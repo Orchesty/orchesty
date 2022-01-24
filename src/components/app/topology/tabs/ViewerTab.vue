@@ -27,7 +27,7 @@
           :label="$t('topologies.viewer.errorsToggle')"
           hide-details
           color="red"
-          @click="toggleOverlays"
+          @click="toggleOverlaysHandler"
         >
           <template #label>
             <span class="subtitle-2">{{ $t('topologies.viewer.errorsToggle') }}</span>
@@ -39,7 +39,7 @@
           :label="$t('topologies.viewer.userTasksToggle')"
           hide-details
           color="primary"
-          @click="toggleOverlays"
+          @click="toggleOverlaysHandler"
         >
           <template #label>
             <span class="subtitle-2">{{ $t('topologies.viewer.userTasksToggle') }}</span>
@@ -51,7 +51,7 @@
           hide-details
           :label="$t('topologies.viewer.queueDepthToggle')"
           color="secondary"
-          @click="toggleOverlays"
+          @click="toggleOverlaysHandler"
         >
           <template #label>
             <span class="subtitle-2">{{ $t('topologies.viewer.queueDepthToggle') }}</span>
@@ -105,7 +105,7 @@ import { IMPLEMENTATIONS } from '@/store/modules/implementations/types'
 import { fitIntoScreen } from '@/components/app/bpmn/helper'
 import { REQUESTS_STATE } from '@/store/modules/api/types'
 import { API } from '@/api'
-import { DIRECTION, OPERATOR } from '@/services/enums/gridEnums'
+import { OPERATOR } from '@/services/enums/gridEnums'
 import { DATA_GRIDS } from '@/services/enums/dataGridEnums'
 import { USER_TASKS } from '@/store/modules/userTasks/types'
 import BpmnNodeGrid from '@/components/app/bpmn/components/BpmnNodeGrid'
@@ -128,7 +128,7 @@ export default {
       showUserTasks: true,
       showQueue: true,
       showTest: false,
-      excludedNodeNames: ['start', 'webhook', 'cron'],
+      startEventTypes: ['start', 'webhook', 'cron'],
       selectedNode: {},
       overlays: [],
       filterMeta: {},
@@ -149,6 +149,27 @@ export default {
     canvasHeight() {
       return 'canvas--basic'
     },
+    diagramOptions() {
+      return {
+        additionalModules: [
+          {
+            zoomScroll: ['value', ''],
+          },
+          {
+            __init__: ['customRenderer', 'contextPadProvider', 'elementFactory', 'paletteProvider'],
+          },
+          { customRenderer: ['type', CustomRenderer] },
+          { contextPadProvider: ['type', CustomContextPadProvider] },
+          { elementFactory: ['type', CustomElementFactory] },
+          { paletteProvider: ['type', CustomPalette] },
+        ],
+        container: '#canvas',
+        moddleExtensions: {
+          pipes: PipesModdleDescriptor,
+          camunda: camundaModdleDescriptor,
+        },
+      }
+    },
   },
   methods: {
     ...mapActions(TOPOLOGIES.NAMESPACE, [
@@ -158,6 +179,137 @@ export default {
     ]),
     ...mapActions(USER_TASKS.NAMESPACE, [USER_TASKS.ACTIONS.USER_TASK_FETCH_TASKS]),
     ...mapActions(IMPLEMENTATIONS.NAMESPACE, [IMPLEMENTATIONS.ACTIONS.LIST_IMPLEMENTATIONS]),
+
+    //#1 BACKEND DATA FETCH
+    async initData(data) {
+      await Promise.all([
+        this[TOPOLOGIES.ACTIONS.TOPOLOGY.NODES]({ id: data._id }),
+        this[IMPLEMENTATIONS.ACTIONS.LIST_IMPLEMENTATIONS]({ data: {} }),
+        this.fetchStatistics(data._id, this.filter),
+        this.fetchUserTasks(),
+      ]).then(async () => await this.prepareCanvas(this.topology))
+    },
+
+    //#2 PREPARE THE CANVAS
+    async prepareCanvas(topology) {
+      window.orchestyIndex = null
+      this.canvasReset()
+      this.viewer = new Modeler(this.diagramOptions)
+
+      //disable doubleclick editing
+      this.viewer.get('eventBus').on('element.dblclick', 1500, function (event) {
+        event.stopPropagation()
+      })
+
+      //set the variable for the canvas overlays and error + queue counter
+      this.overlays = this.viewer.get('overlays')
+      let errors = ''
+      let queueDepth = ''
+
+      //on shape added action
+      this.viewer.get('eventBus').on('shape.added', (event) => {
+        let element = event.element
+
+        //ignore flow arrows
+        if (element.labelTarget || !element.businessObject.$instanceOf('bpmn:FlowNode')) {
+          return
+        }
+
+        //get currently processed node object
+        const node = Object.values(this.nodeNames).filter((n) => {
+          return n.schema_id === element.businessObject.id
+        })[0]
+
+        //get node metrics if exists
+        if (this.statistics.items[node._id]) {
+          errors = this.statistics.items[node._id].process.errors
+          queueDepth = this.statistics.items[node._id].queue_depth.avg
+        }
+
+        //if UserTask - draw a UserTask overlay
+        if (element.businessObject.pipesType === 'user') {
+          if (this.userTasks.items) {
+            this.viewer.get('overlays').add(element, 'bubbles', {
+              position: { top: element.height - 10, right: element.width - 30 },
+              html:
+                `<div onclick="window.dispatchEvent(new CustomEvent('userTasksCheckbox'))"><span class="badge badge-tasks" title="Waiting tasks">` +
+                this.userTasks.items.filter((item) => item.nodeId === node._id).length +
+                '</span></div>',
+            })
+          }
+        }
+
+        //if not Starting Point - draw metrics overlay
+        if (!this.isStartingPoint(element)) {
+          window.orchestyIndex = node._id
+          if (errors !== '0') {
+            this.overlays.add(element, 'bubbles', {
+              position: { top: element.height - 10, right: element.width - 5 },
+              html: `<div><span data-index="${window.orchestyIndex}" class="badge badge-error" title="Failed processes">${errors}</span></div>`,
+            })
+          }
+          this.overlays.add(element, 'bubbles', {
+            position: { top: element.height + 10, right: element.width - 15 },
+            html: `<div onclick="window.dispatchEvent(new CustomEvent('queueDepthCheckbox'))"><span class="badge badge-queue" title="Queue depth">${queueDepth}</span></div>`,
+          })
+        }
+
+        //if Starting Point - add enable/disable functionality
+        if (this.isStartingPoint(element)) {
+          window.orchestyIndex = node._id
+          this.overlays.add(element, {
+            position: {
+              top: 0,
+              left: 0,
+            },
+            html: `<div title="${node.enabled ? 'enabled' : 'disabled'}" class="starting-point" data-index="${
+              window.orchestyIndex
+            }" style="height: ${element.height}px;
+              width: ${element.width}px"></div>`,
+          })
+        }
+      })
+
+      try {
+        await this.importXMLDiagram(topology)
+      } catch (err) {
+        console.log(err)
+      } finally {
+        this.hasTests(topology)
+        this.showTestResults(topology)
+        this.hookEventListeners()
+        this.toggleOverlaysHandler()
+        this.setStartingPointsColor()
+        let labels = document.querySelectorAll('.djs-label')
+        labels.forEach((label) => {
+          this.centerNodeName(label)
+        })
+      }
+    },
+    //#3 IMPORT XML DIAGRAM
+    async importXMLDiagram(topology) {
+      this.diagram = await this[TOPOLOGIES.ACTIONS.TOPOLOGY.GET_DIAGRAM]({ topologyID: topology._id })
+      await this.viewer.importXML(this.diagram)
+      fitIntoScreen(this.viewer, this.diagram)
+    },
+
+    //HELPER FETCH FUNCTIONS W/ PARAMS
+    async fetchStatistics(id, filter) {
+      await this[TOPOLOGIES.ACTIONS.DATA.GET_STATISTICS]({
+        id: id,
+        settings: {
+          filter: filter,
+        },
+      })
+    },
+    async fetchUserTasks() {
+      await this[USER_TASKS.ACTIONS.USER_TASK_FETCH_TASKS]({
+        filter: [[{ column: 'topologyId', operator: OPERATOR.EQUAL, value: this.topology._id }]],
+        params: { id: this.topology._id },
+      })
+    },
+
+    //FILTER HANDLERS
     onFilterChange(filter, filterMeta) {
       this.filter = filter
       this.filterMeta = filterMeta
@@ -166,51 +318,22 @@ export default {
       this.filter = []
       this.filterMeta = {}
     },
-    closeLogs() {
-      this.selectedNode = {}
-    },
-    canvasReset() {
-      document.querySelector('#canvas').innerHTML = ''
-      window.orchestyIndex = null
-    },
-    toggleOverlays() {
+
+    //HANDLERS
+    toggleOverlaysHandler() {
       this.visibilitySwitcher(this.showErrors, '.badge-error')
       this.visibilitySwitcher(this.showUserTasks, '.badge-tasks')
       this.visibilitySwitcher(this.showQueue, '.badge-queue')
     },
-    hookEventListeners() {
-      document.querySelectorAll('.badge-error').forEach((badgeError) => {
-        badgeError.addEventListener('click', function () {
-          window.dispatchEvent(new CustomEvent('nodeSelection', { detail: badgeError }))
-        })
-      })
-    },
-    kokosListeners() {
-      document.querySelectorAll('.kokos, .kokos2').forEach((badgeError) => {
-        badgeError.addEventListener('click', function () {
-          window.dispatchEvent(new CustomEvent('enableStartingPoint', { detail: badgeError }))
-        })
-        console.log(badgeError)
-      })
-    },
-    enableStartingPoint(e) {
-      let sladsfj = this.nodeNames.filter((nodeName) => {
+    enableStartingPointHandler(e) {
+      let selectedNode = this.nodeNames.filter((nodeName) => {
         if (e?.detail?.dataset?.index) {
           return nodeName._id === e.detail.dataset.index
         } else {
           return false
         }
       })[0]
-      events.emit(EVENTS.MODAL.NODE.UPDATE, sladsfj)
-    },
-    visibilitySwitcher(condition, className) {
-      document
-        .querySelectorAll(className)
-        .forEach((error) => (!condition ? (error.style['display'] = 'none') : (error.style['display'] = 'block')))
-    },
-    testExists(topology) {
-      this.showTest = !!topology.test
-      this.testResultsShow = topology.test ? Object.keys(topology.test).length === 0 : true
+      events.emit(EVENTS.MODAL.NODE.UPDATE, selectedNode)
     },
     nodeSelectionHandler(e) {
       this.selectedNode = this.nodeNames.filter((nodeName) => {
@@ -221,10 +344,64 @@ export default {
         }
       })[0]
     },
+
+    //RESET HANDLERS
+    closeLogs() {
+      this.selectedNode = {}
+    },
+    canvasReset() {
+      document.querySelector('#canvas').innerHTML = ''
+    },
+    async reload() {
+      await this.fetchStatistics(this.topology._id, this.filter).then(
+        async () => await this.prepareCanvas(this.topology)
+      )
+    },
+
+    //HOOK EVENT LISTENERS
+    hookEventListeners() {
+      document.querySelectorAll('.badge-error').forEach((badgeError) => {
+        badgeError.addEventListener('click', function () {
+          window.dispatchEvent(new CustomEvent('nodeSelection', { detail: badgeError }))
+        })
+      })
+      document.querySelectorAll('.starting-point').forEach((startingPoint) => {
+        startingPoint.addEventListener('click', function () {
+          window.dispatchEvent(new CustomEvent('enableStartingPoint', { detail: startingPoint }))
+        })
+      })
+    },
+
+    //VISIBILITY SWITCHER
+    visibilitySwitcher(condition, className) {
+      document
+        .querySelectorAll(className)
+        .forEach((error) => (!condition ? (error.style['display'] = 'none') : (error.style['display'] = 'block')))
+    },
+
+    //CONDITIONS CHECKER
+    isStartingPoint(element) {
+      return this.startEventTypes.some((excludedName) => element.businessObject.pipesType === excludedName)
+    },
+    hasTests(topology) {
+      this.showTest = !!topology.test
+      this.testResultsShow = topology.test ? Object.keys(topology.test).length === 0 : true
+    },
+
+    //COLORING
+    setStartingPointsColor() {
+      this.nodeNames.forEach((node) => {
+        if (node.type === 'start' || node.type === 'cron' || node.type === 'webhook') {
+          let svg = document.querySelectorAll(`g[data-element-id='${node.schema_id}'] .djs-visual > *:not(text)`)
+          svg.forEach((svg) => {
+            !node.enabled ? (svg.style.fill = 'rgba(255,40,44,0.53)') : (svg.style.fill = 'rgba(40,255,44,0.53)')
+          })
+        }
+      })
+    },
     showTestResults(topology) {
       if (topology.test) {
         this.nodeNames.forEach((node) => {
-          console.log(node)
           topology.test.forEach((test) => {
             if (test.id === node._id) {
               let svg = document.querySelectorAll(`g[data-element-id='${node.schema_id}'] .djs-visual > *:not(text)`)
@@ -238,6 +415,8 @@ export default {
         })
       }
     },
+
+    //LABEL CENTERING
     centerNodeName(label) {
       let name = ''
       const labelChildrenFinal = label.children.length
@@ -261,180 +440,6 @@ export default {
       title.textContent = name
       label.appendChild(title)
     },
-    async reload() {
-      await this.fetchStatistics(this.topology._id, this.filter).then(async () => await this.initBpmn(this.topology))
-    },
-    async initDiagram(topology) {
-      this.diagram = await this[TOPOLOGIES.ACTIONS.TOPOLOGY.GET_DIAGRAM]({ topologyID: topology._id })
-      await this.viewer.importXML(this.diagram)
-      fitIntoScreen(this.viewer, this.diagram)
-    },
-    async initBpmn(topology) {
-      if (!document.querySelector('#canvas')) {
-        return
-      }
-      this.canvasReset()
-      this.viewer = new Modeler({
-        additionalModules: [
-          {
-            zoomScroll: ['value', ''],
-          },
-          {
-            __init__: ['customRenderer', 'contextPadProvider', 'elementFactory', 'paletteProvider'],
-          },
-          { customRenderer: ['type', CustomRenderer] },
-          { contextPadProvider: ['type', CustomContextPadProvider] },
-          { elementFactory: ['type', CustomElementFactory] },
-          { paletteProvider: ['type', CustomPalette] },
-        ],
-        container: '#canvas',
-        moddleExtensions: {
-          pipes: PipesModdleDescriptor,
-          camunda: camundaModdleDescriptor,
-        },
-      })
-      this.overlays = this.viewer.get('overlays')
-
-      this.viewer.get('eventBus').on('shape.added', (event) => {
-        let element = event.element
-
-        if (element.labelTarget || !element.businessObject.$instanceOf('bpmn:FlowNode')) {
-          return
-        }
-
-        const node = Object.values(this.nodeNames).filter((n) => {
-          return n.schema_id === element.businessObject.id
-        })[0]
-
-        if (element.businessObject.pipesType === 'user') {
-          if (this.userTasks.items) {
-            this.viewer.get('overlays').add(element, 'bubbles', {
-              position: { top: element.height - 10, right: element.width - 30 },
-              html:
-                `<div onclick="window.dispatchEvent(new CustomEvent('userTasksCheckbox'))"><span class="badge badge-tasks" title="Waiting tasks">` +
-                this.userTasks.items.filter((item) => item.nodeId === node._id).length +
-                '</span></div>',
-            })
-          }
-        }
-
-        let errors = ''
-        let queueDepth = ''
-
-        if (this.statistics.items[node._id]) {
-          errors = this.statistics.items[node._id].process.errors
-        }
-
-        if (this.statistics.items[node._id]) {
-          queueDepth = this.statistics.items[node._id].queue_depth.avg
-        }
-
-        if (!this.excludedNodeNames.some((el) => element.businessObject.pipesType === el)) {
-          window.orchestyIndex = node._id
-
-          if (errors !== '0') {
-            this.overlays.add(element, 'bubbles', {
-              position: { top: element.height - 10, right: element.width - 5 },
-              html: `<div><span data-index="${window.orchestyIndex}" class="badge badge-error" title="Failed processes">${errors}</span></div>`,
-            })
-          }
-
-          this.overlays.add(element, 'bubbles', {
-            position: { top: element.height + 10, right: element.width - 15 },
-            html: `<div onclick="window.dispatchEvent(new CustomEvent('queueDepthCheckbox'))"><span class="badge badge-queue" title="Queue depth">${queueDepth}</span></div>`,
-          })
-        }
-
-        if (
-          element.businessObject.pipesType === 'start' ||
-          element.businessObject.pipesType === 'cron' ||
-          element.businessObject.pipesType === 'webhook'
-        ) {
-          const node = Object.values(this.nodeNames).filter((n) => {
-            return n.schema_id === element.businessObject.id
-          })[0]
-          window.orchestyIndex = node._id
-          this.overlays.add(element, {
-            position: {
-              top: 0,
-              left: 0,
-            },
-            html: `<div title="${node.enabled ? 'enabled' : 'disabled'}" class="${
-              node.enabled ? 'kokos' : 'kokos2'
-            }" data-index="${window.orchestyIndex}" style="height: ${element.height}px;
-              width: ${element.width}px"></div>`,
-          })
-        }
-      })
-
-      this.viewer.get('eventBus').on('element.dblclick', 1500, function (event) {
-        event.stopPropagation()
-      })
-
-      try {
-        await this.initDiagram(topology)
-      } catch (err) {
-        console.log(err)
-      } finally {
-        this.testExists(topology)
-        this.showTestResults(topology)
-        this.hookEventListeners()
-        this.toggleOverlays()
-        this.kokosListeners()
-        let labels = document.querySelectorAll('.djs-label')
-        labels.forEach((label) => {
-          this.centerNodeName(label)
-        })
-        this.nodeNames.forEach((node) => {
-          if (node.type === 'start' || node.type === 'cron' || node.type === 'webhook') {
-            let svg = document.querySelectorAll(`g[data-element-id='${node.schema_id}'] .djs-visual > *:not(text)`)
-            console.log(svg)
-
-            svg.forEach((svg) => {
-              !node.enabled ? (svg.style.fill = 'rgba(255,40,44,0.53)') : (svg.style.fill = 'rgba(40,255,44,0.53)')
-            })
-          }
-        })
-      }
-    },
-    async fetchStatistics(id, filter) {
-      await this[TOPOLOGIES.ACTIONS.DATA.GET_STATISTICS]({
-        id: id,
-        settings: {
-          filter: filter,
-          sorter: [
-            {
-              column: 'id',
-              direction: DIRECTION.DESCENDING,
-            },
-          ],
-          paging: { itemsPerPage: 50, page: 1 },
-          search: '',
-        },
-      })
-    },
-    async fetchUserTasks() {
-      await this[USER_TASKS.ACTIONS.USER_TASK_FETCH_TASKS]({
-        filter: [[{ column: 'topologyId', operator: OPERATOR.EQUAL, value: this.topology._id }]],
-        sorter: [
-          {
-            column: 'id',
-            direction: DIRECTION.DESCENDING,
-          },
-        ],
-        paging: { itemsPerPage: 50, page: 1 },
-        params: { id: this.topology._id },
-        search: '',
-      })
-    },
-    async initData(data) {
-      await Promise.all([
-        this[TOPOLOGIES.ACTIONS.TOPOLOGY.NODES]({ id: data._id }),
-        this[IMPLEMENTATIONS.ACTIONS.LIST_IMPLEMENTATIONS]({ data: {} }),
-        this.fetchStatistics(data._id, this.filter),
-        this.fetchUserTasks(),
-      ]).then(async () => await this.initBpmn(this.topology))
-    },
   },
   watch: {
     topology: {
@@ -448,27 +453,27 @@ export default {
       deep: true,
       async handler(val) {
         await Promise.all([this.fetchStatistics(this.topology._id, val), this.fetchUserTasks()]).then(
-          async () => await this.initBpmn(this.topology)
+          async () => await this.prepareCanvas(this.topology)
         )
       },
     },
   },
   created() {
     window.addEventListener('nodeSelection', this.nodeSelectionHandler)
-    window.addEventListener('errorCheckbox', this.toggleOverlays)
-    window.addEventListener('userTasksCheckbox', this.toggleOverlays)
-    window.addEventListener('queueDepthCheckbox', this.toggleOverlays)
-    window.addEventListener('enableStartingPoint', this.enableStartingPoint)
+    window.addEventListener('errorCheckbox', this.toggleOverlaysHandler)
+    window.addEventListener('userTasksCheckbox', this.toggleOverlaysHandler)
+    window.addEventListener('queueDepthCheckbox', this.toggleOverlaysHandler)
+    window.addEventListener('enableStartingPoint', this.enableStartingPointHandler)
   },
   mounted() {
     this.init('timestamp')
   },
   destroyed() {
     window.removeEventListener('nodeSelection', this.nodeSelectionHandler)
-    window.removeEventListener('errorCheckbox', this.toggleOverlays)
-    window.removeEventListener('userTasksCheckbox', this.toggleOverlays)
-    window.removeEventListener('queueDepthCheckbox', this.toggleOverlays)
-    window.removeEventListener('enableStartingPoint', this.enableStartingPoint)
+    window.removeEventListener('errorCheckbox', this.toggleOverlaysHandler)
+    window.removeEventListener('userTasksCheckbox', this.toggleOverlaysHandler)
+    window.removeEventListener('queueDepthCheckbox', this.toggleOverlaysHandler)
+    window.removeEventListener('enableStartingPoint', this.enableStartingPointHandler)
   },
 }
 </script>
@@ -546,14 +551,9 @@ export default {
   width: 40px;
   text-align: start;
 }
-.kokos {
+.starting-point {
   cursor: pointer;
   //content: url('../../../../assets/svg/play-circle-outline.svg');
-  transform: scale(0.7);
-}
-.kokos2 {
-  cursor: pointer;
-  //content: url('../../../../assets/svg/close-circle-outline.svg');
   transform: scale(0.7);
 }
 </style>

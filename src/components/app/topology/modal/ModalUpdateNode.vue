@@ -1,19 +1,19 @@
 <template>
   <modal-template
-    v-if="topologY"
+    v-if="node"
     v-model="isOpen"
-    :title="`${topologY.enabled ? 'Disable' : 'Enable'} node`"
+    :title="`${node.enabled ? 'Disable' : 'Enable'} node`"
     :on-confirm="() => submit()"
   >
     <template #default>
       <v-row dense>
-        <v-col cols="12"> {{ topologY.enabled ? 'Disable' : 'Enable' }} starting point? </v-col>
+        <v-col cols="12"> {{ node.enabled ? 'Disable' : 'Enable' }} starting point? </v-col>
       </v-row>
     </template>
     <template #sendingButton>
       <v-row dense>
         <v-col cols="12" class="d-flex justify-end">
-          <app-button :button-title="topologY.enabled ? 'Disable' : 'Enable'" :on-click="submit" />
+          <app-button :button-title="node.enabled ? 'Disable' : 'Enable'" :on-click="submit" />
         </v-col>
       </v-row>
     </template>
@@ -34,7 +34,7 @@ export default {
   components: { AppButton, ModalTemplate },
   data: () => ({
     isOpen: false,
-    topologY: null,
+    node: null,
   }),
   computed: {
     ...mapState(TOPOLOGIES.NAMESPACE, ['topology']),
@@ -46,22 +46,21 @@ export default {
   methods: {
     ...mapActions(TOPOLOGIES.NAMESPACE, [TOPOLOGIES.ACTIONS.NODE.UPDATE, TOPOLOGIES.ACTIONS.TOPOLOGY.GET_DIAGRAM]),
     async submit() {
-      console.log(this.topologY.enabled)
       await this[TOPOLOGIES.ACTIONS.NODE.UPDATE]({
-        nodeId: this.topologY._id,
-        enabled: !this.topologY.enabled,
+        nodeId: this.node._id,
+        enabled: !this.node.enabled,
         topologyId: this.topology._id,
       }).then((res) => {
         if (res) {
           this.isOpen = false
-          this.topologY = null
+          this.node = null
         }
       })
     },
   },
   created() {
-    events.listen(EVENTS.MODAL.NODE.UPDATE, (e) => {
-      this.topologY = e
+    events.listen(EVENTS.MODAL.NODE.UPDATE, (node) => {
+      this.node = node
       this.isOpen = true
     })
   },
