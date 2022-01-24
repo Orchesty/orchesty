@@ -117,7 +117,7 @@ final class ApplicationController extends AbstractController
     public function installApplicationAction(string $key, string $user): Response
     {
         try {
-            $this->verifyLicense();
+            $this->verifyLicense(TRUE);
         } catch (LicenseException $e) {
             return $this->getErrorResponse($e, 400);
         }
@@ -303,10 +303,11 @@ final class ApplicationController extends AbstractController
      * @throws LicenseException
      * @throws MongoDBException
      */
-    private function verifyLicense(): void
+    private function verifyLicense(bool $lastInstall = FALSE): void
     {
-        $apps = $this->repository->getInstalledApplicationsCount();
-        if (JWTParser::verifyAndReturn()[self::APPLICATIONS] < $apps) {
+        $offset = $lastInstall ? 1 : 0;
+        $apps   = $this->repository->getInstalledApplicationsCount();
+        if (JWTParser::verifyAndReturn()[self::APPLICATIONS] < $apps + $offset) {
             throw new LicenseException(
                 'Your license is not valid or application limit is exceeded',
                 LicenseException::LICENSE_NOT_VALID_OR_APPS_EXCEED,
