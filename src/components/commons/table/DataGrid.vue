@@ -29,6 +29,7 @@
     <!--Data Grid & Iterator-->
     <v-row>
       <v-col :flat="disableToolbar" cols="12" :lg="contentEnabled ? 4 : 12">
+        <h3 v-if="title" class="mb-2 title">{{ title }}</h3>
         <div>
           <v-data-iterator
             v-if="isIterator"

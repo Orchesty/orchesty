@@ -9,6 +9,7 @@
     "topologies": "Topologies",
     "notifications": "Notifications",
     "scheduledTask": "Scheduled Tasks",
+    "healthCheck": "Health Check",
     "userTask": "User Tasks",
     "appStore": "Applications",
     "implementations": "Services",

@@ -9,7 +9,7 @@
               {{ node.nodeId }}
             </v-chip>
           </template>
-          <h4 class="subtitle-1 my-3">
+          <h4 class="subtitle-2 my-3">
             {{ $t('topologies.userTask.information.amount') }}: {{ `${selected.length}` }}
           </h4>
           <v-btn :disabled="selected.length <= 0" color="primary" class="white--text mr-2 fixed-width">

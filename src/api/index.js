@@ -10,6 +10,7 @@ import folder from './endpoints/folder'
 import statistic from './endpoints/statistic'
 import overview from './endpoints/overview'
 import trash from './endpoints/trash'
+import healthCheck from './endpoints/healthCheck'
 
 export const API = {
   auth,
@@ -24,4 +25,5 @@ export const API = {
   folder,
   statistic,
   trash,
+  healthCheck,
 }

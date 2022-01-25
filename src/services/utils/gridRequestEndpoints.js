@@ -15,5 +15,6 @@ export const GRID_REQUESTS = {
   [DATA_GRIDS.LOGS]: API.topology.getLogs,
   [DATA_GRIDS.NODE_LOGS]: API.topology.getNodeLogsByID,
   [DATA_GRIDS.TOPOLOGY_LOGS]: API.topology.getLogsByID,
+  [DATA_GRIDS.HEALTH_CHECK_QUEUES]: API.healthCheck.grid,
   [DATA_GRIDS.TRASH]: API.trash.grid,
 }

@@ -31,8 +31,8 @@
 </template>
 
 <script>
-import TopologyTitle from '@/components/app/topology/landingComponent/TopologyTitle'
-import TopologyActionButtons from '@/components/app/topology/landingComponent/TopologyActionButtons'
+import TopologyTitle from '@/components/app/topology/landing/TopologyTitle'
+import TopologyActionButtons from '@/components/app/topology/landing/TopologyActionButtons'
 import moment from 'moment'
 import { ROUTES } from '@/services/enums/routerEnums'
 import { TOPOLOGY_ENUMS } from '@/services/enums/topologyEnums'

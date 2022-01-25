@@ -1,7 +1,7 @@
 <template>
-  <v-col cols="12" md="6" class="d-flex my-auto">
-    <h1 class="headline">
-      <span class="font-weight-bold text-capitalize">{{ topology.name }}&nbsp;</span>
+  <v-col cols="12" md="6">
+    <h1 class="headline d-flex my-auto">
+      <span class="font-weight-bold">{{ topology.name }}&nbsp;</span>
       <span>v.{{ topology.version }}&nbsp;</span>
       <span :class="topologyStatusColor">{{ topologyStatus }} </span>
     </h1>

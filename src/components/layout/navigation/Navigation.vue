@@ -49,6 +49,7 @@ export default {
         { to: ROUTES.SCHEDULED_TASK, icon: 'access_time', tooltip: this.$t('navigation.scheduledTask') },
         { to: ROUTES.APP_STORE.DEFAULT, icon: 'apps', tooltip: this.$t('navigation.appStore') },
         { to: ROUTES.LOGS, icon: 'list_alt', tooltip: this.$t('navigation.logs') },
+        { to: ROUTES.HEALTH_CHECK, icon: 'mdi-doctor', tooltip: this.$t('navigation.healthCheck') },
         { to: ROUTES.IMPLEMENTATION, icon: 'all_inbox', tooltip: this.$t('navigation.implementations') },
         { to: ROUTES.TRASH, icon: 'delete', tooltip: this.$t('navigation.trash') },
         { to: ROUTES.USER_PROFILE, icon: 'person', tooltip: this.$t('navigation.profile') },

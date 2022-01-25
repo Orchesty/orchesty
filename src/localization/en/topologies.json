@@ -165,6 +165,12 @@
         "severity": "Severity"
       }
     },
+    "healthCheck": {
+      "headers": {
+        "queue": "Name",
+        "consumers": "Status"
+      }
+    },
     "userTask": {
       "title": "User Tasks",
       "titleTrash": "Trash",

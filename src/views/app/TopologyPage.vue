@@ -8,7 +8,7 @@ import ContentTabs from '@/components/layout/content/ContentTabs'
 import { ROUTES } from '@/services/enums/routerEnums'
 import { mapState } from 'vuex'
 import { TOPOLOGIES } from '@/store/modules/topologies/types'
-import TopologyNoSelection from '@/components/app/topology/landingComponent/TopologyNoSelection'
+import TopologyNoSelection from '@/components/app/topology/landing/TopologyNoSelection'
 
 export default {
   components: { TopologyNoSelection, ContentTabs },

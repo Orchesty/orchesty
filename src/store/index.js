@@ -16,7 +16,8 @@ import { callGraphQL } from '../services/utils/graphql'
 import { callApi } from '../services/utils/apiFetch'
 import implementations from './modules/implementations'
 import appStore from './modules/appStore'
-import { DIRECTION } from '@/services/enums/gridEnums'
+import { DIRECTION, OPERATOR } from '@/services/enums/gridEnums'
+import moment from 'moment'
 
 Vue.use(Vuex)
 
@@ -166,6 +167,22 @@ export const createStore = (router) => {
         paging: {
           page: 1,
           itemsPerPage: 50,
+        },
+      }),
+      [DATA_GRIDS.HEALTH_CHECK_QUEUES]: createGrid(DATA_GRIDS.HEALTH_CHECK_QUEUES, {
+        filter: [
+          [
+            {
+              column: 'timestamp',
+              operator: OPERATOR.BETWEEN,
+              value: [moment().utc().subtract(1, 'minutes').format(), moment().utc().format()],
+            },
+          ],
+        ],
+        sorter: null,
+        paging: {
+          page: 1,
+          itemsPerPage: 99999999,
         },
       }),
       [DATA_GRIDS.USER_TASK]: createGrid(DATA_GRIDS.USER_TASK, {

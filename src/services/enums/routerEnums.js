@@ -22,6 +22,7 @@ export const APP_STORE = {
 }
 
 export const ROUTES = {
+  HEALTH_CHECK: 'HEALTH_CHECK',
   DASHBOARD: 'DASHBOARD',
   USERS: 'USERS',
   TRASH: 'TRASH',

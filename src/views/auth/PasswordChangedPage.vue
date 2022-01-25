@@ -4,7 +4,7 @@
       <v-card-text>
         <full-logo />
       </v-card-text>
-      <v-card-text class="text-center subtitle-1">
+      <v-card-text class="text-center subtitle-2">
         {{ $t('setNewPassword.success.text') }}
         <router-link :to="{ name: ROUTES.LOGIN }">{{ $t('setNewPassword.success.link') }}</router-link>
       </v-card-text>
