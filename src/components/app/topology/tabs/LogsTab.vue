@@ -5,7 +5,6 @@
     :namespace="DATA_GRIDS.TOPOLOGY_LOGS"
     expand-click
     :quick-filters="quickFilters"
-    :title="$t('topologies.logs.title')"
     show-expand
     disable-search
     show-full-text-search

@@ -6,7 +6,6 @@
       :namespace="DATA_GRIDS.OVERVIEW"
       :quick-filters="quickFilters"
       :headers="headers"
-      :title="$t('topologies.overview.title')"
       :request-params="{ id: topologyID }"
       stats
       disable-search

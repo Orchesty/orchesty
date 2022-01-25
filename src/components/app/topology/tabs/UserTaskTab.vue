@@ -10,7 +10,6 @@
     show-active-row
     item-key="id"
     show-select
-    :title="$t('topologies.userTask.title')"
     :quick-filters="quickFilters"
     :permanent-filter="permanentFilter"
     :content-enabled="true"
