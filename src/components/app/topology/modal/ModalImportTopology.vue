@@ -24,6 +24,8 @@
           <v-col :key="file.name + Math.random()" cols="8">
             <v-select
               v-model="file.replace"
+              dense
+              outlined
               label="change diagram sdk value with"
               placeholder="change diagram sdk value with"
               :items="implementationsProject"
