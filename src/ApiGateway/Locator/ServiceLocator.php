@@ -266,6 +266,7 @@ final class ServiceLocator implements LoggerAwareInterface
             $request->request->all(),
             FALSE,
             $request->headers->all(),
+            TRUE,
         );
     }
 
@@ -345,8 +346,10 @@ final class ServiceLocator implements LoggerAwareInterface
      * @param mixed[] $body
      * @param bool    $multiple
      * @param mixed[] $headers
+     * @param bool    $allowThrowException
      *
      * @return mixed[]
+     * @throws Throwable
      */
     private function doRequest(
         string $url,
@@ -354,6 +357,7 @@ final class ServiceLocator implements LoggerAwareInterface
         array $body = [],
         bool $multiple = FALSE,
         array $headers = [],
+        bool $allowThrowException = FALSE,
     ): array
     {
         $out = [];
@@ -382,6 +386,10 @@ final class ServiceLocator implements LoggerAwareInterface
                 }
             } catch (Throwable $t) {
                 $this->logger->error($t->getMessage(), ['Exception' => $t, 'Sdk' => $sdk]);
+
+                if($allowThrowException){
+                    throw $t;
+                }
             }
         }
 

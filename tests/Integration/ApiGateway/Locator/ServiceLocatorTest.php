@@ -381,8 +381,8 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
         $req = new Request(['aa' => 'bb']);
         $req->setMethod('post');
 
-        $res = $this->createLocator($dto)->runSyncActions($req, 'key', 'someMethod');
-        self::assertEquals([], $res);
+        self::expectException(LogicException::class);
+        $this->createLocator($dto)->runSyncActions($req, 'key', 'someMethod');
     }
 
     /**
