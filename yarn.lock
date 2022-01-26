@@ -2793,9 +2793,9 @@ bpmn-js-properties-panel@^0.46.0:
     semver "^6.3.0"
 
 bpmn-js@^8.7.1:
-  version "8.9.0"
-  resolved "https://registry.yarnpkg.com/bpmn-js/-/bpmn-js-8.9.0.tgz#c2c8db6216c22f281a512eb1bc2eaec3581115a2"
-  integrity sha512-cthSxiJUpEHspiUKiL0YA8/mRCYngNKwALWieLKPtFo42n+vWTFgmxnASNRwhxpPEbSXjYuTah1lZ0lSyLWPpw==
+  version "8.9.1"
+  resolved "https://registry.yarnpkg.com/bpmn-js/-/bpmn-js-8.9.1.tgz#03dd5abb2b104e42cea08ed89ab737decbea022f"
+  integrity sha512-Y81C/5e0yFwQC47QDKO4B2tyDRYtMIRGgGQhsvJWtP55m5i2AQJS0cEoBH9sDuYx7tr6pfb18BpZXo3DdRlnig==
   dependencies:
     bpmn-moddle "^7.1.2"
     css.escape "^1.5.1"
@@ -4220,9 +4220,9 @@ diagram-js@^7.8.2:
     tiny-svg "^2.2.2"
 
 diagram-js@^8.0.0:
-  version "8.0.2"
-  resolved "https://registry.yarnpkg.com/diagram-js/-/diagram-js-8.0.2.tgz#dfa1e3ce9195d8bbe22b77fc3160abf16fda9590"
-  integrity sha512-W7qAIqlOGOFeboG+zqImnMyWlPyuQmxrtZx7lSMB5NAMP4P5IqEwBCZttCTZVJt7R6Fbfbdic6Pn7X4hbzaidQ==
+  version "8.1.0"
+  resolved "https://registry.yarnpkg.com/diagram-js/-/diagram-js-8.1.0.tgz#5deb6e149d3593e8e98c738c5a70be518befa3c6"
+  integrity sha512-65Fs/9GvNmpk5qhgU1Vv3F7kVKejYXuP5OiR7BvZz25hSj4dq9TGM8bp2vxmDt+Q+HpesNdD/TqtQRh4yWZbPQ==
   dependencies:
     css.escape "^1.5.1"
     didi "^5.2.1"
@@ -7619,7 +7619,12 @@ mimic-fn@^2.1.0:
   resolved "https://registry.yarnpkg.com/mimic-fn/-/mimic-fn-2.1.0.tgz#7ed2c2ccccaf84d3ffcb7a69b57711fc2083401b"
   integrity sha512-OqbOk5oEQeAZ8WXWydlu9HJjz9WVdEIvamMCcXmuqUYjTknH/sqsWvhQ3vgwKFRR1HpjvNBKQ37nbJgYzGqGcg==
 
-min-dash@^3.0.0, min-dash@^3.1.0, min-dash@^3.5.2, min-dash@^3.7.0:
+min-dash@^3.0.0, min-dash@^3.5.2:
+  version "3.8.1"
+  resolved "https://registry.yarnpkg.com/min-dash/-/min-dash-3.8.1.tgz#09a8bd8a041d65eec4732042cde9cb24a6e84b0d"
+  integrity sha512-evumdlmIlg9mbRVPbC4F5FuRhNmcMS5pvuBUbqb1G9v09Ro0ImPEgz5n3khir83lFok1inKqVDjnKEg3GpDxQg==
+
+min-dash@^3.1.0, min-dash@^3.7.0:
   version "3.8.0"
   resolved "https://registry.yarnpkg.com/min-dash/-/min-dash-3.8.0.tgz#4725fd2ac7c94d898f4c935a72c63d0bf1e4db83"
   integrity sha512-a0TLbmL6p4RlNGblZcLd2yjPORp+bCYRlNGvwK5OMwWaMROWh1DlRgN9W8jJm2x9gVuscvD38BEosV7cnikKnw==
@@ -7776,9 +7781,9 @@ moddle-xml@^9.0.5:
     saxen "^8.1.2"
 
 moddle@^5.0.2:
-  version "5.0.2"
-  resolved "https://registry.yarnpkg.com/moddle/-/moddle-5.0.2.tgz#9768320698be636711a29101c82fd361e3d90253"
-  integrity sha512-nBEyKt7sDw6MlM6e85lTCEXButw+p7hubEoRo/JyX+dBzDcGjDoktPuby9QE+ylW1ABZqNvRy8pK0h+23tIW2g==
+  version "5.0.3"
+  resolved "https://registry.yarnpkg.com/moddle/-/moddle-5.0.3.tgz#3687845da07e65e69e7c05260fe83a53f9c65e7d"
+  integrity sha512-EjnQkSaZClHMsM3H/guBy9h7AmHUICH0Pf8H1VnnYGUXy2hkZQU4gqEAyHywJzMRAhYX87pXjH2NtyigF7evkA==
   dependencies:
     min-dash "^3.0.0"
 
@@ -11073,9 +11078,9 @@ vue-hot-reload-api@^2.3.0:
   integrity sha512-BXq3jwIagosjgNVae6tkHzzIk6a8MHFtzAdwhnV5VlvPTFxDCvIttgSiHWjdGoTJvXtmRu5HacExfdarRcFhog==
 
 vue-i18n@^8.25.0:
-  version "8.26.8"
-  resolved "https://registry.yarnpkg.com/vue-i18n/-/vue-i18n-8.26.8.tgz#afe936adbf96ff0e9808e04845b8f41cc21c666f"
-  integrity sha512-BN2OXolO15AKS95yNF8oOtARibaO6RxyKkAYNV4XpOmL7S4eVZYMIDtyvDv+XGZaiUmBJSH9mdNqzexvGMnK2A==
+  version "8.27.0"
+  resolved "https://registry.yarnpkg.com/vue-i18n/-/vue-i18n-8.27.0.tgz#3e3b3ed2c107ccbd7f20dbdd7a96763a9990253e"
+  integrity sha512-SX35iJHL5PJ4Gfh0Mo/q0shyHiI2V6Zkh51c+k8E9O1RKv5BQyYrCxRzpvPrsIOJEnLaeiovet3dsUB0e/kDzw==
 
 vue-jest@^3.0.5:
   version "3.0.7"
@@ -11160,9 +11165,9 @@ vuetify-loader@^1.7.2:
     loader-utils "^2.0.0"
 
 vuetify@^2.5.8:
-  version "2.6.2"
-  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-2.6.2.tgz#1ed4d3c9e734d55202bd566b789cce0e0013279a"
-  integrity sha512-nx3uZkO8MZNMshUEh1xKaQ1hQYepNwWFn3FVxKt+XBVf7ZFscd0GS/a3KZo4B3baXQmziCQAZKNIQF5IWeaIUw==
+  version "2.6.3"
+  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-2.6.3.tgz#b33ede2da958a40c6ced0ad1f4eda737984b3967"
+  integrity sha512-Zfiz2DZnp1DvxqGaSCGqGjv4mPNAurJJ5Xwy7bzNzIySGLlRdlO8UH6aNWnSgfaAsLP3voxadSGDm6tKM8Ys7w==
 
 vuex@^3.6.2:
   version "3.6.2"
