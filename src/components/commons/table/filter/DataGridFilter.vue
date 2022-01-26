@@ -109,8 +109,8 @@ export default {
       currentFilter: [],
       currentMeta: {},
       fullTextSearch: '',
-      timeMargin: '',
-      timeMarginFilter: [{ column: 'time_margin', operator: OPERATOR.EQUAL, value: '' }],
+      timeMargin: 0,
+      timeMarginFilter: [{ column: 'time_margin', operator: OPERATOR.EQUAL, value: 0 }],
       key: 0,
     }
   },
@@ -161,7 +161,7 @@ export default {
       this.currentFilter = []
       this.currentMeta = {}
       this.fullTextSearch = ''
-      this.timeMarginFilter[0].value = ''
+      this.timeMarginFilter[0].value = 0
       this.onClear()
     },
     async reload() {
