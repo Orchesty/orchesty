@@ -14,6 +14,7 @@ export default {
     })
       .then((res) => {
         dispatch(TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES)
+        dispatch(TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID, res.id)
         addSuccessMessage(dispatch, API.topology.enable.id, `Topology ${res.name} created!`)
         return res
       })
@@ -248,6 +249,7 @@ export default {
     })
       .then(() => {
         dispatch(TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES)
+        dispatch(TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID, payload.topologyId)
         addSuccessMessage(dispatch, API.topology.enable.id, `Topology ${payload.data.name} edited!`)
         return true
       })

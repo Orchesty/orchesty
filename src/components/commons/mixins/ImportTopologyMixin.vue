@@ -12,6 +12,7 @@ export default {
   data() {
     return {
       topologyMixinImplementations: {},
+      folderId: null,
     }
   },
   methods: {
@@ -28,46 +29,42 @@ export default {
       })
     },
 
-    async replaceTopologyData(e, altName = '', isDirect = false) {
+    async replaceTopologyData(e, altName = '', folderId) {
       const reader = new FileReader()
       const file = e.target.files[0]
       let name = file.name.split('.')[0]
       let form = {
         name: altName ? altName : name,
         description: null,
-        folder: this.topology ? this.topology.id : null,
+        folder: folderId ? folderId : null,
       }
       reader.onload = async (event) => {
-        if (!isDirect) {
-          const parser = new DOMParser()
-          let xmlDoc = parser.parseFromString(event.target.result, 'text/xml')
-          if (altName) {
-            for (let i = 0; i < xmlDoc.getElementsByTagName('bpmn:process')[0].attributes.length; i++) {
-              if (xmlDoc.getElementsByTagName('bpmn:process')[0].attributes[i].name === 'id') {
-                xmlDoc.getElementsByTagName('bpmn:process')[0].attributes[i].value = altName
-              }
+        const parser = new DOMParser()
+        let xmlDoc = parser.parseFromString(event.target.result, 'text/xml')
+        if (altName) {
+          for (let i = 0; i < xmlDoc.getElementsByTagName('bpmn:process')[0].attributes.length; i++) {
+            if (xmlDoc.getElementsByTagName('bpmn:process')[0].attributes[i].name === 'id') {
+              xmlDoc.getElementsByTagName('bpmn:process')[0].attributes[i].value = altName
             }
           }
-          for (let h = 0; h < xmlDoc.getElementsByTagName('bpmn:process')[0].children.length; h++) {
-            let it = xmlDoc.getElementsByTagName('bpmn:process')[0].children[h]
-            for (let i = 0; i < it.attributes.length; i++) {
-              if (it.attributes[i].name === 'pipes:sdkHost') {
-                this.implementationsFile.forEach((file) => {
-                  if (it.attributes[i].value === file.name) {
-                    it.attributes[i].value = file.replace
-                  }
-                })
-              }
-            }
-          }
-          await this.saveTopology(form, new XMLSerializer().serializeToString(xmlDoc))
-        } else {
-          await this.saveTopology(form, event.target.result)
         }
+        for (let h = 0; h < xmlDoc.getElementsByTagName('bpmn:process')[0].children.length; h++) {
+          let it = xmlDoc.getElementsByTagName('bpmn:process')[0].children[h]
+          for (let i = 0; i < it.attributes.length; i++) {
+            if (it.attributes[i].name === 'pipes:sdkHost') {
+              this.implementationsFile.forEach((file) => {
+                if (it.attributes[i].value === file.name) {
+                  it.attributes[i].value = file.replace
+                }
+              })
+            }
+          }
+        }
+        await this.saveTopology(form, new XMLSerializer().serializeToString(xmlDoc))
       }
       reader.readAsText(file)
     },
-    fetchTopologyDiagram(e) {
+    fetchTopologyDiagram(e, folderId) {
       const reader = new FileReader()
       const file = e.target.files[0]
       reader.onload = (event) => {
@@ -88,7 +85,7 @@ export default {
           }
         }
         this[IMPLEMENTATIONS.ACTIONS.SET_FILE_IMPLEMENTATIONS]([...new Set(services)])
-        events.emit(EVENTS.MODAL.TOPOLOGY.IMPORT, e)
+        events.emit(EVENTS.MODAL.TOPOLOGY.IMPORT, { e, folderId })
       }
       reader.readAsText(file)
     },

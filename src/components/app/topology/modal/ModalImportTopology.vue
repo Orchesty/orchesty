@@ -66,6 +66,7 @@ export default {
   mixins: [ImportTopologyMixin],
   data: () => ({
     altName: '',
+    folderId: null,
     isOpen: false,
     implementationsProject: null,
     implementationsFile: null,
@@ -80,10 +81,11 @@ export default {
   methods: {
     ...mapActions(IMPLEMENTATIONS.NAMESPACE, [IMPLEMENTATIONS.ACTIONS.LIST_IMPLEMENTATIONS]),
     async submit() {
-      await this.replaceTopologyData(this.event, this.altName)
+      await this.replaceTopologyData(this.event, this.altName, this.folderId)
     },
     onClose() {
       this.altName = ''
+      this.folderId = null
     },
   },
   watch: {
@@ -106,7 +108,10 @@ export default {
   async created() {
     await this[IMPLEMENTATIONS.ACTIONS.LIST_IMPLEMENTATIONS]()
     events.listen(EVENTS.MODAL.TOPOLOGY.IMPORT, (event) => {
-      this.event = event
+      this.event = event.e
+      if (event.folderId) {
+        this.folderId = event.folderId
+      }
       this.isOpen = true
     })
   },

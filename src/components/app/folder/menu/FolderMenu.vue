@@ -27,7 +27,7 @@
           hidden
           @change="
             (e) => {
-              fetchDiagram(e)
+              fetchDiagram(e, topology)
             }
           "
         />
@@ -77,8 +77,8 @@ export default {
     },
   },
   methods: {
-    async fetchDiagram(e) {
-      await this.fetchTopologyDiagram(e)
+    async fetchDiagram(e, folder) {
+      await this.fetchTopologyDiagram(e, folder.id)
     },
   },
 }
