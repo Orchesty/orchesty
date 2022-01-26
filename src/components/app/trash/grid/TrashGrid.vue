@@ -10,7 +10,6 @@
     show-active-row
     item-key="id"
     show-select
-    :title="$t('trash.title')"
     :quick-filters="quickFilters"
     :content-enabled="true"
     fill-height
