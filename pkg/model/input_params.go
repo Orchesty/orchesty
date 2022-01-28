@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"topology-generator/pkg/config"
 )
 
 const (
@@ -176,6 +177,7 @@ func (e *Environment) GetEnvironment() (map[string]string, error) {
 
 	environment["MONGODB_DSN"] = e.MongodbDsn
 	environment["MONGODB_DB"] = e.MongodbDb
+	environment["UDP_LOGGER_URL"] = config.Generator.UdpLoggerUrl
 
 	for _, env := range os.Environ() {
 		if !strings.HasPrefix(env, passPrefix) {
