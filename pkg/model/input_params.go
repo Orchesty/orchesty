@@ -5,7 +5,6 @@ import (
 	"net/url"
 	"os"
 	"strings"
-	"topology-generator/pkg/config"
 )
 
 const (
@@ -84,6 +83,7 @@ type Environment struct {
 	GeneratorMode     Adapter  `json:"generator_mode"`
 	Limits            Limits   `json:"limits"`
 	Requests          Requests `json:"requests"`
+	UdpLoggerUrl      string   `json:"udp_logger_url"`
 }
 
 func (p *NodeConfig) GetTopologyJson(t *Topology, nodes []Node) (TopologyJson, error) {
@@ -177,7 +177,7 @@ func (e *Environment) GetEnvironment() (map[string]string, error) {
 
 	environment["MONGODB_DSN"] = e.MongodbDsn
 	environment["MONGODB_DB"] = e.MongodbDb
-	environment["UDP_LOGGER_URL"] = config.Generator.UdpLoggerUrl
+	environment["UDP_LOGGER_URL"] = e.UdpLoggerUrl
 
 	for _, env := range os.Environ() {
 		if !strings.HasPrefix(env, passPrefix) {
