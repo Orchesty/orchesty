@@ -18,6 +18,7 @@ type (
 		MongoDb  *mongoDb
 		RabbitMq *rabbitMq
 		Metrics  *metrics
+		Logs     *logs
 	}
 
 	app struct {
@@ -38,6 +39,10 @@ type (
 		Dsn         string `env:"METRICS_DSN" required:"true"`
 		Measurement string `env:"METRICS_MEASUREMENT" default:"pipes_counter"`
 	}
+
+	logs struct {
+		Url string `env:"UDP_LOGGER_URL" default:"logstash:5120"`
+	}
 )
 
 var (
@@ -45,18 +50,24 @@ var (
 	MongoDb  mongoDb
 	RabbitMq rabbitMq
 	Metrics  metrics
+	Logs     logs
 
 	c = config{
 		App:      &App,
 		MongoDb:  &MongoDb,
 		RabbitMq: &RabbitMq,
 		Metrics:  &Metrics,
+		Logs:     &Logs,
 	}
 )
 
 func init() {
+	if err := configor.Load(&c); err != nil {
+		panic(err)
+	}
+
 	log.Logger = zerolog.
-		New(logger.NewUdpSender()).
+		New(logger.NewUdpSender(Logs.Url)).
 		With().
 		Timestamp().
 		Stack().
@@ -68,10 +79,6 @@ func init() {
 	zerolog.TimestampFieldName = "timestamp"
 	zerolog.ErrorFieldName = "message"
 	zerolog.ErrorStackFieldName = "trace"
-
-	if err := configor.Load(&c); err != nil {
-		log.Fatal().Err(err).Send()
-	}
 
 	if App.Debug {
 		zerolog.SetGlobalLevel(zerolog.DebugLevel)
