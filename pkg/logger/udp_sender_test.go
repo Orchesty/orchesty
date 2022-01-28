@@ -39,7 +39,7 @@ func TestUpdSender_Send(t *testing.T) {
 		}
 	}()
 
-	s := NewUpdSender("localhost", "5120")
+	s := NewUpdSender("localhost:5120")
 	s.Send([]byte("test"))
 
 	<-quitTest

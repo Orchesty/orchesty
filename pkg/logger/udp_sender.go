@@ -76,6 +76,6 @@ func (u *updSender) Send(data []byte) {
 }
 
 // NewUpdSender creates new logger sender that send everything over UDP
-func NewUpdSender(host string, port string) Sender {
-	return &updSender{url: fmt.Sprintf("%s:%s", host, port), refreshTime: 30}
+func NewUpdSender(url string) Sender {
+	return &updSender{url: url, refreshTime: 30}
 }
