@@ -142,15 +142,28 @@ export default {
         this.initialScheme = result
         this.$emit('initialScheme', result)
         const { xml } = result
-        return await this[TOPOLOGIES.ACTIONS.TOPOLOGY.SAVE_DIAGRAM]({ id: this.topology._id, xml: xml }).then(
-          async (response) => {
-            if (response._id !== this.topology._id) {
-              return response._id
-            } else {
-              return false
+
+        const parser = new DOMParser()
+        let xmlDoc = parser.parseFromString(xml, 'text/xml')
+        console.log(xmlDoc.getElementsByTagName('bpmn:task'))
+        for (let i = 0; i < xmlDoc.getElementsByTagName('bpmn:task').length; i++) {
+          for (let j = 0; j < xmlDoc.getElementsByTagName('bpmn:task')[i].attributes.length; j++) {
+            if (xmlDoc.getElementsByTagName('bpmn:task')[i].attributes[j].name === 'sdkHostOptions') {
+              xmlDoc.getElementsByTagName('bpmn:task')[i].removeAttribute('sdkHostOptions')
             }
           }
-        )
+        }
+
+        return await this[TOPOLOGIES.ACTIONS.TOPOLOGY.SAVE_DIAGRAM]({
+          id: this.topology._id,
+          xml: new XMLSerializer().serializeToString(xmlDoc),
+        }).then(async (response) => {
+          if (response._id !== this.topology._id) {
+            return response._id
+          } else {
+            return false
+          }
+        })
       } else {
         return false
       }
