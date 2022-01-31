@@ -173,7 +173,23 @@ export default {
         try {
           const result = await this.modeler.saveXML({ format: true })
           const { xml } = result
-          download(xml, `${this.topology.name}.v${this.topology.version}` + '.tplg', 'application/bpmn+xml')
+
+          const parser = new DOMParser()
+          let xmlDoc = parser.parseFromString(xml, 'text/xml')
+          console.log(xmlDoc.getElementsByTagName('bpmn:task'))
+          for (let i = 0; i < xmlDoc.getElementsByTagName('bpmn:task').length; i++) {
+            for (let j = 0; j < xmlDoc.getElementsByTagName('bpmn:task')[i].attributes.length; j++) {
+              if (xmlDoc.getElementsByTagName('bpmn:task')[i].attributes[j].name === 'sdkHostOptions') {
+                xmlDoc.getElementsByTagName('bpmn:task')[i].removeAttribute('sdkHostOptions')
+              }
+            }
+          }
+
+          download(
+            new XMLSerializer().serializeToString(xmlDoc),
+            `${this.topology.name}.v${this.topology.version}` + '.tplg',
+            'application/bpmn+xml'
+          )
           this.showFlashMessage(false, `Topology ${this.topology.name} exported`)
         } catch (err) {
           this.showFlashMessage(true, err.response.data.message)
