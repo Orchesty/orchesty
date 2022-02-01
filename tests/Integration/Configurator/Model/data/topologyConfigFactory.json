@@ -11,7 +11,8 @@
         "metrics_service": "influx",
         "worker_default_port": 8008,
         "mongodb_dsn": "mongodb://mongo",
-        "mongodb_db": "pipes"
+        "mongodb_db": "pipes",
+        "udp_logger_url": "logstash:5120"
     },
     "node_config": {
         "5d6d17e1e7ad8800000000000": {

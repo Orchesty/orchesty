@@ -22,6 +22,8 @@ doctrine_mongodb:
     default_database: "%env(string:MONGODB_DB)%"
     document_managers:
         default:
+            connection: default
+            database: "%env(string:MONGODB_DB)%"
             mappings:
                 HbPFUserBundle: ~
                 HbPFAclBundle: ~
