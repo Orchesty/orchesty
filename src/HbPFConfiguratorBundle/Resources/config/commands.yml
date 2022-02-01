@@ -18,7 +18,7 @@ services:
             - { name: console.command }
 
     hbpf.command.create_indexes:
-        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\CreateMongoIndexesCommand
+        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\UpdateMongoIndexesCommand
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@doctrine_mongodb.odm.metrics_document_manager'

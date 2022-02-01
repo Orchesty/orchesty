@@ -9,11 +9,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 
 /**
- * Class CreateMongoIndexesCommand
+ * Class UpdateMongoIndexesCommand
  *
  * @package Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command
  */
-final class CreateMongoIndexesCommand extends Command
+final class UpdateMongoIndexesCommand extends Command
 {
 
     private const CMD_NAME = 'mongodb:index:update';
