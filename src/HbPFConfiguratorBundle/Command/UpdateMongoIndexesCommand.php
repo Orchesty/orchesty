@@ -19,7 +19,7 @@ final class UpdateMongoIndexesCommand extends Command
     private const CMD_NAME = 'mongodb:index:update';
 
     /**
-     * CreateMongoIndexesCommand constructor.
+     * UpdateMongoIndexesCommand constructor.
      *
      * @param DocumentManager $ddm
      * @param DocumentManager $mdm

@@ -2,9 +2,6 @@
 
 namespace PipesFrameworkTests\Integration\Command;
 
-use Hanaboso\CommonsBundle\Exception\CronException;
-use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
-use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\RefreshCronCommand;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
