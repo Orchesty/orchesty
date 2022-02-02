@@ -7,7 +7,7 @@
                 "severity": "error",
                 "message": "",
                 "type": "",
-                "correlation_id": "",
+                "correlation_id": "someId",
                 "topology_id": "",
                 "topology_name": "",
                 "node_id": "",

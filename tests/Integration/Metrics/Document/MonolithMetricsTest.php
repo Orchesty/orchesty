@@ -28,7 +28,10 @@ final class MonolithMetricsTest extends DatabaseTestCaseAbstract
      */
     public function testDocument(): void
     {
-        $this->dm->createQueryBuilder(MonolithMetrics::class)
+        $dm = self::getContainer()->get('doctrine_mongodb.odm.metrics_document_manager');
+        $dm->getSchemaManager()->dropDocumentCollection(MonolithMetrics::class);
+        $dm->getSchemaManager()->createDocumentCollection(MonolithMetrics::class);
+        $dm->createQueryBuilder(MonolithMetrics::class)
             ->insert()
             ->setNewObj(
                 [
@@ -48,7 +51,7 @@ final class MonolithMetricsTest extends DatabaseTestCaseAbstract
             ->execute();
 
         /** @var DocumentRepository<MonolithMetrics> $repository */
-        $repository = $this->dm->getRepository(MonolithMetrics::class);
+        $repository = $dm->getRepository(MonolithMetrics::class);
         /** @var MonolithMetrics $result */
         $result = $repository->findAll()[0];
         self::assertEquals('1.111', $result->getFields()->getKernelTime());

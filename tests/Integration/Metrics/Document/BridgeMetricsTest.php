@@ -32,7 +32,10 @@ final class BridgeMetricsTest extends DatabaseTestCaseAbstract
      */
     public function testDocument(): void
     {
-        $this->dm->createQueryBuilder(BridgesMetrics::class)
+        $dm = self::getContainer()->get('doctrine_mongodb.odm.metrics_document_manager');
+        $dm->getSchemaManager()->dropDocumentCollection(BridgesMetrics::class);
+        $dm->getSchemaManager()->createDocumentCollection(BridgesMetrics::class);
+        $dm->createQueryBuilder(BridgesMetrics::class)
             ->insert()
             ->setNewObj(
                 [
@@ -53,7 +56,7 @@ final class BridgeMetricsTest extends DatabaseTestCaseAbstract
             ->execute();
 
         /** @var DocumentRepository<BridgesMetrics> $repository */
-        $repository = $this->dm->getRepository(BridgesMetrics::class);
+        $repository = $dm->getRepository(BridgesMetrics::class);
         /** @var BridgesMetrics $result */
         $result = $repository->findAll()[0];
         self::assertTrue($result->getFields()->isSuccess());

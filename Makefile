@@ -73,7 +73,7 @@ phpcoverage:
 	$(DE) ./vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --coverage-html var/coverage --whitelist src tests
 
 phpcoverage-ci:
-	$(DE) ./vendor/hanaboso/php-check-utils/bin/coverage.sh -c 97 -p $$(nproc)
+	$(DE) ./vendor/hanaboso/php-check-utils/bin/coverage.sh -c 95 -p $$(nproc)
 
 phpmanual-up:
 	cd tests/Manual; $(MAKE) docker-up-force;
@@ -101,4 +101,6 @@ clear-cache:
 	$(DE) php bin/console cache:warmup --env=test
 
 database-create:
-	$(DE) php bin/console doctrine:mongodb:schema:update || true
+	$(DE) php bin/console doctrine:mongodb:schema:update --dm default || true
+	$(DE) php bin/console doctrine:mongodb:schema:update --dm metrics || true
+	$(DE) php bin/console mongodb:index:update || true

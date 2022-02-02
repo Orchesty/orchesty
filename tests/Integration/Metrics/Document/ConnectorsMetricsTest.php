@@ -26,7 +26,10 @@ final class ConnectorsMetricsTest extends DatabaseTestCaseAbstract
      */
     public function testDocument(): void
     {
-        $this->dm->createQueryBuilder(ConnectorsMetrics::class)
+        $dm = self::getContainer()->get('doctrine_mongodb.odm.metrics_document_manager');
+        $dm->getSchemaManager()->dropDocumentCollection(ConnectorsMetrics::class);
+        $dm->getSchemaManager()->createDocumentCollection(ConnectorsMetrics::class);
+        $dm->createQueryBuilder(ConnectorsMetrics::class)
             ->insert()
             ->setNewObj(
                 [
@@ -45,7 +48,7 @@ final class ConnectorsMetricsTest extends DatabaseTestCaseAbstract
             ->execute();
 
         /** @var DocumentRepository<ConnectorsMetrics> $repository */
-        $repository = $this->dm->getRepository(ConnectorsMetrics::class);
+        $repository = $dm->getRepository(ConnectorsMetrics::class);
         /** @var ConnectorsMetrics $result */
         $result = $repository->findAll()[0];
         self::assertEquals(10, $result->getFields()->getTotalDuration());

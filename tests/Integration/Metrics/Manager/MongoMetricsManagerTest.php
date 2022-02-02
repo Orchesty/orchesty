@@ -2,6 +2,7 @@
 
 namespace PipesFrameworkTests\Integration\Metrics\Manager;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
 use Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
@@ -11,7 +12,6 @@ use Hanaboso\Utils\Exception\DateTimeException;
 use Hanaboso\Utils\System\NodeGeneratorUtils;
 use LogicException;
 use MongoDB\BSON\UTCDateTime;
-use MongoDB\Client;
 use Monolog\Logger;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 use PipesFrameworkTests\DataProvider;
@@ -603,8 +603,6 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
     {
         parent::setUp();
 
-        $client = $this->getClient();
-        $client->selectDatabase('metrics')->drop();
         $this->ensureCollections();
     }
 
@@ -661,7 +659,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
      */
     private function setFakeData(Topology $topology, Node $node, string $dateOffset = '-1 days'): void
     {
-        $client = $this->getClient();
+        $client = $this->getMdm()->getClient();
         $this->setMinimalFakeData($topology, $node);
 
         /** @var string $counterTable */
@@ -896,7 +894,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
      */
     private function setMinimalFakeData(Topology $topology, Node $node): void
     {
-        $client = $this->getClient();
+        $client = $this->getMdm()->getClient();
 
         /** @var string $counterTable */
         $counterTable = self::getContainer()->getParameter('mongodb.counter_table');
@@ -983,12 +981,11 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @return Client
+     * @return DocumentManager
      */
-    private function getClient(): Client
+    private function getMdm(): DocumentManager
     {
-        return self::getContainer()->get('doctrine_mongodb.odm.metrics_document_manager')
-            ->getClient();
+        return self::getContainer()->get('doctrine_mongodb.odm.metrics_document_manager');
     }
 
     /**
@@ -996,24 +993,9 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
      */
     private function ensureCollections(): void
     {
-        $client = $this->getClient();
-
-        /** @var string $counterTable */
-        $counterTable = self::getContainer()->getParameter('mongodb.counter_table');
-        /** @var string $monolithTable */
-        $monolithTable = self::getContainer()->getParameter('mongodb.monolith_table');
-        /** @var string $nodeTable */
-        $nodeTable = self::getContainer()->getParameter('mongodb.node_table');
-        /** @var string $connectorTable */
-        $connectorTable = self::getContainer()->getParameter('mongodb.connector_table');
-        /** @var string $rabbitTable */
-        $rabbitTable = self::getContainer()->getParameter('mongodb.rabbit_table');
-
-        $client->selectDatabase('metrics')->createCollection($counterTable);
-        $client->selectDatabase('metrics')->createCollection($monolithTable);
-        $client->selectDatabase('metrics')->createCollection($nodeTable);
-        $client->selectDatabase('metrics')->createCollection($connectorTable);
-        $client->selectDatabase('metrics')->createCollection($rabbitTable);
+        $dm = $this->getMdm();
+        $dm->getSchemaManager()->dropCollections();
+        $dm->getSchemaManager()->createCollections();
     }
 
 }

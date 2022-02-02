@@ -97,7 +97,8 @@ final class LogsFilter extends GridFilterAbstract
                     Logs::PIPES_NODE_ID,
                     Logs::PIPES_NODE_NAME,
                 ],
-            );
+            )
+            ->field(Logs::PIPES_CORRELATION_ID)->exists(TRUE);
     }
 
     /**

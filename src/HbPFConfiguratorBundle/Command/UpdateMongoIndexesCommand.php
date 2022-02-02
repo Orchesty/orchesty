@@ -50,6 +50,11 @@ final class UpdateMongoIndexesCommand extends Command
         $input;
 
         try {
+            $this->ddm->getSchemaManager()->deleteIndexes();
+            $output->writeln(' Indexes for default database has been deleted.');
+            $this->mdm->getSchemaManager()->deleteIndexes();
+            $output->writeln(' Indexes for metrics database has been deleted.');
+
             $this->ddm->getSchemaManager()->updateIndexes();
             $output->writeln(' Indexes for default database has been updated.');
             $this->mdm->getSchemaManager()->updateIndexes();

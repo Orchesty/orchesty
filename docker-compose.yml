@@ -26,6 +26,8 @@ services:
             - TOPOLOGY_API_DSN=topology-api:80
             - MONGODB_DSN=mongodb://mongo
             - MONGODB_DB=pipes
+            - METRICS_DSN=mongodb://mongo
+            - METRICS_DB=metrics
             - MARIADB_DSN=maria
             - STARTING_POINT_DSN=starting-point:8080
             - CRON_DSN=http://cron-api:8080

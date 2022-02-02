@@ -15,7 +15,7 @@ doctrine_mongodb:
                 connectTimeoutMS: 60000
                 socketTimeoutMS: 60000
         metrics:
-            server: "%env(string:MONGODB_DSN)%"
+            server: "%env(string:METRICS_DSN)%"
             options:
                 connectTimeoutMS: 60000
                 socketTimeoutMS: 60000
@@ -63,11 +63,6 @@ doctrine_mongodb:
                     is_bundle: false
                     dir: "%kernel.project_dir%/src/Configurator/Document"
                     prefix: Hanaboso\PipesFramework\Configurator\Document
-                MetricsDocument:
-                    type: annotation
-                    is_bundle: false
-                    dir: "%kernel.project_dir%/src/Metrics/Document"
-                    prefix: Hanaboso\PipesFramework\Metrics\Document
                 UserSettings:
                     type: annotation
                     is_bundle: false
@@ -80,7 +75,7 @@ doctrine_mongodb:
                     prefix: Hanaboso\PipesFramework\UserTask\Document
         metrics:
             connection: metrics
-            database: metrics
+            database: "%env(string:METRICS_DB)%"
             mappings:
                 MetricsDocument:
                     type: annotation

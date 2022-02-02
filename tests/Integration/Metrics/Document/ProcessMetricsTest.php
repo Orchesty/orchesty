@@ -27,7 +27,10 @@ final class ProcessMetricsTest extends DatabaseTestCaseAbstract
      */
     public function testDocument(): void
     {
-        $this->dm->createQueryBuilder(ProcessesMetrics::class)
+        $dm = self::getContainer()->get('doctrine_mongodb.odm.metrics_document_manager');
+        $dm->getSchemaManager()->dropDocumentCollection(ProcessesMetrics::class);
+        $dm->getSchemaManager()->createDocumentCollection(ProcessesMetrics::class);
+        $dm->createQueryBuilder(ProcessesMetrics::class)
             ->insert()
             ->setNewObj(
                 [
@@ -47,7 +50,7 @@ final class ProcessMetricsTest extends DatabaseTestCaseAbstract
             ->execute();
 
         /** @var DocumentRepository<ProcessesMetrics> $repository */
-        $repository = $this->dm->getRepository(ProcessesMetrics::class);
+        $repository = $dm->getRepository(ProcessesMetrics::class);
         /** @var ProcessesMetrics $result */
         $result = $repository->findAll()[0];
         self::assertTrue($result->getFields()->isSuccess());

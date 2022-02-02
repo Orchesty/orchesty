@@ -8,7 +8,7 @@ monolog:
         main:
             type: service
             id: udp_handler
-            level: info
+            level: warning
 
         # Handler for docker container
         stdout:
@@ -31,6 +31,6 @@ services:
         arguments:
             - '@hbpf.transport.udp_sender'
             - '%udp_logger_url%'
-            - 'info'
+            - 'warning'
         calls:
             - ['setFormatter', ['@logstash_formatter']]
