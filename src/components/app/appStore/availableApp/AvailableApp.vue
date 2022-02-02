@@ -67,7 +67,7 @@ export default {
     },
 
     hasLogo(app) {
-      return app.logo ? app.logo : require('@/assets/svg/app_placeholder.svg')
+      return app.logo ? app.logo : require('@/assets/svg/app-item-placeholder.svg')
     },
   },
   computed: {

@@ -65,7 +65,7 @@ export default {
   },
   computed: {
     imageSource() {
-      return this.image ? this.image : require('@/assets/svg/app_placeholder.svg')
+      return this.image ? this.image : require('@/assets/svg/app-item-placeholder.svg')
     },
   },
 }

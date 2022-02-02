@@ -49,7 +49,7 @@
         </v-card-text>
       </v-col>
       <v-col cols="0" lg="6" class="login-image d-none d-lg-block">
-        <img alt="hero_image" src="@/assets/svg/login_illustration.svg" />
+        <img alt="hero_image" src="@/assets/svg/login-screen-banner.svg" />
       </v-col>
     </v-row>
   </v-card>

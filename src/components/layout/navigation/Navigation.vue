@@ -3,7 +3,7 @@
     <v-list>
       <v-list-item class="px-2" @click="redirectToDashboard">
         <v-list-item-content class="safari-fix">
-          <img src="@/assets/svg/logo.svg" alt="HANABOSO, s.r.o." />
+          <img src="@/assets/svg/logo-small.svg" alt="HANABOSO, s.r.o." />
         </v-list-item-content>
       </v-list-item>
 

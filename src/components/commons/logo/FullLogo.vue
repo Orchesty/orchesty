@@ -1,6 +1,6 @@
 <template>
   <div class="text-center">
-    <img class="full-logo" src="@/assets/svg/logo_text.svg" alt="HANABOSO, s.r.o." />
+    <img class="full-logo" src="@/assets/svg/logo-text.svg" alt="HANABOSO, s.r.o." />
   </div>
 </template>
 
