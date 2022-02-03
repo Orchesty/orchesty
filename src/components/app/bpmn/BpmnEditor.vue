@@ -64,7 +64,6 @@ export default {
     }
   },
   computed: {
-    ...mapState(TOPOLOGIES.NAMESPACE, ['statistics']),
     ...mapState(TOPOLOGIES.NAMESPACE, ['nodeNames']),
     ...mapState(AUTH.NAMESPACE, ['user']),
     ...mapGetters(REQUESTS_STATE.NAMESPACE, [REQUESTS_STATE.GETTERS.GET_STATE]),
@@ -73,7 +72,6 @@ export default {
         API.topology.getNodes.id,
         API.topology.getTopologyNodes.id,
         API.implementation.getList.id,
-        API.statistic.getList.id,
       ])
     },
   },
@@ -81,7 +79,6 @@ export default {
     ...mapActions(TOPOLOGIES.NAMESPACE, [
       TOPOLOGIES.ACTIONS.TOPOLOGY.NODES,
       TOPOLOGIES.ACTIONS.TOPOLOGY.GET_DIAGRAM,
-      TOPOLOGIES.ACTIONS.DATA.GET_STATISTICS,
       TOPOLOGIES.ACTIONS.DATA.GET_SDK_NODES,
       TOPOLOGIES.ACTIONS.TOPOLOGY.SAVE_DIAGRAM,
     ]),
@@ -200,10 +197,6 @@ export default {
       await this[TOPOLOGIES.ACTIONS.DATA.GET_SDK_NODES]()
       await this[TOPOLOGIES.ACTIONS.TOPOLOGY.NODES]({ id: this.topology._id })
       await this[IMPLEMENTATIONS.ACTIONS.LIST_IMPLEMENTATIONS]()
-      await this[TOPOLOGIES.ACTIONS.DATA.GET_STATISTICS]({
-        id: this.topology._id,
-        settings: {},
-      })
     },
   },
   async mounted() {
