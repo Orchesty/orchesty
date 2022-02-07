@@ -1,5 +1,5 @@
 <template>
-  <v-col cols="12" md="6">
+  <v-col cols="12" md="8">
     <h1 class="headline d-flex my-auto">
       <span class="font-weight-bold">{{ topology.name }}&nbsp;</span>
       <span>v.{{ topology.version }}&nbsp;</span>

@@ -1,5 +1,5 @@
 <template>
-  <v-col cols="12" md="6" class="text-right">
+  <v-col cols="12" md="4" class="text-right">
     <tooltip>
       <template #activator="{ on, attrs }">
         <v-btn
