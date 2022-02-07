@@ -1,128 +1,136 @@
 <template>
-  <v-row dense>
-    <template v-for="(item, key) in items">
-      <v-col v-if="item.type && item.type === FILTER_TYPE.TEXT" :key="item.column" cols="12" sm="6" md="3">
-        <text-input
-          :key="item.value && item.value[0] ? item.column : `${item.column}_rerender`"
-          :label="$t(item.text)"
-          :column="item.column"
-          :value="item.value && item.value[0] ? item.value[0] : ''"
-          :on-change="(value) => onChangeInput(key, item.column, value, item.operator || undefined)"
+  <validation-observer tag="form" @keydown.enter="$emit('sendFilter')">
+    <v-row dense>
+      <template v-for="(item, key) in items">
+        <v-col v-if="item.type && item.type === FILTER_TYPE.TEXT" :key="item.column" cols="12" sm="6" md="3">
+          <text-input
+            :key="item.value && item.value[0] ? item.column : `${item.column}_rerender`"
+            :label="$t(item.text)"
+            :column="item.column"
+            :value="item.value && item.value[0] ? item.value[0] : ''"
+            :on-change="(value) => onChangeInput(key, item.column, value, item.operator || undefined)"
+            clearable
+          />
+        </v-col>
+        <v-col v-if="item.type && item.type === FILTER_TYPE.NUMBER" :key="item.column" cols="12" sm="6" md="3">
+          <number-input
+            :label="$t(item.text)"
+            :column="item.column"
+            :value="item.value && item.value[0] ? item.value[0] : ''"
+            :on-change="(value) => onChangeInput(key, item.column, value, item.operator || undefined)"
+            clearable
+          />
+        </v-col>
+        <v-col v-if="item.type && item.type === FILTER_TYPE.ENUMS" :key="item.column" cols="12" sm="6" md="3">
+          <select-box-input
+            :label="$t(item.text)"
+            :column="item.column"
+            :value="item.value && item.value[0] ? item.value[0] : ''"
+            :items="item.items"
+            :on-change="(value) => onChangeInput(key, item.column, value, item.operator || undefined)"
+            clearable
+          />
+        </v-col>
+        <v-col v-if="item.type && item.type === FILTER_TYPE.MULTIPLE_ENUMS" :key="item.column" cols="12" sm="6" md="3">
+          <multiple-select-box-input
+            :label="$t(item.text)"
+            :column="item.column"
+            :value="item.value ? item.value : []"
+            :items="item.items"
+            :on-change="(value) => onChangeInput(key, item.column, value, OPERATOR.IN)"
+            clearable
+          />
+        </v-col>
+        <v-col v-if="item.type && item.type === FILTER_TYPE.AUTO_COMPLETE" :key="item.column" cols="12" sm="6" md="3">
+          <auto-complete-input
+            :label="$t(item.text)"
+            :column="item.column"
+            :value="item.value ? item.value : []"
+            :on-search="item.request"
+            :request-id="item.requestId"
+            :multiple="item.multiple"
+            :request-on-focus="item.requestOnFocus"
+            :on-change="
+              (value) =>
+                onChangeInput(
+                  key,
+                  item.column,
+                  value,
+                  typeof item.multiple == 'undefined' || item.multiple ? OPERATOR.IN : OPERATOR.EQUAL
+                )
+            "
+          />
+        </v-col>
+        <v-col v-if="item.type && item.type === FILTER_TYPE.DATETIME" :key="item.column" cols="12" sm="6" md="3">
+          <date-time-input
+            :label="$t(item.text)"
+            :column="item.column"
+            :value="item.value && item.value[0] ? item.value[0] : ''"
+            :on-change="(value) => onChangeInput(key, item.column, value)"
+          />
+        </v-col>
+        <v-col v-if="item.type && item.type === FILTER_TYPE.BOOLEAN" :key="item.column" cols="12" sm="6" md="3">
+          <boolean-input
+            :label="$t(item.text)"
+            :column="item.column"
+            :value="item.value && item.value[0] ? item.value[0] : ''"
+            :on-change="(value) => onChangeInput(key, item.column, value)"
+            allow-all-item
+          />
+        </v-col>
+        <v-col
+          v-if="item.type && item.type === FILTER_TYPE.DATE_TIME_BETWEEN"
+          :key="item.column"
+          cols="12"
+          sm="6"
+          md="6"
+        >
+          <date-time-between-input
+            :label="$t(item.text)"
+            :column="item.column"
+            :value="item.value ? item.value : []"
+            :on-change="(value) => onChangeInput(key, item.column, value, OPERATOR.BETWEEN)"
+          />
+        </v-col>
+        <v-col v-if="item.type && item.type === FILTER_TYPE.DATE" :key="item.column" cols="12" sm="6" md="3">
+          <date-input
+            :label="$t(item.text)"
+            :column="item.column"
+            :value="item.value && item.value[0] ? item.value[0] : ''"
+            :on-change="(value) => onChangeInput(key, item.column, value)"
+          />
+        </v-col>
+        <v-col v-if="item.type && item.type === FILTER_TYPE.DATE_BETWEEN" :key="item.column" cols="12" sm="6" md="3">
+          <date-between-input
+            :label="$t(item.text)"
+            :column="item.column"
+            :value="item.value ? item.value : []"
+            :on-change="(value) => onChangeInput(key, item.column, value, OPERATOR.BETWEEN)"
+          />
+        </v-col>
+      </template>
+      <v-col v-if="showFullTextSearch" key="fulltext" cols="12" sm="6" md="3">
+        <v-text-field v-model="fullTextSearch" hide-details dense outlined clearable label="FulltextSearch" />
+      </v-col>
+      <v-col v-if="showFullTextSearch" key="timeMargin" cols="12" sm="6" md="3">
+        <v-text-field
+          v-model.number="timeMargin"
+          :disabled="!fullTextSearch"
+          hide-details
+          dense
+          outlined
           clearable
+          label="timeMargin"
+          @keypress="isNumber($event)"
         />
       </v-col>
-      <v-col v-if="item.type && item.type === FILTER_TYPE.NUMBER" :key="item.column" cols="12" sm="6" md="3">
-        <number-input
-          :label="$t(item.text)"
-          :column="item.column"
-          :value="item.value && item.value[0] ? item.value[0] : ''"
-          :on-change="(value) => onChangeInput(key, item.column, value, item.operator || undefined)"
-          clearable
-        />
+      <v-col v-if="showFullTextSearch" class="my-auto">
+        <v-btn color="primary" class="py-5" @click="$emit('sendFilter')">
+          {{ $t('dataGrid.runFilter') }}
+        </v-btn>
       </v-col>
-      <v-col v-if="item.type && item.type === FILTER_TYPE.ENUMS" :key="item.column" cols="12" sm="6" md="3">
-        <select-box-input
-          :label="$t(item.text)"
-          :column="item.column"
-          :value="item.value && item.value[0] ? item.value[0] : ''"
-          :items="item.items"
-          :on-change="(value) => onChangeInput(key, item.column, value, item.operator || undefined)"
-          clearable
-        />
-      </v-col>
-      <v-col v-if="item.type && item.type === FILTER_TYPE.MULTIPLE_ENUMS" :key="item.column" cols="12" sm="6" md="3">
-        <multiple-select-box-input
-          :label="$t(item.text)"
-          :column="item.column"
-          :value="item.value ? item.value : []"
-          :items="item.items"
-          :on-change="(value) => onChangeInput(key, item.column, value, OPERATOR.IN)"
-          clearable
-        />
-      </v-col>
-      <v-col v-if="item.type && item.type === FILTER_TYPE.AUTO_COMPLETE" :key="item.column" cols="12" sm="6" md="3">
-        <auto-complete-input
-          :label="$t(item.text)"
-          :column="item.column"
-          :value="item.value ? item.value : []"
-          :on-search="item.request"
-          :request-id="item.requestId"
-          :multiple="item.multiple"
-          :request-on-focus="item.requestOnFocus"
-          :on-change="
-            (value) =>
-              onChangeInput(
-                key,
-                item.column,
-                value,
-                typeof item.multiple == 'undefined' || item.multiple ? OPERATOR.IN : OPERATOR.EQUAL
-              )
-          "
-        />
-      </v-col>
-      <v-col v-if="item.type && item.type === FILTER_TYPE.DATETIME" :key="item.column" cols="12" sm="6" md="3">
-        <date-time-input
-          :label="$t(item.text)"
-          :column="item.column"
-          :value="item.value && item.value[0] ? item.value[0] : ''"
-          :on-change="(value) => onChangeInput(key, item.column, value)"
-        />
-      </v-col>
-      <v-col v-if="item.type && item.type === FILTER_TYPE.BOOLEAN" :key="item.column" cols="12" sm="6" md="3">
-        <boolean-input
-          :label="$t(item.text)"
-          :column="item.column"
-          :value="item.value && item.value[0] ? item.value[0] : ''"
-          :on-change="(value) => onChangeInput(key, item.column, value)"
-          allow-all-item
-        />
-      </v-col>
-      <v-col v-if="item.type && item.type === FILTER_TYPE.DATE_TIME_BETWEEN" :key="item.column" cols="12" sm="6" md="6">
-        <date-time-between-input
-          :label="$t(item.text)"
-          :column="item.column"
-          :value="item.value ? item.value : []"
-          :on-change="(value) => onChangeInput(key, item.column, value, OPERATOR.BETWEEN)"
-        />
-      </v-col>
-      <v-col v-if="item.type && item.type === FILTER_TYPE.DATE" :key="item.column" cols="12" sm="6" md="3">
-        <date-input
-          :label="$t(item.text)"
-          :column="item.column"
-          :value="item.value && item.value[0] ? item.value[0] : ''"
-          :on-change="(value) => onChangeInput(key, item.column, value)"
-        />
-      </v-col>
-      <v-col v-if="item.type && item.type === FILTER_TYPE.DATE_BETWEEN" :key="item.column" cols="12" sm="6" md="3">
-        <date-between-input
-          :label="$t(item.text)"
-          :column="item.column"
-          :value="item.value ? item.value : []"
-          :on-change="(value) => onChangeInput(key, item.column, value, OPERATOR.BETWEEN)"
-        />
-      </v-col>
-    </template>
-    <v-col v-if="showFullTextSearch" key="fulltext" cols="12" sm="6" md="3">
-      <v-text-field v-model="fullTextSearch" hide-details dense outlined clearable label="FulltextSearch" />
-    </v-col>
-    <v-col v-if="showFullTextSearch" key="timeMargin" cols="12" sm="6" md="3">
-      <v-text-field
-        v-model.number="timeMargin"
-        :disabled="!fullTextSearch"
-        hide-details
-        dense
-        outlined
-        clearable
-        label="timeMargin"
-        @keypress="isNumber($event)"
-      />
-    </v-col>
-    <v-col v-if="showFullTextSearch" class="my-auto">
-      <v-btn color="primary" class="py-5" @click="$emit('sendFilter')">
-        {{ $t('dataGrid.runFilter') }}
-      </v-btn>
-    </v-col>
-  </v-row>
+    </v-row>
+  </validation-observer>
 </template>
 
 <script>

@@ -27,7 +27,7 @@ export default {
       return false
     }
   },
-  [USER_TASKS.ACTIONS.USER_TASK_ACCEPT_LIST]: async ({ dispatch }, payload) => {
+  [USER_TASKS.ACTIONS.USER_TASK_ACCEPT_LIST]: async ({ dispatch, rootState }, payload) => {
     try {
       await callApi(dispatch, {
         requestData: { ...API.userTask.acceptAll },
@@ -36,9 +36,10 @@ export default {
         },
       })
 
-      dispatchRoot(dispatch, withNamespace(DATA_GRIDS.USER_TASK, GRID.ACTIONS.GRID_FETCH), {
+      dispatchRoot(dispatch, withNamespace(DATA_GRIDS.USER_TASK, GRID.ACTIONS.FETCH_WITH_INITIAL_STATE), {
         namespace: DATA_GRIDS.USER_TASK,
         params: { id: payload.topologyID },
+        paging: rootState[DATA_GRIDS.USER_TASK].paging,
       })
 
       addSuccessMessage(dispatch, API.userTask.acceptAll.id, 'flashMessages.userTask.acceptList')
@@ -97,7 +98,7 @@ export default {
       return false
     }
   },
-  [USER_TASKS.ACTIONS.USER_TASK_REJECT_LIST]: async ({ dispatch }, payload) => {
+  [USER_TASKS.ACTIONS.USER_TASK_REJECT_LIST]: async ({ dispatch, rootState }, payload) => {
     try {
       await callApi(dispatch, {
         requestData: { ...API.userTask.rejectAll },
@@ -106,9 +107,10 @@ export default {
         },
       })
 
-      dispatchRoot(dispatch, withNamespace(DATA_GRIDS.USER_TASK, GRID.ACTIONS.GRID_FETCH), {
+      dispatchRoot(dispatch, withNamespace(DATA_GRIDS.USER_TASK, GRID.ACTIONS.FETCH_WITH_INITIAL_STATE), {
         namespace: DATA_GRIDS.USER_TASK,
         params: { id: payload.topologyID },
+        paging: rootState[DATA_GRIDS.USER_TASK].paging,
       })
       addSuccessMessage(dispatch, API.userTask.rejectAll.id, 'flashMessages.userTask.rejectList')
 

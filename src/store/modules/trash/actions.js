@@ -26,7 +26,7 @@ export default {
       return false
     }
   },
-  [TRASH.ACTIONS.TRASH_ACCEPT_LIST]: async ({ dispatch }, payload) => {
+  [TRASH.ACTIONS.TRASH_ACCEPT_LIST]: async ({ dispatch, rootState }, payload) => {
     try {
       await callApi(dispatch, {
         requestData: { ...API.userTask.acceptAll },
@@ -37,6 +37,7 @@ export default {
 
       dispatchRoot(dispatch, withNamespace(DATA_GRIDS.TRASH, GRID.ACTIONS.FETCH_WITH_INITIAL_STATE), {
         namespace: DATA_GRIDS.TRASH,
+        paging: rootState[DATA_GRIDS.TRASH].paging,
       })
 
       addSuccessMessage(dispatch, API.userTask.acceptAll.id, 'flashMessages.trash.acceptList')
@@ -80,7 +81,7 @@ export default {
       return false
     }
   },
-  [TRASH.ACTIONS.TRASH_REJECT_LIST]: async ({ dispatch }, payload) => {
+  [TRASH.ACTIONS.TRASH_REJECT_LIST]: async ({ dispatch, rootState }, payload) => {
     try {
       await callApi(dispatch, {
         requestData: { ...API.userTask.rejectAll },
@@ -91,6 +92,7 @@ export default {
 
       dispatchRoot(dispatch, withNamespace(DATA_GRIDS.TRASH, GRID.ACTIONS.FETCH_WITH_INITIAL_STATE), {
         namespace: DATA_GRIDS.TRASH,
+        paging: rootState[DATA_GRIDS.TRASH].paging,
       })
 
       addSuccessMessage(dispatch, API.userTask.rejectAll.id, 'flashMessages.trash.rejectList')

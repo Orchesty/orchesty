@@ -291,7 +291,7 @@ export default {
       selected: [],
       searchText: '',
       options: {},
-      rowItemsPerPage: [10, 20, 50, 100],
+      rowItemsPerPage: [10, 20, 50, 100, 500],
       visibleHeaders: [],
     }
   },
