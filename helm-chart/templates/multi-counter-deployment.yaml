@@ -30,6 +30,8 @@ spec:
             - name: http
               containerPort: 8005
           env:
+            - name: UDP_LOGGER_URL
+              value: {{ include "pipes.fullname" (dict "suffix" "logstash" "root" .) }}:5120
             - name: PROGRESS_SAVE
               value: "{{ .Values.global.multiCounter.progressSave }}"
             - name: RABBITMQ_HOST

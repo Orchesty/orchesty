@@ -28,6 +28,8 @@ spec:
             - name: http
               containerPort: 3333
           env:
+            - name: UDP_LOGGER_URL
+              value: {{ include "pipes.fullname" (dict "suffix" "logstash" "root" .) }}:5120
             - name: LIMITER_ADDR
               value: "0.0.0.0:3333"
             - name: RABBITMQ_HOST

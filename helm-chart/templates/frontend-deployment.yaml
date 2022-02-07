@@ -31,11 +31,6 @@ spec:
               value: "/"
             - name: STARTINGPOINT_URL
               value: "{{ .Values.global.starting_point_url }}"
-            - name: ORCHESTY_LICENSE
-              valueFrom:
-                configMapKeyRef:
-                  key: license
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
           resources:
 {{ toYaml .Values.global.frontend.resources | indent 12 }}
 

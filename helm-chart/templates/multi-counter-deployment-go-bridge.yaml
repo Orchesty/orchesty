@@ -31,6 +31,8 @@ spec:
             - name: http
               containerPort: 8005
           env:
+            - name: UDP_LOGGER_URL
+              value: {{ include "pipes.fullname" (dict "suffix" "logstash" "root" .) }}:5120
             - name: RABBITMQ_DSN
               valueFrom:
                 configMapKeyRef:
