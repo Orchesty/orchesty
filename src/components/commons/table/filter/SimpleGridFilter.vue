@@ -1,6 +1,6 @@
 <template>
   <validation-observer tag="form" @keydown.enter="$emit('sendFilter')">
-    <v-row dense>
+    <v-row dense class="mt-1">
       <template v-for="(item, key) in items">
         <v-col v-if="item.type && item.type === FILTER_TYPE.TEXT" :key="item.column" cols="12" sm="6" md="3">
           <text-input
@@ -110,7 +110,7 @@
         </v-col>
       </template>
       <v-col v-if="showFullTextSearch" key="fulltext" cols="12" sm="6" md="3">
-        <v-text-field v-model="fullTextSearch" hide-details dense outlined clearable label="FulltextSearch" />
+        <v-text-field v-model="fullTextSearch" hide-details dense outlined clearable label="Fulltext Search" />
       </v-col>
       <v-col v-if="showFullTextSearch" key="timeMargin" cols="12" sm="6" md="3">
         <v-text-field
@@ -120,7 +120,7 @@
           dense
           outlined
           clearable
-          label="timeMargin"
+          label="Time Margin"
           @keypress="isNumber($event)"
         />
       </v-col>
@@ -128,6 +128,7 @@
         <v-btn color="primary" class="py-5" @click="$emit('sendFilter')">
           {{ $t('dataGrid.runFilter') }}
         </v-btn>
+        <slot name="resetClearButtons" :on-clear-button="() => {}" />
       </v-col>
     </v-row>
   </validation-observer>

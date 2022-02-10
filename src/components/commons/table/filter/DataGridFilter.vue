@@ -2,6 +2,7 @@
   <v-row v-if="quickFilters.length > 0 || !disableAdvancedFilter">
     <v-col cols="12" class="pb-0">
       <quick-grid-filter
+        ref="quickGridFilter"
         :quick-filters="quickFilters"
         :filter="filter"
         :filter-meta="filterMeta"
@@ -14,14 +15,14 @@
             </v-badge>
           </v-btn>
         </template>
-        <template #buttonLeft="{ onClearButton }">
-          <v-btn color="primary" icon @click="reload">
-            <v-icon> mdi-reload </v-icon>
-          </v-btn>
-          <v-btn color="primary" icon @click="clear(onClearButton)">
-            <v-icon> mdi-close </v-icon>
-          </v-btn>
-        </template>
+        <!--        <template #buttonLeft="{ onClearButton }">-->
+        <!--          <v-btn color="primary" icon @click="reload">-->
+        <!--            <v-icon> mdi-reload </v-icon>-->
+        <!--          </v-btn>-->
+        <!--          <v-btn color="primary" icon @click="clear(onClearButton)">-->
+        <!--            <v-icon> mdi-close </v-icon>-->
+        <!--          </v-btn>-->
+        <!--        </template>-->
         <template #headers>
           <slot name="headers"></slot>
         </template>
@@ -39,7 +40,16 @@
         :on-change="onChangeFilter"
         @input="onFullTextSearch"
         @sendFilter="sendFilter"
-      />
+      >
+        <template #resetClearButtons="{ onClearButton }">
+          <v-btn class="ml-2" color="primary" icon @click="reload">
+            <v-icon> mdi-reload </v-icon>
+          </v-btn>
+          <v-btn class="ml-1" color="primary" icon @click="clear(onClearButton)">
+            <v-icon> mdi-close </v-icon>
+          </v-btn>
+        </template>
+      </simple-grid-filter>
     </v-col>
   </v-row>
 </template>
@@ -153,8 +163,8 @@ export default {
     save() {
       this.$refs.simpleGridFilter.save()
     },
-    clear(onClearButton) {
-      onClearButton()
+    clear() {
+      this.$refs.quickGridFilter.onClear()
       if (this.filter.length === 0) {
         this.key++
       }
