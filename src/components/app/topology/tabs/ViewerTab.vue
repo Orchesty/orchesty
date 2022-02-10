@@ -8,7 +8,7 @@
           :filter-meta="filterMeta"
           :on-change="onFilterChange"
         >
-          <template slot="buttonLeft">
+          <template slot="resetClearButtons">
             <v-btn color="primary" icon @click="reload">
               <v-icon> mdi-reload </v-icon>
             </v-btn>

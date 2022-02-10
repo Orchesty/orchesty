@@ -12,6 +12,7 @@
       >
         {{ $t(item.name) }}
       </v-btn>
+      <slot name="resetClearButtons" :on-clear-button="() => {}" />
       <slot name="advancedFilter" />
     </v-col>
   </v-row>

@@ -15,14 +15,14 @@
             </v-badge>
           </v-btn>
         </template>
-        <!--        <template #buttonLeft="{ onClearButton }">-->
-        <!--          <v-btn color="primary" icon @click="reload">-->
-        <!--            <v-icon> mdi-reload </v-icon>-->
-        <!--          </v-btn>-->
-        <!--          <v-btn color="primary" icon @click="clear(onClearButton)">-->
-        <!--            <v-icon> mdi-close </v-icon>-->
-        <!--          </v-btn>-->
-        <!--        </template>-->
+        <template v-if="!simpleFilter" #resetClearButtons="{ onClearButton }">
+          <v-btn color="primary" icon @click="reload">
+            <v-icon> mdi-reload </v-icon>
+          </v-btn>
+          <v-btn color="primary" icon @click="clear(onClearButton)">
+            <v-icon> mdi-close </v-icon>
+          </v-btn>
+        </template>
         <template #headers>
           <slot name="headers"></slot>
         </template>
