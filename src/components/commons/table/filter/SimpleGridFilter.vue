@@ -110,51 +110,56 @@
         </v-col>
       </template>
 
-      <v-col v-if="showTrashGridFilter" cols="3">
-        <app-input v-model="trashFilter.topologyName" hide-details dense outlined clearable label="Topology" />
-      </v-col>
-      <v-col v-if="showTrashGridFilter" cols="3">
-        <app-input v-model="trashFilter.nodeName" hide-details dense outlined clearable label="Node" />
-      </v-col>
-      <v-col v-if="showTrashGridFilter" cols="3">
-        <app-input
-          v-model="trashFilter.native"
-          hide-details
-          dense
-          outlined
-          clearable
-          label="Custom"
-          placeholder="{'key':'value'}"
-        />
-      </v-col>
-      <v-col v-if="showTrashGridFilter" class="my-auto">
-        <v-btn color="primary" class="py-5" @click="$emit('sendFilter')">
-          {{ $t('dataGrid.runFilter') }}
-        </v-btn>
-        <slot name="resetClearButtons" :on-clear-button="() => {}" />
-      </v-col>
+      <template v-if="simpleFilterEnum === SIMPLE_FILTER.TRASH">
+        <v-col cols="3">
+          <app-input v-model="trashFilter.topologyName" hide-details dense outlined clearable label="Topology" />
+        </v-col>
+        <v-col cols="3">
+          <app-input v-model="trashFilter.nodeName" hide-details dense outlined clearable label="Node" />
+        </v-col>
+        <v-col cols="3">
+          <app-input
+            v-model="trashFilter.native"
+            hide-details
+            dense
+            outlined
+            clearable
+            label="Custom"
+            placeholder="{'key':'value'}"
+          />
+        </v-col>
+        <v-col class="my-auto">
+          <v-btn color="primary" class="py-5" @click="$emit('sendFilter')">
+            {{ $t('dataGrid.runFilter') }}
+          </v-btn>
+          <slot name="resetClearButtons" :on-clear-button="() => {}" />
+        </v-col>
+      </template>
 
-      <v-col v-if="showFullTextSearch" key="fulltext" cols="12" sm="6" md="3">
-        <app-input v-model="fullTextSearch" hide-details dense outlined clearable label="Fulltext Search" />
-      </v-col>
-      <v-col v-if="showFullTextSearch" key="timeMargin" cols="12" sm="6" md="3">
-        <v-text-field
-          v-model.number="timeMargin"
-          :disabled="!fullTextSearch"
-          hide-details
-          dense
-          outlined
-          clearable
-          label="Time Margin"
-          @keypress="isNumber($event)"
-        />
-      </v-col>
-      <v-col v-if="showFullTextSearch" class="my-auto">
-        <v-btn color="primary" class="py-5" @click="$emit('sendFilter')">
-          {{ $t('dataGrid.runFilter') }}
-        </v-btn>
-        <slot name="resetClearButtons" :on-clear-button="() => {}" />
-      </v-col>
+      <template v-if="simpleFilterEnum === SIMPLE_FILTER.LOGS">
+        <v-col key="fulltext" cols="12" sm="6" md="3">
+          <app-input v-model="fullTextSearch" hide-details dense outlined clearable label="Fulltext Search" />
+        </v-col>
+        <v-col key="timeMargin" cols="12" sm="6" md="3">
+          <app-input
+            v-model.number="timeMargin"
+            :disabled="!fullTextSearch"
+            hide-details
+            dense
+            outlined
+            clearable
+            type="number"
+            label="Time Margin"
+            numbers-only
+          />
+        </v-col>
+        <v-col class="my-auto">
+          <v-btn color="primary" class="py-5" @click="$emit('sendFilter')">
+            {{ $t('dataGrid.runFilter') }}
+          </v-btn>
+          <slot name="resetClearButtons" :on-clear-button="() => {}" />
+        </v-col>
+      </template>
     </v-row>
   </validation-observer>
 </template>
@@ -172,6 +177,7 @@ import DateTimeBetweenInput from './inputs/DateTimeBetweenInput'
 import MultipleSelectBoxInput from './inputs/MultipleSelectBoxInput'
 import DateInput from './inputs/DateInput'
 import DateBetweenInput from './inputs/DateBetweenInput'
+import { SIMPLE_FILTER } from '@/services/enums/dataGridFilterEnums'
 import AppInput from '@/components/commons/input/AppInput'
 
 export default {
@@ -190,12 +196,8 @@ export default {
     DateBetweenInput,
   },
   props: {
-    showFullTextSearch: {
-      type: Boolean,
-      required: true,
-    },
-    showTrashGridFilter: {
-      type: Boolean,
+    simpleFilterEnum: {
+      type: String,
       required: true,
     },
     value: {
@@ -221,8 +223,9 @@ export default {
   },
   data() {
     return {
-      FILTER_TYPE: FILTER_TYPE,
-      OPERATOR: OPERATOR,
+      SIMPLE_FILTER,
+      FILTER_TYPE,
+      OPERATOR,
       items: this.initItems(this.filter, this.headers, this.filterMeta),
       innerFilter: this.initFilter(this.filter, this.headers, this.filterMeta),
       fullTextSearch: '',
@@ -296,12 +299,6 @@ export default {
     }
   },
   methods: {
-    isNumber($event) {
-      let keyCode = $event.keyCode ? $event.keyCode : $event.which
-      if ((keyCode < 48 || keyCode > 57) && keyCode !== 46) {
-        $event.preventDefault()
-      }
-    },
     initItems(filter, headers, filterMeta) {
       return headers
         .filter((column) => column.filter)

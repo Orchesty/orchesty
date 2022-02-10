@@ -19,9 +19,8 @@
       :filter-meta="filterMeta"
       :disable-advanced-filter="disabledAdvancedFilter"
       :disable-hide-headers="disableHideHeaders"
-      :show-full-text-search="showFullTextSearch"
       :simple-filter="simpleFilter"
-      :show-trash-grid-filter="showTrashGridFilter"
+      :simple-filter-enum="simpleFilterEnum"
     />
 
     <!--Title & Searchbar-->
@@ -165,6 +164,7 @@ import { GRID } from '../../../store/modules/grid/types'
 import { withNamespace } from '../../../store/utils'
 import DataGridFilter from './filter/DataGridFilter'
 import ProgressBarLinear from '@/components/commons/progressIndicators/ProgressBarLinear'
+import { SIMPLE_FILTER } from '@/services/enums/dataGridFilterEnums'
 
 export default {
   name: 'DataGrid',
@@ -202,9 +202,9 @@ export default {
       type: Boolean,
       default: false,
     },
-    showTrashGridFilter: {
-      type: Boolean,
-      default: false,
+    simpleFilterEnum: {
+      type: String,
+      default: () => SIMPLE_FILTER.NONE,
     },
     disablePagination: {
       type: Boolean,

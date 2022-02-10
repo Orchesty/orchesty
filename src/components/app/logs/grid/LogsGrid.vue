@@ -8,7 +8,7 @@
     show-expand
     disable-search
     simple-filter
-    show-full-text-search
+    :simple-filter-enum="SIMPLE_FILTER.LOGS"
     disabled-advanced-filter
   >
     <template #expand="{ items }">
@@ -66,6 +66,7 @@ import { mapGetters } from 'vuex'
 import Tooltip from '@/components/commons/tooltip/Tooltip'
 import FlashMessageMixin from '@/components/commons/mixins/FlashMessageMixin'
 import QuickFiltersMixin from '@/components/commons/mixins/QuickFiltersMixin'
+import { SIMPLE_FILTER } from '@/services/enums/dataGridFilterEnums'
 export default {
   name: 'LogsGrid',
   components: { Tooltip, DataGrid },
@@ -78,6 +79,7 @@ export default {
   },
   data() {
     return {
+      SIMPLE_FILTER,
       DATA_GRIDS,
       search: '',
       headers: [

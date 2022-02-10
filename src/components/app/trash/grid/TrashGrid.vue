@@ -4,9 +4,9 @@
     :headers="headers"
     disable-search
     disabled-advanced-filter
-    show-trash-grid-filter
     :is-loading="state.isSending"
     :namespace="DATA_GRIDS.TRASH"
+    :simple-filter-enum="SIMPLE_FILTER.TRASH"
     return-row-props
     show-active-row
     item-key="id"
@@ -77,12 +77,14 @@ import UserTaskActionsModal from '@/components/app/userTasks/modal/UserTaskActio
 import { TRASH } from '@/store/modules/trash/types'
 import { ROUTES } from '@/services/enums/routerEnums'
 import QuickFiltersMixin from '@/components/commons/mixins/QuickFiltersMixin'
+import { SIMPLE_FILTER } from '@/services/enums/dataGridFilterEnums'
 export default {
   name: 'TrashGrid',
   components: { UserTaskActionsModal, UserTaskInformation, DataGrid },
   mixins: [QuickFiltersMixin],
   data() {
     return {
+      SIMPLE_FILTER,
       DATA_GRIDS,
       item: null,
       topologyID: null,

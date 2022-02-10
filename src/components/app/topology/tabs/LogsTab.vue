@@ -7,8 +7,8 @@
     :quick-filters="quickFilters"
     show-expand
     disable-search
-    show-full-text-search
     simple-filter
+    :simple-filter-enum="SIMPLE_FILTER.LOGS"
     disabled-advanced-filter
     :permanent-filter="[[{ column: 'topology_id', operator: 'EQUAL', value: [''], default: true }]]"
     :request-params="{ topologyID: $route.params.id }"
@@ -63,6 +63,7 @@ import { mapGetters } from 'vuex'
 import Tooltip from '@/components/commons/tooltip/Tooltip'
 import FlashMessageMixin from '@/components/commons/mixins/FlashMessageMixin'
 import QuickFiltersMixin from '@/components/commons/mixins/QuickFiltersMixin'
+import { SIMPLE_FILTER } from '@/services/enums/dataGridFilterEnums'
 export default {
   name: 'LogsTab',
   components: { Tooltip, DataGrid },
@@ -75,6 +76,7 @@ export default {
   },
   data() {
     return {
+      SIMPLE_FILTER,
       DATA_GRIDS,
       search: null,
       headers: [

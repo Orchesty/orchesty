@@ -33,10 +33,9 @@
         ref="simpleGridFilter"
         :key="key"
         :value="fullTextSearchProp"
-        :show-full-text-search="showFullTextSearch"
+        :simple-filter-enum="simpleFilterEnum"
         :headers="headers"
         :filter="filter"
-        :show-trash-grid-filter="showTrashGridFilter"
         :filter-meta="filterMeta"
         :on-change="onChangeFilter"
         @input="onFullTextSearch"
@@ -62,6 +61,7 @@ import { FILTER, OPERATOR } from '@/services/enums/gridEnums'
 import { GRID } from '@/store/modules/grid/types'
 import { mapActions } from 'vuex'
 import { DATA_GRIDS } from '@/services/enums/dataGridEnums'
+import { SIMPLE_FILTER } from '@/services/enums/dataGridFilterEnums'
 
 export default {
   name: 'DataGridFilter',
@@ -91,13 +91,9 @@ export default {
       type: Array,
       required: true,
     },
-    showFullTextSearch: {
-      type: Boolean,
+    simpleFilterEnum: {
+      type: String,
       required: true,
-    },
-    showTrashGridFilter: {
-      type: Boolean,
-      default: false,
     },
     disableAdvancedFilter: {
       type: Boolean,
@@ -183,19 +179,19 @@ export default {
       await this.$parent.$parent.refresh()
     },
     async sendFilter() {
-      if (this.fullTextSearch) {
+      if (SIMPLE_FILTER.LOGS === this.simpleFilterEnum) {
         this.onFilter(this.currentFilter, this.currentMeta, {
           fullTextSearch: this.fullTextSearch,
           timeMargin: this.timeMarginFilter,
         })
-      } else if (this.showTrashGridFilter) {
+      } else if (SIMPLE_FILTER.TRASH === this.simpleFilterEnum) {
         this.onFilter(this.currentFilter, this.currentMeta, this.$refs.simpleGridFilter.filterGrid)
       } else {
         this.onFilter(this.currentFilter, this.currentMeta)
       }
     },
     async sendTrashFilter() {
-      if (this.showTrashGridFilter) {
+      if (SIMPLE_FILTER.TRASH === this.simpleFilterEnum) {
         this.onFilter(this.currentFilter, this.currentMeta, {
           fullTextSearch: this.fullTextSearch,
           timeMargin: this.timeMarginFilter,

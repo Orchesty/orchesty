@@ -10,6 +10,8 @@
     :readonly="readonly"
     :disabled="disabled"
     :hide-details="hideDetails"
+    :clearable="clearable"
+    @keypress="onKeyup(input)"
   />
 </template>
 
@@ -52,13 +54,22 @@ export default {
       required: false,
       default: undefined,
     },
+    clearable: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    numbersOnly: {
+      type: Boolean,
+      default: false,
+    },
     readonly: {
       type: Boolean,
       required: false,
       default: false,
     },
     value: {
-      type: String,
+      type: [String, Number],
       required: false,
       default: () => '',
     },
@@ -71,6 +82,15 @@ export default {
     return {
       input: '',
     }
+  },
+  methods: {
+    onKeyup(input) {
+      if (this.numbersOnly) {
+        if (typeof input !== 'number') {
+          this.input = input.replace(/\D/g, '')
+        }
+      }
+    },
   },
   watch: {
     input(value) {
