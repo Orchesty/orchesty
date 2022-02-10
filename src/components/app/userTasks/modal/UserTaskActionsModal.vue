@@ -11,9 +11,11 @@
           {{ type !== 'update' ? $t(`userTask.modal.${type}.body`, [bodyMessage]) : null }}
         </v-col>
         <v-col v-if="type === 'update'" cols="12">
+          <span class="pb-1">Headers:</span>
           <v-jsoneditor v-model="headerObject" :options="options" :plus="false" height="300px" @error="onError" />
         </v-col>
         <v-col v-if="type === 'update'" cols="12">
+          <span class="pb-1">Body:</span>
           <v-jsoneditor v-model="bodyObject" :options="options" :plus="false" height="300px" @error="onError" />
         </v-col>
       </v-row>

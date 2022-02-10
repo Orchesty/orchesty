@@ -9,6 +9,7 @@
     :prepend-icon="prependIcon"
     :readonly="readonly"
     :disabled="disabled"
+    :hide-details="hideDetails"
   />
 </template>
 
@@ -30,6 +31,11 @@ export default {
       type: Boolean,
       required: false,
       default: true,
+    },
+    hideDetails: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
     disabled: {
       type: Boolean,

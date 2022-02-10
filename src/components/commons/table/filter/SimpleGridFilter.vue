@@ -109,8 +109,33 @@
           />
         </v-col>
       </template>
+
+      <v-col v-if="showTrashGridFilter" cols="3">
+        <app-input v-model="trashFilter.topologyName" hide-details dense outlined clearable label="Topology" />
+      </v-col>
+      <v-col v-if="showTrashGridFilter" cols="3">
+        <app-input v-model="trashFilter.nodeName" hide-details dense outlined clearable label="Node" />
+      </v-col>
+      <v-col v-if="showTrashGridFilter" cols="3">
+        <app-input
+          v-model="trashFilter.native"
+          hide-details
+          dense
+          outlined
+          clearable
+          label="Custom"
+          placeholder="{'key':'value'}"
+        />
+      </v-col>
+      <v-col v-if="showTrashGridFilter" class="my-auto">
+        <v-btn color="primary" class="py-5" @click="$emit('sendFilter')">
+          {{ $t('dataGrid.runFilter') }}
+        </v-btn>
+        <slot name="resetClearButtons" :on-clear-button="() => {}" />
+      </v-col>
+
       <v-col v-if="showFullTextSearch" key="fulltext" cols="12" sm="6" md="3">
-        <v-text-field v-model="fullTextSearch" hide-details dense outlined clearable label="Fulltext Search" />
+        <app-input v-model="fullTextSearch" hide-details dense outlined clearable label="Fulltext Search" />
       </v-col>
       <v-col v-if="showFullTextSearch" key="timeMargin" cols="12" sm="6" md="3">
         <v-text-field
@@ -147,10 +172,12 @@ import DateTimeBetweenInput from './inputs/DateTimeBetweenInput'
 import MultipleSelectBoxInput from './inputs/MultipleSelectBoxInput'
 import DateInput from './inputs/DateInput'
 import DateBetweenInput from './inputs/DateBetweenInput'
+import AppInput from '@/components/commons/input/AppInput'
 
 export default {
   name: 'SimpleGridFilter',
   components: {
+    AppInput,
     MultipleSelectBoxInput,
     TextInput,
     NumberInput,
@@ -164,6 +191,10 @@ export default {
   },
   props: {
     showFullTextSearch: {
+      type: Boolean,
+      required: true,
+    },
+    showTrashGridFilter: {
       type: Boolean,
       required: true,
     },
@@ -196,6 +227,12 @@ export default {
       innerFilter: this.initFilter(this.filter, this.headers, this.filterMeta),
       fullTextSearch: '',
       timeMargin: 0,
+      trashFilter: {
+        topologyName: '',
+        nodeName: '',
+        native: '',
+      },
+      filterGrid: null,
     }
   },
   watch: {
@@ -204,6 +241,30 @@ export default {
       handler(val) {
         this.fullTextSearch = val.fullTextSearch
         this.timeMargin = val.timeMargin
+      },
+      topology(value) {
+        this.topologyID = value._id
+      },
+    },
+    trashFilter: {
+      deep: true,
+      handler(val) {
+        console.log(val)
+        let filter = [[{ column: 'type', operator: 'EQ', value: ['trash'] }]]
+        let keys = Object.keys(val).filter((key) => {
+          return val[key]
+        })
+        keys.forEach((key) => {
+          if (key.includes('Id') || key.includes('Name')) {
+            filter.push([
+              { column: key, operator: OPERATOR.LIKE, value: val[key] },
+              { column: key.replace('Name', 'Id'), operator: OPERATOR.LIKE, value: val[key] },
+            ])
+          } else {
+            // filter.push([{ column: key, operator: OPERATOR.LIKE, value: val[key] }])
+          }
+        })
+        this.filterGrid = filter
       },
     },
     fullTextSearch() {

@@ -36,6 +36,7 @@
         :show-full-text-search="showFullTextSearch"
         :headers="headers"
         :filter="filter"
+        :show-trash-grid-filter="showTrashGridFilter"
         :filter-meta="filterMeta"
         :on-change="onChangeFilter"
         @input="onFullTextSearch"
@@ -93,6 +94,10 @@ export default {
     showFullTextSearch: {
       type: Boolean,
       required: true,
+    },
+    showTrashGridFilter: {
+      type: Boolean,
+      default: false,
     },
     disableAdvancedFilter: {
       type: Boolean,
@@ -179,6 +184,18 @@ export default {
     },
     async sendFilter() {
       if (this.fullTextSearch) {
+        this.onFilter(this.currentFilter, this.currentMeta, {
+          fullTextSearch: this.fullTextSearch,
+          timeMargin: this.timeMarginFilter,
+        })
+      } else if (this.showTrashGridFilter) {
+        this.onFilter(this.currentFilter, this.currentMeta, this.$refs.simpleGridFilter.filterGrid)
+      } else {
+        this.onFilter(this.currentFilter, this.currentMeta)
+      }
+    },
+    async sendTrashFilter() {
+      if (this.showTrashGridFilter) {
         this.onFilter(this.currentFilter, this.currentMeta, {
           fullTextSearch: this.fullTextSearch,
           timeMargin: this.timeMarginFilter,

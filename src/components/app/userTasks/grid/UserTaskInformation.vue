@@ -24,12 +24,12 @@
           <v-row dense>
             <v-col cols="auto">
               <div>
-                <span class="font-weight-bold">
+                <span>
                   {{ $t('topologies.userTask.information.created') }}
                 </span>
               </div>
               <div>
-                <span>{{
+                <span class="font-weight-bold">{{
                   userTask || isTrash ? $options.filters.internationalFormat(trashTaskSwitcher('created')) : ''
                 }}</span>
               </div>
@@ -37,10 +37,10 @@
             <v-divider vertical class="mx-2" />
             <v-col cols="auto">
               <div>
-                <span class="font-weight-bold">{{ $t('topologies.userTask.information.updated') }}</span>
+                <span>{{ $t('topologies.userTask.information.updated') }}</span>
               </div>
               <div>
-                <span>{{
+                <span class="font-weight-bold">{{
                   userTask || isTrash ? $options.filters.internationalFormat(trashTaskSwitcher('updated')) : ''
                 }}</span>
               </div>
@@ -48,12 +48,12 @@
             <v-divider vertical class="mx-2" />
             <v-col cols="auto">
               <div>
-                <span class="font-weight-bold">
+                <span>
                   {{ $t('topologies.userTask.information.correlationId') }}
                 </span>
               </div>
               <div>
-                <span>{{ trashTaskSwitcher('correlationId') }}</span>
+                <span class="font-weight-bold">{{ trashTaskSwitcher('correlationId') }}</span>
               </div>
             </v-col>
           </v-row>
@@ -113,18 +113,18 @@
                 </v-expansion-panel-content>
               </v-card>
             </v-expansion-panel>
-            <v-expansion-panel>
-              <v-card outlined>
-                <v-expansion-panel-header>
-                  <span>
-                    {{ $t('topologies.userTask.information.auditLog') }}
-                  </span>
-                </v-expansion-panel-header>
-                <v-expansion-panel-content>
-                  <vue-json-pretty :path="'res'" :data="trashTaskSwitcher('auditLogs')" />
-                </v-expansion-panel-content>
-              </v-card>
-            </v-expansion-panel>
+            <!--            <v-expansion-panel>-->
+            <!--              <v-card outlined>-->
+            <!--                <v-expansion-panel-header>-->
+            <!--                  <span>-->
+            <!--                    {{ $t('topologies.userTask.information.auditLog') }}-->
+            <!--                  </span>-->
+            <!--                </v-expansion-panel-header>-->
+            <!--                <v-expansion-panel-content>-->
+            <!--                  <vue-json-pretty :path="'res'" :data="trashTaskSwitcher('auditLogs')" />-->
+            <!--                </v-expansion-panel-content>-->
+            <!--              </v-card>-->
+            <!--            </v-expansion-panel>-->
           </v-expansion-panels>
         </v-col>
       </v-row>

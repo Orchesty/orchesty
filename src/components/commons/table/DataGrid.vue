@@ -21,6 +21,7 @@
       :disable-hide-headers="disableHideHeaders"
       :show-full-text-search="showFullTextSearch"
       :simple-filter="simpleFilter"
+      :show-trash-grid-filter="showTrashGridFilter"
     />
 
     <!--Title & Searchbar-->
@@ -198,6 +199,10 @@ export default {
       default: false,
     },
     showFullTextSearch: {
+      type: Boolean,
+      default: false,
+    },
+    showTrashGridFilter: {
       type: Boolean,
       default: false,
     },
@@ -397,6 +402,13 @@ export default {
         if (search?.timeMargin) {
           filter = filter.concat([search.timeMargin])
         }
+        if (Array.isArray(search)) {
+          filter = filter.concat(search)
+        }
+      } else {
+        if (Array.isArray(search)) {
+          filter = search
+        }
       }
       let fullTextSearch = null
       if (search?.fullTextSearch) {
@@ -406,6 +418,7 @@ export default {
       if (this.searchText) {
         fullTextSearch = this.searchText
       }
+
       // @TODO END
 
       await this.$store.dispatch(withNamespace(this.namespace, GRID.ACTIONS.FETCH_WITH_DATA), {

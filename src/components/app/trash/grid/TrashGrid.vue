@@ -1,9 +1,10 @@
 <template>
   <data-grid
     ref="grid"
-    disable-filter
     :headers="headers"
     disable-search
+    disabled-advanced-filter
+    show-trash-grid-filter
     :is-loading="state.isSending"
     :namespace="DATA_GRIDS.TRASH"
     return-row-props
@@ -14,6 +15,7 @@
     :content-enabled="true"
     fill-height
     is-user-task
+    simple-filter
     @row-props="updateInfo"
     @input="onSelect"
   >
