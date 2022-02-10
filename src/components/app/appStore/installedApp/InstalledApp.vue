@@ -75,12 +75,13 @@
                     <v-select
                       v-model="form.appSettings[item.key]"
                       dense
+                      outlined
                       :readonly="item.readonly"
                       :disabled="item.disabled"
                       :label="item.label"
                       :items="getEntries(item.choices)"
-                      item-value="0"
-                      item-text="1"
+                      item-value="value"
+                      item-text="key"
                     />
                   </validation-provider>
                 </v-col>
@@ -106,7 +107,7 @@
         </v-card>
       </v-col>
     </v-row>
-    <v-row>
+    <v-row v-if="'webhookSettings' in app && app.webhookSettings.length !== 0">
       <v-col cols="6">
         <v-card elevation="0">
           <v-container>
@@ -115,39 +116,37 @@
                 <h3 class="title font-weight-bold mb-4">{{ $t('appStore.detail.webhooks') }}</h3>
               </v-col>
             </v-row>
-            <template v-if="'webhookSettings' in app && app.webhookSettings.length !== 0">
-              <template v-for="item in app.webhookSettings">
-                <validation-observer :key="item.name" :ref="item.name" slim @submit.prevent="saveWebhook(item.name)">
-                  <v-row>
-                    <v-col cols="12" lg="5">
-                      <app-input dense outlined readonly label="Webhook Name" :value="item.name" />
-                    </v-col>
-                    <v-col cols="12" lg="5">
-                      <validation-provider v-slot="{ errors }" :name="item.name" rules="required">
-                        <v-autocomplete
-                          v-if="form.webhooks"
-                          v-model="form.webhooks[item.name].topology"
-                          dense
-                          :readonly="item.default"
-                          :disabled="item.enabled"
-                          label="Topology"
-                          outlined
-                          clearable
-                          :items="topologies"
-                          item-text="name"
-                          item-value="name"
-                          :error-messages="errors[0]"
-                        />
-                      </validation-provider>
-                    </v-col>
-                    <v-col cols="12" lg="2">
-                      <v-btn height="40" type="submit" color="primary" class="mx-auto">
-                        {{ getWebhookStatusButton(item.name) }}
-                      </v-btn>
-                    </v-col>
-                  </v-row>
-                </validation-observer>
-              </template>
+            <template v-for="item in app.webhookSettings">
+              <validation-observer :key="item.name" :ref="item.name" slim @submit.prevent="saveWebhook(item.name)">
+                <v-row>
+                  <v-col cols="12" lg="5">
+                    <app-input dense outlined readonly label="Webhook Name" :value="item.name" />
+                  </v-col>
+                  <v-col cols="12" lg="5">
+                    <validation-provider v-slot="{ errors }" :name="item.name" rules="required">
+                      <v-autocomplete
+                        v-if="form.webhooks"
+                        v-model="form.webhooks[item.name].topology"
+                        dense
+                        :readonly="item.default"
+                        :disabled="item.enabled"
+                        label="Topology"
+                        outlined
+                        clearable
+                        :items="topologies"
+                        item-text="name"
+                        item-value="name"
+                        :error-messages="errors[0]"
+                      />
+                    </validation-provider>
+                  </v-col>
+                  <v-col cols="12" lg="2">
+                    <v-btn height="40" type="submit" color="primary" class="mx-auto">
+                      {{ getWebhookStatusButton(item.name) }}
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </validation-observer>
             </template>
           </v-container>
         </v-card>
@@ -249,7 +248,13 @@ export default {
         : false
     },
     getEntries(item) {
-      return Object.entries(item)
+      return item.map((option) => {
+        if (Object.keys(option)[0] == 0) {
+          return { value: option, key: option }
+        } else {
+          return { value: Object.keys(option)[0], key: option[Object.keys(option)[0]] }
+        }
+      })
     },
     initAppForms(settings) {
       if (!settings) {
