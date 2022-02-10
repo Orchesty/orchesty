@@ -22,7 +22,7 @@
         </validation-provider>
       </v-col>
       <v-col cols="auto">
-        <v-btn color="red" class="ma-auto" dark small fab @click="removeLine(index)">
+        <v-btn color="primary" class="ma-auto" dark small fab @click="removeLine(index)">
           <v-icon>mdi-trash-can</v-icon>
         </v-btn>
       </v-col>
