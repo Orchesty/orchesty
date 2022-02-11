@@ -250,7 +250,9 @@ export default {
           }
           this.overlays.add(element, 'bubbles', {
             position: { top: element.height + 10, right: element.width - 15 },
-            html: `<div onclick="window.dispatchEvent(new CustomEvent('queueDepthCheckbox'))"><span class="badge badge-queue" title="Queue depth">${queueDepth}</span></div>`,
+            html: `<div onclick="window.dispatchEvent(new CustomEvent('queueDepthCheckbox'))"><span class="badge badge-queue" title="Queue depth">${Math.round(
+              queueDepth
+            )}</span></div>`,
           })
         }
 
