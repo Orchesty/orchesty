@@ -10,6 +10,19 @@
       :title="$t('topologies.logs.title')"
       :show-expand="nodeStatus"
       :placeholder="!nodeStatus"
+      :permanent-filter="
+        [
+          [{ column: 'topology_id', operator: 'EQUAL', value: [''], default: true }],
+          [
+            {
+              column: 'node_id',
+              operator: 'EQUAL',
+              value: [''],
+              default: true,
+            },
+          ],
+        ].concat(filter)
+      "
       disable-filter
       disable-search
       :request-params="{ nodeID: node._id, topologyID: $route.params.id }"
@@ -202,7 +215,7 @@ export default {
     node: {
       deep: true,
       async handler() {
-        await this.$refs.bpmnNodeGrid.fetchGridWithParams({ nodeID: this.node._id, topologyID: this.$route.params.id })
+        await this.$refs.bpmnNodeGrid.fetchGridWithFilter()
       },
     },
   },

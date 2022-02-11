@@ -365,12 +365,19 @@ export default {
       })
     },
     async fetchGridWithPaging(args) {
+      console.log(this.permanentFilter)
+      let filter
+      if (this.permanentFilter) {
+        filter = this.filter.concat(this.permanentFilter)
+      } else {
+        filter = this.filter
+      }
       await this.$store.dispatch(withNamespace(this.namespace, GRID.ACTIONS.FETCH_WITH_DATA), {
         namespace: this.namespace,
         params: this.requestParams,
         paging: args.paging,
         sorter: args.sorter,
-        filter: this.filter,
+        filter: filter,
         filterMeta: this.filterMeta,
         search: this.search,
       })
@@ -420,7 +427,6 @@ export default {
       }
 
       // @TODO END
-
       await this.$store.dispatch(withNamespace(this.namespace, GRID.ACTIONS.FETCH_WITH_DATA), {
         namespace: this.namespace,
         filter,

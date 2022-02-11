@@ -14,9 +14,9 @@
             <v-btn color="primary" icon @click="reload">
               <v-icon> mdi-reload </v-icon>
             </v-btn>
-            <v-btn color="primary" icon @click="onFilterClear">
-              <v-icon> mdi-close </v-icon>
-            </v-btn>
+            <!--            <v-btn color="primary" icon @click="onFilterClear">-->
+            <!--              <v-icon> mdi-close </v-icon>-->
+            <!--            </v-btn>-->
           </template>
         </quick-grid-filter>
       </v-col>
@@ -459,12 +459,11 @@ export default {
     quickFilters: {
       deep: true,
       handler(val) {
-        console.log(this.qyuickFilterITems)
         if (val.length === 5) {
           this.filter = [
             [
               {
-                column: 'updated',
+                column: 'timestamp',
                 operator: OPERATOR.BETWEEN,
                 value: QUICK_FILTERS.LAST_HOUR(),
                 isQuickFilter: true,
@@ -499,14 +498,6 @@ export default {
   },
   mounted() {
     this.init('timestamp')
-    // this.filter.push([
-    //   {
-    //     column: 'updated',
-    //     operator: OPERATOR.BETWEEN,
-    //     value: QUICK_FILTERS.LAST_HOUR(),
-    //     isQuickFilter: true,
-    //   },
-    // ])
   },
   destroyed() {
     window.removeEventListener('nodeSelection', this.nodeSelectionHandler)

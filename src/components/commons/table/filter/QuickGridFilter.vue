@@ -82,7 +82,6 @@ export default {
     },
     filter: {
       handler(val) {
-        console.log('filter')
         if (!this.items.length) {
           return
         }
