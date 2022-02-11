@@ -190,16 +190,6 @@ export default {
         this.onFilter(this.currentFilter, this.currentMeta)
       }
     },
-    async sendTrashFilter() {
-      if (SIMPLE_FILTER.TRASH === this.simpleFilterEnum) {
-        this.onFilter(this.currentFilter, this.currentMeta, {
-          fullTextSearch: this.fullTextSearch,
-          timeMargin: this.timeMarginFilter,
-        })
-      } else {
-        this.onFilter(this.currentFilter, this.currentMeta)
-      }
-    },
   },
 }
 </script>

@@ -3,9 +3,11 @@
     <v-row dense>
       <v-col cols="12">
         <quick-grid-filter
+          ref="quickGridFilter"
           :quick-filters="quickFilters"
           :filter="filter"
           :filter-meta="filterMeta"
+          is-viewer
           :on-change="onFilterChange"
         >
           <template slot="resetClearButtons">
@@ -113,6 +115,7 @@ import QuickGridFilter from '@/components/commons/table/filter/QuickGridFilter'
 import ProgressBarLinear from '@/components/commons/progressIndicators/ProgressBarLinear'
 import QuickFiltersMixin from '@/components/commons/mixins/QuickFiltersMixin'
 import { EVENTS, events } from '@/services/utils/events'
+import { QUICK_FILTERS } from '@/services/utils/quickFilters'
 
 export default {
   name: 'ViewerTab',
@@ -317,7 +320,16 @@ export default {
       this.filterMeta = filterMeta
     },
     onFilterClear() {
-      this.filter = []
+      this.filter = [
+        [
+          {
+            column: 'updated',
+            operator: OPERATOR.BETWEEN,
+            value: QUICK_FILTERS.LAST_HOUR(),
+            isQuickFilter: true,
+          },
+        ],
+      ]
       this.filterMeta = {}
     },
 
@@ -444,6 +456,24 @@ export default {
     },
   },
   watch: {
+    quickFilters: {
+      deep: true,
+      handler(val) {
+        console.log(this.qyuickFilterITems)
+        if (val.length === 5) {
+          this.filter = [
+            [
+              {
+                column: 'updated',
+                operator: OPERATOR.BETWEEN,
+                value: QUICK_FILTERS.LAST_HOUR(),
+                isQuickFilter: true,
+              },
+            ],
+          ]
+        }
+      },
+    },
     topology: {
       deep: true,
       async handler(topology) {
@@ -469,6 +499,14 @@ export default {
   },
   mounted() {
     this.init('timestamp')
+    // this.filter.push([
+    //   {
+    //     column: 'updated',
+    //     operator: OPERATOR.BETWEEN,
+    //     value: QUICK_FILTERS.LAST_HOUR(),
+    //     isQuickFilter: true,
+    //   },
+    // ])
   },
   destroyed() {
     window.removeEventListener('nodeSelection', this.nodeSelectionHandler)

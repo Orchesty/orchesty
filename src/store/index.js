@@ -18,6 +18,7 @@ import implementations from './modules/implementations'
 import appStore from './modules/appStore'
 import { DIRECTION, OPERATOR } from '@/services/enums/gridEnums'
 import moment from 'moment'
+import { QUICK_FILTERS } from '@/services/utils/quickFilters'
 
 Vue.use(Vuex)
 
@@ -55,6 +56,16 @@ export const createStore = (router) => {
         },
       }),
       [DATA_GRIDS.OVERVIEW]: createGrid(DATA_GRIDS.OVERVIEW, {
+        filter: [
+          [
+            {
+              column: 'updated',
+              operator: OPERATOR.BETWEEN,
+              value: QUICK_FILTERS.LAST_HOUR(),
+              isQuickFilter: true,
+            },
+          ],
+        ],
         sorter: [
           {
             column: 'started',
@@ -67,6 +78,16 @@ export const createStore = (router) => {
         },
       }),
       [DATA_GRIDS.STATISTICS]: createGrid(DATA_GRIDS.STATISTICS, {
+        filter: [
+          [
+            {
+              column: 'updated',
+              operator: OPERATOR.BETWEEN,
+              value: QUICK_FILTERS.LAST_HOUR(),
+              isQuickFilter: true,
+            },
+          ],
+        ],
         sorter: [
           {
             column: 'id',

@@ -20,10 +20,15 @@
 
 <script>
 import { FILTER } from '@/services/enums/gridEnums'
+import moment from 'moment'
 
 export default {
   name: 'QuickGridFilter',
   props: {
+    isViewer: {
+      type: Boolean,
+      default: false,
+    },
     quickFilters: {
       type: Array,
       required: true,
@@ -47,6 +52,60 @@ export default {
     }
   },
   watch: {
+    items: {
+      deep: true,
+      handler(val) {
+        if (this.isViewer) {
+          if (!this.items.length) {
+            return
+          }
+          if (!val) {
+            return
+          }
+          let filteredVal = this.filter.filter((filter) => {
+            return filter.some((filter1) => {
+              return Object.hasOwnProperty.call(filter1, 'isQuickFilter')
+            })
+          })
+          if (!filteredVal.length) {
+            return
+          }
+
+          let date1 = moment(filteredVal[0][0].value[0])
+          let date2 = moment(filteredVal[0][0].value[1])
+          var diff = date2.diff(date1, 'hours')
+          if (diff === 1) {
+            this.items[2].active = true
+          }
+        }
+      },
+    },
+    filter: {
+      handler(val) {
+        console.log('filter')
+        if (!this.items.length) {
+          return
+        }
+        if (!val) {
+          return
+        }
+        let filteredVal = val.filter((filter) => {
+          return filter.some((filter1) => {
+            return Object.hasOwnProperty.call(filter1, 'isQuickFilter')
+          })
+        })
+        if (!filteredVal.length) {
+          return
+        }
+
+        let date1 = moment(filteredVal[0][0].value[0])
+        let date2 = moment(filteredVal[0][0].value[1])
+        var diff = date2.diff(date1, 'hours')
+        if (diff === 1) {
+          this.items[2].active = true
+        }
+      },
+    },
     filterMeta(meta) {
       if (!meta || meta.type !== FILTER.QUICK_FILTER) {
         this.items = this.createItems(this.quickFilters, meta.index)
@@ -64,6 +123,9 @@ export default {
       })
     }
   },
+  // mounted() {
+  //   this.onChangeFilter(2, this.items[2])
+  // },
   methods: {
     onClear() {
       this.items = this.createItems(this.quickFilters, undefined)
