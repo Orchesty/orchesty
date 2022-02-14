@@ -154,8 +154,18 @@ final class MongoMetricsManager extends MetricsManagerAbstract
 
         $where = [self::TOPOLOGY => $topology->getId()];
 
-        $res             = $this->getTopologyMetrics($topology, $params);
-        $res['requests'] = $this->requestsCountAggregation($where, $dateFrom, $dateTo);
+        $res          = $this->getTopologyMetrics($topology, $params);
+        $keepRequests = FALSE;
+        foreach ($res as $v) {
+            if (array_key_exists('request_time', $v)) {
+                $keepRequests = TRUE;
+
+                break;
+            }
+        }
+        if ($keepRequests) {
+            $res['requests'] = $this->requestsCountAggregation($where, $dateFrom, $dateTo);
+        }
 
         return $res;
     }
@@ -254,10 +264,10 @@ final class MongoMetricsManager extends MetricsManagerAbstract
      * @param string  $dateFrom
      * @param string  $dateTo
      *
-     * @return MetricsDto
+     * @return MetricsDto|null
      * @throws DateTimeException
      */
-    private function connectorNodeMetrics(array $where, string $dateFrom, string $dateTo): MetricsDto
+    private function connectorNodeMetrics(array $where, string $dateFrom, string $dateTo): MetricsDto|NULL
     {
         $qb = $this->metricsDm->createAggregationBuilder(ConnectorsMetrics::class);
         $this->addConditions($qb, $dateFrom, $dateTo, $where, ConnectorsMetrics::class);
@@ -270,12 +280,7 @@ final class MongoMetricsManager extends MetricsManagerAbstract
             ->toArray();
 
         if (!$res) {
-            $res = [
-                'request_count' => 0,
-                'request_sum'   => 0,
-                'request_max'   => 0,
-                'request_min'   => 0,
-            ];
+            return NULL;
         } else {
             $res = reset($res);
         }

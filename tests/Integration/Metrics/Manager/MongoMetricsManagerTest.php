@@ -208,12 +208,11 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
             ],
         );
 
-        self::assertCount(6, $result);
+        self::assertCount(5, $result);
         self::assertArrayHasKey(MongoMetricsManager::QUEUE_DEPTH, $result);
         self::assertArrayHasKey(MongoMetricsManager::WAITING_TIME, $result);
         self::assertArrayHasKey(MongoMetricsManager::PROCESS_TIME, $result);
         self::assertArrayHasKey(MongoMetricsManager::CPU_TIME, $result);
-        self::assertArrayHasKey(MongoMetricsManager::REQUEST_TIME, $result);
         self::assertArrayHasKey(MongoMetricsManager::PROCESS, $result);
 
         self::assertEquals(
@@ -235,11 +234,6 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
                 MongoMetricsManager::CPU_TIME     => [
                     'max' => '0',
                     'avg' => '0.00',
-                    'min' => '0',
-                ],
-                MongoMetricsManager::REQUEST_TIME => [
-                    'max' => '0',
-                    'avg' => 'n/a',
                     'min' => '0',
                 ],
                 MongoMetricsManager::PROCESS      => [
@@ -501,9 +495,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
             ],
         );
 
-        self::assertCount(3, $result);
-        self::assertCount(121, $result['requests']);
-        self::assertEquals(0, array_sum($result['requests']));
+        self::assertCount(2, $result);
     }
 
     /**
