@@ -37,6 +37,9 @@ final class HbPFLogsExtension extends Extension implements PrependExtensionInter
         if (!$container->hasExtension('hb_pf_commons')) {
             throw new RuntimeException('You must register HbPFCommonsBundle before.');
         }
+
+        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/prepend-config'));
+        $loader->load('hbpf-logs.yaml');
     }
 
     /**
@@ -51,9 +54,9 @@ final class HbPFLogsExtension extends Extension implements PrependExtensionInter
         $container->setParameter(HbPFLogsBundle::KEY, $config);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
-        $loader->load('controllers.yml');
-        $loader->load('parameters.yml');
-        $loader->load('services.yml');
+        $loader->load('controllers.yaml');
+        $loader->load('parameters.yaml');
+        $loader->load('services.yaml');
     }
 
 }

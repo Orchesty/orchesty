@@ -26,7 +26,7 @@ services:
             - TOPOLOGY_API_DSN=topology-api:80
             - MONGODB_DSN=mongodb://mongo
             - MONGODB_DB=pipes
-            - METRICS_DSN=mongodb://mongo
+            - METRICS_DSN=influx://8089
             - METRICS_DB=metrics
             - MARIADB_DSN=maria
             - STARTING_POINT_DSN=starting-point:8080
@@ -36,8 +36,6 @@ services:
             - MONOLITH_API_DSN=${DEV_IP}
             - WORKER_DEFAULT_PORT=8008
             - METRICS_SERVICE=influx
-            - METRICS_HOST=influx
-            - METRICS_PORT=8089
             - JWT_KEY=test1234
 
     starting-point:

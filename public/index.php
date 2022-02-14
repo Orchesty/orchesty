@@ -11,7 +11,21 @@ if ($_SERVER['APP_DEBUG'] ?? ('prod' !== ($_SERVER['APP_ENV'] ?? 'dev'))) {
     Debug::enable();
 }
 
-// Request::setTrustedProxies(['0.0.0.0/0'], Request::HEADER_FORWARDED);
+if ($trustedProxies = $_SERVER['TRUSTED_PROXIES'] ?? FALSE) {
+    Request::setTrustedProxies(explode(',', $trustedProxies),
+        Request::HEADER_X_FORWARDED_AWS_ELB |
+        Request::HEADER_X_FORWARDED_FOR |
+        Request::HEADER_X_FORWARDED_PORT |
+        Request::HEADER_X_FORWARDED_PREFIX |
+        Request::HEADER_X_FORWARDED_PROTO |
+        Request::HEADER_X_FORWARDED_TRAEFIK |
+        Request::HEADER_X_FORWARDED_HOST);
+}
+
+if ($trustedHosts = $_SERVER['TRUSTED_HOSTS'] ?? FALSE) {
+    Request::setTrustedHosts(explode(',', $trustedHosts));
+}
+
 $kernel   = new Kernel(
     $_SERVER['APP_ENV'] ?? 'dev',
     (bool) (($_SERVER['APP_DEBUG'] ?? ('prod' !== ($_SERVER['APP_ENV'] ?? 'dev'))))

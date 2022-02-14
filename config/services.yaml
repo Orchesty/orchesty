@@ -1,6 +1,16 @@
-parameters:
-    # Base params
-    locale: en
+imports:
+  - { resource: odm_metrics.php }
 
-    # A secret key that's used to generate certain security-related tokens
-    secret: ThisTokenIsNotSoSecretChangeIt
+parameters:
+  # Base params
+  locale: en
+
+  # A secret key that's used to generate certain security-related tokens
+  secret: ThisTokenIsNotSoSecretChangeIt
+
+  frontendHost: "%env(string:FRONTEND_DSN)%"
+  backend_host: "%env(string:BACKEND_DSN)%"
+  activateLink: '%backend_host%/user/%s/activate'
+  cron_host: "%env(string:CRON_DSN)%"
+  starting_point_host: "%env(string:STARTING_POINT_DSN)%"
+  notification_host: "%env(NOTIFICATION_DSN)%"

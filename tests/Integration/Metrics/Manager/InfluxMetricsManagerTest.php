@@ -223,7 +223,7 @@ final class InfluxMetricsManagerTest extends DatabaseTestCaseAbstract
             'nutshell',
         );
 
-        self::assertCount(0, $result['application']);
+        self::assertEquals(0, $result['application']);
     }
 
     /**

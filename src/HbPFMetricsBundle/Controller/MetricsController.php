@@ -106,42 +106,4 @@ final class MetricsController
         }
     }
 
-    /**
-     * @Route("/metrics/application/{key}", methods={"GET", "OPTIONS"})
-     *
-     * @param Request     $request
-     * @param string|null $key
-     *
-     * @return Response
-     */
-    public function applicationMetricsAction(Request $request, ?string $key = NULL): Response
-    {
-        try {
-            return $this->getResponse(
-                $this->metricsHandler->getApplicationMetrics($request->query->all(), $key),
-            );
-        } catch (Throwable $e) {
-            return $this->getErrorResponse($e, 400);
-        }
-    }
-
-    /**
-     * @Route("/metrics/user/{user}", methods={"GET", "OPTIONS"})
-     *
-     * @param Request     $request
-     * @param string|null $user
-     *
-     * @return Response
-     */
-    public function userMetricsAction(Request $request, ?string $user = NULL): Response
-    {
-        try {
-            return $this->getResponse(
-                $this->metricsHandler->getUserMetrics($request->query->all(), $user),
-            );
-        } catch (Throwable $e) {
-            return $this->getErrorResponse($e, 400);
-        }
-    }
-
 }

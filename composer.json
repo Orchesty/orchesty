@@ -17,7 +17,6 @@
         "hanaboso/email-service-bundle": "^1.2",
         "hanaboso/mongo-data-grid": "^1.6",
         "hanaboso/pipes-php-sdk": "^1.6",
-        "hanaboso/rabbit-mq-bundle": "^1.5",
         "hanaboso/rest-bundle": "^1.1",
         "hanaboso/user-bundle": "^1.5",
         "influxdb/influxdb-php": "^1.15",

@@ -291,36 +291,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::applicationStatisticsAction
-     *
-     * @throws Exception
-     */
-    public function testApplicationStatisticsAction(): void
-    {
-        $this->assertResponseLogged(
-            $this->jwt,
-            __DIR__ . '/data/ApplicationController/applicationStatisticsRequest.json',
-            [],
-            [':key' => 'superApp'],
-        );
-    }
-
-    /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::userStatisticsAction
-     *
-     * @throws Exception
-     */
-    public function testUserStatisticsAction(): void
-    {
-        $this->assertResponseLogged(
-            $this->jwt,
-            __DIR__ . '/data/ApplicationController/userStatisticsRequest.json',
-            [],
-            [':user' => '123-456-789'],
-        );
-    }
-
-    /**
      * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::getSynchronousActionsAction
      *
      * @throws Exception

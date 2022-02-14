@@ -249,7 +249,7 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
             TRUE,
         );
 
-        return ['application' => $result];
+        return ['application' => $result ?: 0];
     }
 
     /**

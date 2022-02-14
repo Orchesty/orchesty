@@ -1,4 +1,4 @@
-FROM hanabosocom/php-base:php-8.0-alpine
+FROM hanabosocom/php-base:php-8.1-alpine
 
 COPY . .
 RUN cd pf-bundles && \
@@ -14,7 +14,7 @@ RUN cd pf-bundles && \
     FRONTEND_DSN=frontend BACKEND_DSN=backend ELASTICSEARCH_DSN=elastic JWT_KEY=key \
     bin/console cache:warmup
 
-FROM hanabosocom/php-base:php-8.0-alpine
+FROM hanabosocom/php-base:php-8.1-alpine
 
 ENV APP_DEBUG=0 APP_ENV=prod PHP_FPM_MAX_CHILDREN=10 PHP_FPM_MAX_REQUESTS=500
 COPY pf-bundles/php-local.ini /usr/local/etc/php/conf.d/zz_local.ini

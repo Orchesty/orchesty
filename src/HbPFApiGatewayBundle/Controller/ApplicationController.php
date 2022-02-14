@@ -268,38 +268,6 @@ final class ApplicationController extends AbstractController
     }
 
     /**
-     * @Route("/applications/statistics/application/{key}", methods={"GET", "OPTIONS"})
-     *
-     * @param Request     $request
-     * @param string|null $key
-     *
-     * @return Response
-     */
-    public function applicationStatisticsAction(Request $request, ?string $key): Response
-    {
-        return $this->forward(
-            'Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::applicationMetricsAction',
-            ['request' => $request, 'key' => $key],
-        );
-    }
-
-    /**
-     * @Route("/applications/statistics/user/{user}", methods={"GET", "OPTIONS"})
-     *
-     * @param Request     $request
-     * @param string|null $user
-     *
-     * @return Response
-     */
-    public function userStatisticsAction(Request $request, ?string $user): Response
-    {
-        return $this->forward(
-            'Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::userMetricsAction',
-            ['request' => $request, 'user' => $user],
-        );
-    }
-
-    /**
      * @param bool $lastInstall
      *
      * @return void

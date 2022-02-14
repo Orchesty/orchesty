@@ -15,7 +15,7 @@ doctrine_mongodb:
                 connectTimeoutMS: 60000
                 socketTimeoutMS: 60000
         metrics:
-            server: "%env(string:METRICS_DSN)%"
+            server: "%odm_metrics_dsn%"
             options:
                 connectTimeoutMS: 60000
                 socketTimeoutMS: 60000

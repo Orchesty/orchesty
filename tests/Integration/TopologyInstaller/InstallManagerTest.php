@@ -134,8 +134,7 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
         $requestHandler->method('runTopology')->willReturn(new ResponseDto(200, '', '', []));
         $requestHandler->method('deleteTopology')->willReturn(new ResponseDto(200, '', '', []));
 
-        /** @var string $redisDsn */
-        $redisDsn        = self::getContainer()->getParameter('redis_dsn');
+        $redisDsn        = 'redis://redis:6379';
         $this->redis     = new Client(Parameters::create($redisDsn));
         $topologyManager = self::getContainer()->get('hbpf.configurator.manager.topology');
         $dir             = sprintf('%s/data', __DIR__);
