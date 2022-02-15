@@ -87,6 +87,9 @@ export default {
   methods: {
     ...mapActions(TOPOLOGIES.NAMESPACE, [TOPOLOGIES.ACTIONS.TOPOLOGY.NODES, TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID]),
     nextRun(cronSettings) {
+      if (!cronSettings.length) {
+        return 'Cron is not set'
+      }
       let next = []
       cronSettings.forEach((item) => {
         let interval = this.cronParser.parseExpression(item.cron)
@@ -122,6 +125,7 @@ export default {
       async handler() {
         if (this.topology) {
           await this[TOPOLOGIES.ACTIONS.TOPOLOGY.NODES]({ id: this.topology._id })
+          console.log(this.topology)
         }
       },
     },

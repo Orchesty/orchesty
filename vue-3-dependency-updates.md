@@ -3,7 +3,6 @@ An update will be possible with the release of Vuetify Titan with the support fo
 
 ```text
 @casl/vue
-chart.js
 vee-validate
 vue
 vue-i18n
