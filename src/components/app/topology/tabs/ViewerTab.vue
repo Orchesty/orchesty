@@ -364,6 +364,9 @@ export default {
       this.selectedNode = {}
     },
     canvasReset() {
+      if (!document.querySelector('#canvas')) {
+        return
+      }
       document.querySelector('#canvas').innerHTML = ''
     },
     async reload() {
