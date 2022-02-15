@@ -1,19 +1,19 @@
 ### Build step
 FROM node:16-slim as builder
 
-RUN apt-get update && apt-get upgrade -y && apt-get install -y yarn g++ make python3
+RUN apt-get update && apt-get upgrade -y
 RUN apt-get autoclean -y && apt-get autoremove -y
 
 # Pre-cache packages
 WORKDIR /precache
 COPY package.json ./
 COPY yarn.lock ./
-RUN yarn install --production
+RUN yarn install
 
 ### Build step
 FROM node:16-slim as pre-cache
 
-RUN apt-get update && apt-get upgrade -y && apt-get install -y yarn
+RUN apt-get update && apt-get upgrade -y
 RUN apt-get autoclean -y && apt-get autoremove -y
 
 # Build
