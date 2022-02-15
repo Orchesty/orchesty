@@ -309,7 +309,6 @@ export default {
       throwError: true,
     })
       .then(() => {
-        console.log(payload)
         dispatch(TOPOLOGIES.ACTIONS.TOPOLOGY.NODES, { id: payload.topologyId })
         dispatch(TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID, { id: payload.topologyId })
         return true

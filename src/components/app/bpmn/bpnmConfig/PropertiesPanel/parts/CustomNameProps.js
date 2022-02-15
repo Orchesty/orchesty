@@ -1,7 +1,6 @@
 import entryFactory from 'bpmn-js-properties-panel/lib/factory/EntryFactory'
 import cmdHelper from 'bpmn-js-properties-panel/lib/helper/CmdHelper'
 import { getBusinessObject, is } from 'bpmn-js/lib/util/ModelUtil'
-// import apiGatewayServer from 'services/apiGatewayServer'
 
 export default function (group, element, translate) {
   var businessObject = getBusinessObject(element)
@@ -17,10 +16,6 @@ export default function (group, element, translate) {
   if (is(element, 'bpmn:TextAnnotation')) {
     modelProperty = 'text'
   }
-
-  // apiGatewayServer(() => {}, 'GET', '/nodes/list/name', null).then((response) => {
-  //   localStorage.setItem('pipes-nodes-list', JSON.stringify(response))
-  // })
 
   const pipesType = getBusinessObject(element).pipesType
   const implementationTypesNames111 = JSON.parse(localStorage.getItem('pipes'))
@@ -44,15 +39,6 @@ export default function (group, element, translate) {
   }
 
   if (['connector', 'batch', 'custom', 'user'].includes(pipesType)) {
-    // const implementationTypesNames = JSON.parse(localStorage.getItem('pipes-nodes-list'))
-    // const sdkServiceName = getBusinessObject(element).$attrs.sdkHostName
-    // const options = implementationTypesNames[sdkServiceName][pipesType].map((item) => ({ name: item, value: item }))
-
-    // console.log(implementationTypesNames, sdkServiceName, implementationTypesNames[sdkServiceName][pipesType])
-    // console.log(implementationTypesNames.map(({ name, url }) => ({ name, value: url })))
-    // console.log(pipesNodes, sdkHostValue, nodeType)
-    // console.log(getBusinessObject(element))
-    console.log(getBusinessObject(element).$attrs.sdkHostOptions)
     group.entries.push(
       entryFactory.selectBox(translate, {
         id: 'name',

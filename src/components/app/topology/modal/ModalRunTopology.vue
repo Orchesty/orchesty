@@ -125,7 +125,6 @@ export default {
       this.setStartingPoints()
       this.loadRunSettings()
       this.isOpen = true
-      console.log('MOUNTED')
     })
   },
   beforeDestroy() {

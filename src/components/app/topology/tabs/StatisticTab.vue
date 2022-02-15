@@ -125,10 +125,7 @@ export default {
       return this[REQUESTS_STATE.GETTERS.GET_STATE]([API.statistic.grid.id, API.statistic.getList.id])
     },
     nodeParameters() {
-      const data = Object.keys(this.nodes[0].data).filter((it) => it !== 'queue_depth')
-      // 0"waiting_time", 1"process_time", 2"cpu_time", 3"request_time", 4"process" ]
-      // return [data[4], data[1], data[3], data[2], data[0]]
-      return [data[1], data[3], data[2], data[0]]
+      return Object.keys(this.nodes[0].data).filter((it) => it !== 'queue_depth' && it !== 'process')
     },
   },
   watch: {
@@ -160,7 +157,6 @@ export default {
       let keys = Object.keys(this.items[0])
       let nodeKeys = keys.filter((node) => Object.prototype.hasOwnProperty.call(this.items[0][node], 'queue_depth'))
       this.nodes = nodeKeys.map((node) => ({ data: { ...this.items[0][node] }, name: node }))
-      console.log('reset')
     },
     chartDataByKey(key, values) {
       let keyedData = []

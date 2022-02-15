@@ -11,7 +11,6 @@ export default {
     state.implementations = data
   },
   [IMPLEMENTATIONS.MUTATIONS.SET_FILE_IMPLEMENTATIONS]: (state, data) => {
-    console.log(data)
     state.topologyImportState.implementationsFile = data
   },
   [IMPLEMENTATIONS.MUTATIONS.RESET]: (state) => {

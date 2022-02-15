@@ -142,7 +142,6 @@ export default {
 
         const parser = new DOMParser()
         let xmlDoc = parser.parseFromString(xml, 'text/xml')
-        console.log(xmlDoc.getElementsByTagName('bpmn:task'))
         for (let i = 0; i < xmlDoc.getElementsByTagName('bpmn:task').length; i++) {
           for (let j = 0; j < xmlDoc.getElementsByTagName('bpmn:task')[i].attributes.length; j++) {
             if (xmlDoc.getElementsByTagName('bpmn:task')[i].attributes[j].name === 'sdkHostOptions') {
@@ -173,7 +172,6 @@ export default {
 
           const parser = new DOMParser()
           let xmlDoc = parser.parseFromString(xml, 'text/xml')
-          console.log(xmlDoc.getElementsByTagName('bpmn:task'))
           for (let i = 0; i < xmlDoc.getElementsByTagName('bpmn:task').length; i++) {
             for (let j = 0; j < xmlDoc.getElementsByTagName('bpmn:task')[i].attributes.length; j++) {
               if (xmlDoc.getElementsByTagName('bpmn:task')[i].attributes[j].name === 'sdkHostOptions') {
@@ -324,7 +322,6 @@ export default {
       console.info(`NODE SDK NAME: ${sdkServiceName}`)
 
       //check if node sdk name has service options for the provided pipes type
-      console.log(sdkHostServices[sdkServiceName], sdkHostServices[sdkServiceName][pipesType])
       if (sdkHostServices[sdkServiceName] && sdkHostServices[sdkServiceName][pipesType]) {
         const options = sdkHostServices[sdkServiceName][pipesType].map((item) => ({
           name: item,
@@ -336,13 +333,11 @@ export default {
         console.error(`NODE DOES NOT HAVE SERVICE OPTIONS`)
       }
 
-      console.log(this.modeler.get('propertiesPanel'))
       document.querySelector(`[data-element-id = ${event.element.id}]`)
       this.modeler.get('propertiesPanel')
       const select = document.querySelector('#camunda-name-select')
       if (select) {
         select.innerHTML = ''
-        console.log(select)
         if (event.element.businessObject.$attrs?.sdkHostOptions) {
           event.element.businessObject.$attrs.sdkHostOptions.forEach((item) => {
             let option = document.createElement('option')

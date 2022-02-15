@@ -252,7 +252,6 @@ export default {
     trashFilter: {
       deep: true,
       handler(val) {
-        console.log(val)
         let filter = [[{ column: 'type', operator: 'EQ', value: ['trash'] }]]
         let keys = Object.keys(val).filter((key) => {
           return val[key]

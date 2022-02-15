@@ -125,7 +125,6 @@ export default {
       async handler() {
         if (this.topology) {
           await this[TOPOLOGIES.ACTIONS.TOPOLOGY.NODES]({ id: this.topology._id })
-          console.log(this.topology)
         }
       },
     },

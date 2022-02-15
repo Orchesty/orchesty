@@ -365,7 +365,6 @@ export default {
       })
     },
     async fetchGridWithPaging(args) {
-      console.log(this.permanentFilter)
       let filter
       if (this.permanentFilter) {
         filter = this.filter.concat(this.permanentFilter)

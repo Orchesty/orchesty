@@ -228,7 +228,6 @@ export default {
     innerFilter: {
       deep: true,
       handler() {
-        console.log(this.innerFilter, 'CHILD')
         this.onChange(this.innerFilter, { type: FILTER.ADVANCED_FILTER })
       },
     },
