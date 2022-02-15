@@ -1,6 +1,6 @@
 module.exports = {
   plugins: ['prettier', 'vue'],
-  extends: ['prettier', 'prettier/vue', 'plugin:vue/recommended', 'eslint:recommended'],
+  extends: ['prettier', 'plugin:vue/recommended', 'eslint:recommended'],
   parserOptions: {
     parser: 'babel-eslint',
   },
@@ -9,6 +9,7 @@ module.exports = {
     node: true,
   },
   rules: {
+    'vue/multi-word-component-names': 'off',
     'prettier/prettier': 'error',
     'vue/max-attributes-per-line': 'off',
     'vue/singleline-html-element-content-newline': 'off',

@@ -17,12 +17,12 @@
         <v-row v-if="nodes[0]">
           <v-col cols="12" lg="12">
             <h4 class="ml-3 mb-2 disabled--text text--darken-3">{{ STATISTICS_ENUM.totalsErrors }}</h4>
-            <bar-chart :chart-data="chartDataProcess('process')" :options="options" :height="80" class="mx-2" />
+            <bar-chart :chart-data="chartDataProcess('process')" :options="options" class="mx-2" />
           </v-col>
           <template v-for="key in nodeParameters">
             <v-col :key="key" cols="12" lg="12">
               <h4 class="ml-3 mb-2 disabled--text text--darken-3">{{ STATISTICS_ENUM[key] }}</h4>
-              <bar-chart :chart-data="chartData(key)" :options="options" :height="80" class="mx-2" />
+              <bar-chart :chart-key="key" :chart-data="chartData(key)" :options="options" class="mx-2" />
             </v-col>
           </template>
         </v-row>
@@ -40,6 +40,7 @@ import DataGrid from '@/components/commons/table/DataGrid'
 import { REQUESTS_STATE } from '@/store/modules/api/types'
 import { API } from '@/api'
 import QuickFiltersMixin from '@/components/commons/mixins/QuickFiltersMixin'
+import prettyMilliseconds from 'pretty-ms'
 
 export default {
   mixins: [QuickFiltersMixin],
@@ -62,50 +63,19 @@ export default {
       DATA_GRIDS,
       nodes: [],
       options: {
-        title: {
-          display: false,
-        },
-        tooltips: {
-          mode: 'index',
-          intersect: false,
+        plugins: {
+          title: {
+            display: false,
+          },
         },
         responsive: true,
         scales: {
-          xAxes: [
-            {
-              id: 'bar-x-axis1',
-              categoryPercentage: 0.1,
-              offset: true,
-              ticks: {
-                beginAtZero: true,
-              },
-            },
-            {
-              display: false,
-              id: 'bar-x-axis2',
-              categoryPercentage: 0.1,
-              offset: true,
-              ticks: {
-                beginAtZero: true,
-              },
-            },
-            {
-              display: false,
-              id: 'bar-x-axis3',
-              categoryPercentage: 0.1,
-              offset: true,
-              ticks: {
-                beginAtZero: true,
-              },
-            },
-          ],
-          yAxes: [
-            {
-              ticks: {
-                beginAtZero: true,
-              },
-            },
-          ],
+          x: {
+            stacked: true,
+          },
+          y: {
+            stacked: true,
+          },
         },
       },
       headers: [
@@ -157,7 +127,8 @@ export default {
     nodeParameters() {
       const data = Object.keys(this.nodes[0].data).filter((it) => it !== 'queue_depth')
       // 0"waiting_time", 1"process_time", 2"cpu_time", 3"request_time", 4"process" ]
-      return [data[4], data[1], data[3], data[2], data[0]]
+      // return [data[4], data[1], data[3], data[2], data[0]]
+      return [data[1], data[3], data[2], data[0]]
     },
   },
   watch: {
@@ -181,6 +152,7 @@ export default {
     },
   },
   methods: {
+    prettyMs: prettyMilliseconds,
     initNodes() {
       if (!this.items[0] || !this.nodeNames || !this.topology) {
         return
@@ -208,6 +180,20 @@ export default {
           labels.push(this.nodeNames.filter((name) => name._id === node.name)[0].name)
         }
       })
+
+      // let prettifiedData = data.map((subject) => {
+      //   for (let subjectKey in subject) {
+      //     if (!Number.isNaN(Number.parseFloat(subject[subjectKey]))) {
+      //       subject[subjectKey] = this.prettyMs(Number.parseInt(subject[subjectKey]), {
+      //         keepDecimalsOnWholeSeconds: true,
+      //       })
+      //     }
+      //   }
+      //
+      //   return subject
+      // })
+      //
+      // console.log(prettifiedData)
       return {
         labels: labels,
         datasets: [
@@ -215,19 +201,16 @@ export default {
             label: 'min',
             backgroundColor: '#0e7d00',
             data: this.chartDataByKey('min', data),
-            xAxisID: 'bar-x-axis1',
           },
           {
             label: 'avg',
             backgroundColor: '#f7b500',
             data: this.chartDataByKey('avg', data),
-            xAxisID: 'bar-x-axis2',
           },
           {
             label: 'max',
             backgroundColor: '#cc0000',
             data: this.chartDataByKey('max', data),
-            xAxisID: 'bar-x-axis3',
           },
         ],
       }
@@ -249,19 +232,11 @@ export default {
             label: 'errors',
             backgroundColor: '#cc0000',
             data: this.chartDataByKey('errors', data),
-            xAxisID: 'bar-x-axis1',
-            ticks: {
-              beginAtZero: true,
-            },
           },
           {
             label: 'total',
             backgroundColor: '#0e7d00',
             data: this.chartDataByKey('total', data),
-            xAxisID: 'bar-x-axis2',
-            ticks: {
-              beginAtZero: true,
-            },
           },
         ],
       }

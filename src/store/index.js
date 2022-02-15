@@ -59,7 +59,7 @@ export const createStore = (router) => {
         filter: [
           [
             {
-              column: 'updated',
+              column: 'started',
               operator: OPERATOR.BETWEEN,
               value: QUICK_FILTERS.LAST_HOUR(),
               isQuickFilter: true,
