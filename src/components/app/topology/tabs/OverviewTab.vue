@@ -118,7 +118,7 @@ export default {
           text: 'topologies.overview.headers.duration',
           value: 'duration',
           align: 'center',
-          sortable: true,
+          sortable: false,
           visible: true,
           width: '15%',
         },
@@ -126,7 +126,7 @@ export default {
           text: 'topologies.overview.headers.progress',
           value: 'progress',
           align: 'center',
-          sortable: true,
+          sortable: false,
           visible: true,
           width: '15%',
         },
@@ -134,7 +134,7 @@ export default {
           text: 'topologies.overview.headers.status',
           value: 'status',
           align: 'center',
-          sortable: true,
+          sortable: false,
           visible: true,
           width: '15%',
         },
@@ -173,8 +173,10 @@ export default {
   },
   watch: {
     async topology(val) {
-      this.topologyID = val._id
-      await this.$refs.grid.fetchGridWithParams({ id: val._id })
+      if (this.topologyID !== val._id) {
+        this.topologyID = val._id
+        await this.$refs.grid.fetchGridWithParams({ id: val._id })
+      }
     },
   },
   mounted() {
