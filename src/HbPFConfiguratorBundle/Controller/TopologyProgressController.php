@@ -2,6 +2,10 @@
 
 namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller;
 
+use Doctrine\ODM\MongoDB\MongoDBException;
+use Hanaboso\MongoDataGrid\Exception\GridException;
+use Hanaboso\MongoDataGrid\GridFilterAbstract;
+use Hanaboso\MongoDataGrid\GridRequestDto;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyProgressHandler;
 use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\Traits\ControllerTrait;
@@ -37,12 +41,25 @@ final class TopologyProgressController
      * @param string  $topologyId
      *
      * @return Response
+     * @throws GridException
+     * @throws MongoDBException
      */
     public function getProgressTopologyAction(Request $request, string $topologyId): Response
     {
-        $data  = $this->handler->getProgress($topologyId);
         $query = Json::decode($request->query->get('filter', '{}'));
-        $data  = array_merge($data, $query);
+        $dto   = new GridRequestDto($query);
+        $dto->setAdditionalFilters(
+            [
+                [
+                    [
+                        GridFilterAbstract::COLUMN   => 'topologyId',
+                        GridFilterAbstract::OPERATOR => GridFilterAbstract::EQ,
+                        GridFilterAbstract::VALUE    => [$topologyId],
+                    ],
+                ],
+            ],
+        );
+        $data = $this->handler->getProgress($dto);
 
         return $this->getResponse($data);
     }

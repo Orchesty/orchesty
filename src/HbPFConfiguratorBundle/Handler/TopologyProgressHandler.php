@@ -2,7 +2,9 @@
 
 namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler;
 
-use Hanaboso\MongoDataGrid\GridFilterAbstract;
+use Doctrine\ODM\MongoDB\MongoDBException;
+use Hanaboso\MongoDataGrid\GridHandlerTrait;
+use Hanaboso\MongoDataGrid\GridRequestDtoInterface;
 use Hanaboso\PipesFramework\Configurator\Model\ProgressManager;
 
 /**
@@ -12,6 +14,8 @@ use Hanaboso\PipesFramework\Configurator\Model\ProgressManager;
  */
 final class TopologyProgressHandler
 {
+
+    use GridHandlerTrait;
 
     /**
      * TopologyProgressHandler constructor.
@@ -23,32 +27,16 @@ final class TopologyProgressHandler
     }
 
     /**
-     * @param string $topologyId
+     * @param GridRequestDtoInterface $dto
      *
      * @return mixed[]
+     * @throws MongoDBException
      */
-    public function getProgress(string $topologyId): array
+    public function getProgress(GridRequestDtoInterface $dto): array
     {
-        $progresses = $this->manager->getProgress($topologyId);
+        $items = $this->manager->getProgress($dto);
 
-        return [
-            'filter' => [],
-            'sorter' => [
-                [
-                    GridFilterAbstract::COLUMN    => 'id',
-                    GridFilterAbstract::DIRECTION => GridFilterAbstract::DESCENDING,
-                ],
-            ],
-            'items'  => $progresses,
-            'paging' => [
-                'page'         => 1,
-                'itemsPerPage' => 20,
-                'total'        => count($progresses),
-                'nextPage'     => 1,
-                'lastPage'     => 1,
-                'previousPage' => 1,
-            ],
-        ];
+        return $this->getGridResponse($dto, $items);
     }
 
 }

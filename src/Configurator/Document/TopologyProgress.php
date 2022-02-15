@@ -230,7 +230,7 @@ class TopologyProgress
         return [
             'id'             => $this->topologyId,
             'correlationId'  => $this->correlationId,
-            'duration'       => $this->durationInMs($this->startedAt, $end),
+            'duration'       => TopologyProgress::durationInMs($this->startedAt, $end),
             'started'        => $this->startedAt->format(DateTimeUtils::DATE_TIME_UTC),
             'finished'       => $finished,
             'nodesProcessed' => $count,
@@ -246,7 +246,7 @@ class TopologyProgress
      *
      * @return int
      */
-    private function durationInMs(DateTime $start, DateTime $end): int
+    public static function durationInMs(DateTime $start, DateTime $end): int
     {
         $startSecs = $start->getTimestamp() * 1_000;
         $endSecs   = $end->getTimestamp() * 1_000;
