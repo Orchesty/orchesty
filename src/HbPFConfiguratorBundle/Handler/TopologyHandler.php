@@ -371,7 +371,7 @@ final class TopologyHandler
         $settings  = [];
         $cronNodes = $this->dm->getRepository(Node::class)->getCronNodes($topology);
         foreach ($cronNodes as $node) {
-            if($node->getCron() && $node->getCronParams()){
+            if($node->getCron()){
                 $settings[] = ['cron' => $node->getCron(), 'cronParams' => $node->getCronParams()];
             }
         }
