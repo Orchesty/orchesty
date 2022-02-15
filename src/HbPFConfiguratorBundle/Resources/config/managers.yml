@@ -29,7 +29,7 @@ services:
     hbpf.configurator.manager.topology_progress:
         class: Hanaboso\PipesFramework\Configurator\Model\ProgressManager
         arguments:
-            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.progress.filter'
 
     hbpf.configurator.manager.dashboard:
         class: Hanaboso\PipesFramework\Configurator\Model\DashboardManager

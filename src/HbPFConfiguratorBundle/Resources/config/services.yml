@@ -52,3 +52,8 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.configurator.manager.category'
             - '%installer_dirs%'
+
+    hbpf.progress.filter:
+        class: Hanaboso\PipesFramework\Configurator\Model\Filters\ProgressFilter
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
