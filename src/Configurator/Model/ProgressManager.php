@@ -38,10 +38,10 @@ final class ProgressManager
         $res = $this->progressFilter->getData($dto)->toArray();
 
         return array_map(static function (array $doc) {
-            $finished = $doc['finished'] ? DateTimeUtils::getUtcDateTime($doc['finished'])->format(
-                DateTimeUtils::DATE_TIME_UTC,
-            ) : NULL;
-            $end      = $doc['finished'] ?? DateTimeUtils::getUtcDateTime();
+            $finished = $doc['finished'] ?
+                DateTimeUtils::getUtcDateTime($doc['finished'])->format(DateTimeUtils::DATE_TIME_UTC,) :
+                NULL;
+            $end      = $doc['finished'] ?? DateTimeUtils::getUtcDateTime()->format(DateTimeUtils::DATE_TIME_UTC);
             $count    = $doc['ok'] + $doc['nok'];
             $created  = DateTimeUtils::getUtcDateTime($doc['created']);
 
@@ -55,7 +55,7 @@ final class ProgressManager
                 'nodesTotal'     => $doc['total'],
                 'status'         => $count < $doc['total'] ? 'IN PROGRESS' : ($doc['total'] > 0 ? 'FAILED' : 'SUCCESS'),
                 'failed'         => $doc['nok'],
-                    ];
+            ];
         }, $res);
     }
 
