@@ -21,6 +21,7 @@
       :disable-hide-headers="disableHideHeaders"
       :simple-filter="simpleFilter"
       :simple-filter-enum="simpleFilterEnum"
+      :is-loading="isLoading"
     />
 
     <!--Title & Searchbar-->
@@ -52,13 +53,13 @@
             :search="searchText"
             :extended-iterator="extendedIterator"
           >
-            <template #loading>
-              <v-row>
-                <v-col cols="12" class="d-flex align-center justify-center">
-                  <progress-bar-linear />
-                </v-col>
-              </v-row>
-            </template>
+            <!--            <template #loading>-->
+            <!--              <v-row>-->
+            <!--                <v-col cols="12" class="d-flex align-center justify-center">-->
+            <!--                  <progress-bar-linear />-->
+            <!--                </v-col>-->
+            <!--              </v-row>-->
+            <!--            </template>-->
             <template #body.prepend>
               <slot name="body.prepend" />
             </template>
@@ -163,12 +164,11 @@ import { DIRECTION } from '@/services/enums/gridEnums'
 import { GRID } from '../../../store/modules/grid/types'
 import { withNamespace } from '../../../store/utils'
 import DataGridFilter from './filter/DataGridFilter'
-import ProgressBarLinear from '@/components/commons/progressIndicators/ProgressBarLinear'
 import { SIMPLE_FILTER } from '@/services/enums/dataGridFilterEnums'
 
 export default {
   name: 'DataGrid',
-  components: { ProgressBarLinear, DataGridFilter },
+  components: { DataGridFilter },
   props: {
     height: {
       type: String,

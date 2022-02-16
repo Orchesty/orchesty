@@ -7,6 +7,7 @@
         :filter="filter"
         :filter-meta="filterMeta"
         :on-change="onChangeFilter"
+        :is-loading="isLoading"
       >
         <template v-if="!disableAdvancedFilter" slot="advancedFilter">
           <v-btn icon color="primary" @click="filterToggle">
@@ -89,6 +90,10 @@ export default {
     },
     headers: {
       type: Array,
+      required: true,
+    },
+    isLoading: {
+      type: Boolean,
       required: true,
     },
     simpleFilterEnum: {

@@ -1,29 +1,39 @@
 <template>
-  <v-row>
-    <v-col cols="auto" class="d-flex flex-wrap align-center flex-grow-1">
-      <v-btn
-        v-for="(item, index) in items"
-        :key="index"
-        small
-        :outlined="!item.active"
-        :color="item.active ? 'primary' : 'secondary'"
-        class="mr-2"
-        @click="onChangeFilter(index, item)"
-      >
-        {{ $t(item.name) }}
-      </v-btn>
-      <slot name="resetClearButtons" :on-clear-button="() => {}" />
-      <slot name="advancedFilter" />
-    </v-col>
-  </v-row>
+  <div>
+    <v-row>
+      <v-col cols="auto" class="d-flex flex-wrap align-center flex-grow-1">
+        <v-btn
+          v-for="(item, index) in items"
+          :key="index"
+          small
+          :disabled="isLoading"
+          :outlined="!item.active"
+          :color="item.active ? 'primary' : 'secondary'"
+          class="mr-2"
+          @click="onChangeFilter(index, item)"
+        >
+          {{ $t(item.name) }}
+        </v-btn>
+        <slot name="resetClearButtons" :on-clear-button="() => {}" />
+        <slot name="advancedFilter" />
+      </v-col>
+    </v-row>
+    <v-row v-if="isLoading" dense>
+      <v-col>
+        <progress-bar-linear />
+      </v-col>
+    </v-row>
+  </div>
 </template>
 
 <script>
 import { FILTER } from '@/services/enums/gridEnums'
 import moment from 'moment'
+import ProgressBarLinear from '@/components/commons/progressIndicators/ProgressBarLinear'
 
 export default {
   name: 'QuickGridFilter',
+  components: { ProgressBarLinear },
   props: {
     isViewer: {
       type: Boolean,
@@ -31,6 +41,10 @@ export default {
     },
     quickFilters: {
       type: Array,
+      required: true,
+    },
+    isLoading: {
+      type: Boolean,
       required: true,
     },
     filter: {
@@ -149,3 +163,14 @@ export default {
   },
 }
 </script>
+<style scoped>
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
+}
+</style>

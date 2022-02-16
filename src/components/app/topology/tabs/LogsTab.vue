@@ -71,7 +71,7 @@ export default {
   computed: {
     ...mapGetters(REQUESTS_STATE.NAMESPACE, [REQUESTS_STATE.GETTERS.GET_STATE]),
     state() {
-      return this[REQUESTS_STATE.GETTERS.GET_STATE](API.topology.getLogs.id)
+      return this[REQUESTS_STATE.GETTERS.GET_STATE](API.topology.getLogsByID.id)
     },
   },
   data() {

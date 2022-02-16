@@ -9,6 +9,7 @@
           :filter-meta="filterMeta"
           is-viewer
           :on-change="onFilterChange"
+          :is-loading="state.isSending"
         >
           <template slot="resetClearButtons">
             <v-btn color="primary" icon @click="reload">
