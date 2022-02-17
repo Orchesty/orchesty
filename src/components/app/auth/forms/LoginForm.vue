@@ -1,72 +1,71 @@
 <template>
-  <v-card elevation="3" rounded="lg">
-    <v-row>
-      <v-col cols="12" lg="6" class="d-flex">
-        <v-card-text class="my-auto mx-5">
-          <ValidationObserver ref="loginForm" tag="form" @submit.prevent="submit" @keydown.enter="submit">
-            <validation-provider
-              v-slot="{ errors }"
-              :name="$t('login.form.email.name')"
-              :rules="fields.email.validations"
-              slim
-            >
-              <app-input
-                v-model="form.email"
-                prepend-icon="person"
-                :label="$t('login.form.email.label')"
-                type="text"
-                :name="fields.email.id"
-                :error-messages="errors"
-              />
-            </validation-provider>
-            <validation-provider
-              v-slot="{ errors }"
-              :name="$t('login.form.password.name')"
-              :rules="fields.password.validations"
-              slim
-            >
-              <app-input
-                v-model="form.password"
-                prepend-icon="lock"
-                :label="$t('login.form.password.label')"
-                input-type="password"
-                :error-messages="errors"
-              />
-            </validation-provider>
-            <router-link :to="{ name: ROUTES.FORGOT_PASSWORD }">
-              <span class="ml-8"> {{ $t('login.forgot_link') }} </span>
-            </router-link>
-            <div class="text-right">
-              <app-button
-                :is-sending="isSending"
-                :button-title="$t('login.form.submit.label')"
-                :sending-title="$t('button.sending.login')"
-                :on-click="submit"
-                :flat="false"
-              />
-            </div>
-          </ValidationObserver>
-        </v-card-text>
-      </v-col>
-      <v-col cols="0" lg="6" class="login-image d-none d-lg-block">
-        <img alt="hero_image" src="@/assets/svg/login-screen-banner.svg" />
-      </v-col>
-    </v-row>
-  </v-card>
+  <auth-split-layout>
+    <template #heading> Login in to you workspace </template>
+    <template #form>
+      <ValidationObserver ref="loginForm" tag="form" @submit.prevent="submit" @keydown.enter="submit">
+        <validation-provider
+          v-slot="{ errors }"
+          :name="$t('login.form.email.name')"
+          :rules="fields.email.validations"
+          slim
+        >
+          <app-input
+            v-model="form.email"
+            dense
+            prepend-icon="person"
+            :label="$t('login.form.email.label')"
+            type="text"
+            :name="fields.email.id"
+            :error-messages="errors"
+          />
+        </validation-provider>
+        <validation-provider
+          v-slot="{ errors }"
+          :name="$t('login.form.password.name')"
+          :rules="fields.password.validations"
+          slim
+        >
+          <app-input
+            v-model="form.password"
+            dense
+            prepend-icon="lock"
+            :label="$t('login.form.password.label')"
+            input-type="password"
+            :error-messages="errors"
+          />
+        </validation-provider>
+        <router-link :to="{ name: ROUTES.FORGOT_PASSWORD }">
+          <span> {{ $t('login.forgot_link') }} </span>
+        </router-link>
+        <div class="d-flex mt-5">
+          <app-button
+            :height="44"
+            :custom-style="{ width: '100%' }"
+            :is-sending="isSending"
+            :button-title="$t('login.form.submit.label')"
+            :sending-title="$t('button.sending.login')"
+            :on-click="submit"
+            :flat="false"
+          />
+        </div>
+      </ValidationObserver>
+    </template>
+  </auth-split-layout>
 </template>
 
 <script>
-import { ROUTES } from '../../../../services/enums/routerEnums'
+import { ROUTES } from '@/services/enums/routerEnums'
 import FormMixin from '@/components/commons/mixins/FormMixin'
 import { mapGetters } from 'vuex'
 import { REQUESTS_STATE } from '@/store/modules/api/types'
 import { API } from '@/api'
 import AppButton from '@/components/commons/button/AppButton'
 import AppInput from '@/components/commons/input/AppInput'
+import AuthSplitLayout from '@/components/app/auth/layout/AuthSplitLayout'
 
 export default {
   name: 'LoginForm',
-  components: { AppInput, AppButton },
+  components: { AuthSplitLayout, AppInput, AppButton },
   computed: {
     ...mapGetters(REQUESTS_STATE.NAMESPACE, [REQUESTS_STATE.GETTERS.GET_STATE]),
     state() {
@@ -121,15 +120,3 @@ export default {
   },
 }
 </script>
-<style lang="scss" scoped>
-.login-image {
-  padding: 0 !important;
-  img {
-    border-top-right-radius: 8px;
-    border-bottom-right-radius: 8px;
-    height: 100%;
-    width: 100%;
-    object-fit: cover;
-  }
-}
-</style>

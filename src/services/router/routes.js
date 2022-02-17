@@ -187,6 +187,14 @@ export default [
     },
   },
   {
+    path: '/forgot-password-sent',
+    name: ROUTES.FORGOT_PASSWORD_SENT,
+    component: () => import('../../views/auth/ForgotPasswordSentPage'),
+    meta: {
+      auth: SECURITY.PUBLIC,
+    },
+  },
+  {
     path: '/restore-password/:token',
     name: ROUTES.RESTORE_PASSWORD,
     component: () => import('../../views/auth/ResetPasswordPage'),

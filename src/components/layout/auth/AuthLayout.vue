@@ -4,7 +4,7 @@
     <v-main>
       <v-container fill-height fluid>
         <v-row align="center" justify="center">
-          <v-col cols="10" sm="6">
+          <v-col xl="5" lg="8" md="6" sm="8" cols="12">
             <slot></slot>
           </v-col>
         </v-row>

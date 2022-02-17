@@ -1,8 +1,26 @@
 <template>
-  <v-btn v-if="isSending" :class="customClass" :color="color" type="submit" disabled :text="flat">
+  <v-btn
+    v-if="isSending"
+    :height="height"
+    :class="customClass"
+    :color="color"
+    type="submit"
+    :style="customStyle"
+    disabled
+    :text="flat"
+  >
     {{ sendingTitle }}
   </v-btn>
-  <v-btn v-else :class="customClass" :color="color" :disabled="disabled" :text="flat" @click="onClick">
+  <v-btn
+    v-else
+    :height="height"
+    :class="customClass"
+    :color="color"
+    :disabled="disabled"
+    :text="flat"
+    :style="customStyle"
+    @click="onClick"
+  >
     {{ buttonTitle }}
   </v-btn>
 </template>
@@ -42,6 +60,15 @@ export default {
       type: String,
       required: false,
       default: () => '',
+    },
+    customStyle: {
+      type: Object,
+      required: false,
+      default: () => {},
+    },
+    height: {
+      type: Number,
+      default: 34,
     },
   },
 }

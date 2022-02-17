@@ -1,20 +1,26 @@
 <template>
   <auth-layout>
-    <forgot-password-form :on-submit="submit" :is-sending="state.isSending" />
+    <auth-split-layout disable-header>
+      <template #form>
+        <h2 class="mx-auto mb-2">Done, instructions sent!</h2>
+        <p class="body-2 mx-auto">
+          Check your email <b>{{ $route.params.email }}</b> and follow the instructions.
+        </p>
+      </template>
+    </auth-split-layout>
   </auth-layout>
 </template>
 
 <script>
-import ForgotPasswordForm from '@/components/app/auth/forms/ForgotPasswordForm'
 import { REQUESTS_STATE } from '@/store/modules/api/types'
 import { API } from '@/api'
 import { mapActions, mapGetters } from 'vuex'
 import { AUTH } from '@/store/modules/auth/types'
-import { ROUTES } from '@/services/enums/routerEnums'
 import AuthLayout from '@/components/layout/auth/AuthLayout'
+import AuthSplitLayout from '@/components/app/auth/layout/AuthSplitLayout'
 
 export default {
-  components: { AuthLayout, ForgotPasswordForm },
+  components: { AuthSplitLayout, AuthLayout },
   name: 'ForgotPasswordPage',
   computed: {
     ...mapGetters(REQUESTS_STATE.NAMESPACE, [REQUESTS_STATE.GETTERS.GET_STATE]),
@@ -25,10 +31,7 @@ export default {
   methods: {
     ...mapActions(AUTH.NAMESPACE, [AUTH.ACTIONS.FORGOT_PASSWORD_REQUEST]),
     async submit(values) {
-      const response = await this[AUTH.ACTIONS.FORGOT_PASSWORD_REQUEST](values)
-      if (response) {
-        await this.$router.push({ name: ROUTES.FORGOT_PASSWORD_SENT, params: { email: response } })
-      }
+      return await this[AUTH.ACTIONS.FORGOT_PASSWORD_REQUEST](values)
     },
   },
 }

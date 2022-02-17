@@ -3,7 +3,13 @@
     <v-alert v-if="email === null" type="error">
       {{ $t('forgotPassword.notValidToken') }}
     </v-alert>
-    <password-form v-else :email="email" :on-submit="submit" :is-sending="setPasswordState.isSending" />
+    <auth-split-layout v-else>
+      <template #heading> Set your new password </template>
+      <template #description> Choose your new password and write it down, twice. </template>
+      <template #form>
+        <password-form :email="email" :on-submit="submit" :is-sending="setPasswordState.isSending" />
+      </template>
+    </auth-split-layout>
   </auth-layout>
 </template>
 
@@ -14,9 +20,11 @@ import { mapActions, mapGetters } from 'vuex'
 import { AUTH } from '@/store/modules/auth/types'
 import AuthLayout from '@/components/layout/auth/AuthLayout'
 import PasswordForm from '@/components/app/auth/forms/PasswordForm'
+import AuthSplitLayout from '@/components/app/auth/layout/AuthSplitLayout'
+import { ROUTES } from '@/services/enums/routerEnums'
 
 export default {
-  components: { PasswordForm, AuthLayout },
+  components: { AuthSplitLayout, PasswordForm, AuthLayout },
   name: 'ResetPasswordPage',
   async created() {
     this.email = await this[AUTH.ACTIONS.CHECK_TOKEN_REQUEST]({ token: this.$route.params.token })
@@ -37,11 +45,14 @@ export default {
   },
   methods: {
     ...mapActions(AUTH.NAMESPACE, [AUTH.ACTIONS.CHECK_TOKEN_REQUEST, AUTH.ACTIONS.SET_PASSWORD_REQUEST]),
-    submit(values) {
-      this[AUTH.ACTIONS.SET_PASSWORD_REQUEST]({
+    async submit(values) {
+      const isOk = await this[AUTH.ACTIONS.SET_PASSWORD_REQUEST]({
         token: this.$route.params.token,
         password: values.password,
       })
+      if (isOk) {
+        await this.$router.push({ name: ROUTES.PASSWORD_CHANGED })
+      }
     },
   },
 }

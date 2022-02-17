@@ -62,7 +62,7 @@ export default {
 
       addSuccessMessage(dispatch, API.auth.forgotPassword.id, 'flashMessages.forgotPassword')
 
-      return true
+      return payload.email
     } catch {
       return false
     }

@@ -1,66 +1,57 @@
 <template>
-  <v-card>
-    <v-card-text>
-      <Logo />
-    </v-card-text>
-    <v-card-text>
-      <div class="text-center">
-        {{ email }}
-      </div>
-      <ValidationObserver ref="restoreForm" tag="form" @submit.prevent="submit">
-        <validation-provider
-          v-slot="{ errors }"
-          :name="$t('setNewPassword.form.restorePassword.name')"
-          :rules="fields.password.validations"
-          :vid="fields.password.id"
-          slim
-        >
-          <app-input
-            v-model="form.password"
-            prepend-icon="lock"
-            :label="$t('setNewPassword.form.restorePassword.label')"
-            input-type="password"
-            :error-messages="errors"
-          />
-        </validation-provider>
-        <validation-provider
-          v-slot="{ errors }"
-          :name="$t('setNewPassword.form.confirm.name')"
-          :rules="fields.confirm.validations"
-          slim
-        >
-          <app-input
-            v-model="form.confirm"
-            prepend-icon="lock"
-            :label="$t('setNewPassword.form.confirm.label')"
-            input-type="password"
-            :error-messages="errors"
-          />
-        </validation-provider>
-        <div class="text-right">
-          <app-button
-            :is-sending="isSending"
-            :button-title="$t('button.change')"
-            :sending-title="$t('button.sending.saving')"
-            :on-click="submit"
-            :flat="false"
-          />
-        </div>
-      </ValidationObserver>
-    </v-card-text>
-  </v-card>
+  <ValidationObserver ref="restoreForm" tag="form" @submit.prevent="submit">
+    <validation-provider
+      v-slot="{ errors }"
+      :name="$t('setNewPassword.form.password.name')"
+      :rules="fields.password.validations"
+      :vid="fields.password.id"
+      slim
+    >
+      <app-input
+        v-model="form.password"
+        prepend-icon="lock"
+        :label="$t('setNewPassword.form.password.label')"
+        input-type="password"
+        :error-messages="errors"
+      />
+    </validation-provider>
+    <validation-provider
+      v-slot="{ errors }"
+      :name="$t('setNewPassword.form.confirm.name')"
+      :rules="fields.confirm.validations"
+      slim
+    >
+      <app-input
+        v-model="form.confirm"
+        prepend-icon="lock"
+        :label="$t('setNewPassword.form.confirm.label')"
+        input-type="password"
+        :error-messages="errors"
+      />
+    </validation-provider>
+    <div>
+      <app-button
+        :height="44"
+        :custom-style="{ width: '100%' }"
+        :is-sending="isSending"
+        button-title="Set new password"
+        :sending-title="$t('button.sending.saving')"
+        :on-click="submit"
+        :flat="false"
+      />
+    </div>
+  </ValidationObserver>
 </template>
 
 <script>
 import { ROUTES } from '@/services/enums/routerEnums'
 import FormMixin from '../../../commons/mixins/FormMixin'
-import Logo from '@/components/commons/logo/Logo'
 import AppButton from '@/components/commons/button/AppButton'
 import AppInput from '@/components/commons/input/AppInput'
 
 export default {
   name: 'PasswordForm',
-  components: { AppInput, AppButton, Logo },
+  components: { AppInput, AppButton },
   mixins: [FormMixin],
   props: {
     email: {

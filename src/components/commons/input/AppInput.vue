@@ -6,7 +6,7 @@
     :type="inputType"
     :outlined="outlined"
     :error-messages="errorMessages[0]"
-    :prepend-icon="prependIcon"
+    :prepend-inner-icon="prependIcon"
     :readonly="readonly"
     :disabled="disabled"
     :hide-details="hideDetails"

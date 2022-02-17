@@ -1,9 +1,8 @@
 <template>
-  <v-card>
-    <v-card-text>
-      <FullLogo />
-    </v-card-text>
-    <v-card-text>
+  <auth-split-layout>
+    <template #heading> Forgot your password </template>
+    <template #description> Enter your email and we'll send you reset link. </template>
+    <template #form>
       <ValidationObserver ref="forgotForm" tag="form" @submit.prevent="submit">
         <validation-provider
           v-slot="{ errors }"
@@ -20,30 +19,32 @@
             :error-messages="errors"
           />
         </validation-provider>
-        <div class="text-right">
+        <div>
           <app-button
+            :height="44"
+            :custom-style="{ width: '100%' }"
             :is-sending="isSending"
-            :button-title="$t('button.send')"
+            button-title="Reset password"
             :sending-title="$t('button.sending.sending')"
             :on-click="submit"
             :flat="false"
           />
         </div>
       </ValidationObserver>
-    </v-card-text>
-  </v-card>
+    </template>
+  </auth-split-layout>
 </template>
 
 <script>
-import { ROUTES } from '../../../../services/enums/routerEnums'
+import { ROUTES } from '@/services/enums/routerEnums'
 import FormMixin from '../../../commons/mixins/FormMixin'
-import FullLogo from '../../../commons/logo/FullLogo'
 import AppButton from '@/components/commons/button/AppButton'
 import AppInput from '@/components/commons/input/AppInput'
+import AuthSplitLayout from '@/components/app/auth/layout/AuthSplitLayout'
 
 export default {
   name: 'ForgotPasswordForm',
-  components: { AppInput, AppButton, FullLogo },
+  components: { AuthSplitLayout, AppInput, AppButton },
   mixins: [FormMixin],
   data() {
     return {
