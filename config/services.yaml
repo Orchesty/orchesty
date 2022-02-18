@@ -6,8 +6,9 @@ parameters:
   secret: ThisTokenIsNotSoSecretChangeIt
 
   frontendHost: "%env(string:FRONTEND_DSN)%"
-  backend_host: "%env(string:BACKEND_DSN)%"
-  activateLink: '%backend_host%/user/%s/activate'
-  cron_host: "%env(string:CRON_DSN)%"
-  starting_point_host: "%env(string:STARTING_POINT_DSN)%"
-  notification_host: "%env(NOTIFICATION_DSN)%"
+  backendHost: "%env(string:BACKEND_DSN)%"
+  cronHost: "%env(string:CRON_DSN)%"
+  startingPointHost: "%env(string:STARTING_POINT_DSN)%"
+  notificationHost: "%env(NOTIFICATION_DSN)%"
+  activateLink: '%backendHost%/user/%s/activate'
+  passwordLink: 'restore-password/%s'

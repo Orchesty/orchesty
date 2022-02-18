@@ -7,15 +7,14 @@ parameters:
 	symfony:
 		container_xml_path: %rootDir%/../../../var/cache/test/Hanaboso_PipesFramework_KernelTestDebugContainer.xml
 	ignoreErrors:
-		- '#Service .* is private#'
 		-
-			message: '#Calling json_encode\(\)#'
-			path: ../src/Configurator/Model/TopologyConfigFactory.php
+			message: '#Calling putenv\(\) is forbidden, might overwrite existing variables#'
+			path: ../tests/KernelTestCaseAbstract.php
+		-
+			message: '#Calling putenv\(\) is forbidden, might overwrite existing variables#'
+			path: ../tests/ControllerTestCaseAbstract.php
 		-
 			message: '#Access to an undefined property#'
-			path: ../tests/*
-		-
-			message: '#PHPDoc tag @var for variable .+ contains unresolvable type#'
 			path: ../tests/*
 	ergebnis:
 		classesAllowedToBeExtended:

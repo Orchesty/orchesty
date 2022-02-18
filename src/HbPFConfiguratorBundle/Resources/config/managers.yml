@@ -9,7 +9,7 @@ services:
             - '@hbpf.cron.manager'
             - '%checkInfiniteLoop%'
             - '@hbpf.transport.curl_manager'
-            - '%starting_point_host%'
+            - '%startingPointHost%'
 
     hbpf.configurator.manager.node:
         class: Hanaboso\PipesFramework\Configurator\Model\NodeManager

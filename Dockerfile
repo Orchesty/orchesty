@@ -7,11 +7,11 @@ RUN cd pf-bundles && \
     composer install -a --no-dev && \
     APP_ENV=prod APP_DEBUG=0 NOTIFICATION_DSN=notification-sender-api RABBIT_DSN=amqp://rabbitmq:5672/ \
     MONGODB_DSN=mongodb://mongo:27017 MONGODB_DB=pipes \
-    METRICS_DSN=mongodb://mongo:27017 METRICS_DB=metrics METRICS_ODM_DSN=mongodb://mongo:27017 \
-    METRICS_HOST=kapacitor METRICS_PORT=9100 METRICS_SERVICE=influx ELASTIC_HOST=elasticsearch ELASTIC_INDEX=index \
+    METRICS_DSN=mongodb://mongo:27017 METRICS_DB=metrics METRICS_ODM_DSN=mongodb://mongo:27017 METRICS_SERVICE=mongo \
     CRON_DSN=cron-api:8080 MONOLITH_API_DSN=php-sdk \
     TOPOLOGY_API_DSN=topology-api:8080 WORKER_DEFAULT_PORT=8008 STARTING_POINT_DSN=starting-point:8080 \
-    FRONTEND_DSN=frontend BACKEND_DSN=backend ELASTICSEARCH_DSN=elastic JWT_KEY=key \
+    FRONTEND_DSN=frontend BACKEND_DSN=backend \
+    ELASTICSEARCH_DSN=elastic JWT_KEY=key \
     bin/console cache:warmup
 
 FROM hanabosocom/php-base:php-8.1-alpine

@@ -43,6 +43,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     {
         parent::setUp();
 
+        putenv('METRICS_ODM_DSN=mongodb://mongo');
         $this->startClient();
         $this->dm = self::getContainer()->get('doctrine_mongodb.odm.default_document_manager');
         $this->clearMongo();

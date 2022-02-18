@@ -15,6 +15,7 @@ use MongoDB\BSON\UTCDateTime;
 use Monolog\Logger;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 use PipesFrameworkTests\DataProvider;
+use Throwable;
 
 /**
  * Class MongoMetricsManagerTest
@@ -595,7 +596,12 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
     {
         parent::setUp();
 
-        $this->ensureCollections();
+        try {
+            $this->ensureCollections();
+        } catch (Throwable $t){
+            $t;
+            //
+        }
     }
 
     /**
