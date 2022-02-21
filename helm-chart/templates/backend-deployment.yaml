@@ -46,6 +46,11 @@ spec:
                 configMapKeyRef:
                   key: license
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: CRYPT_SECRET
+              valueFrom:
+                configMapKeyRef:
+                  key: crypt_secret
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
           resources:
 {{ toYaml .Values.global.backend.resources | indent 12 }}
 
