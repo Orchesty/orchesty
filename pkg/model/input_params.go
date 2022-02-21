@@ -74,10 +74,9 @@ type Environment struct {
 	RabbitMqUser      string   `json:"rabbitmq_user"`
 	RabbitMqPass      string   `json:"rabbitmq_pass"`
 	RabbitMqVHost     string   `json:"rabbitmq_vhost"`
-	MetricsHost       string   `json:"metrics_host"`
+	MetricsDsn        string   `json:"metrics_dsn"`
 	MongodbDsn        string   `json:"mongodb_dsn"`
 	MongodbDb         string   `json:"mongodb_db"`
-	MetricsPort       string   `json:"metrics_port"`
 	MetricsService    string   `json:"metrics_service"`
 	WorkerDefaultPort int      `json:"worker_default_port"`
 	GeneratorMode     Adapter  `json:"generator_mode"`
@@ -163,18 +162,8 @@ func (p *NodeConfig) GetTopologyJson(t *Topology, nodes []Node) (TopologyJson, e
 func (e *Environment) GetEnvironment() (map[string]string, error) {
 	var environment = make(map[string]string)
 
-	// TODO correct mongodb host
-
-	metricsProt := "mongodb"
-	if e.MetricsService != "" {
-		metricsProt = fmt.Sprintf("%sdb", e.MetricsService)
-	}
-	if strings.HasPrefix(metricsProt, "mongo") {
-		environment["METRICS_DSN"] = fmt.Sprintf("%s://%s:%s/metrics", metricsProt, e.MetricsHost, e.MetricsPort)
-	} else {
-		environment["METRICS_DSN"] = fmt.Sprintf("%s://%s:%s", metricsProt, e.MetricsHost, e.MetricsPort)
-	}
-
+	// TODO: add support for Influx
+	environment["METRICS_DSN"] = e.MetricsDsn
 	environment["MONGODB_DSN"] = e.MongodbDsn
 	environment["MONGODB_DB"] = e.MongodbDb
 	environment["UDP_LOGGER_URL"] = e.UdpLoggerUrl

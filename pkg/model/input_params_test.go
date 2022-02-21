@@ -135,9 +135,10 @@ func getFullEnvironment(t *testing.T) {
 	}
 
 	expected := map[string]string{
-		"METRICS_DSN": "influxdb://kapacitor:9100",
-		"MONGODB_DSN": "",
-		"MONGODB_DB":  "",
+		"METRICS_DSN":    "influxdb://kapacitor:9100",
+		"MONGODB_DSN":    "",
+		"MONGODB_DB":     "",
+		"UDP_LOGGER_URL": "",
 	}
 
 	assert.Equal(t, expected, result)
@@ -148,8 +149,7 @@ func getEnvironment(mode Adapter) Environment {
 		DockerRegistry:      "dkr.hanaboso.net/pipes/pipes",
 		DockerPfBridgeImage: "hanaboso/bridge:dev",
 		RabbitMqHost:        "rabbitmq:20",
-		MetricsHost:         "kapacitor",
-		MetricsPort:         "9100",
+		MetricsDsn:          "influxdb://kapacitor:9100",
 		MetricsService:      "influx",
 		WorkerDefaultPort:   8808,
 		GeneratorMode:       mode,
