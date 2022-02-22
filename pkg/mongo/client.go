@@ -1,11 +1,14 @@
 package mongo
 
 import (
+	"context"
 	"github.com/hanaboso/pipes/counter/pkg/config"
 	"github.com/rs/zerolog/log"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"strings"
+	"time"
 )
 
 type MongoDb struct {
@@ -36,10 +39,28 @@ func NewMongo() *MongoDb {
 	parts = strings.Split(parts[len(parts)-1], "?")
 	db := client.Database(parts[0])
 
+	coll := db.Collection(config.MongoDb.CounterCollection)
+
+	indexCorr := mongo.IndexModel{
+		Keys: bson.M{
+			"correlationId": 1,
+		},
+		Options: nil,
+	}
+	indexFinished := mongo.IndexModel{
+		Keys: bson.M{
+			"finished": 1,
+		},
+		Options: nil,
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	_, _ = coll.Indexes().CreateMany(ctx, []mongo.IndexModel{indexCorr, indexFinished})
+	cancel()
+
 	return &MongoDb{
 		client:     client,
 		database:   db,
-		collection: db.Collection(config.MongoDb.CounterCollection),
+		collection: coll,
 	}
 }
 
