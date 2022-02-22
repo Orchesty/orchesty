@@ -189,7 +189,18 @@ export default {
     },
     async test() {
       if (this.$route.name !== TOPOLOGY_ENUMS.BPMN_VIEWER) {
-        await this.$router.push({ name: ROUTES.TOPOLOGY.VIEWER })
+        try {
+          await this.$router.push({ name: ROUTES.TOPOLOGY.VIEWER })
+        } catch (error) {
+          if (
+            !(
+              error.name === 'NavigationDuplicated' ||
+              error.message.includes('Avoided redundant navigation to current location')
+            )
+          ) {
+            throw error
+          }
+        }
       }
       await this[TOPOLOGIES.ACTIONS.TOPOLOGY.TEST]({ topologyID: this.topology._id })
     },
