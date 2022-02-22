@@ -53,7 +53,7 @@ final class ProgressManager
                 'finished'       => $finished,
                 'nodesProcessed' => $count,
                 'nodesTotal'     => $doc['total'],
-                'status'         => $count < $doc['total'] ? 'IN PROGRESS' : ($doc['total'] > 0 ? 'FAILED' : 'SUCCESS'),
+                'status'         => $count < $doc['total'] ? 'IN PROGRESS' : ($doc['nok'] > 0 ? 'FAILED' : 'SUCCESS'),
                 'failed'         => $doc['nok'],
             ];
         }, $res);
