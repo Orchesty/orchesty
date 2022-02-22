@@ -1,0 +1,10 @@
+*
+!status-service/php-local.ini
+!status-service/bin
+!status-service/config
+!status-service/public
+!status-service/src
+!status-service/composer.json
+!status-service/composer.lock
+!pipes-php-sdk/src
+!pipes-php-sdk/composer.json
