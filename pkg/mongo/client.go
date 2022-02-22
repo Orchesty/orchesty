@@ -63,7 +63,9 @@ func NewMongo() *MongoDb {
 		},
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-	_, _ = coll.Indexes().CreateMany(ctx, []mongo.IndexModel{indexCorr, indexFinished, indexExpires})
+	if _, err := coll.Indexes().CreateMany(ctx, []mongo.IndexModel{indexCorr, indexFinished, indexExpires}); err != nil {
+		log.Err(err).Send()
+	}
 	cancel()
 
 	return &MongoDb{
