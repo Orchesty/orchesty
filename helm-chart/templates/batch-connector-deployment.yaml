@@ -1,4 +1,5 @@
 {{- $componentName := "batch-connector" -}}
+{{- if .Values.global.batchConnector.enabled -}}
 ---
 {{- if not .Values.global.imageOverrides.alpha_nodejssdk }}
 apiVersion: apps/v1
@@ -46,3 +47,5 @@ spec:
 {{- end }}
 
 {{- end }}
+
+{{- end -}}

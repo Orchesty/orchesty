@@ -23,7 +23,13 @@ global:
 
   alpha_nodejsSdk:
     extraEnv: {}
-    
+
+  batchConnector:
+    enabled: false
+
+  longRunningNode:
+    enabled: false
+
   monitoring:
     useInfluxDB: false
     logStorage: mongodb

@@ -34,6 +34,16 @@ spec:
                 configMapKeyRef:
                   key: mongodb_dsn
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: __MONGODB_AUTH_AND_HOSTS
+              valueFrom:
+                configMapKeyRef:
+                  key: mongodb_auth_and_hosts
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: __METRICS_DB
+              valueFrom:
+                configMapKeyRef:
+                  key: metrics_db
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
             - name: K8S_NAMESPACE
               value: {{ .Release.Namespace }}
             - name: GENERATOR_MODE
@@ -42,6 +52,12 @@ spec:
               value: /srv/topology
             - name: MONGO_DSN
               value: "$(__MONGODB_DSN)&connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500"
+            - name: METRICS_DSN
+            {{- if .Values.global.monitoring.useInfluxDB }}
+              value: influxdb://kapacitor:9100
+            {{- else }}
+              value: mongodb://$(__MONGODB_AUTH_AND_HOSTS)/$(__METRICS_DB)?readPreference=secondaryPreferred
+            {{- end }}
             - name: WORKER_DEFAULT_LIMIT_MEMORY
               value: "{{ .Values.global.topologyApi.topologiesResources.defaultLimitMemory }}"
             - name: WORKER_DEFAULT_LIMIT_CPU

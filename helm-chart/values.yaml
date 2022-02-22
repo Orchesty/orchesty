@@ -4,6 +4,7 @@ global:
   starting_point_url: http://starting-point.pipes.example.com
 
   alpha_go_bridge: false # also needs image overrides when enabled
+  alpha_legacy: false
 
   imageRegistry:
     enablePullSecret: false
@@ -18,6 +19,7 @@ global:
   images:
     php-sdk: pipes-pf-bundle:master
     backend: pipes-pf-bundle:master
+    status: status-service:dev
     frontend: pipes-frontend:master
     cron-api: pipes-cron:master
 
@@ -70,6 +72,7 @@ global:
         cpu: "2"
 
   batchConnector:
+    enabled: true
     replicaCount: 1
     nodeSelector: {}
     tolerations: []

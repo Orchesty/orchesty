@@ -1,6 +1,5 @@
 {{- $componentName := "status" -}}
 ---
-{{- if not .Values.global.imageOverrides.alpha_nodejssdk }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -23,16 +22,27 @@ spec:
     spec:
 {{ include "pipes.imagePullSecrets" . | indent 6 }}
       containers:
-        - name: php-w-nginx
-          image: {{ include "pipes.imageFullname" (dict "image" "php-sdk" "root" .) }}
+        - name: status
+          image: {{ include "pipes.imageFullname" (dict "image" "status" "root" .) }}
           imagePullPolicy: Always
+{{- if .Values.global.alpha_legacy }}
           args: ["bin/console", "rabbit_mq:consumer:status-service"]
+{{- end }}
           env:
+{{- if .Values.global.alpha_legacy }}
 {{ include "pipes.monolithEnv" . | indent 12 }}
 {{- range $name, $def := .Values.global.phpSdk.extraEnv }}
             - name: {{ $name }}
               {{- $def | toYaml | nindent 14}}
 {{- end }}
+{{- end }}
+
+            - name: RABBITMQ_DSN
+              valueFrom:
+                configMapKeyRef:
+                  key: rabbitmq_dsn
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+
           resources:
 {{ toYaml .Values.global.status.resources | indent 12 }}
 
@@ -43,6 +53,4 @@ spec:
 {{- with .Values.global.tolerations }}
       tolerations:
 {{ toYaml . | indent 8 }}
-{{- end }}
-
 {{- end }}

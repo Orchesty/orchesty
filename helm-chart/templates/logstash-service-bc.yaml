@@ -1,4 +1,5 @@
 {{- $componentName := "logstash" -}}
+{{- if .Values.global.alpha_legacy }}
 ---
 #
 # this is a backward compatibility logstash-service (without release prefix)
@@ -25,3 +26,5 @@ spec:
       protocol: UDP
       port: 5120
       targetPort: ingest-udp
+
+{{- end }}
