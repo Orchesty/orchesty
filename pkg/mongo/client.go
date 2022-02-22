@@ -53,8 +53,17 @@ func NewMongo() *MongoDb {
 		},
 		Options: nil,
 	}
+	month := int32(30 * 24 * 60 * 60)
+	indexExpires := mongo.IndexModel{
+		Keys: bson.M{
+			"created": 1,
+		},
+		Options: &options.IndexOptions{
+			ExpireAfterSeconds: &month,
+		},
+	}
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-	_, _ = coll.Indexes().CreateMany(ctx, []mongo.IndexModel{indexCorr, indexFinished})
+	_, _ = coll.Indexes().CreateMany(ctx, []mongo.IndexModel{indexCorr, indexFinished, indexExpires})
 	cancel()
 
 	return &MongoDb{
