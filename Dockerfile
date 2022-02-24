@@ -5,7 +5,7 @@ RUN cd pf-bundles && \
     sed -i -e 's/"symlink": true/"symlink": false/g' composer.json && \
     sed -i -e 's/"symlink": true/"symlink": false/g' composer.lock && \
     composer install -a --no-dev && \
-    APP_ENV=prod APP_DEBUG=0 NOTIFICATION_DSN=notification-sender-api RABBIT_DSN=amqp://rabbitmq:5672/ \
+    APP_ENV=prod APP_DEBUG=0 NOTIFICATION_DSN=notification-sender-api RABBITMQ_DSN=amqp://rabbitmq:5672/ \
     MONGODB_DSN=mongodb://mongo:27017 MONGODB_DB=pipes \
     METRICS_DSN=mongodb://mongo:27017 METRICS_DB=metrics METRICS_ODM_DSN=mongodb://mongo:27017 METRICS_SERVICE=mongo \
     CRON_DSN=cron-api:8080 MONOLITH_API_DSN=php-sdk \

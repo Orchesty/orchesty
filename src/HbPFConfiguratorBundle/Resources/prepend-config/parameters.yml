@@ -23,7 +23,7 @@ parameters:
     udp_logger_url: "%env(string:UDP_LOGGER_URL)%"
 
     topology_configs:
-        !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::RABBITMQ_DSN: "%env(string:RABBIT_DSN)%"
+        !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::RABBITMQ_DSN: "%env(string:RABBITMQ_DSN)%"
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::DOCKER_REGISTRY: "%docker_registry%"
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::DOCKER_PF_BRIDGE_IMAGE: "%docker_pf_bridge_image%"
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::METRICS_DSN: "%metrics_dsn%"

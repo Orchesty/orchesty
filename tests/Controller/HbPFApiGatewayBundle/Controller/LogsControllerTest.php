@@ -25,7 +25,7 @@ final class LogsControllerTest extends ControllerTestCaseAbstract
     public function testTopologyMetricsAction(): void
     {
         $pipes = new Pipes();
-        $this->setProperty($pipes, 'severity', 'error');
+        $this->setProperty($pipes, 'level', 'error');
         $this->setProperty($pipes, 'correlationId', 'someId');
         $logs = new Logs();
         $this->setProperty($logs, 'pipes', $pipes);

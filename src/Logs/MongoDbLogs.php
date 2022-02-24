@@ -79,14 +79,14 @@ final class MongoDbLogs extends LogsAbstract
                 [
                     [
                         [
-                            GridFilterAbstract::COLUMN   => self::CORRELATION_ID,
+                            GridFilterAbstract::COLUMN   => self::CORRELATIONID,
                             GridFilterAbstract::OPERATOR => GridFilterAbstract::EQ,
                             GridFilterAbstract::VALUE    => $correlationIds,
                         ],
                     ],
                     [
                         [
-                            GridFilterAbstract::COLUMN   => self::TOPOLOGY_ID,
+                            GridFilterAbstract::COLUMN   => self::TOPOLOGYID,
                             GridFilterAbstract::OPERATOR => GridFilterAbstract::NEMPTY,
                         ],
                     ],
@@ -152,15 +152,15 @@ final class MongoDbLogs extends LogsAbstract
         $id     = array_key_exists(self::ID, $item) ? (string) $item[self::ID] : '';
         $result = [
             self::ID             => $id,
-            self::SEVERITY       => $pipes[self::SEVERITY] ?? '',
+            self::SEVERITY       => $pipes[self::LEVEL] ?? '',
             self::MESSAGE        => $item[self::MESSAGE] ?? '',
             self::TYPE           => $pipes[self::TYPE] ?? '',
-            self::CORRELATION_ID => $pipes[self::CORRELATION_ID] ?? '',
-            self::TOPOLOGY_ID    => $pipes[self::TOPOLOGY_ID] ?? '',
-            self::TOPOLOGY_NAME  => $pipes[self::TOPOLOGY_NAME] ?? '',
-            self::NODE_ID        => $pipes[self::NODE_ID] ?? '',
-            self::NODE_NAME      => $pipes[self::NODE_NAME] ?? '',
-            self::TIMESTAMP      => str_replace('"', '', $item['ts'] ?? ''),
+            self::CORRELATION_ID => $pipes[self::CORRELATIONID] ?? '',
+            self::TOPOLOGY_ID    => $pipes[self::TOPOLOGYID] ?? '',
+            self::TOPOLOGY_NAME  => $pipes[self::TOPOLOGYNAME] ?? '',
+            self::NODE_ID        => $pipes[self::NODEID] ?? '',
+            self::NODE_NAME      => $pipes[self::NODENAME] ?? '',
+            self::TIMESTAMP      => str_replace('"', '', $item['ts'] ?? $item[self::TIMESTAMP_PREFIX] ?? ''),
         ];
         if ($range && $id && $allLogs) {
             return array_merge($result, [self::RELATED_LOGS => $this->getPrevNext($id, $range, $allLogs)]);

@@ -229,7 +229,7 @@ final class ElasticLogsTest extends DatabaseTestCaseAbstract
         $dto = new GridRequestDto([]);
 
         self::expectException(LockException::class);
-        $this->invokeMethod($logs, 'processStartingPoints', [$dto, ['1' => ['correlation_id' => []]]]);
+        $this->invokeMethod($logs, 'processStartingPoints', [$dto, ['1' => ['correlationId' => []]]]);
     }
 
     /**

@@ -113,12 +113,12 @@ final class DashboardManager
                         [
                             GridFilterAbstract::COLUMN   => 'severity',
                             GridFilterAbstract::OPERATOR => GridFilterAbstract::EQ,
-                            GridFilterAbstract::VALUE    => 'ERROR',
+                            GridFilterAbstract::VALUE    => 'error',
                         ],
                         [
                             GridFilterAbstract::COLUMN   => 'severity',
                             GridFilterAbstract::OPERATOR => GridFilterAbstract::EQ,
-                            GridFilterAbstract::VALUE    => 'CRITICAL',
+                            GridFilterAbstract::VALUE    => 'critical',
                         ],
                     ],
                     [

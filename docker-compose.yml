@@ -32,7 +32,7 @@ services:
             - STARTING_POINT_DSN=starting-point:8080
             - CRON_DSN=http://cron-api:8080
             - ELASTICSEARCH_DSN=elasticsearch://elasticsearch
-            - RABBIT_DSN=amqp://rabbitmq:5672
+            - RABBITMQ_DSN=amqp://rabbitmq:5672
             - MONOLITH_API_DSN=${DEV_IP}
             - WORKER_DEFAULT_PORT=8008
             - JWT_KEY=test1234

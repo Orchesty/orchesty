@@ -53,35 +53,42 @@ class Pipes
     /**
      * @var string
      *
-     * @ODM\Field(type="string", name="correlation_id")
+     * @ODM\Field(type="string")
+     */
+    private string $level;
+
+    /**
+     * @var string
+     *
+     * @ODM\Field(type="string", name="correlationId")
      */
     private string $correlationId;
 
     /**
      * @var string
      *
-     * @ODM\Field(type="string", name="topology_id")
+     * @ODM\Field(type="string", name="topologyId")
      */
     private string $topologyId;
 
     /**
      * @var string
      *
-     * @ODM\Field(type="string", name="topology_name")
+     * @ODM\Field(type="string", name="topologyName")
      */
     private string $topologyName;
 
     /**
      * @var string
      *
-     * @ODM\Field(type="string", name="node_id")
+     * @ODM\Field(type="string", name="nodeId")
      */
     private string $nodeId;
 
     /**
      * @var string
      *
-     * @ODM\Field(type="string", name="node_name")
+     * @ODM\Field(type="string", name="nodeName")
      */
     private string $nodeName;
 
@@ -130,6 +137,14 @@ class Pipes
     public function getSeverity(): string
     {
         return $this->severity;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLevel(): string
+    {
+        return $this->level;
     }
 
     /**
