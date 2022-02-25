@@ -1,9 +1,9 @@
 <template>
   <tooltip orientation="right">
     <template #activator="{ on, attrs }">
-      <v-list-item v-bind="attrs" :to="{ name: to }" v-on="on" @click="onClick">
+      <v-list-item active-class="navigation-item-active" v-bind="attrs" :to="{ name: to }" v-on="on" @click="onClick">
         <v-list-item-content>
-          <v-icon> {{ icon }} </v-icon>
+          <v-icon color="primary"> {{ icon }} </v-icon>
         </v-list-item-content>
       </v-list-item>
     </template>
@@ -39,8 +39,14 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .v-list-item {
   height: 64px;
+}
+.navigation-item-active {
+  background-color: var(--v-primary-base);
+  .v-icon {
+    color: var(--v-white-base) !important;
+  }
 }
 </style>

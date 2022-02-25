@@ -46,13 +46,13 @@ export default {
       navigationItems: [
         { to: ROUTES.DASHBOARD, icon: 'account_tree', tooltip: this.$t('navigation.topologies') },
         { to: ROUTES.NOTIFICATION, icon: 'notifications_none', tooltip: this.$t('navigation.notifications') },
-        { to: ROUTES.SCHEDULED_TASK, icon: 'access_time', tooltip: this.$t('navigation.scheduledTask') },
+        { to: ROUTES.SCHEDULED_TASK, icon: 'mdi-clock', tooltip: this.$t('navigation.scheduledTask') },
         { to: ROUTES.APP_STORE.DEFAULT, icon: 'apps', tooltip: this.$t('navigation.appStore') },
         { to: ROUTES.LOGS, icon: 'list_alt', tooltip: this.$t('navigation.logs') },
-        { to: ROUTES.HEALTH_CHECK, icon: 'mdi-doctor', tooltip: this.$t('navigation.healthCheck') },
-        { to: ROUTES.IMPLEMENTATION, icon: 'all_inbox', tooltip: this.$t('navigation.implementations') },
+        { to: ROUTES.HEALTH_CHECK, icon: 'mdi-emoticon', tooltip: this.$t('navigation.healthCheck') },
+        { to: ROUTES.IMPLEMENTATION, icon: 'mdi-cogs', tooltip: this.$t('navigation.implementations') },
         { to: ROUTES.TRASH, icon: 'delete', tooltip: this.$t('navigation.trash') },
-        { to: ROUTES.USER_PROFILE, icon: 'person', tooltip: this.$t('navigation.profile') },
+        { to: ROUTES.USER_PROFILE, icon: 'mdi-account-circle', tooltip: this.$t('navigation.profile') },
         { to: ROUTES.LOGIN, icon: 'logout', tooltip: this.$t('navigation.logout'), onClick: this.logout },
       ],
     }
