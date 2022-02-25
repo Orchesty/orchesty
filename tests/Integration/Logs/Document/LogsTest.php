@@ -51,7 +51,7 @@ final class LogsTest extends DatabaseTestCaseAbstract
                     'message'   => 'msg',
                     'host'      => 'host',
                     'pipes'     => [
-                        'timestamp'      => '2222',
+                        'timestamp'      => 2_222,
                         'type'           => 'type',
                         'hostname'       => 'host',
                         'channel'        => 'chn',
@@ -82,7 +82,7 @@ final class LogsTest extends DatabaseTestCaseAbstract
         self::assertEquals('1.2', $result->getVersion());
         self::assertEquals('msg', $result->getMessage());
         self::assertEquals('host', $result->getHost());
-        self::assertEquals('2222', $result->getPipes()->getTimestamp()->getTimestamp());
+        self::assertEquals(2_222, $result->getPipes()->getTimestamp());
         self::assertEquals('type', $result->getPipes()->getType());
         self::assertEquals('host', $result->getPipes()->getHostname());
         self::assertEquals('chn', $result->getPipes()->getChannel());

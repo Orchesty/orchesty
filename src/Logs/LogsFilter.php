@@ -30,7 +30,6 @@ final class LogsFilter extends GridFilterAbstract
             'topology_name'  => Logs::PIPES_TOPOLOGY_NAME,
             'node_id'        => Logs::PIPES_NODE_ID,
             'node_name'      => Logs::PIPES_NODE_NAME,
-            'time_margin'    => Logs::PIPES_TIME_MARGIN,
         ];
     }
 
@@ -96,6 +95,7 @@ final class LogsFilter extends GridFilterAbstract
                     Logs::PIPES_TOPOLOGY_NAME,
                     Logs::PIPES_NODE_ID,
                     Logs::PIPES_NODE_NAME,
+                    Logs::PIPES_TIMESTAMP,
                 ],
             )
             ->field(Logs::PIPES_CORRELATION_ID)->exists(TRUE);

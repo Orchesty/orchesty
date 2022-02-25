@@ -139,7 +139,7 @@ final class DashboardManager
 
         $request->setItemsPerPage($items);
 
-        return $this->logs->getData($request);
+        return $this->logs->getData($request, 0);
     }
 
     /**
@@ -181,7 +181,7 @@ final class DashboardManager
 
         $request->setItemsPerPage($items);
 
-        return $this->logs->getData($request);
+        return $this->logs->getData($request, 0);
     }
 
     /**

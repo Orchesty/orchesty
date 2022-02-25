@@ -37,6 +37,7 @@ class Logs
     public const PIPES_NODE_ID        = 'pipes.nodeId';
     public const PIPES_NODE_NAME      = 'pipes.nodeName';
     public const PIPES_TIME_MARGIN    = 'pipes.time_margin';
+    public const PIPES_TIMESTAMP      = 'pipes.timestamp';
 
     /**
      * @var DateTime

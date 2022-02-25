@@ -24,12 +24,13 @@ final class LogsHandler
 
     /**
      * @param GridRequestDto $dto
+     * @param int            $timeMargin
      *
      * @return mixed[]
      */
-    public function getData(GridRequestDto $dto): array
+    public function getData(GridRequestDto $dto, int $timeMargin): array
     {
-        return $this->logs->getData($dto);
+        return $this->logs->getData($dto, $timeMargin);
     }
 
 }

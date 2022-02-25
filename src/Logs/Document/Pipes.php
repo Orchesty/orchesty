@@ -2,7 +2,6 @@
 
 namespace Hanaboso\PipesFramework\Logs\Document;
 
-use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
@@ -16,11 +15,11 @@ class Pipes
 {
 
     /**
-     * @var DateTime
+     * @var int
      *
-     * @ODM\Field(type="date")
+     * @ODM\Field(type="int")
      */
-    private DateTime $timestamp;
+    private int $timestamp;
 
     /**
      * @var string
@@ -100,9 +99,9 @@ class Pipes
     private Stacktrace $stacktrace;
 
     /**
-     * @return DateTime
+     * @return int
      */
-    public function getTimestamp(): DateTime
+    public function getTimestamp(): int
     {
         return $this->timestamp;
     }

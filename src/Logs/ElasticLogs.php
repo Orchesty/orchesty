@@ -3,7 +3,6 @@
 namespace Hanaboso\PipesFramework\Logs;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\MongoDBException;
 use Elastica\Client;
 use Elastica\Exception\ResponseException;
 use Elastica\Request;
@@ -91,13 +90,13 @@ final class ElasticLogs extends LogsAbstract
 
     /**
      * @param GridRequestDto $dto
+     * @param int            $timeMargin
      *
      * @return mixed[]
-     * @throws MongoDBException
-     * @throws GridException
      */
-    public function getData(GridRequestDto $dto): array
+    public function getData(GridRequestDto $dto, int $timeMargin): array
     {
+        $timeMargin;
         [$filter, $sorter] = $this->getFilterAndSorter($dto);
 
         try {

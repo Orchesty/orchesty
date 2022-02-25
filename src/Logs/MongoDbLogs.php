@@ -4,12 +4,11 @@ namespace Hanaboso\PipesFramework\Logs;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
-use Exception;
 use Hanaboso\MongoDataGrid\GridFilterAbstract;
 use Hanaboso\MongoDataGrid\GridRequestDto;
 use Hanaboso\MongoDataGrid\Result\ResultData;
 use Hanaboso\PipesFramework\Logs\Document\Logs;
-use Throwable;
+use Hanaboso\Utils\Date\DateTimeUtils;
 
 /**
  * Class MongoDbLogs
@@ -41,37 +40,21 @@ final class MongoDbLogs extends LogsAbstract
 
     /**
      * @param GridRequestDto $dto
+     * @param int            $timeMargin
      *
      * @return mixed[]
-     * @throws MongoDBException
-     * @throws Exception
      */
-    public function getData(GridRequestDto $dto): array
+    public function getData(GridRequestDto $dto, int $timeMargin): array
     {
-        $range   = NULL;
-        $column  = FALSE;
         $allLogs = [];
-        $filters = [];
 
-        try {
-            $filters = $dto->getFilter()[0];
-            $column  = array_search(
-                'time_margin',
-                array_column($filters ?? [], GridFilterAbstract::COLUMN),
-                TRUE,
-            );
-        } catch (Throwable) {
-            $range = NULL;
-        }
-
-        if ($column !== FALSE) {
-            $range   = $filters[$column][GridFilterAbstract::VALUE];
+        if ($timeMargin > 0) {
             $allLogs = $this->getAllLogs();
         }
 
         $filteredLogs = $this->filter->getData($dto)->toArray();
 
-        [$result, $correlationIds] = $this->parseLogs($filteredLogs, $range, $allLogs);
+        [$result, $correlationIds] = $this->parseLogs($filteredLogs, $timeMargin, $allLogs);
 
         $innerDto = new GridRequestDto(['limit' => self::LIMIT]);
         if ($correlationIds) {
@@ -160,7 +143,8 @@ final class MongoDbLogs extends LogsAbstract
             self::TOPOLOGY_NAME  => $pipes[self::TOPOLOGYNAME] ?? '',
             self::NODE_ID        => $pipes[self::NODEID] ?? '',
             self::NODE_NAME      => $pipes[self::NODENAME] ?? '',
-            self::TIMESTAMP      => str_replace('"', '', $item['ts'] ?? $item[self::TIMESTAMP_PREFIX] ?? ''),
+            self::TIMESTAMP      => DateTimeUtils::getUtcDateTimeFromTimeStamp($pipes[self::TIMESTAMP] ?? 0)
+                ->format(DateTimeUtils::DATE_TIME_UTC),
         ];
         if ($range && $id && $allLogs) {
             return array_merge($result, [self::RELATED_LOGS => $this->getPrevNext($id, $range, $allLogs)]);

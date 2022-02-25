@@ -27,6 +27,7 @@ final class LogsControllerTest extends ControllerTestCaseAbstract
         $pipes = new Pipes();
         $this->setProperty($pipes, 'level', 'error');
         $this->setProperty($pipes, 'correlationId', 'someId');
+        $this->setProperty($pipes, 'timestamp', 12_345);
         $logs = new Logs();
         $this->setProperty($logs, 'pipes', $pipes);
         $this->pfd($logs);

@@ -55,6 +55,7 @@ final class MongoDbLogsTest extends DatabaseTestCaseAbstract
                     ],
                 ],
             ),
+            0,
         );
 
         self::assertEquals(
@@ -129,15 +130,11 @@ final class MongoDbLogsTest extends DatabaseTestCaseAbstract
                                 GridFilterAbstract::OPERATOR => GridFilterAbstract::EQ,
                                 GridFilterAbstract::VALUE    => 'Correlation ID 5',
                             ],
-                            [
-                                GridFilterAbstract::COLUMN   => 'time_margin',
-                                GridFilterAbstract::OPERATOR => GridFilterAbstract::EQ,
-                                GridFilterAbstract::VALUE    => 3,
-                            ],
                         ],
                     ],
                 ],
             ),
+            3,
         );
 
         self::assertEquals(
@@ -246,12 +243,6 @@ final class MongoDbLogsTest extends DatabaseTestCaseAbstract
                                 'operator' => 'EQ',
                                 'value'    => 'Correlation ID 5',
                             ],
-
-                            [
-                                'column'   => 'time_margin',
-                                'operator' => 'EQ',
-                                'value'    => 3,
-                            ],
                         ],
                     ],
                 'sorter' => [],
@@ -288,7 +279,7 @@ final class MongoDbLogsTest extends DatabaseTestCaseAbstract
             $this->setProperty($stacktrace, 'code', sprintf('Code %s', $i));
 
             $pipes = new Pipes();
-            $this->setProperty($pipes, 'timestamp', new DateTime());
+            $this->setProperty($pipes, 'timestamp', (new DateTime())->getTimestamp());
             $this->setProperty($pipes, 'type', 'starting_point');
             $this->setProperty($pipes, 'hostname', 'Hostname ');
             $this->setProperty($pipes, 'channel', sprintf('Channel %s', $i));

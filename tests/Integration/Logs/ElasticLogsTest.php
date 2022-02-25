@@ -59,6 +59,7 @@ final class ElasticLogsTest extends DatabaseTestCaseAbstract
                     ],
                 ],
             ),
+            0,
         );
 
         self::assertEquals(
@@ -135,6 +136,7 @@ final class ElasticLogsTest extends DatabaseTestCaseAbstract
                     ],
                 ],
             ),
+            0,
         );
     }
 
@@ -171,6 +173,7 @@ final class ElasticLogsTest extends DatabaseTestCaseAbstract
                     ],
                 ],
             ),
+            0,
         );
     }
 
