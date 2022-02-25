@@ -17,12 +17,12 @@
       @update:active="onActive"
     >
       <template #prepend="{ item, open }">
-        <v-icon v-if="TOPOLOGY_TREE.FOLDER === item.type" color="secondary">
-          {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
+        <v-icon v-if="TOPOLOGY_TREE.FOLDER === item.type" color="primary">
+          {{ open ? 'mdi-folder-outline' : 'mdi-folder' }}
         </v-icon>
         <v-icon v-else :color="topologyColor(item)"> account_tree </v-icon>
       </template>
-      <template slot="label" slot-scope="{ item }">
+      <template #label="{ item }">
         <tooltip>
           <template #activator="{ on, attrs }">
             <div class="d-flex" v-bind="attrs" v-on="on">
@@ -46,7 +46,7 @@
       </template>
     </v-treeview>
     <div v-else class="text-center">
-      <span> {{ $t('topologies.sidebar.noTopologiesFound') }} </span>
+      <span> {{ $t('sidebar.noTopologiesFound') }} </span>
     </div>
   </div>
 </template>
@@ -100,7 +100,7 @@ export default {
       return item.visibility === TOPOLOGY_ENUMS.DRAFT ? 'draft' : item.enabled ? 'enabled' : 'disabled'
     },
     topologyColor(item) {
-      return item.visibility === TOPOLOGY_ENUMS.DRAFT ? 'gray' : item.enabled ? 'green' : 'red'
+      return item.visibility === TOPOLOGY_ENUMS.DRAFT ? 'primary' : item.enabled ? 'success' : 'error'
     },
     topologyTitleVersion(item) {
       return TOPOLOGY_TREE.TOPOLOGY === item.type ? `v.${item.version}` : ''

@@ -2,7 +2,7 @@
   <v-menu bottom left>
     <template #activator="{ on, attrs }">
       <v-btn icon v-bind="attrs" v-on="on">
-        <v-icon>mdi-dots-vertical</v-icon>
+        <v-icon color="primary">mdi-dots-vertical</v-icon>
       </v-btn>
     </template>
 

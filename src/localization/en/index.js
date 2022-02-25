@@ -10,12 +10,12 @@ import users from './users.json'
 import dataGrid from './dataGrid.json'
 import profile from './profile.json'
 import vuetify from 'vuetify/es5/locale/cs'
-import topologies from './topologies.json'
 import implementations from './implementations.json'
 import scheduledTask from './scheduledTask.json'
 import userTask from './userTask.json'
 import notifications from './notifications.json'
 import amqpSender from './amqpSender.json'
+import sidebar from './sidebar.json'
 import curlSender from './curlSender.json'
 import emailSender from './emailSender.json'
 import form from './form.json'
@@ -38,7 +38,6 @@ export default Object.assign(
   users,
   dataGrid,
   profile,
-  topologies,
   implementations,
   scheduledTask,
   userTask,
@@ -51,5 +50,6 @@ export default Object.assign(
   enums,
   pages,
   logs,
-  auth
+  auth,
+  sidebar
 )
