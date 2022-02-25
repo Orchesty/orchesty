@@ -1,4 +1,4 @@
-FROM docker.elastic.co/logstash/logstash-oss:6.8.12
+FROM docker.elastic.co/logstash/logstash-oss:6.8.23
 
 ARG TYPE
 
@@ -33,7 +33,3 @@ USER logstash
 
 # https://github.com/singhksandeep25/logstash-output-mongodb/releases/tag/v3.1.7
 RUN logstash-plugin install --no-verify /logstash-output-mongodb-3.1.7.gem
-
-COPY ./entrypoint.sh /
-
-ENTRYPOINT ["/entrypoint.sh"]
