@@ -1,18 +1,15 @@
 <template>
   <auth-layout>
     <auth-split-layout>
-      <template #heading> Done, password changed! </template>
+      <template #heading> {{ $t('auth.page.passwordChanged.title') }}</template>
       <template #form>
         <p class="body-2">
-          Your password has been changed successfully, you can
-          <router-link :to="{ name: ROUTES.LOGIN }">login</router-link> now.
+          <i18n path="auth.page.passwordChanged.body" tag="span" for="auth.page.passwordChanged.login">
+            <router-link :to="{ name: ROUTES.LOGIN }"> {{ $t('auth.page.passwordChanged.login') }}</router-link>
+          </i18n>
         </p>
         <div class="text-right">
-          <app-button
-            button-title="Back to login page"
-            :sending-title="$t('button.sending.sending')"
-            :on-click="submit"
-          />
+          <app-button :button-title="$t('button.login')" :on-click="submit" />
         </div>
       </template>
     </auth-split-layout>

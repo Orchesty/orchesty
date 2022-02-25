@@ -1,7 +1,7 @@
 <template>
   <auth-layout>
     <v-alert v-if="email === null" type="error">
-      {{ $t('registrationConfirm.notValidToken') }}
+      {{ $t('auth.links.notValidToken') }}
     </v-alert>
     <password-form v-else :email="email" :on-submit="submit" :is-sending="setPasswordState.isSending" />
   </auth-layout>

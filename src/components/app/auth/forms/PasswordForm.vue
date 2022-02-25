@@ -2,40 +2,35 @@
   <ValidationObserver ref="restoreForm" tag="form" @submit.prevent="submit">
     <validation-provider
       v-slot="{ errors }"
-      :name="$t('setNewPassword.form.password.name')"
+      :name="$t('auth.inputs.password.fieldName')"
       :rules="fields.password.validations"
       :vid="fields.password.id"
       slim
     >
       <app-input
         v-model="form.password"
-        prepend-icon="lock"
-        :label="$t('setNewPassword.form.password.label')"
+        prepend-icon="key"
+        :label="$t('auth.inputs.password.label')"
         input-type="password"
         :error-messages="errors"
       />
     </validation-provider>
     <validation-provider
       v-slot="{ errors }"
-      :name="$t('setNewPassword.form.confirm.name')"
+      :name="$t('auth.inputs.confirmPassword.fieldName')"
       :rules="fields.confirm.validations"
       slim
     >
       <app-input
         v-model="form.confirm"
-        prepend-icon="lock"
-        :label="$t('setNewPassword.form.confirm.label')"
+        prepend-icon="mdi-key-change"
+        :label="$t('auth.inputs.confirmPassword.label')"
         input-type="password"
         :error-messages="errors"
       />
     </validation-provider>
     <div class="mt-2 text-right">
-      <app-button
-        :is-sending="isSending"
-        button-title="Set"
-        :sending-title="$t('button.sending.saving')"
-        :on-click="submit"
-      />
+      <app-button :is-sending="isSending" button-title="Set" :sending-title="$t('button.set')" :on-click="submit" />
     </div>
   </ValidationObserver>
 </template>

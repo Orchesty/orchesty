@@ -1,12 +1,12 @@
 <template>
   <auth-layout>
-    <v-alert v-if="email === null" type="error">
-      {{ $t('forgotPassword.notValidToken') }}
+    <v-alert v-if="!email" type="error">
+      {{ $t('auth.links.notValidToken') }}
     </v-alert>
     <auth-split-layout v-else>
-      <template #heading> Set your new password </template>
+      <template #heading> {{ $t('auth.page.resetPassword.title') }} </template>
       <template #form>
-        <password-form :email="email" :on-submit="submit" :is-sending="setPasswordState.isSending" />
+        <password-form :email="email" :on-submit="submit" :is-sending="state.isSending" />
       </template>
     </auth-split-layout>
   </auth-layout>
@@ -31,9 +31,6 @@ export default {
   computed: {
     ...mapGetters(REQUESTS_STATE.NAMESPACE, [REQUESTS_STATE.GETTERS.GET_STATE]),
     state() {
-      return this[REQUESTS_STATE.GETTERS.GET_STATE]([API.auth.checkToken.id])
-    },
-    setPasswordState() {
       return this[REQUESTS_STATE.GETTERS.GET_STATE]([API.auth.setPassword.id])
     },
   },

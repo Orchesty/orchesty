@@ -37,6 +37,7 @@
     "unsubscribe": "Unsubscribe",
     "disable": "Disable",
     "import": "Import",
-    "authorize": "Authorize"
+    "authorize": "Authorize",
+    "login": "Login"
   }
 }

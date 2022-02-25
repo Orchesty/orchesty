@@ -1,10 +1,12 @@
 <template>
   <auth-layout>
     <auth-split-layout>
-      <template #heading> Done, instructions sent! </template>
+      <template #heading> {{ $t('auth.page.forgotPasswordSent.title') }} </template>
       <template #form>
         <p class="body-2">
-          Check your email <b>{{ $route.params.email }}</b> and follow the instructions.
+          <i18n path="auth.page.forgotPasswordSent.body" tag="span" :for="$route.params.email">
+            <b>{{ $route.params.email }}</b>
+          </i18n>
         </p>
       </template>
     </auth-split-layout>

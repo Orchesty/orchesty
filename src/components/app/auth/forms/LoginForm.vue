@@ -11,15 +11,15 @@
       >
         <validation-provider
           v-slot="{ errors }"
-          :name="$t('login.form.email.name')"
+          :name="$t('auth.inputs.email.fieldName')"
           :rules="fields.email.validations"
           slim
         >
           <app-input
             v-model="form.email"
             dense
-            prepend-icon="person"
-            :label="$t('login.form.email.label')"
+            prepend-icon="mdi-account-circle"
+            :label="$t('auth.inputs.email.label')"
             type="text"
             :name="fields.email.id"
             :error-messages="errors"
@@ -27,26 +27,26 @@
         </validation-provider>
         <validation-provider
           v-slot="{ errors }"
-          :name="$t('login.form.password.name')"
+          :name="$t('auth.inputs.password.fieldName')"
           :rules="fields.password.validations"
           slim
         >
           <app-input
             v-model="form.password"
             dense
-            prepend-icon="lock"
-            :label="$t('login.form.password.label')"
+            prepend-icon="key"
+            :label="$t('auth.inputs.password.label')"
             input-type="password"
             :error-messages="errors"
           />
         </validation-provider>
         <router-link :to="{ name: ROUTES.FORGOT_PASSWORD }">
-          <span class="caption"> {{ $t('login.forgot_link') }} </span>
+          <span class="caption"> {{ $t('auth.links.forgotPassword') }} </span>
         </router-link>
         <div class="mt-5">
           <app-button
             :is-sending="isSending"
-            :button-title="$t('login.form.submit.label')"
+            :button-title="$t('button.login')"
             :sending-title="$t('button.sending.login')"
             :on-click="submit"
           />
@@ -82,7 +82,6 @@ export default {
       form: {
         email: null,
         password: null,
-        rememberMe: false,
       },
       fields: {
         email: {
@@ -97,10 +96,6 @@ export default {
           validations: {
             required: true,
           },
-        },
-        rememberMe: {
-          id: 'rememberMe',
-          validations: {},
         },
       },
     }

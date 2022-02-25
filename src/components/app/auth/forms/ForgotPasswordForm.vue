@@ -1,18 +1,21 @@
 <template>
   <auth-split-layout>
-    <template #heading> Forgot your password </template>
+    <template #heading> {{ $t('auth.page.forgotPassword.title') }} </template>
     <template #form>
+      <p class="body-2">
+        {{ $t('auth.page.forgotPassword.body') }}
+      </p>
       <ValidationObserver ref="forgotForm" tag="form" @submit.prevent="submit">
         <validation-provider
           v-slot="{ errors }"
-          :name="$t('forgotPassword.form.email.name')"
+          :name="$t('auth.inputs.email.fieldName')"
           :rules="fields.email.validations"
           slim
         >
           <app-input
             v-model="form.email"
-            prepend-icon="person"
-            :label="$t('forgotPassword.form.email.label')"
+            prepend-icon="email"
+            :label="$t('auth.inputs.email.label')"
             type="text"
             :name="fields.email.id"
             :error-messages="errors"
@@ -21,7 +24,7 @@
         <div class="text-right">
           <app-button
             :is-sending="isSending"
-            button-title="Send"
+            :button-title="$t('button.send')"
             :sending-title="$t('button.sending.sending')"
             :on-click="submit"
           />
