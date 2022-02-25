@@ -1,9 +1,9 @@
 <template>
   <auth-layout>
-    <auth-split-layout disable-header>
+    <auth-split-layout>
+      <template #heading> Done, instructions sent! </template>
       <template #form>
-        <h2 class="mx-auto mb-2">Done, instructions sent!</h2>
-        <p class="body-2 mx-auto">
+        <p class="body-2">
           Check your email <b>{{ $route.params.email }}</b> and follow the instructions.
         </p>
       </template>

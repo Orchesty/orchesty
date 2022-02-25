@@ -1,8 +1,14 @@
 <template>
   <auth-split-layout>
-    <template #heading> Login in to you workspace </template>
+    <template #heading> Login to you workspace </template>
     <template #form>
-      <ValidationObserver ref="loginForm" tag="form" @submit.prevent="submit" @keydown.enter="submit">
+      <ValidationObserver
+        ref="loginForm"
+        class="text-right"
+        tag="form"
+        @submit.prevent="submit"
+        @keydown.enter="submit"
+      >
         <validation-provider
           v-slot="{ errors }"
           :name="$t('login.form.email.name')"
@@ -35,17 +41,14 @@
           />
         </validation-provider>
         <router-link :to="{ name: ROUTES.FORGOT_PASSWORD }">
-          <span> {{ $t('login.forgot_link') }} </span>
+          <span class="caption"> {{ $t('login.forgot_link') }} </span>
         </router-link>
-        <div class="d-flex mt-5">
+        <div class="mt-5">
           <app-button
-            :height="44"
-            :custom-style="{ width: '100%' }"
             :is-sending="isSending"
             :button-title="$t('login.form.submit.label')"
             :sending-title="$t('button.sending.login')"
             :on-click="submit"
-            :flat="false"
           />
         </div>
       </ValidationObserver>

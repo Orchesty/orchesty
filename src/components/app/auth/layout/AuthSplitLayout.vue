@@ -6,20 +6,21 @@
       </v-col>
     </v-row>
     <v-row dense>
-      <v-col cols="12" lg="6" class="d-flex flex-column pa-12">
-        <v-card-title v-if="!disableHeader" class="font-weight-bold d-flex flex-column">
-          <h3 class="mx-auto">
-            <slot name="heading" />
-          </h3>
-          <p class="body-2 mx-auto" style="white-space: break-spaces">
-            <slot name="description"></slot>
-          </p>
-        </v-card-title>
-        <v-card-text :class="{ 'text-right': !disableHeader }" class="d-flex" style="flex: 1">
-          <div style="width: 100%" class="my-auto">
-            <slot name="form" />
-          </div>
-        </v-card-text>
+      <v-col cols="12" lg="6" class="d-flex align-center px-xl-11">
+        <v-container class="px-16">
+          <v-row dense>
+            <v-col class="text-center">
+              <h3 class="headline font-weight-bold">
+                <slot name="heading" />
+              </h3>
+            </v-col>
+          </v-row>
+          <v-row dense>
+            <v-col class="mt-5">
+              <slot name="form" />
+            </v-col>
+          </v-row>
+        </v-container>
       </v-col>
       <v-col cols="0" lg="6" class="login-image d-none d-lg-flex">
         <img alt="hero_image" src="@/assets/svg/login-screen-banner.svg" />

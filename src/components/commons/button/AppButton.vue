@@ -8,6 +8,7 @@
     :style="customStyle"
     disabled
     :text="flat"
+    min-width="110"
   >
     {{ sendingTitle }}
   </v-btn>
@@ -19,6 +20,7 @@
     :disabled="disabled"
     :text="flat"
     :style="customStyle"
+    min-width="110"
     @click="onClick"
   >
     {{ buttonTitle }}
@@ -68,7 +70,7 @@ export default {
     },
     height: {
       type: Number,
-      default: 34,
+      default: 40,
     },
   },
 }

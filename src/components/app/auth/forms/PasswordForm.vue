@@ -29,15 +29,12 @@
         :error-messages="errors"
       />
     </validation-provider>
-    <div>
+    <div class="mt-2 text-right">
       <app-button
-        :height="44"
-        :custom-style="{ width: '100%' }"
         :is-sending="isSending"
-        button-title="Set new password"
+        button-title="Set"
         :sending-title="$t('button.sending.saving')"
         :on-click="submit"
-        :flat="false"
       />
     </div>
   </ValidationObserver>
@@ -91,6 +88,9 @@ export default {
       }
       this.onSubmit(this.form)
     },
+  },
+  mounted() {
+    this.$refs.restoreForm.reset()
   },
 }
 </script>

@@ -1,20 +1,17 @@
 <template>
   <auth-layout>
-    <auth-split-layout disable-header>
+    <auth-split-layout>
+      <template #heading> Done, password changed! </template>
       <template #form>
-        <h2 class="mx-auto mb-2">Done, password changed!</h2>
-        <p class="body-2 mx-auto">
+        <p class="body-2">
           Your password has been changed successfully, you can
           <router-link :to="{ name: ROUTES.LOGIN }">login</router-link> now.
         </p>
-        <div class="px-4">
+        <div class="text-right">
           <app-button
-            :height="44"
-            :custom-style="{ width: '100%' }"
             button-title="Back to login page"
             :sending-title="$t('button.sending.sending')"
             :on-click="submit"
-            :flat="false"
           />
         </div>
       </template>

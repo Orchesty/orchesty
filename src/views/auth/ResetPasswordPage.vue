@@ -5,7 +5,6 @@
     </v-alert>
     <auth-split-layout v-else>
       <template #heading> Set your new password </template>
-      <template #description> Choose your new password and write it down, twice. </template>
       <template #form>
         <password-form :email="email" :on-submit="submit" :is-sending="setPasswordState.isSending" />
       </template>

@@ -1,7 +1,6 @@
 <template>
   <auth-split-layout>
     <template #heading> Forgot your password </template>
-    <template #description> Enter your email and we'll send you reset link. </template>
     <template #form>
       <ValidationObserver ref="forgotForm" tag="form" @submit.prevent="submit">
         <validation-provider
@@ -19,15 +18,12 @@
             :error-messages="errors"
           />
         </validation-provider>
-        <div>
+        <div class="text-right">
           <app-button
-            :height="44"
-            :custom-style="{ width: '100%' }"
             :is-sending="isSending"
-            button-title="Reset password"
+            button-title="Send"
             :sending-title="$t('button.sending.sending')"
             :on-click="submit"
-            :flat="false"
           />
         </div>
       </ValidationObserver>
