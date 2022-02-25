@@ -9,14 +9,14 @@
     <v-list dense>
       <v-list-item @click="events.emit(EVENTS.MODAL.FOLDER.CREATE, { topology })">
         <v-list-item-title class="d-flex justify-space-between align-center">
-          <span class="mr-2">{{ $t(`folders.menu.create`) }}</span>
-          <v-icon dense>mdi-folder-plus</v-icon>
+          <span class="mr-2">{{ $t(`contextMenu.folder.create`) }}</span>
+          <v-icon color="primary" dense>mdi-folder-plus</v-icon>
         </v-list-item-title>
       </v-list-item>
       <v-list-item @click="events.emit(EVENTS.MODAL.TOPOLOGY.CREATE, { topology })">
         <v-list-item-title class="d-flex justify-space-between align-center">
-          <span class="mr-2">{{ $t(`folders.menu.createTopology`) }}</span>
-          <v-icon dense>account_tree</v-icon>
+          <span class="mr-2">{{ $t(`contextMenu.folder.createTopology`) }}</span>
+          <v-icon color="primary" dense>account_tree</v-icon>
         </v-list-item-title>
       </v-list-item>
       <v-list-item link @click="$refs.import.click()">
@@ -32,20 +32,20 @@
           "
         />
         <v-list-item-title class="d-flex justify-space-between align-center">
-          <span class="mr-2">{{ $t(`folders.menu.importTopology`) }}</span>
-          <v-icon dense>mdi-import</v-icon>
+          <span class="mr-2">{{ $t(`contextMenu.folder.importTopology`) }}</span>
+          <v-icon color="primary" dense>mdi-import</v-icon>
         </v-list-item-title>
       </v-list-item>
       <v-list-item @click="events.emit(EVENTS.MODAL.FOLDER.EDIT, { topology })">
         <v-list-item-title class="d-flex justify-space-between align-center">
-          <span class="mr-2">{{ $t(`folders.menu.edit`) }}</span>
-          <v-icon dense>mdi-folder-edit</v-icon>
+          <span class="mr-2">{{ $t(`contextMenu.folder.edit`) }}</span>
+          <v-icon color="primary" dense>edit</v-icon>
         </v-list-item-title>
       </v-list-item>
       <v-list-item v-if="topology.children.length === 0" @click="events.emit(EVENTS.MODAL.FOLDER.DELETE, { topology })">
         <v-list-item-title class="d-flex justify-space-between align-center">
-          <span class="mr-2">{{ $t(`folders.menu.delete`) }}</span>
-          <v-icon dense>mdi-folder-remove</v-icon>
+          <span class="mr-2 error--text">{{ $t(`contextMenu.folder.delete`) }}</span>
+          <v-icon color="error" dense>mdi-delete</v-icon>
         </v-list-item-title>
       </v-list-item>
     </v-list>

@@ -7,41 +7,43 @@
     </template>
 
     <v-list dense>
-      <v-list-item @click="events.emit(EVENTS.MODAL.TOPOLOGY.EDIT, { topology })">
-        <v-list-item-title class="d-flex justify-space-between align-center">
-          <span class="mr-2">{{ $t(`topologies.menu.edit`) }}</span> <v-icon dense>mdi-pencil-outline</v-icon>
-        </v-list-item-title>
-      </v-list-item>
-      <v-list-item @click="events.emit(EVENTS.MODAL.TOPOLOGY.MOVE, { topologies, topology })">
-        <v-list-item-title class="d-flex justify-space-between align-center">
-          <span class="mr-2">{{ $t(`topologies.menu.move`) }}</span> <v-icon dense>mdi-arrow-bottom-right-thick</v-icon>
-        </v-list-item-title>
-      </v-list-item>
-      <v-list-item @click="events.emit(EVENTS.MODAL.TOPOLOGY.DELETE, { topology })">
-        <v-list-item-title class="d-flex justify-space-between align-center">
-          <span class="mr-2">{{ $t(`topologies.menu.delete`) }}</span>
-          <v-icon dense>mdi-delete</v-icon>
-        </v-list-item-title>
-      </v-list-item>
       <v-list-item
         v-if="topology.visibility === TOPOLOGY_ENUMS.PUBLIC && topology.enabled"
         @click="events.emit(EVENTS.MODAL.TOPOLOGY.RUN, { topology })"
       >
         <v-list-item-title class="d-flex justify-space-between align-center">
-          <span class="mr-2">{{ $t(`topologies.menu.run`) }}</span>
-          <v-icon dense>mdi-play-circle-outline</v-icon>
+          <span class="mr-2 success--text">{{ $t(`contextMenu.topology.run`) }}</span>
+          <v-icon color="success" dense>mdi-play-circle</v-icon>
+        </v-list-item-title>
+      </v-list-item>
+      <v-list-item @click="events.emit(EVENTS.MODAL.TOPOLOGY.EDIT, { topology })">
+        <v-list-item-title class="d-flex justify-space-between align-center">
+          <span class="mr-2">{{ $t(`contextMenu.topology.edit`) }}</span>
+          <v-icon color="primary" dense>mdi-pencil</v-icon>
+        </v-list-item-title>
+      </v-list-item>
+      <v-list-item @click="events.emit(EVENTS.MODAL.TOPOLOGY.DELETE, { topology })">
+        <v-list-item-title class="d-flex justify-space-between align-center">
+          <span class="mr-2 error--text">{{ $t(`contextMenu.topology.delete`) }}</span>
+          <v-icon color="error" dense>mdi-delete</v-icon>
+        </v-list-item-title>
+      </v-list-item>
+      <v-list-item @click="events.emit(EVENTS.MODAL.TOPOLOGY.MOVE, { topologies, topology })">
+        <v-list-item-title class="d-flex justify-space-between align-center">
+          <span class="mr-2">{{ $t(`contextMenu.topology.move`) }}</span>
+          <v-icon color="primary" dense>mdi-arrow-bottom-right-thick</v-icon>
         </v-list-item-title>
       </v-list-item>
       <v-list-item @click="clone">
         <v-list-item-title class="d-flex justify-space-between align-center">
-          <span class="mr-2">{{ $t(`topologies.menu.clone`) }}</span>
-          <v-icon dense>mdi-content-copy</v-icon>
+          <span class="mr-2">{{ $t(`contextMenu.topology.clone`) }}</span>
+          <v-icon color="primary" dense>mdi-content-copy</v-icon>
         </v-list-item-title>
       </v-list-item>
       <v-list-item @click="exportXML">
         <v-list-item-title class="d-flex justify-space-between align-center">
-          <span class="mr-2">{{ $t(`topologies.menu.export`) }}</span>
-          <v-icon dense>mdi-export-variant</v-icon>
+          <span class="mr-2">{{ $t(`contextMenu.topology.export`) }}</span>
+          <v-icon color="primary" dense>mdi-export</v-icon>
         </v-list-item-title>
       </v-list-item>
     </v-list>

@@ -3,6 +3,26 @@
       "title": "Topologies",
       "noTopologiesFound": "No topologies found"
   },
+  "contextMenu": {
+    "topology": {
+      "create": "New topology",
+      "edit": "Edit",
+      "delete": "Delete",
+      "move": "Move",
+      "export": "Export",
+      "run": "Run",
+      "clone": "Clone",
+      "import": "Import topology"
+    },
+    "folder": {
+      "create": "New Folder",
+      "createTopology": "New Topology",
+      "edit": "Rename Folder",
+      "importTopology": "Import Topology",
+      "delete": "Delete Folder",
+      "move": "Move Folder"
+    }
+  },
 
 
   "folders": {

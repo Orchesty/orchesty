@@ -15,7 +15,7 @@
 
 <script>
 export default {
-  name: 'GreenButton',
+  name: 'AppSpecialButton',
   props: {
     text: {
       type: String,
