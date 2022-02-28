@@ -43,7 +43,7 @@ final class LogsController
         $newFilter  = [];
         $timeMargin = 0;
 
-        foreach ($filter['filter'] as $and) {
+        foreach ($filter['filter'] ?? [] as $and) {
             $newAnd = [];
             foreach ($and as $field) {
                 if ($field['column'] !== 'time_margin') {
