@@ -281,7 +281,9 @@ final class TopologyManager
                 $nodeCopy->setSystemConfigs($settings);
             }
 
-            $this->makePatchRequestForCron($topologyNode, $topologyNode->getType(), $topology->getId());
+            $this->dm->flush();
+
+            $this->makePatchRequestForCron($nodeCopy, $nodeCopy->getType(), $res->getId());
 
             $nodesMap[$topologyNode->getId()] = ['orig' => $topologyNode, 'copy' => $nodeCopy];
         }
