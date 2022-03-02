@@ -1,0 +1,18 @@
+.base-logstash:
+  variables:
+    DIR: logstash
+    IMAGE: ${REGISTRY}/${IMAGE_PREFIX}logstash
+  rules:
+    - if: '$FORCE_PIPELINE =~ /ALL/ || $FORCE_PIPELINE =~ /logstash/'
+    - if: '$CI_COMMIT_BEFORE_SHA == $_BANNED_RUN_ALL_SHA'
+      when: never
+    - changes:
+      - ${DIR}/**/*
+
+
+logstash:build:
+  stage: build
+  needs: []
+  extends:
+    - .base-kaniko-build
+    - .base-logstash
