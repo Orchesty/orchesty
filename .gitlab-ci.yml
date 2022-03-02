@@ -1,7 +1,7 @@
 .base-counter:
   variables:
     DIR: counter
-    IMAGE: ${REGISTRY}/orchesty-counter
+    IMAGE: ${REGISTRY}/${IMAGE_PREFIX}counter
   rules:
     - if: '$FORCE_PIPELINE =~ /ALL/ || $FORCE_PIPELINE =~ /counter/'
     - if: '$CI_COMMIT_BEFORE_SHA == $_BANNED_RUN_ALL_SHA'
