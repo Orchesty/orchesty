@@ -1,7 +1,7 @@
 .base-starting-point:
   variables:
     DIR: starting-point
-    IMAGE: ${REGISTRY}/orchesty-starting-point
+    IMAGE: ${REGISTRY}/${IMAGE_PREFIX}starting-point
   rules:
     - if: '$FORCE_PIPELINE =~ /ALL/ || $FORCE_PIPELINE =~ /starting-point/'
     - if: '$CI_COMMIT_BEFORE_SHA == $_BANNED_RUN_ALL_SHA'
