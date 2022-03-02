@@ -23,5 +23,5 @@ backend:test:
   needs: []
 
   extends:
-    - .base-go-test
+    - .base-go-test # todo: don't use go-test
     - .base-starting-point
