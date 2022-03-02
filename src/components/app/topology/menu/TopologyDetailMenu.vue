@@ -2,7 +2,7 @@
   <v-menu bottom left>
     <template #activator="{ on, attrs }">
       <v-btn icon v-bind="attrs" v-on="on" @click="updateTopology">
-        <v-icon>mdi-dots-vertical</v-icon>
+        <v-icon color="primary">mdi-dots-vertical</v-icon>
       </v-btn>
     </template>
 
@@ -10,31 +10,31 @@
       <v-list-item @click="events.emit(EVENTS.MODAL.TOPOLOGY.EDIT, { topology })">
         <v-list-item-title class="d-flex justify-space-between align-center">
           <span class="mr-2">{{ $t(`topologies.menu.edit`) }} </span>
-          <v-icon dense>mdi-pencil-outline</v-icon>
+          <v-icon color="primary" dense>mdi-pencil</v-icon>
         </v-list-item-title>
       </v-list-item>
       <v-list-item @click="events.emit(EVENTS.MODAL.TOPOLOGY.MOVE, { topologies, topology })">
         <v-list-item-title class="d-flex justify-space-between align-center">
           <span class="mr-2">{{ $t(`topologies.menu.move`) }}</span>
-          <v-icon dense>mdi-arrow-bottom-right-thick</v-icon>
+          <v-icon color="primary" dense>mdi-arrow-bottom-right-thick</v-icon>
         </v-list-item-title>
       </v-list-item>
       <v-list-item @click="events.emit(EVENTS.MODAL.TOPOLOGY.DELETE, { topology })">
         <v-list-item-title class="d-flex justify-space-between align-center">
-          <span class="mr-2">{{ $t(`topologies.menu.delete`) }}</span>
-          <v-icon dense>mdi-delete</v-icon>
+          <span class="mr-2 error--text">{{ $t(`topologies.menu.delete`) }}</span>
+          <v-icon color="error" dense>mdi-delete</v-icon>
         </v-list-item-title>
       </v-list-item>
       <v-list-item @click="clone">
         <v-list-item-title class="d-flex justify-space-between align-center">
           <span class="mr-2">{{ $t(`topologies.menu.clone`) }}</span>
-          <v-icon dense>mdi-content-copy</v-icon>
+          <v-icon color="primary" dense>mdi-content-copy</v-icon>
         </v-list-item-title>
       </v-list-item>
       <v-list-item @click="exportXML">
         <v-list-item-title class="d-flex justify-space-between align-center">
           <span class="mr-2">{{ $t(`topologies.menu.export`) }}</span>
-          <v-icon dense>mdi-export-variant</v-icon>
+          <v-icon color="primary" dense>mdi-export</v-icon>
         </v-list-item-title>
       </v-list-item>
     </v-list>

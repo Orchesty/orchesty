@@ -1,17 +1,23 @@
 <template>
-  <v-col cols="12" md="4" class="text-right">
+  <v-col cols="12" md="4" class="d-flex justify-end align-center">
+    <div class="body-2 mr-4">
+      version: <span class="font-weight-bold">{{ topology.version }}</span>
+    </div>
+    <div class="body-2">
+      status: <span class="font-weight-bold" :class="topologyStatusColor">{{ topologyStatus }}</span>
+    </div>
     <tooltip>
       <template #activator="{ on, attrs }">
         <v-btn
           v-bind="attrs"
           icon
-          color="secondary"
+          color="success"
           class="ml-2 my-1 my-lg-0"
           :disabled="!topology.enabled || topology.visibility !== PAGE_TABS_ENUMS.PUBLIC"
           v-on="on"
           @click="events.emit(EVENTS.MODAL.TOPOLOGY.RUN, { topology })"
         >
-          <v-icon> mdi-play-circle-outline </v-icon>
+          <v-icon> mdi-play-circle </v-icon>
         </v-btn>
       </template>
       <template #tooltip>
@@ -23,13 +29,14 @@
       <template #activator="{ on, attrs }">
         <v-btn
           v-bind="attrs"
+          color="primary"
           class="ml-1 my-1 my-lg-0"
           :to="{ name: ROUTES.EDITOR }"
           :disabled="isSending"
           icon
           v-on="on"
         >
-          <v-icon> mdi-pencil-outline </v-icon>
+          <v-icon> edit </v-icon>
         </v-btn>
       </template>
       <template #tooltip>
@@ -43,13 +50,14 @@
           v-if="!topology.enabled && topology.visibility === PAGE_TABS_ENUMS.PUBLIC"
           v-bind="attrs"
           :loading="enableState"
+          color="primary"
           class="ml-1 my-1 my-lg-0"
           :disabled="isSending"
           icon
           v-on="on"
           @click="enable"
         >
-          <v-icon> mdi-check-circle-outline </v-icon>
+          <v-icon> mdi-check-circle </v-icon>
         </v-btn>
       </template>
       <template #tooltip>
@@ -62,6 +70,7 @@
         <v-btn
           v-if="topology.enabled && topology.visibility === PAGE_TABS_ENUMS.PUBLIC"
           v-bind="attrs"
+          color="primary"
           class="ml-1 my-1 my-lg-0"
           :loading="disableState"
           :disabled="isSending"
@@ -82,6 +91,7 @@
         <v-btn
           v-if="topology.visibility !== PAGE_TABS_ENUMS.PUBLIC"
           v-bind="attrs"
+          color="primary"
           class="ml-1 my-1 my-lg-0"
           :loading="publishState"
           :disabled="isSending"
@@ -100,7 +110,7 @@
     <tooltip>
       <template #activator="{ on, attrs }">
         <v-btn v-bind="attrs" :loading="testState" class="ml-1" :disabled="isSending" icon v-on="on" @click="test">
-          <v-icon> mdi-gauge-full </v-icon>
+          <v-icon color="primary"> mdi-gauge-full </v-icon>
         </v-btn>
       </template>
       <template #tooltip>
@@ -169,6 +179,37 @@ export default {
     },
     isSending() {
       return this.enableState || this.publishState || this.disableState || this.testState
+    },
+
+    topologyStatusColor() {
+      if (this.topology) {
+        if (this.topology.visibility === TOPOLOGY_ENUMS.PUBLIC) {
+          if (this.topology.enabled) {
+            return 'success--text'
+          } else {
+            return 'error--text'
+          }
+        } else {
+          return 'secondary--text'
+        }
+      } else {
+        return ''
+      }
+    },
+    topologyStatus() {
+      if (this.topology) {
+        if (this.topology.visibility === TOPOLOGY_ENUMS.PUBLIC) {
+          if (this.topology.enabled) {
+            return 'enabled'
+          } else {
+            return 'disabled'
+          }
+        } else {
+          return TOPOLOGY_ENUMS.DRAFT
+        }
+      } else {
+        return ''
+      }
     },
   },
   methods: {
