@@ -18,7 +18,7 @@ backend:build:
     - .base-backend
 
   script:
-    -	cp .dockerignore ../.dockerignore
+    - cp .dockerignore ../.dockerignore
     - executor --context ../ --destination ${IMAGE}:${TAG_DIR_CH} --destination ${IMAGE}:${TAG_BRANCH} --cache=true
 
 backend:test:
