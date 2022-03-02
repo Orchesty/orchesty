@@ -17,7 +17,12 @@
       <v-col cols="12" lg="9">
         <v-tabs v-model="currentPage" height="24">
           <v-tabs-slider color="primary" />
-          <v-tab v-for="(tab, index) in tabs" :key="index" :to="{ name: tab.route }" class="text-transform-none mr-2">
+          <v-tab
+            v-for="(tab, index) in tabs"
+            :key="index"
+            :to="{ name: tab.route }"
+            class="text-transform-none mr-2 caption font-weight-medium primary--text"
+          >
             <span>{{ $t(tab.name) }}</span>
           </v-tab>
         </v-tabs>
@@ -138,7 +143,6 @@ export default {
   text-transform: none;
   letter-spacing: 0;
   padding: 0;
-  font-size: 0.95em;
 }
 .tabs-span {
   color: var(--v-text-base) !important;

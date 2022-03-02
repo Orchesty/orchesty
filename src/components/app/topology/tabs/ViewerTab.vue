@@ -29,11 +29,11 @@
           dense
           :label="$t('topologies.viewer.errorsToggle')"
           hide-details
-          color="red"
+          color="error"
           @click="toggleOverlaysHandler"
         >
           <template #label>
-            <span class="subtitle-2">{{ $t('topologies.viewer.errorsToggle') }}</span>
+            <span class="body-2 caption font-weight-medium">{{ $t('topologies.viewer.errorsToggle') }}</span>
           </template>
         </v-checkbox>
         <v-checkbox
@@ -45,7 +45,7 @@
           @click="toggleOverlaysHandler"
         >
           <template #label>
-            <span class="subtitle-2">{{ $t('topologies.viewer.userTasksToggle') }}</span>
+            <span class="body-2 caption font-weight-medium">{{ $t('topologies.viewer.userTasksToggle') }}</span>
           </template>
         </v-checkbox>
         <v-checkbox
@@ -57,7 +57,7 @@
           @click="toggleOverlaysHandler"
         >
           <template #label>
-            <span class="subtitle-2">{{ $t('topologies.viewer.queueDepthToggle') }}</span>
+            <span class="body-2 caption font-weight-medium">{{ $t('topologies.viewer.queueDepthToggle') }}</span>
           </template>
         </v-checkbox>
         <v-checkbox
@@ -70,7 +70,7 @@
           @click="showTestResults"
         >
           <template #label>
-            <span class="subtitle-2">{{ $t('topologies.viewer.testResultsToggle') }}</span>
+            <span class="body-2 caption font-weight-medium">{{ $t('topologies.viewer.testResultsToggle') }}</span>
           </template>
         </v-checkbox>
       </div>

@@ -111,13 +111,13 @@
       </template>
 
       <template v-if="simpleFilterEnum === SIMPLE_FILTER.TRASH">
-        <v-col cols="3">
+        <v-col cols="2">
           <app-input v-model="trashFilter.topologyName" hide-details dense outlined clearable label="Topology" />
         </v-col>
-        <v-col cols="3">
+        <v-col cols="2">
           <app-input v-model="trashFilter.nodeName" hide-details dense outlined clearable label="Node" />
         </v-col>
-        <v-col cols="3">
+        <v-col cols="2">
           <app-input
             v-model="trashFilter.native"
             hide-details
@@ -129,20 +129,27 @@
           />
         </v-col>
         <v-col class="my-auto">
-          <v-btn color="primary" class="py-5" @click="$emit('sendFilter')">
-            {{ $t('dataGrid.runFilter') }}
-          </v-btn>
+          <app-button :on-click="() => $emit('sendFilter')" :button-title="$t('dataGrid.runFilter')" />
           <slot name="resetClearButtons" :on-clear-button="() => {}" />
         </v-col>
       </template>
 
       <template v-if="simpleFilterEnum === SIMPLE_FILTER.LOGS">
-        <v-col key="fulltext" cols="12" sm="6" md="3">
-          <app-input v-model="fullTextSearch" hide-details dense outlined clearable label="Fulltext Search" />
+        <v-col key="fulltext" cols="12" sm="6" md="2">
+          <app-input
+            v-model="fullTextSearch"
+            prepend-icon="search"
+            hide-details
+            dense
+            outlined
+            clearable
+            label="Fulltext Search"
+          />
         </v-col>
-        <v-col key="timeMargin" cols="12" sm="6" md="3">
+        <v-col key="timeMargin" cols="12" sm="6" md="2">
           <app-input
             v-model.number="timeMargin"
+            prepend-icon="mdi-clock"
             :disabled="!fullTextSearch"
             hide-details
             dense
@@ -154,9 +161,7 @@
           />
         </v-col>
         <v-col class="my-auto">
-          <v-btn color="primary" class="py-5" @click="$emit('sendFilter')">
-            {{ $t('dataGrid.runFilter') }}
-          </v-btn>
+          <app-button :button-title="$t('dataGrid.runFilter')" :on-click="() => $emit('sendFilter')" class="py-5" />
           <slot name="resetClearButtons" :on-clear-button="() => {}" />
         </v-col>
       </template>
@@ -179,10 +184,12 @@ import DateInput from './inputs/DateInput'
 import DateBetweenInput from './inputs/DateBetweenInput'
 import { SIMPLE_FILTER } from '@/services/enums/dataGridFilterEnums'
 import AppInput from '@/components/commons/input/AppInput'
+import AppButton from '@/components/commons/button/AppButton'
 
 export default {
   name: 'SimpleGridFilter',
   components: {
+    AppButton,
     AppInput,
     MultipleSelectBoxInput,
     TextInput,

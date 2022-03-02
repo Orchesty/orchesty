@@ -28,9 +28,7 @@
         </v-row>
       </template>
       <template #button>
-        <v-btn color="primary" @click="isOpen = !isOpen">
-          {{ $t('implementation.createModal.create') }}
-        </v-btn>
+        <app-button :on-click="() => (isOpen = !isOpen)" :button-title="$t('implementation.createModal.create')" />
       </template>
     </modal-template>
   </div>

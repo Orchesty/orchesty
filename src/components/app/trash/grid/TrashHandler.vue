@@ -1,11 +1,9 @@
 <template>
-  <v-container class="px-0" fluid>
-    <v-row>
-      <v-col cols="12">
-        <trash-grid ref="grid" />
-      </v-col>
-    </v-row>
-  </v-container>
+  <v-row dense>
+    <v-col cols="12">
+      <trash-grid ref="grid" />
+    </v-col>
+  </v-row>
 </template>
 
 <script>

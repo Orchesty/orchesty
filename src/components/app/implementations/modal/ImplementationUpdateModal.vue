@@ -29,7 +29,7 @@
     </template>
     <template #button>
       <v-btn icon color="primary" @click="isOpen = !isOpen">
-        <v-icon> mdi-pencil-outline </v-icon>
+        <v-icon> mdi-pencil </v-icon>
       </v-btn>
     </template>
   </modal-template>

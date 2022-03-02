@@ -5,7 +5,6 @@
     :height="height"
     :class="customClass"
     :color="color"
-    type="submit"
     :style="customStyle"
     disabled
     :outlined="outlined"

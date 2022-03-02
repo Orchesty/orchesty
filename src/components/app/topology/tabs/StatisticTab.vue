@@ -16,12 +16,12 @@
       <template #default>
         <v-row v-if="nodes[0]">
           <v-col cols="12" lg="12">
-            <h4 class="ml-3 mb-2 disabled--text text--darken-3">{{ STATISTICS_ENUM.totalsErrors }}</h4>
+            <h4 class="body-2 primary--text">{{ STATISTICS_ENUM.totalsErrors }}</h4>
             <bar-chart :chart-data="chartDataProcess('process')" :options="options" class="mx-2" />
           </v-col>
           <template v-for="key in nodeParameters">
             <v-col :key="key" cols="12" lg="12">
-              <h4 class="ml-3 mb-2 disabled--text text--darken-3">{{ STATISTICS_ENUM[key] }}</h4>
+              <h4 class="body-2 primary--text">{{ STATISTICS_ENUM[key] }}</h4>
               <bar-chart :chart-key="key" :chart-data="chartData(key)" :options="options" class="mx-2" />
             </v-col>
           </template>

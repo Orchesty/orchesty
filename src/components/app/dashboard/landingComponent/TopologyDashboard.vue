@@ -7,14 +7,14 @@
     </v-row>
     <v-row v-else>
       <v-col v-for="(i, item) of process" :key="i + item" cols="12" sm="6" md="4" xl="2">
-        <v-card>
-          <v-card-text>
-            <h4 class="text-center">{{ stats[item] }}</h4>
-          </v-card-text>
-          <v-card-title class="pt-0 d-flex">
-            <h2 class="mx-auto">
+        <v-card class="py-2">
+          <v-card-title class="pb-0">
+            <div class="text-center body-2 mx-auto">{{ stats[item] }}</div>
+          </v-card-title>
+          <v-card-title class="pt-0">
+            <div class="title mx-auto font-weight-bold">
               {{ process[item] }}
-            </h2>
+            </div>
           </v-card-title>
         </v-card>
       </v-col>

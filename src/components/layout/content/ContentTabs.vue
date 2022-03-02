@@ -1,13 +1,13 @@
 <template>
   <v-sheet class="page-wrapper">
     <v-container fluid>
-      <v-row>
+      <v-row dense>
         <v-col cols="12">
           <content-tabs-header :title="title" :is-topology="isTopology" :tabs="tabs" />
         </v-col>
       </v-row>
 
-      <v-row>
+      <v-row dense>
         <v-col cols="12" class="pt-0">
           <router-view />
         </v-col>

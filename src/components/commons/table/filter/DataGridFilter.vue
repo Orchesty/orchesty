@@ -1,6 +1,6 @@
 <template>
-  <v-row v-if="quickFilters.length > 0 || !disableAdvancedFilter">
-    <v-col cols="12" class="pb-0">
+  <v-row v-if="quickFilters.length > 0 || !disableAdvancedFilter" dense>
+    <v-col cols="12">
       <quick-grid-filter
         ref="quickGridFilter"
         :quick-filters="quickFilters"

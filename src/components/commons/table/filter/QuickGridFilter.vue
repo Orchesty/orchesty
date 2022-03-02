@@ -1,17 +1,16 @@
 <template>
   <div>
-    <v-row>
+    <v-row dense>
       <v-col cols="auto" class="d-flex flex-wrap align-center flex-grow-1">
         <app-button
           v-for="(item, index) in items"
           :key="index"
-          type="small"
           :height="30"
           :min-width="132"
           :disabled="isLoading"
           :outlined="!item.active"
           :color="item.active ? 'primary' : 'secondary'"
-          class="mr-2 caption"
+          class="mr-2 caption font-weight-medium"
           :button-title="$t(item.name)"
           :on-click="() => onChangeFilter(index, item)"
         />

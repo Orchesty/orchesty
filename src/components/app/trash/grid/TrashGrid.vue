@@ -37,11 +37,11 @@
       </td>
     </template>
     <template #groupActionButtons="contentEnabled">
-      <v-row>
+      <v-row dense>
         <v-col cols="12" :lg="contentEnabled ? 4 : 12" class="py-0">
           <user-task-actions-modal
             text
-            color="primary"
+            color="success"
             :disabled="selected.length === 0"
             :selected="selected"
             type="acceptAll"

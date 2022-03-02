@@ -28,13 +28,14 @@
     <slot v-if="isUserTask" :contentEnabled="contentEnabled" name="groupActionButtons"> </slot>
 
     <!--Data Grid & Iterator-->
-    <v-row>
+    <v-row dense>
       <v-col :flat="disableToolbar" cols="12" :lg="contentEnabled ? 4 : 12">
         <h3 v-if="title" class="mb-2 title">{{ title }}</h3>
         <div>
           <v-data-iterator
             v-if="isIterator"
             v-model="selected"
+            class="mt-2"
             :headers="visibleHeaders"
             :items="items"
             :options.sync="options"
@@ -95,7 +96,9 @@
                 <slot name="top" />
               </template>
               <template v-for="item in visibleHeaders" #[`header.${item.value}`]="{ header }">
-                {{ $t(header.text) }}
+                <span :key="item.value" class="body-2 text-capitalize white--text font-weight-bold">{{
+                  $t(header.text)
+                }}</span>
                 <slot :header="header" name="header.append"></slot>
               </template>
               <template #no-data>
