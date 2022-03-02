@@ -1,0 +1,18 @@
+.base-kapacitor:
+  variables:
+    DIR: kapacitor
+    IMAGE: ${REGISTRY}/${IMAGE_PREFIX}kapacitor
+  rules:
+    - if: '$FORCE_PIPELINE =~ /ALL/ || $FORCE_PIPELINE =~ /kapacitor/'
+    - if: '$CI_COMMIT_BEFORE_SHA == $_BANNED_RUN_ALL_SHA'
+      when: never
+    - changes:
+      - ${DIR}/**/*
+
+
+kapacitor:build:
+  stage: build
+  needs: []
+  extends:
+    - .base-kaniko-build
+    - .base-kapacitor
