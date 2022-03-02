@@ -2,18 +2,19 @@
   <div>
     <v-row>
       <v-col cols="auto" class="d-flex flex-wrap align-center flex-grow-1">
-        <v-btn
+        <app-button
           v-for="(item, index) in items"
           :key="index"
-          small
+          type="small"
+          :height="30"
+          :min-width="132"
           :disabled="isLoading"
           :outlined="!item.active"
           :color="item.active ? 'primary' : 'secondary'"
-          class="mr-2"
-          @click="onChangeFilter(index, item)"
-        >
-          {{ $t(item.name) }}
-        </v-btn>
+          class="mr-2 caption"
+          :button-title="$t(item.name)"
+          :on-click="() => onChangeFilter(index, item)"
+        />
         <slot name="resetClearButtons" :on-clear-button="() => {}" />
         <slot name="advancedFilter" />
       </v-col>
@@ -30,10 +31,11 @@
 import { FILTER } from '@/services/enums/gridEnums'
 import moment from 'moment'
 import ProgressBarLinear from '@/components/commons/progressIndicators/ProgressBarLinear'
+import AppButton from '@/components/commons/button/AppButton'
 
 export default {
   name: 'QuickGridFilter',
-  components: { ProgressBarLinear },
+  components: { AppButton, ProgressBarLinear },
   props: {
     isViewer: {
       type: Boolean,

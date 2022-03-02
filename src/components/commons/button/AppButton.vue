@@ -1,26 +1,30 @@
 <template>
   <v-btn
     v-if="isSending"
+    :[type]="type"
     :height="height"
     :class="customClass"
     :color="color"
     type="submit"
     :style="customStyle"
     disabled
+    :outlined="outlined"
     :text="flat"
-    min-width="110"
+    :min-width="minWidth"
   >
     {{ sendingTitle }}
   </v-btn>
   <v-btn
     v-else
+    :[type]="type"
     :height="height"
     :class="customClass"
     :color="color"
     :disabled="disabled"
     :text="flat"
     :style="customStyle"
-    min-width="110"
+    :min-width="minWidth"
+    :outlined="outlined"
     @click="onClick"
   >
     {{ buttonTitle }}
@@ -40,6 +44,12 @@ export default {
       required: false,
       default: () => '',
     },
+    type: {
+      type: String,
+      required: false,
+      default: () => '',
+    },
+    outlined: Boolean,
     buttonTitle: {
       type: String,
       required: true,
@@ -57,6 +67,10 @@ export default {
     flat: {
       type: Boolean,
       default: false,
+    },
+    minWidth: {
+      type: Number,
+      default: 110,
     },
     customClass: {
       type: String,
