@@ -1,7 +1,7 @@
 .base-app-ui: 
   variables:
     DIR: app-ui
-    IMAGE: ${REGISTRY}/orchesty-app-ui
+    IMAGE: ${REGISTRY}/${IMAGE_PREFIX}app-ui
   
   rules:
     - if: '$FORCE_PIPELINE =~ /ALL/ || $FORCE_PIPELINE =~ /app-ui/'
