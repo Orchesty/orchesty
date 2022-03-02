@@ -16,12 +16,3 @@ cron:build:
   extends:
     - .base-kaniko-build
     - .base-cron
-
-
-cron:test:
-  stage: test
-  needs: []
-
-  extends:
-    - .base-go-test
-    - .base-starting-point
