@@ -1,7 +1,7 @@
 .base-cron:
   variables:
     DIR: cron
-    IMAGE: ${REGISTRY}/orchesty-cron
+    IMAGE: ${REGISTRY}/${IMAGE_PREFIX}cron
   rules:
     - if: '$FORCE_PIPELINE =~ /ALL/ || $FORCE_PIPELINE =~ /cron/'
     - if: '$CI_COMMIT_BEFORE_SHA == $_BANNED_RUN_ALL_SHA'
