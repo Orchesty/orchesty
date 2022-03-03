@@ -16,3 +16,6 @@ logstash:build:
   extends:
     - .base-kaniko-build
     - .base-logstash
+
+  script:
+    - executor --context . --build-arg TYPE=mongo --destination ${IMAGE}:${TAG_DIR_CH} --destination ${IMAGE}:${TAG_BRANCH} #--cache=true
