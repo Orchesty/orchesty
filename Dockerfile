@@ -10,6 +10,7 @@ ENV MONGO_DATABASE=''
 ENV MONGO_COLLECTION=''
 ENV MONGO_SIZE_COLLETION=524288000
 
+RUN echo foo
 COPY ./mongodb-org-3.6.repo /etc/yum.repos.d/mongodb-org-3.6.repo
 COPY ./logstash-output-mongodb-3.1.7.gem /logstash-output-mongodb-3.1.7.gem
 COPY ./conf /usr/share/logstash/pipeline
