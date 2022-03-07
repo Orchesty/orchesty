@@ -12,7 +12,7 @@
 
 logstash:build:
   stage: build
-  needs: []
+  needs: ["collect-tags"]
   extends:
     - .base-kaniko-build
     - .base-logstash
