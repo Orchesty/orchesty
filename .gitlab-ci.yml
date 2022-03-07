@@ -27,4 +27,4 @@ status-service:test:
 
   extends:
     - .base-go-test # todo: don't use go-test
-    - .base-starting-point
+    - .base-status-service
