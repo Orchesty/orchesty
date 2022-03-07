@@ -17,6 +17,9 @@ logstash:build:
     - .base-kaniko-build
     - .base-logstash
 
-  script:
-    - /kaniko/executor --context . --build-arg TYPE=mongo --destination ${IMAGE}:${TAG_LOGSTASH} --destination ${IMAGE}:${TAG_BRANCH} #--cache=true
+  variables:
+    # logstash image causes a segfault in our custom alpine kaniko 
+    KANIKO_IMAGE: gcr.io/kaniko-project/executor:debug
 
+  script:
+    - /kaniko/executor --context . --build-arg TYPE=mongo --destination ${IMAGE}:${TAG_LOGSTASH} --destination ${IMAGE}:${TAG_BRANCH} --cache=true
