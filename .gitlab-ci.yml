@@ -17,14 +17,10 @@ notification-sender:build:
     - .base-kaniko-build
     - .base-notification-sender
 
-  script:
-    - cp .dockerignore ../.dockerignore
-    - executor --context ../ --destination ${IMAGE}:${TAG_DIR_CH} --destination ${IMAGE}:${TAG_BRANCH} --cache=true
-
 notification-sender:test:
   stage: test
   needs: []
 
   extends:
     - .base-go-test # todo: don't use go-test
-    - .base-starting-point
+    - .base-notification-sender
