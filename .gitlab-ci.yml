@@ -23,5 +23,5 @@ logstash:build:
     NO_GIT: 1
 
   script:
-    - source ./export_tags
+    - source ../export_tags
     - /kaniko/executor --context . --build-arg TYPE=mongo --destination ${IMAGE}:${TAG_LOGSTASH} --destination ${IMAGE}:${TAG_BRANCH} --cache=true
