@@ -1,6 +1,6 @@
 .base-notification-sender:
   variables:
-    DIR: pf-bundles
+    DIR: notification-sender
     IMAGE: ${REGISTRY}/${IMAGE_PREFIX}notification-sender
   rules:
     - if: '$FORCE_PIPELINE =~ /ALL/ || $FORCE_PIPELINE =~ /notification-sender/'
