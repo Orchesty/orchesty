@@ -1,6 +1,6 @@
 .base-status-service:
   variables:
-    DIR: pf-bundles
+    DIR: status-service
     IMAGE: ${REGISTRY}/${IMAGE_PREFIX}status-service
   rules:
     - if: '$FORCE_PIPELINE =~ /ALL/ || $FORCE_PIPELINE =~ /status-service/'
