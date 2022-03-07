@@ -20,6 +20,8 @@ logstash:build:
   variables:
     # logstash image causes a segfault in our custom alpine kaniko 
     KANIKO_IMAGE: gcr.io/kaniko-project/executor:debug
+    NO_GIT: 1
 
   script:
+    - source ./export_tags
     - /kaniko/executor --context . --build-arg TYPE=mongo --destination ${IMAGE}:${TAG_LOGSTASH} --destination ${IMAGE}:${TAG_BRANCH} --cache=true
