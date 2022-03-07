@@ -16,7 +16,7 @@ pf-bridge:build:
   needs: []
   extends:
     - .base-kaniko-build
-    - .base-app-ui
+    - .base-pf-bridge
 
 pf-bridge:test:
   stage: test
