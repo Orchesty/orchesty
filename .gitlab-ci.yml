@@ -1,0 +1,30 @@
+.base-notification-sender:
+  variables:
+    DIR: pf-bundles
+    IMAGE: ${REGISTRY}/${IMAGE_PREFIX}notification-sender
+  rules:
+    - if: '$FORCE_PIPELINE =~ /ALL/ || $FORCE_PIPELINE =~ /notification-sender/'
+    - if: '$CI_COMMIT_BEFORE_SHA == $_BANNED_RUN_ALL_SHA'
+      when: never
+    - changes:
+      - ${DIR}/**/*
+
+
+notification-sender:build:
+  stage: build
+  needs: []
+  extends:
+    - .base-kaniko-build
+    - .base-notification-sender
+
+  script:
+    - cp .dockerignore ../.dockerignore
+    - executor --context ../ --destination ${IMAGE}:${TAG_DIR_CH} --destination ${IMAGE}:${TAG_BRANCH} --cache=true
+
+notification-sender:test:
+  stage: test
+  needs: []
+
+  extends:
+    - .base-go-test # todo: don't use go-test
+    - .base-starting-point
