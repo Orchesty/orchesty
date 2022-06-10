@@ -123,8 +123,7 @@ func prepareLogger(severityLevel string) {
 	logger.GetLogger().AddHandler(
 		logger.NewLogStashHandler(
 			logger.NewUpdSender(
-				env.GetEnv("LOGSTASH_HOST", "logstash"),
-				env.GetEnv("LOGSTASH_PORT", "5120"),
+				env.GetEnv("UDP_LOGGER_URL", "logstash:5120"),
 			),
 		),
 	)
