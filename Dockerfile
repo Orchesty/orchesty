@@ -1,4 +1,4 @@
-FROM docker.elastic.co/logstash/logstash-oss:6.8.12
+FROM docker.elastic.co/logstash/logstash-oss:6.8.23
 
 ARG TYPE
 
@@ -12,6 +12,7 @@ ENV MONGO_SIZE_COLLETION=524288000
 
 COPY ./mongodb-org-3.6.repo /etc/yum.repos.d/mongodb-org-3.6.repo
 COPY ./logstash-output-mongodb-3.1.7.gem /logstash-output-mongodb-3.1.7.gem
+COPY ./logstash-filter-drop-3.0.5.gem /logstash-filter-drop-3.0.5.gem
 COPY ./conf /usr/share/logstash/pipeline
 
 USER root
@@ -33,7 +34,5 @@ USER logstash
 
 # https://github.com/singhksandeep25/logstash-output-mongodb/releases/tag/v3.1.7
 RUN logstash-plugin install --no-verify /logstash-output-mongodb-3.1.7.gem
-
-COPY ./entrypoint.sh /
-
-ENTRYPOINT ["/entrypoint.sh"]
+# https://rubygems.org/gems/logstash-filter-drop
+RUN logstash-plugin install --no-verify /logstash-filter-drop-3.0.5.gem
