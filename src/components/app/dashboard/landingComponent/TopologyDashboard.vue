@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-row v-if="state.isSending">
-      <v-col v-for="i in 6" :key="i + Math.random()" cols="4" xl="2">
+      <v-col v-for="i in 6" :key="i + Math.random()" cols="12" sm="6" md="4" xl="2">
         <v-skeleton-loader class="mx-auto" height="102" type="image" />
       </v-col>
     </v-row>

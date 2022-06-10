@@ -68,6 +68,7 @@ export default {
         } else {
           await this.saveTopology(form, new XMLSerializer().serializeToString(xmlDoc))
         }
+        this.showFlashMessage(false, 'Topoplogy imported')
       }
       reader.readAsText(file)
     },

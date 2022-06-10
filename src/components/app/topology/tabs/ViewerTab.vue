@@ -235,7 +235,7 @@ export default {
         if (element.businessObject.pipesType === 'user') {
           if (this.userTasks.items) {
             this.viewer.get('overlays').add(element, 'bubbles', {
-              position: { top: element.height - 10, right: element.width - 30 },
+              position: { top: element.height, right: element.width - 30 },
               html:
                 `<div onclick="window.dispatchEvent(new CustomEvent('userTasksCheckbox'))"><span class="badge badge-tasks" title="Waiting tasks">` +
                 this.userTasks.items.filter((item) => item.nodeId === node._id).length +
@@ -249,12 +249,12 @@ export default {
           window.orchestyIndex = node._id
           if (errors !== '0') {
             this.overlays.add(element, 'bubbles', {
-              position: { top: element.height - 10, right: element.width - 5 },
+              position: { top: element.height, right: element.width - 5 },
               html: `<div><span data-index="${window.orchestyIndex}" class="badge badge-error" title="Failed processes">${errors}</span></div>`,
             })
           }
           this.overlays.add(element, 'bubbles', {
-            position: { top: element.height - 10, right: element.width - 15 },
+            position: { top: element.height, right: element.width - 15 },
             html: `<div onclick="window.dispatchEvent(new CustomEvent('queueDepthCheckbox'))"><span class="badge badge-queue" title="Queue depth">${Math.round(
               queueDepth
             )}</span></div>`,

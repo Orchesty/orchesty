@@ -1,7 +1,6 @@
 import { REQUESTS_STATE } from './types'
 import createState from './state'
 import { resetState } from '../../utils'
-import { API } from '../../../api'
 
 export default {
   [REQUESTS_STATE.MUTATIONS.START_SENDING]: (state, { id, errorType, loadingType }) => {
@@ -20,10 +19,8 @@ export default {
   },
   [REQUESTS_STATE.MUTATIONS.STOP_SENDING]: (state, { id }) => {
     const items = { ...state.items }
-    if (id !== API.auth.login.id) {
-      if (items[id]) {
-        items[id].isSending = false
-      }
+    if (items[id]) {
+      items[id].isSending = false
     }
 
     state.items = items

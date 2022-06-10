@@ -10,7 +10,7 @@
     :disabled="disabled"
     :hide-details="hideDetails"
     :clearable="clearable"
-    @keypress="onKeyup(input)"
+    @keypress="onKeyup"
   />
 </template>
 
@@ -83,10 +83,15 @@ export default {
     }
   },
   methods: {
-    onKeyup(input) {
+    onKeyup(event) {
       if (this.numbersOnly) {
-        if (typeof input !== 'number') {
-          this.input = input.replace(/\D/g, '')
+        event = event ? event : window.event
+        let expect = event.target.value.toString() + event.key.toString()
+
+        if (!/^[-+]?[0-9]*\.?[0-9]*$/.test(expect)) {
+          event.preventDefault()
+        } else {
+          return true
         }
       }
     },

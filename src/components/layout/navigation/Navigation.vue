@@ -45,11 +45,11 @@ export default {
       ROUTES: ROUTES,
       navigationItems: [
         { to: ROUTES.DASHBOARD, icon: 'account_tree', tooltip: this.$t('navigation.topologies') },
-        { to: ROUTES.NOTIFICATION, icon: 'notifications_none', tooltip: this.$t('navigation.notifications') },
+        { to: ROUTES.NOTIFICATION, icon: 'notifications', tooltip: this.$t('navigation.notifications') },
         { to: ROUTES.SCHEDULED_TASK, icon: 'mdi-clock', tooltip: this.$t('navigation.scheduledTask') },
         { to: ROUTES.APP_STORE.DEFAULT, icon: 'apps', tooltip: this.$t('navigation.appStore') },
         { to: ROUTES.LOGS, icon: 'list_alt', tooltip: this.$t('navigation.logs') },
-        { to: ROUTES.HEALTH_CHECK, icon: 'mdi-emoticon', tooltip: this.$t('navigation.healthCheck') },
+        { to: ROUTES.HEALTH_CHECK, icon: 'mdi-briefcase-check', tooltip: this.$t('navigation.healthCheck') },
         { to: ROUTES.IMPLEMENTATION, icon: 'mdi-cogs', tooltip: this.$t('navigation.implementations') },
         { to: ROUTES.TRASH, icon: 'delete', tooltip: this.$t('navigation.trash') },
         { to: ROUTES.USER_PROFILE, icon: 'mdi-account-circle', tooltip: this.$t('navigation.profile') },

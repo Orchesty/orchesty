@@ -5,8 +5,23 @@
     hide-default-footer
     :items-per-page="Number.MAX_SAFE_INTEGER"
   >
+    <template #no-data>
+      <v-container fluid>
+        <v-row>
+          <v-col class="px-0">
+            <span>No apps are installed</span>
+          </v-col>
+        </v-row>
+      </v-container>
+    </template>
     <template #loading>
-      <progress-bar-linear />
+      <v-container fluid>
+        <v-row>
+          <v-col class="px-0">
+            <progress-bar-linear />
+          </v-col>
+        </v-row>
+      </v-container>
     </template>
     <template #default="{ items }">
       <v-row>
@@ -122,3 +137,5 @@ export default {
   },
 }
 </script>
+
+<style lang="scss" scoped></style>

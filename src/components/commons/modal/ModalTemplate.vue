@@ -8,8 +8,8 @@
         <v-btn icon dark @click="cancel">
           <v-icon>mdi-close</v-icon>
         </v-btn>
-        <v-toolbar-title v-if="title">
-          {{ title }}
+        <v-toolbar-title v-if="title" class="pl-0">
+          <h1 class="title font-weight-bold">{{ title }}</h1>
         </v-toolbar-title>
         <div class="flex-grow-1"></div>
         <v-toolbar-items>

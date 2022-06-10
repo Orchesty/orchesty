@@ -17,6 +17,8 @@
             :is-sending="state.isSending"
             :button-title="$t('button.disable')"
             :on-click="disable"
+            outlined
+            color="secondary"
             :flat="false"
             class="mr-3"
           />
@@ -26,7 +28,6 @@
             :button-title="$t('button.delete')"
             :on-click="submit"
             :flat="false"
-            :color="topology && topology.enabled ? 'error' : 'primary'"
           />
         </v-col>
       </v-row>
@@ -89,7 +90,7 @@ export default {
     },
   },
   created() {
-    events.listen(EVENTS.MODAL.TOPOLOGY.DELETE, ({ topology }) => {
+    events.listen(EVENTS.MODAL.TOPOLOGY.DELETE, (topology) => {
       this.topology = topology
       this.isOpen = true
     })

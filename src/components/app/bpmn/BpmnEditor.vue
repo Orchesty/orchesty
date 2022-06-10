@@ -313,7 +313,6 @@ export default {
       if (this.modeler) {
         try {
           await this.modeler.importXML(xml)
-          this.showFlashMessage(false, 'Topology imported')
         } catch (err) {
           console.log(err.message, err.warnings)
           this.showFlashMessage(true, err.message)

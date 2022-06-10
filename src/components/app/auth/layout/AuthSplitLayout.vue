@@ -7,7 +7,7 @@
     </v-row>
     <v-row dense>
       <v-col cols="12" lg="6" class="d-flex align-center px-xl-11">
-        <v-container class="px-16">
+        <v-container>
           <v-row dense>
             <v-col class="text-center">
               <h3 class="headline font-weight-bold">

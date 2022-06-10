@@ -62,7 +62,7 @@ export default {
           text: `contextMenu.topology.delete`,
           iconColor: 'error',
           icon: 'mdi-delete',
-          onClick: () => this.events.emit(EVENTS.MODAL.TOPOLOGY.DELETE, { topology: this.topology }),
+          onClick: () => this.events.emit(EVENTS.MODAL.TOPOLOGY.DELETE, this.topology),
         },
         {
           text: `contextMenu.topology.move`,

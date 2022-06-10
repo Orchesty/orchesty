@@ -7,78 +7,66 @@
     </v-row>
     <v-row dense>
       <v-col cols="12">
-        <v-row dense>
-          <v-col cols="12">
-            <validation-provider
-              v-slot="{ errors }"
-              :name="$t('profile.changePassword.form.current-password.name')"
-              :vid="fields.current.id"
-              :rules="fields.current.validations"
-              slim
-            >
-              <app-input
-                :ref="fields.current.id"
-                v-model="form.current"
-                dense
-                :label="$t('profile.changePassword.form.current-password.label')"
-                input-type="password"
-                outlined
-                :error-messages="errors"
-              />
-            </validation-provider>
-          </v-col>
-        </v-row>
-        <v-row dense>
-          <v-col cols="12">
-            <validation-provider
-              v-slot="{ errors }"
-              :name="$t('profile.changePassword.form.password.name')"
-              :vid="fields.password.id"
-              :rules="fields.password.validations"
-              slim
-            >
-              <app-input
-                :ref="fields.password.id"
-                v-model="form.password"
-                dense
-                outlined
-                :label="$t('profile.changePassword.form.password.label')"
-                input-type="password"
-                :error-messages="errors"
-              />
-            </validation-provider>
-          </v-col>
-        </v-row>
-        <v-row dense>
-          <v-col cols="12">
-            <validation-provider
-              v-slot="{ errors }"
-              :name="$t('profile.changePassword.form.confirm.name')"
-              :rules="fields.confirm.validations"
-              slim
-            >
-              <app-input
-                v-model="form.confirm"
-                dense
-                :label="$t('profile.changePassword.form.confirm.label')"
-                input-type="password"
-                outlined
-                :error-messages="errors"
-              />
-            </validation-provider>
-          </v-col>
-        </v-row>
-        <v-row dense>
-          <v-col cols="12" class="text-right">
-            <app-button
-              :is-sending="isSending"
-              :button-title="$t('button.save')"
-              :sending-title="$t('button.sending.saving')"
-              :on-click="submit"
-              :flat="false"
-            />
-          </v-col>
-        </v-row>
+        <validation-provider
+          v-slot="{ errors }"
+          :name="$t('profile.changePassword.form.current-password.name')"
+          :vid="fields.current.id"
+          :rules="fields.current.validations"
+          slim
+        >
+          <app-input
+            :ref="fields.current.id"
+            v-model="form.current"
+            dense
+            :label="$t('profile.changePassword.form.current-password.label')"
+            input-type="password"
+            outlined
+            :error-messages="errors"
+          />
+        </validation-provider>
+
+        <validation-provider
+          v-slot="{ errors }"
+          :name="$t('profile.changePassword.form.password.name')"
+          :vid="fields.password.id"
+          :rules="fields.password.validations"
+          slim
+        >
+          <app-input
+            :ref="fields.password.id"
+            v-model="form.password"
+            dense
+            outlined
+            :label="$t('profile.changePassword.form.password.label')"
+            input-type="password"
+            :error-messages="errors"
+          />
+        </validation-provider>
+
+        <validation-provider
+          v-slot="{ errors }"
+          :name="$t('profile.changePassword.form.confirm.name')"
+          :rules="fields.confirm.validations"
+          slim
+        >
+          <app-input
+            v-model="form.confirm"
+            dense
+            :label="$t('profile.changePassword.form.confirm.label')"
+            input-type="password"
+            outlined
+            :error-messages="errors"
+          />
+        </validation-provider>
+        <div>
+          <app-button
+            :is-sending="isSending"
+            :button-title="$t('button.save')"
+            :sending-title="$t('button.sending.saving')"
+            :on-click="submit"
+            :flat="false"
+          />
+        </div>
       </v-col>
     </v-row>
   </ValidationObserver>

@@ -1,7 +1,7 @@
 <template>
   <modal-template
     v-model="isOpen"
-    :title="$t('topologies.modals.edit.title')"
+    :title="$t('topologies.modals.edit.title', { msg: callbackData ? callbackData.name : '' })"
     :on-close="() => onClose"
     :on-confirm="() => $refs.form.submit()"
   >
@@ -74,7 +74,7 @@ export default {
     },
   },
   created() {
-    events.listen(EVENTS.MODAL.TOPOLOGY.EDIT, ({ topology }) => {
+    events.listen(EVENTS.MODAL.TOPOLOGY.EDIT, (topology) => {
       this.isOpen = true
       if (!topology) topology = {}
       this.callbackData = topology

@@ -90,7 +90,7 @@
         "enabledWarning": "Topology is running, consider disabling it instead."
       },
       "edit": {
-        "title": "Edit Topology",
+        "title": "Edit Topology {msg}",
         "form": {
           "label": "New name for the topology",
           "name": "name"

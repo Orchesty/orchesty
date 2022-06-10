@@ -12,6 +12,7 @@
       <td>{{ items.item.name }}</td>
       <td class="text-start">
         <template v-if="items.item.status">{{ $t('notifications.serviceOk') }}</template>
+        <template v-else-if="!hasServiceSettings(items.item.settings)">Service not set</template>
         <template v-else>{{ $t('notifications.serviceNOk') }}</template>
       </td>
       <td class="text-center">
@@ -43,6 +44,9 @@ export default {
     },
   },
   methods: {
+    hasServiceSettings(service) {
+      return Object.keys(service).length
+    },
     getService(name) {
       if (name) {
         let service

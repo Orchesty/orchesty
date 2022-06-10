@@ -102,9 +102,6 @@ export default {
   },
   methods: {
     async submit() {
-      if (this.state.isSending) {
-        return
-      }
       const isValid = await this.$refs.loginForm.validate()
       if (!isValid) {
         return

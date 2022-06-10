@@ -49,14 +49,14 @@ export default {
         {
           text: `topologies.menu.edit`,
           icon: 'mdi-pencil',
-          onClick: () => this.events.emit(EVENTS.MODAL.TOPOLOGY.EDIT, { topology: this.topologyActive }),
+          onClick: () => this.events.emit(EVENTS.MODAL.TOPOLOGY.EDIT, this.topologyActive),
         },
         {
           text: `topologies.menu.delete`,
           icon: 'mdi-delete',
           iconColor: 'error',
           spanClass: 'error--text',
-          onClick: () => this.events.emit(EVENTS.MODAL.TOPOLOGY.DELETE, { topology: this.topologyActive }),
+          onClick: () => this.events.emit(EVENTS.MODAL.TOPOLOGY.DELETE, this.topologyActive),
         },
         {
           text: `topologies.menu.move`,
