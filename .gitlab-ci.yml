@@ -1,0 +1,27 @@
+.base-counter:
+  variables:
+    DIR: counter
+    IMAGE: ${REGISTRY}/${IMAGE_PREFIX}counter
+  rules:
+    - if: '$FORCE_PIPELINE =~ /ALL/ || $FORCE_PIPELINE =~ /counter/'
+    - if: '$CI_COMMIT_BEFORE_SHA == $_BANNED_RUN_ALL_SHA'
+      when: never
+    - changes:
+      - ${DIR}/**/*
+
+
+counter:build:
+  stage: build
+  needs: []
+  extends:
+    - .base-kaniko-build
+    - .base-counter
+
+
+counter:test:
+  stage: test
+  needs: []
+
+  extends:
+    - .base-go-test
+    - .base-starting-point
