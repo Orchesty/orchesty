@@ -1,0 +1,37 @@
+{
+    "trash": {
+        "title": "Errors"
+    },
+    "userTask": {
+    "grid": {
+        "node": "Node",
+        "created": "Created",
+        "data": "Data",
+        "logs": "Logs",
+        "actions": "Actions"
+    },
+        "modal": {
+            "accept": {
+                "title": "Approve",
+                "body": "Approve UserTask?"
+            },
+            "update": {
+                "title": "Update",
+                "headers": "Headers",
+                "body": "Body"
+            },
+            "reject": {
+                "title": "Deny",
+                "body": "Deny UserTask?"
+            },
+            "acceptAll": {
+                "title": "Approve",
+                "body": "Approve all {0} UserTasks?"
+            },
+            "rejectAll": {
+                "title": "Deny",
+                "body": "Deny all {0} UserTasks?"
+            }
+        }
+}
+}

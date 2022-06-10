@@ -1,0 +1,34 @@
+{
+  "emailSender": {
+    "form": {
+      "host": {
+        "name": "host",
+        "label": "Host"
+      },
+      "port": {
+        "name": "port",
+        "label": "Port"
+      },
+      "username": {
+        "name": "uživatelské jméno",
+        "label": "Uživatelské jméno"
+      },
+      "password": {
+        "name": "heslo",
+        "label": "Heslo"
+      },
+      "encryption": {
+        "name": "šifrování",
+        "label": "Šifrování"
+      },
+      "sender": {
+        "name": "odesílatel",
+        "label": "Odesílatel"
+      },
+      "receiver": {
+        "name": "příjemnci",
+        "label": "Příjemci"
+      }
+    }
+  }
+}

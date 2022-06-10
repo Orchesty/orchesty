@@ -1,0 +1,10 @@
+{
+  "scheduledTask": {
+    "grid": {
+      "status": "Status",
+      "topology": "Topology",
+      "node": "Node",
+      "settings": "Settings"
+    }
+  }
+}
