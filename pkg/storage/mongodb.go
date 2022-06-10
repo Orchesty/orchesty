@@ -16,12 +16,11 @@ type MongoInterface interface {
 	Connect()
 	Disconnect()
 	IsConnected() bool
-	FindNodeByID(nodeID, topologyID, humanTaskID string, isHumanTask bool) *Node
-	FindNodeByName(nodeName, topologyID, humanTaskID string, isHumanTask bool) []Node
-	FindTopologyByID(topologyID, nodeID, humanTaskID string, isHumanTask bool) *Topology
-	FindTopologyByName(topologyName, nodeName, humanTaskID string, isHumanTask bool) *Topology
+	FindNodeByID(nodeID, topologyID string) *Node
+	FindNodeByName(nodeName, topologyID string) []Node
+	FindTopologyByID(topologyID, nodeID string) *Topology
+	FindTopologyByName(topologyName, nodeName string) *Topology
 	FindTopologyByApplication(topologyName, nodeName, token string) (*Topology, *Webhook)
-	FindHumanTask(nodeID, topologyID, humanTaskID string) *HumanTask
 }
 
 // MongoDefault represents default MongoDB implementation
@@ -71,7 +70,7 @@ func (m *MongoDefault) IsConnected() bool {
 }
 
 // FindNodeByID finds node by id
-func (m *MongoDefault) FindNodeByID(nodeID, topologyID, humanTaskID string, isHumanTask bool) *Node {
+func (m *MongoDefault) FindNodeByID(nodeID, topologyID string) *Node {
 	var node Node
 	innerContext, cancel := m.connection.Context()
 	defer cancel()
@@ -99,7 +98,7 @@ func (m *MongoDefault) FindNodeByID(nodeID, topologyID, humanTaskID string, isHu
 }
 
 // FindNodeByName finds node by name
-func (m *MongoDefault) FindNodeByName(nodeName, topologyID, humanTaskID string, isHumanTask bool) []Node {
+func (m *MongoDefault) FindNodeByName(nodeName, topologyID string) []Node {
 	var node Node
 	var nodes []Node
 	innerContext, cancel := m.connection.Context()
@@ -137,7 +136,7 @@ func (m *MongoDefault) FindNodeByName(nodeName, topologyID, humanTaskID string, 
 }
 
 // FindTopologyByID finds topology by ID
-func (m *MongoDefault) FindTopologyByID(topologyID, nodeID, humanTaskID string, isHumanTask bool) *Topology {
+func (m *MongoDefault) FindTopologyByID(topologyID, nodeID string) *Topology {
 	var topology Topology
 	innerContext, cancel := m.connection.Context()
 	defer cancel()
@@ -161,17 +160,13 @@ func (m *MongoDefault) FindTopologyByID(topologyID, nodeID, humanTaskID string, 
 		return nil
 	}
 
-	topology.Node = m.FindNodeByID(nodeID, topologyID, humanTaskID, isHumanTask)
-
-	if isHumanTask && topology.Node != nil {
-		topology.Node.HumanTask = m.FindHumanTask(nodeID, topologyID, humanTaskID)
-	}
+	topology.Node = m.FindNodeByID(nodeID, topologyID)
 
 	return &topology
 }
 
 // FindTopologyByName finds topology by name
-func (m *MongoDefault) FindTopologyByName(topologyName, nodeName, humanTaskID string, isHumanTask bool) *Topology {
+func (m *MongoDefault) FindTopologyByName(topologyName, nodeName string) *Topology {
 	var topology Topology
 	innerContext, cancel := m.connection.Context()
 	defer cancel()
@@ -198,17 +193,10 @@ func (m *MongoDefault) FindTopologyByName(topologyName, nodeName, humanTaskID st
 			return nil
 		}
 
-		nodes := m.FindNodeByName(nodeName, topology.ID.Hex(), humanTaskID, isHumanTask)
+		nodes := m.FindNodeByName(nodeName, topology.ID.Hex())
 		if len(nodes) > 0 {
 			topology.Node = &nodes[0]
-			if isHumanTask {
-				topology.Node.HumanTask = m.FindHumanTask(nodes[0].ID.Hex(), topology.ID.Hex(), humanTaskID)
-				if topology.Node.HumanTask != nil {
-					return &topology
-				}
-			} else {
-				return &topology
-			}
+			return &topology
 		}
 	}
 
@@ -233,41 +221,9 @@ func (m *MongoDefault) FindTopologyByApplication(topologyName, nodeName, token s
 		return nil, nil
 	}
 
-	topology := m.FindTopologyByName(topologyName, nodeName, "", false)
+	topology := m.FindTopologyByName(topologyName, nodeName)
 
 	return topology, &webhook
-}
-
-// FindHumanTask finds human task
-func (m *MongoDefault) FindHumanTask(nodeID, topologyID, humanTaskID string) *HumanTask {
-	var humanTask HumanTask
-
-	innerContext, cancel := m.connection.Context()
-	defer cancel()
-
-	var filter = primitive.D{
-		primitive.E{Key: "topologyId", Value: topologyID},
-		primitive.E{Key: "nodeId", Value: nodeID},
-	}
-	if humanTaskID != "" {
-		humanTaskID, err := primitive.ObjectIDFromHex(humanTaskID)
-		if err != nil {
-			m.log.Warnf("HumanTask ID '%s' is not valid MongoDB ID.", humanTaskID)
-
-			return nil
-		}
-
-		filter = append(filter, primitive.E{Key: "_id", Value: humanTaskID})
-	}
-
-	err := m.connection.Database.Collection(config.Config.MongoDB.HumanTaskColl).FindOne(innerContext, filter).Decode(&humanTask)
-	if err != nil {
-		logMongoError(m.log, err, fmt.Sprintf("HumanTask with topology '%s', node '%s' and process '%s' not found.", topologyID, nodeID, humanTaskID))
-
-		return nil
-	}
-
-	return &humanTask
 }
 
 func logMongoError(log *log.Logger, err error, content string) {
