@@ -11,7 +11,8 @@
                 "visibility": "draft",
                 "version": 1,
                 "category": null,
-                "enabled": true
+                "enabled": true,
+                "cronSettings": []
             }
         ],
         "total": 1,

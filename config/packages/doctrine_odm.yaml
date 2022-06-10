@@ -15,13 +15,15 @@ doctrine_mongodb:
                 connectTimeoutMS: 60000
                 socketTimeoutMS: 60000
         metrics:
-            server: "%env(string:MONGODB_DSN)%"
+            server: "%env(string:METRICS_ODM_DSN)%"
             options:
                 connectTimeoutMS: 60000
                 socketTimeoutMS: 60000
     default_database: "%env(string:MONGODB_DB)%"
     document_managers:
         default:
+            connection: default
+            database: "%env(string:MONGODB_DB)%"
             mappings:
                 HbPFUserBundle: ~
                 HbPFAclBundle: ~
@@ -51,11 +53,6 @@ doctrine_mongodb:
                     is_bundle: false
                     dir: "%kernel.project_dir%/src/../vendor/hanaboso/commons-bundle/src/FileStorage/Driver/Impl/Mongo"
                     prefix: Hanaboso\CommonsBundle\FileStorage\Driver\Impl\Mongo
-                LongRunningNodeDocument:
-                    type: annotation
-                    is_bundle: false
-                    dir: "%kernel.project_dir%/src/../vendor/hanaboso/pipes-php-sdk/src/LongRunningNode/Document"
-                    prefix: Hanaboso\PipesPhpSdk\LongRunningNode\Document
                 LogsDocument:
                     type: annotation
                     is_bundle: false
@@ -66,19 +63,19 @@ doctrine_mongodb:
                     is_bundle: false
                     dir: "%kernel.project_dir%/src/Configurator/Document"
                     prefix: Hanaboso\PipesFramework\Configurator\Document
-                MetricsDocument:
-                    type: annotation
-                    is_bundle: false
-                    dir: "%kernel.project_dir%/src/Metrics/Document"
-                    prefix: Hanaboso\PipesFramework\Metrics\Document
                 UserSettings:
                     type: annotation
                     is_bundle: false
                     dir: "%kernel.project_dir%/src/User/Document"
                     prefix: Hanaboso\PipesFramework\User\Document
+                UserTask:
+                    type: annotation
+                    is_bundle: false
+                    dir: "%kernel.project_dir%/src/UserTask/Document"
+                    prefix: Hanaboso\PipesFramework\UserTask\Document
         metrics:
             connection: metrics
-            database: metrics
+            database: "%env(string:METRICS_DB)%"
             mappings:
                 MetricsDocument:
                     type: annotation

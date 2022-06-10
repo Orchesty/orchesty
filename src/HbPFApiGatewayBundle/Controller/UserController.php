@@ -2,7 +2,12 @@
 
 namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller;
 
+use Error;
+use Hanaboso\PipesFramework\Utils\JWTParser;
+use Hanaboso\Utils\Traits\ControllerTrait;
+use Psr\Log\NullLogger;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -14,6 +19,16 @@ use Symfony\Component\Routing\Annotation\Route;
 final class UserController extends AbstractController
 {
 
+    use ControllerTrait;
+
+    /**
+     * UserController constructor.
+     */
+    public function __construct()
+    {
+        $this->logger = new NullLogger();
+    }
+
     /**
      * @Route("/user/login", methods={"POST", "OPTIONS"})
      *
@@ -21,7 +36,10 @@ final class UserController extends AbstractController
      */
     public function loginAction(): Response
     {
-        return $this->forward('Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::loginUserAction');
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::loginUserAction',
+            ['jwt' => JWTParser::getJwtLicense()],
+        );
     }
 
     /**
@@ -31,7 +49,17 @@ final class UserController extends AbstractController
      */
     public function logoutAction(): Response
     {
-        return $this->forward('Hanaboso\UserBundle\Controller\UserController::logoutAction');
+        return $this->forward('Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::logoutAction');
+    }
+
+    /**
+     * @Route("/user/check_logged", methods={"GET", "OPTIONS"})
+     *
+     * @return Response
+     */
+    public function loggedUserAction(): Response
+    {
+        return $this->forward('Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::loggedUserAction');
     }
 
     /**
@@ -41,7 +69,7 @@ final class UserController extends AbstractController
      */
     public function registerAction(): Response
     {
-        return $this->forward('Hanaboso\UserBundle\Controller\UserController::registerAction');
+        return $this->forward('Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::registerAction');
     }
 
     /**
@@ -53,7 +81,10 @@ final class UserController extends AbstractController
      */
     public function activateAction(string $token): Response
     {
-        return $this->forward('Hanaboso\UserBundle\Controller\UserController::activateAction', ['token' => $token]);
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::activateAction',
+            ['token' => $token],
+        );
     }
 
     /**
@@ -65,7 +96,10 @@ final class UserController extends AbstractController
      */
     public function verifyAction(string $token): Response
     {
-        return $this->forward('Hanaboso\UserBundle\Controller\UserController::verifyAction', ['token' => $token]);
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::verifyAction',
+            ['token' => $token],
+        );
     }
 
     /**
@@ -77,17 +111,28 @@ final class UserController extends AbstractController
      */
     public function setPasswordAction(string $token): Response
     {
-        return $this->forward('Hanaboso\UserBundle\Controller\UserController::setPasswordAction', ['token' => $token]);
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::setPasswordAction',
+            ['token' => $token],
+        );
     }
 
     /**
      * @Route("/user/change_password", methods={"POST", "OPTIONS"})
      *
+     * @param Request $request
+     *
      * @return Response
      */
-    public function changePasswordAction(): Response
+    public function changePasswordAction(Request $request): Response
     {
-        return $this->forward('Hanaboso\UserBundle\Controller\UserController::changePasswordAction');
+        if($request->request->get('old_password') !== NULL) {
+            return $this->forward(
+                'Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::changePasswordAction',
+            );
+        }
+
+        return $this->getErrorResponse(new Error('Missing old password'), 403);
     }
 
     /**
@@ -97,7 +142,7 @@ final class UserController extends AbstractController
      */
     public function resetPasswordAction(): Response
     {
-        return $this->forward('Hanaboso\UserBundle\Controller\UserController::resetPasswordAction');
+        return $this->forward('Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::resetPasswordAction');
     }
 
     /**
@@ -109,17 +154,26 @@ final class UserController extends AbstractController
      */
     public function deleteAction(string $id): Response
     {
-        return $this->forward('Hanaboso\UserBundle\Controller\UserController::deleteAction', ['id' => $id]);
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::deleteAction',
+            ['id' => $id],
+        );
     }
 
     /**
      * @Route("/user/list", methods={"POST", "OPTIONS"})
      *
+     * @param Request $request
+     *
      * @return Response
      */
-    public function getAllUsersAction(): Response
+    public function getAllUsersAction(Request $request): Response
     {
-        return $this->forward('Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::getAllUsersAction');
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::getAllUsersAction',
+            [],
+            $request->query->all(),
+        );
     }
 
     /**

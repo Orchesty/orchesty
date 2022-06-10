@@ -4,6 +4,7 @@ namespace Hanaboso\PipesFramework\HbPFLogsBundle\Controller;
 
 use Hanaboso\MongoDataGrid\GridRequestDto;
 use Hanaboso\PipesFramework\HbPFLogsBundle\Handler\LogsHandler;
+use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\Traits\ControllerTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -38,7 +39,26 @@ final class LogsController
      */
     public function getDataForTableAction(Request $request): Response
     {
-        return new JsonResponse($this->logsHandler->getData(new GridRequestDto($request->headers->all())));
+        $filter     = Json::decode($request->query->get('filter', '{}'));
+        $newFilter  = [];
+        $timeMargin = 0;
+
+        foreach ($filter['filter'] ?? [] as $and) {
+            $newAnd = [];
+            foreach ($and as $field) {
+                if ($field['column'] !== 'time_margin') {
+                    $newAnd[] = $field;
+                } else {
+                    $timeMargin = $field['value'];
+                }
+            }
+            $newFilter[] = $newAnd;
+        }
+        $filter['filter'] = $newFilter;
+
+        $dto = new GridRequestDto($filter);
+
+        return new JsonResponse($this->logsHandler->getData($dto, $timeMargin));
     }
 
 }

@@ -3,18 +3,17 @@
 namespace Hanaboso\PipesFramework\Configurator\Model;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\LockException;
-use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\Persistence\ObjectRepository;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
+use Hanaboso\PipesFramework\Configurator\Document\Sdk;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyConfigException;
+use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
+use Hanaboso\PipesFramework\Configurator\Repository\SdkRepository;
 use Hanaboso\PipesPhpSdk\Database\Document\Dto\SystemConfigDto;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
-use Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository;
 use Hanaboso\Utils\String\DsnParser;
 use Hanaboso\Utils\String\Json;
-use JsonException;
 
 /**
  * Class TopologyConfigFactory
@@ -32,73 +31,62 @@ final class TopologyConfigFactory
     public const RABBITMQ_USER          = 'rabbitmq_user';
     public const RABBITMQ_PASS          = 'rabbitmq_pass';
     public const RABBITMQ_VHOST         = 'rabbitmq_vhost';
-    public const MULTI_PROBE_HOST       = 'multi_probe_host';
-    public const METRICS_HOST           = 'metrics_host';
-    public const METRICS_PORT           = 'metrics_port';
+    public const METRICS_DSN            = 'metrics_dsn';
     public const METRICS_SERVICE        = 'metrics_service';
     public const WORKER_DEFAULT_PORT    = 'worker_default_port';
-    public const FTP_API_HOST           = 'ftp_api_host';
-    public const MAILER_API_HOST        = 'mailer_api_host';
-    public const MAPPER_API_HOST        = 'mapper_api_host';
     public const MONOLITH_API_HOST      = 'monolith_api_host';
     public const XML_PARSER_API_HOST    = 'xml_parser_api_host';
+    public const MONGODB_DSN            = 'mongodb_dsn';
+    public const MONGODB_DB             = 'mongodb_db';
+    public const UDP_LOGGER_URL         = 'udp_logger_url';
 
-    public const NODE_CONFIG             = 'node_config';
-    public const WORKER                  = 'worker';
-    public const TYPE                    = 'type';
-    public const SETTINGS                = 'settings';
-    public const FAUCET                  = 'faucet';
-    public const PREFETCH                = 'prefetch';
-    public const SPLITTER_AMQRPC         = 'splitter.amqprpc';
-    public const SPLITTER_AMQRPC_LIMITED = 'splitter.amqprpc_limited';
+    public const NODE_CONFIG = 'node_config';
+    public const WORKER      = 'worker';
+    public const TYPE        = 'type';
+    public const SETTINGS    = 'settings';
+    public const FAUCET      = 'faucet';
+    public const PREFETCH    = 'prefetch';
 
     public const WORKER_NULL            = 'worker.null';
-    public const WORKER_RESEQUENCER     = 'worker.resequencer';
-    public const SPLITTER_JSON          = 'splitter.json';
     public const WORKER_HTTP_XML_PARSER = 'worker.http_xml_parser';
-    public const WORKER_LONG_RUNNING    = 'worker.long_running';
+    public const WORKER_USER            = 'worker.user';
     public const WORKER_HTTP            = 'worker.http';
-    public const WORKER_HTTP_LIMITED    = 'worker.http_limited';
+    public const WORKER_BATCH           = 'worker.batch';
     public const HOST                   = 'host';
 
-    public const PROCESS_PATH  = 'process_path';
-    public const STATUS_PATH   = 'status_path';
-    public const METHOD        = 'method';
-    public const PORT          = 'port';
-    public const PUBLISH_QUEUE = 'publish_queue';
-    public const NAME          = 'name';
+    public const PROCESS_PATH = 'process_path';
+    public const STATUS_PATH  = 'status_path';
+    public const METHOD       = 'method';
+    public const PORT         = 'port';
+    public const NAME         = 'name';
+    public const HEADERS      = 'headers';
 
     /**
-     * @var ObjectRepository<Node>&NodeRepository
+     * @var ObjectRepository<Sdk>&SdkRepository
      */
-    private NodeRepository $nodeRepo;
+    private SdkRepository $sdkRepository;
 
     /**
      * TopologyConfigFactory constructor.
      *
      * @param mixed[]         $configs
-     * @param DocumentManager $dm
+     * @param DocumentManager $documentManager
      */
-    public function __construct(private array $configs, private DocumentManager $dm)
+    public function __construct(private array $configs, DocumentManager $documentManager)
     {
-
         $parsed                              = DsnParser::rabbitParser($configs[self::RABBITMQ_DSN]);
         $this->configs[self::RABBITMQ_HOST]  = sprintf('%s:%s', $parsed[DsnParser::HOST], $parsed[DsnParser::PORT]);
         $this->configs[self::RABBITMQ_VHOST] = $parsed[DsnParser::VHOST] ?? '/';
         $this->configs[self::RABBITMQ_USER]  = $parsed[DsnParser::USER] ?? 'guest';
         $this->configs[self::RABBITMQ_PASS]  = $parsed[DsnParser::PASSWORD] ?? 'guest';
-
-        $this->nodeRepo = $this->dm->getRepository(Node::class);
+        $this->sdkRepository                 = $documentManager->getRepository(Sdk::class);
     }
 
     /**
      * @param mixed[] $nodes
      *
      * @return string
-     * @throws LockException
-     * @throws MappingException
      * @throws TopologyConfigException
-     * @throws JsonException
      */
     public function create(array $nodes): string
     {
@@ -115,24 +103,13 @@ final class TopologyConfigFactory
      *
      * @return mixed[]
      * @throws TopologyConfigException
-     * @throws LockException
-     * @throws MappingException
-     * @throws JsonException
      */
     private function loopNodes(array $nodes): array
     {
-        $arr      = [];
-        $nextNode = NULL;
+        $arr = [];
         /** @var Node $node */
         foreach ($nodes as $node) {
-            if ($node->getType() === TypeEnum::WEBHOOK) {
-                $nextNode = $this->getNextNode($node);
-            }
-
-            $arr[$node->getId()] = $this->assembleNode($node, FALSE);
-        }
-        if ($nextNode) {
-            $arr[$nextNode->getId()] = $this->assembleNode($nextNode, TRUE);
+            $arr[$node->getId()] = $this->assembleNode($node);
         }
 
         return $arr;
@@ -150,19 +127,19 @@ final class TopologyConfigFactory
             self::RABBITMQ_USER          => $this->configs[self::RABBITMQ_USER],
             self::RABBITMQ_PASS          => $this->configs[self::RABBITMQ_PASS],
             self::RABBITMQ_VHOST         => $this->configs[self::RABBITMQ_VHOST],
-            self::MULTI_PROBE_HOST       => $this->configs[self::MULTI_PROBE_HOST],
-            self::METRICS_HOST           => $this->configs[self::METRICS_HOST],
-            self::METRICS_PORT           => $this->configs[self::METRICS_PORT],
+            self::MONGODB_DSN            => $this->configs[self::MONGODB_DSN],
+            self::MONGODB_DB             => $this->configs[self::MONGODB_DB],
+            self::METRICS_DSN            => $this->configs[self::METRICS_DSN],
             self::METRICS_SERVICE        => $this->configs[self::METRICS_SERVICE],
             self::WORKER_DEFAULT_PORT    => (int) $this->configs[self::WORKER_DEFAULT_PORT],
+            self::UDP_LOGGER_URL         => $this->configs[self::UDP_LOGGER_URL],
         ];
     }
 
     /**
      * @param Node $node
      *
-     * @return mixed[]|null
-     * @throws JsonException
+     * @return mixed[][]|null
      */
     private function getFaucet(Node $node): ?array
     {
@@ -181,44 +158,40 @@ final class TopologyConfigFactory
 
     /**
      * @param Node $node
-     * @param bool $nextConnector
      *
-     * @return mixed[]
+     * @return mixed[]|string[]
      * @throws TopologyConfigException
-     * @throws JsonException
+     * @throws TopologyException
      */
-    private function getWorkers(Node $node, bool $nextConnector): array
+    private function getWorkers(Node $node): array
     {
         switch ($node->getType()) {
-            case sprintf('%s', TypeEnum::WEBHOOK):
-            case sprintf('%s', TypeEnum::CRON):
-            case sprintf('%s', TypeEnum::START):
+            case TypeEnum::WEBHOOK:
+            case TypeEnum::CRON:
+            case TypeEnum::START:
+            case TypeEnum::USER:
                 return [
                     self::TYPE => $this->getWorkerByType($node),
                 ];
-            case sprintf('%s', TypeEnum::BATCH):
-            case sprintf('%s', TypeEnum::BATCH_CONNECTOR):
-            case sprintf('%s', TypeEnum::RESEQUENCER):
-            case sprintf('%s', TypeEnum::SPLITTER):
-            case sprintf('%s', TypeEnum::DEBUG):
+            case TypeEnum::DEBUG:
                 return [
                     self::TYPE     => $this->getWorkerByType($node),
-                    self::SETTINGS => [
-                        self::PUBLISH_QUEUE => $this->getPublishQueue($node->getType()),
-                    ],
+                    self::SETTINGS => [],
                 ];
             default:
-                $path = $this->getPaths($node, $nextConnector);
+                $host   = $this->getHost($node->getType(), $node->getSystemConfigs());
+                $path   = $this->getPaths($node);
+                $parsed = explode(':', $host);
 
                 return [
                     self::TYPE     => $this->getWorkerByType($node),
                     self::SETTINGS => [
-                        self::HOST          => $this->getHost($node->getType(), $node->getSystemConfigs()),
-                        self::PROCESS_PATH  => $path[self::PROCESS_PATH],
-                        self::STATUS_PATH   => $path[self::STATUS_PATH],
-                        self::METHOD        => CurlManager::METHOD_POST,
-                        self::PORT          => $this->getPort($node->getType()),
-                        self::PUBLISH_QUEUE => $this->getPublishQueue($node->getType()),
+                        self::HOST         => $parsed[0] ?? '',
+                        self::PROCESS_PATH => $path[self::PROCESS_PATH],
+                        self::STATUS_PATH  => $path[self::STATUS_PATH],
+                        self::METHOD       => CurlManager::METHOD_POST,
+                        self::PORT         => (int) ($parsed[1] ?? $this->getPort($node->getType())),
+                        self::HEADERS      => $this->sdkRepository->findByHost($host),
                     ],
                 ];
         }
@@ -232,103 +205,55 @@ final class TopologyConfigFactory
     private function getWorkerByType(Node $node): string
     {
         return match ($node->getType()) {
-            sprintf('%s', TypeEnum::BATCH), sprintf('%s', TypeEnum::BATCH_CONNECTOR) => self::SPLITTER_AMQRPC_LIMITED,
-            sprintf('%s', TypeEnum::WEBHOOK), sprintf('%s', TypeEnum::GATEWAY), sprintf('%s', TypeEnum::DEBUG),
-            sprintf('%s', TypeEnum::CRON), sprintf('%s', TypeEnum::START) => self::WORKER_NULL,
-            sprintf('%s', TypeEnum::RESEQUENCER) => self::WORKER_RESEQUENCER,
-            sprintf('%s', TypeEnum::SPLITTER) => self::SPLITTER_JSON,
-            sprintf('%s', TypeEnum::XML_PARSER) => self::WORKER_HTTP_XML_PARSER,
-            sprintf('%s', TypeEnum::USER) => self::WORKER_LONG_RUNNING,
-            default => self::WORKER_HTTP_LIMITED,
+            TypeEnum::BATCH => self::WORKER_BATCH,
+            TypeEnum::WEBHOOK, TypeEnum::GATEWAY, TypeEnum::DEBUG, TypeEnum::CRON, TypeEnum::START => self::WORKER_NULL,
+            TypeEnum::XML_PARSER => self::WORKER_HTTP_XML_PARSER,
+            TypeEnum::USER => self::WORKER_USER,
+            default => self::WORKER_HTTP,
         };
     }
 
     /**
      * @param Node $node
-     * @param bool $nextConnector
      *
-     * @return mixed[]
+     * @return mixed[]|string[]
      * @throws TopologyConfigException
      */
-    private function getPaths(Node $node, bool $nextConnector): array
+    private function getPaths(Node $node): array
     {
         switch ($node->getType()) {
-            case sprintf('%s', TypeEnum::XML_PARSER):
+            case TypeEnum::XML_PARSER:
                 $paths = [
                     self::PROCESS_PATH => '/xml_parser',
                     self::STATUS_PATH  => '/xml_parser/test',
                 ];
 
                 break;
-            case sprintf('%s', TypeEnum::TABLE_PARSER):
+            case TypeEnum::TABLE_PARSER:
                 $paths = [
                     self::PROCESS_PATH => sprintf('/parser/json/to/%s/', $node->getName()),
                     self::STATUS_PATH  => sprintf('/parser/json/to/%s/test', $node->getName()),
                 ];
 
                 break;
-            case sprintf('%s', TypeEnum::FTP):
-                $paths = [
-                    self::PROCESS_PATH => '/connector/ftp/action',
-                    self::STATUS_PATH  => '/connector/ftp/action/test',
-                ];
-
-                break;
-            case sprintf('%s', TypeEnum::EMAIL):
-                $paths = [
-                    self::PROCESS_PATH => '/mailer/email',
-                    self::STATUS_PATH  => '/mailer/email/test',
-                ];
-
-                break;
-            case sprintf('%s', TypeEnum::MAPPER):
-                $paths = [
-                    self::PROCESS_PATH => sprintf('/mapper/%s/process', $node->getName()),
-                    self::STATUS_PATH  => sprintf('/mapper/%s/test', $node->getName()),
-                ];
-
-                break;
-            case sprintf('%s', TypeEnum::CONNECTOR):
-            case sprintf('%s', TypeEnum::BATCH_CONNECTOR):
-                if ($nextConnector) {
-                    $paths = [
-                        self::PROCESS_PATH => sprintf('/connector/%s/webhook', $node->getName()),
-                        self::STATUS_PATH  => sprintf('/connector/%s/webhook/test', $node->getName()),
-                    ];
-
-                    break;
-                }
+            case TypeEnum::CONNECTOR:
                 $paths = [
                     self::PROCESS_PATH => sprintf('/connector/%s/action', $node->getName()),
                     self::STATUS_PATH  => sprintf('/connector/%s/action/test', $node->getName()),
                 ];
 
                 break;
-            case sprintf('%s', TypeEnum::CUSTOM):
+            case TypeEnum::BATCH:
                 $paths = [
-                    self::PROCESS_PATH => sprintf('/custom_node/%s/process', $node->getName()),
-                    self::STATUS_PATH  => sprintf('/custom_node/%s/process/test', $node->getName()),
+                    self::PROCESS_PATH => sprintf('/batch/%s/action', $node->getName()),
+                    self::STATUS_PATH  => sprintf('/batch/%s/action/test', $node->getName()),
                 ];
 
                 break;
-            case sprintf('%s', TypeEnum::SIGNAL):
+            case TypeEnum::CUSTOM:
                 $paths = [
-                    self::PROCESS_PATH => '/custom_node/signal/process',
-                    self::STATUS_PATH  => '/custom_node/signal/process/test',
-                ];
-
-                break;
-            case sprintf('%s', TypeEnum::USER):
-                $paths = [
-                    self::PROCESS_PATH => sprintf('/longRunning/%s/process', $node->getName()),
-                    self::STATUS_PATH  => sprintf('/longRunning/%s/process/test', $node->getName()),
-                ];
-
-                break;
-            case sprintf('%s', TypeEnum::API):
-                $paths = [
-                    self::PROCESS_PATH => '/connector/api/action',
-                    self::STATUS_PATH  => '/connector/api/action/test',
+                    self::PROCESS_PATH => sprintf('/custom-node/%s/process', $node->getName()),
+                    self::STATUS_PATH  => sprintf('/custom-node/%s/process/test', $node->getName()),
                 ];
 
                 break;
@@ -353,30 +278,10 @@ final class TopologyConfigFactory
         }
 
         return match ($nodeType) {
-            sprintf('%s', TypeEnum::XML_PARSER) => $this->configs[self::XML_PARSER_API_HOST],
-            sprintf('%s', TypeEnum::FTP) => $this->configs[self::FTP_API_HOST],
-            sprintf('%s', TypeEnum::EMAIL) => $this->configs[self::MAILER_API_HOST],
-            sprintf('%s', TypeEnum::MAPPER) => $this->configs[self::MAPPER_API_HOST],
-            sprintf('%s', TypeEnum::BATCH_CONNECTOR), sprintf('%s', TypeEnum::TABLE_PARSER),
-            sprintf('%s', TypeEnum::CONNECTOR), sprintf('%s', TypeEnum::WEBHOOK),
-            sprintf('%s', TypeEnum::CUSTOM), sprintf('%s', TypeEnum::SIGNAL),
-            sprintf('%s', TypeEnum::USER), sprintf('%s', TypeEnum::API) => $this->configs[self::MONOLITH_API_HOST],
+            TypeEnum::XML_PARSER => $this->configs[self::XML_PARSER_API_HOST],
+            TypeEnum::USER => '',
+            TypeEnum::BATCH, TypeEnum::TABLE_PARSER, TypeEnum::CONNECTOR, TypeEnum::WEBHOOK, TypeEnum::CUSTOM => $this->configs[self::MONOLITH_API_HOST],
             default => throw new TopologyConfigException(sprintf('Unknown type of host [%s].', $nodeType)),
-        };
-    }
-
-    /**
-     * @param string $nodeType
-     *
-     * @return mixed[]
-     */
-    private function getPublishQueue(string $nodeType): array
-    {
-        return match ($nodeType) {
-            sprintf('%s', TypeEnum::BATCH), sprintf('%s', TypeEnum::BATCH_CONNECTOR) => [
-                self::NAME => sprintf('pipes.%s', $nodeType),
-            ],
-            default => [],
         };
     }
 
@@ -389,12 +294,7 @@ final class TopologyConfigFactory
     private function getPort(string $nodeType): int
     {
         return match ($nodeType) {
-            sprintf('%s', TypeEnum::API), sprintf('%s', TypeEnum::BATCH),
-            sprintf('%s', TypeEnum::BATCH_CONNECTOR), sprintf('%s', TypeEnum::CONNECTOR),
-            sprintf('%s', TypeEnum::CUSTOM), sprintf('%s', TypeEnum::EMAIL),
-            sprintf('%s', TypeEnum::FTP), sprintf('%s', TypeEnum::MAPPER),
-            sprintf('%s', TypeEnum::SIGNAL), sprintf('%s', TypeEnum::TABLE_PARSER),
-            sprintf('%s', TypeEnum::USER), sprintf('%s', TypeEnum::WEBHOOK) => 80,
+            TypeEnum::BATCH, TypeEnum::CONNECTOR, TypeEnum::CUSTOM, TypeEnum::TABLE_PARSER, TypeEnum::USER, TypeEnum::WEBHOOK => 80,
             default => throw new TopologyConfigException(sprintf('Unknown type for port [%s].', $nodeType)),
         };
     }
@@ -402,34 +302,13 @@ final class TopologyConfigFactory
     /**
      * @param Node $node
      *
-     * @return Node|null
-     * @throws LockException
-     * @throws MappingException
-     */
-    private function getNextNode(Node $node): ?Node
-    {
-        if ($node->getNext()) {
-            /** @var Node $node */
-            $node = $this->nodeRepo->find($node->getNext()[0]->getId());
-
-            return $node;
-        }
-
-        return NULL;
-    }
-
-    /**
-     * @param Node $node
-     * @param bool $nextConnector
-     *
      * @return mixed[]
      * @throws TopologyConfigException
-     * @throws JsonException
      */
-    private function assembleNode(Node $node, bool $nextConnector): array
+    private function assembleNode(Node $node): array
     {
         $arr               = [];
-        $arr[self::WORKER] = $this->getWorkers($node, $nextConnector);
+        $arr[self::WORKER] = $this->getWorkers($node);
 
         if (self::getFaucet($node)) {
             $arr[self::FAUCET] = $this->getFaucet($node);

@@ -1,5 +1,7 @@
 {
     "http": "POST /api/topologies/:id/publish",
     "body": [],
-    "headers": []
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
 }

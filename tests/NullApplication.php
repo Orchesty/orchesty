@@ -36,7 +36,7 @@ final class NullApplication extends BasicApplicationAbstract implements WebhookA
     /**
      * @return string
      */
-    public function getKey(): string
+    public function getName(): string
     {
         return 'null';
     }
@@ -44,7 +44,7 @@ final class NullApplication extends BasicApplicationAbstract implements WebhookA
     /**
      * @return string
      */
-    public function getName(): string
+    public function getPublicName(): string
     {
         return 'null';
     }

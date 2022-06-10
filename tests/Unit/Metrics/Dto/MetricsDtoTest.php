@@ -3,14 +3,14 @@
 namespace PipesFrameworkTests\Unit\Metrics\Dto;
 
 use Hanaboso\PipesFramework\Metrics\Dto\MetricsDto;
-use PipesFrameworkTests\DatabaseTestCaseAbstract;
+use PipesFrameworkTests\KernelTestCaseAbstract;
 
 /**
  * Class MetricsDtoTest
  *
  * @package PipesFrameworkTests\Unit\Metrics\Dto
  */
-final class MetricsDtoTest extends DatabaseTestCaseAbstract
+final class MetricsDtoTest extends KernelTestCaseAbstract
 {
 
     /**

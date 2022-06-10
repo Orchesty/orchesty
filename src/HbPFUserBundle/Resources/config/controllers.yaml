@@ -1,6 +1,8 @@
 services:
     _defaults:
         public: '%public.services%'
+        autowire: true
+        autoconfigure: true
 
     Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController:
         class: Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController

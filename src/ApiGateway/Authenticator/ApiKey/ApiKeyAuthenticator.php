@@ -3,49 +3,38 @@
 namespace Hanaboso\PipesFramework\ApiGateway\Authenticator\ApiKey;
 
 use Hanaboso\UserBundle\Document\User;
+use Hanaboso\UserBundle\Model\Security\JWTAuthenticator;
+use Hanaboso\UserBundle\Model\Security\SecurityManagerException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
-use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Security\Core\User\UserProviderInterface;
-use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
+use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
+use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
+use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
+use Throwable;
 
 /**
  * Class ApiKeyAuthenticator
  *
  * @package Hanaboso\PipesFramework\ApiGateway\Authenticator\ApiKey
  */
-final class ApiKeyAuthenticator extends AbstractGuardAuthenticator
+final class ApiKeyAuthenticator extends AbstractAuthenticator
 {
 
-    public const AUTH_HEADER = 'X-Auth';
+    public const AUTH_HEADER   = 'X-Auth';
+    public const AUTHORIZATION = 'Authorization';
 
     /**
      * ApiKeyAuthenticator constructor.
      *
-     * @param string $universalApiKey
+     * @param JWTAuthenticator $jwtAuthenticator
+     * @param string           $universalApiKey
      */
-    public function __construct(private string $universalApiKey)
+    public function __construct(private JWTAuthenticator $jwtAuthenticator, private string $universalApiKey)
     {
-    }
-
-    /**
-     * @param Request                      $request
-     * @param AuthenticationException|null $authException
-     *
-     * @return JsonResponse
-     */
-    public function start(Request $request, ?AuthenticationException $authException = NULL): JsonResponse
-    {
-        $request;
-        $authException;
-        $data = [
-            'message' => 'Authentication Required',
-        ];
-
-        return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
     }
 
     /**
@@ -55,51 +44,44 @@ final class ApiKeyAuthenticator extends AbstractGuardAuthenticator
      */
     public function supports(Request $request): bool
     {
-        return $request->headers->has(self::AUTH_HEADER);
+        return $request->headers->has(self::AUTH_HEADER)
+            || $request->headers->has(self::AUTHORIZATION)
+            || $request->query->has(self::AUTHORIZATION);
     }
 
     /**
      * @param Request $request
      *
-     * @return string|null
+     * @return Passport
      */
-    public function getCredentials(Request $request): ?string
+    public function authenticate(Request $request): Passport
     {
-        return $request->headers->get(self::AUTH_HEADER);
-    }
+        try {
+            if ($request->headers->has(self::AUTHORIZATION) || $request->query->has(self::AUTHORIZATION)) {
+                return $this->jwtAuthenticator->authenticate($request);
+            }
 
-    /**
-     * @param mixed                 $credentials
-     * @param UserProviderInterface $userProvider
-     *
-     * @return UserInterface|null
-     */
-    public function getUser($credentials, UserProviderInterface $userProvider): ?UserInterface
-    {
-        $userProvider;
-        if ($credentials === NULL) {
-            return NULL;
+            if ($request->headers->get(self::AUTH_HEADER) !== $this->universalApiKey) {
+                throw new SecurityManagerException(
+                    'API key is not valid.',
+                    SecurityManagerException::USER_OR_PASSWORD_NOT_VALID,
+                );
+            }
+
+            $apiUser = new User();
+            $apiUser
+                ->setEmail('apiUser')
+                ->setDeleted(FALSE);
+
+            return new SelfValidatingPassport(
+                new UserBadge(
+                    $apiUser->getEmail(),
+                    static fn() => $apiUser,
+                ),
+            );
+        } catch (Throwable $t) {
+            throw new AuthenticationException('Not valid token', $t->getCode(), $t);
         }
-
-        $apiUser = new User();
-        $apiUser
-            ->setEmail('apiUser')
-            ->setDeleted(FALSE);
-
-        return $apiUser;
-    }
-
-    /**
-     * @param mixed         $credentials
-     * @param UserInterface $user
-     *
-     * @return bool
-     */
-    public function checkCredentials($credentials, UserInterface $user): bool
-    {
-        $user;
-
-        return $credentials === $this->universalApiKey;
     }
 
     /**
@@ -122,25 +104,17 @@ final class ApiKeyAuthenticator extends AbstractGuardAuthenticator
     /**
      * @param Request        $request
      * @param TokenInterface $token
-     * @param string         $providerKey
+     * @param string         $firewallName
      *
      * @return Response|null
      */
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $providerKey): ?Response
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
         $request;
         $token;
-        $providerKey;
+        $firewallName;
 
         return NULL;
-    }
-
-    /**
-     * @return bool
-     */
-    public function supportsRememberMe(): bool
-    {
-        return FALSE;
     }
 
 }

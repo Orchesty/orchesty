@@ -2,7 +2,8 @@
     "http": 200,
     "body": {
         "id": "5e57a1ace2a2c66a577b8ff2",
-        "email": "email@example.com",
-        "settings": []
+        "email": "test@example.com",
+        "settings": [],
+        "token": ""
     }
 }

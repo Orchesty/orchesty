@@ -2,7 +2,9 @@
 
 namespace Hanaboso\PipesFramework\HbPFMetricsBundle\Controller;
 
+use Hanaboso\MongoDataGrid\GridRequestDto;
 use Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler;
+use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\Traits\ControllerTrait;
 use Psr\Log\NullLogger;
 use Symfony\Component\HttpFoundation\Request;
@@ -66,6 +68,24 @@ final class MetricsController
     }
 
     /**
+     * @Route("/metrics/consumers", methods={"GET", "OPTIONS"})
+     *
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function consumerMetricsAction(Request $request): Response
+    {
+        try {
+            $dto = new GridRequestDto(Json::decode($request->query->get('filter', '{}')));
+
+            return $this->getResponse($this->metricsHandler->getConsumerMetrics($dto));
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e, 400);
+        }
+    }
+
+    /**
      * @Route("/metrics/topology/{topology}/requests", methods={"GET", "OPTIONS"})
      *
      * @param Request $request
@@ -76,46 +96,10 @@ final class MetricsController
     public function topologyRequestsCountMetricsAction(Request $request, string $topology): Response
     {
         try {
-            return $this->getResponse(
-                $this->metricsHandler->getRequestsCountMetrics($topology, $request->query->all()),
-            );
-        } catch (Throwable $e) {
-            return $this->getErrorResponse($e, 400);
-        }
-    }
+            $dto = new GridRequestDto(Json::decode($request->query->get('filter', '{}')));
 
-    /**
-     * @Route("/metrics/application/{key}", methods={"GET", "OPTIONS"})
-     *
-     * @param Request     $request
-     * @param string|null $key
-     *
-     * @return Response
-     */
-    public function applicationMetricsAction(Request $request, ?string $key = NULL): Response
-    {
-        try {
             return $this->getResponse(
-                $this->metricsHandler->getApplicationMetrics($request->query->all(), $key),
-            );
-        } catch (Throwable $e) {
-            return $this->getErrorResponse($e, 400);
-        }
-    }
-
-    /**
-     * @Route("/metrics/user/{user}", methods={"GET", "OPTIONS"})
-     *
-     * @param Request     $request
-     * @param string|null $user
-     *
-     * @return Response
-     */
-    public function userMetricsAction(Request $request, ?string $user = NULL): Response
-    {
-        try {
-            return $this->getResponse(
-                $this->metricsHandler->getUserMetrics($request->query->all(), $user),
+                $this->metricsHandler->getRequestsCountMetrics($topology, $dto),
             );
         } catch (Throwable $e) {
             return $this->getErrorResponse($e, 400);

@@ -3,5 +3,7 @@
     "body": {
         "enabled": false
     },
-    "headers": []
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
 }

@@ -16,6 +16,8 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 class MonolithMetricsFields
 {
 
+    // TODO unused metrics: fpm_request_total_duration
+
     /**
      * @var float
      *

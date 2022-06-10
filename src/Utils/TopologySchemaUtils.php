@@ -107,7 +107,7 @@ final class TopologySchemaUtils
                 foreach ($process as $innerProcess) {
 
                     if (isset($innerProcess[$outgoing]) && !isset($innerProcess[$incoming])) {
-                        $schema->setStartNode($innerProcess['@id']);
+                        $schema->addStartNode($innerProcess['@id']);
                     }
 
                     $type = $innerProcess['@pipes:pipesType'] ?? '';

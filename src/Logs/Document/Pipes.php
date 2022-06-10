@@ -2,7 +2,6 @@
 
 namespace Hanaboso\PipesFramework\Logs\Document;
 
-use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
@@ -16,11 +15,11 @@ class Pipes
 {
 
     /**
-     * @var DateTime
+     * @var int
      *
-     * @ODM\Field(type="date")
+     * @ODM\Field(type="int")
      */
-    private DateTime $timestamp;
+    private int $timestamp;
 
     /**
      * @var string
@@ -53,35 +52,42 @@ class Pipes
     /**
      * @var string
      *
-     * @ODM\Field(type="string", name="correlation_id")
+     * @ODM\Field(type="string")
+     */
+    private string $level;
+
+    /**
+     * @var string
+     *
+     * @ODM\Field(type="string", name="correlationId")
      */
     private string $correlationId;
 
     /**
      * @var string
      *
-     * @ODM\Field(type="string", name="topology_id")
+     * @ODM\Field(type="string", name="topologyId")
      */
     private string $topologyId;
 
     /**
      * @var string
      *
-     * @ODM\Field(type="string", name="topology_name")
+     * @ODM\Field(type="string", name="topologyName")
      */
     private string $topologyName;
 
     /**
      * @var string
      *
-     * @ODM\Field(type="string", name="node_id")
+     * @ODM\Field(type="string", name="nodeId")
      */
     private string $nodeId;
 
     /**
      * @var string
      *
-     * @ODM\Field(type="string", name="node_name")
+     * @ODM\Field(type="string", name="nodeName")
      */
     private string $nodeName;
 
@@ -93,9 +99,9 @@ class Pipes
     private Stacktrace $stacktrace;
 
     /**
-     * @return DateTime
+     * @return int
      */
-    public function getTimestamp(): DateTime
+    public function getTimestamp(): int
     {
         return $this->timestamp;
     }
@@ -130,6 +136,14 @@ class Pipes
     public function getSeverity(): string
     {
         return $this->severity;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLevel(): string
+    {
+        return $this->level;
     }
 
     /**

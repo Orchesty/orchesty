@@ -1,13 +1,12 @@
 parameters:
     stdout_path: "%kernel.logs_dir%/stdout_%kernel.environment%.log"
     public.services: true
+
     node_services_dirs:
         - '%kernel.project_dir%/vendor/hanaboso/pipes-php-sdk/src/HbPFConnectorBundle/Resources/config/'
         - '%kernel.project_dir%/vendor/hanaboso/pipes-php-sdk/src/HbPFCustomNodeBundle/Resources/config/'
-        - '%kernel.project_dir%/vendor/hanaboso/pipes-php-sdk/src/HbPFJoinerBundle/Resources/config/'
-        - '%kernel.project_dir%/vendor/hanaboso/pipes-php-sdk/src/HbPFMapperBundle/Resources/config/'
         - '%kernel.project_dir%/config/packages/test/'
-    applications: ['%kernel.project_dir%/config/packages/test']
+    applications: [ '%kernel.project_dir%/config/packages/test' ]
 
 services:
     _defaults:
@@ -15,10 +14,6 @@ services:
 
     hbpf.connector.null:
         class: PipesFrameworkTests\NullConnector
-        arguments:
-
-    hbpf.long_running.null:
-        class: PipesFrameworkTests\NullLongRunning
         arguments:
 
     hbpf.application.null:

@@ -1,0 +1,49 @@
+services:
+    _defaults:
+        public: '%public.services%'
+        autowire: true
+
+    hbpf.handler.logs:
+        class: Hanaboso\PipesFramework\HbPFLogsBundle\Handler\LogsHandler
+        arguments:
+            - '@hbpf.loader.logs'
+
+    hbpf.mongodb.logs:
+        class: Hanaboso\PipesFramework\Logs\MongoDbLogs
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.logs.filter'
+            - '@hbpf.logs.startingpoint_filter'
+
+#    hbpf.elastic.logs:
+#        class: Hanaboso\PipesFramework\Logs\ElasticLogs
+#        arguments:
+#            - '@doctrine_mongodb.odm.default_document_manager'
+#            - '@hbpf.logs.startingpoint_filter'
+#            - '@elastica.client'
+
+    hbpf.loader.logs:
+        class: Hanaboso\PipesFramework\Logs\Manager\LogsManagerLoader
+        arguments:
+            - '%logs_service%'
+            - null
+            - '@hbpf.mongodb.logs'
+
+    elastica.client:
+        class: Elastica\Client
+        factory: Hanaboso\PipesFramework\Logs\ElasticaClientFactory::create
+        arguments:
+            - '%elasticsearch_dsn%'
+
+    Elastica\Client:
+        alias: elastica.client
+
+    hbpf.logs.filter:
+        class: Hanaboso\PipesFramework\Logs\LogsFilter
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.logs.startingpoint_filter:
+        class: Hanaboso\PipesFramework\Logs\StartingPointsFilter
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'

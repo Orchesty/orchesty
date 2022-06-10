@@ -130,7 +130,7 @@ final class CategoryParser
         $categories = $this->getCategories($file);
         $parent     = '';
         foreach ($categories as $name) {
-            /** @var Category $category */
+            /** @var Category|null $category */
             $category = $this->categoryRepository->findOneBy(['name' => $name]);
 
             if (!empty($category) && ($category->getParent() == $parent || empty($parent))) {
@@ -303,7 +303,7 @@ final class CategoryParser
      */
     private function createCategory(string $name, string $parent): Category
     {
-        return $this->categoryManager->createCategory(['name' => $name, 'parent' => $parent ?? NULL]);
+        return $this->categoryManager->createCategory(['name' => $name, 'parent' => $parent]);
     }
 
 }

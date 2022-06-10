@@ -12,7 +12,7 @@ rest:
         '^/api':
             origin: ['*']
             methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS']
-            headers: ['Content-Type', 'OrderBy', 'Filter', 'Page', 'Limit']
+            headers: ['Content-Type', 'OrderBy', 'Filter', 'Page', 'Limit', 'Authorization']
             credentials: TRUE
         '^/':
             origin: ['*']

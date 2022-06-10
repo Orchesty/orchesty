@@ -4,5 +4,7 @@
         "name": "Test category",
         "parent": "12"
     },
-    "headers": []
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
 }

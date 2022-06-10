@@ -3,10 +3,10 @@
 namespace Hanaboso\PipesFramework\Logs;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\MongoDBException;
 use Elastica\Client;
 use Elastica\Exception\ResponseException;
 use Elastica\Request;
+use Hanaboso\MongoDataGrid\Exception\GridException;
 use Hanaboso\MongoDataGrid\GridFilterAbstract;
 use Hanaboso\MongoDataGrid\GridRequestDto;
 
@@ -90,22 +90,23 @@ final class ElasticLogs extends LogsAbstract
 
     /**
      * @param GridRequestDto $dto
+     * @param int            $timeMargin
      *
      * @return mixed[]
-     * @throws MongoDBException
      */
-    public function getData(GridRequestDto $dto): array
+    public function getData(GridRequestDto $dto, int $timeMargin): array
     {
+        $timeMargin;
         [$filter, $sorter] = $this->getFilterAndSorter($dto);
 
         try {
-            $data = $this->getInnerData($filter, $sorter, $dto->getPage(), $dto->getLimit());
+            $data = $this->getInnerData($filter, $sorter, $dto->getPage(), $dto->getItemsPerPage());
         } catch (ResponseException $e) { // Intentionally, because some fields can be missing in ElasticSearch...
             if (!str_contains($e->getMessage(), self::EXCEPTION)) {
                 throw $e;
             }
 
-            $data = $this->getInnerData($filter, self::DEFAULT_SORTER, $dto->getPage(), $dto->getLimit());
+            $data = $this->getInnerData($filter, self::DEFAULT_SORTER, $dto->getPage(), $dto->getItemsPerPage());
         }
 
         $result         = [];
@@ -135,15 +136,42 @@ final class ElasticLogs extends LogsAbstract
         }
 
         $innerDto = new GridRequestDto(['limit' => self::LIMIT]);
-        $innerDto->setAdditionalFilters([self::CORRELATION_ID => $correlationIds]);
-        $result = $this->processStartingPoints($innerDto, $result);
+        if ($correlationIds) {
+            $innerDto->setAdditionalFilters(
+                [
+                    [
+                        [
+                            GridFilterAbstract::COLUMN   => self::CORRELATION_ID,
+                            GridFilterAbstract::OPERATOR => GridFilterAbstract::EQ,
+                            GridFilterAbstract::VALUE    => $correlationIds,
+                        ],
+                    ],
+                    [
+                        [
+                            GridFilterAbstract::COLUMN   => self::TOPOLOGY_ID,
+                            GridFilterAbstract::OPERATOR => GridFilterAbstract::NEMPTY,
+                        ],
+                    ],
+                ],
+            );
+        }
+
+        $page     = $dto->getPage();
+        $lastPage = (int) max(1, ceil($dto->getTotal() / $dto->getItemsPerPage()));
 
         return [
-            'limit'     => $dto->getLimit(),
-            'offset'    => ($dto->getPage() - 1) * $dto->getLimit(),
-            self::COUNT => count($data[self::HITS][self::HITS]),
-            'total'     => $this->getInnerCount($filter),
-            'items'     => $result,
+            'items'  => $this->processStartingPoints($innerDto, $result),
+            'filter' => $dto->getFilter(FALSE),
+            'sorter' => $dto->getOrderBy(),
+            'search' => $dto->getSearch(),
+            'paging' => [
+                'page'         => $page,
+                'itemsPerPage' => $dto->getItemsPerPage(),
+                'total'        => $this->getInnerCount($filter),
+                'nextPage'     => min($lastPage, $page + 1),
+                'lastPage'     => $lastPage,
+                'previousPage' => max(1, $page - 1),
+            ],
         ];
     }
 
@@ -187,19 +215,22 @@ final class ElasticLogs extends LogsAbstract
      * @param GridRequestDto $dto
      *
      * @return mixed[]
+     * @throws GridException
      */
     private function getFilterAndSorter(GridRequestDto $dto): array
     {
+        $search = $dto->getSearch();
         $filter = $dto->getFilter();
         $sorter = $dto->getOrderBy();
 
         $innerFilter = [];
         $innerSorter = [];
 
-        if (isset($filter[self::SEVERITY])) {
+        if (isset($filter[0][0][GridFilterAbstract::COLUMN]) &&
+            $filter[0][0][GridFilterAbstract::COLUMN] === self::SEVERITY) {
             $innerFilter[] = [
                 self::TERMS => [
-                    self::PIPES_SEVERITY_KEYWORD => [$filter[self::SEVERITY]],
+                    self::PIPES_SEVERITY_KEYWORD => [$filter[0][0][GridFilterAbstract::VALUE]],
                 ],
             ];
         } else {
@@ -210,21 +241,19 @@ final class ElasticLogs extends LogsAbstract
             ];
         }
 
-        if (isset($filter[GridFilterAbstract::FILTER_SEARCH_KEY])) {
-            $innerFilter[] = [
-                self::TERM => [
-                    self::MESSAGE => $filter[GridFilterAbstract::FILTER_SEARCH_KEY],
-                ],
-            ];
+        if ($search) {
+            $innerFilter[] = [self::TERM => [self::MESSAGE => $search]];
         }
 
         $innerFilter = [self::QUERY => [self::BOOL => [self::MUST => $innerFilter]]];
 
-        if ($sorter) {
-            $innerSorter = [self::SORT => [self::CONVERT[$sorter[0]] => [self::ORDER => strtolower($sorter[1])]]];
+        foreach ($sorter as $sort) {
+            $innerSorter[self::CONVERT[$sort[GridFilterAbstract::COLUMN]]] = [
+                self::ORDER => strtolower($sort[GridFilterAbstract::DIRECTION]),
+            ];
         }
 
-        return [$innerFilter, $innerSorter];
+        return [$innerFilter, $innerSorter ? [self::SORT => $innerSorter] : []];
     }
 
 }

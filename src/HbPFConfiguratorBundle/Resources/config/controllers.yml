@@ -38,3 +38,10 @@ services:
             - '@hbpf.configurator.handler.topology_progress'
         calls:
             - [ 'setLogger', [ '@monolog.logger.commons' ] ]
+
+    Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\DashboardController:
+        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\DashboardController
+        arguments:
+            - '@hbpf.handler.dashboard'
+        calls:
+            - [ 'setLogger', [ '@monolog.logger.commons' ] ]

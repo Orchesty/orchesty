@@ -7,12 +7,13 @@ services:
         arguments:
             - '@hbpf.database_manager_locator'
             - '@hbpf.configurator.manager.topology'
+            - '@hbpf.configurator.manager.node'
             - '@hbpf.topology_generator.bridge'
+            - '@hbpf.user_task.handler.user_task'
 
     hbpf.configurator.handler.node:
         class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler
         arguments:
-            - '@hbpf.database_manager_locator'
             - '@hbpf.configurator.manager.node'
 
     hbpf.handler.category:
@@ -20,6 +21,11 @@ services:
         arguments:
             - '@hbpf.database_manager_locator'
             - '@hbpf.configurator.manager.category'
+
+    hbpf.handler.dashboard:
+        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\DashboardHandler
+        arguments:
+            - '@hbpf.configurator.manager.dashboard'
 
     hbpf.configurator.handler.sdk:
         class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\SdkHandler

@@ -1,0 +1,26 @@
+{
+    "http": 200,
+    "body": {
+        "id": "507f191e810c19729de860ea",
+        "nodeId": "node",
+        "nodeName": "",
+        "topologyId": "topo",
+        "topologyName": "",
+        "type": "userTask",
+        "correlationId": "corr",
+        "created": "2020-02-02 10:10:10",
+        "updated": "2020-02-02 10:10:10",
+        "message": {
+            "body": "losos",
+            "headers": {
+                "pf-los": "os"
+            }
+        },
+        "auditLogs": [
+            {
+                "body": "body",
+                "headers": []
+            }
+        ]
+    }
+}

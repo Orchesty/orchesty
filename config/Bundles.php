@@ -11,12 +11,10 @@ use Hanaboso\PipesFramework\HbPFLogsBundle\HbPFLogsBundle;
 use Hanaboso\PipesFramework\HbPFMetricsBundle\HbPFMetricsBundle;
 use Hanaboso\PipesFramework\HbPFNotificationBundle\HbPFNotificationBundle;
 use Hanaboso\PipesFramework\HbPFUserBundle\HbPFUsersBundle;
+use Hanaboso\PipesFramework\HbPFUserTaskBundle\HbPFUserTaskBundle;
 use Hanaboso\PipesPhpSdk\HbPFApplicationBundle\HbPFApplicationBundle;
 use Hanaboso\PipesPhpSdk\HbPFConnectorBundle\HbPFConnectorBundle;
 use Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\HbPFCustomNodeBundle;
-use Hanaboso\PipesPhpSdk\HbPFJoinerBundle\HbPFJoinerBundle;
-use Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\HbPFLongRunningNodeBundle;
-use Hanaboso\PipesPhpSdk\HbPFMapperBundle\HbPFMapperBundle;
 use Hanaboso\PipesPhpSdk\HbPFTableParserBundle\HbPFTableParserBundle;
 use Hanaboso\RestBundle\RestBundle;
 use Hanaboso\UserBundle\HbPFUserBundle;
@@ -39,16 +37,14 @@ return [
     HbPFConfiguratorBundle::class    => ['all' => TRUE],
     HbPFConnectorBundle::class       => ['all' => TRUE],
     HbPFCustomNodeBundle::class      => ['all' => TRUE],
-    HbPFJoinerBundle::class          => ['all' => TRUE],
-    HbPFMapperBundle::class          => ['all' => TRUE],
     HbPFTableParserBundle::class     => ['all' => TRUE],
     HbPFUserBundle::class            => ['all' => TRUE],
     HbPFMetricsBundle::class         => ['all' => TRUE],
     HbPFNotificationBundle::class    => ['all' => TRUE],
     HbPFLogsBundle::class            => ['all' => TRUE],
-    HbPFLongRunningNodeBundle::class => ['all' => TRUE],
     EmailServiceBundle::class        => ['all' => TRUE],
     RabbitMqBundle::class            => ['all' => TRUE],
     RestBundle::class                => ['all' => TRUE],
     HbPFUsersBundle::class           => ['all' => TRUE],
+    HbPFUserTaskBundle::class        => ['all' => TRUE],
 ];

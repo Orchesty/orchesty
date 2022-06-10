@@ -7,8 +7,10 @@ use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\Persistence\ObjectRepository;
+use Exception;
 use Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocator;
 use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
+use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\CommonsBundle\Exception\CronException;
 use Hanaboso\CommonsBundle\Exception\NodeException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
@@ -16,17 +18,20 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyConfigException;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
+use Hanaboso\PipesFramework\Configurator\Model\NodeManager;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
+use Hanaboso\PipesFramework\HbPFUserTaskBundle\Handler\UserTaskHandler;
+use Hanaboso\PipesFramework\UserTask\Exception\UserTaskException;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
-use Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository;
 use Hanaboso\PipesPhpSdk\Database\Repository\TopologyRepository;
 use Hanaboso\Utils\Exception\EnumException;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\String\UriParams;
 use Hanaboso\Utils\System\ControllerUtils;
+use Hanaboso\Utils\Validations\Validations;
 use JsonException;
 use Throwable;
 
@@ -37,6 +42,9 @@ use Throwable;
  */
 final class TopologyHandler
 {
+
+    private const STARTING_POINTS = 'startingPoints';
+    private const BODY            = 'body';
 
     /**
      * @var ObjectRepository<Topology>&TopologyRepository
@@ -57,19 +65,46 @@ final class TopologyHandler
      * TopologyHandler constructor.
      *
      * @param DatabaseManagerLocator  $dml
-     * @param TopologyManager         $manager
+     * @param TopologyManager         $topologyManager
+     * @param NodeManager             $nodeManager
      * @param TopologyGeneratorBridge $generatorBridge
+     * @param UserTaskHandler         $userTaskHandler
      */
     public function __construct(
         DatabaseManagerLocator $dml,
-        protected TopologyManager $manager,
+        protected TopologyManager $topologyManager,
+        protected NodeManager $nodeManager,
         protected TopologyGeneratorBridge $generatorBridge,
+        protected UserTaskHandler $userTaskHandler,
     )
     {
         /** @var DocumentManager $dm */
         $dm                       = $dml->getDm();
         $this->dm                 = $dm;
         $this->topologyRepository = $this->dm->getRepository(Topology::class);
+    }
+
+    /**
+     * @param string  $topologyId
+     * @param mixed[] $data
+     *
+     * @return mixed[]
+     * @throws CurlException
+     */
+    public function runTopology(string $topologyId, array $data): array
+    {
+        Validations::checkParams([self::STARTING_POINTS, self::BODY], $data);
+        [$started, $errors] = $this->topologyManager->runTopology(
+            $topologyId,
+            $data[self::STARTING_POINTS],
+            $data[self::BODY],
+        );
+
+        return [
+            'started' => $started,
+            'state'   => $errors ? 'nok' : 'ok',
+            'errors'  => $errors,
+        ];
     }
 
     /**
@@ -109,7 +144,19 @@ final class TopologyHandler
      */
     public function getCronTopologies(): array
     {
-        return ['items' => $this->manager->getCronTopologies()];
+        $cron = $this->topologyManager->getCronTopologies();
+
+        return [
+            'items'  => $cron,
+            'paging' => [
+                'page'         => 1,
+                'itemsPerPage' => 50,
+                'total'        => count($cron),
+                'nextPage'     => 2,
+                'lastPage'     => 2,
+                'previousPage' => 1,
+            ],
+        ];
     }
 
     /**
@@ -138,7 +185,7 @@ final class TopologyHandler
     {
         ControllerUtils::checkParameters(['name'], $data);
 
-        $topology = $this->manager->createTopology($data);
+        $topology = $this->topologyManager->createTopology($data);
 
         return $this->getTopologyData($topology);
     }
@@ -156,7 +203,7 @@ final class TopologyHandler
     public function updateTopology(string $id, array $data): array
     {
         $topology = $this->getTopologyById($id);
-        $topology = $this->manager->updateTopology($topology, $data);
+        $topology = $this->topologyManager->updateTopology($topology, $data);
 
         $this->generatorBridge->invalidateTopologyCache($topology->getName());
 
@@ -190,7 +237,7 @@ final class TopologyHandler
     public function saveTopologySchema(string $id, string $content, array $data): array
     {
         $topology = $this->getTopologyById($id);
-        $topology = $this->manager->saveTopologySchema($topology, $content, $data);
+        $topology = $this->topologyManager->saveTopologySchema($topology, $content, $data);
 
         return $this->getTopologyData($topology);
     }
@@ -206,7 +253,7 @@ final class TopologyHandler
     public function publishTopology(string $id): ResponseDto
     {
         $topology = $this->getTopologyById($id);
-        $topology = $this->manager->publishTopology($topology);
+        $topology = $this->topologyManager->publishTopology($topology);
         $data     = $this->getTopologyData($topology);
 
         try {
@@ -225,7 +272,7 @@ final class TopologyHandler
         }
 
         if ($code !== 200) {
-            $this->manager->unPublishTopology($topology);
+            $this->topologyManager->unPublishTopology($topology);
 
             return new ResponseDto(
                 400,
@@ -255,33 +302,39 @@ final class TopologyHandler
     public function cloneTopology(string $id): array
     {
         $topology = $this->getTopologyById($id);
-        $topology = $this->manager->cloneTopology($topology);
+        $topology = $this->topologyManager->cloneTopology($topology);
 
         return $this->getTopologyData($topology);
     }
 
     /**
-     * @param string $id
+     * @param string    $id
+     * @param bool|null $removeWithTasks
      *
      * @return ResponseDto
      * @throws CronException
      * @throws CurlException
-     * @throws TopologyException
-     * @throws MongoDBException
      * @throws JsonException
+     * @throws MongoDBException
+     * @throws TopologyException
+     * @throws UserTaskException
      */
-    public function deleteTopology(string $id): ResponseDto
+    public function deleteTopology(string $id, ?bool $removeWithTasks = FALSE): ResponseDto
     {
         $topology = $this->getTopologyById($id);
-        $res      = new ResponseDto(200, '', '', []);
+        $res      = new ResponseDto(200, '', '{}', []);
 
-        if (!($topology->getVisibility() === TopologyStatusEnum::PUBLIC && $topology->isEnabled())) {
+        if ($topology->getVisibility() === TopologyStatusEnum::PUBLIC) {
             $this->generatorBridge->stopTopology($id);
             $res = $this->generatorBridge->deleteTopology($id);
         }
 
-        $this->manager->deleteTopology($topology);
+        $this->topologyManager->deleteTopology($topology);
         $this->generatorBridge->invalidateTopologyCache($topology->getName());
+        $this->topologyManager->deleteTopology($topology);
+        if ($removeWithTasks){
+            $this->userTaskHandler->removeAllUserTasks($topology->getId());
+        }
 
         return $res;
     }
@@ -326,6 +379,27 @@ final class TopologyHandler
     }
 
     /**
+     * @param string $topologyId
+     * @param string $nodeName
+     *
+     * @return mixed[]
+     * @throws Exception
+     */
+    public function getTopologiesByIdAndNodeName(string $topologyId, string $nodeName): array
+    {
+        $topologies = $this->topologyManager->getTopologiesById($topologyId);
+        foreach ($topologies as &$value) {
+            $nodes          = array_map(static fn($node): array => [
+                'id'   => $node['_id'],
+                'name' => $node['name'],
+            ], $this->nodeManager->getTopologyNodesByName($value['id'], $nodeName));
+            $value['nodes'] = $nodes;
+        }
+
+        return $topologies;
+    }
+
+    /**
      * @param Topology $topology
      *
      * @return mixed[]
@@ -333,19 +407,25 @@ final class TopologyHandler
      */
     private function getTopologyData(Topology $topology): array
     {
-        /** @var NodeRepository $repository */
-        $repository = $this->dm->getRepository(Node::class);
+        $settings  = [];
+        $cronNodes = $this->dm->getRepository(Node::class)->getCronNodes($topology);
+        foreach ($cronNodes as $node) {
+            if ($node->getCron()) {
+                $settings[] = ['cron' => $node->getCron(), 'cronParams' => $node->getCronParams()];
+            }
+        }
 
         return [
-            '_id'        => $topology->getId(),
-            'type'       => $repository->getTopologyType($topology),
-            'name'       => $topology->getName(),
-            'descr'      => $topology->getDescr(),
-            'status'     => $topology->getStatus(),
-            'visibility' => $topology->getVisibility(),
-            'version'    => $topology->getVersion(),
-            'category'   => $topology->getCategory(),
-            'enabled'    => $topology->isEnabled(),
+            '_id'          => $topology->getId(),
+            'type'         => count($cronNodes) >= 1 ? TypeEnum::CRON : TypeEnum::WEBHOOK,
+            'name'         => $topology->getName(),
+            'descr'        => $topology->getDescr(),
+            'status'       => $topology->getStatus(),
+            'visibility'   => $topology->getVisibility(),
+            'version'      => $topology->getVersion(),
+            'category'     => $topology->getCategory(),
+            'enabled'      => $topology->isEnabled(),
+            'cronSettings' => $settings,
         ];
     }
 

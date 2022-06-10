@@ -25,7 +25,11 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
      */
     public function testCreateTopologiesAction(): void
     {
-        $this->assertResponse(__DIR__ . '/data/TopologyController/createTopologyRequest.json', ['_id' => '123456789']);
+        $this->assertResponseLogged(
+            $this->jwt,
+            __DIR__ . '/data/TopologyController/createTopologyRequest.json',
+            ['_id' => '123456789'],
+        );
     }
 
     /**
@@ -35,10 +39,14 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
      */
     public function testGetTopologies(): void
     {
-        $topology = (new Topology())->setName('Topology');
+        $topology = (new Topology())->setName('Topology')->setEnabled(TRUE);
         $this->pfd($topology);
 
-        $this->assertResponse(__DIR__ . '/data/TopologyController/getTopologiesRequest.json', ['_id' => '123456789']);
+        $this->assertResponseLogged(
+            $this->jwt,
+            __DIR__ . '/data/TopologyController/getTopologiesRequest.json',
+            ['_id' => '123456789'],
+        );
     }
 
     /**
@@ -48,7 +56,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
      */
     public function testGetCronTopologiesAction(): void
     {
-        $this->assertResponse(__DIR__ . '/data/TopologyController/getCronTopologiesRequest.json');
+        $this->assertResponseLogged($this->jwt,__DIR__ . '/data/TopologyController/getCronTopologiesRequest.json');
     }
 
     /**
@@ -58,10 +66,11 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
      */
     public function testGetTopologyAction(): void
     {
-        $topology = (new Topology())->setName('Topology');
+        $topology = (new Topology())->setName('Topology')->setEnabled(TRUE);
         $this->pfd($topology);
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/TopologyController/getTopologyRequest.json',
             ['_id' => '123456789'],
             [':id' => $topology->getId()],
@@ -75,7 +84,11 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
      */
     public function testCreateTopologyAction(): void
     {
-        $this->assertResponse(__DIR__ . '/data/TopologyController/createTopologyRequest.json', ['_id' => '123456789']);
+        $this->assertResponseLogged(
+            $this->jwt,
+            __DIR__ . '/data/TopologyController/createTopologyRequest.json',
+            ['_id' => '123456789'],
+        );
     }
 
     /**
@@ -85,10 +98,11 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
      */
     public function testUpdateTopologyAction(): void
     {
-        $topology = (new Topology())->setName('Topology');
+        $topology = (new Topology())->setName('Topology')->setEnabled(TRUE);
         $this->pfd($topology);
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/TopologyController/updateTopologyRequest.json',
             ['_id' => '123456789'],
             [':id' => $topology->getId()],
@@ -105,7 +119,8 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         $topology = (new Topology())->setName('Topology')->setRawBpmn(TopologyManager::DEFAULT_SCHEME);
         $this->pfd($topology);
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/TopologyController/getTopologySchemaRequest.json',
             ['_id' => '123456789'],
             [':id' => $topology->getId()],
@@ -122,10 +137,11 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
      */
     public function testSaveTopologySchemaAction(): void
     {
-        $topology = (new Topology())->setName('Topology');
+        $topology = (new Topology())->setName('Topology')->setEnabled(TRUE);
         $this->pfd($topology);
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/TopologyController/saveTopologySchemaRequest.json',
             ['_id' => '123456789'],
             [':id' => $topology->getId()],
@@ -142,7 +158,8 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         $topology = (new Topology())->setName('Topology');
         $this->pfd($topology);
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/TopologyController/publishTopologySchemaRequest.json',
             ['_id' => '123456789'],
             [':id' => $topology->getId()],
@@ -159,7 +176,8 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         $topology = (new Topology())->setName('Topology');
         $this->pfd($topology);
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/TopologyController/cloneTopologyRequest.json',
             ['_id' => '123456789'],
             [':id' => $topology->getId()],
@@ -176,7 +194,8 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         $topology = (new Topology())->setName('Topology');
         $this->pfd($topology);
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/TopologyController/deleteTopologyRequest.json',
             ['message' => 'CurlManager::send() failed: cURL error 6: Could not resolve host: topology-api (see https://curl.haxx.se/libcurl/c/libcurl-errors.html)'],
             [':id' => $topology->getId()],
@@ -193,7 +212,8 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         $topology = (new Topology())->setName('Topology');
         $this->pfd($topology);
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/TopologyController/testTopologyRequest.json',
             ['message' => 'CurlManager::send() failed: cURL error 6: Could not resolve host: topology-api (see https://curl.haxx.se/libcurl/c/libcurl-errors.html)'],
             [':id' => $topology->getId()],

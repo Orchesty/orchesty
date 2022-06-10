@@ -25,7 +25,10 @@ final class UserControllerTest extends ControllerTestCaseAbstract
      */
     public function testLoginAction(): void
     {
-        $this->assertResponse(__DIR__ . '/data/UserController/loginRequest.json', ['id' => '123456789']);
+        $this->assertResponse(
+            __DIR__ . '/data/UserController/loginRequest.json',
+            ['id' => '123456789', 'token' => 'jwt'],
+        );
     }
 
     /**
@@ -35,7 +38,21 @@ final class UserControllerTest extends ControllerTestCaseAbstract
      */
     public function testLogoutAction(): void
     {
-        $this->assertResponse(__DIR__ . '/data/UserController/logoutRequest.json');
+        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/UserController/logoutRequest.json');
+    }
+
+    /**
+     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserController::loggedUserAction
+     *
+     * @throws Exception
+     */
+    public function testLoggedUserAction(): void
+    {
+        $this->assertResponseLogged(
+            $this->jwt,
+            __DIR__ . '/data/UserController/loggedRequest.json',
+            ['id' => '123', 'token' => 'jwt'],
+        );
     }
 
     /**
@@ -85,7 +102,7 @@ final class UserControllerTest extends ControllerTestCaseAbstract
      */
     public function testChangePasswordAction(): void
     {
-        $this->assertResponse(__DIR__ . '/data/UserController/changePasswordRequest.json');
+        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/UserController/changePasswordRequest.json');
     }
 
     /**
@@ -105,7 +122,7 @@ final class UserControllerTest extends ControllerTestCaseAbstract
      */
     public function testDeleteAction(): void
     {
-        $this->assertResponse(__DIR__ . '/data/UserController/deleteRequest.json');
+        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/UserController/deleteRequest.json');
     }
 
     /**
@@ -115,7 +132,7 @@ final class UserControllerTest extends ControllerTestCaseAbstract
      */
     public function testGetAction(): void
     {
-        $this->assertResponse(__DIR__ . '/data/UserController/getUserRequest.json');
+        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/UserController/getUserRequest.json');
     }
 
 }

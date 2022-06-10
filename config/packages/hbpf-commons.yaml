@@ -13,6 +13,7 @@ parameters:
     mongodb.connector_table: connectors
     mongodb.node_table: pipes_node
     mongodb.rabbit_table: rabbitmq
+    mongodb.rabbit_consumer_table: rabbitmq_consumer
     mongodb.counter_table: pipes_counter
 
 
@@ -36,10 +37,10 @@ services:
     hbpf.commons.crypt.crypt_manager:
         class: Hanaboso\CommonsBundle\Crypt\CryptManager
         arguments:
-            - ['@hbpf.commons.crypt.windwalker']
+            - ['@hbpf.commons.crypt.advanced-windwalker']
 
-    hbpf.commons.crypt.windwalker:
-        class: Hanaboso\CommonsBundle\Crypt\Impl\WindwalkerCrypt
+    hbpf.commons.crypt.advanced-windwalker:
+        class: Hanaboso\CommonsBundle\Crypt\Impl\AdwancedWindwalkerCrypt
         arguments:
             - '%kernel.secret%'
 

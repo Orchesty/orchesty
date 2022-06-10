@@ -5,9 +5,11 @@ namespace PipesFrameworkTests\Integration\HbPFTopology\Handler;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Exception;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
+use Hanaboso\PipesFramework\Configurator\Model\NodeManager;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler;
+use Hanaboso\PipesFramework\HbPFUserTaskBundle\Handler\UserTaskHandler;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
@@ -28,7 +30,7 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
      */
     public function testGetCronTopologies(): void
     {
-        $handler = self::$container->get('hbpf.configurator.handler.topology');
+        $handler = self::getContainer()->get('hbpf.configurator.handler.topology');
         $result  = $handler->getCronTopologies();
 
         self::assertArrayHasKey('items', $result);
@@ -43,13 +45,15 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
     {
         $topology = $this->createTopology();
 
-        $manager   = $this->mockManager($topology);
-        $generator = self::createPartialMock(TopologyGeneratorBridge::class, ['generateTopology', 'runTopology']);
+        $manager     = $this->mockManager($topology);
+        $nodeManager = $this->mockNodeManager();
+        $generator   = self::createPartialMock(TopologyGeneratorBridge::class, ['generateTopology', 'runTopology']);
         $generator->expects(self::any())->method('generateTopology')->willReturn(new ResponseDto(200, '', '{}', []));
         $generator->expects(self::any())->method('runTopology')->willReturn(new ResponseDto(200, '', '{}', []));
+        $userTaskHandler = $this->mockUserTaskHandler();
 
-        $dml     = self::$container->get('hbpf.database_manager_locator');
-        $handler = new TopologyHandler($dml, $manager, $generator);
+        $dml     = self::getContainer()->get('hbpf.database_manager_locator');
+        $handler = new TopologyHandler($dml, $manager, $nodeManager, $generator, $userTaskHandler);
         $result  = $handler->publishTopology($topology->getId());
 
         self::assertEquals(200, $result->getStatusCode());
@@ -62,12 +66,14 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
      */
     public function testPublishTopologyErr(): void
     {
-        $topology  = $this->createTopology();
-        $manager   = $this->mockManager($topology);
-        $generator = $this->mockGenerator(new ResponseDto(400, '', '{}', []));
+        $topology        = $this->createTopology();
+        $manager         = $this->mockManager($topology);
+        $nodeManager     = $this->mockNodeManager();
+        $generator       = $this->mockGenerator(new ResponseDto(400, '', '{}', []));
+        $userTaskHandler = $this->mockUserTaskHandler();
 
-        $dml     = self::$container->get('hbpf.database_manager_locator');
-        $handler = new TopologyHandler($dml, $manager, $generator);
+        $dml     = self::getContainer()->get('hbpf.database_manager_locator');
+        $handler = new TopologyHandler($dml, $manager, $nodeManager, $generator, $userTaskHandler);
         $result  = $handler->publishTopology($topology->getId());
 
         self::assertEquals(400, $result->getStatusCode());
@@ -80,12 +86,14 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
      */
     public function testPublishTopologyErr2(): void
     {
-        $topology  = $this->createTopology();
-        $manager   = $this->mockManager($topology);
-        $generator = $this->mockGenerator(new MappingException());
+        $topology        = $this->createTopology();
+        $manager         = $this->mockManager($topology);
+        $nodeManager     = $this->mockNodeManager();
+        $generator       = $this->mockGenerator(new MappingException());
+        $userTaskHandler = $this->mockUserTaskHandler();
 
-        $dml     = self::$container->get('hbpf.database_manager_locator');
-        $handler = new TopologyHandler($dml, $manager, $generator);
+        $dml     = self::getContainer()->get('hbpf.database_manager_locator');
+        $handler = new TopologyHandler($dml, $manager, $nodeManager, $generator, $userTaskHandler);
         $result  = $handler->publishTopology($topology->getId());
 
         self::assertEquals(400, $result->getStatusCode());
@@ -100,10 +108,10 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
     {
         $topology = $this->createTopology();
 
-        $handler = self::$container->get('hbpf.configurator.handler.topology');
+        $handler = self::getContainer()->get('hbpf.configurator.handler.topology');
         $result  = $handler->cloneTopology($topology->getId());
 
-        self::assertEquals(9, count($result));
+        self::assertEquals(10, count($result));
     }
 
     /**
@@ -115,10 +123,12 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
     {
         $topology = $this->createTopology()->setEnabled(FALSE);
 
-        $manager   = $this->mockManager($topology);
-        $generator = $this->mockGenerator(new ResponseDto(200, '', '{}', []));
-        $dml       = self::$container->get('hbpf.database_manager_locator');
-        $handler   = new TopologyHandler($dml, $manager, $generator);
+        $manager         = $this->mockManager($topology);
+        $nodeManager     = $this->mockNodeManager();
+        $generator       = $this->mockGenerator(new ResponseDto(200, '', '{}', []));
+        $userTaskHandler = $this->mockUserTaskHandler();
+        $dml             = self::getContainer()->get('hbpf.database_manager_locator');
+        $handler         = new TopologyHandler($dml, $manager, $nodeManager, $generator, $userTaskHandler);
 
         $result = $handler->deleteTopology($topology->getId());
 
@@ -134,10 +144,12 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
     {
         $topology = $this->createTopology();
 
-        $manager   = $this->mockManager($topology);
-        $generator = $this->mockGenerator(new ResponseDto(200, '', '{"docker_info": {"info": 1}}', []));
-        $dml       = self::$container->get('hbpf.database_manager_locator');
-        $handler   = new TopologyHandler($dml, $manager, $generator);
+        $manager         = $this->mockManager($topology);
+        $nodeManager     = $this->mockNodeManager();
+        $generator       = $this->mockGenerator(new ResponseDto(200, '', '{"docker_info": {"info": 1}}', []));
+        $dml             = self::getContainer()->get('hbpf.database_manager_locator');
+        $userTaskHandler = $this->mockUserTaskHandler();
+        $handler         = new TopologyHandler($dml, $manager, $nodeManager, $generator, $userTaskHandler);
 
         $result = $handler->runTest($topology->getId());
 
@@ -153,10 +165,12 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
     {
         $topology = $this->createTopology();
 
-        $manager   = $this->mockManager($topology);
-        $generator = $this->mockGenerator(new ResponseDto(200, '', '', []));
-        $dml       = self::$container->get('hbpf.database_manager_locator');
-        $handler   = new TopologyHandler($dml, $manager, $generator);
+        $manager         = $this->mockManager($topology);
+        $nodeManager     = $this->mockNodeManager();
+        $generator       = $this->mockGenerator(new ResponseDto(200, '', '', []));
+        $dml             = self::getContainer()->get('hbpf.database_manager_locator');
+        $userTaskHandler = $this->mockUserTaskHandler();
+        $handler         = new TopologyHandler($dml, $manager, $nodeManager, $generator, $userTaskHandler);
 
         $result = $handler->runTest($topology->getId());
 
@@ -236,6 +250,28 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
         $manager->expects(self::any())->method('deleteTopology');
 
         return $manager;
+    }
+
+    /**
+     * @return NodeManager
+     */
+    private function mockNodeManager(): NodeManager
+    {
+        return self::createPartialMock(
+            NodeManager::class,
+            [],
+        );
+    }
+
+    /**
+     * @return UserTaskHandler
+     */
+    private function mockUserTaskHandler(): UserTaskHandler
+    {
+        return self::createPartialMock(
+            UserTaskHandler::class,
+            [],
+        );
     }
 
 }

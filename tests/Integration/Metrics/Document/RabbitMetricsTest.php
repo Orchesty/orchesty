@@ -26,7 +26,10 @@ final class RabbitMetricsTest extends DatabaseTestCaseAbstract
      */
     public function testDocument(): void
     {
-        $this->dm->createQueryBuilder(RabbitMetrics::class)
+        $dm = self::getContainer()->get('doctrine_mongodb.odm.metrics_document_manager');
+        $dm->getSchemaManager()->dropDocumentCollection(RabbitMetrics::class);
+        $dm->getSchemaManager()->createDocumentCollection(RabbitMetrics::class);
+        $dm->createQueryBuilder(RabbitMetrics::class)
             ->insert()
             ->setNewObj(
                 [
@@ -35,9 +38,9 @@ final class RabbitMetricsTest extends DatabaseTestCaseAbstract
                         'created'  => DateTimeUtils::getUtcDateTime('1.1.2020')->getTimestamp(),
                     ],
                     'tags'   => [
-                        'nodeId'     => '1',
-                        'topologyId' => '2',
-                        'queue'      => '12',
+                        'node_id'     => '1',
+                        'topology_id' => '2',
+                        'queue'       => '12',
                     ],
                 ],
             )
@@ -45,7 +48,7 @@ final class RabbitMetricsTest extends DatabaseTestCaseAbstract
             ->execute();
 
         /** @var DocumentRepository<RabbitMetrics> $repository */
-        $repository = $this->dm->getRepository(RabbitMetrics::class);
+        $repository = $dm->getRepository(RabbitMetrics::class);
         /** @var RabbitMetrics $result */
         $result = $repository->findAll()[0];
         self::assertEquals(2, $result->getFields()->getMessages());

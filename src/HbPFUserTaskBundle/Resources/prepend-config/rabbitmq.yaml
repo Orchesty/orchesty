@@ -1,0 +1,8 @@
+rabbit_mq:
+    connections:
+        default:
+            dsn: '%env(string:RABBITMQ_DSN)%'
+
+    publishers:
+        pipes-user-task:
+            routing_key: ""

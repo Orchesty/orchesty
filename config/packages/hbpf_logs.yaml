@@ -1,3 +1,0 @@
-hb_pf_logs:
-    type: mongodb
-    storage_name: "%env(string:MONGODB_DB)%"

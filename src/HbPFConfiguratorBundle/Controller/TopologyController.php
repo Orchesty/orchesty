@@ -57,6 +57,23 @@ final class TopologyController
     }
 
     /**
+     * @Route("/topologies/{id}/run", methods={"POST", "OPTIONS"})
+     *
+     * @param Request $request
+     * @param string  $id
+     *
+     * @return Response
+     */
+    public function runTopologiesAction(Request $request, string $id): Response
+    {
+        try {
+            return $this->getResponse($this->topologyHandler->runTopology($id, $request->request->all()));
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
+        }
+    }
+
+    /**
      * @Route("/topologies/cron", methods={"GET", "OPTIONS"})
      *
      * @return Response
@@ -81,7 +98,7 @@ final class TopologyController
     {
         try {
             return $this->getResponse($this->topologyHandler->getTopology($id));
-        } catch (TopologyException | MongoDBException $e) {
+        } catch (TopologyException|MongoDBException $e) {
             return $this->getErrorResponse($e);
         }
     }
@@ -97,6 +114,14 @@ final class TopologyController
     {
         try {
             return $this->getResponse($this->topologyHandler->createTopology($request->request->all()));
+        } catch (TopologyException $e) {
+            return match ($e->getCode()) {
+                TopologyException::TOPOLOGY_NODE_NAME_NOT_FOUND, TopologyException::TOPOLOGY_NODE_TYPE_NOT_FOUND => $this->getErrorResponse(
+                    $e,
+                    404,
+                ),
+                default => $this->getErrorResponse($e, 400),
+            };
         } catch (Throwable $e) {
             return $this->getErrorResponse($e);
         }
@@ -114,7 +139,7 @@ final class TopologyController
     {
         try {
             return $this->getResponse($this->topologyHandler->updateTopology($id, $request->request->all()));
-        } catch (TopologyException | Throwable $e) {
+        } catch (TopologyException|Throwable $e) {
             return $this->getErrorResponse($e);
         }
     }
@@ -159,7 +184,7 @@ final class TopologyController
                     $request->request->all(),
                 ),
             );
-        } catch (TopologyException | Throwable $e) {
+        } catch (TopologyException|Throwable $e) {
             return $this->getErrorResponse(
                 $e,
                 in_array(
@@ -215,14 +240,16 @@ final class TopologyController
     /**
      * @Route("/topologies/{id}", defaults={}, requirements={"id": "\w+"}, methods={"DELETE", "OPTIONS"})
      *
-     * @param string $id
+     * @param Request $request
+     * @param string  $id
      *
      * @return Response
      */
-    public function deleteTopologyAction(string $id): Response
+    public function deleteTopologyAction(Request $request, string $id): Response
     {
         try {
-            $res = $this->topologyHandler->deleteTopology($id);
+            $removeWithTasks = $request->get('removeWithTasks');
+            $res             = $this->topologyHandler->deleteTopology($id, $removeWithTasks);
 
             return $this->getResponse($res->getBody(), $res->getStatusCode());
         } catch (Throwable $e) {
@@ -243,6 +270,33 @@ final class TopologyController
             $data = $this->topologyHandler->runTest($topologyId);
 
             return $this->getResponse($data, 200, ['Content-Type' => 'application/json']);
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
+        }
+    }
+
+    /**
+     * @Route("/topologies/{topologyId}/versions/node/{nodeName}", methods={"GET"})
+     *
+     * @param string $topologyId
+     * @param string $nodeName
+     *
+     * @return Response
+     */
+    public function getTopologyVersions(string $topologyId, string $nodeName): Response
+    {
+        try {
+            if ($topologyId && $nodeName) {
+                $data = $this->topologyHandler->getTopologiesByIdAndNodeName($topologyId, $nodeName);
+
+                return $this->getResponse($data, 200, ['Content-Type' => 'application/json']);
+            } else {
+                return $this->getResponse(
+                    sprintf('Parameter topologyId [%s] or nodeName [%s]is empty', $topologyId, $nodeName),
+                    400,
+                    ['Content-Type' => 'application/json'],
+                );
+            }
         } catch (Throwable $e) {
             return $this->getErrorResponse($e);
         }

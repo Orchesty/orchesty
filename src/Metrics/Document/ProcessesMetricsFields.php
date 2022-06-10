@@ -16,17 +16,19 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 class ProcessesMetricsFields
 {
 
+    // TODO unused metrics: fail_count, ok_count
+
     /**
      * @var bool
      *
-     * @ODM\Field(type="bool", name="counter_process_result")
+     * @ODM\Field(type="bool", name="result")
      */
     private bool $success;
 
     /**
      * @var int
      *
-     * @ODM\Field(type="int", name="counter_process_duration")
+     * @ODM\Field(type="int", name="duration")
      */
     private int $duration;
 

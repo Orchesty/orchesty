@@ -1,5 +1,7 @@
 {
     "http": "GET /api/progress/topology/:topologyId",
     "body": [],
-    "headers": []
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
 }

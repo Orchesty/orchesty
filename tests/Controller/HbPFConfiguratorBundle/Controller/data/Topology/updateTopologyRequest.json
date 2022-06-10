@@ -5,5 +5,7 @@
         "descr": "Topology 2",
         "enabled": true
     },
-    "headers": []
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
 }

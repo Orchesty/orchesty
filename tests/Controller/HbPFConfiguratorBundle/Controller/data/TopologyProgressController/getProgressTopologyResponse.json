@@ -1,27 +1,28 @@
 {
     "http": 200,
     "body": {
+        "filter": [],
+        "sorter": [],
         "items": [
             {
                 "id": "123456789",
-                "name": "name",
                 "correlationId": "corr-id-1234",
                 "duration": 10000,
-                "status": "OK",
-                "nodesProcessed": 1,
-                "nodesRemaining": 2,
-                "nodesTotal": 3,
-                "nodes": [
-                    {
-                        "processId": "proc-id-1234",
-                        "id": "12345",
-                        "name": "node-name",
-                        "status": "OK"
-                    }
-                ],
-                "started": "2010-10-10 10:10:10",
-                "finished": "2010-10-10 10:10:20"
+                "started": "2010-10-10T10:10:10Z",
+                "finished": "2010-10-10T10:10:20Z",
+                "nodesProcessed": 5,
+                "nodesTotal": 10,
+                "status": "IN PROGRESS",
+                "failed": 0
             }
-        ]
+        ],
+        "paging": {
+            "page": 1,
+            "itemsPerPage": 10,
+            "total": 1,
+            "nextPage": 1,
+            "lastPage": 1,
+            "previousPage": 1
+        }
     }
 }

@@ -12,7 +12,6 @@ use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use Hanaboso\Utils\Date\DateTimeUtils;
 use Hanaboso\Utils\Exception\DateTimeException;
-use Hanaboso\Utils\System\NodeGeneratorUtils;
 use Throwable;
 
 /**
@@ -33,6 +32,7 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
      * @param string          $rabbitTable
      * @param string          $counterTable
      * @param string          $connectorTable
+     * @param string          $consumerTable
      */
     public function __construct(
         private ClientInterface $client,
@@ -42,9 +42,10 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
         string $rabbitTable,
         string $counterTable,
         string $connectorTable,
+        string $consumerTable,
     )
     {
-        parent::__construct($dm, $nodeTable, $fpmTable, $rabbitTable, $counterTable, $connectorTable);
+        parent::__construct($dm, $nodeTable, $fpmTable, $rabbitTable, $counterTable, $connectorTable, $consumerTable);
     }
 
     /**
@@ -58,6 +59,7 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
      */
     public function getNodeMetrics(Node $node, Topology $topology, array $params): array
     {
+        $topology;
         $dateFrom = $params['from'] ?? NULL;
         $dateTo   = $params['to'] ?? NULL;
         $from     = sprintf(
@@ -120,8 +122,7 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
         );
 
         $where = [
-            self::NODE  => $node->getId(),
-            self::QUEUE => NodeGeneratorUtils::generateQueueName($topology->getId(), $node->getId(), $node->getName()),
+            self::NODE => $node->getId(),
         ];
 
         return $this->runQuery($select, $from, $where, NULL, $dateFrom, $dateTo);
@@ -140,22 +141,27 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
         $dateFrom = $params['from'] ?? NULL;
         $dateTo   = $params['to'] ?? NULL;
         $from     = $this->counterTable;
-
-        $select  = self::getFunctionForSelect([self::AVG_TIME => self::PROCESS_TIME_COUNT], self::COUNT);
-        $select  = self::addStringSeparator($select);
-        $select .= self::getFunctionForSelect([self::AVG_TIME => self::PROCESS_TIME_SUM], self::SUM);
-        $select  = self::addStringSeparator($select);
-        $select .= self::getFunctionForSelect([self::MIN_TIME => self::PROCESS_TIME_MIN], self::MIN);
-        $select  = self::addStringSeparator($select);
-        $select .= self::getFunctionForSelect([self::MAX_TIME => self::PROCESS_TIME_MAX], self::MAX);
-        $select  = self::addStringSeparator($select);
-        $select .= self::getFunctionForSelect([self::TOTAL_COUNT => self::NODE_TOTAL_SUM], self::SUM);
-        $select  = self::addStringSeparator($select);
-        $select .= self::getFunctionForSelect([self::FAILED_COUNT => self::NODE_ERROR_SUM], self::SUM);
-
-        $where = [self::TOPOLOGY => $topology->getId()];
+        $select   = $this->createTopologiesSelect();
+        $where    = [self::TOPOLOGY => $topology->getId()];
 
         return $this->runQuery($select, $from, $where, NULL, $dateFrom, $dateTo);
+    }
+
+    /**
+     * @param mixed[] $params
+     *
+     * @return mixed[]
+     * @throws DateTimeException
+     * @throws MetricsException
+     */
+    public function getTopologiesProcessTimeMetrics(array $params): array
+    {
+        $dateFrom = $params['from'] ?? NULL;
+        $dateTo   = $params['to'] ?? NULL;
+        $from     = $this->counterTable;
+        $select   = $this->createTopologiesSelect();
+
+        return $this->runQuery($select, $from, [], NULL, $dateFrom, $dateTo);
     }
 
     /**
@@ -170,7 +176,7 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
     {
         $data = $this->getTopologyMetrics($topology, $params);
 
-        $dateFrom = $params['from'] ?? 'now -1h';
+        $dateFrom = $params['from'] ?? 'now - 1 hours';
         $dateTo   = $params['to'] ?? 'now';
         $groupBy  = sprintf(
             'TIME(%s)',
@@ -243,7 +249,7 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
             TRUE,
         );
 
-        return ['application' => $result];
+        return ['application' => $result ?: 0];
     }
 
     /**
@@ -280,6 +286,51 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
     }
 
     /**
+     * @param mixed[] $params
+     *
+     * @return mixed[]
+     * @throws DateTimeException
+     * @throws MetricsException
+     */
+    public function getConsumerMetrics(array $params): array
+    {
+        $dateFrom = $params['from'] ?? '-1 hours';
+        $dateTo   = $params['to'] ?? 'now';
+        $from     = $this->consumerTable;
+
+        $res    = $this->runQuery('*', $from, [], NULL, $dateFrom, $dateTo, FALSE, TRUE);
+        $parsed = [];
+        foreach ($res[0]['values'] as $item) {
+            $createdIndex   = array_search('created', $res[0]['columns'], TRUE);
+            $queueIndex     = array_search('queue', $res[0]['columns'], TRUE);
+            $consumersIndex = array_search('consumers', $res[0]['columns'], TRUE);
+
+            $parsed[] = [
+                'created'   => DateTimeUtils::getUtcDateTimeFromTimeStamp($item[$createdIndex] ?? 0)->format(
+                    DateTimeUtils::DATE_TIME_UTC,
+                ),
+                'consumers' => (int) ($item[$consumersIndex] ?? 0),
+                'queue'     => $item[$queueIndex] ?? '',
+            ];
+        }
+
+        return $parsed;
+    }
+
+    /**
+     * @param mixed[] $params
+     *
+     * @return mixed[]
+     */
+    public function getContainerMetrics(array $params): array
+    {
+        // TODO
+        $params;
+
+        return [];
+    }
+
+    /**
      * -------------------------------------------- HELPERS ---------------------------------------------
      */
 
@@ -291,6 +342,7 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
      * @param string|null $dateFrom
      * @param string|null $dateTo
      * @param bool        $forGraph
+     * @param bool        $raw
      *
      * @return mixed[]
      * @throws MetricsException
@@ -304,6 +356,7 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
         ?string $dateFrom = NULL,
         ?string $dateTo = NULL,
         bool $forGraph = FALSE,
+        bool $raw = FALSE,
     ): array
     {
         $qb = $this->client->getQueryBuilder()
@@ -335,7 +388,32 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
             return $this->processGraphResult($series);
         }
 
+        if ($raw) {
+            return $series;
+        }
+
         return $this->processResultSet($this->getPoints($series));
+    }
+
+    /**
+     * @return string
+     */
+    private function createTopologiesSelect(): string
+    {
+        $select  = self::getFunctionForSelect([self::AVG_TIME => self::PROCESS_TIME_COUNT], self::COUNT);
+        $select  = self::addStringSeparator($select);
+        $select .= self::getFunctionForSelect([self::AVG_TIME => self::PROCESS_TIME_SUM], self::SUM);
+        $select  = self::addStringSeparator($select);
+        $select .= self::getFunctionForSelect([self::MIN_TIME => self::PROCESS_TIME_MIN], self::MIN);
+        $select  = self::addStringSeparator($select);
+        $select .= self::getFunctionForSelect([self::MAX_TIME => self::PROCESS_TIME_MAX], self::MAX);
+        $select  = self::addStringSeparator($select);
+        $select .= self::getFunctionForSelect([self::TOTAL_COUNT => self::NODE_TOTAL_SUM], self::SUM);
+        $select  = self::addStringSeparator($select);
+        // phpcs:ignore
+        $select .= self::getFunctionForSelect([self::FAILED_COUNT => self::NODE_ERROR_SUM], self::SUM);
+
+        return $select;
     }
 
     /**
@@ -467,6 +545,10 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
                 $value = sprintf('%s = \'%s\'', $key, $value);
             },
         );
+
+        if (empty($data)) {
+            return [];
+        }
 
         return [implode(' or ', $data)];
     }
