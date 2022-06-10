@@ -22,13 +22,14 @@ abstract class AMessage {
         const h = Headers.getPFHeaders(headers);
         Headers.validateMandatoryHeaders(h);
 
-        if (!node.id || !node.node_id || !node.node_name) {
+        // if (!node.id || !node.node_id || !node.node_name) {
+        if (!node.id || !node.node_id) {
             throw new Error(`Cannot create message object. Invalid node label obj: "${JSON.stringify(node)}"`);
         }
 
         this.headers = new Headers(h);
         this.headers.setPFHeader(Headers.NODE_ID, node.node_id);
-        this.headers.setPFHeader(Headers.NODE_NAME, node.node_name);
+        // this.headers.setPFHeader(Headers.NODE_NAME, node.node_name);
     }
 
     public getNodeLabel(): INodeLabel {

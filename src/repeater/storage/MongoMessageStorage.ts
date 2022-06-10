@@ -64,7 +64,7 @@ class MongoMessageStorage implements IMessageStorage {
 
         try {
             const mongo: Db = await this.db;
-            const result = await mongo.collection(COLLECTION_NAME).insertOne(document);
+            await mongo.collection(COLLECTION_NAME).insertOne(document);
             logger.debug(
                 "Message persisted.",
                 {
@@ -131,8 +131,10 @@ class MongoMessageStorage implements IMessageStorage {
         const options: MongoClientOptions = {useNewUrlParser: true, useUnifiedTopology: true};
 
         this.db = MongoClient.connect(url, options)
-            .then((client: MongoClient) => {
+            .then(async (client: MongoClient) => {
                 logger.info("MongoDb connection opened.", { node_name: "repeater" });
+
+                await client.db().collection(COLLECTION_NAME).createIndex({'repeat_at': 1});
 
                 return client.db();
             })
@@ -154,7 +156,7 @@ class MongoMessageStorage implements IMessageStorage {
         try {
             const mongo: Db = await this.db;
 
-            return mongo.collection(COLLECTION_NAME).find(query).limit(1000).toArray();
+            return mongo.collection(COLLECTION_NAME).find(query).limit(500).toArray();
         } catch (e) {
             logger.error(
                 `Error finding mongo document. Query: ${JSON.stringify(query)}`,
