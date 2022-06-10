@@ -1,0 +1,14 @@
+parameters:
+    stdout_path: 'php://stdout'
+
+monolog:
+    use_microseconds: false
+    channels: [authorization, commons, connector, ftp, parser_table, rabbit_mq, stdout]
+    handlers:
+        # Handler for docker container
+        stdout:
+            type:  stream
+            path:  "%stdout_path%"
+            level: info
+            max_files: 10
+            channels: '!php'
