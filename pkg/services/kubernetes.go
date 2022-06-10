@@ -362,8 +362,3 @@ func GetKubernetesConfig(config config.GeneratorConfig) (*rest.Config, error) {
 }
 
 func int32Ptr(i int32) *int32 { return &i }
-
-func getKubernetPortName(nodeID string) string {
-	length := len(nodeID)
-	return "p" + nodeID[length-9:length]
-}

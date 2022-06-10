@@ -2,42 +2,50 @@ package model
 
 import (
 	"fmt"
-	"strings"
-
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"strings"
 )
 
-// TopologyBridgeDebugJSON TopologyBridgeDebugJSON
 type TopologyBridgeDebugJSON struct {
 	Port int    `json:"port,omitempty"`
 	Host string `json:"host,omitempty"`
 	URL  string `json:"url,omitempty"`
 }
 
-// TopologyBridgeLabelJSON TopologyBridgeLabelJSON
 type TopologyBridgeLabelJSON struct {
 	ID       string `json:"id"`
 	NodeID   string `json:"node_id"`
 	NodeName string `json:"node_name"`
 }
 
-// TopologyBridgeWorkerSettingsQueueJSON TopologyBridgeWorkerSettingsQueueJSON
 type TopologyBridgeWorkerSettingsQueueJSON struct {
 	Name    string `json:"name,omitempty"`
 	Options string `json:"options,omitempty"`
 }
 
-// TopologyBridgeWorkerSettingsJSON TopologyBridgeWorkerSettingsJSON
 type TopologyBridgeWorkerSettingsJSON struct {
 	Host           string                                `json:"host,omitempty"`
 	ProcessPath    string                                `json:"process_path,omitempty"`
 	StatusPath     string                                `json:"status_path,omitempty"`
 	Method         string                                `json:"method,omitempty"`
+	Headers        map[string]interface{}                `json:"headers"`
 	Port           int                                   `json:"port,omitempty"`
 	Secure         bool                                  `json:"secure,omitempty" default:"true"`
 	Opts           []string                              `json:"opts,omitempty"`
 	PublishQueue   TopologyBridgeWorkerSettingsQueueJSON `json:"publish_queue,omitempty"`
 	ParserSettings []string                              `json:"parser_settings,omitempty"`
+	// Bridge
+	Timeout        int `json:"timeout"`
+	RabbitPrefetch int `json:"rabbitPrefetch"`
+	// Repeater
+	RepeaterEnabled  bool `json:"repeaterEnabled"`
+	RepeaterHops     int  `json:"repeaterHops"`
+	RepeaterInterval int  `json:"repeaterInterval"`
+	// UserTask
+	UserTask bool `json:"userTaskState"`
+	// Limiter
+	LimiterValue    int `json:"limiterValue"`
+	LimiterInterval int `json:"limiterInterval"`
 }
 
 // TopologyBridgeWorkerJSON TopologyBridgeWorkerJSON
@@ -46,22 +54,48 @@ type TopologyBridgeWorkerJSON struct {
 	Settings TopologyBridgeWorkerSettingsJSON `json:"settings,omitempty"`
 }
 
-// TopologyBridgeJSON TopologyBridgeJSON
-type TopologyBridgeJSON struct {
-	ID     string                           `json:"id"`
-	Label  TopologyBridgeLabelJSON          `json:"label"`
-	Faucet TopologyBridgeFaucetSettingsJSON `json:"faucet"`
-	Worker TopologyBridgeWorkerJSON         `json:"worker"`
-	Next   []string                         `json:"next"`
-	Debug  TopologyBridgeDebugJSON          `json:"debug"`
+type TopologyJson struct {
+	Id       string           `json:"id"`
+	Name     string           `json:"name"`
+	Nodes    []NodeJson       `json:"nodes"`
+	RabbitMq []RabbitMqServer `json:"rabbitMq"`
 }
 
-// TopologyJSON TopologyJSON
-type TopologyJSON struct {
-	ID           string               `json:"id"`
-	TopologyID   string               `json:"topology_id"`
-	TopologyName string               `json:"topology_name"`
-	Bridges      []TopologyBridgeJSON `json:"nodes"`
+type RabbitMqServer struct {
+	Dsn string `json:"dsn"`
+}
+
+type NodeJson struct {
+	Id        string             `json:"id"`
+	Name      string             `json:"name"`
+	Worker    string             `json:"worker"`
+	Settings  NodeSettingsJson   `json:"settings"`
+	Followers []NodeJsonFollower `json:"followers"`
+}
+
+type NodeJsonFollower struct {
+	Id   string `json:"id"`
+	Name string `json:"name"`
+}
+
+type NodeSettingsJson struct {
+	Url        string                 `json:"url,omitempty"`
+	ActionPath string                 `json:"actionPath,omitempty"`
+	TestPath   string                 `json:"testPath,omitempty"`
+	Method     string                 `json:"method,omitempty"`
+	Headers    map[string]interface{} `json:"headers"`
+	// Bridge
+	Timeout        int `json:"timeout,omitempty"`
+	RabbitPrefetch int `json:"rabbitPrefetch,omitempty"`
+	// Repeater
+	RepeaterEnabled  bool `json:"repeaterEnabled,omitempty"`
+	RepeaterHops     int  `json:"repeaterHops,omitempty"`
+	RepeaterInterval int  `json:"repeaterInterval,omitempty"`
+	// UserTask
+	UserTask bool `json:"userTask"`
+	// Limiter
+	LimiterValue    int `json:"limiterValue"`
+	LimiterInterval int `json:"limiterInterval"`
 }
 
 // Topology Topology
@@ -133,7 +167,7 @@ func (t *Topology) GetDockerName() string {
 
 // GetMultiNodeName GetMultiNodeName
 func (t *Topology) GetMultiNodeName() string {
-	return fmt.Sprintf("mb-%s", t.ID.Hex())
+	return fmt.Sprintf("topology-%s", t.ID.Hex())
 }
 
 // GetSaveDir GetSaveDir
@@ -144,11 +178,6 @@ func (t *Topology) GetSaveDir() string {
 // GetSwarmName GetSwarmName
 func (t *Topology) GetSwarmName(prefix string) string {
 	return fmt.Sprintf("%s_%s", prefix, Substring(t.ID.Hex(), 8, len(t.ID.Hex())))
-}
-
-// GetProbeServiceName GetProbeServiceName
-func (t *Topology) GetProbeServiceName() string {
-	return fmt.Sprintf("%s_probe", t.ID.Hex())
 }
 
 // GetCounterServiceName GetCounterServiceName

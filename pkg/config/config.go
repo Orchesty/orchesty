@@ -36,11 +36,12 @@ type (
 		Prefix                     string        `default:"dev" env:"DEPLOYMENT_PREFIX"`
 		Network                    string        `default:"client" env:"GENERATOR_NETWORK"`
 		MultiNode                  bool          `default:"true" env:"MULTI_NODE"`
-		WorkerDefaultPort          int           `default:"8088" env:"WORKER_DEFAULT_PORT"`
-		WorkerDefaultLimitMemory   string        `default:"128Mi" env:"WORKER_DEFAULT_LIMIT_MEMORY"`
-		WorkerDefaultLimitCPU      string        `default:"500m" env:"WORKER_DEFAULT_LIMIT_CPU"`
+		WorkerDefaultPort          int           `default:"8000" env:"WORKER_DEFAULT_PORT"`
+		WorkerDefaultLimitMemory   string        `default:"268435456" env:"WORKER_DEFAULT_LIMIT_MEMORY"`
+		WorkerDefaultLimitCPU      string        `default:"1" env:"WORKER_DEFAULT_LIMIT_CPU"`
 		WorkerDefaultRequestMemory string        `default:"128Mi" env:"WORKER_DEFAULT_REQUEST_MEMORY"`
 		WorkerDefaultRequestCPU    string        `default:"500m" env:"WORKER_DEFAULT_REQUEST_CPU"`
+		UdpLoggerUrl               string        `default:"logstash:5120" env:"UDP_LOGGER_URL"`
 	}
 
 	config struct {
