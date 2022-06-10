@@ -11,7 +11,7 @@
                 "class": "NotificationSenderTests\\Integration\\Model\\Notification\\Handler\\Impl\\NullCurlHandler",
                 "events": [],
                 "settings": [],
-                "status": true,
+                "status": false,
                 "status_message": null
             },
             {
@@ -23,7 +23,7 @@
                 "class": "NotificationSenderTests\\Integration\\Model\\Notification\\Handler\\Impl\\NullEmailHandler",
                 "events": [],
                 "settings": [],
-                "status": true,
+                "status": false,
                 "status_message": null
             },
             {
@@ -35,7 +35,7 @@
                 "class": "NotificationSenderTests\\Integration\\Model\\Notification\\Handler\\Impl\\NullRabitHandler",
                 "events": [],
                 "settings": [],
-                "status": true,
+                "status": false,
                 "status_message": null
             },
             {
@@ -47,7 +47,7 @@
                 "class": "NotificationSenderTests\\Integration\\Model\\Notification\\Handler\\Impl\\NullUnknownHandler",
                 "events": [],
                 "settings": [],
-                "status": true,
+                "status": false,
                 "status_message": null
             },
             {
@@ -59,7 +59,7 @@
                 "class": "Hanaboso\\NotificationSender\\Model\\Notification\\Handler\\Impl\\CurlNotificationHandler",
                 "events": [],
                 "settings": [],
-                "status": true,
+                "status": false,
                 "status_message": null
             },
             {
@@ -71,7 +71,7 @@
                 "class": "Hanaboso\\NotificationSender\\Model\\Notification\\Handler\\Impl\\EmailNotificationHandler",
                 "events": [],
                 "settings": [],
-                "status": true,
+                "status": false,
                 "status_message": null
             },
             {
@@ -83,7 +83,7 @@
                 "class": "Hanaboso\\NotificationSender\\Model\\Notification\\Handler\\Impl\\RabbitNotificationHandler",
                 "events": [],
                 "settings": [],
-                "status": true,
+                "status": false,
                 "status_message": null
             }
         ]

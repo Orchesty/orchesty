@@ -71,7 +71,7 @@ class NotificationSettings
      *
      * @ODM\Field(type="bool")
      */
-    private bool $status = TRUE;
+    private bool $status = FALSE;
 
     /**
      * @var string|null

@@ -1,5 +1,5 @@
 {
-    "http": 200,
+    "http": 400,
     "body": {
         "id": "123456789",
         "created": "2010-10-10 10:10:10",
@@ -23,6 +23,6 @@
             "email": "email@example.com"
         },
         "status": false,
-        "status_message": "Connection could not be established with host \"ssl://host:465\": stream_socket_client(): php_network_getaddresses: getaddrinfo failed: Name does not resolve"
+        "status_message": "Connection could not be established with host \"ssl://host:465\": stream_socket_client(): php_network_getaddresses: getaddrinfo for host failed: Try again"
     }
 }

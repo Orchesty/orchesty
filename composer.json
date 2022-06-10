@@ -1,20 +1,24 @@
 {
     "name": "hanaboso/notification-sender",
     "description": "NotificationSender for Symfony",
+    "license": "Apache-2.0",
     "version": "1.2.1",
-    "license": "GPL-3.0-or-later",
     "require": {
         "php": "^8.0",
         "ext-ctype": "*",
         "ext-iconv": "*",
         "ext-intl": "*",
         "ext-mbstring": "*",
-        "doctrine/mongodb-odm-bundle": "^4.2",
-        "hanaboso/commons-bundle": "^2.3",
+        "doctrine/mongodb-odm-bundle": "^4.3",
+        "hanaboso/commons-bundle": "^2.4",
         "hanaboso/email-service-bundle": "^1.2",
         "hanaboso/rabbit-mq-bundle": "^1.5",
         "hanaboso/rest-bundle": "^1.1",
-        "hanaboso/utils": "^1.1"
+        "hanaboso/utils": "^1.1",
+        "psr/log": "^2"
+    },
+    "require-dev": {
+        "hanaboso/php-check-utils": "^1.4"
     },
     "replace": {
         "ralouphie/getallheaders": "*",
@@ -26,9 +30,6 @@
         "symfony/polyfill-php73": "*",
         "symfony/polyfill-php74": "*",
         "symfony/polyfill-php80": "*"
-    },
-    "require-dev": {
-        "hanaboso/php-check-utils": "^1.2"
     },
     "autoload": {
         "psr-4": {

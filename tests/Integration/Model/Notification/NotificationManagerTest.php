@@ -118,7 +118,7 @@ final class NotificationManagerTest extends DatabaseTestCaseAbstract
     {
         parent::setUp();
 
-        $this->manager = self::$container->get('notification.manager');
+        $this->manager = self::getContainer()->get('notification.manager');
     }
 
 }

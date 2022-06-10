@@ -79,8 +79,8 @@ final class NotificationMessageCallbackTest extends DatabaseTestCaseAbstract
     {
         parent::setUp();
 
-        $this->callback   = self::$container->get('notification.callback.message');
-        $this->connection = self::$container->get('rabbit_mq.connection_manager')->getConnection();
+        $this->callback   = self::getContainer()->get('notification.callback.message');
+        $this->connection = self::getContainer()->get('rabbit_mq.connection_manager')->getConnection();
     }
 
 }
