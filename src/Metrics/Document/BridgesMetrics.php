@@ -12,8 +12,8 @@ use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
  *
  * @ODM\Document(collection="pipes_node")
  * @ODM\Index(name="SearchIndex", keys={"tags.node_id"="text","tags.topology_id"="text"}),
- * @ODM\Index(name="createdIndex", keys={"created"="desc"})
- * @ODM\Index(name="expireIndex", keys={"timestamp"=1}, options={"expireAfterSeconds"=2628000})
+ * @ODM\Index(name="createdIndex", keys={"fields.created"="desc"})
+ * @ODM\Index(name="expireIndex", keys={"fields.created"=1}, options={"expireAfterSeconds"=2628000})
  */
 class BridgesMetrics
 {
