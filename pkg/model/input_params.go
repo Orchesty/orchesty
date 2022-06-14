@@ -76,7 +76,6 @@ type Environment struct {
 	RabbitMqVHost     string   `json:"rabbitmq_vhost"`
 	MetricsDsn        string   `json:"metrics_dsn"`
 	MongodbDsn        string   `json:"mongodb_dsn"`
-	MongodbDb         string   `json:"mongodb_db"`
 	MetricsService    string   `json:"metrics_service"`
 	WorkerDefaultPort int      `json:"worker_default_port"`
 	GeneratorMode     Adapter  `json:"generator_mode"`
@@ -165,7 +164,6 @@ func (e *Environment) GetEnvironment() (map[string]string, error) {
 	// TODO: add support for Influx
 	environment["METRICS_DSN"] = e.MetricsDsn
 	environment["MONGODB_DSN"] = e.MongodbDsn
-	environment["MONGODB_DB"] = e.MongodbDb
 	environment["UDP_LOGGER_URL"] = e.UdpLoggerUrl
 
 	for _, env := range os.Environ() {

@@ -137,7 +137,6 @@ func getFullEnvironment(t *testing.T) {
 	expected := map[string]string{
 		"METRICS_DSN":    "influxdb://kapacitor:9100",
 		"MONGODB_DSN":    "",
-		"MONGODB_DB":     "",
 		"UDP_LOGGER_URL": "",
 	}
 
