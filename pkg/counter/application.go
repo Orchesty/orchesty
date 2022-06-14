@@ -11,7 +11,6 @@ import (
 	"github.com/hanaboso/pipes/counter/pkg/rabbit"
 	"github.com/hanaboso/pipes/counter/pkg/utils/intx"
 	"github.com/hanaboso/pipes/counter/pkg/utils/timex"
-	"github.com/rs/zerolog/log"
 	"github.com/streadway/amqp"
 	"time"
 )
@@ -44,7 +43,7 @@ func (c *MultiCounter) Start(ctx context.Context) {
 	c.consumer = consumer
 	c.statusPublisher = statusPublisher
 	msgs := consumer.Consume(ctx)
-	log.Info().Msg("Consumer started")
+	config.Log.Info("Consumer started")
 
 	for {
 		select {
@@ -68,7 +67,7 @@ func (c *MultiCounter) Start(ctx context.Context) {
 func (c *MultiCounter) processMessage(message *model.ProcessMessage) {
 	var body model.ProcessBody
 	if err := json.Unmarshal(message.Body, &body); err != nil {
-		log.Error().Err(err).Send()
+		config.Log.Error(err)
 		return
 	}
 
@@ -160,6 +159,6 @@ func (c *MultiCounter) sendMetrics(process *model.Process) {
 		},
 	)
 	if err != nil {
-		log.Err(err).Send()
+		config.Log.Error(err)
 	}
 }

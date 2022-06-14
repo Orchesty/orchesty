@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/hanaboso/pipes/counter/pkg/config"
 	"github.com/hanaboso/pipes/counter/pkg/utils/intx"
-	"github.com/rs/zerolog/log"
 	"github.com/streadway/amqp"
 	"sync"
 	"time"
@@ -73,7 +72,7 @@ func (r *RabbitMq) Stop() {
 		publisher.stop()
 	}
 	if err := r.connection.Close(); err != nil {
-		log.Error().Err(err)
+		config.Log.Error(err)
 	}
 }
 
@@ -86,10 +85,10 @@ func (r *RabbitMq) connect() {
 
 	reconnectDelay := 2
 	for {
-		log.Debug().Msgf("connecting to rabbitMQ: %s", r.address)
+		config.Log.Debug("connecting to rabbitMQ: %s", r.address)
 		conn, err := amqp.Dial(r.address)
 		if err != nil {
-			log.Debug().Msgf("failed connecting to RabbitMQ server: %v", err)
+			config.Log.Debug("failed connecting to RabbitMQ server: %v", err)
 
 			<-time.After(time.Duration(reconnectDelay) * time.Second)
 			reconnectDelay = intx.Min(reconnectDelay+2, 30)

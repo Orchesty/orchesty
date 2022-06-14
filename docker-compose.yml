@@ -2,7 +2,7 @@ version: '3.5'
 
 services:
     app:
-        image: hanabosocom/go-base:dev
+        image: hanabosocom/go-base:1.18
         user: ${DEV_UID}:${DEV_GID}
         environment:
             APP_DEBUG: ${APP_DEBUG}

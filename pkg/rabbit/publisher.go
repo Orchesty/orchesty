@@ -2,7 +2,8 @@ package rabbit
 
 import (
 	"context"
-	"github.com/rs/zerolog/log"
+	"errors"
+	"github.com/hanaboso/pipes/counter/pkg/config"
 	"github.com/streadway/amqp"
 	"os"
 	"time"
@@ -20,7 +21,7 @@ type Publisher struct {
 func (p *Publisher) Publish(msg amqp.Publishing) {
 	for {
 		if err := p.channel.Publish(p.Exchange, p.RoutingKey, false, false, msg); err != nil {
-			log.Error().Err(err).Send()
+			config.Log.Error(err)
 			p.connect()
 			continue
 		}
@@ -29,13 +30,13 @@ func (p *Publisher) Publish(msg amqp.Publishing) {
 		select {
 		case confirm, ok := <-p.notifyConfirm:
 			if !ok {
-				log.Error().Msg("Publisher's channel is closed")
+				config.Log.Error(errors.New("publisher's channel is closed"))
 				p.connect()
 				cancel()
 				continue
 			}
 			if !confirm.Ack {
-				log.Error().Msg("Delivery nack")
+				config.Log.Error(errors.New("delivery nack"))
 				p.connect()
 				cancel()
 				continue
@@ -43,7 +44,7 @@ func (p *Publisher) Publish(msg amqp.Publishing) {
 			cancel()
 			return
 		case <-ctx.Done():
-			log.Error().Msg("Publish timeout")
+			config.Log.Error(errors.New("publish timeout"))
 			continue
 		}
 	}
@@ -65,13 +66,13 @@ func (p *Publisher) connect() {
 				// This is hack to work around Go lang's rabbitMq shortcomings
 				// It's a fallback due to amqp unresponsiveness
 				// For example ex-declare with missing hash-ex plugin will do nothing (no error, timeout, nada)
-				log.Error().Err(err).Send()
+				config.Log.Error(err)
 				os.Exit(1)
 			}
 		}()
 
 		if _, err := ch.QueueDeclare(p.RoutingKey, true, false, false, false, nil); err != nil {
-			log.Error().Err(err).Send()
+			config.Log.Error(err)
 			cancel()
 			continue
 		}
@@ -87,7 +88,7 @@ func (p *Publisher) connect() {
 func (p *Publisher) stop() {
 	if p.channel != nil {
 		if err := p.channel.Close(); err != nil {
-			log.Error().Err(err).Send()
+			config.Log.Error(err)
 		}
 	}
 }

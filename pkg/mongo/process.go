@@ -70,7 +70,7 @@ func (m *MongoDb) LoadProcesses() model.Processes {
 }
 
 func (m *MongoDb) UpdateProcesses(processes model.Processes) {
-	sess, err := m.client.StartSession()
+	sess, err := m.connection.StartSession()
 	if err != nil {
 		log.Fatal().Err(err).Send()
 	}

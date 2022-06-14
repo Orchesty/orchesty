@@ -1,45 +1,26 @@
 package mongo
 
 import (
-	"context"
+	"github.com/hanaboso/go-mongodb"
 	"github.com/hanaboso/pipes/counter/pkg/config"
-	"github.com/rs/zerolog/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"strings"
-	"time"
 )
 
 type MongoDb struct {
-	client     *mongo.Client
-	database   *mongo.Database
+	connection *mongodb.Connection
 	collection *mongo.Collection
 }
 
 func NewMongo() *MongoDb {
-	dsn := config.MongoDb.Dsn
-	client, err := mongo.NewClient(
-		options.
-			Client().
-			ApplyURI(dsn).
-			SetMaxPoolSize(10),
-	)
+	mongoDbCon := &mongodb.Connection{}
+	mongoDbCon.Connect(config.MongoDb.Dsn)
 
-	if err != nil {
-		log.Fatal().Err(err).Send()
+	mongoDb := &MongoDb{
+		connection: mongoDbCon,
+		collection: mongoDbCon.Database.Collection(config.MongoDb.CounterCollection),
 	}
-
-	err = client.Connect(nil)
-	if err != nil {
-		log.Fatal().Err(err).Send()
-	}
-
-	parts := strings.Split(dsn, "/")
-	parts = strings.Split(parts[len(parts)-1], "?")
-	db := client.Database(parts[0])
-
-	coll := db.Collection(config.MongoDb.CounterCollection)
 
 	indexCorr := mongo.IndexModel{
 		Keys: bson.M{
@@ -62,21 +43,15 @@ func NewMongo() *MongoDb {
 			ExpireAfterSeconds: &month,
 		},
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-	if _, err := coll.Indexes().CreateMany(ctx, []mongo.IndexModel{indexCorr, indexFinished, indexExpires}); err != nil {
-		log.Err(err).Send()
+	ctx, cancel := mongoDb.connection.Context()
+	if _, err := mongoDb.collection.Indexes().CreateMany(ctx, []mongo.IndexModel{indexCorr, indexFinished, indexExpires}); err != nil {
+		mongoDb.connection.Log.Error(err)
 	}
 	cancel()
 
-	return &MongoDb{
-		client:     client,
-		database:   db,
-		collection: coll,
-	}
+	return mongoDb
 }
 
 func (m *MongoDb) Close() {
-	if err := m.client.Disconnect(nil); err != nil {
-		log.Err(err).Send()
-	}
+	m.connection.Disconnect()
 }
