@@ -32,7 +32,6 @@ parameters:
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::MONOLITH_API_HOST: "%monolith_api_host%"
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::XML_PARSER_API_HOST: "%xml_parser_api_host%"
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::MONGODB_DSN: "%env(string:MONGODB_DSN)%"
-        !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::MONGODB_DB: "%env(string:MONGODB_DB)%"
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::UDP_LOGGER_URL: "%udp_logger_url%"
 
     topology_generator_configs:

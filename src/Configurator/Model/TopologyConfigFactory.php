@@ -37,7 +37,6 @@ final class TopologyConfigFactory
     public const MONOLITH_API_HOST      = 'monolith_api_host';
     public const XML_PARSER_API_HOST    = 'xml_parser_api_host';
     public const MONGODB_DSN            = 'mongodb_dsn';
-    public const MONGODB_DB             = 'mongodb_db';
     public const UDP_LOGGER_URL         = 'udp_logger_url';
 
     public const NODE_CONFIG = 'node_config';
@@ -128,7 +127,6 @@ final class TopologyConfigFactory
             self::RABBITMQ_PASS          => $this->configs[self::RABBITMQ_PASS],
             self::RABBITMQ_VHOST         => $this->configs[self::RABBITMQ_VHOST],
             self::MONGODB_DSN            => $this->configs[self::MONGODB_DSN],
-            self::MONGODB_DB             => $this->configs[self::MONGODB_DB],
             self::METRICS_DSN            => $this->configs[self::METRICS_DSN],
             self::METRICS_SERVICE        => $this->configs[self::METRICS_SERVICE],
             self::WORKER_DEFAULT_PORT    => (int) $this->configs[self::WORKER_DEFAULT_PORT],
