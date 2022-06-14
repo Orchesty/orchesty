@@ -50,8 +50,8 @@ final class TopologyProgressControllerTest extends ControllerTestCaseAbstract
             ->setCorrelationId('corr-id-1234')
             ->setTotal(10)
             ->setOk(5)
-            ->setStartedAt(DateTimeUtils::getUtcDateTime('2010-10-10 10:10:10'))
-            ->setFinishedAt(DateTimeUtils::getUtcDateTime('2010-10-10 10:10:10')->modify('+ 10 second'));
+            ->setStartedAt(DateTimeUtils::getUtcDateTime('2022-06-14T09:04:58.789Z'))
+            ->setFinishedAt(DateTimeUtils::getUtcDateTime('2022-06-14T09:04:59.707Z')->modify('+ 10 second'));
 
         $this->pfd($progress);
     }

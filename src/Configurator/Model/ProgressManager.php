@@ -39,7 +39,7 @@ final class ProgressManager
 
         return array_map(static function (array $doc) {
             $finished = $doc['finished'] ?
-                DateTimeUtils::getUtcDateTime($doc['finished'])->format(DateTimeUtils::DATE_TIME_UTC,) :
+                DateTimeUtils::getUtcDateTime($doc['finished'])->format(DateTimeUtils::DATE_TIME_UTC) :
                 NULL;
             $end      = $doc['finished'] ?? DateTimeUtils::getUtcDateTime()->format(DateTimeUtils::DATE_TIME_UTC);
             $count    = $doc['ok'] + $doc['nok'];

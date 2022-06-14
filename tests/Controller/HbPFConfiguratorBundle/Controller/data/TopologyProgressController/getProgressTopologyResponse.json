@@ -7,9 +7,9 @@
             {
                 "id": "123456789",
                 "correlationId": "corr-id-1234",
-                "duration": 10000,
-                "started": "2010-10-10T10:10:10Z",
-                "finished": "2010-10-10T10:10:20Z",
+                "duration": 10918,
+                "started": "2022-06-14T09:04:58Z",
+                "finished": "2022-06-14T09:05:09Z",
                 "nodesProcessed": 5,
                 "nodesTotal": 10,
                 "status": "IN PROGRESS",

@@ -5,6 +5,7 @@ namespace Hanaboso\PipesFramework\Configurator\Model\Filters;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Hanaboso\MongoDataGrid\GridFilterAbstract;
 use Hanaboso\PipesFramework\Configurator\Document\TopologyProgress;
+use Hanaboso\Utils\Date\DateTimeUtils;
 
 /**
  * Class ProgressFilter
@@ -13,6 +14,8 @@ use Hanaboso\PipesFramework\Configurator\Document\TopologyProgress;
  */
 final class ProgressFilter extends GridFilterAbstract
 {
+
+    protected const DATE_FORMAT = DateTimeUtils::DATE_TIME_GO;
 
     /**
      * @return string[]
