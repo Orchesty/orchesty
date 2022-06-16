@@ -69,7 +69,7 @@ final class MongoDbLogsTest extends DatabaseTestCaseAbstract
                             'type'           => 'starting_point',
                             'correlation_id' => 'Correlation ID 5',
                             'topology_id'    => 'Topology ID 5',
-                            'topology_name'  => 'Topology Name 5',
+                            'topology_name'  => '',
                             'node_id'        => $result['items'][0]['node_id'],
                             'node_name'      => 'Node',
                             'timestamp'      => $result['items'][0]['timestamp'],
@@ -148,7 +148,7 @@ final class MongoDbLogsTest extends DatabaseTestCaseAbstract
                             'type'           => 'starting_point',
                             'correlation_id' => 'Correlation ID 5',
                             'topology_id'    => 'Topology ID 5',
-                            'topology_name'  => 'Topology Name 5',
+                            'topology_name'  => '',
                             'node_id'        => $result['items'][0]['node_id'],
                             'node_name'      => 'Node',
                             'timestamp'      => $result['items'][0]['timestamp'],
@@ -283,7 +283,7 @@ final class MongoDbLogsTest extends DatabaseTestCaseAbstract
             $this->setProperty($pipes, 'type', 'starting_point');
             $this->setProperty($pipes, 'hostname', 'Hostname ');
             $this->setProperty($pipes, 'channel', sprintf('Channel %s', $i));
-            $this->setProperty($pipes, 'level', 'ERROR');
+            $this->setProperty($pipes, 'severity', 'ERROR');
             $this->setProperty($pipes, 'correlationId', sprintf('Correlation ID %s', $i));
             $this->setProperty($pipes, 'topologyId', sprintf('Topology ID %s', $i));
             $this->setProperty($pipes, 'topologyName', sprintf('Topology Name %s', $i));

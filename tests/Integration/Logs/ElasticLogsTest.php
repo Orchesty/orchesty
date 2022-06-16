@@ -13,7 +13,6 @@ use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\MongoDataGrid\GridFilterAbstract;
 use Hanaboso\MongoDataGrid\GridRequestDto;
 use Hanaboso\PipesFramework\Logs\ElasticLogs;
-use Hanaboso\PipesFramework\Logs\StartingPointsFilter;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\Utils\Date\DateTimeUtils;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
@@ -35,7 +34,6 @@ final class ElasticLogsTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\Logs\LogsAbstract::getNonEmptyValue
      * @covers \Hanaboso\PipesFramework\Logs\LogsAbstract::processStartingPoints
      * @covers \Hanaboso\PipesFramework\Logs\LogsAbstract::getNodeName
-     * @covers \Hanaboso\PipesFramework\Logs\StartingPointsFilter::prepareSearchQuery
      *
      * @throws Exception
      */
@@ -73,7 +71,7 @@ final class ElasticLogsTest extends DatabaseTestCaseAbstract
                             'type'           => 'starting_point',
                             'correlation_id' => 'Correlation ID 5',
                             'topology_id'    => 'Topology ID 5',
-                            'topology_name'  => 'Topology Name 5',
+                            'topology_name'  => '',
                             'node_id'        => $result['items'][0]['node_id'],
                             'node_name'      => 'Node',
                             'timestamp'      => $result['items'][0]['timestamp'],
@@ -118,7 +116,7 @@ final class ElasticLogsTest extends DatabaseTestCaseAbstract
                 new Response(['error' => 'in order to sort on']),
             ),
         );
-        $elLogs = new ElasticLogs($this->dm, new StartingPointsFilter($this->dm), $client);
+        $elLogs = new ElasticLogs($this->dm, $client);
         $elLogs->setIndex('');
         $this->setProperty($elLogs, 'client', $client);
         self::expectException(ResponseException::class);
@@ -178,11 +176,6 @@ final class ElasticLogsTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Logs\StartingPointsFilter::filterCols
-     * @covers \Hanaboso\PipesFramework\Logs\StartingPointsFilter::orderCols
-     * @covers \Hanaboso\PipesFramework\Logs\StartingPointsFilter::searchableCols
-     * @covers \Hanaboso\PipesFramework\Logs\StartingPointsFilter::useTextSearch
-     * @covers \Hanaboso\PipesFramework\Logs\StartingPointsFilter::prepareSearchQuery
      * @covers \Hanaboso\PipesFramework\Logs\MongoDbLogs
      * @covers \Hanaboso\PipesFramework\Logs\MongoDbLogs::getData
      * @covers \Hanaboso\PipesFramework\Logs\LogsFilter::filterCols
@@ -225,29 +218,13 @@ final class ElasticLogsTest extends DatabaseTestCaseAbstract
      *
      * @throws Exception
      */
-    public function testProcessStartingPoints(): void
-    {
-        $logs = $this->getManager();
-        $logs->setIndex('');
-        $dto = new GridRequestDto([]);
-
-        self::expectException(LockException::class);
-        $this->invokeMethod($logs, 'processStartingPoints', [$dto, ['1' => ['correlationId' => []]]]);
-    }
-
-    /**
-     * @covers \Hanaboso\PipesFramework\Logs\LogsAbstract::processStartingPoints
-     *
-     * @throws Exception
-     */
     public function testProcessStartingPointsErr(): void
     {
         $logs = $this->getManager();
         $logs->setIndex('');
-        $dto = new GridRequestDto([]);
 
         self::expectException(LockException::class);
-        $this->invokeMethod($logs, 'processStartingPoints', [$dto, ['1' => ['node_id' => []]]]);
+        $this->invokeMethod($logs, 'processStartingPoints', [['1' => ['correlation_id' => []]]]);
     }
 
     /**
@@ -317,11 +294,10 @@ final class ElasticLogsTest extends DatabaseTestCaseAbstract
      * @return ElasticLogs
      */
     private function getManager(): ElasticLogs {
-        $documentManager     = self::getContainer()->get('doctrine_mongodb.odm.default_document_manager');
-        $startingPointFilter = self::getContainer()->get('hbpf.logs.startingpoint_filter');
-        $client              = self::getContainer()->get('elastica.client');
+        $documentManager = self::getContainer()->get('doctrine_mongodb.odm.default_document_manager');
+        $client          = self::getContainer()->get('elastica.client');
 
-        return new ElasticLogs($documentManager, $startingPointFilter, $client);
+        return new ElasticLogs($documentManager, $client);
     }
 
 }

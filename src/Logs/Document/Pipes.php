@@ -59,14 +59,14 @@ class Pipes
     /**
      * @var string
      *
-     * @ODM\Field(type="string", name="correlationId")
+     * @ODM\Field(type="string", name="correlation_id")
      */
     private string $correlationId;
 
     /**
      * @var string
      *
-     * @ODM\Field(type="string", name="topologyId")
+     * @ODM\Field(type="string", name="topology_id")
      */
     private string $topologyId;
 
@@ -80,7 +80,7 @@ class Pipes
     /**
      * @var string
      *
-     * @ODM\Field(type="string", name="nodeId")
+     * @ODM\Field(type="string", name="node_id")
      */
     private string $nodeId;
 

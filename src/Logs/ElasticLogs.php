@@ -67,13 +67,12 @@ final class ElasticLogs extends LogsAbstract
     /**
      * ElasticLogs constructor.
      *
-     * @param DocumentManager      $dm
-     * @param StartingPointsFilter $startingPointsFilter
-     * @param Client               $client
+     * @param DocumentManager $dm
+     * @param Client          $client
      */
-    public function __construct(DocumentManager $dm, StartingPointsFilter $startingPointsFilter, private Client $client)
+    public function __construct(DocumentManager $dm, private Client $client)
     {
-        parent::__construct($dm, $startingPointsFilter);
+        parent::__construct($dm);
     }
 
     /**
@@ -109,8 +108,7 @@ final class ElasticLogs extends LogsAbstract
             $data = $this->getInnerData($filter, self::DEFAULT_SORTER, $dto->getPage(), $dto->getItemsPerPage());
         }
 
-        $result         = [];
-        $correlationIds = [];
+        $result = [];
 
         foreach ($data[self::HITS][self::HITS] ?? [] as $item) {
             $pipes = $item[self::SOURCE][self::PIPES];
@@ -127,40 +125,13 @@ final class ElasticLogs extends LogsAbstract
                 self::NODE_NAME      => $pipes[self::NODE_NAME] ?? '',
                 self::TIMESTAMP      => $item[self::SOURCE][self::TIMESTAMP_PREFIX] ?? '',
             ];
-
-            $correlationId = $this->getNonEmptyValue($pipes, self::CORRELATION_ID);
-
-            if ($correlationId) {
-                $correlationIds[] = $correlationId;
-            }
-        }
-
-        $innerDto = new GridRequestDto(['limit' => self::LIMIT]);
-        if ($correlationIds) {
-            $innerDto->setAdditionalFilters(
-                [
-                    [
-                        [
-                            GridFilterAbstract::COLUMN   => self::CORRELATION_ID,
-                            GridFilterAbstract::OPERATOR => GridFilterAbstract::EQ,
-                            GridFilterAbstract::VALUE    => $correlationIds,
-                        ],
-                    ],
-                    [
-                        [
-                            GridFilterAbstract::COLUMN   => self::TOPOLOGY_ID,
-                            GridFilterAbstract::OPERATOR => GridFilterAbstract::NEMPTY,
-                        ],
-                    ],
-                ],
-            );
         }
 
         $page     = $dto->getPage();
         $lastPage = (int) max(1, ceil($dto->getTotal() / $dto->getItemsPerPage()));
 
         return [
-            'items'  => $this->processStartingPoints($innerDto, $result),
+            'items'  => $this->processStartingPoints($result),
             'filter' => $dto->getFilter(FALSE),
             'sorter' => $dto->getOrderBy(),
             'search' => $dto->getSearch(),

@@ -65,7 +65,6 @@ final class StartingPointsFilter extends GridFilterAbstract
                 [
                     Logs::PIPES_CORRELATION_ID,
                     Logs::PIPES_TOPOLOGY_ID,
-                    Logs::PIPES_TOPOLOGY_NAME,
                 ],
             )
             ->field(Logs::PIPES_TYPE)->equals('starting_point')

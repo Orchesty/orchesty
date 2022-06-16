@@ -13,7 +13,6 @@ services:
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.logs.filter'
-            - '@hbpf.logs.startingpoint_filter'
 
 #    hbpf.elastic.logs:
 #        class: Hanaboso\PipesFramework\Logs\ElasticLogs

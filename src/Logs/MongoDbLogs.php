@@ -25,17 +25,12 @@ final class MongoDbLogs extends LogsAbstract
     /**
      * MongoDbLogs constructor.
      *
-     * @param DocumentManager      $dm
-     * @param LogsFilter           $filter
-     * @param StartingPointsFilter $startingPointsFilter
+     * @param DocumentManager $dm
+     * @param LogsFilter      $filter
      */
-    public function __construct(
-        private DocumentManager $dm,
-        private LogsFilter $filter,
-        StartingPointsFilter $startingPointsFilter,
-    )
+    public function __construct(private DocumentManager $dm, private LogsFilter $filter)
     {
-        parent::__construct($dm, $startingPointsFilter);
+        parent::__construct($dm);
     }
 
     /**
@@ -54,30 +49,9 @@ final class MongoDbLogs extends LogsAbstract
 
         $filteredLogs = $this->filter->getData($dto)->toArray();
 
-        [$result, $correlationIds] = $this->parseLogs($filteredLogs, $timeMargin, $allLogs);
+        $result = $this->parseLogs($filteredLogs, $timeMargin, $allLogs);
 
-        $innerDto = new GridRequestDto(['limit' => self::LIMIT]);
-        if ($correlationIds) {
-            $innerDto->setAdditionalFilters(
-                [
-                    [
-                        [
-                            GridFilterAbstract::COLUMN   => self::CORRELATIONID,
-                            GridFilterAbstract::OPERATOR => GridFilterAbstract::EQ,
-                            GridFilterAbstract::VALUE    => $correlationIds,
-                        ],
-                    ],
-                    [
-                        [
-                            GridFilterAbstract::COLUMN   => self::TOPOLOGYID,
-                            GridFilterAbstract::OPERATOR => GridFilterAbstract::NEMPTY,
-                        ],
-                    ],
-                ],
-            );
-        }
-
-        return GridFilterAbstract::getGridResponse($dto, $this->processStartingPoints($innerDto, $result));
+        return GridFilterAbstract::getGridResponse($dto, $this->processStartingPoints($result));
     }
 
     /**
@@ -107,19 +81,14 @@ final class MongoDbLogs extends LogsAbstract
      */
     private function parseLogs(array $filteredLogs, ?int $range = NULL, ?array $allLogs = NULL): array
     {
-        $result         = [];
-        $correlationIds = [];
+        $result = [];
 
         foreach ($filteredLogs as $item) {
-            $pipes         = $item[self::PIPES] ?? [];
-            $result[]      = $this->getResult($item, $pipes, $range, $allLogs);
-            $correlationId = $this->getNonEmptyValue($pipes, self::CORRELATION_ID);
-            if ($correlationId) {
-                $correlationIds[] = $correlationId;
-            }
+            $pipes    = $item[self::PIPES] ?? [];
+            $result[] = $this->getResult($item, $pipes, $range, $allLogs);
         }
 
-        return [$result, $correlationIds];
+        return $result;
     }
 
     /**
@@ -169,8 +138,8 @@ final class MongoDbLogs extends LogsAbstract
         $max = $range > $total ? $total : $range;
 
         return [
-            'prev' => $this->parseLogs(array_slice($allLogs[self::DATA], $min, $index - $min))[0],
-            'next' => $this->parseLogs(array_slice($allLogs[self::DATA], $index + 1, $max))[0],
+            'prev' => $this->parseLogs(array_slice($allLogs[self::DATA], $min, $index - $min)),
+            'next' => $this->parseLogs(array_slice($allLogs[self::DATA], $index + 1, $max)),
         ];
     }
 

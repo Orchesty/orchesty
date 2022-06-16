@@ -6,8 +6,8 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
-use Hanaboso\MongoDataGrid\GridRequestDto;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
+use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Driver\Exception\InvalidArgumentException;
 
@@ -21,13 +21,13 @@ abstract class LogsAbstract implements LogsInterface
 
     protected const ID               = 'id';
     protected const _ID              = '_id';
-    protected const CORRELATIONID    = 'correlationId';
+    protected const CORRELATIONID    = 'correlation_id';
     protected const CORRELATION_ID   = 'correlation_id';
-    protected const TOPOLOGYID       = 'topologyId';
+    protected const TOPOLOGYID       = 'topology_id';
     protected const TOPOLOGY_ID      = 'topology_id';
     protected const TOPOLOGYNAME     = 'topologyName';
     protected const TOPOLOGY_NAME    = 'topology_name';
-    protected const NODEID           = 'nodeId';
+    protected const NODEID           = 'node_id';
     protected const NODE_ID          = 'node_id';
     protected const NODENAME         = 'nodeName';
     protected const NODE_NAME        = 'node_name';
@@ -35,7 +35,7 @@ abstract class LogsAbstract implements LogsInterface
     protected const TIMESTAMP        = 'timestamp';
     protected const PIPES            = 'pipes';
     protected const SEVERITY         = 'severity';
-    protected const LEVEL            = 'level';
+    protected const LEVEL            = 'severity';
     protected const MESSAGE          = 'message';
     protected const TYPE             = 'type';
     protected const LIMIT            = 1_000;
@@ -43,45 +43,32 @@ abstract class LogsAbstract implements LogsInterface
     /**
      * LogsAbstract constructor.
      *
-     * @param DocumentManager      $dm
-     * @param StartingPointsFilter $startingPointsFilter
+     * @param DocumentManager $dm
      */
-    public function __construct(private DocumentManager $dm, private StartingPointsFilter $startingPointsFilter)
+    public function __construct(private DocumentManager $dm)
     {
     }
 
     /**
-     * @param GridRequestDto $dto
-     * @param mixed[]        $result
+     * @param mixed[] $result
      *
      * @return mixed[]
      * @throws MongoDBException
      * @throws Exception
      */
-    protected function processStartingPoints(GridRequestDto $dto, array $result): array
+    protected function processStartingPoints(array $result): array
     {
-        $data        = $this->startingPointsFilter->getData($dto)->toArray();
-        $innerResult = [];
-
-        foreach ($data as $item) {
-            $innerResult[$item[self::PIPES][self::CORRELATIONID]] = $item;
-        }
-
         foreach ($result as $key => $item) {
             $correlationId = $this->getNonEmptyValue($item, self::CORRELATIONID);
             $nodeId        = $this->getNonEmptyValue($item, self::NODE_ID);
+            $topologyId    = $this->getNonEmptyValue($item, self::TOPOLOGY_ID);
 
-            if (is_array($correlationId)) {
+            if (is_array($correlationId) || is_array($topologyId) || is_array($nodeId)) {
                 throw new LockException('Bad data format.');
             }
 
-            if (is_array($nodeId)) {
-                throw new LockException('Bad data format.');
-            }
-
-            if ($correlationId && $this->getNonEmptyValue($innerResult, $correlationId)) {
-                $result[$key][self::TOPOLOGY_ID]   = $innerResult[$correlationId][self::PIPES][self::TOPOLOGY_ID];
-                $result[$key][self::TOPOLOGY_NAME] = $innerResult[$correlationId][self::PIPES][self::TOPOLOGY_NAME];
+            if ($topologyId){
+                $result[$key][self::TOPOLOGY_NAME] = $this->getTopologyName($topologyId);
             }
 
             if ($nodeId) {
@@ -106,6 +93,27 @@ abstract class LogsAbstract implements LogsInterface
             );
 
             return $node ? $node->getName() : '';
+        } catch (InvalidArgumentException $e) {
+            $e;
+
+            return '';
+        }
+    }
+
+    /**
+     * @param string $topologyId
+     *
+     * @return string
+     */
+    protected function getTopologyName(string $topologyId): string
+    {
+        try {
+            /** @var Topology|null $topology */
+            $topology = $this->dm->getRepository(Topology::class)->findOneBy(
+                [self::ID => new ObjectId(explode('-', $topologyId)[0])],
+            );
+
+            return $topology ? $topology->getName() : '';
         } catch (InvalidArgumentException $e) {
             $e;
 

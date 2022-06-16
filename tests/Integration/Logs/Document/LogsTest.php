@@ -56,10 +56,10 @@ final class LogsTest extends DatabaseTestCaseAbstract
                         'hostname'       => 'host',
                         'channel'        => 'chn',
                         'severity'       => 'ERROR',
-                        'correlationId' => '1',
-                        'topologyId'    => '2',
+                        'correlation_id' => '1',
+                        'topology_id'    => '2',
                         'topologyName'  => 'TopoName',
-                        'nodeId'        => '3',
+                        'node_id'        => '3',
                         'nodeName'      => 'NodeName',
                         'stacktrace'     => [
                             'message' => 'msg',

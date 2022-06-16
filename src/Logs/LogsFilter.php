@@ -27,9 +27,7 @@ final class LogsFilter extends GridFilterAbstract
             'severity'       => Logs::PIPES_SEVERITY,
             'correlation_id' => Logs::PIPES_CORRELATION_ID,
             'topology_id'    => Logs::PIPES_TOPOLOGY_ID,
-            'topology_name'  => Logs::PIPES_TOPOLOGY_NAME,
             'node_id'        => Logs::PIPES_NODE_ID,
-            'node_name'      => Logs::PIPES_NODE_NAME,
         ];
     }
 
@@ -46,9 +44,7 @@ final class LogsFilter extends GridFilterAbstract
             'severity'       => Logs::PIPES_SEVERITY,
             'correlation_id' => Logs::PIPES_CORRELATION_ID,
             'topology_id'    => Logs::PIPES_TOPOLOGY_ID,
-            'topology_name'  => Logs::PIPES_TOPOLOGY_NAME,
             'node_id'        => Logs::PIPES_NODE_ID,
-            'node_name'      => Logs::PIPES_NODE_NAME,
         ];
     }
 
@@ -61,9 +57,7 @@ final class LogsFilter extends GridFilterAbstract
             Logs::MESSAGE,
             'correlation_id',
             'topology_id',
-            'topology_name',
             'node_id',
-            'node_name',
         ];
     }
 
@@ -92,9 +86,7 @@ final class LogsFilter extends GridFilterAbstract
                     Logs::PIPES_SEVERITY,
                     Logs::PIPES_CORRELATION_ID,
                     Logs::PIPES_TOPOLOGY_ID,
-                    Logs::PIPES_TOPOLOGY_NAME,
                     Logs::PIPES_NODE_ID,
-                    Logs::PIPES_NODE_NAME,
                     Logs::PIPES_TIMESTAMP,
                 ],
             )

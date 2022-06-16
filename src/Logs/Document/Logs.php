@@ -30,12 +30,10 @@ class Logs
     public const MESSAGE   = 'message';
 
     public const PIPES_TYPE           = 'pipes.type';
-    public const PIPES_SEVERITY       = 'pipes.level';
-    public const PIPES_CORRELATION_ID = 'pipes.correlationId';
-    public const PIPES_TOPOLOGY_ID    = 'pipes.topologyId';
-    public const PIPES_TOPOLOGY_NAME  = 'pipes.topologyName';
-    public const PIPES_NODE_ID        = 'pipes.nodeId';
-    public const PIPES_NODE_NAME      = 'pipes.nodeName';
+    public const PIPES_SEVERITY       = 'pipes.severity';
+    public const PIPES_CORRELATION_ID = 'pipes.correlation_id';
+    public const PIPES_TOPOLOGY_ID    = 'pipes.topology_id';
+    public const PIPES_NODE_ID        = 'pipes.node_id';
     public const PIPES_TIME_MARGIN    = 'pipes.time_margin';
     public const PIPES_TIMESTAMP      = 'pipes.timestamp';
 
