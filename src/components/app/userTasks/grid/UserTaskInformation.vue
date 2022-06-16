@@ -166,7 +166,7 @@ export default {
     ]),
     trashTaskSwitcherMessage(param) {
       if (param === 'body') {
-        return this[this.toggler] ? JSON.parse(this[this.toggler].message[param]) : {}
+        return this[this.toggler] ? this.parseBody(this[this.toggler].message[param]) : {}
       } else {
         return this[this.toggler] ? this[this.toggler].message[param] : {}
       }
@@ -202,6 +202,17 @@ export default {
     reset() {
       this.$emit('reset')
     },
+    parseBody(body) {
+      try {
+        return JSON.parse(body)
+      } catch (e) {
+        if (body) {
+          return body
+        }
+
+        return {}
+      }
+    },
   },
   computed: {
     ...mapState(USER_TASKS.NAMESPACE, ['userTask']),
@@ -210,7 +221,7 @@ export default {
       return this.isTrash ? 'trash' : 'userTask'
     },
     body() {
-      return this[this.toggler] ? JSON.parse(this[this.toggler].message.body) : {}
+      return this[this.toggler] ? this.parseBody(this[this.toggler].message.body) : {}
     },
     message() {
       return this[this.toggler] ? this[this.toggler].message : {}

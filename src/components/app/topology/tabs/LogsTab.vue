@@ -146,6 +146,18 @@ export default {
       navigator.clipboard.writeText(correlationId)
       this.showFlashMessage(false, 'ID copied!')
     },
+    setColor(item) {
+      if (item.toLowerCase() === 'error') {
+        return 'error'
+      }
+      if (item.toLowerCase() === 'warning') {
+        return 'warning'
+      }
+      if (item.toLowerCase() === 'info') {
+        return 'info'
+      }
+      return 'black'
+    },
   },
   created() {
     if (this.$route.params.id) {
