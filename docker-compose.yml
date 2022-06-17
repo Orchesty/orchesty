@@ -34,7 +34,7 @@ services:
             - ELASTICSEARCH_DSN=elasticsearch://elasticsearch
             - RABBITMQ_DSN=amqp://rabbitmq:5672
             - MONOLITH_API_DSN=${DEV_IP}
-            - WORKER_DEFAULT_PORT=8008
+            - WORKER_DEFAULT_PORT=8000
             - JWT_KEY=test1234
             - LOGS_SERVICE=mongo
 

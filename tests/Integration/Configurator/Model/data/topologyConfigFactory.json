@@ -8,7 +8,7 @@
         "rabbitmq_vhost": "\/",
         "metrics_dsn": "influx://8089",
         "metrics_service": "influx",
-        "worker_default_port": 8008,
+        "worker_default_port": 8000,
         "mongodb_dsn": "mongodb://mongo",
         "mongodb_db": "pipes",
         "udp_logger_url": "logstash:5120"
