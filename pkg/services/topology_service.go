@@ -111,7 +111,7 @@ func (ts *TopologyService) CreateDeploymentService() ([]byte, error) {
 			Ports: []model.ServicePort{
 				{
 					Protocol:   "TCP",
-					Port:       80,
+					Port:       8000,
 					TargetPort: "http",
 					Name:       "http",
 				},

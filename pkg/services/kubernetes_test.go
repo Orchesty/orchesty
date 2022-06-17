@@ -281,7 +281,7 @@ func TestClient_CreateService(t *testing.T) {
 			Ports: []model.ServicePort{
 				{
 					Protocol: "TCP",
-					Port:     8008,
+					Port:     8000,
 				},
 			},
 			Selector: map[string]string{
