@@ -41,7 +41,7 @@ func (m *Kubernetes) GetHostAction(c *ContextWrapper) {
 	id := c.Param("topologyId")
 	// TODO něako udělat check zda container běží
 
-	c.OK(gin.H{"host": fmt.Sprintf("topology-%s", id)})
+	c.OK(gin.H{"host": fmt.Sprintf("topology-%s:8000", id)})
 }
 
 // RunStopAction RunStopAction
