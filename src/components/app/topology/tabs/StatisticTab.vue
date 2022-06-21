@@ -42,17 +42,13 @@ export default {
         request_time: 'Request time',
         process: 'Process',
       },
+      nodeParameters: [],
       DATA_GRIDS,
       nodes: [],
       options: {
         plugins: {
           title: {
             display: false,
-          },
-          tooltip: {
-            enabled: false,
-            position: 'nearest',
-            external: this.externalTooltipHandler,
           },
         },
         responsive: true,
@@ -117,9 +113,6 @@ export default {
     state() {
       return this[REQUESTS_STATE.GETTERS.GET_STATE]([API.statistic.grid.id, API.statistic.getList.id])
     },
-    nodeParameters() {
-      return Object.keys(this.nodes[0].data).filter((it) => it !== 'queue_depth' && it !== 'process')
-    },
   },
   methods: {
     ...mapActions(TOPOLOGIES.NAMESPACE, [TOPOLOGIES.ACTIONS.DATA.GET_STATISTICS, TOPOLOGIES.ACTIONS.TOPOLOGY.NODES]),
@@ -134,11 +127,17 @@ export default {
         Object.prototype.hasOwnProperty.call(this.topologyActiveStatistics.items[node], 'queue_depth')
       )
       this.nodes = nodeKeys.map((node) => ({ data: { ...this.topologyActiveStatistics.items[node] }, name: node }))
+
+      let parameters = []
+      this.nodes.forEach((node) => {
+        parameters.push(...Object.keys(node.data).filter((it) => it !== 'queue_depth' && it !== 'process'))
+      })
+      this.nodeParameters = [...new Set(parameters)]
     },
     chartDataByKey(key, values) {
       let keyedData = []
       values.forEach((value) => {
-        if (!isNaN(value[key])) {
+        if (value && !isNaN(value[key])) {
           keyedData.push(value[key])
         }
       })
@@ -148,9 +147,11 @@ export default {
       let labels = []
       let data = []
       this.nodes.forEach((node) => {
-        data.push(node.data[key])
-        if (this.topologyActiveNodes.filter((name) => name._id === node.name)[0]) {
-          labels.push(this.topologyActiveNodes.filter((name) => name._id === node.name)[0].name)
+        if (node.data[key]) {
+          data.push(node.data[key])
+          if (this.topologyActiveNodes.filter((name) => name._id === node.name)[0]) {
+            labels.push(this.topologyActiveNodes.filter((name) => name._id === node.name)[0].name)
+          }
         }
       })
 
