@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/hanaboso/go-metrics"
+	metrics "github.com/hanaboso/go-metrics/pkg"
 	"github.com/streadway/amqp"
 	"starting-point/pkg/config"
 	"starting-point/pkg/rabbitmq"
