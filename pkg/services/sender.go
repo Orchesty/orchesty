@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"detector/pkg/config"
-	"github.com/hanaboso/go-metrics"
+	metrics "github.com/hanaboso/go-metrics/pkg"
 
 	log "github.com/hanaboso/go-log/pkg"
 )
@@ -44,8 +44,7 @@ func (s *Sender) Start() {
 			}
 		case []Container:
 			for _, container := range typed {
-				if err := s.metrics.Send(config.Metrics.ContainerMeasurement, map[string]interface{}{
-				}, map[string]interface{}{
+				if err := s.metrics.Send(config.Metrics.ContainerMeasurement, map[string]interface{}{}, map[string]interface{}{
 					"name":    container.Name,
 					"status":  container.Status,
 					"created": time.Now(),
