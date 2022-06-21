@@ -33,8 +33,6 @@ type rabbitMq struct {
 	Password             string
 	Port                 int16
 	Vhost                string
-	CounterQueueName     string
-	CounterQueueDurable  bool
 	DeliveryMode         int16
 	QueueDurable         bool
 	MaxConcurrentPublish int16
@@ -80,8 +78,6 @@ func init() {
 			Password:             getEnv("RABBIT_PASSWORD", "guest"),
 			Port:                 getEnvInt("RABBIT_PORT", 5672),
 			Vhost:                getEnv("RABBIT_VHOST", ""),
-			CounterQueueName:     getEnv("RABBIT_COUNTER_QUEUE_NAME", "pipes.multi-counter"),
-			CounterQueueDurable:  getEnvBool("RABBIT_COUNTER_QUEUE_DURABLE", true),
 			DeliveryMode:         getEnvInt("RABBIT_DELIVERY_MODE", 2), // 0 - 1 Transient, 2 - Persistent
 			QueueDurable:         getEnvBool("RABBIT_QUEUE_DURABLE", true),
 			MaxConcurrentPublish: getEnvInt("RABBIT_CONCURRENT_PUBLISH_RATE", 32767),

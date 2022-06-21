@@ -13,7 +13,6 @@ import (
 // HeaderBuilder represents headerBuilder
 type HeaderBuilder interface {
 	BldHeaders(topology storage.Topology, headers http.Header) (h amqp.Table, c string, d uint8, t time.Time)
-	BldCounterHeaders(storage.Topology, http.Header) (h amqp.Table, c string, d uint8, t time.Time)
 	BldProcessHeaders(storage.Topology, http.Header) (h amqp.Table, c string, d uint8, t time.Time)
 }
 
@@ -43,21 +42,12 @@ const parentID = prefix + "parent-id"
 const sequenceID = prefix + "sequence-id"
 const topologyID = prefix + "topology-id"
 const pfTimeStamp = prefix + "published-timestamp"
-const resultCode = prefix + "result-code"
 const processStarted = prefix + "process-started"
 
 var whiteList = map[string]struct{}{contentType: {}}
 
 func (b *headerBuilder) BldHeaders(topology storage.Topology, headers http.Header) (h amqp.Table, c string, d uint8, t time.Time) {
 	return b.BldProcessHeaders(topology, headers)
-}
-
-func (b *headerBuilder) BldCounterHeaders(topology storage.Topology, headers http.Header) (h amqp.Table, c string, d uint8, t time.Time) {
-	h, c, d, t = b.BldProcessHeaders(topology, headers)
-
-	h[NodeID] = "starting_point"
-
-	return
 }
 
 func (b *headerBuilder) BldProcessHeaders(topology storage.Topology, headers http.Header) (h amqp.Table, c string, d uint8, t time.Time) {
