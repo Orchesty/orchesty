@@ -397,7 +397,7 @@ export default {
 
 <style lang="sass">
 .primary-row > td:not(:first-child)
-  text-align: center
+  text-align: left
 .selected-row
   background-color: #eeeeee
 .v-data-table-header

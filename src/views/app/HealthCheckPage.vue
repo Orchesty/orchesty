@@ -1,15 +1,15 @@
 <template>
   <content-basic title="Health Check">
-    <health-check-container />
+    <health-check-wrapper />
   </content-basic>
 </template>
 
 <script>
 import ContentBasic from '@/components/layout/content/ContentBasic'
-import HealthCheckContainer from '@/components/app/healthCheck/landing/HealthCheckContainer'
+import HealthCheckWrapper from '@/components/app/healthCheck/landing/HealthCheckWrapper'
 export default {
   name: 'HealthCheckPage',
-  components: { HealthCheckContainer, ContentBasic },
+  components: { HealthCheckWrapper, ContentBasic },
 }
 </script>
 

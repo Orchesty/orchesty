@@ -1,11 +1,8 @@
-import moment from 'moment'
-import { OPERATOR } from '@/services/enums/gridEnums'
-
 export default {
   grid: {
     id: 'HEALTH_CHECK_GRID',
-    request: (data) => ({
-      url: `/metrics/consumers?filter=${JSON.stringify(data)}`,
+    request: () => ({
+      url: '/metrics/consumers',
       method: 'GET',
     }),
     reduce: (data) => {
@@ -15,13 +12,25 @@ export default {
           page: 1,
           itemsPerPage: 99999999,
         },
-        filter: [
-          {
-            column: 'created',
-            operator: OPERATOR.BETWEEN,
-            value: [moment().utc().subtract(1, 'minutes').format(), moment().utc().format()],
-          },
-        ],
+        filter: [],
+        sorter: null,
+      }
+    },
+  },
+  containers: {
+    id: 'HEALTH_CHECK_CONTAINERS',
+    request: () => ({
+      url: '/metrics/containers',
+      method: 'GET',
+    }),
+    reduce: (data) => {
+      return {
+        items: data,
+        paging: {
+          page: 1,
+          itemsPerPage: 99999999,
+        },
+        filter: [],
         sorter: null,
       }
     },

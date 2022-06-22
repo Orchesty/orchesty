@@ -3,17 +3,16 @@
     ref="grid"
     :headers="headers"
     :is-loading="false"
-    :namespace="DATA_GRIDS.HEALTH_CHECK_QUEUES"
+    :namespace="DATA_GRIDS.HEALTH_CHECK_CONTAINERS"
     disabled-advanced-filter
     disable-pagination
-    disable
   >
     <template #default="{ items, isVisible }">
-      <td v-if="isVisible('queue')">
-        {{ items.item.queue }}
+      <td v-if="isVisible('container')">
+        {{ items.item.name }}
       </td>
       <td v-if="isVisible('status')">
-        {{ items.item.consumers ? 'Healthy' : 'Unhealthy' }}
+        {{ items.item.up ? 'Healthy' : 'Unhealthy' }}
       </td>
     </template>
   </data-grid>
@@ -26,10 +25,10 @@ import { mapGetters } from 'vuex'
 import { GRID } from '@/store/modules/grid/types'
 
 export default {
-  name: 'HealthCheckQueue',
+  name: 'HealthCheckContainer',
   components: { DataGrid },
   computed: {
-    ...mapGetters(DATA_GRIDS.SCHEDULED_TASK, {
+    ...mapGetters(DATA_GRIDS.HEALTH_CHECK_CONTAINERS, {
       sorterInitial: GRID.GETTERS.GET_SORTER,
       pagingInitial: GRID.GETTERS.GET_PAGING,
     }),
@@ -39,15 +38,15 @@ export default {
       DATA_GRIDS,
       headers: [
         {
-          text: 'topologies.healthCheck.headers.queue.name',
-          value: 'queue',
+          text: 'topologies.healthCheck.headers.container.name',
+          value: 'container',
           align: 'left',
           sortable: false,
           visible: true,
           width: '50%',
         },
         {
-          text: 'topologies.healthCheck.headers.queue.status',
+          text: 'topologies.healthCheck.headers.container.status',
           value: 'status',
           align: 'left',
           sortable: false,

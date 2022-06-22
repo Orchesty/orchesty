@@ -169,6 +169,22 @@ export const createStore = (router) => {
           itemsPerPage: 99999999,
         },
       }),
+      [DATA_GRIDS.HEALTH_CHECK_CONTAINERS]: createGrid(DATA_GRIDS.HEALTH_CHECK_CONTAINERS, {
+        filter: [
+          [
+            {
+              column: 'timestamp',
+              operator: OPERATOR.BETWEEN,
+              value: [moment().utc().subtract(1, 'minutes').format(), moment().utc().format()],
+            },
+          ],
+        ],
+        sorter: null,
+        paging: {
+          page: 1,
+          itemsPerPage: 99999999,
+        },
+      }),
       [DATA_GRIDS.USER_TASK]: createGrid(DATA_GRIDS.USER_TASK, {
         sorter: [
           {
