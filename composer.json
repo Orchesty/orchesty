@@ -1,6 +1,6 @@
 {
-    "name": "hanaboso/pipes-framework",
-    "description": "PipesFramework for Symfony",
+    "name": "orchesty/backend",
+    "description": "Orchesty backend",
     "license": "Apache-2.0",
     "version": "2.0.0",
     "require": {
@@ -13,14 +13,14 @@
         "ext-mongodb": "*",
         "doctrine/orm": "^2.10",
         "hanaboso/acl-bundle": "^1.5",
-        "hanaboso/app-store": "^2.0",
         "hanaboso/email-service-bundle": "^1.2",
         "hanaboso/mongo-data-grid": "^1.6",
-        "hanaboso/pipes-php-sdk": "^2.0",
         "hanaboso/rest-bundle": "^1.1",
         "hanaboso/user-bundle": "^1.5",
         "influxdb/influxdb-php": "^1.15",
         "lcobucci/jwt": "^4.1",
+        "orchesty/app-store": "^2.0",
+        "orchesty/php-sdk": "^2.0",
         "ruflin/elastica": "^7.1",
         "symfony/security-bundle": "^v6.0",
         "symfony/serializer": "^v6.0"

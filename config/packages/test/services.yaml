@@ -3,8 +3,8 @@ parameters:
     public.services: true
 
     node_services_dirs:
-        - '%kernel.project_dir%/vendor/hanaboso/pipes-php-sdk/src/HbPFConnectorBundle/Resources/config/'
-        - '%kernel.project_dir%/vendor/hanaboso/pipes-php-sdk/src/HbPFCustomNodeBundle/Resources/config/'
+        - '%kernel.project_dir%/vendor/orchesty/php-sdk/src/HbPFConnectorBundle/Resources/config/'
+        - '%kernel.project_dir%/vendor/orchesty/php-sdk/src/HbPFCustomNodeBundle/Resources/config/'
         - '%kernel.project_dir%/config/packages/test/'
     applications: [ '%kernel.project_dir%/config/packages/test' ]
 

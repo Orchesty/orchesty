@@ -31,12 +31,12 @@ doctrine_mongodb:
                 ApplicationDocument:
                     type: annotation
                     is_bundle: false
-                    dir: "%kernel.project_dir%/src/../vendor/hanaboso/pipes-php-sdk/src/Application/Document"
+                    dir: "%kernel.project_dir%/src/../vendor/orchesty/php-sdk/src/Application/Document"
                     prefix: Hanaboso\PipesPhpSdk\Application\Document
                 WebhookDocument:
                     type: annotation
                     is_bundle: false
-                    dir: "%kernel.project_dir%/src/../vendor/hanaboso/app-store/src/Document"
+                    dir: "%kernel.project_dir%/src/../vendor/orchesty/app-store/src/Document"
                     prefix: Hanaboso\HbPFAppStore\Document
                 FileDocument:
                     type: annotation
@@ -46,7 +46,7 @@ doctrine_mongodb:
                 CommonsDocument:
                     type: annotation
                     is_bundle: false
-                    dir: "%kernel.project_dir%/src/../vendor/hanaboso/pipes-php-sdk/src/Database/Document"
+                    dir: "%kernel.project_dir%/src/../vendor/orchesty/php-sdk/src/Database/Document"
                     prefix: Hanaboso\PipesPhpSdk\Database\Document
                 FileMongo:
                     type: annotation
