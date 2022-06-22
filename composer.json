@@ -1,6 +1,6 @@
 {
-    "name": "hanaboso/notification-sender",
-    "description": "NotificationSender for Symfony",
+    "name": "orchesty/notification-sender",
+    "description": "NotificationSender for Orchesty",
     "license": "Apache-2.0",
     "version": "1.2.1",
     "require": {
