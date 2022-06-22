@@ -25,13 +25,6 @@ class TopologyProgress
      *
      * @ODM\Field(type="string")
      */
-    private string $correlationId;
-
-    /**
-     * @var string
-     *
-     * @ODM\Field(type="string")
-     */
     private string $topologyId;
 
     /**
@@ -75,26 +68,6 @@ class TopologyProgress
     public function getId(): string
     {
         return $this->id;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCorrelationId(): string
-    {
-        return $this->correlationId;
-    }
-
-    /**
-     * @param string $correlationId
-     *
-     * @return TopologyProgress
-     */
-    public function setCorrelationId(string $correlationId): TopologyProgress
-    {
-        $this->correlationId = $correlationId;
-
-        return $this;
     }
 
     /**
@@ -229,7 +202,7 @@ class TopologyProgress
 
         return [
             'id'             => $this->topologyId,
-            'correlationId'  => $this->correlationId,
+            'correlationId'  => $this->id,
             'duration'       => TopologyProgress::durationInMs($this->startedAt, $end),
             'started'        => $this->startedAt->format(DateTimeUtils::DATE_TIME_UTC),
             'finished'       => $finished,

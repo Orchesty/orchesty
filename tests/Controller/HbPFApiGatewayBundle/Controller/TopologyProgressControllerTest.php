@@ -26,7 +26,9 @@ final class TopologyProgressControllerTest extends ControllerTestCaseAbstract
         $this->assertResponseLogged(
             $this->jwt,
             __DIR__ . '/data/TopologyProgressController/getProgressTopologyRequest.json',
-            [],
+            [
+                'correlationId' => 'corr-id-1234',
+            ],
             [':topologyId' => '123456789'],
         );
     }
@@ -43,7 +45,6 @@ final class TopologyProgressControllerTest extends ControllerTestCaseAbstract
         $progress = new TopologyProgress();
         $progress
             ->setTopologyId('123456789')
-            ->setCorrelationId('corr-id-1234')
             ->setTotal(2)
             ->setStartedAt(DateTimeUtils::getUtcDateTime('2010-10-10 10:10:10'))
             ->setFinishedAt(DateTimeUtils::getUtcDateTime('2010-10-10 10:10:10')->modify('+ 10 second'));

@@ -47,7 +47,7 @@ final class ProgressManager
 
             return [
                 'id'             => $doc['topologyId'],
-                'correlationId'  => $doc['correlationId'],
+                'correlationId'  => $doc['_id'] ?? $doc['id'],
                 'duration'       => TopologyProgress::durationInMs($created, DateTimeUtils::getUtcDateTime($end)),
                 'started'        => $created->format(DateTimeUtils::DATE_TIME_UTC),
                 'finished'       => $finished,
