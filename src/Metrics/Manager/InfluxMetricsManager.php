@@ -286,21 +286,16 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
     }
 
     /**
-     * @param mixed[] $params
-     *
      * @return mixed[]
      * @throws DateTimeException
      * @throws MetricsException
      */
-    public function getConsumerMetrics(array $params): array
+    public function getConsumerMetrics(): array
     {
-        $dateFrom = $params['from'] ?? '-1 hours';
-        $dateTo   = $params['to'] ?? 'now';
-        $from     = $this->consumerTable;
-
-        $res    = $this->runQuery('*', $from, [], NULL, $dateFrom, $dateTo, FALSE, TRUE);
+        $from   = $this->consumerTable;
+        $res    = $this->runQuery('*', $from, [], NULL, NULL, NULL, FALSE, TRUE);
         $parsed = [];
-        foreach ($res[0]['values'] as $item) {
+        foreach ($res[0]['values'] ?? [] as $item) {
             $createdIndex   = array_search('created', $res[0]['columns'], TRUE);
             $queueIndex     = array_search('queue', $res[0]['columns'], TRUE);
             $consumersIndex = array_search('consumers', $res[0]['columns'], TRUE);
@@ -318,15 +313,10 @@ final class InfluxMetricsManager extends MetricsManagerAbstract
     }
 
     /**
-     * @param mixed[] $params
-     *
      * @return mixed[]
      */
-    public function getContainerMetrics(array $params): array
+    public function getContainerMetrics(): array
     {
-        // TODO
-        $params;
-
         return [];
     }
 

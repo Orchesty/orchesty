@@ -61,15 +61,19 @@ final class MetricsHandler
     }
 
     /**
-     * @param GridRequestDtoInterface $dto
-     *
      * @return mixed[]
      */
-    public function getConsumerMetrics(GridRequestDtoInterface $dto): array
+    public function getConsumerMetrics(): array
     {
-        $params = $this->parseDateRangeFromFilter($dto);
+        return $this->loader->getManager()->getConsumerMetrics();
+    }
 
-        return $this->loader->getManager()->getConsumerMetrics($params);
+    /**
+     * @return mixed[]
+     */
+    public function getContainerMetrics(): array
+    {
+        return $this->loader->getManager()->getContainerMetrics();
     }
 
     /**

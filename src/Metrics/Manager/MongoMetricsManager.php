@@ -6,6 +6,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PipesFramework\Metrics\Document\BridgesMetrics;
 use Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetrics;
+use Hanaboso\PipesFramework\Metrics\Document\ContainerMetrics;
 use Hanaboso\PipesFramework\Metrics\Document\MonolithMetrics;
 use Hanaboso\PipesFramework\Metrics\Document\ProcessesMetrics;
 use Hanaboso\PipesFramework\Metrics\Document\RabbitConsumerMetrics;
@@ -171,17 +172,12 @@ final class MongoMetricsManager extends MetricsManagerAbstract
     }
 
     /**
-     * @param mixed[] $params
-     *
      * @return mixed[]
      * @throws DateTimeException
      */
-    public function getConsumerMetrics(array $params): array
+    public function getConsumerMetrics(): array
     {
-        $from = $params['from'] ?? 'now - 1 hours';
-        $to   = $params['to'] ?? 'now';
-
-        return $this->rabbitConsumerMetrics($from, $to);
+        return $this->rabbitConsumerMetrics();
     }
 
     /**
@@ -243,16 +239,30 @@ final class MongoMetricsManager extends MetricsManagerAbstract
     }
 
     /**
-     * @param mixed[] $params
-     *
      * @return mixed[]
      */
-    public function getContainerMetrics(array $params): array
+    public function getContainerMetrics(): array
     {
-        // TODO
-        $params;
+        $qb  = $this->metricsDm->createQueryBuilder(ContainerMetrics::class);
+        $res = $qb
+            ->getQuery()
+            ->toArray();
 
-        return [];
+        if (!$res) {
+            $res = [];
+        }
+
+        return array_map(
+            static fn(ContainerMetrics $item): array => [
+                'name'    => $item->getFields()->getName(),
+                'message' => $item->getFields()->getMessage(),
+                'up'      => $item->getFields()->isUp(),
+                'created' => $item->getFields()->getCreated()->format(
+                    DateTimeUtils::DATE_TIME_UTC,
+                ),
+            ],
+            $res,
+        );
     }
 
     /**
@@ -267,7 +277,7 @@ final class MongoMetricsManager extends MetricsManagerAbstract
      * @return MetricsDto|null
      * @throws DateTimeException
      */
-    private function connectorNodeMetrics(array $where, string $dateFrom, string $dateTo): MetricsDto|NULL
+    private function connectorNodeMetrics(array $where, string $dateFrom, string $dateTo): MetricsDto|null
     {
         $qb = $this->metricsDm->createAggregationBuilder(ConnectorsMetrics::class);
         $this->addConditions($qb, $dateFrom, $dateTo, $where, ConnectorsMetrics::class);
@@ -528,9 +538,10 @@ final class MongoMetricsManager extends MetricsManagerAbstract
             $res[$row['_id'] / 1_000] = $row['count'];
         }
 
-        $from  = $dateTimeFrom->getTimestamp();
+        $from = $dateTimeFrom->getTimestamp();
+        $to   = $dateTimeTo->getTimestamp();
+
         $from -= $from % $ret;
-        $to    = $dateTimeTo->getTimestamp();
         $to   -= $to % $ret;
 
         $sorted = [];
@@ -542,18 +553,14 @@ final class MongoMetricsManager extends MetricsManagerAbstract
     }
 
     /**
-     * @param string $dateFrom
-     * @param string $dateTo
-     *
      * @return mixed[]
      * @throws DateTimeException
      */
-    private function rabbitConsumerMetrics(string $dateFrom, string $dateTo): array
+    private function rabbitConsumerMetrics(): array
     {
-        $qb = $this->metricsDm->createAggregationBuilder(RabbitConsumerMetrics::class);
-        $this->addConditions($qb, $dateFrom, $dateTo, [], RabbitConsumerMetrics::class);
+        $qb  = $this->metricsDm->createQueryBuilder(RabbitConsumerMetrics::class);
         $res = $qb
-            ->execute()
+            ->getQuery()
             ->toArray();
 
         if (!$res) {
@@ -561,12 +568,12 @@ final class MongoMetricsManager extends MetricsManagerAbstract
         }
 
         return array_map(
-            static fn(array $item): array => [
-                'queue'     => $item['tags']['queue'] ?? '',
-                'consumers' => $item['tags']['consumers'] ?? 0,
-                'created'   => $item['fields']['created'] ? $item['fields']['created']->toDateTime()->format(
+            static fn(RabbitConsumerMetrics $item): array => [
+                'queue'     => $item->getTags()->getQueue(),
+                'consumers' => $item->getFields()->getConsumers(),
+                'created'   => $item->getFields()->getCreated()->format(
                     DateTimeUtils::DATE_TIME_UTC,
-                ) : NULL,
+                ),
             ],
             $res,
         );

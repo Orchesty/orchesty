@@ -134,18 +134,14 @@ abstract class MetricsManagerAbstract implements LoggerAwareInterface
     abstract public function getNodeMetrics(Node $node, Topology $topology, array $params): array;
 
     /**
-     * @param mixed[] $params
-     *
      * @return mixed[]
      */
-    abstract public function getContainerMetrics(array $params): array;
+    abstract public function getContainerMetrics(): array;
 
     /**
-     * @param mixed[] $params
-     *
      * @return mixed[]
      */
-    abstract public function getConsumerMetrics(array $params): array;
+    abstract public function getConsumerMetrics(): array;
 
     /**
      * @param Topology $topology

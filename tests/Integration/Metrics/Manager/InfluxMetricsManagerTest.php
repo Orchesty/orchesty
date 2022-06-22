@@ -238,12 +238,7 @@ final class InfluxMetricsManagerTest extends DatabaseTestCaseAbstract
         $this->setFakeData($topo, $node, 'nutshell');
 
         $manager = $this->getManager();
-        $result  = $manager->getConsumerMetrics(
-            [
-                'from' => '-10 day',
-                'to'   => '+10 day',
-            ],
-        );
+        $result  = $manager->getConsumerMetrics();
 
         self::assertEquals(
             [

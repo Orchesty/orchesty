@@ -70,16 +70,26 @@ final class MetricsController
     /**
      * @Route("/metrics/consumers", methods={"GET", "OPTIONS"})
      *
-     * @param Request $request
+     * @return Response
+     */
+    public function consumerMetricsAction(): Response
+    {
+        try {
+            return $this->getResponse($this->metricsHandler->getConsumerMetrics());
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e, 400);
+        }
+    }
+
+    /**
+     * @Route("/metrics/containers", methods={"GET", "OPTIONS"})
      *
      * @return Response
      */
-    public function consumerMetricsAction(Request $request): Response
+    public function containerMetricsAction(): Response
     {
         try {
-            $dto = new GridRequestDto(Json::decode($request->query->get('filter', '{}')));
-
-            return $this->getResponse($this->metricsHandler->getConsumerMetrics($dto));
+            return $this->getResponse($this->metricsHandler->getContainerMetrics());
         } catch (Throwable $e) {
             return $this->getErrorResponse($e, 400);
         }
