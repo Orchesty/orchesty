@@ -2,6 +2,8 @@ FROM hanabosocom/php-base:php-8.1-alpine
 
 COPY . .
 RUN cd status-service && \
+    sed -i -e 's/"symlink": true/"symlink": false/g' composer.json && \
+    sed -i -e 's/"symlink": true/"symlink": false/g' composer.lock && \
     composer install -a --no-dev && \
     APP_ENV=prod APP_DEBUG=0 RABBITMQ_DSN=amqp://rabbitmq:5672/ \
     METRICS_SERVICE=mongo \
