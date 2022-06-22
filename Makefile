@@ -54,3 +54,5 @@ fasttest: lint
 	$(DE) go tool cover -html=var/coverage.out -o var/coverage.html
 
 test: init-dev fasttest docker-down-clean
+
+ci-test: test
