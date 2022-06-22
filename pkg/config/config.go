@@ -1,7 +1,6 @@
 package config
 
 import (
-	"detector/pkg/enum"
 	"time"
 
 	"github.com/hanaboso/go-log/pkg/zap"
@@ -30,8 +29,8 @@ type (
 	}
 
 	generator struct {
-		Network string       `env:"GENERATOR_NETWORK"`
-		Mode    enum.Adapter `env:"GENERATOR_MODE"`
+		Network string `env:"GENERATOR_NETWORK"`
+		Mode    string `env:"GENERATOR_MODE"`
 	}
 
 	config struct {

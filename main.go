@@ -30,10 +30,10 @@ func main() {
 		var containers []services.Container
 		var err error
 		switch config.Generator.Mode {
-		case enum.Adapter_Compose:
-			containers, err = rb.DockerContainerCheck()
-		case enum.Adapter_Kubernetes:
-			containers, err = rb.KubeContainerCheck()
+		case string(enum.Adapter_Compose):
+			containers, err = services.DockerContainerCheck()
+		case string(enum.Adapter_Kubernetes):
+			containers, err = services.KubeContainerCheck()
 		}
 		if containers != nil && err == nil {
 			workQueue <- containers
