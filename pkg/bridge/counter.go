@@ -15,17 +15,26 @@ type counter struct {
 }
 
 type counterMessageBody struct {
-	Success   bool `json:"success"`
-	Following int  `json:"following"`
+	Success   bool                   `json:"success"`
+	Following int                    `json:"following"`
+	Body      string                 `json:"body"`
+	Headers   map[string]interface{} `json:"headers"`
 }
 
 func (c counter) send(result model.ProcessResult, followers int) {
 	msg := result.Message()
-	success := true
 	status := result.Status()
 
+	body := counterMessageBody{
+		Following: followers,
+		Success:   true,
+	}
+
 	if status == enum.ProcessStatus_Error || status == enum.ProcessStatus_Trash {
-		success = false
+		body.Success = false
+		body.Body = string(result.Message().Body)
+		body.Headers = result.Message().Headers
+
 		err := result.Error()
 		if err == nil {
 			err = fmt.Errorf("failed")
@@ -37,11 +46,6 @@ func (c counter) send(result model.ProcessResult, followers int) {
 	// Error is redelivery -> the message will be repeated
 	if status == enum.ProcessStatus_Error {
 		followers = 1
-	}
-
-	body := counterMessageBody{
-		Following: followers,
-		Success:   success,
 	}
 
 	bodyString, _ := json.Marshal(body)

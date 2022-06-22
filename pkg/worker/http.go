@@ -69,7 +69,7 @@ func (h httpBeforeProcess) BeforeProcess(node types.Node, dto *model.ProcessMess
 
 	// Only check for result code existence -> process is outside http worker
 	if _, err := dto.GetHeader(enum.Header_ResultCode); err != nil {
-		return dto.Error(err)
+		return dto.Trash(err)
 	}
 
 	return dto.Ok()
