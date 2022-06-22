@@ -8,9 +8,9 @@ require (
 	github.com/hanaboso/go-mongodb v1.0.2
 	github.com/jinzhu/configor v1.2.1
 	github.com/rs/zerolog v1.27.0
-	github.com/spf13/cobra v1.4.0
+	github.com/spf13/cobra v1.5.0
 	github.com/streadway/amqp v1.0.0
-	github.com/stretchr/testify v1.7.2
+	github.com/stretchr/testify v1.7.4
 	go.mongodb.org/mongo-driver v1.9.1
 )
 
@@ -19,7 +19,6 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
-	github.com/hanaboso/go-log v1.0.3 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/klauspost/compress v1.13.6 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect

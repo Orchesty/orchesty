@@ -5,35 +5,46 @@ import (
 	"encoding/json"
 	metrics "github.com/hanaboso/go-metrics/pkg"
 	"github.com/hanaboso/pipes/counter/pkg/config"
-	"github.com/hanaboso/pipes/counter/pkg/enum"
 	"github.com/hanaboso/pipes/counter/pkg/model"
 	"github.com/hanaboso/pipes/counter/pkg/mongo"
 	"github.com/hanaboso/pipes/counter/pkg/rabbit"
 	"github.com/hanaboso/pipes/counter/pkg/utils/intx"
 	"github.com/hanaboso/pipes/counter/pkg/utils/timex"
 	"github.com/streadway/amqp"
+	"go.mongodb.org/mongo-driver/bson"
+	md "go.mongodb.org/mongo-driver/mongo"
+	"sync"
 	"time"
 )
 
 type MultiCounter struct {
 	rabbit          *rabbit.RabbitMq
-	mongo           *mongo.MongoDb
-	processes       model.Processes
+	mongo           mongo.MongoDb
 	consumer        *rabbit.Consumer
 	statusPublisher *rabbit.Publisher
+	metrics         metrics.Interface
 	toCommit        bool
 	lastTag         uint64
-	metrics         metrics.Interface
+	wg              *sync.WaitGroup
+	processes       []md.WriteModel
+	subProcesses    []md.WriteModel
+	finishes        []md.WriteModel
+	errors          []bson.M
 }
 
 var relieve = 10
 
-func NewMultiCounter(rabbit *rabbit.RabbitMq, mongo *mongo.MongoDb) MultiCounter {
+func NewMultiCounter(rabbit *rabbit.RabbitMq, mongo mongo.MongoDb) MultiCounter {
 	return MultiCounter{
-		rabbit:    rabbit,
-		mongo:     mongo,
-		processes: mongo.LoadProcesses(),
-		metrics:   metrics.Connect(config.Metrics.Dsn),
+		rabbit:       rabbit,
+		mongo:        mongo,
+		metrics:      metrics.Connect(config.Metrics.Dsn),
+		toCommit:     false,
+		processes:    nil,
+		subProcesses: nil,
+		finishes:     nil,
+		errors:       nil,
+		wg:           &sync.WaitGroup{},
 	}
 }
 
@@ -53,7 +64,8 @@ func (c *MultiCounter) Start(ctx context.Context) {
 		case msg, ok := <-msgs:
 			if ok {
 				c.lastTag = msg.Tag
-				c.processMessage(msg)
+				c.wg.Add(1)
+				c.processMessage(msg) // Just DO NOT make it as a new goroutine! Would create data race.
 			} else {
 				c.commit()
 				return
@@ -65,6 +77,8 @@ func (c *MultiCounter) Start(ctx context.Context) {
 }
 
 func (c *MultiCounter) processMessage(message *model.ProcessMessage) {
+	defer c.wg.Done()
+
 	var body model.ProcessBody
 	if err := json.Unmarshal(message.Body, &body); err != nil {
 		config.Log.Error(err)
@@ -72,55 +86,46 @@ func (c *MultiCounter) processMessage(message *model.ProcessMessage) {
 	}
 
 	c.toCommit = true
-	// Upsert by correlationId
-	correlationId := message.GetHeaderOrDefault(enum.Header_CorrelationId, "")
-	processId := message.GetHeaderOrDefault(enum.Header_ProcessId, "")
 
-	root, ok := c.processes[correlationId]
-	if !ok {
-		root = c.mongo.LoadProcess(correlationId)
-		if root == nil {
-			root = message.IntoProcess()
-			root.Total++
-		}
-		c.processes[correlationId] = root
-	}
+	c.processes = append(
+		c.processes,
+		message.ProcessInitQuery(),
+		message.ProcessQuery(body),
+	)
+	c.subProcesses = append(
+		c.processes,
+		message.SubProcessInitQuery(),
+		message.SubProcessQuery(body),
+	)
 
-	// Main process
-	root.Increment(body)
-	if processId != root.ProcessId {
-		// Subprocess
-		subprocess, ok := root.Subprocesses[processId]
-		if !ok {
-			subprocess = message.IntoSubprocess()
-			root.Subprocesses[processId] = subprocess
-			root.OpenProcesses++
-		}
-
-		subprocess.Increment(body)
-		if subprocess.IsFinished() {
-			closed := []string{processId}
-			closed = append(closed, root.CloseSubprocess(subprocess)...)
-			/*
-				TODO 'closed' are finished subprocesses -> ordered from bottom up
-				TODO Use it later for subprocess notifications
-			*/
-		}
-	}
-
-	if root.IsFinished() {
-		finished := message.GetTimeHeaderOrDefault(enum.Header_PublishedTimestamp)
-		root.Finished = &finished
-		c.finishProcess(root)
+	c.finishes = append(c.finishes, message.FinishProcessQuery())
+	if !body.Success {
+		c.errors = append(c.errors, message.ErrorDoc(body))
 	}
 }
 
-func (c *MultiCounter) finishProcess(process *model.Process) {
+func (c *MultiCounter) commit() {
+	if c.toCommit {
+		c.wg.Wait()
+		finished := c.mongo.UpdateProcesses(c.processes, c.subProcesses, c.finishes, c.errors)
+		for _, process := range finished {
+			go c.finishProcess(process)
+		}
+		c.clear()
+		c.consumer.MutliAck(c.lastTag)
+		relieve = 10
+	} else {
+		time.Sleep(time.Duration(relieve) * time.Millisecond)
+		relieve = intx.Max(relieve+20, 1000)
+	}
+}
+
+func (c *MultiCounter) finishProcess(process model.Process) {
 	body, _ := json.Marshal(struct {
 		ProcessId string `json:"process_id"`
 		Success   bool   `json:"success"`
 	}{
-		ProcessId: process.CorrelationId,
+		ProcessId: process.Id,
 		Success:   process.IsOk(),
 	})
 
@@ -132,19 +137,7 @@ func (c *MultiCounter) finishProcess(process *model.Process) {
 	c.sendMetrics(process)
 }
 
-func (c *MultiCounter) commit() {
-	if c.toCommit {
-		c.toCommit = false
-		c.mongo.UpdateProcesses(c.processes)
-		c.consumer.MutliAck(c.lastTag)
-		relieve = 10
-	} else {
-		time.Sleep(time.Duration(relieve) * time.Millisecond)
-		relieve = intx.Max(relieve+20, 1000)
-	}
-}
-
-func (c *MultiCounter) sendMetrics(process *model.Process) {
+func (c *MultiCounter) sendMetrics(process model.Process) {
 	err := c.metrics.Send(
 		config.Metrics.Measurement,
 		map[string]interface{}{
@@ -152,7 +145,7 @@ func (c *MultiCounter) sendMetrics(process *model.Process) {
 		},
 		map[string]interface{}{
 			"result":     process.IsFinished(),
-			"duration":   timex.MsDiff(process.Created, *process.Finished),
+			"duration":   timex.MsDiff(process.Created, time.Now()),
 			"ok_count":   process.Ok,
 			"fail_count": process.Nok,
 			"created":    time.Now(),
@@ -161,4 +154,12 @@ func (c *MultiCounter) sendMetrics(process *model.Process) {
 	if err != nil {
 		config.Log.Error(err)
 	}
+}
+
+func (c *MultiCounter) clear() {
+	c.toCommit = false
+	c.processes = nil
+	c.subProcesses = nil
+	c.finishes = nil
+	c.errors = nil
 }

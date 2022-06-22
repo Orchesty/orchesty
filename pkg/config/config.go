@@ -25,8 +25,10 @@ type (
 	}
 
 	mongoDb struct {
-		Dsn               string `env:"MONGODB_DSN" required:"true"`
-		CounterCollection string `env:"MONGODB_COUNTER_COLLECTION" default:"MultiCounter"`
+		Dsn                  string `env:"MONGODB_DSN" required:"true"`
+		CounterCollection    string `env:"MONGODB_COUNTER_COLLECTION" default:"MultiCounter"`
+		CounterSubCollection string `env:"MONGODB_COUNTER_SUB_COLLECTION" default:"MultiCounterSubProcess"`
+		CounterErrCollection string `env:"MONGODB_COUNTER_ERR_COLLECTION" default:"MultiCounterError"`
 	}
 
 	metrics struct {

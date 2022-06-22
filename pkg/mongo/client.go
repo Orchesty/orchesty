@@ -3,6 +3,7 @@ package mongo
 import (
 	"github.com/hanaboso/go-mongodb"
 	"github.com/hanaboso/pipes/counter/pkg/config"
+	"github.com/rs/zerolog/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -10,31 +11,21 @@ import (
 
 type MongoDb struct {
 	connection *mongodb.Connection
-	collection *mongo.Collection
 }
 
-func NewMongo() *MongoDb {
+func NewMongo() MongoDb {
 	mongoDbCon := &mongodb.Connection{}
 	mongoDbCon.Connect(config.MongoDb.Dsn)
 
-	mongoDb := &MongoDb{
-		connection: mongoDbCon,
-		collection: mongoDbCon.Database.Collection(config.MongoDb.CounterCollection),
-	}
+	month := int32(30 * 24 * 60 * 60)
+	ctx, cancel := mongoDbCon.Context()
 
-	indexCorr := mongo.IndexModel{
-		Keys: bson.M{
-			"correlationId": 1,
-		},
-		Options: nil,
-	}
 	indexFinished := mongo.IndexModel{
 		Keys: bson.M{
 			"finished": 1,
 		},
 		Options: nil,
 	}
-	month := int32(30 * 24 * 60 * 60)
 	indexExpires := mongo.IndexModel{
 		Keys: bson.M{
 			"created": 1,
@@ -43,13 +34,63 @@ func NewMongo() *MongoDb {
 			ExpireAfterSeconds: &month,
 		},
 	}
-	ctx, cancel := mongoDb.connection.Context()
-	if _, err := mongoDb.collection.Indexes().CreateMany(ctx, []mongo.IndexModel{indexCorr, indexFinished, indexExpires}); err != nil {
-		mongoDb.connection.Log.Error(err)
+
+	coll := mongoDbCon.Database.Collection(config.MongoDb.CounterCollection)
+	if _, err := coll.Indexes().CreateMany(ctx, []mongo.IndexModel{indexFinished, indexExpires}); err != nil {
+		log.Err(err).Send()
 	}
+
+	indexCorr := mongo.IndexModel{
+		Keys: bson.M{
+			"correlationId": 1,
+		},
+		Options: nil,
+	}
+	indexExpires = mongo.IndexModel{
+		Keys: bson.M{
+			"created": 1,
+		},
+		Options: &options.IndexOptions{
+			ExpireAfterSeconds: &month,
+		},
+	}
+
+	coll = mongoDbCon.Database.Collection(config.MongoDb.CounterSubCollection)
+	if _, err := coll.Indexes().CreateMany(ctx, []mongo.IndexModel{indexCorr, indexExpires}); err != nil {
+		log.Err(err).Send()
+	}
+
+	indexCorr = mongo.IndexModel{
+		Keys: bson.M{
+			"correlationId": 1,
+		},
+		Options: nil,
+	}
+	indexPro := mongo.IndexModel{
+		Keys: bson.M{
+			"processId": 1,
+		},
+		Options: nil,
+	}
+	indexExpires = mongo.IndexModel{
+		Keys: bson.M{
+			"created": 1,
+		},
+		Options: &options.IndexOptions{
+			ExpireAfterSeconds: &month,
+		},
+	}
+
+	coll = mongoDbCon.Database.Collection(config.MongoDb.CounterErrCollection)
+	if _, err := coll.Indexes().CreateMany(ctx, []mongo.IndexModel{indexCorr, indexPro, indexExpires}); err != nil {
+		log.Err(err).Send()
+	}
+
 	cancel()
 
-	return mongoDb
+	return MongoDb{
+		connection: mongoDbCon,
+	}
 }
 
 func (m *MongoDb) Close() {

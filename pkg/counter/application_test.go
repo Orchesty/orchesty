@@ -129,12 +129,12 @@ func TestMultiCounter_nok(t *testing.T) {
 	_ = coll.FindOne(ctx, bson.M{}).Decode(&res)
 
 	exp := model.Process{
-		CorrelationId: "unfinished",
-		Ok:            1,
-		Nok:           1,
-		Created:       res.Created,
-		Total:         4,
-		Subprocesses:  make(map[string]*model.Subprocess, 0),
+		Id:       "unfinished",
+		Ok:       1,
+		Nok:      1,
+		Total:    4,
+		Created:  res.Created,
+		Finished: res.Finished,
 	}
 	assert.Equal(t, exp, res)
 	cancel()

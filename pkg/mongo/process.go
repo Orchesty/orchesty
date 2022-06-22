@@ -2,82 +2,85 @@ package mongo
 
 import (
 	"context"
+	"github.com/hanaboso/pipes/counter/pkg/config"
 	"github.com/hanaboso/pipes/counter/pkg/model"
 	"github.com/rs/zerolog/log"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/bsontype"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"time"
 )
 
-func (m *MongoDb) LoadProcess(correlationId string) *model.Process {
-	for {
-		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-		result := m.collection.FindOne(ctx, bson.M{
-			"correlationId": correlationId,
-		})
-		err := result.Err()
-		if err != nil {
-			cancel()
-			return nil
-		}
-
-		var process model.ProcessWithId
-		if err = result.Decode(&process); err != nil {
-			log.Error().Err(err).Send()
-			time.Sleep(time.Second)
-			cancel()
-			continue
-		}
-
+func (m *MongoDb) GetProcess(id string) (model.Process, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	result := m.connection.Database.Collection(config.MongoDb.CounterCollection).FindOne(ctx, bson.M{
+		"_id": id,
+	})
+	err := result.Err()
+	if err != nil {
 		cancel()
-		p := process.IntoProcess()
-		return &p
+		return model.Process{}, err
 	}
+
+	var process model.Process
+	err = result.Decode(&process)
+
+	cancel()
+	return process, err
 }
 
-func (m *MongoDb) LoadProcesses() model.Processes {
-	for {
-		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-		cursor, err := m.collection.Find(ctx, bson.M{
-			"finished": bsontype.Null,
-		})
-		if err != nil {
-			log.Error().Err(err).Send()
-			time.Sleep(time.Second)
-			cancel()
-			continue
-		}
+func (m *MongoDb) GetUnmarkedFinishedProcesses() ([]model.Process, error) {
+	var processes []model.Process
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	result, err := m.connection.Database.Collection(config.MongoDb.CounterCollection).Aggregate(ctx, bson.A{
+		bson.M{
+			"$match": bson.M{
+				"finished": nil,
+			},
+		},
+		bson.M{
+			"$addFields": bson.M{
+				"done": bson.M{
+					"$cond": bson.A{
+						bson.M{
+							"$eq": bson.A{
+								bson.M{
+									"$add": bson.A{"$ok", "$nok"},
+								},
+								"$total",
+							},
+						},
+						true,
+						false,
+					},
+				},
+			},
+		},
+		bson.M{
+			"$match": bson.M{
+				"done": true,
+			},
+		},
+		bson.M{
+			"$unset": "done",
+		},
+	})
 
-		var processes []model.ProcessWithId
-		if err = cursor.All(ctx, &processes); err != nil {
-			log.Error().Err(err).Send()
-			time.Sleep(time.Second)
-			cancel()
-			continue
-		}
+	err = result.All(ctx, &processes)
 
-		mapped := make(model.Processes)
-		for _, process := range processes {
-			p := process.IntoProcess()
-			mapped[process.CorrelationId] = &p
-		}
-
-		cancel()
-		return mapped
-	}
+	cancel()
+	return processes, err
 }
 
-func (m *MongoDb) UpdateProcesses(processes model.Processes) {
+func (m *MongoDb) UpdateProcesses(processes, subProcesses, finishes []mongo.WriteModel, errors []bson.M) (finished []model.Process) {
 	sess, err := m.connection.StartSession()
 	if err != nil {
 		log.Fatal().Err(err).Send()
 	}
 
-	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer func() {
 		sess.EndSession(ctx)
+		cancel()
 	}()
 
 	err = sess.StartTransaction()
@@ -86,60 +89,43 @@ func (m *MongoDb) UpdateProcesses(processes model.Processes) {
 	}
 
 	err = mongo.WithSession(ctx, sess, func(sc mongo.SessionContext) error {
-		var updates []mongo.WriteModel
-		var inserts []interface{}
-		var insertIds []string
-		var toDelete []string
-
-		for key, process := range processes {
-			if process.Id.IsZero() {
-				inserts = append(inserts, process)
-				insertIds = append(insertIds, process.CorrelationId)
-			} else {
-				operation := mongo.NewUpdateOneModel()
-				operation.Filter = bson.M{"_id": process.Id}
-				operation.Update = bson.M{
-					"$set": process,
-				}
-				updates = append(updates, operation)
-
-				if process.IsFinished() || !process.IsActive() {
-					toDelete = append(toDelete, key)
-				}
-			}
-		}
-
-		if len(updates) > 0 {
-			_, err := m.collection.BulkWrite(ctx, updates)
-			if err != nil {
-				_ = sess.AbortTransaction(ctx)
-				return err
-			}
-		}
-
-		if len(insertIds) > 0 {
-			res, err := m.collection.InsertMany(ctx, inserts)
-			if err != nil {
-				_ = sess.AbortTransaction(ctx)
-				return err
-			}
-
-			for index, id := range res.InsertedIDs {
-				processes[insertIds[index]].Id = id.(primitive.ObjectID)
-			}
-		}
-
-		if err = sess.CommitTransaction(sc); err != nil {
+		_, err := m.connection.Database.Collection(config.MongoDb.CounterCollection).BulkWrite(ctx, processes)
+		if err != nil {
+			_ = sess.AbortTransaction(ctx)
 			return err
 		}
-		for _, key := range toDelete {
-			delete(processes, key)
+		_, err = m.connection.Database.Collection(config.MongoDb.CounterSubCollection).BulkWrite(ctx, subProcesses)
+		if err != nil {
+			_ = sess.AbortTransaction(ctx)
+			return err
 		}
 
-		return nil
+		finished, err = m.GetUnmarkedFinishedProcesses()
+		if err != nil {
+			_ = sess.AbortTransaction(ctx)
+			return err
+		}
+
+		_, err = m.connection.Database.Collection(config.MongoDb.CounterCollection).BulkWrite(ctx, finishes)
+		if err != nil {
+			_ = sess.AbortTransaction(ctx)
+			return err
+		}
+
+		for _, errMsg := range errors {
+			_, err = m.connection.Database.Collection(config.MongoDb.CounterErrCollection).InsertOne(ctx, errMsg)
+			if err != nil {
+				_ = sess.AbortTransaction(ctx)
+				return err
+			}
+		}
+
+		return sess.CommitTransaction(sc)
 	})
 
 	if err != nil {
 		log.Fatal().Err(err).Send()
 	}
+
+	return
 }
