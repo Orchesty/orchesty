@@ -36,12 +36,9 @@ services:
             - mongodb:/data/db
 
     logstash:
-        image: hanaboso/pipes-logstash-mongo:master
+        image: mendhak/udp-listener
         environment:
-            - MONGO_DSN=mongodb://mongo:27017
-            - MONGO_DB=pipes
-            - MONGO_COLLECTION=Logs
-            - LS_JAVA_OPTS=-Xms512m -Xmx512m
+            - UDPPORT=5120
 
 volumes:
     rabbitmq:
