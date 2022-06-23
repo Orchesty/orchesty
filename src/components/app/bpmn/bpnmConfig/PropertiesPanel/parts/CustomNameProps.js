@@ -21,7 +21,7 @@ export default function (group, element, translate) {
   const pipesType = getBusinessObject(element).pipesType
   const implementationTypesNames = JSON.parse(localStorage.getItem(LOCAL_STORAGE.IMPLEMENTATIONS))?.items || []
 
-  if (element.type !== 'bpmn:Process' && pipesType !== 'user') {
+  if (!['bpmn:Event', 'bpmn:Process'].includes(element.type) && pipesType !== 'user') {
     group.entries.push(
       entryFactory.selectBox(translate, {
         id: 'sdkHost',
@@ -38,7 +38,7 @@ export default function (group, element, translate) {
     )
   }
 
-  if (['connector', 'batch', 'custom', 'user'].includes(pipesType)) {
+  if (['connector', 'batch', 'custom'].includes(pipesType)) {
     group.entries.push(
       entryFactory.selectBox(translate, {
         id: 'name',

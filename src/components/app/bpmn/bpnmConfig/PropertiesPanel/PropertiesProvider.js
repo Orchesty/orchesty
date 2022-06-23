@@ -12,7 +12,6 @@ import ConnectorRepeaterEnabled from './parts/ConnectorRepeaterEnabled'
 import ConnectorRepeaterHops from './parts/ConnectorRepeaterHops'
 import ConnectorRepeaterInterval from './parts/ConnectorRepeaterInterval'
 import PrefetchProps from './parts/PrefetchProps.js'
-import UserTaskWaitResolve from '@/components/app/bpmn/bpnmConfig/PropertiesPanel/parts/UserTaskWaitResolve'
 import { is } from 'bpmn-js/lib/util/ModelUtil'
 
 function createGeneralTabGroups(element, bpmnFactory, elementRegistry, translate) {
@@ -53,8 +52,6 @@ function createGeneralTabGroups(element, bpmnFactory, elementRegistry, translate
     label: translate('User Task'),
     entries: [],
   }
-
-  UserTaskWaitResolve(userTaskGroup, element, translate)
 
   return [generalGroup, detailsGroup, cronGroup, userTaskGroup]
 }
