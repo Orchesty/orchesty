@@ -1,38 +1,34 @@
 FROM docker.elastic.co/logstash/logstash-oss:6.8.23
 
-ARG TYPE
-
-# EVNS
-ENV MONGO_HOST=''
-ENV MONGO_USER=''
-ENV MONGO_PASS=''
-ENV MONGO_DATABASE=''
+# ENVs
+ENV LOG_STORAGE=mongodb
+ENV MONGO_DSN=''
+ENV MONGO_DB=''
 ENV MONGO_COLLECTION=''
-ENV MONGO_SIZE_COLLETION=524288000
 
-COPY ./mongodb-org-3.6.repo /etc/yum.repos.d/mongodb-org-3.6.repo
-COPY ./logstash-output-mongodb-3.1.7.gem /logstash-output-mongodb-3.1.7.gem
-COPY ./logstash-filter-drop-3.0.5.gem /logstash-filter-drop-3.0.5.gem
-COPY ./conf /usr/share/logstash/pipeline
+# not implemented yet
+ENV MONGO_COLLECTION_SIZE=524288000
 
 USER root
 
-RUN if [ "$TYPE" = "mongo" ] ; then \
-    cd /usr/share/logstash/pipeline/  \
-    && rm logstash_elastics.conf && mv logstash_mongo.conf logstash.conf \
-    && echo "Using config for MongoDB!"; \
-  else \
-    cd /usr/share/logstash/pipeline/  \
-    && rm logstash_mongo.conf && mv logstash_elastics.conf logstash.conf \
-    && echo "Using config for ElasticSearch!"; \
-  fi
+COPY ./mongodb-org-3.6.repo /etc/yum.repos.d/mongodb-org-3.6.repo
 
+# https://github.com/singhksandeep25/logstash-output-mongodb/releases/tag/v3.1.7
+COPY ./logstash-output-mongodb-3.1.7.gem /logstash-output-mongodb-3.1.7.gem
+
+# https://rubygems.org/gems/logstash-filter-drop
+COPY ./logstash-filter-drop-3.0.5.gem /logstash-filter-drop-3.0.5.gem
+
+RUN rm -rf /usr/share/logstash/pipeline/*
+COPY ./conf /usr/share/logstash/pipeline-variants
 
 RUN yum install -y mongodb-org-shell
 
 USER logstash
 
-# https://github.com/singhksandeep25/logstash-output-mongodb/releases/tag/v3.1.7
 RUN logstash-plugin install --no-verify /logstash-output-mongodb-3.1.7.gem
-# https://rubygems.org/gems/logstash-filter-drop
 RUN logstash-plugin install --no-verify /logstash-filter-drop-3.0.5.gem
+
+COPY entrypoint.sh /
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["/bin/sh", "-c", "#(nop) "]

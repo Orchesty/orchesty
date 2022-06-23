@@ -24,4 +24,4 @@ logstash:build:
 
   script:
     - source ../export_tags
-    - /kaniko/executor --context . --build-arg TYPE=mongo --destination ${IMAGE}:${TAG_LOGSTASH} --destination ${IMAGE}:${TAG_BRANCH} --cache=true
+    - /kaniko/executor --context . --destination ${IMAGE}:${TAG_LOGSTASH} --destination ${IMAGE}:${TAG_BRANCH} --cache=true
