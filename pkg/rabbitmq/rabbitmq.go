@@ -153,5 +153,5 @@ func queue(shard model.NodeShard) string {
 }
 
 func routingKey(_ model.NodeShard) string {
-	return "1"
+	return "1" // TODO tohle se rozsype pokud se přidá různorodost při recreate / rebind
 }

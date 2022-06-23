@@ -51,6 +51,10 @@ func (s *subscriber) handleReconnect(conn *amqp.Connection, wg *sync.WaitGroup) 
 		notifyCancel := s.channel.NotifyCancel(make(chan string))
 
 		declareQueue(s.channel, s.queue)
+		if err := bind(ch, s.queue, s.exchange, s.routingKey); err != nil {
+			log.Error().Err(err).Send()
+			continue
+		}
 
 		prefetch := 50
 		if s.prefetch > 0 {
