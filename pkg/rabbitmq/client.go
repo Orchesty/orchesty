@@ -52,7 +52,7 @@ func (c *client) handleReconnect(pubSubs connector, addr string) {
 		notifyClose := conn.NotifyClose(make(chan *amqp.Error))
 
 		// Recreate channels of publishers and consumers
-		pubSubs.connect() // TODO: BR2-5
+		pubSubs.connect() // TODO: BR2-5 ... při smazání queue se bridge nezvpamatuje -> nevytvoří je znovu
 
 		if err := <-notifyClose; err != nil {
 			log.Err(err).Send()

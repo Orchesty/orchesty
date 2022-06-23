@@ -33,10 +33,9 @@ type NodeSettings struct {
 	TestPath   string
 	Headers    map[string]interface{}
 	// Side bar settings
-	Bridge        NodeSettingsBridge
-	Repeater      NodeSettingsRepeater
-	Limiter       NodeSettingsLimiter
-	UserTaskState enum.UserTaskState
+	Bridge   NodeSettingsBridge
+	Repeater NodeSettingsRepeater
+	Limiter  NodeSettingsLimiter
 }
 
 type NodeSettingsBridge struct {

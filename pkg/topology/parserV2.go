@@ -3,7 +3,6 @@ package topology
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/hanaboso/pipes/bridge/pkg/enum"
 	"github.com/hanaboso/pipes/bridge/pkg/model"
 	"github.com/hanaboso/pipes/bridge/pkg/utils/intx"
 	"io/ioutil"
@@ -103,7 +102,6 @@ func (jsonParserV2) getTopology(path string) (model.Topology, error) {
 					Messages: nodeV2.Settings.LimiterValue,
 					Interval: nodeV2.Settings.LimiterInterval,
 				},
-				UserTaskState: enum.UserTaskState(nodeV2.Settings.UserTask),
 			},
 			Followers: make([]model.Follower, len(nodeV2.Followers)),
 			Messages:  make(chan *model.ProcessMessage, 0),

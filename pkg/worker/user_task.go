@@ -20,10 +20,7 @@ func (u UserTask) BeforeProcess(node types.Node, dto *model.ProcessMessage) mode
 			return dto.Error(err)
 		}
 
-		if node.Settings().UserTaskState {
-			return dto.Pending()
-		}
-		return dto.Stop()
+		return dto.Pending()
 	}
 
 	dto.DeleteHeader(enum.Header_UserTaskState)
