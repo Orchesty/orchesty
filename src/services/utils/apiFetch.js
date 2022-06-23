@@ -91,7 +91,13 @@ const call = ({ requestData, params = null, throwError = true, store }, sender) 
           )
         } else {
           // unknown error
-          onError(store, id, 'UNKNOWN', errorType, err.response.data.message)
+          onError(
+            store,
+            id,
+            'UNKNOWN',
+            errorType,
+            err.response?.data?.message ?? 'Network error, please try again later'
+          )
         }
 
         stopSending(store.commit, id)

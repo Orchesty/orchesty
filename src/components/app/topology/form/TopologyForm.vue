@@ -89,6 +89,10 @@ export default {
         this.form.name = callbackdata.name
         this.form.description = callbackdata.description
         this.form.folder = callbackdata.folder
+
+        this.$nextTick(() => {
+          this.$refs.form.reset()
+        })
       },
     },
   },
