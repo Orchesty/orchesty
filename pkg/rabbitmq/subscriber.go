@@ -16,11 +16,12 @@ import (
 )
 
 type subscriber struct {
-	queue    string
-	exchange string
-	channel  *amqp.Channel
-	delivery chan<- *model.ProcessMessage
-	prefetch int
+	queue      string
+	exchange   string
+	routingKey string
+	channel    *amqp.Channel
+	delivery   chan<- *model.ProcessMessage
+	prefetch   int
 }
 
 type subscribers struct {
@@ -47,6 +48,9 @@ func (s *subscriber) handleReconnect(conn *amqp.Connection, wg *sync.WaitGroup) 
 
 		s.channel = ch
 		notifyClose := s.channel.NotifyClose(make(chan *amqp.Error))
+		notifyCancel := s.channel.NotifyCancel(make(chan string))
+
+		declareQueue(s.channel, s.queue)
 
 		prefetch := 50
 		if s.prefetch > 0 {
@@ -78,9 +82,14 @@ func (s *subscriber) handleReconnect(conn *amqp.Connection, wg *sync.WaitGroup) 
 
 		// Graceful notifyClose comes from consume function (after consuming is cancelled and workers are done)
 		// TODO Add context with timeout?
-		if err := <-notifyClose; err != nil {
-			// Error shutdown routine
-			log.Error().Object(enum.LogHeader_Data, s).Msgf("closing channel: %v", err)
+		select {
+		case closed := <-notifyClose:
+			if closed != nil {
+				log.Error().Object(enum.LogHeader_Data, s).Msgf("closing channel: %v", closed)
+				continue
+			}
+		case cancelled := <-notifyCancel:
+			log.Error().Object(enum.LogHeader_Data, s).Msgf("removed: %v", cancelled)
 			continue
 		}
 
@@ -123,10 +132,11 @@ func newSubscribers(shards []model.NodeShard) *subscribers {
 			log.Fatal().Msgf("mismatch of shard addresses [want=%s, got=%s]", addr, shard.RabbitMQDSN)
 		}
 		ss[i] = &subscriber{
-			exchange: exchange(shard),
-			queue:    queue(shard),
-			delivery: shard.Node.Messages,
-			prefetch: shard.Node.Settings.Bridge.Prefetch,
+			exchange:   exchange(shard),
+			queue:      queue(shard),
+			routingKey: routingKey(shard),
+			delivery:   shard.Node.Messages,
+			prefetch:   shard.Node.Settings.Bridge.Prefetch,
 		}
 		addr = shard.RabbitMQDSN
 	}

@@ -28,10 +28,11 @@ func (s *setupSvc) connect() {
 	for _, shard := range s.shards {
 		queue := queue(shard)
 		exchange := exchange(shard)
+		rk := routingKey(shard)
 
 		declareExchange(ch, exchange)
 		declareQueue(ch, queue)
-		if err = ch.QueueBind(queue, routingKey(shard), exchange, false, nil); err != nil {
+		if err := bind(ch, queue, exchange, rk); err != nil {
 			log.Fatal().Err(err).Send()
 		}
 	}
@@ -61,4 +62,12 @@ func declareQueue(channel *amqp.Channel, queueName string) {
 	if _, err := channel.QueueDeclare(queueName, true, false, false, false, nil); err != nil {
 		log.Fatal().Err(err).Send()
 	}
+}
+
+func bind(channel *amqp.Channel, queue, exchange, routingKey string) error {
+	if err := channel.QueueBind(queue, routingKey, exchange, false, nil); err != nil {
+		return err
+	}
+
+	return nil
 }

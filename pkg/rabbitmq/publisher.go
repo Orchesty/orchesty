@@ -14,6 +14,7 @@ import (
 )
 
 type publisher struct {
+	queue           string
 	routingKey      string
 	exchange        string
 	channel         *amqp.Channel
@@ -53,6 +54,14 @@ func (p *publisher) handleReconnect(conn *amqp.Connection, wg *sync.WaitGroup) {
 		// TODO viz comment in src code -> this should be big enough... in case of dead-lock, try 999
 		p.notifyConfirm = p.channel.NotifyPublish(make(chan amqp.Confirmation, 99))
 
+		if p.exchange != "" {
+			declareExchange(ch, p.exchange)
+			if err := bind(ch, p.queue, p.exchange, p.routingKey); err != nil {
+				log.Error().Err(err).Send()
+				continue
+			}
+		}
+
 		if err := <-p.channel.NotifyClose(make(chan *amqp.Error)); err != nil {
 			log.Error().Object(enum.LogHeader_Data, p).Msgf("closing channel: %v", err)
 			continue
@@ -75,8 +84,9 @@ func newPublishers(shards []model.NodeShard) *publishers {
 			log.Fatal().Msgf("mismatch of shard addresses [want=%s, got=%s]", address, shard.RabbitMQDSN)
 		}
 		pubList[i] = &publisher{
-			routingKey:    routingKey(shard),
+			queue:         queue(shard),
 			exchange:      exchange(shard),
+			routingKey:    routingKey(shard),
 			notifyConfirm: make(chan amqp.Confirmation, 1),
 			mu:            &sync.Mutex{},
 		}
