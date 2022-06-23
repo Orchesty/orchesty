@@ -65,9 +65,5 @@ func declareQueue(channel *amqp.Channel, queueName string) {
 }
 
 func bind(channel *amqp.Channel, queue, exchange, routingKey string) error {
-	if err := channel.QueueBind(queue, routingKey, exchange, false, nil); err != nil {
-		return err
-	}
-
-	return nil
+	return channel.QueueBind(queue, routingKey, exchange, false, nil)
 }
