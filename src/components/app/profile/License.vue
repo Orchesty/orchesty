@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="false">
     <v-row>
       <v-col cols="12">
         <h3 class="title font-weight-bold">{{ $t('profile.license.title') }}</h3>
