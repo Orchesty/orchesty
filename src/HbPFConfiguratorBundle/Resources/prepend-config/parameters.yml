@@ -22,6 +22,9 @@ parameters:
     env(UDP_LOGGER_URL): "logstash:5120"
     udp_logger_url: "%env(string:UDP_LOGGER_URL)%"
 
+    env(TOPOLOGY_POD_LABELS): ""
+    topology_pod_labels: "%env(string:TOPOLOGY_POD_LABELS)%"
+
     topology_configs:
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::RABBITMQ_DSN: "%env(string:RABBITMQ_DSN)%"
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::DOCKER_REGISTRY: "%docker_registry%"
@@ -33,6 +36,7 @@ parameters:
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::XML_PARSER_API_HOST: "%xml_parser_api_host%"
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::MONGODB_DSN: "%env(string:MONGODB_DSN)%"
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::UDP_LOGGER_URL: "%udp_logger_url%"
+        !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::TOPOLOGY_POD_LABELS: "%topology_pod_labels%"
 
     topology_generator_configs:
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge::TOPOLOGY_API: "%topology_api%"

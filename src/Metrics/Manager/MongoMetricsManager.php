@@ -253,14 +253,7 @@ final class MongoMetricsManager extends MetricsManagerAbstract
         }
 
         return array_map(
-            static fn(ContainerMetrics $item): array => [
-                'name'    => $item->getFields()->getName(),
-                'message' => $item->getFields()->getMessage(),
-                'up'      => $item->getFields()->isUp(),
-                'created' => $item->getFields()->getCreated()->format(
-                    DateTimeUtils::DATE_TIME_UTC,
-                ),
-            ],
+            static fn(ContainerMetrics $item): array => $item->getFields()->toArray(),
             $res,
         );
     }

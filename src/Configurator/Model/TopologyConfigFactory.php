@@ -38,6 +38,7 @@ final class TopologyConfigFactory
     public const XML_PARSER_API_HOST    = 'xml_parser_api_host';
     public const MONGODB_DSN            = 'mongodb_dsn';
     public const UDP_LOGGER_URL         = 'udp_logger_url';
+    public const TOPOLOGY_POD_LABELS    = 'topology_pod_labels';
 
     public const NODE_CONFIG = 'node_config';
     public const WORKER      = 'worker';
@@ -131,6 +132,7 @@ final class TopologyConfigFactory
             self::METRICS_SERVICE        => $this->configs[self::METRICS_SERVICE],
             self::WORKER_DEFAULT_PORT    => (int) $this->configs[self::WORKER_DEFAULT_PORT],
             self::UDP_LOGGER_URL         => $this->configs[self::UDP_LOGGER_URL],
+            self::TOPOLOGY_POD_LABELS    => $this->configs[self::TOPOLOGY_POD_LABELS],
         ];
     }
 

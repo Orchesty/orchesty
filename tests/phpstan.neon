@@ -47,6 +47,7 @@ parameters:
 			- Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetricsFields
 			- Hanaboso\PipesFramework\Metrics\Document\ContainerMetrics
 			- Hanaboso\PipesFramework\Metrics\Document\ContainerMetricsFields
+			- Hanaboso\PipesFramework\Metrics\Document\ContainerMetricsFieldsPods
 			- Hanaboso\PipesFramework\Metrics\Document\MonolithMetrics
 			- Hanaboso\PipesFramework\Metrics\Document\MonolithMetricsFields
 			- Hanaboso\PipesFramework\Metrics\Document\ProcessesMetrics
