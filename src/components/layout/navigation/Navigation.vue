@@ -32,6 +32,7 @@ import { mapActions } from 'vuex'
 import { AUTH } from '@/store/modules/auth/types'
 import TopologyAddHandler from '@/components/app/topology/menu/TopologyAddHandler'
 import NavigationItem from '@/components/layout/navigation/NavigationItem'
+import { EVENTS, events } from '@/services/utils/events'
 
 export default {
   name: 'Navigation',
@@ -44,7 +45,12 @@ export default {
       ACL: ACL,
       ROUTES: ROUTES,
       navigationItems: [
-        { to: ROUTES.DASHBOARD, icon: 'account_tree', tooltip: this.$t('navigation.topologies') },
+        {
+          to: ROUTES.DASHBOARD,
+          icon: 'account_tree',
+          tooltip: this.$t('navigation.topologies'),
+          onClick: this.toggleSidebar,
+        },
         { to: ROUTES.NOTIFICATION, icon: 'notifications', tooltip: this.$t('navigation.notifications') },
         { to: ROUTES.SCHEDULED_TASK, icon: 'mdi-clock', tooltip: this.$t('navigation.scheduledTask') },
         { to: ROUTES.APP_STORE.DEFAULT, icon: 'apps', tooltip: this.$t('navigation.appStore') },
@@ -55,6 +61,8 @@ export default {
         { to: ROUTES.USER_PROFILE, icon: 'mdi-account-circle', tooltip: this.$t('navigation.profile') },
         { to: ROUTES.LOGIN, icon: 'logout', tooltip: this.$t('navigation.logout'), onClick: this.logout },
       ],
+      EVENTS,
+      events,
     }
   },
   methods: {
@@ -67,6 +75,9 @@ export default {
     },
     emitButtonClick() {
       this.$refs.topologyAddHandler.$refs.actionButton.click()
+    },
+    toggleSidebar() {
+      this.events.emit(EVENTS.SIDEBAR.TOGGLE)
     },
   },
 }

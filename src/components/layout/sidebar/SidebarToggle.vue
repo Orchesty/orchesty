@@ -25,9 +25,10 @@
 
 <script>
 import { ADMIN_USERS } from '@/store/modules/adminUsers/types'
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import { AUTH } from '@/store/modules/auth/types'
 import { LOCAL_STORAGE } from '@/services/enums/localStorageEnums'
+import { EVENTS, events } from '@/services/utils/events'
 
 export default {
   name: 'SidebarToggle',
@@ -39,7 +40,7 @@ export default {
     },
   },
   computed: {
-    ...mapState(AUTH.NAMESPACE, ['user']),
+    ...mapGetters(AUTH.NAMESPACE, { userId: AUTH.GETTERS.GET_LOGGED_USER_ID }),
     offsetLeft() {
       return this.show ? this.sidePageWidth + 33 + 'px' : '43px'
     },
@@ -82,7 +83,7 @@ export default {
             language: JSON.parse(localStorage.getItem(LOCAL_STORAGE.USER_SETTINGS)).language,
           },
         },
-        id: this.user.user.id,
+        id: this.userId,
       })
     },
     '$vuetify.breakpoint.width'() {
@@ -93,6 +94,9 @@ export default {
     this.sidePageWidth = document.querySelector('.side-page-column').offsetWidth
   },
   mounted() {
+    events.listen(EVENTS.SIDEBAR.TOGGLE, () => {
+      this.toggleSideMenu()
+    })
     this.sidePageWidth = document.querySelector('.side-page-column').offsetWidth
   },
 }
