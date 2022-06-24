@@ -122,7 +122,11 @@ export default {
   },
   watch: {
     $route(route) {
-      if (!route.matched.some((matchedRoutes) => matchedRoutes.name === ROUTES.TOPOLOGY.DEFAULT)) {
+      if (
+        !route.matched.some(
+          (matchedRoutes) => matchedRoutes.name === ROUTES.TOPOLOGY.DEFAULT || matchedRoutes.name === ROUTES.EDITOR
+        )
+      ) {
         this.active = []
       }
     },
@@ -130,6 +134,12 @@ export default {
       deep: true,
       handler(topologyActive) {
         this.active = [topologyActive]
+      },
+    },
+    topologiesAll: {
+      deep: true,
+      handler() {
+        this.active = [this.topologyActive]
       },
     },
     opened: {
