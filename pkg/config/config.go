@@ -42,6 +42,7 @@ type (
 		WorkerDefaultRequestMemory string        `default:"128Mi" env:"WORKER_DEFAULT_REQUEST_MEMORY"`
 		WorkerDefaultRequestCPU    string        `default:"500m" env:"WORKER_DEFAULT_REQUEST_CPU"`
 		UdpLoggerUrl               string        `default:"logstash:5120" env:"UDP_LOGGER_URL"`
+		TopologyPodLabels          string        `default:"" env:"TOPOLOGY_POD_LABELS"`
 	}
 
 	config struct {

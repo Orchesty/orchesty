@@ -134,7 +134,12 @@ func (ts *TopologyService) CreateKubernetesDeployment() ([]byte, error) {
 	}
 
 	labels := make(map[string]string)
-	labels["app"] = GetDeploymentName(ts.Topology.ID.Hex())
+	labels["app.kubernetes.io/instance"] = "pipes"
+	for _, label := range strings.Split(config.Generator.TopologyPodLabels, ",") {
+		value := strings.Split(label, "=")
+		labels[value[0]] = value[1]
+	}
+
 	var depl = model.Deployment{
 		APIVersion: "apps/v1",
 		Kind:       "Deployment",
