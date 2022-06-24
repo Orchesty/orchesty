@@ -159,7 +159,8 @@ export default {
           null
         )
       } else if (SIMPLE_FILTER.TRASH === this.simpleFilterEnum) {
-        this.onFilter(null, null, [].concat(this.currentFilter, this.$refs.simpleGridFilter.trashFilter), null, null)
+        const fieldFilters = this.$refs.simpleGridFilter.trashFilter || []
+        this.onFilter(null, null, [].concat(this.currentFilter, fieldFilters), null, null)
       } else {
         this.onFilter(null, null, this.currentFilter, null, null)
       }
