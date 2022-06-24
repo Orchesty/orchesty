@@ -103,7 +103,7 @@ func (n *node) process(dto *model.ProcessMessage) {
 		// Stop    -> Metrics, Counter ok,  Ack
 		// Error   -> Metrics, Counter err, Nack
 		// Trash   -> Metrics, Counter err, Ack, Mongo
-		// Pending -> Metrics,    -         Ack
+		// Pending ->     -       -         Ack
 
 		ack := true
 		status := result.Status()
@@ -111,10 +111,13 @@ func (n *node) process(dto *model.ProcessMessage) {
 			ack = false
 		}
 
-		// Counter ignored in Pending status (UserTask)
+		// Counter ignored in Pending status (Repeater, Limiter, UserTask)
 		if status != enum.ProcessStatus_Pending {
 			result.Message().Status = enum.MessageStatus_Counter
 			n.counter.send(result, followers)
+
+			result.Message().Status = enum.MessageStatus_Metrics
+			n.sendMetrics(result)
 		}
 
 		// Known errors or end of repeats goes to trash and Acked
@@ -131,10 +134,6 @@ func (n *node) process(dto *model.ProcessMessage) {
 				ack = false
 			}
 		}
-
-		// Metrics are for every status
-		result.Message().Status = enum.MessageStatus_Metrics
-		n.sendMetrics(result)
 
 		// Ack/Nack message -> continue in case of error force another process
 		result.Message().Status = enum.MessageStatus_Ack
