@@ -24,8 +24,9 @@ type (
 	}
 
 	app struct {
-		Debug bool          `default:"false" env:"APP_DEBUG"`
-		Tick  time.Duration `default:"5" env:"TICK"` // in seconds, must be same as METRICS_RABBIT_INTERVAL in pf-bundles for correct avg calculations
+		Debug        bool          `default:"false" env:"APP_DEBUG"`
+		Tick         time.Duration `default:"5" env:"TICK"` // in seconds, must be same as METRICS_RABBIT_INTERVAL in pf-bundles for correct avg calculations
+		MonitorLabel string        `default:"app.kubernetes.io/instance=pipes" env:"COMPONENTS_DEPLOYMENT_LABEL"`
 	}
 
 	generator struct {

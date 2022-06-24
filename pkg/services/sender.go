@@ -28,6 +28,17 @@ type Container struct {
 	Name    string `json:"name"`
 	Message string `json:"message"`
 	Up      bool   `json:"up"`
+	// Kubectl
+	Desired int            `json:"desired"`
+	Ready   int            `json:"ready"`
+	Pods    []ContainerPod `json:"pods"`
+}
+
+type ContainerPod struct {
+	Up       bool   `json:"running"`
+	Message  string `json:"message"`
+	Restarts int    `json:"restarts"`
+	Age      string `json:"age"`
 }
 
 func (s *Sender) Start() {
@@ -67,6 +78,9 @@ func (s *Sender) Start() {
 					"message": container.Message,
 					"up":      container.Up,
 					"created": time.Now(),
+					"desired": container.Desired,
+					"ready":   container.Ready,
+					"pods":    container.Pods,
 				}); err != nil {
 					s.logContext().Error(err)
 				}
