@@ -16,18 +16,6 @@ abstract class CurlHandlerAbstract
     /**
      * @return string
      */
-    abstract public function getName(): string;
-
-    /**
-     * @param mixed[] $data
-     *
-     * @return CurlDto
-     */
-    abstract public function process(array $data): CurlDto;
-
-    /**
-     * @return string
-     */
     final public function getType(): string
     {
         return NotificationSenderEnum::CURL;
@@ -40,5 +28,17 @@ abstract class CurlHandlerAbstract
     {
         return [CurlDto::METHOD, CurlDto::URL, CurlDto::HEADERS];
     }
+
+    /**
+     * @return string
+     */
+    abstract public function getName(): string;
+
+    /**
+     * @param mixed[] $data
+     *
+     * @return CurlDto
+     */
+    abstract public function process(array $data): CurlDto;
 
 }
