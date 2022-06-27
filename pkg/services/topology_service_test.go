@@ -31,7 +31,7 @@ func getAllDockerServices(t *testing.T) {
 		Path:              "/srv/app/topology",
 		TopologyPath:      "/srv/app/topology.json",
 		ProjectSourcePath: "/opt/srv",
-		Mode:              model.ModeCompose,
+		Mode:              string(model.ModeCompose),
 		Prefix:            "dev",
 		Network:           "test",
 		MultiNode:         false,

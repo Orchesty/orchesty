@@ -65,7 +65,7 @@ func (ts *TopologyService) CreateDockerCompose(adapter model.Adapter) ([]byte, e
 		return nil, err
 	}
 
-	networks = getDockerNetworks(adapter, ts.generatorConfig.Network)
+	networks = getDockerNetworks(ts.generatorConfig.Network)
 	configs = getDockerConfigs(adapter, ts.generatorConfig.Prefix, ts.Topology)
 
 	compose = model.DockerCompose{
@@ -252,7 +252,6 @@ func (ts *TopologyService) getKubernetesContainers(mountName string) ([]model.Co
 		}
 	}
 	return containers, nil
-
 }
 
 func (ts *TopologyService) getDockerServices(mode model.Adapter) (map[string]*model.Service, error) {

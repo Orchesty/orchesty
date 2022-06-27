@@ -42,7 +42,7 @@ func serverCommand(cmd *cobra.Command, args []string) error {
 	var clientSet *kubernetes.Clientset
 	var err error
 
-	switch config.Generator.Mode {
+	switch model.Adapter(config.Generator.Mode) {
 	case model.ModeKubernetes:
 		cfg, err := services.GetKubernetesConfig(config.Generator)
 		if err != nil {

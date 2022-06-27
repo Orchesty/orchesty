@@ -99,5 +99,4 @@ func (m *Swarm) DeleteAction(c *ContextWrapper) {
 		return
 	}
 	c.WithCode(http.StatusOK, gin.H{"message": fmt.Sprintf("ID: %s", id), "docker-info": nil})
-
 }

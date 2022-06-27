@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"topology-generator/pkg/config"
+	"topology-generator/pkg/model"
 	"topology-generator/pkg/services"
 )
 
@@ -32,7 +33,7 @@ func newMux(sc *services.ServiceContainer) http.Handler {
 
 // V1 routes
 func (m *mux) version1() {
-	handler, err := GetHandlerAdapter(config.Generator.Mode)
+	handler, err := GetHandlerAdapter(model.Adapter(config.Generator.Mode))
 	if err != nil {
 		panic(err)
 	}

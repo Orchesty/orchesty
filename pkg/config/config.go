@@ -1,13 +1,10 @@
 package config
 
 import (
-	"os"
-	"time"
-
-	"topology-generator/pkg/model"
-
 	"github.com/hanaboso/go-log/pkg/zap"
 	"github.com/jinzhu/configor"
+	"os"
+	"time"
 
 	log "github.com/hanaboso/go-log/pkg"
 )
@@ -29,7 +26,7 @@ type (
 		Path                       string        `default:"/opt/srv/topology" env:"GENERATOR_PATH"`
 		TopologyPath               string        `default:"/srv/app/topology/topology.json" env:"TOPOLOGY_PATH"` // for node configuration, path in docker
 		ProjectSourcePath          string        `default:"/" env:"PROJECT_SOURCE_PATH"`                         // path where is stored local files relevant to docker.sock
-		Mode                       model.Adapter `default:"compose" env:"GENERATOR_MODE"`
+		Mode                       string        `default:"compose" env:"GENERATOR_MODE"`
 		ClusterConfig              string        `default:"" env:"K8S_CLUSTER_CONFIG"`
 		Namespace                  string        `default:"default" env:"K8S_NAMESPACE"`
 		K8sTimeout                 time.Duration `default:"30" env:"K8S_TIMEOUT"`

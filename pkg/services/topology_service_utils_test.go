@@ -35,7 +35,7 @@ func TestGetDockerNetworks(t *testing.T) {
 			},
 		}
 
-		result := getDockerNetworks(model.ModeCompose, "test")
+		result := getDockerNetworks("test")
 		assert.Equal(t, expected, result)
 	})
 }

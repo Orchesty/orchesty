@@ -338,7 +338,7 @@ func NewKubernetesSvc(clientSet *kubernetes.Clientset, namespace string) Kuberne
 
 // GetKubernetesConfig GetKubernetesConfig
 func GetKubernetesConfig(config config.GeneratorConfig) (*rest.Config, error) {
-	if config.Mode != model.ModeKubernetes {
+	if model.Adapter(config.Mode) != model.ModeKubernetes {
 		return nil, fmt.Errorf("mode %s is not compatible with kubernetes", config.Mode)
 	}
 
@@ -358,7 +358,6 @@ func GetKubernetesConfig(config config.GeneratorConfig) (*rest.Config, error) {
 		}
 	}
 	return cfg, nil
-
 }
 
 func int32Ptr(i int32) *int32 { return &i }

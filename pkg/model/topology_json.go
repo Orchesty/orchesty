@@ -143,7 +143,6 @@ func (n *Node) GetServiceName() string {
 
 // GetNext GetNext
 func (n *Node) GetNext() []string {
-
 	var nextNode []string
 	nextNode = make([]string, 0)
 

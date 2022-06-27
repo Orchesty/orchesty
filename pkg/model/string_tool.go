@@ -4,7 +4,6 @@ import "strings"
 
 // Substring Substring
 func Substring(s string, start int, length int) string {
-
 	if start > len(s) {
 		return ""
 	}
