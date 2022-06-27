@@ -10,9 +10,11 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookApplicationInterface;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Form;
+use Hanaboso\PipesPhpSdk\Application\Model\Form\FormStack;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
 use Hanaboso\Utils\String\Json;
 use JsonException;
@@ -186,23 +188,26 @@ final class NullApplication extends BasicApplicationAbstract implements WebhookA
         return ApplicationTypeEnum::WEBHOOK;
     }
 
-    /**
-     * @return Form
-     */
-    public function getSettingsForm(): Form
-    {
 
+    /**
+     * @return FormStack
+     */
+    public function getFormStack(): FormStack
+    {
         $field1 = new Field(Field::TEXT, 'settings1', 'Client 11');
         $field2 = new Field(Field::TEXT, 'settings2', 'Client 22');
         $field3 = new Field(Field::PASSWORD, 'settings3', 'Client 33');
 
-        $form = new Form();
+        $form = new Form(ApplicationInterface::AUTHORIZATION_FORM, 'Authorization settings');
         $form
             ->addField($field1)
             ->addField($field2)
             ->addField($field3);
 
-        return $form;
+        $formStack = new FormStack();
+        $formStack->addForm($form);
+
+        return $formStack;
     }
 
     /**
