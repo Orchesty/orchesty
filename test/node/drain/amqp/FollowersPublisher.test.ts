@@ -83,7 +83,7 @@ const settings: IAmqpDrainSettings = {
     ],
 };
 
-describe("FollowersPublisher", () => {
+xdescribe("FollowersPublisher", () => {
     it("publishes message to followers #integration", (done) => {
         const node: INodeLabel = {id: "nodeId", node_id: "nodeId", node_name: "nodeName", topology_id: "topoId"};
         const receivedMessages: Message[] = [];

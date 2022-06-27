@@ -11,7 +11,7 @@ import MongoMessageStorage from "../../src/repeater/storage/MongoMessageStorage"
 
 const conn = new Connection(amqpConnectionOptions);
 
-describe("Repeater", () => {
+xdescribe("Repeater", () => {
     it("should consume message and publish it after repeat interval #integration", (done) => {
         const settings: IRepeaterSettings = {
             input: { queue: { name: "repeater_a", prefetch: 50, options: { durable: persistentQueues } } },

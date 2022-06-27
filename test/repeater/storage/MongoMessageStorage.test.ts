@@ -5,7 +5,7 @@ import {Db, MongoClient} from "mongodb";
 import {mongoStorageOptions} from "../../../src/config";
 import MongoMessageStorage from "../../../src/repeater/storage/MongoMessageStorage";
 
-describe("MongoMessageStorage", () => {
+xdescribe("MongoMessageStorage", () => {
     let db: Db;
     const COLLECTION_NAME = "messages";
 

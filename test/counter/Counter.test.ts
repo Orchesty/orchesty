@@ -360,7 +360,7 @@ const runCounterTest = async (counter: Counter, testOutputQueue: any, done: any)
     await Promise.all(promises);
 };
 
-describe("Counter", () => {
+xdescribe("Counter", () => {
 
     it("using inMemory storage should evaluate processes properly #integration", (done) => {
         const counterSettings: ICounterSettings = {
