@@ -8,8 +8,7 @@ services:
     environment:
       - MONGO_HOST=mongodb
       - RABBITMQ_HOST=rabbitmq
-      - LOGSTASH_HOST=logstash
-      - LOGSTASH_PORT=5120
+      - UDP_LOGGER_URL=logstash:5120
     volumes:
       - ./:/limiter
     command: bash -c 'sleep infinity'
@@ -25,7 +24,9 @@ services:
         - mongodb:/data/db
 
   logstash:
-    image: kedlas/udplogger:latest
+    image: mendhak/udp-listener
+    environment:
+      UDPPORT: 5120
 
 volumes:
     mongodb:

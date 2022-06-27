@@ -40,6 +40,8 @@ func setTestEnv() {
 	os.Setenv("MONGO_DB", "limiter_test")
 	os.Setenv("MONGO_COLLECTION", "messages")
 
+	os.Setenv("LOGSTASH_PORT", "5120")
+
 	os.Setenv("RABBITMQ_HOST", env.GetEnv("RABBITMQ_HOST", "rabbitmq"))
 	os.Setenv("RABBITMQ_PORT", "5672")
 	os.Setenv("RABBITMQ_USER", "guest")
