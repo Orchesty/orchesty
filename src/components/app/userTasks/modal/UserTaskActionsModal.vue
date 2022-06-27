@@ -4,6 +4,7 @@
     :width="type === 'update' ? 800 : 500"
     :title="$t(`userTask.modal.${type}.title`)"
     :on-confirm="confirm"
+    :disable-enter-confirm="type === 'update'"
   >
     <template #default>
       <v-row dense>
@@ -61,7 +62,7 @@ export default {
   data() {
     return {
       isOpen: false,
-      headers: [],
+      headers: '',
       body: '',
       options: {
         mode: 'tree',
@@ -117,7 +118,10 @@ export default {
     },
     headerObject: {
       get() {
-        return JSON.parse(this.headers)
+        let parsedHeaders = JSON.parse(this.headers)
+        parsedHeaders['pf-result-detail'] = parsedHeaders['pf-result-detail'].replace(/\\/g, '').slice(1, -1)
+        parsedHeaders['pf-result-message'] = parsedHeaders['pf-result-message'].replace(/"/g, "'")
+        return parsedHeaders
       },
       set(headers) {
         this.headers = JSON.stringify(headers)
@@ -135,6 +139,7 @@ export default {
   watch: {
     data: {
       immediate: true,
+      deep: true,
       handler(data) {
         if (data && data.headers) {
           this.headers = JSON.stringify(data.headers)
@@ -144,7 +149,6 @@ export default {
         }
       },
     },
-    deep: true,
   },
   methods: {
     async confirm() {

@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="isOpen" :width="width" content-class="modal-template" @keydown.enter="onConfirm">
+  <v-dialog v-model="isOpen" :width="width" content-class="modal-template" @keydown.enter="enterHandler">
     <template #activator="{ on }">
       <slot name="button" v-on="on" />
     </template>
@@ -43,6 +43,10 @@ export default {
   }),
   props: {
     async: {
+      type: Boolean,
+      default: false,
+    },
+    disableEnterConfirm: {
       type: Boolean,
       default: false,
     },
@@ -109,6 +113,11 @@ export default {
     },
   },
   methods: {
+    enterHandler() {
+      if (!this.disableEnterConfirm) {
+        this.onConfirm()
+      }
+    },
     cancel() {
       this.isOpen = false
       if (this.onCancel) {
