@@ -62,7 +62,7 @@ export default {
         {
           text: 'users.list.grid.action',
           value: 'action',
-          align: 'left',
+          align: 'right',
           sortable: false,
           alwaysVisible: true,
           width: '150px',

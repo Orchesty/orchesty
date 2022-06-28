@@ -10,19 +10,19 @@
     @row-props="redirect"
   >
     <template #default="{ items, isVisible }">
-      <td v-if="isVisible('topology')" class="text-start">
+      <td v-if="isVisible('topology')">
         {{ `${items.item.topology.name}.v${items.item.topology.version}` }}
       </td>
-      <td v-if="isVisible('node')" class="text-start">
+      <td v-if="isVisible('node')">
         {{ items.item.node.name }}
       </td>
-      <td v-if="isVisible('time')" class="text-start">
+      <td v-if="isVisible('time')">
         {{ $options.filters.internationalFormat(timeParser(items.item.time)) }}
       </td>
       <td
         v-if="isVisible('status')"
         :class="isEnabled(items.item) ? 'task-active' : 'task-disabled'"
-        class="font-weight-bold text-uppercase text-start"
+        class="font-weight-bold text-uppercase"
         :title="isEnabled(items.item)"
       >
         <span v-if="isEnabled(items.item)"> active </span>

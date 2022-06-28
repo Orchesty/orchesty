@@ -14,19 +14,19 @@
       <span>{{ items.item.message }}</span>
     </template>
     <template #default="{ items, isVisible, expanded }">
-      <td v-if="isVisible('timestamp')" :style="expanded ? 'border-bottom: none' : ''" class="py-0 text-start">
+      <td v-if="isVisible('timestamp')" :style="expanded ? 'border-bottom: none' : ''">
         {{ items.item.timestamp | internationalFormat }}
       </td>
-      <td v-if="isVisible('topology_name')" :style="expanded ? 'border-bottom: none' : ''" class="py-0">
+      <td v-if="isVisible('topology_name')" :style="expanded ? 'border-bottom: none' : ''">
         {{ items.item.topology_name }}
       </td>
-      <td v-if="isVisible('node_id')" :style="expanded ? 'border-bottom: none' : ''" class="py-0">
+      <td v-if="isVisible('node_id')" :style="expanded ? 'border-bottom: none' : ''">
         {{ items.item.node_id }}
       </td>
-      <td v-if="isVisible('node_name')" :style="expanded ? 'border-bottom: none' : ''" class="py-0">
+      <td v-if="isVisible('node_name')" :style="expanded ? 'border-bottom: none' : ''">
         {{ items.item.node_name }}
       </td>
-      <td v-if="isVisible('severity')" :style="expanded ? 'border-bottom: none' : ''" class="py-0">
+      <td v-if="isVisible('severity')" :style="expanded ? 'border-bottom: none' : ''">
         <span :class="`font-weight-bold ${setColor(items.item.severity)}--text text-uppercase`">{{
           items.item.severity
         }}</span>
@@ -37,8 +37,7 @@
             v-if="isVisible('correlation_id')"
             v-bind="attrs"
             :style="expanded ? 'border-bottom: none' : ''"
-            :class="items.item.correlation_id ? 'pr-9' : ''"
-            class="py-0 truncate td-relative-container"
+            class="text-end"
             v-on="on"
           >
             <v-btn v-if="items.item.correlation_id" icon @click.stop="copyToClipboard(items.item.correlation_id)">
@@ -130,7 +129,7 @@ export default {
         {
           text: 'topologies.logs.headers.correlation_id',
           value: 'correlation_id',
-          align: 'left',
+          align: 'right',
           sortable: true,
           visible: true,
           width: '15%',
@@ -182,9 +181,6 @@ export default {
 }
 tr:hover {
   cursor: pointer;
-  //& + .expanded-row {
-  //  background-color: #eeeeee !important;
-  //}
 }
 .transform-center-cell {
   margin-left: 15%;
