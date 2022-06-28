@@ -18,8 +18,8 @@ github.com/hanaboso/go-log v1.0.3 h1:CKqFGuMcDL8T/MyA46X/dBhosXiEYvk35Zqp7lIZjCU
 github.com/hanaboso/go-log v1.0.3/go.mod h1:Hzb9U0jPbkTj+aRjxN5g7JHshuGL8e8oAWqIggwHd5A=
 github.com/hanaboso/go-metrics v1.0.3 h1:qa20Bn2dVDDGIzeFguunLbKCEI2FxqzBjF99cVr5/Ec=
 github.com/hanaboso/go-metrics v1.0.3/go.mod h1:+yqK/7SeZaL+LR8fb/7b6zcrq2L67B791vI8FPwyARk=
-github.com/hanaboso/go-mongodb v1.0.2 h1:IrcPXQUA2uB+iw9h3LKKAa8TOlJ3aBuI3aLM3VS+eNY=
-github.com/hanaboso/go-mongodb v1.0.2/go.mod h1:aajlS+usOUsvIEQi+UV/1nwnE8SHluHuNQnIFuDFH9U=
+github.com/hanaboso/go-mongodb v1.0.3 h1:IFsbysO4HU6UzxfhhPmvB2NJwaPtZGcolPVMzyyD62Q=
+github.com/hanaboso/go-mongodb v1.0.3/go.mod h1:aajlS+usOUsvIEQi+UV/1nwnE8SHluHuNQnIFuDFH9U=
 github.com/inconshreveable/mousetrap v1.0.0 h1:Z8tu5sraLXCXIcARxBp/8cbvlwVa7Z1NHg9XEKhtSvM=
 github.com/inconshreveable/mousetrap v1.0.0/go.mod h1:PxqpIevigyE2G7u3NXJIT2ANytuPF1OarO4DADm73n8=
 github.com/jinzhu/configor v1.2.1 h1:OKk9dsR8i6HPOCZR8BcMtcEImAFjIhbJFZNyn5GCZko=

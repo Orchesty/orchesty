@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/hanaboso/go-log v1.0.3
 	github.com/hanaboso/go-metrics v1.0.3
-	github.com/hanaboso/go-mongodb v1.0.2
+	github.com/hanaboso/go-mongodb v1.0.3
 	github.com/jinzhu/configor v1.2.1
 	github.com/rs/zerolog v1.27.0
 	github.com/spf13/cobra v1.5.0
