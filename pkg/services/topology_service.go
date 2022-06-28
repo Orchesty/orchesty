@@ -138,7 +138,9 @@ func (ts *TopologyService) CreateKubernetesDeployment() ([]byte, error) {
 	labels["app"] = GetDeploymentName(ts.Topology.ID.Hex())
 	for _, label := range strings.Split(config.Generator.TopologyPodLabels, ",") {
 		value := strings.Split(label, "=")
-		labels[value[0]] = value[1]
+		if len(value) == 2 {
+			labels[value[0]] = value[1]
+		}
 	}
 
 	var depl = model.Deployment{
