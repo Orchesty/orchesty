@@ -58,7 +58,7 @@ func (k *Kubernetes) RunStopAction(c *ContextWrapper) {
 
 	if err != nil {
 		logContext().Error(err)
-		c.WithCode(http.StatusInternalServerError, gin.H{"message": fmt.Sprintf("Error trying to run/stop deployment fpr topology %s. Reason: %v", id, err)})
+		c.WithCode(http.StatusInternalServerError, gin.H{"message": fmt.Sprintf("Error trying to run/stop deployment for topology %s. Reason: %v", id, err)})
 		return
 	}
 	c.WithCode(http.StatusOK, gin.H{"message": fmt.Sprintf("ID: %s", id)})
