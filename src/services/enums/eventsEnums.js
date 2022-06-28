@@ -17,4 +17,7 @@ export const EVENT_TYPES = {
       UPDATE: 'MODAL_NODE_UPDATE',
     },
   },
+  SIDEBAR: {
+    TOGGLE: 'SIDEBAR_TOGGLE',
+  },
 }
