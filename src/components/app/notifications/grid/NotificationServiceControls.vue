@@ -10,12 +10,12 @@
   >
     <template #default="{ items }">
       <td>{{ items.item.name }}</td>
-      <td class="text-start">
+      <td>
         <template v-if="items.item.status">{{ $t('notifications.serviceOk') }}</template>
         <template v-else-if="!hasServiceSettings(items.item.settings)">Service not set</template>
         <template v-else>{{ $t('notifications.serviceNOk') }}</template>
       </td>
-      <td class="text-center">
+      <td class="text-end">
         <notification-update-modal :service="items.item" />
       </td>
     </template>
@@ -81,8 +81,8 @@ export default {
         },
         {
           text: 'notifications.edit',
-          value: 'title',
-          align: 'center',
+          value: 'edit',
+          align: 'right',
           sortable: false,
           visible: true,
           width: '100px',

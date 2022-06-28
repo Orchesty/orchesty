@@ -62,7 +62,7 @@
         <span>{{ items.item.message }}</span>
       </template>
       <template #default="{ items, isVisible, expanded }">
-        <td v-if="isVisible('timestamp')" :style="expanded ? 'border-bottom: none' : ''" class="py-0 text-left">
+        <td v-if="isVisible('timestamp')" :style="expanded ? 'border-bottom: none' : ''">
           {{ items.item.timestamp | internationalFormat }}
         </td>
         <tooltip>
@@ -71,17 +71,10 @@
               v-if="isVisible('correlation_id')"
               v-bind="attrs"
               :style="expanded ? 'border-bottom: none' : ''"
-              :class="items.item.correlation_id ? 'pr-9' : ''"
-              class="py-0 truncate td-relative-container"
               v-on="on"
             >
               {{ items.item.correlation_id ? items.item.correlation_id : 'system log - no id' }}
-              <v-btn
-                v-if="items.item.correlation_id"
-                class="button-absolute"
-                icon
-                @click.stop="copyToClipboard(items.item.correlation_id)"
-              >
+              <v-btn v-if="items.item.correlation_id" icon @click.stop="copyToClipboard(items.item.correlation_id)">
                 <v-icon> mdi-content-copy </v-icon>
               </v-btn>
             </td>
@@ -90,12 +83,12 @@
             {{ items.item.correlation_id ? items.item.correlation_id : 'system log - no id' }}
           </template>
         </tooltip>
-        <td v-if="isVisible('message')" :style="expanded ? 'border-bottom: none;' : ''" class="py-0 truncate">
+        <td v-if="isVisible('message')" :style="expanded ? 'border-bottom: none;' : ''" class="truncate">
           <span>
             {{ items.item.message }}
           </span>
         </td>
-        <td v-if="isVisible('severity')" :style="expanded ? 'border-bottom: none' : ''" class="py-0">
+        <td v-if="isVisible('severity')" :style="expanded ? 'border-bottom: none' : ''">
           <span class="font-weight-bold text-uppercase">{{ items.item.severity }}</span>
         </td>
       </template>

@@ -9,10 +9,10 @@
       :fixed-params="{ id: topologyActive._id }"
     >
       <template #default="{ items, isVisible }">
-        <td v-if="isVisible('started')" class="py-0">
+        <td v-if="isVisible('started')">
           {{ items.item.started | internationalFormat }}
         </td>
-        <td v-if="isVisible('finished')" class="py-0">
+        <td v-if="isVisible('finished')">
           {{ filterDate(items.item.finished) }}
         </td>
         <tooltip>
@@ -21,16 +21,10 @@
               v-if="isVisible('correlation_id')"
               v-bind="attrs"
               :class="items.item.correlationId ? 'pr-9' : ''"
-              class="py-0 truncate td-relative-container"
               v-on="on"
             >
               {{ items.item.correlationId ? items.item.correlationId : 'system log - no id' }}
-              <v-btn
-                v-if="items.item.correlationId"
-                class="button-absolute"
-                icon
-                @click.stop="copyToClipboard(items.item.correlationId)"
-              >
+              <v-btn v-if="items.item.correlationId" icon @click.stop="copyToClipboard(items.item.correlationId)">
                 <app-icon>mdi-content-copy</app-icon>
               </v-btn>
             </td>
@@ -39,13 +33,13 @@
             {{ items.item.correlationId ? items.item.correlationId : 'system log - no id' }}
           </template>
         </tooltip>
-        <td v-if="isVisible('duration')" class="py-0">
+        <td v-if="isVisible('duration')">
           {{ prettyMs(items.item.duration, { keepDecimalsOnWholeSeconds: true }) }}
         </td>
-        <td v-if="isVisible('progress')" class="py-0">
+        <td v-if="isVisible('progress')">
           {{ items.item.nodesProcessed + '/' + items.item.nodesTotal }}
         </td>
-        <td v-if="isVisible('status')" class="py-0 font-weight-bold">
+        <td v-if="isVisible('status')" class="font-weight-bold">
           <div class="d-flex align-center justify-center">
             <span :class="`text-uppercase ${setColor(items.item.status)}--text`">
               {{ items.item.status }}

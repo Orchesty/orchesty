@@ -11,7 +11,7 @@
     <template #default="{ items, isVisible }">
       <td v-if="isVisible('name')" class="text-start">{{ items.item.name }}</td>
       <td v-if="isVisible('url')" class="text-start">{{ items.item.url }}</td>
-      <td>
+      <td class="text-end">
         <implementation-update-modal :item-id="items.item.id" />
         <implementation-delete-modal :item-id="items.item.id" />
       </td>
@@ -64,7 +64,7 @@ export default {
         {
           text: 'implementation.form.action.label',
           value: 'actions',
-          align: 'center',
+          align: 'right',
           sortable: true,
           visible: true,
           width: '160px',
