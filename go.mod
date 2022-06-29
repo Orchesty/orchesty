@@ -4,11 +4,11 @@ go 1.18
 
 require (
 	github.com/hanaboso/go-log v1.0.3
-	github.com/hanaboso/go-mongodb v1.0.2
+	github.com/hanaboso/go-mongodb v1.0.4
 	github.com/jinzhu/configor v1.2.1
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/robfig/cron/v3 v3.0.1
-	github.com/stretchr/testify v1.7.4
+	github.com/stretchr/testify v1.7.5
 	go.mongodb.org/mongo-driver v1.9.1
 )
 
