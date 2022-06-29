@@ -16,68 +16,90 @@
             :button-title="$t('appStore.detail.uninstall')"
             :on-click="() => uninstall(appActive.key)"
           />
-          <div v-for="item in appActive.applicationSettings" :key="item.key">
-            <app-item-password-modal v-if="item.type === 'password'" :app-key="appActive.key" :input="item" />
-          </div>
         </div>
       </v-col>
     </v-row>
+
     <v-row>
-      <v-col cols="3">
-        <validation-observer ref="applicationForm" tag="form" slim @submit.prevent="saveSettings">
-          <h3 class="title font-weight-bold mb-3">{{ $t('appStore.detail.application') }}</h3>
-          <v-row dense>
-            <v-col>
-              <div v-for="item in appActive.applicationSettings" :key="item.key">
+      <v-col>
+        <v-tabs v-model="tab" height="24">
+          <v-tab
+            v-for="form in settingsConfig"
+            :key="form.key"
+            class="text-transform-none body-2 font-weight-medium primary--text"
+          >
+            {{ form.publicName }}
+          </v-tab>
+        </v-tabs>
+      </v-col>
+    </v-row>
+
+    <v-tabs-items v-model="tab" class="mt-4">
+      <v-tab-item v-for="(form, index) in settingsConfig" :key="form.key" class="w-400">
+        <v-row v-if="form.description.length > 0" dense class="mt-2">
+          {{ form.description }}
+        </v-row>
+        <v-row dense class="mt-2">
+          <v-col>
+            <validation-observer :ref="form.key" tag="form" slim @submit.prevent="() => saveSettings(form.key)">
+              <div v-for="field in form.fields" :key="field.key">
                 <validation-provider
-                  v-if="item.type === 'text'"
+                  v-if="field.type === 'text'"
                   v-slot="{ errors }"
                   slim
-                  :name="item.key"
-                  :rules="item.required ? 'required' : ''"
+                  :name="field.key"
+                  :rules="field.required ? 'required' : ''"
                 >
                   <app-input
-                    v-model="form.appSettings[item.key]"
+                    v-model="settingsForms[index].fields[field.key]"
                     dense
                     outlined
-                    :readonly="item.readonly"
-                    :disabled="item.disabled"
-                    :label="item.label"
+                    :readonly="field.readonly"
+                    :disabled="field.disabled"
+                    :label="field.label"
                     :error-messages="errors"
                   />
                 </validation-provider>
-                <validation-provider v-if="item.type === 'selectbox'" :name="item.key" slim>
+                <validation-provider v-if="field.type === 'selectbox'" :name="field.key" slim>
                   <v-select
-                    v-model="form.appSettings[item.key]"
+                    v-model="settingsForms[index].fields[field.key]"
                     dense
                     outlined
-                    :readonly="item.readonly"
-                    :disabled="item.disabled"
-                    :label="item.label"
-                    :items="getEntries(item.choices)"
+                    :readonly="field.readonly"
+                    :disabled="field.disabled"
+                    :label="field.label"
+                    :items="getEntries(field.choices)"
                     item-value="value"
                     item-text="key"
                   />
                 </validation-provider>
+                <app-item-password-modal
+                  v-if="field.type === 'password'"
+                  :form-key="form.key"
+                  :field-key="field.key"
+                  :app-key="appActive.key"
+                  :input="field"
+                />
               </div>
-            </v-col>
-          </v-row>
+            </validation-observer>
+          </v-col>
+        </v-row>
 
-          <v-row dense>
-            <v-col class="d-flex">
-              <app-button color="primary" :button-title="$t('button.save')" :on-click="saveSettings" />
-              <app-button
-                v-if="flags.isOauth"
-                class="ml-auto"
-                :disabled="!flags.hasSettings || !flags.matchSettings"
-                :on-click="authorize"
-                :button-title="$t('button.authorize')"
-              />
-            </v-col>
-          </v-row>
-        </validation-observer>
-      </v-col>
-    </v-row>
+        <v-row dense>
+          <v-col class="d-flex">
+            <app-button color="primary" :button-title="$t('button.save')" :on-click="() => saveForm(form.key)" />
+            <app-button
+              v-if="hasOauthAuthorization"
+              class="ml-auto"
+              :disabled="!isFormValid(form.key)"
+              :on-click="authorizeApp"
+              :button-title="$t('button.authorize')"
+            />
+          </v-col>
+        </v-row>
+      </v-tab-item>
+    </v-tabs-items>
+
     <v-divider
       v-if="'webhookSettings' in appActive && appActive.webhookSettings.length !== 0"
       class="orchesty-divider-margin"
@@ -93,8 +115,8 @@
               <v-col>
                 <validation-provider v-slot="{ errors }" :name="item.name" rules="required">
                   <v-autocomplete
-                    v-if="form.webhooks"
-                    v-model="form.webhooks[item.name].topology"
+                    v-if="webhookSettings"
+                    v-model="webhookSettings[item.name].topology"
                     dense
                     :readonly="item.default"
                     :disabled="item.enabled"
@@ -136,16 +158,12 @@ export default {
   components: { AppButton, AppInput, AppItemPasswordModal },
   data() {
     return {
-      form: {
-        appSettings: {},
-        webhookSettings: {},
-      },
-      flags: {
-        matchSettings: true,
-        hasSettings: false,
-        isOauth: false,
-      },
-      initialAppSettings: null,
+      tab: null,
+      settingsForms: [],
+      settingsConfig: [],
+      settingsSnapshots: [],
+      webhooksSettings: {},
+      hasOauthAuthorization: false,
     }
   },
   computed: {
@@ -163,12 +181,14 @@ export default {
       APP_STORE.ACTIONS.UNINSTALL_APP_REQUEST,
       APP_STORE.ACTIONS.AUTHORIZE,
     ]),
+
     async uninstall(key) {
       const isInstalled = await this[APP_STORE.ACTIONS.UNINSTALL_APP_REQUEST]({ key, userId: this.userId })
       if (isInstalled) {
         await this.$router.push({ name: ROUTES.APP_STORE.INSTALLED_APPS })
       }
     },
+
     async saveWebhook(name) {
       const isValid = await this.$refs[name][0].validate()
       if (isValid) {
@@ -179,30 +199,41 @@ export default {
         })
       }
     },
-    async saveSettings() {
-      const isValid = await this.$refs.applicationForm.validate()
+
+    isFormValid(key) {
+      const form = this.getFormByKey(key)
+      return form.matchesWithSnapshot && form.hasValidSettings
+    },
+
+    async saveForm(key) {
+      const isValid = await this.$refs[key][0].validate()
+
       if (!isValid) {
         return
       }
+
+      const form = this.getFormByKey(key)
+
+      const formSettings = {
+        [key]: form.fields,
+      }
+
       const isSaved = await this[APP_STORE.ACTIONS.SAVE_APP_SETTINGS]({
         userId: this.userId,
         key: this.appActive.key,
-        data: this.form.appSettings,
+        data: formSettings,
       })
+
       if (isSaved) {
         await this[APP_STORE.ACTIONS.GET_INSTALLED_APP]({ key: this.$route.params.key, userId: this.userId })
-        this.initAuthState()
       }
     },
-    async authorize() {
+    async authorizeApp() {
       let authUrl = `${config.backend.apiBaseUrl}/api/applications/${this.appActive.key}/users/${this.userId}/authorize?redirect_url=${window.location.href}`
       if (!config.backend.apiBaseUrl.startsWith('http')) {
         authUrl = 'https://'.concat(authUrl)
       }
       window.open(authUrl, '_blank').focus()
-    },
-    async goBack() {
-      await this.$router.push({ name: ROUTES.APP_STORE.INSTALLED_APPS })
     },
 
     getWebhookStatusButton(name) {
@@ -221,78 +252,100 @@ export default {
         }
       })
     },
-    initAppForms(settings) {
-      if (!settings) {
-        return
-      }
-      let webhooks = Object.entries(settings.webhookSettings)
-      let data = Object.entries(settings.applicationSettings)
-      let formData = { appSettings: {}, webhooks: {} }
-      data.forEach((item) => {
-        formData.appSettings[item[1].key] = item[1].value
-      })
-      webhooks.forEach((item) => {
-        formData.webhooks[item[1].name] = item[1]
-      })
-      this.form = { ...formData }
+    initSettings() {
+      this.settingsConfig = Object.values(this.appActive.applicationSettings)
+
+      this.settingsSnapshots = this.settingsConfig.map((form) => ({
+        key: form.key,
+        fields: Object.fromEntries(form.fields.map((field) => [field.key, field.value])),
+      }))
+
+      this.settingsForms = this.settingsConfig.map((form) => ({
+        key: form.key,
+        fields: Object.fromEntries(form.fields.map((field) => [field.key, field.value])),
+        matchesWithSnapshot: true,
+        hasValidSettings: true,
+      }))
+
+      this.webhooksSettings = Object.values(this.appActive.webhookSettings)
     },
-    initAuthState() {
-      this.flags.matchSettings = true
-      this.flags.hasSettings = false
-      this.flags.isOauth = this.appActive.authorization_type.startsWith('oauth')
-      this.initialAppSettings = {}
 
-      let initialAppSettingObjects = this.appActive.applicationSettings
-        .filter((setting) => setting.key !== 'pass')
-        .map((setting) => ({ [setting.key]: setting.value }))
+    hasOauth() {
+      this.hasOauthAuthorization = this.appActive.authorization_type.startsWith('oauth')
+    },
 
-      initialAppSettingObjects.forEach((object) => {
-        Object.assign(this.initialAppSettings, object)
-      })
-      initialAppSettingObjects.forEach((object) => {
-        if (Object.values(object).filter((value) => Boolean(value)).length) {
-          this.flags.hasSettings = true
+    hasEmptySettings() {
+      for (let form of this.settingsForms) {
+        const hasEmptyValue = Object.values(form.fields).some((field) => {
+          return field == null || field === ''
+        })
+        if (hasEmptyValue) {
+          form.hasValidSettings = false
         }
-      })
-    },
-    compareSettings(formData) {
-      if (!this.initialAppSettings) {
-        return
       }
-      let keys = Object.keys(this.initialAppSettings)
-      this.flags.matchSettings = !keys.some((key) => {
-        return this.initialAppSettings[key] !== formData[key]
-      })
+    },
+
+    areFormsMatching(keys, modifiedForm, snapshot) {
+      return keys.every((key) => snapshot.fields[key] === modifiedForm.fields[key])
+    },
+
+    getFormByKey(key) {
+      return this.settingsForms.find((form) => form.key === key)
+    },
+
+    hasMatchingSettings() {
+      for (const snapshot of this.settingsSnapshots) {
+        let modifiedForm = this.getFormByKey(snapshot.key)
+        const keys = Object.keys(snapshot.fields)
+
+        modifiedForm.matchesWithSnapshot = this.areFormsMatching(keys, modifiedForm, snapshot)
+      }
     },
     hasLogo(app) {
       return app?.logo ? app.logo : require('@/assets/svg/app-item-placeholder.svg')
     },
   },
   watch: {
-    appActive(app) {
-      this.initAppForms(app)
+    appActive: {
+      immediate: true,
+      handler() {
+        if (this.appActive) {
+          this.initSettings()
+          this.hasEmptySettings()
+          this.hasOauth()
+        }
+      },
     },
-    'form.appSettings': {
+    settingsForms: {
       deep: true,
-      handler(formData) {
-        this.compareSettings(formData)
+      handler() {
+        if (this.appActive) {
+          this.hasMatchingSettings()
+        }
       },
     },
   },
   async created() {
     await this[TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES]()
-    this.initAuthState()
-    this.initAppForms(this.appActive)
-    this.$refs.applicationForm.reset()
   },
 }
 </script>
-<style>
+<style scoped lang="scss">
+.text-transform-none {
+  text-align: start;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
 .orchesty-divider-margin {
   margin-bottom: 20px !important;
   margin-top: 25px !important;
   border-width: 1px;
   width: 250px;
   border-color: var(--v-gray-base) !important;
+}
+
+.w-400 {
+  max-width: 400px;
 }
 </style>

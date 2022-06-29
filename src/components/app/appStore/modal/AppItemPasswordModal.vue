@@ -62,6 +62,14 @@ export default {
       type: String,
       required: true,
     },
+    fieldKey: {
+      type: String,
+      required: true,
+    },
+    formKey: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     return {
@@ -82,7 +90,7 @@ export default {
       await this[APP_STORE.ACTIONS.APP_SET_PASSWORD]({
         key: this.appKey,
         userId: this.userId,
-        data: { password: this.password },
+        data: { password: this.password, formKey: this.formKey, fieldKey: this.fieldKey },
       }).then((res) => {
         if (res) {
           this.isOpen = false
