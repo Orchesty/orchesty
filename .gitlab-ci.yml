@@ -1,0 +1,27 @@
+.base-bridge:
+  variables:
+    DIR: bridge
+    IMAGE: ${REGISTRY}/${IMAGE_PREFIX}bridge
+  rules:
+    - if: '$FORCE_PIPELINE =~ /ALL/ || $FORCE_PIPELINE =~ /bridge/'
+    - if: '$CI_COMMIT_BEFORE_SHA == $_BANNED_RUN_ALL_SHA'
+      when: never
+    - changes:
+      - ${DIR}/**/*
+
+
+bridge:build:
+  stage: build
+  needs: []
+  extends:
+    - .base-kaniko-build
+    - .base-bridge
+
+
+bridge:test:
+  stage: test
+  needs: []
+
+  extends:
+    - .base-go-test
+    - .base-bridge

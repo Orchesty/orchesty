@@ -40,6 +40,7 @@ docker-compose.ci.yml:
 
 init-dev: docker-up-force
 	$(DR) rabbitmq-plugins enable rabbitmq_consistent_hash_exchange
+	sleep 10
 
 lint:
 	$(DE) go fmt ./...
