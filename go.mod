@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/gofrs/uuid v4.2.0+incompatible
 	github.com/hanaboso/go-metrics v1.0.3
-	github.com/hanaboso/go-mongodb v1.0.2
+	github.com/hanaboso/go-mongodb v1.0.3
 	github.com/jinzhu/configor v1.2.1
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/rs/zerolog v1.27.0
