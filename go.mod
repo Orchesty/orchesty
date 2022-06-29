@@ -7,12 +7,12 @@ require (
 	github.com/gorilla/context v1.1.1
 	github.com/gorilla/mux v1.8.0
 	github.com/hanaboso/go-metrics v1.0.3
-	github.com/hanaboso/go-mongodb v1.0.2
+	github.com/hanaboso/go-mongodb v1.0.4
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/shirou/gopsutil v3.21.11+incompatible
 	github.com/sirupsen/logrus v1.8.1
 	github.com/streadway/amqp v1.0.0
-	github.com/stretchr/testify v1.7.4
+	github.com/stretchr/testify v1.7.5
 	go.mongodb.org/mongo-driver v1.9.1
 )
 

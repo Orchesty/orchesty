@@ -21,8 +21,8 @@ github.com/hanaboso/go-log v1.0.3 h1:CKqFGuMcDL8T/MyA46X/dBhosXiEYvk35Zqp7lIZjCU
 github.com/hanaboso/go-log v1.0.3/go.mod h1:Hzb9U0jPbkTj+aRjxN5g7JHshuGL8e8oAWqIggwHd5A=
 github.com/hanaboso/go-metrics v1.0.3 h1:qa20Bn2dVDDGIzeFguunLbKCEI2FxqzBjF99cVr5/Ec=
 github.com/hanaboso/go-metrics v1.0.3/go.mod h1:+yqK/7SeZaL+LR8fb/7b6zcrq2L67B791vI8FPwyARk=
-github.com/hanaboso/go-mongodb v1.0.2 h1:IrcPXQUA2uB+iw9h3LKKAa8TOlJ3aBuI3aLM3VS+eNY=
-github.com/hanaboso/go-mongodb v1.0.2/go.mod h1:aajlS+usOUsvIEQi+UV/1nwnE8SHluHuNQnIFuDFH9U=
+github.com/hanaboso/go-mongodb v1.0.4 h1:OmL9fD79YZFFRhsfuml4B5Hb4ABs/4MWDb1wlK2U19k=
+github.com/hanaboso/go-mongodb v1.0.4/go.mod h1:hzMJgt8EA23GBj+K1dviUJLi+EMMUmGpJWAnRKTo0C4=
 github.com/klauspost/compress v1.13.6 h1:P76CopJELS0TiO2mebmnzgWaajssP/EszplttgQxcgc=
 github.com/klauspost/compress v1.13.6/go.mod h1:/3/Vjq9QcHkK5uEr5lBEmyoZ1iFhe47etQ6QUkpK6sk=
 github.com/kr/pretty v0.1.0 h1:L/CwN0zerZDmRFUapSPitk6f+Q3+0za1rQkzVuMiMFI=
@@ -51,8 +51,8 @@ github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UV
 github.com/stretchr/testify v1.6.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/stretchr/testify v1.7.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
-github.com/stretchr/testify v1.7.4 h1:wZRexSlwd7ZXfKINDLsO4r7WBt3gTKONc6K/VesHvHM=
-github.com/stretchr/testify v1.7.4/go.mod h1:yNjHg4UonilssWZ8iaSj1OCr/vHnekPRkoO+kdMU+MU=
+github.com/stretchr/testify v1.7.5 h1:s5PTfem8p8EbKQOctVV53k6jCJt3UX4IEJzwh+C324Q=
+github.com/stretchr/testify v1.7.5/go.mod h1:yNjHg4UonilssWZ8iaSj1OCr/vHnekPRkoO+kdMU+MU=
 github.com/tidwall/pretty v1.0.0 h1:HsD+QiTn7sK6flMKIvNmpqz1qrpP3Ps6jOKIKMooyg4=
 github.com/tidwall/pretty v1.0.0/go.mod h1:XNkn88O1ChpSDQmQeStsy+sBenx6DDtFZJxhVysOjyk=
 github.com/tklauser/go-sysconf v0.3.10 h1:IJ1AZGZRWbY8T5Vfk04D9WOA5WSejdflXxP03OUqALw=
