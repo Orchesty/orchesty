@@ -1,11 +1,11 @@
 package service
 
 import (
+	"encoding/json"
 	"fmt"
-	"net/http"
-
 	metrics "github.com/hanaboso/go-metrics/pkg"
 	"github.com/streadway/amqp"
+	"net/http"
 	"starting-point/pkg/config"
 	"starting-point/pkg/rabbitmq"
 	"starting-point/pkg/storage"
@@ -41,16 +41,29 @@ func ConnectToRabbit() {
 	RabbitMq = NewRabbit()
 }
 
+type MessageDto struct {
+	Body    string                 `json:"body"`
+	Headers map[string]interface{} `json:"headers"`
+}
+
 // SndMessage sends message to RabbitMQ
 func (r *RabbitDefault) SndMessage(
 	request *http.Request,
 	topology storage.Topology,
 	init map[string]float64) {
 	// Create ProcessMessage headers
-	h, c, d, t := r.builder.BldHeaders(topology, request.Header)
+	h, c, d, t := r.builder.BldHeaders(topology)
 
-	m := amqp.Publishing{Body: utils.GetBodyFromStream(request), Headers: h, ContentType: c, DeliveryMode: d, Timestamp: t}
-	corrID := m.Headers[utils.CorrelationID]
+	dto := MessageDto{
+		Body:    string(utils.GetBodyFromStream(request)),
+		Headers: h,
+	}
+	marshaled, _ := json.Marshal(dto)
+
+	m := amqp.Publishing{Body: marshaled, Headers: map[string]interface{}{
+		utils.PublishedTimeStamp: utils.Now(),
+	}, ContentType: c, DeliveryMode: d, Timestamp: t}
+	corrID := h[utils.CorrelationID]
 
 	r.publisher.Publish(m, topology.Node.Exchange(), "1")
 

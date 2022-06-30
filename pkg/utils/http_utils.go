@@ -32,7 +32,7 @@ func GetBodyFromStream(r *http.Request) (b []byte) {
 
 // ValidateBody validates struct of request body by content-type
 func ValidateBody(r *http.Request) (err error) {
-	contentType := string(r.Header.Get(contentType))
+	contentType := r.Header.Get(contentType)
 	body := GetBodyFromStream(r)
 	switch contentType {
 	case jsonType:

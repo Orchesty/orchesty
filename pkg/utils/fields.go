@@ -13,7 +13,7 @@ const created = "created"
 // InitFields metrics
 func InitFields() (m map[string]float64) {
 	m = make(map[string]float64)
-	m[timestamp] = float64(now())
+	m[timestamp] = float64(Now())
 	user, kernel := GetCPUTime()
 	m[userTime] = user
 	m[kernelTime] = kernel
@@ -28,12 +28,12 @@ func GetFields(init map[string]float64) (m map[string]interface{}) {
 
 	m[userTime] = user - init[userTime]
 	m[kernelTime] = kernel - init[kernelTime]
-	m[requestDuration] = float64(now()) - init[timestamp]
+	m[requestDuration] = float64(Now()) - init[timestamp]
 	m[created] = time.Now().Unix()
 
 	return
 }
 
-func now() int64 {
+func Now() int64 {
 	return time.Now().UnixNano() / 1_000_000
 }
