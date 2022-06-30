@@ -76,31 +76,24 @@ func (c *MultiCounter) Start(ctx context.Context) {
 	}
 }
 
-func (c *MultiCounter) processMessage(message *model.ProcessMessage) {
+func (c *MultiCounter) processMessage(message *model.ParsedMessage) {
 	defer c.wg.Done()
-
-	var body model.ProcessBody
-	if err := json.Unmarshal(message.Body, &body); err != nil {
-		config.Log.Error(err)
-		return
-	}
-
 	c.toCommit = true
 
 	c.processes = append(
 		c.processes,
 		message.ProcessInitQuery(),
-		message.ProcessQuery(body),
+		message.ProcessQuery(),
 	)
 	c.subProcesses = append(
 		c.processes,
 		message.SubProcessInitQuery(),
-		message.SubProcessQuery(body),
+		message.SubProcessQuery(),
 	)
 
 	c.finishes = append(c.finishes, message.FinishProcessQuery())
-	if !body.Success {
-		c.errors = append(c.errors, message.ErrorDoc(body))
+	if !message.ProcessBody.Success {
+		c.errors = append(c.errors, message.ErrorDoc())
 	}
 }
 

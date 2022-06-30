@@ -2,13 +2,12 @@ package rabbit
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/hanaboso/pipes/counter/pkg/config"
-	"github.com/hanaboso/pipes/counter/pkg/enum"
 	"github.com/hanaboso/pipes/counter/pkg/model"
 	"github.com/rs/zerolog/log"
 	"github.com/streadway/amqp"
 	"os"
-	"strings"
 	"time"
 )
 
@@ -18,11 +17,11 @@ type Consumer struct {
 	rabbit  *RabbitMq
 }
 
-func (c *Consumer) Consume(ctx context.Context) chan *model.ProcessMessage {
+func (c *Consumer) Consume(ctx context.Context) chan *model.ParsedMessage {
 	alive := true
 	go func() { <-ctx.Done(); alive = false }()
 
-	ch := make(chan *model.ProcessMessage, config.RabbitMq.Prefetch)
+	ch := make(chan *model.ParsedMessage, config.RabbitMq.Prefetch)
 
 	go func() {
 		for alive {
@@ -95,17 +94,23 @@ func (c *Consumer) stop() {
 	}
 }
 
-func (c Consumer) parseMessage(msg amqp.Delivery) *model.ProcessMessage {
-	pfHeaders := map[string]interface{}{}
-	for key, value := range msg.Headers {
-		if strings.HasPrefix(key, enum.HeaderPrefix) {
-			pfHeaders[key] = value
-		}
+func (c Consumer) parseMessage(msg amqp.Delivery) *model.ParsedMessage {
+	var message model.ProcessMessage
+	if err := json.Unmarshal(msg.Body, &message); err != nil {
+		config.Log.Error(err)
+		return nil
 	}
 
-	return &model.ProcessMessage{
-		Body:    msg.Body,
-		Headers: pfHeaders,
-		Tag:     msg.DeliveryTag,
+	message.Tag = msg.DeliveryTag
+	var body model.ProcessBody
+	if err := json.Unmarshal([]byte(message.Body), &body); err != nil {
+		config.Log.Error(err)
+		return nil
+	}
+
+	return &model.ParsedMessage{
+		Headers:     message.Headers,
+		Tag:         msg.DeliveryTag,
+		ProcessBody: body,
 	}
 }
