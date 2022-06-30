@@ -38,7 +38,7 @@ func fromDto(dto model.ProcessResult, nodeName, topologyName string) bson.M {
 		"returnExchange":   msg.Exchange,
 		"returnRoutingKey": msg.RoutingKey,
 		"message": bson.M{
-			"body":    string(msg.GetOriginalBody()),
+			"body":    msg.GetOriginalBody(),
 			"headers": msg.Headers,
 		},
 	}

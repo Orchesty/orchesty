@@ -3,13 +3,13 @@ package worker
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/hanaboso/pipes/bridge/pkg/bridge/types"
 	"github.com/hanaboso/pipes/bridge/pkg/enum"
 	"github.com/hanaboso/pipes/bridge/pkg/model"
 	"github.com/hanaboso/pipes/bridge/pkg/utils/stringx"
 	"net/http"
-	"strings"
 	"time"
 )
 
@@ -29,22 +29,26 @@ func (h httpBeforeProcess) BeforeProcess(node types.Node, dto *model.ProcessMess
 		return dto.Error(fmt.Errorf("sdk was unreachable, delaying message"))
 	}
 
-	body := bytes.NewBuffer(dto.GetBody())
-	req, err := http.NewRequest("POST", node.Settings().ActionUrl(), body)
-	if err != nil {
-		return dto.Error(err)
-	}
-
 	dto.KeepRepeatHeaders = true
 	dto.ClearHeaders()
-	for key, value := range dto.Headers {
-		if strings.HasPrefix(key, model.HeaderPrefix) {
-			req.Header.Set(key, fmt.Sprint(value))
-		}
+
+	messageBody := model.MessageDto{
+		Body:    string(dto.GetBody()),
+		Headers: dto.Headers,
+	}
+	if messageBody.Headers == nil {
+		messageBody.Headers = make(map[string]interface{})
 	}
 
 	for key, value := range node.Settings().Headers {
-		req.Header.Set(key, fmt.Sprint(value))
+		messageBody.Headers[key] = fmt.Sprint(value)
+	}
+
+	marshaled, _ := json.Marshal(&messageBody)
+	body := bytes.NewBuffer(marshaled)
+	req, err := http.NewRequest("POST", node.Settings().ActionUrl(), body)
+	if err != nil {
+		return dto.Error(err)
 	}
 
 	// TODO configurable timeout

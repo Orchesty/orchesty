@@ -28,7 +28,7 @@ func TestSubscribers_Subscribe(t *testing.T) {
 
 	err := tClient.ch.Publish("", queue(shards[0]), false, false, amqp.Publishing{
 		Headers:     nil,
-		ContentType: "text/plain",
+		ContentType: "application/json",
 		Body:        []byte(body),
 	})
 	require.Nil(t, err)

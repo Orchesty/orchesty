@@ -35,6 +35,7 @@ const (
 	Header_UserTaskState = "user-task-state"
 
 	// Publish time for metrics
+	// !!! This is single header still inside rabbitMq headers and not in body !!!
 	Header_PublishedTimestamp = "published-timestamp"
 
 	// Batch

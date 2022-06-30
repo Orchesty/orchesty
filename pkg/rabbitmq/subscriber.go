@@ -1,9 +1,9 @@
 package rabbitmq
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/hanaboso/pipes/bridge/pkg/utils/timex"
-	"strings"
 	"sync"
 	"time"
 
@@ -109,7 +109,9 @@ func (s *subscriber) consume(msgs <-chan amqp.Delivery) {
 	wg := &sync.WaitGroup{}
 	for msg := range msgs {
 		wg.Add(1)
-		s.delivery <- s.parseMessage(msg, wg)
+		if parsed := s.parseMessage(msg, wg); parsed != nil {
+			s.delivery <- parsed
+		}
 	}
 
 	wg.Wait() // 1. Await for (n)acking of messages that have been sent to process
@@ -198,19 +200,19 @@ func (s *subscriber) parseMessage(msg amqp.Delivery, wg *sync.WaitGroup) *model.
 		return msg.Nack(false, true)
 	}
 
-	stampHeader := model.Prefix(enum.Header_PublishedTimestamp)
-	published, _ := msg.Headers[stampHeader].(int64)
-	pfHeaders := map[string]interface{}{}
-	for key, value := range msg.Headers {
-		lowerKey := strings.ToLower(key)
-		if strings.HasPrefix(lowerKey, model.HeaderPrefix) && lowerKey != stampHeader {
-			pfHeaders[lowerKey] = value
-		}
+	var fullBody model.MessageDto
+	if err := json.Unmarshal(msg.Body, &fullBody); err != nil {
+		log.Err(err).EmbedObject(s).Send()
+		_ = ackFn()
+		return nil
 	}
 
+	stampHeader := enum.Header_PublishedTimestamp
+	published, _ := msg.Headers[stampHeader].(int64)
+
 	return &model.ProcessMessage{
-		Body:           msg.Body,
-		Headers:        pfHeaders,
+		Body:           []byte(fullBody.Body),
+		Headers:        fullBody.Headers,
 		Ack:            ackFn,
 		Nack:           nackFn,
 		Published:      published,

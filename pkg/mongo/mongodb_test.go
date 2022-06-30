@@ -45,8 +45,8 @@ func TestMongoDb_StoreUserTask(t *testing.T) {
 	assert.Equal(t, Type_UserTask, docs[0].Type)
 	assert.Equal(t,
 		map[string]interface{}{
-			"pf-int":    "666",
-			"pf-string": "string",
+			"int":    "666",
+			"string": "string",
 		},
 		docs[0].Message.Headers,
 	)
@@ -73,9 +73,9 @@ func TestMongoDb_StoreUserTaskError(t *testing.T) {
 	assert.Equal(t, Type_Trash, docs[0].Type)
 	assert.Equal(t,
 		map[string]interface{}{
-			"pf-int":            "666",
-			"pf-result-message": "go is shit",
-			"pf-string":         "string",
+			"int":            "666",
+			"result-message": "go is shit",
+			"string":         "string",
 		},
 		docs[0].Message.Headers,
 	)

@@ -1,6 +1,7 @@
 package model
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/hanaboso/pipes/bridge/pkg/enum"
 	"github.com/rs/zerolog"
@@ -8,10 +9,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
-	"strings"
 )
-
-const HeaderPrefix = "pf-"
 
 type ProcessMessage struct {
 	Body       []byte
@@ -29,20 +27,25 @@ type ProcessMessage struct {
 	Status         enum.MessageStatus
 }
 
+type MessageDto struct {
+	Headers map[string]interface{} `json:"headers"`
+	Body    string                 `json:"body"`
+}
+
 func (pm ProcessMessage) GetBody() []byte {
 	return pm.Body
 }
 
-func (pm ProcessMessage) GetOriginalBody() []byte {
+func (pm ProcessMessage) GetOriginalBody() string {
 	if len(pm.bodyBackup) > 0 {
-		return pm.bodyBackup
+		return string(pm.bodyBackup)
 	}
 
-	return pm.Body
+	return string(pm.Body)
 }
 
 func (pm ProcessMessage) GetHeader(header string) (string, error) {
-	value, ok := pm.Headers[Prefix(header)]
+	value, ok := pm.Headers[header]
 	if !ok {
 		return "", fmt.Errorf("requested header [%s] does not exist", header)
 	}
@@ -83,7 +86,7 @@ func (pm ProcessMessage) GetIntHeaderOrDefault(header string, defaultValue int) 
 }
 
 func (pm *ProcessMessage) DeleteHeader(header string) *ProcessMessage {
-	delete(pm.Headers, Prefix(header))
+	delete(pm.Headers, header)
 
 	return pm
 }
@@ -108,42 +111,49 @@ func (pm *ProcessMessage) SetHeader(key, value string) *ProcessMessage {
 		pm.Headers = make(map[string]interface{})
 	}
 
-	pm.Headers[Prefix(key)] = value
+	pm.Headers[key] = value
 
 	return pm
 }
 
 func (pm *ProcessMessage) IntoAmqp() amqp.Publishing {
 	pm.ClearHeaders()
+	body, _ := json.Marshal(MessageDto{
+		Headers: pm.Headers,
+		Body:    string(pm.Body),
+	})
 
 	return amqp.Publishing{
-		ContentType: "text/plain",
-		Headers:     pm.Headers,
-		Body:        pm.Body,
+		ContentType: "application/json",
+		Body:        body,
+		Headers:     map[string]interface{}{},
 	}
 }
 
 func (pm *ProcessMessage) IntoOriginalAmqp() amqp.Publishing {
+	body, _ := json.Marshal(MessageDto{
+		Headers: pm.Headers,
+		Body:    pm.GetOriginalBody(),
+	})
+
 	return amqp.Publishing{
-		ContentType: "text/plain",
-		Headers:     pm.Headers,
-		Body:        pm.GetOriginalBody(),
+		ContentType: "application/json",
+		Body:        body,
+		Headers:     map[string]interface{}{},
 	}
 }
 
 func (pm *ProcessMessage) FromHttpResponse(response *http.Response) *ProcessMessage {
 	responseBody, _ := ioutil.ReadAll(response.Body)
+	var messageDto MessageDto
+	_ = json.Unmarshal(responseBody, &messageDto)
+
 	pm.bodyBackup = pm.Body
-	pm.Body = responseBody
+	pm.Body = []byte(messageDto.Body)
 	pm.KeepRepeatHeaders = false
-	pm.Headers = make(map[string]interface{})
-	for key, values := range response.Header {
-		if len(values) > 0 {
-			key = strings.ToLower(key)
-			if strings.HasPrefix(key, HeaderPrefix) {
-				pm.Headers[key] = values[0]
-			}
-		}
+	pm.Headers = messageDto.Headers
+	if pm.Headers == nil {
+		pm.Headers = make(map[string]interface{})
 	}
 
 	return pm
@@ -163,14 +173,17 @@ func (pm *ProcessMessage) Copy() *ProcessMessage {
 	}
 }
 
-func (pm *ProcessMessage) CopyWithBody(body []byte) *ProcessMessage {
+func (pm *ProcessMessage) CopyBatchItem(item MessageDto) *ProcessMessage {
 	copied := make(map[string]interface{}, len(pm.Headers))
 	for i, j := range pm.Headers {
 		copied[i] = j
 	}
+	for key, value := range item.Headers {
+		copied[key] = value
+	}
 
 	return &ProcessMessage{
-		Body:    body,
+		Body:    []byte(item.Body),
 		Headers: copied,
 		Ack:     func() error { return nil },
 		Nack:    func() error { return nil },
@@ -186,7 +199,7 @@ func (pm *ProcessMessage) Stop() ProcessResult {
 	return StopResult(pm)
 }
 
-// UserTask - counter doesn't receive message
+// UserTask / Limiter / Repeater - counter doesn't receive message
 func (pm *ProcessMessage) Pending() ProcessResult {
 	return PendingResult(pm)
 }
@@ -206,8 +219,4 @@ func (pm ProcessMessage) MarshalZerologObject(e *zerolog.Event) {
 	e.Str(enum.LogHeader_ProcessId, pm.GetHeaderOrDefault(enum.Header_ProcessId, ""))
 	e.Str(enum.LogHeader_TopologyId, pm.GetHeaderOrDefault(enum.Header_TopologyId, ""))
 	e.Str(enum.LogHeader_NodeId, pm.GetHeaderOrDefault(enum.Header_NodeId, ""))
-}
-
-func Prefix(header string) string {
-	return fmt.Sprintf("%s%s", HeaderPrefix, header)
 }

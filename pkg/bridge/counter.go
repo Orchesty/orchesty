@@ -32,8 +32,6 @@ func (c counter) send(result model.ProcessResult, followers int) {
 
 	if status == enum.ProcessStatus_Error || status == enum.ProcessStatus_Trash {
 		body.Success = false
-		body.Body = string(result.Message().Body)
-		body.Headers = result.Message().Headers
 
 		err := result.Error()
 		if err == nil {
@@ -49,12 +47,16 @@ func (c counter) send(result model.ProcessResult, followers int) {
 	}
 
 	bodyString, _ := json.Marshal(body)
+	msgDto := model.MessageDto{
+		Headers: msg.Headers,
+		Body:    string(bodyString),
+	}
+	msgDtoBytes, _ := json.Marshal(msgDto)
 
 	// TODO prozatím se ignoruje non-delivery, dokud se nevyřeší couter do funkční podoby
 	_ = c.publisher.Publish(amqp.Publishing{
-		ContentType: "text/plain",
-		Headers:     msg.Headers, // TODO check counter and clear headers
-		Body:        bodyString,
+		ContentType: "application/json",
+		Body:        msgDtoBytes,
 	})
 }
 

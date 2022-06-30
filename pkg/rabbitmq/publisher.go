@@ -147,7 +147,7 @@ func (p *publisher) Publish(pm amqp.Publishing) error {
 	defer p.mu.Unlock()
 
 	if p.updateTimestamp {
-		pm.Headers[model.Prefix(enum.Header_PublishedTimestamp)] = timex.UnixMs()
+		pm.Headers[enum.Header_PublishedTimestamp] = timex.UnixMs()
 	}
 	if err := p.channel.Publish(p.exchange, p.routingKey, false, false, pm); err != nil {
 		return err

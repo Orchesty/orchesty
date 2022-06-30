@@ -14,7 +14,7 @@ type Batch struct {
 func (Batch) AfterProcess(node types.Node, dto *model.ProcessMessage) (model.ProcessResult, int) {
 	published := 0
 
-	var contents []interface{}
+	var contents []model.MessageDto
 	err := json.Unmarshal(dto.GetBody(), &contents)
 	if err != nil {
 		return dto.Trash(err), 0
@@ -26,14 +26,13 @@ func (Batch) AfterProcess(node types.Node, dto *model.ProcessMessage) (model.Pro
 	if resultCode != enum.ResultCode_CursorOnly {
 		for _, publisher := range node.Followers() {
 			for _, content := range contents {
-				body, err := json.Marshal(content)
 				if err != nil {
 					return dto.Trash(err), 0
 				}
 
 				published++
 				partial := dto.
-					CopyWithBody(body).
+					CopyBatchItem(content).
 					SetHeader(enum.Header_ParentProcessId, parentProcessId).
 					SetHeader(enum.Header_ProcessId, newUuid()).
 					SetHeader(enum.Header_PreviousNodeId, node.Id()).
