@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"time"
@@ -12,31 +13,22 @@ import (
 )
 
 // LimiterLimitRow header defines the key for getting limit
-const LimiterLimitRow = "pf-limiter-key"
+const LimiterLimitRow = "limiter-key"
 
 // LimitKeyHeader header defines the key by which the requests are limited
-const LimitKeyHeader = "pf-limit-key"
+const LimitKeyHeader = "limit-key"
 
 // LimitTimeHeader header defines time
-const LimitTimeHeader = "pf-limit-time"
+const LimitTimeHeader = "limit-time"
 
 // LimitValueHeader header defines the value
-const LimitValueHeader = "pf-limit-value"
+const LimitValueHeader = "limit-value"
 
 // ReturnExchangeHeader header defines the exchange where message should be routed back
-const ReturnExchangeHeader = "pf-limit-return-exchange"
+const ReturnExchangeHeader = "limit-return-exchange"
 
 // ReturnRoutingKeyHeader header defines the routing key to be used when message is routed back
-const ReturnRoutingKeyHeader = "pf-limit-return-routing-key"
-
-// SystemKeyHeader defines system key header name
-const SystemKeyHeader = "pf-system-key"
-
-// GUIDHeader defines guid key header name
-const GUIDHeader = "pf-guid"
-
-// TokenHeader defines token key header name
-const TokenHeader = "token-guid"
+const ReturnRoutingKeyHeader = "limit-return-routing-key"
 
 // Message represents RabbitMQ message
 type Message struct {
@@ -62,7 +54,10 @@ func NewMessage(delivery *amqp.Delivery) (*Message, error) {
 	limitTime := 0
 	limitValue := 0
 
-	limitRow, ok := delivery.Headers[LimiterLimitRow]
+	var processDto model.ProcessDto
+	_ = json.Unmarshal(delivery.Body, &processDto)
+
+	limitRow, ok := processDto.Headers[LimiterLimitRow]
 	if ok {
 		row, err := model.ParseLimiterRow(limitRow.(string))
 		if err != nil {
@@ -79,13 +74,13 @@ func NewMessage(delivery *amqp.Delivery) (*Message, error) {
 		}
 
 	} else {
-		key, ok := delivery.Headers[LimitKeyHeader]
+		key, ok := processDto.Headers[LimitKeyHeader]
 		if !ok {
 			return nil, fmt.Errorf("missing header %s", LimitKeyHeader)
 		}
 		limitKey = key.(string)
 
-		lt, ok := delivery.Headers[LimitTimeHeader]
+		lt, ok := processDto.Headers[LimitTimeHeader]
 		if !ok {
 			return nil, fmt.Errorf("missing header %s", LimitTimeHeader)
 		}
@@ -95,7 +90,7 @@ func NewMessage(delivery *amqp.Delivery) (*Message, error) {
 		}
 		limitTime = l
 
-		lv, ok := delivery.Headers[LimitValueHeader]
+		lv, ok := processDto.Headers[LimitValueHeader]
 		if !ok {
 			return nil, fmt.Errorf("missing header %s", LimitValueHeader)
 		}
@@ -106,22 +101,24 @@ func NewMessage(delivery *amqp.Delivery) (*Message, error) {
 		limitValue = v
 	}
 
-	exchange, ok := delivery.Headers[ReturnExchangeHeader]
+	exchange, ok := processDto.Headers[ReturnExchangeHeader]
 	if !ok || exchange == "" {
 		return nil, fmt.Errorf("missing or empty header %s", ReturnExchangeHeader)
 	}
 
-	routingKey, ok := delivery.Headers[ReturnRoutingKeyHeader]
+	routingKey, ok := processDto.Headers[ReturnRoutingKeyHeader]
 	if !ok || routingKey == "" {
 		return nil, fmt.Errorf("missing or empty header %s", ReturnRoutingKeyHeader)
 	}
 
-	delete(delivery.Headers, ReturnExchangeHeader)
-	delete(delivery.Headers, ReturnRoutingKeyHeader)
+	delete(processDto.Headers, ReturnExchangeHeader)
+	delete(processDto.Headers, ReturnRoutingKeyHeader)
+
+	newBody, _ := json.Marshal(processDto)
 
 	innerMsg := amqp.Publishing{
 		Headers:     delivery.Headers,
-		Body:        delivery.Body,
+		Body:        newBody,
 		ContentType: delivery.ContentType,
 		Priority:    delivery.Priority,
 		ReplyTo:     delivery.ReplyTo,

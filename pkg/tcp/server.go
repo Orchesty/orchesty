@@ -20,10 +20,10 @@ const (
 	connHost = "localhost"
 	connType = "tcp"
 
-	healthCheckRequest       = "pf-health-check"
+	healthCheckRequest       = "health-check"
 	healthCheckValidResponse = "ok"
 
-	limitCheckRequest      = "pf-check"
+	limitCheckRequest      = "check"
 	limitCheckResponseFree = "ok"
 	limitCheckResponseBusy = "nok"
 )

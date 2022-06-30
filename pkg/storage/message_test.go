@@ -16,7 +16,7 @@ func TestNewMessageWithSomeMissingHeaders(t *testing.T) {
 	}})
 	assert.Nil(t, msg)
 	assert.NotNil(t, err)
-	assert.Equal(t, "missing header pf-limit-key", err.Error())
+	assert.Equal(t, "missing header limit-key", err.Error())
 
 	msg, err = NewMessage(&amqp.Delivery{Headers: amqp.Table{
 		LimitKeyHeader:         "#123",
@@ -26,7 +26,7 @@ func TestNewMessageWithSomeMissingHeaders(t *testing.T) {
 	}})
 	assert.Nil(t, msg)
 	assert.NotNil(t, err)
-	assert.Equal(t, "missing header pf-limit-value", err.Error())
+	assert.Equal(t, "missing header limit-value", err.Error())
 
 	msg, err = NewMessage(&amqp.Delivery{Headers: amqp.Table{
 		LimitKeyHeader:         "#123",
@@ -36,7 +36,7 @@ func TestNewMessageWithSomeMissingHeaders(t *testing.T) {
 	}})
 	assert.Nil(t, msg)
 	assert.NotNil(t, err)
-	assert.Equal(t, "missing header pf-limit-time", err.Error())
+	assert.Equal(t, "missing header limit-time", err.Error())
 
 	msg, err = NewMessage(&amqp.Delivery{Headers: amqp.Table{
 		LimitKeyHeader:         "#123",
@@ -46,7 +46,7 @@ func TestNewMessageWithSomeMissingHeaders(t *testing.T) {
 	}})
 	assert.Nil(t, msg)
 	assert.NotNil(t, err)
-	assert.Equal(t, "missing or empty header pf-limit-return-exchange", err.Error())
+	assert.Equal(t, "missing or empty header limit-return-exchange", err.Error())
 
 	msg, err = NewMessage(&amqp.Delivery{Headers: amqp.Table{
 		LimitKeyHeader:       "#123",
@@ -56,7 +56,7 @@ func TestNewMessageWithSomeMissingHeaders(t *testing.T) {
 	}})
 	assert.Nil(t, msg)
 	assert.NotNil(t, err)
-	assert.Equal(t, "missing or empty header pf-limit-return-routing-key", err.Error())
+	assert.Equal(t, "missing or empty header limit-return-routing-key", err.Error())
 }
 
 // TestNewMessageOK checks if Message struct is properly filled with data

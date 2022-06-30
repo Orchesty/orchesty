@@ -62,9 +62,6 @@ func (lg *LimitGuard) sendNotificationLog(message *storage.Message) {
 	lg.logger.Info(
 		fmt.Sprintf("There is a limiter message rotting in storage for a long time, key: '%s'", message.LimitKey),
 		logger.Context{
-			"system_key":        message.Message.Headers[storage.SystemKeyHeader],
-			"guid":              message.Message.Headers[storage.GUIDHeader],
-			"token":             message.Message.Headers[storage.TokenHeader],
 			"type":              "notification",
 			"notification_type": notification.LimitExceeded,
 		},

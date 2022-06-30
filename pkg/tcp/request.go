@@ -9,12 +9,12 @@ import (
 
 // CreateTCPHealthCheckRequestContent returns the body of health check HTTP request
 func CreateTCPHealthCheckRequestContent(reqID string) string {
-	return "pf-health-check;" + reqID + "\n"
+	return "health-check;" + reqID + "\n"
 }
 
 // CreateTCPCheckRequestContent returns the body of tcp check HTTP request
 func CreateTCPCheckRequestContent(reqID string, key string, time int, val int) string {
-	return "pf-check;" + reqID + ";" + key + ";" + strconv.Itoa(time) + ";" + strconv.Itoa(val) + "\n"
+	return "check;" + reqID + ";" + key + ";" + strconv.Itoa(time) + ";" + strconv.Itoa(val) + "\n"
 }
 
 // SendTCPPacket send packet over network
