@@ -7,6 +7,7 @@ use Hanaboso\PipesFramework\UserTask\Document\UserTask;
 use Hanaboso\PipesFramework\UserTask\Document\UserTaskMessage;
 use Hanaboso\PipesFramework\UserTask\Enum\UserTaskEnum;
 use Hanaboso\PipesFramework\UserTask\Model\UserTaskManager;
+use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\System\PipesHeaders;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 use RabbitMqBundle\Publisher\Publisher;
@@ -273,10 +274,11 @@ final class UserTaskControllerTest extends ControllerTestCaseAbstract
 
         $publisher = self::createMock(Publisher::class);
         $publisher->method('publish')->willReturnCallback(
-            static function (string $body, array $headers) use ($state): void {
-                self::assertEquals('body', $body);
-                self::assertArrayHasKey(PipesHeaders::createKey('user-task-state'), $headers);
-                self::assertEquals(PipesHeaders::get('user-task-state', $headers), $state);
+            static function (string $body) use ($state): void {
+                $parsed = Json::decode($body);
+                self::assertEquals('body', $parsed['body']);
+                self::assertArrayHasKey(PipesHeaders::createKey('user-task-state'), $parsed['headers']);
+                self::assertEquals(PipesHeaders::get('user-task-state', $parsed['headers']), $state);
             },
         );
         $c   = self::getContainer();

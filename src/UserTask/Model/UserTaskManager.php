@@ -13,6 +13,7 @@ use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository;
 use Hanaboso\PipesPhpSdk\Database\Repository\TopologyRepository;
+use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\System\PipesHeaders;
 use RabbitMqBundle\Publisher\Publisher;
 
@@ -94,7 +95,8 @@ final class UserTaskManager
      *
      * @return UserTask[]
      */
-    public function getAllUserTasks(string $topologyId): array {
+    public function getAllUserTasks(string $topologyId): array
+    {
         return $this->userTaskRepository->findBy(['topologyId' => $topologyId]);
     }
 
@@ -104,7 +106,8 @@ final class UserTaskManager
      * @return void
      * @throws MongoDBException
      */
-    public function removeAllUserTasks(string $topologyId): void {
+    public function removeAllUserTasks(string $topologyId): void
+    {
         $this->deleteMany($this->getAllUserTasks($topologyId));
     }
 
@@ -191,8 +194,15 @@ final class UserTaskManager
 
         $headers = $message->getHeaders();
 
-        $headers[PipesHeaders::createKey(self::STATE_HEADER)] = $accept ? self::STATE_ACCEPT : self::STATE_REJECT;
-        $this->publisher->publish($message->getBody(), $headers);
+        $headers[self::STATE_HEADER] = $accept ? self::STATE_ACCEPT : self::STATE_REJECT;
+        $this->publisher->publish(
+            Json::encode(
+                [
+                    'body'    => $message->getBody(),
+                    'headers' => $headers,
+                ],
+            ),
+        );
     }
 
     /**
@@ -212,7 +222,8 @@ final class UserTaskManager
      * @return void
      * @throws MongoDBException
      */
-    private function deleteMany(array $userTasks): void {
+    private function deleteMany(array $userTasks): void
+    {
         foreach ($userTasks as $userTask) {
             $this->delete($userTask);
         }
