@@ -12,7 +12,7 @@ use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
  *
  * @ODM\Document(collection="connectors")
  * @ODM\Index(name="SearchIndex", keys={"tags.node_id"="text","tags.topology_id"="text","tags.application_id"="text","tags.user_id"="text","tags.correlation_id"="text"}),
- * @ODM\Index(name="createdIndex", keys={"created"="desc"})
+ * @ODM\Index(name="createdIndex", keys={"fields.created"="desc"})
  * @ODM\Index(name="expireIndex", keys={"timestamp"=1}, options={"expireAfterSeconds"=2628000})
  */
 class ConnectorsMetrics

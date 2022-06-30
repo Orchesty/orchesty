@@ -1,6 +1,6 @@
 TAG?=dev
 IMAGE=dkr.hanaboso.net/pipes/pipes/pf-bundle:$(TAG)
-PUBLIC_IMAGE=hanaboso/pipes-pf-bundle:$(TAG)
+PUBLIC_IMAGE=orchesty/backend:$(TAG)
 
 DC=docker-compose
 DE=docker-compose exec -T app
