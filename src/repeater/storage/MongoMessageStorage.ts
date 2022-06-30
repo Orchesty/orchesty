@@ -2,15 +2,12 @@ import {Message} from "amqplib";
 import {Db, DeleteWriteOpResultObject, MongoClient, MongoClientOptions} from "mongodb";
 import logger from "../../logger/Logger";
 import IMessageStorage from "./IMessageStorage";
+import Headers from "../../message/Headers";
 
 const RECONNECT_INTERVAL = 5000;
 
 export interface IMongoMessageStorageSettings {
-    host: string;
-    port: number;
-    user: string;
-    pass: string;
-    db: string;
+    dsn: string;
 }
 
 interface IPersistedMessage {
@@ -62,28 +59,21 @@ class MongoMessageStorage implements IMessageStorage {
             created_at: now,
         };
 
+        const bodyHeaders = JSON.parse(message.content.toString()).headers;
+        const ctx = {
+            node_name: "repeater",
+            correlation_id: bodyHeaders[Headers.CORRELATION_ID],
+            process_id: bodyHeaders[Headers.PROCESS_ID],
+        };
+
         try {
             const mongo: Db = await this.db;
             await mongo.collection(COLLECTION_NAME).insertOne(document);
-            logger.debug(
-                "Message persisted.",
-                {
-                    node_name: "repeater",
-                    correlation_id: message.properties.headers.correlation_id,
-                    process_id: message.properties.headers.process_id,
-                },
-            );
+            logger.debug("Message persisted.",ctx);
             return true;
         } catch (e) {
-            logger.error(
-                "Cannot save document",
-                {
-                    node_name: "repeater",
-                    correlation_id: message.properties.headers.correlation_id,
-                    process_id: message.properties.headers.process_id,
-                    error: e,
-                },
-            );
+            const errCtx = {...ctx, error: e}
+            logger.error("Cannot save document", errCtx);
             return false;
         }
     }
@@ -127,10 +117,9 @@ class MongoMessageStorage implements IMessageStorage {
      * Created new mongodb connection
      */
     private createConnection(): void {
-        const url = `mongodb://${this.settings.host}/${this.settings.db}`;
         const options: MongoClientOptions = {useNewUrlParser: true, useUnifiedTopology: true};
 
-        this.db = MongoClient.connect(url, options)
+        this.db = MongoClient.connect(this.settings.dsn, options)
             .then(async (client: MongoClient) => {
                 logger.info("MongoDb connection opened.", { node_name: "repeater" });
 

@@ -11,7 +11,7 @@ xdescribe("MongoMessageStorage", () => {
 
     before(async () => {
         const mongo = await MongoClient.connect(
-            `mongodb://${mongoStorageOptions.host}/${mongoStorageOptions.db}`,
+            mongoStorageOptions.dsn,
             {useNewUrlParser: true, useUnifiedTopology: true},
         );
         db = mongo.db();
