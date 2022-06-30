@@ -2,18 +2,19 @@ package services
 
 import (
 	"bytes"
+	"detector/pkg/config"
 	"os/exec"
 	"strconv"
 	"strings"
 )
 
 func KubeContainerCheck() ([]Container, error) {
-	cmdPods := []string{"get", "pods", "-l", "app.kubernetes.io/instance=pipes"}
+	cmdPods := []string{"get", "pods", "-l", config.App.MonitorLabel}
 	// kubectl get pods -l app.kubernetes.io/instance=pipes
 	// NAME                                                  READY   STATUS    RESTARTS   AGE
 	// pipes-backend-678468cccf-qct9w                        1/1     Running   0          46d
 
-	cmdReplicas := []string{"get", "rs", "-l", "app.kubernetes.io/instance=pipes", "|", "awk", "'$2!=0'"}
+	cmdReplicas := []string{"get", "rs", "-l", config.App.MonitorLabel, "|", "awk", "'$2!=0'"}
 	// kubectl get rs -l app.kubernetes.io/instance=pipes | awk '$2!=0'
 	// NAME                                            DESIRED   CURRENT   READY   AGE
 	// pipes-backend-678468cccf                        1         1         1       97d
