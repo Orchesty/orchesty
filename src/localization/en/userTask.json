@@ -13,7 +13,7 @@
         "modal": {
             "accept": {
                 "title": "Approve",
-                "body": "Approve UserTask?"
+                "body": "Approve item?"
             },
             "update": {
                 "title": "Update",
@@ -22,15 +22,15 @@
             },
             "reject": {
                 "title": "Deny",
-                "body": "Deny UserTask?"
+                "body": "Deny item?"
             },
             "acceptAll": {
                 "title": "Approve",
-                "body": "Approve all {0} UserTasks?"
+                "body": "Approve all {0} items?"
             },
             "rejectAll": {
                 "title": "Deny",
-                "body": "Deny all {0} UserTasks?"
+                "body": "Deny all {0} items?"
             }
         }
 }
