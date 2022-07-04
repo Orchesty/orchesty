@@ -6,7 +6,7 @@
       :rules="fields.text.validations"
       slim
     >
-      <app-input v-model="form.host" :label="$t('emailSender.form.host.label')" :error-messages="errors" />
+      <app-input v-model="form.host" autofocus :label="$t('emailSender.form.host.label')" :error-messages="errors" />
     </validation-provider>
     <validation-provider
       v-slot="{ errors }"

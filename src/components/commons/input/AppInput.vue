@@ -1,6 +1,7 @@
 <template>
   <v-text-field
     v-model="input"
+    :autofocus="autofocus"
     :dense="dense"
     :label="label"
     :type="inputType"
@@ -30,32 +31,30 @@ export default {
     },
     dense: {
       type: Boolean,
-      required: false,
       default: true,
+    },
+    autofocus: {
+      type: Boolean,
+      default: false,
     },
     hideDetails: {
       type: Boolean,
-      required: false,
       default: false,
     },
     disabled: {
       type: Boolean,
-      required: false,
       default: false,
     },
     outlined: {
       type: Boolean,
-      required: false,
       default: true,
     },
     prependIcon: {
       type: String,
-      required: false,
       default: undefined,
     },
     clearable: {
       type: Boolean,
-      required: false,
       default: false,
     },
     numbersOnly: {
@@ -64,12 +63,10 @@ export default {
     },
     readonly: {
       type: Boolean,
-      required: false,
       default: false,
     },
     value: {
       type: [String, Number],
-      required: false,
       default: () => '',
     },
     label: {

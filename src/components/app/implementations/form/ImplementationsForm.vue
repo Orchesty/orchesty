@@ -6,7 +6,7 @@
       :rules="fields.site.validations"
       slim
     >
-      <app-input v-model="form.site" :label="$t('implementation.form.url.label')" :error-messages="errors" />
+      <app-input v-model="form.site" autofocus :label="$t('implementation.form.url.label')" :error-messages="errors" />
     </validation-provider>
     <validation-provider
       v-slot="{ errors }"
