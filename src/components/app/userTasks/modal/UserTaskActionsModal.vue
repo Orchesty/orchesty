@@ -119,8 +119,12 @@ export default {
     headerObject: {
       get() {
         let parsedHeaders = JSON.parse(this.headers)
-        parsedHeaders['pf-result-detail'] = parsedHeaders['pf-result-detail'].replace(/\\/g, '').slice(1, -1)
-        parsedHeaders['pf-result-message'] = parsedHeaders['pf-result-message'].replace(/"/g, "'")
+        if (parsedHeaders['pf-result-detail']) {
+          parsedHeaders['pf-result-detail'] = parsedHeaders['pf-result-detail'].replace(/\\/g, '').slice(1, -1)
+        }
+        if (parsedHeaders['pf-result-message']) {
+          parsedHeaders['pf-result-message'] = parsedHeaders['pf-result-message'].replace(/"/g, "'")
+        }
         return parsedHeaders
       },
       set(headers) {
