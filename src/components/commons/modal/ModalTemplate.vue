@@ -3,7 +3,7 @@
     <template #activator="{ on }">
       <slot name="button" v-on="on" />
     </template>
-    <v-card flat>
+    <v-card flat class="h-100">
       <v-toolbar color="primary" dark>
         <v-btn icon dark @click="cancel">
           <v-icon>mdi-close</v-icon>
@@ -150,5 +150,8 @@ export default {
 <style lang="scss">
 .modal-template {
   display: flex;
+}
+.h-100 {
+  height: 100%;
 }
 </style>
