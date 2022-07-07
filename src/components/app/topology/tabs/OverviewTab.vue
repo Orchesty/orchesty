@@ -23,7 +23,6 @@
               :class="items.item.correlationId ? 'pr-9' : ''"
               v-on="on"
             >
-              {{ items.item.correlationId ? items.item.correlationId : 'system log - no id' }}
               <v-btn v-if="items.item.correlationId" icon @click.stop="copyToClipboard(items.item.correlationId)">
                 <app-icon>mdi-content-copy</app-icon>
               </v-btn>
@@ -40,11 +39,9 @@
           {{ items.item.nodesProcessed + '/' + items.item.nodesTotal }}
         </td>
         <td v-if="isVisible('status')" class="font-weight-bold">
-          <div class="d-flex align-center justify-center">
-            <span :class="`text-uppercase ${setColor(items.item.status)}--text`">
-              {{ items.item.status }}
-            </span>
-          </div>
+          <span :class="`text-uppercase ${setColor(items.item.status)}--text`">
+            {{ items.item.status }}
+          </span>
         </td>
       </template>
     </data-grid>
