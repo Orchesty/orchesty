@@ -6,7 +6,7 @@
       :rules="fields.url.validations"
       slim
     >
-      <app-input v-model="form.url" :label="$t('curlSender.form.url.label')" :error-messages="errors" />
+      <app-input v-model="form.url" autofocus :label="$t('curlSender.form.url.label')" :error-messages="errors" />
     </validation-provider>
     <validation-provider
       v-slot="{ errors }"

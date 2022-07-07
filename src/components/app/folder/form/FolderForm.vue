@@ -8,6 +8,7 @@
     >
       <app-input
         v-model="form.name"
+        autofocus
         :label="$t('folders.createFolder.form.name.label')"
         type="text"
         :error-messages="errors"
