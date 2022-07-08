@@ -378,4 +378,7 @@ export default {
       return false
     }
   },
+  [TOPOLOGIES.ACTIONS.TOPOLOGY.RESET]: ({ commit }) => {
+    commit(TOPOLOGIES.MUTATIONS.TOPOLOGY.MUTATE_TOPOLOGY, {})
+  },
 }

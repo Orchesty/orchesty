@@ -92,6 +92,7 @@ export default {
     ...mapActions(TOPOLOGIES.NAMESPACE, [
       TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES,
       TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID,
+      TOPOLOGIES.ACTIONS.TOPOLOGY.RESET,
     ]),
     topologyTooltip(item) {
       if (item.type === TOPOLOGY_ENUMS.CATEGORY) {
@@ -121,13 +122,14 @@ export default {
     },
   },
   watch: {
-    $route(route) {
+    async $route(route) {
       if (
         !route.matched.some(
           (matchedRoutes) => matchedRoutes.name === ROUTES.TOPOLOGY.DEFAULT || matchedRoutes.name === ROUTES.EDITOR
         )
       ) {
         this.active = []
+        await this[TOPOLOGIES.ACTIONS.TOPOLOGY.RESET]()
       }
     },
     topologyActive: {

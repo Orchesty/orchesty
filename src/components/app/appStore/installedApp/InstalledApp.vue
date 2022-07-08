@@ -41,7 +41,7 @@
         </v-row>
         <v-row dense class="mt-2">
           <v-col>
-            <validation-observer :ref="form.key" tag="form" slim @submit.prevent="() => saveSettings(form.key)">
+            <validation-observer :ref="form.key" tag="form" slim @submit.prevent="() => saveForm(form.key)">
               <div v-for="field in form.fields" :key="field.key">
                 <validation-provider
                   v-if="field.type === 'text'"
