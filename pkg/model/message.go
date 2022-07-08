@@ -150,13 +150,11 @@ func (pm ParsedMessage) FinishProcessQuery() mongo.WriteModel {
 				"finished": bson.M{
 					"$cond": bson.A{
 						bson.M{
-							"if": bson.M{
-								"$eq": bson.A{
-									bson.M{
-										"$sum": bson.A{"$ok", "$nok"},
-									},
-									"$total",
+							"$eq": bson.A{
+								bson.M{
+									"$sum": bson.A{"$ok", "$nok"},
 								},
+								"$total",
 							},
 						},
 						pm.GetTimeHeaderOrDefault(enum.Header_PublishedTimestamp),
@@ -183,13 +181,11 @@ func (pm ParsedMessage) FinishSubProcessQuery() mongo.WriteModel {
 				"finished": bson.M{
 					"$cond": bson.A{
 						bson.M{
-							"if": bson.M{
-								"$eq": bson.A{
-									bson.M{
-										"$sum": bson.A{"$ok", "$nok"},
-									},
-									"$total",
+							"$eq": bson.A{
+								bson.M{
+									"$sum": bson.A{"$ok", "$nok"},
 								},
+								"$total",
 							},
 						},
 						pm.GetTimeHeaderOrDefault(enum.Header_PublishedTimestamp),
