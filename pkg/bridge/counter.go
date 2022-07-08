@@ -57,6 +57,9 @@ func (c counter) send(result model.ProcessResult, followers int) {
 	_ = c.publisher.Publish(amqp.Publishing{
 		ContentType: "application/json",
 		Body:        msgDtoBytes,
+		Headers: map[string]interface{}{
+			enum.Header_PublishedTimestamp: msg.Published,
+		},
 	})
 }
 
