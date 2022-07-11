@@ -10,7 +10,7 @@
     >
       <template #default="{ items, isVisible }">
         <td v-if="isVisible('started')">
-          {{ items.item.started | internationalFormat }}
+          {{ internationalFormat(items.item.started) }}
         </td>
         <td v-if="isVisible('finished')">
           {{ getProcessFinishTime(items.item) }}
@@ -69,6 +69,7 @@ export default {
   data() {
     return {
       DATA_GRIDS,
+      internationalFormat,
       headers: [
         {
           text: 'topologies.overview.headers.created',
@@ -126,7 +127,7 @@ export default {
     prettyMs: prettyMilliseconds,
 
     getProcessFinishTime(process) {
-      return this.isInProgress(process.status) ? '-' : process.finished
+      return this.isInProgress(process.status) ? '-' : internationalFormat(process.finished)
     },
     getProcessDurationTime(process) {
       if (this.isInProgress(process.status)) {
@@ -163,9 +164,6 @@ export default {
     prettifyMilliseconds(milliseconds) {
       return this.prettyMs(milliseconds, { keepDecimalsOnWholeSeconds: true })
     },
-  },
-  filters: {
-    internationalFormat,
   },
   async mounted() {
     this.init('started')
