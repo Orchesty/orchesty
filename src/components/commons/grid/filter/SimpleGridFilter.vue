@@ -1,6 +1,25 @@
 <template>
-  <validation-observer tag="form" @keydown.enter="$emit('sendFilter')">
-    <v-row dense class="mt-3 mb-2">
+  <div @keydown.enter="$emit('sendFilter')">
+    <v-row dense>
+      <template v-if="simpleFilterEnum === SIMPLE_FILTER.USER_TASK">
+        <v-col cols="2">
+          <app-input
+            v-model="userTaskFilterValues.nodeName"
+            hide-details
+            dense
+            outlined
+            clearable
+            label="Node"
+            prepend-icon="mdi-directions-fork"
+          />
+        </v-col>
+
+        <v-col class="my-auto">
+          <app-button :on-click="() => $emit('sendFilter')" :button-title="$t('dataGrid.runFilter')" />
+          <slot name="resetClearButtons" :on-clear-button="() => {}" />
+        </v-col>
+      </template>
+
       <template v-if="simpleFilterEnum === SIMPLE_FILTER.TRASH">
         <v-col cols="2">
           <app-input
@@ -85,7 +104,7 @@
         </v-col>
       </template>
     </v-row>
-  </validation-observer>
+  </div>
 </template>
 
 <script>
@@ -137,6 +156,7 @@ export default {
         ],
       ],
       trashFilter: null,
+      userTaskFilter: null,
       logsFilterValues: {
         fullTextSearch: '',
         timeMargin: 0,
@@ -146,6 +166,9 @@ export default {
         correlation: '',
         nodeName: '',
         native: '',
+      },
+      userTaskFilterValues: {
+        nodeName: '',
       },
     }
   },
@@ -159,6 +182,20 @@ export default {
               column: 'time_margin',
               operator: OPERATOR.EQUAL,
               value: logsFilterValues.timeMargin,
+            },
+          ],
+        ]
+      },
+    },
+    userTaskFilterValues: {
+      deep: true,
+      handler(userTaskFilterValues) {
+        this.userTaskFilter = [
+          [
+            {
+              column: 'nodeName',
+              operator: OPERATOR.LIKE,
+              value: userTaskFilterValues.nodeName ?? '',
             },
           ],
         ]

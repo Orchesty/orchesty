@@ -2,7 +2,7 @@
   <v-sheet>
     <!--Filter-->
     <data-grid-filter
-      v-if="!disableFilter"
+      :disable-filter="disableFilter"
       :params="{ namespace: namespace, params: fixedParams, paging: paging, filter: filter }"
       :quick-filters="quickFilters"
       :on-filter="fetchGrid"

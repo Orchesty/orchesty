@@ -2,12 +2,14 @@
   <v-row v-if="quickFilters.length > 0" dense>
     <v-col cols="12">
       <quick-grid-filter
+        v-if="!disableFilter"
         ref="quickGridFilter"
         :quick-filters="quickFilters"
         :filter="filter"
         :filter-meta="filterMeta"
         :on-change="onChangeFilter"
         :is-loading="isLoading"
+        :class="{ 'mb-3': simpleFilter }"
       >
         <template v-if="!simpleFilter" #resetClearButtons="{}">
           <v-btn color="primary" icon @click="reload">
@@ -31,6 +33,7 @@
         :filter="filter"
         :filter-meta="filterMeta"
         :on-change="onChangeFilter"
+        :class="{ 'mt-2': disableFilter }"
         @sendFilter="sendFilter"
       >
         <template #resetClearButtons="{ onClearButton }">
@@ -70,6 +73,10 @@ export default {
     filterMeta: {
       type: Object,
       required: true,
+    },
+    disableFilter: {
+      type: Boolean,
+      default: false,
     },
     onFilter: {
       type: Function,
@@ -160,6 +167,9 @@ export default {
         )
       } else if (SIMPLE_FILTER.TRASH === this.simpleFilterEnum) {
         const fieldFilters = this.$refs.simpleGridFilter.trashFilter || []
+        this.onFilter(null, null, [].concat(this.currentFilter, fieldFilters), null, null)
+      } else if (SIMPLE_FILTER.USER_TASK === this.simpleFilterEnum) {
+        const fieldFilters = this.$refs.simpleGridFilter.userTaskFilter || []
         this.onFilter(null, null, [].concat(this.currentFilter, fieldFilters), null, null)
       } else {
         this.onFilter(null, null, this.currentFilter, null, null)

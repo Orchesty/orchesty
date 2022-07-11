@@ -7,6 +7,9 @@
     :namespace="DATA_GRIDS.USER_TASK"
     return-row-props
     show-active-row
+    :simple-filter-enum="SIMPLE_FILTER.USER_TASK"
+    simple-filter
+    disable-filter
     item-key="id"
     show-select
     :quick-filters="quickFilters"
@@ -70,12 +73,14 @@ import { USER_TASKS } from '@/store/modules/userTasks/types'
 import UserTaskActionsModal from '@/components/app/userTasks/modal/UserTaskActionsModal'
 import QuickFiltersMixin from '@/services/mixins/QuickFiltersMixin'
 import { GRID } from '@/store/modules/grid/types'
+import { SIMPLE_FILTER } from '@/services/enums/dataGridFilterEnums'
 export default {
   name: 'UserTaskTab',
   components: { UserTaskActionsModal, UserTaskInformation, DataGrid },
   mixins: [QuickFiltersMixin],
   data() {
     return {
+      SIMPLE_FILTER,
       DATA_GRIDS,
       item: null,
       topologyID: null,
