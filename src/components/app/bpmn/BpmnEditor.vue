@@ -6,7 +6,6 @@
           <div id="canvas-edit"></div>
           <div class="canvas-properties">
             <div id="properties"></div>
-            <div id="properties2"></div>
             <div v-if="selectedShape === 'start'" class="mx-3 subtitle-2">
               <hr class="mb-2 mt-3" />
               <span class="font-weight-bold">{{ $t('topologies.editor.startingPoint') }}: </span>
@@ -54,11 +53,9 @@ export default {
   data() {
     return {
       firstFetchDone: false,
-      isSending: false,
       selectedShape: '',
       startingPoint: '',
       modeler: null,
-      topology: JSON.parse(localStorage.getItem(LOCAL_STORAGE.TOPOLOGY_ACTIVE)),
     }
   },
   computed: {
@@ -114,6 +111,22 @@ export default {
       TOPOLOGIES.ACTIONS.TOPOLOGY.SAVE_DIAGRAM,
     ]),
     ...mapActions(IMPLEMENTATIONS.NAMESPACE, [IMPLEMENTATIONS.ACTIONS.LIST_IMPLEMENTATIONS]),
+
+    async getCurrentXMLDiagram() {
+      const parser = new DOMParser()
+      const { xml } = await this.modeler.saveXML({ format: true })
+
+      let xmlNodes = parser.parseFromString(xml, 'text/xml')
+      for (let i = 0; i < xmlNodes.getElementsByTagName('bpmn:task').length; i++) {
+        for (let j = 0; j < xmlNodes.getElementsByTagName('bpmn:task')[i].attributes.length; j++) {
+          if (xmlNodes.getElementsByTagName('bpmn:task')[i].attributes[j].name === 'sdkHostOptions') {
+            xmlNodes.getElementsByTagName('bpmn:task')[i].removeAttribute('sdkHostOptions')
+          }
+        }
+      }
+
+      return xmlNodes
+    },
 
     getNodeRunUrl(baseURL, nodeId, nodeName, nodeType, topologyId, topologyName, userId, data = {}) {
       return nodeType === 'webhook'
@@ -291,25 +304,11 @@ export default {
       }
     },
 
-    async fetchSchema() {
-      const result = await this.modeler.saveXML({ format: true })
-      this.initialScheme = result
-      const { xml } = result
-
-      const parser = new DOMParser()
-      let xmlDoc = parser.parseFromString(xml, 'text/xml')
-      for (let i = 0; i < xmlDoc.getElementsByTagName('bpmn:task').length; i++) {
-        for (let j = 0; j < xmlDoc.getElementsByTagName('bpmn:task')[i].attributes.length; j++) {
-          if (xmlDoc.getElementsByTagName('bpmn:task')[i].attributes[j].name === 'sdkHostOptions') {
-            xmlDoc.getElementsByTagName('bpmn:task')[i].removeAttribute('sdkHostOptions')
-          }
-        }
-      }
-
-      return new XMLSerializer().serializeToString(xmlDoc)
+    async compareDiagrams() {
+      return this.topologyActiveDiagram === new XMLSerializer().serializeToString(await this.getCurrentXMLDiagram())
     },
 
-    async openBPMN(xml) {
+    async importXMLDiagram(xml) {
       if (this.modeler) {
         try {
           await this.modeler.importXML(xml)
@@ -320,31 +319,23 @@ export default {
       }
     },
 
+    hasNewId(response) {
+      if (response._id !== this.topologyActive._id) {
+        return response._id
+      } else {
+        return false
+      }
+    },
+
     async saveDiagram() {
       if (this.modeler) {
-        const result = await this.modeler.saveXML({ format: true })
-        this.initialScheme = result
-        const { xml } = result
-
-        const parser = new DOMParser()
-        let xmlDoc = parser.parseFromString(xml, 'text/xml')
-        for (let i = 0; i < xmlDoc.getElementsByTagName('bpmn:task').length; i++) {
-          for (let j = 0; j < xmlDoc.getElementsByTagName('bpmn:task')[i].attributes.length; j++) {
-            if (xmlDoc.getElementsByTagName('bpmn:task')[i].attributes[j].name === 'sdkHostOptions') {
-              xmlDoc.getElementsByTagName('bpmn:task')[i].removeAttribute('sdkHostOptions')
-            }
-          }
-        }
+        const xml = new XMLSerializer().serializeToString(await this.getCurrentXMLDiagram())
 
         return await this[TOPOLOGIES.ACTIONS.TOPOLOGY.SAVE_DIAGRAM]({
           id: this.topologyActive._id,
-          xml: new XMLSerializer().serializeToString(xmlDoc),
+          xml,
         }).then(async (response) => {
-          if (response._id !== this.topologyActive._id) {
-            return response._id
-          } else {
-            return false
-          }
+          return this.hasNewId(response)
         })
       } else {
         return false
@@ -354,25 +345,14 @@ export default {
     async exportDiagram() {
       if (this.modeler) {
         try {
-          const result = await this.modeler.saveXML({ format: true })
-          const { xml } = result
-
-          const parser = new DOMParser()
-          let xmlDoc = parser.parseFromString(xml, 'text/xml')
-          for (let i = 0; i < xmlDoc.getElementsByTagName('bpmn:task').length; i++) {
-            for (let j = 0; j < xmlDoc.getElementsByTagName('bpmn:task')[i].attributes.length; j++) {
-              if (xmlDoc.getElementsByTagName('bpmn:task')[i].attributes[j].name === 'sdkHostOptions') {
-                xmlDoc.getElementsByTagName('bpmn:task')[i].removeAttribute('sdkHostOptions')
-              }
-            }
-          }
+          const xml = await this.getCurrentXMLDiagram()
 
           download(
-            new XMLSerializer().serializeToString(xmlDoc),
-            `${this.topology.name}.v${this.topology.version}` + '.tplg',
+            new XMLSerializer().serializeToString(xml),
+            `${this.topologyActive.name}.v${this.topologyActive.version}` + '.tplg',
             'application/bpmn+xml'
           )
-          this.showFlashMessage(false, `Topology ${this.topology.name} exported`)
+          this.showFlashMessage(false, `Topology ${this.topologyActive.name} exported`)
         } catch (err) {
           this.showFlashMessage(true, err.response.data.message)
         }
@@ -383,7 +363,7 @@ export default {
     topologyActiveDiagram: {
       async handler(diagram) {
         if (this.firstFetchDone) {
-          await this.openBPMN(diagram)
+          await this.importXMLDiagram(diagram)
         }
       },
     },

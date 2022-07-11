@@ -1,7 +1,12 @@
 <template>
   <content-basic v-if="topologyActive" :title="`${topologyActive.name} v.${topologyActive.version}`">
-    <bpmn-editor ref="editor" @isSending="isSending" />
-    <unsaved-editor-modal ref="dialog" :is-sending="state.isSending" :get-saving-result="getSavingResult" />
+    <bpmn-editor ref="editor" />
+    <unsaved-editor-modal
+      ref="dialog"
+      :redirect-function="redirectFunction"
+      :is-sending="state.isSending"
+      :save-has-new-id="saveHasNewId"
+    />
     <template #nav-buttons>
       <action-buttons
         :route-back="routeBack"
@@ -26,6 +31,7 @@ import UnsavedEditorModal from '@/components/app/bpmn/modals/UnsavedEditorModal'
 import ActionButtons from '@/components/app/bpmn/components/ActionButtons'
 import { redirectTo } from '@/services/utils/utils'
 import ImportTopologyMixin from '@/services/mixins/ImportTopologyMixin'
+import { EVENTS, events } from '@/services/utils/events'
 
 export default {
   name: 'EditorPage',
@@ -35,6 +41,7 @@ export default {
     return {
       ROUTES,
       sending: false,
+      redirectFunction: () => {},
     }
   },
   computed: {
@@ -58,7 +65,7 @@ export default {
       TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES,
       TOPOLOGIES.ACTIONS.TOPOLOGY.GET_DIAGRAM,
     ]),
-    async getSavingResult() {
+    async saveHasNewId() {
       return await this.$refs.editor.saveDiagram()
     },
     async exportDiagram() {
@@ -68,30 +75,32 @@ export default {
       this.fetchTopologyDiagram(e, null, true)
     },
     async saveDiagram() {
-      const newTopologyId = await this.$refs.editor.saveDiagram()
-      if (newTopologyId) {
-        await this[TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID](newTopologyId)
+      const newId = await this.saveHasNewId()
+      if (newId) {
+        await this[TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID](newId)
         await this[TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES]()
-        await redirectTo(this.$router, { name: ROUTES.TOPOLOGY.VIEWER, params: { id: newTopologyId } })
+        await redirectTo(this.$router, {
+          name: ROUTES.TOPOLOGY.VIEWER,
+          params: { id: newId, forceRoute: true },
+        })
       } else {
         await this[TOPOLOGIES.ACTIONS.TOPOLOGY.GET_DIAGRAM](this.topologyActive._id)
       }
     },
-    async routeBack() {
-      if (this.$refs.editor.state.isSending) {
-        this.$router.go(-1)
-        return
-      }
-      const scheme = await this.$refs.editor.fetchSchema()
-      if (scheme !== this.topologyActiveDiagram) {
-        this.$refs.dialog.isOpen = true
+    routeBack() {
+      this.$router.go(-1)
+    },
+  },
+  mounted() {
+    events.listen(EVENTS.EDITOR.COMPARE_XML, async (redirectFunction) => {
+      this.redirectFunction = redirectFunction
+      const diagramsMatch = await this.$refs.editor.compareDiagrams()
+      if (diagramsMatch) {
+        this.redirectFunction()
       } else {
-        this.$router.go(-1)
+        this.$refs.dialog.isOpen = true
       }
-    },
-    isSending(val) {
-      this.sending = val
-    },
+    })
   },
 }
 </script>
