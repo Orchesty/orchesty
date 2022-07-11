@@ -8,6 +8,7 @@ export const GRID = {
   GETTERS: {
     GET_PAGING: 'GET_PAGING',
     GET_SORTER: 'GET_SORTER',
+    GET_FILTER: 'GET_FILTER',
   },
   MUTATIONS: {
     GRID_RESPONSE: 'GRID_RESPONSE',
