@@ -20,57 +20,6 @@
       </v-col>
     </v-row>
     <v-row v-if="!state.isSending" key="2" dense class="d-flex justify-start">
-      <div class="ml-4 mt-1 canvas--checkboxes">
-        <v-checkbox
-          v-model="showErrors"
-          dense
-          :label="$t('topologies.viewer.errorsToggle')"
-          hide-details
-          color="error"
-          @click="toggleOverlaysHandler"
-        >
-          <template #label>
-            <span class="body-2">{{ $t('topologies.viewer.errorsToggle') }}</span>
-          </template>
-        </v-checkbox>
-        <v-checkbox
-          v-model="showUserTasks"
-          dense
-          :label="$t('topologies.viewer.userTasksToggle')"
-          hide-details
-          color="primary"
-          @click="toggleOverlaysHandler"
-        >
-          <template #label>
-            <span class="body-2">{{ $t('topologies.viewer.userTasksToggle') }}</span>
-          </template>
-        </v-checkbox>
-        <v-checkbox
-          v-model="showQueue"
-          dense
-          hide-details
-          :label="$t('topologies.viewer.queueDepthToggle')"
-          color="secondary"
-          @click="toggleOverlaysHandler"
-        >
-          <template #label>
-            <span class="body-2">{{ $t('topologies.viewer.queueDepthToggle') }}</span>
-          </template>
-        </v-checkbox>
-        <v-checkbox
-          v-model="showTest"
-          :disabled="testResultsShow"
-          dense
-          hide-details
-          :label="$t('topologies.viewer.testResultsToggle')"
-          color="accent"
-          @click="showTestResults"
-        >
-          <template #label>
-            <span class="body-2">{{ $t('topologies.viewer.testResultsToggle') }}</span>
-          </template>
-        </v-checkbox>
-      </div>
       <v-col cols="12">
         <v-card outlined class="bpmn-viewer-node-grid-container">
           <div id="canvas" :class="canvasHeight"></div>
@@ -208,8 +157,6 @@ export default {
 
       //set the variable for the canvas overlays and error + queue counter
       this.overlays = this.viewer.get('overlays')
-      let errors = ''
-      let queueDepth = ''
 
       //on shape added action
       this.viewer.on('shape.added', (event) => {
@@ -224,42 +171,6 @@ export default {
         const node = Object.values(this.topologyActiveNodes).filter((n) => {
           return n.schema_id === element.businessObject.id
         })[0]
-
-        //get node metrics if exists
-        if (this.topologyActiveStatistics.items[node._id]) {
-          errors = this.topologyActiveStatistics.items[node._id].process.errors
-          queueDepth = this.topologyActiveStatistics.items[node._id].queue_depth.avg
-        }
-
-        //if UserTask - draw a UserTask overlay
-        if (element.businessObject.pipesType === 'user') {
-          if (this.userTasks.items) {
-            this.viewer.get('overlays').add(element, 'bubbles', {
-              position: { top: element.height, right: element.width - 30 },
-              html:
-                `<div onclick="window.dispatchEvent(new CustomEvent('userTasksCheckbox'))"><span class="badge badge-tasks" title="Waiting tasks">` +
-                this.userTasks.items.filter((item) => item.nodeId === node._id).length +
-                '</span></div>',
-            })
-          }
-        }
-
-        //if not Starting Point - draw metrics overlay
-        if (!this.isStartingPoint(element)) {
-          window.orchestyIndex = node._id
-          if (errors !== '0') {
-            this.overlays.add(element, 'bubbles', {
-              position: { top: element.height, right: element.width - 5 },
-              html: `<div><span data-index="${window.orchestyIndex}" class="badge badge-error" title="Failed processes">${errors}</span></div>`,
-            })
-          }
-          this.overlays.add(element, 'bubbles', {
-            position: { top: element.height, right: element.width - 15 },
-            html: `<div onclick="window.dispatchEvent(new CustomEvent('queueDepthCheckbox'))"><span class="badge badge-queue" title="Queue depth">${Math.round(
-              queueDepth
-            )}</span></div>`,
-          })
-        }
 
         //if Starting Point - add enable/disable functionality
         if (this.isStartingPoint(element)) {
