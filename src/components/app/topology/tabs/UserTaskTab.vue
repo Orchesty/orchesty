@@ -21,7 +21,7 @@
     @reset="reset"
   >
     <template #content>
-      <user-task-information :item="item" @reset="reset" />
+      <user-task-information :item="item" @reset="reset" @fetchGrid="fetchGrid" />
     </template>
     <template #default="{ items, isVisible }">
       <td v-if="isVisible('nodeName')" class="py-3 px-0 pointer text-start" @click="$refs.grid.onRowClicked(items)">
@@ -110,6 +110,7 @@ export default {
     ...mapGetters(DATA_GRIDS.USER_TASK, {
       sorterInitial: GRID.GETTERS.GET_SORTER,
       pagingInitial: GRID.GETTERS.GET_PAGING,
+      gridFilter: GRID.GETTERS.GET_FILTER,
     }),
     ...mapGetters(REQUESTS_STATE.NAMESPACE, [REQUESTS_STATE.GETTERS.GET_STATE]),
     ...mapGetters(TOPOLOGIES.NAMESPACE, { topologyActive: TOPOLOGIES.GETTERS.GET_ACTIVE_TOPOLOGY }),
@@ -132,14 +133,30 @@ export default {
       USER_TASKS.ACTIONS.USER_TASK_ACCEPT_LIST,
     ]),
     async acceptAll() {
-      return await this[USER_TASKS.ACTIONS.USER_TASK_ACCEPT_LIST]({
+      const response = await this[USER_TASKS.ACTIONS.USER_TASK_ACCEPT_LIST]({
         ids: this.selected.map((item) => item.id),
       })
+
+      if (response) {
+        await this.fetchGrid()
+      }
+
+      return response
     },
     async rejectAll() {
-      return await this[USER_TASKS.ACTIONS.USER_TASK_REJECT_LIST]({
+      const response = await this[USER_TASKS.ACTIONS.USER_TASK_REJECT_LIST]({
         ids: this.selected.map((item) => item.id),
       })
+
+      if (response) {
+        await this.fetchGrid()
+      }
+
+      return response
+    },
+
+    async fetchGrid() {
+      await this.$refs.grid.fetchGrid(null, null, this.gridFilter, null, null)
     },
     async updateInfo(item) {
       this.item = item.item

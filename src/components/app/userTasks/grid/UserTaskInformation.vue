@@ -113,18 +113,6 @@
                 </v-expansion-panel-content>
               </v-card>
             </v-expansion-panel>
-            <!--            <v-expansion-panel>-->
-            <!--              <v-card outlined>-->
-            <!--                <v-expansion-panel-header>-->
-            <!--                  <span>-->
-            <!--                    {{ $t('topologies.userTask.information.auditLog') }}-->
-            <!--                  </span>-->
-            <!--                </v-expansion-panel-header>-->
-            <!--                <v-expansion-panel-content>-->
-            <!--                  <vue-json-pretty :path="'res'" :data="trashTaskSwitcher('auditLogs')" />-->
-            <!--                </v-expansion-panel-content>-->
-            <!--              </v-card>-->
-            <!--            </v-expansion-panel>-->
           </v-expansion-panels>
         </v-col>
       </v-row>
@@ -175,32 +163,59 @@ export default {
       return this[this.toggler][param]
     },
     async acceptAll() {
-      return await this[USER_TASKS.ACTIONS.USER_TASK_ACCEPT_LIST]({ ids: this.selected.map((item) => item.id) })
+      const response = await this[USER_TASKS.ACTIONS.USER_TASK_ACCEPT_LIST]({
+        ids: this.selected.map((item) => item.id),
+      })
+      if (response) {
+        await this.fetchGrid()
+      }
+      return response
     },
     async rejectAll() {
-      return await this[USER_TASKS.ACTIONS.USER_TASK_REJECT_LIST]({ ids: this.selected.map((item) => item.id) })
+      const response = await this[USER_TASKS.ACTIONS.USER_TASK_REJECT_LIST]({
+        ids: this.selected.map((item) => item.id),
+      })
+      if (response) {
+        await this.fetchGrid()
+      }
+      return response
     },
     async accept() {
-      return await this[this.isTrash ? TRASH.ACTIONS.TRASH_ACCEPT : USER_TASKS.ACTIONS.USER_TASK_ACCEPT]({
+      const response = await this[this.isTrash ? TRASH.ACTIONS.TRASH_ACCEPT : USER_TASKS.ACTIONS.USER_TASK_ACCEPT]({
         id: this[this.toggler].id,
         topologyID: this[this.toggler].topologyId,
       })
+      if (response) {
+        await this.fetchGrid()
+      }
+      return response
     },
     async update(val) {
-      return await this[this.isTrash ? TRASH.ACTIONS.TRASH_UPDATE : USER_TASKS.ACTIONS.USER_TASK_UPDATE]({
+      const response = await this[this.isTrash ? TRASH.ACTIONS.TRASH_UPDATE : USER_TASKS.ACTIONS.USER_TASK_UPDATE]({
         id: this[this.toggler].id,
         ...val,
         topologyID: this[this.toggler].topologyId,
       })
+      if (response) {
+        await this.fetchGrid()
+      }
+      return response
     },
     async reject() {
-      return await this[this.isTrash ? TRASH.ACTIONS.TRASH_REJECT : USER_TASKS.ACTIONS.USER_TASK_REJECT]({
+      const response = await this[this.isTrash ? TRASH.ACTIONS.TRASH_REJECT : USER_TASKS.ACTIONS.USER_TASK_REJECT]({
         id: this[this.toggler].id,
         topologyID: this[this.toggler].topologyId,
       })
+      if (response) {
+        await this.fetchGrid()
+      }
+      return response
     },
     reset() {
       this.$emit('reset')
+    },
+    async fetchGrid() {
+      await this.$emit('fetchGrid')
     },
     parseBody(body) {
       try {
