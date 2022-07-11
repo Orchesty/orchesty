@@ -26,8 +26,8 @@
           {{ items.item.nodeName }}
         </span>
       </td>
-      <td v-if="isVisible('updated')" class="pointer" @click="$refs.grid.onRowClicked(items)">
-        <span>{{ items.item.updated | internationalFormat }}</span>
+      <td v-if="isVisible('created')" class="pointer" @click="$refs.grid.onRowClicked(items)">
+        <span>{{ items.item.created | internationalFormat }}</span>
       </td>
     </template>
     <template #groupActionButtons="contentEnabled">
@@ -91,8 +91,8 @@ export default {
           width: '50%',
         },
         {
-          text: 'topologies.userTask.headers.updated',
-          value: 'updated',
+          text: 'topologies.userTask.headers.created',
+          value: 'created',
           align: 'left',
           sortable: true,
           visible: true,

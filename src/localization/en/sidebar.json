@@ -210,7 +210,8 @@
       "headers": {
         "nodeName": "Node name",
         "nodeNameTopology": "Topology / Node name",
-        "updated": "Updated"
+        "updated": "Updated",
+        "created": "Created"
       },
       "information": {
         "nodeName": "Node Name",
