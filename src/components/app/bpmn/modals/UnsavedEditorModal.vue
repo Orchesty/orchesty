@@ -26,7 +26,6 @@
 <script>
 import ModalTemplate from '@/components/commons/modal/ModalTemplate'
 import { TOPOLOGIES } from '@/store/modules/topologies/types'
-import { ROUTES } from '@/services/enums/routerEnums'
 import { mapActions } from 'vuex'
 import AppButton from '@/components/commons/button/AppButton'
 export default {
@@ -37,7 +36,11 @@ export default {
       type: Boolean,
       required: true,
     },
-    getSavingResult: {
+    saveHasNewId: {
+      type: Function,
+      required: true,
+    },
+    redirectFunction: {
       type: Function,
       required: true,
     },
@@ -50,18 +53,18 @@ export default {
   methods: {
     ...mapActions(TOPOLOGIES.NAMESPACE, [TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID]),
     async saveDiagram() {
-      const isClone = await this.getSavingResult()
+      const newId = await this.saveHasNewId()
       this.isOpen = false
-      if (isClone) {
-        await this[TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID](isClone)
-        await this.$router.push({ name: ROUTES.EDITOR })
+      if (newId) {
+        this.redirectFunction()
+        await this[TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID](newId)
       } else {
-        this.$router.go(-1)
+        this.redirectFunction()
       }
     },
     exitEditor() {
       this.isOpen = false
-      this.$router.go(-1)
+      this.redirectFunction()
     },
   },
 }

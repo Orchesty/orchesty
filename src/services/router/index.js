@@ -5,6 +5,8 @@ import { withNamespace } from '../../store/utils'
 import { AUTH } from '../../store/modules/auth/types'
 import { config } from '../../config'
 import routes from './routes'
+import { events } from '@/services/utils/events'
+import { EVENT_TYPES } from '@/services/enums/eventsEnums'
 
 Vue.use(Router)
 
@@ -62,6 +64,11 @@ export const beforeEach = (store) => {
 
     if (isChecked) {
       if (isLogged) {
+        if (from.name === ROUTES.EDITOR && !to.params.forceRoute) {
+          events.emit(EVENT_TYPES.EDITOR.COMPARE_XML, next)
+          return
+        }
+
         next()
         return
       }
