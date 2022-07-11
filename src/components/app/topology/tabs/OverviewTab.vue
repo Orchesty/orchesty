@@ -13,35 +13,25 @@
           {{ items.item.started | internationalFormat }}
         </td>
         <td v-if="isVisible('finished')">
-          {{ filterDate(items.item.finished) }}
+          {{ getProcessFinishTime(items.item) }}
         </td>
-        <tooltip>
-          <template #activator="{ on, attrs }">
-            <td
-              v-if="isVisible('correlation_id')"
-              v-bind="attrs"
-              :class="items.item.correlationId ? 'pr-9' : ''"
-              v-on="on"
-            >
-              <v-btn v-if="items.item.correlationId" icon @click.stop="copyToClipboard(items.item.correlationId)">
-                <app-icon>mdi-content-copy</app-icon>
-              </v-btn>
-            </td>
-          </template>
-          <template #tooltip>
-            {{ items.item.correlationId ? items.item.correlationId : 'system log - no id' }}
-          </template>
-        </tooltip>
+        <td v-if="isVisible('correlation_id')">
+          <v-btn v-if="items.item.correlationId" icon @click.stop="copyToClipboard(items.item.correlationId)">
+            <app-icon>mdi-content-copy</app-icon>
+          </v-btn>
+        </td>
         <td v-if="isVisible('duration')">
-          {{ prettyMs(items.item.duration, { keepDecimalsOnWholeSeconds: true }) }}
+          {{ getProcessDurationTime(items.item) }}
         </td>
         <td v-if="isVisible('progress')">
           {{ items.item.nodesProcessed + '/' + items.item.nodesTotal }}
         </td>
         <td v-if="isVisible('status')" class="font-weight-bold">
-          <span :class="`text-uppercase ${setColor(items.item.status)}--text`">
-            {{ items.item.status }}
-          </span>
+          <div class="d-flex align-center justify-center">
+            <span :class="`text-uppercase ${getStatusColor(items.item.status)}--text`">
+              {{ items.item.status }}
+            </span>
+          </div>
         </td>
       </template>
     </data-grid>
@@ -58,14 +48,14 @@ import { mapActions, mapGetters } from 'vuex'
 import { TOPOLOGIES } from '@/store/modules/topologies/types'
 import { GRID } from '@/store/modules/grid/types'
 import prettyMilliseconds from 'pretty-ms'
-import Tooltip from '@/components/commons/Tooltip'
 import FlashMessageMixin from '@/services/mixins/FlashMessageMixin'
 import QuickFiltersMixin from '@/services/mixins/QuickFiltersMixin'
 import AppIcon from '@/components/commons/icon/AppIcon'
+import moment from 'moment'
 
 export default {
   name: 'OverviewTab',
-  components: { AppIcon, Tooltip, DataGrid },
+  components: { AppIcon, DataGrid },
   mixins: [FlashMessageMixin, QuickFiltersMixin],
   computed: {
     ...mapGetters(DATA_GRIDS.OVERVIEW, {
@@ -136,18 +126,21 @@ export default {
   methods: {
     ...mapActions(DATA_GRIDS.EVENTS, [GRID.ACTIONS.GRID_FETCH]),
     prettyMs: prettyMilliseconds,
-    filterDate(date) {
-      if (date) {
-        return this.$options.filters.internationalFormat(date)
+
+    getProcessFinishTime(process) {
+      return this.isInProgress(process.status) ? '-' : process.finished
+    },
+    getProcessDurationTime(process) {
+      if (this.isInProgress(process.status)) {
+        const processStartedMilliseconds = moment(process.started).format('x')
+        const currentTimeMilliseconds = moment().format('x')
+
+        return this.prettifyMilliseconds(currentTimeMilliseconds - processStartedMilliseconds)
       } else {
-        return 'In progress..'
+        return this.prettifyMilliseconds(process.duration)
       }
     },
-    copyToClipboard(correlationId) {
-      navigator.clipboard.writeText(correlationId)
-      this.showFlashMessage(false, 'ID copied!')
-    },
-    setColor(props) {
+    getStatusColor(props) {
       if (props.toLowerCase() === 'failed') {
         return 'error'
       }
@@ -158,6 +151,19 @@ export default {
         return 'success'
       }
       return 'info'
+    },
+
+    copyToClipboard(correlationId) {
+      navigator.clipboard.writeText(correlationId)
+      this.showFlashMessage(false, 'ID copied!')
+    },
+
+    isInProgress(value) {
+      return value.toLowerCase() === 'in progress'
+    },
+
+    prettifyMilliseconds(milliseconds) {
+      return this.prettyMs(milliseconds, { keepDecimalsOnWholeSeconds: true })
     },
   },
   filters: {
