@@ -27,11 +27,9 @@
           {{ items.item.nodesProcessed + '/' + items.item.nodesTotal }}
         </td>
         <td v-if="isVisible('status')" class="font-weight-bold">
-          <div class="d-flex align-center justify-center">
-            <span :class="`text-uppercase ${getStatusColor(items.item.status)}--text`">
-              {{ items.item.status }}
-            </span>
-          </div>
+          <span :class="`text-uppercase ${getStatusColor(items.item.status)}--text`">
+            {{ items.item.status }}
+          </span>
         </td>
       </template>
     </data-grid>
