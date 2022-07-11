@@ -1,6 +1,7 @@
 package rabbit
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"github.com/hanaboso/pipes/counter/pkg/config"
@@ -96,21 +97,25 @@ func (c *Consumer) stop() {
 
 func (c Consumer) parseMessage(msg amqp.Delivery) *model.ParsedMessage {
 	var message model.ProcessMessage
-	if err := json.Unmarshal(msg.Body, &message); err != nil {
+
+	// Cannot use regular decoder due to process-started timestamp -> it converts int64 to float64
+	d := json.NewDecoder(bytes.NewBuffer(msg.Body))
+	d.UseNumber()
+	if err := d.Decode(&message); err != nil {
 		config.Log.Error(err)
 		return nil
 	}
 
-	message.Tag = msg.DeliveryTag
 	var body model.ProcessBody
 	if err := json.Unmarshal([]byte(message.Body), &body); err != nil {
 		config.Log.Error(err)
 		return nil
 	}
+	message.ProcessBody = body
 
 	return &model.ParsedMessage{
-		Headers:     message.Headers,
-		Tag:         msg.DeliveryTag,
-		ProcessBody: body,
+		Headers:        msg.Headers,
+		Tag:            msg.DeliveryTag,
+		ProcessMessage: message,
 	}
 }

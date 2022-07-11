@@ -92,7 +92,7 @@ func (c *MultiCounter) processMessage(message *model.ParsedMessage) {
 	)
 
 	c.finishes = append(c.finishes, message.FinishProcessQuery())
-	if !message.ProcessBody.Success {
+	if !message.ProcessMessage.ProcessBody.Success {
 		c.errors = append(c.errors, message.ErrorDoc())
 	}
 }

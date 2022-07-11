@@ -9,10 +9,16 @@ import (
 	"time"
 )
 
+type ParsedMessage struct {
+	Headers        map[string]interface{} // RabbitMq headers -> contains only published timestamp
+	ProcessMessage ProcessMessage         // Counter message body containing body&headers
+	Tag            uint64
+}
+
 type ProcessMessage struct {
-	Headers map[string]interface{} `json:"headers"`
-	Body    string                 `json:"body"` // ProcessBody
-	Tag     uint64                 `json:"-"`
+	Headers     map[string]interface{} `json:"headers"` // Message headers required for counter message
+	Body        string                 `json:"body"`    // encoded ProcessBody
+	ProcessBody ProcessBody            `json:"-"`
 }
 
 type ProcessBody struct {
@@ -22,13 +28,7 @@ type ProcessBody struct {
 	Headers   map[string]interface{} `json:"headers"` // Message resulting in error in success=false case
 }
 
-type ParsedMessage struct {
-	Headers     map[string]interface{}
-	ProcessBody ProcessBody
-	Tag         uint64
-}
-
-func (pm ParsedMessage) GetHeader(header enum.HeaderType) (string, error) {
+func (pm ParsedMessage) getHeader(header enum.HeaderType) (string, error) {
 	value, ok := pm.Headers[string(header)]
 	if !ok {
 		return "", fmt.Errorf("requested header [%s] does not exist", header)
@@ -37,7 +37,16 @@ func (pm ParsedMessage) GetHeader(header enum.HeaderType) (string, error) {
 	return fmt.Sprint(value), nil
 }
 
-func (pm ParsedMessage) GetHeaderOrDefault(header enum.HeaderType, defaultValue string) string {
+func (pm ProcessMessage) GetHeader(header enum.HeaderType) (string, error) {
+	value, ok := pm.Headers[string(header)]
+	if !ok {
+		return "", fmt.Errorf("requested header [%s] does not exist", header)
+	}
+
+	return fmt.Sprint(value), nil
+}
+
+func (pm ProcessMessage) GetHeaderOrDefault(header enum.HeaderType, defaultValue string) string {
 	value, err := pm.GetHeader(header)
 	if err != nil {
 		return defaultValue
@@ -46,8 +55,8 @@ func (pm ParsedMessage) GetHeaderOrDefault(header enum.HeaderType, defaultValue 
 	return value
 }
 
-func (pm ParsedMessage) GetTimeHeaderOrDefault(header enum.HeaderType) time.Time {
-	value, err := pm.GetHeader(header)
+func (pm ParsedMessage) GetPublishedTimestamp() time.Time {
+	value, err := pm.getHeader(enum.Header_PublishedTimestamp)
 	if err != nil {
 		return time.Now()
 	}
@@ -60,18 +69,32 @@ func (pm ParsedMessage) GetTimeHeaderOrDefault(header enum.HeaderType) time.Time
 	return time.Unix(0, val*1_000_000)
 }
 
+func (pm ProcessMessage) GetTimeHeaderOrDefault(header enum.HeaderType) time.Time {
+	value, err := pm.GetHeader(header)
+	if err != nil {
+		return time.Now()
+	}
+
+	val, err := strconv.ParseUint(value, 10, 64)
+	if err != nil {
+		return time.Now()
+	}
+
+	return time.Unix(0, int64(val*1_000_000))
+}
+
 func (pm ParsedMessage) ProcessInitQuery() mongo.WriteModel {
 	doc := mongo.NewUpdateOneModel()
 	doc.Filter = bson.M{
-		"_id": pm.GetHeaderOrDefault(enum.Header_CorrelationId, ""),
+		"_id": pm.ProcessMessage.GetHeaderOrDefault(enum.Header_CorrelationId, ""),
 	}
 	doc.Update = bson.M{
 		"$setOnInsert": bson.M{
 			"ok":         0,
 			"nok":        0,
 			"total":      1,
-			"created":    pm.GetTimeHeaderOrDefault(enum.Header_ProcessStarted),
-			"topologyId": pm.GetHeaderOrDefault(enum.Header_TopologyId, ""),
+			"created":    pm.ProcessMessage.GetTimeHeaderOrDefault(enum.Header_ProcessStarted),
+			"topologyId": pm.ProcessMessage.GetHeaderOrDefault(enum.Header_TopologyId, ""),
 			"finished":   nil,
 		},
 	}
@@ -84,13 +107,13 @@ func (pm ParsedMessage) ProcessInitQuery() mongo.WriteModel {
 func (pm ParsedMessage) ProcessQuery() mongo.WriteModel {
 	doc := mongo.NewUpdateOneModel()
 	doc.Filter = bson.M{
-		"_id": pm.GetHeaderOrDefault(enum.Header_CorrelationId, ""),
+		"_id": pm.ProcessMessage.GetHeaderOrDefault(enum.Header_CorrelationId, ""),
 	}
 	doc.Update = bson.M{
 		"$inc": bson.M{
-			"ok":    pm.ProcessBody.successes(),
-			"nok":   pm.ProcessBody.fails(),
-			"total": pm.ProcessBody.Following,
+			"ok":    pm.ProcessMessage.ProcessBody.successes(),
+			"nok":   pm.ProcessMessage.ProcessBody.fails(),
+			"total": pm.ProcessMessage.ProcessBody.Following,
 		},
 	}
 
@@ -98,22 +121,22 @@ func (pm ParsedMessage) ProcessQuery() mongo.WriteModel {
 }
 
 func (pm ParsedMessage) SubProcessInitQuery() mongo.WriteModel {
-	corrId := pm.GetHeaderOrDefault(enum.Header_CorrelationId, "")
+	corrId := pm.ProcessMessage.GetHeaderOrDefault(enum.Header_CorrelationId, "")
 
 	doc := mongo.NewUpdateOneModel()
 	doc.Filter = bson.M{
-		"_id": pm.GetHeaderOrDefault(enum.Header_ProcessId, ""),
+		"_id": pm.ProcessMessage.GetHeaderOrDefault(enum.Header_ProcessId, ""),
 	}
 	doc.Update = bson.M{
 		"$setOnInsert": bson.M{
 			"ok":            0,
 			"nok":           0,
 			"total":         1,
-			"created":       pm.GetTimeHeaderOrDefault(enum.Header_PublishedTimestamp),
-			"topologyId":    pm.GetHeaderOrDefault(enum.Header_TopologyId, ""),
+			"created":       pm.GetPublishedTimestamp(),
+			"topologyId":    pm.ProcessMessage.GetHeaderOrDefault(enum.Header_TopologyId, ""),
 			"finished":      nil,
 			"correlationId": corrId,
-			"parentId":      pm.GetHeaderOrDefault(enum.Header_ParentProcessId, corrId),
+			"parentId":      pm.ProcessMessage.GetHeaderOrDefault(enum.Header_ParentProcessId, corrId),
 		},
 	}
 	t := true
@@ -125,13 +148,13 @@ func (pm ParsedMessage) SubProcessInitQuery() mongo.WriteModel {
 func (pm ParsedMessage) SubProcessQuery() mongo.WriteModel {
 	doc := mongo.NewUpdateOneModel()
 	doc.Filter = bson.M{
-		"_id": pm.GetHeaderOrDefault(enum.Header_ProcessId, ""),
+		"_id": pm.ProcessMessage.GetHeaderOrDefault(enum.Header_ProcessId, ""),
 	}
 	doc.Update = bson.M{
 		"$inc": bson.M{
-			"ok":    pm.ProcessBody.successes(),
-			"nok":   pm.ProcessBody.fails(),
-			"total": pm.ProcessBody.Following,
+			"ok":    pm.ProcessMessage.ProcessBody.successes(),
+			"nok":   pm.ProcessMessage.ProcessBody.fails(),
+			"total": pm.ProcessMessage.ProcessBody.Following,
 		},
 	}
 
@@ -141,7 +164,7 @@ func (pm ParsedMessage) SubProcessQuery() mongo.WriteModel {
 func (pm ParsedMessage) FinishProcessQuery() mongo.WriteModel {
 	doc := mongo.NewUpdateOneModel()
 	doc.Filter = bson.M{
-		"_id":      pm.GetHeaderOrDefault(enum.Header_CorrelationId, ""),
+		"_id":      pm.ProcessMessage.GetHeaderOrDefault(enum.Header_CorrelationId, ""),
 		"finished": nil,
 	}
 	doc.Update = bson.A{
@@ -157,7 +180,7 @@ func (pm ParsedMessage) FinishProcessQuery() mongo.WriteModel {
 								"$total",
 							},
 						},
-						pm.GetTimeHeaderOrDefault(enum.Header_PublishedTimestamp),
+						pm.GetPublishedTimestamp(),
 						nil,
 					},
 				},
@@ -172,7 +195,7 @@ func (pm ParsedMessage) FinishProcessQuery() mongo.WriteModel {
 func (pm ParsedMessage) FinishSubProcessQuery() mongo.WriteModel {
 	doc := mongo.NewUpdateOneModel()
 	doc.Filter = bson.M{
-		"_id":      pm.GetHeaderOrDefault(enum.Header_ProcessId, ""),
+		"_id":      pm.ProcessMessage.GetHeaderOrDefault(enum.Header_ProcessId, ""),
 		"finished": nil,
 	}
 	doc.Update = bson.A{
@@ -188,7 +211,7 @@ func (pm ParsedMessage) FinishSubProcessQuery() mongo.WriteModel {
 								"$total",
 							},
 						},
-						pm.GetTimeHeaderOrDefault(enum.Header_PublishedTimestamp),
+						pm.GetPublishedTimestamp(),
 						nil,
 					},
 				},
@@ -201,10 +224,10 @@ func (pm ParsedMessage) FinishSubProcessQuery() mongo.WriteModel {
 
 func (pm ParsedMessage) ErrorDoc() bson.M {
 	return bson.M{
-		"correlationId": pm.GetHeaderOrDefault(enum.Header_CorrelationId, ""),
-		"processId":     pm.GetHeaderOrDefault(enum.Header_ProcessId, ""),
-		"body":          pm.ProcessBody.Body,
-		"headers":       pm.ProcessBody.Headers,
+		"correlationId": pm.ProcessMessage.GetHeaderOrDefault(enum.Header_CorrelationId, ""),
+		"processId":     pm.ProcessMessage.GetHeaderOrDefault(enum.Header_ProcessId, ""),
+		"body":          pm.ProcessMessage.ProcessBody.Body,
+		"headers":       pm.ProcessMessage.ProcessBody.Headers,
 		"created":       time.Now(),
 	}
 }
