@@ -13,6 +13,7 @@ type ParsedMessage struct {
 	Headers        map[string]interface{} // RabbitMq headers -> contains only published timestamp
 	ProcessMessage ProcessMessage         // Counter message body containing body&headers
 	Tag            uint64
+	Ok             bool
 }
 
 type ProcessMessage struct {

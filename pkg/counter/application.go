@@ -64,8 +64,10 @@ func (c *MultiCounter) Start(ctx context.Context) {
 		case msg, ok := <-msgs:
 			if ok {
 				c.lastTag = msg.Tag
-				c.wg.Add(1)
-				c.processMessage(msg) // Just DO NOT make it as a new goroutine! Would create data race.
+				if msg.Ok {
+					c.wg.Add(1)
+					c.processMessage(msg) // Just DO NOT make it as a new goroutine! Would create data race.
+				}
 			} else {
 				c.commit()
 				return

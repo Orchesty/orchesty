@@ -103,13 +103,19 @@ func (c Consumer) parseMessage(msg amqp.Delivery) *model.ParsedMessage {
 	d.UseNumber()
 	if err := d.Decode(&message); err != nil {
 		config.Log.Error(err)
-		return nil
+		return &model.ParsedMessage{
+			Tag: msg.DeliveryTag, // Ensure that even failed messages are acked
+			Ok:  false,
+		}
 	}
 
 	var body model.ProcessBody
 	if err := json.Unmarshal([]byte(message.Body), &body); err != nil {
 		config.Log.Error(err)
-		return nil
+		return &model.ParsedMessage{
+			Tag: msg.DeliveryTag, // Ensure that even failed messages are acked
+			Ok:  false,
+		}
 	}
 	message.ProcessBody = body
 
@@ -117,5 +123,6 @@ func (c Consumer) parseMessage(msg amqp.Delivery) *model.ParsedMessage {
 		Headers:        msg.Headers,
 		Tag:            msg.DeliveryTag,
 		ProcessMessage: message,
+		Ok:             true,
 	}
 }
