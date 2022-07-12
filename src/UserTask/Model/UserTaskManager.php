@@ -15,7 +15,6 @@ use Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository;
 use Hanaboso\PipesPhpSdk\Database\Repository\TopologyRepository;
 use Hanaboso\Utils\Date\DateTimeUtils;
 use Hanaboso\Utils\String\Json;
-use Hanaboso\Utils\System\PipesHeaders;
 use RabbitMqBundle\Publisher\Publisher;
 
 /**
@@ -204,7 +203,7 @@ final class UserTaskManager
                 ],
             ),
             [
-                'published-timestamp' => DateTimeUtils::getUtcDateTime()->getTimestamp() * 1_000
+                'published-timestamp' => DateTimeUtils::getUtcDateTime()->getTimestamp() * 1_000,
             ],
         );
     }
