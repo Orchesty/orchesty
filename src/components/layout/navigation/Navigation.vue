@@ -11,6 +11,11 @@
         <topology-add-handler ref="topologyAddHandler" />
       </v-list-item>
 
+      <v-list-item active-class="navigation-item-active" @click="toggleSidebar">
+        <v-list-item-content>
+          <app-icon> account_tree </app-icon>
+        </v-list-item-content>
+      </v-list-item>
       <template v-for="(item, index) in navigationItems">
         <navigation-item
           :key="item.tooltip"
@@ -33,10 +38,12 @@ import { AUTH } from '@/store/modules/auth/types'
 import TopologyAddHandler from '@/components/app/topology/menu/TopologyAddHandler'
 import NavigationItem from '@/components/layout/navigation/NavigationItem'
 import { EVENTS, events } from '@/services/utils/events'
+import AppIcon from '@/components/commons/icon/AppIcon'
 
 export default {
   name: 'Navigation',
   components: {
+    AppIcon,
     NavigationItem,
     TopologyAddHandler,
   },
@@ -45,12 +52,6 @@ export default {
       ACL: ACL,
       ROUTES: ROUTES,
       navigationItems: [
-        {
-          to: ROUTES.DASHBOARD,
-          icon: 'account_tree',
-          tooltip: this.$t('navigation.topologies'),
-          onClick: this.toggleSidebar,
-        },
         { to: ROUTES.NOTIFICATION, icon: 'notifications', tooltip: this.$t('navigation.notifications') },
         { to: ROUTES.SCHEDULED_TASK, icon: 'mdi-clock', tooltip: this.$t('navigation.scheduledTask') },
         { to: ROUTES.APP_STORE.DEFAULT, icon: 'apps', tooltip: this.$t('navigation.appStore') },
