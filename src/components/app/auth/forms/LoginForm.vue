@@ -21,6 +21,8 @@
             prepend-icon="mdi-account-circle"
             :label="$t('auth.inputs.email.label')"
             type="text"
+            placeholder=" "
+            persistent-placeholder
             :name="fields.email.id"
             :error-messages="errors"
           />
@@ -34,6 +36,8 @@
           <app-input
             v-model="form.password"
             dense
+            placeholder=" "
+            persistent-placeholder
             prepend-icon="key"
             :label="$t('auth.inputs.password.label')"
             input-type="password"
