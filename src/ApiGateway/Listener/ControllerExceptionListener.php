@@ -94,7 +94,7 @@ final class ControllerExceptionListener implements EventSubscriberInterface, Log
 
         $response = $this->getResponseByError($e);
 
-        $response->headers->add(PipesHeaders::clear($event->getRequest()->headers->all()));
+        $response->headers->add($event->getRequest()->headers->all());
 
         if (in_array($e::class, [ConnectorException::class], TRUE)) {
             /** @var ConnectorException $exception */
@@ -102,11 +102,11 @@ final class ControllerExceptionListener implements EventSubscriberInterface, Log
             $dto       = $exception->getProcessDto();
 
             if ($dto) {
-                $response->headers->add(PipesHeaders::clear($dto->getHeaders()));
+                $response->headers->add($dto->getHeaders());
             }
         }
 
-        $response->headers->set(PipesHeaders::createKey(PipesHeaders::RESULT_CODE), '1006');
+        $response->headers->set(PipesHeaders::RESULT_CODE, '1006');
 
         $event->setResponse($response);
         $event->allowCustomResponseCode();

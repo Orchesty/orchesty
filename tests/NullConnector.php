@@ -13,12 +13,14 @@ use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
 final class NullConnector extends ConnectorAbstract
 {
 
+    public const NAME = 'null';
+
     /**
      * @return string
      */
-    public function getId(): string
+    public function getName(): string
     {
-        return 'null';
+        return self::NAME;
     }
 
     /**

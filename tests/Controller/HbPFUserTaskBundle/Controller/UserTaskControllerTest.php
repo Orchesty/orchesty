@@ -277,7 +277,7 @@ final class UserTaskControllerTest extends ControllerTestCaseAbstract
             static function (string $body) use ($state): void {
                 $parsed = Json::decode($body);
                 self::assertEquals('body', $parsed['body']);
-                self::assertArrayHasKey(PipesHeaders::createKey('user-task-state'), $parsed['headers']);
+                self::assertArrayHasKey('user-task-state', $parsed['headers']);
                 self::assertEquals(PipesHeaders::get('user-task-state', $parsed['headers']), $state);
             },
         );

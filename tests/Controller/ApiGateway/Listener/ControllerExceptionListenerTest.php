@@ -67,12 +67,12 @@ final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
         $controller->onKernelException($eventMock);
         self::assertInstanceOf(Response::class, $eventMock->getResponse());
         self::assertArrayHasKey(
-            PipesHeaders::createKey(PipesHeaders::RESULT_CODE),
+            PipesHeaders::RESULT_CODE,
             $eventMock->getResponse()->headers->all(),
         );
         self::assertEquals(
             1_006,
-            $eventMock->getResponse()->headers->get(PipesHeaders::createKey(PipesHeaders::RESULT_CODE)),
+            $eventMock->getResponse()->headers->get(PipesHeaders::RESULT_CODE),
         );
     }
 
@@ -103,7 +103,7 @@ final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
         if ($response) {
             self::assertEquals(
                 1_006,
-                $response->headers->get(PipesHeaders::createKey(PipesHeaders::RESULT_CODE)),
+                $response->headers->get(PipesHeaders::RESULT_CODE),
             );
         }
     }
@@ -124,7 +124,7 @@ final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
         if ($response) {
             self::assertEquals(
                 1_006,
-                $response->headers->get(PipesHeaders::createKey(PipesHeaders::RESULT_CODE)),
+                $response->headers->get(PipesHeaders::RESULT_CODE),
             );
 
             self::assertEquals(401, $response->getStatusCode());
@@ -147,7 +147,7 @@ final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
         if ($response) {
             self::assertEquals(
                 1_006,
-                $response->headers->get(PipesHeaders::createKey(PipesHeaders::RESULT_CODE)),
+                $response->headers->get(PipesHeaders::RESULT_CODE),
             );
 
             self::assertEquals(400, $response->getStatusCode());
@@ -170,7 +170,7 @@ final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
         if ($response) {
             self::assertEquals(
                 1_006,
-                $response->headers->get(PipesHeaders::createKey(PipesHeaders::RESULT_CODE)),
+                $response->headers->get(PipesHeaders::RESULT_CODE),
             );
 
             self::assertEquals(500, $response->getStatusCode());
@@ -193,7 +193,7 @@ final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
         if ($response) {
             self::assertEquals(
                 1_006,
-                $response->headers->get(PipesHeaders::createKey(PipesHeaders::RESULT_CODE)),
+                $response->headers->get(PipesHeaders::RESULT_CODE),
             );
 
             self::assertEquals(500, $response->getStatusCode());
@@ -216,7 +216,7 @@ final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
         if ($response) {
             self::assertEquals(
                 1_006,
-                $response->headers->get(PipesHeaders::createKey(PipesHeaders::RESULT_CODE)),
+                $response->headers->get(PipesHeaders::RESULT_CODE),
             );
 
             self::assertEquals(500, $response->getStatusCode());

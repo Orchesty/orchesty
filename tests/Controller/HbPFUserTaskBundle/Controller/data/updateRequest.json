@@ -6,7 +6,7 @@
     "body": {
         "body": "losos",
         "headers": {
-            "pf-los": "os"
+            "los": "os"
         }
     }
 }

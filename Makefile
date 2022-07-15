@@ -61,13 +61,13 @@ phpstan:
 	$(DE) ./vendor/bin/phpstan analyse -c tests/phpstan.neon -l 8 src tests
 
 phpunit:
-	$(DE) ./vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --colors tests/Unit
+	$(DE) ./vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --colors=always tests/Unit
 
 phpintegration: database-create
-	$(DE) ./vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --colors tests/Integration
+	$(DE) ./vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --colors=always tests/Integration
 
 phpcontroller:
-	$(DE) ./vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --colors tests/Controller
+	$(DE) ./vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --colors=always tests/Controller
 
 phpcoverage:
 	$(DE) ./vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --coverage-html var/coverage --whitelist src tests
@@ -79,7 +79,7 @@ phpmanual-up:
 	cd tests/Manual; $(MAKE) docker-up-force;
 
 phpmanual-tests:
-	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --colors tests/Manual/
+	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --colors=always tests/Manual/
 
 phpmanual-down:
 	cd tests/Manual; $(MAKE) docker-down-clean;
