@@ -7,8 +7,7 @@
         "orchesty/php-sdk": "^2.0"
     },
     "require-dev": {
-        "hanaboso/php-check-utils": "^1.4",
-        "psr/log": "^2"
+        "hanaboso/php-check-utils": "^1.4"
     },
     "replace": {
         "ralouphie/getallheaders": "*",
