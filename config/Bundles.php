@@ -22,6 +22,7 @@ use RabbitMqBundle\RabbitMqBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\MonologBundle\MonologBundle;
 use Symfony\Bundle\SecurityBundle\SecurityBundle;
+use Hanaboso\PipesFramework\HbPFUsageStatsBundle\HbPFUsageStatsBundle;
 
 return [
     DoctrineMongoDBBundle::class => ['all' => TRUE],
@@ -29,21 +30,22 @@ return [
     MonologBundle::class         => ['all' => TRUE],
     SecurityBundle::class        => ['all' => TRUE],
 
-    HbPFCommonsBundle::class         => ['all' => TRUE],
-    HbPFAclBundle::class             => ['all' => TRUE],
-    HbPFApiGatewayBundle::class      => ['all' => TRUE],
-    HbPFApplicationBundle::class     => ['all' => TRUE],
-    HbPFAppStoreBundle::class        => ['all' => TRUE],
-    HbPFConfiguratorBundle::class    => ['all' => TRUE],
-    HbPFConnectorBundle::class       => ['all' => TRUE],
-    HbPFCustomNodeBundle::class      => ['all' => TRUE],
-    HbPFTableParserBundle::class     => ['all' => TRUE],
-    HbPFUserBundle::class            => ['all' => TRUE],
-    HbPFMetricsBundle::class         => ['all' => TRUE],
-    HbPFNotificationBundle::class    => ['all' => TRUE],
-    HbPFLogsBundle::class            => ['all' => TRUE],
-    EmailServiceBundle::class        => ['all' => TRUE],
-    RabbitMqBundle::class            => ['all' => TRUE],
+    HbPFCommonsBundle::class      => ['all' => TRUE],
+    HbPFAclBundle::class          => ['all' => TRUE],
+    HbPFApiGatewayBundle::class   => ['all' => TRUE],
+    HbPFApplicationBundle::class  => ['all' => TRUE],
+    HbPFAppStoreBundle::class     => ['all' => TRUE],
+    HbPFUsageStatsBundle::class   => ['all' => TRUE],
+    HbPFConfiguratorBundle::class => ['all' => TRUE],
+    HbPFConnectorBundle::class    => ['all' => TRUE],
+    HbPFCustomNodeBundle::class   => ['all' => TRUE],
+    HbPFTableParserBundle::class  => ['all' => TRUE],
+    HbPFUserBundle::class         => ['all' => TRUE],
+    HbPFMetricsBundle::class      => ['all' => TRUE],
+    HbPFNotificationBundle::class => ['all' => TRUE],
+    HbPFLogsBundle::class         => ['all' => TRUE],
+    EmailServiceBundle::class     => ['all' => TRUE],
+    RabbitMqBundle::class         => ['all' => TRUE],
     RestBundle::class                => ['all' => TRUE],
     HbPFUsersBundle::class           => ['all' => TRUE],
     HbPFUserTaskBundle::class        => ['all' => TRUE],

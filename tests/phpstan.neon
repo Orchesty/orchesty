@@ -60,3 +60,4 @@ parameters:
 			- Hanaboso\PipesFramework\UserTask\Document\UserTask
 			- Hanaboso\PipesFramework\UserTask\Document\UserTaskMessage
 			- Hanaboso\PipesFramework\User\Document\UserSettings
+			- Hanaboso\PipesFramework\UsageStats\Document\UsageStatsEvent

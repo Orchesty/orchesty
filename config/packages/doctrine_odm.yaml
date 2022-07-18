@@ -58,6 +58,11 @@ doctrine_mongodb:
                     is_bundle: false
                     dir: "%kernel.project_dir%/src/Logs/Document"
                     prefix: Hanaboso\PipesFramework\Logs\Document
+                UsageStatsDocument:
+                    type: annotation
+                    is_bundle: false
+                    dir: "%kernel.project_dir%/src/UsageStats/Document"
+                    prefix: Hanaboso\PipesFramework\UsageStats\Document
                 ConfiguratorDocument:
                     type: annotation
                     is_bundle: false

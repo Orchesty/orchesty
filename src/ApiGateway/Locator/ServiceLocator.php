@@ -11,11 +11,14 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Configurator\Document\Sdk;
 use Hanaboso\PipesFramework\Configurator\Enum\NodeImplementationEnum;
 use Hanaboso\PipesFramework\Configurator\Repository\SdkRepository;
+use Hanaboso\PipesFramework\UsageStats\Enum\EventTypeEnum;
+use Hanaboso\PipesFramework\UsageStats\Event\BillingEvent;
 use Hanaboso\Utils\String\Json;
 use LogicException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Throwable;
 
@@ -42,14 +45,16 @@ final class ServiceLocator implements LoggerAwareInterface
     /**
      * ServiceLocator constructor.
      *
-     * @param DocumentManager   $dm
-     * @param CurlManager       $curlManager
-     * @param RedirectInterface $redirect
+     * @param DocumentManager          $dm
+     * @param CurlManager              $curlManager
+     * @param RedirectInterface        $redirect
+     * @param EventDispatcherInterface $eventDispatcher
      */
     public function __construct(
         DocumentManager $dm,
         private CurlManager $curlManager,
         private RedirectInterface $redirect,
+        private EventDispatcherInterface $eventDispatcher,
     )
     {
         $this->sdkRepository = $dm->getRepository(Sdk::class);
@@ -146,7 +151,24 @@ final class ServiceLocator implements LoggerAwareInterface
      */
     public function installApp(string $key, string $user): array
     {
-        return $this->doRequest(sprintf('applications/%s/users/%s/install', $key, $user), CurlManager::METHOD_POST);
+        try {
+            $resp = $this->doRequest(
+                sprintf('applications/%s/users/%s/install', $key, $user),
+                CurlManager::METHOD_POST,
+                [],
+                FALSE,
+                [],
+                TRUE,
+            );
+            $this->dispatchBillingEvent(
+                EventTypeEnum::INSTALL,
+                ['aid' => $key, 'euid' => $user],
+            );
+
+            return $resp;
+        } catch (Throwable) {
+            return [];
+        }
     }
 
     /**
@@ -157,7 +179,24 @@ final class ServiceLocator implements LoggerAwareInterface
      */
     public function uninstallApp(string $key, string $user): array
     {
-        return $this->doRequest(sprintf('applications/%s/users/%s/uninstall', $key, $user), CurlManager::METHOD_DELETE);
+        try {
+            $resp = $this->doRequest(
+                sprintf('applications/%s/users/%s/uninstall', $key, $user),
+                CurlManager::METHOD_DELETE,
+                [],
+                FALSE,
+                [],
+                TRUE,
+            );
+            $this->dispatchBillingEvent(
+                EventTypeEnum::UNINSTALL,
+                ['aid' => $key, 'euid' => $user],
+            );
+
+            return $resp;
+        } catch (Throwable) {
+            return [];
+        }
     }
 
     /**
@@ -383,7 +422,7 @@ final class ServiceLocator implements LoggerAwareInterface
             } catch (Throwable $t) {
                 $this->logger->error($t->getMessage(), ['Exception' => $t, 'Sdk' => $sdk]);
 
-                if($allowThrowException){
+                if ($allowThrowException) {
                     throw $t;
                 }
             }
@@ -425,6 +464,18 @@ final class ServiceLocator implements LoggerAwareInterface
         }
 
         return $s;
+    }
+
+    /**
+     * @param string  $type
+     * @param mixed[] $data
+     *
+     * @return void
+     */
+    private function dispatchBillingEvent(string $type, array $data): void
+    {
+        $billingEvent = new BillingEvent($type, $data);
+        $this->eventDispatcher->dispatch($billingEvent, BillingEvent::NAME);
     }
 
 }
