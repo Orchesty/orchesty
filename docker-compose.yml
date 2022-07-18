@@ -6,9 +6,9 @@ services:
     image: hanabosocom/go-base:1.18
     working_dir: /limiter
     environment:
-      - MONGO_HOST=mongodb
       - RABBITMQ_HOST=rabbitmq
       - UDP_LOGGER_URL=logstash:5120
+      - MONGO_DSN=${MONGO_DSN}
     volumes:
       - ./:/limiter
     command: bash -c 'sleep infinity'

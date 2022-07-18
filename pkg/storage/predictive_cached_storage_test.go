@@ -1,13 +1,13 @@
 package storage
 
 import (
-	"gopkg.in/mgo.v2"
-
+	"encoding/json"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"limiter/pkg/logger"
 
 	"github.com/streadway/amqp"
 	"github.com/stretchr/testify/assert"
-	"gopkg.in/mgo.v2/bson"
 
 	"testing"
 	"time"
@@ -33,7 +33,7 @@ func (mm *mongoMock) Exists(key string) (bool, error) {
 func (mm *mongoMock) Save(m *Message) (string, error) {
 	return m.LimitKey, nil
 }
-func (mm *mongoMock) Remove(key string, id bson.ObjectId) (bool, error) {
+func (mm *mongoMock) Remove(key string, id primitive.ObjectID) (bool, error) {
 	return true, nil
 }
 
@@ -62,7 +62,7 @@ func (mm *mongoMock) GetDistinctGroupFirstItems() (map[string]*Message, error) {
 	return make(map[string]*Message, 0), nil
 }
 
-func (mm *mongoMock) CreateIndex(index mgo.Index) error {
+func (mm *mongoMock) CreateIndex(index mongo.IndexModel) error {
 	return nil
 }
 
@@ -71,13 +71,18 @@ func (mm *mongoMock) CreateIndex(index mgo.Index) error {
 func TestPredictiveCachedStorage_MongoEmptyDb(t *testing.T) {
 	s := NewPredictiveCachedStorage(&mongoMock{}, time.Hour*time.Duration(24), logger.GetNullLogger())
 
-	msg, _ := NewMessage(&amqp.Delivery{Headers: amqp.Table{
-		LimitKeyHeader:         "not-in-db",
-		LimitTimeHeader:        "1",
-		LimitValueHeader:       "2",
-		ReturnExchangeHeader:   "exchange",
-		ReturnRoutingKeyHeader: "routing-key",
-	}})
+	jsonData, _ := json.Marshal(map[string]interface{}{
+		"body": "Some content",
+		"headers": map[string]string{
+			LimitKeyHeader:         "not-in-db",
+			LimitTimeHeader:        "1",
+			LimitValueHeader:       "2",
+			ReturnExchangeHeader:   "exchange",
+			ReturnRoutingKeyHeader: "routing-key",
+		},
+	})
+
+	msg, _ := NewMessage(&amqp.Delivery{Body: jsonData})
 
 	assert.False(t, s.hasCachedItem("not-in-db"))
 
@@ -95,9 +100,9 @@ func TestPredictiveCachedStorage_MongoEmptyDb(t *testing.T) {
 
 	assert.True(t, s.hasCachedItem("not-in-db"))
 
-	s.Remove("not-in-db", bson.NewObjectId())
-	s.Remove("not-in-db", bson.NewObjectId())
-	s.Remove("not-in-db", bson.NewObjectId())
+	s.Remove("not-in-db", primitive.NewObjectID())
+	s.Remove("not-in-db", primitive.NewObjectID())
+	s.Remove("not-in-db", primitive.NewObjectID())
 
 	assert.True(t, s.hasCachedItem("not-in-db"))
 
@@ -133,8 +138,8 @@ func TestPredictiveCachedStorage_MongoNonEmptyDb(t *testing.T) {
 	assert.True(t, s.hasCachedItem("already-in-db"))
 
 	// remove does not impact the cache
-	s.Remove("already-in-db", bson.NewObjectId())
-	s.Remove("already-in-db", bson.NewObjectId())
+	s.Remove("already-in-db", primitive.NewObjectID())
+	s.Remove("already-in-db", primitive.NewObjectID())
 
 	assert.True(t, s.hasCachedItem("already-in-db"))
 

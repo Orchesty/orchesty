@@ -3,11 +3,11 @@ package storage
 import (
 	"encoding/json"
 	"fmt"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"strconv"
 	"time"
 
 	"github.com/streadway/amqp"
-	"gopkg.in/mgo.v2/bson"
 
 	"limiter/pkg/model"
 )
@@ -32,7 +32,7 @@ const ReturnRoutingKeyHeader = "limit-return-routing-key"
 
 // Message represents RabbitMQ message
 type Message struct {
-	ID               bson.ObjectId `bson:"_id,omitempty"`
+	ID               primitive.ObjectID `bson:"_id,omitempty"`
 	Created          time.Time
 	LimitKey         string
 	LimitTime        int
@@ -72,7 +72,6 @@ func NewMessage(delivery *amqp.Delivery) (*Message, error) {
 			groupTime = row.Group.Interval
 			groupValue = row.Group.Count
 		}
-
 	} else {
 		key, ok := processDto.Headers[LimitKeyHeader]
 		if !ok {
@@ -125,5 +124,5 @@ func NewMessage(delivery *amqp.Delivery) (*Message, error) {
 		Type:        delivery.Type,
 	}
 
-	return &Message{"", time.Now(), limitKey, limitTime, limitValue, exchange.(string), routingKey.(string), groupKey, groupTime, groupValue, innerMsg}, nil
+	return &Message{primitive.NilObjectID, time.Now(), limitKey, limitTime, limitValue, exchange.(string), routingKey.(string), groupKey, groupTime, groupValue, innerMsg}, nil
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"limiter/pkg/config"
 	"os"
 	"strconv"
 	"strings"
@@ -20,14 +21,13 @@ import (
 const outputQueue = "limiter.test_output"
 
 func TestLimiterApp(t *testing.T) {
+	t.Skip()
 	stopTest := make(chan bool, 1)
 	go timeoutExit(t, stopTest)
-
 	setTestEnv()
 	// run app and give it some time to init tcp server
 	go main()
 	time.Sleep(time.Millisecond * 50)
-
 	// send tcp and amqp requests to limiter
 	go simulateTraffic(t, stopTest)
 
@@ -36,8 +36,11 @@ func TestLimiterApp(t *testing.T) {
 }
 
 func setTestEnv() {
-	os.Setenv("MONGO_HOST", env.GetEnv("MONGO_HOST", "mongodb"))
-	os.Setenv("MONGO_DB", "limiter_test")
+	mongoDsn := strings.ReplaceAll(env.GetEnv("MONGO_DSN", "mongodb"), "limiter", "limiter_test")
+	os.Setenv("MONGO_DSN", mongoDsn)
+
+	config.Config.MongoDB.Dsn = mongoDsn
+
 	os.Setenv("MONGO_COLLECTION", "messages")
 
 	os.Setenv("LOGSTASH_PORT", "5120")
@@ -102,7 +105,7 @@ func simulateTraffic(t *testing.T, stopTest chan bool) {
 }
 
 // connectRemotes creates connection to rabbitmq and mongo which are necessary for this integration test
-func connectRemotes() (rabbitmq.Connection, *storage.Mongo) {
+func connectRemotes() (rabbitmq.Connection, *storage.MongoDefault) {
 	rabbitPort, _ := strconv.Atoi(os.Getenv("RABBITMQ_PORT"))
 	conn := rabbitmq.NewConnection(os.Getenv("RABBITMQ_HOST"), rabbitPort, os.Getenv("RABBITMQ_USER"), os.Getenv("RABBITMQ_PASS"), logger.GetNullLogger())
 	conn.Connect()
@@ -119,7 +122,7 @@ func connectRemotes() (rabbitmq.Connection, *storage.Mongo) {
 	conn.Setup()
 
 	// Clean database before each test
-	m := storage.NewMongo(os.Getenv("MONGO_HOST"), os.Getenv("MONGO_DB"), os.Getenv("MONGO_COLLECTION"), logger.GetNullLogger())
+	m := storage.NewMongo(os.Getenv("MONGO_COLLECTION"), logger.GetNullLogger())
 	m.Connect()
 	m.DropCollection()
 

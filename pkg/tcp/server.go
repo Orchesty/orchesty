@@ -204,10 +204,8 @@ func (srv *Server) handleRequest(conn net.Conn) {
 	switch req.name {
 	case healthCheckRequest:
 		result = srv.handleHealthCheckRequest(req)
-		break
 	case limitCheckRequest:
 		result = srv.handleLimitCheckRequest(req)
-		break
 	}
 
 	response := strings.Join([]string{req.name, req.id, result}, ";")
@@ -219,7 +217,7 @@ func (srv *Server) handleRequest(conn net.Conn) {
 }
 
 // handleHealthCheckRequest just writes the given string to response which means that it is alive
-func (*Server) handleHealthCheckRequest(req request) string {
+func (*Server) handleHealthCheckRequest(_ request) string {
 	return healthCheckValidResponse
 }
 

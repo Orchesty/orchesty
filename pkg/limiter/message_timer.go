@@ -84,7 +84,7 @@ func (mt *messageTimer) addTicker(key string, duration int, count int, groupData
 			}
 
 			hasNext := mt.release(key, count)
-			if hasNext == false {
+			if !hasNext {
 				item.Ticker.Stop()
 				mt.customers.Delete(key)
 				mt.logger.Debug(fmt.Sprintf("Removed ticker for key '%s'", key), nil)

@@ -2,14 +2,13 @@ package main
 
 import (
 	"fmt"
+	"go.mongodb.org/mongo-driver/mongo"
 	"log"
 	"os"
 	"os/signal"
 	"strconv"
 	"syscall"
 	"time"
-
-	"gopkg.in/mgo.v2"
 
 	"limiter/pkg/env"
 	"limiter/pkg/limiter"
@@ -58,7 +57,7 @@ func main() {
 	gracefulShutdown(tcpServer, consumer, publisher, serverFault)
 }
 
-func createIndexes(store storage.Storage, indexes []mgo.Index) error {
+func createIndexes(store storage.Storage, indexes []mongo.IndexModel) error {
 	for _, index := range indexes {
 		if err := store.CreateIndex(index); err != nil {
 			return err
@@ -70,8 +69,6 @@ func createIndexes(store storage.Storage, indexes []mgo.Index) error {
 
 func prepareStorage() storage.Storage {
 	db := storage.NewMongo(
-		env.GetEnv("MONGO_HOST", "mongodb"),
-		env.GetEnv("MONGO_DB", "limiter"),
 		env.GetEnv("MONGO_COLLECTION", "messages"),
 		logger.GetLogger(),
 	)

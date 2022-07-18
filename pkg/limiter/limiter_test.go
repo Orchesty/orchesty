@@ -1,8 +1,8 @@
 package limiter
 
 import (
-	"gopkg.in/mgo.v2"
-
+	"encoding/json"
+	"go.mongodb.org/mongo-driver/mongo"
 	"limiter/pkg/logger"
 	"limiter/pkg/storage"
 
@@ -32,7 +32,7 @@ func (db *checkerSaverMock) Save(m *storage.Message) (string, error) {
 	return "msgKey", nil
 }
 
-func (db *checkerSaverMock) CreateIndex(index mgo.Index) error {
+func (db *checkerSaverMock) CreateIndex(index mongo.IndexModel) error {
 	return nil
 }
 
@@ -82,15 +82,19 @@ func TestLimiter_HandleAmqpMessage_BlacklistedKey(t *testing.T) {
 		logger: logger.GetNullLogger(),
 	}
 
-	msg := amqp.Delivery{
-		Body: []byte("test content"),
-		Headers: amqp.Table{
+	jsonData, _ := json.Marshal(map[string]interface{}{
+		"body": "test content",
+		"headers": map[string]interface{}{
 			storage.LimitKeyHeader:         "blacklisted",
 			storage.LimitTimeHeader:        "10",
 			storage.LimitValueHeader:       "10",
 			storage.ReturnExchangeHeader:   "limiter-exchange",
 			storage.ReturnRoutingKeyHeader: "limiter-rk",
 		},
+	})
+
+	msg := amqp.Delivery{
+		Body: jsonData,
 	}
 
 	err := l.handleAmqpMessage(msg)
@@ -107,15 +111,19 @@ func TestLimiter_HandleAmqpMessage_OK(t *testing.T) {
 		timerChan: timerChan,
 	}
 
-	msg := amqp.Delivery{
-		Body: []byte("test content"),
-		Headers: amqp.Table{
+	jsonData, _ := json.Marshal(map[string]interface{}{
+		"body": "test content",
+		"headers": map[string]interface{}{
 			storage.LimitKeyHeader:         "someKey",
 			storage.LimitTimeHeader:        "10",
 			storage.LimitValueHeader:       "10",
 			storage.ReturnExchangeHeader:   "limiter-exchange",
 			storage.ReturnRoutingKeyHeader: "limiter-rk",
 		},
+	})
+
+	msg := amqp.Delivery{
+		Body: jsonData,
 	}
 
 	err := l.handleAmqpMessage(msg)

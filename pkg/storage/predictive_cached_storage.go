@@ -2,11 +2,10 @@ package storage
 
 import (
 	"fmt"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"sync"
 	"time"
-
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
 
 	"limiter/pkg/logger"
 )
@@ -140,17 +139,17 @@ func (cm *PredictiveCachedStorage) Save(m *Message) (string, error) {
 }
 
 // CreateIndex - create mongo indexes
-func (cm *PredictiveCachedStorage) CreateIndex(index mgo.Index) error {
+func (cm *PredictiveCachedStorage) CreateIndex(index mongo.IndexModel) error {
 	return cm.db.CreateIndex(index)
 }
 
 // Remove tries to delete the concrete message from storage
-func (cm *PredictiveCachedStorage) Remove(key string, id bson.ObjectId) (bool, error) {
+func (cm *PredictiveCachedStorage) Remove(key string, id primitive.ObjectID) (bool, error) {
 	return cm.db.Remove(key, id)
 }
 
 // ClearCacheItem remove key from memory cache
-func (cm *PredictiveCachedStorage) ClearCacheItem(key string, val int) bool {
+func (cm *PredictiveCachedStorage) ClearCacheItem(key string, _ int) bool {
 	item, ok, _ := cm.newCache.get(key)
 	if !ok {
 		return false

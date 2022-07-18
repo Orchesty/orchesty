@@ -40,11 +40,9 @@ func (u *updSender) resolveHost() {
 }
 
 func (u *updSender) Send(data []byte) {
-
 	u.resolveHost()
 
 	go func() {
-
 		if u.addr == nil {
 			resErr := u.findHost()
 
@@ -72,7 +70,6 @@ func (u *updSender) Send(data []byte) {
 
 		return
 	}()
-
 }
 
 // NewUpdSender creates new logger sender that send everything over UDP

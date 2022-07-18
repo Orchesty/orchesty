@@ -54,7 +54,6 @@ func (c *connection) AddExchange(e Exchange) {
 }
 
 func (c *connection) Setup() {
-
 	if c.conn == nil {
 		c.logger.Error("Connection setup error: not connected.", nil)
 		c.Connect()
@@ -77,7 +76,6 @@ func (c *connection) Setup() {
 	// Bindings exchange to exchange
 	for _, e := range c.exchanges {
 		for _, b := range e.Bindings {
-
 			err := ch.ExchangeBind(e.Name, b.RoutingKey, b.Exchange, b.NoWait, b.Args)
 
 			if err != nil {
@@ -90,7 +88,6 @@ func (c *connection) Setup() {
 
 	// Declare queues
 	for _, q := range c.queues {
-
 		_, err := ch.QueueDeclare(q.Name, q.Durable, q.AutoDelete, q.Exclusive, q.NoWait, q.Args)
 
 		if err != nil {
@@ -100,7 +97,6 @@ func (c *connection) Setup() {
 		c.logger.Info(fmt.Sprintf("Rabbit MQ queue declare %s", q.Name), nil)
 
 		for _, b := range q.Bindings {
-
 			err := ch.QueueBind(q.Name, b.RoutingKey, b.Exchange, b.NoWait, b.Args)
 
 			if err != nil {
@@ -154,7 +150,6 @@ func (c *connection) Disconnect() {
 }
 
 func (c *connection) CreateChannel() int {
-
 	ch, err := c.conn.Channel()
 
 	if err != nil {
@@ -195,7 +190,7 @@ func (c *connection) Stop() {
 		}
 	}
 
-	if exists == false && c.conn != nil {
+	if !exists && c.conn != nil {
 		c.conn.Close()
 		c.conn = nil
 		c.logger.Info("Rabbit MQ connection close.", nil)
