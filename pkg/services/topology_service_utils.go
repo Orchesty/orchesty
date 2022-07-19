@@ -69,7 +69,7 @@ func getMultiBridgeStartCommand() string {
 	return "/bin/bridge start"
 }
 
-func getSingleBridgeStartCommand(serviceName string) string {
+func getSingleBridgeStartCommand(_ string) string {
 	return getMultiBridgeStartCommand()
 }
 

@@ -108,7 +108,7 @@ func (d dockerClient) RunStopSwarm(topologyID string, db StorageSvc, dockerCli D
 	return nil, fmt.Errorf("action %s not allow", action)
 }
 
-func (d dockerClient) DeleteSwarm(topologyID string, db StorageSvc, dockerCli DockerCliSvc, generatorConfig config.GeneratorConfig) error {
+func (d dockerClient) DeleteSwarm(topologyID string, db StorageSvc, _ DockerCliSvc, generatorConfig config.GeneratorConfig) error {
 	topology, err := db.GetTopology(topologyID)
 
 	if err != nil {

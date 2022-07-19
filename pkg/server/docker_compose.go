@@ -63,7 +63,7 @@ func (m *DockerCompose) GenerateAction(c *ContextWrapper) {
 	c.OK(gin.H{"message": fmt.Sprintf("ID: %s", id)})
 }
 
-func (m *DockerCompose) GetHostAction(c *ContextWrapper) {
+func (m *DockerCompose) HostAction(c *ContextWrapper) {
 	id := c.Param("topologyId")
 	// TODO něako udělat check zda container běží
 
