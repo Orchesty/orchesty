@@ -23,7 +23,7 @@ export const createDefaultGridState = (namespace, defaultState = {}) => {
     filterMeta: {},
     sorter: defaultState.sorter || initialSorter,
     paging: defaultState.paging || initialPaging,
-    search: null,
+    search: '',
     items: [],
     backup: defaultState,
   }

@@ -314,7 +314,7 @@ export default {
       }
 
       await this.$store.dispatch(withNamespace(this.namespace, GRID.ACTIONS.FETCH_WITH_INITIAL_STATE), {
-        search: search || null,
+        search: search || '',
         namespace: this.namespace,
         filter: finalFilter || null,
         paging: paging || null,
