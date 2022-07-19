@@ -39,6 +39,7 @@ docker-compose.ci.yml:
 	sed -r 's/^(\s+ports:)$$/#\1/g; s/^(\s+- \$$\{DEV_IP\}.*)$$/#\1/g; s/^(\s+- \$$\{GOPATH\}.*)$$/#\1/g' docker-compose.yml > docker-compose.ci.yml
 
 init-dev: docker-up-force
+	sleep 10
 	$(DR) rabbitmq-plugins enable rabbitmq_consistent_hash_exchange
 	sleep 10
 

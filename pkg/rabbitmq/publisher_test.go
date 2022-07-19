@@ -1,6 +1,7 @@
 package rabbitmq
 
 import (
+	"encoding/json"
 	"testing"
 	"time"
 
@@ -28,7 +29,7 @@ func TestPublishers_StartPublisher(t *testing.T) {
 	time.Sleep(time.Second)
 
 	pm := model.ProcessMessage{
-		Headers: map[string]interface{}{"pf-foo": "bar"},
+		Headers: map[string]interface{}{"foo": "bar"},
 		Body:    []byte("{}"),
 	}
 
@@ -38,8 +39,12 @@ func TestPublishers_StartPublisher(t *testing.T) {
 	require.Nil(t, err)
 
 	msg := <-msgs
-	assert.Equal(t, "bar", msg.Headers["pf-foo"].(string))
-	assert.Equal(t, pm.Body, msg.Body)
+
+	var toAssert model.MessageDto
+	_ = json.Unmarshal(msg.Body, &toAssert)
+
+	assert.Equal(t, "bar", toAssert.Headers["foo"])
+	assert.Equal(t, string(pm.Body), toAssert.Body)
 
 	rabbit.ClosePublishers()
 }

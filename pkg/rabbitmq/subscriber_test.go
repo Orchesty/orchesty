@@ -24,7 +24,7 @@ func TestSubscribers_Subscribe(t *testing.T) {
 	rabbit.Setup("amqp://rabbitmq", shards)
 	rabbit.ConnectSubscribers(shards)
 
-	body := "{\"some\":\"message\"}"
+	body := "{\"body\":\"{\\\"some\\\":\\\"message\\\"}\", \"headers\":{}}"
 
 	err := tClient.ch.Publish("", queue(shards[0]), false, false, amqp.Publishing{
 		Headers:     nil,
@@ -34,7 +34,8 @@ func TestSubscribers_Subscribe(t *testing.T) {
 	require.Nil(t, err)
 
 	msg := <-node.Messages
-	assert.Equal(t, []byte(body), msg.GetBody())
+
+	assert.Equal(t, "{\"some\":\"message\"}", string(msg.Body))
 	_ = msg.Ack()
 
 	rabbit.CloseSubscribers()
