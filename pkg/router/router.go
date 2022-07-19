@@ -36,12 +36,12 @@ func Router(routes Routes) *mux.Router {
 	return router
 }
 
-func notFoundHandler(w http.ResponseWriter, r *http.Request) {
+func notFoundHandler(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusNotFound)
 }
 
-func methodNotAllowedHandler(w http.ResponseWriter, r *http.Request) {
+func methodNotAllowedHandler(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusMethodNotAllowed)
 }

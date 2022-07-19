@@ -50,7 +50,7 @@ func HandleLimit(h http.HandlerFunc, w http.ResponseWriter, r *http.Request) {
 }
 
 // HandleStatus checks if HTTP is working correctly
-func HandleStatus(w http.ResponseWriter, r *http.Request) {
+func HandleStatus(w http.ResponseWriter, _ *http.Request) {
 	writeResponse(w, map[string]interface{}{
 		"database": storage.Mongo.IsConnected(),
 		"metrics":  service.RabbitMq.IsMetricsConnected(),

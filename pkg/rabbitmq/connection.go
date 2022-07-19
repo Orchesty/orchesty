@@ -72,7 +72,6 @@ func (c *connection) Connect() {
 }
 
 func (c *connection) Declare(q *Queue) {
-
 	if c.conn == nil {
 		c.log.Error("Connection setup error: not connected.")
 		c.Connect()
