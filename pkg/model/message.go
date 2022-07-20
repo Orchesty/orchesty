@@ -85,6 +85,11 @@ func (pm ProcessMessage) GetTimeHeaderOrDefault(header enum.HeaderType) time.Tim
 }
 
 func (pm ParsedMessage) ProcessInitQuery() mongo.WriteModel {
+	var user *string
+	if tmp := pm.ProcessMessage.GetHeaderOrDefault(enum.Header_TopologyId, ""); tmp != "" {
+		user = &tmp
+	}
+
 	doc := mongo.NewUpdateOneModel()
 	doc.Filter = bson.M{
 		"_id": pm.ProcessMessage.GetHeaderOrDefault(enum.Header_CorrelationId, ""),
@@ -96,6 +101,7 @@ func (pm ParsedMessage) ProcessInitQuery() mongo.WriteModel {
 			"total":      1,
 			"created":    pm.ProcessMessage.GetTimeHeaderOrDefault(enum.Header_ProcessStarted),
 			"topologyId": pm.ProcessMessage.GetHeaderOrDefault(enum.Header_TopologyId, ""),
+			"user":       user,
 			"finished":   nil,
 		},
 	}

@@ -16,6 +16,7 @@ type Process struct {
 	Nok        int        `bson:"nok"`
 	Total      int        `bson:"total"`
 	TopologyId string     `bson:"topologyId"`
+	User       string     `bson:"user"`
 	Created    time.Time  `bson:"created"`
 	Finished   *time.Time `bson:"finished"`
 }
