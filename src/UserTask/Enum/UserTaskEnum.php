@@ -12,14 +12,14 @@ use Hanaboso\Utils\Enum\EnumAbstract;
 final class UserTaskEnum extends EnumAbstract
 {
 
-    public const THRASH    = 'thrash';
+    public const TRASH     = 'trash';
     public const USER_TASK = 'userTask';
 
     /**
      * @var string[]
      */
     protected static array $choices = [
-        self::THRASH    => self::THRASH,
+        self::TRASH     => self::TRASH,
         self::USER_TASK => self::USER_TASK,
     ];
 

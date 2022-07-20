@@ -45,6 +45,7 @@ class UserTask
     public const AUDIT_LOGS         = 'auditLogs';
     public const CREATED            = 'created';
     public const UPDATED            = 'updated';
+    public const USER               = 'user';
 
     /**
      * @var string
@@ -115,6 +116,13 @@ class UserTask
      * @ODM\Field(type="string")
      */
     private array|string $auditLogs = [];
+
+    /**
+     * @var string
+     *
+     * @ODM\Field(type="string")
+     */
+    private string $user;
 
     /**
      * UserTask constructor.
@@ -366,6 +374,23 @@ class UserTask
     }
 
     /**
+     * @return string
+     */
+    public function getUser(): string {
+        return $this->user;
+    }
+
+    /**
+     * @param string $user
+     *
+     * @return UserTask
+     */
+    public function setUser(string $user): self {
+        $this->user = $user;
+        return $this;
+    }
+
+    /**
      * @return mixed[]
      */
     public function toArray(): array
@@ -382,6 +407,7 @@ class UserTask
             self::UPDATED        => $this->updated->format(DateTimeUtils::DATE_TIME_UTC),
             self::MESSAGE        => $this->message->toArray(),
             self::AUDIT_LOGS     => $this->getAuditLogs(),
+            self::USER           => $this->getUser(),
         ];
     }
 
