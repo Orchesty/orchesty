@@ -5,6 +5,7 @@ const (
 	Header_ProcessId       = "process-id"
 	Header_ParentProcessId = "parent-id"
 	Header_PreviousNodeId  = "previous-node-id"
+	Header_User            = "user"
 	// TODO deprecated totok by mělo být vyřešeno novým gateway workerem
 	Header_ForceTargetQueue = "force-target-queue"
 	Header_NodeId           = "node-id"

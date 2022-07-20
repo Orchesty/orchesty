@@ -26,12 +26,18 @@ func fromDto(dto model.ProcessResult, nodeName, topologyName string) bson.M {
 		msg.SetHeader(enum.Header_ResultMessage, err.Error())
 	}
 
+	var user *string
+	if tmp := msg.GetHeaderOrDefault(enum.Header_User, ""); tmp != "" {
+		user = &tmp
+	}
+
 	return bson.M{
 		"nodeId":           msg.GetHeaderOrDefault(enum.Header_NodeId, ""),
 		"nodeName":         nodeName,
 		"topologyId":       msg.GetHeaderOrDefault(enum.Header_TopologyId, ""),
 		"topologyName":     topologyName,
 		"correlationId":    msg.GetHeaderOrDefault(enum.Header_CorrelationId, ""),
+		"user":             user,
 		"created":          time.Now(),
 		"updated":          time.Now(),
 		"type":             typed,
