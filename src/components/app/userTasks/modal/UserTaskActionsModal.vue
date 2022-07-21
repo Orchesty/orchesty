@@ -117,7 +117,7 @@ export default {
       return `${this.text ? '' : 'white--text '} ${this.ml ? 'ml-2' : 'mr-2'}`
     },
     bodyMessage() {
-      return this.selected.length
+      return this.localizeItemCount(this.$i18n.locale, this.selected.length)
     },
   },
   watch: {
@@ -149,6 +149,20 @@ export default {
           }
         })
       }
+    },
+    localizeItemCount(locale, count = 1) {
+      const format = new Intl.PluralRules(locale, {
+        type: 'cardinal',
+      })
+
+      const messages = {
+        en: {
+          one: 'item',
+          other: 'items',
+        },
+      }
+
+      return `${count} ${messages[locale][format.select(count)]}`
     },
     checkBodyDataFormat(body) {
       try {

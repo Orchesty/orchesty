@@ -25,12 +25,12 @@
                 "body": "Deny item?"
             },
             "acceptAll": {
-                "title": "Approve",
-                "body": "Approve all {0} items?"
+                "title": "Approve Selected",
+                "body": "{0} will be approved."
             },
             "rejectAll": {
-                "title": "Deny",
-                "body": "Deny all {0} items?"
+                "title": "Deny Selected",
+                "body": "{0} will be denied."
             }
         }
 }
