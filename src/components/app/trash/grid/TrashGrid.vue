@@ -42,7 +42,7 @@
             :disabled="selected.length === 0"
             :selected="selected"
             type="acceptAll"
-            :method="acceptAll"
+            :on-submit="acceptAll"
             @reset="reset"
           />
           <user-task-actions-modal
@@ -51,7 +51,7 @@
             :disabled="selected.length === 0"
             :selected="selected"
             type="rejectAll"
-            :method="rejectAll"
+            :on-submit="rejectAll"
             @reset="reset"
           />
         </v-col>

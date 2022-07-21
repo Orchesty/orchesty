@@ -4,21 +4,25 @@
     :width="type === 'update' ? 800 : 500"
     :title="$t(`userTask.modal.${type}.title`)"
     :on-confirm="confirm"
-    :disable-enter-confirm="type === 'update'"
+    :disable-enter-confirm="isActionUpdate"
   >
     <template #default>
       <v-row dense>
-        <v-col cols="12">
-          {{ type !== 'update' ? $t(`userTask.modal.${type}.body`, [bodyMessage]) : null }}
-        </v-col>
-        <v-col v-if="type === 'update'" cols="12">
-          <span class="pb-1">Headers:</span>
-          <v-jsoneditor v-model="headerObject" :options="options" :plus="false" height="300px" @error="onError" />
-        </v-col>
-        <v-col v-if="type === 'update'" cols="12">
-          <span class="pb-1">Body:</span>
-          <v-jsoneditor v-model="bodyObject" :options="options" :plus="false" height="300px" @error="onError" />
-        </v-col>
+        <template v-if="!isActionUpdate">
+          <v-col cols="12">
+            {{ $t(`userTask.modal.${type}.body`, [bodyMessage]) }}
+          </v-col>
+        </template>
+        <template v-else>
+          <v-col cols="12">
+            <span class="pb-1">Headers:</span>
+            <json-editor v-model="headers" />
+          </v-col>
+          <v-col cols="12">
+            <span class="pb-1">Body:</span>
+            <json-editor v-if="isBodyJson" v-model="body" />
+          </v-col>
+        </template>
       </v-row>
     </template>
     <template #sendingButton>
@@ -54,20 +58,17 @@ import { REQUESTS_STATE } from '@/store/modules/api/types'
 import { API } from '@/api'
 import ModalTemplate from '@/components/commons/modal/ModalTemplate'
 import AppButton from '@/components/commons/button/AppButton'
-import VJsoneditor from 'v-jsoneditor'
+import JsonEditor from '@/components/app/userTasks/modal/JsonEditor'
 
 export default {
   name: 'UserTaskActionsModal',
-  components: { AppButton, ModalTemplate, VJsoneditor },
+  components: { JsonEditor, AppButton, ModalTemplate },
   data() {
     return {
       isOpen: false,
-      headers: '',
-      body: '',
-      options: {
-        mode: 'tree',
-        mainMenuBar: false,
-      },
+      headers: null,
+      body: null,
+      isBodyJson: false,
     }
   },
   props: {
@@ -93,14 +94,13 @@ export default {
     },
     disabled: {
       type: Boolean,
-      required: false,
       default: false,
     },
-    data: {
+    message: {
       type: Object,
       default: () => {},
     },
-    method: {
+    onSubmit: {
       type: Function,
       required: true,
     },
@@ -110,46 +110,24 @@ export default {
     state() {
       return this[REQUESTS_STATE.GETTERS.GET_STATE](API.userTask[this.type].id)
     },
+    isActionUpdate() {
+      return this.type === 'update'
+    },
     buttonClass() {
       return `${this.text ? '' : 'white--text '} ${this.ml ? 'ml-2' : 'mr-2'}`
     },
     bodyMessage() {
       return this.selected.length
     },
-    headerObject: {
-      get() {
-        let parsedHeaders = JSON.parse(this.headers)
-        if (parsedHeaders['pf-result-detail']) {
-          parsedHeaders['pf-result-detail'] = parsedHeaders['pf-result-detail'].replace(/\\/g, '').slice(1, -1)
-        }
-        if (parsedHeaders['pf-result-message']) {
-          parsedHeaders['pf-result-message'] = parsedHeaders['pf-result-message'].replace(/"/g, "'")
-        }
-        return parsedHeaders
-      },
-      set(headers) {
-        this.headers = JSON.stringify(headers)
-      },
-    },
-    bodyObject: {
-      get() {
-        return JSON.parse(this.body)
-      },
-      set(body) {
-        this.body = JSON.stringify(body)
-      },
-    },
   },
   watch: {
-    data: {
+    message: {
       immediate: true,
       deep: true,
-      handler(data) {
-        if (data && data.headers) {
-          this.headers = JSON.stringify(data.headers)
-          if (data.body) {
-            this.body = JSON.stringify(data.body)
-          }
+      handler(message) {
+        if (message) {
+          this.headers = message.headers
+          this.checkBodyDataFormat(message.body)
         }
       },
     },
@@ -157,19 +135,27 @@ export default {
   methods: {
     async confirm() {
       if (this.type === 'update') {
-        await this.method({ headers: JSON.parse(this.headers), body: JSON.parse(this.body) }).then((res) => {
+        await this.onSubmit({ headers: this.headers, body: JSON.stringify(this.body) }).then((res) => {
           if (res) {
             this.$emit('reset')
             this.isOpen = false
           }
         })
       } else {
-        await this.method().then((res) => {
+        await this.onSubmit().then((res) => {
           if (res) {
             this.$emit('reset')
             this.isOpen = false
           }
         })
+      }
+    },
+    checkBodyDataFormat(body) {
+      try {
+        this.body = JSON.parse(body)
+        this.isBodyJson = true
+      } catch (e) {
+        this.isBodyJson = false
       }
     },
     onError() {

@@ -65,23 +65,23 @@
             color="primary"
             :selected="selected"
             type="accept"
-            :data="message"
-            :method="accept"
+            :message="message"
+            :on-submit="accept"
             @reset="reset"
           />
           <user-task-actions-modal
             color="primary"
             :selected="selected"
             type="update"
-            :data="message"
-            :method="update"
+            :message="message"
+            :on-submit="update"
           />
           <user-task-actions-modal
             color="error"
             :selected="selected"
             type="reject"
-            :data="message"
-            :method="reject"
+            :message="message"
+            :on-submit="reject"
             @reset="reset"
           />
         </v-col>
