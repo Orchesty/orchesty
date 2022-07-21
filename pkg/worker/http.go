@@ -25,7 +25,7 @@ type Http struct {
 func (h httpBeforeProcess) BeforeProcess(node types.Node, dto *model.ProcessMessage) model.ProcessResult {
 	host := node.Settings().Url
 	if !CanSend(host) {
-		time.Sleep(delay)
+		time.Sleep(delaySec * time.Second)
 		return dto.Error(fmt.Errorf("sdk was unreachable, delaying message"))
 	}
 
@@ -58,6 +58,7 @@ func (h httpBeforeProcess) BeforeProcess(node types.Node, dto *model.ProcessMess
 
 	response, err := h.client.Do(req)
 	if err != nil {
+		Lock(host)
 		return dto.Error(err)
 	}
 	defer response.Body.Close()

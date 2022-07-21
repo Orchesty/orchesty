@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-const delay = 5 * 60 * 1000
+const delaySec = 5
 
 var l locker
 
@@ -16,7 +16,7 @@ type locker struct {
 
 func Lock(host string) {
 	l.mutex.Lock()
-	l.locks[host] = time.Now().UnixMilli() + delay
+	l.locks[host] = time.Now().UnixMilli() + int64(delaySec*time.Millisecond)
 	l.mutex.Unlock()
 }
 
