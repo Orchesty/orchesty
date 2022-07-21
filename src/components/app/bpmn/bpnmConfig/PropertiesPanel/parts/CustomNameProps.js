@@ -4,11 +4,12 @@ import { getBusinessObject, is } from 'bpmn-js/lib/util/ModelUtil'
 import { LOCAL_STORAGE } from '@/services/enums/localStorageEnums'
 
 export default function (group, element, translate) {
-  var businessObject = getBusinessObject(element)
-  if (is(element, 'bpmn:Process') || (is(element, 'bpmn:Participant') && businessObject.get('processRef'))) {
-    return
-  }
-  if (is(element, 'bpmn:Collaboration')) {
+  const businessObject = getBusinessObject(element)
+  if (
+    is(element, 'bpmn:Process') ||
+    is(element, 'bpmn:Collaboration') ||
+    (is(element, 'bpmn:Participant') && businessObject.get('processRef'))
+  ) {
     return
   }
 
@@ -65,6 +66,9 @@ export default function (group, element, translate) {
       })
     )
   } else {
+    if (!getBusinessObject(element).name) {
+      getBusinessObject(element).name = pipesType
+    }
     group.entries.push(
       entryFactory.validationAwareTextField(translate, {
         id: 'name',
