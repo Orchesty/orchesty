@@ -63,6 +63,13 @@ class TopologyProgress
     private ?DateTime $finishedAt = NULL;
 
     /**
+     * @var string
+     *
+     * @ODM\Field(type="string")
+     */
+    private string $user;
+
+    /**
      * @return string
      */
     public function getId(): string
@@ -191,6 +198,28 @@ class TopologyProgress
     }
 
     /**
+     * @param string $user
+     *
+     * @return string
+     */
+    public function getUser(string $user): string
+    {
+        return $user;
+    }
+
+    /**
+     * @param string $user
+     *
+     * @return TopologyProgress
+     */
+    public function setUser(string $user): TopologyProgress
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    /**
      * @return mixed[]
      * @throws DateTimeException
      */
@@ -210,6 +239,7 @@ class TopologyProgress
             'nodesTotal'     => $this->total,
             'status'         => $count < $this->total ? 'IN PROGRESS' : ($this->nok > 0 ? 'FAILED' : 'SUCCESS'),
             'failed'         => $this->nok,
+            'user'           => $this->user,
         ];
     }
 

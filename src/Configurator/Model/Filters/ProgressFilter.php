@@ -25,6 +25,7 @@ final class ProgressFilter extends GridFilterAbstract
         return [
             'topologyId' => 'topologyId',
             'started'    => 'startedAt',
+            'user'       => 'user',
         ];
     }
 

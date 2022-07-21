@@ -55,6 +55,7 @@ final class ProgressManager
                 'nodesTotal'     => $doc['total'],
                 'status'         => $count < $doc['total'] ? 'IN PROGRESS' : ($doc['nok'] > 0 ? 'FAILED' : 'SUCCESS'),
                 'failed'         => $doc['nok'],
+                'user'           => $doc['user'],
             ];
         }, $res);
     }

@@ -373,6 +373,7 @@ class UserTask
         $this->getAuditLogs();
     }
 
+
     /**
      * @return string
      */
