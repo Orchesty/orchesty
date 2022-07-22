@@ -2,6 +2,7 @@ package rabbitmq
 
 import (
 	"errors"
+	"github.com/hanaboso/pipes/bridge/pkg/utils/intx"
 	"time"
 
 	"github.com/rs/zerolog/log"
@@ -42,7 +43,7 @@ func (c *client) handleReconnect(pubSubs connector, addr string) {
 		if err != nil {
 			log.Printf("failed connecting to RabbitMQ server: %v", err)
 
-			<-time.After(reconnectDelay + time.Duration(retryCount)*time.Second) // TODO If efficiency is a concern, use NewTimer instead and call Timer.Stop if the timer is no longer needed.
+			<-time.After(reconnectDelay + time.Duration(intx.Max(retryCount, 30))*time.Second) // TODO If efficiency is a concern, use NewTimer instead and call Timer.Stop if the timer is no longer needed.
 			retryCount++
 			continue
 		}
@@ -52,7 +53,7 @@ func (c *client) handleReconnect(pubSubs connector, addr string) {
 		notifyClose := conn.NotifyClose(make(chan *amqp.Error))
 
 		// Recreate channels of publishers and consumers
-		pubSubs.connect() // TODO: BR2-5 ... při smazání queue se bridge nezvpamatuje -> nevytvoří je znovu
+		pubSubs.connect()
 
 		if err := <-notifyClose; err != nil {
 			log.Err(err).Send()
