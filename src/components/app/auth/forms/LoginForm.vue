@@ -4,7 +4,7 @@
     <template #form>
       <ValidationObserver
         ref="loginForm"
-        class="text-right"
+        class="text-right login-form"
         tag="form"
         @submit.prevent="submit"
         @keydown.enter="submit"
@@ -21,8 +21,6 @@
             prepend-icon="mdi-account-circle"
             :label="$t('auth.inputs.email.label')"
             type="text"
-            placeholder=" "
-            persistent-placeholder
             :name="fields.email.id"
             :error-messages="errors"
           />
@@ -36,8 +34,6 @@
           <app-input
             v-model="form.password"
             dense
-            placeholder=" "
-            persistent-placeholder
             prepend-icon="key"
             :label="$t('auth.inputs.password.label')"
             input-type="password"
@@ -119,3 +115,11 @@ export default {
   },
 }
 </script>
+<style lang="scss" scoped>
+.login-form::v-deep .v-text-field--outlined.v-input--dense .v-label {
+  transform: translateY(-16px) scale(0.75);
+  background-color: var(--v-white-base) !important;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+</style>
