@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/gofrs/uuid v4.2.0+incompatible
 	github.com/hanaboso/go-metrics v1.0.3
-	github.com/hanaboso/go-mongodb v1.0.4
+	github.com/hanaboso/go-mongodb v1.0.5
 	github.com/jinzhu/configor v1.2.1
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/rs/zerolog v1.27.0
@@ -21,6 +21,7 @@ require (
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/hanaboso/go-log v1.0.3 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
+	github.com/jpillora/backoff v1.0.0 // indirect
 	github.com/klauspost/compress v1.13.6 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
