@@ -6,7 +6,7 @@ require (
 	github.com/docker/docker v20.10.17+incompatible
 	github.com/gin-gonic/gin v1.8.1
 	github.com/hanaboso/go-log v1.0.3
-	github.com/hanaboso/go-mongodb v1.0.4
+	github.com/hanaboso/go-mongodb v1.0.5
 	github.com/jinzhu/configor v1.2.1
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.5.0
@@ -46,6 +46,7 @@ require (
 	github.com/imdario/mergo v0.3.5 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
+	github.com/jpillora/backoff v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/compress v1.13.6 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
