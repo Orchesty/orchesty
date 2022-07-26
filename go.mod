@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/hanaboso/go-log v1.0.3
 	github.com/hanaboso/go-metrics v1.0.3
-	github.com/hanaboso/go-mongodb v1.0.4
+	github.com/hanaboso/go-mongodb v1.0.5
 	github.com/jinzhu/configor v1.2.1
 	github.com/sirupsen/logrus v1.9.0
 	go.mongodb.org/mongo-driver v1.10.0
@@ -14,6 +14,7 @@ require (
 require (
 	github.com/BurntSushi/toml v0.3.1 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
+	github.com/jpillora/backoff v1.0.0 // indirect
 	github.com/klauspost/compress v1.13.6 // indirect
 	github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe // indirect
 	github.com/pkg/errors v0.9.1 // indirect
