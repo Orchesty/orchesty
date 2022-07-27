@@ -6,7 +6,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/context v1.1.1
 	github.com/gorilla/mux v1.8.0
-	github.com/hanaboso/go-metrics v1.0.3
+	github.com/hanaboso/go-metrics v1.0.4
 	github.com/hanaboso/go-mongodb v1.0.5
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/shirou/gopsutil v3.21.11+incompatible
