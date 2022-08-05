@@ -24,7 +24,7 @@ function preprocessRequest(req: Request, permission: ResourceEnum) {
 function preprocessRequestWithQuery(req: Request, permission: ResourceEnum) {
   preprocessRequest(req, permission);
   const tenantId = getLoggedUser(req);
-  const query = req.query as unknown as ITenantSearchQuery;
+  const query = req.params as unknown as ITenantSearchQuery;
 
   if (permission === ResourceEnum.DELETE_TENANT && query.tenantId === tenantId) {
     throw new PermissionsError('Tenant cannot delete himself!');

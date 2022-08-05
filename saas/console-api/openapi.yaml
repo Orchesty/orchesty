@@ -176,7 +176,7 @@ paths:
                     $ref: "#/components/responses/404NotFound"
                 '500':
                     $ref: "#/components/responses/500BadRequest"
-    /users/list:
+    /users:
         get:
             description: Fill
             x-swagger-router-controller: users
@@ -184,8 +184,8 @@ paths:
             tags:
                 - Users
             parameters:
-                - $ref: "#/components/parameters/emails"
                 - $ref: "#/components/parameters/tenantId"
+                - $ref: "#/components/parameters/emails"
             responses:
                 '200':
                     description: Success
@@ -193,33 +193,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: "#/components/schemas/UsersRows"
-                '400':
-                    $ref: "#/components/responses/400BadRequest"
-                '401':
-                    $ref: "#/components/responses/401Unauthorized"
-                '403':
-                    $ref: "#/components/responses/403Forbidden"
-                '404':
-                    $ref: "#/components/responses/404NotFound"
-                '500':
-                    $ref: "#/components/responses/500BadRequest"
-    /users:
-        get:
-            description: Fill
-            x-swagger-router-controller: users
-            operationId: usersGet
-            tags:
-                - Users
-            parameters:
-                - $ref: "#/components/parameters/uid"
-                - $ref: "#/components/parameters/tenantId"
-            responses:
-                '200':
-                    description: Success
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/OneUser"
                 '400':
                     $ref: "#/components/responses/400BadRequest"
                 '401':
@@ -238,9 +211,37 @@ paths:
             tags:
                 - Users
             parameters:
-                - $ref: "#/components/parameters/tenantId"
+                -   $ref: "#/components/parameters/tenantId"
             requestBody:
                 $ref: '#/components/requestBodies/UserBody'
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/OneUser"
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+
+    /users/{uid}:
+        get:
+            description: Fill
+            x-swagger-router-controller: users
+            operationId: usersGet
+            tags:
+                - Users
+            parameters:
+                - $ref: "#/components/parameters/tenantId"
+                - $ref: "#/components/parameters/uid"
             responses:
                 '200':
                     description: Success
@@ -349,32 +350,7 @@ paths:
                     $ref: "#/components/responses/404NotFound"
                 '500':
                     $ref: "#/components/responses/500BadRequest"
-
-    /tenants/list:
-        get:
-            description: Fill
-            x-swagger-router-controller: tenants
-            operationId: tenantsList
-            tags:
-                - Tenants
-            responses:
-                '200':
-                    description: Success
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/TenantsRows"
-                '400':
-                    $ref: "#/components/responses/400BadRequest"
-                '401':
-                    $ref: "#/components/responses/401Unauthorized"
-                '403':
-                    $ref: "#/components/responses/403Forbidden"
-                '404':
-                    $ref: "#/components/responses/404NotFound"
-                '500':
-                    $ref: "#/components/responses/500BadRequest"
-    /tenants:
+    /tenants/{tenantId}:
         get:
             description: Fill
             x-swagger-router-controller: tenants
@@ -390,6 +366,89 @@ paths:
                         application/json:
                             schema:
                                 $ref: "#/components/schemas/OneTenant"
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+
+        put:
+            description: Fill
+            x-swagger-router-controller: tenants
+            operationId: tenantsUpdate
+            tags:
+                - Tenants
+            parameters:
+                -   $ref: "#/components/parameters/tenantId"
+            requestBody:
+                $ref: '#/components/requestBodies/UpdateTenantBody'
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/OneTenant"
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+
+        delete:
+            description: Fill
+            x-swagger-router-controller: tenants
+            operationId: tenantsDelete
+            tags:
+                - Tenants
+            parameters:
+                -   $ref: "#/components/parameters/tenantId"
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    msg:
+                                        description: Message for client
+                                        type: string
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+
+    /tenants:
+        get:
+            description: Fill
+            x-swagger-router-controller: tenants
+            operationId: tenantsList
+            tags:
+                - Tenants
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/TenantsRows"
                 '400':
                     $ref: "#/components/responses/400BadRequest"
                 '401':
@@ -427,63 +486,6 @@ paths:
                 '500':
                     $ref: "#/components/responses/500BadRequest"
 
-        put:
-            description: Fill
-            x-swagger-router-controller: tenants
-            operationId: tenantsUpdate
-            tags:
-                - Tenants
-            parameters:
-                - $ref: "#/components/parameters/tenantId"
-            requestBody:
-                $ref: '#/components/requestBodies/UpdateTenantBody'
-            responses:
-                '200':
-                    description: Success
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/OneTenant"
-                '400':
-                    $ref: "#/components/responses/400BadRequest"
-                '401':
-                    $ref: "#/components/responses/401Unauthorized"
-                '403':
-                    $ref: "#/components/responses/403Forbidden"
-                '404':
-                    $ref: "#/components/responses/404NotFound"
-                '500':
-                    $ref: "#/components/responses/500BadRequest"
-
-        delete:
-            description: Fill
-            x-swagger-router-controller: tenants
-            operationId: tenantsDelete
-            tags:
-                - Tenants
-            parameters:
-                - $ref: "#/components/parameters/tenantId"
-            responses:
-                '200':
-                    description: Success
-                    content:
-                        application/json:
-                            schema:
-                                type: object
-                                properties:
-                                    msg:
-                                        description: Message for client
-                                        type: string
-                '400':
-                    $ref: "#/components/responses/400BadRequest"
-                '401':
-                    $ref: "#/components/responses/401Unauthorized"
-                '403':
-                    $ref: "#/components/responses/403Forbidden"
-                '404':
-                    $ref: "#/components/responses/404NotFound"
-                '500':
-                    $ref: "#/components/responses/500BadRequest"
 security:
     - Bearer: []
 components:
@@ -573,7 +575,7 @@ components:
             in: query
             name: uid
             description: User identifier
-            required: true
+            required: false
             schema:
                 type: string
 

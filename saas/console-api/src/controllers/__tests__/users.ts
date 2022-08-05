@@ -30,7 +30,7 @@ describe('usersController', () => {
   const authorization = getJWTToken(true);
   describe('list', () => {
     it('shouldReturnDataForAll', async () => {
-      const resp = await supertest(server).get('/users/list').query({ tenantId: 't1234' }).set(authorization);
+      const resp = await supertest(server).get('/users').query({ tenantId: 't1234' }).set(authorization);
       assert.deepEqual(resp.statusCode, 200);
       assert.deepEqual(resp.body.rows.length, 1);
       assert.deepEqual(resp.body, {
@@ -38,7 +38,7 @@ describe('usersController', () => {
       });
     });
     it('shouldReturnDataForFilter', async () => {
-      const resp = await supertest(server).get('/users/list').query({ tenantId: 't1234', emails: ['neco@neco.com'] })
+      const resp = await supertest(server).get('/users').query({ tenantId: 't1234', emails: ['neco@neco.com'] })
         .set(authorization);
       assert.deepEqual(resp.statusCode, 200);
       assert.deepEqual(resp.body.rows.length, 1);
@@ -47,21 +47,21 @@ describe('usersController', () => {
       });
     });
     it('shouldReturn400ForAll', async () => {
-      const resp = await supertest(server).get('/users/list').query({ tenantId: 't123' }).set(authorization);
+      const resp = await supertest(server).get('/users').query({ tenantId: 't123' }).set(authorization);
       assert.deepEqual(resp.statusCode, 400);
     });
     it('shouldReturn400ForFilter', async () => {
-      const resp = await supertest(server).get('/users/list').query({ tenantId: 't123', emails: ['neco'] })
+      const resp = await supertest(server).get('/users').query({ tenantId: 't123', emails: ['neco'] })
         .set(authorization);
       assert.deepEqual(resp.statusCode, 400);
     });
     it('shouldReturn400ForFilter', async () => {
-      const resp = await supertest(server).get('/users/list').query({ tenantId: 't123', emails: ['neco'] })
+      const resp = await supertest(server).get('/users').query({ tenantId: 't123', emails: ['neco'] })
         .set(authorization);
       assert.deepEqual(resp.statusCode, 400);
     });
     it('shouldReturn403', async () => {
-      const resp = await supertest(server).get('/users/list')
+      const resp = await supertest(server).get('/users')
         .query({ tenantId: 't1234', emails: ['invalidEmail'] })
         .set(getJWTToken());
       assert.deepEqual(resp.statusCode, 403);
@@ -70,8 +70,8 @@ describe('usersController', () => {
 
   describe('get', () => {
     it('shouldReturnData', async () => {
-      const resp = await supertest(server).get('/users')
-        .query({ tenantId: 't1234', uid: 'BjDKHoIseJR5zd0bixYnRR6Dt9i2' }).set(authorization);
+      const resp = await supertest(server).get('/users/BjDKHoIseJR5zd0bixYnRR6Dt9i2')
+        .query({ tenantId: 't1234' }).set(authorization);
       assert.deepEqual(resp.statusCode, 200);
       assert.deepEqual(resp.body, {
         user: generateUsersExport(),
@@ -96,8 +96,8 @@ describe('usersController', () => {
 
   describe('update', () => {
     it('shouldReturnData', async () => {
-      const resp = await supertest(server).put('/users')
-        .query({ tenantId: 't1234', uid: 'BjDKHoIseJR5zd0bixYnRR6Dt9i2' })
+      const resp = await supertest(server).put('/users/BjDKHoIseJR5zd0bixYnRR6Dt9i2')
+        .query({ tenantId: 't1234' })
         .set(authorization)
         .send({ displayName: 'neco1' });
       assert.deepEqual(resp.statusCode, 200);
@@ -108,8 +108,8 @@ describe('usersController', () => {
     it('shouldReturn400', async () => {
       jest.spyOn(adminAuth, 'updateUser')
         .mockImplementationOnce(() => { throw new Error(); });
-      const resp = await supertest(server).put('/users')
-        .query({ tenantId: 't1234', uid: 'BjDKHoIseJR5zd0bixYnRR6Dt9i2' })
+      const resp = await supertest(server).put('/users/BjDKHoIseJR5zd0bixYnRR6Dt9i2')
+        .query({ tenantId: 't1234' })
         .set(authorization)
         .send({ displayName: 'neco1' });
       assert.deepEqual(resp.statusCode, 400);
@@ -118,8 +118,8 @@ describe('usersController', () => {
 
   describe('delete', () => {
     it('shouldReturnData', async () => {
-      const resp = await supertest(server).delete('/users')
-        .query({ tenantId: 't1234', uid: 'BjDKHoIseJR5zd0bixYnRR6Dt9i2' })
+      const resp = await supertest(server).delete('/users/BjDKHoIseJR5zd0bixYnRR6Dt9i2')
+        .query({ tenantId: 't1234' })
         .set(authorization);
       assert.deepEqual(resp.statusCode, 200);
       assert.deepEqual(resp.body, { msg: 'User successfully deleted!' });
@@ -127,8 +127,8 @@ describe('usersController', () => {
     it('shouldReturn400', async () => {
       jest.spyOn(adminAuth, 'deleteUser')
         .mockImplementationOnce(() => { throw new Error(); });
-      const resp = await supertest(server).delete('/users')
-        .query({ tenantId: 't1234', uid: 'BjDKHoIseJR5zd0bixYnRR6Dt9i2' })
+      const resp = await supertest(server).delete('/users/BjDKHoIseJR5zd0bixYnRR6Dt9i2')
+        .query({ tenantId: 't1234' })
         .set(authorization);
       assert.deepEqual(resp.statusCode, 400);
     });

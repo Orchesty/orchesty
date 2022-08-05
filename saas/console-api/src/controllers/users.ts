@@ -25,7 +25,7 @@ export interface IUserSearchQuery {
 
 function preprocessRequest(req: Request, permission: ResourceEnum) {
   const tenantId = getLoggedUser(req);
-  const query = req.query as unknown as IUserSearchQuery;
+  const query = {...req.query, ...req.params} as unknown as IUserSearchQuery;
   const permissions = getLoggedUserPermissions(req);
 
   let allowed = true;
