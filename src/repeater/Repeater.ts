@@ -49,7 +49,7 @@ class Repeater implements IStoppable {
 
         this.consumerTag = await this.consumer.consume(q, {});
 
-        logger.info(`Repeater consumer started consumption of messages in '${q}'`, { node_name: "repeater" });
+        logger.info(`Repeater consumer started consumption of messages in '${q}'`, {node_name: "repeater"});
 
         this.checkMessages();
     }
@@ -78,21 +78,24 @@ class Repeater implements IStoppable {
 
                 logger.debug(
                     `Found ${toResend.length} messages to resend. Next check in ${this.settings.check_timeout}ms.`,
-                    { node_name: "repeater" },
+                    {node_name: "repeater"},
                 );
 
                 toResend.forEach(async (msg: Message) => {
                     await this.resend(msg);
+                    const bodyHeaders = JSON.parse(msg.content.toString()).headers;
                     const ctx = {
                         node_name: "repeater",
-                        correlation_id: msg.properties.headers.correlation_id,
-                        process_id: msg.properties.headers.process_id,
+                        correlation_id: bodyHeaders[Headers.CORRELATION_ID],
+                        process_id: bodyHeaders[Headers.PROCESS_ID],
                     };
                     logger.debug("Message repeated.", ctx);
                 });
             });
 
-        setTimeout(() => { this.checkMessages(); }, this.settings.check_timeout);
+        setTimeout(() => {
+            this.checkMessages();
+        }, this.settings.check_timeout);
     }
 
     /**
@@ -102,21 +105,23 @@ class Repeater implements IStoppable {
      */
     private resend(message: Message): Promise<void> {
         try {
-            const headers = new Headers(message.properties.headers);
-            const target = headers.getPFHeader(Headers.REPEAT_QUEUE);
+            const body = message.content.toString();
+            const bodyHeaders = JSON.parse(body).headers;
+            const target = bodyHeaders[Headers.REPEAT_QUEUE];
 
-            const content = Buffer.from(message.content.toString());
             const props: Options.Publish = ObjectUtils.removeNullableProperties(message.properties);
-            props.headers = headers.getRaw();
+            props.headers = message.properties.headers;
             props.priority ? props.priority++ : props.priority = 1;
 
-            return this.publisher.sendToQueue(target, content, props);
+            return this.publisher.sendToQueue(target, Buffer.from(body), props);
         } catch (e) {
-            const h = message.properties.headers;
-            logger.error(
-                "Repeater could not resend message",
-                { node_name: "repeater", correlation_id: h.correlation_id, process_id: h.process_id },
-            );
+            const bodyHeaders = JSON.parse(message.content.toString()).headers;
+            const ctx = {
+                node_name: "repeater",
+                correlation_id: bodyHeaders[Headers.CORRELATION_ID],
+                process_id: bodyHeaders[Headers.PROCESS_ID],
+            };
+            logger.error("Repeater could not resend message", ctx);
 
             return Promise.resolve();
         }
@@ -131,30 +136,31 @@ class Repeater implements IStoppable {
             return new Promise(async (resolve) => {
                 await ch.assertQueue(this.settings.input.queue.name, this.settings.input.queue.options);
                 await ch.prefetch(this.settings.input.queue.prefetch);
-                logger.info("Repeater consumer ready.", { node_name: "repeater" });
+                logger.info("Repeater consumer ready.", {node_name: "repeater"});
                 resolve();
             });
         };
 
         const handleMessageFn = (msg: Message) => {
-            const headers = new Headers(msg.properties.headers);
+            const bodyHeaders = JSON.parse(msg.content.toString()).headers;
 
-            if (!headers.hasPFHeader(Headers.REPEAT_QUEUE) || !headers.hasPFHeader(Headers.REPEAT_INTERVAL)) {
+            if (!bodyHeaders[Headers.REPEAT_QUEUE] || !bodyHeaders[Headers.REPEAT_INTERVAL]) {
+                const ctx = {
+                    node_name: "repeater",
+                    correlation_id: bodyHeaders[Headers.CORRELATION_ID],
+                    process_id: bodyHeaders[Headers.PROCESS_ID],
+                };
                 logger.error(
                     `Repeater discarded message. Missing 'REPEAT_QUEUE' or 'REPEAT_INTERVAL' headers.
-                     Headers: "${JSON.stringify(headers.getRaw())}"`,
-                    {
-                        node_name: "repeater",
-                        correlation_id: headers.getPFHeader(Headers.CORRELATION_ID),
-                        process_id: headers.getPFHeader(Headers.PROCESS_ID),
-                    },
+                     Headers: "${JSON.stringify(bodyHeaders)}"`,
+                    ctx,
                 );
 
                 // Ignore this message and ack it
                 return;
             }
 
-            const timeout = parseInt(headers.getPFHeader(Headers.REPEAT_INTERVAL), 10);
+            const timeout = parseInt(bodyHeaders[Headers.REPEAT_INTERVAL], 10) * 1000;
 
             return this.storage.save(msg, timeout);
         };
@@ -170,7 +176,7 @@ class Repeater implements IStoppable {
         return new AssertionPublisher(
             this.amqpCon,
             () => {
-                logger.info("Repeater publisher ready.", { node_name: "repeater" });
+                logger.info("Repeater publisher ready.", {node_name: "repeater"});
                 return Promise.resolve();
             },
             {

@@ -38,7 +38,7 @@ const conn = new Connection(amqpConnectionOptions);
 // Publisher emulates the previous node in topology
 const publisher = new Publisher(conn, (ch: Channel) =>  Promise.resolve() );
 
-describe("AmqpFaucet", () => {
+xdescribe("AmqpFaucet", () => {
     it("should start consumption on open #integration", (done) => {
         const check = (msg: JobMessage) => {
             assert.equal(msg.getCorrelationId(), "correlationId");

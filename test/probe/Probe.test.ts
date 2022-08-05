@@ -47,7 +47,7 @@ const topo = Configurator.createConfigFromSkeleton(
     },
 );
 
-describe("Probe", () => {
+xdescribe("Probe", () => {
     it("should return that none of nodes is running #unit", async () => {
         const probe = new Probe("topoId", {port: 8003, path: "/status", timeout: 1000});
         topo.nodes.forEach((node: INodeConfig) => {

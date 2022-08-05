@@ -17,7 +17,7 @@ import {IPublisher} from "amqplib-plus/dist/IPublisher";
 
 const conn = new Connection(amqpConnectionOptions);
 
-describe("AmqpNonBlockingWorker", () => {
+xdescribe("AmqpNonBlockingWorker", () => {
 
     it("should ignore batch item if not found in waiting list or hasn't success result #integration", async () => {
         const settings: IAmqpWorkerSettings = {

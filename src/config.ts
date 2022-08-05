@@ -59,11 +59,7 @@ export const repeaterOptions: IRepeaterSettings = {
 };
 
 export const mongoStorageOptions: IMongoMessageStorageSettings = {
-    host: process.env.MONGO_HOST || "mongo",
-    port: parseInt(process.env.MONGO_PORT, 10) || 27017,
-    user: process.env.MONGO_USER || "",
-    pass: process.env.MONGO_PASS || "",
-    db: process.env.MONGO_DB || "repeater",
+    dsn: process.env.MONGO_DSN || "mongodb://mongo:21017/repeater"
 };
 
 export const probeOptions: IProbeSettings = {

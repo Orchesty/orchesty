@@ -16,7 +16,7 @@ const dumbStorage = {
     stop: () => Promise.resolve(),
 };
 
-describe("Terminator", () => {
+xdescribe("Terminator", () => {
     it("should accept valid termination http request and send another request to given url #unit", async () => {
         const prom = new Promise((resolve) => {
             const topoApiMock = express();

@@ -61,7 +61,7 @@ const testTopology: ITopologyConfigSkeleton = {
 const amqpConn = new Connection(config.amqpConnectionOptions);
 const firstQueue = `pipes.${testTopology.id}.${testTopology.nodes[0].id}`;
 
-describe("Linear topology with splitter test", () => {
+xdescribe("Linear topology with splitter test", () => {
     it("complete flow of messages till the end #integration", (testDone) => {
         const msgTestContent = [
             { val : "to be split 1"},

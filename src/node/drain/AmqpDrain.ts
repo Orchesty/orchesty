@@ -218,7 +218,7 @@ class AmqpDrain implements IDrain, IPartialForwarder {
             return await this.forward(message);
         }
 
-        const interval = parseInt(headers.getPFHeader(Headers.REPEAT_INTERVAL), 10);
+        const interval = parseInt(headers.getPFHeader(Headers.REPEAT_INTERVAL), 10) * 1000;
         if (interval < MAX_REPEAT_IMMEDIATELY_LIMIT) {
             // Repeat immediately by sending to node's input queue
             message.getHeaders().setPFHeader(Headers.FORCE_TARGET_QUEUE, this.settings.faucet.queue.name);
