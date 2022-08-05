@@ -165,7 +165,7 @@ final class NotificationSettingsControllerTest extends ControllerTestCaseAbstrac
         $handler = self::createMock(NotificationSettingsHandler::class);
         $handler->method($method)->willThrowException(new Exception('Something gone wrong!'));
 
-        self::$container->set('notification.handler.settings', $handler);
+        self::getContainer()->set('notification.handler.settings', $handler);
     }
 
 }
