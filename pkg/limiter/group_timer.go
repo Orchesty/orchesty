@@ -7,7 +7,7 @@ import (
 	"limiter/pkg/model"
 )
 
-func (mt *messageTimer) addGroupTicker(groupKey string, groupInterval, groupLimit int) {
+func (mt *messageTimer) addGroupTicker(groupKey string, _, groupLimit int) {
 	item, ok, _ := mt.groups.Get(groupKey)
 	if !ok {
 		mt.logger.Debug(fmt.Sprintf("Group ticker for key '%s' not exist", groupKey), nil)
@@ -46,7 +46,7 @@ func (mt *messageTimer) addGroupTicker(groupKey string, groupInterval, groupLimi
 	}()
 }
 
-func (mt *messageTimer) canGroupHandle(groupData *model.RequestGroup, key string, count int) bool {
+func (mt *messageTimer) canGroupHandle(groupData *model.RequestGroup, _ string, _ int) bool {
 	if groupData == nil {
 		return true
 	}

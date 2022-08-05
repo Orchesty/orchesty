@@ -26,10 +26,7 @@ type Connection interface {
 }
 
 type connection struct {
-	host        string
-	port        int
-	user        string
-	password    string
+	dsn         string
 	queues      []Queue
 	exchanges   []Exchange
 	conn        *amqp.Connection
@@ -54,7 +51,6 @@ func (c *connection) AddExchange(e Exchange) {
 }
 
 func (c *connection) Setup() {
-
 	if c.conn == nil {
 		c.logger.Error("Connection setup error: not connected.", nil)
 		c.Connect()
@@ -77,7 +73,6 @@ func (c *connection) Setup() {
 	// Bindings exchange to exchange
 	for _, e := range c.exchanges {
 		for _, b := range e.Bindings {
-
 			err := ch.ExchangeBind(e.Name, b.RoutingKey, b.Exchange, b.NoWait, b.Args)
 
 			if err != nil {
@@ -90,7 +85,6 @@ func (c *connection) Setup() {
 
 	// Declare queues
 	for _, q := range c.queues {
-
 		_, err := ch.QueueDeclare(q.Name, q.Durable, q.AutoDelete, q.Exclusive, q.NoWait, q.Args)
 
 		if err != nil {
@@ -100,7 +94,6 @@ func (c *connection) Setup() {
 		c.logger.Info(fmt.Sprintf("Rabbit MQ queue declare %s", q.Name), nil)
 
 		for _, b := range q.Bindings {
-
 			err := ch.QueueBind(q.Name, b.RoutingKey, b.Exchange, b.NoWait, b.Args)
 
 			if err != nil {
@@ -113,10 +106,8 @@ func (c *connection) Setup() {
 }
 
 func (c *connection) Connect() {
-	connString := fmt.Sprintf("amqp://%s:%s@%s:%d/", c.user, c.password, c.host, c.port)
-
 	var err error
-	c.conn, err = amqp.Dial(connString)
+	c.conn, err = amqp.Dial(c.dsn)
 
 	if err != nil {
 		c.logger.Error(fmt.Sprintf("Rabbit MQ connection error: %s", err), logger.Context{"error": err})
@@ -144,7 +135,7 @@ func (c *connection) Connect() {
 		c.CreateChannel()
 	}
 
-	c.logger.Info(fmt.Sprintf("Rabbit MQ connected to %s", connString), nil)
+	c.logger.Info("Rabbit MQ connected", nil)
 }
 
 func (c *connection) Disconnect() {
@@ -154,7 +145,6 @@ func (c *connection) Disconnect() {
 }
 
 func (c *connection) CreateChannel() int {
-
 	ch, err := c.conn.Channel()
 
 	if err != nil {
@@ -195,7 +185,7 @@ func (c *connection) Stop() {
 		}
 	}
 
-	if exists == false && c.conn != nil {
+	if !exists && c.conn != nil {
 		c.conn.Close()
 		c.conn = nil
 		c.logger.Info("Rabbit MQ connection close.", nil)
@@ -203,6 +193,6 @@ func (c *connection) Stop() {
 }
 
 // NewConnection creates new Connection struct (disconnected until Connect is called)
-func NewConnection(host string, port int, user string, password string, logger logger.Logger) (r Connection) {
-	return &connection{host: host, port: port, user: user, password: password, restartChan: make(chan bool), logger: logger}
+func NewConnection(dsn string, logger logger.Logger) (r Connection) {
+	return &connection{dsn: dsn, restartChan: make(chan bool), logger: logger}
 }

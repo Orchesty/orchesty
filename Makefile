@@ -1,12 +1,25 @@
 .PHONY: docker-build docker-push go-test
 
+DC=docker-compose
+DE=docker-compose exec -T app
+
 TAG := dev
 DOCKER_REGISTRY := dkr.hanaboso.net/pipes/pipes/limiter
 PUBLIC_REGISTRY := hanaboso/limiter
 
+.env:
+	sed -e 's/{DEV_UID}/$(shell id -u)/g' \
+		-e 's/{DEV_GID}/$(shell id -g)/g' \
+		-e 's/{GITLAB_CI}/$(echo $GITLAB_CI)/g' \
+		.env.dist >> .env; \
+
 lint:
-	gofmt -w cmd pkg
-	golint ./cmd/... ./pkg/...
+	$(DE) go fmt ./...
+	excludes='';\
+	for file in $$(ls -R $$(find . -type f ) | grep test.go); do\
+		excludes="$${excludes} -exclude $$(echo $${file} | cut -c 3-)";\
+	done;\
+	$(DE) revive -config config.toml $${excludes} -formatter friendly ./...
 
 build:
 	docker build -t $(DOCKER_REGISTRY):$(TAG) .
@@ -14,17 +27,25 @@ build:
 	docker tag ${DOCKER_REGISTRY}:${TAG} $(PUBLIC_REGISTRY):$(TAG)
 	docker push $(PUBLIC_REGISTRY):$(TAG)
 
-go-test:
-	# for mac users: $ sudo ifconfig lo0 alias 127.0.0.10 up
-	docker-compose up -d
-	RABBITMQ_HOST=localhost MONGO_HOST=localhost go test ./...
+docker-compose.ci.yml:
+	# Comment out any port forwarding
+	sed -r 's/^(\s+ports:)$$/#\1/g; s/^(\s+- \$$\{DEV_IP\}.*)$$/#\1/g' docker-compose.yml > docker-compose.ci.yml
 
-ci-test:
-	docker-compose -f docker-compose.ci.yml pull
-	docker-compose -f docker-compose.ci.yml up -d --force-recreate
-	# waiting for rabbitMQ to get ready...
-	sleep 10
-	docker-compose -f docker-compose.ci.yml exec -T limiter go test ./...
+docker-up-force: .env
+	$(DC) pull
+	$(DC) up -d --force-recreate --remove-orphans
 
-ci-clean:
+docker-down-clean: .env
+	$(DC) down -v
+
+test: docker-up-force fast-test docker-down-clean
+
+ci-test: test
+
+fast-test: lint
+	$(DE) mkdir var || true
+	$(DE) go test -cover -coverprofile var/coverage.out ./... -count=1
+	$(DE) go tool cover -html=var/coverage.out -o var/coverage.html
+
+clean:
 	docker-compose down -v

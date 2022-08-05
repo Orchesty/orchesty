@@ -2,14 +2,13 @@ package main
 
 import (
 	"fmt"
+	"go.mongodb.org/mongo-driver/mongo"
 	"log"
 	"os"
 	"os/signal"
 	"strconv"
 	"syscall"
 	"time"
-
-	"gopkg.in/mgo.v2"
 
 	"limiter/pkg/env"
 	"limiter/pkg/limiter"
@@ -58,7 +57,7 @@ func main() {
 	gracefulShutdown(tcpServer, consumer, publisher, serverFault)
 }
 
-func createIndexes(store storage.Storage, indexes []mgo.Index) error {
+func createIndexes(store storage.Storage, indexes []mongo.IndexModel) error {
 	for _, index := range indexes {
 		if err := store.CreateIndex(index); err != nil {
 			return err
@@ -70,8 +69,6 @@ func createIndexes(store storage.Storage, indexes []mgo.Index) error {
 
 func prepareStorage() storage.Storage {
 	db := storage.NewMongo(
-		env.GetEnv("MONGO_HOST", "mongodb"),
-		env.GetEnv("MONGO_DB", "limiter"),
 		env.GetEnv("MONGO_COLLECTION", "messages"),
 		logger.GetLogger(),
 	)
@@ -82,10 +79,6 @@ func prepareStorage() storage.Storage {
 func prepareRabbit() (rabbitmq.Consumer, rabbitmq.Publisher, error) {
 	inputQueue := env.GetEnv("RABBITMQ_INPUT_QUEUE", "pipes.limiter")
 	pc := env.GetEnv("RABBITMQ_INPUT_QUEUE_PREFETCH_COUNT", "100")
-	rabbitPort, err := strconv.Atoi(env.GetEnv("RABBITMQ_PORT", "5672"))
-	if err != nil {
-		return nil, nil, fmt.Errorf("can't get RABBITMQ_PORT [%v]", err)
-	}
 
 	prefetchCount, err := strconv.Atoi(pc)
 	if err != nil {
@@ -93,10 +86,7 @@ func prepareRabbit() (rabbitmq.Consumer, rabbitmq.Publisher, error) {
 	}
 
 	conn := rabbitmq.NewConnection(
-		env.GetEnv("RABBITMQ_HOST", "rabbitmq"),
-		rabbitPort,
-		env.GetEnv("RABBITMQ_USER", "guest"),
-		env.GetEnv("RABBITMQ_PASS", "guest"),
+		env.GetEnv("RABBITMQ_DSN", ""),
 		logger.GetLogger(),
 	)
 
@@ -123,15 +113,14 @@ func prepareLogger(severityLevel string) {
 	logger.GetLogger().AddHandler(
 		logger.NewLogStashHandler(
 			logger.NewUpdSender(
-				env.GetEnv("LOGSTASH_HOST", "logstash"),
-				env.GetEnv("LOGSTASH_PORT", "5120"),
+				env.GetEnv("UDP_LOGGER_URL", "logstash:5120"),
 			),
 		),
 	)
 }
 
 func prepareGuard(storage storage.Storage) limiter.Guard {
-	tooOld := time.Hour * 36
+	tooOld := time.Hour * 24 * 365
 	guard := limiter.NewLimitGuard(storage, logger.GetLogger())
 
 	// check immediately

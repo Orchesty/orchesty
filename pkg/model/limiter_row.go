@@ -41,7 +41,7 @@ func ParseLimiterRow(msg string) (LimiterRow, error) {
 	}
 
 	//TODO: refactor
-	if data[0] == "pf-check" {
+	if data[0] == "check" {
 		// matches check limit request message
 		if len(data) == 5 || len(data) == 8 {
 			result.Name = data[0]
@@ -86,7 +86,7 @@ func ParseLimiterRow(msg string) (LimiterRow, error) {
 		}
 	} else {
 		if len(data) == 3 || len(data) == 6 {
-			result.Name = "pf-check"
+			result.Name = "check"
 			result.ID = ""
 
 			timeParam, err := strconv.Atoi(data[1])

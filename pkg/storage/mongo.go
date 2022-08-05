@@ -1,67 +1,61 @@
 package storage
 
 import (
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
-
-	"limiter/pkg/logger"
-
 	"fmt"
-	"time"
+	"github.com/hanaboso/go-mongodb"
+	log "github.com/sirupsen/logrus"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"limiter/pkg/config"
+	"limiter/pkg/logger"
 )
 
-// Mongo represents the mongo db connection
-type Mongo struct {
-	host       string
-	db         string
+// MongoDefault represents the mongo db connection
+type MongoDefault struct {
+	connection *mongodb.Connection
 	collection string
-	session    *mgo.Session
+	session    mongo.Session
 	logger     logger.Logger
 }
 
-// Connect creates new connection to mongo DB
-func (s *Mongo) Connect() {
+// Connect connects to database
+func (m *MongoDefault) Connect() {
+	log.Info("Connecting to MongoDB")
+
+	m.connection = &mongodb.Connection{}
+	m.connection.Connect(config.Config.MongoDB.Dsn)
 	var err error
-	s.logger.Info(fmt.Sprintf("Mongo DB connecting to: %s", s.host), nil)
-	s.session, err = mgo.DialWithTimeout(s.host, 2500*time.Millisecond)
+	m.session, err = m.connection.StartSession()
 	if err != nil {
-		s.logger.Error(fmt.Sprintf("Mongo DB error: %s", err), logger.Context{"error": err})
-		s.reconnect()
-		return
+		log.Error(err)
 	}
-
-	s.session.SetMode(mgo.Monotonic, true)
-
-	s.logger.Info(fmt.Sprintf("Mongo DB is connected to: %s", s.host), nil)
+	log.Info("MongoDB successfully connected!")
 }
 
-// Disconnect closes the mongo db connection
-func (s *Mongo) Disconnect() {
-	if s.session != nil {
-		s.session.Close()
-	}
+// Disconnect disconnects from database
+func (m *MongoDefault) Disconnect() {
+	m.connection.Disconnect()
 }
 
-func (s *Mongo) reconnect() {
-	s.logger.Info("Waiting 1s.", nil)
-	time.Sleep(time.Second * 1)
-	s.Disconnect()
-	s.Connect()
+// IsConnected checks connection status
+func (m *MongoDefault) IsConnected() bool {
+	return m.connection.IsConnected()
 }
 
 // CanHandle just calls Exists method
-func (s *Mongo) CanHandle(key string, time int, value int, groupKey string, groupTime int, groupValue int) (bool, error) {
-	return s.Exists(key)
+func (m *MongoDefault) CanHandle(key string, _ int, _ int, _ string, _ int, _ int) (bool, error) {
+	return m.Exists(key)
 }
 
 // Remove removes the document by it's unique id
-func (s *Mongo) Remove(key string, id bson.ObjectId) (bool, error) {
-	session := s.getActiveSession()
-	defer session.Close()
+func (m *MongoDefault) Remove(_ string, id primitive.ObjectID) (bool, error) {
+	innerContext, cancel := m.connection.Context()
+	defer cancel()
 
-	c := session.DB(s.db).C(s.collection)
-
-	if err := c.RemoveId(id); err != nil {
+	if _, err := m.connection.Database.Collection(m.collection).DeleteOne(innerContext, primitive.M{
+		"_id": id,
+	}); err != nil {
 		return false, err
 	}
 
@@ -69,40 +63,56 @@ func (s *Mongo) Remove(key string, id bson.ObjectId) (bool, error) {
 }
 
 // ClearCacheItem remove key from memory cache
-func (s *Mongo) ClearCacheItem(key string, val int) bool {
+func (m *MongoDefault) ClearCacheItem(_ string, _ int) bool {
 	return true
 }
 
 // Save persists Message to mongo storage and returns it's limitKey
-func (s *Mongo) Save(m *Message) (string, error) {
-	session := s.getActiveSession()
-	defer session.Close()
+func (m *MongoDefault) Save(message *Message) (string, error) {
+	innerContext, cancel := m.connection.Context()
+	defer cancel()
 
-	c := session.DB(s.db).C(s.collection)
-	if err := c.Insert(m); err != nil {
-		return m.LimitKey, err
+	if _, err := m.connection.Database.Collection(m.collection).InsertOne(innerContext, message); err != nil {
+		return message.LimitKey, err
 	}
 
-	return m.LimitKey, nil
+	return message.LimitKey, nil
 }
 
 // CreateIndex - RunCommand run command
-func (s *Mongo) CreateIndex(index mgo.Index) error {
-	session := s.getActiveSession()
-	defer session.Close()
+func (m *MongoDefault) CreateIndex(index mongo.IndexModel) error {
+	innerContext, cancel := m.connection.Context()
+	defer cancel()
 
-	return session.DB(s.db).C(s.collection).EnsureIndex(index)
+	if _, err := m.connection.Database.Collection(m.collection).Indexes().CreateOne(innerContext, index); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // Exists return boolean if any document found with given key or returns error if some mongo error occurs
-func (s *Mongo) Exists(key string) (bool, error) {
-	session := s.getActiveSession()
-	defer session.Close()
+func (m *MongoDefault) Exists(key string) (bool, error) {
+	innerContext, cancel := m.connection.Context()
+	defer cancel()
 
-	c := session.DB(s.db).C(s.collection)
+	limit64 := int64(1)
 
 	var messages []*Message
-	if err := c.Find(bson.M{"limitkey": key}).Limit(1).All(&messages); err != nil {
+	cursor, err := m.connection.Database.Collection(m.collection).Find(innerContext, primitive.M{"limitkey": key},
+		&options.FindOptions{
+			Limit: &limit64,
+			Sort: primitive.D{
+				{"created", 1},
+			},
+		})
+
+	if err != nil {
+		return false, err
+	}
+
+	err = cursor.All(innerContext, &messages)
+	if err != nil {
 		return false, err
 	}
 
@@ -110,14 +120,27 @@ func (s *Mongo) Exists(key string) (bool, error) {
 }
 
 // Get tries to find up to X messages in the storage by their key, where X is the length param value
-func (s *Mongo) Get(key string, length int) ([]*Message, error) {
+func (m *MongoDefault) Get(key string, limit int) ([]*Message, error) {
+	innerContext, cancel := m.connection.Context()
+	defer cancel()
+
+	limit64 := int64(limit)
+
 	var messages []*Message
-	session := s.getActiveSession()
-	defer session.Close()
+	cursor, err := m.connection.Database.Collection(m.collection).Find(innerContext, primitive.M{"limitkey": key},
+		&options.FindOptions{
+			Limit: &limit64,
+			Sort: primitive.D{
+				{"created", 1},
+			},
+		})
 
-	c := session.DB(s.db).C(s.collection)
+	if err != nil {
+		return make([]*Message, 0), err
+	}
 
-	if err := c.Find(bson.M{"limitkey": key}).Limit(length).Sort("created").Iter().All(&messages); err != nil {
+	err = cursor.All(innerContext, &messages)
+	if err != nil {
 		return make([]*Message, 0), err
 	}
 
@@ -125,14 +148,27 @@ func (s *Mongo) Get(key string, length int) ([]*Message, error) {
 }
 
 // GetMessages get records from messages
-func (s *Mongo) GetMessages(field, key string, length int) ([]*Message, error) {
+func (m *MongoDefault) GetMessages(field, key string, limit int) ([]*Message, error) {
+	innerContext, cancel := m.connection.Context()
+	defer cancel()
+
+	limit64 := int64(limit)
+
 	var messages []*Message
-	session := s.getActiveSession()
-	defer session.Close()
+	cursor, err := m.connection.Database.Collection(m.collection).Find(innerContext, primitive.M{field: key},
+		&options.FindOptions{
+			Limit: &limit64,
+			Sort: primitive.D{
+				{"created", 1},
+			},
+		})
 
-	c := session.DB(s.db).C(s.collection)
+	if err != nil {
+		return make([]*Message, 0), err
+	}
 
-	if err := c.Find(bson.M{field: key}).Limit(length).Sort("created").Iter().All(&messages); err != nil {
+	err = cursor.All(innerContext, &messages)
+	if err != nil {
 		return make([]*Message, 0), err
 	}
 
@@ -140,14 +176,24 @@ func (s *Mongo) GetMessages(field, key string, length int) ([]*Message, error) {
 }
 
 // Count tries to find up to X messages in the storage by their key, where X is the length param value
-func (s *Mongo) Count(key string, limit int) (int, error) {
-	session := s.getActiveSession()
-	defer session.Close()
+func (m *MongoDefault) Count(key string, limit int) (int, error) {
+	innerContext, cancel := m.connection.Context()
+	defer cancel()
 
-	c := session.DB(s.db).C(s.collection)
+	limit64 := int64(limit)
 
 	var messages []*Message
-	if err := c.Find(bson.M{"limitkey": key}).Limit(limit).All(&messages); err != nil {
+	cursor, err := m.connection.Database.Collection(m.collection).Find(innerContext, primitive.M{"limitkey": key},
+		&options.FindOptions{
+			Limit: &limit64,
+		})
+
+	if err != nil {
+		return 0, err
+	}
+
+	err = cursor.All(innerContext, &messages)
+	if err != nil {
 		return 0, err
 	}
 
@@ -155,22 +201,28 @@ func (s *Mongo) Count(key string, limit int) (int, error) {
 }
 
 // CountInGroup get group count
-func (s *Mongo) CountInGroup(keys []string, limit int) (int, error) {
+func (m *MongoDefault) CountInGroup(keys []string, limit int) (int, error) {
 	if len(keys) == 0 {
 		return 0, nil
 	}
 
-	session := s.getActiveSession()
-	defer session.Close()
+	innerContext, cancel := m.connection.Context()
+	defer cancel()
 
-	c := session.DB(s.db).C(s.collection)
+	limit64 := int64(limit)
 
-	items := make([]interface{}, 0)
-	for _, key := range keys {
-		items = append(items, bson.M{"groupkey": key})
-	}
 	var messages []*Message
-	if err := c.Find(bson.M{"groupkey": keys[0]}).Limit(limit).All(&messages); err != nil {
+	cursor, err := m.connection.Database.Collection(m.collection).Find(innerContext, primitive.M{"groupkey": keys[0]},
+		&options.FindOptions{
+			Limit: &limit64,
+		})
+
+	if err != nil {
+		return 0, err
+	}
+
+	err = cursor.All(innerContext, &messages)
+	if err != nil {
 		return 0, err
 	}
 
@@ -178,10 +230,10 @@ func (s *Mongo) CountInGroup(keys []string, limit int) (int, error) {
 }
 
 // GetDistinctFirstItems returns for every distinct limitkey the first record
-func (s *Mongo) GetDistinctFirstItems() (map[string]*Message, error) {
+func (m *MongoDefault) GetDistinctFirstItems() (map[string]*Message, error) {
 	items := make(map[string]*Message, 0)
 
-	keys, err := s.getDistinctKeys()
+	keys, err := m.getDistinctKeys()
 	if err != nil {
 		return items, err
 	}
@@ -190,7 +242,7 @@ func (s *Mongo) GetDistinctFirstItems() (map[string]*Message, error) {
 	}
 
 	for _, key := range keys {
-		item, err := s.Get(key, 1)
+		item, err := m.Get(key, 1)
 		if err != nil {
 			return items, err
 		}
@@ -204,10 +256,10 @@ func (s *Mongo) GetDistinctFirstItems() (map[string]*Message, error) {
 }
 
 // GetDistinctGroupFirstItems return all saved groups
-func (s *Mongo) GetDistinctGroupFirstItems() (map[string]*Message, error) {
+func (m *MongoDefault) GetDistinctGroupFirstItems() (map[string]*Message, error) {
 	items := make(map[string]*Message, 0)
 
-	keys, err := s.getGroupDistinctKeys()
+	keys, err := m.getGroupDistinctKeys()
 	if err != nil {
 		return items, err
 	}
@@ -216,7 +268,7 @@ func (s *Mongo) GetDistinctGroupFirstItems() (map[string]*Message, error) {
 	}
 
 	for _, key := range keys {
-		item, err := s.GetMessages("groupkey", key, 1)
+		item, err := m.GetMessages("groupkey", key, 1)
 		if err != nil {
 			return items, err
 		}
@@ -230,50 +282,57 @@ func (s *Mongo) GetDistinctGroupFirstItems() (map[string]*Message, error) {
 }
 
 // getDistinctKeys returns the distinct limitkey values from collection
-func (s *Mongo) getDistinctKeys() ([]string, error) {
-	var keys []string
-	session := s.getActiveSession()
-	defer session.Close()
+func (m *MongoDefault) getDistinctKeys() ([]string, error) {
+	innerContext, cancel := m.connection.Context()
+	defer cancel()
+	cursor, err := m.connection.Database.Collection(m.collection).Distinct(innerContext, "limitkey", primitive.D{})
 
-	c := session.DB(s.db).C(s.collection)
-
-	if err := c.Find(nil).Distinct("limitkey", &keys); err != nil {
+	if err != nil {
 		return make([]string, 0), err
+	}
+	var keys []string
+
+	for _, value := range cursor {
+		keys = append(keys, value.(string))
 	}
 
 	return keys, nil
 }
 
-func (s *Mongo) getGroupDistinctKeys() ([]string, error) {
-	var keys []string
-	session := s.getActiveSession()
-	defer session.Close()
+func (m *MongoDefault) getGroupDistinctKeys() ([]string, error) {
+	innerContext, cancel := m.connection.Context()
+	defer cancel()
+	cursor, err := m.connection.Database.Collection(m.collection).Distinct(innerContext, "groupkeys", primitive.M{
+		"groupkey": primitive.M{"$ne": ""},
+	})
 
-	c := session.DB(s.db).C(s.collection)
-
-	if err := c.Find(bson.M{"groupkey": bson.M{"$ne": ""}}).Distinct("groupkey", &keys); err != nil {
+	if err != nil {
 		return make([]string, 0), err
+	}
+	var keys []string
+
+	for _, value := range cursor {
+		keys = append(keys, value.(string))
 	}
 
 	return keys, nil
 }
 
 // getActiveSession always returns the active session
-func (s *Mongo) getActiveSession() *mgo.Session {
-	return s.session.Copy()
+func (m *MongoDefault) getActiveSession() mongo.Session {
+	return m.session
 }
 
 // DropCollection drops current collection
-func (s *Mongo) DropCollection() {
-	session := s.getActiveSession()
-	defer session.Close()
-
-	if err := session.DB(s.db).C(s.collection).DropCollection(); err != nil {
-		s.logger.Error(fmt.Sprintf("failed drop collection %v", err), logger.Context{"error": err})
+func (m *MongoDefault) DropCollection() {
+	innerContext, cancel := m.connection.Context()
+	defer cancel()
+	if err := m.connection.Database.Collection(m.collection).Drop(innerContext); err != nil {
+		m.logger.Error(fmt.Sprintf("failed drop collection %v", err), logger.Context{"error": err})
 	}
 }
 
 // NewMongo returns the pointer to new created mongo storage instance
-func NewMongo(host string, db string, collection string, logger logger.Logger) *Mongo {
-	return &Mongo{host: host, db: db, collection: collection, logger: logger}
+func NewMongo(collection string, logger logger.Logger) *MongoDefault {
+	return &MongoDefault{collection: collection, logger: logger}
 }

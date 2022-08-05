@@ -15,13 +15,13 @@ components:
                 headers:
                     type: object
                     properties:
-                        pf-limit-key:
+                        limit-key:
                             type: string
-                        pf-limit-time:
+                        limit-time:
                             type: string
-                        pf-limit-value:
+                        limit-value:
                             type: string
-                        pf-limit-return-exchange:
+                        limit-return-exchange:
                             type: string
-                        pf-limit-return-routing-key:
+                        limit-return-routing-key:
                             type: string

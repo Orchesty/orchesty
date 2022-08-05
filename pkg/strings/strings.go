@@ -13,7 +13,6 @@ func init() {
 
 // Substring returns the part of given string
 func Substring(s string, start int, length int) string {
-
 	if start > len(s) {
 		return ""
 	}

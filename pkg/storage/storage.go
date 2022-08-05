@@ -1,8 +1,8 @@
 package storage
 
 import (
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 // Storage represents the DB
@@ -30,13 +30,13 @@ type Saver interface {
 	Save(m *Message) (string, error)
 
 	//CreateIndex run custom mongo command
-	CreateIndex(index mgo.Index) error
+	CreateIndex(index mongo.IndexModel) error
 }
 
 // Remover should be used for removing items from storage
 type Remover interface {
 	// Remove removes the document by it's unique object id
-	Remove(key string, id bson.ObjectId) (bool, error)
+	Remove(key string, id primitive.ObjectID) (bool, error)
 	// ClearCacheItem remove item in cache
 	ClearCacheItem(key string, val int) bool
 }

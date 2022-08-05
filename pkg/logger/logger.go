@@ -101,7 +101,6 @@ func (l *logger) Fatal(msg string, context Context) {
 }
 
 func (l *logger) Metrics(key string, msg string, context Context) {
-
 	data := strings.Split(key, "|")
 
 	if len(data) == 0 {
