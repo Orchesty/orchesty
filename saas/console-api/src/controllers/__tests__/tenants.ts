@@ -33,7 +33,7 @@ describe('tenantsController', () => {
   const authorization = getJWTToken(true);
   describe('list', () => {
     it('shouldReturnData', async () => {
-      const resp = await supertest(server).get('/tenants/list').set(authorization);
+      const resp = await supertest(server).get('/tenants').set(authorization);
       assert.deepEqual(resp.statusCode, 200);
       assert.deepEqual(resp.body.rows.length, 1);
       assert.deepEqual(resp.body, {
@@ -41,7 +41,7 @@ describe('tenantsController', () => {
       });
     });
     it('shouldReturn403', async () => {
-      const resp = await supertest(server).get('/tenants/list')
+      const resp = await supertest(server).get('/tenants')
         .set(getJWTToken());
       assert.deepEqual(resp.statusCode, 403);
     });
@@ -49,7 +49,7 @@ describe('tenantsController', () => {
 
   describe('get', () => {
     it('shouldReturnData', async () => {
-      const resp = await supertest(server).get('/tenants').query({ tenantId: 't1234' }).set(authorization);
+      const resp = await supertest(server).get('/tenants/t1234').set(authorization);
       assert.deepEqual(resp.statusCode, 200);
       assert.deepEqual(resp.body, {
         tenant: generateTenantsExport(),
@@ -58,7 +58,7 @@ describe('tenantsController', () => {
     it('shouldReturn400', async () => {
       jest.spyOn(tenantManager, 'getTenant')
         .mockImplementationOnce(() => { throw new Error(); });
-      const resp = await supertest(server).get('/tenants').query({ tenantId: 't123' }).set(authorization);
+      const resp = await supertest(server).get('/tenants/t123').set(authorization);
       assert.deepEqual(resp.statusCode, 400);
     });
   });
@@ -97,7 +97,7 @@ describe('tenantsController', () => {
     it('shouldReturnData', async () => {
       jest.spyOn(tenantManager, 'updateTenant')
         .mockReturnValue(Promise.resolve(generateTenantMockedData('neco1')));
-      const resp = await supertest(server).put('/tenants').query({ tenantId: 't1234' }).set(authorization)
+      const resp = await supertest(server).put('/tenants/t1234').set(authorization)
         .send({
           displayName: 'neco1',
         });
@@ -110,12 +110,12 @@ describe('tenantsController', () => {
 
   describe('delete', () => {
     it('shouldReturnData', async () => {
-      const resp = await supertest(server).delete('/tenants').query({ tenantId: 't123' }).set(authorization);
+      const resp = await supertest(server).delete('/tenants/t123').set(authorization);
       assert.deepEqual(resp.statusCode, 200);
       assert.deepEqual(resp.body, { msg: 'Tenant successfully deleted!' });
     });
     it('shouldReturn403', async () => {
-      const resp = await supertest(server).delete('/tenants').query({ tenantId: 't1234' }).set(authorization);
+      const resp = await supertest(server).delete('/tenants/t1234').set(authorization);
       assert.deepEqual(resp.statusCode, 403);
     });
   });
