@@ -53,7 +53,23 @@ final class NotificationController
      */
     public function getSettingEventsAction(): Response
     {
-        return $this->getResponse(NotificationEventEnum::getChoices());
+        $items = NotificationEventEnum::getChoices();
+
+        return $this->getResponse(
+            [
+                'items'  => $items,
+                'paging' => [
+                    'page'         => 1,
+                    'itemsPerPage' => 50,
+                    'total'        => count($items),
+                    'nextPage'     => 2,
+                    'lastPage'     => 2,
+                    'previousPage' => 1,
+                ],
+                'filter' => [],
+                'sorter' => [],
+            ],
+        );
     }
 
     /**

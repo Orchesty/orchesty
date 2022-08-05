@@ -47,14 +47,14 @@ class Tags
     /**
      * @var string
      *
-     * @ODM\Field(type="string")
+     * @ODM\Field(type="string", name="node_id")
      */
     private string $nodeId;
 
     /**
      * @var string
      *
-     * @ODM\Field(type="string")
+     * @ODM\Field(type="string", name="topology_id")
      */
     private string $topologyId;
 

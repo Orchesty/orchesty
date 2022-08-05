@@ -102,6 +102,21 @@ final class NodeSchemaDto
     /**
      * @return mixed[]
      */
+    public function getSystemConfigsArray(): array
+    {
+        return [
+            'sdkHost' => $this->systemConfigs->getSdkHost(),
+            'bridgeHost' => $this->systemConfigs->getBridgeHost(),
+            'prefetch' => $this->systemConfigs->getPrefetch(),
+            'repeaterEnabled' => $this->systemConfigs->isRepeaterEnabled(),
+            'repeaterHops' => $this->systemConfigs->getRepeaterHops(),
+            'repeaterInterval' => $this->systemConfigs->getRepeaterInterval(),
+        ];
+    }
+
+    /**
+     * @return mixed[]
+     */
     public function toArray(): array
     {
         return [

@@ -3,16 +3,17 @@
 namespace PipesFrameworkTests\Integration\Metrics\Manager;
 
 use Exception;
-use Hanaboso\PipesFramework\Metrics\Client\MetricsClient;
 use Hanaboso\PipesFramework\Metrics\Exception\MetricsException;
 use Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
+use Hanaboso\Utils\Date\DateTimeUtils;
 use Hanaboso\Utils\System\NodeGeneratorUtils;
 use InfluxDB\Database;
-use InfluxDB\Database\RetentionPolicy;
 use InfluxDB\Point;
+use MongoDB\BSON\UTCDateTime;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
+use PipesFrameworkTests\InfluxTestTrait;
 
 /**
  * Class InfluxMetricsManagerTest
@@ -21,6 +22,8 @@ use PipesFrameworkTests\DatabaseTestCaseAbstract;
  */
 final class InfluxMetricsManagerTest extends DatabaseTestCaseAbstract
 {
+
+    use InfluxTestTrait;
 
     /**
      * @covers \Hanaboso\PipesFramework\Metrics\Manager\MetricsManagerAbstract
@@ -38,7 +41,7 @@ final class InfluxMetricsManagerTest extends DatabaseTestCaseAbstract
      */
     public function testGetNodeMetrics(): void
     {
-        $topo = $this->createTopo();
+        $topo = $this->createTopology();
         $node = $this->createNode($topo);
 
         $this->setFakeData($topo, $node);
@@ -107,7 +110,7 @@ final class InfluxMetricsManagerTest extends DatabaseTestCaseAbstract
      */
     public function testGetTopologyMetrics(): void
     {
-        $topo      = $this->createTopo();
+        $topo      = $this->createTopology();
         $node      = $this->createNode($topo);
         $nodeTwo   = $this->createNode($topo);
         $nodeThree = $this->createNode($topo);
@@ -166,7 +169,7 @@ final class InfluxMetricsManagerTest extends DatabaseTestCaseAbstract
      */
     public function testGetTopologyRequestCountMetric(): void
     {
-        $topo = $this->createTopo();
+        $topo = $this->createTopology();
         $node = $this->createNode($topo);
 
         $this->setFakeData($topo, $node);
@@ -206,7 +209,7 @@ final class InfluxMetricsManagerTest extends DatabaseTestCaseAbstract
      */
     public function testGetApplicationMetrics(): void
     {
-        $topo = $this->createTopo();
+        $topo = $this->createTopology();
         $node = $this->createNode($topo);
 
         $this->setFakeData($topo, $node, 'nutshell');
@@ -220,7 +223,33 @@ final class InfluxMetricsManagerTest extends DatabaseTestCaseAbstract
             'nutshell',
         );
 
-        self::assertCount(0, $result['application']);
+        self::assertEquals(0, $result['application']);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager::getConsumerMetrics
+     * @throws Exception
+     */
+    public function testGetConsumerMetrics(): void
+    {
+        $topo = $this->createTopology();
+        $node = $this->createNode($topo);
+
+        $this->setFakeData($topo, $node, 'nutshell');
+
+        $manager = $this->getManager();
+        $result  = $manager->getConsumerMetrics();
+
+        self::assertEquals(
+            [
+                [
+                    'queue'     => 'pipes.limiter',
+                    'consumers' => 0,
+                    'created'   => $result[0]['created'],
+                ],
+            ],
+            $result,
+        );
     }
 
     /**
@@ -229,7 +258,7 @@ final class InfluxMetricsManagerTest extends DatabaseTestCaseAbstract
      */
     public function testGetUserMetrics(): void
     {
-        $topo = $this->createTopo();
+        $topo = $this->createTopology();
         $node = $this->createNode($topo);
 
         $this->setFakeData($topo, $node, 'nutshell', 'user123');
@@ -260,97 +289,14 @@ final class InfluxMetricsManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws Exception
-     */
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $client = $this->getClient()->createClient();
-        $client->selectDB('test')->drop();
-        $client->selectDB('test')->create(new RetentionPolicy('5s', '1h', 1, TRUE));
-        $client->selectDB('test')->create(new RetentionPolicy('4h', '4h', 1, TRUE));
-        $client->query('', 'CREATE DATABASE test');
-    }
-
-    /**
-     * --------------------------------------- HELPERS ----------------------------------
-     */
-
-    /**
-     * @return Topology
-     * @throws Exception
-     */
-    private function createTopo(): Topology
-    {
-        $topo = new Topology();
-        $topo->setName(uniqid());
-        $this->dm->persist($topo);
-        $this->dm->flush();
-
-        return $topo;
-    }
-
-    /**
-     * @param Topology $topology
+     * @covers \Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager::getConditions
      *
-     * @return Node
      * @throws Exception
      */
-    private function createNode(Topology $topology): Node
+    public function testEmptyConditions(): void
     {
-        $node = new Node();
-        $node
-            ->setTopology($topology->getId())
-            ->setName(uniqid());
-        $this->dm->persist($node);
-        $this->dm->flush();
-
-        return $node;
-    }
-
-    /**
-     * @return MetricsClient
-     */
-    private function getClient(): MetricsClient
-    {
-        /** @var string $host */
-        $host = self::$container->getParameter('influx.host');
-        /** @var int $port */
-        $port = self::$container->getParameter('influx.api_port');
-        /** @var string $user */
-        $user = self::$container->getParameter('influx.user');
-        /** @var string $pass */
-        $pass = self::$container->getParameter('influx.password');
-
-        return new MetricsClient($host, $port, $user, $pass, 'test');
-    }
-
-    /**
-     * @return InfluxMetricsManager
-     */
-    private function getManager(): InfluxMetricsManager
-    {
-        /** @var string $nodeTable */
-        $nodeTable = self::$container->getParameter('influx.node_table');
-        /** @var string $fpmTable */
-        $fpmTable = self::$container->getParameter('influx.monolith_table');
-        /** @var string $connTable */
-        $connTable = self::$container->getParameter('influx.connector_table');
-        /** @var string $rabbitTable */
-        $rabbitTable = self::$container->getParameter('influx.rabbit_table');
-        /** @var string $counterTable */
-        $counterTable = self::$container->getParameter('influx.counter_table');
-
-        return new InfluxMetricsManager(
-            $this->getClient(),
-            $this->dm,
-            $nodeTable,
-            $fpmTable,
-            $rabbitTable,
-            $counterTable,
-            $connTable,
-        );
+        $res = $this->invokeMethod($this->getManager(), 'getConditions', [[]]);
+        self::assertEmpty($res);
     }
 
     /**
@@ -429,11 +375,7 @@ final class InfluxMetricsManagerTest extends DatabaseTestCaseAbstract
                 'rabbitmq',
                 NULL,
                 [
-                    InfluxMetricsManager::QUEUE => NodeGeneratorUtils::generateQueueName(
-                        $topology->getId(),
-                        $node->getId(),
-                        $node->getName(),
-                    ),
+                    InfluxMetricsManager::NODE => $node->getId(),
                 ],
                 [
                     InfluxMetricsManager::AVG_MESSAGES => 5,
@@ -676,6 +618,23 @@ final class InfluxMetricsManagerTest extends DatabaseTestCaseAbstract
             ),
         ];
         $database->writePoints($points, Database::PRECISION_NANOSECONDS);
+
+        usleep(10);
+        $points = [
+            new Point(
+                'rabbitmq_consumer',
+                NULL,
+                [
+                    'queue'     => 'pipes.limiter',
+                    'consumers' => 0,
+                ],
+                [
+                    'created' => new UTCDateTime(DateTimeUtils::getUtcDateTime()),
+                ],
+            ),
+        ];
+        $database->writePoints($points, Database::PRECISION_NANOSECONDS);
+        usleep(10);
     }
 
 }

@@ -134,12 +134,29 @@ abstract class MetricsManagerAbstract implements LoggerAwareInterface
     abstract public function getNodeMetrics(Node $node, Topology $topology, array $params): array;
 
     /**
+     * @return mixed[]
+     */
+    abstract public function getContainerMetrics(): array;
+
+    /**
+     * @return mixed[]
+     */
+    abstract public function getConsumerMetrics(): array;
+
+    /**
      * @param Topology $topology
      * @param mixed[]  $params
      *
      * @return mixed[]
      */
     abstract public function getTopologyProcessTimeMetrics(Topology $topology, array $params): array;
+
+    /**
+     * @param mixed[] $params
+     *
+     * @return mixed[]
+     */
+    abstract public function getTopologiesProcessTimeMetrics(array $params): array;
 
     /**
      * @param Topology $topology
@@ -174,6 +191,7 @@ abstract class MetricsManagerAbstract implements LoggerAwareInterface
      * @param string          $rabbitTable
      * @param string          $counterTable
      * @param string          $connectorTable
+     * @param string          $consumerTable
      */
     public function __construct(
         DocumentManager $dm,
@@ -182,6 +200,7 @@ abstract class MetricsManagerAbstract implements LoggerAwareInterface
         protected string $rabbitTable,
         protected string $counterTable,
         protected string $connectorTable,
+        protected string $consumerTable,
     )
     {
         $this->nodeRepository = $dm->getRepository(Node::class);
@@ -192,14 +211,10 @@ abstract class MetricsManagerAbstract implements LoggerAwareInterface
      * Sets a logger instance on the object.
      *
      * @param LoggerInterface $logger
-     *
-     * @return MetricsManagerAbstract
      */
-    public function setLogger(LoggerInterface $logger): MetricsManagerAbstract
+    public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
-
-        return $this;
     }
 
     /**
@@ -230,13 +245,13 @@ abstract class MetricsManagerAbstract implements LoggerAwareInterface
     }
 
     /**
-     * @param MetricsDto $queue
-     * @param MetricsDto $waiting
-     * @param MetricsDto $process
-     * @param MetricsDto $cpu
-     * @param MetricsDto $request
-     * @param MetricsDto $error
-     * @param MetricsDto $counter
+     * @param MetricsDto        $queue
+     * @param MetricsDto        $waiting
+     * @param MetricsDto        $process
+     * @param MetricsDto        $cpu
+     * @param MetricsDto | NULL $request
+     * @param MetricsDto        $error
+     * @param MetricsDto        $counter
      *
      * @return mixed[]
      */
@@ -245,12 +260,12 @@ abstract class MetricsManagerAbstract implements LoggerAwareInterface
         MetricsDto $waiting,
         MetricsDto $process,
         MetricsDto $cpu,
-        MetricsDto $request,
+        MetricsDto | NULL $request,
         MetricsDto $error,
         MetricsDto $counter,
     ): array
     {
-        return [
+        $metrics = [
             self::QUEUE_DEPTH  => [
                 self::MAX_KEY => $queue->getMax(),
                 self::AVG_KEY => $queue->getAvg(),
@@ -270,11 +285,6 @@ abstract class MetricsManagerAbstract implements LoggerAwareInterface
                 self::AVG_KEY => $cpu->getAvg(),
                 self::MIN_KEY => $cpu->getMin(),
             ],
-            self::REQUEST_TIME => [
-                self::MAX_KEY => $request->getMax(),
-                self::AVG_KEY => $request->getAvg() == 0 ? 'n/a' : $request->getAvg(),
-                self::MIN_KEY => $request->getMin(),
-            ],
             self::PROCESS      => [
                 self::MAX_KEY => $counter->getMax(),
                 self::MIN_KEY => $counter->getMin(),
@@ -283,6 +293,16 @@ abstract class MetricsManagerAbstract implements LoggerAwareInterface
                 'errors'      => $error->getErrors(),
             ],
         ];
+
+        if ($request){
+            $metrics[self::REQUEST_TIME] = [
+                self::MAX_KEY => $request->getMax(),
+                self::AVG_KEY => $request->getAvg() == 0 ? 'n/a' : $request->getAvg(),
+                self::MIN_KEY => $request->getMin(),
+            ];
+        }
+
+        return $metrics;
     }
 
 }

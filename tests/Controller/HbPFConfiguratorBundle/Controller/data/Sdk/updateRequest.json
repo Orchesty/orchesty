@@ -1,8 +1,10 @@
 {
     "http": "PUT /api/sdks/:id",
     "body": {
-        "key": "One",
-        "value": "value"
+        "name": "One",
+        "url": "value"
     },
-    "headers": []
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
 }

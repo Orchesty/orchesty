@@ -2,7 +2,7 @@
     "http": "POST /api/user/login",
     "body": {
         "email": "test@example.com",
-        "password": "Passw0rd"
+        "password": "password"
     },
     "headers": []
 }

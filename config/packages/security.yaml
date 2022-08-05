@@ -1,5 +1,6 @@
 security:
-    encoders:
+    enable_authenticator_manager: true
+    password_hashers:
         Hanaboso\UserBundle\Document\User:
             algorithm: auto
             cost: 12
@@ -13,20 +14,27 @@ security:
                 class: Hanaboso\UserBundle\Document\User
                 property: email
     firewalls:
+        unsecured_test_api:
+            pattern: ^/api/applications/authorize/token
+            security: false
         unsecured_user_api:
-            pattern: ^/(api/user/login|api/user/logout|api/user/\w+/activate|api/user/\w+/set_password|api/user/reset_password|api/user/register)
+            pattern: ^/api/(user/login|user/logout|user/\w+/activate|user/\w+/set_password|user/reset_password|user/register|user/\w+/verify)
+            security: false
+        unsecured_status_api:
+            pattern: ^/api/status
             security: false
         unsecured_applications:
             pattern: ^/api/applications/.*/(sync|users)/.*
             stateless: true
             provider: api_provider
-            guard:
-                authenticators:
-                    - hbpf.authenticator.api_key
+            custom_authenticator:
+                - Hanaboso\PipesFramework\ApiGateway\Authenticator\ApiKey\ApiKeyAuthenticator
         secured_area:
             pattern: ^/
             security: true
             provider: user_provider
+            custom_authenticators:
+                - Hanaboso\UserBundle\Model\Security\JWTAuthenticator
             form_login:
                 check_path: /api/user/login
                 login_path: /api/user/login
@@ -36,6 +44,3 @@ security:
                 path: /api/user/logout
                 target: /
                 invalidate_session: true
-                success_handler: hbpf.user.handler.user
-        main:
-            anonymous: ~

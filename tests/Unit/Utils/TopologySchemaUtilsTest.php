@@ -3,8 +3,10 @@
 namespace PipesFrameworkTests\Unit\Utils;
 
 use Exception;
+use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
 use Hanaboso\RestBundle\Model\Decoder\XmlDecoder;
+use Hanaboso\Utils\File\File;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 
 /**
@@ -32,16 +34,7 @@ final class TopologySchemaUtilsTest extends KernelTestCaseAbstract
         $nodes = $schema->getNodes();
         self::assertCount(9, $schema->getNodes());
         self::assertCount(6, $schema->getSequences());
-        self::assertEquals('Event_1lqi8dm', $schema->getStartNode());
-
-        foreach ($nodes as $node) {
-            self::assertObjectHasAttribute('handler', $node);
-            self::assertObjectHasAttribute('id', $node);
-            self::assertObjectHasAttribute('name', $node);
-            self::assertObjectHasAttribute('cronTime', $node);
-            self::assertObjectHasAttribute('pipesType', $node);
-            self::assertObjectHasAttribute('systemConfigs', $node);
-        }
+        self::assertEquals(['Event_1lqi8dm'], $schema->getStartNode());
 
         self::assertEquals('bpmn:event', $nodes['Event_1lqi8dm']->getHandler());
         self::assertEquals('Event_1lqi8dm', $nodes['Event_1lqi8dm']->getId());
@@ -51,7 +44,7 @@ final class TopologySchemaUtilsTest extends KernelTestCaseAbstract
 
         self::assertCount(9, $schema->getNodes());
         self::assertCount(6, $schema->getSequences());
-        self::assertEquals('Event_1lqi8dm', $schema->getStartNode());
+        self::assertEquals(['Event_1lqi8dm'], $schema->getStartNode());
 
         self::assertEquals(
             [
@@ -66,12 +59,12 @@ final class TopologySchemaUtilsTest extends KernelTestCaseAbstract
         );
 
         $content = $this->load('tplg-no-process.tplg');
-        $schema  = TopologySchemaUtils::getSchemaObject($this->getXmlDecoder()->decode($content));
-        self::assertCount(0, $schema->getNodes());
-
-        $content = $this->load('tplg-with-process.tplg');
-        $schema  = TopologySchemaUtils::getSchemaObject($this->getXmlDecoder()->decode($content));
-        self::assertCount(0, $schema->getNodes());
+        try {
+            TopologySchemaUtils::getSchemaObject($this->getXmlDecoder()->decode($content));
+        } catch (TopologyException $e) {
+            self::assertEquals('Unsupported schema!', $e->getMessage());
+            self::assertEquals(TopologyException::UNSUPPORTED_SCHEMA, $e->getCode());
+        }
 
         $content = $this->load('tplg-no-type.tplg');
         $schema  = TopologySchemaUtils::getSchemaObject($this->getXmlDecoder()->decode($content));
@@ -89,7 +82,7 @@ final class TopologySchemaUtilsTest extends KernelTestCaseAbstract
         $result = $this->invokeMethod($topo, 'getPipesType', ['']);
         self::assertEquals('', $result);
 
-        $result = $this->invokeMethod($topo, 'getPipesType', ['gateway']);
+        $result = $this->invokeMethod($topo, 'getPipesType', ['bpmn:exclusiveGateway']);
         self::assertEquals('gateway', $result);
     }
 
@@ -100,7 +93,7 @@ final class TopologySchemaUtilsTest extends KernelTestCaseAbstract
      */
     private function load(string $name): string
     {
-        return (string) file_get_contents(sprintf('%s/data/%s', __DIR__, $name));
+        return File::getContent(sprintf('%s/data/%s', __DIR__, $name));
     }
 
     /**
@@ -108,7 +101,7 @@ final class TopologySchemaUtilsTest extends KernelTestCaseAbstract
      */
     private function getXmlDecoder(): XmlDecoder
     {
-        return self::$container->get('rest.decoder.xml');
+        return self::getContainer()->get('rest.decoder.xml');
     }
 
 }

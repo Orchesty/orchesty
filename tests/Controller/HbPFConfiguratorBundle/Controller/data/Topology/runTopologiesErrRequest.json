@@ -1,0 +1,9 @@
+{
+    "http": "POST /api/topologies/:id/run",
+    "body": {
+        "startingPoints": ["abc"]
+    },
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
+}

@@ -6,6 +6,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\Persistence\ObjectRepository;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Exception\CronException;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
@@ -27,7 +28,7 @@ use Throwable;
 final class CronManager
 {
 
-    private const CURL_COMMAND = "echo \"[CRON] [$(date +'%%Y-%%m-%%dT%%TZ')] Requesting %s: $(curl -H 'Accept: application/json' -H 'Content-Type: application/json' -X POST -d '{%s}' -s %s)\" >> /proc/1/fd/1";
+    private const CURL_COMMAND = 'echo "[CRON] [$(date +"%%Y-%%m-%%dT%%TZ")] Requesting %s: $(curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d "{%s}" %s)" &> /proc/1/fd/1';
 
     private const GET    = '%s/crons';
     private const CREATE = '%s/crons';
@@ -71,7 +72,9 @@ final class CronManager
      */
     public function getAll(): ResponseDto
     {
-        return $this->sendAndProcessRequest(new RequestDto(CurlManager::METHOD_GET, $this->getUrl(self::GET)));
+        return $this->sendAndProcessRequest(
+            new RequestDto($this->getUrl(self::GET), CurlManager::METHOD_GET, new ProcessDto()),
+        );
     }
 
     /**
@@ -86,7 +89,7 @@ final class CronManager
         [$topologyName, $nodeName] = $this->getTopologyAndNode($node);
 
         $url = $this->getUrl(self::CREATE);
-        $dto = (new RequestDto(CurlManager::METHOD_POST, $url))
+        $dto = (new RequestDto($url, CurlManager::METHOD_POST, new ProcessDto()))
             ->setBody(
                 Json::encode(
                     [
@@ -111,7 +114,7 @@ final class CronManager
     public function update(Node $node): ResponseDto
     {
         $url = $this->getUrl(self::UPDATE, $this->getHash($node));
-        $dto = (new RequestDto(CurlManager::METHOD_PUT, $url))
+        $dto = (new RequestDto($url, CurlManager::METHOD_PUT, new ProcessDto()))
             ->setBody(
                 Json::encode(
                     [
@@ -144,7 +147,7 @@ final class CronManager
         }
 
         $url = $this->getUrl(self::PATCH, $this->getHash($node));
-        $dto = (new RequestDto(CurlManager::METHOD_PATCH, $url))->setBody(Json::encode($body));
+        $dto = (new RequestDto($url, CurlManager::METHOD_PATCH, new ProcessDto()))->setBody(Json::encode($body));
 
         return $this->sendAndProcessRequest($dto);
     }
@@ -159,7 +162,7 @@ final class CronManager
     public function delete(Node $node): ResponseDto
     {
         $url = $this->getUrl(self::DELETE, $this->getHash($node));
-        $dto = new RequestDto(CurlManager::METHOD_DELETE, $url);
+        $dto = new RequestDto($url, CurlManager::METHOD_DELETE, new ProcessDto());
 
         return $this->sendAndProcessRequest($dto);
     }
@@ -174,7 +177,8 @@ final class CronManager
     public function batchCreate(array $nodes): ResponseDto
     {
         $body = $this->processNodes($nodes);
-        $dto  = (new RequestDto(CurlManager::METHOD_POST, $this->getUrl(self::BATCH)))->setBody($body);
+        $dto  = (new RequestDto($this->getUrl(self::BATCH), CurlManager::METHOD_POST, new ProcessDto()))
+            ->setBody($body);
 
         return $this->sendAndProcessRequest($dto);
     }
@@ -189,7 +193,7 @@ final class CronManager
     public function batchUpdate(array $nodes): ResponseDto
     {
         $body = $this->processNodes($nodes);
-        $dto  = (new RequestDto(CurlManager::METHOD_PUT, $this->getUrl(self::BATCH)))->setBody($body);
+        $dto  = (new RequestDto($this->getUrl(self::BATCH), CurlManager::METHOD_PUT, new ProcessDto()))->setBody($body);
 
         return $this->sendAndProcessRequest($dto);
     }
@@ -210,7 +214,8 @@ final class CronManager
         }
 
         $body = $this->processNodes($nodes, $exclude);
-        $dto  = (new RequestDto(CurlManager::METHOD_PATCH, $this->getUrl(self::BATCH)))->setBody($body);
+        $dto  = (new RequestDto($this->getUrl(self::BATCH), CurlManager::METHOD_PATCH, new ProcessDto()))
+            ->setBody($body);
 
         return $this->sendAndProcessRequest($dto);
     }
@@ -225,7 +230,8 @@ final class CronManager
     public function batchDelete(array $nodes): ResponseDto
     {
         $body = $this->processNodes($nodes, [self::TIME, self::COMMAND]);
-        $dto  = (new RequestDto(CurlManager::METHOD_DELETE, $this->getUrl(self::BATCH)))->setBody($body);
+        $dto  = (new RequestDto($this->getUrl(self::BATCH), CurlManager::METHOD_DELETE, new ProcessDto()))
+            ->setBody($body);
 
         return $this->sendAndProcessRequest($dto);
     }

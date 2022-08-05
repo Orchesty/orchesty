@@ -21,14 +21,9 @@ final class TopologyFileTest extends KernelTestCaseAbstract
      */
     public function testGetPath(): void
     {
-        $this->getFunctionMock('Hanaboso\PipesFramework\TopologyInstaller\Dto', 'file_get_contents')
-            ->expects(self::any())
-            ->willReturn(FALSE);
-
         $dto = new TopologyFile('name', __DIR__ . '/data/test.txt');
         self::assertEquals('/var/www/tests/Unit/TopologyInstaller/Dto/data/test.txt', $dto->getPath());
 
-        self::expectException(RuntimeException::class);
         $dto->getFileContents();
     }
 

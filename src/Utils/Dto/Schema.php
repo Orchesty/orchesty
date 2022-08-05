@@ -23,9 +23,9 @@ final class Schema
     private array $sequences = [];
 
     /**
-     * @var string
+     * @var string[]
      */
-    private string $startNode = '';
+    private array $startNode = [];
 
     /**
      * @return NodeSchemaDto[]
@@ -70,9 +70,9 @@ final class Schema
     }
 
     /**
-     * @return string
+     * @return string[]
      */
-    public function getStartNode(): string
+    public function getStartNode(): array
     {
         return $this->startNode;
     }
@@ -82,9 +82,9 @@ final class Schema
      *
      * @return Schema
      */
-    public function setStartNode(string $startNode): Schema
+    public function addStartNode(string $startNode): Schema
     {
-        $this->startNode = $startNode;
+        $this->startNode[] = $startNode;
 
         return $this;
     }
@@ -105,25 +105,72 @@ final class Schema
             return [];
         }
 
-        $index   = [];
-        $index[] = $this->getIndexItem($this->startNode);
-        $nextIds = $this->getNextIds($this->startNode);
+        $topology = [];
+        foreach ($this->startNode as $start) {
+            $index   = [];
+            $index[] = $this->getIndexItem($start);
+            $nextIds = $this->getNextIds($start);
 
-        while (!empty($nextIds)) {
-            $nextId  = array_shift($nextIds);
-            $index[] = $this->getIndexItem($nextId);
-            foreach ($this->getNextIds($nextId) as $follower) {
-                if (!in_array($this->getIndexItem($follower), $index, TRUE)) {
-                    $nextIds[] = $follower;
-                } else if ($checkInfiniteLoop) {
-                    $this->isInfinity();
+            if ($checkInfiniteLoop) {
+                $tree  = [];
+                $clone = $nextIds;
+                $this->addToTree($tree, $start, $clone);
+            }
+
+            while (!empty($nextIds)) {
+                $nextId  = array_shift($nextIds);
+                $index[] = $this->getIndexItem($nextId);
+                $ids     = $this->getNextIds($nextId);
+                if (!empty($ids) && $checkInfiniteLoop) {
+                        $clone = $ids;
+                        $this->addToTree($tree, $nextId, $clone);
+                }
+                foreach ($ids as $follower) {
+                    if (!in_array($this->getIndexItem($follower), $index, TRUE)) {
+                        $nextIds[] = $follower;
+                    }
+                }
+            }
+
+            if ($checkInfiniteLoop) {
+                $this->isInfinity($tree);
+            }
+
+            sort($index);
+            $topology[] = $index;
+        }
+
+        return $topology;
+    }
+
+    /**
+     * @param mixed[] $tree
+     * @param string  $parent
+     * @param mixed[] $followers
+     * @param bool    $canWrite
+     */
+    private function addToTree(array &$tree, string $parent, array &$followers, bool $canWrite = TRUE): void
+    {
+        foreach ($tree as $i => $node) {
+            foreach ($node as $name => $f) {
+                $isLast = next($tree) === FALSE;
+                if ($name === $parent) {
+                    foreach ($followers as $k => $follower) {
+                        $tree[$i][$parent][$follower] = [];
+                        unset($followers[$k]);
+                    }
+                } else if (!empty($f)) {
+                    $this->addToTree($tree[$i][$name], $parent, $followers, $isLast);
                 }
             }
         }
 
-        sort($index);
-
-        return $index;
+        if ($canWrite) {
+            foreach ($followers as $j => $follower) {
+                $tree[$parent][$follower] = [];
+                unset($followers[$j]);
+            }
+        }
     }
 
     /**
@@ -167,11 +214,27 @@ final class Schema
     }
 
     /**
+     * @param mixed[] $tree
+     * @param mixed[] $walked
+     *
      * @throws TopologyException
      */
-    private function isInfinity(): void
+    private function isInfinity(array &$tree, array &$walked = []): void
     {
-        throw new TopologyException('Invalid schema - infinite loop', TopologyException::SCHEMA_INFINITE_LOOP);
+        foreach ($tree as $name => $node) {
+            if (array_search($name, $walked, TRUE)) {
+                throw new TopologyException('Invalid schema - infinite loop', TopologyException::SCHEMA_INFINITE_LOOP);
+            }
+
+            if (!empty($node)) {
+                $walked[] = $name;
+                $this->isInfinity($tree[$name], $walked);
+            } else if (count($tree) == 1) {
+                $walked = [];
+            } else {
+                unset($tree[$name]);
+            }
+        }
     }
 
 }

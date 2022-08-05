@@ -22,7 +22,8 @@ final class NotificationControllerTest extends ControllerTestCaseAbstract
      */
     public function testGetSettingsAction(): void
     {
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/NotificationController/getSettingsRequest.json',
             ['id' => '123456789', 'created' => '2010-10-10 10:10:10', 'updated' => '2010-10-10 10:10:10'],
         );
@@ -35,7 +36,7 @@ final class NotificationControllerTest extends ControllerTestCaseAbstract
      */
     public function testGetSettingEventsAction(): void
     {
-        $this->assertResponse(__DIR__ . '/data/NotificationController/getSettingEventsRequest.json');
+        $this->assertResponseLogged($this->jwt,__DIR__ . '/data/NotificationController/getSettingEventsRequest.json');
     }
 
     /**
@@ -45,7 +46,7 @@ final class NotificationControllerTest extends ControllerTestCaseAbstract
      */
     public function testGetSettingAction(): void
     {
-        $this->assertResponse(__DIR__ . '/data/NotificationController/getSettingRequest.json');
+        $this->assertResponseLogged($this->jwt,__DIR__ . '/data/NotificationController/getSettingRequest.json');
     }
 
     /**
@@ -55,7 +56,7 @@ final class NotificationControllerTest extends ControllerTestCaseAbstract
      */
     public function testUpdateSettingsAction(): void
     {
-        $this->assertResponse(__DIR__ . '/data/NotificationController/updateSettingsRequest.json');
+        $this->assertResponseLogged($this->jwt,__DIR__ . '/data/NotificationController/updateSettingsRequest.json',);
     }
 
 }

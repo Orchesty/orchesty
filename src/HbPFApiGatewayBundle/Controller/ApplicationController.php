@@ -2,8 +2,13 @@
 
 namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\Persistence\ObjectRepository;
 use Exception;
 use Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator;
+use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
+use Hanaboso\Utils\Traits\ControllerTrait;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -19,24 +24,35 @@ use Symfony\Component\Routing\Annotation\Route;
 final class ApplicationController extends AbstractController
 {
 
+    use ControllerTrait;
+
+    /**
+     * @var ObjectRepository<ApplicationInstall>&ApplicationInstallRepository
+     */
+    protected $repository;
+
     /**
      * ApplicationController constructor.
      *
-     * @param ServiceLocator $locator
+     * @param ServiceLocator  $locator
+     * @param DocumentManager $dm
      */
-    public function __construct(private ServiceLocator $locator)
+    public function __construct(private ServiceLocator $locator, private DocumentManager $dm)
     {
+        $this->repository = $this->dm->getRepository(ApplicationInstall::class);
     }
 
     /**
      * @Route("/applications", methods={"GET", "OPTIONS"})
      *
+     * @param Request $request
+     *
      * @return Response
      */
-    public function listOfApplicationsAction(): Response
+    public function listOfApplicationsAction(Request $request): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done
-        return new JsonResponse($this->locator->getApps());
+        return new JsonResponse($this->locator->getApps($request->query->get('exclude', '')));
     }
 
     /**
@@ -55,14 +71,15 @@ final class ApplicationController extends AbstractController
     /**
      * @Route("/applications/users/{user}", methods={"GET", "OPTIONS"})
      *
-     * @param string $user
+     * @param Request $request
+     * @param string  $user
      *
      * @return Response
      */
-    public function getUsersApplicationAction(string $user): Response
+    public function getUsersApplicationAction(Request $request, string $user): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done
-        return new JsonResponse($this->locator->getUserApps($user));
+        return new JsonResponse($this->locator->getUserApps($user, $request->query->get('exclude', '')));
     }
 
     /**
@@ -216,38 +233,6 @@ final class ApplicationController extends AbstractController
         $url = $this->locator->authorizationQueryToken($request->query->all());
 
         return new RedirectResponse($url['redirectUrl']);
-    }
-
-    /**
-     * @Route("/applications/statistics/application/{key}", methods={"GET", "OPTIONS"})
-     *
-     * @param Request     $request
-     * @param string|null $key
-     *
-     * @return Response
-     */
-    public function applicationStatisticsAction(Request $request, ?string $key): Response
-    {
-        return $this->forward(
-            'Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::applicationMetricsAction',
-            ['request' => $request, 'key' => $key],
-        );
-    }
-
-    /**
-     * @Route("/applications/statistics/user/{user}", methods={"GET", "OPTIONS"})
-     *
-     * @param Request     $request
-     * @param string|null $user
-     *
-     * @return Response
-     */
-    public function userStatisticsAction(Request $request, ?string $user): Response
-    {
-        return $this->forward(
-            'Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::userMetricsAction',
-            ['request' => $request, 'user' => $user],
-        );
     }
 
 }

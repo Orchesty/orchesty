@@ -25,6 +25,8 @@ final class TopologyException extends PipesFrameworkExceptionAbstract
     public const SCHEMA_START_NODE_MISSING        = self::OFFSET + 11;
     public const SCHEMA_INFINITE_LOOP             = self::OFFSET + 12;
     public const TOPOLOGY_NODE_CRON_NOT_AVAILABLE = self::OFFSET + 13;
+    public const SDK_HEADERS_NOT_FOUND            = self::OFFSET + 14;
+    public const UNSUPPORTED_SCHEMA               = self::OFFSET + 15;
 
     protected const OFFSET = 2_400;
 

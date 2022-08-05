@@ -1,6 +1,6 @@
 TAG?=dev
 IMAGE=dkr.hanaboso.net/pipes/pipes/pf-bundle:$(TAG)
-PUBLIC_IMAGE=hanaboso/pipes-pf-bundle:$(TAG)
+PUBLIC_IMAGE=hanaboso/backend:$(TAG)
 
 DC=docker-compose
 DE=docker-compose exec -T app
@@ -61,30 +61,32 @@ phpstan:
 	$(DE) ./vendor/bin/phpstan analyse -c tests/phpstan.neon -l 8 src tests
 
 phpunit:
-	$(DE) ./vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --colors tests/Unit
+	$(DE) ./vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --colors=always tests/Unit
 
 phpintegration: database-create
-	$(DE) ./vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --colors tests/Integration
+	$(DE) ./vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --colors=always tests/Integration
 
 phpcontroller:
-	$(DE) ./vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --colors tests/Controller
+	$(DE) ./vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --colors=always tests/Controller
 
 phpcoverage:
 	$(DE) ./vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --coverage-html var/coverage --whitelist src tests
 
 phpcoverage-ci:
-	$(DE) ./vendor/hanaboso/php-check-utils/bin/coverage.sh -p $$(nproc)
+	$(DE) ./vendor/hanaboso/php-check-utils/bin/coverage.sh -c 90 -p $$(nproc)
 
 phpmanual-up:
 	cd tests/Manual; $(MAKE) docker-up-force;
 
 phpmanual-tests:
-	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --colors tests/Manual/
+	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --colors=always tests/Manual/
 
 phpmanual-down:
 	cd tests/Manual; $(MAKE) docker-down-clean;
 
-test: docker-up-force composer-install fasttest
+ci-test: test
+
+test: docker-up-force composer-install fasttest docker-down-clean
 
 fasttest: codesniffer clear-cache phpstan phpunit phpintegration phpcontroller phpcoverage-ci
 
@@ -101,4 +103,6 @@ clear-cache:
 	$(DE) php bin/console cache:warmup --env=test
 
 database-create:
-	$(DE) php bin/console doctrine:mongodb:schema:create --dm=metrics || true
+	$(DE) php bin/console doctrine:mongodb:schema:update --dm default || true
+	$(DE) php bin/console doctrine:mongodb:schema:update --dm metrics || true
+	$(DE) php bin/console mongodb:index:update || true

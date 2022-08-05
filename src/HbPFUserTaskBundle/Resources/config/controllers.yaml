@@ -1,0 +1,10 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    Hanaboso\PipesFramework\HbPFUserTaskBundle\Controller\UserTaskController:
+        class: Hanaboso\PipesFramework\HbPFUserTaskBundle\Controller\UserTaskController
+        arguments:
+            - '@hbpf.user_task.handler.user_task'
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]

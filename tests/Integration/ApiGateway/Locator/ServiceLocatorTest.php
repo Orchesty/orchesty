@@ -12,6 +12,7 @@ use Hanaboso\Utils\String\Json;
 use LogicException;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 use Psr\Log\NullLogger;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -36,7 +37,22 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
         $dto = new ResponseDto(200, '', Json::encode(['items' => [['key' => 'null']]]), []);
 
         $res = $this->createLocator($dto)->getApps();
-        self::assertEquals(['items' => [['key' => 'null']]], $res);
+        self::assertEquals(
+            [
+                'items'  => [['key' => 'null']],
+                'paging' => [
+                    'page'         => 1,
+                    'itemsPerPage' => 50,
+                    'total'        => 1,
+                    'nextPage'     => 2,
+                    'lastPage'     => 2,
+                    'previousPage' => 1,
+                ],
+                'filter' => [],
+                'sorter' => [],
+            ],
+            $res,
+        );
     }
 
     /**
@@ -66,7 +82,22 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
         $dto = new ResponseDto(200, '', Json::encode(['items' => [['key' => 'null']]]), []);
 
         $res = $this->createLocator($dto)->getUserApps('user');
-        self::assertEquals(['items' => [['key' => 'null']]], $res);
+        self::assertEquals(
+            [
+                'items'  => [['key' => 'null']],
+                'filter' => [],
+                'sorter' => [],
+                'paging' => [
+                    'page'         => 1,
+                    'itemsPerPage' => 50,
+                    'total'        => 1,
+                    'nextPage'     => 2,
+                    'lastPage'     => 2,
+                    'previousPage' => 1,
+                ],
+            ],
+            $res,
+        );
     }
 
     /**
@@ -81,7 +112,22 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
         $dto = new ResponseDto(200, '', Json::encode([]), []);
 
         $res = $this->createLocator($dto)->getUserApps('user');
-        self::assertEquals(['items' => []], $res);
+        self::assertEquals(
+            [
+                'items'  => [],
+                'sorter' => [],
+                'filter' => [],
+                'paging' => [
+                    'page'         => 1,
+                    'itemsPerPage' => 50,
+                    'total'        => 0,
+                    'nextPage'     => 2,
+                    'lastPage'     => 2,
+                    'previousPage' => 1,
+                ],
+            ],
+            $res,
+        );
     }
 
     /**
@@ -248,10 +294,13 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
         $res = $this->createLocator($dto)->getNodes();
         self::assertEquals(
             [
-                'name' => [
+                'name'    => [
                     'connector' => ['key' => 'null'],
                     'custom'    => ['key' => 'null'],
-                    'user'      => ['key' => 'null'],
+                    'batch'     => ['key' => 'null'],
+                ],
+                'backend' => [
+                    'user' => ['user-task'],
                 ],
             ],
             $res,
@@ -269,7 +318,14 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
         $dto = new ResponseDto(200, '', Json::encode(['key' => 'null']), []);
 
         $res = $this->createLocator($dto, TRUE)->getNodes();
-        self::assertEquals([], $res);
+        self::assertEquals(
+            [
+                'backend' => [
+                    'user' => ['user-task'],
+                ],
+            ],
+            $res,
+        );
     }
 
     /**
@@ -326,8 +382,8 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
         $req = new Request(['aa' => 'bb']);
         $req->setMethod('post');
 
-        $res = $this->createLocator($dto)->runSyncActions($req, 'key', 'someMethod');
-        self::assertEquals([], $res);
+        self::expectException(LogicException::class);
+        $this->createLocator($dto)->runSyncActions($req, 'key', 'someMethod');
     }
 
     /**
@@ -344,7 +400,7 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
     private function createLocator(ResponseDto $dto, bool $exception = FALSE): ServiceLocator
     {
         $sdk = new Sdk();
-        $sdk->setValue('name')->setKey('host');
+        $sdk->setName('name')->setUrl('host');
         $this->dm->persist($sdk);
         $this->dm->flush();
         $this->dm->clear();
@@ -357,9 +413,13 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
             $curl->method('send')->willReturn($dto);
         }
 
-        $redirect = $this->createMock(RedirectInterface::class);
+        $redirect        = $this->createMock(RedirectInterface::class);
+        $eventDispatcher = $this->createMock(EventDispatcherInterface::class);
 
-        return (new ServiceLocator($this->dm, $curl, $redirect))->setLogger(new NullLogger());
+        $locator = new ServiceLocator($this->dm, $curl, $redirect, $eventDispatcher);
+        $locator->setLogger(new NullLogger());
+
+        return $locator;
     }
 
 }

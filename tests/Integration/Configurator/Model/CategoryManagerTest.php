@@ -25,9 +25,9 @@ final class CategoryManagerTest extends DatabaseTestCaseAbstract
      */
     public function testManager(): void
     {
-        $manager         = self::$container->get('hbpf.configurator.manager.category');
+        $manager         = self::getContainer()->get('hbpf.configurator.manager.category');
         $repo            = $this->dm->getRepository(Category::class);
-        $topologyManager = self::$container->get('hbpf.configurator.manager.topology');
+        $topologyManager = self::getContainer()->get('hbpf.configurator.manager.topology');
 
         $dataR1 = [
             'name'   => 'root1',

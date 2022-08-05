@@ -14,9 +14,10 @@ interface LogsInterface
 
     /**
      * @param GridRequestDto $dto
+     * @param int            $timeMargin
      *
      * @return mixed[]
      */
-    public function getData(GridRequestDto $dto): array;
+    public function getData(GridRequestDto $dto, int $timeMargin): array;
 
 }

@@ -10,6 +10,7 @@ use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\CommonsBundle\Exception\NodeException;
 use Hanaboso\PipesFramework\Configurator\Model\NodeManager;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
+use Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 
 /**
@@ -98,8 +99,10 @@ final class NodeManagerTest extends KernelTestCaseAbstract
      */
     private function getDmlMock(): DatabaseManagerLocator
     {
-        $dm = self::createPartialMock(DocumentManager::class, ['flush']);
+        $repo = self::createPartialMock(NodeRepository::class, []);
+        $dm   = self::createPartialMock(DocumentManager::class, ['flush', 'getRepository']);
         $dm->method('flush')->willReturn(TRUE);
+        $dm->method('getRepository')->willReturn($repo);
 
         $dml = self::createPartialMock(DatabaseManagerLocator::class, ['getDm']);
         $dml->method('getDm')->willReturn($dm);

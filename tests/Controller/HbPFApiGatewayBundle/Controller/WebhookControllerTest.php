@@ -25,7 +25,7 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
     public function testSubscribeWebhookAction(): void
     {
         $this->createApplication();
-        $this->assertResponse(__DIR__ . '/data/WebhookController/subscribeWebhooksRequest.json');
+        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/WebhookController/subscribeWebhooksRequest.json');
     }
 
     /**
@@ -36,7 +36,7 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
     public function testUnsubscribeWebhookAction(): void
     {
         $this->createApplication();
-        $this->assertResponse(__DIR__ . '/data/WebhookController/unsubscribeWebhooksRequest.json');
+        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/WebhookController/unsubscribeWebhooksRequest.json');
     }
 
     /**
@@ -48,7 +48,7 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
         $this->pfd($application);
 
         $sdk = new Sdk();
-        $sdk->setKey('php-sdk')->setValue('php-sdk');
+        $sdk->setUrl('php-sdk')->setName('php-sdk');
         $this->pfd($sdk);
     }
 

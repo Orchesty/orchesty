@@ -4,5 +4,7 @@
         "topology": "topo",
         "handler": "action"
     },
-    "headers": []
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
 }

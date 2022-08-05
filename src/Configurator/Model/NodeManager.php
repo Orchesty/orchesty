@@ -3,11 +3,14 @@
 namespace Hanaboso\PipesFramework\Configurator\Model;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocator;
 use Hanaboso\CommonsBundle\Enum\HandlerEnum;
 use Hanaboso\CommonsBundle\Exception\NodeException;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
+use Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository;
 
 /**
  * Class NodeManager
@@ -23,6 +26,11 @@ final class NodeManager
     private DocumentManager $dm;
 
     /**
+     * @var NodeRepository
+     */
+    private NodeRepository $nodeRepository;
+
+    /**
      * NodeManager constructor.
      *
      * @param DatabaseManagerLocator $dml
@@ -32,6 +40,9 @@ final class NodeManager
         /** @var DocumentManager $dm */
         $dm       = $dml->getDm();
         $this->dm = $dm;
+        /** @var NodeRepository $nodeRepo */
+        $nodeRepo             = $dm->getRepository(Node::class);
+        $this->nodeRepository = $nodeRepo;
     }
 
     /**
@@ -64,6 +75,60 @@ final class NodeManager
         $this->dm->flush();
 
         return $node;
+    }
+
+    /**
+     * @param string $topologyId
+     *
+     * @return mixed[]
+     */
+    public function getNodes(string $topologyId): array
+    {
+        $nodes = $this->nodeRepository->getEventNodesByTopology($topologyId);
+
+        $items = [];
+        foreach ($nodes as $node) {
+            $items[] = $node->toArray();
+        }
+
+        return ['items' => $items];
+    }
+
+    /**
+     * @param string $topologyId
+     * @param string $nodeName
+     *
+     * @return mixed[]
+     */
+    public function getTopologyNodesByName(string $topologyId, string $nodeName): array
+    {
+        return array_filter(
+            $this->getNodes($topologyId)['items'],
+            static fn($value) => $value['name'] === $nodeName,
+        );
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return Node
+     * @throws NodeException
+     * @throws LockException
+     * @throws MappingException
+     */
+    public function getNodeById(string $id): Node
+    {
+        /** @var Node|null $res */
+        $res = $this->nodeRepository->find($id);
+
+        if (!$res) {
+            throw new NodeException(
+                sprintf('Node with [%s] id was not found.', $id),
+                NodeException::NODE_NOT_FOUND,
+            );
+        }
+
+        return $res;
     }
 
 }
