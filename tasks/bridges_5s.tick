@@ -17,23 +17,23 @@ var bridgeData = stream
 
 // Total Processes
 var total = bridgeData
-   |count('bridge_job_result_success')
+   |count('result_success')
 
 var totalFailed = bridgeData
-   |where(lambda: "bridge_job_result_success" == FALSE)
-   |count('bridge_job_result_success')
+   |where(lambda: "result_success" == FALSE)
+   |count('result_success')
 
 // Bridge data
 var waitingTimeAvg = bridgeData
-    |mean('bridge_job_waiting_duration')
+    |mean('waiting_duration')
         .as('time')
 
 var timeMinWaiting = bridgeData
-    |min('bridge_job_waiting_duration')
+    |min('waiting_duration')
         .as('waiting')
 
 var timeMinProcess = bridgeData
-    |min('bridge_job_total_duration')
+    |min('total_duration')
         .as('process')
 
 var timeMin = timeMinWaiting
@@ -43,11 +43,11 @@ var timeMin = timeMinWaiting
         .as('waiting', 'process')
 
 var timeMaxWaiting = bridgeData
-    |max('bridge_job_waiting_duration')
+    |max('waiting_duration')
         .as('waiting')
 
 var timeMaxProcess = bridgeData
-    |max('bridge_job_total_duration')
+    |max('total_duration')
         .as('process')
 
 var timeMax = timeMaxWaiting
@@ -57,23 +57,23 @@ var timeMax = timeMaxWaiting
         .as('waiting', 'process')
 
 var processTimeAvg = bridgeData
-    |mean('bridge_job_total_duration')
+    |mean('total_duration')
         .as('time')
 
 var jobSum = bridgeData
-    |sum('bridge_job_total_duration')
+    |sum('total_duration')
         .as('time')
 
 var jobCount = bridgeData
-    |count('bridge_job_total_duration')
+    |count('total_duration')
         .as('time')
 
 var jobSumWaiting = bridgeData
-    |sum('bridge_job_waiting_duration')
+    |sum('waiting_duration')
         .as('time')
 
 var jobCountWaiting = bridgeData
-    |count('bridge_job_waiting_duration')
+    |count('waiting_duration')
         .as('time')
 total
    |join(totalFailed, waitingTimeAvg, timeMin, timeMax, processTimeAvg, jobSum, jobCount, jobSumWaiting, jobCountWaiting)
