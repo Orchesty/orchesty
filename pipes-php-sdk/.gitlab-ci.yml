@@ -22,3 +22,11 @@ pipes-php-sdk:git-mirror:
   extends:
     - .base-git-mirror
     - .base-pipes-php-sdk
+
+pipes-php-sdk:test:
+  stage: test
+  needs: []
+
+  extends:
+    - .base-go-test # todo: don't use go-test
+    - .base-pipes-php-sdk
