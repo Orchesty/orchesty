@@ -139,6 +139,12 @@ func (m *MongoDBImplementation) Update(cron *Cron) (*mongo.UpdateResult, error) 
 
 // Upsert upserts cron
 func (m *MongoDBImplementation) Upsert(cron *Cron) (*mongo.UpdateResult, error) {
+	if cron.Time == "" {
+		_, err := m.Delete(cron)
+
+		return &mongo.UpdateResult{}, err
+	}
+
 	return m.createUpdate(cron, true)
 }
 

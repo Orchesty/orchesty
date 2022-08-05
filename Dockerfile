@@ -1,4 +1,4 @@
-FROM hanabosocom/go-base:dev
+FROM hanabosocom/go-base:1.18
 COPY . .
 RUN go build -ldflags='-s -w' -o /cron cmd/cron.go && upx -9 /cron
 
