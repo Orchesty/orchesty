@@ -10,5 +10,5 @@ func TestGetDefaultRoutes(t *testing.T) {
 	r := GetDefaultRoutes()
 
 	assert.IsType(t, Routes{}, r)
-	assert.Len(t, r, 15)
+	assert.Len(t, r, 7)
 }

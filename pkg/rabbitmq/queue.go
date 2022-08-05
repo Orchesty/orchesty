@@ -17,11 +17,6 @@ type Queue struct {
 	Args       amqp.Table
 }
 
-// GetProcessCounterQueue returns Queue conf
-func GetProcessCounterQueue() *Queue {
-	return &Queue{Name: config.Config.RabbitMQ.CounterQueueName, Durable: config.Config.RabbitMQ.CounterQueueDurable, NoWait: false}
-}
-
 // GetProcessQueue returns Queue conf
 func GetProcessQueue(topology storage.Topology) *Queue {
 	queueName := utils.GenerateTplgName(topology)

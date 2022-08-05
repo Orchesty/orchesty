@@ -9,14 +9,6 @@ import (
 	"starting-point/pkg/storage"
 )
 
-func TestGetProcessCounterQueue(t *testing.T) {
-	q := GetProcessCounterQueue()
-
-	assert.Equal(t, config.Config.RabbitMQ.CounterQueueName, q.Name)
-	assert.Equal(t, config.Config.RabbitMQ.CounterQueueDurable, q.Durable)
-	assert.Equal(t, false, q.NoWait)
-}
-
 func TestGetProcessQueue(t *testing.T) {
 	topology := storage.Topology{Name: "Topology", ID: primitive.NewObjectID(), Node: &storage.Node{ID: primitive.NewObjectID(), Name: "Node"}}
 	q := GetProcessQueue(topology)

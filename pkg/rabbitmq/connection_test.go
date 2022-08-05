@@ -12,11 +12,10 @@ func TestConnect(t *testing.T) {
 }
 
 func TestDeclare(t *testing.T) {
-	q := GetProcessCounterQueue()
 	c := getConnection()
 
 	c.Connect()
-	c.Declare(q)
+	c.Declare(&Queue{Name: "test", Durable: true, NoWait: false})
 }
 
 func TestDisconnect(t *testing.T) {

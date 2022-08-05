@@ -50,7 +50,7 @@ func HandleLimit(h http.HandlerFunc, w http.ResponseWriter, r *http.Request) {
 }
 
 // HandleStatus checks if HTTP is working correctly
-func HandleStatus(w http.ResponseWriter, r *http.Request) {
+func HandleStatus(w http.ResponseWriter, _ *http.Request) {
 	writeResponse(w, map[string]interface{}{
 		"database": storage.Mongo.IsConnected(),
 		"metrics":  service.RabbitMq.IsMetricsConnected(),
@@ -59,37 +59,17 @@ func HandleStatus(w http.ResponseWriter, r *http.Request) {
 
 // HandleRunByID runs topology by ID
 func HandleRunByID(w http.ResponseWriter, r *http.Request) {
-	handleByID(w, r, false, false)
+	handleByID(w, r)
 }
 
 // HandleRunByName runs topology by name
 func HandleRunByName(w http.ResponseWriter, r *http.Request) {
-	handleByName(w, r, false, false)
+	handleByName(w, r)
 }
 
 // HandleRunByApplication runs topology by application
 func HandleRunByApplication(w http.ResponseWriter, r *http.Request) {
 	handleByApplication(w, r)
-}
-
-// HandleHumanTaskRunByID runs human task topology by ID
-func HandleHumanTaskRunByID(w http.ResponseWriter, r *http.Request) {
-	handleByID(w, r, true, false)
-}
-
-// HandleHumanTaskRunByName runs human task topology by name
-func HandleHumanTaskRunByName(w http.ResponseWriter, r *http.Request) {
-	handleByName(w, r, true, false)
-}
-
-// HandleHumanTaskStopByID stops human task topology by ID
-func HandleHumanTaskStopByID(w http.ResponseWriter, r *http.Request) {
-	handleByID(w, r, true, true)
-}
-
-// HandleHumanTaskStopByName stops human task topology by name
-func HandleHumanTaskStopByName(w http.ResponseWriter, r *http.Request) {
-	handleByName(w, r, true, true)
 }
 
 // HandleInvalidateCache invalidates topology cache
@@ -100,7 +80,7 @@ func HandleInvalidateCache(w http.ResponseWriter, r *http.Request) {
 	writeResponse(w, map[string]interface{}{"cache": cache})
 }
 
-func handleByID(w http.ResponseWriter, r *http.Request, isHumanTask, isStop bool) {
+func handleByID(w http.ResponseWriter, r *http.Request) {
 	err := utils.ValidateBody(r)
 	if err != nil {
 		config.Config.Logger.Errorf("Content is not valid: %s", err.Error())
@@ -110,13 +90,7 @@ func handleByID(w http.ResponseWriter, r *http.Request, isHumanTask, isStop bool
 
 	init := utils.InitFields()
 	vars := mux.Vars(r)
-	var topology *storage.Topology
-
-	if !isHumanTask {
-		topology = service.Cache.FindTopologyByID(vars["topology"], vars["node"], "", isHumanTask)
-	} else {
-		topology = storage.Mongo.FindTopologyByID(vars["topology"], vars["node"], vars["token"], isHumanTask)
-	}
+	topology := service.Cache.FindTopologyByID(vars["topology"], vars["node"])
 
 	if topology == nil {
 		writeErrorResponse(w, http.StatusNotFound, fmt.Sprintf("Topology with key '%s' not found!", vars["topology"]))
@@ -128,21 +102,16 @@ func handleByID(w http.ResponseWriter, r *http.Request, isHumanTask, isStop bool
 		return
 	}
 
-	if isHumanTask && topology.Node.HumanTask == nil {
-		writeErrorResponse(w, http.StatusNotFound, fmt.Sprintf("Human task with token '%s' not found!", vars["token"]))
-		return
-	}
-
 	if user := getUser(r); user != "" {
 		r.Header.Set(utils.UserID, user)
 	}
 
-	go processMessage(isHumanTask, isStop, topology, r, init)
+	go processMessage(topology, r, init)
 
 	writeResponse(w, map[string]interface{}{"state": "ok", "started": 1})
 }
 
-func handleByName(w http.ResponseWriter, r *http.Request, isHumanTask, isStop bool) {
+func handleByName(w http.ResponseWriter, r *http.Request) {
 	err := utils.ValidateBody(r)
 	if err != nil {
 		config.Config.Logger.Errorf("Content is not valid: %s", err.Error())
@@ -152,29 +121,19 @@ func handleByName(w http.ResponseWriter, r *http.Request, isHumanTask, isStop bo
 
 	init := utils.InitFields()
 	vars := mux.Vars(r)
-	var topology *storage.Topology
 
-	if !isHumanTask {
-		topology = service.Cache.FindTopologyByName(vars["topology"], vars["node"], "", isHumanTask)
+	topology := service.Cache.FindTopologyByName(vars["topology"], vars["node"])
 
-		if topology == nil {
-			writeErrorResponse(w, http.StatusNotFound, fmt.Sprintf("Topology with name '%s' and node with name '%s' not found!", vars["topology"], vars["node"]))
-			return
-		}
-	} else {
-		topology = storage.Mongo.FindTopologyByName(vars["topology"], vars["node"], vars["token"], isHumanTask)
-
-		if topology == nil {
-			writeErrorResponse(w, http.StatusNotFound, fmt.Sprintf("Topology with name '%s', node with name '%s' and human task with token '%s' not found!", vars["topology"], vars["node"], vars["token"]))
-			return
-		}
+	if topology == nil {
+		writeErrorResponse(w, http.StatusNotFound, fmt.Sprintf("Topology with name '%s' and node with name '%s' not found!", vars["topology"], vars["node"]))
+		return
 	}
 
 	if user := getUser(r); user != "" {
 		r.Header.Set(utils.UserID, user)
 	}
 
-	go processMessage(isHumanTask, isStop, topology, r, init)
+	go processMessage(topology, r, init)
 
 	writeResponse(w, map[string]interface{}{"state": "ok", "started": 1})
 }
@@ -199,13 +158,13 @@ func handleByApplication(w http.ResponseWriter, r *http.Request) {
 	r.Header.Set(utils.ApplicationID, webhook.Application)
 	r.Header.Set(utils.UserID, webhook.User)
 
-	go processMessage(false, false, topology, r, init)
+	go processMessage(topology, r, init)
 
 	writeResponse(w, map[string]interface{}{"state": "ok", "started": 1})
 }
 
-func processMessage(isHumanTask bool, isStop bool, topology *storage.Topology, r *http.Request, init map[string]float64) {
-	service.RabbitMq.SndMessage(r, *topology, init, isHumanTask, isStop)
+func processMessage(topology *storage.Topology, r *http.Request, init map[string]float64) {
+	service.RabbitMq.SndMessage(r, *topology, init)
 }
 
 func getUser(r *http.Request) string {

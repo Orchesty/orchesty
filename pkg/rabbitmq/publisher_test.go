@@ -18,7 +18,7 @@ func TestPublish(t *testing.T) {
 	q := GetProcessQueue(topology)
 	m := amqp.Publishing{Body: []byte("test"), Headers: amqp.Table{}}
 
-	p.Publish(m, q.Name)
+	p.Publish(m, "", q.Name)
 }
 
 func TestClearChannels(t *testing.T) {
