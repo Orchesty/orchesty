@@ -1,0 +1,146 @@
+{
+  "folders": {
+    "createFolder": {
+      "form": {
+        "name": {
+          "label": "Název",
+          "name": "název"
+        }
+      }
+    },
+    "menu": {
+      "create": "Přidat složku",
+      "edit": "Upravit složku",
+      "delete": "Smazat složku",
+      "move": "Přesunout složku"
+    },
+    "modals": {
+      "create": {
+        "title": "Přidat složku"
+      },
+      "move": {
+        "title": "Přesunout složku"
+      },
+      "delete": {
+        "title": "Smazat složku",
+        "body": "Opravdu si přejete smazat složku \"{0}\"?"
+      },
+      "edit": {
+        "title": "Upravit složku",
+        "form": {
+          "label": "Nový název složky",
+          "name": "název složky"
+        }
+      }
+    }
+  },
+  "topologies": {
+    "sidebar": {
+      "title": "Topologie"
+    },
+    "detail": {
+      "tabs": {
+        "overview": "Přehled",
+        "editor": "BPNM Chart",
+        "statistic": "Statistika",
+        "userTask": "UserTasky",
+        "logs": "Seznam Logů"
+      }
+    },
+    "create": {
+      "form": {
+        "name": {
+          "label": "Název",
+          "name": "název"
+        },
+        "description": {
+          "label": "Popis",
+          "name": "popis"
+        }
+      }
+    },
+    "menu": {
+      "create": "Přidat topologii",
+      "edit": "Upravit topologii",
+      "delete": "Smazat topologii",
+      "move": "Přesunout topologii"
+    },
+    "modals": {
+      "create": {
+        "title": "Přidat topologii"
+      },
+      "move": {
+        "title": "Přesunout topologii"
+      },
+      "delete": {
+        "title": "Smazat topologii",
+        "body": "Opravdu si přejete smazat topologii \"{0}\"?"
+      },
+      "edit": {
+        "title": "Upravit topologii",
+        "form": {
+          "label": "Nový název topologie",
+          "name": "název topologie"
+        }
+      }
+    },
+    "overview": {
+      "title": "Seznam Procesů",
+      "headers": {
+        "created": "Vytvořeno",
+        "updated": "Aktualizováno",
+        "correlation_id": "Correlation ID",
+        "duration": "Průběh",
+        "progress": "Progress",
+        "status": "Status"
+      }
+    },
+    "dashboard": {
+      "title": "Nástěnka",
+      "viewMore": "Zobrazit více",
+      "tables": {
+        "errorLogs": "Errory",
+        "alertLogs": "Upozornění"
+      },
+      "headers": {
+        "time": "Čas",
+        "topologyId": "TopologyID",
+        "level": "level"
+      },
+      "metrics": "Metriky"
+    },
+    "logs": {
+      "title": "Logy",
+      "headers": {
+        "timestamp": "Vytvořeno",
+        "correlation_id": "Correlation ID",
+        "nodeID": "ID Uzlu",
+        "nodeName": "Název Uzlu",
+        "severity": "Severenity"
+      }
+    },
+    "userTask": {
+      "title": "User Tasky",
+      "headers": {
+        "nodeName": "Název Uzlu",
+        "updated": "Aktualizováno"
+      },
+      "information": {
+        "nodeName": "Název Uzlu",
+        "created": "Vytvořeno",
+        "parentID": "Nadřazené ID",
+        "topologyName": "Název Topologie",
+        "processID": "ID Procesu",
+        "auditLog": "Seznam Auditů",
+        "headers": "Hlavičky",
+        "selectedNodes": "Vybrané user tasky",
+        "amount": "Počet "
+      },
+      "buttons": {
+        "approve": "Povolit",
+        "deny": "Zakázat",
+        "update": "Aktualizovat"
+      }
+    }
+  }
+}

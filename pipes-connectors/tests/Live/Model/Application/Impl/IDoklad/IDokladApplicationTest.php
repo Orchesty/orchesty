@@ -3,6 +3,7 @@
 namespace HbPFConnectorsTests\Live\Model\Application\Impl\IDoklad;
 
 use Exception;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
@@ -23,9 +24,9 @@ final class IDokladApplicationTest extends ControllerTestCaseAbstract
      */
     public function testAuthorize(): void
     {
-        $app                = self::$container->get('hbpf.application.i-doklad');
+        $app                = self::getContainer()->get('hbpf.application.i-doklad');
         $applicationInstall = DataProvider::getOauth2AppInstall(
-            $app->getKey(),
+            $app->getName(),
             'user',
             'token123',
             'ae89f69a-44f4-4163-ac98-************',
@@ -52,10 +53,10 @@ final class IDokladApplicationTest extends ControllerTestCaseAbstract
      */
     public function testCreateAccessToken(): void
     {
-        $app = self::$container->get('hbpf.application.i-doklad');
+        $app = self::getContainer()->get('hbpf.application.i-doklad');
 
         $applicationInstall = DataProvider::getOauth2AppInstall(
-            $app->getKey(),
+            $app->getName(),
             'user',
             '',
             'ae89f69a-44f4-4163-ac98-************',
@@ -71,14 +72,11 @@ final class IDokladApplicationTest extends ControllerTestCaseAbstract
         /** @var ApplicationInstall $doc */
         $doc      = $this->dm->getRepository(ApplicationInstall::class)->find($applicationInstall->getId());
         $settings = $doc->getSettings();
-        self::assertArrayHasKey(BasicApplicationInterface::AUTHORIZATION_SETTINGS, $settings);
-        self::assertArrayHasKey(
-            BasicApplicationInterface::TOKEN,
-            $settings[BasicApplicationInterface::AUTHORIZATION_SETTINGS],
-        );
+        self::assertArrayHasKey(ApplicationInterface::AUTHORIZATION_FORM, $settings);
+        self::assertArrayHasKey(BasicApplicationInterface::TOKEN, $settings[ApplicationInterface::AUTHORIZATION_FORM]);
         self::assertArrayHasKey(
             OAuth2Provider::ACCESS_TOKEN,
-            $settings[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::TOKEN],
+            $settings[ApplicationInterface::AUTHORIZATION_FORM][BasicApplicationInterface::TOKEN],
         );
     }
 

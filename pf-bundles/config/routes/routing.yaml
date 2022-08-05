@@ -35,10 +35,14 @@ hb_pf_logs:
     resource: '@HbPFLogsBundle'
     type: annotation
 
-hb_pf_long_running:
-    resource: '@HbPFLongRunningNodeBundle'
-    type: annotation
-
 hb_pf_users:
     resource: "@HbPFUsersBundle"
+    type: annotation
+
+hb_pf_user:
+    resource: "@HbPFUserBundle"
+    type: annotation
+
+hb_pf_user_task:
+    resource: "@HbPFUserTaskBundle"
     type: annotation

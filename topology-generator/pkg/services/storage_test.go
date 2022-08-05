@@ -8,13 +8,9 @@ import (
 
 type mockStorageSvc struct{}
 
-func (n mockStorageSvc) Connect() {
-	return
-}
+func (n mockStorageSvc) Connect() {}
 
-func (n mockStorageSvc) Disconnect() {
-	return
-}
+func (n mockStorageSvc) Disconnect() {}
 
 func (n mockStorageSvc) FindTopologyByID(id string) (*model.Topology, error) {
 	return getMockTopology(), nil

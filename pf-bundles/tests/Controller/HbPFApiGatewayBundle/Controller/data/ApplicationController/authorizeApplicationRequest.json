@@ -3,5 +3,7 @@
     "body": {
         "password": "password"
     },
-    "headers": []
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
 }

@@ -1,7 +1,7 @@
-# Pipes App Store
+# Orchesty App Store
 
 ## Popis služby
-App Store je doplněk, který rozšiřuje Pipes Framework o rozhranní na kterém lze budovat App Store.
+App Store je doplněk, který rozšiřuje Orchesty/PHP-Sdk o možnost psaní aplikací.
 
 App Store poskytuje abstrakce pro správu a subscribe webhooků, rozhranní pro budování appstoru pro libovolný UI framework.
 
@@ -33,10 +33,10 @@ App Store poskytuje abstrakce pro správu a subscribe webhooků, rozhranní pro 
     - Například: `${PHP_IDE_CONFIG}` - PHP_IDE_CONFIG se bere ze souboru `.env`
 
 ## Použité technologie
-- PHP 7.4+
+- PHP 8.1+
 
 ## Závislosti
-- Pipes-PHP-SDK
+- Orchesty/PHP-SDK
 - MongoDB
 - MariaDB (optional)
 - RabbitMQ (optional)

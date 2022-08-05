@@ -4,11 +4,12 @@ namespace HbPFConnectorsTests\Live\Model\Application\Impl\FlexiBee;
 
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\FlexiBee\FlexiBeeApplication;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
-use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
 use Hanaboso\Utils\Exception\DateTimeException;
 use HbPFConnectorsTests\ControllerTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
@@ -30,7 +31,7 @@ final class FlexiBeeApplicationTest extends ControllerTestCaseAbstract
      */
     public function testAuthorize(): void
     {
-        $dto = $this->getApp()->getRequestDto($this->getAppInstall(), 'GET');
+        $dto = $this->getApp()->getRequestDto(new ProcessDto(), $this->getAppInstall(), 'GET');
         self::assertNotEmpty($dto->getHeaders()['Authorization']);
     }
 
@@ -39,7 +40,7 @@ final class FlexiBeeApplicationTest extends ControllerTestCaseAbstract
      */
     private function getApp(): FlexiBeeApplication
     {
-        return self::$container->get('hbpf.application.flexibee');
+        return self::getContainer()->get('hbpf.application.flexibee');
     }
 
     /**
@@ -48,17 +49,14 @@ final class FlexiBeeApplicationTest extends ControllerTestCaseAbstract
      */
     private function getAppInstall(): ApplicationInstall
     {
-        $appInstall = DataProvider::getBasicAppInstall($this->getApp()->getKey());
+        $appInstall = DataProvider::getBasicAppInstall($this->getApp()->getName());
 
         $appInstall->setSettings(
             [
-                FlexiBeeApplication::AUTHORIZATION_SETTINGS =>
+                ApplicationInterface::AUTHORIZATION_FORM =>
                     [
-                        'user'     => 'user123',
-                        'password' => 'pass123',
-                    ],
-                BasicApplicationAbstract::FORM              =>
-                    [
+                        'user'        => 'user123',
+                        'password'    => 'pass123',
                         'auth'        => 'http',
                         'flexibeeUrl' => 'https://demo.flexibee.eu/c/demo',
                     ],

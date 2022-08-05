@@ -2,6 +2,7 @@
 
 namespace Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps;
 
+use Hanaboso\CommonsBundle\Process\ProcessDtoAbstract;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
@@ -49,6 +50,7 @@ abstract class AwsApplicationAbstract extends BasicApplicationAbstract
     protected const LATEST = 'latest';
 
     /**
+     * @param ProcessDtoAbstract $dto
      * @param ApplicationInstall $applicationInstall
      * @param string             $method
      * @param string|null        $url
@@ -58,6 +60,7 @@ abstract class AwsApplicationAbstract extends BasicApplicationAbstract
      */
     public function getRequestDto
     (
+        ProcessDtoAbstract $dto,
         ApplicationInstall $applicationInstall,
         string $method,
         ?string $url = NULL,
@@ -69,6 +72,7 @@ abstract class AwsApplicationAbstract extends BasicApplicationAbstract
         $url;
         $data;
         $method;
+        $dto;
 
         throw new LogicException(
             sprintf(

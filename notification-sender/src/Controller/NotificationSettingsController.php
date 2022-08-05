@@ -2,6 +2,7 @@
 
 namespace Hanaboso\NotificationSender\Controller;
 
+use Hanaboso\NotificationSender\Document\NotificationSettings;
 use Hanaboso\NotificationSender\Exception\NotificationException;
 use Hanaboso\NotificationSender\Handler\NotificationSettingsHandler;
 use Hanaboso\Utils\System\ControllerUtils;
@@ -78,7 +79,12 @@ final class NotificationSettingsController
     public function saveSettingsAction(Request $request, string $id): Response
     {
         try {
-            return $this->getResponse($this->handler->saveSettings($id, $request->request->all()));
+            $res = $this->handler->saveSettings($id, $request->request->all());
+            if ($res[NotificationSettings::STATUS] === FALSE && empty($res[NotificationSettings::STATUS_MESSAGE])) {
+                return $this->getResponse($res);
+            }
+
+            return $this->getResponse($res, 400);
         } catch (NotificationException $e) {
             return $this->getErrorResponse($e, 404, ControllerUtils::NOT_FOUND, $request->headers->all());
         } catch (Throwable $e) {

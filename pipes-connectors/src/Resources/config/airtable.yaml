@@ -7,9 +7,8 @@ services:
 
     hbpf.connector.airtable_new_record:
         class: Hanaboso\HbPFConnectors\Model\Application\Impl\Airtable\Connector\AirtableNewRecordConnector
-        arguments:
-            - '@hbpf.transport.curl_manager'
-            - '@doctrine_mongodb.odm.default_document_manager'
         calls:
-            - ['setApplication',['@hbpf.application.airtable']]
+            - setApplication : ['@hbpf.application.airtable']
+            - setDb : ['@doctrine_mongodb.odm.default_document_manager']
+            - setSender : ['@hbpf.transport.curl_manager']
 

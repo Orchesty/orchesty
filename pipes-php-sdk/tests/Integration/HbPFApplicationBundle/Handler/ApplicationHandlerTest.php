@@ -4,7 +4,6 @@ namespace PipesPhpSdkTests\Integration\HbPFApplicationBundle\Handler;
 
 use Exception;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
-use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager;
 use Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler;
@@ -120,7 +119,7 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
 
         $handler = new ApplicationHandler($manager);
         $handler->authorizeApplication('null', 'user', '/redirect/url');
-        self::assertTrue(TRUE);
+        self::assertFake();
     }
 
     /**
@@ -136,7 +135,7 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
 
         $handler = new ApplicationHandler($manager);
         $handler->authorizeApplication('null', 'user', '/redirect/url');
-        self::assertTrue(TRUE);
+        self::assertFake();
     }
 
     /**
@@ -149,12 +148,12 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
         $manager = self::createPartialMock(ApplicationManager::class, ['saveAuthorizationToken']);
         $manager
             ->expects(self::any())->method('saveAuthorizationToken')
-            ->willReturn([ApplicationInterface::REDIRECT_URL => '/redirect/url']);
+            ->willReturn('/redirect/url');
 
         $handler     = new ApplicationHandler($manager);
         $redirectUrl = $handler->saveAuthToken('null', 'user', ['code' => '__code__']);
 
-        self::assertEquals(['redirect_url' => '/redirect/url'], $redirectUrl);
+        self::assertEquals('/redirect/url', $redirectUrl);
     }
 
     /**
@@ -164,7 +163,7 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
     {
         parent::setUp();
 
-        $this->handler = self::$container->get('hbpf.application.handler');
+        $this->handler = self::getContainer()->get('hbpf.application.handler');
     }
 
     /**

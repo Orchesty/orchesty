@@ -1,0 +1,7 @@
+{
+    "http": "POST /api/applinth/application/key",
+    "body": [],
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
+}

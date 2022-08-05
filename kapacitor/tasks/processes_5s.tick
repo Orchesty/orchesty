@@ -16,36 +16,36 @@ var data = stream
    |groupBy('topology_id')
 
 var total = data
-    |count('counter_process_result')
+    |count('result')
 
 var totalFailed = data
-    |where(lambda: "counter_process_result" == FALSE)
-    |count('counter_process_result')
+    |where(lambda: "result" == FALSE)
+    |count('result')
 
 var timeAvg = data
-    |mean('counter_process_duration')
+    |mean('duration')
         .as('time')
 
 var timeMin = data
-    |min('counter_process_duration')
+    |min('duration')
         .as('time')
-    |delete().field('counter_process_fail_count')
-    |delete().field('counter_process_ok_count')
-    |delete().field('counter_process_result')
+    |delete().field('fail_count')
+    |delete().field('ok_count')
+    |delete().field('result')
 
 var timeMax = data
-    |max('counter_process_duration')
+    |max('duration')
         .as('time')
-    |delete().field('counter_process_fail_count')
-    |delete().field('counter_process_ok_count')
-    |delete().field('counter_process_result')
+    |delete().field('fail_count')
+    |delete().field('ok_count')
+    |delete().field('result')
 
 var processSum = data
-    |sum('counter_process_duration')
+    |sum('duration')
         .as('time')
 
 var processCount = data
-    |count('counter_process_duration')
+    |count('duration')
         .as('time')
 
 total

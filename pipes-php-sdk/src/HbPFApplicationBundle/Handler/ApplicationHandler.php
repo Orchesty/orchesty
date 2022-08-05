@@ -102,11 +102,11 @@ final class ApplicationHandler
      * @param string  $user
      * @param mixed[] $token
      *
-     * @return mixed[]
+     * @return string
      * @throws ApplicationInstallException
      * @throws MongoDBException
      */
-    public function saveAuthToken(string $key, string $user, array $token): array
+    public function saveAuthToken(string $key, string $user, array $token): string
     {
         return $this->applicationManager->saveAuthorizationToken($key, $user, $token);
     }

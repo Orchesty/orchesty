@@ -1,0 +1,15 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    hbpf.user_task.filter.user_task:
+        class: Hanaboso\PipesFramework\UserTask\Model\UserTaskFilter
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.user_task.manager.user_task:
+        class: Hanaboso\PipesFramework\UserTask\Model\UserTaskManager
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.user_task.filter.user_task'
+            - '@rabbit_mq.publisher.pipes-user-task'

@@ -3,4 +3,4 @@ framework:
     serializer:
 
 parameters:
-    backend_host: 127.0.0.4
+    backendHost: 127.0.0.4

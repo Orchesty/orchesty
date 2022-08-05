@@ -7,10 +7,8 @@ use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\HbPFAppStore\Document\Synchronization;
+use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
-use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessEventNotSupportedTrait;
-use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessExceptionTrait;
-use JsonException;
 
 /**
  * Class ShoptetCreateOrderConnector
@@ -20,8 +18,7 @@ use JsonException;
 final class ShoptetCreateOrderConnector extends ShoptetConnectorAbstract
 {
 
-    use ProcessExceptionTrait;
-    use ProcessEventNotSupportedTrait;
+    public const NAME = 'shoptet-create-order';
 
     private const URL   = '/api/orders';
     private const CODE  = 'code';
@@ -30,41 +27,47 @@ final class ShoptetCreateOrderConnector extends ShoptetConnectorAbstract
     /**
      * @return string
      */
-    public function getId(): string
+    public function getName(): string
     {
-        return 'shoptet-create-order';
+        return self::NAME;
     }
 
     /**
      * @param ProcessDto $dto
      *
      * @return ProcessDto
+     * @throws ApplicationInstallException
      * @throws ConnectorException
      * @throws OnRepeatException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
-        $applicationInstall = $this->getApplicationInstall($dto);
+        $applicationInstall = $this->getApplicationInstallFromProcess($dto);
 
         try {
             $response = $this->processResponse(
-                $this->sender->send(
+                $this->getSender()->send(
                     $this->getApplication()->getRequestDto(
+                        $dto,
                         $applicationInstall,
                         CurlManager::METHOD_POST,
                         sprintf('%s%s', $this->host, self::URL),
                         $dto->getData(),
-                    )->setDebugInfo($dto),
+                    ),
                 )->getJsonBody(),
                 $dto,
             );
 
             $externalId = $response[self::DATA][self::ORDER][self::CODE];
-            $this->setHeader($dto, Synchronization::EXTERNAL_ID_HEADER, $externalId);
+            $dto->addHeader(Synchronization::EXTERNAL_ID_HEADER, $externalId);
 
-            return $this->setJsonContent($dto, $response);
-        } catch (CurlException | JsonException $e) {
-            throw $this->createRepeatException($dto, $e, self::REPEATER_INTERVAL);
+            return $dto->setJsonData($response);
+        } catch (CurlException $e) {
+            throw new OnRepeatException(
+                $dto,
+                sprintf("Connector '%s': %s: %s", $this->getName(), $e::class, $e->getMessage()),
+                $e->getCode(),
+            );
         }
     }
 

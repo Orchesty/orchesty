@@ -9,8 +9,10 @@ use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\Connector\S3GetObjectConnector;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\S3Application;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
+use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use Throwable;
@@ -27,7 +29,7 @@ final class S3GetObjectConnectorTest extends DatabaseTestCaseAbstract
 
     private const KEY     = 's3';
     private const USER    = 'user';
-    private const HEADERS = ['pf-application' => self::KEY, 'pf-user' => self::USER];
+    private const HEADERS = ['application' => self::KEY, 'user' => self::USER];
 
     /**
      * @var S3GetObjectConnector
@@ -51,13 +53,14 @@ final class S3GetObjectConnectorTest extends DatabaseTestCaseAbstract
 
             self::assertEquals('Test', $content['name']);
             self::assertEquals('Content', $content['content']);
-        } catch (Throwable) { // Sometimes fails on CI, use mock when it's happen...
+        } catch (Throwable $e) { // Sometimes fails on CI, use mock when it's happen...
+            $e;
             $client = self::createPartialMock(S3Client::class, ['__call']);
             $client->method('__call')->willReturnCallback(
                 static function (string $method, array $parameters): void {
                     $method;
 
-                    file_put_contents($parameters[0]['SaveAs'], 'Content');
+                    File::putContent($parameters[0]['SaveAs'], 'Content');
                 },
             );
 
@@ -80,7 +83,7 @@ final class S3GetObjectConnectorTest extends DatabaseTestCaseAbstract
     {
         self::assertException(
             ConnectorException::class,
-            ConnectorException::CONNECTOR_FAILED_TO_PROCESS,
+            NULL,
             "Connector 's3-get-object': Required parameter 'name' is not provided!",
         );
 
@@ -124,11 +127,11 @@ final class S3GetObjectConnectorTest extends DatabaseTestCaseAbstract
             ->setData(Json::encode(['name' => 'Test', 'content' => 'Content']))
             ->setHeaders(self::HEADERS);
 
-        self::$container
+        self::getContainer()
             ->get('hbpf.connector.s3-create-object')
             ->processAction($dto);
 
-        $this->connector = self::$container->get('hbpf.connector.s3-get-object');
+        $this->connector = self::getContainer()->get('hbpf.connector.s3-get-object');
     }
 
     /**
@@ -141,7 +144,7 @@ final class S3GetObjectConnectorTest extends DatabaseTestCaseAbstract
             ->setUser(self::USER)
             ->setSettings(
                 [
-                    S3Application::FORM => [
+                    ApplicationInterface::AUTHORIZATION_FORM => [
                         S3Application::KEY      => 'Key',
                         S3Application::SECRET   => 'Secret',
                         S3Application::REGION   => 'eu-central-1',

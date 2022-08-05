@@ -39,7 +39,7 @@ func TestServerHealthCheck(t *testing.T) {
 
 	resp, err := SendTCPPacket("localhost:3334", CreateTCPHealthCheckRequestContent("someId"))
 	assert.Nil(t, err)
-	assert.Equal(t, "pf-health-check;someId;ok", resp)
+	assert.Equal(t, "health-check;someId;ok", resp)
 }
 
 // TestServer tests TcpServer healthCheck route
@@ -61,9 +61,9 @@ func TestServerLimitCheck(t *testing.T) {
 
 	resp, err := SendTCPPacket("localhost:3334", CreateTCPCheckRequestContent("someId", "someKey", 10, 50))
 	assert.Nil(t, err)
-	assert.Equal(t, "pf-check;someId;ok", resp)
+	assert.Equal(t, "check;someId;ok", resp)
 
 	resp, err = SendTCPPacket("localhost:3335", CreateTCPCheckRequestContent("someId", "someKey", 10, 50))
 	assert.Nil(t, err)
-	assert.Equal(t, "pf-check;someId;nok", resp)
+	assert.Equal(t, "check;someId;nok", resp)
 }

@@ -1,4 +1,4 @@
-# Pipes PHP SDK
+# Orchesty PHP SDK
 
 ## Popis služby
 SDK pro tvorbu workerů za pomocí jazyka PHP.
@@ -37,7 +37,7 @@ Dále je možné vytvořit Application, která poskytuje možnost autorizaci pro
     - Například: `${PHP_IDE_CONFIG}` - PHP_IDE_CONFIG se bere ze souboru `.env`
 
 ## Použité technologie
-- PHP 7.4+
+- PHP 8.1+
 
 ## Závislosti
 - MongoDB

@@ -1,3 +1,0 @@
-parameters:
-    frontendHost: "%env(string:FRONTEND_DSN)%"
-    backend_host: "%env(string:BACKEND_DSN)%"

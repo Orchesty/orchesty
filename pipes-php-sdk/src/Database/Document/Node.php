@@ -13,7 +13,6 @@ use Hanaboso\CommonsBundle\Exception\NodeException;
 use Hanaboso\PipesPhpSdk\Database\Document\Dto\SystemConfigDto;
 use Hanaboso\PipesPhpSdk\Database\Document\Embed\EmbedNode;
 use Hanaboso\Utils\Exception\EnumException;
-use JsonException;
 
 /**
  * Class Node
@@ -230,7 +229,9 @@ class Node
         try {
             TypeEnum::isValid($type);
             $this->type = $type;
-        } catch (EnumException) {
+        } catch (EnumException $e) {
+            $e;
+
             throw new NodeException(
                 sprintf('Invalid node type "%s"', $type),
                 NodeException::INVALID_TYPE,
@@ -259,7 +260,9 @@ class Node
         try {
             HandlerEnum::isValid($handler);
             $this->handler = $handler;
-        } catch (EnumException) {
+        } catch (EnumException $e) {
+            $e;
+
             throw new NodeException(
                 sprintf('Invalid node handler value "%s"', $handler),
                 NodeException::INVALID_HANDLER,
@@ -343,7 +346,6 @@ class Node
 
     /**
      * @return SystemConfigDto|null
-     * @throws JsonException
      */
     public function getSystemConfigs(): ?SystemConfigDto
     {
@@ -352,6 +354,23 @@ class Node
         }
 
         return SystemConfigDto::fromString($this->systemConfigs);
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public function toArray(): array
+    {
+        return [
+            '_id'         => $this->getId(),
+            'name'        => $this->getName(),
+            'topology_id' => $this->getTopology(),
+            'next'        => $this->getNext(),
+            'type'        => $this->getType(),
+            'handler'     => $this->getHandler(),
+            'enabled'     => $this->isEnabled(),
+            'schema_id'   => $this->getSchemaId(),
+        ];
     }
 
 }

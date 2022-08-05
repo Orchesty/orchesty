@@ -41,10 +41,10 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
         $data = $this->manager->getAll();
 
         self::assertCount(2, $data);
-        self::assertEquals('One', $data[0]->getKey());
-        self::assertEquals('One', $data[0]->getValue());
-        self::assertEquals('Two', $data[1]->getKey());
-        self::assertEquals('Two', $data[1]->getValue());
+        self::assertEquals('One', $data[0]->getName());
+        self::assertEquals('One', $data[0]->getUrl());
+        self::assertEquals('Two', $data[1]->getName());
+        self::assertEquals('Two', $data[1]->getUrl());
     }
 
     /**
@@ -56,8 +56,8 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
     {
         $data = $this->manager->getOne($this->createSdk('One')->getId());
 
-        self::assertEquals('One', $data->getKey());
-        self::assertEquals('One', $data->getValue());
+        self::assertEquals('One', $data->getName());
+        self::assertEquals('One', $data->getUrl());
 
         self::expectException(DocumentNotFoundException::class);
         $this->manager->getOne('Unknown');
@@ -72,16 +72,17 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
     {
         $data = $this->manager->create(
             [
-                Sdk::KEY   => 'Key',
-                Sdk::VALUE => 'Value',
+                Sdk::URL  => 'url',
+                Sdk::NAME => 'Name',
+                Sdk::HEADERS => [],
             ],
         );
 
         $this->dm->clear();
         self::assertCount(1, $this->sdkRepo->findAll());
 
-        self::assertEquals('Key', $data->getKey());
-        self::assertEquals('Value', $data->getValue());
+        self::assertEquals('url', $data->getUrl());
+        self::assertEquals('Name', $data->getName());
     }
 
     /**
@@ -94,16 +95,16 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
         $data = $this->manager->update(
             $this->createSdk('One'),
             [
-                Sdk::KEY   => 'Key',
-                Sdk::VALUE => 'Value',
+                Sdk::NAME => 'Name1',
+                Sdk::URL  => 'url1',
             ],
         );
 
         $this->dm->clear();
         self::assertCount(1, $this->sdkRepo->findAll());
 
-        self::assertEquals('Key', $data->getKey());
-        self::assertEquals('Value', $data->getValue());
+        self::assertEquals('Name1', $data->getName());
+        self::assertEquals('url1', $data->getUrl());
     }
 
     /**
@@ -119,8 +120,8 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
 
         self::assertCount(0, $this->sdkRepo->findAll());
 
-        self::assertEquals('One', $data->getKey());
-        self::assertEquals('One', $data->getValue());
+        self::assertEquals('One', $data->getName());
+        self::assertEquals('One', $data->getUrl());
     }
 
     /**
@@ -130,7 +131,7 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
     {
         parent::setUp();
 
-        $this->manager = self::$container->get('hbpf.configurator.manager.sdk');
+        $this->manager = self::getContainer()->get('hbpf.configurator.manager.sdk');
         $this->sdkRepo = $this->dm->getRepository(Sdk::class);
     }
 
@@ -143,8 +144,8 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
     private function createSdk(string $string): Sdk
     {
         $sdk = (new Sdk())
-            ->setKey($string)
-            ->setValue($string);
+            ->setName($string)
+            ->setUrl($string);
 
         $this->dm->persist($sdk);
         $this->dm->flush();

@@ -44,6 +44,7 @@ type Service struct {
 	Command     string                           `yaml:"command,omitempty" json:"command,omitempty"`
 	MemLimit    string                           `yaml:"mem_limit"`
 	Cpus        float64                          `yaml:"cpus"`
+	Restart     string                           `yaml:"restart"`
 }
 
 // DockerCompose DockerCompose

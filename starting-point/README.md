@@ -1,7 +1,7 @@
 # Starting Point
 ​
 ## Popis služby
-API pro spouštění topologií Pipes Frameworku. Topologie je možné spouštět dle jejich ID a názvů. V případě topologií vyžadujících akci uživatele (human tasků) umožňuje také jejich potvrzení nebo zamítnutí.
+API pro spouštění topologií Pipes Frameworku. Topologie je možné spouštět dle jejich ID a názvů.
 
 ## Spuštění služby - development
 - `make init-dev` - Spustí aplikaci definovanou v `docker-compose.yml`
@@ -21,10 +21,6 @@ API pro spouštění topologií Pipes Frameworku. Topologie je možné spouště
     - Povinný: Ne (výchozí `Node`)
     - MongoDB kolekce uzlů
     - Například: `Node`
-- MONGO_HUMAN_TASK_COLL
-    - Povinný: Ne (výchozí `LongRunningNodeData`)
-    - MongoDB kolekce uživatelských akcí (human tasků)
-    - Například: `LongRunningNodeData`
 - MONGO_WEBHOOK_COLL
     - Povinný: Ne (výchozí `Webhook`)
     - MongoDB kolekce webhooků

@@ -8,39 +8,39 @@ import (
 type nullLogger struct {
 }
 
-func (l *nullLogger) SetLevel(severity Level) {
+func (l *nullLogger) SetLevel(_ Level) {
 	// void
 }
 
-func (l *nullLogger) Debug(msg string, context Context) {
+func (l *nullLogger) Debug(_ string, _ Context) {
 	// void
 }
 
-func (l *nullLogger) Log(severityLevel Level, msg string, context Context) {
+func (l *nullLogger) Log(_ Level, _ string, _ Context) {
 	// void
 }
 
-func (l *nullLogger) Info(msg string, context Context) {
+func (l *nullLogger) Info(_ string, _ Context) {
 	// void
 }
 
-func (l *nullLogger) Error(msg string, context Context) {
+func (l *nullLogger) Error(_ string, _ Context) {
 	// void
 }
 
-func (l *nullLogger) Warning(msg string, context Context) {
+func (l *nullLogger) Warning(_ string, _ Context) {
 	// void
 }
 
-func (l *nullLogger) Fatal(msg string, context Context) {
+func (l *nullLogger) Fatal(_ string, _ Context) {
 	os.Exit(1)
 }
 
-func (l *nullLogger) Metrics(key string, msg string, context Context) {
-	//void
+func (l *nullLogger) Metrics(_ string, _ string, _ Context) {
+	// void
 }
 
-func (l *nullLogger) AddHandler(handler Handler) {
+func (l *nullLogger) AddHandler(_ Handler) {
 	// void
 }
 

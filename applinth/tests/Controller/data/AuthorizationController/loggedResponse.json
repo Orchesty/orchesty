@@ -1,0 +1,7 @@
+{
+    "http": 200,
+    "body": {
+        "access_token": "abcd",
+        "expires_in": "123"
+    }
+}

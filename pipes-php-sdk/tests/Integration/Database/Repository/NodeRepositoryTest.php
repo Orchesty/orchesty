@@ -151,6 +151,7 @@ final class NodeRepositoryTest extends DatabaseTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository::getCronNodes
      * @covers \Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository::getTopologyType
      *
      * @throws Exception

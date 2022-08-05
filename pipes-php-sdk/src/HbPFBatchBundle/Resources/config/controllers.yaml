@@ -1,0 +1,10 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    Hanaboso\PipesPhpSdk\HbPFBatchBundle\Controller\BatchController:
+        class: Hanaboso\PipesPhpSdk\HbPFBatchBundle\Controller\BatchController
+        arguments:
+            - '@hbpf.handler.batch'
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]

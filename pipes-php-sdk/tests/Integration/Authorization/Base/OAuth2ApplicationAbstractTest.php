@@ -3,11 +3,9 @@
 namespace PipesPhpSdkTests\Integration\Authorization\Base;
 
 use Exception;
-use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
-use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth2Dto;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
@@ -46,9 +44,9 @@ final class OAuth2ApplicationAbstractTest extends DatabaseTestCaseAbstract
     {
         $applicationInstall = $this->createApplicationInstall(
             [
-                ApplicationInterface::AUTHORIZATION_SETTINGS =>
+                ApplicationInterface::AUTHORIZATION_FORM =>
                     [
-                        OAuth2ApplicationInterface::TOKEN =>
+                        ApplicationInterface::TOKEN =>
                             [
                                 OAuth2Provider::ACCESS_TOKEN => 'access_token',
                             ],
@@ -60,14 +58,15 @@ final class OAuth2ApplicationAbstractTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract::getApplicationForm
-
-     * @throws Exception
+     * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract::getApplicationForms
+ * @throws Exception
      */
     public function testGetApplicationForm(): void
     {
         $applicationInstall = $this->createApplicationInstall();
-        self::assertEquals(3, count($this->testApp->getApplicationForm($applicationInstall)));
+        self::assertEquals(3, count($this->testApp->getApplicationForms(
+            $applicationInstall,
+        )[ApplicationInterface::AUTHORIZATION_FORM][ApplicationInterface::FIELDS]));
     }
 
     /**
@@ -80,8 +79,8 @@ final class OAuth2ApplicationAbstractTest extends DatabaseTestCaseAbstract
     {
         $applicationInstall = $this->createApplicationInstall(
             [
-                BasicApplicationInterface::AUTHORIZATION_SETTINGS => [
-                    OAuth2ApplicationInterface::TOKEN => [
+                ApplicationInterface::AUTHORIZATION_FORM => [
+                    ApplicationInterface::TOKEN => [
                         'access_token' => '123',
                         'expires_in'   => DateTimeUtils::getUtcDateTime('tomorrow')->getTimestamp(),
                     ],
@@ -105,7 +104,7 @@ final class OAuth2ApplicationAbstractTest extends DatabaseTestCaseAbstract
         self::assertEquals(
             '__token__',
             $applicationInstall->getSettings(
-            )[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN][OAuth2Provider::ACCESS_TOKEN],
+            )[ApplicationInterface::AUTHORIZATION_FORM][ApplicationInterface::TOKEN][OAuth2Provider::ACCESS_TOKEN],
         );
     }
 
@@ -117,7 +116,7 @@ final class OAuth2ApplicationAbstractTest extends DatabaseTestCaseAbstract
     public function testGetFrontendRedirectUrl(): void
     {
         $applicationInstall = $this->createApplicationInstall(
-            [ApplicationInterface::AUTHORIZATION_SETTINGS => [ApplicationInterface::REDIRECT_URL => '/redirect/url']],
+            [ApplicationInterface::AUTHORIZATION_FORM => [ApplicationInterface::FRONTEND_REDIRECT_URL => '/redirect/url']],
         );
         self::assertEquals('/redirect/url', $this->testApp->getFrontendRedirectUrl($applicationInstall));
     }
@@ -147,7 +146,7 @@ final class OAuth2ApplicationAbstractTest extends DatabaseTestCaseAbstract
         self::assertEquals(
             '__token__',
             $applicationInstall->getSettings(
-            )[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN][OAuth2Provider::ACCESS_TOKEN],
+            )[ApplicationInterface::AUTHORIZATION_FORM][ApplicationInterface::TOKEN][OAuth2Provider::ACCESS_TOKEN],
         );
     }
 
@@ -159,7 +158,7 @@ final class OAuth2ApplicationAbstractTest extends DatabaseTestCaseAbstract
     public function testGetAccessToken(): void
     {
         $applicationInstall = $this->createApplicationInstall(
-            [ApplicationInterface::AUTHORIZATION_SETTINGS => [ApplicationInterface::TOKEN => [OAuth2Provider::ACCESS_TOKEN => '__token__']]],
+            [ApplicationInterface::AUTHORIZATION_FORM => [ApplicationInterface::TOKEN => [OAuth2Provider::ACCESS_TOKEN => '__token__']]],
         );
 
         self::assertEquals('__token__', $this->testApp->getAccessToken($applicationInstall));
@@ -170,7 +169,7 @@ final class OAuth2ApplicationAbstractTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract::setApplicationSettings
+     * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract::saveApplicationForms
      *
      * @throws Exception
      */
@@ -178,17 +177,17 @@ final class OAuth2ApplicationAbstractTest extends DatabaseTestCaseAbstract
     {
         $applicationInstall = $this->createApplicationInstall();
 
-        $this->testApp->setApplicationSettings(
+        $this->testApp->saveApplicationForms(
             $applicationInstall,
-            [
+            [ApplicationInterface::AUTHORIZATION_FORM => [
                 OAuth2ApplicationInterface::CLIENT_ID     => '123',
                 OAuth2ApplicationInterface::CLIENT_SECRET => '__secret__',
-            ],
+            ]],
         );
 
         self::assertEquals(
             '123',
-            $applicationInstall->getSettings()[ApplicationAbstract::FORM][OAuth2ApplicationInterface::CLIENT_ID],
+            $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][OAuth2ApplicationInterface::CLIENT_ID],
         );
     }
 
@@ -213,7 +212,7 @@ final class OAuth2ApplicationAbstractTest extends DatabaseTestCaseAbstract
     {
         parent::setUp();
 
-        $this->testApp = self::$container->get('hbpf.application.null2');
+        $this->testApp = self::getContainer()->get('hbpf.application.null2');
     }
 
     /**

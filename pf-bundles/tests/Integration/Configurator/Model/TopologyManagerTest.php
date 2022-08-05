@@ -17,6 +17,7 @@ use Hanaboso\PipesPhpSdk\Database\Document\Dto\SystemConfigDto;
 use Hanaboso\PipesPhpSdk\Database\Document\Embed\EmbedNode;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
+use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Json;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
@@ -144,6 +145,28 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         self::assertEquals(['bpmn'], $top->getBpmn());
         self::assertEquals('bpmn', $top->getRawBpmn());
         self::assertFalse($top->isEnabled());
+    }
+
+    /**
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::checkTopologySchemaIsSame
+     *
+     * @throws Exception
+     */
+    public function testCheckTopologyIsSame(): void
+    {
+        $schema = $this->getSchema();
+
+        $top = new Topology();
+        $top
+            ->setVisibility(TopologyStatusEnum::DRAFT)
+            ->setDescr('asd')
+            ->setName('asdd')
+            ->setEnabled(TRUE);
+
+        $this->dm->persist($top);
+
+        $this->manager->saveTopologySchema($top, '', $schema);
+        self::assertEquals(TRUE, $this->manager->checkTopologySchemaIsSame($top, $schema));
     }
 
     /**
@@ -379,6 +402,46 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::getNodeBySchemaId
      * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::setNodeAttributes
      * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::createNode
+     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getSequences
+     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getNodes
+     *
+     * @throws Exception
+     */
+    public function testReSaveTopologySchema(): void
+    {
+        $topology = (new Topology())
+            ->setName('Topology')
+            ->setDescr('Topology')
+            ->setContentHash('123');
+        $this->pfd($topology);
+
+        $node = (new Node())
+            ->setName('deleted')
+            ->setTopology($topology->getId());
+        $this->pfd($node);
+
+        $result = $this->manager->saveTopologySchema($topology, '', $this->getSchema());
+
+        /** @var Node[] $nodes */
+        $nodes = $this->dm->getRepository(Node::class)->findBy(['topology' => $topology->getId()]);
+
+        self::assertEquals($topology->getId(), $result->getId());
+        self::assertEquals(7, count($nodes));
+
+        self::assertNodesFromSchemaFile($nodes);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::saveTopologySchema
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::cloneTopologyShallow
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::generateNodes
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::removeNodesByTopology
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNodes
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNode
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::checkNodeAttributes
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::getNodeBySchemaId
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::setNodeAttributes
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::createNode
      *
      * @throws Exception
      */
@@ -590,31 +653,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $schema                                                     = $this->getSchema();
         $schema['bpmn:process']['bpmn:event'][0]['@pipes:cronTime'] = 'Unknown';
         $this->manager->saveTopologySchema($topology, '', $schema);
-    }
-
-    /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::deleteTopology
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::removeNodesByTopology
-     *
-     * @throws Exception
-     */
-    public function testDeletePublishedTopology(): void
-    {
-        $node  = new Node();
-        $node2 = new Node();
-        $top   = new Topology();
-        $top
-            ->setName('name')
-            ->setVisibility(TopologyStatusEnum::PUBLIC);
-        $this->pfd($top);
-        $node->setName('node')->setType(TypeEnum::MAPPER)->setTopology($top->getId());
-        $node2->setName('node')->setType(TypeEnum::CRON)->setTopology($top->getId());
-        $this->pfd($node);
-        $this->pfd($node2);
-
-        self::expectException(TopologyException::class);
-        self::expectExceptionCode(TopologyException::CANNOT_DELETE_PUBLIC_TOPOLOGY);
-        $this->manager->deleteTopology($top);
     }
 
     /**
@@ -911,7 +949,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     {
         parent::setUp();
 
-        $this->manager = self::$container->get('hbpf.configurator.manager.topology');
+        $this->manager = self::getContainer()->get('hbpf.configurator.manager.topology');
     }
 
     /**
@@ -923,7 +961,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
      */
     private function getSchema(string $name = 'schema.json'): array
     {
-        return Json::decode((string) file_get_contents(sprintf('%s/data/%s', __DIR__, $name)));
+        return Json::decode(File::getContent(sprintf('%s/data/%s', __DIR__, $name)));
     }
 
     /**

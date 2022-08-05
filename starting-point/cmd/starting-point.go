@@ -33,7 +33,6 @@ func main() {
 		service.RabbitMq.DisconnectRabbit()
 		storage.Mongo.Disconnect()
 		_ = server.Shutdown(context.Background())
-
 	}()
 
 	gracefulShutdown(server)

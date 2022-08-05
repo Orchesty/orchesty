@@ -1,0 +1,18 @@
+.base-cron:
+  variables:
+    DIR: cron
+    IMAGE: ${REGISTRY}/${IMAGE_PREFIX}cron
+  rules:
+    - if: '$FORCE_PIPELINE =~ /ALL/ || $FORCE_PIPELINE =~ /cron/'
+    - if: '$CI_COMMIT_BEFORE_SHA == $_BANNED_RUN_ALL_SHA'
+      when: never
+    - changes:
+      - ${DIR}/**/*
+
+
+cron:build:
+  stage: build
+  needs: []
+  extends:
+    - .base-kaniko-build
+    - .base-cron

@@ -21,11 +21,10 @@ type config struct {
 }
 
 type mongoDb struct {
-	Dsn           string
-	NodeColl      string
-	TopologyColl  string
-	HumanTaskColl string
-	WebhookColl   string
+	Dsn          string
+	NodeColl     string
+	TopologyColl string
+	WebhookColl  string
 }
 
 type rabbitMq struct {
@@ -34,8 +33,6 @@ type rabbitMq struct {
 	Password             string
 	Port                 int16
 	Vhost                string
-	CounterQueueName     string
-	CounterQueueDurable  bool
 	DeliveryMode         int16
 	QueueDurable         bool
 	MaxConcurrentPublish int16
@@ -70,11 +67,10 @@ func init() {
 
 	Config = config{
 		MongoDB: &mongoDb{
-			Dsn:           getEnv("MONGO_DSN", ""),
-			NodeColl:      getEnv("MONGO_NODE_COLL", "Node"),
-			TopologyColl:  getEnv("MONGO_TOPOLOGY_COLL", "Topology"),
-			HumanTaskColl: getEnv("MONGO_HUMAN_TASK_COLL", "LongRunningNodeData"),
-			WebhookColl:   getEnv("MONGO_WEBHOOK_COLL", "Webhook"),
+			Dsn:          getEnv("MONGO_DSN", ""),
+			NodeColl:     getEnv("MONGO_NODE_COLL", "Node"),
+			TopologyColl: getEnv("MONGO_TOPOLOGY_COLL", "Topology"),
+			WebhookColl:  getEnv("MONGO_WEBHOOK_COLL", "Webhook"),
 		},
 		RabbitMQ: &rabbitMq{
 			Hostname:             getEnv("RABBIT_HOSTNAME", "rabbitmq"),
@@ -82,8 +78,6 @@ func init() {
 			Password:             getEnv("RABBIT_PASSWORD", "guest"),
 			Port:                 getEnvInt("RABBIT_PORT", 5672),
 			Vhost:                getEnv("RABBIT_VHOST", ""),
-			CounterQueueName:     getEnv("RABBIT_COUNTER_QUEUE_NAME", "pipes.multi-counter"),
-			CounterQueueDurable:  getEnvBool("RABBIT_COUNTER_QUEUE_DURABLE", true),
 			DeliveryMode:         getEnvInt("RABBIT_DELIVERY_MODE", 2), // 0 - 1 Transient, 2 - Persistent
 			QueueDurable:         getEnvBool("RABBIT_QUEUE_DURABLE", true),
 			MaxConcurrentPublish: getEnvInt("RABBIT_CONCURRENT_PUBLISH_RATE", 32767),

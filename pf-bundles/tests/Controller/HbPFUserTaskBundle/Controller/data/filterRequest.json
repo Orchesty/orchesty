@@ -1,0 +1,7 @@
+{
+    "http": "GET /user-task?filter={\"filter\":[[{\"column\":\"id\",\"operator\":\"EQ\",\"value\":[\"507f191e810c19729de860ea\"]}]]}",
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    },
+    "body": {}
+}

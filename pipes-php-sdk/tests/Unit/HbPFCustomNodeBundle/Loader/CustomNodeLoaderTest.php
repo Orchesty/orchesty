@@ -3,9 +3,9 @@
 namespace PipesPhpSdkTests\Unit\HbPFCustomNodeBundle\Loader;
 
 use Exception;
-use Hanaboso\PipesPhpSdk\CustomNode\Impl\NullCustomNode;
 use Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Exception\CustomNodeException;
 use Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Loader\CustomNodeLoader;
+use PipesPhpSdkTests\Integration\HbPFCustomNodeBundle\TestNullCustomNode;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 
 /**
@@ -28,7 +28,7 @@ final class CustomNodeLoaderTest extends KernelTestCaseAbstract
     {
         $customNode = $this->customNodeLoader->get('null');
 
-        self::assertInstanceOf(NullCustomNode::class, $customNode);
+        self::assertInstanceOf(TestNullCustomNode::class, $customNode);
     }
 
     /**
@@ -49,7 +49,7 @@ final class CustomNodeLoaderTest extends KernelTestCaseAbstract
     {
         parent::setUp();
 
-        $this->customNodeLoader = self::$container->get('hbpf.loader.custom_node');
+        $this->customNodeLoader = self::getContainer()->get('hbpf.loader.custom_node');
     }
 
 }

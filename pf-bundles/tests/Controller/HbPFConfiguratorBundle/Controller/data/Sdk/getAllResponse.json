@@ -4,14 +4,24 @@
         "items": [
             {
                 "id": "5e32a7a41ffeab2445696983",
-                "key": "One",
-                "value": "One"
+                "name": "One",
+                "url": "One",
+                "headers": []
             },
             {
                 "id": "5e32a7a41ffeab2445696983",
-                "key": "Two",
-                "value": "Two"
+                "name": "Two",
+                "url": "Two",
+                "headers": []
             }
-        ]
+        ],
+        "paging": {
+            "page": 1,
+            "itemsPerPage": 50,
+            "total": 2,
+            "nextPage": 2,
+            "lastPage": 2,
+            "previousPage": 1
+        }
     }
 }

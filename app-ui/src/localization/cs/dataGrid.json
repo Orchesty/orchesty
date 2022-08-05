@@ -1,0 +1,33 @@
+{
+  "dataGrid": {
+    "search": {
+      "label": "Hledat"
+    },
+    "selected": "Počet vybraných položek",
+    "filter": "Filtr",
+    "quickFilters": "Rychlé filtry:",
+    "save": "Uložit",
+    "clear": "Vyčistit",
+    "runFilter": "Filtrovat",
+    "simpleFilter": "Jednoduchý filtr",
+    "advancedFilter": "Pokročilý filtr",
+    "inputs": {
+      "boolean": {
+        "all": "Vše",
+        "true": "Ano",
+        "false": "Ne"
+      },
+      "between": {
+        "from": "Od",
+        "to": "Do"
+      }
+    },
+    "advanced": {
+      "and": "AND",
+      "or": "OR",
+      "column": "Sloupec",
+      "operator": "Operátor",
+      "value": "Hodnota(y)"
+    }
+  }
+}

@@ -4,10 +4,11 @@ namespace Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3;
 
 use Aws\S3\S3Client;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\AwsApplicationAbstract;
-use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Form;
+use Hanaboso\PipesPhpSdk\Application\Model\Form\FormStack;
 
 /**
  * Class S3Application
@@ -22,7 +23,7 @@ final class S3Application extends AwsApplicationAbstract
     /**
      * @return string
      */
-    public function getKey(): string
+    public function getName(): string
     {
         return 's3';
     }
@@ -30,7 +31,7 @@ final class S3Application extends AwsApplicationAbstract
     /**
      * @return string
      */
-    public function getName(): string
+    public function getPublicName(): string
     {
         return 'Amazon Simple Storage Service';
     }
@@ -44,16 +45,22 @@ final class S3Application extends AwsApplicationAbstract
     }
 
     /**
-     * @return Form
+     * @return FormStack
      */
-    public function getSettingsForm(): Form
+    public function getFormStack(): FormStack
     {
-        return (new Form())
-            ->addField((new Field(Field::TEXT, self::KEY, 'Key', NULL, TRUE)))
-            ->addField((new Field(Field::TEXT, self::SECRET, 'Secret', NULL, TRUE)))
-            ->addField((new Field(Field::TEXT, self::BUCKET, 'Bucket', NULL, TRUE)))
-            ->addField((new Field(Field::SELECT_BOX, self::REGION, 'Region', NULL, TRUE))->setChoices(self::REGIONS))
-            ->addField((new Field(Field::TEXT, self::ENDPOINT, 'Custom Endpoint')));
+        $form = new Form(ApplicationInterface::AUTHORIZATION_FORM, 'Authorization settings');
+        $form
+        ->addField((new Field(Field::TEXT, self::KEY, 'Key', NULL, TRUE)))
+        ->addField((new Field(Field::TEXT, self::SECRET, 'Secret', NULL, TRUE)))
+        ->addField((new Field(Field::TEXT, self::BUCKET, 'Bucket', NULL, TRUE)))
+        ->addField((new Field(Field::SELECT_BOX, self::REGION, 'Region', NULL, TRUE))->setChoices(self::REGIONS))
+        ->addField((new Field(Field::TEXT, self::ENDPOINT, 'Custom Endpoint')));
+
+        $formStack = new FormStack();
+        $formStack->addForm($form);
+
+        return $formStack;
     }
 
     /**
@@ -63,11 +70,11 @@ final class S3Application extends AwsApplicationAbstract
      */
     public function isAuthorized(ApplicationInstall $applicationInstall): bool
     {
-        if (!isset($applicationInstall->getSettings()[ApplicationAbstract::FORM])) {
+        if (!isset($applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM])) {
             return FALSE;
         }
 
-        $settings = $applicationInstall->getSettings()[ApplicationAbstract::FORM];
+        $settings = $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM];
 
         return isset($settings[self::KEY])
             && isset($settings[self::SECRET])
@@ -82,7 +89,7 @@ final class S3Application extends AwsApplicationAbstract
      */
     public function getS3Client(ApplicationInstall $applicationInstall): S3Client
     {
-        $settings = $applicationInstall->getSettings()[self::FORM];
+        $settings = $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM];
         $endpoint = $settings[self::ENDPOINT];
 
         return new S3Client(

@@ -17,6 +17,7 @@ global:
     # note: you can currently override image used in topologies only by changing images.bridge
 
   images:
+    applinth-marketplace-ui: ""
     php-sdk: pipes-pf-bundle:master
     backend: pipes-pf-bundle:master
     status: status-service:dev
@@ -35,7 +36,7 @@ global:
     topology-api: pipes-topology-api-v2:master
     logstash: pipes-logstash-mongo:master
     kapacitor: kapacitor:master
-    telegraf: pipes-telegraf:master
+    detector: detector:master
     logstash-fluentd-google: no-default-image-yet
 
   # Default global node selector
@@ -58,6 +59,9 @@ global:
     googleServiceAccount: gsa-with-Logs-Writer-role
 
   api:
+    serviceAnnotations: {}
+
+  applinthMarketplaceUI:
     serviceAnnotations: {}
 
   backend:
@@ -221,7 +225,9 @@ global:
         memory: 128Gi
         cpu: "2"
 
-  telegraf:
+  detector:
+    manageServiceAccount: true
+    manageRBAC: true
     # values for backward compat, will be reset
     resources:
       requests:

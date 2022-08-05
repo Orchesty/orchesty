@@ -4,7 +4,6 @@ namespace PipesPhpSdkTests\Controller\HbPFConnectorBundle\Controller;
 
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Handler\ConnectorHandler;
 use Hanaboso\Utils\String\Json;
 use PipesPhpSdkTests\ControllerTestCaseAbstract;
@@ -16,75 +15,6 @@ use PipesPhpSdkTests\ControllerTestCaseAbstract;
  */
 final class ConnectorControllerTest extends ControllerTestCaseAbstract
 {
-
-    /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Controller\ConnectorController::processEventAction
-     *
-     * @throws Exception
-     */
-    public function testProcessEvent(): void
-    {
-        $this->mockHandler('processEvent');
-
-        $response = $this->sendPost('/connector/magento/webhook', []);
-        self::assertEquals(200, $response->status);
-        self::assertEquals('test', $response->content->test);
-    }
-
-    /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Controller\ConnectorController::processEventAction
-     *
-     * @throws Exception
-     */
-    public function testProcessEventActionErr(): void
-    {
-        $this->client->request('POST', '/connector/magento/webhook', [], [], [], '{}');
-
-        $response = $this->client->getResponse();
-        self::assertEquals(500, $response->getStatusCode());
-    }
-
-    /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Controller\ConnectorController::processEventAction
-     *
-     * @throws Exception
-     */
-    public function testProcessEventActionErr2(): void
-    {
-        $handler = self::createPartialMock(ConnectorHandler::class, ['getConnectors']);
-        $handler->expects(self::any())->method('getConnectors')->willThrowException(new ConnectorException());
-
-        self::$container->set('hbpf.handler.connector', $handler);
-
-        $this->client->request('POST', '/connector/magento/webhook', [], [], [], '{}');
-
-        $response = $this->client->getResponse();
-        self::assertEquals(500, $response->getStatusCode());
-    }
-
-    /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Controller\ConnectorController::processEventTestAction
-     *
-     * @throws Exception
-     */
-    public function testProcessEventTestAction(): void
-    {
-        $this->mockHandler('processEvent');
-
-        $response = $this->sendGet('/connector/magento/webhook/test');
-        self::assertEquals(200, $response->status);
-    }
-
-    /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Controller\ConnectorController::processEventTestAction
-     *
-     * @throws Exception
-     */
-    public function testProcessEventTestActionErr(): void
-    {
-        $response = $this->sendGet('/connector/magento/webhook/test');
-        self::assertEquals(500, $response->status);
-    }
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Controller\ConnectorController::processActionAction
@@ -109,25 +39,12 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
         $handler = self::createPartialMock(ConnectorHandler::class, ['getConnectors']);
         $handler->expects(self::any())->method('getConnectors')->willThrowException(new Exception());
 
-        self::$container->set('hbpf.handler.connector', $handler);
+        self::getContainer()->set('hbpf.handler.connector', $handler);
 
         $this->client->request('POST', '/connector/magento/action', [], [], [], '{}');
 
         $response = $this->client->getResponse();
         self::assertEquals(500, $response->getStatusCode());
-    }
-
-    /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Controller\ConnectorController::processActionTestAction
-     *
-     * @throws Exception
-     */
-    public function testProcessActionTestAction(): void
-    {
-        $this->mockHandler('processEvent');
-
-        $response = $this->sendGet('/connector/magento/action/test');
-        self::assertEquals(200, $response->status);
     }
 
     /**
@@ -151,7 +68,7 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
         $handler = self::createPartialMock(ConnectorHandler::class, ['getConnectors']);
         $handler->expects(self::any())->method('getConnectors')->willThrowException(new Exception());
 
-        self::$container->set('hbpf.handler.connector', $handler);
+        self::getContainer()->set('hbpf.handler.connector', $handler);
 
         $response = $this->sendGet('/connector/list');
         self::assertEquals(500, $response->status);
@@ -206,7 +123,7 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
     {
         $handler = $this->getMockBuilder(ConnectorHandler::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['processAction', 'processEvent', 'processTest'])
+            ->onlyMethods(['processAction', 'processTest'])
             ->getMock();
 
         $dto = new ProcessDto();
@@ -215,7 +132,7 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
             ->setHeaders([]);
         $handler->method($method)->willReturn($dto);
 
-        self::$container->set('hbpf.handler.connector', $handler);
+        self::getContainer()->set('hbpf.handler.connector', $handler);
     }
 
     /**

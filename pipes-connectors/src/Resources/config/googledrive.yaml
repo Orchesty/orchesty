@@ -9,8 +9,7 @@ services:
 
     hbpf.connector.google-drive.upload-file:
         class: Hanaboso\HbPFConnectors\Model\Application\Impl\GoogleDrive\Connector\GoogleDriveUploadFileConnector
-        arguments:
-            - '@doctrine_mongodb.odm.default_document_manager'
-            - '@hbpf.transport.curl_manager'
         calls:
-            - ['setApplication', ['@hbpf.application.google-drive']]
+            -   setApplication: [ '@hbpf.application.google-drive' ]
+            -   setDb: [ '@doctrine_mongodb.odm.default_document_manager' ]
+            -   setSender: [ '@hbpf.transport.curl_manager' ]

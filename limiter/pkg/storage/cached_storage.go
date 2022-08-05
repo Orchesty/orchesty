@@ -1,10 +1,9 @@
 package storage
 
 import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"sync"
-
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
 )
 
 // CachedStorage represents a storage that uses cache
@@ -88,7 +87,7 @@ func (cs *CachedStorage) Save(m *Message) (string, error) {
 }
 
 // Remove deletes a record in storage
-func (cs *CachedStorage) Remove(key string, id bson.ObjectId) (bool, error) {
+func (cs *CachedStorage) Remove(key string, id primitive.ObjectID) (bool, error) {
 	_, err := cs.db.Remove(key, id)
 	if err != nil {
 		return false, err
@@ -103,7 +102,7 @@ func (cs *CachedStorage) Remove(key string, id bson.ObjectId) (bool, error) {
 }
 
 // ClearCacheItem remove key from memory cache
-func (cs *CachedStorage) ClearCacheItem(key string, val int) bool {
+func (cs *CachedStorage) ClearCacheItem(key string, _ int) bool {
 	_, ok := cs.cache[key]
 	if !ok {
 		return false
@@ -137,6 +136,6 @@ func (cs *CachedStorage) getCount(key string) int {
 }
 
 // CreateIndex - create mongo indexes
-func (cs *CachedStorage) CreateIndex(index mgo.Index) error {
+func (cs *CachedStorage) CreateIndex(index mongo.IndexModel) error {
 	return cs.db.CreateIndex(index)
 }

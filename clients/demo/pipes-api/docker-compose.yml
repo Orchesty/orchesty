@@ -4,7 +4,7 @@ version: '3.5'
 
 services:
     app:
-        image: hanabosocom/php-dev:php-8.0-alpine
+        image: hanabosocom/php-dev:php-8.1-alpine
         user: ${DEV_UID}:${DEV_GID}
         ports:
             - ${DEV_IP}:8000:80
@@ -13,11 +13,18 @@ services:
             PHP_WEBROOT: /var/www/pipes/clients/demo/pipes-api
             DEV_UID: ${DEV_UID}
             DEV_GID: ${DEV_GID}
-            BACKEND_HOST: ${DEV_IP}/
-            METRICS_SERVICE: influx
+            BACKEND_DSN: ${DEV_IP}/
+            MONGODB_DSN: mongodb://mongo
+            MONGODB_DB: pipes
+            METRICS_DSN: mongodb://mongo
+            METRICS_DB: metrics
+            METRICS_SERVICE: mongo
             COMPOSER_HOME: ${HOME}/dev/.composer
             KERNEL_CLASS: Demo\Kernel
         volumes:
             - ../../../:/var/www/pipes:cached
             - ${SSH_AUTH}:/tmp/.ssh-auth-sock
             - ${HOME}/dev/.composer:${HOME}/dev/.composer:cached
+
+    mongo:
+        image: mongo

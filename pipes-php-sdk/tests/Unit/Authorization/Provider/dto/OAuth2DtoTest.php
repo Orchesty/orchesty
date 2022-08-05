@@ -3,8 +3,8 @@
 namespace PipesPhpSdkTests\Unit\Authorization\Provider\dto;
 
 use Exception;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth2Dto;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
@@ -24,7 +24,7 @@ final class OAuth2DtoTest extends KernelTestCaseAbstract
     {
         $applicationInstall = (new ApplicationInstall())->setSettings(
             [
-                BasicApplicationInterface::AUTHORIZATION_SETTINGS =>
+                ApplicationInterface::AUTHORIZATION_FORM =>
                     [
                         OAuth2ApplicationInterface::CLIENT_ID     => '159',
                         OAuth2ApplicationInterface::CLIENT_SECRET => 'secret',

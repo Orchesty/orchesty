@@ -1,36 +1,26 @@
 {
-    "name": "hanaboso/pipes-connectors",
-    "description": "Connectors for PipesFramework",
-    "version": "1.6.1",
-    "license": "GPL-3.0-or-later",
+    "name": "orchesty/php-connectors",
+    "description": "Connectors for Orchesty",
+    "license": "Apache-2.0",
+    "version": "2.1.1",
     "require": {
-        "php": "^8.0",
+        "php": "^8.1",
         "ext-ctype": "*",
         "ext-intl": "*",
         "ext-mbstring": "*",
-        "hanaboso/app-store": "^1.6",
-        "hanaboso/pipes-php-sdk": "^1.6",
-        "hanaboso/rabbit-mq-bundle": "^1.5"
+        "hanaboso/rabbit-mq-bundle": "^1.5",
+        "orchesty/app-store": "^2.0",
+        "orchesty/php-sdk": "^2.0"
     },
     "require-dev": {
         "aws/aws-sdk-php-symfony": "^2.2",
-        "hanaboso/php-check-utils": "^1.2",
-        "symfony/debug-bundle": "^v5.3",
-        "symfony/security-bundle": "^v5.3",
-        "symfony/serializer": "^v5.3"
+        "hanaboso/php-check-utils": "^1.4",
+        "symfony/debug-bundle": "^v6.0",
+        "symfony/security-bundle": "^v6.0",
+        "symfony/serializer": "^v6.0"
     },
     "suggest": {
         "aws/aws-sdk-php-symfony": "Install me, if you need to use Model\\Application\\Impl\\AmazonApps."
-    },
-    "autoload": {
-        "psr-4": {
-            "Hanaboso\\HbPFConnectors\\": "src"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "HbPFConnectorsTests\\": "tests"
-        }
     },
     "repositories": [
         {
@@ -47,5 +37,15 @@
                 "symlink": true
             }
         }
-    ]
+    ],
+    "autoload": {
+        "psr-4": {
+            "Hanaboso\\HbPFConnectors\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "HbPFConnectorsTests\\": "tests"
+        }
+    }
 }

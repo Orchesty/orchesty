@@ -15,9 +15,9 @@ abstract class RedshiftObjectConnectorAbstract extends AwsObjectConnectorAbstrac
     /**
      * @return string
      */
-    public function getId(): string
+    public function getName(): string
     {
-        return sprintf('redshift-%s', $this->getCustomId());
+        return sprintf('redshift-%s', $this->getCustomName());
     }
 
 }

@@ -5,9 +5,12 @@ namespace Hanaboso\PipesPhpSdk\Database\Repository;
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
+use Exception;
 use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
 use Hanaboso\PipesPhpSdk\Database\Document\Category;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
+use LogicException;
+use MongoDB\BSON\ObjectId;
 
 /**
  * Class TopologyRepository
@@ -47,6 +50,25 @@ final  class TopologyRepository extends DocumentRepository
         /** @var int $result */
         $result = $this->createQueryBuilder()
             ->field('deleted')->equals(FALSE)
+            ->count()
+            ->getQuery()->execute();
+
+        return $result;
+    }
+
+    /**
+     * @param bool $enabled
+     *
+     * @return int
+     * @throws MongoDBException
+     */
+    public function getCountByEnable(bool $enabled): int
+    {
+        /** @var int $result */
+        $result = $this->createQueryBuilder()
+            ->field('deleted')->equals(FALSE)
+            ->field('enabled')->equals($enabled)
+            ->field('visibility')->equals(TopologyStatusEnum::PUBLIC)
             ->count()
             ->getQuery()->execute();
 
@@ -141,6 +163,58 @@ final  class TopologyRepository extends DocumentRepository
     public function getTopologiesByCategory(Category $category): array
     {
         return $this->findBy(['category' => $category->getId(), 'deleted' => FALSE]);
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return Topology
+     * @throws Exception
+     */
+    public function getTopologyById(string $id): Topology
+    {
+        /** @var Topology|null $topology */
+        $topology = $this->findBy(['id' => $id, 'deleted' => FALSE]);
+
+        if (!$topology) {
+            throw new LogicException(
+                sprintf('Node with id is not found [%s]', $id),
+            );
+        }
+
+        return $topology;
+    }
+
+    /**
+     * @param string $topologyId
+     *
+     * @return mixed[]
+     * @throws Exception
+     */
+    public function getActiveTopologiesVersions(string $topologyId): array
+    {
+        /** @var Iterator<Topology> $result */
+        $result = $this->createAggregationBuilder()
+            ->match()
+            ->field('deleted')->equals(FALSE)
+            ->field('enabled')->equals(TRUE)
+            ->group()
+            ->field('id')->expression('$name')
+            ->field('topology')->push('$$ROOT')
+            ->field('ids')->push('$_id')
+            ->match()
+            ->field('ids')
+            ->equals(new ObjectId($topologyId))
+            ->unwind('$topology')
+            ->project()
+            ->excludeFields(['_id'])
+            ->field('id')->expression('$topology._id')
+            ->field('name')->expression('$topology.name')
+            ->field('version')->expression('$topology.version')
+            ->getAggregation()
+            ->getIterator();
+
+        return $result->toArray();
     }
 
 }

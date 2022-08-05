@@ -8,7 +8,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\MailchimpApplication;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
-use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
@@ -40,7 +40,7 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
     {
         $this->setApplication();
         $applicationInstall = DataProvider::getOauth2AppInstall(
-            $this->application->getKey(),
+            $this->application->getName(),
             'user',
             'token123',
             self::CLIENT_ID,
@@ -77,14 +77,17 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
         );
         $this->setApplication();
         $applicationInstall = DataProvider::getOauth2AppInstall(
-            $this->application->getKey(),
+            $this->application->getName(),
             'user',
             'fa830d8d4308*****c307906e83de659',
         );
         $applicationInstall->addSettings(
             [
-                ApplicationAbstract::FORM          => [MailchimpApplication::AUDIENCE_ID => '2a8******8'],
-                MailchimpApplication::API_KEYPOINT => $this->application->getApiEndpoint($applicationInstall),
+                ApplicationInterface::AUTHORIZATION_FORM => [
+                    ...$applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM],
+                    MailchimpApplication::AUDIENCE_ID => '2a8******8',
+                ],
+                MailchimpApplication::API_KEYPOINT       => $this->application->getApiEndpoint($applicationInstall),
             ],
         );
 
@@ -108,7 +111,8 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
             sprintf(
                 '%s/3.0/lists/%s/webhooks',
                 $applicationInstall->getSettings()[MailchimpApplication::API_KEYPOINT],
-                $applicationInstall->getSettings()[ApplicationAbstract::FORM][MailchimpApplication::AUDIENCE_ID],
+                $applicationInstall->getSettings(
+                )[ApplicationInterface::AUTHORIZATION_FORM][MailchimpApplication::AUDIENCE_ID],
             ),
             $request->getUriString(),
         );
@@ -117,7 +121,8 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
             sprintf(
                 '%s/3.0/lists/%s/webhooks/358',
                 $applicationInstall->getSettings()[MailchimpApplication::API_KEYPOINT],
-                $applicationInstall->getSettings()[ApplicationAbstract::FORM][MailchimpApplication::AUDIENCE_ID],
+                $applicationInstall->getSettings(
+                )[ApplicationInterface::AUTHORIZATION_FORM][MailchimpApplication::AUDIENCE_ID],
             ),
             $requestUn->getUriString(),
         );
@@ -126,12 +131,12 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
     /**
      * @throws Exception
      */
-    public function testName(): void
+    public function testPublicName(): void
     {
         $this->setApplication();
         self::assertEquals(
             'Mailchimp',
-            $this->application->getName(),
+            $this->application->getPublicName(),
         );
     }
 
@@ -162,19 +167,21 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
     /**
      * @throws Exception
      */
-    public function testGetSettingsForm(): void
+    public function testGetFormStack(): void
     {
         $this->setApplication();
-        $fields = $this->application->getSettingsForm()->getFields();
-        foreach ($fields as $field) {
-            self::assertContainsEquals(
-                $field->getKey(),
-                [
-                    OAuth2ApplicationAbstract::CLIENT_ID,
-                    OAuth2ApplicationAbstract::CLIENT_SECRET,
-                    MailchimpApplication::AUDIENCE_ID,
-                ],
-            );
+        $forms = $this->application->getFormStack()->getForms();
+        foreach ($forms as $form) {
+            foreach ($form->getFields() as $field) {
+                self::assertContainsEquals(
+                    $field->getKey(),
+                    [
+                        OAuth2ApplicationAbstract::CLIENT_ID,
+                        OAuth2ApplicationAbstract::CLIENT_SECRET,
+                        MailchimpApplication::AUDIENCE_ID,
+                    ],
+                );
+            }
         }
     }
 
@@ -241,7 +248,7 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
         );
         $this->setApplication();
         $applicationInstall = DataProvider::getOauth2AppInstall(
-            $this->application->getKey(),
+            $this->application->getName(),
             'user',
             'fa830d8d4308*****c307906e83de659',
             self::CLIENT_ID,
@@ -264,12 +271,12 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
         self::assertEquals(
             'code123',
             $applicationInstall->getSettings(
-            )[MailchimpApplication::AUTHORIZATION_SETTINGS][MailchimpApplication::TOKEN]['code'],
+            )[ApplicationInterface::AUTHORIZATION_FORM][MailchimpApplication::TOKEN]['code'],
         );
         self::assertEquals(
             'token333',
             $applicationInstall->getSettings(
-            )[MailchimpApplication::AUTHORIZATION_SETTINGS][MailchimpApplication::TOKEN]['access_token'],
+            )[ApplicationInterface::AUTHORIZATION_FORM][MailchimpApplication::TOKEN]['access_token'],
         );
     }
 
@@ -279,7 +286,7 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
     private function setApplication(): void
     {
         $this->mockRedirect(MailchimpApplication::MAILCHIMP_URL, self::CLIENT_ID);
-        $this->application = self::$container->get('hbpf.application.mailchimp');
+        $this->application = self::getContainer()->get('hbpf.application.mailchimp');
     }
 
 }

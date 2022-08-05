@@ -2,13 +2,15 @@
 
 namespace Hanaboso\HbPFConnectors\Model\Application\Impl\Quickbooks;
 
+use Hanaboso\CommonsBundle\Process\ProcessDtoAbstract;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Form;
-use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
+use Hanaboso\PipesPhpSdk\Application\Model\Form\FormStack;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
 
@@ -31,7 +33,7 @@ final class QuickbooksApplication extends OAuth2ApplicationAbstract
     /**
      * @return string
      */
-    public function getKey(): string
+    public function getName(): string
     {
         return 'quickbooks';
     }
@@ -39,7 +41,7 @@ final class QuickbooksApplication extends OAuth2ApplicationAbstract
     /**
      * @return string
      */
-    public function getName(): string
+    public function getPublicName(): string
     {
         return 'Quickbooks';
     }
@@ -69,6 +71,7 @@ final class QuickbooksApplication extends OAuth2ApplicationAbstract
     }
 
     /**
+     * @param ProcessDtoAbstract $dto
      * @param ApplicationInstall $applicationInstall
      * @param string             $method
      * @param string|null        $url
@@ -79,6 +82,7 @@ final class QuickbooksApplication extends OAuth2ApplicationAbstract
      * @throws CurlException
      */
     public function getRequestDto(
+        ProcessDtoAbstract $dto,
         ApplicationInstall $applicationInstall,
         string $method,
         ?string $url = NULL,
@@ -86,8 +90,9 @@ final class QuickbooksApplication extends OAuth2ApplicationAbstract
     ): RequestDto
     {
         $request = new RequestDto(
-            $method,
             $this->getUri(sprintf('%s%s', $this->getBaseUrl($applicationInstall), $url)),
+            $method,
+            $dto,
         );
         $request->setHeaders(
             [
@@ -105,14 +110,20 @@ final class QuickbooksApplication extends OAuth2ApplicationAbstract
     }
 
     /**
-     * @return Form
+     * @return FormStack
      */
-    public function getSettingsForm(): Form
+    public function getFormStack(): FormStack
     {
-        return (new Form())
+        $form = new Form(ApplicationInterface::AUTHORIZATION_FORM, 'Authorization settings');
+        $form
             ->addField(new Field(Field::TEXT, OAuth2ApplicationInterface::CLIENT_ID, 'Client Id', NULL, TRUE))
             ->addField(new Field(Field::TEXT, OAuth2ApplicationInterface::CLIENT_SECRET, 'Client Secret', NULL, TRUE))
             ->addField(new Field(Field::TEXT, self::APP_ID, 'Realm Id', NULL, TRUE));
+
+        $formStack = new FormStack();
+        $formStack->addForm($form);
+
+        return $formStack;
     }
 
     /**
@@ -138,7 +149,7 @@ final class QuickbooksApplication extends OAuth2ApplicationAbstract
             '%s/%s/company/%s',
             self::BASE_URL,
             self::VERSION,
-            $applicationInstall->getSettings()[BasicApplicationAbstract::FORM][self::APP_ID],
+            $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][self::APP_ID],
         );
     }
 

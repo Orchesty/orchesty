@@ -2,8 +2,8 @@
 
 namespace Hanaboso\PipesPhpSdk\Authorization\Provider\Dto;
 
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1\OAuth1ApplicationInterface;
 
 /**
@@ -38,9 +38,9 @@ final class OAuth1Dto implements OAuth1DtoInterface
     )
     {
         $this->consumerKey    = $applicationInstall->getSettings()
-                                [BasicApplicationInterface::AUTHORIZATION_SETTINGS][OAuth1ApplicationInterface::CONSUMER_KEY] ?? '';
+                                [ApplicationInterface::AUTHORIZATION_FORM][OAuth1ApplicationInterface::CONSUMER_KEY] ?? '';
         $this->consumerSecret = $applicationInstall->getSettings()
-                                [BasicApplicationInterface::AUTHORIZATION_SETTINGS][OAuth1ApplicationInterface::CONSUMER_SECRET] ?? '';
+                                [ApplicationInterface::AUTHORIZATION_FORM][OAuth1ApplicationInterface::CONSUMER_SECRET] ?? '';
     }
 
     /**
@@ -89,7 +89,7 @@ final class OAuth1Dto implements OAuth1DtoInterface
     public function getToken(): array
     {
         return $this->applicationInstall->getSettings()
-               [BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::TOKEN] ?? [];
+               [ApplicationInterface::AUTHORIZATION_FORM][ApplicationInterface::TOKEN] ?? [];
     }
 
 }

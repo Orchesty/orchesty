@@ -1,0 +1,7 @@
+{
+    "http": "GET /api/applinth/process/overview",
+    "body": {},
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
+}

@@ -35,7 +35,6 @@ final class HbPFConnectorExtension extends Extension implements PrependExtension
         }
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/prepend-config'));
-        $loader->load('batch-connector.yaml');
         $loader->load('status_service.yaml');
     }
 

@@ -17,15 +17,15 @@ final class FilterStockExchangeTest extends KernelTestCaseAbstract
 
     /**
      * @covers \Demo\CustomNode\FilterStockExchange
-     * @covers \Demo\CustomNode\FilterStockExchange::process
+     * @covers \Demo\CustomNode\FilterStockExchange::processAction
      * @throws Exception
      */
     public function testProcess(): void
     {
         /** @var FilterStockExchange $customNode */
-        $customNode = self::$container->get('hbpf.custom_node.filter-bids');
+        $customNode = self::getContainer()->get('hbpf.custom_node.filter-bids');
 
-        $dto = $customNode->process((new ProcessDto())->setData('{"bids": {"foo":"bar"}}'));
+        $dto = $customNode->processAction((new ProcessDto())->setData('{"bids": {"foo":"bar"}}'));
 
         self::assertEquals('{"foo":"bar"}', $dto->getData());
 
@@ -33,7 +33,7 @@ final class FilterStockExchangeTest extends KernelTestCaseAbstract
             ->expects(self::any())
             ->willReturn(5);
 
-        $dto = $customNode->process((new ProcessDto())->setData('{}'));
+        $dto = $customNode->processAction((new ProcessDto())->setData('{}'));
         self::assertEquals('', $dto->getData());
     }
 

@@ -348,6 +348,7 @@ export default class Counter implements ICounter, IStoppable {
             this.metrics.removeTag("node_id");
             this.metrics.addTag("topology_id", process.topology.split("-")[0]);
             await this.metrics.send({
+                created: new Date(),
                 counter_process_result: process.ok === process.total,
                 counter_process_duration: process.end_timestamp - process.start_timestamp,
                 counter_process_ok_count: process.ok,

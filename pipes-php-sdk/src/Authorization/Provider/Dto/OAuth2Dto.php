@@ -2,8 +2,8 @@
 
 namespace Hanaboso\PipesPhpSdk\Authorization\Provider\Dto;
 
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
 
 /**
@@ -53,9 +53,9 @@ final class OAuth2Dto implements OAuth2DtoInterface
     )
     {
         $this->clientId     = $authorization->getSettings()
-                              [BasicApplicationInterface::AUTHORIZATION_SETTINGS][OAuth2ApplicationInterface::CLIENT_ID] ?? '';
+                              [ApplicationInterface::AUTHORIZATION_FORM][OAuth2ApplicationInterface::CLIENT_ID] ?? '';
         $this->clientSecret = $authorization->getSettings()
-                              [BasicApplicationInterface::AUTHORIZATION_SETTINGS][OAuth2ApplicationInterface::CLIENT_SECRET] ?? '';
+                              [ApplicationInterface::AUTHORIZATION_FORM][OAuth2ApplicationInterface::CLIENT_SECRET] ?? '';
     }
 
     /**

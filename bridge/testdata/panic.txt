@@ -1,0 +1,154 @@
+SIGTRAP: trace trap
+PC=0x43d021 m=6 sigcode=128
+
+goroutine 24 [running]:
+runtime.fatalpanic(0xc00014d4a8)
+        /usr/local/go/src/runtime/panic.go:1189 +0x1 fp=0xc00014d428 sp=0xc00014d420 pc=0x43d021
+panic(0x8e6220, 0x976a10)
+        /usr/local/go/src/runtime/panic.go:1064 +0x56c fp=0xc00014d4f0 sp=0xc00014d428 pc=0x43c9ec
+runtime.closechan(0xc0001c2000)
+        /usr/local/go/src/runtime/chan.go:365 +0x265 fp=0xc00014d530 sp=0xc00014d4f0 pc=0x4069e5
+github.com/streadway/amqp.(*confirms).Close(0xc000124180, 0x0, 0x0)
+        /go/pkg/mod/github.com/streadway/amqp@v1.0.0/confirms.go:90 +0x117 fp=0xc00014d5e0 sp=0xc00014d530 pc=0x863557
+github.com/streadway/amqp.(*Channel).shutdown.func1()
+        /go/pkg/mod/github.com/streadway/amqp@v1.0.0/channel.go:143 +0x5fa fp=0xc00014d800 sp=0xc00014d5e0 pc=0x8872da
+sync.(*Once).doSlow(0xc000134120, 0xc00014d928)
+        /usr/local/go/src/sync/once.go:66 +0x118 fp=0xc00014d8e0 sp=0xc00014d800 pc=0x499018
+sync.(*Once).Do(0xc000134120, 0xc00014d928)
+        /usr/local/go/src/sync/once.go:57 +0x48 fp=0xc00014d908 sp=0xc00014d8e0 pc=0x498ee8
+github.com/streadway/amqp.(*Channel).shutdown(0xc000134120, 0x0)
+        /go/pkg/mod/github.com/streadway/amqp@v1.0.0/channel.go:93 +0x7d fp=0xc00014d950 sp=0xc00014d908 pc=0x85a5fd
+github.com/streadway/amqp.(*Connection).shutdown.func1()
+        /go/pkg/mod/github.com/streadway/amqp@v1.0.0/connection.go:419 +0x3d5 fp=0xc00014db30 sp=0xc00014d950 pc=0x887af5
+sync.(*Once).doSlow(0xc00008c3c0, 0xc00014dc58)
+        /usr/local/go/src/sync/once.go:66 +0x118 fp=0xc00014dc10 sp=0xc00014db30 pc=0x499018
+sync.(*Once).Do(0xc00008c3c0, 0xc00014dc58)
+        /usr/local/go/src/sync/once.go:57 +0x48 fp=0xc00014dc38 sp=0xc00014dc10 pc=0x498ee8
+github.com/streadway/amqp.(*Connection).shutdown(0xc00008c3c0, 0x0)
+        /go/pkg/mod/github.com/streadway/amqp@v1.0.0/connection.go:389 +0x93 fp=0xc00014dc80 sp=0xc00014dc38 pc=0x8655d3
+github.com/streadway/amqp.(*Connection).Close(0xc00008c3c0, 0x0, 0x0)
+        /go/pkg/mod/github.com/streadway/amqp@v1.0.0/connection.go:328 +0x271 fp=0xc00014dd90 sp=0xc00014dc80 pc=0x864ef1
+github.com/hanaboso/pipes/bridge/pkg/rabbitmq.(*publishers).close(0xc0001965d0)
+        /app/pkg/rabbitmq/publisher.go:121 +0x2a5 fp=0xc00014ded0 sp=0xc00014dd90 pc=0x88ede5
+github.com/hanaboso/pipes/bridge/pkg/rabbitmq.(*RabbitMQ).ClosePublishers(0xc000066c90)
+        /app/pkg/rabbitmq/rabbitmq.go:36 +0xb6 fp=0xc00014df38 sp=0xc00014ded0 pc=0x88f9d6
+github.com/hanaboso/pipes/bridge/pkg/bridge.(*Bridge).shutdown.func1(0xc00010a600, 0xc00008b9d0, 0xc0001a42b0)
+        /app/pkg/bridge/application.go:85 +0xe5 fp=0xc00014dfc8 sp=0xc00014df38 pc=0x8989e5
+runtime.goexit()
+        /usr/local/go/src/runtime/asm_amd64.s:1374 +0x1 fp=0xc00014dfd0 sp=0xc00014dfc8 pc=0x475141
+created by github.com/hanaboso/pipes/bridge/pkg/bridge.(*Bridge).shutdown
+        /app/pkg/bridge/application.go:76 +0x8c
+
+goroutine 1 [runnable]:
+github.com/hanaboso/pipes/bridge/pkg/bridge.(*Bridge).shutdown(0xc00008b9d0, 0x982720, 0xc0001007e0, 0xc0001a42b0)
+        /app/pkg/bridge/application.go:88 +0x155
+github.com/hanaboso/pipes/bridge/pkg/bridge.(*Bridge).start(0xc00008b9d0, 0x9826a0, 0xc000076340)
+        /app/pkg/bridge/application.go:69 +0x3b6
+github.com/hanaboso/pipes/bridge/pkg/bridge.(*Bridge).Run(0xc00008b9d0, 0x9826a0, 0xc000076340)
+        /app/pkg/bridge/application.go:40 +0x2f5
+github.com/hanaboso/pipes/bridge/cmd.startBridge(0xb39880, 0xb6e498, 0x0, 0x0)
+        /app/cmd/start.go:50 +0x225
+github.com/spf13/cobra.(*Command).execute(0xb39880, 0xb6e498, 0x0, 0x0, 0x0, 0x0)
+        /go/pkg/mod/github.com/spf13/cobra@v1.1.3/command.go:856 +0xe62
+github.com/spf13/cobra.(*Command).ExecuteC(0xb3e680, 0xb39880, 0x0, 0x0)
+        /go/pkg/mod/github.com/spf13/cobra@v1.1.3/command.go:960 +0x768
+github.com/spf13/cobra.(*Command).Execute(0xb3e680, 0x0, 0x0)
+        /go/pkg/mod/github.com/spf13/cobra@v1.1.3/command.go:897 +0x3b
+github.com/hanaboso/pipes/bridge/cmd.Execute()
+        /app/cmd/root.go:13 +0x3f
+main.main()
+        /app/main.go:6 +0x25
+
+goroutine 18 [syscall]:
+os/signal.signal_recv(0x97fa20)
+        /usr/local/go/src/runtime/sigqueue.go:147 +0x9d
+os/signal.loop()
+        /usr/local/go/src/os/signal/signal_unix.go:23 +0x27
+created by os/signal.Notify.func1.1
+        /usr/local/go/src/os/signal/signal.go:150 +0x45
+
+goroutine 38 [runnable]:
+github.com/hanaboso/pipes/bridge/pkg/rabbitmq.(*client).handleReconnect(0xc0001965d0, 0x97cac0, 0xc0001965d0, 0xc00001204d, 0xf)
+        /app/pkg/rabbitmq/client.go:57 +0x3a6
+created by github.com/hanaboso/pipes/bridge/pkg/rabbitmq.newPublishers
+        /app/pkg/rabbitmq/publisher.go:100 +0x6c8
+
+goroutine 12 [IO wait]:
+internal/poll.runtime_pollWait(0x7fb262d17f08, 0x72, 0xb122b0)
+        /usr/local/go/src/runtime/netpoll.go:222 +0x65
+internal/poll.(*pollDesc).wait(0xc000098498, 0x72, 0xffffffffffffff00, 0x0, 0x0)
+        /usr/local/go/src/internal/poll/fd_poll_runtime.go:87 +0x9b
+internal/poll.(*pollDesc).waitRead(0xc000098498, 0xffffffffffffff00, 0x0, 0x0)
+        /usr/local/go/src/internal/poll/fd_poll_runtime.go:92 +0x45
+internal/poll.(*FD).Read(0xc000098480, 0xc0000f7000, 0x1000, 0x1000, 0x0, 0x0, 0x0)
+        /usr/local/go/src/internal/poll/fd_unix.go:159 +0x3f4
+net.(*netFD).Read(0xc000098480, 0xc0000f7000, 0x1000, 0x1000, 0x0, 0x0, 0x0)
+        /usr/local/go/src/net/fd_posix.go:55 +0x7c
+net.(*conn).Read(0xc00000e1c8, 0xc0000f7000, 0x1000, 0x1000, 0x0, 0x0, 0x0)
+        /usr/local/go/src/net/net.go:182 +0xb5
+bufio.(*Reader).Read(0xc000052ba0, 0xc000106470, 0x7, 0x7, 0x7, 0x0, 0x0)
+        /usr/local/go/src/bufio/bufio.go:227 +0x415
+io.ReadAtLeast(0x97c760, 0xc000052ba0, 0xc000106470, 0x7, 0x7, 0x7, 0x0, 0x0, 0x0)
+        /usr/local/go/src/io/io.go:314 +0x192
+io.ReadFull(0x97c760, 0xc000052ba0, 0xc000106470, 0x7, 0x7, 0x0, 0x0, 0x0)
+        /usr/local/go/src/io/io.go:333 +0xaa
+github.com/streadway/amqp.(*reader).ReadFrame(0xc0000a3f78, 0x0, 0x0, 0x0, 0x0)
+        /go/pkg/mod/github.com/streadway/amqp@v1.0.0/read.go:49 +0xf3
+github.com/streadway/amqp.(*Connection).reader(0xc00008c3c0, 0x97cc80, 0xc00000e1c8)
+        /go/pkg/mod/github.com/streadway/amqp@v1.0.0/connection.go:521 +0x145
+created by github.com/streadway/amqp.Open
+        /go/pkg/mod/github.com/streadway/amqp@v1.0.0/connection.go:233 +0x3b0
+
+goroutine 13 [runnable]:
+github.com/streadway/amqp.(*Connection).heartbeater(0xc00008c3c0, 0x2540be400, 0xc000052c00)
+        /go/pkg/mod/github.com/streadway/amqp@v1.0.0/connection.go:551 +0x25c
+created by github.com/streadway/amqp.(*Connection).openTune
+        /go/pkg/mod/github.com/streadway/amqp@v1.0.0/connection.go:782 +0x83a
+
+goroutine 16 [runnable]:
+github.com/hanaboso/pipes/bridge/pkg/rabbitmq.(*publisher).handleReconnect(0xc0001b20c0, 0xc00008c3c0, 0xc0001a42a0)
+        /app/pkg/rabbitmq/publisher.go:61 +0x66c
+created by github.com/hanaboso/pipes/bridge/pkg/rabbitmq.(*publishers).connect
+        /app/pkg/rabbitmq/publisher.go:106 +0xe5
+
+goroutine 65 [chan receive]:
+github.com/hanaboso/pipes/bridge/pkg/rabbitmq.(*publisher).handleReconnect(0xc0001b2100, 0xc00008c3c0, 0xc0001a42a0)
+        /app/pkg/rabbitmq/publisher.go:61 +0x66c
+created by github.com/hanaboso/pipes/bridge/pkg/rabbitmq.(*publishers).connect
+        /app/pkg/rabbitmq/publisher.go:106 +0xe5
+
+goroutine 66 [runnable]:
+github.com/streadway/amqp.(*Channel).call(0xc000134240, 0x982e20, 0xc000102250, 0xc000235cf8, 0x1, 0x1, 0x0, 0x0)
+        /go/pkg/mod/github.com/streadway/amqp@v1.0.0/channel.go:176 +0x1e5
+github.com/streadway/amqp.(*Channel).open(0xc000134240, 0x0, 0x0)
+        /go/pkg/mod/github.com/streadway/amqp@v1.0.0/channel.go:165 +0x15b
+github.com/streadway/amqp.(*Connection).openChannel(0xc00008c3c0, 0x0, 0x0, 0x0)
+        /go/pkg/mod/github.com/streadway/amqp@v1.0.0/connection.go:631 +0xdb
+github.com/streadway/amqp.(*Connection).Channel(0xc00008c3c0, 0x0, 0x0, 0x0)
+        /go/pkg/mod/github.com/streadway/amqp@v1.0.0/connection.go:653 +0x51
+github.com/hanaboso/pipes/bridge/pkg/rabbitmq.(*publisher).handleReconnect(0xc0001b2140, 0xc00008c3c0, 0xc0001a42a0)
+        /app/pkg/rabbitmq/publisher.go:41 +0x175
+created by github.com/hanaboso/pipes/bridge/pkg/rabbitmq.(*publishers).connect
+        /app/pkg/rabbitmq/publisher.go:106 +0xe5
+
+rax    0xc00014d4a8
+rbx    0x0
+rcx    0x0
+rdx    0xc00014d3c8
+rdi    0xc000102280
+rsi    0x10
+rbp    0xc00014d4e0
+rsp    0xc00014d420
+r8     0x0
+r9     0x8ea640
+r10    0x1
+r11    0x0
+r12    0x0
+r13    0x9ea7a8
+r14    0xb1ae80
+r15    0x0
+rip    0x43d021
+rflags 0x212
+cs     0x33
+fs     0x0
+gs     0x0

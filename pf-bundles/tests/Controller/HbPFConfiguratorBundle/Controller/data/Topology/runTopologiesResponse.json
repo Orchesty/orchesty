@@ -1,0 +1,8 @@
+{
+    "http": 200,
+    "body": {
+        "started": 1,
+        "state": "ok",
+        "errors": []
+    }
+}

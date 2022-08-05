@@ -21,7 +21,6 @@ func Test_TopologyStringUtils(t *testing.T) {
 		t.Run("Get docker name", getDockerName)
 		t.Run("Get multi node name", getMultiNodeName)
 		t.Run("Get swarm name", getSwarmName)
-		t.Run("Get probe service name", getProbeServiceName)
 		t.Run("Get counter service name", getCounterServiceName)
 		t.Run("Get config name", getConfigName)
 		t.Run("Get topology prefix", getTopologyPrefix)
@@ -91,16 +90,6 @@ func getCounterServiceName(t *testing.T) {
 	}
 }
 
-func getProbeServiceName(t *testing.T) {
-	topology := getTestTopology()
-	expected := "5cc0474e4e9acc00282bb942_probe"
-	result := topology.GetProbeServiceName()
-
-	if result != expected {
-		t.Errorf("bad result: expected `%s`, got `%s`", expected, result)
-	}
-}
-
 func getSwarmName(t *testing.T) {
 	expected := "dev_4e9acc00282bb942"
 	topology := getTestTopology()
@@ -112,7 +101,7 @@ func getSwarmName(t *testing.T) {
 }
 
 func getMultiNodeName(t *testing.T) {
-	expected := "mb-5cc0474e4e9acc00282bb942"
+	expected := "topology-5cc0474e4e9acc00282bb942"
 	topology := getTestTopology()
 	result := topology.GetMultiNodeName()
 

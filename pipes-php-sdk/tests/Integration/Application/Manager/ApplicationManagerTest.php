@@ -6,7 +6,6 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\PsrCachedReader;
 use Exception;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
-use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
@@ -46,7 +45,7 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
      */
     public function testGetApplication(): void
     {
-        self::assertEquals('null-key', $this->manager->getApplication('null')->getKey());
+        self::assertEquals('null-key', $this->manager->getApplication('null')->getName());
     }
 
     /**
@@ -107,16 +106,23 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
     {
         $this->createApplicationInstall();
 
-        $applicationInstall = $this->manager
-            ->saveApplicationSettings('null', 'user', ['user' => 'user789']);
+        $res = $this->manager
+            ->saveApplicationSettings(
+                'null',
+                'user',
+                ['test' => ['b' => 'bValue']],
+            );
+
         $this->dm->clear();
 
-        /** @var ApplicationInstall $applicationInstall */
-        $applicationInstall = $this->dm->getRepository(ApplicationInstall::class)->find($applicationInstall->getId());
+        self::assertEquals(
+            'testPublicName',
+            $res[ApplicationManager::APPLICATION_SETTINGS][ApplicationInterface::AUTHORIZATION_FORM]['key'],
+        );
 
         self::assertEquals(
-            'user789',
-            $applicationInstall->getSettings()[ApplicationAbstract::FORM]['user'],
+            'testPublicName',
+            $res[ApplicationManager::APPLICATION_SETTINGS][ApplicationInterface::AUTHORIZATION_FORM]['publicName'],
         );
     }
 
@@ -128,11 +134,17 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
     public function testSaveApplicationPassword(): void
     {
         $this->createApplicationInstall();
-        $applicationInstall = $this->manager->saveApplicationPassword('null', 'user', 'password123');
+        $applicationInstall = $this->manager->saveApplicationPassword(
+            'null',
+            'user',
+            ApplicationInterface::AUTHORIZATION_FORM,
+            BasicApplicationInterface::PASSWORD,
+            'password123',
+        );
 
         self::assertEquals(
-            ['password' => 'password123'],
-            $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS],
+            'password123',
+            $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][BasicApplicationInterface::PASSWORD],
         );
     }
 
@@ -145,7 +157,7 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
     {
         $applicationInstall = $this->createApplicationInstall('null2');
         $applicationInstall->setSettings(
-            [ApplicationInterface::AUTHORIZATION_SETTINGS => [ApplicationInterface::REDIRECT_URL => '/test/redirect']],
+            [ApplicationInterface::AUTHORIZATION_FORM => [ApplicationInterface::FRONTEND_REDIRECT_URL => '/test/redirect']],
         );
 
         $app = self::createPartialMock(TestOAuth2NullApplication::class, ['setAuthorizationToken']);
@@ -156,7 +168,7 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
         $manager = new ApplicationManager($this->dm, $loader, $reader);
 
         self::assertEquals(
-            ['redirect_url' => '/test/redirect'],
+            '/test/redirect',
             $manager->saveAuthorizationToken('null2', 'user', ['code' => ['token']]),
         );
     }
@@ -168,7 +180,7 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
     {
         parent::setUp();
 
-        $this->manager = self::$container->get('hbpf.application.manager');
+        $this->manager = self::getContainer()->get('hbpf.application.manager');
     }
 
     /**
@@ -182,9 +194,8 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
         $applicationInstall = (new ApplicationInstall())
             ->setKey($key)
             ->setUser('user')
-            ->setSettings(
-                [ApplicationInterface::AUTHORIZATION_SETTINGS => [BasicApplicationInterface::PASSWORD => 'passwd987']],
-            );
+            ->setSettings(['applicationSettings' => ['test' => ['a' => 'aValue']]]);
+
         $this->pfd($applicationInstall);
 
         return $applicationInstall;

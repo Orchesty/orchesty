@@ -5,6 +5,7 @@ import (
 	"github.com/docker/docker/api/types"
 	"topology-generator/pkg/config"
 	"topology-generator/pkg/fscommands"
+	"topology-generator/pkg/model"
 
 	log "github.com/hanaboso/go-log/pkg"
 )
@@ -44,13 +45,12 @@ func (d dockerClient) RunStop(topologyID string, db StorageSvc, dockerCli Docker
 }
 
 func (d dockerClient) Generate(ts *TopologyService) error {
-
 	dstFile := GetDstDir(ts.generatorConfig.Path, ts.Topology.GetSaveDir())
 	err := ts.GenerateTopology()
 	if err != nil {
 		return fmt.Errorf("error generating topology. Reason: %v", err)
 	}
-	dockerCompose, err := ts.CreateDockerCompose(ts.generatorConfig.Mode)
+	dockerCompose, err := ts.CreateDockerCompose(model.Adapter(ts.generatorConfig.Mode))
 	if err != nil {
 		return fmt.Errorf("writing docker-compose[topology_id=%s] failed. Reason: %v", ts.Topology.ID.Hex(), err)
 	}
@@ -106,10 +106,9 @@ func (d dockerClient) RunStopSwarm(topologyID string, db StorageSvc, dockerCli D
 	}
 
 	return nil, fmt.Errorf("action %s not allow", action)
-
 }
 
-func (d dockerClient) DeleteSwarm(topologyID string, db StorageSvc, dockerCli DockerCliSvc, generatorConfig config.GeneratorConfig) error {
+func (d dockerClient) DeleteSwarm(topologyID string, db StorageSvc, _ DockerCliSvc, generatorConfig config.GeneratorConfig) error {
 	topology, err := db.GetTopology(topologyID)
 
 	if err != nil {

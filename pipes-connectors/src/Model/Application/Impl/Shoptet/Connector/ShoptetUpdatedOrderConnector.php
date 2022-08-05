@@ -6,13 +6,8 @@ use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
-use Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
-use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessActionNotSupportedTrait;
-use Hanaboso\PipesPhpSdk\Utils\ProcessContentTrait;
-use Hanaboso\Utils\System\PipesHeaders;
-use JsonException;
 
 /**
  * Class ShoptetUpdatedOrderConnector
@@ -22,8 +17,7 @@ use JsonException;
 final class ShoptetUpdatedOrderConnector extends ShoptetConnectorAbstract
 {
 
-    use ProcessContentTrait;
-    use ProcessActionNotSupportedTrait;
+    public const NAME = 'shoptet-updated-order-connector';
 
     private const URL = 'api/orders/%s?include=notes';
 
@@ -33,9 +27,9 @@ final class ShoptetUpdatedOrderConnector extends ShoptetConnectorAbstract
     /**
      * @return string
      */
-    public function getId(): string
+    public function getName(): string
     {
-        return 'shoptet-updated-order-connector';
+        return self::NAME;
     }
 
     /**
@@ -45,29 +39,29 @@ final class ShoptetUpdatedOrderConnector extends ShoptetConnectorAbstract
      * @throws ApplicationInstallException
      * @throws ConnectorException
      * @throws OnRepeatException
-     * @throws JsonException
      */
-    public function processEvent(ProcessDto $dto): ProcessDto
+    public function processAction(ProcessDto $dto): ProcessDto
     {
-        $dto
-            ->addHeader(PipesHeaders::createKey(PipesHeaders::USER), (string) $this->getContentByKey($dto, 'eshopId'))
-            ->addHeader(PipesHeaders::createKey(PipesHeaders::APPLICATION), ShoptetApplication::SHOPTET_KEY);
-
         try {
             $data = $this->processResponse(
-                $this->sender->send(
+                $this->getSender()->send(
                     $this->getApplication()->getRequestDto(
-                        $this->repository->findUserAppByHeaders($dto),
+                        $dto,
+                        $this->getApplicationInstallFromProcess($dto),
                         CurlManager::METHOD_GET,
-                        $this->getUrl(self::URL, $this->getContentByKey($dto, self::EVENT_INSTANCE)),
-                    )->setDebugInfo($dto),
+                        $this->getUrl(self::URL, $dto->getJsonData()[self::EVENT_INSTANCE] ?? ''),
+                    ),
                 )->getJsonBody(),
                 $dto,
             )[self::DATA][self::ORDER];
 
-            return $this->setJsonContent($dto, $data);
+            return $dto->setJsonData($data);
         } catch (CurlException $e) {
-            throw $this->createRepeatException($dto, $e);
+            throw new OnRepeatException(
+                $dto,
+                sprintf("Connector '%s': %s: %s", $this->getName(), $e::class, $e->getMessage()),
+                $e->getCode(),
+            );
         }
     }
 

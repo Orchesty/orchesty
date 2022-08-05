@@ -4,8 +4,8 @@ namespace PipesPhpSdkTests\Unit\Authorization\Provider;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1\OAuth1ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth1Dto;
@@ -102,7 +102,7 @@ final class OAuth1ProviderTest extends KernelTestCaseAbstract
     {
         $install = new ApplicationInstall();
         $install->setSettings(
-            [BasicApplicationInterface::AUTHORIZATION_SETTINGS => [BasicApplicationInterface::TOKEN => $data]],
+            [ApplicationInterface::AUTHORIZATION_FORM => [ApplicationInterface::TOKEN => $data]],
         );
         $provider = $this->getMockedProvider(['token']);
         $provider->setLogger(new Logger('logger'));
@@ -128,8 +128,8 @@ final class OAuth1ProviderTest extends KernelTestCaseAbstract
         $install = new ApplicationInstall();
         $install->setSettings(
             [
-                BasicApplicationInterface::AUTHORIZATION_SETTINGS => [
-                    BasicApplicationInterface::TOKEN => [
+                ApplicationInterface::AUTHORIZATION_FORM=> [
+                    ApplicationInterface::TOKEN => [
                         'oauth_token' => 'token', 'oauth_token_secret' => 'secret',
                     ],
                 ],
@@ -176,7 +176,7 @@ final class OAuth1ProviderTest extends KernelTestCaseAbstract
     {
         $install = new ApplicationInstall();
         $install->setSettings(
-            [BasicApplicationInterface::AUTHORIZATION_SETTINGS => [BasicApplicationInterface::TOKEN => $data]],
+            [ApplicationInterface::AUTHORIZATION_FORM => [ApplicationInterface::TOKEN => $data]],
         );
         $provider = $this->getMockedProvider(['token']);
         $provider->setLogger(new Logger('logger'));
@@ -211,13 +211,13 @@ final class OAuth1ProviderTest extends KernelTestCaseAbstract
      */
     public function testCreateClient(): void
     {
-        $provider = self::$container->get('hbpf.providers.oauth1_provider');
+        $provider = self::getContainer()->get('hbpf.providers.oauth1_provider');
 
         $dto = new OAuth1Dto(
             (new ApplicationInstall())
                 ->setSettings(
                     [
-                        BasicApplicationInterface::AUTHORIZATION_SETTINGS => [
+                        ApplicationInterface::AUTHORIZATION_FORM => [
                             OAuth1ApplicationInterface::CONSUMER_KEY    => 'consumer_key',
                             OAuth1ApplicationInterface::CONSUMER_SECRET => 'secret_key',
                         ],

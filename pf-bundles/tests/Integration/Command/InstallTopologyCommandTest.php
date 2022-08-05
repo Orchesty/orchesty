@@ -49,7 +49,7 @@ final class InstallTopologyCommandTest extends DatabaseTestCaseAbstract
     public function testInsertRows(): void
     {
         $table   = new Table(new ConsoleOutput());
-        $command = self::$container->get('hbpf.command.topology_install');
+        $command = self::getContainer()->get('hbpf.command.topology_install');
         $this->invokeMethod($command, 'insertRows', [$table, ['foo1' => 'bar1'], 'create', TRUE]);
         $this->invokeMethod($command, 'insertRows', [$table, ['foo2' => 'bar2'], 'update', FALSE]);
 

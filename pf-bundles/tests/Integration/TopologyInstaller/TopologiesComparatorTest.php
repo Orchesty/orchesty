@@ -10,6 +10,7 @@ use Hanaboso\PipesFramework\TopologyInstaller\TopologiesComparator;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use Hanaboso\PipesPhpSdk\Database\Repository\TopologyRepository;
+use Hanaboso\Utils\File\File;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -37,7 +38,7 @@ final class TopologiesComparatorTest extends DatabaseTestCaseAbstract
      */
     public function testCompare(): void
     {
-        $xmlDecoder = self::$container->get('rest.decoder.xml');
+        $xmlDecoder = self::getContainer()->get('rest.decoder.xml');
         $topology   = new Topology();
         $topology
             ->setName('file')
@@ -97,7 +98,7 @@ final class TopologiesComparatorTest extends DatabaseTestCaseAbstract
      */
     private function load(string $name, bool $change): string
     {
-        $content = (string) file_get_contents(sprintf('%s/data/%s', __DIR__, $name));
+        $content = File::getContent(sprintf('%s/data/%s', __DIR__, $name));
 
         if (!$change) {
             return $content;

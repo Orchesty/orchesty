@@ -1,5 +1,7 @@
 {
     "http": "GET /api/nodes/:id",
     "body": [],
-    "headers": []
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
 }

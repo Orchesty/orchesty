@@ -24,6 +24,7 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
     {
         parent::setUp();
 
+        putenv('METRICS_ODM_DSN=mongodb://mongo');
         self::bootKernel();
     }
 

@@ -8,6 +8,7 @@ use Hanaboso\PhpCheckUtils\PhpUnit\Traits\CustomAssertTrait;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
+use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use HbPFAppStoreTests\DatabaseTestCaseAbstract;
 
 /**
@@ -107,14 +108,20 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
     {
         $this->createApp('null');
 
-        $this->applicationManager->saveApplicationPassword('null', 'example1', 'password123');
+        $this->applicationManager->saveApplicationPassword(
+            'null',
+            'example1',
+            ApplicationInterface::AUTHORIZATION_FORM,
+            BasicApplicationInterface::PASSWORD,
+            'password123',
+        );
         $repository = $this->dm->getRepository(ApplicationInstall::class);
         /** @var ApplicationInstall $app */
         $app = $repository->findOneBy(['key' => 'null']);
 
         self::assertEquals(
             'password123',
-            $app->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS]['password'],
+            $app->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][BasicApplicationInterface::PASSWORD],
         );
     }
 
@@ -128,16 +135,25 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
         $this->applicationManager->saveApplicationSettings(
             'null',
             'example1',
-            [
-                'settings1' => 'some text',
-                'settings2' => 'example2',
+            [ApplicationInterface::AUTHORIZATION_FORM => [
+                BasicApplicationInterface::USER => 'testUser',
+                BasicApplicationInterface::PASSWORD => 'testPass',
+                ],
             ],
         );
         $repository = $this->dm->getRepository(ApplicationInstall::class);
         /** @var ApplicationInstall $app */
         $app = $repository->findOneBy(['key' => 'null']);
 
-        self::assertEquals('some text', $app->getSettings()['form']['settings1']);
+        self::assertEquals(
+            'testUser',
+            $app->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][BasicApplicationInterface::USER],
+        );
+
+        self::assertEquals(
+            'testPass',
+            $app->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][BasicApplicationInterface::PASSWORD],
+        );
     }
 
     /**
@@ -150,16 +166,23 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
         $this->applicationManager->saveApplicationSettings(
             'null',
             'example1',
-            [
-                'settings1' => 'data1',
-                'settings2' => 'data2',
+            [ApplicationInterface::AUTHORIZATION_FORM => [
+                BasicApplicationInterface::USER => 'data1',
+                BasicApplicationInterface::PASSWORD => 'data2',
                 'settings3' => 'secret',
+                ],
             ],
         );
         $values = $this->applicationManager->getApplicationSettings('null', 'example1');
 
-        self::assertEquals('settings1', $values[0]['key']);
-        self::assertEquals(TRUE, $values[2]['value']);
+        self::assertEquals(
+            BasicApplicationInterface::USER,
+            $values[ApplicationInterface::AUTHORIZATION_FORM][ApplicationInterface::FIELDS][0]['key'],
+        );
+        self::assertEquals(
+            TRUE,
+            $values[ApplicationInterface::AUTHORIZATION_FORM][ApplicationInterface::FIELDS][2]['value'],
+        );
     }
 
     /**
@@ -172,10 +195,10 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
         $this->applicationManager->saveApplicationSettings(
             'null',
             'example1',
-            [
-                'settings1' => 'data1',
-                'settings2' => 'data2',
-                'password'  => 'secret123',
+            [ApplicationInterface::AUTHORIZATION_FORM => [
+                BasicApplicationInterface::USER => 'data1',
+                BasicApplicationInterface::PASSWORD => 'data2',
+                ],
             ],
         );
 
@@ -183,8 +206,14 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
         /** @var ApplicationInstall $app */
         $app = $repository->findOneBy(['key' => 'null']);
 
-        self::assertEquals('data1', $app->getSettings()['form']['settings1']);
-        self::assertArrayNotHasKey('password', $app->getSettings()['form']);
+        self::assertEquals(
+            'data1',
+            $app->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][BasicApplicationInterface::USER],
+        );
+        self::assertEquals(
+            'data2',
+            $app->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][BasicApplicationInterface::PASSWORD],
+        );
     }
 
     /**
@@ -207,7 +236,7 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
     {
         parent::setUp();
 
-        $this->applicationManager = self::$container->get('hbpf._application.manager.application');
+        $this->applicationManager = self::getContainer()->get('hbpf._application.manager.application');
     }
 
     /**

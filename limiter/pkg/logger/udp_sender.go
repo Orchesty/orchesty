@@ -40,11 +40,9 @@ func (u *updSender) resolveHost() {
 }
 
 func (u *updSender) Send(data []byte) {
-
 	u.resolveHost()
 
 	go func() {
-
 		if u.addr == nil {
 			resErr := u.findHost()
 
@@ -72,10 +70,9 @@ func (u *updSender) Send(data []byte) {
 
 		return
 	}()
-
 }
 
 // NewUpdSender creates new logger sender that send everything over UDP
-func NewUpdSender(host string, port string) Sender {
-	return &updSender{url: fmt.Sprintf("%s:%s", host, port), refreshTime: 30}
+func NewUpdSender(url string) Sender {
+	return &updSender{url: url, refreshTime: 30}
 }

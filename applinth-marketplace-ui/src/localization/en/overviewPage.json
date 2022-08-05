@@ -1,0 +1,10 @@
+{
+  "overviewPage": {
+    "installedApps":  {
+      "heading": "Installed Apps"
+    },
+    "overview": {
+      "heading": "Overview"
+    }
+  }
+}

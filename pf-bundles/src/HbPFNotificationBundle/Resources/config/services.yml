@@ -8,6 +8,6 @@ services:
         class: Hanaboso\PipesFramework\Notification\Model\NotificationManager
         arguments:
             - '@hbpf.transport.curl_manager'
-            - '%notification_host%'
+            - '%notificationHost%'
         calls:
             - ['setLogger', ['@monolog.logger.commons']]

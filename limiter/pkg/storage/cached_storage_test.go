@@ -1,10 +1,11 @@
 package storage
 
 import (
+	"encoding/json"
 	"github.com/streadway/amqp"
 	"github.com/stretchr/testify/assert"
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"testing"
 )
 
@@ -30,7 +31,7 @@ func (mm *csMongoMock) Exists(key string) (bool, error) {
 func (mm *csMongoMock) Save(m *Message) (string, error) {
 	return m.LimitKey, nil
 }
-func (mm *csMongoMock) Remove(key string, id bson.ObjectId) (bool, error) {
+func (mm *csMongoMock) Remove(key string, id primitive.ObjectID) (bool, error) {
 	return true, nil
 }
 
@@ -60,7 +61,7 @@ func (mm *csMongoMock) GetDistinctGroupFirstItems() (map[string]*Message, error)
 	return make(map[string]*Message, 0), nil
 }
 
-func (mm *csMongoMock) CreateIndex(index mgo.Index) error {
+func (mm *csMongoMock) CreateIndex(index mongo.IndexModel) error {
 	return nil
 }
 
@@ -69,13 +70,19 @@ func TestCachedMongoCountingWhenNotPreviouslyInDb(t *testing.T) {
 
 	ex, _ := s.Exists("not-in-db")
 	assert.False(t, ex)
-	msgA, _ := NewMessage(&amqp.Delivery{Headers: amqp.Table{
-		LimitKeyHeader:         "not-in-db",
-		LimitTimeHeader:        "10",
-		LimitValueHeader:       "10",
-		ReturnExchangeHeader:   "exchange",
-		ReturnRoutingKeyHeader: "routing-key",
-	}})
+
+	jsonData, _ := json.Marshal(map[string]interface{}{
+		"body": "test content",
+		"headers": map[string]interface{}{
+			LimitKeyHeader:         "not-in-db",
+			LimitTimeHeader:        "10",
+			LimitValueHeader:       "10",
+			ReturnExchangeHeader:   "exchange",
+			ReturnRoutingKeyHeader: "routing-key",
+		},
+	})
+
+	msgA, _ := NewMessage(&amqp.Delivery{Body: jsonData})
 	s.Save(msgA)
 	ex, _ = s.Exists("not-in-db")
 	assert.True(t, ex)
@@ -86,9 +93,9 @@ func TestCachedMongoCountingWhenNotPreviouslyInDb(t *testing.T) {
 	ex, _ = s.Exists("not-in-db")
 	assert.True(t, ex)
 
-	s.Remove("not-in-db", bson.NewObjectId())
-	s.Remove("not-in-db", bson.NewObjectId())
-	s.Remove("not-in-db", bson.NewObjectId())
+	s.Remove("not-in-db", primitive.NewObjectID())
+	s.Remove("not-in-db", primitive.NewObjectID())
+	s.Remove("not-in-db", primitive.NewObjectID())
 
 	ex, _ = s.Exists("not-in-db")
 	assert.False(t, ex)
@@ -99,13 +106,18 @@ func TestCachedMongoCountingWhenAlreadyInDb(t *testing.T) {
 
 	ex, _ := s.Exists("was-in-db")
 	assert.True(t, ex)
-	msgA, _ := NewMessage(&amqp.Delivery{Headers: amqp.Table{
-		LimitKeyHeader:         "was-in-db",
-		LimitTimeHeader:        "10",
-		LimitValueHeader:       "10",
-		ReturnExchangeHeader:   "exchange",
-		ReturnRoutingKeyHeader: "routing-key",
-	}})
+
+	jsonData, _ := json.Marshal(map[string]interface{}{
+		"body": "test content",
+		"headers": map[string]interface{}{
+			LimitKeyHeader:         "was-in-db",
+			LimitTimeHeader:        "10",
+			LimitValueHeader:       "10",
+			ReturnExchangeHeader:   "exchange",
+			ReturnRoutingKeyHeader: "routing-key",
+		},
+	})
+	msgA, _ := NewMessage(&amqp.Delivery{Body: jsonData})
 	s.Save(msgA)
 	ex, _ = s.Exists("was-in-db")
 	assert.True(t, ex)
@@ -122,10 +134,10 @@ func TestCachedMongoCountingWhenAlreadyInDb(t *testing.T) {
 	ex, _ = s.Exists("was-in-db")
 	assert.True(t, ex)
 
-	s.Remove("was-in-db", bson.NewObjectId())
-	s.Remove("was-in-db", bson.NewObjectId())
-	s.Remove("was-in-db", bson.NewObjectId())
-	s.Remove("was-in-db", bson.NewObjectId())
+	s.Remove("was-in-db", primitive.NewObjectID())
+	s.Remove("was-in-db", primitive.NewObjectID())
+	s.Remove("was-in-db", primitive.NewObjectID())
+	s.Remove("was-in-db", primitive.NewObjectID())
 
 	num, _ = s.Count("was-in-db", 1)
 	assert.Equal(t, 1, num)

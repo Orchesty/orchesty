@@ -5,17 +5,21 @@ namespace Hanaboso\PipesFramework\ApiGateway\Locator;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\Persistence\ObjectRepository;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Redirect\RedirectInterface;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Configurator\Document\Sdk;
 use Hanaboso\PipesFramework\Configurator\Enum\NodeImplementationEnum;
 use Hanaboso\PipesFramework\Configurator\Repository\SdkRepository;
+use Hanaboso\PipesFramework\UsageStats\Enum\EventTypeEnum;
+use Hanaboso\PipesFramework\UsageStats\Event\BillingEvent;
 use Hanaboso\Utils\String\Json;
 use LogicException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Throwable;
 
@@ -26,6 +30,8 @@ use Throwable;
  */
 final class ServiceLocator implements LoggerAwareInterface
 {
+
+    public const USER_TASK_LIST = ['user-task'];
 
     /**
      * @var ObjectRepository<Sdk>&SdkRepository
@@ -40,14 +46,16 @@ final class ServiceLocator implements LoggerAwareInterface
     /**
      * ServiceLocator constructor.
      *
-     * @param DocumentManager   $dm
-     * @param CurlManager       $curlManager
-     * @param RedirectInterface $redirect
+     * @param DocumentManager          $dm
+     * @param CurlManager              $curlManager
+     * @param RedirectInterface        $redirect
+     * @param EventDispatcherInterface $eventDispatcher
      */
     public function __construct(
         DocumentManager $dm,
         private CurlManager $curlManager,
         private RedirectInterface $redirect,
+        private EventDispatcherInterface $eventDispatcher,
     )
     {
         $this->sdkRepository = $dm->getRepository(Sdk::class);
@@ -60,22 +68,38 @@ final class ServiceLocator implements LoggerAwareInterface
 
     /**
      * @param LoggerInterface $logger
-     *
-     * @return $this
      */
-    public function setLogger(LoggerInterface $logger): ServiceLocator
+    public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
-
-        return $this;
     }
 
     /**
+     * @param string $exclude
+     *
      * @return mixed[]
+     * @throws Throwable
      */
-    public function getApps(): array
+    public function getApps(string $exclude = ''): array
     {
-        return $this->doRequest('applications', CurlManager::METHOD_GET, [], TRUE);
+        $res = $this->doRequest('applications', CurlManager::METHOD_GET, [], TRUE);
+        if (empty($res) || !isset($res['items'])) {
+            $res['items'] = [];
+        }
+
+        $this->excludeItem($res, $exclude);
+        $res['filter'] = [];
+        $res['sorter'] = [];
+        $res['paging'] = [
+            'page'         => 1,
+            'itemsPerPage' => 50,
+            'total'        => count($res['items']),
+            'nextPage'     => 2,
+            'lastPage'     => 2,
+            'previousPage' => 1,
+        ];
+
+        return $res;
     }
 
     /**
@@ -90,15 +114,29 @@ final class ServiceLocator implements LoggerAwareInterface
 
     /**
      * @param string $user
+     * @param string $exclude
      *
      * @return mixed[]
+     * @throws Throwable
      */
-    public function getUserApps(string $user): array
+    public function getUserApps(string $user, string $exclude = ''): array
     {
         $res = $this->doRequest(sprintf('applications/users/%s', $user), CurlManager::METHOD_GET, [], TRUE);
         if (empty($res) || !isset($res['items'])) {
             $res['items'] = [];
         }
+
+        $this->excludeItem($res, $exclude);
+        $res['sorter'] = [];
+        $res['filter'] = [];
+        $res['paging'] = [
+            'page'         => 1,
+            'itemsPerPage' => 50,
+            'total'        => count($res['items']),
+            'nextPage'     => 2,
+            'lastPage'     => 2,
+            'previousPage' => 1,
+        ];
 
         return $res;
     }
@@ -122,7 +160,24 @@ final class ServiceLocator implements LoggerAwareInterface
      */
     public function installApp(string $key, string $user): array
     {
-        return $this->doRequest(sprintf('applications/%s/users/%s/install', $key, $user), CurlManager::METHOD_POST);
+        try {
+            $resp = $this->doRequest(
+                sprintf('applications/%s/users/%s/install', $key, $user),
+                CurlManager::METHOD_POST,
+                [],
+                FALSE,
+                [],
+                TRUE,
+            );
+            $this->dispatchBillingEvent(
+                EventTypeEnum::INSTALL,
+                ['aid' => $key, 'euid' => $user],
+            );
+
+            return $resp;
+        } catch (Throwable) {
+            return [];
+        }
     }
 
     /**
@@ -133,7 +188,24 @@ final class ServiceLocator implements LoggerAwareInterface
      */
     public function uninstallApp(string $key, string $user): array
     {
-        return $this->doRequest(sprintf('applications/%s/users/%s/uninstall', $key, $user), CurlManager::METHOD_DELETE);
+        try {
+            $resp = $this->doRequest(
+                sprintf('applications/%s/users/%s/uninstall', $key, $user),
+                CurlManager::METHOD_DELETE,
+                [],
+                FALSE,
+                [],
+                TRUE,
+            );
+            $this->dispatchBillingEvent(
+                EventTypeEnum::UNINSTALL,
+                ['aid' => $key, 'euid' => $user],
+            );
+
+            return $resp;
+        } catch (Throwable) {
+            return [];
+        }
     }
 
     /**
@@ -238,6 +310,7 @@ final class ServiceLocator implements LoggerAwareInterface
             $request->request->all(),
             FALSE,
             $request->headers->all(),
+            TRUE,
         );
     }
 
@@ -253,19 +326,32 @@ final class ServiceLocator implements LoggerAwareInterface
         $n = [];
         foreach ($this->getSdks() as $sdk) {
             try {
-                $ip   = $sdk->getKey();
-                $name = $sdk->getValue();
-                $con  = new RequestDto(CurlManager::METHOD_GET, new Uri(sprintf('%s/connector/list', $ip)));
-                $cst  = new RequestDto(CurlManager::METHOD_GET, new Uri(sprintf('%s/custom_node/list', $ip)));
-                $usr  = new RequestDto(CurlManager::METHOD_GET, new Uri(sprintf('%s/longRunning/list', $ip)));
+                $ip   = $sdk->getUrl();
+                $name = $sdk->getName();
+                $con  = new RequestDto(
+                    new Uri(sprintf('%s/connector/list', $ip)),
+                    CurlManager::METHOD_GET,
+                    new ProcessDto(),
+                );
+                $cst  = new RequestDto(
+                    new Uri(sprintf('%s/custom-node/list', $ip)),
+                    CurlManager::METHOD_GET,
+                    new ProcessDto(),
+                );
+                $btch = new RequestDto(
+                    new Uri(sprintf('%s/batch/list', $ip)),
+                    CurlManager::METHOD_GET,
+                    new ProcessDto(),
+                );
 
                 $n[$name][NodeImplementationEnum::CONNECTOR] = $this->curlManager->send($con)->getJsonBody();
                 $n[$name][NodeImplementationEnum::CUSTOM]    = $this->curlManager->send($cst)->getJsonBody();
-                $n[$name][NodeImplementationEnum::USER]      = $this->curlManager->send($usr)->getJsonBody();
+                $n[$name][NodeImplementationEnum::BATCH]     = $this->curlManager->send($btch)->getJsonBody();
             } catch (Throwable $t) {
                 $this->logger->error($t->getMessage(), ['Exception' => $t, 'Sdk' => $sdk]);
             }
         }
+        $n['backend'][NodeImplementationEnum::USER] = self::USER_TASK_LIST;
 
         return $n;
     }
@@ -316,8 +402,10 @@ final class ServiceLocator implements LoggerAwareInterface
      * @param mixed[] $body
      * @param bool    $multiple
      * @param mixed[] $headers
+     * @param bool    $allowThrowException
      *
      * @return mixed[]
+     * @throws Throwable
      */
     private function doRequest(
         string $url,
@@ -325,14 +413,21 @@ final class ServiceLocator implements LoggerAwareInterface
         array $body = [],
         bool $multiple = FALSE,
         array $headers = [],
+        bool $allowThrowException = FALSE,
     ): array
     {
         $out = [];
         foreach ($this->getSdks() as $sdk) {
             try {
-                $ip = $sdk->getKey();
+                $ip = $sdk->getUrl();
 
-                $dto = new RequestDto($method, new Uri(sprintf('%s/%s', $ip, $url)), $headers);
+                $dto = new RequestDto(
+                    new Uri(sprintf('%s/%s', $ip, $url)),
+                    $method,
+                    new ProcessDto(),
+                    '',
+                    $headers,
+                );
                 if (!empty($body)) {
                     $dto->setBody(Json::encode($body));
                 }
@@ -346,9 +441,17 @@ final class ServiceLocator implements LoggerAwareInterface
                     } else {
                         $out = array_merge($out, $res->getJsonBody());
                     }
+                } else if ($res->getStatusCode() === 404) {
+                    throw new LogicException(sprintf('Route not found. Message: %s', $res->getBody()));
+                } else {
+                    throw new LogicException(sprintf('Unknown error. Message: %s', $res->getBody()));
                 }
             } catch (Throwable $t) {
                 $this->logger->error($t->getMessage(), ['Exception' => $t, 'Sdk' => $sdk]);
+
+                if ($allowThrowException) {
+                    throw $t;
+                }
             }
         }
 
@@ -388,6 +491,35 @@ final class ServiceLocator implements LoggerAwareInterface
         }
 
         return $s;
+    }
+
+    /**
+     * @param string  $type
+     * @param mixed[] $data
+     *
+     * @return void
+     */
+    private function dispatchBillingEvent(string $type, array $data): void
+    {
+        $billingEvent = new BillingEvent($type, $data);
+        $this->eventDispatcher->dispatch($billingEvent, BillingEvent::NAME);
+    }
+
+    /**
+     * @param mixed[] $res
+     * @param string  $exclude
+     *
+     * @return void
+     */
+    private function excludeItem(array &$res, string $exclude): void
+    {
+        array_walk($res['items'], static function ($item, $key) use ($res, $exclude): void {
+            if ($item['key'] === $exclude) {
+                unset($res['items'][$key]);
+            }
+        });
+
+        $res['items'] = array_values($res['items']);
     }
 
 }

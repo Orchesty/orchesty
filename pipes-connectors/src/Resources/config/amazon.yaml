@@ -8,24 +8,24 @@ services:
 
     hbpf.connector.s3-create-object:
         class: Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\Connector\S3CreateObjectConnector
-        arguments:
-            - '@doctrine_mongodb.odm.default_document_manager'
         calls:
-            - ['setApplication', ['@hbpf.application.s3']]
+            -   setApplication: [ '@hbpf.application.s3' ]
+            -   setDb: [ '@doctrine_mongodb.odm.default_document_manager' ]
+            -   setSender: [ '@hbpf.transport.curl_manager' ]
 
     hbpf.connector.s3-get-object:
         class: Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\Connector\S3GetObjectConnector
-        arguments:
-            - '@doctrine_mongodb.odm.default_document_manager'
         calls:
-            - ['setApplication', ['@hbpf.application.s3']]
+            -   setApplication: [ '@hbpf.application.s3' ]
+            -   setDb: [ '@doctrine_mongodb.odm.default_document_manager' ]
+            -   setSender: [ '@hbpf.transport.curl_manager' ]
 
     hbpf.connector.s3-delete-object:
         class: Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\Connector\S3DeleteObjectConnector
-        arguments:
-            - '@doctrine_mongodb.odm.default_document_manager'
         calls:
-            - ['setApplication', ['@hbpf.application.s3']]
+            -   setApplication: [ '@hbpf.application.s3' ]
+            -   setDb: [ '@doctrine_mongodb.odm.default_document_manager' ]
+            -   setSender: [ '@hbpf.transport.curl_manager' ]
 
     hbpf.application.redshift:
         class: Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\Redshift\RedshiftApplication
@@ -33,7 +33,7 @@ services:
 
     hbpf.connector.redshift-execute-query:
         class: Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\Redshift\Connector\RedshiftExecuteQueryConnector
-        arguments:
-            - '@doctrine_mongodb.odm.default_document_manager'
         calls:
-            - ['setApplication',['@hbpf.application.redshift']]
+            -   setApplication: [ '@hbpf.application.redshift' ]
+            -   setDb: [ '@doctrine_mongodb.odm.default_document_manager' ]
+            -   setSender: [ '@hbpf.transport.curl_manager' ]

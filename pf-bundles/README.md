@@ -43,10 +43,6 @@ Obsahuje moduly pro práci s BPMN schématem, generování topologií, konfigura
     - Povinný: `ANO`
     - DSN of Redis
     - Například: `redis://redis:6379/10`
-- MULTI_PROBE_DSN 
-    - Povinný: `ANO`
-    - DSN of Multi Probe
-    - Například: `multi-probe:8007`
 - TOPOLOGY_API_DSN 
      - Povinný: `ANO`
      - DSN of Topology Api
@@ -95,7 +91,11 @@ Obsahuje moduly pro práci s BPMN schématem, generování topologií, konfigura
     - Povinný: `ANO`
     - DSN of Mailer Api
     - Například: `xml-parser-api`
-    
+- USER_TASK_COLLECTION
+    - Povinný: `NE`
+    - Jméno userTask mongo collection
+    - Default: `userTask`
+
 ## Použité technologie
 - PHP 7.4+
 

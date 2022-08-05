@@ -1,0 +1,7 @@
+{
+    "http": "GET /api/applinth/application/installed",
+    "body": [],
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
+}

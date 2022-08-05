@@ -23,7 +23,7 @@ final class LogsControllerTest extends ControllerTestCaseAbstract
      */
     public function testGetDataForTableAction(): void
     {
-        $this->assertResponse(__DIR__ . '/data/getDataForTableRequest.json');
+        $this->assertResponseLogged($this->jwt,__DIR__ . '/data/getDataForTableRequest.json');
     }
 
 }

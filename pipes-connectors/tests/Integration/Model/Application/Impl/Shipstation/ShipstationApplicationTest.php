@@ -35,7 +35,7 @@ final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
     public function testWebhookSubscribeRequestDto(): void
     {
         $applicationInstall = DataProvider::getBasicAppInstall(
-            $this->application->getKey(),
+            $this->application->getName(),
             self::API_KEY,
             self::API_SECRET,
         );
@@ -63,9 +63,9 @@ final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
     /**
      *
      */
-    public function testName(): void
+    public function testPublicName(): void
     {
-        self::assertEquals('Shipstation', $this->application->getName());
+        self::assertEquals('Shipstation', $this->application->getPublicName());
     }
 
     /**
@@ -96,11 +96,13 @@ final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
     /**
      * @throws Exception
      */
-    public function testGetSettingsForm(): void
+    public function testGetFormStack(): void
     {
-        $fields = $this->application->getSettingsForm()->getFields();
-        foreach ($fields as $field) {
-            self::assertContains($field->getKey(), ['user', 'password']);
+        $forms = $this->application->getFormStack()->getForms();
+        foreach ($forms as $form) {
+            foreach ($form->getFields() as $field) {
+                self::assertContains($field->getKey(), ['user', 'password']);
+            }
         }
     }
 
@@ -134,7 +136,7 @@ final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
     {
         parent::setUp();
 
-        $this->application = self::$container->get('hbpf.application.shipstation');
+        $this->application = self::getContainer()->get('hbpf.application.shipstation');
     }
 
 }

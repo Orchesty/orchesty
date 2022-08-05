@@ -11,6 +11,7 @@ use Hanaboso\PipesFramework\Configurator\Document\Sdk;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\Utils\String\Json;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -30,7 +31,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
      */
     public function testListApplicationsAction(): void
     {
-        $this->assertResponse(__DIR__ . '/data/ApplicationController/listApplicationsRequest.json');
+        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/ApplicationController/listApplicationsRequest.json');
     }
 
     /**
@@ -40,7 +41,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
      */
     public function testGetApplicationAction(): void
     {
-        $this->assertResponse(__DIR__ . '/data/ApplicationController/getApplicationRequest.json');
+        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/ApplicationController/getApplicationRequest.json');
     }
 
     /**
@@ -52,7 +53,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     {
         $this->createApplication();
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/ApplicationController/getUsersApplicationRequest.json',
             [
                 'id'      => '123456789',
@@ -71,7 +73,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     {
         $this->createApplication();
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/ApplicationController/getApplicationDetailRequest.json',
             [
                 'id'      => '123456789',
@@ -88,7 +91,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
      */
     public function testInstallApplicationAction(): void
     {
-        $this->assertResponse(__DIR__ . '/data/ApplicationController/installApplicationRequest.json');
+        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/ApplicationController/installApplicationRequest.json');
     }
 
     /**
@@ -100,7 +103,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     {
         $this->createApplication();
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/ApplicationController/updateApplicationSettingsRequest.json',
             [
                 'id'      => '123456789',
@@ -119,7 +123,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     {
         $this->createApplication();
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/ApplicationController/uninstallApplicationRequest.json',
             [
                 'id'      => '123456789',
@@ -138,7 +143,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     {
         $this->createApplication();
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/ApplicationController/saveApplicationPasswordRequest.json',
             [
                 'id'      => '123456789',
@@ -156,7 +162,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     public function testAuthorizeApplicationAction(): void
     {
         $sdk = new Sdk();
-        $sdk->setKey('ip')->setValue('name');
+        $sdk->setUrl('ip')->setName('name');
         $this->dm->persist($sdk);
         $this->dm->flush();
         $this->dm->clear();
@@ -166,17 +172,23 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
             ->method('send')
             ->willReturn(new ResponseDto(200, '', Json::encode(['authorizeUrl' => 'redirect/url']), []));
 
+        $eventDispatcher = $this->createMock(EventDispatcherInterface::class);
+
         $loader = new ServiceLocator(
             $this->dm,
             $curl,
             self::createMock(RedirectInterface::class),
+            $eventDispatcher,
         );
 
-        self::$container->set('hbpp.service.locator', $loader);
+        self::getContainer()->set('hbpp.service.locator', $loader);
 
         $this->createApplication();
 
-        $this->assertResponse(__DIR__ . '/data/ApplicationController/authorizeApplicationRequest.json');
+        $this->assertResponseLogged(
+            $this->jwt,
+            __DIR__ . '/data/ApplicationController/authorizeApplicationRequest.json',
+        );
     }
 
     /**
@@ -188,15 +200,19 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     {
         $loader = new ServiceLocator(
             $this->dm,
-            self::$container->get('hbpf.transport.curl_manager'),
+            self::getContainer()->get('hbpf.transport.curl_manager'),
             self::createMock(RedirectInterface::class),
+            self::createMock(EventDispatcherInterface::class),
         );
 
-        self::$container->set('hbpp.service.locator', $loader);
+        self::getContainer()->set('hbpp.service.locator', $loader);
 
         $this->createApplication();
 
-        $this->assertResponse(__DIR__ . '/data/ApplicationController/authorizeApplicationExRequest.json');
+        $this->assertResponseLogged(
+            $this->jwt,
+            __DIR__ . '/data/ApplicationController/authorizeApplicationExRequest.json',
+        );
     }
 
     /**
@@ -211,9 +227,10 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         $dto  = new ResponseDto(200, '', Json::encode(['redirectUrl' => 'redirect/url']), []);
         $curl = self::createMock(CurlManager::class);
         $curl->method('send')->willReturn($dto);
-        self::$container->set('hbpf.transport.curl_manager', $curl);
+        self::getContainer()->set('hbpf.transport.curl_manager', $curl);
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/ApplicationController/setAuthorizationTokenRequest.json',
             [],
             [],
@@ -239,9 +256,10 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         $dto  = new ResponseDto(200, '', Json::encode(['redirectUrl' => 'redirect/url']), []);
         $curl = self::createMock(CurlManager::class);
         $curl->method('send')->willReturn($dto);
-        self::$container->set('hbpf.transport.curl_manager', $curl);
+        self::getContainer()->set('hbpf.transport.curl_manager', $curl);
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/ApplicationController/setAuthorizationTokenQueryRequest.json',
             [],
             [],
@@ -252,34 +270,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
 
                 return ['Redirect'];
             },
-        );
-    }
-
-    /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::applicationStatisticsAction
-     *
-     * @throws Exception
-     */
-    public function testApplicationStatisticsAction(): void
-    {
-        $this->assertResponse(
-            __DIR__ . '/data/ApplicationController/applicationStatisticsRequest.json',
-            [],
-            [':key' => 'superApp'],
-        );
-    }
-
-    /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::userStatisticsAction
-     *
-     * @throws Exception
-     */
-    public function testUserStatisticsAction(): void
-    {
-        $this->assertResponse(
-            __DIR__ . '/data/ApplicationController/userStatisticsRequest.json',
-            [],
-            [':user' => '123-456-789'],
         );
     }
 
@@ -312,7 +302,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         $this->pfd($application);
 
         $sdk = new Sdk();
-        $sdk->setKey('php-sdk')->setValue('php-sdk');
+        $sdk->setUrl('php-sdk')->setName('php-sdk');
         $this->pfd($sdk);
     }
 

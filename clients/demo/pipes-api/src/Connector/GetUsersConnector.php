@@ -9,7 +9,6 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
-use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessEventNotSupportedTrait;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 
 /**
@@ -20,23 +19,14 @@ use Hanaboso\Utils\Exception\PipesFrameworkException;
 final class GetUsersConnector extends ConnectorAbstract
 {
 
-    use ProcessEventNotSupportedTrait;
-
-    /**
-     * GetUsersConnector constructor.
-     *
-     * @param CurlManager $sender
-     */
-    public function __construct(private CurlManager $sender)
-    {
-    }
+    public const NAME = 'get-users';
 
     /**
      * @return string
      */
-    public function getId(): string
+    public function getName(): string
     {
-        return 'get-users';
+        return self::NAME;
     }
 
     /**
@@ -48,12 +38,12 @@ final class GetUsersConnector extends ConnectorAbstract
     public function processAction(ProcessDto $dto): ProcessDto
     {
         try {
-            $request = new RequestDto(
-                CurlManager::METHOD_GET,
+            $request  = new RequestDto(
                 new Uri('https://jsonplaceholder.typicode.com/users'),
+                CurlManager::METHOD_GET,
+                $dto,
             );
-            $request->setDebugInfo($dto);
-            $response = $this->sender->send($request);
+            $response = $this->getSender()->send($request);
 
             // If status code from response is 500 it will throw an exception to start the Repeater
             if ($response->getStatusCode() === 500) {

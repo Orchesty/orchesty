@@ -2,13 +2,13 @@
 
 namespace HbPFConnectorsTests\Integration\Model\Application\Impl\OAuth2\Connector;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
-use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\BatchProcessDto;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\OAuth2\Connector\GetApplicationForRefreshBatchConnector;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
-use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\SuccessMessage;
 use Hanaboso\Utils\Date\DateTimeUtils;
+use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 
 /**
@@ -20,40 +20,31 @@ final class GetApplicationForRefreshBatchTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\OAuth2\Connector\GetApplicationForRefreshBatchConnector::processBatch
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\OAuth2\Connector\GetApplicationForRefreshBatchConnector::__construct
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\OAuth2\Connector\GetApplicationForRefreshBatchConnector::processAction
      * @throws Exception
      */
-    public function testProcessBatch(): void
+    public function testProcessAction(): void
     {
-        $this->pfd((new ApplicationInstall())->setExpires(DateTimeUtils::getUtcDateTime()));
+        $this->pfd((new ApplicationInstall())->setExpires(DateTimeUtils::getUtcDateTime())->setUser('testUser'));
+        /** @var GetApplicationForRefreshBatchConnector $conn */
+        $conn = self::getContainer()->get('hbpf.connector.batch-get_application_for_refresh');
 
-        $this->assertBatch(
-            self::$container->get('hbpf.connector.batch-get_application_for_refresh'),
-            new ProcessDto(),
-            static function (SuccessMessage $successMessage): void {
-                self::assertEquals('', $successMessage->getData());
-            },
-        );
+        $dto = $conn->processAction(new BatchProcessDto());
+        self::assertCount(1, Json::decode($dto->getBridgeData()));
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\OAuth2\Connector\GetApplicationForRefreshBatchConnector::getId
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\OAuth2\Connector\GetApplicationForRefreshBatchConnector::getName
      */
-    public function testGetId(): void
+    public function testGetName(): void
     {
-        $application = self::$container->get('hbpf.connector.batch-get_application_for_refresh');
+        /** @var DocumentManager $documentManager */
+        $documentManager = self::getContainer()->get('doctrine_mongodb.odm.default_document_manager');
 
-        self::assertEquals('get_application_for_refresh', $application->getId());
-    }
+        $application = new GetApplicationForRefreshBatchConnector($documentManager);
 
-    /**
-     * @throws ConnectorException
-     */
-    public function testProcess(): void
-    {
-        $getAppForRefreshBatchCreateContactConnector = new GetApplicationForRefreshBatchConnector($this->dm);
-        $this->expectException(ConnectorException::class);
-        $getAppForRefreshBatchCreateContactConnector->processAction(new ProcessDto());
+        self::assertEquals('get_application_for_refresh', $application->getName());
     }
 
 }

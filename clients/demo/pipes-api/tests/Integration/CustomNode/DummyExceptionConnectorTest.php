@@ -18,7 +18,7 @@ final class DummyExceptionConnectorTest extends KernelTestCaseAbstract
 
     /**
      * @covers \Demo\CustomNode\DummyExceptionConnector
-     * @covers \Demo\CustomNode\DummyExceptionConnector::process
+     * @covers \Demo\CustomNode\DummyExceptionConnector::processAction
      * @covers \Demo\CustomNode\DummyExceptionConnector::throwDummyException
      * @covers \Demo\CustomNode\DummyExceptionConnector::setLogger
      * @throws Exception
@@ -30,9 +30,9 @@ final class DummyExceptionConnectorTest extends KernelTestCaseAbstract
             ->willReturnOnConsecutiveCalls(...[5]);
 
         /** @var DummyExceptionConnector $connector */
-        $connector = self::$container->get('hbpf.custom_node.dummy-exception');
+        $connector = self::getContainer()->get('hbpf.custom_node.dummy-exception');
         $connector->setLogger(new Logger('logger'));
-        $dto = $connector->process(new ProcessDto());
+        $dto = $connector->processAction((new ProcessDto())->setData('{}'));
 
         self::assertEquals('{}', $dto->getData());
     }

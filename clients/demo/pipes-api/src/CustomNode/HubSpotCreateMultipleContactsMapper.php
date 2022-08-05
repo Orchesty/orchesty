@@ -4,30 +4,38 @@ namespace Demo\CustomNode;
 
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
-use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
+use Hanaboso\PipesPhpSdk\CustomNode\CommonNodeAbstract;
 use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\System\PipesHeaders;
-use JsonException;
 
 /**
  * Class HubSpotCreateMultipleContactsMapper
  *
  * @package Demo\CustomNode
  */
-final class HubSpotCreateMultipleContactsMapper extends CustomNodeAbstract
+final class HubSpotCreateMultipleContactsMapper extends CommonNodeAbstract
 {
+
+    public const NAME = 'hub-spot.create-multiple-contacts-mapper';
+
+    /**
+     * @return string
+     */
+    function getName(): string
+    {
+        return self::NAME;
+    }
 
     /**
      * @param ProcessDto $dto
      *
      * @return ProcessDto
      * @throws ConnectorException
-     * @throws JsonException
      */
-    public function process(ProcessDto $dto): ProcessDto
+    public function processAction(ProcessDto $dto): ProcessDto
     {
         $data      = Json::decode($dto->getData());
-        $pipesUser = $dto->getHeader(PipesHeaders::createKey(PipesHeaders::USER), '');
+        $pipesUser = $dto->getHeader(PipesHeaders::USER, '');
         $pipesUser = is_array($pipesUser) ? reset($pipesUser) : $pipesUser;
         $body      = [];
 
@@ -56,7 +64,7 @@ final class HubSpotCreateMultipleContactsMapper extends CustomNodeAbstract
             ];
         }
 
-        return $dto->setData(Json::encode($body));
+        return $dto->setJsonData($body);
     }
 
 }

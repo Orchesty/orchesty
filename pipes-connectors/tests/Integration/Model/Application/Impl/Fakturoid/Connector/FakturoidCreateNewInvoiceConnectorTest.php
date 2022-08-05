@@ -7,6 +7,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Fakturoid\Connector\FakturoidCreateNewInvoiceConnector;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
+use Hanaboso\Utils\File\File;
 use HbPFConnectorsTests\DataProvider;
 
 /**
@@ -18,8 +19,7 @@ final class FakturoidCreateNewInvoiceConnectorTest extends FakturoidAbstractConn
 {
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Fakturoid\Connector\FakturoidCreateNewInvoiceConnector::getId
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Fakturoid\Connector\FakturoidCreateNewInvoiceConnector::__construct
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Fakturoid\Connector\FakturoidCreateNewInvoiceConnector::getName
      *
      * @throws Exception
      */
@@ -27,7 +27,7 @@ final class FakturoidCreateNewInvoiceConnectorTest extends FakturoidAbstractConn
     {
         self::assertEquals(
             'fakturoid.create-new-invoice',
-            $this->createConnector(DataProvider::createResponseDto())->getId(),
+            $this->createConnector(DataProvider::createResponseDto())->getName(),
         );
     }
 
@@ -39,10 +39,10 @@ final class FakturoidCreateNewInvoiceConnectorTest extends FakturoidAbstractConn
     {
         $this->setApplicationAndMock('fakturacnitest');
 
-        $app          = self::$container->get('hbpf.application.fakturoid');
-        $dataFromFile = (string) file_get_contents(__DIR__ . '/Data/requestCreateNewInvoice.json');
+        $app          = self::getContainer()->get('hbpf.application.fakturoid');
+        $dataFromFile = File::getContent(__DIR__ . '/Data/requestCreateNewInvoice.json');
         $dto          = DataProvider::getProcessDto(
-            $app->getKey(),
+            $app->getName(),
             'user',
             $dataFromFile,
         );
@@ -75,7 +75,12 @@ final class FakturoidCreateNewInvoiceConnectorTest extends FakturoidAbstractConn
             $sender->method('send')->willReturn($dto);
         }
 
-        return new FakturoidCreateNewInvoiceConnector($sender, $this->dm);
+        $fakturoidCreateNewInvoiceConnector = new FakturoidCreateNewInvoiceConnector();
+        $fakturoidCreateNewInvoiceConnector
+            ->setSender($sender)
+            ->setDb($this->dm);
+
+        return $fakturoidCreateNewInvoiceConnector;
     }
 
     /**
@@ -83,13 +88,12 @@ final class FakturoidCreateNewInvoiceConnectorTest extends FakturoidAbstractConn
      */
     public function setApplication(): FakturoidCreateNewInvoiceConnector
     {
-        $app                = self::$container->get('hbpf.application.fakturoid');
-        $fakturoidConnector = new FakturoidCreateNewInvoiceConnector(
-            self::$container->get('hbpf.transport.curl_manager'),
-            $this->dm,
-        );
-
-        $fakturoidConnector->setApplication($app);
+        $app                = self::getContainer()->get('hbpf.application.fakturoid');
+        $fakturoidConnector = new FakturoidCreateNewInvoiceConnector();
+        $fakturoidConnector
+            ->setSender(self::getContainer()->get('hbpf.transport.curl_manager'))
+            ->setDb($this->dm)
+            ->setApplication($app);
 
         return $fakturoidConnector;
     }

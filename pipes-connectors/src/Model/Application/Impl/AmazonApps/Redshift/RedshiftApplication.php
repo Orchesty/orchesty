@@ -4,11 +4,13 @@ namespace Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\Redshift;
 
 use Aws\Redshift\RedshiftClient;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\AwsApplicationAbstract;
-use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Form;
+use Hanaboso\PipesPhpSdk\Application\Model\Form\FormStack;
+use PgSql\Connection;
 
 /**
  * Class RedshiftApplication
@@ -31,7 +33,7 @@ final class RedshiftApplication extends AwsApplicationAbstract
     /**
      * @return string
      */
-    public function getKey(): string
+    public function getName(): string
     {
         return 'redshift';
     }
@@ -39,7 +41,7 @@ final class RedshiftApplication extends AwsApplicationAbstract
     /**
      * @return string
      */
-    public function getName(): string
+    public function getPublicName(): string
     {
         return 'Amazon Redshift';
     }
@@ -53,18 +55,21 @@ final class RedshiftApplication extends AwsApplicationAbstract
     }
 
     /**
-     * @return Form
+     * @return FormStack
      */
-    public function getSettingsForm(): Form
+    public function getFormStack(): FormStack
     {
-        $form = new Form();
+        $form = new Form(ApplicationInterface::AUTHORIZATION_FORM, 'Authorization settings');
         $form
             ->addField(new Field(Field::TEXT, self::KEY, 'Key', NULL, TRUE))
             ->addField(new Field(Field::TEXT, self::SECRET, 'Secret', NULL, TRUE))
             ->addField(new Field(Field::PASSWORD, self::DB_PASSWORD, 'Database Password', NULL, TRUE))
             ->addField((new Field(Field::SELECT_BOX, self::REGION, 'Region', '', TRUE))->setChoices(self::REGIONS));
 
-        return $form;
+        $formStack = new FormStack();
+        $formStack->addForm($form);
+
+        return $formStack;
     }
 
     /**
@@ -74,11 +79,11 @@ final class RedshiftApplication extends AwsApplicationAbstract
      */
     public function isAuthorized(ApplicationInstall $applicationInstall): bool
     {
-        if (!isset($applicationInstall->getSettings()[ApplicationAbstract::FORM])) {
+        if (!isset($applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM])) {
             return FALSE;
         }
 
-        $settings = $applicationInstall->getSettings()[self::FORM];
+        $settings = $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM];
 
         return isset($settings[self::KEY])
             && isset($settings[self::SECRET])
@@ -93,7 +98,7 @@ final class RedshiftApplication extends AwsApplicationAbstract
      */
     public function getRedshiftClient(ApplicationInstall $applicationInstall): RedshiftClient
     {
-        $settings = $applicationInstall->getSettings()[self::FORM];
+        $settings = $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM];
 
         return new RedshiftClient(
             [
@@ -116,7 +121,7 @@ final class RedshiftApplication extends AwsApplicationAbstract
      */
     public function setApplicationSettings(ApplicationInstall $applicationInstall, array $settings): ApplicationInstall
     {
-        $applicationInstall = parent::setApplicationSettings($applicationInstall, $settings);
+        $applicationInstall = parent::saveApplicationForms($applicationInstall, $settings);
         $cluster            = $this->getRedshiftClient($applicationInstall)->describeClusters()->get('Clusters')[0];
 
         if (!$cluster) {
@@ -127,8 +132,8 @@ final class RedshiftApplication extends AwsApplicationAbstract
             [
                 RedshiftApplication::CLUSTER_IDENTIFIER => $cluster[RedshiftApplication::CLUSTER_IDENTIFIER],
                 RedshiftApplication::MASTER_USER        => $cluster[RedshiftApplication::MASTER_USER],
-                RedshiftApplication::DB_PASSWORD        => $applicationInstall->getSettings(
-                )[self::FORM][self::DB_PASSWORD],
+                RedshiftApplication::DB_PASSWORD        => $applicationInstall
+                                                               ->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][self::DB_PASSWORD],
                 RedshiftApplication::DBNAME             => $cluster[RedshiftApplication::DBNAME],
                 RedshiftApplication::HOST               => $cluster[RedshiftApplication::ENDPOINT][RedshiftApplication::ADDRESS],
                 RedshiftApplication::PORT               => $cluster[RedshiftApplication::ENDPOINT][RedshiftApplication::PORT],
@@ -139,10 +144,10 @@ final class RedshiftApplication extends AwsApplicationAbstract
     /**
      * @param ApplicationInstall $applicationInstall
      *
-     * @return resource
+     * @return Connection
      * @throws ApplicationInstallException
      */
-    public function getConnection(ApplicationInstall $applicationInstall)
+    public function getConnection(ApplicationInstall $applicationInstall): Connection
     {
         $settings = $applicationInstall->getSettings();
         $host     = $settings[RedshiftApplication::HOST];

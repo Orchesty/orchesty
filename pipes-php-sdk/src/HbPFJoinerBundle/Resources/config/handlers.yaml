@@ -1,8 +1,0 @@
-services:
-    _defaults:
-        public: '%public.services%'
-
-    hbpf.handler.joiner:
-        class: Hanaboso\PipesPhpSdk\HbPFJoinerBundle\Handler\JoinerHandler
-        arguments:
-            - '@hbpf.loader.joiner'

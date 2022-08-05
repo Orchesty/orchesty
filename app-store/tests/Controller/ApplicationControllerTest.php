@@ -5,7 +5,10 @@ namespace HbPFAppStoreTests\Controller;
 use Exception;
 use Hanaboso\HbPFAppStore\Handler\ApplicationHandler;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
+use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Json;
 use HbPFAppStoreTests\ControllerTestCaseAbstract;
 use HbPFAppStoreTests\Integration\Model\NullApplication;
@@ -27,9 +30,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
      */
     public function testGetUsersApplication(): void
     {
-        $this->mockApplicationHandler(
-            Json::decode((string) file_get_contents(sprintf('%s/data/data.json', __DIR__))),
-        );
+        $this->mockApplicationHandler(Json::decode(File::getContent(sprintf('%s/data/data.json', __DIR__))));
 
         self::$client->request('GET', '/applications/users/bar');
         $response = self::$client->getResponse();
@@ -66,8 +67,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         $this->insertApp();
         $application = self::createMock(ApplicationAbstract::class);
         $application->method('toArray')->willReturn(['user' => 'bar']);
-        $application->method('getApplicationForm')->willReturn([]);
-        self::$container->set('hbpf.application.someApp', $application);
+        $application->method('getApplicationForms')->willReturn([]);
+        self::getContainer()->set('hbpf.application.someApp', $application);
 
         $response = (array) $this->sendGet('/applications/someApp/users/bar');
         self::assertEquals('200', $response['status']);
@@ -98,7 +99,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     public function testInstallApplication(): void
     {
         $application = new NullApplication();
-        self::$container->set('hbpf.application.example', $application);
+        self::getContainer()->set('hbpf.application.example', $application);
 
         $response = (array) $this->sendPost('/applications/example/users/bar/install', []);
         self::assertEquals('200', $response['status']);
@@ -208,11 +209,27 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     {
         $this->mockApplicationHandler(['new_passwd' => 'secret']);
 
-        self::$client->request('PUT', '/applications/someApp/users/bar/password', ['password' => 'Passw0rd']);
+        self::$client->request(
+            'PUT',
+            '/applications/someApp/users/bar/password',
+            [
+                'formKey' => ApplicationInterface::AUTHORIZATION_FORM,
+                'fieldKey' => BasicApplicationInterface::PASSWORD,
+                'password' => 'Passw0rd',
+            ],
+        );
         $response = self::$client->getResponse();
         self::assertEquals('200', $response->getStatusCode());
 
-        self::$client->request('PUT', '/applications/application/users/user/password', ['password' => 'Passw0rd']);
+        self::$client->request(
+            'PUT',
+            '/applications/application/users/user/password',
+            [
+                'formKey' => ApplicationInterface::AUTHORIZATION_FORM,
+                'fieldKey' => BasicApplicationInterface::PASSWORD,
+                'password' => 'Passw0rd',
+            ],
+        );
         $response = self::$client->getResponse();
         self::assertEquals('404', $response->getStatusCode());
     }
@@ -237,13 +254,11 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     {
         $mock = self::createPartialMock(ApplicationHandler::class, [$fn]);
         $mock->expects(self::any())->method($fn)->willThrowException(new Exception());
-        self::$container->set('hbpf._application.handler.application', $mock);
+        self::getContainer()->set('hbpf._application.handler.application', $mock);
     }
 
     /**
      * @param mixed[] $returnValue
-     *
-     * @throws Exception
      */
     private function mockApplicationHandler(array $returnValue = []): void
     {
@@ -252,7 +267,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
             ->getMock();
 
         $handler->method('saveAuthToken')
-            ->willReturn($returnValue);
+            ->willReturn('');
         $handler->method('updateApplicationPassword')
             ->willReturn($returnValue);
         $handler->method('updateApplicationSettings')

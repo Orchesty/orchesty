@@ -8,7 +8,6 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Connector\HubSpotCreateContactConnector;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\HubSpotApplication;
-use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
@@ -43,10 +42,10 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
     /**
      *
      */
-    public function testName(): void
+    public function testPublicName(): void
     {
         $this->setApplication();
-        self::assertEquals('HubSpot Application', $this->application->getName());
+        self::assertEquals('HubSpot Application', $this->application->getPublicName());
     }
 
     /**
@@ -64,19 +63,21 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
     /**
      * @throws Exception
      */
-    public function testGetSettingsForm(): void
+    public function testGetFormStack(): void
     {
         $this->setApplication();
-        $fields = $this->application->getSettingsForm()->getFields();
-        foreach ($fields as $field) {
-            self::assertContainsEquals(
-                $field->getKey(),
-                [
-                    HubSpotApplication::APP_ID,
-                    OAuth2ApplicationInterface::CLIENT_ID,
-                    OAuth2ApplicationInterface::CLIENT_SECRET,
-                ],
-            );
+        $forms = $this->application->getFormStack()->getForms();
+        foreach ($forms as $form){
+            foreach ($form->getFields() as $field) {
+                self::assertContainsEquals(
+                    $field->getKey(),
+                    [
+                        HubSpotApplication::APP_ID,
+                        OAuth2ApplicationInterface::CLIENT_ID,
+                        OAuth2ApplicationInterface::CLIENT_SECRET,
+                    ],
+                );
+            }
         }
     }
 
@@ -87,7 +88,7 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
     {
         $this->setApplication();
         $applicationInstall = DataProvider::getOauth2AppInstall(
-            $this->application->getKey(),
+            $this->application->getName(),
             'user',
             'token',
             self::CLIENT_ID,
@@ -150,22 +151,22 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
     public function testGetWebhookSubscribeRequestDto(): void
     {
         $this->setApplication();
-        $hubspotCreateContactConnector = new HubSpotCreateContactConnector(
-            self::$container->get('hbpf.transport.curl_manager'),
-            $this->dm,
-        );
+        $hubspotCreateContactConnector = new HubSpotCreateContactConnector();
+        $hubspotCreateContactConnector
+            ->setSender(self::getContainer()->get('hbpf.transport.curl_manager'))
+            ->setDb($this->dm)
+            ->setApplication($this->application);
 
-        $hubspotCreateContactConnector->setApplication($this->application);
         $applicationInstall = new ApplicationInstall();
         $applicationInstall->setSettings(
             [
-                ApplicationAbstract::FORM                    => [
+                ApplicationInterface::AUTHORIZATION_FORM => [
                     HubSpotApplication::APP_ID => '123xx',
+                    ApplicationInterface::TOKEN => [OAuth2Provider::ACCESS_TOKEN => 'token123'],
                 ],
-                ApplicationInterface::AUTHORIZATION_SETTINGS => [ApplicationInterface::TOKEN => [OAuth2Provider::ACCESS_TOKEN => 'token123']],
             ],
         );
-        $this->pfd(DataProvider::getOauth2AppInstall($this->application->getKey()));
+        $this->pfd(DataProvider::getOauth2AppInstall($this->application->getName()));
         $webhookSubscription = new WebhookSubscription(
             'name',
             'node',
@@ -201,7 +202,7 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
     private function setApplication(): void
     {
         $this->mockRedirect(HubSpotApplication::HUBSPOT_URL, self::CLIENT_ID, 'contacts');
-        $this->application = self::$container->get('hbpf.application.hub-spot');
+        $this->application = self::getContainer()->get('hbpf.application.hub-spot');
     }
 
 }

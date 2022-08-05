@@ -29,7 +29,11 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
         $this->createSdk('One');
         $this->createSdk('Two');
 
-        $this->assertResponse(__DIR__ . '/data/Sdk/getAllRequest.json', ['id' => '5e32a7a41ffeab2445696983']);
+        $this->assertResponseLogged(
+            $this->jwt,
+            __DIR__ . '/data/Sdk/getAllRequest.json',
+            ['id' => '5e32a7a41ffeab2445696983'],
+        );
     }
 
     /**
@@ -41,7 +45,8 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
      */
     public function testGetOne(): void
     {
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/Sdk/getOneRequest.json',
             ['id' => '5e32a9b8a1b2a70fef6fa273'],
             [':id' => $this->createSdk('One')->getId()],
@@ -57,7 +62,7 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
      */
     public function testGetOneNotFound(): void
     {
-        $this->assertResponse(__DIR__ . '/data/Sdk/getOneNotFoundRequest.json');
+        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/Sdk/getOneNotFoundRequest.json');
     }
 
     /**
@@ -69,7 +74,11 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
      */
     public function testCreate(): void
     {
-        $this->assertResponse(__DIR__ . '/data/Sdk/createRequest.json', ['id' => '5e32aab74c2bd32924205303']);
+        $this->assertResponseLogged(
+            $this->jwt,
+            __DIR__ . '/data/Sdk/createRequest.json',
+            ['id' => '5e32aab74c2bd32924205303'],
+        );
     }
 
     /**
@@ -81,7 +90,7 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
      */
     public function testCreateErr(): void
     {
-        $this->assertResponse(__DIR__ . '/data/Sdk/createErrRequest.json');
+        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/Sdk/createErrRequest.json');
     }
 
     /**
@@ -94,7 +103,8 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
      */
     public function testUpdate(): void
     {
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/Sdk/updateRequest.json',
             ['id' => '5e32ac41505d6e1b5047eb43'],
             [':id' => $this->createSdk('One')->getId()],
@@ -111,7 +121,7 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
      */
     public function testUpdateNotFound(): void
     {
-        $this->assertResponse(__DIR__ . '/data/Sdk/updateNotFoundRequest.json');
+        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/Sdk/updateNotFoundRequest.json');
     }
 
     /**
@@ -124,7 +134,8 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
      */
     public function testDelete(): void
     {
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/Sdk/deleteRequest.json',
             ['id' => '5e32ae5cb04e0b3566176113'],
             [':id' => $this->createSdk('One')->getId()],
@@ -140,7 +151,7 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
      */
     public function testDeleteErr(): void
     {
-        $this->assertResponse(__DIR__ . '/data/Sdk/deleteErrRequest.json');
+        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/Sdk/deleteErrRequest.json');
     }
 
     /**
@@ -152,8 +163,9 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
     private function createSdk(string $string): Sdk
     {
         $sdk = (new Sdk())
-            ->setKey($string)
-            ->setValue($string);
+            ->setUrl($string)
+            ->setHeaders([])
+            ->setName($string);
 
         $this->dm->persist($sdk);
         $this->dm->flush();

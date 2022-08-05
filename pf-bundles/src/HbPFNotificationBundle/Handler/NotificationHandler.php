@@ -33,7 +33,20 @@ final class NotificationHandler
      */
     public function getSettings(): array
     {
-        return Json::decode($this->manager->getSettings()->getBody());
+        $res = Json::decode($this->manager->getSettings()->getBody());
+
+        $res['paging'] = [
+            'page'         => 1,
+            'itemsPerPage' => 50,
+            'total'        => count($res['items']),
+            'nextPage'     => 2,
+            'lastPage'     => 2,
+            'previousPage' => 1,
+        ];
+        $res['filter'] = [];
+        $res['sorter'] = [];
+
+        return $res;
     }
 
     /**

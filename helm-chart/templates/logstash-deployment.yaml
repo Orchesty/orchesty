@@ -35,13 +35,13 @@ spec:
           env:
             - name: LS_JAVA_OPTS
               value: "-Xms512m -Xmx512m"
-            - name: __MONGODB_AUTH_HOST
+            - name: LOG_STORAGE
+              value: {{ .Values.global.monitoring.logStorage }}
+            - name: MONGO_DSN
               valueFrom:
                 configMapKeyRef:
-                  key: mongodb_auth_and_hosts
+                  key: mongodb_dsn
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: MONGO_DSN
-              value: "mongodb://$(__MONGODB_AUTH_HOST)"
             - name: MONGO_DB
               valueFrom:
                 configMapKeyRef:
@@ -49,10 +49,6 @@ spec:
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
             - name: MONGO_COLLECTION
               value: Logs
-          volumeMounts:
-            - name: config-volume
-              subPath: logstash.conf
-              mountPath: /usr/share/logstash/pipeline/logstash.conf
           resources:
 {{ toYaml .Values.global.logstash.resources | indent 12 }}
 {{ if eq .Values.global.monitoring.logStorage "google" }}
@@ -67,10 +63,6 @@ spec:
               memory: 1Gi
               cpu: "1"
 {{ end }}
-      volumes:
-        - name: config-volume
-          configMap:
-            name: {{ include "pipes.fullname" (dict "suffix" $componentName "root" .) }}
 
 {{- with .Values.global.nodeSelector }}
       nodeSelector:

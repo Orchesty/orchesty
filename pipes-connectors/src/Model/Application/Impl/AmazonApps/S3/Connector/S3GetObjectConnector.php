@@ -9,6 +9,7 @@ use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\S3Application;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
+use Hanaboso\Utils\File\File;
 
 /**
  * Class S3GetObjectConnector
@@ -29,16 +30,16 @@ final class S3GetObjectConnector extends S3ObjectConnectorAbstract
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
-        $content = $this->getJsonContent($dto);
+        $content = $dto->getJsonData();
         $this->checkParameters([self::NAME], $content);
 
-        $applicationInstall = $this->getApplicationInstall($dto);
+        $applicationInstall = $this->getApplicationInstallFromProcess($dto);
         /** @var S3Application $application */
         $application = $this->getApplication();
         $client      = $application->getS3Client($applicationInstall);
 
         $path = sprintf('/tmp/%s', bin2hex(random_bytes(10)));
-        file_put_contents($path, '');
+        File::putContent($path, '');
 
         try {
             $client->getObject(
@@ -49,19 +50,22 @@ final class S3GetObjectConnector extends S3ObjectConnectorAbstract
                 ],
             );
         } catch (AwsException $e) {
-            throw $this->createRepeatException($dto, $e);
+            throw new OnRepeatException(
+                $dto,
+                sprintf("Connector '%s': %s: %s", $this->getName(), $e::class, $e->getMessage()),
+            );
         } finally {
-            $fileContent = file_get_contents($path);
+            $fileContent = File::getContent($path);
             unlink($path);
         }
 
-        return $this->setJsonContent($dto, [self::NAME => $content[self::NAME], self::CONTENT => $fileContent]);
+        return $dto->setJsonData([self::NAME => $content[self::NAME], self::CONTENT => $fileContent]);
     }
 
     /**
      * @return string
      */
-    protected function getCustomId(): string
+    protected function getCustomName(): string
     {
         return 'get-object';
     }

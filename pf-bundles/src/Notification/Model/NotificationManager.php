@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesFramework\Notification\Model;
 
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
@@ -50,7 +51,7 @@ final class NotificationManager implements LoggerAwareInterface
      */
     public function getSettings(): ResponseDto
     {
-        $dto = new RequestDto(CurlManager::METHOD_GET, $this->getUrl(self::LIST));
+        $dto = new RequestDto($this->getUrl(self::LIST),CurlManager::METHOD_GET, new ProcessDto());
 
         return $this->sendAndProcessRequest($dto);
     }
@@ -64,7 +65,7 @@ final class NotificationManager implements LoggerAwareInterface
      */
     public function getSetting(string $id): ResponseDto
     {
-        $dto = new RequestDto(CurlManager::METHOD_GET, $this->getUrl(self::GET, $id));
+        $dto = new RequestDto($this->getUrl(self::GET, $id), CurlManager::METHOD_GET, new ProcessDto());
 
         return $this->sendAndProcessRequest($dto);
     }
@@ -79,7 +80,7 @@ final class NotificationManager implements LoggerAwareInterface
      */
     public function updateSettings(string $id, array $data): ResponseDto
     {
-        $dto = (new RequestDto(CurlManager::METHOD_PUT, $this->getUrl(self::SAVE, $id)))
+        $dto = (new RequestDto($this->getUrl(self::SAVE, $id), CurlManager::METHOD_PUT, new ProcessDto()))
             ->setBody(Json::encode($data));
 
         return $this->sendAndProcessRequest($dto);

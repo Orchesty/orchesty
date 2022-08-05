@@ -1,0 +1,913 @@
+openapi: 3.0.0
+info:
+    title: Sample API
+    description: |
+        # Error codes:
+        ## DateTime format error
+        - 1001 - timeRangeStart and/or timeRangeEnd are in invalid format
+        - 1002 - installedDate are in invalid format
+    version: 0.1.9
+paths:
+    /status:
+        get:
+            description: Service status for health checking
+            x-swagger-router-controller: status
+            operationId: status
+            security: []
+            tags:
+                - Health check
+            responses:
+                '200':
+                    description: Healthy
+    /billing/reports/apps:
+        get:
+            description: Get billing report aggregated by an appName
+            x-swagger-router-controller: usageStats
+            operationId: usageStatsApps
+            tags:
+                - Billing
+            parameters:
+                - $ref: "#/components/parameters/tenantId"
+                - $ref: "#/components/parameters/timeRangeStart"
+                - $ref: "#/components/parameters/timeRangeEnd"
+                - $ref: "#/components/parameters/appName"
+                - $ref: "#/components/parameters/granularity"
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/UsageStatsApps"
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+    /billing/reports/installedApps:
+        get:
+            description: Get list of installed apps for one end user
+            x-swagger-router-controller: usageStats
+            operationId: usageStatsInstalledApps
+            tags:
+                - Billing
+            parameters:
+                - $ref: "#/components/parameters/tenantId"
+                - $ref: "#/components/parameters/requiredEndUserId"
+                - in: query
+                  name: installedDate
+                  description: Filter by installedDate
+                  required: false
+                  schema:
+                      type: string
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/UsageStatsInstalledApps"
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+    /billing/reports/timeBucketUsers:
+        get:
+            description: Get billing report time bucket (monthly) for one app
+            x-swagger-router-controller: usageStats
+            operationId: usageStatsTimeBucketUsers
+            tags:
+                - Billing
+            parameters:
+                - $ref: "#/components/parameters/tenantId"
+                - $ref: "#/components/parameters/timeRangeStart"
+                - $ref: "#/components/parameters/timeRangeEnd"
+                - $ref: "#/components/parameters/requiredAppName"
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/UsageStatsTimeBucketUsers"
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+    /billing/reports/timeBucketApps:
+        get:
+            description: Get billing report time bucket (monthly) for one end user
+            x-swagger-router-controller: usageStats
+            operationId: usageStatsTimeBucketApps
+            tags:
+                - Billing
+            parameters:
+                - $ref: "#/components/parameters/tenantId"
+                - $ref: "#/components/parameters/timeRangeStart"
+                - $ref: "#/components/parameters/timeRangeEnd"
+                - $ref: "#/components/parameters/requiredEndUserId"
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/UsageStatsTimeBucketApps"
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+    /billing/reports/users:
+        get:
+            description: Get billing report aggregated by an users
+            x-swagger-router-controller: usageStats
+            operationId: usageStatsUsers
+            tags:
+                - Billing
+            parameters:
+                - $ref: "#/components/parameters/tenantId"
+                - $ref: "#/components/parameters/timeRangeStart"
+                - $ref: "#/components/parameters/timeRangeEnd"
+                - $ref: "#/components/parameters/appName"
+                - $ref: "#/components/parameters/granularity"
+                - in: query
+                  name: endUserDisplayId
+                  description: Filter by endUserDisplayId
+                  required: false
+                  schema:
+                      type: string
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/UsageStatsUsers"
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+    /users/list:
+        get:
+            description: Fill
+            x-swagger-router-controller: users
+            operationId: usersList
+            tags:
+                - Users
+            parameters:
+                - $ref: "#/components/parameters/emails"
+                - $ref: "#/components/parameters/tenantId"
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/UsersRows"
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+    /users:
+        get:
+            description: Fill
+            x-swagger-router-controller: users
+            operationId: usersGet
+            tags:
+                - Users
+            parameters:
+                - $ref: "#/components/parameters/uid"
+                - $ref: "#/components/parameters/tenantId"
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/OneUser"
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+
+        post:
+            description: Fill
+            x-swagger-router-controller: users
+            operationId: usersCreate
+            tags:
+                - Users
+            parameters:
+                - $ref: "#/components/parameters/tenantId"
+            requestBody:
+                $ref: '#/components/requestBodies/UserBody'
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/OneUser"
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+
+        put:
+            description: Fill
+            x-swagger-router-controller: users
+            operationId: usersUpdate
+            tags:
+                - Users
+            parameters:
+                - $ref: "#/components/parameters/uid"
+                - $ref: "#/components/parameters/tenantId"
+            requestBody:
+                $ref: '#/components/requestBodies/UpdateUserBody'
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/OneUser"
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+
+        delete:
+            description: Fill
+            x-swagger-router-controller: users
+            operationId: usersDelete
+            tags:
+                - Users
+            parameters:
+                - $ref: "#/components/parameters/uid"
+                - $ref: "#/components/parameters/tenantId"
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    msg:
+                                        description: Message for client
+                                        type: string
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+
+    /users/sendResetPasswordEmail:
+        post:
+            description: Fill
+            x-swagger-router-controller: users
+            operationId: userSendResetPasswordEmail
+            tags:
+                - Users
+            parameters:
+                - $ref: "#/components/parameters/tenantId"
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    msg:
+                                        description: Message for client
+                                        type: string
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+
+    /tenants/list:
+        get:
+            description: Fill
+            x-swagger-router-controller: tenants
+            operationId: tenantsList
+            tags:
+                - Tenants
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/TenantsRows"
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+    /tenants:
+        get:
+            description: Fill
+            x-swagger-router-controller: tenants
+            operationId: tenantsGet
+            tags:
+                - Tenants
+            parameters:
+                - $ref: "#/components/parameters/tenantId"
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/OneTenant"
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+
+        post:
+            description: Fill
+            x-swagger-router-controller: tenants
+            operationId: tenantsCreate
+            tags:
+                - Tenants
+            requestBody:
+                $ref: '#/components/requestBodies/TenantBody'
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/OneTenant"
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+
+        put:
+            description: Fill
+            x-swagger-router-controller: tenants
+            operationId: tenantsUpdate
+            tags:
+                - Tenants
+            parameters:
+                - $ref: "#/components/parameters/tenantId"
+            requestBody:
+                $ref: '#/components/requestBodies/UpdateTenantBody'
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/OneTenant"
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+
+        delete:
+            description: Fill
+            x-swagger-router-controller: tenants
+            operationId: tenantsDelete
+            tags:
+                - Tenants
+            parameters:
+                - $ref: "#/components/parameters/tenantId"
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    msg:
+                                        description: Message for client
+                                        type: string
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+security:
+    - Bearer: []
+components:
+    securitySchemes:
+        identityPlatform:
+            type: "oauth2"
+            flows:
+                implicit:
+                    authorizationUrl: "https://localhost:3000"
+                    scopes: {}
+                    x-google-issuer: "https://securetoken.google.com/orchesty-cloud-stage"
+                    x-google-jwks_uri: "https://www.googleapis.com/service_accounts/v1/metadata/x509/securetoken@system.gserviceaccount.com"
+                    x-google-audiences: "orchesty-cloud-stage"
+    parameters:
+        tenantId:
+            in: query
+            name: tenantId
+            description: Tenant ID to get data for. If not specified, logged-in user is assumed
+            required: false
+            schema:
+                type: string
+        timeRangeStart:
+            in: query
+            name: timeRangeStart
+            description: Start of the time range to show (inclusive). Must be in ISO 8601 format.
+            required: true
+            schema:
+                type: string
+                example: 2018-03-20T09:12:28Z
+        timeRangeEnd:
+            in: query
+            name: timeRangeEnd
+            description: End of the time range to show (exclusive). Must be in ISO 8601 format.
+            required: true
+            schema:
+                type: string
+                example: 2018-03-20T09:12:28Z
+        endUserId:
+            in: query
+            name: endUserId
+            description: Filter by endUserId
+            required: false
+            schema:
+                type: string
+        requiredEndUserId:
+            in: query
+            name: endUserId
+            description: Filter by endUserId
+            required: true
+            schema:
+                type: string
+        appName:
+            in: query
+            name: appName
+            description: Filter by appName
+            required: false
+            schema:
+                type: string
+        requiredAppName:
+            in: query
+            name: appName
+            description: Filter by appName
+            required: true
+            schema:
+                type: string
+        granularity:
+            in: query
+            name: granularity
+            description: Set time granularity
+            required: false
+            schema:
+                type: string
+                example: 'hourly'
+                enum:
+                    - 'hourly'
+                    - 'daily'
+                    - 'monthly'
+                default: 'hourly'
+        emails:
+            in: query
+            name: emails
+            description: List of user emails, separated by comma
+            required: false
+            schema:
+                type: string
+        uid:
+            in: query
+            name: uid
+            description: User identifier
+            required: true
+            schema:
+                type: string
+
+    requestBodies:
+        UserBody:
+            description: A JSON object containing user information
+            required: true
+            content:
+                application/json:
+                    schema:
+                        oneOf:
+                            - $ref: '#/components/schemas/CreateUser'
+        UpdateUserBody:
+            description: A JSON object containing user information
+            required: true
+            content:
+                application/json:
+                    schema:
+                        oneOf:
+                            - $ref: '#/components/schemas/UpdateUser'
+        TenantBody:
+            description: A JSON object containing user information
+            required: true
+            content:
+                application/json:
+                    schema:
+                        oneOf:
+                            - $ref: '#/components/schemas/CreateTenant'
+        UpdateTenantBody:
+            description: A JSON object containing user information
+            required: true
+            content:
+                application/json:
+                    schema:
+                        oneOf:
+                            - $ref: '#/components/schemas/UpdateTenant'
+    schemas:
+        UsageStatsApps:
+            type: object
+            properties:
+                rows:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            appName:
+                                description: Application name (also ID)
+                                type: string
+                            endUsers:
+                                description: Number of unique end users having the app installed within the given period
+                                type: integer
+                            totalCost:
+                                description: Total installs cost for this app
+                                type: integer
+                            installCount:
+                                description: Total number of installs
+                                type: integer
+        UsageStatsInstalledApps:
+            type: object
+            properties:
+                rows:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            appName:
+                                description: Application name (also ID)
+                                type: string
+                            installed:
+                                description: App installation date
+                                type: string
+        UsageStatsTimeBucketUsers:
+            type: object
+            properties:
+                rows:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            timeBucketName:
+                                description: Name of time bucket in format (MM/YY)
+                                type: string
+                            endUsers:
+                                description: Number of unique end users having the app installed within the given period
+                                type: integer
+        UsageStatsTimeBucketApps:
+            type: object
+            properties:
+                rows:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            timeBucketName:
+                                description: Name of time bucket in format (MM/YY)
+                                type: string
+                            appName:
+                                description: Application name (also ID)
+                                type: string
+                            totalCost:
+                                description: Total installs cost for this app
+                                type: integer
+        UsageStatsUsers:
+            type: object
+            properties:
+                rows:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            endUserId:
+                                type: string
+                            endUserDisplayId:
+                                type: string
+                            appNames:
+                                description: Array of application names
+                                type: array
+                            totalCost:
+                                description: Total installs cost for this user
+                                type: integer
+                            installCount:
+                                description: Total installs count for this user
+                                type: integer
+        CreateUser:
+            type:
+                object
+            properties:
+                email:
+                    description: User's email
+                    type: string
+                phoneNumber:
+                    description: User's phone number
+                    type: string
+                displayName:
+                    description: User's display name
+                    type: string
+                photoUrl:
+                    description: User's photo url
+                    type: string
+                disabled:
+                    description: Switch indicating if user is disabled
+                    type: boolean
+            required:
+                - email
+        UpdateUser:
+            type: object
+            properties:
+                phoneNumber:
+                    description: User's phone number
+                    type: string
+                displayName:
+                    description: User's display name
+                    type: string
+                photoUrl:
+                    description: User's photo url
+                    type: string
+                disabled:
+                    description: Switch indicating if user is disabled
+                    type: boolean
+        CreateTenant:
+            type:
+                object
+            properties:
+                displayName:
+                    description: Tenant's display name
+                    type: string
+                userDisplayName:
+                    description: User's display name -> you must set email when this value is set
+                    type: string
+                email:
+                    description: User's email -> you must set userDisplayName when this value is set
+                    type: string
+            required:
+                - displayName
+        UpdateTenant:
+            type: object
+            properties:
+                displayName:
+                    description: Tenant's display name
+                    type: string
+        UsersRows:
+            type: object
+            properties:
+                rows:
+                    type: array
+                    items:
+                        $ref: "#/components/schemas/OutputUser"
+        OneUser:
+            type: object
+            properties:
+                user:
+                    $ref: "#/components/schemas/OutputUser"
+        OutputUser:
+            type: object
+            properties:
+                uid:
+                    type: string
+                email:
+                    type: string
+                emailVerified:
+                    type: boolean
+                displayName:
+                    type: string
+                    nullable: true
+                photoUrl:
+                    type: string
+                    nullable: true
+                phoneNumber:
+                    type: string
+                    nullable: true
+                disabled:
+                    type: boolean
+                    nullable: true
+                metadata:
+                    type: object
+                    nullable: true
+                    properties:
+                        creationTime:
+                            type: string
+                            nullable: true
+                        lastSignTime:
+                            type: string
+                            nullable: true
+                providerData:
+                    type: array
+                    nullable: true
+                    items:
+                        type: object
+                        properties:
+                            uid:
+                                type: string
+                                nullable: true
+                            email:
+                                type: string
+                                nullable: true
+                            providerId:
+                                type: string
+                                nullable: true
+                passwordHash:
+                    type: string
+                    nullable: true
+                passwordSalt:
+                    type: string
+                    nullable: true
+                tokensValidAfterTime:
+                    type: string
+                    nullable: true
+                tenantId:
+                    type: string
+                    nullable: true
+        TenantsRows:
+            type: object
+            properties:
+                rows:
+                    type: array
+                    items:
+                        $ref: "#/components/schemas/OutputTenant"
+        OneTenant:
+            type: object
+            properties:
+                tenant:
+                    $ref: "#/components/schemas/OutputTenant"
+        OutputTenant:
+            type: object
+            properties:
+                tenantId:
+                    type: string
+                displayName:
+                    type: string
+                    nullable: true
+                emailSignInConfig:
+                    type: object
+                    nullable: true
+                    properties:
+                        enabled:
+                            type: boolean
+                        passwordRequired:
+                            type: boolean
+                anonymousSignInEnabled:
+                    type: boolean
+                    nullable: true
+
+    responses:
+        '400BadRequest':
+            description: Bad request
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            msg:
+                                description: Reason presented to client
+                                type: string
+
+        '401Unauthorized':
+            description: Unauthorized
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            msg:
+                                description: Reason presented to client
+                                type: string
+
+        '403Forbidden':
+            description: Forbidden
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            msg:
+                                description: Reason presented to client
+                                type: string
+
+        '404NotFound':
+            description: Resource not found
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            msg:
+                                description: Reason presented to client
+                                type: string
+
+        '500BadRequest':
+            description: Internal server error
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            msg:
+                                description: Reason presented to client
+                                type: string

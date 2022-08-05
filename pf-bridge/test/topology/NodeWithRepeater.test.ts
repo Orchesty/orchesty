@@ -118,7 +118,7 @@ testMsgHeaders.setPFHeader(Headers.SEQUENCE_ID, "0");
 testMsgHeaders.setPFHeader(Headers.TOPOLOGY_ID, testTopology.id);
 testMsgHeaders.setHeader(Headers.CONTENT_TYPE, "text/plain");
 
-describe("Node with repeater test", () => {
+xdescribe("Node with repeater test", () => {
     it("in first node message should be repeated and then forwarded to second node #integration", (done) => {
         const pip = new Pipes(testTopology);
 

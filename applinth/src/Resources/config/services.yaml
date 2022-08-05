@@ -1,0 +1,28 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    hbpf._application.handler.statistics:
+        class: Hanaboso\Applinth\Handler\StatisticsHandler
+        arguments:
+            - '@hbpf._application.manager.statistics'
+            - '@hbpf.metrics.manager_loader'
+
+    hbpf.metrics.manager_loader:
+        class: Hanaboso\PipesFramework\Metrics\Manager\MetricsManagerLoader
+        arguments:
+            - '%metrics_service%'
+            - '@hbpf.metrics.manager.influx_metrics'
+            - '@hbpf.metrics.manager.mongo_metrics'
+
+    Hanaboso\Applinth\Authenticator\EndUserAuthenticator:
+        class: Hanaboso\Applinth\Authenticator\EndUserAuthenticator
+        arguments:
+            - '@Hanaboso\Applinth\Manager\AuthorizationManager'
+
+    Hanaboso\Applinth\Handler\AuthorizationHandler:
+        class: Hanaboso\Applinth\Handler\AuthorizationHandler
+        arguments:
+            - '@Hanaboso\Applinth\Manager\AuthorizationManager'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpp.service.locator'

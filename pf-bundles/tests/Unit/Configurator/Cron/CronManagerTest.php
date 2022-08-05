@@ -25,9 +25,9 @@ use PipesFrameworkTests\KernelTestCaseAbstract;
 final class CronManagerTest extends KernelTestCaseAbstract
 {
 
-    private const COM1 = "echo \"[CRON] [$(date +'%Y-%m-%dT%TZ')] Requesting http://example.com/topologies/test/nodes/id-1/run: $(curl -H 'Accept: application/json' -H 'Content-Type: application/json' -X POST -d '{\"params\":\"abc\"}' -s http://example.com/topologies/test/nodes/id-1/run)\" >> /proc/1/fd/1";
-    private const COM2 = "echo \"[CRON] [$(date +'%Y-%m-%dT%TZ')] Requesting http://example.com/topologies/test/nodes/id-2/run: $(curl -H 'Accept: application/json' -H 'Content-Type: application/json' -X POST -d '{\"params\":\"abc\"}' -s http://example.com/topologies/test/nodes/id-2/run)\" >> /proc/1/fd/1";
-    private const COM3 = "echo \"[CRON] [$(date +'%Y-%m-%dT%TZ')] Requesting http://example.com/topologies/test/nodes/id-3/run: $(curl -H 'Accept: application/json' -H 'Content-Type: application/json' -X POST -d '{\"params\":\"abc\"}' -s http://example.com/topologies/test/nodes/id-3/run)\" >> /proc/1/fd/1";
+    private const COM1 = 'echo "[CRON] [$(date +"%Y-%m-%dT%TZ")] Requesting http://example.com/topologies/test/nodes/id-1/run: $(curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d "{"params":"abc"}" http://example.com/topologies/test/nodes/id-1/run)" &> /proc/1/fd/1';
+    private const COM2 = 'echo "[CRON] [$(date +"%Y-%m-%dT%TZ")] Requesting http://example.com/topologies/test/nodes/id-2/run: $(curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d "{"params":"abc"}" http://example.com/topologies/test/nodes/id-2/run)" &> /proc/1/fd/1';
+    private const COM3 = 'echo "[CRON] [$(date +"%Y-%m-%dT%TZ")] Requesting http://example.com/topologies/test/nodes/id-3/run: $(curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d "{"params":"abc"}" http://example.com/topologies/test/nodes/id-3/run)" &> /proc/1/fd/1';
 
     /**
      * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager

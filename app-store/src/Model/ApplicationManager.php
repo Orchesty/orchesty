@@ -163,7 +163,7 @@ final class ApplicationManager extends SdkApplicationManager
         /** @var ApplicationAbstract $application */
         $application = $this->loader->getApplication($key);
 
-        return $application->getApplicationForm($applicationInstall);
+        return $application->getApplicationForms($applicationInstall);
     }
 
 }

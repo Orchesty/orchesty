@@ -32,38 +32,20 @@ spec:
               value: {{ include "pipes.fullname" (dict "suffix" "logstash" "root" .) }}:5120
             - name: LIMITER_ADDR
               value: "0.0.0.0:3333"
-            - name: RABBITMQ_HOST
+            - name: RABBITMQ_DSN
               valueFrom:
                 configMapKeyRef:
-                  key: rabbitmq_host
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: RABBITMQ_USER
-              valueFrom:
-                configMapKeyRef:
-                  key: rabbitmq_user
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: RABBITMQ_PASS
-              valueFrom:
-                configMapKeyRef:
-                  key: rabbitmq_password
+                  key: rabbitmq_dsn
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
             - name: RABBITMQ_INPUT_QUEUE_PREFETCH_COUNT
               value: "500"
-            - name: MONGO_HOST
+            - name: MONGO_DSN
               valueFrom:
                 configMapKeyRef:
-                  key: mongodb_auth_and_hosts
+                  key: mongodb_dsn
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: MONGO_DB
-              valueFrom:
-                configMapKeyRef:
-                  key: mongodb_database
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: MONGO_COLLECTION
-              value: LimiterMessages
-            # todo: mongo auth, when limiter supports it
             - name: LOGSTASH_HOST
-              value: logstash
+              value: {{ include "pipes.fullname" (dict "suffix" "logstash" "root" .) }}
             - name: LOGSTASH_PORT
               value: "5120"
             - name: LOG_LEVEL

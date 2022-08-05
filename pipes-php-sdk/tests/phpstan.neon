@@ -14,6 +14,9 @@ parameters:
 		-
 			message: '#Variable method call on Hanaboso\\PipesPhpSdk\\Application\\Base\\ApplicationInterface.#'
 			path:  ../src/Application/Manager/ApplicationManager.php
+		-
+			message: '#Calling putenv\(\) is forbidden, might overwrite existing variables#'
+			path:  ../tests/Integration/Command/AuthorizeUserCommandTest.php
 	ergebnis:
 		classesAllowedToBeExtended:
 			- Hanaboso\MongoDataGrid\GridFilterAbstract
@@ -22,15 +25,10 @@ parameters:
 			- Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1\OAuth1ApplicationAbstract
 			- Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract
 			- Hanaboso\PipesPhpSdk\Authorization\Provider\OAuthProviderAbstract
+			- Hanaboso\PipesPhpSdk\Batch\BatchAbstract
 			- Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract
 			- Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract
 			- Hanaboso\PipesPhpSdk\CustomNode\Impl\RabbitCustomNode
-			- Hanaboso\PipesPhpSdk\Joiner\JoinerAbstract
-			- Hanaboso\PipesPhpSdk\LongRunningNode\Model\Impl\LongRunningNodeAbstract
-			- Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeAbstract
-			- Hanaboso\PipesPhpSdk\Mapper\MapperAbstract
-			- Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchActionAbstract
-			- Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchActionAbstract
 			- Hanaboso\Utils\Enum\EnumAbstract
 			- Hanaboso\Utils\Exception\PipesFrameworkExceptionAbstract
 			- PipesPhpSdkTests\ControllerTestCaseAbstract
@@ -39,6 +37,7 @@ parameters:
 			- RabbitMqBundle\Consumer\AsyncConsumer
 			- RabbitMqBundle\Consumer\Consumer
 			- RabbitMqBundle\Consumer\Consumer
+			- Hanaboso\PipesPhpSdk\CustomNode\CommonNodeAbstract
 
 		classesNotRequiredToBeAbstractOrFinal:
 			- Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall
@@ -48,7 +47,4 @@ parameters:
 			- Hanaboso\PipesPhpSdk\Database\Document\Node
 			- Hanaboso\PipesPhpSdk\Database\Document\Topology
 			- Hanaboso\PipesPhpSdk\Listener\RepeaterListener
-			- Hanaboso\PipesPhpSdk\LongRunningNode\Document\LongRunningNodeData
-			- Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchConsumerCallback
-			- Hanaboso\PipesPhpSdk\RabbitMq\Impl\BatchConnector\LoadApplicationUsersConnector
 			- Hanaboso\PipesPhpSdk\StatusService\StatusServiceCallback

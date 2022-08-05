@@ -6,6 +6,7 @@ use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
@@ -56,6 +57,7 @@ final class AuthorizeUserCommand extends Command
             return 1;
         }
 
+        /** @var QuestionHelper $helper */
         $helper = $this->getHelper('question');
 
         $question1 = new Question(sprintf('Please input app key.%s', PHP_EOL));

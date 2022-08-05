@@ -12,8 +12,3 @@ services:
         class: Hanaboso\HbPFAppStore\Handler\WebhookHandler
         arguments:
             - '@hbpf._application.manager.application'
-
-    hbpf._application.handler.statistics:
-        class: Hanaboso\HbPFAppStore\Handler\StatisticsHandler
-        arguments:
-            - '@hbpf._application.manager.statistics'

@@ -1,0 +1,10 @@
+release-version:
+  stage: release
+  needs: []
+
+  rules:
+    - if: '$CI_COMMIT_REF_NAME =~ /^v[0-9]+\.[0-9]+\.[0-9]+$/'
+      when: manual
+
+  trigger:
+    include: "/.gitlab/ci/release-pipeline.gitlab-ci.yml"

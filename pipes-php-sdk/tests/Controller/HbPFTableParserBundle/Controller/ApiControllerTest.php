@@ -8,6 +8,7 @@ use Hanaboso\CommonsBundle\Exception\FileStorageException;
 use Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler;
 use Hanaboso\PipesPhpSdk\Parser\Exception\TableParserException;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
+use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Json;
 use PipesPhpSdkTests\ControllerTestCaseAbstract;
 use Throwable;
@@ -36,9 +37,7 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
 
         self::assertEquals(200, $response->status);
         self::assertEquals(
-            Json::decode(
-                (string) file_get_contents(__DIR__ . '/../../../Integration/Parser/data/output-10.json'),
-            ),
+            Json::decode(File::getContent(__DIR__ . '/../../../Integration/Parser/data/output-10.json')),
             $response->content,
         );
     }
@@ -255,7 +254,9 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
                 'status'  => $response->getStatusCode(),
                 'content' => Json::decode((string) $response->getContent()),
             ];
-        } catch (Throwable) {
+        } catch (Throwable $e) {
+            $e;
+
             return (object) [
                 'status'  => $response->getStatusCode(),
                 'content' => (string) $response->getContent(),

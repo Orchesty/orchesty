@@ -3,9 +3,10 @@
 namespace HbPFConnectorsTests\Integration\Model\Application\Impl\Mailchimp\Mapper;
 
 use Exception;
-use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDtoAbstract;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\MailchimpApplication;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\Mapper\MailchimpCreateContactMapper;
+use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
@@ -34,10 +35,10 @@ final class MailchimpCreateContactMapperTest extends DatabaseTestCaseAbstract
             ],
         );
 
-        $app = self::$container->get('hbpf.application.mailchimp');
+        $app = self::getContainer()->get('hbpf.application.mailchimp');
 
         $applicationInstall = DataProvider::getOauth2AppInstall(
-            $app->getKey(),
+            $app->getName(),
             'user',
             'fa830d8d43*****bac307906e83de659',
         );
@@ -52,35 +53,25 @@ final class MailchimpCreateContactMapperTest extends DatabaseTestCaseAbstract
         $this->pfd($applicationInstall);
 
         $dto = DataProvider::getProcessDto(
-            $app->getKey(),
+            $app->getName(),
             'user',
-            (string) file_get_contents(__DIR__ . '/Data/responseHubspot.json', TRUE),
+            File::getContent(__DIR__ . '/Data/responseHubspot.json'),
         );
 
         $mailchimpCreateContactMapper = new MailchimpCreateContactMapper();
-        $dto                          = $mailchimpCreateContactMapper->process($dto);
-        $dtoNoBody                    = $mailchimpCreateContactMapper->process($dto);
+        $dto                          = $mailchimpCreateContactMapper->processAction($dto);
+        $dtoNoBody                    = $mailchimpCreateContactMapper->processAction($dto);
 
         self::assertEquals(
             Json::decode($dto->getData()),
-            Json::decode(
-                (string) file_get_contents(
-                    sprintf('%s/Data/requestMailchimp.json', __DIR__),
-                    TRUE,
-                ),
-            ),
+            Json::decode(File::getContent(sprintf('%s/Data/requestMailchimp.json', __DIR__))),
         );
         self::assertEquals(
             Json::decode($dtoNoBody->getData()),
-            Json::decode(
-                (string) file_get_contents(
-                    sprintf('%s/Data/requestMailchimp.json', __DIR__),
-                    TRUE,
-                ),
-            ),
+            Json::decode(File::getContent(sprintf('%s/Data/requestMailchimp.json', __DIR__))),
         );
 
-        self::assertEquals(ProcessDto::STOP_AND_FAILED, $dtoNoBody->getHeaders()['pf-result-code']);
+        self::assertEquals(ProcessDtoAbstract::STOP_AND_FAILED, $dtoNoBody->getHeaders()['result-code']);
     }
 
 }

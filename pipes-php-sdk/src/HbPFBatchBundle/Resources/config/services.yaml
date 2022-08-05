@@ -1,0 +1,19 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    hbpf.loader.batch:
+        class: Hanaboso\PipesPhpSdk\HbPFBatchBundle\Loader\BatchLoader
+        public: true
+        arguments:
+            - '@service_container'
+
+    hbpf.handler.batch:
+        class: Hanaboso\PipesPhpSdk\HbPFBatchBundle\Handler\BatchHandler
+        arguments:
+            - '@hbpf.manager.batch'
+            - '@hbpf.loader.batch'
+
+    hbpf.manager.batch:
+        class: Hanaboso\PipesPhpSdk\Batch\Model\BatchManager
+        arguments:

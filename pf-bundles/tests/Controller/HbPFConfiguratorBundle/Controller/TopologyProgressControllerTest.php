@@ -3,7 +3,6 @@
 namespace PipesFrameworkTests\Controller\HbPFConfiguratorBundle\Controller;
 
 use Exception;
-use Hanaboso\PipesFramework\Configurator\Document\NodeProgress;
 use Hanaboso\PipesFramework\Configurator\Document\TopologyProgress;
 use Hanaboso\Utils\Date\DateTimeUtils;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
@@ -12,26 +11,28 @@ use PipesFrameworkTests\ControllerTestCaseAbstract;
  * Class TopologyProgressControllerTest
  *
  * @package PipesFrameworkTests\Controller\HbPFConfiguratorBundle\Controller
+ *
+ * @covers  \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyProgressController
+ * @covers  \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyProgressHandler
+ * @covers  \Hanaboso\PipesFramework\Configurator\Model\ProgressManager
  */
 final class TopologyProgressControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyProgressController::__construct
      * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyProgressController::getProgressTopologyAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyProgressHandler::__construct
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyProgressHandler::getProgress
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\ProgressManager::__construct
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\ProgressManager::getProgress
      *
      * @throws Exception
      */
     public function testGetAllAction(): void
     {
         $this->createProgress();
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/TopologyProgressController/getProgressTopologyRequest.json',
-            [],
+            [
+                'correlationId' => 'corr-id-1234',
+            ],
             [':topologyId' => '123456789'],
         );
     }
@@ -48,20 +49,10 @@ final class TopologyProgressControllerTest extends ControllerTestCaseAbstract
         $progress = new TopologyProgress();
         $progress
             ->setTopologyId('123456789')
-            ->setTopologyName('name')
-            ->setCorrelationId('corr-id-1234')
-            ->setStatus('OK')
-            ->setFollowers(2)
-            ->setStartedAt(DateTimeUtils::getUtcDateTime('2010-10-10 10:10:10'))
-            ->setFinishedAt(DateTimeUtils::getUtcDateTime('2010-10-10 10:10:10')->modify('+ 10 second'))
-            ->setDuration(10_000)
-            ->addNode(
-                (new NodeProgress())
-                    ->setNodeId('12345')
-                    ->setNodeName('node-name')
-                    ->setStatus('OK')
-                    ->setProcessId('proc-id-1234'),
-            );
+            ->setTotal(10)
+            ->setOk(5)
+            ->setStartedAt(DateTimeUtils::getUtcDateTime('2022-06-14T09:04:58.789Z'))
+            ->setFinishedAt(DateTimeUtils::getUtcDateTime('2022-06-14T09:04:59.707Z')->modify('+ 10 second'));
 
         $this->pfd($progress);
     }

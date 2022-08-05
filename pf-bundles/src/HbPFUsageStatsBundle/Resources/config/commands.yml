@@ -1,0 +1,13 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    hbpf.command.send_billing_events_to_usccp_command:
+        class: Hanaboso\PipesFramework\HbPFUsageStatsBundle\Command\SendBillingEventsToUSCCPCommand
+        arguments:
+            - '@hbpf.database_manager_locator'
+            - '%usccp_uri%'
+            - '%alpha_instance_id%'
+            - '@hbpf.transport.curl_manager'
+        tags:
+            - { name: console.command }

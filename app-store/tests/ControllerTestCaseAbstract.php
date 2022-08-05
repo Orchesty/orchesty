@@ -9,8 +9,8 @@ use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\PasswordHasher\Hasher\NativePasswordHasher;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
-use Symfony\Component\Security\Core\Encoder\NativePasswordEncoder;
 
 /**
  * Class ControllerTestCaseAbstract
@@ -36,9 +36,9 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     protected TokenStorage $tokenStorage;
 
     /**
-     * @var NativePasswordEncoder
+     * @var NativePasswordHasher
      */
-    protected NativePasswordEncoder $encoder;
+    protected NativePasswordHasher $encoder;
 
     /**
      * @var KernelBrowser
@@ -56,7 +56,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     {
         parent::__construct($name, $data, $dataName);
 
-        $this->encoder = new NativePasswordEncoder(3);
+        $this->encoder = new NativePasswordHasher(3);
     }
 
     /**
@@ -76,7 +76,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     {
         self::$client = self::createClient([], []);
 
-        $this->dm = self::$container->get('doctrine_mongodb.odm.default_document_manager');
+        $this->dm = self::getContainer()->get('doctrine_mongodb.odm.default_document_manager');
         $this->dm->getConfiguration()->setDefaultDB($this->getMongoDatabaseName());
 
         $documents = $this->dm->getMetadataFactory()->getAllMetadata();

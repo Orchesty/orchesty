@@ -1,0 +1,33 @@
+{
+  "dataGrid": {
+    "search": {
+      "label": "Search"
+    },
+    "selected": "Selected items",
+    "filter": "Filter",
+    "quickFilters": "Quick filters:",
+    "save": "Save",
+    "clear": "Clear",
+    "runFilter": "Filter",
+    "simpleFilter": "Simple filter",
+    "advancedFilter": "Advanced filter",
+    "inputs": {
+      "boolean": {
+        "all": "All",
+        "true": "True",
+        "false": "False"
+      },
+      "between": {
+        "from": "From",
+        "to": "To"
+      }
+    },
+    "advanced": {
+      "and": "AND",
+      "or": "OR",
+      "column": "Column",
+      "operator": "Operator",
+      "value": "Value(s)"
+    }
+  }
+}

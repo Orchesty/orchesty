@@ -2,22 +2,17 @@
 
 namespace Hanaboso\HbPFConnectors\Model\Application\Impl\FlexiBee\Connector;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\FlexiBee\FlexiBeeApplication;
-use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
-use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
-use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessEventNotSupportedTrait;
 use Hanaboso\Utils\Exception\DateTimeException;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
-use Hanaboso\Utils\String\Json;
 
 /**
  * Class FlexiBeeCreateNewContactConnector
@@ -27,32 +22,14 @@ use Hanaboso\Utils\String\Json;
 final class FlexiBeeCreateNewContactConnector extends ConnectorAbstract
 {
 
-    use ProcessEventNotSupportedTrait;
-
-    private const ID = 'flexibee.create-new-contact';
-
-    /**
-     * @var ApplicationInstallRepository
-     */
-    private ApplicationInstallRepository $repository;
-
-    /**
-     * FlexiBeeCreateNewContactConnector constructor.
-     *
-     * @param DocumentManager $dm
-     * @param CurlManager     $sender
-     */
-    public function __construct(DocumentManager $dm, private CurlManager $sender)
-    {
-        $this->repository = $dm->getRepository(ApplicationInstall::class);
-    }
+    private const NAME = 'flexibee.create-new-contact';
 
     /**
      * @return string
      */
-    public function getId(): string
+    public function getName(): string
     {
-        return self::ID;
+        return self::NAME;
     }
 
     /**
@@ -83,7 +60,7 @@ final class FlexiBeeCreateNewContactConnector extends ConnectorAbstract
             ];
 
             $url          = '';
-            $dtoDataArray = Json::decode($dto->getData());
+            $dtoDataArray = $dto->getJsonData();
 
             foreach ($dtoDataArray as $key => $value) {
                 if (in_array($key, $acceptedParams, TRUE) && isset($value)) {
@@ -129,18 +106,19 @@ final class FlexiBeeCreateNewContactConnector extends ConnectorAbstract
 
             $url = rtrim($url, '&');
 
-            $applicationInstall = $this->repository->findUserAppByHeaders($dto);
+            $applicationInstall = $this->getApplicationInstallFromProcess($dto);
 
             /** @var FlexiBeeApplication $application */
             $application = $this->getApplication();
             $request     = $application
                 ->getRequestDto(
+                    $dto,
                     $applicationInstall,
                     CurlManager::METHOD_PUT,
                     (string) $application->getUrl($applicationInstall, sprintf('%s%s', 'admin/zalozeni-firmy?', $url)),
-                )->setDebugInfo($dto);
+                );
 
-            $response = $this->sender->send($request);
+            $response = $this->getSender()->send($request);
 
             $this->evaluateStatusCode($response->getStatusCode(), $dto);
 

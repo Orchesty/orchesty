@@ -4,12 +4,10 @@ namespace PipesFrameworkTests\Unit\ApiGateway\Authenticator\ApiKey;
 
 use Exception;
 use Hanaboso\PipesFramework\ApiGateway\Authenticator\ApiKey\ApiKeyAuthenticator;
-use Hanaboso\UserBundle\Document\User;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
-use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 /**
  * Class ApiKeyAuthenticatorTest
@@ -24,68 +22,47 @@ final class ApiKeyAuthenticatorTest extends KernelTestCaseAbstract
     /**
      * @throws Exception
      *
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Authenticator\ApiKey\ApiKeyAuthenticator::start
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Authenticator\ApiKey\ApiKeyAuthenticator::__construct
-     */
-    public function testStart(): void
-    {
-        $res = $this->getAuthenticator()->start(new Request());
-        self::assertEquals('{"message":"Authentication Required"}', $res->getContent());
-    }
-
-    /**
-     * @throws Exception
-     *
      * @covers \Hanaboso\PipesFramework\ApiGateway\Authenticator\ApiKey\ApiKeyAuthenticator::supports
      */
     public function testSupports(): void
     {
         $r = new Request();
         self::assertFalse($this->getAuthenticator()->supports($r));
+
         $r->headers->set(ApiKeyAuthenticator::AUTH_HEADER, self::KEY);
+        self::assertTrue($this->getAuthenticator()->supports($r));
+
+        $r->headers->remove(ApiKeyAuthenticator::AUTH_HEADER);
+        $r->headers->set(ApiKeyAuthenticator::AUTHORIZATION, self::KEY);
         self::assertTrue($this->getAuthenticator()->supports($r));
     }
 
     /**
      * @throws Exception
      *
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Authenticator\ApiKey\ApiKeyAuthenticator::getCredentials
+     * @covers \Hanaboso\PipesFramework\ApiGateway\Authenticator\ApiKey\ApiKeyAuthenticator::authenticate
      */
-    public function testGetCredentials(): void
+    public function testAuthenticate(): void
     {
         $r = new Request();
-        self::assertEmpty($this->getAuthenticator()->getCredentials($r));
         $r->headers->set(ApiKeyAuthenticator::AUTH_HEADER, self::KEY);
-        self::assertEquals(self::KEY, $this->getAuthenticator()->getCredentials($r));
+        $res = $this->getAuthenticator()->authenticate($r);
+        self::assertEquals('apiUser', $res->getUser()->getUserIdentifier());
     }
 
     /**
      * @throws Exception
      *
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Authenticator\ApiKey\ApiKeyAuthenticator::getUser
+     * @covers \Hanaboso\PipesFramework\ApiGateway\Authenticator\ApiKey\ApiKeyAuthenticator::authenticate
      */
-    public function testGetUser(): void
+    public function testAuthenticateErr(): void
     {
-        /** @var User $u */
-        $u = $this->getAuthenticator()->getUser(self::KEY, self::createMock(UserProviderInterface::class));
-        self::assertEquals('apiUser', $u->getEmail());
+        $r = new Request();
+        $r->headers->set(ApiKeyAuthenticator::AUTH_HEADER, 'badKEz');
 
-        $u = $this->getAuthenticator()->getUser(NULL, self::createMock(UserProviderInterface::class));
-        self::assertEmpty($u);
-    }
-
-    /**
-     * @throws Exception
-     *
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Authenticator\ApiKey\ApiKeyAuthenticator::checkCredentials
-     */
-    public function testCheckCredentials(): void
-    {
-        $r = $this->getAuthenticator()->checkCredentials(self::KEY, self::createMock(User::class));
-        self::assertTrue($r);
-
-        $r = $this->getAuthenticator()->checkCredentials('bad_key', self::createMock(User::class));
-        self::assertFalse($r);
+        $this->expectException(AuthenticationException::class);
+        $this->expectExceptionMessage('Not valid token');
+        $this->getAuthenticator()->authenticate($r);
     }
 
     /**
@@ -115,16 +92,6 @@ final class ApiKeyAuthenticatorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @throws Exception
-     *
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Authenticator\ApiKey\ApiKeyAuthenticator::supportsRememberMe
-     */
-    public function testSupportsRememberMe(): void
-    {
-        self::assertFalse($this->getAuthenticator()->supportsRememberMe());
-    }
-
-    /**
      * ------------------------------------- HELPERS -----------------------------------
      */
 
@@ -133,7 +100,10 @@ final class ApiKeyAuthenticatorTest extends KernelTestCaseAbstract
      */
     private function getAuthenticator(): ApiKeyAuthenticator
     {
-        return new ApiKeyAuthenticator(self::KEY);
+        return new ApiKeyAuthenticator(
+            self::getContainer()->get('Hanaboso\UserBundle\Model\Security\JWTAuthenticator'),
+            self::KEY,
+        );
     }
 
 }

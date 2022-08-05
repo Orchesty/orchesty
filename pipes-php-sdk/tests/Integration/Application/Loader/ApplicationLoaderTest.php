@@ -18,7 +18,7 @@ final class ApplicationLoaderTest extends KernelTestCaseAbstract
      */
     public function testGetApplication(): void
     {
-        $loader = self::$container->get('hbpf.application.loader');
+        $loader = self::getContainer()->get('hbpf.application.loader');
 
         self::expectException(ApplicationInstallException::class);
         $loader->getApplication('test');
@@ -29,7 +29,7 @@ final class ApplicationLoaderTest extends KernelTestCaseAbstract
      */
     public function testGetApplications(): void
     {
-        $loader = self::$container->get('hbpf.application.loader');
+        $loader = self::getContainer()->get('hbpf.application.loader');
 
         self::assertEquals(['null', 'null2', 'null3'], $loader->getApplications());
     }

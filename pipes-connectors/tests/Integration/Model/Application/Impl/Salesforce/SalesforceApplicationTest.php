@@ -4,6 +4,7 @@ namespace HbPFConnectorsTests\Integration\Model\Application\Impl\Salesforce;
 
 use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Salesforce\SalesforceApplication;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract;
@@ -38,26 +39,26 @@ final class SalesforceApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Salesforce\SalesforceApplication::getKey
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Salesforce\SalesforceApplication::getName
      */
     public function testGetKey(): void
     {
         $this->setApplication();
         self::assertEquals(
             'salesforce',
-            $this->application->getKey(),
+            $this->application->getName(),
         );
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Salesforce\SalesforceApplication::getName
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Salesforce\SalesforceApplication::getPublicName
      */
     public function testGetName(): void
     {
         $this->setApplication();
         self::assertEquals(
             'Salesforce',
-            $this->application->getName(),
+            $this->application->getPublicName(),
         );
     }
 
@@ -74,23 +75,25 @@ final class SalesforceApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Salesforce\SalesforceApplication::getSettingsForm
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Salesforce\SalesforceApplication::getFormStack
      *
      * @throws Exception
      */
-    public function testGetSettingsForm(): void
+    public function testGetFormStack(): void
     {
         $this->setApplication();
-        $fields = $this->application->getSettingsForm()->getFields();
-        foreach ($fields as $field) {
-            self::assertContainsEquals(
-                $field->getKey(),
-                [
-                    OAuth2ApplicationAbstract::CLIENT_ID,
-                    OAuth2ApplicationAbstract::CLIENT_SECRET,
-                    'instance_name',
-                ],
-            );
+        $forms = $this->application->getFormStack()->getForms();
+        foreach ($forms as $form) {
+            foreach ($form->getFields() as $field) {
+                self::assertContainsEquals(
+                    $field->getKey(),
+                    [
+                        OAuth2ApplicationAbstract::CLIENT_ID,
+                        OAuth2ApplicationAbstract::CLIENT_SECRET,
+                        'instance_name',
+                    ],
+                );
+            }
         }
     }
 
@@ -102,10 +105,11 @@ final class SalesforceApplicationTest extends DatabaseTestCaseAbstract
     public function testGetRequestDto(): void
     {
         $this->setApplication();
-        $applicationInstall = DataProvider::getOauth2AppInstall($this->application->getKey());
+        $applicationInstall = DataProvider::getOauth2AppInstall($this->application->getName());
         $this->pfd($applicationInstall);
 
         $dto = $this->application->getRequestDto(
+            new ProcessDto(),
             $applicationInstall,
             CurlManager::METHOD_POST,
             'https://yourInstance.salesforce.com/services/data/v20.0/sobjects/Account/',
@@ -154,7 +158,7 @@ final class SalesforceApplicationTest extends DatabaseTestCaseAbstract
     {
         $this->setApplication();
         $applicationInstall = DataProvider::getOauth2AppInstall(
-            $this->application->getKey(),
+            $this->application->getName(),
             'user',
             'token123',
             self::CLIENT_ID,
@@ -170,7 +174,7 @@ final class SalesforceApplicationTest extends DatabaseTestCaseAbstract
     private function setApplication(): void
     {
         $this->mockRedirect('https://login.salesforce.com/services/oauth2/authorize', self::CLIENT_ID);
-        $this->application = self::$container->get('hbpf.application.salesforce');
+        $this->application = self::getContainer()->get('hbpf.application.salesforce');
     }
 
 }

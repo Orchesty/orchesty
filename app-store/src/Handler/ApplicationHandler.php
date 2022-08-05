@@ -12,6 +12,7 @@ use Hanaboso\HbPFAppStore\Model\Webhook\WebhookManager;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
+use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use InvalidArgumentException;
 
 /**
@@ -79,7 +80,7 @@ final class ApplicationHandler
             $application->toArray(),
             [
                 self::AUTHORIZED           => $application->isAuthorized($applicationInstall),
-                self::APPLICATION_SETTINGS => $application->getApplicationForm($applicationInstall),
+                self::APPLICATION_SETTINGS => $application->getApplicationForms($applicationInstall),
                 self::WEBHOOK_SETTINGS     => $application->getApplicationType() === ApplicationTypeEnum::WEBHOOK ?
                     $this->webhookManager->getWebhooks($application, $user) :
                     [],
@@ -105,7 +106,7 @@ final class ApplicationHandler
             $application->toArray(),
             [
                 self::AUTHORIZED           => $application->isAuthorized($applicationInstall),
-                self::APPLICATION_SETTINGS => $application->getApplicationForm($applicationInstall),
+                self::APPLICATION_SETTINGS => $application->getApplicationForms($applicationInstall),
             ],
         );
     }
@@ -140,10 +141,7 @@ final class ApplicationHandler
      */
     public function updateApplicationSettings(string $key, string $user, array $data): array
     {
-        return array_merge(
-            $this->applicationManager->saveApplicationSettings($key, $user, $data)->toArray(),
-            [self::APPLICATION_SETTINGS => $this->applicationManager->getApplicationSettings($key, $user)],
-        );
+        return  $this->applicationManager->saveApplicationSettings($key, $user, $data);
     }
 
     /**
@@ -152,15 +150,30 @@ final class ApplicationHandler
      * @param mixed[] $data
      *
      * @return mixed[]
-     * @throws Exception
+     * @throws ApplicationInstallException
+     * @throws MongoDBException
      */
     public function updateApplicationPassword(string $key, string $user, array $data): array
     {
-        if (!array_key_exists('password', $data)) {
+        if (!array_key_exists(BasicApplicationInterface::PASSWORD, $data)) {
             throw new InvalidArgumentException('Field password is not included.');
         }
 
-        return $this->applicationManager->saveApplicationPassword($key, $user, $data['password'])->toArray();
+        if (!array_key_exists('formKey', $data)) {
+            throw new InvalidArgumentException('Field formKey is not included.');
+        }
+
+        if (!array_key_exists('fieldKey', $data)) {
+            throw new InvalidArgumentException('Field fieldKey is not included.');
+        }
+
+        return $this->applicationManager->saveApplicationPassword(
+            $key,
+            $user,
+            $data['formKey'],
+            $data['fieldKey'],
+            $data[BasicApplicationInterface::PASSWORD],
+        )->toArray();
     }
 
     /**
@@ -181,11 +194,11 @@ final class ApplicationHandler
      * @param string  $user
      * @param mixed[] $token
      *
-     * @return mixed[]
+     * @return string
      * @throws ApplicationInstallException
      * @throws MongoDBException
      */
-    public function saveAuthToken(string $key, string $user, array $token): array
+    public function saveAuthToken(string $key, string $user, array $token): string
     {
         return $this->applicationManager->saveAuthorizationToken($key, $user, $token);
     }

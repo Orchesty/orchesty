@@ -37,12 +37,12 @@ func startServer(sc *services.ServiceContainer) *http.Server {
 	return s
 }
 
-func serverCommand(cmd *cobra.Command, args []string) error {
+func serverCommand(_ *cobra.Command, _ []string) error {
 	var docker *client.Client
 	var clientSet *kubernetes.Clientset
 	var err error
 
-	switch config.Generator.Mode {
+	switch model.Adapter(config.Generator.Mode) {
 	case model.ModeKubernetes:
 		cfg, err := services.GetKubernetesConfig(config.Generator)
 		if err != nil {

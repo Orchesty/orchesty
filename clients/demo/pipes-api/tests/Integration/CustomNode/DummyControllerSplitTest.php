@@ -16,14 +16,14 @@ final class DummyControllerSplitTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers \Demo\CustomNode\DummyConnectorSplit::process
+     * @covers \Demo\CustomNode\DummyConnectorSplit::processAction
      * @throws DateTimeException
      */
     public function testProcess(): void
     {
         /** @var DummyConnectorSplit $connector */
-        $connector = self::$container->get('hbpf.custom_node.fill-in-form');
-        $dto       = $connector->process(new ProcessDto());
+        $connector = self::getContainer()->get('hbpf.custom_node.fill-in-form');
+        $dto       = $connector->processAction((new ProcessDto())->setData('{}'));
 
         self::assertNull($dto->getHeader('something'));
     }

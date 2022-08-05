@@ -1,0 +1,84 @@
+// Location of this file is important for Vuetify
+// https://vuetifyjs.com/en/features/sass-variables/#vue-cli-install
+// Other scss files receive this file in imports automagically
+
+//
+// App variables
+//
+
+/* https://vuetifyjs.com/en/styles/colors/#sass-color-pack */
+$color-pack: false;
+
+$font-family: "Poppins", sans-serif;
+
+$color-accent-blue: #34aff9;
+$color-yellow: #eabb15;
+$color-red: #e71d36;
+$color-green: #2ed47a;
+$color-primary-blue: #023047;
+$color-primary-text: #37474f;
+$color-secondary-text: #193d53;
+$color-main-text: #525a61;
+$color-main-text-50: #a7acb0;
+$color-secondary-green: #0a3047;
+$color-dark-blue: #334d6e;
+$color-secondary-blue: #90a0b7;
+$color-background: #f5f5f5;
+$color-white: #ffffff;
+
+//
+// Vuetify config
+//
+
+// Typography
+
+$body-font-family: $font-family;
+
+$headings: (
+  "h1": (
+    "size": 1.25rem,
+    "weight": 700,
+    "line-height": 1.5,
+    "letter-spacing": 0,
+  ),
+  "h2": (
+    "size": 0.875rem,
+    "weight": 700,
+    "line-height": 1.5,
+    "letter-spacing": 0,
+  ),
+  "h3": (
+    "size": 0.75rem,
+    "weight": 400,
+    "line-height": 1.5,
+    "letter-spacing": 0,
+  ),
+  "subtitle-2": (
+    "weight": 600,
+  ),
+  "subtitle-1": (
+    "weight": 500,
+  ),
+);
+
+// Colors
+
+$primary: $color-primary-blue;
+$secondary: $color-accent-blue;
+$accent: $color-accent-blue;
+$error: $color-red;
+$info: $color-secondary-blue;
+$success: $color-green;
+$warning: $color-yellow;
+$anchor: $color-accent-blue;
+
+// Component / v-btn
+
+$btn-font-weight: 700;
+
+// Component / v-calendar
+
+$calendar-line-width: 0;
+$calendar-weekly-weekday-font-size: 1rem;
+$calendar-weekly-weekday-font-size: 1rem;
+$calendar-weekly-day-label-font-size: 1rem;

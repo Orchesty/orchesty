@@ -13,7 +13,7 @@ use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
  * @ODM\Document(
  *     repositoryClass="Hanaboso\PipesPhpSdk\Database\Repository\CategoryRepository",
  *     indexes={
- *         @ODM\Index(keys={"name": "asc", "parent": "asc"}, unique="true")
+ *         @ODM\Index(keys={"name": "asc", "parent": "asc"}, unique=true)
  *     }
  * )
  */

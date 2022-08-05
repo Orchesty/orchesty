@@ -1,0 +1,52 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    Hanaboso\Applinth\Controller\StatisticsController:
+        class: Hanaboso\Applinth\Controller\StatisticsController
+        arguments:
+            - '@hbpf._application.handler.statistics'
+        calls:
+            - [ 'setLogger', [ '@monolog.logger.commons' ] ]
+
+    Hanaboso\Applinth\Controller\ApplicationController:
+        class: Hanaboso\Applinth\Controller\ApplicationController
+        arguments:
+            - '@Hanaboso\Applinth\Authenticator\EndUserAuthenticator'
+        calls:
+            - [ 'setLogger', [ '@monolog.logger.commons' ] ]
+            - [ 'setContainer', [ '@service_container' ] ]
+
+    Hanaboso\Applinth\Controller\TrashController:
+        class: Hanaboso\Applinth\Controller\TrashController
+        arguments:
+            - '@Hanaboso\Applinth\Authenticator\EndUserAuthenticator'
+            - '@hbpf.user_task.handler.user_task'
+        calls:
+            - [ 'setLogger', [ '@monolog.logger.commons' ] ]
+            - [ 'setContainer', [ '@service_container' ] ]
+
+    Hanaboso\Applinth\Controller\ProcessController:
+        class: Hanaboso\Applinth\Controller\ProcessController
+        arguments:
+            - '@Hanaboso\Applinth\Authenticator\EndUserAuthenticator'
+            - '@hbpf.configurator.handler.topology_progress'
+        calls:
+            - [ 'setLogger', [ '@monolog.logger.commons' ] ]
+            - [ 'setContainer', [ '@service_container' ] ]
+
+    Hanaboso\Applinth\Controller\AuthorizationController:
+        class: Hanaboso\Applinth\Controller\AuthorizationController
+        arguments:
+            - '@Hanaboso\Applinth\Handler\AuthorizationHandler'
+        calls:
+            - [ 'setLogger', [ '@monolog.logger.commons' ] ]
+            - [ 'setContainer', [ '@service_container' ] ]
+
+    Hanaboso\Applinth\Controller\SettingsController:
+        class: Hanaboso\Applinth\Controller\SettingsController
+        arguments:
+            - '@Hanaboso\Applinth\Authenticator\EndUserAuthenticator'
+        calls:
+            - [ 'setLogger', [ '@monolog.logger.commons' ] ]
+            - [ 'setContainer', [ '@service_container' ] ]

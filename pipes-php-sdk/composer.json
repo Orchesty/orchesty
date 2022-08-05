@@ -1,28 +1,30 @@
 {
-    "name": "hanaboso/pipes-php-sdk",
-    "description": "PHP sdk for PipesFramework",
-    "version": "1.6.1",
-    "license": "GPL-3.0-or-later",
+    "name": "orchesty/php-sdk",
+    "description": "PHP sdk for Orchesty",
+    "license": "Apache-2.0",
+    "version": "2.1.3",
     "require": {
-        "php": "^8.0",
+        "php": "^8.1",
+        "ext-fileinfo": "*",
         "ext-json": "*",
         "ext-mongodb": "*",
         "ext-oauth": "*",
-        "doctrine/mongodb-odm-bundle": "^4.3",
-        "hanaboso/commons-bundle": "^2.3",
-        "hanaboso/mongo-data-grid": "~1.3.1",
+        "doctrine/mongodb-odm-bundle": "^4.5",
+        "hanaboso/commons-bundle": "^2.6",
+        "hanaboso/mongo-data-grid": "^1.6",
         "hanaboso/rabbit-mq-bundle": "^1.5",
+        "hanaboso/utils": "^1.2",
         "league/oauth2-client": "^2.6",
-        "phpoffice/phpspreadsheet": "^1.18",
-        "symfony/monolog-bundle": "^v3.7",
-        "symfony/yaml": "^v5.3"
+        "phpoffice/phpspreadsheet": "^1.24.0",
+        "symfony/monolog-bundle": "^v3.8",
+        "symfony/yaml": "^v6.1"
     },
     "require-dev": {
-        "hanaboso/php-check-utils": "^1.2",
+        "hanaboso/php-check-utils": "^1.4",
         "hanaboso/rest-bundle": "^1.1",
-        "symfony/debug-bundle": "^v5.3",
-        "symfony/security-bundle": "^v5.3",
-        "symfony/serializer": "^v5.3"
+        "symfony/debug-bundle": "^v6.1",
+        "symfony/security-bundle": "^v6.1",
+        "symfony/serializer": "^v6.1"
     },
     "autoload": {
         "psr-4": {

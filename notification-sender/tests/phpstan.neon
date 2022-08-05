@@ -6,6 +6,8 @@ parameters:
 		objectManagerLoader: DocumentManagerLoader.php
 	symfony:
 		container_xml_path: %rootDir%/../../../var/cache/test/Hanaboso_NotificationSender_KernelTestDebugContainer.xml
+	ignoreErrors:
+		- '#Service .* is private#'
 	ergebnis:
 		classesAllowedToBeExtended:
 			- Hanaboso\NotificationSender\Model\Notification\Handler\CurlHandlerAbstract

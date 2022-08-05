@@ -1,0 +1,87 @@
+.base-docker-build:
+  extends:
+    - .base-dind
+
+  variables:
+    DIR: "PROVIDE-WHEN-EXTENDING"
+
+  before_script:
+    - !reference [.base-dind, before_script]
+    - apk add --no-cache make
+    - cd ${DIR}
+
+
+.base-kaniko-build:
+  needs:
+    - collect-tags
+
+  variables:
+    DIR: "PROVIDE-WHEN-EXTENDING"
+    IMAGE: "PROVIDE-WHEN-EXTENDING"
+
+    # todo: determine default image
+    KANIKO_IMAGE: ${REGISTRY}/kaniko-alpine:latest
+
+  image:
+    name: ${KANIKO_IMAGE}
+
+    # this is required for :debug image and does not cause problems for our custom image
+    entrypoint: ["sh", "-c"]
+
+  before_script:
+    - 'cd ${DIR} && echo "Working directory: ${DIR}"'
+    - export TAG_BRANCH=${CI_COMMIT_REF_SLUG}
+    - '[ -z "${NO_GIT}" ] && export TAG_DIR_CH=$(git log -1 --pretty=%h --abbrev=8 .)'
+    - env | egrep "^(TAG_|IMAGE)"
+
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+
+  # feel free to override
+  script:
+    - executor --context . --destination ${IMAGE}:${TAG_DIR_CH} --destination ${IMAGE}:${TAG_BRANCH} --cache=true
+
+  tags:
+    - docker
+
+.base-dummy-build:
+  image: alpine
+  script:
+    - ': >>> DUMMY BUILD "OK" <<<'
+  tags:
+    - docker
+
+.base-kaniko-alpine:
+  stage: prepare
+  variables:
+    DIR: .gitlab/ci/kaniko-alpine
+    IMAGE: ${REGISTRY}/kaniko-alpine
+
+  rules:
+    - if: '$FORCE_PIPELINE =~ /kaniko/'
+
+
+kaniko-alpine:build:
+  needs: []
+  variables:
+    KANIKO_IMAGE: gcr.io/kaniko-project/executor:debug
+    NO_GIT: 1
+
+  extends:
+    - .base-kaniko-build
+    - .base-kaniko-alpine
+
+  script:
+    - /kaniko/executor --cache=true --single-snapshot --context . --destination ${IMAGE}:${CI_COMMIT_REF_SLUG}
+
+
+kaniko-alpine:release:
+  needs: ["kaniko-alpine:build"]
+  extends:
+    - .base-dind
+    - .base-kaniko-alpine
+
+  script:
+    - docker pull ${IMAGE}:${CI_COMMIT_REF_SLUG}
+    - docker tag ${IMAGE}:${CI_COMMIT_REF_SLUG} ${IMAGE}:latest
+    - docker push ${IMAGE}:latest

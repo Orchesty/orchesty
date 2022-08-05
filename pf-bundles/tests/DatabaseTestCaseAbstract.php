@@ -5,6 +5,7 @@ namespace PipesFrameworkTests;
 use Exception;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\CustomAssertTrait;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\DatabaseTestTrait;
+use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Json;
 
 /**
@@ -25,7 +26,7 @@ abstract class DatabaseTestCaseAbstract extends KernelTestCaseAbstract
     {
         parent::setUp();
 
-        $this->dm = self::$container->get('doctrine_mongodb.odm.default_document_manager');
+        $this->dm = self::getContainer()->get('doctrine_mongodb.odm.default_document_manager');
         $this->clearMongo();
     }
 
@@ -35,7 +36,7 @@ abstract class DatabaseTestCaseAbstract extends KernelTestCaseAbstract
      */
     protected function assertResult(string $path, array $arrayResult): void
     {
-        $fileContent = file_get_contents($path);
+        $fileContent = File::getContent($path);
         $i           = 0;
 
         foreach ($arrayResult['node_config'] as $key => $value) {
@@ -48,7 +49,7 @@ abstract class DatabaseTestCaseAbstract extends KernelTestCaseAbstract
             }
         }
 
-        self::assertEquals($fileContent, Json::encode($arrayResult));
+        self::assertEquals(Json::decode($fileContent ?: ''), $arrayResult);
     }
 
 }

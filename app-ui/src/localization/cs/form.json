@@ -1,0 +1,14 @@
+{
+  "form": {
+    "keyValue": {
+      "key": {
+        "name": "klíč",
+        "label": "Klíč"
+      },
+      "value": {
+        "name": "hodnota",
+        "label": "Hodnota"
+      }
+    }
+  }
+}

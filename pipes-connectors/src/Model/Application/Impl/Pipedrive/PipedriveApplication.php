@@ -3,6 +3,8 @@
 namespace Hanaboso\HbPFConnectors\Model\Application\Impl\Pipedrive;
 
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDtoAbstract;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
@@ -13,6 +15,7 @@ use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Form;
+use Hanaboso\PipesPhpSdk\Application\Model\Form\FormStack;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\Utils\String\Json;
@@ -41,7 +44,7 @@ final class PipedriveApplication extends BasicApplicationAbstract implements Web
     /**
      * @return string
      */
-    public function getKey(): string
+    public function getName(): string
     {
         return 'pipedrive';
     }
@@ -49,7 +52,7 @@ final class PipedriveApplication extends BasicApplicationAbstract implements Web
     /**
      * @return string
      */
-    public function getName(): string
+    public function getPublicName(): string
     {
         return 'Pipedrive';
     }
@@ -63,6 +66,7 @@ final class PipedriveApplication extends BasicApplicationAbstract implements Web
     }
 
     /**
+     * @param ProcessDtoAbstract $dto
      * @param ApplicationInstall $applicationInstall
      * @param string             $method
      * @param string|null        $url
@@ -72,6 +76,7 @@ final class PipedriveApplication extends BasicApplicationAbstract implements Web
      * @throws CurlException
      */
     public function getRequestDto(
+        ProcessDtoAbstract $dto,
         ApplicationInstall $applicationInstall,
         string $method,
         ?string $url = NULL,
@@ -80,7 +85,7 @@ final class PipedriveApplication extends BasicApplicationAbstract implements Web
     {
         $join    = strpos($url ?? '', '?') ? '&' : '?';
         $url     = $this->getUri(sprintf('%s%sapi_token=%s', $url, $join, $this->getToken($applicationInstall)));
-        $request = new RequestDto($method, $url);
+        $request = new RequestDto($url, $method, $dto);
         $request->setHeaders(
             [
                 'Accept'       => 'application/json',
@@ -95,15 +100,17 @@ final class PipedriveApplication extends BasicApplicationAbstract implements Web
     }
 
     /**
-     * @return Form
+     * @return FormStack
      */
-    public function getSettingsForm(): Form
+    public function getFormStack(): FormStack
     {
-        $form  = new Form();
-        $field = new Field(Field::TEXT, BasicApplicationAbstract::USER, 'API token', NULL, TRUE);
-        $form->addField($field);
+        $form = new Form(ApplicationInterface::AUTHORIZATION_FORM, 'Authorization settings');
+        $form->addField(new Field(Field::TEXT, BasicApplicationAbstract::USER, 'API token', NULL, TRUE));
 
-        return $form;
+        $formStack = new FormStack();
+        $formStack->addForm($form);
+
+        return $formStack;
     }
 
     /**
@@ -116,7 +123,7 @@ final class PipedriveApplication extends BasicApplicationAbstract implements Web
         return
             isset(
                 $applicationInstall->getSettings(
-                )[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::USER],
+                )[ApplicationInterface::AUTHORIZATION_FORM][BasicApplicationInterface::USER],
             );
     }
 
@@ -153,6 +160,7 @@ final class PipedriveApplication extends BasicApplicationAbstract implements Web
     ): RequestDto
     {
         return $this->getRequestDto(
+            new ProcessDto(),
             $applicationInstall,
             CurlManager::METHOD_POST,
             sprintf(
@@ -179,6 +187,7 @@ final class PipedriveApplication extends BasicApplicationAbstract implements Web
     public function getWebhookUnsubscribeRequestDto(ApplicationInstall $applicationInstall, string $id): RequestDto
     {
         return $this->getRequestDto(
+            new ProcessDto(),
             $applicationInstall,
             CurlManager::METHOD_DELETE,
             sprintf(
@@ -221,7 +230,7 @@ final class PipedriveApplication extends BasicApplicationAbstract implements Web
     private function getToken(ApplicationInstall $applicationInstall): string
     {
         return $applicationInstall->getSettings(
-        )[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationAbstract::USER];
+        )[ApplicationInterface::AUTHORIZATION_FORM][BasicApplicationAbstract::USER];
     }
 
 }

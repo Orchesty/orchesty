@@ -13,9 +13,8 @@ use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 interface OAuth2ApplicationInterface extends ApplicationInterface
 {
 
-    public const  CLIENT_ID             = 'client_id';
-    public const  CLIENT_SECRET         = 'client_secret';
-    public const  FRONTEND_REDIRECT_URL = 'frontend_redirect_url';
+    public const  CLIENT_ID     = 'client_id';
+    public const  CLIENT_SECRET = 'client_secret';
 
     /**
      * @param ApplicationInstall $applicationInstall

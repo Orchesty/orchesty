@@ -1,0 +1,13 @@
+// @import '../../styles/variables.scss'
+
+// Export for use in JavaScript
+:export {
+  primary: $primary;
+  secondary: $secondary;
+  accent: $accent;
+  error: $error;
+  info: $info;
+  success: $success;
+  warning: $warning;
+  anchor: $anchor;
+}

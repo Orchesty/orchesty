@@ -1,0 +1,47 @@
+{{- $componentName := "applinth-marketplace-ui" -}}
+---
+{{- if (index .Values.global.imageOverrides "applinth-marketplace-ui") }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "pipes.fullname" (dict "suffix" $componentName "root" .) }}
+  labels:
+{{ include "pipes.labels" . | indent 4 }}
+{{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 4 }}
+spec:
+  selector:
+    matchLabels:
+{{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 6 }}
+  template:
+    metadata:
+      labels:
+{{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 8 }}
+    spec:
+{{ include "pipes.imagePullSecrets" . | indent 6 }}
+      containers:
+        - name: nginx
+          image: {{ include "pipes.imageFullname" (dict "image" "applinth-marketplace-ui" "root" .) }}
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 80
+          env:
+            - name: BACKEND_URL
+              value: "{{ .Values.global.backend_url }}"
+            - name: FRONTEND_URL
+              value: "{{ .Values.global.frontend_url }}"
+            - name: STARTINGPOINT_URL
+              value: "{{ .Values.global.starting_point_url }}"
+          resources:
+{{ toYaml .Values.global.applinthMarketplaceUI.resources | indent 12 }}
+
+{{- with .Values.global.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- with .Values.global.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+{{- end }}
+
+{{- end }}

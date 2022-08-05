@@ -9,7 +9,7 @@ use EmailServiceBundle\MessageBuilder\Impl\GenericMessageBuilder\GenericTranspor
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
-use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
+use Hanaboso\PipesPhpSdk\CustomNode\CommonNodeAbstract;
 use Hanaboso\Utils\Date\DateTimeUtils;
 use Hanaboso\Utils\Exception\DateTimeException;
 use Hanaboso\Utils\String\Json;
@@ -20,8 +20,10 @@ use JsonException;
  *
  * @package Demo\CustomNode
  */
-final class SendDutyEmail extends CustomNodeAbstract
+final class SendDutyEmail extends CommonNodeAbstract
 {
+
+    public const NAME = 'send-duty-email';
 
     private const FROM    = 'dev.email.hb@gmail.com';
     private const TO      = [
@@ -44,6 +46,14 @@ final class SendDutyEmail extends CustomNodeAbstract
     }
 
     /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return self::NAME;
+    }
+
+    /**
      * @param ProcessDto $dto
      *
      * @return ProcessDto
@@ -53,7 +63,7 @@ final class SendDutyEmail extends CustomNodeAbstract
      * @throws ConnectorException
      * @throws JsonException
      */
-    public function process(ProcessDto $dto): ProcessDto
+    public function processAction(ProcessDto $dto): ProcessDto
     {
         $dates = Json::decode($dto->getData());
 

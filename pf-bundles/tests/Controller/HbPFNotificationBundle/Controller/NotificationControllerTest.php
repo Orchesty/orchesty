@@ -27,9 +27,9 @@ final class NotificationControllerTest extends ControllerTestCaseAbstract
      */
     public function testGetSettingsAction(): void
     {
-        $this->mockSender(new ResponseDto(200, 'notification', '{"notification":"settings"}', []));
+        $this->mockSender(new ResponseDto(200, 'notification', '{"items":["settings"]}', []));
 
-        $this->assertResponse(__DIR__ . '/data/getSettingsRequest.json');
+        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/getSettingsRequest.json');
     }
 
     /**
@@ -42,7 +42,7 @@ final class NotificationControllerTest extends ControllerTestCaseAbstract
     {
         $this->mockSenderException(new CurlException());
 
-        $this->assertResponse(__DIR__ . '/data/getSettingsErrRequest.json');
+        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/getSettingsErrRequest.json');
     }
 
     /**
@@ -52,7 +52,7 @@ final class NotificationControllerTest extends ControllerTestCaseAbstract
      */
     public function testGetSettingsEventAction(): void
     {
-        $this->assertResponse(__DIR__ . '/data/getSettingsEventsRequest.json');
+        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/getSettingsEventsRequest.json');
     }
 
     /**
@@ -65,7 +65,7 @@ final class NotificationControllerTest extends ControllerTestCaseAbstract
     {
         $this->mockSender(new ResponseDto(200, 'notification', '[{"foo":"bar"}]', []));
 
-        $this->assertResponse(__DIR__ . '/data/getSettingRequest.json');
+        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/getSettingRequest.json');
     }
 
     /**
@@ -78,7 +78,7 @@ final class NotificationControllerTest extends ControllerTestCaseAbstract
     {
         $this->mockSenderException(new CurlException());
 
-        $this->assertResponse(__DIR__ . '/data/getSettingErrRequest.json');
+        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/getSettingErrRequest.json');
     }
 
     /**
@@ -91,7 +91,7 @@ final class NotificationControllerTest extends ControllerTestCaseAbstract
     {
         $this->mockSender(new ResponseDto(200, 'notification', '[{"foo":"bar"}]', []));
 
-        $this->assertResponse(__DIR__ . '/data/updateSettingsRequest.json');
+        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/updateSettingsRequest.json');
     }
 
     /**
@@ -104,7 +104,7 @@ final class NotificationControllerTest extends ControllerTestCaseAbstract
     {
         $this->mockSenderException(new CurlException());
 
-        $this->assertResponse(__DIR__ . '/data/updateSettingsErrRequest.json');
+        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/updateSettingsErrRequest.json');
     }
 
     /**
@@ -114,7 +114,7 @@ final class NotificationControllerTest extends ControllerTestCaseAbstract
     {
         $sender = self::createPartialMock(CurlManager::class, ['send']);
         $sender->expects(self::any())->method('send')->willReturn($dto);
-        self::$container->set('hbpf.transport.curl_manager', $sender);
+        self::getContainer()->set('hbpf.transport.curl_manager', $sender);
     }
 
     /**
@@ -124,7 +124,7 @@ final class NotificationControllerTest extends ControllerTestCaseAbstract
     {
         $sender = self::createPartialMock(CurlManager::class, ['send']);
         $sender->expects(self::any())->method('send')->willThrowException($t);
-        self::$container->set('hbpf.transport.curl_manager', $sender);
+        self::getContainer()->set('hbpf.transport.curl_manager', $sender);
     }
 
 }

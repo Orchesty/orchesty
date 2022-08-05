@@ -24,10 +24,46 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
      */
     public function testTopologyMetricsAction(): void
     {
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/MetricsController/topologyMetricsRequest.json',
             [],
             [':id' => $this->createTopology()->getId()],
+        );
+    }
+
+    /**
+     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\MetricsController::consumerMetricsAction
+     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::consumerMetricsAction
+     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler::getConsumerMetrics
+     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler::parseDateRangeFromFilter
+     *
+     * @throws Exception
+     */
+    public function testConsumerMetricsAction(): void
+    {
+        $this->assertResponseLogged(
+            $this->jwt,
+            __DIR__ . '/data/MetricsController/consumerMetricsRequest.json',
+            [],
+            [],
+        );
+    }
+
+    /**
+     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\MetricsController::containerMetricsAction
+     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::containerMetricsAction
+     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler::getContainerMetrics
+     *
+     * @throws Exception
+     */
+    public function testContainerMetricsAction(): void
+    {
+        $this->assertResponseLogged(
+            $this->jwt,
+            __DIR__ . '/data/MetricsController/containerMetricsRequest.json',
+            [],
+            [],
         );
     }
 
@@ -40,7 +76,8 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
     {
         $topologyId = $this->createTopology()->getId();
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/MetricsController/nodeMetricsRequest.json',
             [],
             [':topologyId' => $topologyId, ':nodeId' => $this->createNode($topologyId)->getId()],
@@ -54,7 +91,8 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
      */
     public function testTopologyRequestsCountMetricsAction(): void
     {
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/MetricsController/topologyRequestsCountMetricsRequest.json',
             [],
             [':id' => $this->createTopology()->getId()],

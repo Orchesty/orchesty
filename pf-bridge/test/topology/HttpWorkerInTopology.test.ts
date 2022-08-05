@@ -82,7 +82,7 @@ httpMock.post("/process", (req, resp) => {
 });
 httpMock.listen(7600);
 
-describe("Topology with HttpWorker Node", () => {
+xdescribe("Topology with HttpWorker Node", () => {
     it("Next node should receive changed content #integration", async () => {
         const pip = new Pipes(testTopology);
 

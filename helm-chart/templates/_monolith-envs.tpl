@@ -100,11 +100,11 @@
 - name: XML_PARSER_API_DSN
   value: xml-parser-api
 - name: CRON_DSN
-  value: cron-api:8080  
+  value: cron-api:8080
 - name: PHP_FPM_MAX_REQUESTS
   value: "5000"
 - name: PHP_FPM_MAX_CHILDREN
   value: "20"
 - name: WORKER_DEFAULT_PORT
-  value: "8008"
+  value: "8000"
 {{- end -}}

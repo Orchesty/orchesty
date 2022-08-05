@@ -134,7 +134,6 @@ func (m *MongoDefault) FindNodesByTopology(id string) ([]model.Node, error) {
 	}
 
 	return nodes, nil
-
 }
 
 func (m *MongoDefault) logContext(data map[string]interface{}) log.Logger {

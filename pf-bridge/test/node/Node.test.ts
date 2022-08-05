@@ -14,7 +14,7 @@ const metricsMock = {
     removeTag: () => { return; },
 };
 
-describe("Node", () => {
+xdescribe("Node", () => {
     it("prepare and start and open node, when worker is ready #unit", async () => {
         const worker = mock.mock(UppercaseWorker);
         worker.isWorkerReady = () => Promise.resolve(true);

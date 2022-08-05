@@ -33,92 +33,16 @@ abstract class BasicApplicationAbstract extends ApplicationAbstract implements B
         return
             (
                 isset(
-                    $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::PASSWORD],
+                    $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][BasicApplicationInterface::PASSWORD],
                 )
                 &&
                 isset(
-                    $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::USER],
+                    $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][BasicApplicationInterface::USER],
                 )
             ) ||
             isset(
-                $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::TOKEN],
+                $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][ApplicationInterface::TOKEN],
             );
-    }
-
-    /**
-     * @param ApplicationInstall $applicationInstall
-     * @param string             $password
-     *
-     * @return ApplicationInstall
-     */
-    public function setApplicationPassword(ApplicationInstall $applicationInstall, string $password): ApplicationInstall
-    {
-        $settings = $applicationInstall->getSettings();
-
-        $settings[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::PASSWORD] = $password;
-
-        return $applicationInstall->addSettings($settings);
-    }
-
-    /**
-     * @param ApplicationInstall $applicationInstall
-     * @param string             $user
-     *
-     * @return ApplicationInstall
-     */
-    public function setApplicationUser(ApplicationInstall $applicationInstall, string $user): ApplicationInstall
-    {
-        $settings = $applicationInstall->getSettings();
-
-        $settings[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::USER] = $user;
-
-        return $applicationInstall->addSettings($settings);
-    }
-
-    /**
-     * @param ApplicationInstall $applicationInstall
-     * @param string             $token
-     *
-     * @return ApplicationInstall
-     */
-    public function setApplicationToken(ApplicationInstall $applicationInstall, string $token): ApplicationInstall
-    {
-        $settings = $applicationInstall->getSettings();
-
-        $settings[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::TOKEN] = $token;
-
-        return $applicationInstall->addSettings($settings);
-    }
-
-    /**
-     * @param ApplicationInstall $applicationInstall
-     * @param mixed[]            $settings
-     *
-     * @return ApplicationInstall
-     */
-    public function setApplicationSettings(ApplicationInstall $applicationInstall, array $settings): ApplicationInstall
-    {
-        $applicationInstall = parent::setApplicationSettings($applicationInstall, $settings);
-
-        foreach ($applicationInstall->getSettings()[ApplicationAbstract::FORM] ?? [] as $key => $value) {
-            if ($key === BasicApplicationInterface::USER) {
-                $this->setApplicationUser($applicationInstall, $value);
-
-                continue;
-            }
-            if ($key === BasicApplicationInterface::PASSWORD) {
-                $this->setApplicationPassword($applicationInstall, $value);
-
-                continue;
-            }
-            if ($key === BasicApplicationInterface::TOKEN) {
-                $this->setApplicationToken($applicationInstall, $value);
-
-                continue;
-            }
-        }
-
-        return $applicationInstall;
     }
 
 }

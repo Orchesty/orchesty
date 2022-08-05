@@ -11,8 +11,8 @@ use Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetGetE
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\Utils\Date\DateTimeUtils;
+use Hanaboso\Utils\File\File;
 use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
 
@@ -27,8 +27,8 @@ final class ShoptetGetEshopInfoTest extends DatabaseTestCaseAbstract
     use PrivateTrait;
 
     private const HEADERS = [
-        'pf-user'        => 'user',
-        'pf-application' => ShoptetApplication::SHOPTET_KEY,
+        'user'        => 'user',
+        'application' => ShoptetApplication::SHOPTET_KEY,
     ];
 
     /**
@@ -37,22 +37,11 @@ final class ShoptetGetEshopInfoTest extends DatabaseTestCaseAbstract
     private ShoptetGetEshopInfo $connector;
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetGetEshopInfo::getId()
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetGetEshopInfo::getName()
      */
-    public function testGetId(): void
+    public function testGetName(): void
     {
-        self::assertEquals('shoptet-get-eshop-info', $this->connector->getId());
-    }
-
-    /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetGetEshopInfo::processEvent()
-     *
-     * @throws Exception
-     */
-    public function testProcessEvent(): void
-    {
-        self::expectException(ConnectorException::class);
-        $this->connector->processEvent(new ProcessDto());
+        self::assertEquals('shoptet-get-eshop-info', $this->connector->getName());
     }
 
     /**
@@ -62,7 +51,7 @@ final class ShoptetGetEshopInfoTest extends DatabaseTestCaseAbstract
      */
     public function testProcessAction(): void
     {
-        $jsonContent = (string) file_get_contents(__DIR__ . '/data/ShoptetGetEshopInfo.json');
+        $jsonContent = File::getContent(__DIR__ . '/data/ShoptetGetEshopInfo.json');
         $this->mockSender($jsonContent);
         $this->insertApplicationInstall();
 
@@ -79,7 +68,7 @@ final class ShoptetGetEshopInfoTest extends DatabaseTestCaseAbstract
      */
     public function testProcessActionArray(): void
     {
-        $jsonContent = (string) file_get_contents(__DIR__ . '/data/ShoptetGetEshopInfo.json');
+        $jsonContent = File::getContent(__DIR__ . '/data/ShoptetGetEshopInfo.json');
         $this->mockSender($jsonContent);
         $applicationInstall = $this->insertApplicationInstall();
         $data               = $this->connector->processActionArray($applicationInstall, new ProcessDto());
@@ -117,7 +106,7 @@ final class ShoptetGetEshopInfoTest extends DatabaseTestCaseAbstract
     {
         parent::setUp();
 
-        $this->connector = self::$container->get('hbpf.connector.shoptet-get-eshop-info');
+        $this->connector = self::getContainer()->get('hbpf.connector.shoptet-get-eshop-info');
     }
 
     /**

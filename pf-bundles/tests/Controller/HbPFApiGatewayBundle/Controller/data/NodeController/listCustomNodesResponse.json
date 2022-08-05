@@ -1,12 +1,5 @@
 {
     "http": 200,
     "body": [
-        "microsleep100000",
-        "microsleep200000",
-        "microsleep500000",
-        "microsleep700000",
-        "null",
-        "requestbin",
-        "sleep1"
     ]
 }

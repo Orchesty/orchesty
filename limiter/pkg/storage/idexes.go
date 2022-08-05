@@ -1,21 +1,18 @@
 package storage
 
-import "gopkg.in/mgo.v2"
+import "go.mongodb.org/mongo-driver/mongo"
 
 // GetIndexes - get indexes to create
-func GetIndexes() []mgo.Index {
-	return []mgo.Index{
+func GetIndexes() []mongo.IndexModel {
+	return []mongo.IndexModel{
 		{
-			Key:        []string{"limitkey"},
-			Background: true,
+			Keys: []string{"limitkey"},
 		},
 		{
-			Key:        []string{"limitkey", "created"},
-			Background: true,
+			Keys: []string{"limitkey", "created"},
 		},
 		{
-			Key:        []string{"groupkey"},
-			Background: true,
+			Keys: []string{"groupkey"},
 		},
 	}
 }

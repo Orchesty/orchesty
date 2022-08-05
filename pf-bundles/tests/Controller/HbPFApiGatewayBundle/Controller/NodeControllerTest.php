@@ -24,7 +24,8 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
      */
     public function testGetNodesAction(): void
     {
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/NodeController/getNodesRequest.json',
             ['_id' => '123456789', 'topology_id' => '123456789'],
             [':id' => $this->createTopology()->getId()],
@@ -38,7 +39,8 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
      */
     public function testGetNodeAction(): void
     {
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/NodeController/getNodeRequest.json',
             ['_id' => '123456789', 'topology_id' => '123456789'],
             [':id' => $this->createNode()->getId()],
@@ -52,7 +54,8 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
      */
     public function testUpdateNodeAction(): void
     {
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/NodeController/updateNodeRequest.json',
             ['_id' => '123456789', 'topology_id' => '123456789'],
             [':id' => $this->createNode()->getId()],
@@ -66,7 +69,7 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
      */
     public function testListNodesAction(): void
     {
-        $this->assertResponse(__DIR__ . '/data/NodeController/listConnectorNodesRequest.json');
+        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/NodeController/listConnectorNodesRequest.json');
     }
 
     /**
@@ -76,27 +79,7 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
      */
     public function testListNodesAction2(): void
     {
-        $this->assertResponse(__DIR__ . '/data/NodeController/listCustomNodesRequest.json');
-    }
-
-    /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NodeController::listOfNodesAction
-     *
-     * @throws Exception
-     */
-    public function testListNodesAction3(): void
-    {
-        $this->assertResponse(__DIR__ . '/data/NodeController/listLongRunningNodesRequest.json');
-    }
-
-    /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NodeController::listOfNodesAction
-     *
-     * @throws Exception
-     */
-    public function testListNodesAction4(): void
-    {
-        $this->assertResponse(__DIR__ . '/data/NodeController/listMapperNodesRequest.json');
+        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/NodeController/listCustomNodesRequest.json');
     }
 
     /**
@@ -104,7 +87,7 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
      */
     public function testListOfNodesEmpty(): void
     {
-        $nodeController = self::$container->get(
+        $nodeController = self::getContainer()->get(
             'Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NodeController',
         );
 
@@ -119,7 +102,7 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
      */
     public function testListNodesNamesAction(): void
     {
-        $this->assertResponse(__DIR__ . '/data/NodeController/listNodesNamesRequest.json');
+        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/NodeController/listNodesNamesRequest.json');
     }
 
     /**

@@ -55,7 +55,6 @@ func (c *consumer) getChannel() *amqp.Channel {
 }
 
 func (c *consumer) Consume(callback Callback) {
-
 	if c.channelID == -1 {
 		c.channelID = c.connection.CreateChannel()
 	}
@@ -81,7 +80,7 @@ func (c *consumer) Consume(callback Callback) {
 	c.logger.Info("[*] Waiting for messages. To exit press CTRL+C", nil)
 
 	// waiting forever
-	if <-c.connection.GetRestartChan() != false {
+	if <-c.connection.GetRestartChan() {
 		c.connection.Setup()
 		c.Consume(callback)
 	}

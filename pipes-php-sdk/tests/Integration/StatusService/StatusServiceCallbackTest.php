@@ -95,7 +95,7 @@ final class StatusServiceCallbackTest extends KernelTestCaseAbstract
     {
         parent::setUp();
 
-        $this->callback   = self::$container->get('hbpf.custom_nodes.status_service.status_service_callback');
+        $this->callback   = self::getContainer()->get('hbpf.custom_nodes.status_service.status_service_callback');
         $this->connection = self::createMock(Connection::class);
     }
 

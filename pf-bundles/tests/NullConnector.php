@@ -13,22 +13,14 @@ use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
 final class NullConnector extends ConnectorAbstract
 {
 
+    public const NAME = 'null';
+
     /**
      * @return string
      */
-    public function getId(): string
+    public function getName(): string
     {
-        return 'null';
-    }
-
-    /**
-     * @param ProcessDto $dto
-     *
-     * @return ProcessDto
-     */
-    public function processEvent(ProcessDto $dto): ProcessDto
-    {
-        return $dto->setData('{"key":"value"}');
+        return self::NAME;
     }
 
     /**

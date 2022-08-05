@@ -5,10 +5,10 @@ namespace PipesPhpSdkTests\Integration\Authorization\Base;
 use Exception;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1\OAuth1ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth1Dto;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider;
+use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
 use Hanaboso\Utils\Date\DateTimeUtils;
 use PipesPhpSdkTests\DatabaseTestCaseAbstract;
 use PipesPhpSdkTests\Integration\Command\NullOAuth1Application;
@@ -43,20 +43,25 @@ final class OAuth1ApplicationAbstractTest extends DatabaseTestCaseAbstract
     public function testIsAuthorized(): void
     {
         $applicationInstall = $this->createApplicationInstall(
-            [ApplicationInterface::AUTHORIZATION_SETTINGS => [OAuth1ApplicationInterface::TOKEN => '__token__']],
+            [ApplicationInterface::AUTHORIZATION_FORM => [OAuth1ApplicationInterface::TOKEN => '__token__']],
         );
         self::assertTrue($this->testApp->isAuthorized($applicationInstall));
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1\OAuth1ApplicationAbstract::getApplicationForm
+     * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1\OAuth1ApplicationAbstract::getApplicationForms
      *
      * @throws Exception
      */
     public function testGetApplicationForm(): void
     {
         $applicationInstall = $this->createApplicationInstall();
-        self::assertEquals(4, count($this->testApp->getApplicationForm($applicationInstall)));
+        self::assertEquals(
+            4,
+            count($this->testApp->getApplicationForms(
+                $applicationInstall,
+            )[ApplicationInterface::AUTHORIZATION_FORM][ApplicationInterface::FIELDS]),
+        );
     }
 
     /**
@@ -70,7 +75,7 @@ final class OAuth1ApplicationAbstractTest extends DatabaseTestCaseAbstract
     {
         $applicationInstall = $this->createApplicationInstall(
             [
-                BasicApplicationInterface::AUTHORIZATION_SETTINGS => [
+                ApplicationInterface::AUTHORIZATION_FORM => [
                     OAuth1ApplicationInterface::CONSUMER_KEY    => 'key',
                     OAuth1ApplicationInterface::CONSUMER_SECRET => 'secret',
                 ],
@@ -83,7 +88,7 @@ final class OAuth1ApplicationAbstractTest extends DatabaseTestCaseAbstract
         $application = new NullOAuth1Application($provider);
         $application->authorize($applicationInstall);
 
-        self::assertTrue(TRUE);
+        self::assertFake();
     }
 
     /**
@@ -109,7 +114,7 @@ final class OAuth1ApplicationAbstractTest extends DatabaseTestCaseAbstract
         self::assertEquals(
             '__token__',
             $applicationInstall->getSettings(
-            )[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN]['access_token'],
+            )[ApplicationInterface::AUTHORIZATION_FORM][ApplicationInterface::TOKEN][OAuth2Provider::ACCESS_TOKEN],
         );
     }
 
@@ -142,7 +147,7 @@ final class OAuth1ApplicationAbstractTest extends DatabaseTestCaseAbstract
         self::assertEquals(
             ['data'],
             $applicationInstall->getSettings(
-            )[ApplicationInterface::AUTHORIZATION_SETTINGS][OAuth1ApplicationInterface::OAUTH],
+            )[ApplicationInterface::AUTHORIZATION_FORM][OAuth1ApplicationInterface::OAUTH],
         );
     }
 
@@ -153,7 +158,7 @@ final class OAuth1ApplicationAbstractTest extends DatabaseTestCaseAbstract
     {
         parent::setUp();
 
-        $this->testApp = self::$container->get('hbpf.application.null3');
+        $this->testApp = self::getContainer()->get('hbpf.application.null3');
     }
 
     /**

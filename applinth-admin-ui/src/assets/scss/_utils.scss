@@ -1,0 +1,78 @@
+@import "~vuetify/src/styles/settings/_variables";
+
+@mixin variants-generator($property, $variants) {
+  @each $name, $value in $variants {
+    &-#{$name} {
+      #{$property}: $value !important;
+    }
+  }
+}
+
+// Colors
+
+$app-colors: (
+  "accent-blue": $color-accent-blue,
+  "yellow": $color-yellow,
+  "red": $color-red,
+  "green": $color-green,
+  "primary-blue": $color-primary-blue,
+  "primary-text": $color-primary-text,
+  "secondary-text": $color-secondary-text,
+  "main-text": $color-main-text,
+  "main-text-50": $color-main-text-50,
+  "secondary-green": $color-secondary-green,
+  "dark-blue": $color-dark-blue,
+  "secondary-blue": $color-secondary-blue,
+  "background": $color-background,
+  "white": $color-white,
+);
+
+.color {
+  @include variants-generator("color", $app-colors);
+}
+
+.bg-color {
+  @include variants-generator("background-color", $app-colors);
+}
+
+// Images
+
+.responsive-image {
+  width: 100% !important;
+  height: auto !important;
+}
+
+// Gap
+
+$gap-amounts: (
+  "1": 4px,
+  "2": 8px,
+  "4": 16px,
+  "6": 24px,
+  "8": 32px,
+);
+
+.gap {
+  @include variants-generator("gap", $gap-amounts);
+}
+
+// Table
+
+@media #{map-get($display-breakpoints, 'md-and-up')} {
+  .table-small {
+    max-width: 500px !important;
+  }
+
+  .table-medium {
+    max-width: 760px !important;
+  }
+
+  .table-small-form {
+    max-width: 300px !important;
+  }
+}
+
+// Icon
+.router-icon {
+  font-size: 2rem !important;
+}

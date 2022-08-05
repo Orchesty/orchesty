@@ -2,6 +2,7 @@
 
 namespace Hanaboso\PipesFramework\TopologyInstaller\Dto;
 
+use Hanaboso\Utils\File\File;
 use RuntimeException;
 use Symfony\Component\Finder\SplFileInfo;
 
@@ -63,16 +64,7 @@ final class TopologyFile
     public function getFileContents(): string
     {
         if (file_exists($this->path)) {
-            $level   = error_reporting(0);
-            $content = file_get_contents($this->path);
-            error_reporting($level);
-            if ($content === FALSE) {
-                $error = error_get_last();
-
-                throw new RuntimeException($error['message'] ?? 'Unknown Error');
-            }
-
-            return $content;
+            return File::getContent($this->path);
         }
 
         throw new RuntimeException(sprintf('File "%s" not found!', $this->path));

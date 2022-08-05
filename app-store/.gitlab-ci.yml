@@ -1,15 +1,24 @@
----
+.base-app-store:
+  variables:
+    DIR: app-store
 
-stages:
-    - mirror
+  rules:
+    - if: '$FORCE_PIPELINE =~ /ALL/ || $FORCE_PIPELINE =~ /app-store/'
+    - if: '$CI_COMMIT_BEFORE_SHA == $_BANNED_RUN_ALL_SHA'
+      when: never
+    - if: '"$CI_COMMIT_REF_NAME" != "master" && "$CI_COMMIT_REF_NAME" != "dev" && "$CI_COMMIT_REF_NAME" != "new-ui"'
+      when: never
+    - changes:
+      - ${DIR}/**/*
 
-before_script:
-    - export REPO_ROOT=$(pwd)
-    - eval $(ssh-agent)
-    - ssh-add ~/.ssh/bob_the_builder_hanaboso
 
-mirror:
-    stage: mirror
-    when: manual
-    script:
-        - "curl -X POST -F token=${MIRROR_TOKEN} -F ref=master -F variables\\[REPO\\]=hanaboso-pipes-php-app-store https://gitlab.hanaboso.net/api/v4/projects/38/trigger/pipeline"
+app-store:git-mirror:
+  needs: []
+
+  variables:
+    MIRROR_REPOSITORY_NAME: app-store
+    MIRROR_TRIGGER_REPO_VAR: hanaboso-pipes-php-app-store
+
+  extends:
+    - .base-git-mirror
+    - .base-app-store

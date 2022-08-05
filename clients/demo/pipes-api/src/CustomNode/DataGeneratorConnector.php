@@ -4,7 +4,7 @@ namespace Demo\CustomNode;
 
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
+use Hanaboso\PipesPhpSdk\CustomNode\CommonNodeAbstract;
 use Hanaboso\Utils\Date\DateTimeUtils;
 use Hanaboso\Utils\String\Json;
 
@@ -13,8 +13,18 @@ use Hanaboso\Utils\String\Json;
  *
  * @package Demo\CustomNode
  */
-final class DataGeneratorConnector extends CustomNodeAbstract
+final class DataGeneratorConnector extends CommonNodeAbstract
 {
+
+    public const NAME = 'data-generator-connector';
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return self::NAME;
+    }
 
     /**
      * @param ProcessDto $dto
@@ -22,7 +32,7 @@ final class DataGeneratorConnector extends CustomNodeAbstract
      * @return ProcessDto
      * @throws Exception
      */
-    public function process(ProcessDto $dto): ProcessDto
+    public function processAction(ProcessDto $dto): ProcessDto
     {
         $data = Json::decode($dto->getData());
         $key  = DateTimeUtils::getUtcDateTime()->format('d. m. Y H:i:s');
@@ -33,7 +43,7 @@ final class DataGeneratorConnector extends CustomNodeAbstract
             password_hash($key, PASSWORD_ARGON2I),
         ];
 
-        return $dto->setData(Json::encode($data));
+        return $dto->setJsonData($data);
     }
 
 }

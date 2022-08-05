@@ -1,2 +1,0 @@
-parameters:
-    activateLink: '%backend_host%/user/%s/activate'

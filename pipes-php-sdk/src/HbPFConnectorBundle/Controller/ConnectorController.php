@@ -33,48 +33,6 @@ final class ConnectorController implements LoggerAwareInterface
     }
 
     /**
-     * @Route("/connector/{id}/webhook", methods={"POST", "OPTIONS"})
-     *
-     * @param string  $id
-     * @param Request $request
-     *
-     * @return Response
-     * @throws OnRepeatException
-     * @throws PipesFrameworkExceptionAbstract
-     */
-    public function processEventAction(string $id, Request $request): Response
-    {
-        try {
-            $dto = $this->connectorHandler->processEvent($id, $request);
-
-            return $this->getResponse($dto->getData(), 200, ControllerUtils::createHeaders($dto->getHeaders()));
-        } catch (PipesFrameworkExceptionAbstract | OnRepeatException $e) {
-            throw $e;
-        } catch (Throwable $e) {
-            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
-        }
-    }
-
-    /**
-     * @Route("/connector/{id}/webhook/test", methods={"GET", "OPTIONS"})
-     *
-     * @param Request $request
-     * @param string  $id
-     *
-     * @return Response
-     */
-    public function processEventTestAction(Request $request, string $id): Response
-    {
-        try {
-            $this->connectorHandler->processTest($id);
-
-            return $this->getResponse([]);
-        } catch (Throwable $e) {
-            return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
-        }
-    }
-
-    /**
      * @Route("/connector/{id}/action", methods={"POST", "OPTIONS"})
      *
      * @param string  $id

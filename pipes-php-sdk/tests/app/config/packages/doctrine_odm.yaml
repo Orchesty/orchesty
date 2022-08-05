@@ -37,11 +37,6 @@ doctrine_mongodb:
                     is_bundle: false
                     dir: "%kernel.project_dir%/src/Application/Document"
                     prefix: Hanaboso\PipesPhpSdk\Application\Document
-                LongRunningNodeDocument:
-                    type: annotation
-                    is_bundle: false
-                    dir: "%kernel.project_dir%/src/LongRunningNode/Document"
-                    prefix: Hanaboso\PipesPhpSdk\LongRunningNode\Document
                 FileDocument:
                     type: annotation
                     is_bundle: false

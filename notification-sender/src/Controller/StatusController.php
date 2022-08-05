@@ -42,13 +42,15 @@ final class StatusController
         try {
             $this->dm->getClient()->listDatabases();
             $database = TRUE;
-        } catch (Throwable) {
+        } catch (Throwable $t) {
+            $t;
             $database = FALSE;
         }
 
         try {
             $rabbitMq = $this->manager->getConnection()->getClient()->isConnected();
-        } catch (Throwable) {
+        } catch (Throwable $t) {
+            $t;
             $rabbitMq = FALSE;
         }
 

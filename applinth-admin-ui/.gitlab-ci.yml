@@ -1,0 +1,20 @@
+.base-applinth-admin-ui: 
+  variables:
+    DIR: applinth-admin-ui
+    IMAGE: ${REGISTRY}/${IMAGE_PREFIX}applinth-admin-ui
+  
+  rules:
+    - if: '$FORCE_PIPELINE =~ /ALL/ || $FORCE_PIPELINE =~ /applinth-admin-ui/'
+    - if: '$CI_COMMIT_BEFORE_SHA == $_BANNED_RUN_ALL_SHA'
+      when: never
+    - changes:
+      - ${DIR}/**/*
+
+
+applinth-admin-ui:build:
+  stage: build
+  needs: []
+  extends:
+    - .base-kaniko-build
+    - .base-applinth-admin-ui
+

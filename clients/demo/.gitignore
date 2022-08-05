@@ -1,4 +1,17 @@
+.idea/
 .docker-volumes
 .env
 docker-compose.ci.yml
 docker-compose.yml
+
+# NODE
+node-sdk/dist
+node-sdk/coverage
+node-sdk/node_modules
+node-sdk/.yarn/*
+!node-sdk/.yarn/releases
+!node-sdk/.yarn/patches
+!node-sdk/.yarn/plugins
+!node-sdk/.yarn/sdks
+!node-sdk/.yarn/versions
+!node-sdk/.pnp.*

@@ -13,7 +13,7 @@ func getDockerGeneratorVersion(mode model.Adapter) string {
 	return "2.4"
 }
 
-func getDockerNetworks(adapter model.Adapter, network string) map[string]*model.NetworkConfig {
+func getDockerNetworks(network string) map[string]*model.NetworkConfig {
 	var networks = make(map[string]*model.NetworkConfig)
 
 	networks[network] = &model.NetworkConfig{
@@ -36,6 +36,10 @@ func getDockerConfigs(m model.Adapter, prefix string, t *model.Topology) map[str
 }
 
 func getDockerImage(registry string, image string) string {
+	if registry == "" {
+		return image
+	}
+
 	return fmt.Sprintf("%s/%s", registry, image)
 }
 
@@ -62,11 +66,11 @@ func getDockerServiceConfigs(adapter model.Adapter, topologyPath string, configN
 }
 
 func getMultiBridgeStartCommand() string {
-	return "./dist/src/bin/pipes.js start multi_bridge"
+	return "/bin/bridge start"
 }
 
-func getSingleBridgeStartCommand(serviceName string) string {
-	return fmt.Sprintf("./dist/src/bin/pipes.js start bridge --id %s", serviceName)
+func getSingleBridgeStartCommand(_ string) string {
+	return getMultiBridgeStartCommand()
 }
 
 // GetConfigMapName GetConfigMapName

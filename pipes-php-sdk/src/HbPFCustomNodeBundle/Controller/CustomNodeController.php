@@ -51,7 +51,7 @@ final class CustomNodeController implements LoggerAwareInterface
     public function sendAction(Request $request, string $id): Response
     {
         try {
-            $data = $this->handler->process($id, $request);
+            $data = $this->handler->processAction($id, $request);
 
             return $this->getResponse($data->getData(), 200, ControllerUtils::createHeaders($data->getHeaders()));
         } catch (PipesFrameworkExceptionAbstract | OnRepeatException $e) {

@@ -3,6 +3,7 @@
 namespace HbPFConnectorsTests\Integration\Model\Application\Impl\IDoklad;
 
 use Exception;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\IDoklad\IDokladApplication;
@@ -26,23 +27,23 @@ final class IDokladApplicationTest extends DatabaseTestCaseAbstract
     private IDokladApplication $app;
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\IDoklad\IDokladApplication::getKey
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\IDoklad\IDokladApplication::getName
      *
      * @throws Exception
      */
     public function testGetKey(): void
     {
-        self::assertEquals('i-doklad', $this->app->getKey());
+        self::assertEquals('i-doklad', $this->app->getName());
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\IDoklad\IDokladApplication::getName
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\IDoklad\IDokladApplication::getPublicName
      *
      * @throws Exception
      */
-    public function testGetName(): void
+    public function testGetPublicName(): void
     {
-        self::assertEquals('iDoklad Application', $this->app->getName());
+        self::assertEquals('iDoklad Application', $this->app->getPublicName());
     }
 
     /**
@@ -76,14 +77,15 @@ final class IDokladApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\IDoklad\IDokladApplication::getSettingsForm
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\IDoklad\IDokladApplication::getFormStack
      *
      * @throws Exception
      */
-    public function testGetSettingsForm(): void
+    public function testGetFormStack(): void
     {
-        $form = $this->app->getSettingsForm();
-        self::assertCount(2, $form->getFields());
+        foreach ($this->app->getFormStack()->getForms() as $form){
+            self::assertCount(2, $form->getFields());
+        }
     }
 
     /**
@@ -94,7 +96,8 @@ final class IDokladApplicationTest extends DatabaseTestCaseAbstract
     public function testGetRequestDto(): void
     {
         $dto = $this->app->getRequestDto(
-            DataProvider::getOauth2AppInstall($this->app->getKey()),
+            new ProcessDto(),
+            DataProvider::getOauth2AppInstall($this->app->getName()),
             CurlManager::METHOD_POST,
             NULL,
             Json::encode(['foo' => 'bar']),
@@ -109,7 +112,7 @@ final class IDokladApplicationTest extends DatabaseTestCaseAbstract
      */
     public function testAuthorize(): void
     {
-        $this->app->authorize(DataProvider::getOauth2AppInstall($this->app->getKey()));
+        $this->app->authorize(DataProvider::getOauth2AppInstall($this->app->getName()));
 
         self::assertFake();
     }

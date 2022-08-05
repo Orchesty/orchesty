@@ -2,9 +2,10 @@
 
 namespace Hanaboso\PipesPhpSdk\Application\Base;
 
+use Hanaboso\CommonsBundle\Process\ProcessDtoAbstract;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Application\Model\Form\Form;
+use Hanaboso\PipesPhpSdk\Application\Model\Form\FormStack;
 
 /**
  * Interface ApplicationInterface
@@ -14,9 +15,11 @@ use Hanaboso\PipesPhpSdk\Application\Model\Form\Form;
 interface ApplicationInterface
 {
 
-    public const  AUTHORIZATION_SETTINGS = 'authorization_settings';
-    public const  TOKEN                  = 'token';
-    public const  REDIRECT_URL           = 'redirect_url';
+    public const  AUTHORIZATION_FORM    = 'authorization_form';
+    public const  TOKEN                 = 'token';
+    public const  FIELDS                = 'fields';
+    public const  FRONTEND_REDIRECT_URL = 'frontend_redirect_url';
+    public const  OAUTH_REDIRECT_URL    = 'redirect_url';
 
     /**
      * @return string
@@ -31,12 +34,12 @@ interface ApplicationInterface
     /**
      * @return string
      */
-    public function getKey(): string;
+    public function getName(): string;
 
     /**
      * @return string
      */
-    public function getName(): string;
+    public function getPublicName(): string;
 
     /**
      * @return string
@@ -44,6 +47,12 @@ interface ApplicationInterface
     public function getDescription(): string;
 
     /**
+     * @return string|null
+     */
+    public function getLogo(): ?string;
+
+    /**
+     * @param ProcessDtoAbstract $dto
      * @param ApplicationInstall $applicationInstall
      * @param string             $method
      * @param string|null        $url
@@ -53,6 +62,7 @@ interface ApplicationInterface
      */
     public function getRequestDto
     (
+        ProcessDtoAbstract $dto,
         ApplicationInstall $applicationInstall,
         string $method,
         ?string $url = NULL,
@@ -60,9 +70,9 @@ interface ApplicationInterface
     ): RequestDto;
 
     /**
-     * @return Form
+     * @return FormStack
      */
-    public function getSettingsForm(): Form;
+    public function getFormStack(): FormStack;
 
     /**
      * @param ApplicationInstall $applicationInstall
@@ -70,7 +80,29 @@ interface ApplicationInterface
      *
      * @return ApplicationInstall
      */
-    public function setApplicationSettings(ApplicationInstall $applicationInstall, array $settings): ApplicationInstall;
+    public function saveApplicationForms(ApplicationInstall $applicationInstall, array $settings): ApplicationInstall;
+
+    /**
+     * @param ApplicationInstall $applicationInstall
+     *
+     * @return mixed[]
+     */
+    public function getApplicationForms(ApplicationInstall $applicationInstall): array;
+
+    /**
+     * @param ApplicationInstall $applicationInstall
+     * @param string             $formKey
+     * @param string             $fieldKey
+     * @param string             $password
+     *
+     * @return ApplicationInstall
+     */
+    public function savePassword(
+        ApplicationInstall $applicationInstall,
+        string $formKey,
+        string $fieldKey,
+        string $password,
+    ): ApplicationInstall;
 
     /**
      * @param ApplicationInstall $applicationInstall
