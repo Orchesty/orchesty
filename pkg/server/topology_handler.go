@@ -26,6 +26,7 @@ type Kubernetes Service
 // TopologyHandler TopologyHandler
 type TopologyHandler interface {
 	GenerateAction(c *ContextWrapper)
+	HostAction(c *ContextWrapper)
 	RunStopAction(c *ContextWrapper)
 	DeleteAction(c *ContextWrapper)
 	InfoAction(c *ContextWrapper)

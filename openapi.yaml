@@ -82,8 +82,6 @@ components:
                                         type: string
                                     rabbitmq_dsn:
                                         type: string
-                                    multi_probe_host:
-                                        type: string
                                     metrics_host:
                                         type: string
                                     metrics_port:

@@ -63,6 +63,13 @@ func (m *DockerCompose) GenerateAction(c *ContextWrapper) {
 	c.OK(gin.H{"message": fmt.Sprintf("ID: %s", id)})
 }
 
+func (m *DockerCompose) HostAction(c *ContextWrapper) {
+	id := c.Param("topologyId")
+	// TODO něako udělat check zda container běží
+
+	c.OK(gin.H{"host": fmt.Sprintf("topology-%s:8000", id)})
+}
+
 // RunStopAction RunStopAction
 func (m *DockerCompose) RunStopAction(c *ContextWrapper) {
 	var body body

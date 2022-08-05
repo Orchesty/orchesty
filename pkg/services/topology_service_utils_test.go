@@ -35,7 +35,7 @@ func TestGetDockerNetworks(t *testing.T) {
 			},
 		}
 
-		result := getDockerNetworks(model.ModeCompose, "test")
+		result := getDockerNetworks("test")
 		assert.Equal(t, expected, result)
 	})
 }
@@ -107,13 +107,13 @@ func TestGetDockerServiceConfigs(t *testing.T) {
 
 func TestGetComposeCommand(t *testing.T) {
 	t.Run("Get docker compose start command", func(t *testing.T) {
-		assert.Equal(t, "./dist/src/bin/pipes.js start multi_bridge", getMultiBridgeStartCommand())
+		assert.Equal(t, "/bin/bridge start", getMultiBridgeStartCommand())
 	})
 }
 
 func TestGetSwarmCommand(t *testing.T) {
 	t.Run("Get swarm start command", func(t *testing.T) {
-		assert.Equal(t, "./dist/src/bin/pipes.js start bridge --id test", getSingleBridgeStartCommand("test"))
+		assert.Equal(t, "/bin/bridge start", getSingleBridgeStartCommand("test"))
 	})
 }
 

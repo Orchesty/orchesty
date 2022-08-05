@@ -35,7 +35,13 @@ func (k *Kubernetes) GenerateAction(c *ContextWrapper) {
 	}
 
 	c.OK(gin.H{"message": fmt.Sprintf("ID: %s", id)})
+}
 
+func (k *Kubernetes) HostAction(c *ContextWrapper) {
+	id := c.Param("topologyId")
+	// TODO něako udělat check zda container běží
+
+	c.OK(gin.H{"host": fmt.Sprintf("topology-%s:8000", id)})
 }
 
 // RunStopAction RunStopAction
@@ -52,7 +58,7 @@ func (k *Kubernetes) RunStopAction(c *ContextWrapper) {
 
 	if err != nil {
 		logContext().Error(err)
-		c.WithCode(http.StatusInternalServerError, gin.H{"message": fmt.Sprintf("Error trying to run/stop deployment fpr topology %s. Reason: %v", id, err)})
+		c.WithCode(http.StatusInternalServerError, gin.H{"message": fmt.Sprintf("Error trying to run/stop deployment for topology %s. Reason: %v", id, err)})
 		return
 	}
 	c.WithCode(http.StatusOK, gin.H{"message": fmt.Sprintf("ID: %s", id)})

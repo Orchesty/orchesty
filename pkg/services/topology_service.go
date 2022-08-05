@@ -15,7 +15,6 @@ import (
 	"topology-generator/pkg/model"
 )
 
-// TopologyService TopologyService
 type TopologyService struct {
 	Topology        *model.Topology
 	Nodes           []model.Node
@@ -24,24 +23,15 @@ type TopologyService struct {
 	logger          log.Logger
 }
 
-// CreateTopologyJSON CreateTopologyJSON
 func (ts *TopologyService) CreateTopologyJSON() ([]byte, error) {
-	var bridges, err = ts.nodeConfig.GetBridges(ts.Topology, ts.Nodes, ts.nodeConfig.Environment.WorkerDefaultPort)
-
+	topology, err := ts.nodeConfig.GetTopologyJson(ts.Topology, ts.Nodes)
 	if err != nil {
 		return nil, err
 	}
 
-	t := model.TopologyJSON{
-		ID:           model.CreateServiceName(ts.Topology.NormalizeName()),
-		TopologyName: ts.Topology.Name,
-		TopologyID:   ts.Topology.ID.Hex(),
-		Bridges:      bridges,
-	}
-	return json.Marshal(t)
+	return json.Marshal(topology)
 }
 
-// GenerateTopology GenerateTopology
 func (ts *TopologyService) GenerateTopology() error {
 	topologyJSONData, err := ts.CreateTopologyJSON()
 	if err != nil {
@@ -62,7 +52,6 @@ func (ts *TopologyService) GenerateTopology() error {
 	return nil
 }
 
-// CreateDockerCompose CreateDockerCompose
 func (ts *TopologyService) CreateDockerCompose(adapter model.Adapter) ([]byte, error) {
 	var (
 		services map[string]*model.Service
@@ -76,7 +65,7 @@ func (ts *TopologyService) CreateDockerCompose(adapter model.Adapter) ([]byte, e
 		return nil, err
 	}
 
-	networks = getDockerNetworks(adapter, ts.generatorConfig.Network)
+	networks = getDockerNetworks(ts.generatorConfig.Network)
 	configs = getDockerConfigs(adapter, ts.generatorConfig.Prefix, ts.Topology)
 
 	compose = model.DockerCompose{
@@ -112,21 +101,6 @@ func (ts *TopologyService) CreateConfigMap() ([]byte, error) {
 
 // CreateDeploymentService CreateDeploymentService
 func (ts *TopologyService) CreateDeploymentService() ([]byte, error) {
-	containerPorts, err := ts.getKubernetesContainerPorts()
-	if err != nil {
-		return nil, fmt.Errorf("failed to get k8s container containerPorts, reason: %w", err)
-	}
-
-	servicePorts := make([]model.ServicePort, len(containerPorts))
-	for i, containerPort := range containerPorts {
-		servicePorts[i] = model.ServicePort{
-			Protocol:   "TCP",
-			Port:       containerPort.ContainerPort,
-			TargetPort: containerPort.Name,
-			Name:       containerPort.Name,
-		}
-	}
-
 	s := model.DeploymentService{
 		APIVersion: "v1",
 		Kind:       "Service",
@@ -134,7 +108,14 @@ func (ts *TopologyService) CreateDeploymentService() ([]byte, error) {
 			Name: ts.Topology.GetMultiNodeName(),
 		},
 		Spec: model.ServiceSpec{
-			Ports: servicePorts,
+			Ports: []model.ServicePort{
+				{
+					Protocol:   "TCP",
+					Port:       8000,
+					TargetPort: "http",
+					Name:       "http",
+				},
+			},
 			Selector: map[string]string{
 				"app": GetDeploymentName(ts.Topology.ID.Hex()),
 			},
@@ -153,7 +134,15 @@ func (ts *TopologyService) CreateKubernetesDeployment() ([]byte, error) {
 	}
 
 	labels := make(map[string]string)
+	labels["app.kubernetes.io/instance"] = "pipes"
 	labels["app"] = GetDeploymentName(ts.Topology.ID.Hex())
+	for _, label := range strings.Split(config.Generator.TopologyPodLabels, ",") {
+		value := strings.Split(label, "=")
+		if len(value) == 2 {
+			labels[value[0]] = value[1]
+		}
+	}
+
 	var depl = model.Deployment{
 		APIVersion: "apps/v1",
 		Kind:       "Deployment",
@@ -184,22 +173,6 @@ func (ts *TopologyService) CreateKubernetesDeployment() ([]byte, error) {
 	return yaml.Marshal(depl)
 }
 
-func (ts *TopologyService) getKubernetesContainerPorts() ([]model.Port, error) {
-	var bridges, err = ts.nodeConfig.GetBridges(ts.Topology, ts.Nodes, ts.nodeConfig.Environment.WorkerDefaultPort)
-
-	if err != nil {
-		return nil, err
-	}
-	containerPorts := make([]model.Port, len(bridges))
-	for i, bridge := range bridges {
-		containerPorts[i] = model.Port{
-			Name:          getKubernetPortName(bridge.Label.NodeID),
-			ContainerPort: bridge.Debug.Port,
-		}
-	}
-	return containerPorts, nil
-}
-
 func (ts *TopologyService) getKubernetesContainers(mountName string) ([]model.Container, error) {
 	registry := ts.nodeConfig.Environment.DockerRegistry
 	image := ts.nodeConfig.Environment.DockerPfBridgeImage
@@ -209,11 +182,6 @@ func (ts *TopologyService) getKubernetesContainers(mountName string) ([]model.Co
 	environment, err := ts.nodeConfig.Environment.GetEnvironment()
 	if err != nil {
 		return nil, fmt.Errorf("error getting environment. reason: %v", err)
-	}
-
-	ports, err := ts.getKubernetesContainerPorts()
-	if err != nil {
-		return nil, fmt.Errorf("error getting container ports, reason: %w", err)
 	}
 
 	env := make([]model.EnvItem, len(environment))
@@ -242,8 +210,13 @@ func (ts *TopologyService) getKubernetesContainers(mountName string) ([]model.Co
 					Limits:   limits,
 					Requests: requests,
 				},
-				Ports: ports,
-				Env:   env,
+				Env: env,
+				Ports: []model.Port{
+					{
+						Name:          "http",
+						ContainerPort: ts.nodeConfig.Environment.WorkerDefaultPort,
+					},
+				},
 				VolumeMounts: []model.VolumeMount{
 					{
 						Name:      mountName,
@@ -269,6 +242,7 @@ func (ts *TopologyService) getKubernetesContainers(mountName string) ([]model.Co
 			},
 			Ports: []model.Port{
 				{
+					Name:          "http",
 					ContainerPort: ts.nodeConfig.Environment.WorkerDefaultPort,
 				},
 			},
@@ -281,7 +255,6 @@ func (ts *TopologyService) getKubernetesContainers(mountName string) ([]model.Co
 		}
 	}
 	return containers, nil
-
 }
 
 func (ts *TopologyService) getDockerServices(mode model.Adapter) (map[string]*model.Service, error) {
@@ -327,6 +300,7 @@ func (ts *TopologyService) getDockerServices(mode model.Adapter) (map[string]*mo
 			Command:     getMultiBridgeStartCommand(),
 			MemLimit:    memory,
 			Cpus:        cpus,
+			Restart:     "on-failure",
 		}
 	} else {
 		var node model.Node
@@ -340,6 +314,7 @@ func (ts *TopologyService) getDockerServices(mode model.Adapter) (map[string]*mo
 				Command:     getSingleBridgeStartCommand(model.CreateServiceName(node.GetServiceName())),
 				MemLimit:    memory,
 				Cpus:        cpus,
+				Restart:     "on-failure",
 			}
 		}
 	}

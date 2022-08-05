@@ -19,7 +19,7 @@ type ServiceContainer struct {
 // NewServiceContainer NewServiceContainer
 func NewServiceContainer(mongo storage.MongoInterface, cli *client.Client, clientSet *kubernetes.Clientset, config config.GeneratorConfig) *ServiceContainer {
 	storageSvc := NewStorageSvc(mongo)
-	if config.Mode == model.ModeKubernetes {
+	if model.Adapter(config.Mode) == model.ModeKubernetes {
 		kubernetesSvc := NewKubernetesSvc(clientSet, config.Namespace)
 		return &ServiceContainer{
 			Mongo:      storageSvc,

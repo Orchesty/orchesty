@@ -34,10 +34,9 @@ func getBridgesMissingConfig(t *testing.T) {
 		Environment: getEnvironment(ModeCompose),
 	}
 
-	result, err := nodeConfig.GetBridges(&topology, nodes, 8088)
+	_, err := nodeConfig.GetTopologyJson(&topology, nodes)
 
 	assert.Error(t, err)
-	assert.Nil(t, result)
 }
 
 func getBridgesEmptyNodes(t *testing.T) {
@@ -49,14 +48,13 @@ func getBridgesEmptyNodes(t *testing.T) {
 		Environment: getEnvironment(ModeCompose),
 	}
 
-	result, err := nodeConfig.GetBridges(&topology, nodes, 8088)
+	_, err := nodeConfig.GetTopologyJson(&topology, nodes)
 
 	assert.Error(t, err)
-	assert.Nil(t, result)
 }
 
 func getBridges(t *testing.T) {
-	topologyJSON := []byte(`[{"id":"5cc047dd4e9acc002a200c12-sta","label":{"id":"5cc047dd4e9acc002a200c12-sta","node_id":"5cc047dd4e9acc002a200c12","node_name":"start"},"faucet":{},"worker":{"type":"worker.null","settings":{"publish_queue":{}}},"next":["5cc047dd4e9acc002a200c14-xml"],"debug":{"port":8088,"host":"mb-5cc0474e4e9acc00282bb942","url":"http://mb-5cc0474e4e9acc00282bb942:8088/status"}},{"id":"5cc047dd4e9acc002a200c13-web","label":{"id":"5cc047dd4e9acc002a200c13-web","node_id":"5cc047dd4e9acc002a200c13","node_name":"Webhook"},"faucet":{"settings":{"prefetch":10}},"worker":{"type":"worker.http","settings":{"host":"monolith-api","process_path":"/connector/Webhook/webhook","status_path":"/connector/Webhook/webhook/test","method":"POST","port":80,"publish_queue":{}}},"next":[],"debug":{"port":8089,"host":"mb-5cc0474e4e9acc00282bb942","url":"http://mb-5cc0474e4e9acc00282bb942:8089/status"}},{"id":"5cc047dd4e9acc002a200c14-xml","label":{"id":"5cc047dd4e9acc002a200c14-xml","node_id":"5cc047dd4e9acc002a200c14","node_name":"Xml_parser"},"faucet":{},"worker":{"type":"worker.http_xml_parser","settings":{"host":"xml-parser-api","process_path":"/Xml_parser","status_path":"/Xml_parser/test","method":"POST","port":80,"publish_queue":{}}},"next":["5cc047dd4e9acc002a200c13-web"],"debug":{"port":8090,"host":"mb-5cc0474e4e9acc00282bb942","url":"http://mb-5cc0474e4e9acc00282bb942:8090/status"}}]`)
+	topologyJSON := []byte(`{"id":"5cc0474e4e9acc00282bb942","name":"test","nodes":[{"id":"5cc047dd4e9acc002a200c12","name":"start","worker":"worker.null","settings":{"url":"http://:0","actionPath":"","testPath":"","method":"","timeout":0},"followers":[{"id":"5cc047dd4e9acc002a200c14","name":"Xml_parser"}]},{"id":"5cc047dd4e9acc002a200c13","name":"Webhook","worker":"worker.http","settings":{"url":"http://monolith-api:80","actionPath":"/connector/Webhook/webhook","testPath":"/connector/Webhook/webhook/test","method":"POST","headers":{"customHeader":"customTail"},"timeout":0},"followers":[]},{"id":"5cc047dd4e9acc002a200c14","name":"Xml_parser","worker":"worker.http_xml_parser","settings":{"url":"http://xml-parser-api:80","actionPath":"/Xml_parser","testPath":"/Xml_parser/test","method":"POST", "headers":{"customHeader":"customTail"},"timeout":0},"followers":[{"id":"5cc047dd4e9acc002a200c13","name":"Webhook"}]}],"rabbitMq":[{"dsn":"amqp://rabbitmq:20/%2F"}]}`)
 
 	topology := getTestTopology()
 	nodes := getTestNodes()
@@ -66,12 +64,12 @@ func getBridges(t *testing.T) {
 		Environment: getEnvironment(ModeCompose),
 	}
 
-	result, err := nodeConfig.GetBridges(&topology, nodes, 8088)
+	result, err := nodeConfig.GetTopologyJson(&topology, nodes)
 	if err != nil {
-		t.Errorf("cannot get bridges [%s]", err)
+		t.Errorf("cannot parse topology json [%s]", err)
 	}
 
-	var expected []TopologyBridgeJSON
+	var expected TopologyJson
 	err = json.Unmarshal(topologyJSON, &expected)
 
 	assert.Equal(t, expected, result)
@@ -96,10 +94,13 @@ func getNodeConfigs() map[string]NodeUserParams {
 			Worker: TopologyBridgeWorkerJSON{
 				Type: "worker.http",
 				Settings: TopologyBridgeWorkerSettingsJSON{
-					Host:         "monolith-api",
-					ProcessPath:  "/connector/Webhook/webhook",
-					StatusPath:   "/connector/Webhook/webhook/test",
-					Method:       "POST",
+					Host:        "monolith-api",
+					ProcessPath: "/connector/Webhook/webhook",
+					StatusPath:  "/connector/Webhook/webhook/test",
+					Method:      "POST",
+					Headers: map[string]interface{}{
+						"customHeader": "customTail",
+					},
 					Port:         80,
 					Secure:       false,
 					PublishQueue: TopologyBridgeWorkerSettingsQueueJSON{},
@@ -110,10 +111,13 @@ func getNodeConfigs() map[string]NodeUserParams {
 			Worker: TopologyBridgeWorkerJSON{
 				Type: "worker.http_xml_parser",
 				Settings: TopologyBridgeWorkerSettingsJSON{
-					Host:         "xml-parser-api",
-					ProcessPath:  "/Xml_parser",
-					StatusPath:   "/Xml_parser/test",
-					Method:       "POST",
+					Host:        "xml-parser-api",
+					ProcessPath: "/Xml_parser",
+					StatusPath:  "/Xml_parser/test",
+					Method:      "POST",
+					Headers: map[string]interface{}{
+						"customHeader": "customTail",
+					},
 					Port:         80,
 					PublishQueue: TopologyBridgeWorkerSettingsQueueJSON{},
 				},
@@ -131,30 +135,20 @@ func getFullEnvironment(t *testing.T) {
 	}
 
 	expected := map[string]string{
-		"METRICS_HOST":     "kapacitor",
-		"METRICS_PORT":     "9100",
-		"METRICS_SERVICE":  "influx",
-		"MULTI_PROBE_HOST": "multi-probe",
-		"MULTI_PROBE_PORT": "8007",
-		"RABBITMQ_HOST":    "rabbitmq",
-		"RABBITMQ_PORT":    "20",
-		"RABBITMQ_PASS":    "",
-		"RABBITMQ_USER":    "",
-		"RABBITMQ_VHOST":   "",
+		"METRICS_DSN":    "influxdb://kapacitor:9100",
+		"MONGODB_DSN":    "",
+		"UDP_LOGGER_URL": "",
 	}
 
 	assert.Equal(t, expected, result)
-
 }
 
 func getEnvironment(mode Adapter) Environment {
 	return Environment{
 		DockerRegistry:      "dkr.hanaboso.net/pipes/pipes",
-		DockerPfBridgeImage: "pf-bridge:dev",
+		DockerPfBridgeImage: "hanaboso/bridge:dev",
 		RabbitMqHost:        "rabbitmq:20",
-		MultiProbeHost:      "multi-probe:8007",
-		MetricsHost:         "kapacitor",
-		MetricsPort:         "9100",
+		MetricsDsn:          "influxdb://kapacitor:9100",
 		MetricsService:      "influx",
 		WorkerDefaultPort:   8808,
 		GeneratorMode:       mode,
