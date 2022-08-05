@@ -32,12 +32,12 @@ final class CustomNodeHandler
      * @return ProcessDto
      * @throws CustomNodeException
      */
-    public function process(string $nodeId, Request $request): ProcessDto
+    public function processAction(string $nodeId, Request $request): ProcessDto
     {
         $dto  = ProcessDtoFactory::createFromRequest($request);
         $node = $this->loader->get($nodeId);
 
-        return $node->process($dto);
+        return $node->processAction($dto);
     }
 
     /**

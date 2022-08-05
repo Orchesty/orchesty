@@ -1,0 +1,19 @@
+{
+  "button": {
+    "cancel": "Zrušit",
+    "change": "Změnit",
+    "close": "Zavřít",
+    "login": "Přihlásit se",
+    "save": "Uložit",
+    "send": "Odeslat",
+    "set": "Nastavit",
+    "delete": "Smazat",
+    "yes": "Ano",
+    "no": "Ne",
+    "create": "Vytvořit",
+    "update": "Změnit",
+    "share": "Sdílet",
+    "back": "Zpět",
+    "add": "Přidat"
+  }
+}

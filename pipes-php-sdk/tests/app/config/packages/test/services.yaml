@@ -3,8 +3,6 @@ parameters:
     node_services_dirs:
         - '%kernel.project_dir%/src/HbPFConnectorBundle/Resources/config/'
         - '%kernel.project_dir%/src/HbPFCustomNodeBundle/Resources/config/'
-        - '%kernel.project_dir%/src/HbPFJoinerBundle/Resources/config/'
-        - '%kernel.project_dir%/src/HbPFMapperBundle/Resources/config/'
         - '%kernel.project_dir%/tests/app/config/packages/test/'
 
     applications:
@@ -18,11 +16,10 @@ services:
         calls:
             - [setApplication, ['@hbpf.application.null']]
 
-    hbpf.connector.batch-null:
-        class: PipesPhpSdkTests\Unit\Connector\Model\BatchConnector\NullBatchConnector
+    hbpf.batch.null:
+        class: PipesPhpSdkTests\Unit\HbPFBatchBundle\Loader\NullBatch
+        calls:
+            - [ setApplication, [ '@hbpf.application.null' ] ]
 
-    hbpf.long_running.null:
-        class: PipesPhpSdkTests\Unit\HbPFLongRunningNodeBundle\Loader\TestLongRunningNode
-
-    hbpf.hbpf.mapper.null:
-        class: PipesPhpSdkTests\Integration\HbPFMapperBundle\NullMapper
+    hbpf.custom_node.null:
+        class: PipesPhpSdkTests\Integration\HbPFCustomNodeBundle\TestNullCustomNode

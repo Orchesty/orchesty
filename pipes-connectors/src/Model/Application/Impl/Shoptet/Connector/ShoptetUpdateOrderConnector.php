@@ -7,12 +7,10 @@ use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication;
-use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
+use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
-use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessEventNotSupportedTrait;
-use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessExceptionTrait;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
-use JsonException;
 
 /**
  * Class ShoptetUpdateOrderConnector
@@ -22,35 +20,36 @@ use JsonException;
 final class ShoptetUpdateOrderConnector extends ShoptetConnectorAbstract
 {
 
-    use ProcessEventNotSupportedTrait;
-    use ProcessExceptionTrait;
+    public const NAME = 'shoptet-update-order';
 
     private const URL = '/api/orders/%s/status?suppressDocumentGeneration=true&suppressEmailSending=true&suppressSmsSending=true';
 
     /**
      * @return string
      */
-    public function getId(): string
+    public function getName(): string
     {
-        return 'shoptet-update-order';
+        return self::NAME;
     }
 
     /**
      * @param ProcessDto $dto
      *
      * @return ProcessDto
+     * @throws ApplicationInstallException
      * @throws ConnectorException
-     * @throws OnRepeatException
      * @throws PipesFrameworkException
+     * @throws OnRepeatException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
-        $applicationInstall = $this->getApplicationInstall($dto);
+        $applicationInstall = $this->getApplicationInstallFromProcess($dto);
 
         try {
             $response = $this->processResponse(
-                $this->sender->send(
+                $this->getSender()->send(
                     $this->getApplication()->getRequestDto(
+                        $dto,
                         $applicationInstall,
                         CurlManager::METHOD_PATCH,
                         sprintf(
@@ -59,17 +58,21 @@ final class ShoptetUpdateOrderConnector extends ShoptetConnectorAbstract
                             sprintf(
                                 self::URL,
                                 $applicationInstall->getSettings(
-                                )[ApplicationAbstract::FORM][ShoptetApplication::ESHOP_ID],
+                                )[ApplicationInterface::AUTHORIZATION_FORM][ShoptetApplication::ESHOP_ID],
                             ),
                         ),
-                    )->setDebugInfo($dto),
+                    ),
                 )->getJsonBody(),
                 $dto,
             );
 
-            return $this->setJsonContent($dto, $response)->setStopProcess();
-        } catch (CurlException | JsonException $e) {
-            throw $this->createRepeatException($dto, $e, self::REPEATER_INTERVAL);
+            return $dto->setJsonData($response)->setStopProcess(ProcessDto::DO_NOT_CONTINUE, 'Order updated');
+        } catch (CurlException $e) {
+            throw new OnRepeatException(
+                $dto,
+                sprintf("Connector '%s': %s: %s", $this->getName(), $e::class, $e->getMessage()),
+                $e->getCode(),
+            );
         }
     }
 

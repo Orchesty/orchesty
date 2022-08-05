@@ -6,6 +6,8 @@ use Exception;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\CommonsBundle\Enum\AuthorizationTypeEnum;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDtoAbstract;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
@@ -15,6 +17,7 @@ use Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Form;
+use Hanaboso\PipesPhpSdk\Application\Model\Form\FormStack;
 use Hanaboso\Utils\String\Json;
 
 /**
@@ -52,7 +55,7 @@ final class WebhookApplication extends ApplicationAbstract implements WebhookApp
     /**
      * @return string
      */
-    public function getKey(): string
+    public function getName(): string
     {
         return 'webhook';
     }
@@ -60,7 +63,7 @@ final class WebhookApplication extends ApplicationAbstract implements WebhookApp
     /**
      * @return string
      */
-    public function getName(): string
+    public function getPublicName(): string
     {
         return 'Webhook';
     }
@@ -74,6 +77,7 @@ final class WebhookApplication extends ApplicationAbstract implements WebhookApp
     }
 
     /**
+     * @param ProcessDtoAbstract $dto
      * @param ApplicationInstall $applicationInstall
      * @param string             $method
      * @param string|null        $url
@@ -83,6 +87,7 @@ final class WebhookApplication extends ApplicationAbstract implements WebhookApp
      * @throws CurlException
      */
     public function getRequestDto(
+        ProcessDtoAbstract $dto,
         ApplicationInstall $applicationInstall,
         string $method,
         ?string $url = NULL,
@@ -94,19 +99,17 @@ final class WebhookApplication extends ApplicationAbstract implements WebhookApp
         $url;
         $data;
 
-        return new RequestDto(CurlManager::METHOD_POST, new Uri('https://example.com'));
+        return new RequestDto(new Uri('https://example.com'), CurlManager::METHOD_POST, $dto);
     }
 
     /**
-     * @param ApplicationInstall $applicationInstall
-     *
-     * @return Form
+     * @return FormStack
      */
-    public function getForm(ApplicationInstall $applicationInstall): Form
+    public function getFormStack(): FormStack
     {
-        $applicationInstall;
+        $formStack = new FormStack();
 
-        return new Form();
+        return $formStack->addForm(new Form('webhookForm','Webhook form'));
     }
 
     /**
@@ -147,7 +150,7 @@ final class WebhookApplication extends ApplicationAbstract implements WebhookApp
         $applicationInstall;
         $subscription;
 
-        return (new RequestDto(CurlManager::METHOD_POST, new Uri(self::SUBSCRIBE)))
+        return (new RequestDto(new Uri(self::SUBSCRIBE),CurlManager::METHOD_POST, new ProcessDto()))
             ->setBody(Json::encode(['url' => $url,]));
     }
 
@@ -162,7 +165,7 @@ final class WebhookApplication extends ApplicationAbstract implements WebhookApp
     {
         $applicationInstall;
 
-        return (new RequestDto(CurlManager::METHOD_POST, new Uri(self::UNSUBSCRIBE)))
+        return (new RequestDto(new Uri(self::UNSUBSCRIBE),CurlManager::METHOD_POST, new ProcessDto()))
             ->setBody(Json::encode(['id' => $id,]));
     }
 
@@ -209,14 +212,6 @@ final class WebhookApplication extends ApplicationAbstract implements WebhookApp
     public function getApplicationType(): string
     {
         return ApplicationTypeEnum::WEBHOOK;
-    }
-
-    /**
-     * @return Form
-     */
-    public function getSettingsForm(): Form
-    {
-        return new Form();
     }
 
 }

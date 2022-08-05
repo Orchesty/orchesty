@@ -6,13 +6,10 @@ use Exception;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Fakturoid\Connector\FakturoidAbstractConnector;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Fakturoid\FakturoidApplication;
-use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
-use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use HbPFConnectorsTests\DatabaseTestCaseAbstract;
-use HbPFConnectorsTests\DataProvider;
 
 /**
  * Class FakturoidAbstractConnectorTest
@@ -44,16 +41,6 @@ abstract class FakturoidAbstractConnectorTest extends DatabaseTestCaseAbstract
     abstract protected function setApplication(): FakturoidAbstractConnector;
 
     /**
-     * @throws ConnectorException
-     */
-    public function testProcessEvent(): void
-    {
-        self::expectException(ConnectorException::class);
-        self::expectExceptionCode(ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_EVENT);
-        $this->createConnector(DataProvider::createResponseDto())->processEvent(DataProvider::getProcessDto());
-    }
-
-    /**
      * @param string|null $account
      *
      * @return FakturoidAbstractConnector
@@ -64,14 +51,11 @@ abstract class FakturoidAbstractConnectorTest extends DatabaseTestCaseAbstract
         $applicationInstall = new ApplicationInstall();
         $applicationInstall->setSettings(
             [
-                ApplicationInterface::AUTHORIZATION_SETTINGS => [
+                ApplicationInterface::AUTHORIZATION_FORM => [
                     BasicApplicationInterface::USER     => 'hana******.com',
                     BasicApplicationInterface::PASSWORD => 'cf4*****191bbef40dcd86*****625ec4c4*****',
+                    FakturoidApplication::ACCOUNT       => $account,
                 ],
-                ApplicationAbstract::FORM                    =>
-                    [
-                        FakturoidApplication::ACCOUNT => $account,
-                    ],
             ],
         );
 
@@ -94,11 +78,9 @@ abstract class FakturoidAbstractConnectorTest extends DatabaseTestCaseAbstract
         $applicationInstall = new ApplicationInstall();
         $applicationInstall->setSettings(
             [
-                ApplicationInterface::AUTHORIZATION_SETTINGS => [
+                ApplicationInterface::AUTHORIZATION_FORM => [
                     BasicApplicationInterface::USER => 'hana******.com',
-                ],
-                ApplicationAbstract::FORM                    => [
-                    FakturoidApplication::ACCOUNT => $account,
+                    FakturoidApplication::ACCOUNT   => $account,
                 ],
             ],
         );

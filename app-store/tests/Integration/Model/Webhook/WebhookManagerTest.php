@@ -191,7 +191,7 @@ final class WebhookManagerTest extends DatabaseTestCaseAbstract
     {
         parent::setUp();
 
-        $this->application = self::$container->get('hbpf.application.webhook');
+        $this->application = self::getContainer()->get('hbpf.application.webhook');
         $this->repository  = $this->dm->getRepository(Webhook::class);
     }
 

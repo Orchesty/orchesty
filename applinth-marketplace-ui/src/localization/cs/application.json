@@ -1,0 +1,15 @@
+{
+  "application": {
+      "details": "Detaily",
+      "webhooks": "Webhooky",
+      "settings": "Nastavení",
+    "form": {
+      "clientID": "ID Klienta",
+      "clientID_name": "id klienta",
+      "clientSecret": "Heslo Klienta",
+      "clientSecret_name": "heslo klienta",
+      "password": "Heslo",
+      "password_name": "heslo"
+    }
+  }
+}

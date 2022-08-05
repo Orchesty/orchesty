@@ -1,0 +1,29 @@
+version: '3.5'
+services:
+
+    console-api:
+        image: console-api:tag
+        build: ./docker
+        user: ${DEV_UID}:${DEV_GID}
+        working_dir: /var/www
+        ports:
+            - ${DEV_IP}:3000:3000
+        volumes:
+            - ./:/var/www
+        environment:
+            # Envs for tests are load from .jest/testEnvs.js
+            JEST_DOCKER: 1
+            APP_ENV: 'debug'
+            MONGODB_DSN: mongodb://mongo/console-api
+            FIREBASE_API_KEY: AIzaSyANIRePUXX1f8fr-IS2ljSU8FgLkC53a0o
+        command: sleep infinity
+
+    mongo:
+        image: mongo:latest
+        ports:
+            - ${DEV_IP}:27017:27017
+        volumes:
+            - mongo:/data/db
+
+volumes:
+    mongo: {}

@@ -1,5 +1,7 @@
 {
     "http": "GET /api/notification_settings/Unknown",
     "body": [],
-    "headers": []
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
 }

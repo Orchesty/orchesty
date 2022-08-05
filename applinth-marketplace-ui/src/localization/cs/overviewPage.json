@@ -1,0 +1,10 @@
+{
+  "overviewPage": {
+    "installedApps":  {
+      "heading": "Nainstalované Aplikace"
+    },
+    "overview": {
+      "heading": "Přehled"
+    }
+  }
+}

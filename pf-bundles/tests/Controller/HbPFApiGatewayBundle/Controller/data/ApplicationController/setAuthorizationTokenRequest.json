@@ -3,5 +3,7 @@
     "body": {
         "token": "token"
     },
-    "headers": []
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
 }

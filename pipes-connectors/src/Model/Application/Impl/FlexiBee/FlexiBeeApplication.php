@@ -7,6 +7,7 @@ use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Enum\AuthorizationTypeEnum;
+use Hanaboso\CommonsBundle\Process\ProcessDtoAbstract;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
@@ -15,6 +16,7 @@ use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Form;
+use Hanaboso\PipesPhpSdk\Application\Model\Form\FormStack;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\Utils\Date\DateTimeUtils;
@@ -73,7 +75,7 @@ final class FlexiBeeApplication extends BasicApplicationAbstract
     /**
      * @return string
      */
-    public function getKey(): string
+    public function getName(): string
     {
         return self::KEY;
     }
@@ -81,7 +83,7 @@ final class FlexiBeeApplication extends BasicApplicationAbstract
     /**
      * @return string
      */
-    public function getName(): string
+    public function getPublicName(): string
     {
         return 'FlexiBee Application';
     }
@@ -95,6 +97,7 @@ final class FlexiBeeApplication extends BasicApplicationAbstract
     }
 
     /**
+     * @param ProcessDtoAbstract $dto
      * @param ApplicationInstall $applicationInstall
      * @param string             $method
      * @param string|null        $url
@@ -103,26 +106,25 @@ final class FlexiBeeApplication extends BasicApplicationAbstract
      * @return RequestDto
      * @throws ApplicationInstallException
      * @throws CurlException
-     * @throws DateTimeException
-     * @throws MongoDBException
      */
     public function getRequestDto(
+        ProcessDtoAbstract $dto,
         ApplicationInstall $applicationInstall,
         string $method,
         ?string $url = NULL,
         ?string $data = NULL,
     ): RequestDto
     {
-        $request = new RequestDto($method, $this->getUri($url));
-        if ($applicationInstall->getSettings()[self::FORM][self::AUTH] == self::AUTH_JSON) {
+        $request = new RequestDto($this->getUri($url), $method, $dto);
+        if ($applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][self::AUTH] == self::AUTH_JSON) {
             $request->setHeaders(
                 [
                     'Content-Type'    => 'application/json',
                     'Accept'          => 'application/json',
-                    'X-authSessionId' => $this->getApiToken($applicationInstall),
+                    'X-authSessionId' => $this->getApiToken($applicationInstall, $dto),
                 ],
             );
-        } else if ($applicationInstall->getSettings()[self::FORM][self::AUTH] == self::AUTH_HTTP) {
+        } else if ($applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][self::AUTH] == self::AUTH_HTTP) {
             $request->setHeaders(
                 [
                     'Content-Type'  => 'application/json',
@@ -131,9 +133,9 @@ final class FlexiBeeApplication extends BasicApplicationAbstract
                         sprintf(
                             ' Basic %s:%s',
                             $applicationInstall->getSettings(
-                            )[self::AUTHORIZATION_SETTINGS][BasicApplicationInterface::USER],
+                            )[ApplicationInterface::AUTHORIZATION_FORM][BasicApplicationInterface::USER],
                             $applicationInstall->getSettings(
-                            )[self::AUTHORIZATION_SETTINGS][BasicApplicationInterface::PASSWORD],
+                            )[ApplicationInterface::AUTHORIZATION_FORM][BasicApplicationInterface::PASSWORD],
                         ),
                     ),
                 ],
@@ -156,7 +158,7 @@ final class FlexiBeeApplication extends BasicApplicationAbstract
      */
     public function getUrl(ApplicationInstall $applicationInstall, ?string $url): Uri
     {
-        $host = $applicationInstall->getSettings()[self::FORM][self::FLEXIBEE_URL] ?? '';
+        $host = $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][self::FLEXIBEE_URL] ?? '';
 
         if (empty($host)) {
             throw new ApplicationInstallException(
@@ -169,21 +171,24 @@ final class FlexiBeeApplication extends BasicApplicationAbstract
     }
 
     /**
-     * @return Form
+     * @return FormStack
      */
-    public function getSettingsForm(): Form
+    public function getFormStack(): FormStack
     {
         $authTypeField = new Field(Field::SELECT_BOX, self::AUTH, 'Authorize type', NULL, TRUE);
         $authTypeField->setChoices([self::AUTH_HTTP, self::AUTH_JSON]);
 
-        $form = new Form();
+        $form = new Form(ApplicationInterface::AUTHORIZATION_FORM, 'Authorization settings');
         $form
             ->addField(new Field(Field::TEXT, BasicApplicationInterface::USER, 'User', NULL, TRUE))
             ->addField(new Field(Field::PASSWORD, BasicApplicationInterface::PASSWORD, 'Password', NULL, TRUE))
             ->addField(new Field(Field::URL, self::FLEXIBEE_URL, 'Flexibee URL', NULL, TRUE))
             ->addField($authTypeField);
 
-        return $form;
+        $formStack = new FormStack();
+        $formStack->addForm($form);
+
+        return $formStack;
     }
 
     /**
@@ -195,18 +200,19 @@ final class FlexiBeeApplication extends BasicApplicationAbstract
     {
         $settings = $applicationInstall->getSettings();
 
-        return isset($settings[ApplicationInterface::AUTHORIZATION_SETTINGS][self::USER])
-            && isset($settings[ApplicationInterface::AUTHORIZATION_SETTINGS][self::PASSWORD]);
+        return isset($settings[ApplicationInterface::AUTHORIZATION_FORM][self::USER])
+            && isset($settings[ApplicationInterface::AUTHORIZATION_FORM][self::PASSWORD]);
     }
 
     /**
      * @param ApplicationInstall $applicationInstall
+     * @param ProcessDtoAbstract $dto
      *
      * @return RequestDto
      * @throws ApplicationInstallException
      * @throws CurlException
      */
-    private function getApiTokenDto(ApplicationInstall $applicationInstall): RequestDto
+    private function getApiTokenDto(ApplicationInstall $applicationInstall, ProcessDtoAbstract $dto): RequestDto
     {
         $settings = $applicationInstall->getSettings();
         if (!$this->isAuthorized($applicationInstall)) {
@@ -216,12 +222,13 @@ final class FlexiBeeApplication extends BasicApplicationAbstract
             );
         }
 
-        $user     = $settings[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::USER];
-        $password = $settings[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::PASSWORD];
+        $user     = $settings[ApplicationInterface::AUTHORIZATION_FORM][BasicApplicationInterface::USER];
+        $password = $settings[ApplicationInterface::AUTHORIZATION_FORM][BasicApplicationInterface::PASSWORD];
 
         $request = new RequestDto(
-            CurlManager::METHOD_POST,
             $this->getUrl($applicationInstall, self::ENDPOINT_LOGIN),
+            CurlManager::METHOD_POST,
+            $dto,
         );
 
         $request->setHeaders(
@@ -258,6 +265,7 @@ final class FlexiBeeApplication extends BasicApplicationAbstract
 
     /**
      * @param ApplicationInstall $applicationInstall
+     * @param ProcessDtoAbstract $dto
      *
      * @return string
      * @throws ApplicationInstallException
@@ -265,12 +273,12 @@ final class FlexiBeeApplication extends BasicApplicationAbstract
      * @throws DateTimeException
      * @throws MongoDBException
      */
-    private function getApiToken(ApplicationInstall $applicationInstall): string
+    private function getApiToken(ApplicationInstall $applicationInstall, ProcessDtoAbstract $dto): string
     {
         $token = $this->getApiTokenFromSettings($applicationInstall);
 
         if (!$token) {
-            $res = $this->curlManager->send($this->getApiTokenDto($applicationInstall));
+            $res = $this->curlManager->send($this->getApiTokenDto($applicationInstall, $dto));
 
             if ($res->getStatusCode() != 200) {
                 throw new Exception(self::INCORECT_RESPONSE);
@@ -278,7 +286,9 @@ final class FlexiBeeApplication extends BasicApplicationAbstract
 
             try {
                 $token = $res->getJsonBody();
-            } catch (Throwable) {
+            } catch (Throwable $e) {
+                $e;
+
                 throw new Exception(self::CANNOT_GET_BODY);
             }
 

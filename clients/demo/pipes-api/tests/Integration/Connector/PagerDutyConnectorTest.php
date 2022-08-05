@@ -29,11 +29,11 @@ final class PagerDutyConnectorTest extends KernelTestCaseAbstract
     private PagerDutyConnector $connector;
 
     /**
-     * @covers \Demo\Connector\PagerDutyConnector::getId
+     * @covers \Demo\Connector\PagerDutyConnector::getName
      */
-    public function testGetId(): void
+    public function testGetName(): void
     {
-        self::assertEquals('pager_duty.schedule', $this->connector->getId());
+        self::assertEquals('pager_duty.schedule', $this->connector->getName());
     }
 
     /**
@@ -51,7 +51,7 @@ final class PagerDutyConnectorTest extends KernelTestCaseAbstract
                     File::getContent(__DIR__ . '/data/pagerDuty.json'),
                     [],
                 ),
-            )->processAction(new ProcessDto())->getData(),
+            )->processAction((new ProcessDto())->setData('{}'))->getData(),
         );
 
         self::assertEquals(40, $data['Radek Jirsa']['hours']);
@@ -76,7 +76,7 @@ final class PagerDutyConnectorTest extends KernelTestCaseAbstract
                     File::getContent(__DIR__ . '/data/pagerDutyHours.json'),
                     [],
                 ),
-            )->processAction(new ProcessDto())->getData(),
+            )->processAction((new ProcessDto())->setData('{}'))->getData(),
         );
 
         self::assertEquals(64, $data['Radek Jirsa']['hours']);
@@ -98,7 +98,7 @@ final class PagerDutyConnectorTest extends KernelTestCaseAbstract
         self::expectExceptionMessage('Server response with status code [500]');
 
         $this->prepareService(static fn() => new ResponseDto(500, '', '', []))
-            ->processAction(new ProcessDto())->getData();
+            ->processAction((new ProcessDto())->setData('{}'))->getData();
     }
 
     /**
@@ -120,7 +120,7 @@ final class PagerDutyConnectorTest extends KernelTestCaseAbstract
     {
         parent::setUp();
 
-        $this->connector = self::$container->get('hbpf.connector.pager-duty');
+        $this->connector = self::getContainer()->get('hbpf.connector.pager-duty');
     }
 
     /**
@@ -133,7 +133,10 @@ final class PagerDutyConnectorTest extends KernelTestCaseAbstract
         $curl = self::createMock(CurlManagerInterface::class);
         $curl->method('send')->willReturnCallback($closure);
 
-        return new PagerDutyConnector($curl);
+        $pagerDutyConnector =  new PagerDutyConnector();
+        $pagerDutyConnector->setSender($curl);
+
+        return $pagerDutyConnector;
     }
 
 }

@@ -80,7 +80,7 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
                     NotificationSettings::CLASS_NAME     => NullCurlHandler::class,
                     NotificationSettings::EVENTS         => [],
                     NotificationSettings::SETTINGS       => [],
-                    NotificationSettings::STATUS         => TRUE,
+                    NotificationSettings::STATUS         => FALSE,
                     NotificationSettings::STATUS_MESSAGE => NULL,
                 ], [
                     NotificationSettings::ID             => $handlers[1][NotificationSettings::ID],
@@ -91,7 +91,7 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
                     NotificationSettings::CLASS_NAME     => NullEmailHandler::class,
                     NotificationSettings::EVENTS         => [],
                     NotificationSettings::SETTINGS       => [],
-                    NotificationSettings::STATUS         => TRUE,
+                    NotificationSettings::STATUS         => FALSE,
                     NotificationSettings::STATUS_MESSAGE => NULL,
                 ], [
                     NotificationSettings::ID             => $handlers[2][NotificationSettings::ID],
@@ -102,7 +102,7 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
                     NotificationSettings::CLASS_NAME     => NullRabitHandler::class,
                     NotificationSettings::EVENTS         => [],
                     NotificationSettings::SETTINGS       => [],
-                    NotificationSettings::STATUS         => TRUE,
+                    NotificationSettings::STATUS         => FALSE,
                     NotificationSettings::STATUS_MESSAGE => NULL,
                 ], [
                     NotificationSettings::ID             => $handlers[3][NotificationSettings::ID],
@@ -113,7 +113,7 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
                     NotificationSettings::CLASS_NAME     => NullUnknownHandler::class,
                     NotificationSettings::EVENTS         => [],
                     NotificationSettings::SETTINGS       => [],
-                    NotificationSettings::STATUS         => TRUE,
+                    NotificationSettings::STATUS         => FALSE,
                     NotificationSettings::STATUS_MESSAGE => NULL,
                 ], [
                     NotificationSettings::ID             => $handlers[4][NotificationSettings::ID],
@@ -124,7 +124,7 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
                     NotificationSettings::CLASS_NAME     => CurlNotificationHandler::class,
                     NotificationSettings::EVENTS         => [],
                     NotificationSettings::SETTINGS       => [],
-                    NotificationSettings::STATUS         => TRUE,
+                    NotificationSettings::STATUS         => FALSE,
                     NotificationSettings::STATUS_MESSAGE => NULL,
                 ], [
                     NotificationSettings::ID             => $handlers[5][NotificationSettings::ID],
@@ -141,7 +141,7 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
                     NotificationSettings::SETTINGS       => [
                         EmailDto::EMAILS => ['one@example.com', 'two@example.com'],
                     ],
-                    NotificationSettings::STATUS         => TRUE,
+                    NotificationSettings::STATUS         => FALSE,
                     NotificationSettings::STATUS_MESSAGE => NULL,
                 ], [
                     NotificationSettings::ID             => $handlers[6][NotificationSettings::ID],
@@ -152,7 +152,7 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
                     NotificationSettings::CLASS_NAME     => RabbitNotificationHandler::class,
                     NotificationSettings::EVENTS         => [],
                     NotificationSettings::SETTINGS       => [],
-                    NotificationSettings::STATUS         => TRUE,
+                    NotificationSettings::STATUS         => FALSE,
                     NotificationSettings::STATUS_MESSAGE => NULL,
                 ],
             ],
@@ -194,7 +194,7 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
                 NotificationSettings::SETTINGS       => [
                     EmailDto::EMAILS => ['one@example.com', 'two@example.com'],
                 ],
-                NotificationSettings::STATUS         => TRUE,
+                NotificationSettings::STATUS         => FALSE,
                 NotificationSettings::STATUS_MESSAGE => NULL,
             ],
             $settings,
@@ -525,7 +525,7 @@ final class NotificationSettingsManagerTest extends DatabaseTestCaseAbstract
     {
         parent::setUp();
 
-        $this->manager = self::$container->get('notification.manager.settings');
+        $this->manager = self::getContainer()->get('notification.manager.settings');
     }
 
 }

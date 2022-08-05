@@ -5,8 +5,8 @@ namespace PipesPhpSdkTests\Integration\Command;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
 use Hanaboso\CommonsBundle\Redirect\RedirectInterface;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1\OAuth1ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth1Dto;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider;
@@ -72,7 +72,7 @@ final class AuthorizeUserCommandTest extends DatabaseTestCaseAbstract
             ->setUser('user')
             ->setSettings(
                 [
-                    BasicApplicationInterface::AUTHORIZATION_SETTINGS => [
+                    ApplicationInterface::AUTHORIZATION_FORM => [
                         OAuth1ApplicationInterface::CONSUMER_KEY => 'consumer.key',
                         OAuth1ApplicationInterface::TOKEN        => 'secret.key',
                     ],

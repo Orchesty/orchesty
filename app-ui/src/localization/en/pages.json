@@ -1,0 +1,16 @@
+{
+"pages": {
+  "topology": "Topology",
+  "lastRun": "Last run",
+  "nextRun": "Next run",
+  "editor": "Editor",
+  "run": "Run",
+  "actions": "Actions",
+  "enable": "Enable",
+  "test": "Test",
+  "clone": "Clone",
+  "publish": "Publish",
+  "disable": "Disable",
+  "noDataAvailable": "No data available"
+}
+}

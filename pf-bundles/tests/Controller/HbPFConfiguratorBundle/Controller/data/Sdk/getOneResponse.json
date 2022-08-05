@@ -2,7 +2,8 @@
     "http": 200,
     "body": {
         "id": "5e32a9b8a1b2a70fef6fa273",
-        "key": "One",
-        "value": "One"
+        "name": "One",
+        "url": "One",
+        "headers": []
     }
 }

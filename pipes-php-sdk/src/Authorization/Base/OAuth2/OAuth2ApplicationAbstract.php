@@ -8,7 +8,6 @@ use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
-use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth2Dto;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
@@ -80,7 +79,7 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
     {
         return isset(
             $applicationInstall->getSettings(
-            )[ApplicationInterface::AUTHORIZATION_SETTINGS][OAuth2ApplicationInterface::TOKEN][OAuth2Provider::ACCESS_TOKEN],
+            )[ApplicationInterface::AUTHORIZATION_FORM][ApplicationInterface::TOKEN][OAuth2Provider::ACCESS_TOKEN],
         );
     }
 
@@ -90,22 +89,24 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
      * @return mixed[]
      * @throws ApplicationInstallException
      */
-    public function getApplicationForm(ApplicationInstall $applicationInstall): array
+    public function getApplicationForms(ApplicationInstall $applicationInstall): array
     {
-        $form = parent::getApplicationForm($applicationInstall);
+        $form = parent::getApplicationForms($applicationInstall);
 
-        return array_merge(
-            $form,
+        $form[ApplicationInterface::AUTHORIZATION_FORM][ApplicationInterface::FIELDS] = array_merge(
+            $form[ApplicationInterface::AUTHORIZATION_FORM][ApplicationInterface::FIELDS],
             [
                 (new Field(
                     Field::TEXT,
-                    ApplicationInterface::REDIRECT_URL,
+                    ApplicationInterface::OAUTH_REDIRECT_URL,
                     'Redirect URL',
                     $this->provider->getRedirectUri(),
                 )
                 )->setReadOnly(TRUE)->toArray(),
             ],
         );
+
+        return $form;
     }
 
     /**
@@ -129,9 +130,9 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
             );
         }
 
-        $settings                                                                            = $applicationInstall->getSettings(
+        $settings                                                                        = $applicationInstall->getSettings(
         );
-        $settings[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN] = $token;
+        $settings[ApplicationInterface::AUTHORIZATION_FORM][ApplicationInterface::TOKEN] = $token;
         $applicationInstall->addSettings($settings);
 
         return $applicationInstall;
@@ -145,7 +146,7 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
     public function getFrontendRedirectUrl(ApplicationInstall $applicationInstall): string
     {
         return $applicationInstall->getSettings(
-        )[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::REDIRECT_URL];
+        )[ApplicationInterface::AUTHORIZATION_FORM][ApplicationInterface::FRONTEND_REDIRECT_URL];
     }
 
     /**
@@ -161,7 +162,7 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
     {
         $settings = $applicationInstall->getSettings();
 
-        $settings[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::REDIRECT_URL] = $redirectUrl;
+        $settings[ApplicationInterface::AUTHORIZATION_FORM][ApplicationInterface::FRONTEND_REDIRECT_URL] = $redirectUrl;
         $applicationInstall->addSettings($settings);
 
         return $this;
@@ -186,7 +187,7 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
 
         $settings = $applicationInstall->getSettings();
 
-        $settings[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN] = $token;
+        $settings[ApplicationInterface::AUTHORIZATION_FORM][ApplicationInterface::TOKEN] = $token;
         $applicationInstall->addSettings($settings);
 
         return $this;
@@ -200,36 +201,15 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
      */
     public function getAccessToken(ApplicationInstall $applicationInstall): string
     {
-        if (isset($applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN][OAuth2Provider::ACCESS_TOKEN])) {
+        if (isset($applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][ApplicationInterface::TOKEN][OAuth2Provider::ACCESS_TOKEN])) {
             return $applicationInstall->getSettings(
-            )[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN][OAuth2Provider::ACCESS_TOKEN];
+            )[ApplicationInterface::AUTHORIZATION_FORM][ApplicationInterface::TOKEN][OAuth2Provider::ACCESS_TOKEN];
         } else {
             throw new ApplicationInstallException(
                 'There is no access token',
                 ApplicationInstallException::AUTHORIZATION_OAUTH2_ERROR,
             );
         }
-    }
-
-    /**
-     * @param ApplicationInstall $applicationInstall
-     * @param mixed[]            $settings
-     *
-     * @return ApplicationInstall
-     */
-    public function setApplicationSettings(ApplicationInstall $applicationInstall, array $settings): ApplicationInstall
-    {
-        $applicationInstall = parent::setApplicationSettings($applicationInstall, $settings);
-
-        foreach ($applicationInstall->getSettings()[ApplicationAbstract::FORM] ?? [] as $key => $value) {
-            if (in_array($key, self::CREDENTIALS, TRUE)) {
-                $settings                                                          = $applicationInstall->getSettings();
-                $settings[BasicApplicationInterface::AUTHORIZATION_SETTINGS][$key] = $value;
-                $applicationInstall->addSettings($settings);
-            }
-        }
-
-        return $applicationInstall;
     }
 
     /**
@@ -258,7 +238,7 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
     protected function getTokens(ApplicationInstall $applicationInstall): array
     {
         return $applicationInstall->getSettings(
-        )[ApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN];
+        )[ApplicationInterface::AUTHORIZATION_FORM][ApplicationInterface::TOKEN];
     }
 
     /**

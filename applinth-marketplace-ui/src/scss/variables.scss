@@ -1,0 +1,36 @@
+.applinth-w-400 {
+  max-width: 400px;
+}
+
+.applinth-pointer {
+  cursor: pointer;
+}
+
+@font-face {
+  font-family: Montserrat;
+  font-style: normal;
+}
+
+//ROOT
+$font-size-root: 0.875rem;
+
+//INPUT
+$input-font-size: 0.875rem;
+$label-font-size: 0.875rem;
+
+//DATA TABLE
+$data-table-regular-row-font-size: 0.875rem;
+$data-table-regular-header-font-size: 0.875rem;
+
+//BUTTON
+$btn-text-transform: none;
+$btn-font-sizes: (
+  'small': .875rem,
+);
+
+//FONT FAMILY
+$body-font-family: 'Montserrat', sans-serif;
+$heading-font-family: 'Montserrat', sans-serif;
+
+//TOOLTIP
+$tooltip-background-color: rgba(28, 40, 73, 1);

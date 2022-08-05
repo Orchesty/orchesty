@@ -4,13 +4,14 @@ namespace HbPFConnectorsTests\Integration\Model\Application\Impl\Airtable\Connec
 
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDtoAbstract;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Airtable\AirtableApplication;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Airtable\Connector\AirtableNewRecordConnector;
-use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
-use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
-use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
+use Hanaboso\Utils\File\File;
 use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
 use HbPFConnectorsTests\MockCurlMethod;
@@ -36,10 +37,10 @@ final class AirtableNewRecordConnectorTest extends DatabaseTestCaseAbstract
 
         $airtableNewRecordConnector = $this->setApplicationAndMock(self::API_KEY);
 
-        $newRecordFile = file_get_contents(sprintf('%s/Data/newRecord.json', __DIR__), TRUE);
+        $newRecordFile = File::getContent(sprintf('%s/Data/newRecord.json', __DIR__));
 
         $response = $airtableNewRecordConnector->processAction(
-            DataProvider::getProcessDto('airtable', 'user', (string) $newRecordFile),
+            DataProvider::getProcessDto('airtable', 'user', $newRecordFile),
         );
 
         self::assertSuccessProcessResponse($response, 'response200.json');
@@ -53,14 +54,14 @@ final class AirtableNewRecordConnectorTest extends DatabaseTestCaseAbstract
         $this->mockCurl([new MockCurlMethod(500, 'response500.json', [])]);
 
         $airtableNewRecordConnector = $this->setApplicationAndMock(self::API_KEY);
-        $newRecordFileNoFields      = file_get_contents(sprintf('%s/Data/newRecordNoFields.json', __DIR__), TRUE);
+        $newRecordFileNoFields      = File::getContent(sprintf('%s/Data/newRecordNoFields.json', __DIR__));
         $response                   = $airtableNewRecordConnector->processAction(
-            DataProvider::getProcessDto('airtable', 'user', (string) $newRecordFileNoFields),
+            DataProvider::getProcessDto('airtable', 'user', $newRecordFileNoFields),
         );
 
         self::assertFailedProcessResponse($response, 'response500.json');
 
-        self::assertEquals(ProcessDto::STOP_AND_FAILED, $response->getHeaders()['pf-result-code']);
+        self::assertEquals(ProcessDto::STOP_AND_FAILED, $response->getHeaders()['result-code']);
     }
 
     /**
@@ -70,37 +71,26 @@ final class AirtableNewRecordConnectorTest extends DatabaseTestCaseAbstract
     {
         $airtableNewRecordConnector = $this->setApplicationAndMock();
 
-        $newRecordFile = file_get_contents(sprintf('%s/Data/newRecord.json', __DIR__), TRUE);
+        $newRecordFile = File::getContent(sprintf('%s/Data/newRecord.json', __DIR__));
 
         $response = $airtableNewRecordConnector->processAction(
-            DataProvider::getProcessDto('airtable', 'user', (string) $newRecordFile),
+            DataProvider::getProcessDto('airtable', 'user', $newRecordFile),
         );
 
         self::assertFailedProcessResponse($response, 'newRecord.json');
 
-        self::assertEquals(ProcessDto::STOP_AND_FAILED, $response->getHeaders()['pf-result-code']);
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function testProcessEvent(): void
-    {
-        $airtableNewRecordConnector = $this->setApplication();
-
-        self::expectException(ConnectorException::class);
-        $airtableNewRecordConnector->processEvent(DataProvider::getProcessDto('airtable', 'user', ''));
+        self::assertEquals(ProcessDtoAbstract::STOP_AND_FAILED, $response->getHeaders()['result-code']);
     }
 
     /**
      *
      */
-    public function testGetId(): void
+    public function testGetName(): void
     {
-        $airtableNewRecordConnector = $this->setApplication();
+        $airtableNewRecordConnector = new AirtableNewRecordConnector();
         self::assertEquals(
             'airtable_new_record',
-            $airtableNewRecordConnector->getId(),
+            $airtableNewRecordConnector->getName(),
         );
     }
 
@@ -117,16 +107,19 @@ final class AirtableNewRecordConnectorTest extends DatabaseTestCaseAbstract
 
     /**
      * @return AirtableNewRecordConnector
+     * @throws Exception
      */
     private function setApplication(): AirtableNewRecordConnector
     {
-        $app                        = self::$container->get('hbpf.application.airtable');
-        $airtableNewRecordConnector = new AirtableNewRecordConnector(
-            self::$container->get('hbpf.transport.curl_manager'),
-            $this->dm,
-        );
-
-        $airtableNewRecordConnector->setApplication($app);
+        /** @var AirtableApplication $app */
+        $app = self::getContainer()->get('hbpf.application.airtable');
+        /** @var CurlManager $curl */
+        $curl                       = self::getContainer()->get('hbpf.transport.curl_manager');
+        $airtableNewRecordConnector = new AirtableNewRecordConnector();
+        $airtableNewRecordConnector
+            ->setSender($curl)
+            ->setDb($this->dm)
+            ->setApplication($app);
 
         return $airtableNewRecordConnector;
     }
@@ -142,11 +135,8 @@ final class AirtableNewRecordConnectorTest extends DatabaseTestCaseAbstract
         $applicationInstall = new ApplicationInstall();
         $applicationInstall->setSettings(
             [
-                BasicApplicationInterface::AUTHORIZATION_SETTINGS =>
-                    [
-                        BasicApplicationAbstract::TOKEN => self::API_KEY,
-                    ],
-                ApplicationAbstract::FORM                         => [
+                ApplicationInterface::AUTHORIZATION_FORM => [
+                    BasicApplicationAbstract::TOKEN => self::API_KEY,
                     AirtableApplication::BASE_ID    => $baseId,
                     AirtableApplication::TABLE_NAME => self::TABLE_NAME,
                 ],

@@ -2,13 +2,15 @@
 
 namespace Hanaboso\HbPFConnectors\Model\Application\Impl\Zendesk;
 
+use Hanaboso\CommonsBundle\Process\ProcessDtoAbstract;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
-use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Form;
+use Hanaboso\PipesPhpSdk\Application\Model\Form\FormStack;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth2Dto;
@@ -32,7 +34,7 @@ final class ZendeskApplication extends OAuth2ApplicationAbstract
     /**
      * @return string
      */
-    public function getKey(): string
+    public function getName(): string
     {
         return 'zendesk';
     }
@@ -40,7 +42,7 @@ final class ZendeskApplication extends OAuth2ApplicationAbstract
     /**
      * @return string
      */
-    public function getName(): string
+    public function getPublicName(): string
     {
         return 'Zendesk';
     }
@@ -54,23 +56,25 @@ final class ZendeskApplication extends OAuth2ApplicationAbstract
     }
 
     /**
+     * @param ProcessDtoAbstract $dto
      * @param ApplicationInstall $applicationInstall
      * @param string             $method
      * @param string|null        $url
      * @param string|null        $data
      *
      * @return RequestDto
-     * @throws CurlException
      * @throws ApplicationInstallException
+     * @throws CurlException
      */
     public function getRequestDto(
+        ProcessDtoAbstract $dto,
         ApplicationInstall $applicationInstall,
         string $method,
         ?string $url = NULL,
         ?string $data = NULL,
     ): RequestDto
     {
-        $request = new RequestDto($method, $this->getUri($url));
+        $request = new RequestDto($this->getUri($url), $method, $dto);
         $request->setHeaders(
             [
                 'Content-Type'  => 'application/json',
@@ -87,16 +91,22 @@ final class ZendeskApplication extends OAuth2ApplicationAbstract
     }
 
     /**
-     * @inheritDoc1
+     * @return FormStack
      */
-    public function getSettingsForm(): Form
+    public function getFormStack(): FormStack
     {
-        return (new Form())
+        $form = new Form(ApplicationInterface::AUTHORIZATION_FORM, 'Authorization settings');
+        $form
             ->addField((new Field(Field::TEXT, self::SUBDOMAIN, 'Subdomain', NULL, TRUE)))
             ->addField((new Field(Field::TEXT, OAuth2ApplicationInterface::CLIENT_ID, 'Client Id', NULL, TRUE)))
             ->addField(
                 (new Field(Field::TEXT, OAuth2ApplicationInterface::CLIENT_SECRET, 'Client Secret', NULL, TRUE)),
             );
+
+        $formStack = new FormStack();
+        $formStack->addForm($form);
+
+        return $formStack;
     }
 
     /**
@@ -106,7 +116,10 @@ final class ZendeskApplication extends OAuth2ApplicationAbstract
      */
     public function getAuthUrlWithSubdomain(ApplicationInstall $applicationInstall): string
     {
-        return sprintf(self::AUTH_URL, $applicationInstall->getSettings()[ApplicationAbstract::FORM][self::SUBDOMAIN]);
+        return sprintf(
+            self::AUTH_URL,
+            $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][self::SUBDOMAIN],
+        );
     }
 
     /**
@@ -116,7 +129,10 @@ final class ZendeskApplication extends OAuth2ApplicationAbstract
      */
     public function getTokenUrlWithSubdomain(ApplicationInstall $applicationInstall): string
     {
-        return sprintf(self::TOKEN_URL, $applicationInstall->getSettings()[ApplicationAbstract::FORM][self::SUBDOMAIN]);
+        return sprintf(
+            self::TOKEN_URL,
+            $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][self::SUBDOMAIN],
+        );
     }
 
     /**

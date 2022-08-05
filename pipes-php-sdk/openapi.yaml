@@ -174,167 +174,6 @@ paths:
                 500:
                     $ref: '#/components/responses/500'
 
-    /joiner/list:
-        get:
-            tags: [ Joiners ]
-            responses:
-                200:
-                    $ref: '#/components/responses/Connectors'
-                500:
-                    $ref: '#/components/responses/500'
-
-    /joiner/{id}/join:
-        post:
-            tags: [ Joiners ]
-            parameters:
-                -   $ref: '#/components/parameters/Id'
-            responses:
-                200:
-                    $ref: '#/components/responses/Empty'
-                500:
-                    $ref: '#/components/responses/500'
-
-    /joiner/{id}/join/test:
-        post:
-            tags: [ Joiners ]
-            parameters:
-                -   $ref: '#/components/parameters/Id'
-            responses:
-                200:
-                    $ref: '#/components/responses/Empty'
-                500:
-                    $ref: '#/components/responses/500'
-
-    /longRunning/list:
-        get:
-            tags: [ Long Running Nodes ]
-            responses:
-                200:
-                    $ref: '#/components/responses/Connectors'
-                500:
-                    $ref: '#/components/responses/500'
-
-    /longRunning/{id}/process:
-        get:
-            tags: [ Long Running Nodes ]
-            parameters:
-                -   $ref: '#/components/parameters/Id'
-            responses:
-                200:
-                    $ref: '#/components/responses/Empty'
-                500:
-                    $ref: '#/components/responses/500'
-        post:
-            tags: [ Long Running Nodes ]
-            parameters:
-                -   $ref: '#/components/parameters/Id'
-            responses:
-                200:
-                    $ref: '#/components/responses/Empty'
-                500:
-                    $ref: '#/components/responses/500'
-
-    /longRunning/{id}/process/test:
-        get:
-            tags: [ Long Running Nodes ]
-            parameters:
-                -   $ref: '#/components/parameters/Id'
-            responses:
-                200:
-                    $ref: '#/components/responses/Empty'
-                500:
-                    $ref: '#/components/responses/500'
-
-    /longRunning/id/topology/{topology}/getTasks:
-        get:
-            tags: [ Long Running Nodes ]
-            parameters:
-                -   $ref: '#/components/parameters/Topology'
-            responses:
-                200:
-                    $ref: '#/components/responses/TopologyTasks'
-                500:
-                    $ref: '#/components/responses/500'
-
-    /longRunning/name/topology/{topology}/getTasks:
-        get:
-            tags: [ Long Running Nodes ]
-            parameters:
-                -   $ref: '#/components/parameters/Topology'
-            responses:
-                200:
-                    $ref: '#/components/responses/TopologyTasks'
-                500:
-                    $ref: '#/components/responses/500'
-
-    /longRunning/id/topology/{topology}/node/{node}/getTasks:
-        get:
-            tags: [ Long Running Nodes ]
-            parameters:
-                -   $ref: '#/components/parameters/Topology'
-                -   $ref: '#/components/parameters/Node'
-            responses:
-                200:
-                    $ref: '#/components/responses/TopologyTasks'
-                500:
-                    $ref: '#/components/responses/500'
-
-    /longRunning/name/topology/{topology}/node/{node}/getTasks:
-        get:
-            tags: [ Long Running Nodes ]
-            parameters:
-                -   $ref: '#/components/parameters/Topology'
-                -   $ref: '#/components/parameters/Node'
-            responses:
-                200:
-                    $ref: '#/components/responses/TopologyTasks'
-                500:
-                    $ref: '#/components/responses/500'
-
-    /longRunning/{id}:
-        put:
-            tags: [ Long Running Nodes ]
-            parameters:
-                -   $ref: '#/components/parameters/Id'
-            requestBody:
-                $ref: '#/components/requestBodies/LongRunningData'
-            responses:
-                200:
-                    $ref: '#/components/responses/LongRunningData'
-                500:
-                    $ref: '#/components/responses/500'
-
-    /mapper/list:
-        get:
-            tags: [ Mappers ]
-            responses:
-                200:
-                    $ref: '#/components/responses/Connectors'
-                500:
-                    $ref: '#/components/responses/500'
-
-    /mapper/{id}/process:
-        post:
-            tags: [ Mappers ]
-            parameters:
-                -   $ref: '#/components/parameters/Id'
-            responses:
-                200:
-                    $ref: '#/components/responses/Empty'
-                500:
-                    $ref: '#/components/responses/500'
-
-    /mapper/{id}/process/test:
-        post:
-            tags: [ Mappers ]
-            parameters:
-                -   $ref: '#/components/parameters/Id'
-            responses:
-                200:
-                    $ref: '#/components/responses/Empty'
-                500:
-                    $ref: '#/components/responses/500'
-
     /parser/{type}/to/json:
         post:
             tags: [ Parsers ]
@@ -374,23 +213,8 @@ paths:
             parameters:
                 -   $ref: '#/components/parameters/Type'
             responses:
-                200:
-                    $ref: '#/components/responses/Empty'
-                500:
-                    $ref: '#/components/responses/500'
 
 components:
-    requestBodies:
-        LongRunningData:
-            description: ''
-            content:
-                application/json:
-                    schema:
-                        type: object
-                        properties:
-                            data:
-                                type: object
-
     responses:
         Empty:
             description: ''
@@ -412,13 +236,6 @@ components:
                 application/json:
                     schema:
                         $ref: '#/components/schemas/TopologyTasks'
-
-        LongRunningData:
-            description: ''
-            content:
-                application/json:
-                    schema:
-                        $ref: '#/components/schemas/LongRunningData'
 
         404:
             description: ''
@@ -489,42 +306,6 @@ components:
                     type: integer
                 offset:
                     type: integer
-
-        LongRunningData:
-            type: object
-            properties:
-                topology_id:
-                    type: string
-                topology_name:
-                    type: string
-                node_id:
-                    type: string
-                node_name:
-                    type: string
-                parent_id:
-                    type: string
-                correlation_id:
-                    type: string
-                process_id:
-                    type: string
-                sequence_id:
-                    type: string
-                state:
-                    type: string
-                data:
-                    type: string
-                headers:
-                    type: string
-                created:
-                    type: string
-                updated:
-                    type: string
-                updated_by:
-                    type: string
-                audit_logs:
-                    type: string
-                content_type:
-                    type: string
 
         Message:
             type: object

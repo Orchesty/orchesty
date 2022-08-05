@@ -1,0 +1,31 @@
+{
+  "button": {
+    "sending": {
+      "loading": "Nahrávám...",
+      "saving": "Ukládám...",
+      "login": "Přihlašování...",
+      "sending": "Odesílám...",
+      "sync": "Synchronizuji...",
+      "enqueueingToProceed": "Zpracovávání...",
+      "validating": "Validuji...",
+      "moving": "Přesouvám...",
+      "deleting": "Mažu...",
+      "editing": "Upravuji...",
+      "creating": "Vytvářím..."
+    },
+    "save": "Uložit",
+    "change": "Změnit",
+    "add": "Přidat",
+    "send": "Odeslat",
+    "close": "Zavřít",
+    "show": "Zobrazit",
+    "cancel": "Zrušit",
+    "set": "Nastavit",
+    "ok": "OK",
+    "delete": "Smazat",
+    "install": "Instalovat",
+    "move": "Přesunout",
+    "edit": "Upravit",
+    "create": "Vytvořit"
+  }
+}

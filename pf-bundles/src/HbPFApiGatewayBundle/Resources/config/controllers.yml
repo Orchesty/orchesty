@@ -8,18 +8,18 @@ services:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController
         arguments:
             - '@hbpp.service.locator'
+            - '@doctrine_mongodb.odm.default_document_manager'
+        calls:
+            - [ 'setLogger', [ '@monolog.logger.commons' ] ]
+
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\DashboardController:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\DashboardController
 
     Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\CategoryController:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\CategoryController
 
-    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ConnectorController:
-        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ConnectorController
-
     Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\LogsController:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\LogsController
-
-    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\LongRunningNodeController:
-        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\LongRunningNodeController
 
     Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\MetricsController:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\MetricsController
@@ -37,6 +37,8 @@ services:
 
     Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserController:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserController
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]
 
     Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\SdkController:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\SdkController
@@ -48,3 +50,9 @@ services:
 
     Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyProgressController:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyProgressController
+
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserTaskController:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserTaskController
+
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\StatusController:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\StatusController

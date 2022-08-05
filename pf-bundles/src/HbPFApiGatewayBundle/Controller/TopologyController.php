@@ -61,6 +61,22 @@ final class TopologyController extends AbstractController
     }
 
     /**
+     * @Route("/topologies/{id}/run", defaults={}, requirements={"id": "\w+"}, methods={"POST", "OPTIONS"})
+     *
+     * @param Request $request
+     * @param string  $id
+     *
+     * @return Response
+     */
+    public function runTopologiesAction(Request $request, string $id): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::runTopologiesAction',
+            ['request' => $request, 'id' => $id],
+        );
+    }
+
+    /**
      * @Route("/topologies", methods={"POST", "OPTIONS"})
      *
      * @return Response
@@ -118,6 +134,21 @@ final class TopologyController extends AbstractController
     }
 
     /**
+     * @Route("/topologies/check/{id}/schema.bpmn", defaults={"_format"="xml"}, requirements={"id": "\w+"}, methods={"GET", "OPTIONS"})
+     *
+     * @param string $id
+     *
+     * @return Response
+     */
+    public function checkTopologySchemaDifferencesAction(string $id): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::checkTopologySchemaDifferencesAction',
+            ['id' => $id],
+        );
+    }
+
+    /**
      * @Route("/topologies/{id}/publish", defaults={}, requirements={"id": "\w+"}, methods={"POST", "OPTIONS"})
      *
      * @param string $id
@@ -150,15 +181,16 @@ final class TopologyController extends AbstractController
     /**
      * @Route("/topologies/{id}", defaults={}, requirements={"id": "\w+"}, methods={"DELETE", "OPTIONS"})
      *
-     * @param string $id
+     * @param Request $request
+     * @param string  $id
      *
      * @return Response
      */
-    public function deleteTopologyAction(string $id): Response
+    public function deleteTopologyAction(Request $request, string $id): Response
     {
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::deleteTopologyAction',
-            ['id' => $id],
+            ['request' => $request, 'id' => $id],
         );
     }
 

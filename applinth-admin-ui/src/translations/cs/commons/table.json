@@ -1,0 +1,40 @@
+{
+  "table": {
+    "quickFilters": "Rychlé filtry",
+    "search": "Hledat",
+    "advancedFilters": "Filtr",
+    "clearFilters": "Zrušit filtry",
+    "filter": "Filtrovat",
+    "saveFilter": "Uložit filtr",
+    "noData": "Nebyla nalezena žádná data",
+    "or": "nebo",
+    "and": "a zároveň",
+    "itemsPerPage": "Počet řádků",
+    "numberOfPages": "Stránka {0} ze {1}",
+    "saveFilterModal": {
+      "title": "Uložit jako rychlý filtr",
+      "form": {
+        "name": {
+          "label": "Název",
+          "name": "nazev"
+        }
+      }
+    },
+    "updateSavedFiltersModal": {
+      "title": "Upravit rychlé filtry",
+      "form": {
+        "name": {
+          "label": "Název",
+          "name": "nazev"
+        }
+      }
+    },
+    "advancedFilterHeaders": {
+      "column": "Sloupeček",
+      "operator": "Operátor",
+      "value1": "Hodnota",
+      "value2": "Druhá hodnota",
+      "actions": "Akce"
+    }
+  }
+}

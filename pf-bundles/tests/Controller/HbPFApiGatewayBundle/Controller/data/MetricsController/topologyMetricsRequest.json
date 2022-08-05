@@ -1,5 +1,7 @@
 {
     "http": "GET /api/metrics/topology/:id",
     "body": [],
-    "headers": []
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
 }

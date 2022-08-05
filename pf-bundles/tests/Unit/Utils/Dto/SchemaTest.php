@@ -6,6 +6,7 @@ use Exception;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
 use Hanaboso\RestBundle\Model\Decoder\XmlDecoder;
+use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Json;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 
@@ -24,9 +25,10 @@ final class SchemaTest extends KernelTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::isInfinity
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::addNode
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::addSequence
-     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::setStartNode
+     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::addStartNode
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getNodes
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getNextIds
+     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::addToTree
      *
      * @throws Exception
      */
@@ -44,6 +46,7 @@ final class SchemaTest extends KernelTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getIndexItem
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::isInfinity
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getNextIds
+     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::addToTree
      *
      * @throws Exception
      */
@@ -61,6 +64,7 @@ final class SchemaTest extends KernelTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getIndexItem
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::isInfinity
      * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getNextIds
+     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::addToTree
      *
      * @throws Exception
      */
@@ -72,6 +76,25 @@ final class SchemaTest extends KernelTestCaseAbstract
         self::expectExceptionCode(TopologyException::SCHEMA_START_NODE_MISSING);
 
         $schema->buildIndex();
+    }
+
+    /**
+     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::buildIndex
+     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::checkStartNode
+     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getIndexItem
+     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::isInfinity
+     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getNextIds
+     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::addToTree
+     *
+     * @throws Exception
+     */
+    public function testFalsePositiveInfinity(): void
+    {
+        $content = $this->load('false-positive-infinity.tplg');
+        $schema  = TopologySchemaUtils::getSchemaObject($this->getXmlDecoder()->decode($content));
+        $res     = $schema->buildIndex();
+
+        self::assertCount(2, $res);
     }
 
     /**
@@ -119,15 +142,17 @@ final class SchemaTest extends KernelTestCaseAbstract
             'sha256',
             Json::encode(
                 [
-                    0 => 'Event_1lqi8dm:hubspot-updated-contact-connector:webhook',
-                    1 => 'Task_00wzy7d:hanaboso-create-subscriptions-connector:connector',
-                    2 => 'Task_0fzjb0y:hanaboso-delete-subscriptions-connector:connector',
-                    3 => 'Task_0h8gpta:hanaboso-update-subscriptions-connector:connector',
-                    4 => 'Task_0nwvqkt:hubspot-created-contact-mapper:custom',
-                    5 => 'Task_152x7cw:hubspot-deleted-contact-mapper:custom',
-                    6 => 'Task_1niijps:hubspot-get-contact-connector:connector',
-                    7 => 'Task_1taayin:universal-splitter:splitter',
-                    8 => 'Task_1wcc82o:hubspot-updated-contact-mapper:custom',
+                    [
+                        0 => 'Event_1lqi8dm:hubspot-updated-contact-connector:webhook',
+                        1 => 'Task_00wzy7d:hanaboso-create-subscriptions-connector:connector',
+                        2 => 'Task_0fzjb0y:hanaboso-delete-subscriptions-connector:connector',
+                        3 => 'Task_0h8gpta:hanaboso-update-subscriptions-connector:connector',
+                        4 => 'Task_0nwvqkt:hubspot-created-contact-mapper:custom',
+                        5 => 'Task_152x7cw:hubspot-deleted-contact-mapper:custom',
+                        6 => 'Task_1niijps:hubspot-get-contact-connector:connector',
+                        7 => 'Task_1taayin:universal-splitter:splitter',
+                        8 => 'Task_1wcc82o:hubspot-updated-contact-mapper:custom',
+                    ],
                 ],
             ),
         );
@@ -140,7 +165,7 @@ final class SchemaTest extends KernelTestCaseAbstract
      */
     private function load(string $name): string
     {
-        return (string) file_get_contents(sprintf('%s/data/%s', __DIR__, $name));
+        return File::getContent(sprintf('%s/data/%s', __DIR__, $name));
     }
 
     /**
@@ -148,7 +173,7 @@ final class SchemaTest extends KernelTestCaseAbstract
      */
     private function getXmlDecoder(): XmlDecoder
     {
-        return self::$container->get('rest.decoder.xml');
+        return self::getContainer()->get('rest.decoder.xml');
     }
 
 }

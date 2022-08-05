@@ -4,10 +4,11 @@ namespace HbPFConnectorsTests\Integration\Model\Application\Impl\Quickbooks;
 
 use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Quickbooks\QuickbooksApplication;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
 use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
@@ -38,19 +39,19 @@ final class QuickbooksApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Quickbooks\QuickbooksApplication::getKey
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Quickbooks\QuickbooksApplication::getName
      */
     public function testGetKey(): void
     {
-        self::assertEquals('quickbooks', $this->application->getKey());
+        self::assertEquals('quickbooks', $this->application->getName());
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Quickbooks\QuickbooksApplication::getName
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Quickbooks\QuickbooksApplication::getPublicName
      */
-    public function testName(): void
+    public function testPublicName(): void
     {
-        self::assertEquals('Quickbooks', $this->application->getName());
+        self::assertEquals('Quickbooks', $this->application->getPublicName());
     }
 
     /**
@@ -81,22 +82,24 @@ final class QuickbooksApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Quickbooks\QuickbooksApplication::getSettingsForm
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Quickbooks\QuickbooksApplication::getFormStack
      *
      * @throws Exception
      */
-    public function testGetSettingsForm(): void
+    public function testGetFormStack(): void
     {
-        $fields = $this->application->getSettingsForm()->getFields();
-        foreach ($fields as $field) {
-            self::assertContains(
-                $field->getKey(),
-                [
-                    'app_id',
-                    OAuth2ApplicationInterface::CLIENT_ID,
-                    OAuth2ApplicationInterface::CLIENT_SECRET,
-                ],
-            );
+        $forms = $this->application->getFormStack()->getForms();
+        foreach ($forms as $form) {
+            foreach ($form->getFields() as $field) {
+                self::assertContains(
+                    $field->getKey(),
+                    [
+                        'app_id',
+                        OAuth2ApplicationInterface::CLIENT_ID,
+                        OAuth2ApplicationInterface::CLIENT_SECRET,
+                    ],
+                );
+            }
         }
     }
 
@@ -109,18 +112,24 @@ final class QuickbooksApplicationTest extends DatabaseTestCaseAbstract
     public function testGetRequestDto(): void
     {
         $applicationInstall = DataProvider::getOauth2AppInstall(
-            $this->application->getKey(),
+            $this->application->getName(),
             'user',
             'token',
             self::CLIENT_ID,
             self::CLIENT_SECRET,
         );
         $applicationInstall->addSettings(
-            [BasicApplicationAbstract::FORM => [QuickbooksApplication::APP_ID => self::SHOP_ID]],
+            [
+                ApplicationInterface::AUTHORIZATION_FORM => [
+                    ...$applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM],
+                    QuickbooksApplication::APP_ID => self::SHOP_ID,
+                ],
+            ],
         );
         $this->pfd($applicationInstall);
 
         $dto = $this->application->getRequestDto(
+            new ProcessDto(),
             $applicationInstall,
             CurlManager::METHOD_POST,
             '/account',
@@ -159,7 +168,7 @@ final class QuickbooksApplicationTest extends DatabaseTestCaseAbstract
     {
         parent::setUp();
 
-        $this->application = self::$container->get('hbpf.application.quickbooks');
+        $this->application = self::getContainer()->get('hbpf.application.quickbooks');
     }
 
 }

@@ -11,7 +11,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
-use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchInterface;
+use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Json;
 use PHPUnit\Framework\MockObject\Stub\ReturnCallback;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -64,7 +64,7 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
                 self::assertEquals($expectedUrl, $url);
             },
         );
-        self::$container->set('hbpf.redirect', $mock);
+        self::getContainer()->set('hbpf.redirect', $mock);
 
         return $mock;
     }
@@ -95,7 +95,7 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
                 ),
             );
 
-        self::$container->set('hbpf.transport.curl_manager', $mock);
+        self::getContainer()->set('hbpf.transport.curl_manager', $mock);
 
         return $mock;
     }
@@ -111,13 +111,12 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
         array_pop($exploded);
         array_shift($exploded);
 
-        return (string) file_get_contents(
+        return File::getContent(
             sprintf(
-                '%s/Data/%s',
+                __DIR__ . '/%s/Data/%s',
                 implode('/', $exploded),
                 $fileName,
             ),
-            TRUE,
         );
     }
 
@@ -130,7 +129,7 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
     protected function assertSuccessProcessResponse(ProcessDto $response, string $fileName): void
     {
         self::assertProcessResponse($response, $fileName);
-        self::assertArrayNotHasKey('pf-result-code', $response->getHeaders());
+        self::assertArrayNotHasKey('result-code', $response->getHeaders());
     }
 
     /**
@@ -142,7 +141,7 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
     protected function assertFailedProcessResponse(ProcessDto $response, string $fileName): void
     {
         self::assertProcessResponse($response, $fileName);
-        self::assertEquals($response->getHeaders()['pf-result-code'], ProcessDto::STOP_AND_FAILED);
+        self::assertEquals($response->getHeaders()['result-code'], ProcessDto::STOP_AND_FAILED);
     }
 
     /**
@@ -171,28 +170,6 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
                 self::expectExceptionMessageMatches(sprintf('/^%s$/', preg_quote($exceptionMessage))) :
                 self::expectExceptionMessageMatches($exceptionMessage);
         }
-    }
-
-    /**
-     * @param BatchInterface $batch
-     * @param ProcessDto     $dto
-     * @param Closure|null   $closure
-     */
-    protected function assertBatch(BatchInterface $batch, ProcessDto $dto, ?Closure $closure = NULL): void
-    {
-        $batch->processBatch(
-            $dto,
-            $closure ?: static function (): void {
-                self::assertTrue(TRUE);
-            },
-        )->then(
-            static function (): void {
-                self::assertTrue(TRUE);
-            },
-            static function ($e): void {
-                self::fail(sprintf('Something gone wrong!: %s', $e));
-            },
-        )->wait();
     }
 
     /**

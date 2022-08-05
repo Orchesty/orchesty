@@ -4,10 +4,11 @@ namespace HbPFConnectorsTests\Live\Model\Application\Impl\FlexiBee\Connector;
 
 use Exception;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\CommonsBundle\Process\ProcessDtoAbstract;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\FlexiBee\FlexiBeeApplication;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
 use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
 
@@ -26,9 +27,9 @@ final class FlexiBeeGetContactsArrayConnectorTest extends DatabaseTestCaseAbstra
     {
         $this->getAppInstall();
 
-        $conn = self::$container->get('hbpf.connector.flexibee.get-contacts-array');
+        $conn = self::getContainer()->get('hbpf.connector.flexibee.get-contacts-array');
         $conn->setApplication($this->mockApplication());
-        $dto = DataProvider::getProcessDto($this->getApp()->getKey(), 'user');
+        $dto = DataProvider::getProcessDto($this->getApp()->getName(), 'user');
         $conn->processAction($dto);
         self::assertFake();
     }
@@ -38,7 +39,7 @@ final class FlexiBeeGetContactsArrayConnectorTest extends DatabaseTestCaseAbstra
      */
     private function getApp(): FlexiBeeApplication
     {
-        return self::$container->get('hbpf.application.flexibee');
+        return self::getContainer()->get('hbpf.application.flexibee');
     }
 
     /**
@@ -46,17 +47,14 @@ final class FlexiBeeGetContactsArrayConnectorTest extends DatabaseTestCaseAbstra
      */
     private function getAppInstall(): void
     {
-        $appInstall = DataProvider::getBasicAppInstall($this->getApp()->getKey());
+        $appInstall = DataProvider::getBasicAppInstall($this->getApp()->getName());
 
         $appInstall->setSettings(
             [
-                FlexiBeeApplication::AUTHORIZATION_SETTINGS =>
+                ApplicationInterface::AUTHORIZATION_FORM =>
                     [
                         'user'     => 'winstrom',
                         'password' => 'winstrom',
-                    ],
-                BasicApplicationAbstract::FORM              =>
-                    [
                         'auth'        => 'http',
                         'flexibeeUrl' => 'https://demo.flexibee.eu/c/demo',
                     ],
@@ -74,6 +72,7 @@ final class FlexiBeeGetContactsArrayConnectorTest extends DatabaseTestCaseAbstra
         $app = self::createPartialMock(FlexiBeeApplication::class, ['getRequestDto']);
         $app->method('getRequestDto')->willReturnCallback(
             static function (
+                ProcessDtoAbstract $dto,
                 ApplicationInstall $applicationInstall,
                 string $method,
                 ?string $url = NULL,
@@ -81,7 +80,7 @@ final class FlexiBeeGetContactsArrayConnectorTest extends DatabaseTestCaseAbstra
             ): RequestDto {
 
                 $applicationInstall;
-                $request = new RequestDto($method, new Uri(sprintf('%s', ltrim($url ?? '', '/'))));
+                $request = new RequestDto(new Uri(sprintf('%s', ltrim($url ?? '', '/'))), $method, $dto);
 
                 $request->setHeaders(
                     [

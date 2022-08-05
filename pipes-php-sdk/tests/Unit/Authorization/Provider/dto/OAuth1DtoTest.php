@@ -2,8 +2,8 @@
 
 namespace PipesPhpSdkTests\Unit\Authorization\Provider\dto;
 
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1\OAuth1ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth1Dto;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
@@ -30,10 +30,10 @@ final class OAuth1DtoTest extends KernelTestCaseAbstract
         $applicationInstall = (new ApplicationInstall())
             ->setSettings(
                 [
-                    BasicApplicationInterface::AUTHORIZATION_SETTINGS => [
+                    ApplicationInterface::AUTHORIZATION_FORM => [
                         OAuth1ApplicationInterface::CONSUMER_KEY    => '__consumerKey__',
                         OAuth1ApplicationInterface::CONSUMER_SECRET => '__consumerSecret__',
-                        BasicApplicationInterface::TOKEN            => [
+                        ApplicationInterface::TOKEN => [
                             'access_token' => '__token__',
                             'expires_in'   => 'inFuture',
                         ],

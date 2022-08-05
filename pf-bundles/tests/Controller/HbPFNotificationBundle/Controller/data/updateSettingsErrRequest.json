@@ -5,5 +5,7 @@
             "foo": "bar"
         }
     ],
-    "headers": []
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
 }

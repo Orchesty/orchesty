@@ -48,16 +48,16 @@ phpstan:
 	$(DE) php ./vendor/bin/phpstan analyse -c ./tests/phpstan.neon -l 8 src tests
 
 phpintegration:
-	$(DE) php ./vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --colors tests/Integration
+	$(DE) php ./vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --colors=always tests/Integration
 
 phpcontroller:
-	$(DE) php ./vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --colors tests/Controller
+	$(DE) php ./vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --colors=always tests/Controller
 
 phpcoverage:
 	$(DE) ./vendor/bin/paratest -c vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --coverage-html var/coverage --whitelist src --exclude-group live tests
 
 phpcoverage-ci:
-	$(DE) ./vendor/hanaboso/php-check-utils/bin/coverage.sh -c 60 -p $$(nproc) -e live
+	$(DE) ./vendor/hanaboso/php-check-utils/bin/coverage.sh -c 40 -p $$(nproc) -e live
 
 phplive:
 	$(DE) ./vendor/bin/phpunit -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist tests/Live

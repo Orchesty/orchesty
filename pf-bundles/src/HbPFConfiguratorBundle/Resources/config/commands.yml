@@ -15,4 +15,12 @@ services:
         arguments:
             - '@hbpf.install.topology.manager'
         tags:
-            - {name: console.command}
+            - { name: console.command }
+
+    hbpf.command.create_indexes:
+        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\UpdateMongoIndexesCommand
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@doctrine_mongodb.odm.metrics_document_manager'
+        tags:
+            - { name: console.command }

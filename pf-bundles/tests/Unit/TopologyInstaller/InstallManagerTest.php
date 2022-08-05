@@ -223,7 +223,7 @@ final class InstallManagerTest extends KernelTestCaseAbstract
             static function (): void {
             },
         );
-        $decoder    = self::$container->get('rest.decoder.xml');
+        $decoder    = self::getContainer()->get('rest.decoder.xml');
         $redisCache = new NullCache();
 
         return new InstallManager(

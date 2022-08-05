@@ -32,7 +32,7 @@ final class PipedriveApplicationTest extends DatabaseTestCaseAbstract
     public function testWebhookSubscribeRequestDto(): void
     {
         $applicationInstall = DataProvider::getBasicAppInstall(
-            $this->application->getKey(),
+            $this->application->getName(),
             self::TOKEN,
         );
 
@@ -70,9 +70,9 @@ final class PipedriveApplicationTest extends DatabaseTestCaseAbstract
     /**
      *
      */
-    public function testName(): void
+    public function testPublicName(): void
     {
-        self::assertEquals('Pipedrive', $this->application->getName());
+        self::assertEquals('Pipedrive', $this->application->getPublicName());
     }
 
     /**
@@ -104,10 +104,13 @@ final class PipedriveApplicationTest extends DatabaseTestCaseAbstract
     /**
      * @throws Exception
      */
-    public function testGetSettingsForm(): void
+    public function testGetFormStack(): void
     {
-        $field = $this->application->getSettingsForm()->getFields();
-        self::assertContains($field[0]->getKey(), ['user']);
+        $forms = $this->application->getFormStack()->getForms();
+        foreach ($forms as $form) {
+            $field = $form->getFields();
+            self::assertContains($field[0]->getKey(), ['user']);
+        }
     }
 
     /**
@@ -139,7 +142,7 @@ final class PipedriveApplicationTest extends DatabaseTestCaseAbstract
     public function testIsAuthorized(): void
     {
         $applicationInstall = DataProvider::getBasicAppInstall(
-            $this->application->getKey(),
+            $this->application->getName(),
             self::TOKEN,
         );
         $this->pfd($applicationInstall);
@@ -154,7 +157,7 @@ final class PipedriveApplicationTest extends DatabaseTestCaseAbstract
     {
         parent::setUp();
 
-        $this->application = self::$container->get('hbpf.application.pipedrive');
+        $this->application = self::getContainer()->get('hbpf.application.pipedrive');
     }
 
 }

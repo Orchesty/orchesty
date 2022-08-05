@@ -3,15 +3,19 @@
 namespace Hanaboso\HbPFConnectors\Model\Application\Impl\Shopify;
 
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDtoAbstract;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookApplicationInterface;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Form;
+use Hanaboso\PipesPhpSdk\Application\Model\Form\FormStack;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\Utils\String\Json;
@@ -39,7 +43,7 @@ final class ShopifyApplication extends BasicApplicationAbstract implements Webho
     /**
      * @return string
      */
-    public function getKey(): string
+    public function getName(): string
     {
         return 'shopify';
     }
@@ -47,7 +51,7 @@ final class ShopifyApplication extends BasicApplicationAbstract implements Webho
     /**
      * @return string
      */
-    public function getName(): string
+    public function getPublicName(): string
     {
         return 'Shopify';
     }
@@ -61,6 +65,7 @@ final class ShopifyApplication extends BasicApplicationAbstract implements Webho
     }
 
     /**
+     * @param ProcessDtoAbstract $dto
      * @param ApplicationInstall $applicationInstall
      * @param string             $method
      * @param string|null        $url
@@ -70,6 +75,7 @@ final class ShopifyApplication extends BasicApplicationAbstract implements Webho
      * @throws CurlException
      */
     public function getRequestDto(
+        ProcessDtoAbstract $dto,
         ApplicationInstall $applicationInstall,
         string $method,
         ?string $url = NULL,
@@ -77,7 +83,7 @@ final class ShopifyApplication extends BasicApplicationAbstract implements Webho
     ): RequestDto
     {
         $uri     = sprintf('%s%s', $this->getBaseUrl($applicationInstall), $url);
-        $request = new RequestDto($method, $this->getUri($uri));
+        $request = new RequestDto($this->getUri($uri), $method, $dto);
         $request->setHeaders(
             [
                 'Content-Type'           => 'application/json',
@@ -94,13 +100,19 @@ final class ShopifyApplication extends BasicApplicationAbstract implements Webho
     }
 
     /**
-     * @return Form
+     * @return FormStack
      */
-    public function getSettingsForm(): Form
+    public function getFormStack(): FormStack
     {
-        return (new Form())
+        $form = new Form(ApplicationInterface::AUTHORIZATION_FORM, 'Authorization settings');
+        $form
             ->addField(new Field(Field::TEXT, BasicApplicationInterface::USER, 'Shop name', NULL, TRUE))
             ->addField(new Field(Field::TEXT, BasicApplicationAbstract::PASSWORD, 'App password', NULL, TRUE));
+
+        $formStack = new FormStack();
+        $formStack->addForm($form);
+
+        return $formStack;
     }
 
     /**
@@ -128,6 +140,7 @@ final class ShopifyApplication extends BasicApplicationAbstract implements Webho
     ): RequestDto
     {
         return $this->getRequestDto(
+            new ProcessDto(),
             $applicationInstall,
             CurlManager::METHOD_POST,
             '/webhooks.json',
@@ -153,7 +166,12 @@ final class ShopifyApplication extends BasicApplicationAbstract implements Webho
      */
     public function getWebhookUnsubscribeRequestDto(ApplicationInstall $applicationInstall, string $id): RequestDto
     {
-        return $this->getRequestDto($applicationInstall, CurlManager::METHOD_DELETE, sprintf('/webhooks/%s.json', $id));
+        return $this->getRequestDto(
+            new ProcessDto(),
+            $applicationInstall,
+            CurlManager::METHOD_DELETE,
+            sprintf('/webhooks/%s.json', $id),
+        );
     }
 
     /**
@@ -188,7 +206,7 @@ final class ShopifyApplication extends BasicApplicationAbstract implements Webho
     private function getPassword(ApplicationInstall $applicationInstall): string
     {
         return $applicationInstall->getSettings(
-        )[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::PASSWORD];
+        )[ApplicationInterface::AUTHORIZATION_FORM][BasicApplicationInterface::PASSWORD];
     }
 
     /**
@@ -213,7 +231,7 @@ final class ShopifyApplication extends BasicApplicationAbstract implements Webho
      */
     private function getShopName(ApplicationInstall $applicationInstall): string
     {
-        return $applicationInstall->getSettings()[BasicApplicationInterface::AUTHORIZATION_SETTINGS][self::USER];
+        return $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][self::USER];
     }
 
 }

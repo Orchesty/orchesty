@@ -13,6 +13,7 @@ use Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandlerExcepti
 use Hanaboso\PipesPhpSdk\Parser\Exception\TableParserException;
 use Hanaboso\PipesPhpSdk\Parser\TableParser;
 use Hanaboso\PipesPhpSdk\Parser\TableParserInterface;
+use Hanaboso\Utils\File\File as Files;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -53,7 +54,7 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
                 'has_headers' => FALSE,
             ],
         );
-        self::assertEquals(file_get_contents(sprintf('%s/output-10.json', $this->path)), $result);
+        self::assertEquals(Files::getContent(sprintf('%s/output-10.json', $this->path)), $result);
 
         $result = $this->handler->parseToJson(
             [
@@ -61,7 +62,7 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
                 'has_headers' => TRUE,
             ],
         );
-        self::assertEquals(file_get_contents(sprintf('%s/output-10h.json', $this->path)), $result);
+        self::assertEquals(Files::getContent(sprintf('%s/output-10h.json', $this->path)), $result);
     }
 
     /**
@@ -129,11 +130,11 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
      */
     public function testParseToJsonFromContent(): void
     {
-        $content = (string) file_get_contents(sprintf('%s/input-10.xlsx', $this->path));
+        $content = Files::getContent(sprintf('%s/input-10.xlsx', $this->path));
         $file    = $this->storage->saveFileFromContent(new FileContentDto($content, 'xlsx'));
 
         $result = $this->handler->parseToJson(['file_id' => $file->getId()]);
-        self::assertEquals(file_get_contents(sprintf('%s/output-10.json', $this->path)), $result);
+        self::assertEquals(Files::getContent(sprintf('%s/output-10.json', $this->path)), $result);
     }
 
     /**
@@ -164,7 +165,7 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
                 'has_headers' => FALSE,
             ],
         );
-        self::assertEquals(file_get_contents(sprintf('%s/output-10.json', $this->path)), $result);
+        self::assertEquals(Files::getContent(sprintf('%s/output-10.json', $this->path)), $result);
         unlink($resultPath);
 
         $resultPath = $this->handler->parseFromJson(
@@ -180,7 +181,7 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
                 'has_headers' => TRUE,
             ],
         );
-        self::assertEquals(file_get_contents(sprintf('%s/output-10h.json', $this->path)), $result);
+        self::assertEquals(Files::getContent(sprintf('%s/output-10h.json', $this->path)), $result);
         unlink($resultPath);
     }
 
@@ -191,7 +192,7 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
      */
     public function testParseFromJsonFromContent(): void
     {
-        $content = (string) file_get_contents(sprintf('%s/output-10.json', $this->path));
+        $content = Files::getContent(sprintf('%s/output-10.json', $this->path));
         $file    = $this->storage->saveFileFromContent(new FileContentDto($content, 'json'));
 
         $resultPath = $this->handler->parseFromJson(
@@ -206,7 +207,7 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
                 'has_headers' => FALSE,
             ],
         );
-        self::assertEquals(file_get_contents(sprintf('%s/output-10.json', $this->path)), $result);
+        self::assertEquals(Files::getContent(sprintf('%s/output-10.json', $this->path)), $result);
         unlink($resultPath);
     }
 
@@ -264,7 +265,7 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
     {
         parent::setUp();
 
-        $this->storage = self::$container->get('hbpf.file_storage');
+        $this->storage = self::getContainer()->get('hbpf.file_storage');
         $this->handler = new TableParserHandler(new TableParser(), $this->storage);
         $this->path    = __DIR__ . '/../../Parser/data';
     }

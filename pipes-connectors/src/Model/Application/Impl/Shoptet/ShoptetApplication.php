@@ -4,19 +4,21 @@ namespace Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
-use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDtoAbstract;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookApplicationInterface;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription;
-use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Form;
+use Hanaboso\PipesPhpSdk\Application\Model\Form\FormStack;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth2Dto;
@@ -75,7 +77,7 @@ final class ShoptetApplication extends OAuth2ApplicationAbstract implements Webh
     /**
      * @return string
      */
-    public function getKey(): string
+    public function getName(): string
     {
         return self::SHOPTET_KEY;
     }
@@ -83,7 +85,7 @@ final class ShoptetApplication extends OAuth2ApplicationAbstract implements Webh
     /**
      * @return string
      */
-    public function getName(): string
+    public function getPublicName(): string
     {
         return 'Shoptet';
     }
@@ -97,6 +99,7 @@ final class ShoptetApplication extends OAuth2ApplicationAbstract implements Webh
     }
 
     /**
+     * @param ProcessDtoAbstract $dto
      * @param ApplicationInstall $applicationInstall
      * @param string             $method
      * @param string|null        $url
@@ -109,18 +112,19 @@ final class ShoptetApplication extends OAuth2ApplicationAbstract implements Webh
      * @throws MongoDBException
      */
     public function getRequestDto(
+        ProcessDtoAbstract $dto,
         ApplicationInstall $applicationInstall,
         string $method,
         ?string $url = NULL,
         ?string $data = NULL,
     ): RequestDto
     {
-        $request = new RequestDto($method, $this->getUri($url));
+        $request = new RequestDto($this->getUri($url), $method, $dto);
         $request->setHeaders(
             [
                 'Content-Type'         => 'application/vnd.shoptet.v1.0',
                 'Accept'               => 'application/json',
-                'Shoptet-Access-Token' => $this->getApiToken($applicationInstall),
+                'Shoptet-Access-Token' => $this->getApiToken($applicationInstall, $dto),
             ],
         );
         if (isset($data)) {
@@ -131,18 +135,22 @@ final class ShoptetApplication extends OAuth2ApplicationAbstract implements Webh
     }
 
     /**
-     * @return Form
+     * @return FormStack
      */
-    public function getSettingsForm(): Form
+    public function getFormStack(): FormStack
     {
-        $form = new Form();
-
-        return $form
+        $form = new Form(ApplicationInterface::AUTHORIZATION_FORM, 'Authorization settings');
+        $form
             ->addField(new Field(Field::TEXT, OAuth2ApplicationInterface::CLIENT_ID, 'Client Id', NULL, TRUE))
             ->addField(new Field(Field::TEXT, OAuth2ApplicationInterface::CLIENT_SECRET, 'Client Secret', NULL, TRUE))
             ->addField(new Field(Field::TEXT, self::ESHOP_ID, 'Eshop Id', NULL, TRUE))
             ->addField(new Field(Field::TEXT, self::OAUTH_URL, 'Authorization url', NULL, TRUE))
             ->addField(new Field(Field::TEXT, self::API_TOKEN_URL, 'Api token url', NULL, TRUE));
+
+        $formStack = new FormStack();
+        $formStack->addForm($form);
+
+        return $formStack;
     }
 
     /**
@@ -168,7 +176,7 @@ final class ShoptetApplication extends OAuth2ApplicationAbstract implements Webh
      */
     public function getAuthUrlWithServerUrl(ApplicationInstall $applicationInstall): string
     {
-        return $applicationInstall->getSettings()[ApplicationAbstract::FORM][self::OAUTH_URL];
+        return $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][self::OAUTH_URL];
     }
 
     /**
@@ -178,7 +186,7 @@ final class ShoptetApplication extends OAuth2ApplicationAbstract implements Webh
      */
     public function getTokenUrlWithServerUrl(ApplicationInstall $applicationInstall): string
     {
-        return $applicationInstall->getSettings()[ApplicationAbstract::FORM][self::API_TOKEN_URL];
+        return $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][self::API_TOKEN_URL];
     }
 
     /**
@@ -220,6 +228,7 @@ final class ShoptetApplication extends OAuth2ApplicationAbstract implements Webh
     ): RequestDto
     {
         return $this->getRequestDto(
+            new ProcessDto(),
             $applicationInstall,
             CurlManager::METHOD_POST,
             self::SHOPTET_WEBHOOK_URL,
@@ -245,6 +254,7 @@ final class ShoptetApplication extends OAuth2ApplicationAbstract implements Webh
     public function getWebhookUnsubscribeRequestDto(ApplicationInstall $applicationInstall, string $id): RequestDto
     {
         return $this->getRequestDto(
+            new ProcessDto(),
             $applicationInstall,
             CurlManager::METHOD_POST,
             sprintf('%s%s', self::SHOPTET_WEBHOOK_URL, $id),
@@ -276,18 +286,20 @@ final class ShoptetApplication extends OAuth2ApplicationAbstract implements Webh
 
     /**
      * @param ApplicationInstall $applicationInstall
+     * @param ProcessDtoAbstract $dto
      *
      * @return RequestDto
      * @throws ApplicationInstallException
      * @throws CurlException
      */
-    public function getApiTokenDto(ApplicationInstall $applicationInstall): RequestDto
+    public function getApiTokenDto(ApplicationInstall $applicationInstall, ProcessDtoAbstract $dto): RequestDto
     {
         $oauthAccessToken = $this->getAccessToken($applicationInstall);
 
         $request = new RequestDto(
-            CurlManager::METHOD_POST,
             $this->getUri($this->getTokenUrlWithServerUrl($applicationInstall)),
+            CurlManager::METHOD_POST,
+            $dto,
         );
         $request->setHeaders(
             [
@@ -324,20 +336,20 @@ final class ShoptetApplication extends OAuth2ApplicationAbstract implements Webh
 
     /**
      * @param ApplicationInstall $applicationInstall
+     * @param ProcessDtoAbstract $dto
      *
      * @return string
      * @throws ApplicationInstallException
      * @throws CurlException
      * @throws DateTimeException
      * @throws MongoDBException
-     * @throws Exception
      */
-    private function getApiToken(ApplicationInstall $applicationInstall): string
+    private function getApiToken(ApplicationInstall $applicationInstall, ProcessDtoAbstract $dto): string
     {
         $token = $this->getApiTokenFromSettings($applicationInstall);
 
         if (!$token) {
-            $requestDto = $this->getApiTokenDto($applicationInstall);
+            $requestDto = $this->getApiTokenDto($applicationInstall, $dto);
             $token      = $this->sender->send($requestDto)->getJsonBody();
             $applicationInstall->addSettings(
                 [

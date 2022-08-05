@@ -3,6 +3,7 @@
 namespace Hanaboso\HbPFConnectors\Model\Application\Impl\SendGrid;
 
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\CommonsBundle\Process\ProcessDtoAbstract;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
@@ -10,6 +11,7 @@ use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Form;
+use Hanaboso\PipesPhpSdk\Application\Model\Form\FormStack;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
 
 /**
@@ -26,7 +28,7 @@ final class SendGridApplication extends BasicApplicationAbstract
     /**
      * @return string
      */
-    public function getKey(): string
+    public function getName(): string
     {
         return 'send-grid';
     }
@@ -34,7 +36,7 @@ final class SendGridApplication extends BasicApplicationAbstract
     /**
      * @return string
      */
-    public function getName(): string
+    public function getPublicName(): string
     {
         return 'SendGrid Application';
     }
@@ -54,10 +56,11 @@ final class SendGridApplication extends BasicApplicationAbstract
      */
     public function isAuthorized(ApplicationInstall $applicationInstall): bool
     {
-        return isset($applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS][self::API_KEY]);
+        return isset($applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][self::API_KEY]);
     }
 
     /**
+     * @param ProcessDtoAbstract $dto
      * @param ApplicationInstall $applicationInstall
      * @param string             $method
      * @param string|null        $url
@@ -68,6 +71,7 @@ final class SendGridApplication extends BasicApplicationAbstract
      * @throws CurlException
      */
     public function getRequestDto(
+        ProcessDtoAbstract $dto,
         ApplicationInstall $applicationInstall,
         string $method,
         ?string $url = NULL,
@@ -79,29 +83,33 @@ final class SendGridApplication extends BasicApplicationAbstract
         }
 
         $settings = $applicationInstall->getSettings();
-        $token    = $settings[ApplicationInterface::AUTHORIZATION_SETTINGS][self::API_KEY];
-        $dto      = new RequestDto(
-            $method,
+        $token    = $settings[ApplicationInterface::AUTHORIZATION_FORM][self::API_KEY];
+        $request  = new RequestDto(
             new Uri($url ?? self::BASE_URL),
+            $method,
+            $dto,
+            '',
             ['Content-Type' => 'application/json', 'Authorization' => sprintf('Bearer %s', $token)],
         );
-
         if ($data) {
-            $dto->setBody($data);
+            $request->setBody($data);
         }
 
-        return $dto;
+        return $request;
     }
 
     /**
-     * @return Form
+     * @return FormStack
      */
-    public function getSettingsForm(): Form
+    public function getFormStack(): FormStack
     {
-        $form  = new Form();
-        $field = new Field(Field::TEXT, self::API_KEY, 'Api key', NULL, TRUE);
+        $form = new Form(ApplicationInterface::AUTHORIZATION_FORM, 'Authorization settings');
+        $form->addField(new Field(Field::TEXT, self::API_KEY, 'Api key', NULL, TRUE));
 
-        return $form->addField($field);
+        $formStack = new FormStack();
+        $formStack->addForm($form);
+
+        return $formStack;
     }
 
 }

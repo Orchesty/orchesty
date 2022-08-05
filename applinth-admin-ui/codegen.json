@@ -1,0 +1,19 @@
+{
+  "overwrite": true,
+  "generates": {
+    "src/types/gqlGeneratedPublic.ts": {
+      "schema": "http://127.0.0.18:8080/gql/public/admin",
+      "plugins": ["typescript", "typescript-operations"],
+      "documents": "src/api/public/**/*.ts"
+    },
+    "src/types/gqlGeneratedPrivate.ts": {
+      "schema": "http://127.0.0.18:8080/gql/private/admin",
+      "plugins": ["typescript", "typescript-operations"],
+      "documents": "src/api/private/**/*.ts"
+    }
+  },
+  "hooks": {
+    "afterOneFileWrite": "prettier --write",
+    "afterAllFileWrite": "eslint --fix"
+  }
+}

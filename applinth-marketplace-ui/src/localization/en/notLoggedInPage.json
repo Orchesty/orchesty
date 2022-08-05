@@ -1,0 +1,6 @@
+{
+  "notLoggedInPage": {
+    "heading": "You have to log in first",
+    "redirectNotSet": "The address for redirection to log in page is not configured."
+  }
+}

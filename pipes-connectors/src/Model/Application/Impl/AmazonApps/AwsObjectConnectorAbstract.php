@@ -2,16 +2,11 @@
 
 namespace Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\Persistence\ObjectRepository;
-use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
-use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessEventNotSupportedTrait;
-use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessExceptionTrait;
 
 /**
  * Class AwsObjectConnectorAbstract
@@ -20,9 +15,6 @@ use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessExceptionTrait;
  */
 abstract class AwsObjectConnectorAbstract extends ConnectorAbstract
 {
-
-    use ProcessExceptionTrait;
-    use ProcessEventNotSupportedTrait;
 
     protected const QUERY  = 'query';
     protected const RESULT = 'result';
@@ -43,28 +35,7 @@ abstract class AwsObjectConnectorAbstract extends ConnectorAbstract
     /**
      * @return string
      */
-    abstract protected function getCustomId(): string;
-
-    /**
-     * AwsObjectConnectorAbstract constructor.
-     *
-     * @param DocumentManager $dm
-     */
-    public function __construct(DocumentManager $dm)
-    {
-        $this->repository = $dm->getRepository(ApplicationInstall::class);
-    }
-
-    /**
-     * @param ProcessDto $dto
-     *
-     * @return ApplicationInstall
-     * @throws ApplicationInstallException
-     */
-    protected function getApplicationInstall(ProcessDto $dto): ApplicationInstall
-    {
-        return $this->repository->findUserAppByHeaders($dto);
-    }
+    abstract protected function getCustomName(): string;
 
     /**
      * @param mixed[] $parameters
@@ -76,7 +47,9 @@ abstract class AwsObjectConnectorAbstract extends ConnectorAbstract
     {
         foreach ($parameters as $parameter) {
             if (!isset($content[$parameter])) {
-                throw $this->createException("Required parameter '%s' is not provided!", $parameter);
+                throw new ConnectorException(
+                    sprintf("Connector '%s': Required parameter '%s' is not provided!", $this->getName(), $parameter),
+                );
             }
         }
     }

@@ -11,9 +11,4 @@ services:
     hbpf.handler.connector:
         class: Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Handler\ConnectorHandler
         arguments:
-            - '@hbpf.manager.connector'
             - '@hbpf.loader.connector'
-
-    hbpf.manager.connector:
-        class: Hanaboso\PipesPhpSdk\Connector\Model\ConnectorManager
-        arguments:

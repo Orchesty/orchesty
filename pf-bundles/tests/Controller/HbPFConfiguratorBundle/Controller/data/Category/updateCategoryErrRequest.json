@@ -3,5 +3,7 @@
     "body": {
         "name": "category 2"
     },
-    "headers": []
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
 }

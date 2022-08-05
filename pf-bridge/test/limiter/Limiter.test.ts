@@ -21,7 +21,7 @@ const createBasicMessage = (): JobMessage => {
     );
 };
 
-describe("Limiter", () => {
+xdescribe("Limiter", () => {
     it("isReady should return negative result on requesting invalid limiter #unit", async () => {
         const tcp = new TcpClient("invalidhost", 3333);
         const publisher: any = {};

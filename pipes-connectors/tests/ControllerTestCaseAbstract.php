@@ -9,7 +9,7 @@ use Hanaboso\PhpCheckUtils\PhpUnit\Traits\DatabaseTestTrait;
 use Hanaboso\Utils\String\Json;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Security\Core\Encoder\NativePasswordEncoder;
+use Symfony\Component\PasswordHasher\Hasher\NativePasswordHasher;
 
 /**
  * Class ControllerTestCaseAbstract
@@ -24,9 +24,9 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     use CustomAssertTrait;
 
     /**
-     * @var NativePasswordEncoder
+     * @var NativePasswordHasher
      */
-    protected NativePasswordEncoder $encoder;
+    protected NativePasswordHasher $encoder;
 
     /**
      * ControllerTestCaseAbstract constructor.
@@ -39,7 +39,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     {
         parent::__construct($name, $data, $dataName);
 
-        $this->encoder = new NativePasswordEncoder(3);
+        $this->encoder = new NativePasswordHasher(3);
     }
 
     /**
@@ -50,7 +50,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
         parent::setUp();
 
         $this->startClient();
-        $this->dm = self::$container->get('doctrine_mongodb.odm.default_document_manager');
+        $this->dm = self::getContainer()->get('doctrine_mongodb.odm.default_document_manager');
         $this->clearMongo();
     }
 

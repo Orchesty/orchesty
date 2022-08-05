@@ -46,22 +46,15 @@ spec:
                 configMapKeyRef:
                   key: rabbitmq_password
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: __RABBITMQ_VHOST
+            - name: RABBITMQ_VHOST
               valueFrom:
                 configMapKeyRef:
                   key: rabbitmq_vhost
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: RABBITMQ_VHOST # todo: fix / in code or start supporting DSN
-              value: "/$(__RABBITMQ_VHOST)"
-            - name: MONGO_HOST
+            - name: MONGO_DSN
               valueFrom:
                 configMapKeyRef:
-                  key: mongodb_auth_and_hosts
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: MONGO_DB
-              valueFrom:
-                configMapKeyRef:
-                  key: mongodb_db_and_opts
+                  key: mongodb_dsn
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
             - name: REPEATER_CHECK_TIMEOUT
               value: "5000"

@@ -3,7 +3,7 @@
 namespace Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Loader;
 
 use Hanaboso\CommonsBundle\Utils\NodeServiceLoader;
-use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeInterface;
+use Hanaboso\PipesPhpSdk\CustomNode\CommonNodeInterface;
 use Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Exception\CustomNodeException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -29,14 +29,14 @@ final class CustomNodeLoader
     /**
      * @param string $serviceName
      *
-     * @return CustomNodeInterface
+     * @return CommonNodeInterface
      * @throws CustomNodeException
      */
-    public function get(string $serviceName): CustomNodeInterface
+    public function get(string $serviceName): CommonNodeInterface
     {
         $name = sprintf('%s.%s', self::PREFIX, $serviceName);
         if ($this->container->has($name)) {
-            /** @var CustomNodeInterface $node */
+            /** @var CommonNodeInterface $node */
             $node = $this->container->get($name);
 
             return $node;

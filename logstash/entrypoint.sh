@@ -1,17 +1,24 @@
 #!/bin/bash
 
-set -ex
+cd /usr/share/logstash/pipeline
 
-if [ "$MONGO_HOST" != "" ]; then
+if [ "$LOG_STORAGE" = "mongodb" ] ; then
+  echo "Using config for MongoDB"
+  cp ../pipeline-variants/logstash_mongo.conf .
 
-    if [ "$MONGO_USER" != "" ]; then
-        mongo --host="$MONGO_HOST" "$MONGO_DATABASE" -u "$MONGO_USER" -p "$MONGO_PASS" --authenticationDatabase=admin --eval="db.createCollection( '$MONGO_COLLECTION', { capped: true, size: $MONGO_SIZE_COLLETION } );"
-    else
-        mongo --host="$MONGO_HOST" "$MONGO_DATABASE" --eval="db.createCollection( '$MONGO_COLLECTION', { capped: true, size: $MONGO_SIZE_COLLETION } );"
-    fi;
+elif [ "$LOG_STORAGE" = "elasticsearch" ]; then
+  echo "Using config for Elasticsearch"
+  cp ../pipeline-variants/logstash_elastics.conf .
 
-    mongo --host="$MONGO_HOST" "$MONGO_DATABASE" --eval="db.$MONGO_COLLECTION.createIndex({'pipes.severity': 1});db.$MONGO_COLLECTION.createIndex({'pipes.correlation_id': 1});db.$MONGO_COLLECTION.createIndex({'@timestamp': -1});"
+elif [ "$LOG_STORAGE" = "google" ]; then
+  echo "Using config for Google Cloud Logs"
+  cp ../pipeline-variants/logstash_google.conf .
+  echo "ERROR: LOG_STORAGE google not supported in current version"
+  exit 1
 
+else
+  echo "ERROR: Unsupported log storage: ${LOG_STORAGE}"
+  exit 1
 fi
 
-exec /usr/local/bin/docker-entrypoint "$@"
+exec /usr/local/bin/docker-entrypoint

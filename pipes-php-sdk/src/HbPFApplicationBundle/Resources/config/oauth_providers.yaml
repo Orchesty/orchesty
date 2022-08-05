@@ -6,13 +6,13 @@ services:
         class: Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
-            - '%backend_host%'
+            - '%backendHost%'
         calls:
             - ['setLogger', ['@monolog.logger.commons']]
 
     hbpf.providers.oauth2_provider:
         class: Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider
         arguments:
-            - '%backend_host%'
+            - '%backendHost%'
         calls:
             - ['setLogger', ['@monolog.logger.commons']]

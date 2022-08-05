@@ -70,8 +70,9 @@ final class SdkManager
     public function create(array $data): Sdk
     {
         $sdk = (new Sdk())
-            ->setKey($data[Sdk::KEY])
-            ->setValue($data[Sdk::VALUE]);
+            ->setName($data[Sdk::NAME])
+            ->setHeaders($data[Sdk::HEADERS] ?? [])
+            ->setUrl($data[Sdk::URL]);
 
         $this->dm->persist($sdk);
         $this->dm->flush();
@@ -88,13 +89,15 @@ final class SdkManager
      */
     public function update(Sdk $sdk, array $data): Sdk
     {
-        if (isset($data[Sdk::KEY])) {
-            $sdk->setKey($data[Sdk::KEY]);
+        if (isset($data[Sdk::NAME])) {
+            $sdk->setName($data[Sdk::NAME]);
         }
 
-        if (isset($data[Sdk::VALUE])) {
-            $sdk->setValue($data[Sdk::VALUE]);
+        if (isset($data[Sdk::URL])) {
+            $sdk->setUrl($data[Sdk::URL]);
         }
+
+        $sdk->setHeaders($data[Sdk::HEADERS] ?? []);
 
         $this->dm->flush();
 

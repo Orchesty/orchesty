@@ -5,6 +5,7 @@ namespace PipesPhpSdkTests\Integration\Parser;
 use Exception;
 use Hanaboso\PipesPhpSdk\Parser\TableParser;
 use Hanaboso\PipesPhpSdk\Parser\TableParserInterface;
+use Hanaboso\Utils\File\File;
 use PhpOffice\PhpSpreadsheet\Cell\Cell;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
@@ -24,7 +25,6 @@ final class TableParserTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\Parser\TableParser::createWriter
-
      * @throws Exception
      */
     public function testCreateWriter(): void
@@ -50,7 +50,7 @@ final class TableParserTest extends DatabaseTestCaseAbstract
      * @covers       \Hanaboso\PipesPhpSdk\Parser\TableParser::getTrimmedCellValue
      *
      * @dataProvider getParseToJsonData
-
+     *
      * @param string $input
      * @param string $output
      * @param bool   $hasHeaders
@@ -61,7 +61,7 @@ final class TableParserTest extends DatabaseTestCaseAbstract
     {
         $parser = new TableParser();
         $result = $parser->parseToJson(__DIR__ . $input, $hasHeaders);
-        self::assertEquals(file_get_contents(__DIR__ . $output), $result);
+        self::assertEquals(File::getContent(__DIR__ . $output), $result);
     }
 
     /**
@@ -70,7 +70,7 @@ final class TableParserTest extends DatabaseTestCaseAbstract
      * @covers       \Hanaboso\PipesPhpSdk\Parser\TableParser::createWriter
      *
      * @dataProvider getParseFromJsonData
-
+     *
      * @param string $input
      * @param string $type
      * @param bool   $hasHeaders
@@ -83,14 +83,13 @@ final class TableParserTest extends DatabaseTestCaseAbstract
         $path   = $parser->parseFromJson(__DIR__ . $input, $type, $hasHeaders);
 
         $result = $parser->parseToJson($path, $hasHeaders);
-        self::assertEquals(file_get_contents(__DIR__ . $input), $result);
+        self::assertEquals(File::getContent(__DIR__ . $input), $result);
 
         unlink($path);
     }
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\Parser\TableParser::getTrimmedCellValue
-
      * @throws Exception
      */
     public function testGetTrimmedCellValue(): void

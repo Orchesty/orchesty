@@ -1,0 +1,43 @@
+<template>
+  <LoginLayout>
+    <template #title>
+      Resetovací link odeslán <v-icon class="icon">mdi-check</v-icon>
+    </template>
+
+    <p class="subtitle-2 color-main-text mb-8">
+      Email s linkem pro změnu hesla byl odeslán na zadaný email.
+    </p>
+  </LoginLayout>
+</template>
+
+<script lang="ts">
+import { Component, Vue } from "vue-property-decorator";
+import LoginLayout from "../components/commons/layouts/LoginLayout.vue";
+
+@Component({
+  components: {
+    LoginLayout,
+  },
+})
+export default class ResetPasswordPage extends Vue {}
+</script>
+
+<style lang="scss" scoped>
+.icon {
+  position: relative;
+  top: -3px;
+  margin-left: 1rem;
+  padding: 4px;
+  color: $color-dark-blue;
+  font-size: 0.7em;
+  border: 2px solid;
+  border-radius: 50%;
+}
+
+.button {
+  font-size: 20px;
+  padding: 10px;
+  width: 25ch !important;
+  min-width: initial !important;
+}
+</style>

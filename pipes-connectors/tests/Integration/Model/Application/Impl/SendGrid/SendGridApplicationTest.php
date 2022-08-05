@@ -3,6 +3,7 @@
 namespace HbPFConnectorsTests\Integration\Model\Application\Impl\SendGrid;
 
 use Exception;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\SendGrid\SendGridApplication;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
@@ -25,23 +26,23 @@ final class SendGridApplicationTest extends DatabaseTestCaseAbstract
     private SendGridApplication $app;
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\SendGrid\SendGridApplication::getKey
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\SendGrid\SendGridApplication::getName
      *
      * @throws Exception
      */
     public function testGetKey(): void
     {
-        self::assertEquals('send-grid', $this->app->getKey());
+        self::assertEquals('send-grid', $this->app->getName());
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\SendGrid\SendGridApplication::getName
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\SendGrid\SendGridApplication::getPublicName
      *
      * @throws Exception
      */
-    public function testGetName(): void
+    public function testGetPublicName(): void
     {
-        self::assertEquals('SendGrid Application', $this->app->getName());
+        self::assertEquals('SendGrid Application', $this->app->getPublicName());
     }
 
     /**
@@ -61,11 +62,11 @@ final class SendGridApplicationTest extends DatabaseTestCaseAbstract
      */
     public function testIsAuthorized(): void
     {
-        $appInstall = DataProvider::createApplicationInstall($this->app->getKey());
+        $appInstall = DataProvider::createApplicationInstall($this->app->getName());
         self::assertFalse($this->app->isAuthorized($appInstall));
 
         $appInstall->setSettings(
-            [ApplicationInterface::AUTHORIZATION_SETTINGS => [SendGridApplication::API_KEY => 'key']],
+            [ApplicationInterface::AUTHORIZATION_FORM => [SendGridApplication::API_KEY => 'key']],
         );
         self::assertTrue($this->app->isAuthorized($appInstall));
     }
@@ -79,30 +80,38 @@ final class SendGridApplicationTest extends DatabaseTestCaseAbstract
     public function testGetRequestDto(): void
     {
         $appInstall = DataProvider::createApplicationInstall(
-            $this->app->getKey(),
+            $this->app->getName(),
             'user',
-            [ApplicationInterface::AUTHORIZATION_SETTINGS => [SendGridApplication::API_KEY => 'key']],
+            [ApplicationInterface::AUTHORIZATION_FORM => [SendGridApplication::API_KEY => 'key']],
         );
 
-        $dto = $this->app->getRequestDto($appInstall, CurlManager::METHOD_POST, NULL, Json::encode(['foo' => 'bar']));
+        $dto = $this->app->getRequestDto(
+            new ProcessDto(),
+            $appInstall,
+            CurlManager::METHOD_POST,
+            NULL,
+            Json::encode(['foo' => 'bar']),
+        );
         self::assertEquals(CurlManager::METHOD_POST, $dto->getMethod());
         self::assertEquals(SendGridApplication::BASE_URL, $dto->getUri(TRUE));
         self::assertEquals(Json::encode(['foo' => 'bar']), $dto->getBody());
 
-        $appInstall = DataProvider::createApplicationInstall($this->app->getKey());
+        $appInstall = DataProvider::createApplicationInstall($this->app->getName());
         self::expectException(ApplicationInstallException::class);
-        $this->app->getRequestDto($appInstall, CurlManager::METHOD_GET);
+        $this->app->getRequestDto(new ProcessDto(), $appInstall, CurlManager::METHOD_GET);
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\SendGrid\SendGridApplication::getSettingsForm
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\SendGrid\SendGridApplication::getFormStack
      *
      * @throws Exception
      */
-    public function testGetSettingsForm(): void
+    public function testGetFormStack(): void
     {
-        $form = $this->app->getSettingsForm();
-        self::assertCount(1, $form->getFields());
+        $forms = $this->app->getFormStack()->getForms();
+        foreach ($forms as $form) {
+            self::assertCount(1, $form->getFields());
+        }
     }
 
     /**

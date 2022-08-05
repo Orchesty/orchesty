@@ -49,6 +49,36 @@ final class MetricsController extends AbstractController
     }
 
     /**
+     * @Route("/metrics/consumers", methods={"GET", "OPTIONS"})
+     *
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function consumerMetricsAction(Request $request): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::consumerMetricsAction',
+            ['request' => $request],
+        );
+    }
+
+    /**
+     * @Route("/metrics/containers", methods={"GET", "OPTIONS"})
+     *
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function containerMetricsAction(Request $request): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::containerMetricsAction',
+            ['request' => $request],
+        );
+    }
+
+    /**
      * @Route("/metrics/topology/{topology}/requests", methods={"GET", "OPTIONS"})
      *
      * @param Request $request

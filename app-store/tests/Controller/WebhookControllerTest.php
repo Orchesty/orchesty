@@ -153,7 +153,7 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
     {
         $mock = self::createPartialMock(WebhookHandler::class, [$fn]);
         $mock->expects(self::any())->method($fn)->willThrowException($return);
-        self::$container->set('hbpf._application.handler.webhook', $mock);
+        self::getContainer()->set('hbpf._application.handler.webhook', $mock);
     }
 
 }

@@ -3,9 +3,10 @@
 namespace HbPFConnectorsTests\Integration\Model\Application\Impl\Hubspot\Mapper;
 
 use Exception;
-use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDtoAbstract;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Mapper\HubSpotCreateContactMapper;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shipstation\Connector\ShipstationNewOrderConnector;
+use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
@@ -37,51 +38,48 @@ final class HubspotCreateContactMapperTest extends DatabaseTestCaseAbstract
             ],
         );
 
-        $shipstation                  = self::$container->get('hbpf.application.shipstation');
-        $shipstationNewOrderConnector = new ShipstationNewOrderConnector(
-            self::$container->get('hbpf.transport.curl_manager'),
-            $this->dm,
-        );
-
-        $shipstationNewOrderConnector->setApplication($shipstation);
+        $shipstation                  = self::getContainer()->get('hbpf.application.shipstation');
+        $shipstationNewOrderConnector = new ShipstationNewOrderConnector();
+        $shipstationNewOrderConnector
+            ->setSender(self::getContainer()->get('hbpf.transport.curl_manager'))
+            ->setDb($this->dm)
+            ->setApplication($shipstation);
 
         $applicationInstall = DataProvider::getBasicAppInstall(
-            $shipstation->getKey(),
+            $shipstation->getName(),
             self::API_KEY,
             self::API_SECRET,
         );
 
         $this->pfd($applicationInstall);
 
-        $response = $shipstationNewOrderConnector->processEvent(
+        $response = $shipstationNewOrderConnector->processAction(
             DataProvider::getProcessDto(
-                $shipstation->getKey(),
+                $shipstation->getName(),
                 self::API_KEY,
-                (string) file_get_contents(sprintf('%s/Data/newOrderShipstation.json', __DIR__), TRUE),
+                File::getContent(sprintf('%s/Data/newOrderShipstation.json', __DIR__)),
             ),
         );
 
-        $responseNoBody = $shipstationNewOrderConnector->processEvent(
+        $responseNoBody = $shipstationNewOrderConnector->processAction(
             DataProvider::getProcessDto(
-                $shipstation->getKey(),
+                $shipstation->getName(),
                 self::API_KEY,
             ),
         );
 
-        $response->setData((string) file_get_contents(sprintf('%s/Data/responseShipstation.json', __DIR__), TRUE));
+        $response->setData(File::getContent(sprintf('%s/Data/responseShipstation.json', __DIR__)));
 
         $hubspotCreateContactMapper = new HubSpotCreateContactMapper();
-        $dto                        = $hubspotCreateContactMapper->process($response);
-        $dtoNoBody                  = $hubspotCreateContactMapper->process($responseNoBody);
+        $dto                        = $hubspotCreateContactMapper->processAction($response);
+        $dtoNoBody                  = $hubspotCreateContactMapper->processAction($responseNoBody);
 
         self::assertEquals(
             Json::decode($dto->getData()),
-            Json::decode(
-                (string) file_get_contents(__DIR__ . '/Data/requestHubspot.json', TRUE),
-            ),
+            Json::decode(File::getContent(__DIR__ . '/Data/requestHubspot.json')),
         );
 
-        self::assertEquals(ProcessDto::STOP_AND_FAILED, $dtoNoBody->getHeaders()['pf-result-code']);
+        self::assertEquals(ProcessDtoAbstract::STOP_AND_FAILED, $dtoNoBody->getHeaders()['result-code']);
     }
 
 }

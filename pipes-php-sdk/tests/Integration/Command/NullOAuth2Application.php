@@ -5,11 +5,13 @@ namespace PipesPhpSdkTests\Integration\Command;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\CommonsBundle\Enum\AuthorizationTypeEnum;
+use Hanaboso\CommonsBundle\Process\ProcessDtoAbstract;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Form;
+use Hanaboso\PipesPhpSdk\Application\Model\Form\FormStack;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
 
@@ -50,7 +52,7 @@ final class NullOAuth2Application extends OAuth2ApplicationAbstract
     /**
      * @return string
      */
-    public function getKey(): string
+    public function getName(): string
     {
         return 'null2';
     }
@@ -58,7 +60,7 @@ final class NullOAuth2Application extends OAuth2ApplicationAbstract
     /**
      * @return string
      */
-    public function getName(): string
+    public function getPublicName(): string
     {
         return 'null2';
     }
@@ -72,6 +74,7 @@ final class NullOAuth2Application extends OAuth2ApplicationAbstract
     }
 
     /**
+     * @param ProcessDtoAbstract $dto
      * @param ApplicationInstall $applicationInstall
      * @param string             $method
      * @param string|null        $url
@@ -82,6 +85,7 @@ final class NullOAuth2Application extends OAuth2ApplicationAbstract
      */
     public function getRequestDto
     (
+        ProcessDtoAbstract $dto,
         ApplicationInstall $applicationInstall,
         string $method,
         ?string $url = NULL,
@@ -92,25 +96,27 @@ final class NullOAuth2Application extends OAuth2ApplicationAbstract
         $data;
         $url;
 
-        return new RequestDto($method, new Uri(''));
+        return new RequestDto(new Uri(''), $method, $dto);
     }
 
     /**
-     * @return Form
+     * @return FormStack
      */
-    public function getSettingsForm(): Form
+    public function getFormStack(): FormStack
     {
         $field1 = new Field(Field::TEXT, 'settings1', 'Client 11');
         $field2 = new Field(Field::TEXT, 'settings2', 'Client 22');
         $field3 = new Field(Field::PASSWORD, 'settings3', 'Client 33');
 
-        $form = new Form();
+        $form = new Form('nullApp', 'nullPublicName');
         $form
             ->addField($field1)
             ->addField($field2)
             ->addField($field3);
 
-        return $form;
+        $formStack = new FormStack();
+
+        return $formStack->addForm($form);
     }
 
     /**

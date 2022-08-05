@@ -4,7 +4,7 @@ import "mocha";
 import * as net from "net";
 import TcpLimiter from "../../src/limiter/TcpLimiter";
 
-describe("TcpLimiter", () => {
+xdescribe("TcpLimiter", () => {
     it("isReady should return negative result on requesting invalid limiter #unit", async () => {
         const limiter = new TcpLimiter({host: "invalidhost", port: 65336});
         const result = await limiter.isReady();

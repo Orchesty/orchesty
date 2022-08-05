@@ -4,6 +4,7 @@ namespace Hanaboso\PipesFramework\Configurator\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
+use Hanaboso\Utils\String\Json;
 
 /**
  * Class Sdk
@@ -17,40 +18,48 @@ class Sdk
 
     use IdTrait;
 
-    public const ID    = 'id';
-    public const KEY   = 'key';
-    public const VALUE = 'value';
+    public const ID      = 'id';
+    public const NAME    = 'name';
+    public const URL     = 'url';
+    public const HEADERS = 'headers';
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private string $key;
+    private string $name;
 
     /**
      * @var string
      *
      * @ODM\Field(type="string")
      */
-    private string $value;
+    private string $url;
+
+    /**
+     * @var string
+     *
+     * @ODM\Field(type="string")
+     */
+    private string $headers = '[]';
 
     /**
      * @return string
      */
-    public function getKey(): string
+    public function getName(): string
     {
-        return $this->key;
+        return $this->name;
     }
 
     /**
-     * @param string $key
+     * @param string $name
      *
      * @return Sdk
      */
-    public function setKey(string $key): Sdk
+    public function setName(string $name): Sdk
     {
-        $this->key = $key;
+        $this->name = $name;
 
         return $this;
     }
@@ -58,19 +67,39 @@ class Sdk
     /**
      * @return string
      */
-    public function getValue(): string
+    public function getUrl(): string
     {
-        return $this->value;
+        return $this->url;
     }
 
     /**
-     * @param string $value
+     * @param string $url
      *
      * @return Sdk
      */
-    public function setValue(string $value): Sdk
+    public function setUrl(string $url): Sdk
     {
-        $this->value = $value;
+        $this->url = $url;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public function getHeaders(): array
+    {
+        return Json::decode($this->headers);
+    }
+
+    /**
+     * @param mixed[] $headers
+     *
+     * @return Sdk
+     */
+    public function setHeaders(array $headers): Sdk
+    {
+        $this->headers = Json::encode($headers);
 
         return $this;
     }
@@ -81,9 +110,10 @@ class Sdk
     public function toArray(): array
     {
         return [
-            self::ID    => $this->id,
-            self::KEY   => $this->key,
-            self::VALUE => $this->value,
+            self::ID      => $this->id,
+            self::NAME    => $this->name,
+            self::URL     => $this->url,
+            self::HEADERS => $this->getHeaders(),
         ];
     }
 

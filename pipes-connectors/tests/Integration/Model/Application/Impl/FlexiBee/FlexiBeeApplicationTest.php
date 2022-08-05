@@ -5,13 +5,14 @@ namespace HbPFConnectorsTests\Integration\Model\Application\Impl\FlexiBee;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
 use Hanaboso\CommonsBundle\Enum\AuthorizationTypeEnum;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\FlexiBee\FlexiBeeApplication;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
-use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
 use Hanaboso\Utils\Exception\DateTimeException;
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DatabaseTestCaseAbstract;
@@ -32,15 +33,15 @@ final class FlexiBeeApplicationTest extends DatabaseTestCaseAbstract
     public function testGetKey(): void
     {
 
-        self::assertEquals('flexibee', $this->getApp()->getKey());
+        self::assertEquals('flexibee', $this->getApp()->getName());
     }
 
     /**
      * @throws Exception
      */
-    public function testGetName(): void
+    public function testGetPublicName(): void
     {
-        self::assertEquals('FlexiBee Application', $this->getApp()->getName());
+        self::assertEquals('FlexiBee Application', $this->getApp()->getPublicName());
     }
 
     /**
@@ -70,9 +71,10 @@ final class FlexiBeeApplicationTest extends DatabaseTestCaseAbstract
     {
         $this->setApp();
         $dto = $this->getApp()->getRequestDto(
+            new ProcessDto(),
             $this->getAppInstall(),
             CurlManager::METHOD_POST,
-            NULL,
+            '',
             json::encode(['foo' => 'bar']),
         );
 
@@ -81,16 +83,15 @@ final class FlexiBeeApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws MongoDBException
-     * @throws CurlException
+     * @return void
      * @throws ApplicationInstallException
-     * @throws DateTimeException
-     * @throws Exception
+     * @throws CurlException
      */
     public function testGetRequestDtoWithHttpAuth(): void
     {
         $this->setApp();
         $dto = $this->getApp()->getRequestDto(
+            new ProcessDto(),
             $this->getAppInstall(TRUE),
             CurlManager::METHOD_POST,
             NULL,
@@ -116,6 +117,7 @@ final class FlexiBeeApplicationTest extends DatabaseTestCaseAbstract
 
         $this->setApp();
         $this->getApp()->getRequestDto(
+            new ProcessDto(),
             $this->getAppInstall(FALSE, FALSE),
             CurlManager::METHOD_POST,
             NULL,
@@ -138,6 +140,7 @@ final class FlexiBeeApplicationTest extends DatabaseTestCaseAbstract
 
         $this->setApp();
         $this->getApp()->getRequestDto(
+            new ProcessDto(),
             $this->getAppInstall(FALSE, FALSE, FALSE),
             CurlManager::METHOD_POST,
             NULL,
@@ -160,6 +163,7 @@ final class FlexiBeeApplicationTest extends DatabaseTestCaseAbstract
 
         $this->setApp();
         $this->getApp()->getRequestDto(
+            new ProcessDto(),
             $this->getAppInstall(FALSE, FALSE, TRUE, FALSE),
             CurlManager::METHOD_POST,
             NULL,
@@ -178,6 +182,7 @@ final class FlexiBeeApplicationTest extends DatabaseTestCaseAbstract
     {
         $this->setApp();
         $dto = $this->getApp()->getRequestDto(
+            new ProcessDto(),
             $this->getAppInstall(FALSE, TRUE, TRUE, TRUE, TRUE),
             CurlManager::METHOD_POST,
             NULL,
@@ -202,6 +207,7 @@ final class FlexiBeeApplicationTest extends DatabaseTestCaseAbstract
 
         $this->setApp(400);
         $dto = $this->getApp()->getRequestDto(
+            new ProcessDto(),
             $this->getAppInstall(),
             CurlManager::METHOD_POST,
         );
@@ -223,6 +229,7 @@ final class FlexiBeeApplicationTest extends DatabaseTestCaseAbstract
 
         $this->setApp(200, FALSE);
         $dto = $this->getApp()->getRequestDto(
+            new ProcessDto(),
             $this->getAppInstall(),
             CurlManager::METHOD_POST,
         );
@@ -244,20 +251,23 @@ final class FlexiBeeApplicationTest extends DatabaseTestCaseAbstract
 
         $this->setApp(200, TRUE, FALSE);
         $this->getApp()->getRequestDto(
+            new ProcessDto(),
             $this->getAppInstall(),
             CurlManager::METHOD_POST,
         );
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\FlexiBee\FlexiBeeApplication::getSettingsForm
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\FlexiBee\FlexiBeeApplication::getFormStack
      *
      * @throws Exception
      */
-    public function testGetSettingsForm(): void
+    public function testGetFormStack(): void
     {
-        $form = $this->getApp()->getSettingsForm();
-        self::assertCount(4, $form->getFields());
+        $forms = $this->getApp()->getFormStack()->getForms();
+        foreach ($forms as $form) {
+            self::assertCount(4, $form->getFields());
+        }
     }
 
     /**
@@ -293,7 +303,7 @@ final class FlexiBeeApplicationTest extends DatabaseTestCaseAbstract
         bool $withoutTokenParam = FALSE,
     ): void
     {
-        self::$container->set(
+        self::getContainer()->set(
             'hbpf.transport.curl_manager',
             $this->createCurlManagerMock($errorCode, $withBody, $isTokenSuccess, $withoutTokenParam),
         );
@@ -342,7 +352,7 @@ final class FlexiBeeApplicationTest extends DatabaseTestCaseAbstract
      */
     private function getApp(): FlexiBeeApplication
     {
-        return self::$container->get('hbpf.application.flexibee');
+        return self::getContainer()->get('hbpf.application.flexibee');
     }
 
     /**
@@ -363,7 +373,7 @@ final class FlexiBeeApplicationTest extends DatabaseTestCaseAbstract
         bool $fillToken = FALSE,
     ): ApplicationInstall
     {
-        $appInstall = DataProvider::getBasicAppInstall($this->getApp()->getKey());
+        $appInstall = DataProvider::getBasicAppInstall($this->getApp()->getName());
 
         if ($httpAuth) {
             $auth = 'http';
@@ -382,22 +392,22 @@ final class FlexiBeeApplicationTest extends DatabaseTestCaseAbstract
         if ($flexiBeeUrl) {
             $appInstall->addSettings(
                 [
-                    FlexiBeeApplication::AUTHORIZATION_SETTINGS => $arrayAuthSetttings,
-                    BasicApplicationAbstract::FORM =>
-                    [
-                        'auth'                                      => $auth,
-                        'flexibeeUrl'                               => 'https://demo.flexibee.eu/c/demo',
-                    ],
+                    ApplicationInterface::AUTHORIZATION_FORM =>
+                        [
+                            ...$arrayAuthSetttings,
+                            'auth'        => $auth,
+                            'flexibeeUrl' => 'https://demo.flexibee.eu/c/demo',
+                        ],
 
                 ],
             );
         } else {
             $appInstall->addSettings(
                 [
-                    FlexiBeeApplication::AUTHORIZATION_SETTINGS => $arrayAuthSetttings,
-                    BasicApplicationAbstract::FORM =>
+                    ApplicationInterface::AUTHORIZATION_FORM =>
                         [
-                            'auth'                                      => $auth,
+                            ...$arrayAuthSetttings,
+                            'auth' => $auth,
                         ],
                 ],
             );

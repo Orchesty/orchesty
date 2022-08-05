@@ -69,7 +69,7 @@ const settings: IAmqpDrainSettings = {
     ],
 };
 
-describe("CounterPublisher", () => {
+xdescribe("CounterPublisher", () => {
     it("composes message in correct format #integration", () => {
         const publisher = new CounterPublisher(conn, settings);
         const msgCorrId = "corrId";

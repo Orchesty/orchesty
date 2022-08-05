@@ -3,27 +3,35 @@
 namespace Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Mapper;
 
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
+use Hanaboso\PipesPhpSdk\CustomNode\CommonNodeAbstract;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\String\Json;
-use JsonException;
 
 /**
  * Class HubSpotCreateContactMapper
  *
  * @package Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Mapper
  */
-final class HubSpotCreateContactMapper extends CustomNodeAbstract
+final class HubSpotCreateContactMapper extends CommonNodeAbstract
 {
+
+    public const NAME = 'hub-spot.create-contact-mapper';
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return self::NAME;
+    }
 
     /**
      * @param ProcessDto $dto
      *
      * @return ProcessDto
      * @throws PipesFrameworkException
-     * @throws JsonException
      */
-    public function process(ProcessDto $dto): ProcessDto
+    public function processAction(ProcessDto $dto): ProcessDto
     {
         $body = Json::decode($dto->getData())['orders'][0] ?? NULL;
 

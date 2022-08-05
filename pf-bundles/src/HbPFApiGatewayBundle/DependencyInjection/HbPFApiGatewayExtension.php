@@ -48,9 +48,6 @@ final class HbPFApiGatewayExtension extends Extension implements PrependExtensio
         if (!$container->hasExtension('hb_pf_commons')) {
             throw new RuntimeException('You must register HbPFCommonsBundle before.');
         }
-
-        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/prepend-config'));
-        $loader->load('parameters.yml');
     }
 
 }

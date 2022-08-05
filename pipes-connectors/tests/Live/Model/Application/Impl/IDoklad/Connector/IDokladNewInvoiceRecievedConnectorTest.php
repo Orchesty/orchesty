@@ -3,6 +3,7 @@
 namespace HbPFConnectorsTests\Live\Model\Application\Impl\IDoklad\Connector;
 
 use Exception;
+use Hanaboso\Utils\File\File;
 use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
 
@@ -20,19 +21,19 @@ final class IDokladNewInvoiceRecievedConnectorTest extends DatabaseTestCaseAbstr
      */
     public function testSend(): void
     {
-        $app = self::$container->get('hbpf.application.i-doklad');
+        $app = self::getContainer()->get('hbpf.application.i-doklad');
 
         $applicationInstall = DataProvider::getOauth2AppInstall(
-            $app->getKey(),
+            $app->getName(),
             'user',
             'token',
             'ae89f69a-44f4-4163-ac98-************',
             'de469040-fc97-4e03-861e-************',
         );
         $this->pfd($applicationInstall);
-        $conn         = self::$container->get('hbpf.connector.i-doklad.new-invoice-recieved');
-        $dataFromFile = (string) file_get_contents(__DIR__ . '/newInvoice.json');
-        $dto          = DataProvider::getProcessDto($app->getKey(), 'user', $dataFromFile);
+        $conn         = self::getContainer()->get('hbpf.connector.i-doklad.new-invoice-recieved');
+        $dataFromFile = File::getContent(__DIR__ . '/newInvoice.json');
+        $dto          = DataProvider::getProcessDto($app->getName(), 'user', $dataFromFile);
         $conn->processAction($dto);
         self::assertFake();
     }

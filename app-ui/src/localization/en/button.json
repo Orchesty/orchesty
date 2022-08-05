@@ -1,0 +1,43 @@
+{
+  "button": {
+    "sending": {
+      "loading": "loading...",
+      "saving": "saving...",
+      "login": "logging...",
+      "sending": "sending...",
+      "sync": "syncing...",
+      "enqueueingToProceed": "processing...",
+      "validating": "validating...",
+      "moving": "moving...",
+      "deleting": "deleting...",
+      "editing": "editing...",
+      "creating": "creating...",
+      "run": "running...",
+      "disabling": "disabling...",
+      "importing": "Importing..."
+    },
+    "run": "Run",
+    "save": "Save",
+    "allow": "Accept",
+    "change": "Change",
+    "add": "Add",
+    "send": "Send",
+    "close": "Close",
+    "show": "Show",
+    "cancel": "Cancel",
+    "set": "Set",
+    "ok": "OK",
+    "delete": "Delete",
+    "install": "Install",
+    "move": "Move",
+    "edit": "Edit",
+    "create": "Create",
+    "back": "Back",
+    "subscribe": "Subscribe",
+    "unsubscribe": "Unsubscribe",
+    "disable": "Disable",
+    "import": "Import",
+    "authorize": "Authorize",
+    "login": "Login"
+  }
+}

@@ -1,0 +1,170 @@
+---
+version: '3.5'
+
+services:
+    wait-for-it:
+        image: hanabosocom/wait-for-it:master
+
+    node-sdk:
+        image: node-sdk:tag
+        build: node-sdk/docker
+        user: ${DEV_UID}:${DEV_GID}
+        working_dir: /var/www
+        volumes:
+            - ./node-sdk/:/var/www:cached
+        environment:
+            # Envs for tests are load from node-sdk/.jest/testEnvs.js
+            JEST_DOCKER: 1
+            APP_ENV: debug
+            CRYPT_SECRET: ThisIsNotSoSecret
+            BACKEND_URL: ${BACKEND_URL}
+            STARTING_POINT_URL: starting-point:8080
+            UDP_LOGGER_DSN: logstash:5005
+            METRICS_DSN: ${METRICS_DSN}
+            MONGODB_DSN: ${MONGO_DSN}
+        command: sh -c 'pnpm install && pnpm run start'
+
+    notification-sender-api:
+        image: orchesty/notification-sender:${VERSION}
+        working_dir: /var/www
+        environment:
+            MONGO_CONNECTION: ${MONGO_DSN}
+
+    starting-point:
+        image: hanabosocom/go-base:1.18
+        user: ${DEV_UID}:${DEV_GID}
+        environment:
+            DEV_UID: ${DEV_UID}
+            DEV_GID: ${DEV_GID}
+            APP_DEBUG: 'true'
+            MONGO_DSN: ${MONGO_DSN}
+            METRICS_DSN: ${METRICS_DSN}
+            RABBIT_COUNTER_QUEUE_DURABLE: 'true'
+            RABBIT_QUEUE_DURABLE: 'true'
+            RABBIT_DELIVERY_MODE: 2
+        volumes:
+            - ./../../starting-point/:/app:cached
+        ports:
+            - ${DEV_IP}:82:8080
+        command: go run cmd/starting-point.go
+
+    topology-api:
+        image: orchesty/topology-api:${VERSION}
+        environment:
+            DEPLOYMENT_PREFIX: demo
+            GENERATOR_NETWORK: ${NETWORK_NAME}
+            GENERATOR_MODE: ${GENERATOR_MODE}
+            GENERATOR_PATH: /srv/topology
+            MONGO_DSN: ${MONGO_DSN}
+            PROJECT_SOURCE_PATH: ${PROJECT_SOURCE_PATH}/../topology
+        volumes:
+            - ./../../topology-generator/:/topology-generator
+            - ${DOCKER_SOCKET_PATH}:/var/run/docker.sock
+            - ../topology:/srv/topology
+
+    cron-api:
+        image: hanabosocom/go-base:1.18
+        user: ${DEV_UID}:${DEV_GID}
+        environment:
+            DEV_UID: ${DEV_UID}
+            DEV_GID: ${DEV_GID}
+            APP_DEBUG: 'true'
+            MONGO_DSN: ${MONGO_DSN}
+            MONGO_COLLECTION: cron
+        volumes:
+            - ../../cron:/app:cached
+        command: /bin/sh -c '
+            su-exec root chmod u+s /usr/bin/crontab &&
+            su-exec root crond -l 0 -L /var/log/cron.log &&
+            go run cmd/cron.go'
+
+    backend:
+        image: hanabosocom/php-dev:php-8.1-alpine
+        user: ${DEV_UID}:${DEV_GID}
+        ports:
+            - ${DEV_IP}:8080:80
+        environment:
+            APP_ENV: dev
+            APP_DEBUG: 'true'
+            PHP_WEBROOT: /var/www/pipes/applinth/public
+            COMPOSER_HOME: ${HOME}/dev/.composer
+            BACKEND_DSN: ${BACKEND_URL}/
+            FRONTEND_DSN: ${FRONTEND_URL}/
+            NOTIFICATION_DSN: notification-sender-api
+            RABBITMQ_DSN: ${RABBITMQ_DSN}
+            MONGODB_DSN: ${MONGO_DSN}
+            MONGODB_DB: demo
+            METRICS_DSN: ${METRICS_DSN}
+            METRICS_DB: metrics
+            METRICS_SERVICE: mongo
+            CRON_DSN: cron-api:8080
+            MONOLITH_API_DSN: php-sdk
+            STARTING_POINT_DSN: starting-point:8080
+            TOPOLOGY_API_DSN: topology-api:8080
+            WORKER_DEFAULT_PORT: 8000
+            DOCKER_REGISTRY: orchesty
+            DOCKER_PF_BRIDGE_IMAGE: bridge:${VERSION}
+            JWT_KEY: demo_key
+            X_AUTH_KEY: demo_key
+            EMAIL_DSN: smtp://mailhog:1025
+            CRYPT_SECRET: 'ThisIsNotSoSecret'
+            USCCP_URI: ${BACKEND_URL}
+            ALPHA_INSTANCE_ID: 'demo'
+            JWS_KEY: BWoCz4gxw3YHDMkqE5HD1WT2u6zqIAtiJkYVyf6UucL4ZtbhhatQooP5IgTQRwowYR6z8wE3biqZTl37
+            JWE_PRIVATE_KEY: |
+                -----BEGIN RSA PRIVATE KEY-----
+                MIICWgIBAAKBgH3O2axPpFRQpeq1uqDUrpCpOTNcbYLusMZWBDE6G3CFRKfH7L8v
+                flGEpc1cJP1mvdJwR7cV1lg5ayIasDEHRnM8qkKWIrAhRWsMApJ2ZZiIKWU1wAZ5
+                qkGNYEDYXpA+gZzMDxKJFMc4fKnYOIIC3iZoBwGyGG2Ecads/LpJk2U7AgMBAAEC
+                gYAuhFUnySrRoiA28IrY/Mqu4mMsAnjbeLYUH6ndKccLi7se7mUzK7RhH9LOY8up
+                hluZe7qIj6J5bIGYUpXjCvWZDW/VUtZpujk3y802mHT2Ze5KbYGztvaeMi3Dv+Q5
+                4rgX5/2oStonPgdBt5souhXOtvweav5bHhifPOoK2KqKQQJBAOZRfIdipLXuWGMf
+                RHgjxp8A3qw3kACENSHuHJBWHHBxdAizG+LG/zLdr12Mo19zoxQPAixvmGA/oFhT
+                7CNfZdcCQQCL1hUNW8KPOnwq59fdLHMNiQoWzP4dbHsLDi5HcRCYCUkhyit3iluA
+                RSPnehYGkbhah/T3iX85ysbf0rpYAsc9AkB0CTXOF7qYFj7doZEjXhLhZNTKuyuH
+                txP1xjsJ1Ph7Bg3JnEM+W7eS7vE9Fm/w1ReiMXWM4aRJSYUFOzLLF3L9AkBd83gx
+                gXU2xhSmvx5Je5PRhEFDEHerTTdeNijh1xVPEO4RxcNujYbsp4d3/o7N2xoBuVbc
+                +YSBT7xOpUaN21ABAkAi8Q2nlieTaxzmZrRXFydVkEgLiLqy8JRPTlA0Mi0POZhS
+                jkqMqGxTP/igqnSjI4TQH6nBTUvK8lNCPAIafi4+
+                -----END RSA PRIVATE KEY-----
+            JWE_PUBLIC_KEY: |
+                -----BEGIN PUBLIC KEY-----
+                MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgH3O2axPpFRQpeq1uqDUrpCpOTNc
+                bYLusMZWBDE6G3CFRKfH7L8vflGEpc1cJP1mvdJwR7cV1lg5ayIasDEHRnM8qkKW
+                IrAhRWsMApJ2ZZiIKWU1wAZ5qkGNYEDYXpA+gZzMDxKJFMc4fKnYOIIC3iZoBwGy
+                GG2Ecads/LpJk2U7AgMBAAE=
+                -----END PUBLIC KEY-----
+        working_dir: /var/www/pipes/applinth
+        volumes:
+            - ../../:/var/www/pipes:cached
+            - ${HOME}/dev/.composer:${HOME}/dev/.composer:cached
+
+    logstash:
+        image: orchesty/logstash:${VERSION}
+        environment:
+            - MONGO_DSN=mongodb://mongo:27017
+            - MONGO_DB=demo
+            - MONGO_COLLECTION=Logs
+            - LS_JAVA_OPTS=-Xms512m -Xmx512m
+
+    mongo:
+        image: mongo
+        ports:
+            - ${DEV_IP}:27017:27017
+        volumes:
+            - mongodb:/data/db
+
+    rabbitmq:
+        image: rabbitmq:3-management-alpine
+        ports:
+            - ${DEV_IP}:15672:15672
+        volumes:
+            - rabbitmq:/var/lib/rabbitmq
+
+volumes:
+    mongodb:
+    rabbitmq:
+
+networks:
+    default:
+        name: demo_default

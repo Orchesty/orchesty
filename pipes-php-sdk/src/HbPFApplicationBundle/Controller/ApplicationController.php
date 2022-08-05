@@ -2,7 +2,6 @@
 
 namespace Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller;
 
-use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler;
@@ -153,7 +152,7 @@ final class ApplicationController
         try {
             $url = $this->applicationHandler->saveAuthToken($key, $user, $request->query->all());
 
-            return $this->getResponse(['redirectUrl' => $url[ApplicationInterface::REDIRECT_URL]]);
+            return $this->getResponse(['redirectUrl' => $url]);
         } catch (ApplicationInstallException $e) {
             return $this->getErrorResponse($e, 404, ControllerUtils::NOT_FOUND);
         } catch (Throwable $e) {
@@ -175,7 +174,7 @@ final class ApplicationController
 
             $url = $this->applicationHandler->saveAuthToken($key, $user, $request->query->all());
 
-            return $this->getResponse(['redirectUrl' => $url[ApplicationInterface::REDIRECT_URL]]);
+            return $this->getResponse(['redirectUrl' => $url]);
         } catch (ApplicationInstallException $e) {
             return $this->getErrorResponse($e, 404, ControllerUtils::NOT_FOUND);
         } catch (Throwable $e) {

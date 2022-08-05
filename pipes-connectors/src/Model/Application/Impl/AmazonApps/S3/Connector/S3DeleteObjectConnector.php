@@ -8,7 +8,6 @@ use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\S3Application;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
-use JsonException;
 
 /**
  * Class S3DeleteObjectConnector
@@ -22,17 +21,16 @@ final class S3DeleteObjectConnector extends S3ObjectConnectorAbstract
      * @param ProcessDto $dto
      *
      * @return ProcessDto
+     * @throws ApplicationInstallException
      * @throws ConnectorException
      * @throws OnRepeatException
-     * @throws ApplicationInstallException
-     * @throws JsonException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
-        $content = $this->getJsonContent($dto);
+        $content = $dto->getJsonData();
         $this->checkParameters([self::NAME], $content);
 
-        $applicationInstall = $this->getApplicationInstall($dto);
+        $applicationInstall = $this->getApplicationInstallFromProcess($dto);
         /** @var S3Application $application */
         $application = $this->getApplication();
         $client      = $application->getS3Client($applicationInstall);
@@ -45,16 +43,19 @@ final class S3DeleteObjectConnector extends S3ObjectConnectorAbstract
                 ],
             );
         } catch (AwsException $e) {
-            throw $this->createRepeatException($dto, $e);
+            throw new OnRepeatException(
+                $dto,
+                sprintf("Connector '%s': %s: %s", $this->getName(), $e::class, $e->getMessage()),
+            );
         }
 
-        return $this->setJsonContent($dto, [self::NAME => $content[self::NAME]]);
+        return $dto->setJsonData([self::NAME => $content[self::NAME]]);
     }
 
     /**
      * @return string
      */
-    protected function getCustomId(): string
+    protected function getCustomName(): string
     {
         return 'delete-object';
     }

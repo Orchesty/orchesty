@@ -20,7 +20,7 @@ final class SendDutyEmailTest extends KernelTestCaseAbstract
 
     /**
      * @covers \Demo\CustomNode\SendDutyEmail
-     * @covers \Demo\CustomNode\SendDutyEmail::process
+     * @covers \Demo\CustomNode\SendDutyEmail::processAction
      * @covers \Demo\CustomNode\SendDutyEmail::send
      * @covers \Demo\CustomNode\SendDutyEmail::getSubject
      *
@@ -31,12 +31,12 @@ final class SendDutyEmailTest extends KernelTestCaseAbstract
         $transport = $this->createPartialMock(TransportInterface::class, ['send', 'setLogger']);
         $transport->method('send');
 
-        $pagerDuty = self::$container->get('hbpf.connector.pager-duty');
+        $pagerDuty = self::getContainer()->get('hbpf.connector.pager-duty');
         $result    = new SendDutyEmail(new Mailer($transport), $pagerDuty);
         $dto       = (new ProcessDto())
             ->setData(Json::encode(['since' => '2019-04-19', 'until' => '2019-04-29']));
 
-        self::assertNotEmpty($result->process($dto)->getData());
+        self::assertNotEmpty($result->processAction($dto)->getData());
     }
 
 }

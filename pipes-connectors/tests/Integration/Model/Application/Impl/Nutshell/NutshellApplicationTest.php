@@ -4,6 +4,7 @@ namespace HbPFConnectorsTests\Integration\Model\Application\Impl\Nutshell;
 
 use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Nutshell\NutshellApplication;
 use HbPFConnectorsTests\DatabaseTestCaseAbstract;
@@ -28,16 +29,21 @@ final class NutshellApplicationTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Nutshell\NutshellApplication::getRequestDto
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Nutshell\NutshellApplication::getToken
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Nutshell\NutshellApplication::getKey
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Nutshell\NutshellApplication::getName
      *
      * @throws Exception
      */
     public function testAuthorization(): void
     {
-        $applicationInstall = DataProvider::getBasicAppInstall($this->application->getKey(), self::USER, self::API_KEY);
+        $applicationInstall = DataProvider::getBasicAppInstall(
+            $this->application->getName(),
+            self::USER,
+            self::API_KEY,
+        );
         $this->pfd($applicationInstall);
 
         $dto = $this->application->getRequestDto(
+            new ProcessDto(),
             $applicationInstall,
             CurlManager::METHOD_POST,
             'https://app.nutshell.com/api/v1/json',
@@ -61,11 +67,11 @@ final class NutshellApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Nutshell\NutshellApplication::getName
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Nutshell\NutshellApplication::getPublicName
      */
-    public function testName(): void
+    public function testPublicName(): void
     {
-        self::assertEquals('Nutshell', $this->application->getName());
+        self::assertEquals('Nutshell', $this->application->getPublicName());
     }
 
     /**
@@ -77,15 +83,17 @@ final class NutshellApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Nutshell\NutshellApplication::getSettingsForm
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Nutshell\NutshellApplication::getFormStack
      *
      * @throws Exception
      */
-    public function testGetSettingsForm(): void
+    public function testGetFormStack(): void
     {
-        $fields = $this->application->getSettingsForm()->getFields();
-        foreach ($fields as $field) {
-            self::assertContains($field->getKey(), ['user', 'password']);
+        $forms = $this->application->getFormStack()->getForms();
+        foreach ($forms as $form) {
+            foreach ($form->getFields() as $field) {
+                self::assertContains($field->getKey(), ['user', 'password']);
+            }
         }
     }
 
@@ -96,7 +104,7 @@ final class NutshellApplicationTest extends DatabaseTestCaseAbstract
     {
         parent::setUp();
 
-        $this->application = self::$container->get('hbpf.application.nutshell');
+        $this->application = self::getContainer()->get('hbpf.application.nutshell');
     }
 
 }

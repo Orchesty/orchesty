@@ -4,6 +4,7 @@ namespace Demo\Command;
 
 use Exception;
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
@@ -224,13 +225,15 @@ final class DownloaderCommand extends Command
     private function sendData(string $data, OutputInterface $output, string $topology): void
     {
         $request = (new RequestDto(
-            'POST',
             new Uri(sprintf('http://frontend/starting-point/topologies/%s/nodes/start/run-by-name', $topology)),
+            'POST',
+            new ProcessDto(),
+            $data,
             [
                 'Accept'       => 'application/json',
                 'Content-Type' => 'application/json',
             ],
-        ))->setBody($data);
+        ));
 
         $this->manager->sendAsync($request)->then(
             static function (ResponseInterface $response) use ($output): void {

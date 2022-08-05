@@ -1,0 +1,20 @@
+parameters:
+    ##########################
+    #        Metrics         #
+    ##########################
+    metrics_service: '%env(string:METRICS_SERVICE)%'
+
+services:
+    _defaults:
+        public: '%public.services%'
+
+    ##########################
+    #        Metrics         #
+    ##########################
+
+    hbpf.metrics_connector.loader:
+        class: Hanaboso\CommonsBundle\Metrics\MetricsSenderLoader
+        arguments:
+            - '%metrics_service%'
+            - null
+            - null

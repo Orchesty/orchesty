@@ -40,7 +40,7 @@ final class CategoryParserTest extends DatabaseTestCaseAbstract
      */
     public function testClassifyTopology(): void
     {
-        $categoryManager = self::$container->get('hbpf.configurator.manager.category');
+        $categoryManager = self::getContainer()->get('hbpf.configurator.manager.category');
 
         $categoryParser = new CategoryParser($this->dm, $categoryManager);
         $categoryParser->addRoot('System', '*/data');
@@ -124,7 +124,7 @@ final class CategoryParserTest extends DatabaseTestCaseAbstract
      */
     public function testClassifyTopologyError(): void
     {
-        $categoryManager = self::$container->get('hbpf.configurator.manager.category');
+        $categoryManager = self::getContainer()->get('hbpf.configurator.manager.category');
 
         $categoryParser = new CategoryParser($this->dm, $categoryManager);
         $categoryParser->addRoot('System', '*/*');

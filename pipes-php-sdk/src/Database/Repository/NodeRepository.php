@@ -85,14 +85,23 @@ final class NodeRepository extends DocumentRepository
      */
     public function getTopologyType(Topology $topology): string
     {
-        /** @var int $hasCron */
-        $hasCron = $this->createQueryBuilder()
-            ->count()
-            ->field('topology')->equals($topology->getId())
-            ->field('type')->equals(TypeEnum::CRON)
-            ->getQuery()->execute();
+        $hasCron = count($this->getCronNodes($topology));
 
         return $hasCron === 1 ? TypeEnum::CRON : TypeEnum::WEBHOOK;
+    }
+
+    /**
+     * @param Topology $topology
+     *
+     * @return Node[]
+     * @throws MongoDBException
+     */
+    public function getCronNodes(Topology $topology): array
+    {
+        return $this->createQueryBuilder()
+            ->field('topology')->equals($topology->getId())
+            ->field('type')->equals(TypeEnum::CRON)
+            ->getQuery()->toArray();
     }
 
     /**
@@ -106,6 +115,28 @@ final class NodeRepository extends DocumentRepository
             ->field('topology')->equals($topologyId)
             ->getQuery()
             ->toArray();
+    }
+
+    /**
+     * @param string $nodeId
+     *
+     * @return Node
+     */
+    public function getNodeById(string $nodeId): Node {
+        /** @var Node|null $node */
+        $node = $this->createQueryBuilder()
+            ->field('id')->equals($nodeId)
+            ->field('deleted')->equals(FALSE)
+            ->field('enabled')->equals(TRUE)
+            ->getQuery()->getSingleResult();
+
+        if (!$node) {
+            throw new LogicException(
+                sprintf('Node with id is not found [%s]', $nodeId),
+            );
+        }
+
+        return $node;
     }
 
 }

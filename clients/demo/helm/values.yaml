@@ -23,13 +23,7 @@ global:
 
   alpha_nodejsSdk:
     extraEnv: {}
-
-  batchConnector:
-    enabled: false
-
-  longRunningNode:
-    enabled: false
-
+    
   monitoring:
     useInfluxDB: false
     logStorage: mongodb
@@ -40,12 +34,8 @@ global:
   longRunningNode:
     enabled: false
 
-mongodb:
-  pvcName: pipes-mongodb
-  nodeSelector:
-    kubernetes.io/hostname: "node2"
+customPersistence: {}
 
-rabbitmq:
-  pvcName: pipes-rabbitmq
-  nodeSelector:
-    kubernetes.io/hostname: "node2"
+mongodb: {}
+
+rabbitmq: {}

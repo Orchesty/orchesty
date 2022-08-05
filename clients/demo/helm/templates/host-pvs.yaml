@@ -1,8 +1,9 @@
 ---
+{{- if .Values.customPersistence }}
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: pipes-influxdb
+  name: {{ .Values.customPersistence.pvPrefix }}-influxdb
 spec:
   storageClassName: ""
   accessModes:
@@ -11,13 +12,13 @@ spec:
     storage: 1Gi
   hostPath:
     type: Directory
-    path: /srv/pipes-demo2/influxdb
+    path: {{ .Values.customPersistence.pvDir }}/influxdb
 
 ---
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: pipes-mongodb
+  name: {{ .Values.customPersistence.pvPrefix }}-mongodb
 spec:
   storageClassName: ""
   accessModes:
@@ -26,13 +27,13 @@ spec:
     storage: 1Gi
   hostPath:
     type: Directory
-    path: /srv/pipes-demo2/mongodb
+    path: {{ .Values.customPersistence.pvDir }}/mongodb
 
 ---
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: pipes-rabbitmq
+  name: {{ .Values.customPersistence.pvPrefix }}-rabbitmq
 spec:
   storageClassName: ""
   accessModes:
@@ -41,14 +42,14 @@ spec:
     storage: 1Gi
   hostPath:
     type: Directory
-    path: /srv/pipes-demo2/rabbitmq
+    path: {{ .Values.customPersistence.pvDir }}/rabbitmq
 
 
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: pipes-influxdb
+  name: {{ .Values.customPersistence.pvcPrefix }}-influxdb
 spec:
   storageClassName: ""
   accessModes:
@@ -56,13 +57,13 @@ spec:
   resources:
     requests:
       storage: 1Gi
-  volumeName: pipes-influxdb
+  volumeName: {{ .Values.customPersistence.pvPrefix }}-influxdb
 
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: pipes-mongodb
+  name: {{ .Values.customPersistence.pvcPrefix }}-mongodb
 spec:
   storageClassName: ""
   accessModes:
@@ -70,13 +71,13 @@ spec:
   resources:
     requests:
       storage: 1Gi
-  volumeName: pipes-mongodb
+  volumeName: {{ .Values.customPersistence.pvPrefix }}-mongodb
 
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: pipes-rabbitmq
+  name: {{ .Values.customPersistence.pvcPrefix }}-rabbitmq
 spec:
   storageClassName: ""
   accessModes:
@@ -84,4 +85,6 @@ spec:
   resources:
     requests:
       storage: 1Gi
-  volumeName: pipes-rabbitmq
+  volumeName: {{ .Values.customPersistence.pvPrefix }}-rabbitmq
+
+{{ end }}

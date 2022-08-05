@@ -10,7 +10,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Nutshell\Connector\NutshellCreateContactConnector;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
-use Hanaboso\Utils\System\PipesHeaders;
+use Hanaboso\Utils\File\File;
 use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
 use ReflectionException;
@@ -31,11 +31,11 @@ final class NutshellCreateContactConnectorTest extends DatabaseTestCaseAbstract
     private NutshellCreateContactConnector $connector;
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Nutshell\Connector\NutshellCreateContactConnector::getId
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Nutshell\Connector\NutshellCreateContactConnector::getName
      */
-    public function testGetId(): void
+    public function testGetName(): void
     {
-        self::assertEquals('nutshell-create-contact', $this->connector->getId());
+        self::assertEquals('nutshell-create-contact', $this->connector->getName());
     }
 
     /**
@@ -49,15 +49,15 @@ final class NutshellCreateContactConnectorTest extends DatabaseTestCaseAbstract
      */
     public function testProcessAction(): void
     {
-        $data = (string) file_get_contents(__DIR__ . '/Data/newContact.json');
+        $data = File::getContent(__DIR__ . '/Data/newContact.json');
         $this->mockSender($data);
         $applicationInstall = DataProvider::getBasicAppInstall('nutshell');
         $this->pfd($applicationInstall);
 
         $dto    = (new ProcessDto())->setData($data)->setHeaders(
             [
-                PipesHeaders::createKey('application') => 'nutshell',
-                PipesHeaders::createKey('user')        => 'user',
+                'application' => 'nutshell',
+                'user'        => 'user',
             ],
         );
         $result = $this->connector->processAction($dto);
@@ -72,13 +72,11 @@ final class NutshellCreateContactConnectorTest extends DatabaseTestCaseAbstract
     {
         parent::setUp();
 
-        $this->connector = self::$container->get('hbpf.connector.nutshell-create-contact');
+        $this->connector = self::getContainer()->get('hbpf.connector.nutshell-create-contact');
     }
 
     /**
      * @param string $data
-     *
-     * @throws ReflectionException
      */
     private function mockSender(string $data): void
     {
@@ -86,7 +84,7 @@ final class NutshellCreateContactConnectorTest extends DatabaseTestCaseAbstract
         $sender->expects(self::any())->method('send')->willReturn(
             new ResponseDto(200, 'success', $data, []),
         );
-        $this->setProperty($this->connector, 'curlManager', $sender);
+        $this->setProperty($this->connector, 'sender', $sender);
     }
 
 }

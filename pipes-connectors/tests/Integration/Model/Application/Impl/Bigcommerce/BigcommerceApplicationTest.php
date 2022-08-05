@@ -4,6 +4,7 @@ namespace HbPFConnectorsTests\Integration\Model\Application\Impl\Bigcommerce;
 
 use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Bigcommerce\BigcommerceApplication;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use HbPFConnectorsTests\DatabaseTestCaseAbstract;
@@ -31,7 +32,7 @@ final class BigcommerceApplicationTest extends DatabaseTestCaseAbstract
     public function testAutorize(): void
     {
         $applicationInstall = DataProvider::getOauth2AppInstall(
-            $this->application->getKey(),
+            $this->application->getName(),
             'user',
             'token',
             self::CLIENT_ID,
@@ -64,14 +65,20 @@ final class BigcommerceApplicationTest extends DatabaseTestCaseAbstract
     public function testRequestDto(): void
     {
         $applicationInstall = DataProvider::getOauth2AppInstall(
-            $this->application->getKey(),
+            $this->application->getName(),
             'user',
             'token',
             self::CLIENT_ID,
             self::CLIENT_SECRET,
         );
         $this->pfd($applicationInstall);
-        $dto = $this->application->getRequestDto($applicationInstall, 'POST', 'url', '{"data":"hello data"}');
+        $dto = $this->application->getRequestDto(
+            new ProcessDto(),
+            $applicationInstall,
+            'POST',
+            'url',
+            '{"data":"hello data"}',
+        );
         self::assertEquals('{"data":"hello data"}', $dto->getBody());
     }
 
@@ -89,11 +96,11 @@ final class BigcommerceApplicationTest extends DatabaseTestCaseAbstract
     /**
      *
      */
-    public function testName(): void
+    public function testPublicName(): void
     {
         self::assertEquals(
             'Bigcommerce',
-            $this->application->getName(),
+            $this->application->getPublicName(),
         );
     }
 
@@ -111,11 +118,13 @@ final class BigcommerceApplicationTest extends DatabaseTestCaseAbstract
     /**
      * @throws Exception
      */
-    public function testGetSettingsForm(): void
+    public function testGetFormStack(): void
     {
-        $fields = $this->application->getSettingsForm()->getFields();
-        foreach ($fields as $field) {
-            self::assertContains($field->getKey(), ['client_id', 'client_secret']);
+        $forms = $this->application->getFormStack()->getForms();
+        foreach ($forms as $form) {
+            foreach ($form->getFields() as $field) {
+                self::assertContains($field->getKey(), ['client_id', 'client_secret']);
+            }
         }
     }
 
@@ -127,7 +136,7 @@ final class BigcommerceApplicationTest extends DatabaseTestCaseAbstract
         parent::setUp();
 
         $this->mockRedirect(BigcommerceApplication::BIGCOMMERCE_URL, self::CLIENT_ID, 'store_v2_products');
-        $this->application = self::$container->get('hbpf.application.bigcommerce');
+        $this->application = self::getContainer()->get('hbpf.application.bigcommerce');
     }
 
 }

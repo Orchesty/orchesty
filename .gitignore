@@ -3,6 +3,13 @@
 *.log
 go/pkg
 
+!clients/topology/.gitkeep
 clients/topology
 .DS_Store
 node_modules
+docusaurus/documentation/.docusaurus
+docusaurus/documentation/build
+docusaurus/documentation/node_modules
+
+_old_ci/*
+

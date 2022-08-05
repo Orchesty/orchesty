@@ -67,15 +67,15 @@ final class MetricsClientTest extends KernelTestCaseAbstract
     private function getMetricsClient(): MetricsClient
     {
         /** @var string $host */
-        $host = self::$container->getParameter('influx.host');
+        $host = self::getContainer()->getParameter('influx.host');
         /** @var int $port */
-        $port = self::$container->getParameter('influx.api_port');
+        $port = self::getContainer()->getParameter('influx.api_port');
         /** @var string $user */
-        $user = self::$container->getParameter('influx.user');
+        $user = self::getContainer()->getParameter('influx.user');
         /** @var string $pass */
-        $pass = self::$container->getParameter('influx.password');
+        $pass = self::getContainer()->getParameter('influx.password');
         /** @var string $db */
-        $db = self::$container->getParameter('influx.database');
+        $db = self::getContainer()->getParameter('influx.database');
 
         return new MetricsClient($host, $port, $user, $pass, $db);
     }

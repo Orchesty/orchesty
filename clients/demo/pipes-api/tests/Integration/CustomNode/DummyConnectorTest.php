@@ -15,14 +15,14 @@ final class DummyConnectorTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers \Demo\CustomNode\DummyConnector::process
+     * @covers \Demo\CustomNode\DummyConnector::processAction
      */
     public function testProcess(): void
     {
         /** @var DummyConnector $connector */
-        $connector = self::$container->get('hbpf.custom_node.print-label');
+        $connector = self::getContainer()->get('hbpf.custom_node.print-label');
 
-        $dto = $connector->process((new ProcessDto())->setData('{"foo":"bar"}'));
+        $dto = $connector->processAction((new ProcessDto())->setData('{"foo":"bar"}'));
         self::assertEquals('{"foo":"bar"}', $dto->getData());
     }
 

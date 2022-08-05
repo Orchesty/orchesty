@@ -5,7 +5,6 @@ namespace HbPFConnectorsTests\Live\Model\Application\Impl\Mailchimp;
 use Exception;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\MailchimpApplication;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
-use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
 
@@ -22,10 +21,10 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
      */
     public function testAutorize(): void
     {
-        $app = self::$container->get('hbpf.application.mailchimp');
+        $app = self::getContainer()->get('hbpf.application.mailchimp');
 
         $applicationInstall = DataProvider::getOauth2AppInstall(
-            $app->getKey(),
+            $app->getName(),
             'user',
             'token123',
             '6748****7235',
@@ -33,9 +32,9 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
         );
         $applicationInstall = $applicationInstall->setSettings(
             [
-                BasicApplicationInterface::AUTHORIZATION_SETTINGS =>
+                ApplicationInterface::AUTHORIZATION_FORM =>
                     [
-                        ApplicationInterface::REDIRECT_URL => 'xxxx',
+                        ApplicationInterface::FRONTEND_REDIRECT_URL => 'xxxx',
                     ],
                 MailchimpApplication::AUDIENCE_ID                 => 'c9e7f***5b',
             ],

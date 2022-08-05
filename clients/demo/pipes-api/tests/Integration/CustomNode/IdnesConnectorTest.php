@@ -2,7 +2,7 @@
 
 namespace DemoTests\Integration\CustomNode;
 
-use Demo\CustomNode\IdnesConnector;
+use Demo\Connector\IdnesConnector;
 use DemoTests\KernelTestCaseAbstract;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
@@ -16,16 +16,16 @@ final class IdnesConnectorTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers \Demo\CustomNode\IdnesConnector
-     * @covers \Demo\CustomNode\IdnesConnector::process
+     * @covers \Demo\Connector\IdnesConnector
+     * @covers \Demo\Connector\IdnesConnector::processAction
      * @throws CurlException
      */
     public function testProcess(): void
     {
         /** @var IdnesConnector $connector */
-        $connector = self::$container->get('hbpf.custom_node.idnes');
+        $connector = self::getContainer()->get('hbpf.idnes-connector');
 
-        $dto = $connector->process(new ProcessDto());
+        $dto = $connector->processAction((new ProcessDto())->setData('{}'));
         self::assertEquals('{}', $dto->getData());
     }
 

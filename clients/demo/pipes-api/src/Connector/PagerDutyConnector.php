@@ -9,10 +9,8 @@ use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
-use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
-use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessEventNotSupportedTrait;
 use Hanaboso\Utils\Date\DateTimeUtils;
 use Hanaboso\Utils\Exception\DateTimeException;
 use Hanaboso\Utils\String\Json;
@@ -28,23 +26,14 @@ use Yasumi\Yasumi;
 final class PagerDutyConnector extends ConnectorAbstract
 {
 
-    use ProcessEventNotSupportedTrait;
-
-    /**
-     * PagerDutyConnector constructor.
-     *
-     * @param CurlManagerInterface $curlManager
-     */
-    public function __construct(private CurlManagerInterface $curlManager)
-    {
-    }
+    public const NAME =  'pager_duty.schedule';
 
     /**
      * @return string
      */
-    public function getId(): string
+    public function getName(): string
     {
-        return 'pager_duty.schedule';
+        return self::NAME;
     }
 
     /**
@@ -59,8 +48,10 @@ final class PagerDutyConnector extends ConnectorAbstract
     public function processAction(ProcessDto $dto): ProcessDto
     {
         $requestDto = new RequestDto(
-            CurlManager::METHOD_GET,
             $this->getUrl($dto),
+            CurlManager::METHOD_GET,
+            $dto,
+            '',
             array_merge(
                 $dto->getHeaders(),
                 [
@@ -69,9 +60,8 @@ final class PagerDutyConnector extends ConnectorAbstract
                 ],
             ),
         );
-        $requestDto->setDebugInfo($dto);
 
-        $response = $this->curlManager->send($requestDto);
+        $response = $this->getSender()->send($requestDto);
         if ($response->getStatusCode() !== 200) {
             throw new ConnectorException(sprintf('Server response with status code [%s]', $response->getStatusCode()));
         }

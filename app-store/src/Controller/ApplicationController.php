@@ -140,7 +140,11 @@ final class ApplicationController
     {
         try {
             return $this->getResponse(
-                $this->applicationHandler->updateApplicationPassword($key, $user, $request->request->all()),
+                $this->applicationHandler->updateApplicationPassword(
+                    $key,
+                    $user,
+                    $request->request->all(),
+                ),
             );
         } catch (ApplicationInstallException $e) {
             return $this->getErrorResponse($e, 404, ControllerUtils::NOT_FOUND);

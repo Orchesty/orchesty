@@ -1,0 +1,3 @@
+parameters:
+    alpha_instance_id: '%env(string:ALPHA_INSTANCE_ID)%'
+    usccp_uri: '%env(string:USCCP_URI)%'

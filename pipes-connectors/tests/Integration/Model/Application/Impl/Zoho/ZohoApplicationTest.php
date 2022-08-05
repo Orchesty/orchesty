@@ -4,6 +4,7 @@ namespace HbPFConnectorsTests\Integration\Model\Application\Impl\Zoho;
 
 use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Zoho\ZohoApplication;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract;
@@ -38,26 +39,26 @@ final class ZohoApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Zoho\ZohoApplication::getKey
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Zoho\ZohoApplication::getName
      */
     public function testGetKey(): void
     {
         $this->setApplication();
         self::assertEquals(
             'zoho',
-            $this->application->getKey(),
+            $this->application->getName(),
         );
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Zoho\ZohoApplication::getName
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Zoho\ZohoApplication::getPublicName
      */
-    public function testGetName(): void
+    public function testGetPublicName(): void
     {
         $this->setApplication();
         self::assertEquals(
             'Zoho',
-            $this->application->getName(),
+            $this->application->getPublicName(),
         );
     }
 
@@ -74,19 +75,21 @@ final class ZohoApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Zoho\ZohoApplication::getSettingsForm
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Zoho\ZohoApplication::getFormStack
      *
      * @throws Exception
      */
-    public function testGetSettingsForm(): void
+    public function testGetFormStack(): void
     {
         $this->setApplication();
-        $fields = $this->application->getSettingsForm()->getFields();
-        foreach ($fields as $field) {
-            self::assertContainsEquals(
-                $field->getKey(),
-                [OAuth2ApplicationAbstract::CLIENT_ID, OAuth2ApplicationAbstract::CLIENT_SECRET],
-            );
+        $forms = $this->application->getFormStack()->getForms();
+        foreach ($forms as $form) {
+            foreach ($form->getFields() as $field) {
+                self::assertContainsEquals(
+                    $field->getKey(),
+                    [OAuth2ApplicationAbstract::CLIENT_ID, OAuth2ApplicationAbstract::CLIENT_SECRET],
+                );
+            }
         }
     }
 
@@ -98,10 +101,11 @@ final class ZohoApplicationTest extends DatabaseTestCaseAbstract
     public function testGetRequestDto(): void
     {
         $this->setApplication();
-        $applicationInstall = DataProvider::getOauth2AppInstall($this->application->getKey());
+        $applicationInstall = DataProvider::getOauth2AppInstall($this->application->getName());
         $this->pfd($applicationInstall);
 
         $dto = $this->application->getRequestDto(
+            new ProcessDto(),
             $applicationInstall,
             CurlManager::METHOD_POST,
             'https://www.zohoapis.com/crm/v2/settings/modules',
@@ -151,7 +155,7 @@ final class ZohoApplicationTest extends DatabaseTestCaseAbstract
     {
         $this->setApplication();
         $applicationInstall = DataProvider::getOauth2AppInstall(
-            $this->application->getKey(),
+            $this->application->getName(),
             'user',
             'token123',
             self::CLIENT_ID,
@@ -171,7 +175,7 @@ final class ZohoApplicationTest extends DatabaseTestCaseAbstract
             self::CLIENT_ID,
             'ZohoCRM.modules.ALL ZohoCRM.settings.ALL',
         );
-        $this->application = self::$container->get('hbpf.application.zoho');
+        $this->application = self::getContainer()->get('hbpf.application.zoho');
     }
 
 }

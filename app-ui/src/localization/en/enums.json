@@ -1,0 +1,28 @@
+{
+  "enums": {
+    "userType": {
+      "USER": "User",
+      "ADMIN": "Admin"
+    },
+    "currency": {
+      "cs": "Kč"
+    },
+    "time": {
+      "hour": "h."
+    },
+    "duration": {
+      "last5mins": "Last 5 mins",
+      "last30mins": "Last 30 mins",
+      "lastHour": "Last hour",
+      "last6hours": "Last 6 hours",
+      "last24hours": "Last 24 hours"
+    },
+    "loading": {
+      "editor": "data is being loaded..."
+    },
+    "boolean": {
+      "yes": "Yes",
+      "no": "No"
+    }
+  }
+}

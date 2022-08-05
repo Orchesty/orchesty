@@ -1,7 +1,0 @@
-{
-    "http": "POST /api/longRunning/null/process",
-    "body": [],
-    "headers": {
-        "HTTP_pf-doc-id": "123456789"
-    }
-}

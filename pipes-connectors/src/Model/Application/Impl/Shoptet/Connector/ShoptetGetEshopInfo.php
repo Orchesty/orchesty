@@ -9,8 +9,6 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
-use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessEventNotSupportedTrait;
-use JsonException;
 
 /**
  * Class ShoptetGetEshopInfo
@@ -20,16 +18,16 @@ use JsonException;
 final class ShoptetGetEshopInfo extends ShoptetConnectorAbstract
 {
 
-    use ProcessEventNotSupportedTrait;
+    public const NAME = 'shoptet-get-eshop-info';
 
     private const GET_ESHOP_INFO = '/api/eshop?include=orderAdditionalFields%2CorderStatuses%2CshippingMethods%2CpaymentMethods';
 
     /**
      * @return string
      */
-    public function getId(): string
+    public function getName(): string
     {
-        return 'shoptet-get-eshop-info';
+        return self::NAME;
     }
 
     /**
@@ -37,43 +35,43 @@ final class ShoptetGetEshopInfo extends ShoptetConnectorAbstract
      *
      * @return ProcessDto
      * @throws ApplicationInstallException
-     * @throws OnRepeatException
      * @throws ConnectorException
-     * @throws JsonException
+     * @throws OnRepeatException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
-        $applicationInstall = $this->repository->findUserAppByHeaders($dto);
+        $applicationInstall = $this->getApplicationInstallFromProcess($dto);
         try {
             $response = $this->processActionArray($applicationInstall, $dto);
-        } catch (CurlException $exception) {
-            throw $this->createRepeatException($dto, $exception);
+        } catch (CurlException $e) {
+            throw new OnRepeatException(
+                $dto,
+                sprintf("Connector '%s': %s: %s", $this->getName(), $e::class, $e->getMessage()),
+                $e->getCode(),
+            );
         }
 
-        return $this->setJsonContent($dto, $response);
+        return $dto->setJsonData($response);
     }
 
     /**
      * @param ApplicationInstall $applicationInstall
-     * @param ProcessDto|null    $processDto
+     * @param ProcessDto         $processDto
      *
      * @return mixed[]
-     * @throws CurlException
      * @throws ConnectorException
-     * @throws JsonException
+     * @throws CurlException
      */
-    public function processActionArray(ApplicationInstall $applicationInstall, ?ProcessDto $processDto = NULL): array
+    public function processActionArray(ApplicationInstall $applicationInstall, ProcessDto $processDto): array
     {
         $requestDto = $this->getApplication()->getRequestDto(
+            $processDto,
             $applicationInstall,
             CurlManager::METHOD_GET,
             sprintf('%s%s', $this->host, self::GET_ESHOP_INFO),
         );
-        if ($processDto) {
-            $requestDto->setDebugInfo($processDto);
-        }
 
-        return $this->sender->send($requestDto)->getJsonBody();
+        return $this->getSender()->send($requestDto)->getJsonBody();
     }
 
 }

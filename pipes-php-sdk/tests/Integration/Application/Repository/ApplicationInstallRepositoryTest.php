@@ -3,7 +3,6 @@
 namespace PipesPhpSdkTests\Integration\Application\Repository;
 
 use Exception;
-use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
@@ -37,6 +36,27 @@ final class ApplicationInstallRepositoryTest extends DatabaseTestCaseAbstract
             $appInstallRepository->getApplicationsCount(),
         );
     }
+
+    /**
+     * @covers  \Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository::getApplicationsCount
+     * @covers  \Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall::setUser
+     * @covers  \Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall::setKey
+     * @covers  \Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall::setExpires
+     *
+     * @throws Exception
+     */
+    public function testGetApplicationsCount(): void
+    {
+        $this->createApps();
+        /** @var ApplicationInstallRepository $appInstallRepository */
+        $appInstallRepository = $this->dm->getRepository(ApplicationInstall::class);
+
+        self::assertEquals(
+            4,
+            $appInstallRepository->getInstalledApplicationsCount(),
+        );
+    }
+
 
     /**
      * @covers  \Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository::getApplicationsCountDetails
@@ -78,23 +98,6 @@ final class ApplicationInstallRepositoryTest extends DatabaseTestCaseAbstract
 
         self::expectException(ApplicationInstallException::class);
         $appInstallRepository->findUserApp('user', 'key');
-    }
-
-    /**
-     * @covers \Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository::findUserAppByHeaders
-     *
-     * @throws Exception
-     */
-    public function testFindUserAppByHeaders(): void
-    {
-        $this->createApps();
-        $dto = (new ProcessDto())->setHeaders(['pf-application' => 'hubspot', 'pf-user' => 'user2']);
-
-        /** @var ApplicationInstallRepository $appInstallRepository */
-        $appInstallRepository = $this->dm->getRepository(ApplicationInstall::class);
-
-        $applicationInstall = $appInstallRepository->findUserAppByHeaders($dto);
-        self::assertFalse($applicationInstall->isDeleted());
     }
 
     /**

@@ -1,0 +1,24 @@
+{
+  "grid": {
+    "state": {
+      "loading": "Načítání..."
+    },
+    "overview": {
+      "header": {
+        "process": "Název Topologie",
+        "created": "Vytvořeno",
+        "started": "Vytvořeno",
+        "finished": "Dokončeno",
+        "duration": "Průběh",
+        "progress": "Progres",
+        "status": "Status"
+      }
+    },
+    "trash": {
+      "header": {
+        "topologyName": "Proces",
+        "created": "Vytvořeno"
+      }
+    }
+  }
+}

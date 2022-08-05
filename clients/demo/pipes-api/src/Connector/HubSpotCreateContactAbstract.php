@@ -2,22 +2,17 @@
 
 namespace Demo\Connector;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\HubSpotApplication;
-use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
-use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
-use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessEventNotSupportedTrait;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\System\PipesHeaders;
-use JsonException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -30,17 +25,10 @@ use Psr\Log\NullLogger;
 abstract class HubSpotCreateContactAbstract extends ConnectorAbstract implements LoggerAwareInterface
 {
 
-    use ProcessEventNotSupportedTrait;
-
     /**
      * @var string
      */
     protected string $contactUrl;
-
-    /**
-     * @var ApplicationInstallRepository
-     */
-    protected ApplicationInstallRepository $repository;
 
     /**
      * @var LoggerInterface
@@ -49,27 +37,18 @@ abstract class HubSpotCreateContactAbstract extends ConnectorAbstract implements
 
     /**
      * HubSpotCreateContactAbstract constructor.
-     *
-     * @param DocumentManager $dm
-     * @param CurlManager     $sender
      */
-    public function __construct(DocumentManager $dm, protected CurlManager $sender)
+    public function __construct()
     {
-        /** @phpstan-ignore-next-line */
-        $this->repository = $dm->getRepository(ApplicationInstall::class);
-        $this->logger     = new NullLogger();
+        $this->logger = new NullLogger();
     }
 
     /**
      * @param LoggerInterface $logger
-     *
-     * @return self
      */
-    public function setLogger(LoggerInterface $logger): self
+    public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
-
-        return $this;
     }
 
     /**
@@ -77,23 +56,23 @@ abstract class HubSpotCreateContactAbstract extends ConnectorAbstract implements
      *
      * @return ProcessDto
      * @throws ApplicationInstallException
-     * @throws PipesFrameworkException
      * @throws OnRepeatException
-     * @throws JsonException
+     * @throws PipesFrameworkException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
-        $applicationInstall = $this->repository->findUserAppByHeaders($dto);
-        $body               = $this->getJsonContent($dto);
+        $applicationInstall = $this->getApplicationInstallFromProcess($dto);
+        $body               = $dto->getJsonData();
 
         try {
-            $response = $this->sender->send(
+            $response = $this->getSender()->send(
                 $this->getApplication()->getRequestDto(
+                    $dto,
                     $applicationInstall,
                     CurlManager::METHOD_POST,
                     sprintf('%s/%s', HubspotApplication::BASE_URL, $this->contactUrl),
                     Json::encode($body),
-                )->setDebugInfo($dto),
+                ),
             );
 
             if ($response->getStatusCode() === 202) {

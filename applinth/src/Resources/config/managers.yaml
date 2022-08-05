@@ -1,0 +1,23 @@
+parameters:
+    jwe_private_key: '%env(string:JWE_PRIVATE_KEY)%'
+    jws_key: '%env(string:JWS_KEY)%'
+
+services:
+    _defaults:
+        public: '%public.services%'
+
+    hbpf._application.manager.statistics:
+        class: Hanaboso\Applinth\Manager\StatisticsManager
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    Hanaboso\Applinth\Manager\AuthorizationManager:
+        class: Hanaboso\Applinth\Manager\AuthorizationManager
+        arguments:
+            - '%jwe_private_key%'
+            - '%jws_key%'
+            - '@jose.jwe_serializer.serializer'
+            - '@jose.jwe_decrypter.decrypter'
+            - '@jose.jws_serializer.serializer'
+            - '@jose.jws_builder.builder'
+            - '@jose.jws_verifier.verifier'

@@ -17,15 +17,15 @@ final class DataGeneratorConnectorTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers \Demo\CustomNode\DataGeneratorConnector::process
+     * @covers \Demo\CustomNode\DataGeneratorConnector::processAction
      * @throws Exception
      */
     public function testProcess(): void
     {
         /** @var DataGeneratorConnector $connector */
-        $connector = self::$container->get('hbpf.custom_node.data-generator');
+        $connector = self::getContainer()->get('hbpf.custom_node.data-generator');
 
-        $dto = $connector->process(new ProcessDto());
+        $dto = $connector->processAction((new ProcessDto())->setData('{}'));
 
         self::assertArrayHasKey('generator', Json::decode($dto->getData()));
     }

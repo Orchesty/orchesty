@@ -87,6 +87,7 @@ func (d dockercli) RemoveSwarmConfig(topology *model.Topology, prefix string) er
 // StartCompose StartCompose
 func (d dockercli) StartCompose(dstDir string) error {
 	configPath := getDockerComposePath(dstDir)
+	_, _, _ = fscommands.Execute("docker-compose", "-f", configPath, "pull")
 	_, stdErr, err := fscommands.Execute("docker-compose", "-f", configPath, "up", "-d")
 	if err != nil {
 		return fmt.Errorf("%s [%s]", err.Error(), stdErr.String())

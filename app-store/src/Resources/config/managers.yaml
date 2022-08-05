@@ -7,7 +7,7 @@ services:
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
-            - '%backend_host%'
+            - '%backendHost%'
 
     hbpf._application.manager.application:
         class: Hanaboso\HbPFAppStore\Model\ApplicationManager
@@ -16,8 +16,3 @@ services:
             - '@hbpf.application.loader'
             - '@annotations.cached_reader'
             - '@hbpf._application.manager.webhook'
-            -
-    hbpf._application.manager.statistics:
-        class: Hanaboso\HbPFAppStore\Model\StatisticsManager
-        arguments:
-            - '@doctrine_mongodb.odm.default_document_manager'

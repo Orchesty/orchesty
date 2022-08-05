@@ -30,7 +30,6 @@ type logStashHandler struct {
 }
 
 func (h *logStashHandler) Handle(data map[string]interface{}) {
-
 	formatData, err := h.formatter.Format(data)
 
 	if err != nil {

@@ -9,7 +9,6 @@ use Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
-use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
 use Hanaboso\Utils\System\PipesHeaders;
@@ -40,10 +39,10 @@ final class DataProvider
         string $clientSecret = 'clientSecret',
     ): ApplicationInstall
     {
-        $settings                                                                                                               = [];
-        $settings[BasicApplicationInterface::AUTHORIZATION_SETTINGS][ApplicationInterface::TOKEN][OAuth2Provider::ACCESS_TOKEN] = $accessToken;
-        $settings[BasicApplicationInterface::AUTHORIZATION_SETTINGS][OAuth2ApplicationInterface::CLIENT_ID]                     = $clientId;
-        $settings[BasicApplicationInterface::AUTHORIZATION_SETTINGS][OAuth2ApplicationInterface::CLIENT_SECRET]                 = $clientSecret;
+        $settings                                                                                                      = [];
+        $settings[ApplicationInterface::AUTHORIZATION_FORM][ApplicationInterface::TOKEN][OAuth2Provider::ACCESS_TOKEN] = $accessToken;
+        $settings[ApplicationInterface::AUTHORIZATION_FORM][OAuth2ApplicationInterface::CLIENT_ID]                     = $clientId;
+        $settings[ApplicationInterface::AUTHORIZATION_FORM][OAuth2ApplicationInterface::CLIENT_SECRET]                 = $clientSecret;
 
         $applicationInstall = new ApplicationInstall();
 
@@ -67,9 +66,9 @@ final class DataProvider
         string $password = 'pass123',
     ): ApplicationInstall
     {
-        $settings                                                                                        = [];
-        $settings[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationAbstract::USER]     = $user;
-        $settings[BasicApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationAbstract::PASSWORD] = $password;
+        $settings                                                                               = [];
+        $settings[ApplicationInterface::AUTHORIZATION_FORM][BasicApplicationAbstract::USER]     = $user;
+        $settings[ApplicationInterface::AUTHORIZATION_FORM][BasicApplicationAbstract::PASSWORD] = $password;
 
         $applicationInstall = new ApplicationInstall();
 
@@ -93,8 +92,8 @@ final class DataProvider
             ->setData($body)
             ->setHeaders(
                 [
-                    PipesHeaders::createKey(PipesHeaders::USER)        => [$user],
-                    PipesHeaders::createKey(PipesHeaders::APPLICATION) => [$key],
+                    PipesHeaders::USER        => $user,
+                    PipesHeaders::APPLICATION => $key,
                 ],
             );
 

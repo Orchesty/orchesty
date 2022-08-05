@@ -2,29 +2,33 @@
 version: '3'
 
 services:
-  rabbitmq:
-    image: rabbitmq:management-alpine
-    ports:
-      - ${LIMITER_HOST}:15672:15672
-      - ${LIMITER_HOST}:5672:5672
-  mongodb:
-    image: mongo
-    ports:
-      - ${LIMITER_HOST}:27017:27017
-
-  logstash:
-    image: kedlas/udplogger:latest
-    ports:
-      - ${LIMITER_HOST}:5120:4444/udp
-
-  limiter:
-    image: golang:latest
+  app:
+    image: hanabosocom/go-base:1.18
     working_dir: /limiter
     environment:
-      - MONGO_HOST=mongodb
-      - RABBITMQ_HOST=rabbitmq
-      - LOGSTASH_HOST=logstash
-      - LOGSTASH_PORT=4444
+      - RABBITMQ_DSN=amqp://rabbitmq:5672/
+      - UDP_LOGGER_URL=logstash:5120
+      - MONGO_DSN=${MONGO_DSN}
     volumes:
       - ./:/limiter
     command: bash -c 'sleep infinity'
+
+  rabbitmq:
+    image: rabbitmq:management-alpine
+
+  mongodb:
+      image: mongo:latest
+      ports:
+        - ${DEV_IP}:27017:27017
+      volumes:
+        - mongodb:/data/db
+
+  logstash:
+    image: mendhak/udp-listener
+    environment:
+      UDPPORT: 5120
+
+volumes:
+    mongodb:
+    rabbitmq:
+

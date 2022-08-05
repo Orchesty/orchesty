@@ -16,19 +16,9 @@ final class NullConnector extends ConnectorAbstract
     /**
      * @return string
      */
-    public function getId(): string
+    function getName(): string
     {
-        return '0';
-    }
-
-    /**
-     * @param ProcessDto $dto
-     *
-     * @return ProcessDto
-     */
-    public function processEvent(ProcessDto $dto): ProcessDto
-    {
-        return $dto;
+        return 'null-connector';
     }
 
     /**

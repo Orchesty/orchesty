@@ -87,6 +87,11 @@ final class CategoryController
     {
         try {
             return $this->getResponse($this->categoryHandler->deleteCategory($id));
+        } catch (CategoryException $e) {
+            return match ($e->getCode()) {
+                CategoryException::CATEGORY_NOT_FOUND => $this->getErrorResponse($e, 404),
+                default => $this->getErrorResponse($e, 400),
+            };
         } catch (Throwable $e) {
             return $this->getErrorResponse($e);
         }

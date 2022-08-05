@@ -1,0 +1,17 @@
+{
+  "pageTitle": {
+    "siteName": "Applinth Admin",
+    "route": {
+      "CHANGED_PASSWORD": "Změněné heslo",
+      "DASHBOARD": "Dashboard",
+      "FORGOT_PASSWORD": "Zapomenuté heslo",
+      "LOGIN": "Přihlášení",
+      "NEW_PASSWORD": "Nové heslo",
+      "NOT_FOUND": "Nenalezeno",
+      "PROFILE": "Profil",
+      "RESET_PASSWORD": "Reset hesla",
+      "USERS": "Uživatelé",
+      "USER_UPDATE": "Úprava uživatele"
+    }
+  }
+}

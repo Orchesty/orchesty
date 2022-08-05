@@ -54,7 +54,7 @@ final class TopologyTest extends DatabaseTestCaseAbstract
         self::assertEquals(['bpmn' => '1'], $topology->getBpmn());
         self::assertEquals('bpmn', $topology->getRawBpmn());
         self::assertEquals('draft', $topology->getVisibility());
-        self::assertTrue($topology->isEnabled());
+        self::assertFalse($topology->isEnabled());
     }
 
 }

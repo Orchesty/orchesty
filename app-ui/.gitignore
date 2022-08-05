@@ -1,0 +1,20 @@
+# Exclude IDE
+.idea
+.vscode
+
+# Exclude env
+.env
+
+# Exclude dependencies
+node_modules
+
+# Exclude build
+dist
+
+.yarn/*
+!.yarn/patches
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*

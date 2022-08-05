@@ -1,0 +1,35 @@
+.base-git-mirror:
+  stage: release
+  image:
+    name: alpine/git:latest
+    entrypoint: ["sh", "-c"]
+
+  variables:
+    DIR: SET-PER-USE
+    MIRROR_REPOSITORY_NAME: SET-PER-USE
+    MIRROR_GIT_REPOSITORY_BASE_URL: SET-IN-GITLAB-UI
+    MIRROR_TRIGGER_REPO_VAR: SET-PER-USE
+    MIRROR_TRIGGER_URL: SET-IN-GITLAB-UI
+    MIRROR_TRIGGER_TOKEN: SET-IN-GITLAB-UI
+
+  script:
+    - apk add curl
+    - rm -rf _tmp_git_full
+    - rm -rf _tmp_git
+    - git clone -b ${CI_BUILD_REF_NAME} ${CI_REPOSITORY_URL} _tmp_git_full
+    - git clone --bare ${CI_REPOSITORY_URL} _tmp_git
+    - cd _tmp_git
+    - git filter-branch -f --prune-empty --subdirectory-filter ${DIR} -- -q --all
+    - git remote add dest ${MIRROR_GIT_REPOSITORY_BASE_URL}/${MIRROR_REPOSITORY_NAME}
+    - git push dest master -f
+    - git push dest dev -f
+    - git push dest new-ui -f
+    - "[[ ${CI_BUILD_REF_NAME} == 'master' ]] && git push dest ${CI_BUILD_REF_NAME}:refs/tags/v$(cat ../_tmp_git_full/${DIR}/composer.json | grep version | grep -oE '[[:digit:]]+\\.[[:digit:]]+\\.[[:digit:]]+') || true"
+    - "[[ ${CI_BUILD_REF_NAME} == 'dev' ]] && git push dest ${CI_BUILD_REF_NAME}:refs/tags/v$(cat ../_tmp_git_full/${DIR}/composer.json | grep version | grep -oE '[[:digit:]]+\\.[[:digit:]]+\\.[[:digit:]]+') || true"
+    - "[[ ${CI_BUILD_REF_NAME} == 'new-ui' ]] && git push dest ${CI_BUILD_REF_NAME}:refs/tags/v$(cat ../_tmp_git_full/${DIR}/composer.json | grep version | grep -oE '[[:digit:]]+\\.[[:digit:]]+\\.[[:digit:]]+') || true"
+
+    - "curl -X POST -F token=${MIRROR_TRIGGER_TOKEN} -F ref=master -F variables\\[REPO\\]=${MIRROR_TRIGGER_REPO_VAR} ${MIRROR_TRIGGER_URL}"
+
+
+  tags:
+    - docker

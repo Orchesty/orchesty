@@ -1,0 +1,31 @@
+.base-pf-bundles:
+  variables:
+    DIR: pf-bundles
+    IMAGE: ${REGISTRY}/${IMAGE_PREFIX}backend
+  rules:
+    - if: '$FORCE_PIPELINE =~ /ALL/ || $FORCE_PIPELINE =~ /backend/'
+    - if: '$CI_COMMIT_BEFORE_SHA == $_BANNED_RUN_ALL_SHA'
+      when: never
+    - changes:
+      - ${DIR}/**/*
+
+
+backend:build:
+  stage: build
+  needs: []
+  extends:
+    - .base-kaniko-build
+    - .base-pf-bundles
+
+  script:
+    - cp .dockerignore ../.dockerignore
+    - executor --context ../ --destination ${IMAGE}:${TAG_DIR_CH} --destination ${IMAGE}:${TAG_BRANCH} --cache=true
+
+
+backend:test:
+  stage: test
+  needs: []
+
+  extends:
+    - .base-go-test # todo: don't use go-test
+    - .base-pf-bundles

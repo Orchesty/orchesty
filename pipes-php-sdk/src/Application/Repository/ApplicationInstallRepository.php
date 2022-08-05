@@ -2,13 +2,12 @@
 
 namespace Hanaboso\PipesPhpSdk\Application\Repository;
 
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
-use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\Utils\Date\DateTimeUtils;
 use Hanaboso\Utils\Exception\DateTimeException;
-use Hanaboso\Utils\System\PipesHeaders;
 use MongoDB\BSON\UTCDateTime;
 
 /**
@@ -47,22 +46,40 @@ final class ApplicationInstallRepository extends DocumentRepository
     }
 
     /**
-     * @param ProcessDto $dto
-     * @param bool       $clear
+     * @param string $key
      *
      * @return ApplicationInstall
      * @throws ApplicationInstallException
      */
-    public function findUserAppByHeaders(ProcessDto $dto, bool $clear = TRUE): ApplicationInstall
+    public function findOneByName(string $key): ApplicationInstall
     {
-        if ($clear) {
-            $this->clear();
+        /** @var ApplicationInstall | null $app */
+        $app = $this->createQueryBuilder()
+            ->field(ApplicationInstall::KEY)->equals($key)
+            ->getQuery()->getSingleResult();
+
+        if (!$app) {
+            throw new ApplicationInstallException(
+                sprintf('Application [%s] was not found .', $key),
+                ApplicationInstallException::APP_WAS_NOT_FOUND,
+            );
         }
 
-        return $this->findUserApp(
-            (string) PipesHeaders::get(PipesHeaders::APPLICATION, $dto->getHeaders()),
-            (string) PipesHeaders::get(PipesHeaders::USER, $dto->getHeaders()),
-        );
+        return $app;
+    }
+
+    /**
+     * @return int
+     * @throws MongoDBException
+     */
+    public function getInstalledApplicationsCount(): int
+    {
+        /** @var int $res */
+        $res = $this->createQueryBuilder()
+            ->field('deleted')->equals(FALSE)
+            ->count()->getQuery()->execute();
+
+        return $res;
     }
 
     /**
@@ -73,8 +90,9 @@ final class ApplicationInstallRepository extends DocumentRepository
     {
         $ab  = $this->createAggregationBuilder();
         $res = $ab
-            ->group()->field('id')
-            ->expression('$key')
+            ->match()->field('deleted')->equals(FALSE)
+            ->group()
+            ->field('id')->expression('$key')
             ->field('total_sum')->sum(1)
             ->field('non_expire_sum')->sum(
                 $ab->expr()->cond(
@@ -87,7 +105,8 @@ final class ApplicationInstallRepository extends DocumentRepository
                 ),
             )
             ->sort('id', 'ASC')
-            ->execute()
+            ->getAggregation()
+            ->getIterator()
             ->toArray();
 
         $ret = [];
@@ -95,6 +114,31 @@ final class ApplicationInstallRepository extends DocumentRepository
             $ret[] = [
                 '_id'   => $item['_id'],
                 'value' => ['total_sum' => $item['total_sum'], 'non_expire_sum' => $item['non_expire_sum']],
+            ];
+        }
+
+        return $ret;
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public function getUsersCount(): array
+    {
+        $res = $this->createQueryBuilder()
+            ->field('deleted')->equals(FALSE)
+            ->sort('id', 'ASC')
+            ->getQuery()
+            ->toArray();
+
+        $ret = [];
+        /** @var ApplicationInstall $item */
+        foreach ($res as $item) {
+            $ret[] = [
+                'id'                  => $item->getId(),
+                'name'                 => $item->getKey(),
+                'user'                 => $item->getUser(),
+                'nonEncryptedSettings' => $item->getNonEncryptedSettings(),
             ];
         }
 
@@ -124,7 +168,8 @@ final class ApplicationInstallRepository extends DocumentRepository
                     ->field('name')->ifNull('$user', ''),
             )
             ->sort('id', 'ASC')
-            ->execute()
+            ->getAggregation()
+            ->getIterator()
             ->toArray();
 
         $ret = ['_id' => $application];

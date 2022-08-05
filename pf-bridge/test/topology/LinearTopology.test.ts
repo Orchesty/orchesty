@@ -69,7 +69,7 @@ const testTopology: ITopologyConfigSkeleton = {
 const amqpConn = new Connection(config.amqpConnectionOptions);
 const firstQueue = `pipes.${testTopology.id}.${testTopology.nodes[0].id}`;
 
-describe("Linear Topology test", () => {
+xdescribe("Linear Topology test", () => {
     it("complete flow of messages till the end #integration", (done) => {
         const msgTestContent = "test content";
         const msgHeaders = { headers: {

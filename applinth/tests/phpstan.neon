@@ -1,0 +1,21 @@
+includes:
+    - ../vendor/hanaboso/php-check-utils/phpstan.neon
+
+parameters:
+    doctrine:
+        objectManagerLoader: DocumentManagerLoader.php
+    symfony:
+        container_xml_path: %rootDir%/../../../var/cache/test/Hanaboso_Applinth_KernelTestDebugContainer.xml
+    ignoreErrors:
+            -
+                message: '#Calling putenv\(\) is forbidden, might overwrite existing variables#'
+                path: ../tests/ControllerTestCaseAbstract.php
+            -
+                message: '#Class Hanaboso\\Applinth\\Authenticator\\Document\\MarketPlaceRestrictedToken is neither abstract nor final.#'
+                path: ../src/Authenticator/Document/MarketPlaceRestrictedToken.php
+    ergebnis:
+        classesAllowedToBeExtended:
+            - ApplinthTests\ControllerTestCaseAbstract
+            - ApplinthTests\KernelTestCaseAbstract
+            - Hanaboso\Utils\Exception\PipesFrameworkExceptionAbstract
+            - Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator

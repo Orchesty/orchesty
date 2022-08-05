@@ -3,22 +3,32 @@
 namespace Demo\CustomNode;
 
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
+use Hanaboso\PipesPhpSdk\CustomNode\CommonNodeAbstract;
 
 /**
  * Class DummyConnector
  *
  * @package Demo\CustomNode
  */
-final class DummyConnector extends CustomNodeAbstract
+final class DummyConnector extends CommonNodeAbstract
 {
+
+    public const NAME = 'dummy-connector';
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return self::NAME;
+    }
 
     /**
      * @param ProcessDto $dto
      *
      * @return ProcessDto
      */
-    public function process(ProcessDto $dto): ProcessDto
+    public function processAction(ProcessDto $dto): ProcessDto
     {
         return $dto;
     }

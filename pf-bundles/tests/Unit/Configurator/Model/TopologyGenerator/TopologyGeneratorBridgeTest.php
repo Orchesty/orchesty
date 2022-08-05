@@ -10,7 +10,9 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
+use Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge;
+use Hanaboso\PipesFramework\Configurator\Repository\SdkRepository;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository;
 use PipesFrameworkTests\KernelTestCaseAbstract;
@@ -61,6 +63,20 @@ final class TopologyGeneratorBridgeTest extends KernelTestCaseAbstract
     {
         $this->getManager(
             static function (RequestDto $request): ResponseDto {
+                self::assertEquals(CurlManager::METHOD_GET, $request->getMethod());
+                self::assertEquals('http://topology-api/v1/api/topologies/topology/host', $request->getUri(TRUE));
+                self::assertEquals('', $request->getBody());
+
+                return new ResponseDto(200, 'OK', '{"host":"http://bridge"}', []);
+            },
+            static function (RequestDto $request): ResponseDto {
+                self::assertEquals(CurlManager::METHOD_DELETE, $request->getMethod());
+                self::assertEquals('http://bridge/clear', $request->getUri(TRUE));
+                self::assertEquals('', $request->getBody());
+
+                return new ResponseDto(200, 'OK', '{}', []);
+            },
+            static function (RequestDto $request): ResponseDto {
                 self::assertEquals(CurlManager::METHOD_PUT, $request->getMethod());
                 self::assertEquals('http://topology-api/v1/api/topologies/topology', $request->getUri(TRUE));
                 self::assertEquals('{"action":"stop"}', $request->getBody());
@@ -110,7 +126,14 @@ final class TopologyGeneratorBridgeTest extends KernelTestCaseAbstract
         $this->getManager(
             static function (RequestDto $request): ResponseDto {
                 self::assertEquals(CurlManager::METHOD_GET, $request->getMethod());
-                self::assertEquals('http://multi-probe/topology/status?topologyId=topology', $request->getUri(TRUE));
+                self::assertEquals('http://topology-api/v1/api/topologies/topology/host', $request->getUri(TRUE));
+                self::assertEquals('', $request->getBody());
+
+                return new ResponseDto(200, 'OK', '{"host":"http://bridge"}', []);
+            },
+            static function (RequestDto $request): ResponseDto {
+                self::assertEquals(CurlManager::METHOD_GET, $request->getMethod());
+                self::assertEquals('http://bridge/status', $request->getUri(TRUE));
                 self::assertEquals('', $request->getBody());
 
                 return new ResponseDto(200, 'OK', '{}', []);
@@ -172,7 +195,7 @@ final class TopologyGeneratorBridgeTest extends KernelTestCaseAbstract
         $this->getManager(
             static function (RequestDto $request): ResponseDto {
                 self::assertEquals(CurlManager::METHOD_GET, $request->getMethod());
-                self::assertEquals('http://multi-probe/topology/status?topologyId=topology', $request->getUri(TRUE));
+                self::assertEquals('http://topology-api/v1/api/topologies/topology/host', $request->getUri(TRUE));
                 self::assertEquals('', $request->getBody());
 
                 return new ResponseDto(400, 'NOT OK', '{}', []);
@@ -181,12 +204,12 @@ final class TopologyGeneratorBridgeTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @param Closure $callback
+     * @param Closure ...$callbacks
      *
      * @return TopologyGeneratorBridge
      * @throws Exception
      */
-    private function getManager(Closure $callback): TopologyGeneratorBridge
+    private function getManager(Closure ...$callbacks): TopologyGeneratorBridge
     {
         $node = (new Node())->setName('topology-1');
         $this->setProperty($node, 'id', 'test');
@@ -198,20 +221,32 @@ final class TopologyGeneratorBridgeTest extends KernelTestCaseAbstract
         $documentManager->method('getRepository')->willReturn($nodeRepository);
 
         $curlManager = self::createPartialMock(CurlManager::class, ['send']);
-        $curlManager->method('send')->willReturnCallback($callback);
+        $curlManager->method('send')->willReturnCallback(
+            static function (RequestDto $requestDto) use ($callbacks): ResponseDto {
+                static $i = 0;
+
+                return $callbacks[$i++]($requestDto);
+            },
+        );
 
         $managerLocator = self::createPartialMock(DatabaseManagerLocator::class, ['get', 'getDm']);
         $managerLocator->method('get')->willReturn($documentManager);
         $managerLocator->method('getDm')->willReturn($documentManager);
 
+        $sdkRepository = self::createPartialMock(SdkRepository::class, ['findByHost']);
+        $sdkRepository->method('findByHost')->willReturn([]);
+
+        $dm = self::createPartialMock(DocumentManager::class, ['getRepository']);
+        $dm->method('getRepository')->willReturn($sdkRepository);
+        $configManager = new TopologyConfigFactory(self::getContainer()->getParameter('topology_configs'), $dm);
+
         return new TopologyGeneratorBridge(
             $managerLocator,
             $curlManager,
-            self::$container->get('hbpf.topology.configurator'),
+            $configManager,
             [
                 TopologyGeneratorBridge::STARTING_POINT => 'starting-point',
                 TopologyGeneratorBridge::TOPOLOGY_API   => 'topology-api',
-                TopologyGeneratorBridge::MULTI_PROBE    => 'multi-probe',
             ],
         );
     }

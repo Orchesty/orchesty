@@ -37,7 +37,7 @@ final class ConnectorLoaderTest extends KernelTestCaseAbstract
     {
         parent::setUp();
 
-        $this->loader = self::$container->get('hbpf.loader.connector');
+        $this->loader = self::getContainer()->get('hbpf.loader.connector');
     }
 
 }

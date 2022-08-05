@@ -1,0 +1,9 @@
+{
+    "http": "GET /api/applinth/authorization/logged",
+    "body": {
+        "password": "password"
+    },
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
+}

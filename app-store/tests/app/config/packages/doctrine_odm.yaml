@@ -29,12 +29,12 @@ doctrine_mongodb:
                 SdkDocument:
                     type: annotation
                     is_bundle: false
-                    dir: "%kernel.project_dir%/vendor/hanaboso/pipes-php-sdk/src/Database/Document"
+                    dir: "%kernel.project_dir%/vendor/orchesty/php-sdk/src/Database/Document"
                     prefix: Hanaboso\PipesPhpSdk\Database\Document
                 ApplicationDocument:
                     type: annotation
                     is_bundle: false
-                    dir: "%kernel.project_dir%/vendor/hanaboso/pipes-php-sdk/src/Application/Document"
+                    dir: "%kernel.project_dir%/vendor/orchesty/php-sdk/src/Application/Document"
                     prefix: Hanaboso\PipesPhpSdk\Application\Document
                 AppStoreDocument:
                     type: annotation

@@ -1,0 +1,14 @@
+{
+  "form": {
+    "keyValue": {
+      "key": {
+        "name": "key",
+        "label": "Key"
+      },
+      "value": {
+        "name": "value",
+        "label": "Value"
+      }
+    }
+  }
+}

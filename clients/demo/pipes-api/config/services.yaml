@@ -5,14 +5,16 @@ parameters:
         dumper:
             inline_factories: true
 
-    backend_host: '%env(BACKEND_HOST)%'
-    starting_point_host: "%env(string:STARTING_POINT_DSN)%"
+    backendHost: '%env(BACKEND_DSN)%'
+    startingPointHost: "%env(string:STARTING_POINT_DSN)%"
+
+    env(UDP_LOGGER_URL): "logstash:5120"
+    udp_logger_url: "%env(string:UDP_LOGGER_URL)%"
 
     access_token_refresh_interval: 3600
     node_services_dirs:
         - '%kernel.project_dir%/config'
         - '%kernel.project_dir%/vendor/hanaboso/pipes-connectors/src/Resources/config/'
-        - '%kernel.project_dir%/vendor/hanaboso/pipes-php-sdk/src/HbPFLongRunningNodeBundle/Resources'
 
     applications:
         - '%kernel.project_dir%/vendor/hanaboso/pipes-connectors/src/Resources/config/'
@@ -28,7 +30,7 @@ services:
     Demo\Controller\DefaultController:
         class: Demo\Controller\DefaultController
         calls:
-            - ['setContainer', ['@service_container']]
+            - [ 'setContainer', [ '@service_container' ] ]
 
 
     Demo\Command\DownloaderCommand:
@@ -46,18 +48,12 @@ services:
 
 
     # Connector
-    hbpf.connector.batch:
-        class: Demo\Connector\BatchConnector
-
     hbpf.connector.pager-duty:
         class: Demo\Connector\PagerDutyConnector
-        arguments:
-            - '@hbpf.transport.curl_manager'
+        calls:
+            -   setSender: [ '@hbpf.transport.curl_manager' ]
 
     # CustomNode
-    hbpf.custom_node.batch:
-        class: Demo\CustomNode\BatchCustomNode
-
     hbpf.custom_node.data-generator:
         class: Demo\CustomNode\DataGeneratorConnector
 
@@ -88,7 +84,7 @@ services:
     hbpf.custom_node.dummy-exception:
         class: Demo\CustomNode\DummyExceptionConnector
         calls:
-            - ['setLogger', ['@monolog.logger.commons']]
+            - [ 'setLogger', [ '@monolog.logger.commons' ] ]
 
     hbpf.custom_node.filter-bids:
         class: Demo\CustomNode\FilterStockExchange
@@ -100,20 +96,18 @@ services:
         arguments:
             - 'asks'
         calls:
-            - ['setLogger', ['@monolog.logger.commons']]
+            - [ 'setLogger', [ '@monolog.logger.commons' ] ]
 
-    hbpf.custom_node.idnes:
-        class: Demo\CustomNode\IdnesConnector
-        arguments:
-            - '@hbpf.transport.curl_manager'
-
-    hbpf.custom_node.split-file:
-        class: Demo\CustomNode\SplitFileBatch
+    hbpf.idnes-connector:
+        class: Demo\Connector\IdnesConnector
+        calls:
+            -   setSender: [ '@hbpf.transport.curl_manager' ]
 
     hbpf.custom_node.split-file2:
         class: Demo\CustomNode\SplitFileBatch2
+        calls:
+            -   setDb: [ '@doctrine_mongodb.odm.default_document_manager' ]
         arguments:
-            - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.rabbit_mq.connection'
             - '@rabbit_mq.publisher.pipes-notifications'
 
@@ -122,22 +116,6 @@ services:
         arguments:
             - 'default'
             - '@rabbit_mq.client_factory'
-
-    # LongRunningNode
-    hbpf.long_running.time-stamper:
-        class: Demo\LongRunningNode\TimeStamperHumanTask
-        arguments:
-            - '@doctrine_mongodb.odm.default_document_manager'
-
-    hbpf.long_running.time-stamper-one:
-        class: Demo\LongRunningNode\TimeStamperHumanTask
-        arguments:
-            - '@doctrine_mongodb.odm.default_document_manager'
-
-    hbpf.long_running.time-stamper-two:
-        class: Demo\LongRunningNode\TimeStamperHumanTask
-        arguments:
-            - '@doctrine_mongodb.odm.default_document_manager'
 
     hbpf.custom_node.send-duty-email:
         class: Demo\CustomNode\SendDutyEmail
@@ -155,22 +133,13 @@ services:
 
     hbpf.connector.get-users:
         class: Demo\Connector\GetUsersConnector
-        arguments:
-            - '@hbpf.transport.curl_manager'
+        calls:
+            -   setSender: [ '@hbpf.transport.curl_manager' ]
 
     hbpf.connector.hub-spot.create-multiple-contact:
         class: Demo\Connector\HubSpotCreateMultipleContactsConnector
-        arguments:
-            - '@doctrine_mongodb.odm.default_document_manager'
-            - '@hbpf.transport.curl_manager'
         calls:
-            - [ 'setApplication', [ '@hbpf.application.hub-spot' ] ]
-            - [ 'setLogger', [ '@monolog.logger.commons' ] ]
-
-    hbpf.connector.load-application-users.hub-spot:
-        class: Hanaboso\PipesPhpSdk\RabbitMq\Impl\BatchConnector\LoadApplicationUsersConnector
-        arguments:
-            - '@doctrine_mongodb.odm.default_document_manager'
-            - 'hub-spot'
-        calls:
-            - [ 'setApplication', [ '@hbpf.application.hub-spot' ] ]
+            -   setDb: [ '@doctrine_mongodb.odm.default_document_manager' ]
+            -   setSender: [ '@hbpf.transport.curl_manager' ]
+            -   setApplication: [ '@hbpf.application.hub-spot' ]
+            -   setLogger: [ '@monolog.logger.commons' ]

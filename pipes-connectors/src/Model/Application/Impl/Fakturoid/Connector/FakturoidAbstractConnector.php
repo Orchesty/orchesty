@@ -2,19 +2,15 @@
 
 namespace Hanaboso\HbPFConnectors\Model\Application\Impl\Fakturoid\Connector;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDtoAbstract;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
-use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Fakturoid\FakturoidApplication;
-use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
-use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
-use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
-use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessEventNotSupportedTrait;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 
 /**
@@ -25,32 +21,14 @@ use Hanaboso\Utils\Exception\PipesFrameworkException;
 abstract class FakturoidAbstractConnector extends ConnectorAbstract
 {
 
-    use ProcessEventNotSupportedTrait;
-
     protected const NAME     = '';
     protected const ENDPOINT = '';
     protected const METHOD   = '';
 
     /**
-     * @var ApplicationInstallRepository
-     */
-    private ApplicationInstallRepository $repository;
-
-    /**
-     * FakturoidAbstractConnector constructor.
-     *
-     * @param CurlManagerInterface $curlManager
-     * @param DocumentManager      $dm
-     */
-    public function __construct(private CurlManagerInterface $curlManager, DocumentManager $dm)
-    {
-        $this->repository = $dm->getRepository(ApplicationInstall::class);
-    }
-
-    /**
      * @return string
      */
-    public function getId(): string
+    public function getName(): string
     {
         return static::NAME;
     }
@@ -66,13 +44,13 @@ abstract class FakturoidAbstractConnector extends ConnectorAbstract
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
-        $applicationInstall = $this->repository->findUserAppByHeaders($dto);
+        $applicationInstall = $this->getApplicationInstallFromProcess($dto);
 
         /** @var FakturoidApplication $app */
         $app = $this->getApplication();
         if (!$app->isAuthorized($applicationInstall)) {
 
-            $dto->setStopProcess(ProcessDto::STOP_AND_FAILED);
+            $dto->setStopProcess(ProcessDtoAbstract::STOP_AND_FAILED, 'Application not authorized');
 
             return $dto;
         }
@@ -81,7 +59,7 @@ abstract class FakturoidAbstractConnector extends ConnectorAbstract
             '%s/%s/%s/%s',
             FakturoidApplication::BASE_URL,
             FakturoidApplication::BASE_ACCOUNTS,
-            $applicationInstall->getSettings()[ApplicationAbstract::FORM][FakturoidApplication::ACCOUNT],
+            $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][FakturoidApplication::ACCOUNT],
             static::ENDPOINT,
         );
 
@@ -93,8 +71,9 @@ abstract class FakturoidAbstractConnector extends ConnectorAbstract
             $body = $dto->getData();
         }
 
-        $return = $this->curlManager->send(
+        $return = $this->getSender()->send(
             $app->getRequestDto(
+                $dto,
                 $applicationInstall,
                 static::METHOD,
                 $url,

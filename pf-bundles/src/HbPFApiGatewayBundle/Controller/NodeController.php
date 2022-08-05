@@ -71,7 +71,7 @@ final class NodeController extends AbstractController
     }
 
     /**
-     * @Route("/nodes/{type}/list_nodes", requirements={"type"="connector|custom_node|joiner|mapper|long_running"}, methods={"GET", "OPTIONS"})
+     * @Route("/nodes/{type}/list_nodes", requirements={"type"="connector|custom_node|user"}, methods={"GET", "OPTIONS"})
      *
      * @param string $type
      *
@@ -84,19 +84,12 @@ final class NodeController extends AbstractController
                 return $this->forward(
                     'Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Controller\ConnectorController::listOfConnectorsAction',
                 );
-            case 'joiner':
             case 'custom_node':
                 return $this->forward(
                     'Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Controller\CustomNodeController::listOfCustomNodesAction',
                 );
-            case 'long_running':
-                return $this->forward(
-                    'Hanaboso\PipesPhpSdk\HbPFLongRunningNodeBundle\Controller\LongRunningNodeController::listOfLongRunningNodesAction',
-                );
-            case 'mapper':
-                return $this->forward(
-                    'Hanaboso\PipesPhpSdk\HbPFMapperBundle\Controller\MapperController::listOfMappersAction',
-                );
+            case 'user':
+                return new JsonResponse(ServiceLocator::USER_TASK_LIST);
         }
 
         return new JsonResponse();

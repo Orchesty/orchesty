@@ -11,7 +11,8 @@
                 "visibility": "draft",
                 "version": 1,
                 "category": null,
-                "enabled": true
+                "enabled": true,
+                "cronSettings": []
             },
             {
                 "_id": "5e32b04ce99e002a011e0d25",
@@ -22,7 +23,8 @@
                 "visibility": "draft",
                 "version": 1,
                 "category": null,
-                "enabled": true
+                "enabled": true,
+                "cronSettings": []
             }
         ],
         "total": 4,

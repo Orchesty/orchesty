@@ -6,6 +6,7 @@ use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Exception;
 use Hanaboso\PipesFramework\Metrics\Document\BridgesMetrics;
 use Hanaboso\Utils\Date\DateTimeUtils;
+use MongoDB\BSON\UTCDateTime;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -31,20 +32,23 @@ final class BridgeMetricsTest extends DatabaseTestCaseAbstract
      */
     public function testDocument(): void
     {
-        $this->dm->createQueryBuilder(BridgesMetrics::class)
+        $dm = self::getContainer()->get('doctrine_mongodb.odm.metrics_document_manager');
+        $dm->getSchemaManager()->dropDocumentCollection(BridgesMetrics::class);
+        $dm->getSchemaManager()->createDocumentCollection(BridgesMetrics::class);
+        $dm->createQueryBuilder(BridgesMetrics::class)
             ->insert()
             ->setNewObj(
                 [
                     'fields' => [
-                        'bridge_job_result_success'   => TRUE,
-                        'bridge_job_waiting_duration' => 10,
-                        'bridge_job_total_duration'   => 20,
-                        'created'                     => DateTimeUtils::getUtcDateTime('1.1.2020')->getTimestamp(),
+                        'result_success'   => TRUE,
+                        'waiting_duration' => 10,
+                        'total_duration'   => 20,
+                        'created'          => new UTCDateTime(DateTimeUtils::getUtcDateTime('1.1.2020')),
                     ],
                     'tags'   => [
-                        'nodeId'     => '1',
-                        'topologyId' => '2',
-                        'queue'      => '12',
+                        'node_id'     => '1',
+                        'topology_id' => '2',
+                        'queue'       => '12',
                     ],
                 ],
             )
@@ -52,7 +56,7 @@ final class BridgeMetricsTest extends DatabaseTestCaseAbstract
             ->execute();
 
         /** @var DocumentRepository<BridgesMetrics> $repository */
-        $repository = $this->dm->getRepository(BridgesMetrics::class);
+        $repository = $dm->getRepository(BridgesMetrics::class);
         /** @var BridgesMetrics $result */
         $result = $repository->findAll()[0];
         self::assertTrue($result->getFields()->isSuccess());

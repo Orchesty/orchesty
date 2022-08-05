@@ -1,0 +1,20 @@
+{
+  "navigation": {
+    "link": {
+      "integrations": "Integrations",
+      "applications": "Applications",
+      "trash": "Trash",
+      "settings": "Settings",
+      "backToTheApplications": "Back to the applications"
+    },
+    "item": {
+      "integrations": "Integrations",
+      "applications": "Applications",
+      "availableApplicationDetail": "Available Application Detail",
+      "installedApplicationDetail": "Installed Application Detail",
+      "trash": "Trash",
+      "settings": "Settings",
+      "trashDetail": "Trash Detail"
+    }
+  }
+}

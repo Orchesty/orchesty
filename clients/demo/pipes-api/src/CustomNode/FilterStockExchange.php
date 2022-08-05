@@ -5,7 +5,7 @@ namespace Demo\CustomNode;
 use Exception;
 use Hanaboso\CommonsBundle\Monolog\LoggerContext;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
+use Hanaboso\PipesPhpSdk\CustomNode\CommonNodeAbstract;
 use Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Exception\CustomNodeException;
 use Hanaboso\Utils\String\Json;
 use Psr\Log\LoggerAwareInterface;
@@ -18,8 +18,10 @@ use Throwable;
  *
  * @package Demo\CustomNode
  */
-final class FilterStockExchange extends CustomNodeAbstract implements LoggerAwareInterface
+final class FilterStockExchange extends CommonNodeAbstract implements LoggerAwareInterface
 {
+
+    public const NAME = 'filter-stock-exchange';
 
     /**
      * @var LoggerInterface
@@ -37,12 +39,20 @@ final class FilterStockExchange extends CustomNodeAbstract implements LoggerAwar
     }
 
     /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return self::NAME;
+    }
+
+    /**
      * @param ProcessDto $dto
      *
      * @return ProcessDto
      * @throws Exception
      */
-    public function process(ProcessDto $dto): ProcessDto
+    public function processAction(ProcessDto $dto): ProcessDto
     {
         $data = Json::decode($dto->getData());
 
@@ -64,7 +74,7 @@ final class FilterStockExchange extends CustomNodeAbstract implements LoggerAwar
         }
 
         $dto->setData('');
-        $dto->setStopProcess(ProcessDto::DO_NOT_CONTINUE);
+        $dto->setStopProcess(ProcessDto::DO_NOT_CONTINUE, '');
 
         return $dto;
     }
@@ -73,14 +83,10 @@ final class FilterStockExchange extends CustomNodeAbstract implements LoggerAwar
      * Sets a logger instance on the object.
      *
      * @param LoggerInterface $logger
-     *
-     * @return FilterStockExchange
      */
-    public function setLogger(LoggerInterface $logger): FilterStockExchange
+    public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
-
-        return $this;
     }
 
 }

@@ -11,10 +11,11 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  * @package Hanaboso\PipesFramework\Metrics\Document
  *
  * @ODM\EmbeddedDocument()
- * @ODM\Index(name="createdIndex", keys={"created"="desc"})
  */
 class MonolithMetricsFields
 {
+
+    // TODO unused metrics: fpm_request_total_duration
 
     /**
      * @var float

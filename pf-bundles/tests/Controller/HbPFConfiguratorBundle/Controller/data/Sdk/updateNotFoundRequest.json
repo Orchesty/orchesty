@@ -4,5 +4,7 @@
         "key": "One",
         "value": "value"
     },
-    "headers": []
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
 }

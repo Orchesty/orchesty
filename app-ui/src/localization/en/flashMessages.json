@@ -1,0 +1,48 @@
+{
+  "flashMessages": {
+    "forgotPassword": "Email was sent successfully",
+    "user": {
+      "create": "User was created",
+      "delete": "User was deleted",
+      "update": "Changes were saved"
+    },
+    "topologies": {
+      "cloned": "Cloned",
+      "published": "Published",
+      "tested": "Tested",
+      "disabled": "Disabled",
+      "enabled": "Enabled",
+      "run": "Run successfully"
+    },
+    "userTask": {
+      "accept": "Task accepted",
+      "acceptList": "List of tasks accepted",
+      "reject": "Task rejected",
+      "rejectList": "List of tasks rejected",
+      "update": "Task updated"
+    },
+    "trash": {
+      "accept": "Accepted",
+      "acceptList": "List accepted",
+      "reject": "Rejected",
+      "rejectList": "List rejected",
+      "update": "Updated"
+    },
+    "changePassword": "Password was changed",
+    "emailSent": "Email was sent",
+    "implementations": {
+      "create": "Service was created",
+      "delete": "Service was deleted",
+      "update": "Service was updated"
+    },
+    "notifications": {
+      "update": "Notification was updated"
+    },
+    "appStore": {
+      "appInstalled": "App installed",
+      "appUninstalled": "App uninstalled",
+      "appSaved": "App saved",
+      "subscribed": "Webhook subscribed"
+    }
+  }
+}

@@ -49,7 +49,7 @@ final class MetricsHandlerTest extends KernelTestCaseAbstract
     {
         parent::setUp();
 
-        $this->handler = self::$container->get('hbpf.metrics.handler.metrics');
+        $this->handler = self::getContainer()->get('hbpf.metrics.handler.metrics');
     }
 
 }

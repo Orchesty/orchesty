@@ -2,15 +2,15 @@
 
 namespace Hanaboso\HbPFConnectors\Model\Application\Impl\Airtable;
 
+use Hanaboso\CommonsBundle\Process\ProcessDtoAbstract;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
-use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Form;
+use Hanaboso\PipesPhpSdk\Application\Model\Form\FormStack;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
-use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
 
 /**
@@ -28,7 +28,7 @@ final class AirtableApplication extends BasicApplicationAbstract
     /**
      * @return string
      */
-    public function getKey(): string
+    public function getName(): string
     {
         return 'airtable';
     }
@@ -36,7 +36,7 @@ final class AirtableApplication extends BasicApplicationAbstract
     /**
      * @return string
      */
-    public function getName(): string
+    public function getPublicName(): string
     {
         return 'Airtable';
     }
@@ -50,6 +50,7 @@ final class AirtableApplication extends BasicApplicationAbstract
     }
 
     /**
+     * @param ProcessDtoAbstract $dto
      * @param ApplicationInstall $applicationInstall
      * @param string             $method
      * @param string|null        $url
@@ -60,13 +61,14 @@ final class AirtableApplication extends BasicApplicationAbstract
      * @throws CurlException
      */
     public function getRequestDto(
+        ProcessDtoAbstract $dto,
         ApplicationInstall $applicationInstall,
         string $method,
         ?string $url = NULL,
         ?string $data = NULL,
     ): RequestDto
     {
-        $request = new RequestDto($method, $this->getUri($url));
+        $request = new RequestDto($this->getUri($url), $method, $dto);
         $request->setHeaders(
             [
                 'Content-Type'  => 'application/json',
@@ -82,16 +84,19 @@ final class AirtableApplication extends BasicApplicationAbstract
     }
 
     /**
-     * @return Form
+     * @return FormStack
      */
-    public function getSettingsForm(): Form
+    public function getFormStack(): FormStack
     {
-        $form = new Form();
+        $form = new Form(ApplicationInterface::AUTHORIZATION_FORM, 'Authorization settings');
         $form->addField(new Field(Field::TEXT, BasicApplicationAbstract::TOKEN, 'API Key', NULL, TRUE));
         $form->addField(new Field(Field::TEXT, AirtableApplication::BASE_ID, 'Base id', NULL, TRUE));
         $form->addField(new Field(Field::TEXT, AirtableApplication::TABLE_NAME, 'Table name', NULL, TRUE));
 
-        return $form;
+        $formStack = new FormStack();
+        $formStack->addForm($form);
+
+        return $formStack;
     }
 
     /**
@@ -104,15 +109,15 @@ final class AirtableApplication extends BasicApplicationAbstract
         return
             isset(
                 $applicationInstall->getSettings(
-                )[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::TOKEN],
+                )[ApplicationInterface::AUTHORIZATION_FORM][ApplicationInterface::TOKEN],
             )
             &&
             isset(
-                $applicationInstall->getSettings()[ApplicationAbstract::FORM][AirtableApplication::BASE_ID],
+                $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][AirtableApplication::BASE_ID],
             )
             &&
             isset(
-                $applicationInstall->getSettings()[ApplicationAbstract::FORM][AirtableApplication::TABLE_NAME],
+                $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][AirtableApplication::TABLE_NAME],
             );
     }
 
@@ -124,8 +129,8 @@ final class AirtableApplication extends BasicApplicationAbstract
      */
     public function getValue(ApplicationInstall $applicationInstall, string $value): ?string
     {
-        if (isset($applicationInstall->getSettings()[ApplicationAbstract::FORM][$value])) {
-            return $applicationInstall->getSettings()[ApplicationAbstract::FORM][$value];
+        if (isset($applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][$value])) {
+            return $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][$value];
         }
 
         return NULL;
@@ -139,8 +144,8 @@ final class AirtableApplication extends BasicApplicationAbstract
      */
     private function getAccessToken(ApplicationInstall $applicationInstall): string
     {
-        if (isset($applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::TOKEN])) {
-            return $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_SETTINGS][BasicApplicationInterface::TOKEN];
+        if (isset($applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][ApplicationInterface::TOKEN])) {
+            return $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][ApplicationInterface::TOKEN];
         }
 
         throw new AuthorizationException(

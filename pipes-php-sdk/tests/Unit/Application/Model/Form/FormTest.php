@@ -3,6 +3,7 @@
 namespace PipesPhpSdkTests\Unit\Application\Model\Form;
 
 use Exception;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Form;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
@@ -26,9 +27,9 @@ final class FormTest extends KernelTestCaseAbstract
     {
         $field1 = new Field(Field::TEXT, 'username', 'Username');
         $field2 = new Field(Field::TEXT, 'passwd', 'Password');
-        $form   = (new Form())->addField($field1)->addField($field2);
+        $form   = (new Form('testKey', 'testPublicName'))->addField($field1)->addField($field2);
 
-        self::assertEquals(2, count($form->toArray()));
+        self::assertEquals(2, count($form->toArray()[ApplicationInterface::FIELDS]));
         self::assertEquals(2, count($form->getFields()));
     }
 

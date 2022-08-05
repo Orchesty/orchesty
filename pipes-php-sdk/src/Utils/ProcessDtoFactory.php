@@ -2,7 +2,9 @@
 
 namespace Hanaboso\PipesPhpSdk\Utils;
 
+use Hanaboso\CommonsBundle\Process\BatchProcessDto;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\Utils\String\Json;
 use PhpAmqpLib\Message\AMQPMessage;
 use RabbitMqBundle\Utils\Message;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,6 +26,17 @@ final class ProcessDtoFactory
     {
         return self::createDto($request->getContent(), $request->headers->all());
     }
+
+    /**
+     * @param Request $request
+     *
+     * @return BatchProcessDto
+     */
+    public static function createBatchFromRequest(Request $request): BatchProcessDto
+    {
+        return self::createBatchDto([$request->getContent()], $request->headers->all());
+    }
+
 
     /**
      * @param AMQPMessage $message
@@ -50,6 +63,23 @@ final class ProcessDtoFactory
         $dto = new ProcessDto();
         $dto
             ->setData($content)
+            ->setHeaders($headers)
+            ->setSuccessProcess();
+
+        return $dto;
+    }
+
+    /**
+     * @param mixed[] $content
+     * @param mixed[] $headers
+     *
+     * @return BatchProcessDto
+     */
+    private static function createBatchDto(array $content, array $headers): BatchProcessDto
+    {
+        $dto = new BatchProcessDto();
+        $dto
+            ->setBridgeData(Json::encode($content))
             ->setHeaders($headers)
             ->setSuccessProcess();
 

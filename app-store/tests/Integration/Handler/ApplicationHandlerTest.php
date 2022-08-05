@@ -6,6 +6,9 @@ use Exception;
 use Hanaboso\HbPFAppStore\Handler\ApplicationHandler;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager;
+use Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager as ApplicationManagerAlias;
+use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use HbPFAppStoreTests\DatabaseTestCaseAbstract;
 use InvalidArgumentException;
 
@@ -61,9 +64,25 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
      */
     public function testUpdateApplicationSettings(): void
     {
-        $this->createApplicationInstall('null', ['form' => ['settings1' => 'Old settings']]);
-        $result = $this->handler->updateApplicationSettings('null', 'user', ['settings1' => 'New settings']);
-        self::assertEquals('New settings', $result['applicationSettings'][0]['value']);
+        $this->createApplicationInstall(
+            'null',
+            [
+                ApplicationInterface::AUTHORIZATION_FORM => [
+                    BasicApplicationInterface::USER => 'Old user',
+                    BasicApplicationInterface::PASSWORD => 'Old password',
+                ],
+            ],
+        );
+        $res = $this->handler->updateApplicationSettings(
+            'null',
+            'user',
+            [ApplicationInterface::AUTHORIZATION_FORM => [BasicApplicationInterface::USER => 'New user']],
+        );
+
+        self::assertEquals(
+            'New user',
+            $res[ApplicationManagerAlias::APPLICATION_SETTINGS][ApplicationInterface::AUTHORIZATION_FORM][ApplicationInterface::FIELDS][0]['value'],
+        );
     }
 
     /**
@@ -75,8 +94,20 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
     {
         $this->createApplicationInstall('null');
 
-        $result = $this->handler->updateApplicationPassword('null', 'user', ['password' => '_newPasswd_']);
-        self::assertEquals('_newPasswd_', $result['settings']['authorization_settings']['password']);
+        $this->handler->updateApplicationPassword(
+            'null',
+            'user',
+            [
+                'formKey' => ApplicationInterface::AUTHORIZATION_FORM,
+                'fieldKey' => BasicApplicationInterface::PASSWORD,
+                'password' => '_newPasswd_',
+            ],
+        );
+        $app = $this->handler->getApplicationByKeyAndUser('null', 'user');
+        self::assertEquals(
+            '_newPasswd_',
+            $app[ApplicationManager::APPLICATION_SETTINGS][ApplicationInterface::AUTHORIZATION_FORM][ApplicationInterface::FIELDS][1]['value'],
+        );
     }
 
     /**
@@ -89,7 +120,15 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
         $this->createApplicationInstall('null');
 
         self::expectException(InvalidArgumentException::class);
-        $this->handler->updateApplicationPassword('null', 'user', ['username' => 'newUsername']);
+        $this->handler->updateApplicationPassword(
+            'null',
+            'user',
+            [
+                'formKey' => ApplicationInterface::AUTHORIZATION_FORM,
+                'fieldKey' => BasicApplicationInterface::PASSWORD,
+                'username' => 'newUsername',
+            ],
+        );
     }
 
     /**
@@ -115,11 +154,11 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
     {
         $this->createApplicationInstall(
             'null2',
-            [ApplicationInterface::AUTHORIZATION_SETTINGS => [ApplicationInterface::REDIRECT_URL => 'redirect_url']],
+            [ApplicationInterface::AUTHORIZATION_FORM => [ApplicationInterface::FRONTEND_REDIRECT_URL => 'redirect_url']],
         );
         $result = $this->handler->saveAuthToken('null2', 'user', ['token']);
 
-        self::assertEquals('redirect_url', $result['redirect_url']);
+        self::assertEquals('redirect_url', $result);
     }
 
     /**
@@ -129,7 +168,7 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
     {
         parent::setUp();
 
-        $this->handler = self::$container->get('hbpf._application.handler.application');
+        $this->handler = self::getContainer()->get('hbpf._application.handler.application');
     }
 
     /**

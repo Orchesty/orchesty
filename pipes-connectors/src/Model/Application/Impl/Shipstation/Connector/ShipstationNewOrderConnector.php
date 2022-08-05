@@ -2,20 +2,14 @@
 
 namespace Hanaboso\HbPFConnectors\Model\Application\Impl\Shipstation\Connector;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\Persistence\ObjectRepository;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDtoAbstract;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
-use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
-use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
-use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
-use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessActionNotSupportedTrait;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
-use JsonException;
 
 /**
  * Class ShipstationNewOrderConnector
@@ -25,30 +19,14 @@ use JsonException;
 final class ShipstationNewOrderConnector extends ConnectorAbstract
 {
 
-    use ProcessActionNotSupportedTrait;
-
-    /**
-     * @var ApplicationInstallRepository&ObjectRepository<ApplicationInstall>
-     */
-    private ApplicationInstallRepository $repository;
-
-    /**
-     * ShipstationNewOrderConnector constructor.
-     *
-     * @param CurlManagerInterface $curlManager
-     * @param DocumentManager      $dm
-     */
-    public function __construct(private CurlManagerInterface $curlManager, DocumentManager $dm)
-    {
-        $this->repository = $dm->getRepository(ApplicationInstall::class);
-    }
+    public const NAME = 'shipstation_new_order';
 
     /**
      * @return string
      */
-    public function getId(): string
+    public function getName(): string
     {
-        return 'shipstation_new_order';
+        return self::NAME;
     }
 
     /**
@@ -56,24 +34,24 @@ final class ShipstationNewOrderConnector extends ConnectorAbstract
      *
      * @return ProcessDto
      * @throws ApplicationInstallException
+     * @throws ConnectorException
      * @throws CurlException
      * @throws PipesFrameworkException
-     * @throws ConnectorException
-     * @throws JsonException
      */
-    public function processEvent(ProcessDto $dto): ProcessDto
+    public function processAction(ProcessDto $dto): ProcessDto
     {
-        $applicationInstall = $this->repository->findUserAppByHeaders($dto);
+        $applicationInstall = $this->getApplicationInstallFromProcess($dto);
 
-        $url = $this->getJsonContent($dto)['resource_url'] ?? NULL;
+        $url = $dto->getJsonData()['resource_url'] ?? NULL;
         if (!$url) {
-            $dto->setStopProcess(ProcessDto::STOP_AND_FAILED);
+            $dto->setStopProcess(ProcessDtoAbstract::STOP_AND_FAILED, 'Resource url not set');
 
             return $dto;
         }
 
-        $return = $this->curlManager->send(
+        $return = $this->getSender()->send(
             $this->getApplication()->getRequestDto(
+                $dto,
                 $applicationInstall,
                 CurlManager::METHOD_GET,
                 $url,

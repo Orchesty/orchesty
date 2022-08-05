@@ -3,6 +3,8 @@
 namespace Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp;
 
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDtoAbstract;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
@@ -10,11 +12,12 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookApplicationInterface;
 use Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription;
-use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Form;
+use Hanaboso\PipesPhpSdk\Application\Model\Form\FormStack;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
@@ -59,7 +62,7 @@ final class MailchimpApplication extends OAuth2ApplicationAbstract implements We
     /**
      * @return string
      */
-    public function getKey(): string
+    public function getName(): string
     {
         return 'mailchimp';
     }
@@ -67,7 +70,7 @@ final class MailchimpApplication extends OAuth2ApplicationAbstract implements We
     /**
      * @return string
      */
-    public function getName(): string
+    public function getPublicName(): string
     {
         return 'Mailchimp';
     }
@@ -97,6 +100,7 @@ final class MailchimpApplication extends OAuth2ApplicationAbstract implements We
     }
 
     /**
+     * @param ProcessDtoAbstract $dto
      * @param ApplicationInstall $applicationInstall
      * @param string             $method
      * @param string|null        $url
@@ -107,13 +111,14 @@ final class MailchimpApplication extends OAuth2ApplicationAbstract implements We
      * @throws CurlException
      */
     public function getRequestDto(
+        ProcessDtoAbstract $dto,
         ApplicationInstall $applicationInstall,
         string $method,
         ?string $url = NULL,
         ?string $data = NULL,
     ): RequestDto
     {
-        $request = new RequestDto($method, $this->getUri($url));
+        $request = new RequestDto($this->getUri($url), $method, $dto);
         $request->setHeaders(
             [
                 'Content-Type'  => 'application/json',
@@ -130,16 +135,19 @@ final class MailchimpApplication extends OAuth2ApplicationAbstract implements We
     }
 
     /**
-     * @return Form
+     * @return FormStack
      */
-    public function getSettingsForm(): Form
+    public function getFormStack(): FormStack
     {
-        $form = new Form();
+        $form = new Form(ApplicationInterface::AUTHORIZATION_FORM, 'Authorization settings');
         $form->addField(new Field(Field::TEXT, OAuth2ApplicationInterface::CLIENT_ID, 'Client Id', NULL, TRUE));
         $form->addField(new Field(Field::TEXT, OAuth2ApplicationInterface::CLIENT_SECRET, 'Client Secret', NULL, TRUE));
         $form->addField(new Field(Field::TEXT, self::AUDIENCE_ID, 'Audience Id', NULL, TRUE));
 
-        return $form;
+        $formStack = new FormStack();
+        $formStack->addForm($form);
+
+        return $formStack;
     }
 
     /**
@@ -180,6 +188,7 @@ final class MailchimpApplication extends OAuth2ApplicationAbstract implements We
     {
         $return = $this->curlManager->send(
             $this->getRequestDto(
+                new ProcessDto(),
                 $applicationInstall,
                 CurlManager::METHOD_GET,
                 sprintf('%s/oauth2/metadata', self::MAILCHIMP_DATACENTER_URL),
@@ -217,12 +226,13 @@ final class MailchimpApplication extends OAuth2ApplicationAbstract implements We
     ): RequestDto
     {
         return $this->getRequestDto(
+            new ProcessDto(),
             $applicationInstall,
             CurlManager::METHOD_POST,
             sprintf(
                 '%s/3.0/lists/%s/webhooks',
                 $applicationInstall->getSettings()[self::API_KEYPOINT],
-                $applicationInstall->getSettings()[ApplicationAbstract::FORM][self::AUDIENCE_ID],
+                $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][self::AUDIENCE_ID],
             ),
             Json::encode(
                 [
@@ -251,12 +261,13 @@ final class MailchimpApplication extends OAuth2ApplicationAbstract implements We
     public function getWebhookUnsubscribeRequestDto(ApplicationInstall $applicationInstall, string $id): RequestDto
     {
         return $this->getRequestDto(
+            new ProcessDto(),
             $applicationInstall,
             CurlManager::METHOD_DELETE,
             sprintf(
                 '%s/3.0/lists/%s/webhooks/%s',
                 $applicationInstall->getSettings()[self::API_KEYPOINT],
-                $applicationInstall->getSettings()[ApplicationAbstract::FORM][self::AUDIENCE_ID],
+                $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][self::AUDIENCE_ID],
                 $id,
             ),
         );

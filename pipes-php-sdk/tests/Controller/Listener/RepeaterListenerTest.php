@@ -32,7 +32,10 @@ final class RepeaterListenerTest extends ControllerTestCaseAbstract
      */
     public function testOnRepeatableException(): void
     {
-        $node = (new Node())->setSystemConfigs((new SystemConfigDto('', '', 1, TRUE, 5, 20)));
+        $maxHops  = 2;
+        $interval = 30;
+
+        $node = (new Node())->setSystemConfigs((new SystemConfigDto('', '', 1, TRUE, $maxHops, $interval)));
         $this->pfd($node);
 
         $nodeRepository = $this->dm->getRepository(Node::class);
@@ -40,30 +43,14 @@ final class RepeaterListenerTest extends ControllerTestCaseAbstract
 
         $listener = new RepeaterListener($this->dm);
         $dto      = new ProcessDto();
-        $dto->setHeaders([PipesHeaders::createKey(PipesHeaders::NODE_ID) => $node->getId()]);
+        $dto->setHeaders([PipesHeaders::NODE_ID => $node->getId()]);
 
         $eventMock = $this->mockEvent(new OnRepeatException($dto));
-
-        for ($i = 1; $i <= 5; $i++) {
-            $listener->onRepeatableException($eventMock);
-            /** @var Response $response */
-            $response         = $eventMock->getResponse();
-            $currentHop       = $response->headers->get(PipesHeaders::createKey(PipesHeaders::REPEAT_HOPS));
-            $maxHop           = $response->headers->get(PipesHeaders::createKey(PipesHeaders::REPEAT_MAX_HOPS));
-            $repeaterInterval = $response->headers->get(PipesHeaders::createKey(PipesHeaders::REPEAT_INTERVAL));
-
-            self::assertEquals($i, $currentHop);
-            self::assertEquals(5, $maxHop);
-            self::assertEquals(20, $repeaterInterval);
-        }
-
-        $eventMock = $this->mockEvent(new OnRepeatException(new ProcessDto()));
         $listener->onRepeatableException($eventMock);
         /** @var Response $response */
         $response = $eventMock->getResponse();
-        self::assertEquals(1, $response->headers->get(PipesHeaders::createKey(PipesHeaders::REPEAT_HOPS)));
-        self::assertEquals(3, $response->headers->get(PipesHeaders::createKey(PipesHeaders::REPEAT_MAX_HOPS)));
-        self::assertEquals(60_000, $response->headers->get(PipesHeaders::createKey(PipesHeaders::REPEAT_INTERVAL)));
+        self::assertEquals($maxHops, $response->headers->get(PipesHeaders::REPEAT_MAX_HOPS));
+        self::assertEquals($interval, $response->headers->get(PipesHeaders::REPEAT_INTERVAL));
     }
 
     /**
@@ -73,7 +60,7 @@ final class RepeaterListenerTest extends ControllerTestCaseAbstract
      */
     public function testOnRepeatableExceptionReturn(): void
     {
-        $listener  = self::$container->get('listener.repeater');
+        $listener  = self::getContainer()->get('listener.repeater');
         $eventMock = $this->mockEvent(new Exception('Upps, somehing went wrong.'));
         $listener->onRepeatableException($eventMock);
 
@@ -91,7 +78,7 @@ final class RepeaterListenerTest extends ControllerTestCaseAbstract
         $this->pfd($node);
         $listener = new RepeaterListener($this->dm);
         $dto      = new ProcessDto();
-        $dto->setHeaders([PipesHeaders::createKey(PipesHeaders::NODE_ID) => $node->getId()]);
+        $dto->setHeaders([PipesHeaders::NODE_ID => $node->getId()]);
 
         $eventMock = $this->mockEvent(new OnRepeatException($dto));
         $listener->onRepeatableException($eventMock);
@@ -105,23 +92,31 @@ final class RepeaterListenerTest extends ControllerTestCaseAbstract
      */
     public function testMaxHops(): void
     {
+        $maxHops  = 5;
+        $interval = 4;
+
         $listener = new RepeaterListener($this->dm);
         $dto      = new ProcessDto();
 
-        $dto->addHeader(PipesHeaders::createKey(PipesHeaders::REPEAT_HOPS), '5');
+        $dto->addHeader(PipesHeaders::REPEAT_HOPS, '5');
 
         $exception = new OnRepeatException($dto);
-        $exception->setInterval(5);
-        $exception->setMaxHops(4);
+        $exception->setInterval($maxHops);
+        $exception->setMaxHops($interval);
 
         $eventMock = $this->mockEvent($exception);
         $listener->onRepeatableException($eventMock);
         /** @var Response $response */
         $response = $eventMock->getResponse();
 
-        self::assertEquals(0, (int) $response->headers->get(PipesHeaders::createKey(PipesHeaders::REPEAT_INTERVAL)));
-        self::assertArrayNotHasKey(PipesHeaders::createKey(PipesHeaders::REPEAT_MAX_HOPS), $response->headers->all());
-        self::assertArrayHasKey(PipesHeaders::createKey(PipesHeaders::REPEAT_HOPS), $response->headers->all());
+        self::assertEquals(
+            $maxHops,
+            (int) $response->headers->get(PipesHeaders::REPEAT_INTERVAL),
+        );
+        self::assertEquals(
+            $interval,
+            (int) $response->headers->get(PipesHeaders::REPEAT_MAX_HOPS),
+        );
         self::assertEquals(200, $response->getStatusCode());
     }
 

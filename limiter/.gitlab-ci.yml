@@ -1,28 +1,26 @@
-stages:
-    - build
-    - clean
+.base-limiter:
+  variables:
+    DIR: limiter
+    IMAGE: ${REGISTRY}/${IMAGE_PREFIX}limiter
+  rules:
+    - if: '$FORCE_PIPELINE =~ /ALL/ || $FORCE_PIPELINE =~ /limiter/'
+    - if: '$CI_COMMIT_BEFORE_SHA == $_BANNED_RUN_ALL_SHA'
+      when: never
+    - changes:
+      - ${DIR}/**/*
 
-before_script:
-  - eval $(ssh-agent)
-  - ssh-add ~/.ssh/id_rsa
+limiter:build:
+  stage: build
+  needs: []
+  extends:
+    - .base-kaniko-build
+    - .base-limiter
 
-build:
-    stage: build
-    only:
-        - dev
-        - master
-        - ci
-    script:
-        - export COMPOSE_PROJECT_NAME="build_${CI_PIPELINE_ID}"
-        - make ci-test
-        - IMAGE=cmhanaboso.azurecr.io/clever-monitor/limiter:${CI_BUILD_REF_SLUG}
-        - docker build -t ${IMAGE} .
-        - docker push ${IMAGE}
 
-clean:
-    stage: clean
-    script:
-        - export COMPOSE_PROJECT_NAME="build_${CI_PIPELINE_ID}"
-        - make ci-clean
-    when: always
+limiter:test:
+  stage: test
+  needs: []
 
+  extends:
+    - .base-go-test
+    - .base-limiter

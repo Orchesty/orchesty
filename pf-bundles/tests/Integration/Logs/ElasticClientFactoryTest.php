@@ -17,7 +17,7 @@ final class ElasticClientFactoryTest extends DatabaseTestCaseAbstract
      */
     public function testCreate(): void
     {
-        $client = self::$container->get('elastica.client');
+        $client = self::getContainer()->get('elastica.client');
         $config = (array) $client->getConfig();
 
         self::assertEquals(

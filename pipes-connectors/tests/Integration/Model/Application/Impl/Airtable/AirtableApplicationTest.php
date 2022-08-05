@@ -4,10 +4,10 @@ namespace HbPFConnectorsTests\Integration\Model\Application\Impl\Airtable;
 
 use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Airtable\AirtableApplication;
-use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
-use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
 use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
@@ -42,15 +42,15 @@ final class AirtableApplicationTest extends DatabaseTestCaseAbstract
      */
     public function testGetKey(): void
     {
-        self::assertEquals('airtable', $this->app->getKey());
+        self::assertEquals('airtable', $this->app->getName());
     }
 
     /**
      * @throws Exception
      */
-    public function testName(): void
+    public function testPublicName(): void
     {
-        self::assertEquals('Airtable', $this->app->getName());
+        self::assertEquals('Airtable', $this->app->getPublicName());
     }
 
     /**
@@ -64,11 +64,13 @@ final class AirtableApplicationTest extends DatabaseTestCaseAbstract
     /**
      * @throws Exception
      */
-    public function testGetSettingsForm(): void
+    public function testGetFormStack(): void
     {
-        $fields = $this->app->getSettingsForm()->getFields();
-        foreach ($fields as $field) {
-            self::assertContains($field->getKey(), ['token', 'base_id', 'table_name']);
+        $forms = $this->app->getFormStack()->getForms();
+        foreach ($forms as $form) {
+            foreach ($form->getFields() as $field) {
+                self::assertContains($field->getKey(), ['token', 'base_id', 'table_name']);
+            }
         }
     }
 
@@ -78,15 +80,12 @@ final class AirtableApplicationTest extends DatabaseTestCaseAbstract
     public function testIsAuthorized(): void
     {
         $applicationInstall = DataProvider::getBasicAppInstall(
-            $this->app->getKey(),
+            $this->app->getName(),
         );
         $applicationInstall->setSettings(
             [
-                BasicApplicationInterface::AUTHORIZATION_SETTINGS =>
-                    [
-                        BasicApplicationAbstract::TOKEN => self::API_KEY,
-                    ],
-                ApplicationAbstract::FORM                         => [
+                ApplicationInterface::AUTHORIZATION_FORM => [
+                    BasicApplicationAbstract::TOKEN => self::API_KEY,
                     AirtableApplication::BASE_ID    => self::BASE_ID,
                     AirtableApplication::TABLE_NAME => self::TABLE_NAME,
                 ],
@@ -102,11 +101,11 @@ final class AirtableApplicationTest extends DatabaseTestCaseAbstract
     public function testNoToken(): void
     {
         $applicationInstall = DataProvider::getBasicAppInstall(
-            $this->app->getKey(),
+            $this->app->getName(),
         );
         $applicationInstall->setSettings(
             [
-                ApplicationAbstract::FORM => [
+                ApplicationInterface::AUTHORIZATION_FORM => [
                     AirtableApplication::BASE_ID    => self::BASE_ID,
                     AirtableApplication::TABLE_NAME => self::TABLE_NAME,
                 ],
@@ -114,7 +113,7 @@ final class AirtableApplicationTest extends DatabaseTestCaseAbstract
         );
         $this->pfd($applicationInstall);
         $this->expectException(AuthorizationException::class);
-        $this->app->getRequestDto($applicationInstall, 'POST');
+        $this->app->getRequestDto(new ProcessDto(), $applicationInstall, 'POST');
     }
 
     /**
@@ -124,7 +123,7 @@ final class AirtableApplicationTest extends DatabaseTestCaseAbstract
     {
         parent::setUp();
 
-        $this->app = self::$container->get('hbpf.application.airtable');
+        $this->app = self::getContainer()->get('hbpf.application.airtable');
     }
 
 }

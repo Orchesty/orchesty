@@ -8,13 +8,11 @@ framework:
     http_method_override: true
     test: false
     serializer:
-    session:
-        storage_id: session.storage.mock_file
     router:
         strict_requirements: ~
 
 parameters:
-    backend_host: 127.0.0.9
+    backendHost: 127.0.0.9
     # Base params
     locale: en
 

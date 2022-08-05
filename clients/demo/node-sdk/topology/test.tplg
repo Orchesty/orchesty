@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:pipes="http://www.omg.org/spec/Pipes/20100524/MODEL" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="Process_1" isExecutable="false">
+    <bpmn:event id="start_1m79era" pipes:pipesType="start" pipes:sdkHost="node-sdk:8080" name="Start">
+      <bpmn:outgoing>Flow_1i4iy3o</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0kupim0</bpmn:outgoing>
+    </bpmn:event>
+    <bpmn:task id="batch_1wgvno2" pipes:pipesType="batch" pipes:sdkHost="node-sdk:8080" name="list-posts">
+      <bpmn:incoming>Flow_1i4iy3o</bpmn:incoming>
+      <bpmn:outgoing>Flow_089ph7j</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="Flow_1i4iy3o" sourceRef="start_1m79era" targetRef="batch_1wgvno2" />
+    <bpmn:task id="user_00emac9" pipes:pipesType="user" pipes:sdkHost="backend" name="user-task" userTaskState="true">
+      <bpmn:incoming>Flow_0kupim0</bpmn:incoming>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="Flow_0kupim0" sourceRef="start_1m79era" targetRef="user_00emac9" />
+    <bpmn:task id="connector_0o5cc3c" pipes:pipesType="connector" pipes:sdkHost="node-sdk:8080" name="bin-sender">
+      <bpmn:incoming>Flow_089ph7j</bpmn:incoming>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="Flow_089ph7j" sourceRef="batch_1wgvno2" targetRef="connector_0o5cc3c" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1">
+      <bpmndi:BPMNEdge id="Flow_089ph7j_di" bpmnElement="Flow_089ph7j">
+        <di:waypoint x="650" y="330" />
+        <di:waypoint x="730" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0kupim0_di" bpmnElement="Flow_0kupim0">
+        <di:waypoint x="398" y="330" />
+        <di:waypoint x="474" y="330" />
+        <di:waypoint x="474" y="210" />
+        <di:waypoint x="550" y="210" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1i4iy3o_di" bpmnElement="Flow_1i4iy3o">
+        <di:waypoint x="398" y="330" />
+        <di:waypoint x="550" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_1m79era_di" bpmnElement="start_1m79era">
+        <dc:Bounds x="362" y="312" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="368" y="351" width="24" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1wgvno2_di" bpmnElement="batch_1wgvno2">
+        <dc:Bounds x="550" y="290" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_00emac9_di" bpmnElement="user_00emac9">
+        <dc:Bounds x="550" y="170" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0o5cc3c_di" bpmnElement="connector_0o5cc3c">
+        <dc:Bounds x="730" y="290" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

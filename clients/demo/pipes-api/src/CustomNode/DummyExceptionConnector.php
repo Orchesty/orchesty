@@ -5,7 +5,7 @@ namespace Demo\CustomNode;
 use Exception;
 use Hanaboso\CommonsBundle\Monolog\LoggerContext;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
-use Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract;
+use Hanaboso\PipesPhpSdk\CustomNode\CommonNodeAbstract;
 use Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Exception\CustomNodeException;
 use Hanaboso\Utils\System\PipesHeaders;
 use Psr\Log\LoggerAwareInterface;
@@ -17,8 +17,10 @@ use Psr\Log\NullLogger;
  *
  * @package Demo\CustomNode
  */
-final class DummyExceptionConnector extends CustomNodeAbstract implements LoggerAwareInterface
+final class DummyExceptionConnector extends CommonNodeAbstract implements LoggerAwareInterface
 {
+
+    public const NAME = 'dummy-exception-connector';
 
     /**
      * @var LoggerInterface
@@ -34,13 +36,21 @@ final class DummyExceptionConnector extends CustomNodeAbstract implements Logger
     }
 
     /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return self::NAME;
+    }
+
+    /**
      * @param ProcessDto $dto
      *
      * @return ProcessDto
      *
      * @throws Exception
      */
-    public function process(ProcessDto $dto): ProcessDto
+    public function processAction(ProcessDto $dto): ProcessDto
     {
         if (mt_rand(1, 10) == 5) {
             try {
@@ -52,7 +62,7 @@ final class DummyExceptionConnector extends CustomNodeAbstract implements Logger
                     ->setException($e);
                 $this->logger->error($e->getMessage(), $context->toArray());
 
-                $dto->addHeader(PipesHeaders::createKey(PipesHeaders::RESULT_CODE), '1003');
+                $dto->addHeader(PipesHeaders::RESULT_CODE, '1003');
             }
         }
 
@@ -63,14 +73,10 @@ final class DummyExceptionConnector extends CustomNodeAbstract implements Logger
      * Sets a logger instance on the object.
      *
      * @param LoggerInterface $logger
-     *
-     * @return DummyExceptionConnector
      */
-    public function setLogger(LoggerInterface $logger): DummyExceptionConnector
+    public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
-
-        return $this;
     }
 
     /**

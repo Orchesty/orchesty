@@ -1,0 +1,41 @@
+---
+
+global:
+  backend_url: https://api-pipes-demo.stage.hanaboso.net
+  frontend_url: https://pipes-demo.stage.hanaboso.net
+  starting_point_url: https://sp-pipes-demo-sp.stage.hanaboso.net
+
+  imageOverrides:
+    alpha_nodejssdk: hanaboso/demo-nodejs:dev
+    applinth-marketplace-ui: orchesty/applinth-marketplace-ui:VERSION_TAG
+    backend: dkr.hanaboso.net/pipes/pipes/applinth:master
+    status: orchesty/status-service:VERSION_TAG
+    frontend: orchesty/frontend:VERSION_TAG
+    cron-api: orchesty/cron:VERSION_TAG
+    bridge: orchesty/bridge:VERSION_TAG
+    counter: orchesty/counter:VERSION_TAG
+    repeater: orchesty/pf-bridge:VERSION_TAG
+    limiter: orchesty/limiter:VERSION_TAG
+    multi-probe: hanaboso/multi-probe:master
+    notification-sender: orchesty/notification-sender:VERSION_TAG
+    starting-point: orchesty/starting-point:VERSION_TAG
+    topology-api: orchesty/topology-api:VERSION_TAG
+    logstash: orchesty/logstash:VERSION_TAG
+    kapacitor: orchesty/kapacitor:VERSION_TAG
+    detector: orchesty/detector:VERSION_TAG
+
+customPersistence:
+  node: node2
+  pvDir: /srv/pipes-demo2
+  pvPrefix: pipes
+  pvcPrefix: pipes
+
+mongodb:
+  pvcName: pipes-mongodb
+  nodeSelector:
+    kubernetes.io/hostname: "node2"
+
+rabbitmq:
+  pvcName: pipes-rabbitmq
+  nodeSelector:
+    kubernetes.io/hostname: "node2"

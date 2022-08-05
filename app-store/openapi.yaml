@@ -98,27 +98,6 @@ paths:
                 500:
                     $ref: '#/components/responses/500'
 
-    /statistics/applications:
-        get:
-            tags: [ Statistics ]
-            responses:
-                200:
-                    $ref: '#/components/responses/ApplicationsStatistics'
-                500:
-                    $ref: '#/components/responses/500'
-
-    /statistics/applications/{application}:
-        get:
-            tags: [ Statistics ]
-            parameters:
-                -   $ref: '#/components/parameters/Application'
-            responses:
-                200:
-                    $ref: '#/components/responses/ApplicationStatistics'
-                500:
-                    $ref: '#/components/responses/500'
-
-
     /webhook/applications/{key}/users/{user}/subscribe:
         post:
             tags: [ Webhooks ]
@@ -244,20 +223,6 @@ components:
                     schema:
                         $ref: '#/components/schemas/ApplicationInstallSettings'
 
-        ApplicationsStatistics:
-            description: ''
-            content:
-                application/json:
-                    schema:
-                        $ref: '#/components/schemas/ApplicationsStatistics'
-
-        ApplicationStatistics:
-            description: ''
-            content:
-                application/json:
-                    schema:
-                        $ref: '#/components/schemas/ApplicationStatistics'
-
         Empty:
             description: ''
             content:
@@ -371,46 +336,6 @@ components:
                     items:
                         $ref: '#/components/schemas/ApplicationInstallUninstall'
 
-        ApplicationsStatistics:
-            type: object
-            properties:
-                items:
-                    type: array
-                    items:
-                        type: object
-                        properties:
-                            _id:
-                                type: string
-                            value:
-                                type: object
-                                properties:
-                                    total_sum:
-                                        type: integer
-                                    non_expire_sum:
-                                        type: integer
-
-        ApplicationStatistics:
-            type: object
-            properties:
-                items:
-                    type: array
-                    items:
-                        type: object
-                        properties:
-                            _id:
-                                type: string
-                            value:
-                                type: object
-                                properties:
-                                    users:
-                                        type: object
-                                        properties:
-                                            name:
-                                                type: string
-                                            active:
-                                                type: boolean
-
-
         ApplicationInstallSettings:
             type: object
             properties:
@@ -499,13 +424,5 @@ components:
             in: path
             required: true
             example: user
-            schema:
-                type: string
-
-        Application:
-            name: application
-            in: path
-            required: true
-            example: application
             schema:
                 type: string

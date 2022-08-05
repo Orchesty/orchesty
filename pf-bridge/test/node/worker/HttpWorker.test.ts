@@ -121,7 +121,7 @@ const createMessage = () => {
     return new JobMessage(node, headers.getRaw(), Buffer.from(JSON.stringify({ val: "original" })));
 };
 
-describe("HttpWorker", () => {
+xdescribe("HttpWorker", () => {
     const port = 4020;
     let listener: http.Server;
 

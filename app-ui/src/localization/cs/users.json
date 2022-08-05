@@ -1,0 +1,40 @@
+{
+  "users": {
+    "list": {
+      "createUser": "Přidat uživatele",
+      "grid": {
+        "id": "ID",
+        "email": "Email",
+        "action": "Akce",
+        "created": "Vytvořeno"
+      }
+    },
+    "form": {
+        "type": {
+          "name": "typ uživatele",
+          "label": "Typ uživatele"
+        },
+        "email": {
+          "name": "email",
+          "label": "Email"
+        }
+    },
+    "create": {
+      "title": "Vytvoření uživatele"
+    },
+    "read": {
+      "title": "Detail uživatele"
+    },
+    "update": {
+      "title": "Editace uživatele"
+    },
+    "delete": {
+      "title": "Smazat uživatele",
+      "body": "Opravdu chcete smazat uživatele?"
+    },
+    "tabs": {
+      "users": "Uživatelé",
+      "tmpUsers": "Neaktivování uživatelé"
+    }
+  }
+}

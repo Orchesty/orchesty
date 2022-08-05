@@ -1,0 +1,24 @@
+{
+  "grid": {
+    "state": {
+      "loading": "Loading..."
+    },
+    "overview": {
+      "header": {
+        "process": "Topology Name",
+        "created": "Created",
+        "started": "Started",
+        "finished": "Finished",
+        "duration": "Duration",
+        "progress": "Progress",
+        "status": "Status"
+      }
+    },
+    "trash": {
+      "header": {
+        "topologyName": "Process",
+        "created": "Created"
+      }
+    }
+  }
+}

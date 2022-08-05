@@ -1,0 +1,100 @@
+.base-deploy:
+  needs: ["collect-tags"]
+  stage: deploy
+  environment: stage
+  image:
+    name: alpine/helm
+    entrypoint: [""]
+
+  script:
+    - echo "${KUBECONFIG}" > /tmp/kubeconfig
+    - chmod 0600 /tmp/kubeconfig
+
+    - . ./export_tags
+    - cp -a ./helm-chart ${PROJECT_DIR}/helm/charts/pipes
+    - cd ${PROJECT_DIR}
+    - >-
+      helm --kubeconfig /tmp/kubeconfig upgrade -i --wait -f helm/resources.yaml ${HELM_ARGS} ${HELM_ARGS_EXT}
+      pipes ./helm
+
+  tags:
+    - docker
+
+
+.base-deploy-current:
+  needs: ["collect-tags"]
+  stage: deploy
+  environment: stage
+  when: manual
+
+  image:
+    name: alpine/helm
+    entrypoint: [""]
+
+  script:
+    - echo "${KUBECONFIG}" > /tmp/kubeconfig
+    - chmod 0600 /tmp/kubeconfig
+
+    - . ./export_tags
+    - cp -a ./helm-chart ${PROJECT_DIR}/helm/charts/pipes
+    - cd ${PROJECT_DIR}
+    - >-
+      helm --kubeconfig /tmp/kubeconfig upgrade -i --wait -f helm/resources.yaml ${HELM_ARGS}
+      --set global.imageOverrides.applinth-marketplace-ui=${REGISTRY}/${IMAGE_PREFIX}applinth-marketplace-ui:${TAG_APPLINTH_MARKETPLACE_UI}
+      --set global.imageOverrides.php-sdk=${REGISTRY}/${IMAGE_PREFIX}backend:${TAG_BACKEND}
+      --set global.imageOverrides.backend=${REGISTRY}/${IMAGE_PREFIX}backend:${TAG_BACKEND}
+      --set global.imageOverrides.status=${REGISTRY}/${IMAGE_PREFIX}status-service:${TAG_STATUS_SERVICE}
+      --set global.imageOverrides.frontend=${REGISTRY}/${IMAGE_PREFIX}frontend:${TAG_FRONTEND}
+      --set global.imageOverrides.cron-api=${REGISTRY}/${IMAGE_PREFIX}cron:${TAG_CRON}
+      --set global.imageOverrides.bridge=${REGISTRY}/${IMAGE_PREFIX}bridge:${TAG_BRIDGE}
+      --set global.imageOverrides.counter=${REGISTRY}/${IMAGE_PREFIX}counter:${TAG_COUNTER}
+      --set global.imageOverrides.repeater=${REGISTRY}/${IMAGE_PREFIX}pf-bridge:${TAG_PF_BRIDGE}
+      --set global.imageOverrides.limiter=${REGISTRY}/limiter:${TAG_LIMITER}
+      --set global.imageOverrides.multi-probe=hanaboso/multi-probe:master
+      --set global.imageOverrides.notification-sender=${REGISTRY}/${IMAGE_PREFIX}notification-sender:${TAG_NOTIFICATION_SENDER}
+      --set global.imageOverrides.starting-point=${REGISTRY}/${IMAGE_PREFIX}starting-point:${TAG_STARTING_POINT}
+      --set global.imageOverrides.topology-api=${REGISTRY}/${IMAGE_PREFIX}topology-api:${TAG_TOPOLOGY_API}
+      --set global.imageOverrides.logstash=${REGISTRY}/${IMAGE_PREFIX}logstash:${TAG_LOGSTASH}
+      --set global.imageOverrides.kapacitor=${REGISTRY}/${IMAGE_PREFIX}kapacitor:${TAG_KAPACITOR}
+      --set global.imageOverrides.detector=${REGISTRY}/${IMAGE_PREFIX}detector:${TAG_DETECTOR}
+      ${HELM_ARGS_EXT}
+      pipes ./helm
+
+  tags:
+    - docker
+
+
+stage:deploy:
+  extends: .base-deploy-current
+  environment: stage
+  when: manual
+  variables:
+    PROJECT_DIR: clients/demo
+    HELM_ARGS: -f helm/values.stage.yaml
+
+
+demo:deploy:
+  extends: .base-deploy
+  environment: demo
+  variables:
+    PROJECT_DIR: clients/demo
+    HELM_ARGS: -f helm/values.demo.yaml
+
+  rules:
+    - if: $DEPLOY_DEMO_VERSION != ""
+      when: manual
+    - when: never
+ 
+  before_script:
+    - sed -E "s/VERSION_TAG/${DEPLOY_DEMO_VERSION}/g" -i clients/demo/helm/values.demo.yaml
+
+demo2:deploy:
+  extends: .base-deploy-current
+  environment: demo2
+  when: manual
+  variables:
+    PROJECT_DIR: clients/demo
+    HELM_ARGS: -f helm/values.demo2.yaml
+
+  before_script:
+    - echo "${DEMO2_VALUES}" > clients/demo/helm/values.demo2.yaml

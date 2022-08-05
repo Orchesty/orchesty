@@ -35,7 +35,6 @@ func (p *publisher) getChannel() *amqp.Channel {
 }
 
 func (p *publisher) Publish(msg amqp.Publishing) {
-
 	err := p.getChannel().Publish(p.exchange, p.routingKey, p.mandatory, p.immediate, msg)
 
 	context := ctxFromPublishing(msg)
@@ -46,7 +45,7 @@ func (p *publisher) Publish(msg amqp.Publishing) {
 
 		v := <-p.connection.GetRestartChan()
 
-		if v == true {
+		if v {
 			p.Publish(msg)
 		}
 	}

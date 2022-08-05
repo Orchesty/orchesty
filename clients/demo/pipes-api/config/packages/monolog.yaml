@@ -3,13 +3,12 @@ parameters:
 
 monolog:
     use_microseconds: false
-    channels: [commons, stdout]
+    channels: [commons]
     handlers:
-        commons:
+        main:
             type: service
             id: udp_handler
-            level: info
-            channels: [commons]
+            level: warning
 
         # Handler for docker container
         stdout:
@@ -18,7 +17,7 @@ monolog:
             level: info
             formatter: logstash_formatter
             max_files: 10
-            channels: ['!php', '!request']
+            channels: ['!php', '!request', '!security']
 
 services:
     _defaults:
@@ -31,7 +30,6 @@ services:
         class: Hanaboso\CommonsBundle\Monolog\UdpHandler
         arguments:
             - '@hbpf.transport.udp_sender'
-            - 'logstash:5120'
-            - 'info'
+            - '%udp_logger_url%'
         calls:
             - ['setFormatter', ['@logstash_formatter']]

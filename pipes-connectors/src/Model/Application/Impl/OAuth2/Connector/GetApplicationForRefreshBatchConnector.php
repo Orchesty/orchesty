@@ -5,33 +5,22 @@ namespace Hanaboso\HbPFConnectors\Model\Application\Impl\OAuth2\Connector;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\Persistence\ObjectRepository;
-use GuzzleHttp\Promise\PromiseInterface;
-use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\BatchProcessDto;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
-use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
-use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessActionNotSupportedTrait;
-use Hanaboso\PipesPhpSdk\Connector\Traits\ProcessEventNotSupportedTrait;
-use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchInterface;
-use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\BatchTrait;
-use Hanaboso\PipesPhpSdk\RabbitMq\Impl\Batch\SuccessMessage;
+use Hanaboso\PipesPhpSdk\Batch\BatchAbstract;
 use Hanaboso\Utils\Date\DateTimeUtils;
 use Hanaboso\Utils\Exception\DateTimeException;
-use Hanaboso\Utils\System\PipesHeaders;
 
 /**
  * Class GetApplicationForRefreshBatchConnector
  *
  * @package Hanaboso\HbPFConnectors\Model\Application\Impl\OAuth2\Connector
  */
-final class GetApplicationForRefreshBatchConnector extends ConnectorAbstract implements BatchInterface
+final class GetApplicationForRefreshBatchConnector extends BatchAbstract
 {
 
-    use ProcessActionNotSupportedTrait;
-    use ProcessEventNotSupportedTrait;
-    use BatchTrait;
-
-    public const APPLICATION_ID = 'get_application_for_refresh';
+    public const NAME = 'get_application_for_refresh';
 
     /**
      * @var ObjectRepository<ApplicationInstall>&ApplicationInstallRepository
@@ -45,47 +34,43 @@ final class GetApplicationForRefreshBatchConnector extends ConnectorAbstract imp
      */
     public function __construct(DocumentManager $dm)
     {
-        $this->repository = $dm->getRepository(ApplicationInstall::class);
+        /** @var ApplicationInstallRepository $appInstallRepo */
+        $appInstallRepo   = $dm->getRepository(ApplicationInstall::class);
+        $this->repository = $appInstallRepo;
     }
 
     /**
      * @return string
      */
-    public function getId(): string
+    public function getName(): string
     {
-        return self::APPLICATION_ID;
+        return self::NAME;
     }
 
     /**
-     * @param ProcessDto $dto
-     * @param callable   $callbackItem
+     * @param BatchProcessDto $dto
      *
-     * @return PromiseInterface
-     * @throws MongoDBException
+     * @return BatchProcessDto
      * @throws DateTimeException
+     * @throws MongoDBException
      */
-    public function processBatch(ProcessDto $dto, callable $callbackItem): PromiseInterface
+    public function processAction(BatchProcessDto $dto): BatchProcessDto
     {
-        $dto;
-        $i    = 1;
         $time = DateTimeUtils::getUtcDateTime('1 hour');
 
         /** @var ApplicationInstall[] $applications */
         $applications = $this->repository
             ->createQueryBuilder()
-            ->select('_id')
             ->field('expires')->lte($time)
             ->field('expires')->notEqual(NULL)
             ->getQuery()
             ->execute();
 
         foreach ($applications as $app) {
-            $message = new SuccessMessage($i);
-            $callbackItem($message->addHeader(PipesHeaders::createKey(self::APPLICATION_ID), $app->getId()));
-            $i++;
+            $dto->addItem([],$app->getUser());
         }
 
-        return $this->createPromise();
+        return $dto;
     }
 
 }

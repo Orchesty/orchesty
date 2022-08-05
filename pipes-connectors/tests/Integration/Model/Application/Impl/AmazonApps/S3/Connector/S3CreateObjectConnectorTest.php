@@ -11,6 +11,7 @@ use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\Connector\S3CreateObjectConnector;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\S3Application;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\Utils\String\Json;
@@ -43,7 +44,7 @@ final class S3CreateObjectConnectorTest extends DatabaseTestCaseAbstract
 
         $dto = (new ProcessDto())
             ->setData(Json::encode(['name' => 'Test', 'content' => 'Content']))
-            ->setHeaders(['pf-application' => self::KEY, 'pf-user' => self::USER]);
+            ->setHeaders(['application' => self::KEY, 'user' => self::USER]);
         $dto = $this->connector->processAction($dto);
 
         self::assertEquals('Test', Json::decode($dto->getData())['name']);
@@ -56,7 +57,7 @@ final class S3CreateObjectConnectorTest extends DatabaseTestCaseAbstract
     {
         self::assertException(
             ConnectorException::class,
-            ConnectorException::CONNECTOR_FAILED_TO_PROCESS,
+            NULL,
             "Connector 's3-create-object': Required parameter 'name' is not provided!",
         );
 
@@ -64,7 +65,7 @@ final class S3CreateObjectConnectorTest extends DatabaseTestCaseAbstract
 
         $dto = (new ProcessDto())
             ->setData(Json::encode(['content' => 'Content']))
-            ->setHeaders(['pf-application' => self::KEY, 'pf-user' => self::USER]);
+            ->setHeaders(['application' => self::KEY, 'user' => self::USER]);
 
         $this->connector->processAction($dto);
     }
@@ -76,7 +77,7 @@ final class S3CreateObjectConnectorTest extends DatabaseTestCaseAbstract
     {
         self::assertException(
             ConnectorException::class,
-            ConnectorException::CONNECTOR_FAILED_TO_PROCESS,
+            NULL,
             "Connector 's3-create-object': Required parameter 'content' is not provided!",
         );
 
@@ -84,7 +85,7 @@ final class S3CreateObjectConnectorTest extends DatabaseTestCaseAbstract
 
         $dto = (new ProcessDto())
             ->setData(Json::encode(['name' => 'Test']))
-            ->setHeaders(['pf-application' => self::KEY, 'pf-user' => self::USER]);
+            ->setHeaders(['application' => self::KEY, 'user' => self::USER]);
 
         $this->connector->processAction($dto);
     }
@@ -115,7 +116,7 @@ final class S3CreateObjectConnectorTest extends DatabaseTestCaseAbstract
 
         $dto = (new ProcessDto())
             ->setData(Json::encode(['name' => 'Test', 'content' => 'Content']))
-            ->setHeaders(['pf-application' => self::KEY, 'pf-user' => self::USER]);
+            ->setHeaders(['application' => self::KEY, 'user' => self::USER]);
 
         $this->connector->processAction($dto);
     }
@@ -127,7 +128,7 @@ final class S3CreateObjectConnectorTest extends DatabaseTestCaseAbstract
     {
         parent::setUp();
 
-        $this->connector = self::$container->get('hbpf.connector.s3-create-object');
+        $this->connector = self::getContainer()->get('hbpf.connector.s3-create-object');
     }
 
     /**
@@ -140,7 +141,7 @@ final class S3CreateObjectConnectorTest extends DatabaseTestCaseAbstract
             ->setUser(self::USER)
             ->setSettings(
                 [
-                    S3Application::FORM => [
+                    ApplicationInterface::AUTHORIZATION_FORM => [
                         S3Application::KEY      => 'Key',
                         S3Application::SECRET   => 'Secret',
                         S3Application::REGION   => 'eu-central-1',

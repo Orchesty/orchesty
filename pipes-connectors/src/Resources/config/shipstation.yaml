@@ -7,8 +7,7 @@ services:
 
     hbpf.connector.shipstation_new_order:
         class: Hanaboso\HbPFConnectors\Model\Application\Impl\Shipstation\Connector\ShipstationNewOrderConnector
-        arguments:
-            - '@hbpf.transport.curl_manager'
-            - '@doctrine_mongodb.odm.default_document_manager'
         calls:
-            - ['setApplication',['@hbpf.application.shipstation']]
+            -   setApplication: [ '@hbpf.application.shipstation' ]
+            -   setDb: [ '@doctrine_mongodb.odm.default_document_manager' ]
+            -   setSender: [ '@hbpf.transport.curl_manager' ]

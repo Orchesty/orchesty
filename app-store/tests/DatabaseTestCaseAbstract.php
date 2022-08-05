@@ -35,7 +35,7 @@ abstract class DatabaseTestCaseAbstract extends KernelTestCaseAbstract
         $this->session->invalidate();
         $this->session->clear();
 
-        $this->dm = self::$container->get('doctrine_mongodb.odm.default_document_manager');
+        $this->dm = self::getContainer()->get('doctrine_mongodb.odm.default_document_manager');
         $this->dm->getConfiguration()->setDefaultDB($this->getMongoDatabaseName());
 
         $documents = $this->dm->getMetadataFactory()->getAllMetadata();

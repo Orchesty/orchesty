@@ -8,11 +8,9 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetGetApiAccessTokenConnector;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
-use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
-use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
 
@@ -27,8 +25,8 @@ final class ShoptetGetApiAccessTokenConnectorTest extends DatabaseTestCaseAbstra
     use PrivateTrait;
 
     private const HEADERS = [
-        'pf-user'        => 'user',
-        'pf-application' => ShoptetApplication::SHOPTET_KEY,
+        'user'        => 'user',
+        'application' => ShoptetApplication::SHOPTET_KEY,
     ];
 
     private const API_TOKEN_URL = 'https://12345.myshoptet.com/action/ApiOAuthServer/getAccessToken';
@@ -39,22 +37,11 @@ final class ShoptetGetApiAccessTokenConnectorTest extends DatabaseTestCaseAbstra
     private ShoptetGetApiAccessTokenConnector $connector;
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetGetApiAccessTokenConnector::getId
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetGetApiAccessTokenConnector::getName
      */
-    public function testGetId(): void
+    public function testGetName(): void
     {
-        self::assertEquals('shoptet-get-access-token', $this->connector->getId());
-    }
-
-    /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetGetApiAccessTokenConnector::processEvent
-     *
-     * @throws Exception
-     */
-    public function testProcessEvent(): void
-    {
-        self::expectException(ConnectorException::class);
-        $this->connector->processEvent(new ProcessDto());
+        self::assertEquals('shoptet-get-access-token', $this->connector->getName());
     }
 
     /**
@@ -93,7 +80,7 @@ final class ShoptetGetApiAccessTokenConnectorTest extends DatabaseTestCaseAbstra
     {
         parent::setUp();
 
-        $this->connector = self::$container->get('hbpf.connector.shoptet-get-api-access-token');
+        $this->connector = self::getContainer()->get('hbpf.connector.shoptet-get-api-access-token');
     }
 
     /**
@@ -107,10 +94,10 @@ final class ShoptetGetApiAccessTokenConnectorTest extends DatabaseTestCaseAbstra
             ShoptetApplication::SHOPTET_KEY,
             'user',
             [
-                ApplicationInterface::AUTHORIZATION_SETTINGS => [
+                ApplicationInterface::AUTHORIZATION_FORM => [
                     ApplicationInterface::TOKEN => [OAuth2Provider::ACCESS_TOKEN => '___access_token__'],
+                    ShoptetApplication::API_TOKEN_URL => self::API_TOKEN_URL,
                 ],
-                ApplicationAbstract::FORM                    => [ShoptetApplication::API_TOKEN_URL => self::API_TOKEN_URL],
             ],
         );
         $this->pfd($applicationInstall);

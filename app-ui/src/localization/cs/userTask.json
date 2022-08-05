@@ -1,0 +1,11 @@
+{
+    "userTask": {
+    "grid": {
+        "node": "Uzel",
+        "created": "Vutvořeno",
+        "data": "Data",
+        "logs": "Záznamy",
+        "actions": "Akce"
+    }
+}
+}

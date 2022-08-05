@@ -19,30 +19,20 @@ final class TopologySchemaUtils
 {
 
     private const BPMN_PROCESS = 'bpmn:process';
-    private const PROCESS      = 'process';
 
     private const BPMN_START_EVENT       = 'bpmn:startEvent';
-    private const START_EVENT            = 'startEvent';
     private const BPMN_TASK              = 'bpmn:task';
-    private const TASK                   = 'task';
     private const BPMN_EVENT             = 'bpmn:event';
-    private const EVENT                  = 'event';
     private const BPMN_END_EVENT         = 'bpmn:endEvent';
-    private const END_EVENT              = 'endEvent';
     private const BPMN_GATEWAY           = 'bpmn:gateway';
-    private const GATEWAY                = 'gateway';
     private const BPMN_EXCLUSIVE_GATEWAY = 'bpmn:exclusiveGateway';
-    private const EXCLUSIVE_GATEWAY      = 'exclusiveGateway';
 
     private const BPMN_SEQUENCE_FLOW = 'bpmn:sequenceFlow';
-    private const SEQUENCE_FLOW      = 'sequenceFlow';
     private const SOURCE_REF         = '@sourceRef';
     private const TARGET_REF         = '@targetRef';
 
     private const BPMN_INCOMING = 'bpmn:incoming';
-    private const INCOMING      = 'incoming';
     private const BPMN_OUTGOING = 'bpmn:outgoing';
-    private const OUTGOING      = 'outgoing';
 
     private const SDK_HOST          = '@pipes:sdkHost';
     private const BRIDGE_HOST       = '@pipes:bridgeHost';
@@ -64,56 +54,42 @@ final class TopologySchemaUtils
     ];
 
     /**
-     * @var string[]
-     */
-    private static array $handlers = [
-        self::START_EVENT, self::TASK, self::EVENT, self::END_EVENT, self::GATEWAY, self::EXCLUSIVE_GATEWAY,
-    ];
-
-    /**
      * @param mixed[] $data
      *
      * @return Schema
+     * @throws TopologyException
      */
     public static function getSchemaObject(array $data): Schema
     {
         $schema = new Schema();
 
-        if (isset($data[self::PROCESS])) {
-            $processes    = $data[self::PROCESS];
-            $handlers     = self::$handlers;
-            $outgoing     = self::OUTGOING;
-            $incoming     = self::INCOMING;
-            $sequenceFlow = self::SEQUENCE_FLOW;
-        } else if (isset($data[self::BPMN_PROCESS])) {
-            $processes    = $data[self::BPMN_PROCESS];
-            $handlers     = self::$bpmnHandlers;
-            $outgoing     = self::BPMN_OUTGOING;
-            $incoming     = self::BPMN_INCOMING;
-            $sequenceFlow = self::BPMN_SEQUENCE_FLOW;
+        if (count($data) !== 0) {
+            if (!isset($data[self::BPMN_PROCESS])) {
+                throw new TopologyException('Unsupported schema!', TopologyException::UNSUPPORTED_SCHEMA);
+            }
         } else {
             return $schema;
         }
+        $processes    = $data[self::BPMN_PROCESS];
+        $handlers     = self::$bpmnHandlers;
+        $outgoing     = self::BPMN_OUTGOING;
+        $incoming     = self::BPMN_INCOMING;
+        $sequenceFlow = self::BPMN_SEQUENCE_FLOW;
         unset($data);
 
         foreach ($processes as $handler => $process) {
             if (in_array($handler, $handlers, TRUE)) {
 
                 if (!Arrays::isList($process)) {
-                    $tmp = $process;
-                    unset($process);
-                    $process = [$tmp];
+                    $process = [$process];
                 }
                 foreach ($process as $innerProcess) {
 
                     if (isset($innerProcess[$outgoing]) && !isset($innerProcess[$incoming])) {
-                        $schema->setStartNode($innerProcess['@id']);
+                        $schema->addStartNode($innerProcess['@id']);
                     }
 
-                    $type = $innerProcess['@pipes:pipesType'] ?? '';
-                    if (!$type) {
-                        $type = self::getPipesType($handler);
-                    }
+                    $type = $innerProcess['@pipes:pipesType'] ?? self::getPipesType($handler);
 
                     $topologyDto = new NodeSchemaDto(
                         $handler,
@@ -158,6 +134,42 @@ final class TopologySchemaUtils
     }
 
     /**
+     * @param Schema $schema
+     *
+     * @return string
+     */
+    public static function getSchemaFullIndexHash(Schema $schema): string
+    {
+        $schemaIndex = [];
+        foreach ($schema->getNodes() as $nodeKey => $nodeBody) {
+            $schemaIndex[] = sprintf('schema_key_%s', $nodeKey);
+            $schemaIndex[] = sprintf('schema_id_%s_%s', $nodeKey, $nodeBody->getId());
+            $schemaIndex[] = sprintf('schema_name_%s_%s', $nodeKey, $nodeBody->getName());
+            $schemaIndex[] = sprintf('schema_handler_%s_%s', $nodeKey, $nodeBody->getHandler());
+            $schemaIndex[] = sprintf('schema_pipes_type_%s_%s', $nodeKey, $nodeBody->getPipesType());
+            $schemaIndex[] = sprintf('schema_cron_time_%s_%s', $nodeKey, $nodeBody->getCronTime());
+            $schemaIndex[] = sprintf('schema_cron_params_%s_%s', $nodeKey, $nodeBody->getCronParams());
+
+            foreach ($nodeBody->getSystemConfigsArray() as $configKey => $configValue) {
+                $schemaIndex[] = sprintf('schema_system_config_%s%s_%s', $nodeKey, $configKey, $configValue);
+            }
+        }
+        foreach ($schema->getSequences() as $sequenceKey => $sequence) {
+            foreach ($sequence as $sequenceValue) {
+                $schemaIndex[] = sprintf('sequence_%s_%s', $sequenceKey, $sequenceValue);
+            }
+        }
+
+        foreach ($schema->getStartNode() as $startNode) {
+            $schemaIndex[] = sprintf('start_node_%s', $startNode);
+        }
+
+        sort($schemaIndex);
+
+        return hash('sha256', Json::encode($schemaIndex));
+    }
+
+    /**
      * @param string $type
      *
      * @return string
@@ -165,9 +177,9 @@ final class TopologySchemaUtils
     private static function getPipesType(string $type): string
     {
         return match ($type) {
-            self::GATEWAY, self::EXCLUSIVE_GATEWAY, self::BPMN_GATEWAY, self::BPMN_EXCLUSIVE_GATEWAY => TypeEnum::GATEWAY,
-            self::EVENT, self::START_EVENT, self::BPMN_EVENT, self::BPMN_START_EVENT => TypeEnum::START,
-            self::TASK, self::BPMN_TASK => TypeEnum::CUSTOM,
+            self::BPMN_GATEWAY, self::BPMN_EXCLUSIVE_GATEWAY => TypeEnum::GATEWAY,
+            self::BPMN_EVENT, self::BPMN_START_EVENT => TypeEnum::START,
+            self::BPMN_TASK => TypeEnum::CUSTOM,
             default => '',
         };
     }

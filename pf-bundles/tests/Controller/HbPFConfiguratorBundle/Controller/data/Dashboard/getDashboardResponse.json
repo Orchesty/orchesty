@@ -1,0 +1,43 @@
+{
+    "http": 200,
+    "body": {
+        "process": {
+            "activeTopologies": 0,
+            "disabledTopologies": 0,
+            "totalRuns": 0,
+            "errorsCount": 0,
+            "successCount": 0,
+            "installedApps": 0
+        },
+        "errorLogs": [
+            {
+                "time": "date time",
+                "topologyId": "11ssd-ad25-a77",
+                "topologyName": "abc.v1",
+                "nodeId": "11ssd-ad25-a77",
+                "nodeName": "abc.v1",
+                "level": "INFO",
+                "message": "Some message"
+            },
+            {
+                "time": "date time",
+                "topologyId": "11ssd-ad25-a77",
+                "topologyName": "abc.v1",
+                "nodeId": "11ssd-ad25-a77",
+                "nodeName": "abc.v1",
+                "level": "INFO",
+                "message": "Some message"
+            }
+        ],
+        "alertLogs": [],
+        "systemMetrics": {
+            "cpu": 0,
+            "memory": 0,
+            "space": 0,
+            "tcpConnections": 0
+        },
+        "filter": {
+            "range": "10000h"
+        }
+    }
+}

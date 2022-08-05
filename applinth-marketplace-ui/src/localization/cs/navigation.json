@@ -1,0 +1,20 @@
+{
+  "navigation": {
+    "link": {
+      "integrations": "Integrace",
+      "applications": "Aplikace",
+      "trash": "Koš",
+      "settings": "Nastavení",
+      "backToTheApplications": "Zpět na aplikace"
+    },
+    "item": {
+      "integrations": "Integrace",
+      "applications": "Aplikace",
+      "availableApplicationDetail": "Detail dostupné aplikace",
+      "installedApplicationDetail": "Detail nainstalované aplikace",
+      "trash": "Koš",
+      "settings": "Nastavení",
+      "trashDetail": "Koš Detail"
+    }
+  }
+}

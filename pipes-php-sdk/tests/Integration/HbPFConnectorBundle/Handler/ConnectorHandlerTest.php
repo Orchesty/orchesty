@@ -21,18 +21,6 @@ final class ConnectorHandlerTest extends DatabaseTestCaseAbstract
     private ConnectorHandler $handler;
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Handler\ConnectorHandler::processEvent
-     *
-     * @throws Exception
-     */
-    public function testProcessEvent(): void
-    {
-        $dto = $this->handler->processEvent('null', new Request());
-
-        self::assertEquals('', $dto->getData());
-    }
-
-    /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Handler\ConnectorHandler::processTest
      *
      * @throws Exception
@@ -41,7 +29,7 @@ final class ConnectorHandlerTest extends DatabaseTestCaseAbstract
     {
         $this->handler->processTest('null');
 
-        self::assertTrue(TRUE);
+        self::assertFake();
     }
 
     /**
@@ -63,7 +51,7 @@ final class ConnectorHandlerTest extends DatabaseTestCaseAbstract
     {
         parent::setUp();
 
-        $this->handler = self::$container->get('hbpf.handler.connector');
+        $this->handler = self::getContainer()->get('hbpf.handler.connector');
     }
 
 }

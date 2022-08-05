@@ -2,8 +2,8 @@
 
 namespace PipesPhpSdkTests\Controller\HbPFApplicationBundle\Controller;
 
+use _PHPStan_9a6ded56a\Symfony\Component\Console\Exception\LogicException;
 use Exception;
-use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler;
 use Hanaboso\Utils\String\Base64;
@@ -177,11 +177,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
      */
     public function testSetAuthorizationTokenAction(): void
     {
-        $this->mockHandler(
-            'saveAuthToken',
-            [ApplicationInterface::REDIRECT_URL => '/applications/key/users/user/authorize'],
-        );
-
+        $this->mockHandler('saveAuthToken', '/applications/key/users/user/authorize');
         $this->sendRequest(
             'GET',
             '/applications/key/users/user/authorize/token',
@@ -214,7 +210,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
      */
     public function testSetAuthorizationTokenActionErr(): void
     {
-        $this->mockHandler('saveAuthToken');
+        $this->mockHandler('saveAuthToken', new LogicException());
         $response = $this->sendGet('/applications/key/users/user/authorize/token');
 
         self::assertEquals(500, $response->status);
@@ -227,7 +223,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
      */
     public function testSetAuthorizationTokenQueryAction(): void
     {
-        $this->mockHandler('saveAuthToken', [ApplicationInterface::REDIRECT_URL => '/redirect/url']);
+        $this->mockHandler('saveAuthToken', '/redirect/url');
         $user = Base64::base64UrlEncode('user:url');
 
         $this->sendRequest(

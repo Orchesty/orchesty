@@ -4,11 +4,14 @@ namespace PipesPhpSdkTests\Integration\Command;
 
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
+use Hanaboso\CommonsBundle\Process\ProcessDtoAbstract;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Form;
+use Hanaboso\PipesPhpSdk\Application\Model\Form\FormStack;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1\OAuth1ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth1DtoInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider;
@@ -42,7 +45,7 @@ final class NullOAuth1Application extends OAuth1ApplicationAbstract implements O
     /**
      * @return string
      */
-    public function getKey(): string
+    public function getName(): string
     {
         return 'null1';
     }
@@ -50,7 +53,7 @@ final class NullOAuth1Application extends OAuth1ApplicationAbstract implements O
     /**
      * @return string
      */
-    public function getName(): string
+    public function getPublicName(): string
     {
         return 'null1';
     }
@@ -64,6 +67,7 @@ final class NullOAuth1Application extends OAuth1ApplicationAbstract implements O
     }
 
     /**
+     * @param ProcessDtoAbstract $dto
      * @param ApplicationInstall $applicationInstall
      * @param string             $method
      * @param string|null        $url
@@ -74,6 +78,7 @@ final class NullOAuth1Application extends OAuth1ApplicationAbstract implements O
      */
     public function getRequestDto
     (
+        ProcessDtoAbstract $dto,
         ApplicationInstall $applicationInstall,
         string $method,
         ?string $url = NULL,
@@ -84,25 +89,27 @@ final class NullOAuth1Application extends OAuth1ApplicationAbstract implements O
         $url;
         $data;
 
-        return new RequestDto($method, new Uri(''));
+        return new RequestDto(new Uri(''), $method, $dto);
     }
 
     /**
-     * @return Form
+     * @return FormStack
      */
-    public function getSettingsForm(): Form
+    public function getFormStack(): FormStack
     {
         $field1 = new Field(Field::TEXT, 'settings1', 'Client 11');
         $field2 = new Field(Field::TEXT, 'settings2', 'Client 22');
         $field3 = new Field(Field::PASSWORD, 'settings3', 'Client 33');
 
-        $form = new Form();
+        $form = new Form(ApplicationInterface::AUTHORIZATION_FORM, 'testPublicName');
         $form
             ->addField($field1)
             ->addField($field2)
             ->addField($field3);
 
-        return $form;
+        $formStack = new FormStack();
+
+        return $formStack->addForm($form);
     }
 
     /**

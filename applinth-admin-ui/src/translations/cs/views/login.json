@@ -1,0 +1,14 @@
+{
+  "login": {
+    "form": {
+      "email": {
+        "label": "Email",
+        "name": "email"
+      },
+      "password": {
+        "label": "Heslo",
+        "name": "heslo"
+      }
+    }
+  }
+}

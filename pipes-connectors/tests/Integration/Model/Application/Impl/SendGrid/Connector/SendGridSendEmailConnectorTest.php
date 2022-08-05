@@ -30,26 +30,16 @@ final class SendGridSendEmailConnectorTest extends DatabaseTestCaseAbstract
     private SendGridApplication $app;
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\SendGrid\Connector\SendGridSendEmailConnector::getId
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\SendGrid\Connector\SendGridSendEmailConnector::__construct
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\SendGrid\Connector\SendGridSendEmailConnector::getName
      *
      * @throws Exception
      */
-    public function testGetId(): void
+    public function testGetName(): void
     {
-        self::assertEquals('send-grid.send-email', $this->createConnector(DataProvider::createResponseDto())->getId());
-    }
-
-    /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\SendGrid\Connector\SendGridSendEmailConnector::processEvent
-     *
-     * @throws Exception
-     */
-    public function testProcessEvent(): void
-    {
-        self::expectException(ConnectorException::class);
-        self::expectExceptionCode(ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_EVENT);
-        $this->createConnector(DataProvider::createResponseDto())->processEvent(DataProvider::getProcessDto());
+        self::assertEquals(
+            'send-grid.send-email',
+            $this->createConnector(DataProvider::createResponseDto())->getName(),
+        );
     }
 
     /**
@@ -63,7 +53,7 @@ final class SendGridSendEmailConnectorTest extends DatabaseTestCaseAbstract
         $this->dm->clear();
 
         $dto = DataProvider::getProcessDto(
-            $this->app->getKey(),
+            $this->app->getName(),
             'user',
             Json::encode(['email' => 'noreply@johndoe.com', 'name' => 'John Doe', 'subject' => 'Hello, World!']),
         );
@@ -85,7 +75,7 @@ final class SendGridSendEmailConnectorTest extends DatabaseTestCaseAbstract
         $this->dm->clear();
 
         $dto = DataProvider::getProcessDto(
-            $this->app->getKey(),
+            $this->app->getName(),
         );
 
         self::expectException(ConnectorException::class);
@@ -106,7 +96,7 @@ final class SendGridSendEmailConnectorTest extends DatabaseTestCaseAbstract
         $this->dm->clear();
 
         $dto = DataProvider::getProcessDto(
-            $this->app->getKey(),
+            $this->app->getName(),
             'user',
             Json::encode(['email' => 'noreply@johndoe.com', 'name' => 'John Doe', 'subject' => 'Hello, World!']),
         );
@@ -163,7 +153,12 @@ final class SendGridSendEmailConnectorTest extends DatabaseTestCaseAbstract
             $sender->method('send')->willReturn($dto);
         }
 
-        return new SendGridSendEmailConnector($this->dm, $sender);
+        $sendGridSendEmailConnector = new SendGridSendEmailConnector();
+        $sendGridSendEmailConnector
+            ->setSender($sender)
+            ->setDb($this->dm);
+
+        return $sendGridSendEmailConnector;
     }
 
     /**
@@ -172,9 +167,9 @@ final class SendGridSendEmailConnectorTest extends DatabaseTestCaseAbstract
      */
     private function createApplicationInstall(): ApplicationInstall
     {
-        $appInstall = DataProvider::getBasicAppInstall($this->app->getKey());
+        $appInstall = DataProvider::getBasicAppInstall($this->app->getName());
         $appInstall
-            ->setSettings([ApplicationInterface::AUTHORIZATION_SETTINGS => [SendGridApplication::API_KEY => 'key']]);
+            ->setSettings([ApplicationInterface::AUTHORIZATION_FORM => [SendGridApplication::API_KEY => 'key']]);
 
         return $appInstall;
     }

@@ -9,7 +9,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\FlexiBee\Connector\FlexiBeeCreateNewContactConnector;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\FlexiBee\FlexiBeeApplication;
-use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
@@ -23,26 +23,16 @@ final class FlexiBeeCreateNewContactConnectorTest extends DatabaseTestCaseAbstra
 {
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\FlexiBee\Connector\FlexiBeeCreateNewContactConnector::getId
+     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\FlexiBee\Connector\FlexiBeeCreateNewContactConnector::getName
      *
      * @throws Exception
      */
-    public function testGetId(): void
+    public function testGetName(): void
     {
         self::assertEquals(
             'flexibee.create-new-contact',
-            $this->createConnector(DataProvider::createResponseDto())->getId(),
+            $this->createConnector(DataProvider::createResponseDto())->getName(),
         );
-    }
-
-    /**
-     * @throws ConnectorException
-     */
-    public function testProcessEvent(): void
-    {
-        self::expectException(ConnectorException::class);
-        self::expectExceptionCode(ConnectorException::CONNECTOR_DOES_NOT_HAVE_PROCESS_EVENT);
-        $this->createConnector(DataProvider::createResponseDto())->processEvent(DataProvider::getProcessDto());
     }
 
     /**
@@ -56,7 +46,7 @@ final class FlexiBeeCreateNewContactConnectorTest extends DatabaseTestCaseAbstra
         $this->dm->clear();
 
         $dto = DataProvider::getProcessDto(
-            $this->getApp()->getKey(),
+            $this->getApp()->getName(),
             'user',
             $body,
         );
@@ -80,7 +70,7 @@ final class FlexiBeeCreateNewContactConnectorTest extends DatabaseTestCaseAbstra
         $this->dm->clear();
 
         $dto = DataProvider::getProcessDto(
-            $this->getApp()->getKey(),
+            $this->getApp()->getName(),
             'user',
             $body,
         );
@@ -129,7 +119,7 @@ final class FlexiBeeCreateNewContactConnectorTest extends DatabaseTestCaseAbstra
         $this->dm->clear();
 
         $dto = DataProvider::getProcessDto(
-            $this->getApp()->getKey(),
+            $this->getApp()->getName(),
             'user',
             $body,
         );
@@ -138,8 +128,8 @@ final class FlexiBeeCreateNewContactConnectorTest extends DatabaseTestCaseAbstra
             ->createConnector(DataProvider::createResponseDto(), new CurlException())
             ->setApplication($this->getApp())
             ->processAction($dto);
-        self::assertArrayHasKey('pf-result-code', $response->getHeaders());
-        self::assertEquals('1003', $response->getHeaders()['pf-result-code']);
+        self::assertArrayHasKey('result-code', $response->getHeaders());
+        self::assertEquals('1003', $response->getHeaders()['result-code']);
     }
 
     /**
@@ -147,21 +137,17 @@ final class FlexiBeeCreateNewContactConnectorTest extends DatabaseTestCaseAbstra
      */
     private function getAppInstall(): void
     {
-        $appInstall = DataProvider::getBasicAppInstall($this->getApp()->getKey());
+        $appInstall = DataProvider::getBasicAppInstall($this->getApp()->getName());
 
         $appInstall->addSettings(
             [
-                FlexiBeeApplication::AUTHORIZATION_SETTINGS =>
+                ApplicationInterface::AUTHORIZATION_FORM =>
                     [
                         'user'     => 'user123',
                         'password' => 'pass123',
-                    ],
-                BasicApplicationAbstract::FORM                   =>
-                    [
                         'auth'        => 'http',
                         'flexibeeUrl' => 'https://demo.flexibee.eu/c/demo',
                     ],
-
             ],
         );
 
@@ -182,7 +168,7 @@ final class FlexiBeeCreateNewContactConnectorTest extends DatabaseTestCaseAbstra
      */
     private function getApp(): FlexiBeeApplication
     {
-        return self::$container->get('hbpf.application.flexibee');
+        return self::getContainer()->get('hbpf.application.flexibee');
     }
 
     /**
@@ -201,7 +187,12 @@ final class FlexiBeeCreateNewContactConnectorTest extends DatabaseTestCaseAbstra
             $sender->method('send')->willReturn($dto);
         }
 
-        return new FlexiBeeCreateNewContactConnector($this->dm, $sender);
+        $flexibeeCreateNewContact = new FlexiBeeCreateNewContactConnector();
+        $flexibeeCreateNewContact
+            ->setSender($sender)
+            ->setDb($this->dm);
+
+        return $flexibeeCreateNewContact;
     }
 
 }

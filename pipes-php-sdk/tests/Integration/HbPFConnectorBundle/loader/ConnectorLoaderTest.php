@@ -20,13 +20,13 @@ final class ConnectorLoaderTest extends KernelTestCaseAbstract
      */
     public function testGetAllConnectors(): void
     {
-        $connector = new ConnectorLoader(self::$container);
+        $connector = new ConnectorLoader(self::getContainer());
 
         $fields = $connector->getAllConnectors();
-        self::assertCount(2, $fields);
+        self::assertCount(1, $fields);
 
         $fields = $connector->getAllConnectors(['null']);
-        self::assertCount(1, $fields);
+        self::assertCount(0, $fields);
     }
 
     /**
@@ -36,7 +36,7 @@ final class ConnectorLoaderTest extends KernelTestCaseAbstract
      */
     public function testGetConnector(): void
     {
-        $connector = new ConnectorLoader(self::$container);
+        $connector = new ConnectorLoader(self::getContainer());
 
         self::expectException(ConnectorException::class);
         $connector->getConnector('null1');

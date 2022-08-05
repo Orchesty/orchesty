@@ -5,6 +5,7 @@
         "email": "test@example.com",
         "settings": {
             "data": "someData"
-        }
+        },
+        "token": "jwt"
     }
 }

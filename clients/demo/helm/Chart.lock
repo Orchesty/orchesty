@@ -2,5 +2,11 @@ dependencies:
 - name: pipes
   repository: file://../../../helm-chart
   version: 1.0.0
-digest: sha256:18817086862c8904b2804e546969798646629c2aa1385fc176b822c8c6721b11
-generated: "2021-12-07T09:20:08.890760539+01:00"
+- name: mongodb
+  repository: ""
+  version: '*'
+- name: rabbitmq
+  repository: ""
+  version: '*'
+digest: sha256:471270a979af125e1e2c6ebcd100144d490f955b1545e8600e7250f435f68488
+generated: "2022-06-30T12:46:59.951026676+02:00"
