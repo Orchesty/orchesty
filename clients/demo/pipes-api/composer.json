@@ -5,21 +5,20 @@
     "require": {
         "php": "^8.1",
         "ext-json": "*",
-        "azuyalabs/yasumi": "^2.4",
-        "hanaboso/commons-bundle": "^2.4",
+        "azuyalabs/yasumi": "^2.5",
+        "hanaboso/commons-bundle": "^2.6",
         "hanaboso/email-service-bundle": "^1.2",
         "hanaboso/rabbit-mq-bundle": "^1.5",
         "hanaboso/rest-bundle": "^1.1",
-        "orchesty/app-store": "^2.0",
-        "orchesty/php-connectors": "^2.0",
-        "orchesty/php-sdk": "^2.0",
+        "orchesty/php-connectors": "^2.1",
+        "orchesty/php-sdk": "^2.2",
         "ratchet/pawl": "^0.4",
-        "symfony/security-bundle": "^6.0"
+        "symfony/security-bundle": "^6.1"
     },
     "require-dev": {
         "hanaboso/php-check-utils": "^1.4",
-        "symfony/debug-bundle": "^6.0",
-        "symfony/serializer": "^6.0"
+        "symfony/debug-bundle": "^6.1",
+        "symfony/serializer": "^6.1"
     },
     "replace": {
         "ralouphie/getallheaders": "*",
@@ -33,19 +32,13 @@
         "symfony/polyfill-php72": "*",
         "symfony/polyfill-php73": "*",
         "symfony/polyfill-php74": "*",
-        "symfony/polyfill-php80": "*"
+        "symfony/polyfill-php80": "*",
+        "symfony/polyfill-php81": "*"
     },
     "repositories": [
         {
             "type": "path",
             "url": "../../../pipes-php-sdk",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "path",
-            "url": "../../../app-store",
             "options": {
                 "symlink": true
             }

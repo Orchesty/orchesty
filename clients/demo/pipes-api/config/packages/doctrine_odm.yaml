@@ -35,8 +35,3 @@ doctrine_mongodb:
                     is_bundle: false
                     dir: "%kernel.root_dir%/../vendor/orchesty/php-sdk/src/Application/Document"
                     prefix: Hanaboso\PipesPhpSdk\Application\Document
-                WebhookDocument:
-                    type: annotation
-                    is_bundle: false
-                    dir: "%kernel.root_dir%/../vendor/orchesty/app-store/src/Document"
-                    prefix: Hanaboso\HbPFAppStore\Document

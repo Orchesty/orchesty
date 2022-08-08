@@ -5,7 +5,6 @@ use EmailServiceBundle\EmailServiceBundle;
 use Hanaboso\AclBundle\HbPFAclBundle;
 use Hanaboso\Applinth\ApplinthBundle;
 use Hanaboso\CommonsBundle\HbPFCommonsBundle;
-use Hanaboso\HbPFAppStore\HbPFAppStoreBundle;
 use Hanaboso\PipesFramework\HbPFApiGatewayBundle\HbPFApiGatewayBundle;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\HbPFConfiguratorBundle;
 use Hanaboso\PipesFramework\HbPFLogsBundle\HbPFLogsBundle;
@@ -36,7 +35,6 @@ return [
     HbPFAclBundle::class          => ['all' => TRUE],
     HbPFApiGatewayBundle::class   => ['all' => TRUE],
     HbPFApplicationBundle::class  => ['all' => TRUE],
-    HbPFAppStoreBundle::class     => ['all' => TRUE],
     HbPFConfiguratorBundle::class => ['all' => TRUE],
     HbPFConnectorBundle::class    => ['all' => TRUE],
     HbPFCustomNodeBundle::class   => ['all' => TRUE],

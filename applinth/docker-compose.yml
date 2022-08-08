@@ -69,16 +69,6 @@ services:
                 VdS1O1pcwFCNX4jSJBWQPje8IEEHzfUhW6AhVtQ1R+w5nrRDbMoaOeFfFGVEK98D
                 2cIvZthsD1I93JMh026Fig==
                 -----END PRIVATE KEY-----
-            JWE_PUBLIC_KEY: |
-                -----BEGIN PUBLIC KEY-----
-                MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAs+HPFVblO+B1msyECGgH
-                Ff9AqwQXGiqjepCQHz073EOzvKjEmjjQXHVORK3ub7pEb4pbwUdhp5mfXpAKktpE
-                N4WZqSwa54VqQRSIkd7fa+BEgz8Ov35HnMGev4fB5B5nxqj12q4jCovqzkTmMhzh
-                o1+Nz9PmMvOZDZ6ZPTo/5wMgTyM1uE9lnPWKS7QwjUNGKsjFhlrJeYgarYj1WHcY
-                QjAWwtaU3JCaou4lIST8AtCPgxmEWBEgIURfFzonr9k8ykEJLyldxfnmjmUfPBDB
-                +RGZSDtJsWbp75VqAGO9zeBQUbhKft8J3LWF+L9/xhS+QKq0UQ99yuFPWbYcAUBt
-                1wIDAQAB
-                -----END PUBLIC KEY-----
 
     swagger-ui:
         image: swaggerapi/swagger-ui

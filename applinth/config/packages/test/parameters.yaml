@@ -1,2 +1,0 @@
-parameters:
-    jwe_public_key: '%env(string:JWE_PUBLIC_KEY)%'

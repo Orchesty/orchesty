@@ -3,6 +3,7 @@
 namespace Hanaboso\NotificationSender\Model\Notification\Sender;
 
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
@@ -35,8 +36,9 @@ final class CurlSender
     {
         $this->manager->send(
             (new RequestDto(
-                $settings[CurlDto::METHOD],
                 new Uri($settings[CurlDto::URL]),
+                $settings[CurlDto::METHOD],
+                new ProcessDto(),
             ))->setBody($dto->getJsonBody())->setHeaders(array_merge($settings[CurlDto::HEADERS], $dto->getHeaders())),
         );
     }

@@ -175,7 +175,7 @@ final class TopologyManager
     public function saveTopologySchema(Topology $topology, string $content, array $data): Topology
     {
         $newSchemaObject = TopologySchemaUtils::getSchemaObject($data);
-        $newSchemaSha256    = TopologySchemaUtils::getIndexHash($newSchemaObject, $this->checkInfiniteLoop);
+        $newSchemaSha256 = TopologySchemaUtils::getIndexHash($newSchemaObject, $this->checkInfiniteLoop);
 
         $cloned              = FALSE;
         $originalContentHash = $topology->getContentHash();

@@ -5,9 +5,9 @@ namespace HbPFConnectorsTests\Integration\Model\Application\Impl\Shipstation;
 use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
-use Hanaboso\HbPFAppStore\Model\Webhook\WebhookSubscription;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shipstation\ShipstationApplication;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookSubscription;
 use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
 
