@@ -28,6 +28,7 @@ paths:
                 - Billing
             parameters:
                 - $ref: "#/components/parameters/tenantId"
+                - $ref: "#/components/parameters/instanceId"
                 - $ref: "#/components/parameters/timeRangeStart"
                 - $ref: "#/components/parameters/timeRangeEnd"
                 - $ref: "#/components/parameters/appName"
@@ -58,6 +59,7 @@ paths:
                 - Billing
             parameters:
                 - $ref: "#/components/parameters/tenantId"
+                - $ref: "#/components/parameters/instanceId"
                 - $ref: "#/components/parameters/requiredEndUserId"
                 - in: query
                   name: installedDate
@@ -91,6 +93,7 @@ paths:
                 - Billing
             parameters:
                 - $ref: "#/components/parameters/tenantId"
+                - $ref: "#/components/parameters/instanceId"
                 - $ref: "#/components/parameters/timeRangeStart"
                 - $ref: "#/components/parameters/timeRangeEnd"
                 - $ref: "#/components/parameters/requiredAppName"
@@ -120,6 +123,7 @@ paths:
                 - Billing
             parameters:
                 - $ref: "#/components/parameters/tenantId"
+                - $ref: "#/components/parameters/instanceId"
                 - $ref: "#/components/parameters/timeRangeStart"
                 - $ref: "#/components/parameters/timeRangeEnd"
                 - $ref: "#/components/parameters/requiredEndUserId"
@@ -149,6 +153,7 @@ paths:
                 - Billing
             parameters:
                 - $ref: "#/components/parameters/tenantId"
+                - $ref: "#/components/parameters/instanceId"
                 - $ref: "#/components/parameters/timeRangeStart"
                 - $ref: "#/components/parameters/timeRangeEnd"
                 - $ref: "#/components/parameters/appName"
@@ -523,6 +528,13 @@ components:
             schema:
                 type: string
                 example: 2018-03-20T09:12:28Z
+        instanceId:
+            in: query
+            name: instanceId
+            description: Filter by instanceId
+            required: false
+            schema:
+                type: string
         endUserId:
             in: query
             name: endUserId
@@ -633,6 +645,9 @@ components:
                             installCount:
                                 description: Total number of installs
                                 type: integer
+                            instanceIds:
+                                description: Array of instance ids
+                                type: array
         UsageStatsInstalledApps:
             type: object
             properties:
@@ -645,6 +660,9 @@ components:
                                 description: Application name (also ID)
                                 type: string
                             installed:
+                                description: App installation date
+                                type: string
+                            instanceId:
                                 description: App installation date
                                 type: string
         UsageStatsTimeBucketUsers:

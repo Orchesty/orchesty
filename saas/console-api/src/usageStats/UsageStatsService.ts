@@ -10,6 +10,7 @@ interface IMongoQuery {
   end?: object | string,
   endUserId?: string,
   endUserDisplayId?: RegExp,
+  instanceId?: string,
   appName?: string,
 }
 
@@ -32,6 +33,7 @@ export default class UsageStatsService {
         $group: {
           // eslint-disable-next-line @typescript-eslint/naming-convention
           _id: '$appName',
+          instanceIds: { $addToSet: '$instanceId' },
           userIds: { $addToSet: '$endUserId' },
           totalCost: { $sum: '$cost' },
           installCount: { $push: '$_id' },
@@ -48,12 +50,16 @@ export default class UsageStatsService {
           appName: '$_id',
           endUsers: { $size: '$userIds' },
           totalCost: 1,
+          instanceIds: 1,
           installCount: { $size: '$installCount' },
         },
       },
-
     ];
+
     const rows = await this._db.getCollection(collectionName).aggregate(aggregations).toArray();
+    rows.forEach((row) => {
+      row.instanceIds.sort();
+    });
     return { rows };
   }
 
@@ -73,22 +79,28 @@ export default class UsageStatsService {
         $match: { installId: { $in: installIds } },
       },
       {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        $group: { _id: '$appName', installed: { $min: '$start' } },
+        $group: {
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          _id: { appName: '$appName', instanceId: '$instanceId' },
+          installed: { $min: '$start' },
+          appName: { $first: '$appName' },
+          instanceId: { $first: '$instanceId' },
+        },
       },
       {
-        $sort: { installed: 1 },
+        $sort: { installed: 1, instanceId: 1 },
       },
       {
         $project: {
           // eslint-disable-next-line @typescript-eslint/naming-convention
           _id: 0,
-          appName: '$_id',
+          appName: 1,
           installed: 1,
+          instanceId: 1,
         },
       },
-
     ];
+
     const rows = await this._db.getCollection(collectionName).aggregate(aggregations).toArray();
     return { rows };
   }
@@ -111,6 +123,7 @@ export default class UsageStatsService {
           date: { $first: '$start' },
           totalCost: { $sum: '$cost' },
           appNames: { $addToSet: '$appName' },
+          instanceIds: { $addToSet: '$instanceId' },
         },
       },
       {
@@ -121,15 +134,17 @@ export default class UsageStatsService {
           // eslint-disable-next-line @typescript-eslint/naming-convention
           _id: 0,
           appNames: 1,
+          instanceIds: 1,
           formattedDate: this._getFormattedDate(),
           totalCost: 1,
         },
       },
-
     ];
+
     const rows = await this._db.getCollection(collectionName).aggregate(aggregations).toArray();
     rows.forEach((row) => {
       row.appNames.sort();
+      row.instanceIds.sort();
     });
     return { rows };
   }
@@ -164,8 +179,8 @@ export default class UsageStatsService {
           formattedDate: this._getFormattedDate(),
         },
       },
-
     ];
+
     const rows = await this._db.getCollection(collectionName).aggregate(aggregations).toArray();
     return { rows };
   }
@@ -187,6 +202,7 @@ export default class UsageStatsService {
           _id: '$endUserDisplayId',
           endUserId: { $first: '$endUserId' },
           appNames: { $addToSet: '$appName' },
+          instanceIds: { $addToSet: '$instanceId' },
           totalCost: { $sum: '$cost' },
           installCount: { $push: '$_id' },
         },
@@ -198,6 +214,7 @@ export default class UsageStatsService {
           endUserDisplayId: '$_id',
           endUserId: 1,
           appNames: 1,
+          instanceIds: 1,
           totalCost: 1,
           installCount: { $size: '$installCount' },
         },
@@ -207,9 +224,11 @@ export default class UsageStatsService {
       },
 
     ];
+
     const rows = await this._db.getCollection(collectionName).aggregate(aggregations).toArray();
     rows.forEach((row) => {
       row.appNames.sort();
+      row.instanceIds.sort();
     });
     return { rows };
   }
@@ -271,6 +290,10 @@ export default class UsageStatsService {
 
     if (query.endUserDisplayId) {
       mongoQuery.endUserDisplayId = new RegExp(query.endUserDisplayId, 'i');
+    }
+
+    if (query.instanceId) {
+      mongoQuery.instanceId = query.instanceId;
     }
 
     if (query.appName) {

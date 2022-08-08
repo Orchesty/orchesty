@@ -11,6 +11,7 @@ export interface IAppsAggregationParams {
   timeRangeEnd: string,
   endUserId?: string,
   endUserDisplayId?: string,
+  instanceId?: string,
   appName?: string,
   installedDate?: string,
   granularity?: string,

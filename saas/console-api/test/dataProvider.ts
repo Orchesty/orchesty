@@ -16,6 +16,7 @@ function generateUsageStatsRow(
   end: DateTime,
   appName = 'neco1',
   endUserId = '1235',
+  instanceId = 'inst1234',
   installId = 'i1235',
   tenantId = 't1234',
   cost = 100000,
@@ -25,6 +26,7 @@ function generateUsageStatsRow(
     endUserId,
     endUserDisplayId: endUserId,
     installId,
+    instanceId,
     tenantId,
     start,
     end,
@@ -141,13 +143,20 @@ export async function createUsageStats() {
 
   await db.getCollection(CollectionEnum.USAGE_STATS_MONTHLY)
     .insertMany([
-      generateUsageStatsRow(startDate1, endDate1, 'neco', '1235', 'i1234', 't1234', 500000),
-      generateUsageStatsRow(startDate2, endDate2, 'neco', '1235', 'i1234', 't1234', 1000000),
-      generateUsageStatsRow(startDate3, endDate3, 'neco', '1235', 'i1234', 't1234', 1000000),
+      generateUsageStatsRow(startDate1, endDate1, 'neco', '1235', 'inst1234', 'i1234', 't1234', 500000),
+      generateUsageStatsRow(startDate2, endDate2, 'neco', '1235', 'inst1234', 'i1234', 't1234', 1000000),
+      generateUsageStatsRow(startDate3, endDate3, 'neco', '1235', 'inst1234', 'i1234', 't1234', 1000000),
       generateUsageStatsRow(startDate2, endDate2),
       generateUsageStatsRow(startDate3, endDate3),
-      generateUsageStatsRow(startDate3, endDate3, 'neco1', '1234', 'i1236'),
-      generateUsageStatsRow(startDate3, endDate3, 'neco1', '1234', 'i1236', 't123'),
+      generateUsageStatsRow(startDate3, endDate3, 'neco1', '1234', 'inst1234', 'i1236'),
+      generateUsageStatsRow(startDate3, endDate3, 'neco1', '1234', 'inst1234', 'i1236', 't123'),
+      generateUsageStatsRow(startDate1, endDate1, 'neco', '1235', 'inst1235', 'i1237', 't1234', 500000),
+      generateUsageStatsRow(startDate2, endDate2, 'neco', '1235', 'inst1235', 'i1237', 't1234', 1000000),
+      generateUsageStatsRow(startDate3, endDate3, 'neco', '1235', 'inst1235', 'i1237', 't1234', 1000000),
+      generateUsageStatsRow(startDate2, endDate2, 'neco1', '1235', 'inst1235', 'i1238'),
+      generateUsageStatsRow(startDate3, endDate3, 'neco1', '1235', 'inst1235', 'i1238'),
+      generateUsageStatsRow(startDate3, endDate3, 'neco1', '1234', 'inst1235', 'i1239'),
+      generateUsageStatsRow(startDate3, endDate3, 'neco1', '1234', 'inst1235', 'i1239', 't123'),
     ]);
 }
 
