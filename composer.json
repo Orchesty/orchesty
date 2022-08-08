@@ -2,7 +2,7 @@
     "name": "orchesty/backend",
     "description": "Orchesty backend",
     "license": "Apache-2.0",
-    "version": "2.0.0",
+    "version": "2.14.0",
     "require": {
         "php": "^8.1",
         "ext-ctype": "*",
@@ -11,7 +11,7 @@
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-mongodb": "*",
-        "doctrine/orm": "^2.10",
+        "doctrine/orm": "^2.13",
         "hanaboso/acl-bundle": "^1.5",
         "hanaboso/email-service-bundle": "^1.2",
         "hanaboso/mongo-data-grid": "^1.6",
@@ -19,11 +19,10 @@
         "hanaboso/user-bundle": "^1.5",
         "influxdb/influxdb-php": "^1.15",
         "lcobucci/jwt": "^4.1",
-        "orchesty/app-store": "^2.0",
-        "orchesty/php-sdk": "^2.0",
-        "ruflin/elastica": "^7.1",
-        "symfony/security-bundle": "^v6.0",
-        "symfony/serializer": "^v6.0"
+        "orchesty/php-sdk": "^2.2",
+        "ruflin/elastica": "^7.2",
+        "symfony/security-bundle": "^v6.1",
+        "symfony/serializer": "^v6.1"
     },
     "require-dev": {
         "hanaboso/php-check-utils": "^1.4",
@@ -48,13 +47,6 @@
         {
             "type": "path",
             "url": "../pipes-php-sdk",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "path",
-            "url": "../app-store",
             "options": {
                 "symlink": true
             }
