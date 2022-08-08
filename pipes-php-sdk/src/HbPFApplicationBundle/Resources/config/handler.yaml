@@ -6,3 +6,9 @@ services:
         class: Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler
         arguments:
             - '@hbpf.application.manager'
+            - '@hbpf.application.manager.webhook'
+
+    hbpf.application.handler.webhook:
+        class: Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\WebhookHandler
+        arguments:
+            - '@hbpf.application.manager'

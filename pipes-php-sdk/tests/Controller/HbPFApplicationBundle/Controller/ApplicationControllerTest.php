@@ -4,10 +4,17 @@ namespace PipesPhpSdkTests\Controller\HbPFApplicationBundle\Controller;
 
 use _PHPStan_9a6ded56a\Symfony\Component\Console\Exception\LogicException;
 use Exception;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
+use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
+use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler;
+use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Base64;
+use Hanaboso\Utils\String\Json;
 use PipesPhpSdkTests\ControllerTestCaseAbstract;
+use PipesPhpSdkTests\Integration\Application\Manager\NullApplication;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -265,6 +272,233 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::getUsersApplicationAction
+     *
+     * @throws Exception
+     */
+    public function testGetUsersApplication(): void
+    {
+        $this->mockHandler(
+            'getApplicationsByUser',
+            Json::decode(File::getContent(sprintf('%s/data/data.json', __DIR__))),
+        );
+
+        $this->client->request('GET', '/applications/users/bar');
+        $response = $this->client->getResponse();
+
+        self::assertEquals(
+            'bar',
+            Json::decode((string) $response->getContent())[0][ApplicationInstall::USER],
+        );
+        self::assertEquals('200', $response->getStatusCode());
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::getUsersApplicationAction
+     *
+     * @throws Exception
+     */
+    public function testGetUsersApplicationErr(): void
+    {
+        $this->mockHandler('getApplicationsByUser', new Exception());
+
+        $response = (array) $this->sendGet('/applications/users/bar');
+        self::assertEquals(500, $response['status']);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::getApplicationDetailAction
+     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler::getApplicationByKeyAndUser
+     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookManager::getWebhooks
+     *
+     * @throws Exception
+     */
+    public function testGetApplicationDetail(): void
+    {
+        $this->insertApp();
+        $application = self::createMock(ApplicationAbstract::class);
+        $application->method('toArray')->willReturn(['user' => 'bar']);
+        $application->method('getApplicationForms')->willReturn([]);
+        self::getContainer()->set('hbpf.application.someApp', $application);
+
+        $response = (array) $this->sendGet('/applications/someApp/users/bar');
+        self::assertEquals('200', $response['status']);
+
+        $response = (array) $this->sendGet('/applications/application/users/user');
+        self::assertEquals('404', $response['status']);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::getApplicationDetailAction
+     *
+     * @throws Exception
+     */
+    public function testApplicationDetailErr(): void
+    {
+        $this->mockHandler('getApplicationByKeyAndUser', new Exception());
+        $response = (array) $this->sendGet('/applications/someApp/users/bar');
+
+        self::assertEquals(500, $response['status']);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::installApplicationAction
+     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager::installApplication
+     *
+     * @throws Exception
+     */
+    public function testInstallApplication(): void
+    {
+        $application = new NullApplication();
+        self::getContainer()->set('hbpf.application.example', $application);
+
+        $response = (array) $this->sendPost('/applications/example/users/bar/install', []);
+        self::assertEquals('200', $response['status']);
+
+        $response = (array) $this->sendPost('/applications/application/users/user/install', []);
+        self::assertEquals('404', $response['status']);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::installApplicationAction
+     *
+     * @throws Exception
+     */
+    public function testInstallApplicationErr(): void
+    {
+        $this->mockHandler('installApplication', new Exception());
+
+        $response = (array) $this->sendPost('/applications/example/users/bar/install', []);
+
+        self::assertEquals(500, $response['status']);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::uninstallApplicationAction
+     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler::uninstallApplication
+     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager::uninstallApplication
+     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager::unsubscribeWebhooks
+     *
+     * @throws Exception
+     */
+    public function testUninstallApplication(): void
+    {
+        $this->insertApp('null');
+
+        $this->client->request('DELETE', '/applications/null/users/bar/uninstall');
+        $response = $this->client->getResponse();
+
+        self::assertEquals(
+            'bar',
+            Json::decode((string) $response->getContent())[ApplicationInstall::USER],
+        );
+        self::assertEquals('200', $response->getStatusCode());
+
+        $this->client->request('GET', '/applications/someApp/users/bar');
+        $response = $this->client->getResponse();
+
+        self::assertEquals('3002', Json::decode((string) $response->getContent())['error_code']);
+
+        $response = (array) $this->sendDelete('/applications/application/users/user/uninstall');
+        self::assertEquals('404', $response['status']);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::uninstallApplicationAction
+     *
+     * @throws Exception
+     */
+    public function testUninstallApplicationErr(): void
+    {
+        $this->mockHandler('uninstallApplication', new Exception());
+        $response = (array) $this->sendDelete('/applications/null/users/bar/uninstall');
+
+        self::assertEquals(500, $response['status']);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::updateApplicationSettingsAction
+     *
+     * @throws Exception
+     */
+    public function testUpdateApplicationSettings(): void
+    {
+        $this->mockHandler('updateApplicationSettings', ['new_settings' => 'test1']);
+
+        $this->client->request('PUT', '/applications/someApp/users/bar/settings', [], [], [], '{"test":1}');
+        $response = $this->client->getResponse();
+        self::assertEquals('200', $response->getStatusCode());
+        self::assertEquals(
+            'test1',
+            Json::decode((string) $response->getContent())['new_settings'],
+        );
+
+        $this->client->request('PUT', '/applications/application/users/user/settings');
+        $response = $this->client->getResponse();
+        self::assertEquals('404', $response->getStatusCode());
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::updateApplicationSettingsAction
+     *
+     * @throws Exception
+     */
+    public function testUpdateApplicationSettingsErr(): void
+    {
+        $this->mockHandler('updateApplicationSettings', new Exception());
+        $response = (array) $this->sendPut('/applications/someApp/users/bar/settings', [], ['test' => 1]);
+
+        self::assertEquals(500, $response['status']);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::saveApplicationPasswordAction
+     *
+     * @throws Exception
+     */
+    public function testSaveApplicationPassword(): void
+    {
+        $this->mockHandler('updateApplicationPassword', ['new_passwd' => 'secret']);
+
+        $this->client->request(
+            'PUT',
+            '/applications/someApp/users/bar/password',
+            [
+                'formKey' => ApplicationInterface::AUTHORIZATION_FORM,
+                'fieldKey' => BasicApplicationInterface::PASSWORD,
+                'password' => 'Passw0rd',
+            ],
+        );
+        $response = $this->client->getResponse();
+        self::assertEquals('200', $response->getStatusCode());
+
+        $this->client->request(
+            'PUT',
+            '/applications/application/users/user/password',
+            [
+                'formKey' => ApplicationInterface::AUTHORIZATION_FORM,
+                'fieldKey' => BasicApplicationInterface::PASSWORD,
+                'password' => 'Passw0rd',
+            ],
+        );
+        $response = $this->client->getResponse();
+        self::assertEquals('404', $response->getStatusCode());
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::saveApplicationPasswordAction
+     *
+     * @throws Exception
+     */
+    public function testSaveApplicationPasswordErr(): void
+    {
+        $this->mockHandler('updateApplicationPassword', new Exception());
+        $response = (array) $this->sendPut('/applications/someApp/users/bar/password', [], ['passwd' => 'test']);
+
+        self::assertEquals(500, $response['status']);
+    }
+
+    /**
      * @param string     $method
      * @param mixed|null $return
      */
@@ -283,6 +517,20 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
 
         $container = $this->client->getContainer();
         $container->set('hbpf.application.handler', $handler);
+    }
+
+    /**
+     * @param string $key
+     *
+     * @throws Exception
+     */
+    private function insertApp(string $key = 'someApp'): void
+    {
+        $dto = new ApplicationInstall();
+        $dto->setKey($key)
+            ->setUser('bar');
+
+        $this->pfd($dto);
     }
 
 }

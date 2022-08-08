@@ -7,7 +7,7 @@ parameters:
 	symfony:
 		container_xml_path: %rootDir%/../../../var/cache/test/PipesPhpSdkTests_app_KernelTestDebugContainer.xml
 	ignoreErrors:
-		- '#Parameter \#2 \$auth_session_handle of method OAuth::getAccessToken\(\) expects string, null given.#'
+		-   '#Parameter \#2 \$auth_session_handle of method OAuth::getAccessToken\(\) expects string, null given.#'
 		-
 			message: '#Access to an undefined property#'
 			path: ../tests/*
@@ -41,7 +41,7 @@ parameters:
 
 		classesNotRequiredToBeAbstractOrFinal:
 			- Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall
-			- Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager
+			- Hanaboso\PipesPhpSdk\Application\Document\Webhook
 			- Hanaboso\PipesPhpSdk\Database\Document\Category
 			- Hanaboso\PipesPhpSdk\Database\Document\Embed\EmbedNode
 			- Hanaboso\PipesPhpSdk\Database\Document\Node

@@ -9,7 +9,9 @@ use Hanaboso\PhpCheckUtils\PhpUnit\Traits\DatabaseTestTrait;
 use Hanaboso\Utils\String\Json;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\PasswordHasher\Hasher\NativePasswordHasher;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 
 /**
  * Class ControllerTestCaseAbstract
@@ -22,6 +24,16 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     use ControllerTestTrait;
     use DatabaseTestTrait;
     use CustomAssertTrait;
+
+    /**
+     * @var Session<mixed>
+     */
+    protected Session $session;
+
+    /**
+     * @var TokenStorage
+     */
+    protected TokenStorage $tokenStorage;
 
     /**
      * @var NativePasswordHasher

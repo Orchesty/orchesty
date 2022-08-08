@@ -23,3 +23,7 @@ services:
 
     hbpf.custom_node.null:
         class: PipesPhpSdkTests\Integration\HbPFCustomNodeBundle\TestNullCustomNode
+
+    hbpf.application.webhook:
+        class: PipesPhpSdkTests\Integration\Application\Manager\Webhook\WebhookApplication
+        arguments:

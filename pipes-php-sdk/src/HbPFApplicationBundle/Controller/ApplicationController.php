@@ -182,4 +182,125 @@ final class ApplicationController
         }
     }
 
+    /**
+     * @Route("/applications/users/{user}", methods={"GET"})
+     *
+     * @param string $user
+     *
+     * @return Response
+     */
+    public function getUsersApplicationAction(string $user): Response
+    {
+        try {
+            return $this->getResponse($this->applicationHandler->getApplicationsByUser($user));
+        } catch (Throwable $t) {
+            return $this->getErrorResponse($t);
+        }
+    }
+
+    /**
+     * @Route("/applications/{key}/users/{user}",  methods={"GET"})
+     *
+     * @param string $key
+     * @param string $user
+     *
+     * @return Response
+     */
+    public function getApplicationDetailAction(string $key, string $user): Response
+    {
+        try {
+            return $this->getResponse($this->applicationHandler->getApplicationByKeyAndUser($key, $user));
+        } catch (ApplicationInstallException $e) {
+            return $this->getErrorResponse($e, 404, ControllerUtils::NOT_FOUND);
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
+        }
+    }
+
+    /**
+     * @Route("/applications/{key}/users/{user}/install",  methods={"POST"})
+     *
+     * @param string $key
+     * @param string $user
+     *
+     * @return Response
+     */
+    public function installApplicationAction(string $key, string $user): Response
+    {
+        try {
+            return $this->getResponse($this->applicationHandler->installApplication($key, $user));
+        } catch (ApplicationInstallException $e) {
+            return $this->getErrorResponse($e, 404, ControllerUtils::NOT_FOUND);
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
+        }
+    }
+
+    /**
+     * @Route("/applications/{key}/users/{user}/uninstall", methods={"DELETE"})
+     *
+     * @param string $key
+     * @param string $user
+     *
+     * @return Response
+     */
+    public function uninstallApplicationAction(string $key, string $user): Response
+    {
+        try {
+            return $this->getResponse($this->applicationHandler->uninstallApplication($key, $user));
+        } catch (ApplicationInstallException $e) {
+            return $this->getErrorResponse($e, 404, ControllerUtils::NOT_FOUND);
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
+        }
+    }
+
+    /**
+     * @Route("/applications/{key}/users/{user}/settings", methods={"PUT"})
+     *
+     * @param Request $request
+     * @param string  $key
+     * @param string  $user
+     *
+     * @return Response
+     */
+    public function updateApplicationSettingsAction(Request $request, string $key, string $user): Response
+    {
+        try {
+            return $this->getResponse(
+                $this->applicationHandler->updateApplicationSettings($key, $user, $request->request->all()),
+            );
+        } catch (ApplicationInstallException $e) {
+            return $this->getErrorResponse($e, 404, ControllerUtils::NOT_FOUND);
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
+        }
+    }
+
+    /**
+     * @Route("/applications/{key}/users/{user}/password", methods={"PUT"})
+     *
+     * @param Request $request
+     * @param string  $key
+     * @param string  $user
+     *
+     * @return Response
+     */
+    public function saveApplicationPasswordAction(Request $request, string $key, string $user): Response
+    {
+        try {
+            return $this->getResponse(
+                $this->applicationHandler->updateApplicationPassword(
+                    $key,
+                    $user,
+                    $request->request->all(),
+                ),
+            );
+        } catch (ApplicationInstallException $e) {
+            return $this->getErrorResponse($e, 404, ControllerUtils::NOT_FOUND);
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
+        }
+    }
+
 }
