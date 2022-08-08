@@ -90,6 +90,93 @@ paths:
                 500:
                     $ref: '#/components/responses/500'
 
+    /applications/users/{user}:
+        get:
+            tags: [ Applications ]
+            parameters:
+                -   $ref: '#/components/parameters/User'
+            responses:
+                200:
+                    $ref: '#/components/responses/ApplicationInstalls'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /applications/{key}/users/{user}:
+        get:
+            tags: [ Applications ]
+            parameters:
+                -   $ref: '#/components/parameters/Key'
+                -   $ref: '#/components/parameters/User'
+            responses:
+                200:
+                    $ref: '#/components/responses/ApplicationInstall'
+                404:
+                    $ref: '#/components/responses/404'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /applications/{key}/users/{user}/install:
+        post:
+            tags: [ Applications ]
+            parameters:
+                -   $ref: '#/components/parameters/Key'
+                -   $ref: '#/components/parameters/User'
+            requestBody:
+                $ref: '#/components/requestBodies/Empty'
+            responses:
+                200:
+                    $ref: '#/components/responses/ApplicationInstallInstall'
+                404:
+                    $ref: '#/components/responses/404'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /applications/{key}/users/{user}/settings:
+        put:
+            tags: [ Applications ]
+            parameters:
+                -   $ref: '#/components/parameters/Key'
+                -   $ref: '#/components/parameters/User'
+            requestBody:
+                $ref: '#/components/requestBodies/Settings'
+            responses:
+                200:
+                    $ref: '#/components/responses/ApplicationInstallSettings'
+                404:
+                    $ref: '#/components/responses/404'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /applications/{key}/users/{user}/password:
+        put:
+            tags: [ Applications ]
+            parameters:
+                -   $ref: '#/components/parameters/Key'
+                -   $ref: '#/components/parameters/User'
+            requestBody:
+                $ref: '#/components/requestBodies/Password'
+            responses:
+                200:
+                    $ref: '#/components/responses/ApplicationInstallUninstall'
+                404:
+                    $ref: '#/components/responses/404'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /applications/{key}/users/{user}/uninstall:
+        delete:
+            tags: [ Applications ]
+            parameters:
+                -   $ref: '#/components/parameters/Key'
+                -   $ref: '#/components/parameters/User'
+            responses:
+                200:
+                    $ref: '#/components/responses/ApplicationInstallUninstall'
+                404:
+                    $ref: '#/components/responses/404'
+                500:
+                    $ref: '#/components/responses/500'
+
     /connector/list:
         get:
             tags: [ Connectors ]
@@ -174,6 +261,40 @@ paths:
                 500:
                     $ref: '#/components/responses/500'
 
+
+
+    /webhook/applications/{key}/users/{user}/subscribe:
+        post:
+            tags: [ Webhooks ]
+            parameters:
+                -   $ref: '#/components/parameters/Key'
+                -   $ref: '#/components/parameters/User'
+            requestBody:
+                $ref: '#/components/requestBodies/Webhook'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+                404:
+                    $ref: '#/components/responses/404'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /webhook/applications/{key}/users/{user}/unsubscribe:
+        post:
+            tags: [ Webhooks ]
+            parameters:
+                -   $ref: '#/components/parameters/Key'
+                -   $ref: '#/components/parameters/User'
+            requestBody:
+                $ref: '#/components/requestBodies/Webhook'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+                404:
+                    $ref: '#/components/responses/404'
+                500:
+                    $ref: '#/components/responses/500'
+
     /parser/{type}/to/json:
         post:
             tags: [ Parsers ]
@@ -216,6 +337,55 @@ paths:
 
 components:
     responses:
+        Application:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Application'
+
+        Applications:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Applications'
+
+        ApplicationInstall:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/ApplicationInstall'
+
+        ApplicationInstalls:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/ApplicationInstalls'
+
+        ApplicationInstallInstall:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/ApplicationInstall'
+
+        ApplicationInstallUninstall:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/ApplicationInstallUninstall'
+
+        ApplicationInstallSettings:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/ApplicationInstallSettings'
+
         Empty:
             description: ''
             content:
@@ -262,6 +432,137 @@ components:
                         error_code: 500
 
     schemas:
+        Application:
+            type: object
+            properties:
+                key:
+                    type: string
+                name:
+                    type: string
+                description:
+                    type: string
+                application_type:
+                    type: string
+                    enum: [cron, webhook]
+                authorization_type:
+                    type: string
+                    enum: [basic, oauth, oauth2]
+
+        Applications:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Application'
+
+        ApplicationInstall:
+            type: object
+            properties:
+                key:
+                    type: string
+                name:
+                    type: string
+                description:
+                    type: string
+                application_type:
+                    type: string
+                    enum: [cron, webhook]
+                authorization_type:
+                    type: string
+                    enum: [basic, oauth, oauth2]
+                authorized:
+                    type: boolean
+                applicationSettings:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ApplicationSetting'
+                webhookSettings:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/WebhookSetting'
+
+        ApplicationInstallUninstall:
+            type: object
+            properties:
+                id:
+                    type: string
+                key:
+                    type: string
+                user:
+                    type: string
+                authorized:
+                    type: boolean
+                settings:
+                    type: object
+                nonEncryptedSettings:
+                    type: object
+                created:
+                    type: string
+                updated:
+                    type: string
+                expires:
+                    type: string
+                    nullable: true
+
+        ApplicationInstalls:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ApplicationInstallUninstall'
+
+        ApplicationInstallSettings:
+            type: object
+            properties:
+                id:
+                    type: string
+                key:
+                    type: string
+                user:
+                    type: string
+                settings:
+                    type: object
+                nonEncryptedSettings:
+                    type: object
+                created:
+                    type: string
+                updated:
+                    type: string
+                expires:
+                    type: string
+                    nullable: true
+                applicationSettings:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ApplicationSetting'
+
+        ApplicationSetting:
+            type: object
+            properties:
+                key:
+                    type: string
+                type:
+                    type: string
+                    enum: [text, number, url, password, selectbox, checkbox]
+                label:
+                    type: string
+                value:
+                    type: string
+                description:
+                    type: string
+                required:
+                    type: boolean
+                readOnly:
+                    type: boolean
+                disabled:
+                    type: boolean
+                choices:
+                    type: array
+                    items:
+                        type: string
+
         Connectors:
             type: array
             items:
@@ -318,6 +619,18 @@ components:
                     type: string
                 error_code:
                     type: integer
+
+        WebhookSetting:
+            type: object
+            properties:
+                name:
+                    type: string
+                topology:
+                    type: string
+                default:
+                    type: boolean
+                enabled:
+                    type: boolean
 
     parameters:
         Id:

@@ -11,6 +11,7 @@ use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Loader\ApplicationLoader;
 use Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager;
+use Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookManager;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use PipesPhpSdkTests\DatabaseTestCaseAbstract;
 use PipesPhpSdkTests\Integration\Application\TestOAuth2NullApplication;
@@ -29,6 +30,11 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
      * @var ApplicationManager
      */
     private ApplicationManager $manager;
+
+    /**
+     * @var WebhookManager
+     */
+    private WebhookManager $webhookManager;
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager::getApplications
@@ -165,7 +171,7 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
         $loader = self::createPartialMock(ApplicationLoader::class, ['getApplication']);
         $loader->expects(self::any())->method('getApplication')->willReturn($app);
         $reader  = new PsrCachedReader(new AnnotationReader(), new ApcuAdapter());
-        $manager = new ApplicationManager($this->dm, $loader, $reader);
+        $manager = new ApplicationManager($this->dm, $loader, $reader, $this->webhookManager);
 
         self::assertEquals(
             '/test/redirect',
@@ -176,24 +182,229 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
     /**
      * @throws Exception
      */
+    public function testGetInstalledApplications(): void
+    {
+        $this->createApplicationInstall();
+        $this->createApplicationInstall();
+
+        $installedApp = $this->manager->getInstalledApplications('user');
+
+        self::assertEquals(2, count($installedApp));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetInstalledApplicationDetail(): void
+    {
+        $this->createApplicationInstall('some app', 'example1');
+
+        $this->manager->getInstalledApplicationDetail('some app', 'example1');
+
+        self::expectException(ApplicationInstallException::class);
+        self::expectExceptionCode(ApplicationInstallException::APP_WAS_NOT_FOUND);
+        $this->manager->getInstalledApplicationDetail('some app', 'example5');
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager::installApplication
+     *
+     * @throws Exception
+     */
+    public function testInstallApplication(): void
+    {
+        $this->manager->installApplication('something', 'example3');
+
+        $repository = $this->dm->getRepository(ApplicationInstall::class);
+        $app        = $repository->findOneBy(
+            [
+                ApplicationInstall::USER => 'example3',
+                ApplicationInstall::KEY  => 'something',
+            ],
+        );
+
+        self::assertIsObject($app);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager::installApplication
+     *
+     * @throws Exception
+     */
+    public function testInstallApplicationTest(): void
+    {
+        $this->createApplicationInstall('key');
+
+        self::expectException(ApplicationInstallException::class);
+        $this->manager->installApplication('key', 'user');
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testUninstallApplication(): void
+    {
+        $this->createApplicationInstall('null', 'example1');
+
+        $this->manager->uninstallApplication('null', 'example1');
+
+        $repository = $this->dm->getRepository(ApplicationInstall::class);
+        $app        = $repository->findAll();
+
+        self::assertEquals([], $app);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testApplicationPassword(): void
+    {
+        $this->createApplicationInstall('null', 'example1');
+
+        $this->manager->saveApplicationPassword(
+            'null',
+            'example1',
+            ApplicationInterface::AUTHORIZATION_FORM,
+            BasicApplicationInterface::PASSWORD,
+            'password123',
+        );
+        $repository = $this->dm->getRepository(ApplicationInstall::class);
+        /** @var ApplicationInstall $app */
+        $app = $repository->findOneBy(['key' => 'null']);
+
+        self::assertEquals(
+            'password123',
+            $app->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][BasicApplicationInterface::PASSWORD],
+        );
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testApplicationSettings(): void
+    {
+        $this->createApplicationInstall('null', 'example1');
+
+        $this->manager->saveApplicationSettings(
+            'null',
+            'example1',
+            [ApplicationInterface::AUTHORIZATION_FORM => [
+                BasicApplicationInterface::USER => 'testUser',
+                BasicApplicationInterface::PASSWORD => 'testPass',
+            ],
+            ],
+        );
+        $repository = $this->dm->getRepository(ApplicationInstall::class);
+        /** @var ApplicationInstall $app */
+        $app = $repository->findOneBy(['key' => 'null']);
+
+        self::assertEquals(
+            'testUser',
+            $app->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][BasicApplicationInterface::USER],
+        );
+
+        self::assertEquals(
+            'testPass',
+            $app->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][BasicApplicationInterface::PASSWORD],
+        );
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetSettingsFormValues(): void
+    {
+        $this->createApplicationInstall('null', 'example1');
+
+        $this->manager->saveApplicationSettings(
+            'null',
+            'example1',
+            [ApplicationInterface::AUTHORIZATION_FORM => [
+                BasicApplicationInterface::USER => 'data1',
+                BasicApplicationInterface::PASSWORD => 'data2',
+                'settings3' => 'secret',
+            ],
+            ],
+        );
+        $values = $this->manager->getApplicationSettings('null', 'example1');
+
+        self::assertEquals(
+            BasicApplicationInterface::USER,
+            $values[ApplicationInterface::AUTHORIZATION_FORM][ApplicationInterface::FIELDS][0]['key'],
+        );
+        self::assertEquals(
+            'data1',
+            $values[ApplicationInterface::AUTHORIZATION_FORM][ApplicationInterface::FIELDS][0]['value'],
+        );
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testSetApplicationSettingForm(): void
+    {
+        $this->createApplicationInstall('null', 'example1');
+
+        $this->manager->saveApplicationSettings(
+            'null',
+            'example1',
+            [ApplicationInterface::AUTHORIZATION_FORM => [
+                BasicApplicationInterface::USER => 'data1',
+                BasicApplicationInterface::PASSWORD => 'data2',
+            ],
+            ],
+        );
+
+        $repository = $this->dm->getRepository(ApplicationInstall::class);
+        /** @var ApplicationInstall $app */
+        $app = $repository->findOneBy(['key' => 'null']);
+
+        self::assertEquals(
+            'data1',
+            $app->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][BasicApplicationInterface::USER],
+        );
+        self::assertEquals(
+            'data2',
+            $app->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][BasicApplicationInterface::PASSWORD],
+        );
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager::subscribeWebhooks
+     *
+     * @throws Exception
+     */
+    public function testSubscribeWebhooks(): void
+    {
+        $applicationInstall = $this->createApplicationInstall('null', 'user');
+        $this->manager->subscribeWebhooks($applicationInstall);
+
+        self::assertFake();
+    }
+
+    /**
+     * @throws Exception
+     */
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->manager = self::getContainer()->get('hbpf.application.manager');
+        $this->manager        = self::getContainer()->get('hbpf.application.manager');
+        $this->webhookManager = self::getContainer()->get('hbpf.application.manager.webhook');
     }
 
     /**
      * @param string $key
+     * @param string $user
      *
      * @return ApplicationInstall
      * @throws Exception
      */
-    private function createApplicationInstall(string $key = 'null'): ApplicationInstall
+    private function createApplicationInstall(string $key = 'null', string $user = 'user'): ApplicationInstall
     {
         $applicationInstall = (new ApplicationInstall())
             ->setKey($key)
-            ->setUser('user')
+            ->setUser($user)
             ->setSettings(['applicationSettings' => ['test' => ['a' => 'aValue']]]);
 
         $this->pfd($applicationInstall);

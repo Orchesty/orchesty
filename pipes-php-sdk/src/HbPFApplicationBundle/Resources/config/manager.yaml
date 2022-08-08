@@ -8,7 +8,14 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.application.loader'
             - '@annotations.cached_reader'
+            - '@hbpf.application.manager.webhook'
 
+    hbpf.application.manager.webhook:
+        class: Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookManager
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+            - '%backendHost%'
 
     hbpf.application.loader:
         class: Hanaboso\PipesPhpSdk\Application\Loader\ApplicationLoader

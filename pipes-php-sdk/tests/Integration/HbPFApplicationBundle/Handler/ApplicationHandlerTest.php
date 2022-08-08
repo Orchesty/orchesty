@@ -4,9 +4,14 @@ namespace PipesPhpSdkTests\Integration\HbPFApplicationBundle\Handler;
 
 use Exception;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager;
+use Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager as ApplicationManagerAlias;
+use Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookManager;
+use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler;
+use InvalidArgumentException;
 use PipesPhpSdkTests\DatabaseTestCaseAbstract;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -114,10 +119,12 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
     public function testAuthorizeApplication(): void
     {
         $this->createApplicationInstall();
-        $manager = self::createPartialMock(ApplicationManager::class, ['authorizeApplication']);
-        $manager->expects(self::any())->method('authorizeApplication');
+        $applicationManager = self::createPartialMock(ApplicationManager::class, ['authorizeApplication']);
+        $applicationManager->expects(self::any())->method('authorizeApplication');
 
-        $handler = new ApplicationHandler($manager);
+        $webhookManager = self::createMock(WebhookManager::class);
+
+        $handler = new ApplicationHandler($applicationManager, $webhookManager);
         $handler->authorizeApplication('null', 'user', '/redirect/url');
         self::assertFake();
     }
@@ -130,10 +137,12 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
     public function testSaveAuthToken(): void
     {
         $this->createApplicationInstall();
-        $manager = self::createPartialMock(ApplicationManager::class, ['authorizeApplication']);
-        $manager->expects(self::any())->method('authorizeApplication');
+        $applicationManager = self::createPartialMock(ApplicationManager::class, ['authorizeApplication']);
+        $applicationManager->expects(self::any())->method('authorizeApplication');
 
-        $handler = new ApplicationHandler($manager);
+        $webhookManager = self::createMock(WebhookManager::class);
+
+        $handler = new ApplicationHandler($applicationManager, $webhookManager);
         $handler->authorizeApplication('null', 'user', '/redirect/url');
         self::assertFake();
     }
@@ -145,15 +154,121 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
      */
     public function testAuthToken(): void
     {
-        $manager = self::createPartialMock(ApplicationManager::class, ['saveAuthorizationToken']);
-        $manager
+        $applicationManager = self::createPartialMock(ApplicationManager::class, ['saveAuthorizationToken']);
+        $applicationManager
             ->expects(self::any())->method('saveAuthorizationToken')
             ->willReturn('/redirect/url');
 
-        $handler     = new ApplicationHandler($manager);
+        $webhookManager = self::createMock(WebhookManager::class);
+
+        $handler     = new ApplicationHandler($applicationManager, $webhookManager);
         $redirectUrl = $handler->saveAuthToken('null', 'user', ['code' => '__code__']);
 
         self::assertEquals('/redirect/url', $redirectUrl);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler::getApplicationsByUser
+     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager::getApplication
+     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager::getInstalledApplications
+     *
+     * @throws Exception
+     */
+    public function testGetApplicationsByUser(): void
+    {
+        $this->createApplicationInstall('null');
+        $this->createApplicationInstall('webhook');
+        $result = $this->handler->getApplicationsByUser('user');
+
+        self::assertEquals(2, count($result['items']));
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler::getApplicationByKeyAndUser
+     *
+     * @throws Exception
+     */
+    public function testGetApplicationByKeyAndUser(): void
+    {
+        $this->createApplicationInstall('webhook');
+
+        $result = $this->handler->getApplicationByKeyAndUser('webhook', 'user');
+        self::assertEquals('Webhook', $result['name']);
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler::updateApplicationSettings
+     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager::saveApplicationSettings
+     *
+     * @throws Exception
+     */
+    public function testUpdateApplicationSettings(): void
+    {
+        $this->createApplicationInstall(
+            'null',
+            [
+                ApplicationInterface::AUTHORIZATION_FORM => [
+                    BasicApplicationInterface::USER => 'Old user',
+                    BasicApplicationInterface::PASSWORD => 'Old password',
+                ],
+            ],
+        );
+        $res = $this->handler->updateApplicationSettings(
+            'null',
+            'user',
+            [ApplicationInterface::AUTHORIZATION_FORM => [BasicApplicationInterface::USER => 'New user']],
+        );
+
+        self::assertEquals(
+            'New user',
+            $res[ApplicationManagerAlias::APPLICATION_SETTINGS][ApplicationInterface::AUTHORIZATION_FORM][ApplicationInterface::FIELDS][0]['value'],
+        );
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler::updateApplicationPassword
+     *
+     * @throws Exception
+     */
+    public function testUpdateApplicationPassword(): void
+    {
+        $this->createApplicationInstall('null');
+
+        $this->handler->updateApplicationPassword(
+            'null',
+            'user',
+            [
+                'formKey' => ApplicationInterface::AUTHORIZATION_FORM,
+                'fieldKey' => BasicApplicationInterface::PASSWORD,
+                'password' => '_newPasswd_',
+            ],
+        );
+        $app = $this->handler->getApplicationByKeyAndUser('null', 'user');
+        self::assertEquals(
+            TRUE,
+            $app[ApplicationManager::APPLICATION_SETTINGS][ApplicationInterface::AUTHORIZATION_FORM][ApplicationInterface::FIELDS][1]['value'],
+        );
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler::updateApplicationPassword
+     *
+     * @throws Exception
+     */
+    public function testUpdateApplicationPasswordErr(): void
+    {
+        $this->createApplicationInstall('null');
+
+        self::expectException(InvalidArgumentException::class);
+        $this->handler->updateApplicationPassword(
+            'null',
+            'user',
+            [
+                'formKey' => ApplicationInterface::AUTHORIZATION_FORM,
+                'fieldKey' => BasicApplicationInterface::PASSWORD,
+                'username' => 'newUsername',
+            ],
+        );
     }
 
     /**
@@ -167,14 +282,18 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
     }
 
     /**
+     * @param string  $key
+     * @param mixed[] $settings
+     *
+     * @return void
      * @throws Exception
      */
-    private function createApplicationInstall(): void
+    private function createApplicationInstall(string $key = 'key', array $settings = []): void
     {
         $applicationInstall = (new ApplicationInstall())
-            ->setKey('null')
+            ->setKey($key)
             ->setUser('user')
-            ->setSettings([]);
+            ->setSettings($settings);
 
         $this->pfd($applicationInstall);
     }

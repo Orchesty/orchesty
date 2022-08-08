@@ -8,3 +8,10 @@ services:
             - '@hbpf.application.handler'
         calls:
             - ['setLogger', ['@monolog.logger.commons']]
+
+    Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\WebhookController:
+        class: Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\WebhookController
+        arguments:
+            - '@hbpf.application.handler.webhook'
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]

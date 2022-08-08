@@ -1,6 +1,20 @@
 framework:
     secret: "secret"
+    csrf_protection:
+        enabled: false
+    default_locale: "%locale%"
+    trusted_hosts: ~
+    fragments: ~
+    http_method_override: true
+    test: false
     serializer:
+    router:
+        strict_requirements: ~
 
 parameters:
     backendHost: 127.0.0.4
+    # Base params
+    locale: en
+
+    # A secret key that's used to generate certain security-related tokens
+    secret: ThisTokenIsNotSoSecretChangeIt
