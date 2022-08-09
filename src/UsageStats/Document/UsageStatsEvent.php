@@ -15,10 +15,9 @@ use Hanaboso\Utils\Exception\DateTimeException;
  * @package Hanaboso\PipesFramework\UsageStats\Document
  *
  * @ODM\Document(repositoryClass="Hanaboso\PipesFramework\UsageStats\Repository\UsageStatsEventRepository", indexes={
- *     @ODM\Index(name="sortIndex", keys={"_id"="asc"}),
  *     @ODM\Index(name="sortCreated", keys={"created"="asc"}),
  *     @ODM\Index(name="sortType", keys={"type"="asc"}),
- *     @ODM\Index(name="sortSent", keys={"type"="asc"}),
+ *     @ODM\Index(name="sortSent", keys={"sent"="asc"}),
  * })
  */
 class UsageStatsEvent
