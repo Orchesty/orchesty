@@ -37,8 +37,6 @@ services:
             - WORKER_DEFAULT_PORT=8000
             - JWT_KEY=test1234
             - LOGS_SERVICE=mongo
-            - ALPHA_INSTANCE_ID=1234
-            - USCCP_URI=https://eol7tmdt6fll11k.m.pipedream.net
 
     starting-point:
         image: dkr.hanaboso.net/pipes/pipes/starting-point:master

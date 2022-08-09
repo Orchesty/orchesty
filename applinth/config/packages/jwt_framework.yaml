@@ -19,12 +19,12 @@ jose:
 
         builders:
             builder:
-                key_encryption_algorithms: [ 'RSA-OAEP-256' ]
+                key_encryption_algorithms: [ 'ECDH-ES' ]
                 content_encryption_algorithms: [ 'A128GCM' ]
                 compression_methods: [ 'DEF' ]
 
         decrypters:
             decrypter:
-                key_encryption_algorithms: [ 'RSA-OAEP-256' ]
+                key_encryption_algorithms: [ 'RSA-OAEP-256', 'ECDH-ES' ]
                 content_encryption_algorithms: [ 'A128GCM' ]
                 compression_methods: [ 'DEF' ]

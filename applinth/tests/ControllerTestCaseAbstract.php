@@ -11,7 +11,7 @@ use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
 use Hanaboso\UserBundle\Document\User;
 use Hanaboso\Utils\String\Json;
 use Jose\Component\Encryption\Algorithm\ContentEncryption\A128GCM;
-use Jose\Component\Encryption\Algorithm\KeyEncryption\RSAOAEP256;
+use Jose\Component\Encryption\Algorithm\KeyEncryption\ECDHES;
 use Jose\Component\KeyManagement\JWKFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
@@ -202,22 +202,20 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
         $jweSerializer = self::getContainer()->get('jose.jwe_serializer.serializer');
         $jweBuilder    = self::getContainer()->get('jose.jwe_builder.builder');
 
-        $publicKey = '                -----BEGIN PUBLIC KEY-----
-                MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAs+HPFVblO+B1msyECGgH
-                Ff9AqwQXGiqjepCQHz073EOzvKjEmjjQXHVORK3ub7pEb4pbwUdhp5mfXpAKktpE
-                N4WZqSwa54VqQRSIkd7fa+BEgz8Ov35HnMGev4fB5B5nxqj12q4jCovqzkTmMhzh
-                o1+Nz9PmMvOZDZ6ZPTo/5wMgTyM1uE9lnPWKS7QwjUNGKsjFhlrJeYgarYj1WHcY
-                QjAWwtaU3JCaou4lIST8AtCPgxmEWBEgIURfFzonr9k8ykEJLyldxfnmjmUfPBDB
-                +RGZSDtJsWbp75VqAGO9zeBQUbhKft8J3LWF+L9/xhS+QKq0UQ99yuFPWbYcAUBt
-                1wIDAQAB
-                -----END PUBLIC KEY-----';
+        $publicKey = '-----BEGIN PUBLIC KEY-----
+MIGbMBAGByqGSM49AgEGBSuBBAAjA4GGAAQAZyRJCpJxZ6cbpkhZOTBSBGE5tkXm
+mpTuFKwnOEETiHIUyGWEW/RnkqLpwEbcZyXH2GvggaV8zm5izbzd7u+S9qQAzoOK
+fhpIMLRXX0muR4TKEA9oxBJi96Lb8o3/IxebfLtmDxnF8KMCdr1kkOqcltexS1ap
+lMtmVuVUqMJD6dvQr2E=
+-----END PUBLIC KEY-----
+';
         $jwkPublic = JWKFactory::createFromKey($publicKey);
 
         $jwe = $jweBuilder
             ->withPayload(Json::encode($payload))
             ->withSharedProtectedHeader(
                 [
-                    'alg' => (new RSAOAEP256())->name(),// Key Encryption Algorithm
+                    'alg' => (new ECDHES())->name(), // Key Encryption Algorithm
                     'enc' => (new A128GCM())->name(), // Content Encryption Algorithm
                 ],
             )
