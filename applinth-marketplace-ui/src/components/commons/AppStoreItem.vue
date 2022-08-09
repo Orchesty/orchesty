@@ -87,11 +87,12 @@ export default {
 }
 </script>
 <style scoped lang="scss">
-//COMMENT line clamp documentation
-//https://css-tricks.com/line-clampin/
-//https://caniuse.com/css-line-clamp
-
 .truncate-3-rows {
+  /*
+  Line clamp documentation
+  https://css-tricks.com/line-clampin/
+  https://caniuse.com/css-line-clamp
+  */
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
   display: -webkit-box;

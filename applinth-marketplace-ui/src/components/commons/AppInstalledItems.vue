@@ -77,11 +77,10 @@ export default {
         const matchingApp = availableApps.items.find((app) => {
           return item.key.toLowerCase() === app.key.toLowerCase()
         })
-        const { logo, name } = matchingApp
         return {
           ...item,
-          logo,
-          name,
+          logo: matchingApp?.logo,
+          name: matchingApp?.name,
         }
       })
     },
@@ -96,15 +95,19 @@ export default {
     async fetchApplications() {
       this.isLoading = true
 
-      const availableApps = await callApi({
-        requestData: API.appStore.getAvailableApps,
-      })
-      const installedApps = await callApi({
-        requestData: API.appStore.getInstalledApps,
-      })
-      this.apps = this.mergeApps(installedApps, availableApps)
-
-      this.isLoading = false
+      try {
+        const availableApps = await callApi({
+          requestData: API.appStore.getAvailableApps,
+        })
+        const installedApps = await callApi({
+          requestData: API.appStore.getInstalledApps,
+        })
+        this.apps = this.mergeApps(installedApps, availableApps)
+      } catch {
+        this.apps = []
+      } finally {
+        this.isLoading = false
+      }
     },
   },
   async created() {

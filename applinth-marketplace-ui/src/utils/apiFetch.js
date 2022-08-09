@@ -68,9 +68,6 @@ const call = ({ requestData, params = null, throwError = true }, sender) => {
       .catch((err) => {
         console.error('Response ERROR!', err)
 
-        if (err.response) {
-          console.log(err.response)
-        }
         if (throwError) {
           reject(err)
         }
