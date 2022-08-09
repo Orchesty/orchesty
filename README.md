@@ -101,7 +101,6 @@ Obsahuje moduly pro práci s BPMN schématem, generování topologií, konfigura
 
 ## Závislosti
 - Pipes-PHP-SDK
-- Pipes-App-Store
 - MongoDB
 - RabbitMQ
 - InfluxDB

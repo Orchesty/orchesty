@@ -8,5 +8,3 @@
 !pf-bundles/composer.lock
 !pipes-php-sdk/src
 !pipes-php-sdk/composer.json
-!app-store/src
-!app-store/composer.json
