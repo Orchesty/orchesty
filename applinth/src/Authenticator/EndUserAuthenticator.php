@@ -14,6 +14,7 @@ use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
+use Throwable;
 
 /**
  * Class EndUserAuthenticator
@@ -58,23 +59,27 @@ final class EndUserAuthenticator extends AbstractAuthenticator
      */
     public function authenticate(Request $request): Passport
     {
-        if(!$request->headers->has(self::AUTHORIZATION)){
+        if (!$request->headers->has(self::AUTHORIZATION)) {
             throw new AuthenticationException('Missing token');
         }
 
-        $this->loggedUser = $this->manager->payloadFromJws($request->headers->get(self::AUTHORIZATION) ?? '');
+        try {
+            $this->loggedUser = $this->manager->payloadFromJws($request->headers->get(self::AUTHORIZATION) ?? '');
 
-        $apiUser = new User();
-        $apiUser
-            ->setEmail($this->loggedUser[AuthorizationHandler::EU_SUB])
-            ->setDeleted(FALSE);
+            $apiUser = new User();
+            $apiUser
+                ->setEmail($this->loggedUser[AuthorizationHandler::EU_SUB])
+                ->setDeleted(FALSE);
 
-        return new SelfValidatingPassport(
-            new UserBadge(
-                $apiUser->getEmail(),
-                static fn() => $apiUser,
-            ),
-        );
+            return new SelfValidatingPassport(
+                new UserBadge(
+                    $apiUser->getEmail(),
+                    static fn() => $apiUser,
+                ),
+            );
+        } catch (Throwable $t) {
+            throw new AuthenticationException($t->getMessage());
+        }
     }
 
     /**
