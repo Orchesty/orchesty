@@ -14,7 +14,6 @@ test-go:
 
 test-php:
 	cd pipes-php-sdk && $(TEST)
-	cd app-store && $(TEST)
 	cd pipes-connectors && $(TEST)
 	cd pf-bundles && $(TEST)
 	cd applinth && $(TEST)
@@ -25,7 +24,6 @@ test-php:
 
 vendor-remove: var-remove
 	cd pipes-php-sdk && $(VENDOR)
-	cd app-store && $(VENDOR)
 	cd pipes-connectors && $(VENDOR)
 	cd pf-bundles && $(VENDOR)
 	cd applinth && $(VENDOR)
@@ -36,7 +34,6 @@ vendor-remove: var-remove
 
 var-remove:
 	cd pipes-php-sdk && $(VAR)
-	cd app-store && $(VAR)
 	cd pipes-connectors && $(VAR)
 	cd pf-bundles && $(VAR)
 	cd applinth && $(VAR)
@@ -47,7 +44,6 @@ var-remove:
 
 vendor-refresh:
 	cd pipes-php-sdk && $(VENDOR) && $(DOCKER) && $(INSTALL) && $(COMPOSER)
-	cd app-store && $(VENDOR) && $(DOCKER) && $(INSTALL) && $(COMPOSER)
 	cd pipes-connectors && $(VENDOR) && $(DOCKER) && $(INSTALL) && $(COMPOSER)
 	cd pf-bundles && $(VENDOR) && $(DOCKER) && $(INSTALL) && $(COMPOSER)
 	cd applinth && $(VENDOR) && $(DOCKER) && $(INSTALL) && $(COMPOSER)

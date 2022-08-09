@@ -10,5 +10,3 @@
 !pf-bundles/composer.json
 !pipes-php-sdk/src
 !pipes-php-sdk/composer.json
-!app-store/src
-!app-store/composer.json

@@ -1,5 +1,4 @@
 *
-!app-store/openapi.yaml
 !cron/openapi.yaml
 !lib-python/xml_parser/openapi.yaml
 !limiter/openapi.yaml
