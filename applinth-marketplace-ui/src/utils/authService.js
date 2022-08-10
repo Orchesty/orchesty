@@ -67,7 +67,10 @@ export class AuthService {
       authenticationData = await callApi({
         requestData: API.auth.refreshAuth,
       })
-    } catch {}
+    } catch {
+      // The error is handled in callApi function,
+      // only the return value is important
+    }
 
     if (authenticationData) {
       this.authenticate(authenticationData)
