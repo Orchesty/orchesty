@@ -63,10 +63,11 @@ export class AuthService {
 
   async tryRefreshAuthentication(redirect) {
     let authenticationData = null
-    authenticationData = await callApi({
-      requestData: API.auth.refreshAuth,
-      throwError: false,
-    })
+    try {
+      authenticationData = await callApi({
+        requestData: API.auth.refreshAuth,
+      })
+    } catch {}
 
     if (authenticationData) {
       this.authenticate(authenticationData)
