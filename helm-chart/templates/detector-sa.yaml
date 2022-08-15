@@ -15,7 +15,7 @@ metadata:
  name: {{ include "pipes.fullname" (dict "suffix" $componentName "root" .) }}
 rules:
 - apiGroups: ["", "apps"]
-  resources: ["deployments", "pods"]
+  resources: ["deployments", "pods", "replicasets"]
   verbs: ["get", "list"]
 
 ---
