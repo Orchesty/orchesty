@@ -1,91 +1,128 @@
 package services
 
 import (
-	"bytes"
+	"context"
 	"detector/pkg/config"
-	"os/exec"
-	"strconv"
-	"strings"
+	"detector/pkg/utils/stringx"
+	"io/ioutil"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
+	"time"
 )
 
-func KubeContainerCheck() ([]Container, error) {
-	cmdPods := []string{"get", "pods", "-l", config.App.MonitorLabel}
-	// kubectl get pods -l app.kubernetes.io/instance=pipes
-	// NAME                                                  READY   STATUS    RESTARTS   AGE
-	// pipes-backend-678468cccf-qct9w                        1/1     Running   0          46d
+type KubernetesSvc struct {
+	client *kubernetes.Clientset
+	ns     string
+}
 
-	cmdReplicas := []string{"get", "rs", "-l", config.App.MonitorLabel, "|", "awk", "'$2!=0'"}
-	// kubectl get rs -l app.kubernetes.io/instance=pipes | awk '$2!=0'
-	// NAME                                            DESIRED   CURRENT   READY   AGE
-	// pipes-backend-678468cccf                        1         1         1       97d
+func (k KubernetesSvc) getReplicaSets() (map[string]*Container, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	res, err := k.client.
+		AppsV1().
+		ReplicaSets(k.ns).
+		List(ctx, v1.ListOptions{
+			LabelSelector: "app.kubernetes.io/instance=pipes",
+		})
 
-	var out bytes.Buffer
-	cmd := exec.Command("kubectl", cmdReplicas...)
-	cmd.Stdout = &out
-	_ = cmd.Run()
-	replicasInfo := out.String()
+	cancel()
+	if err != nil {
+		return nil, err
+	}
 
-	cmd = exec.Command("kubectl", cmdPods...)
-	out.Reset()
-	cmd.Stdout = &out
-	_ = cmd.Run()
-	podsInfo := out.String()
+	containers := make(map[string]*Container)
+	for _, it := range res.Items {
+		if it.Status.Replicas == 0 {
+			continue
+		}
 
-	containers := make(map[string]Container, 10)
-
-	for i, line := range strings.Split(replicasInfo, "\n") {
-		if i > 0 && len(line) > 0 {
-			rs := strings.Fields(line)
-			desired, _ := strconv.Atoi(rs[1])
-			ready, _ := strconv.Atoi(rs[3])
-
-			containers[""] = Container{
-				Name: rs[0][:strings.LastIndex(rs[0], "-")],
-				//Message: "",
-				Up:      true,
-				Desired: desired,
-				Ready:   ready,
-				Pods:    nil,
-			}
+		name := stringx.RemovePostfix(it.Name, "-")
+		containers[name] = &Container{
+			Name:    name,
+			Message: "",
+			Up:      true,
+			Desired: int(it.Status.Replicas),
+			Ready:   int(it.Status.ReadyReplicas),
+			Pods:    make([]ContainerPod, 0),
 		}
 	}
 
-	for i, line := range strings.Split(podsInfo, "\n") {
-		if i > 0 && len(line) > 0 {
-			pod := strings.Fields(line)
-			name := pod[0][:strings.LastIndex(pod[0], "-")]
-			name = name[:strings.LastIndex(name, "-")]
-			container, ok := containers[name]
-			if !ok {
-				continue
-			}
+	return containers, err
+}
 
-			conts := strings.Split(pod[1], "/")
-			restarts, _ := strconv.Atoi(pod[3])
+func (k KubernetesSvc) getPods(containers map[string]*Container) ([]Container, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	res, err := k.client.
+		CoreV1().
+		Pods(k.ns).
+		List(ctx, v1.ListOptions{
+			LabelSelector: "app.kubernetes.io/instance=pipes",
+		})
 
-			container.Pods = append(container.Pods, ContainerPod{
-				Up:       conts[0] == conts[1],
-				Message:  pod[2],
-				Restarts: restarts,
-				Age:      pod[4],
-			})
-		}
+	cancel()
+	if err != nil {
+		return nil, err
 	}
 
-	var res []Container
-	for _, container := range containers {
-		for _, pod := range container.Pods {
-			if !pod.Up {
-				container.Up = false
-				if len(container.Message) > 0 {
-					container.Message += ","
-				}
-				container.Message += container.Message
-			}
+	for _, it := range res.Items {
+		name := stringx.RemovePostfix(it.Name, "-")
+		name = stringx.RemovePostfix(name, "-")
+
+		_, ok := containers[name]
+		if !ok {
+			continue
 		}
 
-		res = append(res, container)
+		msg := ""
+		sts := it.Status.ContainerStatuses[0]
+		if sts.LastTerminationState.Terminated != nil {
+			msg = sts.LastTerminationState.Terminated.Reason
+		}
+
+		containers[name].Pods = append(containers[name].Pods, ContainerPod{
+			Up:       it.Status.Phase == "Running",
+			Message:  msg,
+			Restarts: int(sts.RestartCount),
+			Created:  it.Status.StartTime.Time,
+		})
 	}
 
-	return res, nil
+	var list []Container
+	for _, it := range containers {
+		list = append(list, *it)
+	}
+
+	return list, err
+}
+
+func (k KubernetesSvc) KubeContainerCheck() ([]Container, error) {
+	containers, err := k.getReplicaSets()
+	if err != nil {
+		return nil, err
+	}
+
+	return k.getPods(containers)
+}
+
+func NewKubernetesSvc() KubernetesSvc {
+	c, err := rest.InClusterConfig()
+	if err != nil {
+		config.Logger.Fatal(err)
+	}
+	clientset, err := kubernetes.NewForConfig(c)
+	if err != nil {
+		config.Logger.Fatal(err)
+	}
+
+	tokenFile := "/var/run/secrets/kubernetes.io/serviceaccount/namespace"
+	namespaceBytes, err := ioutil.ReadFile(tokenFile)
+	if err != nil {
+		config.Logger.Fatal(err)
+	}
+	namespace := string(namespaceBytes)
+
+	return KubernetesSvc{
+		client: clientset,
+		ns:     namespace,
+	}
 }

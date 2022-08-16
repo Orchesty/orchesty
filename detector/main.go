@@ -12,6 +12,11 @@ import (
 
 func main() {
 	rb := services.NewRabbitMqFetchSvc()
+	var kb services.KubernetesSvc
+	if config.Generator.Mode == string(enum.Adapter_Kubernetes) {
+		kb = services.NewKubernetesSvc()
+	}
+
 	log.Infof("Starting detector, ticks every [%d] secs", config.App.Tick/time.Second)
 
 	// Publisher
@@ -33,7 +38,7 @@ func main() {
 		case string(enum.Adapter_Compose):
 			containers, err = services.DockerContainerCheck()
 		case string(enum.Adapter_Kubernetes):
-			containers, err = services.KubeContainerCheck()
+			containers, err = kb.KubeContainerCheck()
 		}
 		if containers != nil && err == nil {
 			workQueue <- containers
