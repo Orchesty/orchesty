@@ -35,10 +35,10 @@ type Container struct {
 }
 
 type ContainerPod struct {
-	Up       bool   `json:"running"`
-	Message  string `json:"message"`
-	Restarts int    `json:"restarts"`
-	Age      string `json:"age"`
+	Up       bool      `json:"running"`
+	Message  string    `json:"message"`
+	Restarts int       `json:"restarts"`
+	Created  time.Time `json:"created"`
 }
 
 func (s *Sender) Start() {
