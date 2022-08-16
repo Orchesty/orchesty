@@ -28,6 +28,8 @@ docker-down-clean: .env .lo0-down
 start:
 	$(DCS) pnpm run start
 
+init: docker-up-force install
+
 install:
 	$(DCS) pnpm install
 
