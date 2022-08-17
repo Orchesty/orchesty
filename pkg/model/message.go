@@ -171,8 +171,7 @@ func (pm ParsedMessage) SubProcessQuery() mongo.WriteModel {
 func (pm ParsedMessage) FinishProcessQuery() mongo.WriteModel {
 	doc := mongo.NewUpdateOneModel()
 	doc.Filter = bson.M{
-		"_id":      pm.ProcessMessage.GetHeaderOrDefault(enum.Header_CorrelationId, ""),
-		"finished": nil,
+		"_id": pm.ProcessMessage.GetHeaderOrDefault(enum.Header_CorrelationId, ""),
 	}
 	doc.Update = bson.A{
 		bson.M{
