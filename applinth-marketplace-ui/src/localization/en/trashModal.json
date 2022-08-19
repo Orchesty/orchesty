@@ -1,7 +1,6 @@
 {
   "trashModal": {
     "title": "Update trash item",
-    "headers": "Headers",
     "body": "Body"
   }
 }
