@@ -11,8 +11,6 @@
     </template>
     <template #content>
       <div class="d-flex flex-column">
-        <sub-heading>{{ $t('trashModal.headers') }}</sub-heading>
-        <json-editor v-model="headers" class="mb-5" />
         <sub-heading>{{ $t('trashModal.body') }}</sub-heading>
         <json-editor v-if="isBodyJson" v-model="body" />
       </div>
