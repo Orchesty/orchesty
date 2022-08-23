@@ -9,6 +9,8 @@
                 "nodeName": "",
                 "topologyId": "topo",
                 "topologyName": "",
+                "topologyDescr": "",
+                "topologyVersion": 0,
                 "type": "userTask",
                 "updated": "2020-02-02T10:10:10Z",
                 "id": "507f191e810c19729de860ea"
@@ -20,6 +22,8 @@
                 "nodeName": "",
                 "topologyId": "topo",
                 "topologyName": "",
+                "topologyDescr": "",
+                "topologyVersion": 0,
                 "type": "userTask",
                 "updated": "2020-02-02T10:10:10Z",
                 "id": "507f191e810c19729de860eb"

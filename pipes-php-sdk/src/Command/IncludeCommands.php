@@ -17,16 +17,18 @@ final class IncludeCommands extends BundleApplication
      * @var mixed[]
      */
     protected array $defaultCommands = [
+        'authorization:install',
+        'cron:refresh',
+        'rabbit_mq:consumer:status-service',
+        'rabbit_mq:publisher:pipes-notifications',
+        'rabbit_mq:publisher:pipes-user-task',
+        'rabbit_mq:publisher:pipes.messages',
+        'topology:install',
+        'usage_stats:send-events',
         'user:create',
         'user:delete',
         'user:list',
         'user:password:change',
-        'rabbit_mq:async-consumer',
-        'rabbit_mq:consumer',
-        'rabbit_mq:setup',
-        'rabbit_mq:publisher:pipes.messages',
-        'authorization:install',
-        'cron:refresh',
     ];
 
     /**
