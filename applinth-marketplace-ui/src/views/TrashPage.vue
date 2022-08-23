@@ -53,8 +53,6 @@
 </template>
 
 <script>
-import FlashMessageMixin from '../mixins/FlashMessageMixin'
-
 import { GRIDS } from '@/utils/gridsConfig'
 import {
   toLocalDateTime,
@@ -71,7 +69,6 @@ import { API } from '@/api'
 export default {
   name: 'TrashPage',
   components: { Heading, DataGridSelectable, BaseButton },
-  mixins: [FlashMessageMixin],
   data() {
     return {
       headers: [

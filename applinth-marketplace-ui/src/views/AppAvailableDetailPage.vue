@@ -74,6 +74,10 @@ export default {
       requestData: API.appStore.getAppPreview,
       params: { key: this.$route.params.id },
     })
+    this.$emit('appChanged', this.app.name)
+  },
+  beforeDestroy() {
+    this.$emit('appChanged', null)
   },
 }
 </script>

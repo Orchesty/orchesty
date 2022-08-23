@@ -66,7 +66,6 @@
 </template>
 
 <script>
-import FlashMessageMixin from '../mixins/FlashMessageMixin'
 import DataGrid from '@/components/commons/DataGrid'
 import { GRIDS } from '@/utils/gridsConfig'
 import {
@@ -86,7 +85,6 @@ export default {
     AppInstalledItems,
     DataGrid,
   },
-  mixins: [FlashMessageMixin],
   data() {
     return {
       headers: [
