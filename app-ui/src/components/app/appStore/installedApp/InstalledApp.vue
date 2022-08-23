@@ -86,15 +86,18 @@
         </v-row>
 
         <v-row dense>
-          <v-col class="d-flex">
-            <app-button color="primary" :button-title="$t('button.save')" :on-click="() => saveForm(form.key)" />
-            <app-button
-              v-if="hasOauthAuthorization"
-              class="ml-auto"
-              :disabled="!isFormValid(form.key)"
-              :on-click="authorizeApp"
-              :button-title="$t('button.authorize')"
-            />
+          <v-col>
+            <actions-wrapper>
+              <app-button color="primary" :button-title="$t('button.save')" :on-click="() => saveForm(form.key)" />
+              <app-button
+                v-if="hasOauthAuthorization"
+                color="secondary"
+                :disabled="!isFormValid(form.key)"
+                :on-click="authorizeApp"
+                :button-title="$t('button.authorize')"
+                outlined
+              />
+            </actions-wrapper>
           </v-col>
         </v-row>
       </v-tab-item>
@@ -153,10 +156,11 @@ import { config } from '@/config'
 import AppItemPasswordModal from '@/components/app/appStore/modal/AppItemPasswordModal'
 import AppInput from '@/components/commons/input/AppInput'
 import AppButton from '@/components/commons/button/AppButton'
+import ActionsWrapper from '@/components/layout/actions/ActionsWrapper'
 
 export default {
   name: 'InstalledApp',
-  components: { AppButton, AppInput, AppItemPasswordModal },
+  components: { ActionsWrapper, AppButton, AppInput, AppItemPasswordModal },
   data() {
     return {
       tab: null,
