@@ -76,6 +76,9 @@ export default {
       }
     },
     initForm() {
+      this.$nextTick(() => {
+        this.$refs.forgotForm.reset()
+      })
       return {
         email: null,
       }

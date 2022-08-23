@@ -64,6 +64,10 @@ export default {
         if (!callbackdata) return
         this.form.name = callbackdata.name
         this.form.parent = callbackdata.parent
+
+        this.$nextTick(() => {
+          this.$refs.form.reset()
+        })
       },
     },
   },

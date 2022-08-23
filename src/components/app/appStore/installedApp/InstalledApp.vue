@@ -313,6 +313,15 @@ export default {
     hasLogo(app) {
       return app?.logo ? app.logo : require('@/assets/svg/app-item-placeholder.svg')
     },
+    resetFormValidation() {
+      for (let form of this.settingsConfig) {
+        if (this.$refs[form.key]) {
+          this.$nextTick(() => {
+            this.$refs[form.key][0].reset()
+          })
+        }
+      }
+    },
   },
   watch: {
     appActive: {
@@ -322,6 +331,9 @@ export default {
           this.initSettings()
           this.hasEmptySettings()
           this.hasOauth()
+          this.$nextTick(() => {
+            this.resetFormValidation()
+          })
         }
       },
     },
