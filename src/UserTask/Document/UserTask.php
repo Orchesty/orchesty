@@ -37,6 +37,8 @@ class UserTask
     public const TOPOLOGY_ID        = 'topologyId';
     public const NODE_NAME          = 'nodeName';
     public const TOPOLOGY_NAME      = 'topologyName';
+    public const TOPOLOGY_DESCR     = 'topologyDescr';
+    public const TOPOLOGY_VERSION   = 'topologyVersion';
     public const CORRELATION_ID     = 'correlationId';
     public const TYPE               = 'type';
     public const RETURN_EXCHANGE    = 'returnExchange';

@@ -169,9 +169,19 @@ final class ServiceLocator implements LoggerAwareInterface
                 [],
                 TRUE,
             );
+
             $this->dispatchBillingEvent(
                 EventTypeEnum::INSTALL,
                 ['aid' => $key, 'euid' => $user],
+            );
+
+            $this->doRequest(
+                sprintf('applications/%s/sync/afterInstallCallback', $key),
+                CurlManager::METHOD_POST,
+                ['user' => $user, 'name' => $key],
+                FALSE,
+                [],
+                TRUE,
             );
 
             return $resp;

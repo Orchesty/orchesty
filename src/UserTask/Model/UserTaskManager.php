@@ -158,7 +158,17 @@ final class UserTaskManager
      */
     public function filter(GridRequestDtoInterface $dto): array
     {
-        return $this->filter->getData($dto)->toArray();
+        $res = $this->filter->getData($dto)->toArray();
+
+        return array_map(function (array $doc) {
+            $topo = $this->dm->getRepository(Topology::class)->findOneBy(['id' => $doc[UserTask::TOPOLOGY_ID]]);
+
+            return [
+                ...$doc,
+                UserTask::TOPOLOGY_DESCR => $topo?->getDescr() ?? '',
+                UserTask::TOPOLOGY_VERSION => $topo?->getVersion() ?? 0,
+            ];
+        }, $res);
     }
 
     /**

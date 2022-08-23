@@ -2,6 +2,7 @@
 
 namespace Hanaboso\PipesFramework\HbPFUserTaskBundle\Handler;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\MongoDataGrid\Exception\GridException;
@@ -11,6 +12,7 @@ use Hanaboso\MongoDataGrid\GridRequestDtoInterface;
 use Hanaboso\PipesFramework\UserTask\Document\UserTask;
 use Hanaboso\PipesFramework\UserTask\Document\UserTaskMessage;
 use Hanaboso\PipesFramework\UserTask\Model\UserTaskManager;
+use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use Hanaboso\Utils\Validations\Validations;
 
 /**
@@ -33,8 +35,9 @@ final class UserTaskHandler
      * UserTaskHandler constructor.
      *
      * @param UserTaskManager $manager
+     * @param DocumentManager $dm
      */
-    public function __construct(private UserTaskManager $manager)
+    public function __construct(private UserTaskManager $manager, private DocumentManager $dm)
     {
     }
 
@@ -47,7 +50,15 @@ final class UserTaskHandler
      */
     public function get(string $id): array
     {
-        return $this->manager->get($id)->toArray();
+        $doc = $this->manager->get($id);
+
+        $topo = $this->dm->getRepository(Topology::class)->findOneBy(['id' => $doc->getTopologyId()]);
+
+        return [
+            ...$doc->toArray(),
+            UserTask::TOPOLOGY_DESCR => $topo?->getDescr() ?? '',
+            UserTask::TOPOLOGY_VERSION => $topo?->getVersion() ?? 0,
+        ];
     }
 
     /**
