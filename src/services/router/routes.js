@@ -8,7 +8,8 @@ import StatisticTab from '@/components/app/topology/tabs/StatisticTab'
 import LogsTab from '@/components/app/topology/tabs/LogsTab'
 import AvailableAppsGridHandler from '@/components/app/appStore/availableApp/AvailableAppsGridHandler'
 import InstalledAppsGridHandler from '@/components/app/appStore/installedApp/InstalledAppsGridHandler'
-import AppItemPage from '@/views/app/AppItemPage'
+import InstalledApp from '@/components/app/appStore/installedApp/InstalledApp'
+import AvailableApp from '@/components/app/appStore/availableApp/AvailableApp'
 
 export default [
   {
@@ -125,13 +126,13 @@ export default [
       },
       {
         path: 'installed-app/:key',
-        component: AppItemPage,
+        component: InstalledApp,
         name: APP_STORE.INSTALLED_APP,
         meta: { title: 'Installed App' },
       },
       {
         path: 'app-detail/:key',
-        component: AppItemPage,
+        component: AvailableApp,
         name: APP_STORE.DETAIL_APP,
         meta: { title: 'Detail App' },
       },
