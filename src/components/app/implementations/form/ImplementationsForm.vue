@@ -78,6 +78,9 @@ export default {
         name: null,
         url: null,
       }
+      this.$nextTick(() => {
+        this.$refs.form.reset()
+      })
     },
   },
   watch: {

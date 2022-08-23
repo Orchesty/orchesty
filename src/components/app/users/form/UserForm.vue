@@ -56,7 +56,9 @@ export default {
     },
     initForm(user) {
       if (!user) user = {}
-
+      this.$nextTick(() => {
+        this.$refs.form.reset()
+      })
       return {
         email: user && user.email ? user.email : null,
       }

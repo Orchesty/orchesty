@@ -74,6 +74,9 @@ export default {
     },
     initForm(value) {
       if (!value) value = {}
+      this.$nextTick(() => {
+        this.$refs.form.reset()
+      })
       return {
         method: value.method || null,
         url: value.url || null,
