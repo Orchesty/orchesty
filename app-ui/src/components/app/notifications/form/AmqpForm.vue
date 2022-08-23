@@ -101,6 +101,9 @@ export default {
       return this.onSubmit(this.form)
     },
     initForm() {
+      this.$nextTick(() => {
+        this.$refs.form.reset()
+      })
       return {
         host: this.service.settings.host || null,
         port: this.service.settings.port || null,
