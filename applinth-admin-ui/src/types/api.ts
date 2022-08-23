@@ -1,9 +1,9 @@
-import { AxiosRequestConfig } from "axios";
 import { ErrorType } from "../enums";
 
-export interface ApiConfig<V = any> {
+export interface ApiConfig<V = unknown> {
   id: string;
-  request: (variables?: any) => AxiosRequestConfig;
+  request: (...variables: any) => Promise<unknown>;
+  transform?: (data: any) => unknown;
   errorType?: ErrorType;
   throwError?: boolean;
   variables?: V;

@@ -11,14 +11,19 @@
           />
         </div>
         <div class="d-flex align-center justify-start">
-          <h1>{{ app.name }}</h1>
+          <h1>{{ app.appName }}</h1>
         </div>
         <div class="d-flex flex-column align-center justify-center">
           <h1 class="font-weight-light">Users</h1>
-          <span class="display-1 font-weight-bold">{{ app.users }}</span>
+          <span class="display-1 font-weight-bold">{{ app.endUsers }}</span>
         </div>
         <div class="d-flex align-center justify-center">
-          <router-link :to="{ name: null }">
+          <router-link
+            :to="{
+              name: Routes.ApplicationDetail,
+              params: { id: app.appName },
+            }"
+          >
             <h1 class="font-weight-light">Detail</h1>
           </router-link>
         </div>
@@ -28,17 +33,35 @@
 </template>
 
 <script lang="ts">
+import { api } from "@/api";
+import {
+  UsageStatsAppsRequest,
+  UsageStatsAppsRowsInner,
+} from "@/api/generated";
+import { callApi } from "@/utils/apiClient";
 import { Component, Vue } from "vue-property-decorator";
+import { authNamespace, AuthGetters, User } from "@/store/modules/auth";
+import { Getter } from "vuex-class";
+import { Routes } from "@/enums/Routes";
 
 @Component({
   components: {},
 })
 export default class AppsOverview extends Vue {
-  apps = [
-    { name: "Amazon Web Services Limited", users: 98, id: 1 },
-    { name: "Second App", users: 23, id: 2 },
-    { name: "Third App", users: 21, id: 3 },
-  ];
+  @Getter(`${authNamespace}/${AuthGetters.GetUser}`)
+  currentUser!: User;
+
+  apps: UsageStatsAppsRowsInner = [] as UsageStatsAppsRowsInner;
+
+  Routes = Routes;
+
+  async created() {
+    this.apps = await callApi<UsageStatsAppsRequest>(api.overview.apps, {
+      timeRangeStart: new Date(0).toISOString(),
+      timeRangeEnd: new Date().toISOString(),
+      tenantId: this.currentUser.tenantId ?? undefined,
+    });
+  }
 }
 </script>
 

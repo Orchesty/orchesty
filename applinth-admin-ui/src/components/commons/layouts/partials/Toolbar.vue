@@ -17,7 +17,6 @@ import { Component, Vue } from "vue-property-decorator";
 import { State } from "vuex-class";
 import { AuthState } from "../../../../store/modules/auth";
 import { authNamespace } from "../../../../store/modules/auth/types";
-import { userSettings } from "../../../../utils/userSettings";
 import ToolbarItems from "./ToolbarItems.vue";
 
 @Component({
@@ -28,6 +27,5 @@ import ToolbarItems from "./ToolbarItems.vue";
 export default class Toolbar extends Vue {
   @State(authNamespace)
   private auth!: AuthState;
-  userSettings = userSettings;
 }
 </script>

@@ -39,13 +39,6 @@ import { Component, Vue } from "vue-property-decorator";
 import { ValidationObserver } from "vee-validate";
 import TextField from "../commons/inputsAndControls/TextField.vue";
 import Button from "../commons/inputsAndControls/Button.vue";
-import { api } from "../../api";
-import { Routes } from "../../enums";
-import {
-  SetPasswordMutation,
-  SetPasswordMutationVariables,
-} from "../../types/gqlGeneratedPublic";
-import { apiClient } from "../../utils";
 
 @Component({
   components: {
@@ -59,22 +52,22 @@ export default class NewPassword extends Vue {
   newPasswordTwo = "";
 
   async submit(): Promise<void> {
-    const { data } = await apiClient.callGraphqlPublic<
-      SetPasswordMutation,
-      SetPasswordMutationVariables
-    >({
-      ...api.auth.setPassword,
-      variables: {
-        input: {
-          password: this.newPasswordOne,
-          token: this.$route.params?.token,
-        },
-      },
-    });
-
-    if (data?.setPassword) {
-      this.$router.push({ name: Routes.ChangedPassword });
-    }
+    // TODO implement using Firebase
+    // const { data } = await apiClient.callGraphqlPublic<
+    //   SetPasswordMutation,
+    //   SetPasswordMutationVariables
+    // >({
+    //   ...api.auth.setPassword,
+    //   variables: {
+    //     input: {
+    //       password: this.newPasswordOne,
+    //       token: this.$route.params?.token,
+    //     },
+    //   },
+    // });
+    // if (data?.setPassword) {
+    //   this.$router.push({ name: Routes.ChangedPassword });
+    // }
   }
 }
 </script>

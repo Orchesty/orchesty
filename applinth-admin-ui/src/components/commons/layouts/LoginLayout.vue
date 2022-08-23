@@ -28,15 +28,13 @@ export default class LoginLayout extends Vue {}
 
 <style lang="scss" scoped>
 .wrapper {
-  display: grid;
-  grid-template-columns: 6fr 7fr;
   height: 100%;
+  background-color: $color-white;
 }
 
 .form {
   display: flex;
   justify-content: center;
-  background-color: $color-white;
   padding: 2rem;
   padding-top: 20vh;
 }

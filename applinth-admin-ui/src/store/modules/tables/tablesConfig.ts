@@ -9,56 +9,20 @@ interface Config {
 type TablesConfig = { [index in TablesNamespaces]: Config };
 
 export const tablesConfig: TablesConfig = {
-  adminsTable: {
-    apiConfig: api.admins.adminList,
-    reduceData: (data) => data.admins,
+  usersTable: {
+    apiConfig: api.users.list,
+    reduceData: (data) => data,
   },
-  devicesTable: {
-    apiConfig: api.devices.deviceList,
-    reduceData: (data) => data.devices,
+  customersTable: {
+    apiConfig: api.customers.list,
+    reduceData: (data) => data,
   },
-  laborersTable: {
-    apiConfig: api.laborers.laborerList,
-    reduceData: (data) => data.laborers,
+  customersAppsTable: {
+    apiConfig: api.customers.list,
+    reduceData: (data) => data,
   },
-  laborerEventsTable: {
-    apiConfig: api.laborerEvents.laborerEventList,
-    reduceData: (data) => data.laborerEvents,
-  },
-  laborerTicketsTable: {
-    apiConfig: api.tickets.ticketList,
-    reduceData: (data) => data.tickets,
-  },
-  maintenancesTable: {
-    apiConfig: api.maintenances.maintenanceList,
-    reduceData: (data) => data.maintenances,
-  },
-  pinnedTicketsTable: {
-    apiConfig: api.tickets.pinnedTicketList,
-    reduceData: (data) => data.pinnedTickets,
-  },
-  processSubCodesTable: {
-    apiConfig: api.processSubCodes.processSubCodeList,
-    reduceData: (data) => data.processSubCodes,
-  },
-  processCodesTable: {
-    apiConfig: api.processCodes.processCodeList,
-    reduceData: (data) => data.processCodes,
-  },
-  processTemplatesTable: {
-    apiConfig: api.processTemplates.processTemplateList,
-    reduceData: (data) => data.processTemplates,
-  },
-  operationTemplatesTable: {
-    apiConfig: api.operationTemplates.operationTemplateList,
-    reduceData: (data) => data.operationTemplates,
-  },
-  regularMaintenancesTable: {
-    apiConfig: api.regularMaintenances.regularMaintenanceList,
-    reduceData: (data) => data.regularMaintenances,
-  },
-  ticketsTable: {
-    apiConfig: api.tickets.ticketList,
-    reduceData: (data) => data.tickets,
+  customersBillingTable: {
+    apiConfig: api.customers.list,
+    reduceData: (data) => data,
   },
 };

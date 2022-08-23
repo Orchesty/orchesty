@@ -1,21 +1,8 @@
 export enum TablesNamespaces {
-  AdminsTable = "adminsTable",
   UsersTable = "usersTable",
   CustomersTable = "customersTable",
   CustomersAppsTable = "customersAppsTable",
   CustomersBillingTable = "customersBillingTable",
-  DevicesTable = "devicesTable",
-  LaborerEventsTable = "laborerEventsTable",
-  LaborerTicketsTable = "laborerTicketsTable",
-  LaborersTable = "laborersTable",
-  MaintenancesTable = "maintenancesTable",
-  OperationTemplatesTable = "operationTemplatesTable",
-  PinnedTicketsTable = "pinnedTicketsTable",
-  ProcessSubCodesTable = "processSubCodesTable",
-  ProcessCodesTable = "processCodesTable",
-  ProcessTemplatesTable = "processTemplatesTable",
-  RegularMaintenancesTable = "regularMaintenancesTable",
-  TicketsTable = "ticketsTable",
 }
 
 export enum TablesActions {

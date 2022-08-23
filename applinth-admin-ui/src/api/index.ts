@@ -1,35 +1,11 @@
-import { admins } from "./private/admins";
-import { auth } from "./public/auth";
+import { overview } from "./private/overview";
+import { customers } from "./private/customers";
 import { dashboard } from "./private/dashboard";
-import { device } from "./private/device";
-import { devices } from "./private/devices";
-import { laborerEvents } from "./private/laborerEvents";
-import { laborers } from "./private/laborers";
-import { maintenances } from "./private/maintenances";
-import { operationTemplates } from "./private/operationTemplates";
-import { processCodes } from "./private/processCodes";
-import { processSubCodes } from "./private/processSubCodes";
-import { processTemplates } from "./private/processTemplates";
-import { regularMaintenances } from "./private/regularMaintenances";
-import { scheduler } from "./private/scheduler";
-import { ticket } from "./private/ticket";
-import { tickets } from "./private/tickets";
+import { users } from "./private/users";
 
 export const api = {
-  admins,
-  auth,
+  overview,
+  users,
+  customers,
   dashboard,
-  device,
-  devices,
-  laborerEvents,
-  laborers,
-  maintenances,
-  operationTemplates,
-  processCodes,
-  processSubCodes,
-  processTemplates,
-  regularMaintenances,
-  scheduler,
-  ticket,
-  tickets,
 };

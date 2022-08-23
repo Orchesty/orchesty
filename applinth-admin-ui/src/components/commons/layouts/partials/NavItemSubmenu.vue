@@ -67,7 +67,6 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { Location } from "vue-router";
-import { userSettings } from "../../../../utils/userSettings";
 
 @Component
 export default class NavItemSubmenu extends Vue {
@@ -87,18 +86,7 @@ export default class NavItemSubmenu extends Vue {
 
   constructor() {
     super();
-    if (!this.navMiniVariant) {
-      this.open = userSettings.getNavSubmenuExpanded(this.label);
-    } else {
-      this.open = false;
-    }
-  }
-
-  private updateUserSettings(): void {
-    const prevVal = this.open;
-    if (!this.navMiniVariant) {
-      userSettings.updateNavSubmenuExpanded(this.label, !prevVal);
-    }
+    this.open = false;
   }
 }
 </script>

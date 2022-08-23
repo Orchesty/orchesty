@@ -2,6 +2,13 @@
   <ValidationObserver v-slot="{ handleSubmit }">
     <v-form class="mb-8" @submit.prevent="handleSubmit(submit)">
       <TextField
+        label="Tenant ID"
+        big-label
+        name="Tenant"
+        v-model="form.tenant"
+        type="text"
+      />
+      <TextField
         label="Email"
         big-label
         :name="$t('login.form.email.name')"
@@ -64,6 +71,7 @@ export default class LoginForm extends Vue {
   form: TLoginForm = {
     email: "",
     password: "",
+    tenant: "",
   };
 
   rules: TLoginRules = {

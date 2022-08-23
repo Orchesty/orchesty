@@ -1,7 +1,6 @@
 <template>
   <v-app>
     <GlobalAlerts />
-
     <router-view />
   </v-app>
 </template>
@@ -20,6 +19,6 @@ export default class App extends Vue {}
 @import "assets/scss/main";
 
 #app {
-  background-color: #f5f5f5 !important;
+  background-color: $color-white;
 }
 </style>

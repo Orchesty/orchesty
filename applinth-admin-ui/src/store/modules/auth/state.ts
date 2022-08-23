@@ -1,13 +1,13 @@
-import { Admin } from "../../../types/gqlGeneratedPublic";
+import { User } from "./types";
 
 export interface AuthState {
-  accessToken: string;
-  administrator?: Admin & { settings?: any };
+  user: User | null;
+  accessToken: string | null;
 }
 
 export const createState = (): AuthState => {
   return {
-    accessToken: "",
-    administrator: undefined,
+    user: null,
+    accessToken: null,
   };
 };

@@ -2,18 +2,24 @@ export const authNamespace = "auth";
 
 export enum AuthActions {
   Login = "login",
-  RefreshToken = "refreshToken",
   UpdateSettings = "updateSettings",
 }
 
 export enum AuthMutations {
+  SetUser = "setUser",
   SetAccessToken = "setAccessToken",
-  SetAdministrator = "setAdministrator",
 }
 
 export enum AuthGetters {
+  GetUser = "getUser",
+  GetDisplayName = "getDisplayName",
   GetAccessToken = "getAccessToken",
   GetRawSettings = "getRawSettings",
-  GetAdministrator = "getAdministrator",
-  GetFullName = "getFullName",
 }
+
+export type User = {
+  id: string;
+  name: string | null;
+  email: string | null;
+  tenantId: string | null;
+};

@@ -19,7 +19,7 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { authService } from "../../../../utils/authService";
+import { invalidateAuthentication } from "@/utils/authService";
 import { router } from "../../../../utils/router";
 import { Routes } from "../../../../enums";
 
@@ -27,11 +27,11 @@ import { Routes } from "../../../../enums";
   components: {},
 })
 export default class ToolbarItems extends Vue {
-  private logout() {
-    authService.invalidateAuthentication(true);
+  logout() {
+    invalidateAuthentication();
   }
 
-  private profile() {
+  profile() {
     if (router.currentRoute.name !== Routes.Profile) {
       router.push({ name: Routes.Profile });
     }

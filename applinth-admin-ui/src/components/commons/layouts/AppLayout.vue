@@ -5,13 +5,14 @@
       clipped
       permanent
       height="54px"
-      class="elevation-1 bg-color-white"
+      class="elevation-1"
+      color="primary"
     >
       <TopBar />
     </v-app-bar>
 
     <v-main>
-      <v-container>
+      <v-container class="py-5">
         <slot />
       </v-container>
     </v-main>

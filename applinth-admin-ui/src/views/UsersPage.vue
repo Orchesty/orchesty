@@ -1,108 +1,93 @@
 <template>
   <AppLayout>
-    <TableHeader :table-options="tableOptions" title="Uživatelé">
-      <template #actions>
-        <Button @click="addItem" color="secondary" outlined>Přidat</Button>
+    <h1 class="mb-4">Uživatelé</h1>
+    <Button class="mb-4" @click="addItem" color="secondary" outlined
+      >Přidat</Button
+    >
+    <SimpleTable class="table-medium" :headers="headers" :items="users">
+      <template #actions="{ item }">
+        <RoundButton @click="() => updateItem(item)" icon="pencil" />
+        <RoundButton
+          @click="() => deleteItem(item)"
+          icon="delete"
+          :disabled="!(currentUser && currentUser.id !== item.id)"
+        />
       </template>
-    </TableHeader>
-    <div class="table-medium">
-      <Table :table-options="tableOptions">
-        <template #actions="{ item }">
-          <ActionsWrapper>
-            <RoundButton @click="() => updateItem(item)" icon="pencil" />
-            <RoundButton
-              @click="() => deleteItem(item)"
-              icon="delete"
-              :disabled="!(admin && admin.adminId !== item.id)"
-            />
-          </ActionsWrapper>
-        </template>
-      </Table>
-      <UserDeleteModal />
-      <UserCreateModal />
-    </div>
+    </SimpleTable>
+    <UserDeleteModal />
+    <UserCreateModal />
   </AppLayout>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
 import AppLayout from "../components/commons/layouts/AppLayout.vue";
-import Table from "../components/commons/tables/Table.vue";
-import TableHeader from "../components/commons/tables/TableHeader.vue";
-import ActionsWrapper from "../components/commons/tables/ActionsWrapper.vue";
 import Button from "../components/commons/inputsAndControls/Button.vue";
 import RoundButton from "../components/commons/inputsAndControls/RoundButton.vue";
-import { TableOptions } from "../types";
-import { Admin, AdminsFilterEnum } from "../types/gqlGeneratedPrivate";
-import { TablesNamespaces } from "../store/modules/tables";
-import { EventBus } from "../enums/EventBus";
-import { eventBus } from "../utils/eventBus";
-import { Routes } from "../enums/Routes";
-import { Getter } from "vuex-class";
-import { authNamespace, AuthGetters } from "../store/modules/auth";
-import UserDeleteModal from "@/components/app/admins/UserDeleteModal.vue";
+import SimpleTable from "@/components/commons/tables/SimpleTable.vue";
 import UserCreateModal from "@/components/app/admins/UserCreateModal.vue";
+import UserDeleteModal from "@/components/app/admins/UserDeleteModal.vue";
+import { Component, Vue } from "vue-property-decorator";
+import { EventBus } from "../enums/EventBus";
+import { Getter } from "vuex-class";
+import { Routes } from "../enums/Routes";
+import { api } from "@/api";
+import { authNamespace, AuthGetters, User } from "../store/modules/auth";
+import { callApi } from "@/utils/apiClient";
+import { eventBus } from "../utils/eventBus";
 
 @Component({
   components: {
-    UserCreateModal,
-    UserDeleteModal,
     AppLayout,
     Button,
     RoundButton,
-    Table,
-    TableHeader,
-    ActionsWrapper,
+    SimpleTable,
+    UserCreateModal,
+    UserDeleteModal,
   },
 })
 export default class UsersPage extends Vue {
-  @Getter(`${authNamespace}/${AuthGetters.GetAdministrator}`)
-  admin!: Admin;
+  @Getter(`${authNamespace}/${AuthGetters.GetUser}`)
+  currentUser!: User;
 
-  tableOptions: TableOptions<Admin, AdminsFilterEnum> = {
-    defaultSortBy: ["surname"],
-    headers: [
-      {
-        text: "Jméno",
-        sortable: true,
-        align: "start",
-        value: "firstname",
-      },
-      {
-        text: "Příjmení",
-        sortable: true,
-        align: "start",
-        value: "surname",
-      },
-      { text: "Email", sortable: true, align: "start", value: "username" },
-      {
-        text: "Superadmin",
-        sortable: true,
-        align: "start",
-        value: "isSuperAdmin",
-      },
-      {
-        text: "",
-        sortable: false,
-        value: "actions",
-      },
-    ],
-    namespace: TablesNamespaces.UsersTable,
-  };
+  users: User[] = [];
 
-  deleteItem(admin: Admin): void {
-    eventBus.$emit(EventBus.UserDeleteModal, admin);
+  headers = [
+    {
+      text: "Email",
+      sortable: true,
+      align: "start",
+      value: "email",
+    },
+    {
+      text: "Name",
+      sortable: true,
+      align: "start",
+      value: "displayName",
+    },
+    {
+      text: "",
+      sortable: false,
+      value: "actions",
+    },
+  ];
+
+  deleteItem(user: User): void {
+    eventBus.$emit(EventBus.UserDeleteModal, user);
   }
 
   addItem(): void {
     eventBus.$emit(EventBus.UserCreateModal);
   }
 
-  updateItem(admin: Admin): void {
+  updateItem(user: User): void {
     this.$router.push({
       name: Routes.UserUpdate,
-      params: { id: admin.id.toString() },
+      params: { id: user.id },
     });
+  }
+
+  async created() {
+    this.users = await callApi(api.users.list);
   }
 }
 </script>

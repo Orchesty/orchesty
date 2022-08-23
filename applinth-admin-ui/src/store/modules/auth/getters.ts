@@ -1,28 +1,22 @@
+import { i18n } from "@/utils/vueI18n";
 import { Getters } from "../../../types";
-import { Admin } from "../../../types/gqlGeneratedPublic";
 import { AuthState } from "./state";
-import { AuthGetters } from "./types";
+import { AuthGetters, User } from "./types";
 
 export const getters: Getters<AuthGetters, AuthState> = {
-  getAccessToken(state): AuthState["accessToken"] {
-    return state.accessToken;
+  getUser(state: AuthState): User | null {
+    return state.user;
   },
-  getRawSettings(state): string {
-    return state.administrator?.settings || "{}";
-  },
-  getAdministrator(state): Admin {
+  getDisplayName(state: AuthState): string {
     return (
-      state.administrator ?? {
-        isSuperAdmin: false,
-        surname: "",
-        firstname: "",
-        username: "",
-        id: -1,
-      }
+      (state.user?.name || state.user?.email) ??
+      (i18n.t("login.unknownName") as string)
     );
   },
-  getFullName(state): string {
-    const admin = state.administrator;
-    return admin ? `${admin.firstname} ${admin.surname}` : "Neznámé";
+  getAccessToken(state: AuthState): string | null {
+    return state.accessToken;
+  },
+  getRawSettings(): any {
+    // TODO not implemented yet
   },
 };

@@ -1,33 +1,46 @@
 <template>
-  <div class="d-flex align-center justify-space-between w-100">
-    <router-link :to="{ name: routes.Overview }"><h1>Applinth</h1></router-link>
-
+  <div class="wrapper d-flex justify-space-between align-center ml-4">
     <div class="d-flex align-center">
+      <router-link class="d-flex align-center logo-link" to="/">
+        <img
+          class="logo-image"
+          alt="Applinth Logo"
+          :src="require('@/assets/img/logo.svg')"
+        />
+        <span class="logo-text">Applinth Admin</span>
+      </router-link>
+    </div>
+    <nav class="d-flex align-center text-body-2 gap-4">
       <router-link :to="{ name: routes.Overview }">Overview</router-link>
-      <router-link class="ml-2" :to="{ name: routes.Users }">Users</router-link>
-      <router-link class="ml-2" :to="{ name: routes.Profile }">{{
-        fullName
-      }}</router-link>
-      <v-btn
-        class="ml-2"
+      <router-link :to="{ name: routes.Customers }">Customers</router-link>
+      <router-link :to="{ name: routes.Users }">Users</router-link>
+      <router-link
+        class="ml-8 mr-4"
+        :to="{ name: routes.Profile }"
+        title="Profile"
+        >{{ displayName }}</router-link
+      >
+      <button
+        class="d-flex align-center"
         @click="handleLogout"
-        icon
-        color="black"
         title="Odhlásit se"
       >
-        <SvgIcon iconName="logout" fill />
-      </v-btn>
-    </div>
+        <SvgIcon class="color-white" iconName="logout" fill />
+      </button>
+    </nav>
   </div>
 </template>
 
 <script lang="ts">
 import SvgIcon from "../../../app/SvgIcon.vue";
 import { Component, Vue } from "vue-property-decorator";
-import { Routes } from "@/enums";
+import { Routes } from "../../../../enums/Routes";
 import { Getter } from "vuex-class";
-import { AuthGetters, authNamespace } from "@/store/modules/auth";
-import { authService } from "@/utils";
+import {
+  AuthGetters,
+  authNamespace,
+} from "../../../../store/modules/auth/types";
+import { invalidateAuthentication } from "../../../../utils/authService";
 
 @Component({
   components: {
@@ -35,19 +48,40 @@ import { authService } from "@/utils";
   },
 })
 export default class TopBar extends Vue {
-  @Getter(`${authNamespace}/${AuthGetters.GetFullName}`)
-  fullName!: string;
+  @Getter(`${authNamespace}/${AuthGetters.GetDisplayName}`)
+  displayName!: string;
 
   routes = Routes;
 
   handleLogout() {
-    authService.invalidateAuthentication(true);
+    invalidateAuthentication();
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.w-100 {
+.wrapper {
   width: 100%;
+}
+
+.logo-image {
+  max-height: 36px;
+  width: auto;
+}
+
+.logo-link {
+  color: $color-white;
+  text-decoration: none;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.logo-text {
+  margin-left: 1rem;
+}
+
+nav a {
+  text-decoration: none;
+  color: $color-white;
 }
 </style>
