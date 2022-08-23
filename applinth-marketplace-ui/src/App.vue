@@ -1,7 +1,5 @@
 <template>
   <v-app>
-    <flash-messages />
-
     <v-app-bar app color="primary">
       <router-link class="d-flex align-center" to="/">
         <v-img
@@ -42,7 +40,7 @@
             </v-breadcrumbs>
           </v-col>
         </v-row>
-        <router-view />
+        <router-view @appChanged="onAppChanged" />
       </v-container>
     </v-main>
   </v-app>
@@ -50,14 +48,16 @@
 
 <script>
 import { ROUTES } from '@/router/routes'
-import FlashMessages from '@/components/commons/FlashMessages'
 import NavigationItem from '@/components/commons/NavigationItem'
 
 export default {
   name: 'App',
-  components: { NavigationItem, FlashMessages },
+  components: { NavigationItem },
   computed: {
     breadCrumbs() {
+      if (typeof this.$route.meta.breadcrumbs === 'function') {
+        return this.$route.meta.breadcrumbs(this.currentAppName)
+      }
       return this.$route.meta.breadcrumbs
     },
   },
@@ -85,7 +85,13 @@ export default {
         text: 'navigation.link.settings',
       },
     ],
+    currentAppName: null,
   }),
+  methods: {
+    onAppChanged(name) {
+      this.currentAppName = name
+    },
+  },
 }
 </script>
 

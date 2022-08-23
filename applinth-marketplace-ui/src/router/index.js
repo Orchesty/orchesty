@@ -59,20 +59,22 @@ const routes = [
     component: AppInstalledDetailPage,
     meta: {
       auth: true,
-      breadcrumbs: [
-        {
-          text: 'navigation.item.integrations',
-          to: { name: ROUTES.OVERVIEW },
-        },
-        {
-          text: 'navigation.item.applications',
-          to: { name: ROUTES.APPLICATIONS },
-        },
-        {
-          text: 'navigation.item.installedApplicationDetail',
-          to: { name: ROUTES.APPLICATION_INSTALLED },
-        },
-      ],
+      breadcrumbs: (appActiveName) => {
+        return [
+          {
+            text: 'navigation.item.integrations',
+            to: { name: ROUTES.OVERVIEW },
+          },
+          {
+            text: 'navigation.item.applications',
+            to: { name: ROUTES.APPLICATIONS },
+          },
+          {
+            text: appActiveName,
+            to: { name: ROUTES.APPLICATION_INSTALLED },
+          },
+        ]
+      },
     },
   },
   {
@@ -81,20 +83,22 @@ const routes = [
     component: AppAvailableDetailPage,
     meta: {
       auth: true,
-      breadcrumbs: [
-        {
-          text: 'navigation.item.integrations',
-          to: { name: ROUTES.OVERVIEW },
-        },
-        {
-          text: 'navigation.item.applications',
-          to: { name: ROUTES.APPLICATIONS },
-        },
-        {
-          text: 'navigation.item.availableApplicationDetail',
-          to: { name: ROUTES.APPLICATION_AVAILABLE },
-        },
-      ],
+      breadcrumbs: (appActiveName) => {
+        return [
+          {
+            text: 'navigation.item.integrations',
+            to: { name: ROUTES.OVERVIEW },
+          },
+          {
+            text: 'navigation.item.applications',
+            to: { name: ROUTES.APPLICATIONS },
+          },
+          {
+            text: appActiveName,
+            to: { name: ROUTES.APPLICATION_AVAILABLE },
+          },
+        ]
+      },
     },
   },
   {

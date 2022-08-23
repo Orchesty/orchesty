@@ -288,6 +288,10 @@ export default {
       requestData: API.appStore.getApp,
       params: { key: this.$route.params.id },
     })
+    this.$emit('appChanged', this.appActive.name)
+  },
+  beforeDestroy() {
+    this.$emit('appChanged', null)
   },
 }
 </script>
