@@ -1,5 +1,5 @@
 <template>
-  <div v-if="appActive">
+  <content-basic v-if="appActive" redirect-in-title title="Back to the applications">
     <v-row class="mt-4">
       <v-col cols="2">
         <v-img max-width="150" contain :src="hasLogo(appActive)" />
@@ -142,7 +142,7 @@
         </template>
       </v-col>
     </v-row>
-  </div>
+  </content-basic>
 </template>
 
 <script>
@@ -157,10 +157,11 @@ import AppItemPasswordModal from '@/components/app/appStore/modal/AppItemPasswor
 import AppInput from '@/components/commons/input/AppInput'
 import AppButton from '@/components/commons/button/AppButton'
 import ActionsWrapper from '@/components/layout/actions/ActionsWrapper'
+import ContentBasic from '@/components/layout/content/ContentBasic'
 
 export default {
   name: 'InstalledApp',
-  components: { ActionsWrapper, AppButton, AppInput, AppItemPasswordModal },
+  components: { ContentBasic, ActionsWrapper, AppButton, AppInput, AppItemPasswordModal },
   data() {
     return {
       tab: null,
@@ -355,6 +356,7 @@ export default {
   },
   async created() {
     await this[TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES]()
+    await this[APP_STORE.ACTIONS.GET_INSTALLED_APP]({ key: this.$route.params.key, userId: this.userId })
   },
 }
 </script>
