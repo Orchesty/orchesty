@@ -9,6 +9,8 @@
         "label": "Heslo",
         "name": "heslo"
       }
-    }
+    },
+    "failed": "Chybně zadané heslo nebo uživatelské jméno",
+    "unknownName": "Neznámé jméno"
   }
 }

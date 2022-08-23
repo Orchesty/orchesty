@@ -37,13 +37,6 @@ import LoginLayout from "../components/commons/layouts/LoginLayout.vue";
 import TextField from "../components/commons/inputsAndControls/TextField.vue";
 import { Component, Vue } from "vue-property-decorator";
 import { ValidationObserver } from "vee-validate";
-import { apiClient } from "../utils/apiClient";
-import { api } from "../api";
-import {
-  ResetPasswordMutation,
-  ResetPasswordMutationVariables,
-} from "../types/gqlGeneratedPublic";
-import { Routes } from "../enums";
 
 @Component({
   components: {
@@ -57,19 +50,19 @@ export default class ForgotPasswordPage extends Vue {
   email = "";
 
   async submit(): Promise<void> {
-    const { data } = await apiClient.callGraphqlPublic<
-      ResetPasswordMutation,
-      ResetPasswordMutationVariables
-    >({
-      ...api.auth.resetPassword,
-      variables: {
-        input: { username: this.email },
-      },
-    });
-
-    if (data?.resetPassword) {
-      this.$router.push({ name: Routes.ResetPassword });
-    }
+    // TODO implement using firebase
+    // const { data } = await apiClient.callGraphqlPublic<
+    //   ResetPasswordMutation,
+    //   ResetPasswordMutationVariables
+    // >({
+    //   ...api.auth.resetPassword,
+    //   variables: {
+    //     input: { username: this.email },
+    //   },
+    // });
+    // if (data?.resetPassword) {
+    //   this.$router.push({ name: Routes.ResetPassword });
+    // }
   }
 }
 </script>

@@ -22,7 +22,6 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import { userSettings } from "../../utils/userSettings";
 
 @Component
 export default class Card extends Vue {
@@ -39,15 +38,11 @@ export default class Card extends Vue {
 
   constructor() {
     super();
-    if (this.expandableCardId) {
-      this.expanded = userSettings.getCardExpanded(this.expandableCardId);
-    }
   }
 
   private handleExpand(): void {
     if (!this.expandableCardId) return;
     this.expanded = !this.expanded;
-    userSettings.updateCardExpanded(this.expandableCardId, this.expanded);
   }
 }
 </script>

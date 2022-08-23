@@ -1,3 +1,4 @@
 gqlGenerated.ts
 dist/
 storybook-static/
+generated/

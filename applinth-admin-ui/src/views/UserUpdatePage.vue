@@ -64,17 +64,9 @@ import AppLayout from "../components/commons/layouts/AppLayout.vue";
 import Button from "../components/commons/inputsAndControls/Button.vue";
 import TextField from "../components/commons/inputsAndControls/TextField.vue";
 import { Action } from "vuex-class";
-import { api } from "../api";
 import { TablesActions, TablesNamespaces } from "../store/modules/tables";
 import { TableRefreshPayload } from "../types";
-import {
-  UpdateAdminInput,
-  AdminQuery,
-  AdminQueryVariables,
-  UpdateAdminMutation,
-  UpdateAdminMutationVariables,
-} from "../types/gqlGeneratedPrivate";
-import { apiClient, alerts } from "../utils";
+import { UpdateAdminInput } from "../types/gqlGeneratedPrivate";
 import { Routes } from "../enums";
 
 const emptyFormData: UpdateAdminInput = {
@@ -104,7 +96,7 @@ export default class UserUpdatePage extends Vue {
   };
 
   @Action(TablesActions.Refresh, {
-    namespace: TablesNamespaces.AdminsTable,
+    namespace: TablesNamespaces.UsersTable,
   })
   refreshTable!: (payload: TableRefreshPayload) => Promise<void>;
 
@@ -116,21 +108,22 @@ export default class UserUpdatePage extends Vue {
 
   async initialData(id: number): Promise<void> {
     this.isSending = true;
-    const result = await apiClient.callGraphqlPrivate<
-      AdminQuery,
-      AdminQueryVariables
-    >({
-      ...api.admins.admin,
-      variables: { id },
-    });
-    if (result.data) {
-      this.formData = {
-        username: result.data.admin.username,
-        firstname: result.data.admin.firstname,
-        surname: result.data.admin.surname,
-        isSuperAdmin: result.data.admin.isSuperAdmin,
-      };
-    }
+    // TODO implement using Firebase
+    // const result = await apiClient.callGraphqlPrivate<
+    //   AdminQuery,
+    //   AdminQueryVariables
+    // >({
+    //   ...api.users.user,
+    //   variables: { id },
+    // });
+    // if (result.data) {
+    //   this.formData = {
+    //     username: result.data.admin.username,
+    //     firstname: result.data.admin.firstname,
+    //     surname: result.data.admin.surname,
+    //     isSuperAdmin: result.data.admin.isSuperAdmin,
+    //   };
+    // }
     this.isSending = false;
   }
 
@@ -143,22 +136,23 @@ export default class UserUpdatePage extends Vue {
 
   async sendForm(formData: UpdateAdminInput): Promise<void> {
     this.isSending = true;
-    const result = await apiClient.callGraphqlPrivate<
-      UpdateAdminMutation,
-      UpdateAdminMutationVariables
-    >({
-      ...api.admins.updateAdmin,
-      variables: {
-        id: this.adminId,
-        input: formData,
-      },
-    });
-    if (result.data) {
-      alerts.addSuccessAlert("UPDATE_ADMIN", "Uloženo");
-      this.$router.push({
-        name: Routes.Users,
-      });
-    }
+    // TODO implement using Firebase
+    // const result = await apiClient.callGraphqlPrivate<
+    //   UpdateAdminMutation,
+    //   UpdateAdminMutationVariables
+    // >({
+    //   ...api.users.updateUser,
+    //   variables: {
+    //     id: this.adminId,
+    //     input: formData,
+    //   },
+    // });
+    // if (result.data) {
+    //   alerts.addSuccessAlert("UPDATE_ADMIN", "Uloženo");
+    //   this.$router.push({
+    //     name: Routes.Users,
+    //   });
+    // }
     this.isSending = false;
   }
 }

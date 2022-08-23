@@ -10,16 +10,9 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import ConfirmModal from "../../commons/ConfirmModal.vue";
-import {
-  DeleteAdminMutation,
-  DeleteAdminMutationVariables,
-  Admin,
-} from "../../../types/gqlGeneratedPrivate";
-import { api } from "../../../api";
+import { Admin } from "../../../types/gqlGeneratedPrivate";
 import { EventBus } from "../../../enums";
-import { apiClient } from "../../../utils/apiClient";
 import { TablesActions, TablesNamespaces } from "../../../store/modules/tables";
-import { alerts } from "../../../utils";
 import { Action } from "vuex-class";
 import { TableRefreshPayload } from "../../../types";
 
@@ -31,27 +24,28 @@ export default class UserDeleteModal extends Vue {
   isSending = false;
 
   @Action(TablesActions.Refresh, {
-    namespace: TablesNamespaces.AdminsTable,
+    namespace: TablesNamespaces.UsersTable,
   })
   refreshTable!: (payload: TableRefreshPayload) => Promise<void>;
 
   async onConfirm(payload: Admin) {
     this.isSending = true;
-    const result = await apiClient.callGraphqlPrivate<
-      DeleteAdminMutation,
-      DeleteAdminMutationVariables
-    >({
-      ...api.admins.deleteAdmin,
-      variables: {
-        id: payload.id,
-      },
-    });
-    if (result.data) {
-      alerts.addSuccessAlert("DELETE_ADMIN", "Smazáno");
-      this.refreshTable({
-        namespace: TablesNamespaces.AdminsTable,
-      });
-    }
+    // TODO call backend API
+    // const result = await apiClient.callGraphqlPrivate<
+    //   DeleteAdminMutation,
+    //   DeleteAdminMutationVariables
+    // >({
+    //   ...api.users.deleteUser,
+    //   variables: {
+    //     id: payload.id,
+    //   },
+    // });
+    // if (result.data) {
+    //   alerts.addSuccessAlert("DELETE_ADMIN", "Smazáno");
+    //   this.refreshTable({
+    //     namespace: TablesNamespaces.UsersTable,
+    //   });
+    // }
     this.isSending = false;
   }
 }

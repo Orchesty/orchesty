@@ -1,8 +1,9 @@
+import store from "@/store";
+import { AuthGetters, authNamespace } from "@/store/modules/auth";
 import Vue from "vue";
 import VueRouter, { RawLocation } from "vue-router";
 import { Routes, ViewAuth } from "../enums";
 import { routes } from "../routes";
-import { authService } from "./authService";
 import { i18n } from "./vueI18n";
 
 Vue.use(VueRouter);
@@ -17,7 +18,8 @@ export const routerHistory: RawLocation[] = [];
 router.beforeEach(async (to, from, next) => {
   // Check auth
   if (to.meta?.auth === ViewAuth.Private || to.meta?.auth === undefined) {
-    const authenticated = await authService.isAuthenticatedOrRefresh();
+    const authenticated: boolean =
+      store.getters[`${authNamespace}/${AuthGetters.GetUser}`];
     if (!authenticated && to.name !== Routes.Login) {
       next({ name: Routes.Login, query: { redirect: to.path } });
       return;

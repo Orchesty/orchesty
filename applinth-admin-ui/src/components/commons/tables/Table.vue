@@ -55,7 +55,6 @@ import store from "../../../store";
 import { ApiGetters, apiNamespace } from "../../../store/modules/api/types";
 import { TablesActions, TableState } from "../../../store/modules/tables";
 import { Options, SorterDirectionEnum } from "../../../types";
-import { userSettings } from "../../../utils/userSettings";
 import {
   TableChangePagingPayload,
   TableFetchPayload,
@@ -141,24 +140,6 @@ export default class Table extends Vue {
       multiSort: false,
     };
 
-    if (this.tableOptions.saveTableState) {
-      const tableLastState = userSettings.getTableLastState(
-        this.tableOptions.namespace
-      );
-
-      if (tableLastState.pager) {
-        options.page = tableLastState.pager.page;
-        options.itemsPerPage = tableLastState.pager.size;
-      }
-
-      if (tableLastState.sorter && tableLastState.sorter.length) {
-        options.sortBy = [tableLastState.sorter[0].column];
-        options.sortDesc = [
-          tableLastState.sorter[0].direction === SorterDirectionEnum.Descending,
-        ];
-      }
-    }
-
     return options;
   }
 
@@ -174,24 +155,6 @@ export default class Table extends Vue {
 
     let search = this.tableOptions.defaultSearch;
     let filter = this.tableOptions.defaultFilter;
-
-    if (this.tableOptions.saveTableState) {
-      const tableLastState = userSettings.getTableLastState(
-        this.tableOptions.namespace
-      );
-
-      if (tableLastState.filter) {
-        filter = tableLastState.filter;
-      }
-
-      if (tableLastState.sorter) {
-        sorter = tableLastState.sorter;
-      }
-
-      if (tableLastState.search) {
-        search = tableLastState.search;
-      }
-    }
 
     store.dispatch(`${this.tableOptions.namespace}/${TablesActions.Fetch}`, {
       namespace: this.tableOptions.namespace,
@@ -240,13 +203,6 @@ export default class Table extends Vue {
         pager: newPager,
       } as TableChangePagingPayload
     );
-
-    if (this.tableOptions.saveTableState) {
-      userSettings.updateTableLastState(this.tableOptions.namespace, {
-        ...userSettings.getTableLastState(this.tableOptions.namespace),
-        pager: newPager,
-      });
-    }
   }
 
   @Watch("options", { deep: true })
@@ -273,13 +229,6 @@ export default class Table extends Vue {
       namespace: this.tableOptions.namespace,
       sorter: newSorter,
     } as TableSortPayload);
-
-    if (this.tableOptions.saveTableState) {
-      userSettings.updateTableLastState(this.tableOptions.namespace, {
-        ...userSettings.getTableLastState(this.tableOptions.namespace),
-        sorter: newSorter,
-      });
-    }
   }
 
   onRowClick(props: any) {

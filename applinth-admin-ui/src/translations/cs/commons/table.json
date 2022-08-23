@@ -20,15 +20,6 @@
         }
       }
     },
-    "updateSavedFiltersModal": {
-      "title": "Upravit rychlé filtry",
-      "form": {
-        "name": {
-          "label": "Název",
-          "name": "nazev"
-        }
-      }
-    },
     "advancedFilterHeaders": {
       "column": "Sloupeček",
       "operator": "Operátor",

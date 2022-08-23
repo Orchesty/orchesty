@@ -1,25 +1,12 @@
-# applinth-admin-ui
+# Applinth Admin UI
 
-## Project setup
-```
-yarn install
-```
+## Development
 
-### Compiles and hot-reloads for development
+Start frontend dev server (vue cli server) and local fake backend
 ```
-yarn serve
+npm run dev
 ```
 
-### Compiles and minifies for production
-```
-yarn build
-```
-
-### Lints and fixes files
-```
-yarn lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
-
+Local server will be running on:
+- http://localhost:8080 for frontend
+- http://localhost:4010 for fake backend

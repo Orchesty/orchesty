@@ -34,16 +34,9 @@ import Modal from "../../commons/Modal.vue";
 import { ValidationObserver } from "vee-validate";
 import Button from "../../commons/inputsAndControls/Button.vue";
 import TextField from "../../commons/inputsAndControls/TextField.vue";
-import { api } from "../../../api";
 import { EventBus } from "../../../enums";
 import { eventBus } from "../../../utils/eventBus";
-import {
-  MutationCreateAdminArgs,
-  MutationUpdateAdminArgs,
-  CreateAdminInput,
-} from "../../../types/gqlGeneratedPrivate";
-import { apiClient } from "../../../utils/apiClient";
-import { alerts } from "../../../utils";
+import { CreateAdminInput } from "../../../types/gqlGeneratedPrivate";
 import { Action } from "vuex-class";
 import { TablesActions, TablesNamespaces } from "../../../store/modules/tables";
 import { TableRefreshPayload } from "../../../types";
@@ -69,7 +62,7 @@ export default class UserCreateModal extends Vue {
   };
 
   @Action(TablesActions.Refresh, {
-    namespace: TablesNamespaces.AdminsTable,
+    namespace: TablesNamespaces.UsersTable,
   })
   refreshTable!: (payload: TableRefreshPayload) => Promise<void>;
 
@@ -89,21 +82,22 @@ export default class UserCreateModal extends Vue {
 
   async sendForm(formData: CreateAdminInput): Promise<void> {
     this.isSending = true;
-    const result = await apiClient.callGraphqlPrivate<
-      MutationUpdateAdminArgs,
-      MutationCreateAdminArgs
-    >({
-      ...api.admins.createAdmin,
-      variables: {
-        input: formData,
-      },
-    });
-    if (result.data) {
-      alerts.addSuccessAlert("CREATE_ADMIN", "Uloženo");
-      this.refreshTable({
-        namespace: TablesNamespaces.AdminsTable,
-      });
-    }
+    // TODO call backend API
+    // const result = await apiClient.callGraphqlPrivate<
+    //   MutationUpdateAdminArgs,
+    //   MutationCreateAdminArgs
+    // >({
+    //   ...api.users.createUser,
+    //   variables: {
+    //     input: formData,
+    //   },
+    // });
+    // if (result.data) {
+    //   alerts.addSuccessAlert("CREATE_ADMIN", "Uloženo");
+    //   this.refreshTable({
+    //     namespace: TablesNamespaces.UsersTable,
+    //   });
+    // }
     this.initForm();
     this.isOpen = false;
   }

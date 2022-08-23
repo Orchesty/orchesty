@@ -87,16 +87,12 @@ import Table from "../components/commons/tables/Table.vue";
 import TextField from "../components/commons/inputsAndControls/TextField.vue";
 import { Component, Vue } from "vue-property-decorator";
 import { ValidationObserver } from "vee-validate";
-import { alerts, apiClient } from "../utils";
-import { api } from "../api";
-import { AuthGetters, authNamespace } from "../store/modules/auth";
+import { alerts } from "../utils";
+import { AuthGetters, authNamespace, User } from "../store/modules/auth";
 import { Getter } from "vuex-class";
-import { Admin } from "../types/gqlGeneratedPublic";
 import {
   UpdateLoggedAdminInput,
-  UpdateLoggedAdminMutationVariables,
   UpdateLoggedAdminPasswordInput,
-  UpdateLoggedAdminPasswordMutationVariables,
 } from "../types/gqlGeneratedPrivate";
 
 @Component({
@@ -109,8 +105,8 @@ import {
   },
 })
 export default class ProfilePage extends Vue {
-  @Getter(`${authNamespace}/${AuthGetters.GetAdministrator}`)
-  admin!: Admin;
+  @Getter(`${authNamespace}/${AuthGetters.GetUser}`)
+  user!: User;
 
   isFormNameValid = false;
   formLoggedAdmin: UpdateLoggedAdminInput = {
@@ -127,11 +123,12 @@ export default class ProfilePage extends Vue {
   };
 
   mounted() {
-    this.formLoggedAdmin = {
-      firstname: this.admin.firstname,
-      surname: this.admin.surname,
-      username: this.admin.username,
-    };
+    // TODO redo the form
+    // this.formLoggedAdmin = {
+    // firstname: this.user.firstname,
+    // surname: this.user.surname,
+    // username: this.user.username,
+    // };
   }
 
   async submitFormName() {
@@ -142,13 +139,15 @@ export default class ProfilePage extends Vue {
   }
 
   async updateLoggedAdmin(input: UpdateLoggedAdminInput) {
-    return await apiClient.callGraphqlPrivate<
-      Admin,
-      UpdateLoggedAdminMutationVariables
-    >({
-      ...api.admins.updateLoggedAdmin,
-      variables: { input },
-    });
+    // TODO implement using Firebase
+    // return await apiClient.callGraphqlPrivate<
+    //   Admin,
+    //   UpdateLoggedAdminMutationVariables
+    // >({
+    //   ...api.users.updateLoggedUser,
+    //   variables: { input },
+    // });
+    return { data: {} };
   }
 
   async submitFormNewPassword() {
@@ -163,13 +162,15 @@ export default class ProfilePage extends Vue {
   }
 
   async updateLoggedAdminPassword(input: UpdateLoggedAdminPasswordInput) {
-    return await apiClient.callGraphqlPrivate<
-      boolean,
-      UpdateLoggedAdminPasswordMutationVariables
-    >({
-      ...api.admins.updateLoggedAdminPassword,
-      variables: { input },
-    });
+    // TODO implement using Firebase
+    // return await apiClient.callGraphqlPrivate<
+    //   boolean,
+    //   UpdateLoggedAdminPasswordMutationVariables
+    // >({
+    //   ...api.users.updateLoggedUserPassword,
+    //   variables: { input },
+    // });
+    return { data: {} };
   }
 }
 </script>
