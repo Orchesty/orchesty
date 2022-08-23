@@ -100,9 +100,9 @@
       </v-tab-item>
     </v-tabs-items>
 
-    <v-divider v-if="webhooksSettings.length !== 0" class="orchesty-divider-margin" />
+    <v-divider v-if="hasWebhookSettings" class="orchesty-divider-margin" />
     <v-row>
-      <v-col v-if="webhooksSettings.length !== 0" cols="6">
+      <v-col v-if="hasWebhookSettings" cols="6">
         <h3 class="title font-weight-bold mb-3">{{ $t('appStore.detail.webhooks') }}</h3>
 
         <template v-for="item in webhooksSettings">
@@ -172,6 +172,9 @@ export default {
     ...mapGetters(TOPOLOGIES.NAMESPACE, { topologiesAll: TOPOLOGIES.GETTERS.GET_ALL_TOPOLOGIES }),
     ...mapGetters(REQUESTS_STATE.NAMESPACE, [REQUESTS_STATE.GETTERS.GET_STATE]),
     ...mapGetters(AUTH.NAMESPACE, { userId: AUTH.GETTERS.GET_LOGGED_USER_ID }),
+    hasWebhookSettings() {
+      return Object.entries(this.webhooksSettings).length > 0
+    },
   },
   methods: {
     ...mapActions(TOPOLOGIES.NAMESPACE, [TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES]),
