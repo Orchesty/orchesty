@@ -24,9 +24,9 @@ final class SendBillingEventsToUSCCPCommandTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFUsageStatsBundle\Command\SendBillingEventsToUSCCPCommand::execute
-     * @covers \Hanaboso\PipesFramework\HbPFUsageStatsBundle\Command\SendBillingEventsToUSCCPCommand::configure
-     * @covers \Hanaboso\PipesFramework\HbPFUsageStatsBundle\Command\SendBillingEventsToUSCCPCommand::sendRequest
+     * @covers \Hanaboso\PipesFramework\HbPFUsageStatsBundle\Command\SendUsageStatsEventsToUSCCPCommand::execute
+     * @covers \Hanaboso\PipesFramework\HbPFUsageStatsBundle\Command\SendUsageStatsEventsToUSCCPCommand::configure
+     * @covers \Hanaboso\PipesFramework\HbPFUsageStatsBundle\Command\SendUsageStatsEventsToUSCCPCommand::sendRequest
      * @covers \Hanaboso\PipesFramework\UsageStats\Repository\UsageStatsEventRepository::findBillingEvents
      * @covers \Hanaboso\PipesFramework\UsageStats\Repository\UsageStatsEventRepository::getRemainingEventCount
      */
@@ -46,7 +46,7 @@ final class SendBillingEventsToUSCCPCommandTest extends DatabaseTestCaseAbstract
             });
 
         $application = new Application(self::$kernel);
-        $command     = $application->get('billing:send-billing-events');
+        $command     = $application->get('usage_stats:send-events');
         $this->setProperty($command, 'curlManager', $curl);
         $commandTester = new CommandTester($command);
         $result        = $commandTester->execute(['command' => $command->getName()]);

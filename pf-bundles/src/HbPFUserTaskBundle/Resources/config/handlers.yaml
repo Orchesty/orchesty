@@ -6,3 +6,4 @@ services:
         class: Hanaboso\PipesFramework\HbPFUserTaskBundle\Handler\UserTaskHandler
         arguments:
             - '@hbpf.user_task.manager.user_task'
+            - '@doctrine_mongodb.odm.default_document_manager'

@@ -24,14 +24,14 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class SendBillingEventsToUSCCPCommand
+ * Class SendUsageStatsEventsToUSCCPCommand
  *
  * @package Hanaboso\PipesFramework\HbPFUsageStatsBundle\Command
  */
-final class SendBillingEventsToUSCCPCommand extends Command
+final class SendUsageStatsEventsToUSCCPCommand extends Command
 {
 
-    private const CMD_NAME = 'billing:send-billing-events';
+    private const CMD_NAME = 'usage_stats:send-events';
 
     private const BATCH_SIZE            = 100;
     private const BATCH_TIME_LIMIT      = 45;
@@ -48,7 +48,7 @@ final class SendBillingEventsToUSCCPCommand extends Command
     private DocumentManager $dm;
 
     /**
-     * SendBillingEventsToUSCCPCommand constructor.
+     * SendUsageStatsEventsToUSCCPCommand constructor.
      *
      * @param DatabaseManagerLocator $dml
      * @param string                 $usccpUri

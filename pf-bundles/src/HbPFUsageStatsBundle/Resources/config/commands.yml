@@ -2,8 +2,8 @@ services:
     _defaults:
         public: '%public.services%'
 
-    hbpf.command.send_billing_events_to_usccp_command:
-        class: Hanaboso\PipesFramework\HbPFUsageStatsBundle\Command\SendBillingEventsToUSCCPCommand
+    hbpf.command.send_usage_stats_events_to_usccp_command:
+        class: Hanaboso\PipesFramework\HbPFUsageStatsBundle\Command\SendUsageStatsEventsToUSCCPCommand
         arguments:
             - '@hbpf.database_manager_locator'
             - '%usccp_uri%'

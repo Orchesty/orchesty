@@ -34,7 +34,7 @@ services:
             - RABBITMQ_DSN=amqp://rabbitmq:5672
             - MONOLITH_API_DSN=${DEV_IP}
             - WORKER_DEFAULT_PORT=8000
-            - JWT_KEY=test1234
+            - JWT_KEY=test1234test1234test1234test1234test1234test1234test1234test1234test1234
             - LOGS_SERVICE=mongo
 
     starting-point:
