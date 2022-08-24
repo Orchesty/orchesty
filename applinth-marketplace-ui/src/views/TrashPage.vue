@@ -74,7 +74,7 @@ export default {
       headers: [
         {
           text: 'grid.trash.header.topologyName',
-          value: 'topologyName',
+          value: 'topologyDescr',
           align: 'start',
           sortable: true,
         },
