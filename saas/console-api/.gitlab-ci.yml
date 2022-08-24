@@ -1,0 +1,19 @@
+.base-cloud-applinth-api:
+  variables:
+    DIR: saas/console-api
+    IMAGE: ${REGISTRY}/${IMAGE_PREFIX}cloud-applinth-api
+
+  rules:
+    - if: '$FORCE_PIPELINE =~ /ALL/ || $FORCE_PIPELINE =~ /cloud-applinth-api/'
+    - if: '$CI_COMMIT_BEFORE_SHA == $_BANNED_RUN_ALL_SHA'
+      when: never
+    - changes:
+      - ${DIR}/**/*
+
+
+cloud-applinth-api:build:
+  stage: build
+  needs: []
+  extends:
+    - .base-kaniko-build
+    - .base-cloud-applinth-api

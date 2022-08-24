@@ -3,7 +3,8 @@
     DIR: applinth
     IMAGE: ${REGISTRY}/${IMAGE_PREFIX}backend
   rules:
-    - if: '$FORCE_PIPELINE =~ /ALL/ || $FORCE_PIPELINE =~ /applinth/'
+    # todo: resolve inconsistency applinht / applinth-backend (it prevents running 'applinth' pipelines ie. for applinh-admin-ui)
+    - if: '$FORCE_PIPELINE =~ /ALL/ || $FORCE_PIPELINE =~ /applinth-backend/'
     - if: '$CI_COMMIT_BEFORE_SHA == $_BANNED_RUN_ALL_SHA'
       when: never
     - changes:

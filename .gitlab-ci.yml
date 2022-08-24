@@ -24,6 +24,7 @@ include:
   - local: "/pf-bundles/.gitlab-ci.yml" # aka backend
   - local: "/pipes-connectors/.gitlab-ci.yml"
   - local: "/pipes-php-sdk/.gitlab-ci.yml"
+  - local: "/saas/console-api/.gitlab-ci.yml"
   - local: "/starting-point/.gitlab-ci.yml"
   - local: "/status-service/.gitlab-ci.yml"
   - local: "/topology-generator/.gitlab-ci.yml"
