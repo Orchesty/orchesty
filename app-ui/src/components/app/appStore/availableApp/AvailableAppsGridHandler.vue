@@ -36,7 +36,16 @@
           >
             <template #redirect>
               <app-item-button v-if="'authorized' in item" :text="$t('appStore.app.installed')" class="success" />
-              <app-item-button v-else :text="$t('appStore.app.install')" @click="appInstall(item.key)" />
+              <app-item-button
+                v-else-if="item.isInstallable"
+                :text="$t('appStore.app.install')"
+                @click="appInstall(item.key)"
+              />
+              <app-item-button
+                v-else
+                :text="$t('appStore.app.install')"
+                @click="redirectToAppPage(item.key, item.installed)"
+              />
               <app-item-button
                 :white="true"
                 :text="$t('appStore.app.detail')"
