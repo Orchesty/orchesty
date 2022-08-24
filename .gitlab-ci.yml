@@ -10,6 +10,7 @@ include:
   - local: "/app-ui/.gitlab-ci.yml"
   - local: "/applinth/.gitlab-ci.yml"
   - local: "/applinth-marketplace-ui/.gitlab-ci.yml"
+  - local: "/applinth-admin-ui/.gitlab-ci.yml"
   - local: "/bridge/.gitlab-ci.yml"
   - local: "/counter/.gitlab-ci.yml"
   - local: "/cron/.gitlab-ci.yml"
