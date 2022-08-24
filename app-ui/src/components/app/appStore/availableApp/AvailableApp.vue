@@ -9,7 +9,7 @@
       <v-col cols="5" class="d-flex justify-space-between flex-column">
         <h1 class="headline font-weight-bold">{{ appActive.name }}</h1>
         <p class="mt-4">{{ appActive.description }}</p>
-        <div>
+        <div v-if="appActive.isInstallable">
           <app-button color="primary" :button-title="$t('appStore.app.install')" :on-click="install" />
         </div>
       </v-col>

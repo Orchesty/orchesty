@@ -22,11 +22,22 @@
       >
         <template #buttons>
           <app-store-item-button
+            v-if="app.isInstallable"
             :text="
               app.installed ? $t('button.installed') : $t('button.install')
             "
             :color="app.installed ? 'success' : 'primary'"
+            :disabled="app.installed"
             @click="install(app.key)"
+          />
+          <app-store-item-button
+            v-else
+            :text="$t('button.installed')"
+            color="primary"
+            :to="{
+              name: ROUTES.APPLICATION_AVAILABLE,
+              params: { id: app.key },
+            }"
           />
           <app-store-item-button
             outlined

@@ -19,7 +19,7 @@
       <v-col class="d-flex justify-space-between flex-column">
         <h1 class="headline font-weight-bold">{{ app.name }}</h1>
         <p class="mt-4">{{ app.description }}</p>
-        <div>
+        <div v-if="app.isInstallable">
           <base-button
             :button-title="$t('button.install')"
             :on-click="install"
