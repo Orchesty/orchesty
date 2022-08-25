@@ -50,7 +50,11 @@ export default class SampleApplication extends ABasicApplication implements IWeb
             .addField(new Field(FieldType.TEXT, 'user', 'User'))
             .addField(new Field(FieldType.PASSWORD, 'pass', 'Password'));
 
-        return new FormStack().addForm(form);
+        const readOnlyForm = new Form('read_only_form_test', 'Readonly form')
+            .addField(new Field(FieldType.TEXT, 'pin', 'PIN', 123))
+            .setReadOnly(true);
+
+        return new FormStack().addForm(form).addForm(readOnlyForm);
     }
 
     public getWebhookSubscribeRequestDto(

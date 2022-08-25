@@ -3,17 +3,6 @@
         "plugin:@hanaboso/orchesty"
     ],
     "rules": {
-        "jest/no-disabled-tests": "off",
-        "no-param-reassign": "off",
-        "jest/expect-expect": [
-            "error",
-            {
-                "assertFunctionNames": [
-                    "expect",
-                    "tester.runTopology",
-                    "tester.test*"
-                ]
-            }
-        ]
+        "jest/no-disabled-tests": "off"
     }
 }
