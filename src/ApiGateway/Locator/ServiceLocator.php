@@ -170,7 +170,7 @@ final class ServiceLocator implements LoggerAwareInterface
                 TRUE,
             );
 
-            $this->dispatchBillingEvent(
+            $this->dispatchUsageStatsEvent(
                 EventTypeEnum::INSTALL,
                 ['aid' => $key, 'euid' => $user],
             );
@@ -207,9 +207,19 @@ final class ServiceLocator implements LoggerAwareInterface
                 [],
                 TRUE,
             );
-            $this->dispatchBillingEvent(
+
+            $this->dispatchUsageStatsEvent(
                 EventTypeEnum::UNINSTALL,
                 ['aid' => $key, 'euid' => $user],
+            );
+
+            $this->doRequest(
+                sprintf('applications/%s/sync/afterUninstallCallback', $key),
+                CurlManager::METHOD_POST,
+                ['user' => $user, 'name' => $key],
+                FALSE,
+                [],
+                TRUE,
             );
 
             return $resp;
@@ -509,7 +519,7 @@ final class ServiceLocator implements LoggerAwareInterface
      *
      * @return void
      */
-    private function dispatchBillingEvent(string $type, array $data): void
+    private function dispatchUsageStatsEvent(string $type, array $data): void
     {
         $billingEvent = new BillingEvent($type, $data);
         $this->eventDispatcher->dispatch($billingEvent, BillingEvent::NAME);
