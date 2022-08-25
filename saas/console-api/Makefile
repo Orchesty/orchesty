@@ -1,4 +1,5 @@
 DCS=docker-compose exec -T console-api
+IMAGE=dkr.hanaboso.net/pipes/pipes/saas/console-api:$(TAG)
 
 ALIAS?=alias
 Darwin:
@@ -25,6 +26,14 @@ docker-up-force: .env .lo0-up
 docker-down-clean: .env .lo0-down
 	docker-compose down -v
 
+# Build
+build: .env
+	docker build -f Dockerfile -t $(IMAGE) --pull .
+	docker push $(IMAGE)
+
+build-dev:
+	docker build ./docker -t node-sdk:tag
+
 start:
 	$(DCS) pnpm run start
 
@@ -41,6 +50,10 @@ lint:
 
 unit:
 	$(DCS) pnpm run test
+
+localtest:
+	pnpm run lint
+	pnpm run test
 
 fasttest: lint unit
 

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
 
-export const status = (req: Request, res: Response) => {
-  res.status(200).send();
-};
+export function status(req: Request, res: Response): void {
+    res.status(200).send();
+}

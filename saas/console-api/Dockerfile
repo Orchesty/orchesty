@@ -4,7 +4,8 @@ RUN npm i -g pnpm
 
 # Install node packages
 WORKDIR /tmp/_node
-COPY . .
+COPY package.json ./
+COPY pnpm-lock.yaml ./
 RUN pnpm install
 
 # Install prod node packages

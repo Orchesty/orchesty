@@ -2,6 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@firebase/app-types': ^0.7.0
+  '@hanaboso/eslint-plugin': ^1.0.0
   '@types/express': ^4.17.13
   '@types/firebase': ^3.2.1
   '@types/jest': ^28.1.8
@@ -12,12 +13,6 @@ specifiers:
   '@types/node-fetch': ^2.6.2
   '@types/supertest': ^2.0.12
   '@types/winston': ^2.4.4
-  '@typescript-eslint/eslint-plugin': ^5.35.1
-  '@typescript-eslint/parser': ^5.35.1
-  eslint: ^8.22.0
-  eslint-config-airbnb-base: ^15.0.0
-  eslint-import-resolver-typescript: ^3.5.0
-  eslint-plugin-import: ^2.26.0
   express: ^5.0.0-beta.1
   firebase: ^9.9.3
   firebase-admin: ^11.0.1
@@ -49,6 +44,7 @@ dependencies:
 
 devDependencies:
   '@firebase/app-types': 0.7.0
+  '@hanaboso/eslint-plugin': 1.0.0_bi2kohzqnxavgozw3csgny5hju
   '@types/express': 4.17.13
   '@types/firebase': 3.2.1
   '@types/jest': 28.1.8
@@ -59,12 +55,6 @@ devDependencies:
   '@types/node-fetch': 2.6.2
   '@types/supertest': 2.0.12
   '@types/winston': 2.4.4
-  '@typescript-eslint/eslint-plugin': 5.35.1_ktjxjibzrfqejavile4bhmzhjq
-  '@typescript-eslint/parser': 5.35.1_4rv7y5c6xz3vfxwhbrcxxi73bq
-  eslint: 8.22.0
-  eslint-config-airbnb-base: 15.0.0_2iahngt3u2tkbdlu6s4gkur3pu
-  eslint-import-resolver-typescript: 3.5.0_2iahngt3u2tkbdlu6s4gkur3pu
-  eslint-plugin-import: 2.26.0_w7ehzcacvb3lhivydjh7ca7hf4
   jest: 28.1.3_vqz5d3y22yhywvm6xfyh7j5jna
   nodemon: 2.0.19
   supertest: 6.2.4
@@ -963,6 +953,25 @@ packages:
       long: 4.0.0
       protobufjs: 7.0.0
       yargs: 16.2.0
+
+  /@hanaboso/eslint-plugin/1.0.0_bi2kohzqnxavgozw3csgny5hju:
+    resolution: {integrity: sha512-Xmtd2dLsWGgGxVBFrvxefuIgL9bQN5ZJbsWFVLkaOrMkufWPIsGel6mzXyiLUYWpk2KUs410ukI/j7QBYaftGg==}
+    dependencies:
+      '@typescript-eslint/eslint-plugin': 5.35.1_ktjxjibzrfqejavile4bhmzhjq
+      '@typescript-eslint/parser': 5.35.1_4rv7y5c6xz3vfxwhbrcxxi73bq
+      eslint: 8.22.0
+      eslint-config-airbnb-base: 15.0.0_2iahngt3u2tkbdlu6s4gkur3pu
+      eslint-import-resolver-typescript: 3.5.0_2iahngt3u2tkbdlu6s4gkur3pu
+      eslint-plugin-import: 2.26.0_w7ehzcacvb3lhivydjh7ca7hf4
+      eslint-plugin-jest: 26.8.7_mwa3amaxosy2l465c2swgvcqq4
+      eslint-plugin-promise: 6.0.1_eslint@8.22.0
+      eslint-plugin-simple-import-sort: 7.0.0_eslint@8.22.0
+    transitivePeerDependencies:
+      - eslint-import-resolver-webpack
+      - jest
+      - supports-color
+      - typescript
+    dev: true
 
   /@humanwhocodes/config-array/0.10.4:
     resolution: {integrity: sha512-mXAIHxZT3Vcpg83opl1wGlVZ9xydbfZO3r5YfRSH6Gpp2J/PfdBP0wbDa2sO6/qRbcalpoevVyW6A/fI6LfeMw==}
@@ -2706,6 +2715,45 @@ packages:
       - eslint-import-resolver-typescript
       - eslint-import-resolver-webpack
       - supports-color
+    dev: true
+
+  /eslint-plugin-jest/26.8.7_mwa3amaxosy2l465c2swgvcqq4:
+    resolution: {integrity: sha512-nJJVv3VY6ZZvJGDMC8h1jN/TIGT4We1JkNn1lvstPURicr/eZPVnlFULQ4W2qL9ByCuCr1hPmlBOc2aZ1ktw4Q==}
+    engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
+    peerDependencies:
+      '@typescript-eslint/eslint-plugin': ^5.0.0
+      eslint: ^6.0.0 || ^7.0.0 || ^8.0.0
+      jest: '*'
+    peerDependenciesMeta:
+      '@typescript-eslint/eslint-plugin':
+        optional: true
+      jest:
+        optional: true
+    dependencies:
+      '@typescript-eslint/eslint-plugin': 5.35.1_ktjxjibzrfqejavile4bhmzhjq
+      '@typescript-eslint/utils': 5.35.1_4rv7y5c6xz3vfxwhbrcxxi73bq
+      eslint: 8.22.0
+      jest: 28.1.3_vqz5d3y22yhywvm6xfyh7j5jna
+    transitivePeerDependencies:
+      - supports-color
+      - typescript
+    dev: true
+
+  /eslint-plugin-promise/6.0.1_eslint@8.22.0:
+    resolution: {integrity: sha512-uM4Tgo5u3UWQiroOyDEsYcVMOo7re3zmno0IZmB5auxoaQNIceAbXEkSt8RNrKtaYehARHG06pYK6K1JhtP0Zw==}
+    engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
+    peerDependencies:
+      eslint: ^7.0.0 || ^8.0.0
+    dependencies:
+      eslint: 8.22.0
+    dev: true
+
+  /eslint-plugin-simple-import-sort/7.0.0_eslint@8.22.0:
+    resolution: {integrity: sha512-U3vEDB5zhYPNfxT5TYR7u01dboFZp+HNpnGhkDB2g/2E4wZ/g1Q9Ton8UwCLfRV9yAKyYqDh62oHOamvkFxsvw==}
+    peerDependencies:
+      eslint: '>=5.0.0'
+    dependencies:
+      eslint: 8.22.0
     dev: true
 
   /eslint-scope/5.1.1:
