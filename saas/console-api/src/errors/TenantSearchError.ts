@@ -1,6 +1,8 @@
 export default class TenantSearchError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = this.constructor.name;
-  }
+
+    public constructor(message: string) {
+        super(message);
+        this.name = this.constructor.name;
+    }
+
 }

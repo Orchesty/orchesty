@@ -1,17 +1,17 @@
 import express, { Express, RequestHandler } from 'express';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import { configure, initializeMiddleware } from 'oas-tools';
+import { initializeApp } from 'firebase/app';
+import admin from 'firebase-admin';
 import * as fs from 'fs';
 import jsyaml from 'js-yaml';
-import admin from 'firebase-admin';
-import { initializeApp } from 'firebase/app';
-import Mongo from './storage/mongo/Mongo';
-import UsageStatsService from './usageStats/UsageStatsService';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
+import { configure, initializeMiddleware } from 'oas-tools';
 import { app, firebase, mongo } from './config/config';
 import initializeLogger from './logger/logger';
-import UsersService from './users/UsersService';
+import Mongo from './storage/mongo/Mongo';
 import TenantService from './tenants/TenantService';
+import UsageStatsService from './usageStats/UsageStatsService';
+import UsersService from './users/UsersService';
 
 /* eslint-disable import/no-mutable-exports */
 let db: Mongo;
@@ -23,40 +23,42 @@ const logger = initializeLogger(app.debug);
 /* eslint-enable import/no-mutable-exports */
 
 const authApp = admin.initializeApp({
-  credential: admin.credential.cert(`${__dirname}/../privateKey.json`),
+    credential: admin.credential.cert(`${__dirname}/../privateKey.json`),
 });
 
 const fbApp = initializeApp({
-  apiKey: firebase.apiKey,
+    apiKey: firebase.apiKey,
 });
 
-async function initServices() {
-  db = new Mongo(mongo.dsn);
-  await db.connect();
-  await db.createIndexes();
-  logger.info('Database connected');
-  usageStatsService = new UsageStatsService(db);
-  usersService = new UsersService();
-  tenantService = new TenantService();
+async function initServices(): Promise<void> {
+    db = new Mongo(mongo.dsn);
+    await db.connect();
+    await db.createIndexes();
+    logger.info('Database connected');
+    usageStatsService = new UsageStatsService(db);
+    usersService = new UsersService();
+    tenantService = new TenantService();
 }
 
 function createServer(): Express {
-  server = express();
+    server = express();
 
-  const spec = fs.readFileSync(app.openapiPath, 'utf8');
-  const oasDoc = jsyaml.load(spec);
-  const options = {
-    controllers: `${__dirname}/controllers`,
-  };
-  configure(options);
+    const spec = fs.readFileSync(app.openapiPath, 'utf8');
+    const oasDoc = jsyaml.load(spec);
+    const options = {
+        controllers: `${__dirname}/controllers`,
+    };
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    configure(options);
 
-  initializeMiddleware(oasDoc, server, (middleware: {swaggerRouter: RequestHandler}) => {
-    server.use(middleware.swaggerRouter);
-  });
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    initializeMiddleware(oasDoc, server, (middleware: { swaggerRouter: RequestHandler }) => {
+        server.use(middleware.swaggerRouter);
+    });
 
-  return server;
+    return server;
 }
 
 export {
-  db, usageStatsService, usersService, tenantService, logger, server, createServer, initServices, authApp, fbApp,
-};
+    authApp, createServer, db, fbApp,
+    initServices, logger, server, tenantService, usageStatsService, usersService };
