@@ -171,16 +171,16 @@ describe('usageStatsController', () => {
             assert.deepEqual(resp.body.rows.length, 4);
             assert.deepEqual(resp.body.rows, [
                 {
-                    appName: 'neco', installed: '2020-12-31T23:00:00.000Z', instanceId: 'inst1234',
+                    appName: 'neco', installed: '2021-01-01T00:00:00.000Z', instanceId: 'inst1234',
                 },
                 {
-                    appName: 'neco', installed: '2020-12-31T23:00:00.000Z', instanceId: 'inst1235',
+                    appName: 'neco', installed: '2021-01-01T00:00:00.000Z', instanceId: 'inst1235',
                 },
                 {
-                    appName: 'neco1', installed: '2021-01-31T23:00:00.000Z', instanceId: 'inst1234',
+                    appName: 'neco1', installed: '2021-02-01T00:00:00.000Z', instanceId: 'inst1234',
                 },
                 {
-                    appName: 'neco1', installed: '2021-01-31T23:00:00.000Z', instanceId: 'inst1235',
+                    appName: 'neco1', installed: '2021-02-01T00:00:00.000Z', instanceId: 'inst1235',
                 },
             ]);
             assert.deepEqual(resp.statusCode, 200);
@@ -198,18 +198,18 @@ describe('usageStatsController', () => {
             assert.deepEqual(resp.body.rows.length, 3);
             assert.deepEqual(resp.body.rows, [
                 {
-                    appNames: ['neco'], instanceIds: ['inst1234', 'inst1235'], formattedDate: '12/20', totalCost: 1000000,
-                },
-                {
-                    appNames: ['neco', 'neco1'],
-                    instanceIds: ['inst1234', 'inst1235'],
-                    formattedDate: '01/21',
-                    totalCost: 2200000,
+                    appNames: ['neco'], instanceIds: ['inst1234', 'inst1235'], formattedDate: '01/21', totalCost: 1000000,
                 },
                 {
                     appNames: ['neco', 'neco1'],
                     instanceIds: ['inst1234', 'inst1235'],
                     formattedDate: '02/21',
+                    totalCost: 2200000,
+                },
+                {
+                    appNames: ['neco', 'neco1'],
+                    instanceIds: ['inst1234', 'inst1235'],
+                    formattedDate: '03/21',
                     totalCost: 2200000,
                 },
             ]);
@@ -228,10 +228,10 @@ describe('usageStatsController', () => {
             assert.deepEqual(resp.body.rows.length, 2);
             assert.deepEqual(resp.body.rows, [
                 {
-                    endUsers: 1, formattedDate: '01/21',
+                    endUsers: 1, formattedDate: '02/21',
                 },
                 {
-                    endUsers: 2, formattedDate: '02/21',
+                    endUsers: 2, formattedDate: '03/21',
                 },
             ]);
             assert.deepEqual(resp.statusCode, 200);
