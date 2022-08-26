@@ -29,7 +29,7 @@ ENV APP_PORT=8000
 ENV NODE_ENV=prod
 
 WORKDIR /srv/app
-COPY --from=build /srv/app/dist/src /srv/app
+COPY --from=build /srv/app/dist/src /srv/app/openapi.yaml /srv/app/
 COPY --from=precache /tmp/_node_prod /srv/app
 
 CMD node server.js
