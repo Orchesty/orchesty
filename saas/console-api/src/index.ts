@@ -26,7 +26,7 @@ let fbAdminConfig = {};
 const fbAdminPrivKey = `${__dirname}/../privateKey.json`;
 if (fs.existsSync(fbAdminPrivKey)) {
     fbAdminConfig = {
-        credential: admin.credential.cert(),
+        credential: admin.credential.cert(fbAdminPrivKey),
     }
 }
 
