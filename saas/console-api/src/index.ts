@@ -22,9 +22,15 @@ let server: Express;
 const logger = initializeLogger(app.debug);
 /* eslint-enable import/no-mutable-exports */
 
-const authApp = admin.initializeApp({
-    credential: admin.credential.cert(`${__dirname}/../privateKey.json`),
-});
+let fbAdminConfig = {};
+const fbAdminPrivKey = `${__dirname}/../privateKey.json`;
+if (fs.existsSync(fbAdminPrivKey)) {
+    fbAdminConfig = {
+        credential: admin.credential.cert(),
+    }
+}
+
+const authApp = admin.initializeApp(fbAdminConfig);
 
 const fbApp = initializeApp({
     apiKey: firebase.apiKey,
