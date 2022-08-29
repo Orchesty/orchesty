@@ -52,6 +52,9 @@ export const repeaterOptions: IRepeaterSettings = {
             prefetch: 50,
             options: {
                 durable: persistentQueues,
+                arguments: {
+                    'x-queue-type': 'quorum',
+                },
             },
         },
     },
