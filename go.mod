@@ -4,6 +4,7 @@ go 1.18
 
 require (
 	github.com/hanaboso/go-mongodb v1.0.5
+	github.com/rabbitmq/amqp091-go v1.4.0
 	github.com/sirupsen/logrus v1.9.0
 	github.com/streadway/amqp v1.0.0
 	github.com/stretchr/testify v1.8.0

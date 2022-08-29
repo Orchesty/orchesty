@@ -1,6 +1,6 @@
 package rabbitmq
 
-import "github.com/streadway/amqp"
+import amqp "github.com/rabbitmq/amqp091-go"
 
 // Exchange represents the RabbitMQ exchange and its settings
 type Exchange struct {
