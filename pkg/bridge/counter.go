@@ -6,9 +6,9 @@ import (
 	"github.com/hanaboso/pipes/bridge/pkg/bridge/types"
 	"github.com/hanaboso/pipes/bridge/pkg/enum"
 	"github.com/hanaboso/pipes/bridge/pkg/model"
+	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/hanaboso/pipes/bridge/pkg/utils/timex"
 	"github.com/rs/zerolog/log"
-	"github.com/streadway/amqp"
 )
 
 type counter struct {

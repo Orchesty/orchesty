@@ -5,8 +5,8 @@ import (
 	"github.com/hanaboso/pipes/bridge/pkg/utils/intx"
 	"time"
 
+	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/rs/zerolog/log"
-	"github.com/streadway/amqp"
 )
 
 const (
