@@ -179,6 +179,7 @@ final class AuthorizationHandler
             try {
                 $app = $this->appInstallRepository->findUserApp($key, $user);
                 $app->setNonEncryptedSettings([self::PIN => $pin, self::EU_ALIAS => $jwePayload[self::EU_ALIAS]]);
+                $this->dm->flush();
 
                 $link = $resp['applicationSettings'][ApplicationInterface::AUTHORIZATION_FORM]['redirect_url'] ?? NULL;
             } catch (ApplicationInstallException){}
