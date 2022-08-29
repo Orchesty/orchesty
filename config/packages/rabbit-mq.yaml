@@ -8,6 +8,8 @@ rabbit_mq:
     queues:
         pipes.notifications:
             durable: true
+            arguments:
+                x-queue-type: 'quorum'
 
     publishers:
         notification-rabbit:
