@@ -46,7 +46,7 @@
         </v-row>
       </v-col>
       <v-col cols="12" md="7">
-        <router-view />
+        <router-view @taskSubmitted="onTaskSubmitted" />
       </v-col>
     </v-row>
   </div>
@@ -99,6 +99,10 @@ export default {
     },
   },
   methods: {
+    async onTaskSubmitted() {
+      await this.$router.push({ name: ROUTES.TRASH })
+      await this.$refs.gridTrash.gridFetch()
+    },
     async onRowClick(items) {
       this.$refs.gridTrash.onRowClicked(items)
       await this.redirectTo(this.$router, {
