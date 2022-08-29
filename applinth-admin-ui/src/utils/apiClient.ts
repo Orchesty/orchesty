@@ -16,16 +16,29 @@ const configParams: ConfigurationParameters = {
   middleware: [],
 };
 
-const apiConfig = new Configuration(configParams);
+let apiConfig = new Configuration(configParams);
 
-export const apiClient = {
-  billingApi: new BillingApi(apiConfig),
-  healthCheckApi: new HealthCheckApi(apiConfig),
-  tenantsApi: new TenantsApi(apiConfig),
-  usersApi: new UsersApi(apiConfig),
-};
+export let apiClient = initApiConfig();
 
 export type ApiClient = typeof apiClient;
+
+function initApiConfig() {
+  return {
+    billingApi: new BillingApi(apiConfig),
+    healthCheckApi: new HealthCheckApi(apiConfig),
+    tenantsApi: new TenantsApi(apiConfig),
+    usersApi: new UsersApi(apiConfig),
+  };
+}
+
+export function assignTokenToApiCall(token: string) {
+  apiConfig = new Configuration({
+    basePath: config.backend.apiBaseUrl,
+    middleware: [],
+    headers: { ["authorization"]: token },
+  });
+  apiClient = initApiConfig();
+}
 
 export async function callApi<P>(
   apiConfig: ApiConfig<any>,
