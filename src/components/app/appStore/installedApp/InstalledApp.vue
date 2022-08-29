@@ -74,7 +74,7 @@
                   />
                 </validation-provider>
                 <app-item-password-modal
-                  v-if="field.type === 'password'"
+                  v-if="field.type === 'password' && !form.readOnly"
                   :form-key="form.key"
                   :field-key="field.key"
                   :app-key="appActive.key"
@@ -85,7 +85,7 @@
           </v-col>
         </v-row>
 
-        <v-row dense>
+        <v-row v-if="!form.readOnly" dense>
           <v-col>
             <actions-wrapper>
               <app-button color="primary" :button-title="$t('button.save')" :on-click="() => saveForm(form.key)" />
