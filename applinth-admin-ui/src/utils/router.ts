@@ -19,7 +19,7 @@ router.beforeEach(async (to, from, next) => {
   // Check auth
   if (to.meta?.auth === ViewAuth.Private || to.meta?.auth === undefined) {
     const authenticated: boolean =
-      store.getters[`${authNamespace}/${AuthGetters.GetUser}`];
+      store.getters[`${authNamespace}/${AuthGetters.GetAccessToken}`];
     if (!authenticated && to.name !== Routes.Login) {
       next({ name: Routes.Login, query: { redirect: to.path } });
       return;

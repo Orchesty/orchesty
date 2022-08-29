@@ -1,5 +1,5 @@
 export default {
   backend: {
-    apiBaseUrl: "http://localhost:4010",
+    apiBaseUrl: "127.0.0.42:3000",
   },
 };

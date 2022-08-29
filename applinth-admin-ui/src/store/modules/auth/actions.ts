@@ -1,5 +1,5 @@
 import { transformUser } from "@/firebase";
-import { alerts, i18n } from "@/utils";
+import { alerts, assignTokenToApiCall, i18n } from "@/utils";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { TLoginForm } from "../../../components/auth/types";
 import { Actions } from "../../../types";
@@ -21,11 +21,12 @@ export const actions: Actions<AuthActions, AuthState> = {
       const user = userCredential.user;
 
       if (user) {
-        console.log("user", user);
-        commit(AuthMutations.SetUser, transformUser(user));
         const token = await user.getIdToken();
-        console.log("token", token);
+
+        commit(AuthMutations.SetUser, transformUser(user));
         commit(AuthMutations.SetAccessToken, token);
+
+        assignTokenToApiCall(token);
         return true;
       } else {
         return false;
