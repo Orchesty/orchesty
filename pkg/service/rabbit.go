@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	metrics "github.com/hanaboso/go-metrics/pkg"
-	"github.com/streadway/amqp"
+	amqp "github.com/rabbitmq/amqp091-go"
 	"net/http"
 	"starting-point/pkg/config"
 	"starting-point/pkg/rabbitmq"

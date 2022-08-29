@@ -15,7 +15,9 @@ func TestDeclare(t *testing.T) {
 	c := getConnection()
 
 	c.Connect()
-	c.Declare(&Queue{Name: "test", Durable: true, NoWait: false})
+	c.Declare(&Queue{Name: "test", Durable: true, NoWait: false, Args: map[string]interface{}{
+		"x-queue-type": "quorum",
+	}})
 }
 
 func TestDisconnect(t *testing.T) {

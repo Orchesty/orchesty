@@ -1,7 +1,7 @@
 package rabbitmq
 
 import (
-	"github.com/streadway/amqp"
+	amqp "github.com/rabbitmq/amqp091-go"
 	"starting-point/pkg/config"
 	"starting-point/pkg/storage"
 	"starting-point/pkg/utils"
