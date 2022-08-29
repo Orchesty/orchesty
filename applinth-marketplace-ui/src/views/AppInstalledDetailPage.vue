@@ -92,12 +92,19 @@
                     item-text="key"
                   />
                 </validation-provider>
+                <app-item-password-modal
+                  v-if="field.type === 'password' && !form.readOnly"
+                  :form-key="form.key"
+                  :field-key="field.key"
+                  :app-key="appActive.key"
+                  :input="field"
+                />
               </div>
             </validation-observer>
           </v-col>
         </v-row>
 
-        <v-row dense>
+        <v-row v-if="!form.readOnly" dense>
           <v-col class="d-flex">
             <base-button
               color="primary"
@@ -126,10 +133,11 @@ import { callApi } from '@/utils/apiFetch'
 import { API } from '@/api'
 import NavigationItem from '@/components/commons/NavigationItem'
 import { ROUTES } from '@/router/routes'
+import AppItemPasswordModal from '@/components/commons/AppInstalledPasswordModal'
 
 export default {
   name: 'InstalledApp',
-  components: { NavigationItem, BaseButton, BaseInput },
+  components: { AppItemPasswordModal, NavigationItem, BaseButton, BaseInput },
   data() {
     return {
       tab: null,
