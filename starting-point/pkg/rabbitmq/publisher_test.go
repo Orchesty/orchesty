@@ -3,7 +3,7 @@ package rabbitmq
 import (
 	"testing"
 
-	"github.com/streadway/amqp"
+	amqp "github.com/rabbitmq/amqp091-go"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"starting-point/pkg/config"
 	"starting-point/pkg/storage"

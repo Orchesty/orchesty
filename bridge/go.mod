@@ -8,9 +8,9 @@ require (
 	github.com/hanaboso/go-mongodb v1.0.5
 	github.com/jinzhu/configor v1.2.1
 	github.com/julienschmidt/httprouter v1.3.0
+	github.com/rabbitmq/amqp091-go v1.4.0
 	github.com/rs/zerolog v1.27.0
 	github.com/spf13/cobra v1.5.0
-	github.com/streadway/amqp v1.0.0
 	github.com/stretchr/testify v1.8.0
 	go.mongodb.org/mongo-driver v1.10.0
 )

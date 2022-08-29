@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/hanaboso/pipes/bridge/pkg/model"
-	"github.com/streadway/amqp"
+	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

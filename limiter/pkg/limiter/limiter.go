@@ -7,7 +7,7 @@ import (
 	"limiter/pkg/rabbitmq"
 	"limiter/pkg/storage"
 
-	"github.com/streadway/amqp"
+	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 // Limiter represents the whole limiter service

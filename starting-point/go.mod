@@ -9,9 +9,9 @@ require (
 	github.com/hanaboso/go-metrics v1.0.4
 	github.com/hanaboso/go-mongodb v1.0.5
 	github.com/patrickmn/go-cache v2.1.0+incompatible
+	github.com/rabbitmq/amqp091-go v1.4.0
 	github.com/shirou/gopsutil v3.21.11+incompatible
 	github.com/sirupsen/logrus v1.9.0
-	github.com/streadway/amqp v1.0.0
 	github.com/stretchr/testify v1.8.0
 	go.mongodb.org/mongo-driver v1.10.0
 )

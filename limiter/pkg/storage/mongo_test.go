@@ -5,7 +5,7 @@ import (
 	"limiter/pkg/env"
 	"limiter/pkg/logger"
 
-	"github.com/streadway/amqp"
+	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/stretchr/testify/assert"
 
 	"os"

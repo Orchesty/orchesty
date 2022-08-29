@@ -6,8 +6,8 @@ import (
 	"encoding/json"
 	"github.com/hanaboso/pipes/counter/pkg/config"
 	"github.com/hanaboso/pipes/counter/pkg/model"
+	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/rs/zerolog/log"
-	"github.com/streadway/amqp"
 	"os"
 	"time"
 )
@@ -71,7 +71,9 @@ func (c *Consumer) connect() <-chan amqp.Delivery {
 			continue
 		}
 
-		if _, err := ch.QueueDeclare(c.Queue, true, false, false, false, nil); err != nil {
+		if _, err := ch.QueueDeclare(c.Queue, true, false, false, false, map[string]interface{}{
+			"x-queue-type": "quorum",
+		}); err != nil {
 			log.Error().Err(err).Send()
 			cancel()
 			continue
