@@ -10,7 +10,7 @@ import (
 	"github.com/hanaboso/pipes/counter/pkg/rabbit"
 	"github.com/hanaboso/pipes/counter/pkg/utils/intx"
 	"github.com/hanaboso/pipes/counter/pkg/utils/timex"
-	"github.com/streadway/amqp"
+	amqp "github.com/rabbitmq/amqp091-go"
 	"go.mongodb.org/mongo-driver/bson"
 	md "go.mongodb.org/mongo-driver/mongo"
 	"sync"

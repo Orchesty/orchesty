@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/hanaboso/pipes/counter/pkg/config"
-	"github.com/streadway/amqp"
+	amqp "github.com/rabbitmq/amqp091-go"
 	"os"
 	"time"
 )
