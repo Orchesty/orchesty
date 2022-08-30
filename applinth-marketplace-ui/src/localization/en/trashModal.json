@@ -6,11 +6,11 @@
     },
     "accept": {
       "title": "Accept trash item",
-      "body": "Body"
+      "body": "Accept item id: {0}, of process {1}"
     },
     "reject": {
       "title": "Deny trash item",
-      "body": "Body"
+      "body": "Reject item id: {0}, of process {1}"
     }
   }
 }

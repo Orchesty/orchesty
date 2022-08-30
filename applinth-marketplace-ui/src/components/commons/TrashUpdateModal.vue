@@ -1,8 +1,8 @@
 <template>
-  <base-modal v-model="isOpen" :title="$t('trashModal.title')">
+  <base-modal v-model="isOpen" :title="$t('trashModal.update.title')">
     <template #activator="{ attrs, on }">
       <base-button
-        color="secondary"
+        color="primary"
         :attrs="attrs"
         :on="on"
         :button-title="$t('button.update')"
@@ -11,7 +11,7 @@
     </template>
     <template #content>
       <div class="d-flex flex-column">
-        <sub-heading>{{ $t('trashModal.body') }}</sub-heading>
+        <p>{{ $t('trashModal.update.body') }}</p>
         <json-editor v-if="isBodyJson" v-model="body" />
       </div>
     </template>
@@ -30,10 +30,9 @@ import BaseButton from '@/components/commons/BaseButton'
 import JsonEditor from '@/components/commons/JsonEditor'
 import { callApi } from '@/utils/apiFetch'
 import { API } from '@/api'
-import SubHeading from '@/components/commons/SubHeading'
 export default {
   name: 'TrashUpdateModal',
-  components: { SubHeading, JsonEditor, BaseButton, BaseModal },
+  components: { JsonEditor, BaseButton, BaseModal },
   props: {
     trashItem: {
       type: Object,

@@ -16,19 +16,21 @@
           </v-col>
         </v-row>
       </v-col>
-      <v-col class="d-flex justify-end">
-        <trash-approve-modal
-          :trash-item="trash"
-          @trashRejected="onTrashSubmitted"
-        />
-        <trash-reject-modal
-          :trash-item="trash"
-          @trashRejected="onTrashSubmitted"
-        />
-        <trash-update-modal
-          :trash-item="trash"
-          @refreshItemData="refreshItemData"
-        />
+      <v-col cols="auto" class="d-flex justify-end">
+        <actions-wrapper>
+          <trash-approve-modal
+            :trash-item="trash"
+            @trashRejected="onTrashSubmitted"
+          />
+          <trash-update-modal
+            :trash-item="trash"
+            @refreshItemData="refreshItemData"
+          />
+          <trash-reject-modal
+            :trash-item="trash"
+            @trashRejected="onTrashSubmitted"
+          />
+        </actions-wrapper>
       </v-col>
     </v-row>
 
@@ -56,10 +58,12 @@ import TrashUpdateModal from '@/components/commons/TrashUpdateModal'
 import JsonEditor from '@/components/commons/JsonEditor'
 import TrashApproveModal from '@/components/commons/TrashAcceptModal'
 import TrashRejectModal from '@/components/commons/TrashRejectModal'
+import ActionsWrapper from '@/components/commons/ActionsWrapper'
 
 export default {
   name: 'TrashDetail',
   components: {
+    ActionsWrapper,
     TrashRejectModal,
     TrashApproveModal,
     JsonEditor,

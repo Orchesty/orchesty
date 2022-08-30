@@ -2,26 +2,25 @@
   <base-modal v-model="isOpen" :title="$t('trashModal.accept.title')">
     <template #activator="{ attrs, on }">
       <base-button
-        color="secondary"
+        color="primary"
         :attrs="attrs"
         :on="on"
         :button-title="$t('button.accept')"
-        outlined
       />
     </template>
     <template #content>
       <div class="d-flex flex-column">
-        <sub-heading>{{ $t('trashModal.body') }}</sub-heading>
+        <p>
+          {{
+            $t('trashModal.accept.body', [trashItem.id, trashItem.topologyName])
+          }}
+        </p>
       </div>
     </template>
     <template #actions>
       <base-button
         :button-title="$t('button.accept')"
         :on-click="acceptTrashItem"
-      />
-      <base-button
-        :button-title="$t('button.cancel')"
-        :on-click="(isOpen = false)"
       />
     </template>
   </base-modal>
@@ -32,10 +31,9 @@ import BaseModal from '@/components/commons/BaseModal'
 import BaseButton from '@/components/commons/BaseButton'
 import { callApi } from '@/utils/apiFetch'
 import { API } from '@/api'
-import SubHeading from '@/components/commons/SubHeading'
 export default {
   name: 'TrashAcceptModal',
-  components: { SubHeading, BaseButton, BaseModal },
+  components: { BaseButton, BaseModal },
   props: {
     trashItem: {
       type: Object,
