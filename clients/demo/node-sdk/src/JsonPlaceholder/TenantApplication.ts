@@ -14,6 +14,8 @@ export const PIN = 'pin';
 
 export default class TenantApplication extends ABasicApplication {
 
+    protected isInstallable = false;
+
     public getDescription(): string {
         return 'Tenenant application description';
     }
@@ -42,7 +44,7 @@ export default class TenantApplication extends ABasicApplication {
     }
 
     public getFormStack(): FormStack {
-        const settingsForm = new Form(AUTHORIZATION_FORM, 'Settings');
+        const settingsForm = new Form(AUTHORIZATION_FORM, 'Auth token').setReadOnly(true);
         const tokenField = new Field(FieldType.TEXT, PIN, 'PIN').setReadOnly(true);
 
         settingsForm.addField(tokenField);
