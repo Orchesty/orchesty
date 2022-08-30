@@ -105,19 +105,20 @@
         </v-row>
 
         <v-row v-if="!form.readOnly" dense>
-          <v-col class="d-flex">
-            <base-button
-              color="primary"
-              :button-title="$t('button.save')"
-              :on-click="() => saveForm(form.key)"
-            />
-            <base-button
-              v-if="hasOauthAuthorization"
-              class="ml-auto"
-              :disabled="!isFormValid(form.key)"
-              :on-click="authorizeApp"
-              :button-title="$t('button.authorize')"
-            />
+          <v-col>
+            <actions-wrapper>
+              <base-button
+                color="primary"
+                :button-title="$t('button.save')"
+                :on-click="() => saveForm(form.key)"
+              />
+              <base-button
+                v-if="hasOauthAuthorization"
+                :disabled="!isFormValid(form.key)"
+                :on-click="authorizeApp"
+                :button-title="$t('button.authorize')"
+              />
+            </actions-wrapper>
           </v-col>
         </v-row>
       </v-tab-item>
@@ -134,10 +135,17 @@ import { API } from '@/api'
 import NavigationItem from '@/components/commons/NavigationItem'
 import { ROUTES } from '@/router/routes'
 import AppItemPasswordModal from '@/components/commons/AppInstalledPasswordModal'
+import ActionsWrapper from '@/components/commons/ActionsWrapper'
 
 export default {
   name: 'InstalledApp',
-  components: { AppItemPasswordModal, NavigationItem, BaseButton, BaseInput },
+  components: {
+    AppItemPasswordModal,
+    ActionsWrapper,
+    NavigationItem,
+    BaseButton,
+    BaseInput,
+  },
   data() {
     return {
       tab: null,
