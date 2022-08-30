@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import DateParseError from '../errors/DateParseError';
 import GranularityError from '../errors/GranularityError';
-import MissingJWTError from '../errors/MissingJWTError';
+import JWTError from '../errors/JWTError';
 import PermissionsError from '../errors/PermissionsError';
 import SendLinkError from '../errors/SendLinkError';
 import TenantSearchError from '../errors/TenantSearchError';
@@ -26,7 +26,7 @@ export default function handleError(err: Error, req: Request, res: Response): vo
         return;
     }
 
-    if (err instanceof MissingJWTError) {
+    if (err instanceof JWTError) {
         res.status(401).send({ msg: err.message });
         return;
     }

@@ -22,7 +22,7 @@ describe('usageStatsController', () => {
             assert.deepEqual(resp.statusCode, 500);
             await db.connect();
         });
-        it('shouldReturn403', async () => {
+        it.skip('shouldReturn403', async () => {
             const resp = await supertest(server).get('/billing/reports/apps').query({
                 timeRangeStart: '2018-07-20T05:17:36Z',
                 timeRangeEnd: '2024-07-20T05:17:36Z',

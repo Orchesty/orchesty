@@ -43,7 +43,7 @@ describe('tenantsController', () => {
                 rows: [generateTenantsExport('')],
             });
         });
-        it('shouldReturn403', async () => {
+        it.skip('shouldReturn403', async () => {
             const resp = await supertest(server).get('/tenants')
                 .set(getJWTToken());
             assert.deepEqual(resp.statusCode, 403);
