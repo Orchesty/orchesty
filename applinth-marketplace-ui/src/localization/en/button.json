@@ -44,7 +44,9 @@
     "uninstall": "Uninstall",
     "detail": "Detail",
     "approve": "Approve",
+    "accept": "Approve",
     "deny": "Deny",
+    "reject": "Reject",
     "update": "Update",
     "addApplication": "Add an Application"
   }

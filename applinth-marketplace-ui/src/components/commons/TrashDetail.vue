@@ -17,17 +17,13 @@
         </v-row>
       </v-col>
       <v-col class="d-flex justify-end">
-        <base-button
-          :button-title="$t('button.approve')"
-          class="mr-2"
-          :on-click="itemAccept"
+        <trash-approve-modal
+          :trash-item="trash"
+          @trashRejected="onTrashSubmitted"
         />
-        <base-button
-          :button-title="$t('button.deny')"
-          outlined
-          color="secondary"
-          class="mr-2"
-          :on-click="itemReject"
+        <trash-reject-modal
+          :trash-item="trash"
+          @trashRejected="onTrashSubmitted"
         />
         <trash-update-modal
           :trash-item="trash"
@@ -56,17 +52,19 @@ import SubHeading from '@/components/commons/SubHeading'
 import { callApi } from '@/utils/apiFetch'
 import { API } from '@/api'
 import { toLocalDate, toLocalTime } from '@/localization/filters/dateFilters'
-import BaseButton from '@/components/commons/BaseButton'
 import { ROUTES } from '@/router/routes'
 import TrashUpdateModal from '@/components/commons/TrashUpdateModal'
 import JsonEditor from '@/components/commons/JsonEditor'
+import TrashApproveModal from '@/components/commons/TrashAcceptModal'
+import TrashRejectModal from '@/components/commons/TrashRejectModal'
 
 export default {
   name: 'TrashDetail',
   components: {
+    TrashRejectModal,
+    TrashApproveModal,
     JsonEditor,
     TrashUpdateModal,
-    BaseButton,
     SubHeading,
   },
   data() {
@@ -87,25 +85,14 @@ export default {
     },
   },
   methods: {
+    onTrashSubmitted() {
+      this.$emit('taskSubmitted')
+    },
     async refreshItemData() {
       this.trash = await callApi({
         requestData: API.trash.getById,
         params: { id: this.$route.params.id },
       })
-    },
-    async itemAccept() {
-      await callApi({
-        requestData: API.trash.accept,
-        params: { id: this.$route.params.id },
-      })
-      await this.$router.push({ name: ROUTES.TRASH })
-    },
-    async itemReject() {
-      await callApi({
-        requestData: API.trash.reject,
-        params: { id: this.$route.params.id },
-      })
-      await this.$router.push({ name: ROUTES.TRASH })
     },
   },
   watch: {

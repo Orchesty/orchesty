@@ -1,6 +1,16 @@
 {
   "trashModal": {
-    "title": "Update trash item",
-    "body": "Body"
+    "update": {
+      "title": "Update trash item",
+      "body": "Body"
+    },
+    "accept": {
+      "title": "Accept trash item",
+      "body": "Body"
+    },
+    "reject": {
+      "title": "Deny trash item",
+      "body": "Body"
+    }
   }
 }

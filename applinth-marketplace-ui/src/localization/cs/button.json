@@ -44,7 +44,9 @@
     "uninstall": "Odinstalovat",
     "detail": "Detail",
     "approve": "Potvrdit",
+    "accept": "Potvrdit",
     "deny": "Zamítnout",
+    "reject": "Zamítnout",
     "update": "Aktualizovat",
     "addApplication": "Přidat aplikaci"
   }
