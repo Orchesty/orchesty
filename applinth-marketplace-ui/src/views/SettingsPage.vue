@@ -1,17 +1,5 @@
 <template>
   <div v-if="rootApp">
-    <v-row class="mt-4">
-      <v-col cols="2">
-        <v-img max-width="150" contain :src="hasLogo(rootApp)" />
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col cols="5" class="d-flex justify-space-between flex-column">
-        <h1 class="headline font-weight-bold">{{ rootApp.name }}</h1>
-        <p class="mt-4">{{ rootApp.description }}</p>
-      </v-col>
-    </v-row>
-
     <v-row>
       <v-col>
         <v-tabs v-model="tab" height="24">
@@ -55,7 +43,7 @@
                     v-model="settingsForms[index].fields[field.key]"
                     dense
                     outlined
-                    :readonly="field.readonly"
+                    :readonly="field.readOnly"
                     :disabled="field.disabled"
                     :label="field.label"
                     :error-messages="errors"
@@ -78,12 +66,19 @@
                     item-text="key"
                   />
                 </validation-provider>
+                <app-item-password-modal
+                  v-if="field.type === 'password' && !form.readOnly"
+                  :form-key="form.key"
+                  :field-key="field.key"
+                  :app-key="rootApp.key"
+                  :input="field"
+                />
               </div>
             </validation-observer>
           </v-col>
         </v-row>
 
-        <v-row dense>
+        <v-row v-if="!form.readOnly" dense>
           <v-col class="d-flex">
             <base-button
               color="primary"
@@ -105,16 +100,17 @@
 </template>
 
 <script>
-import { config } from '@/config'
 import BaseInput from '@/components/commons/BaseInput'
-import BaseButton from '@/components/commons/BaseButton'
 import { callApi } from '@/utils/apiFetch'
 import { API } from '@/api'
 import { ROUTES } from '@/router/routes'
+import AppItemPasswordModal from '@/components/commons/AppInstalledPasswordModal'
+import { config } from '@/config'
+import BaseButton from '@/components/commons/BaseButton'
 
 export default {
   name: 'SettingsPage',
-  components: { BaseButton, BaseInput },
+  components: { BaseButton, AppItemPasswordModal, BaseInput },
   data() {
     return {
       tab: null,

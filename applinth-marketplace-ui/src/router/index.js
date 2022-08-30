@@ -151,6 +151,19 @@ const routes = [
     path: '/settings',
     name: ROUTES.SETTINGS,
     component: SettingsPage,
+    meta: {
+      auth: true,
+      breadcrumbs: [
+        {
+          text: 'navigation.item.integrations',
+          to: { name: ROUTES.OVERVIEW },
+        },
+        {
+          text: 'navigation.item.settings',
+          to: { name: ROUTES.SETTINGS },
+        },
+      ],
+    },
   },
   {
     path: '/not-logged-in',
