@@ -31,7 +31,6 @@ import JsonEditor from '@/components/commons/JsonEditor'
 import { callApi } from '@/utils/apiFetch'
 import { API } from '@/api'
 import SubHeading from '@/components/commons/SubHeading'
-import { ROUTES } from "@/router/routes";
 export default {
   name: 'TrashUpdateModal',
   components: { SubHeading, JsonEditor, BaseButton, BaseModal },
