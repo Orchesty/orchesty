@@ -164,15 +164,17 @@ export async function createUsageStats(): Promise<void> {
 }
 
 export function getJWTToken(withPermissions = false): { authorization: string } {
+    const token = sign({
+        /* eslint-disable @typescript-eslint/naming-convention */
+        firebase: { tenant: 't1234' },
+        first_name: 'John',
+        last_name: 'Doe',
+        /* eslint-enable @typescript-eslint/naming-convention */
+        email: 'john.doe@mail.com',
+        permissions: withPermissions ? getAllResources() : [],
+    }, 'secretPass');
+
     return {
-        authorization: sign({
-            /* eslint-disable @typescript-eslint/naming-convention */
-            firebase: { tenant: 't1234' },
-            first_name: 'John',
-            last_name: 'Doe',
-            /* eslint-enable @typescript-eslint/naming-convention */
-            email: 'john.doe@mail.com',
-            permissions: withPermissions ? getAllResources() : [],
-        }, 'secretPass'),
+        authorization: `Bearer ${token}`,
     };
 }

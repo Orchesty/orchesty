@@ -35,7 +35,7 @@ export function assignTokenToApiCall(token: string) {
   apiConfig = new Configuration({
     basePath: config.backend.apiBaseUrl,
     middleware: [],
-    headers: { ["authorization"]: token },
+    headers: { ["authorization"]: `Bearer ${token}` },
   });
   apiClient = initApiConfig();
 }

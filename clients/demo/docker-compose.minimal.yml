@@ -127,13 +127,6 @@ services:
                 +YSBT7xOpUaN21ABAkAi8Q2nlieTaxzmZrRXFydVkEgLiLqy8JRPTlA0Mi0POZhS
                 jkqMqGxTP/igqnSjI4TQH6nBTUvK8lNCPAIafi4+
                 -----END RSA PRIVATE KEY-----
-            JWE_PUBLIC_KEY: |
-                -----BEGIN PUBLIC KEY-----
-                MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgH3O2axPpFRQpeq1uqDUrpCpOTNc
-                bYLusMZWBDE6G3CFRKfH7L8vflGEpc1cJP1mvdJwR7cV1lg5ayIasDEHRnM8qkKW
-                IrAhRWsMApJ2ZZiIKWU1wAZ5qkGNYEDYXpA+gZzMDxKJFMc4fKnYOIIC3iZoBwGy
-                GG2Ecads/LpJk2U7AgMBAAE=
-                -----END PUBLIC KEY-----
         working_dir: /var/www/pipes/applinth
         volumes:
             - ../../:/var/www/pipes:cached
