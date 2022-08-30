@@ -161,6 +161,9 @@ export default {
         requestData: API.appStore.uninstallApp,
         params: { key },
       })
+      await this.redirectTo(this.$router, {
+        name: ROUTES.APPLICATIONS,
+      })
     },
 
     isFormValid(key) {
