@@ -33,7 +33,6 @@ import BaseButton from '@/components/commons/BaseButton'
 import { callApi } from '@/utils/apiFetch'
 import { API } from '@/api'
 import SubHeading from '@/components/commons/SubHeading'
-import { ROUTES } from '@/router/routes'
 export default {
   name: 'TrashAcceptModal',
   components: { SubHeading, BaseButton, BaseModal },
