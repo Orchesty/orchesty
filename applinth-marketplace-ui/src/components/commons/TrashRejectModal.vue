@@ -11,17 +11,17 @@
     </template>
     <template #content>
       <div class="d-flex flex-column">
-        <sub-heading>{{ $t('trashModal.body') }}</sub-heading>
+        <p>
+          {{
+            $t('trashModal.reject.body', [trashItem.id, trashItem.topologyName])
+          }}
+        </p>
       </div>
     </template>
     <template #actions>
       <base-button
         :button-title="$t('button.reject')"
         :on-click="rejectTrashItem"
-      />
-      <base-button
-        :button-title="$t('button.cancel')"
-        :on-click="(isOpen = false)"
       />
     </template>
   </base-modal>
@@ -32,10 +32,9 @@ import BaseModal from '@/components/commons/BaseModal'
 import BaseButton from '@/components/commons/BaseButton'
 import { callApi } from '@/utils/apiFetch'
 import { API } from '@/api'
-import SubHeading from '@/components/commons/SubHeading'
 export default {
   name: 'TrashRejectModal',
-  components: { SubHeading, BaseButton, BaseModal },
+  components: { BaseButton, BaseModal },
   props: {
     trashItem: {
       type: Object,

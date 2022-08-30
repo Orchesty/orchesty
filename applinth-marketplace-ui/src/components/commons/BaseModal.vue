@@ -10,7 +10,7 @@
     <template #default>
       <v-card>
         <v-toolbar color="primary" dark>
-          <heading>{{ title }}</heading>
+          <sub-heading>{{ title }}</sub-heading>
         </v-toolbar>
         <v-card-text class="py-6 black--text">
           <slot name="content"></slot>
@@ -24,10 +24,10 @@
 </template>
 
 <script>
-import Heading from '@/components/commons/Heading'
+import SubHeading from '@/components/commons/SubHeading'
 export default {
   name: 'BaseModal',
-  components: { Heading },
+  components: { SubHeading },
   props: {
     title: {
       type: String,
