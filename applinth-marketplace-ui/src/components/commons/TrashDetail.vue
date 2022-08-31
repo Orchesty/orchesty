@@ -20,7 +20,7 @@
         <actions-wrapper>
           <trash-approve-modal
             :trash-item="trash"
-            @trashRejected="onTrashSubmitted"
+            @taskSubmitted="onTrashSubmitted"
           />
           <trash-update-modal
             :trash-item="trash"
@@ -28,7 +28,7 @@
           />
           <trash-reject-modal
             :trash-item="trash"
-            @trashRejected="onTrashSubmitted"
+            @taskSubmitted="onTrashSubmitted"
           />
         </actions-wrapper>
       </v-col>
