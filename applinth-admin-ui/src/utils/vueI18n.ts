@@ -6,8 +6,8 @@ import translations from "../translations";
 Vue.use(VueI18n);
 
 export const i18n = new VueI18n({
-  locale: Locale.Cs,
-  fallbackLocale: Locale.Cs,
+  locale: Locale.En,
+  fallbackLocale: Locale.En,
   messages: {
     ...translations,
   },

@@ -9,7 +9,7 @@
 /* https://vuetifyjs.com/en/styles/colors/#sass-color-pack */
 $color-pack: false;
 
-$font-family: "Poppins", sans-serif;
+$font-family: "Montserrat", sans-serif;
 
 $color-accent-blue: #34aff9;
 $color-yellow: #eabb15;
@@ -31,6 +31,30 @@ $color-white: #ffffff;
 //
 
 // Typography
+
+//Root
+$font-size-root: 0.875rem;
+
+//Input
+$input-font-size: 0.875rem;
+$label-font-size: 0.875rem;
+
+//Data Table
+$data-table-regular-row-font-size: 0.875rem;
+$data-table-regular-header-font-size: 0.875rem;
+
+//Button
+$btn-text-transform: none;
+$btn-font-sizes: (
+        'small': .875rem,
+);
+
+//Font Family
+$body-font-family: 'Montserrat', sans-serif;
+$heading-font-family: 'Montserrat', sans-serif;
+
+//Tooltip
+$tooltip-background-color: rgba(28, 40, 73, 1);
 
 $body-font-family: $font-family;
 
@@ -63,14 +87,13 @@ $headings: (
 
 // Colors
 
-$primary: $color-primary-blue;
-$secondary: $color-accent-blue;
-$accent: $color-accent-blue;
-$error: $color-red;
-$info: $color-secondary-blue;
-$success: $color-green;
-$warning: $color-yellow;
-$anchor: $color-accent-blue;
+$primary: #03233A;
+$gray: #bbbbbb;
+$white: #FFFFFF;
+$success: #4CAF50;
+$error: #BB2124;
+$secondary: #339CB4;
+$black: #212121;
 
 // Component / v-btn
 

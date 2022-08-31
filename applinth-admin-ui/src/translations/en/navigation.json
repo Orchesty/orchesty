@@ -1,0 +1,20 @@
+{
+  "navigation": {
+    "link": {
+      "customers": "Customers",
+      "users": "Users",
+      "overview": "Overview",
+      "profile": "Profile"
+    },
+    "item": {
+      "integrations": "Integrations",
+      "customers": "Customers",
+      "customerDetail": "Customer - Detail",
+      "customerBilling": "Customer - Billing",
+      "users": "Users",
+      "userUpdate": "User - Edit",
+      "overview": "Overview",
+      "profile": "Profile"
+    }
+  }
+}

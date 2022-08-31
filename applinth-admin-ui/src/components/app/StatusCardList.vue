@@ -10,31 +10,13 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import StatusCard from "../commons/StatusCard.vue";
-import { Action, Getter } from "vuex-class";
-import {
-  StatusCardsActions,
-  StatusCards,
-  statusCardsNamespace,
-  StatusCardsGetters,
-} from "@/store/modules/status-cards";
-import { StatusCardsState } from "@/store/modules/status-cards";
 
 @Component({
   components: {
     StatusCard,
   },
 })
-export default class StatusCardList extends Vue {
-  @Getter(`${statusCardsNamespace}/${StatusCardsGetters.GetState}`)
-  numbers!: StatusCards;
-
-  @Action(`${statusCardsNamespace}/${StatusCardsActions.Fetch}`)
-  fetchStatusCards!: () => Promise<StatusCardsState>;
-
-  created() {
-    this.fetchStatusCards();
-  }
-}
+export default class StatusCardList extends Vue {}
 </script>
 
 <style lang="scss" scoped>

@@ -20,11 +20,6 @@ import {
   createTablesModule,
   createState as tableCreateState,
 } from "./modules/tables";
-import {
-  statusCardsNamespace,
-  statusCardsModule,
-  createState as statusCardsCreateState,
-} from "./modules/status-cards";
 
 Vue.use(Vuex);
 
@@ -47,7 +42,6 @@ export default new Vuex.Store({
       state[alertsNamespace] = alertsCreateState();
       state[authNamespace] = authCreateState();
       state[apiNamespace] = apiCreateState();
-      state[statusCardsNamespace] = statusCardsCreateState();
     },
   },
   modules: {
@@ -55,6 +49,5 @@ export default new Vuex.Store({
     [alertsNamespace]: alertsModule,
     [authNamespace]: authModule,
     [apiNamespace]: apiModule,
-    [statusCardsNamespace]: statusCardsModule,
   },
 });

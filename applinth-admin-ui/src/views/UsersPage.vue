@@ -14,8 +14,6 @@
         />
       </template>
     </SimpleTable>
-    <UserDeleteModal />
-    <UserCreateModal />
   </AppLayout>
 </template>
 
@@ -24,8 +22,6 @@ import AppLayout from "../components/commons/layouts/AppLayout.vue";
 import Button from "../components/commons/inputsAndControls/Button.vue";
 import RoundButton from "../components/commons/inputsAndControls/RoundButton.vue";
 import SimpleTable from "@/components/commons/tables/SimpleTable.vue";
-import UserCreateModal from "@/components/app/admins/UserCreateModal.vue";
-import UserDeleteModal from "@/components/app/admins/UserDeleteModal.vue";
 import { Component, Vue } from "vue-property-decorator";
 import { EventBus } from "../enums/EventBus";
 import { Getter } from "vuex-class";
@@ -42,8 +38,6 @@ import {UsageStatsAppsRequest, UsersListRequest} from "@/api/generated";
     Button,
     RoundButton,
     SimpleTable,
-    UserCreateModal,
-    UserDeleteModal,
   },
 })
 export default class UsersPage extends Vue {

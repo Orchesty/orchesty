@@ -1,24 +1,99 @@
 <template>
   <v-app>
     <GlobalAlerts />
-    <router-view />
+
+    <v-app-bar app color="primary">
+      <router-link class="d-flex align-center" to="/">
+        <v-img
+          alt="Applinth Logo"
+          contain
+          min-width="100"
+          src="./assets/svg/logo.svg"
+          width="100"
+        />
+      </router-link>
+
+      <v-spacer />
+
+      <navigation-item
+        v-for="item in navigationItems"
+        :key="item.text"
+        class="navigation-item"
+        :text="item.text"
+        :icon="item.icon"
+        :to="item.to"
+      />
+    </v-app-bar>
+
+    <v-main>
+      <v-container class="wrapper">
+        <v-row>
+          <v-col>
+            <v-breadcrumbs :items="breadCrumbs" class="px-0">
+              <template #item="{ item }">
+                <v-breadcrumbs-item
+                  :to="item.to"
+                  :disabled="item.disabled"
+                  exact
+                >
+                  {{ $t(item.text) }}
+                </v-breadcrumbs-item>
+              </template>
+            </v-breadcrumbs>
+          </v-col>
+        </v-row>
+        <router-view />
+      </v-container>
+    </v-main>
   </v-app>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import GlobalAlerts from "./components/commons/alerts/GlobalAlerts.vue";
+import { Routes } from "@/enums";
+import NavigationItem from "@/components/app/NavigationItem.vue";
 
 @Component({
-  components: { GlobalAlerts },
+  components: { NavigationItem, GlobalAlerts },
 })
-export default class App extends Vue {}
+export default class App extends Vue {
+  navigationItems = [
+    {
+      to: Routes.Overview,
+      icon: "mdi-toy-brick",
+      text: "navigation.link.overview",
+    },
+    {
+      to: Routes.Customers,
+      icon: "mdi-apps",
+      text: "navigation.link.customers",
+    },
+    {
+      to: Routes.Profile,
+      icon: "mdi-delete",
+      text: "navigation.link.profile",
+    },
+    {
+      to: Routes.Users,
+      icon: "mdi-account-cog",
+      text: "navigation.link.users",
+    },
+  ];
+
+  currentAppName: null | string = null;
+
+  get breadCrumbs() {
+    if (this.$route.meta) {
+      if (typeof this.$route.meta.breadcrumbs === "function") {
+        return this.$route.meta.breadcrumbs(this.currentAppName);
+      }
+      return this.$route.meta.breadcrumbs;
+    } else {
+      return null;
+    }
+  }
+}
 </script>
 
-<style lang="scss">
-@import "assets/scss/main";
-
-#app {
-  background-color: $color-white;
-}
-</style>
+<style lang="scss"></style>

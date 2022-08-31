@@ -4,7 +4,7 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import logo from "@/assets/img/logo.svg";
+import logo from "@/assets/svg/logo.svg";
 
 @Component
 export default class Logo extends Vue {
