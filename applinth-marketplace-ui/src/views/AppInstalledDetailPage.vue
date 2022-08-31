@@ -1,128 +1,143 @@
 <template>
-  <div v-if="appActive">
-    <navigation-item
-      :text="navigationItem.text"
-      :icon="navigationItem.icon"
-      :to="navigationItem.to"
-      :color="navigationItem.color"
-    />
-    <v-row class="mt-4">
-      <v-col cols="2">
-        <v-img max-width="150" contain :src="hasLogo(appActive)" />
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col cols="5" class="d-flex justify-space-between flex-column">
-        <h1 class="headline font-weight-bold">{{ appActive.name }}</h1>
-        <p class="mt-4">{{ appActive.description }}</p>
-        <div class="d-flex">
-          <base-button
-            color="error"
-            class="mr-3"
-            :button-title="$t('button.uninstall')"
-            :on-click="() => uninstall(appActive.key)"
-          />
-        </div>
-      </v-col>
-    </v-row>
-
+  <div v-if="loading">
     <v-row>
       <v-col>
-        <v-tabs v-model="tab" height="24">
-          <v-tab
-            v-for="form in settingsConfig"
-            :key="form.key"
-            class="text-transform-none body-2 font-weight-medium primary--text"
-          >
-            {{ form.publicName }}
-          </v-tab>
-        </v-tabs>
+        <base-progress-bar-linear />
       </v-col>
     </v-row>
+  </div>
+  <div v-else>
+    <div v-if="appActive">
+      <navigation-item
+        :text="navigationItem.text"
+        :icon="navigationItem.icon"
+        :to="navigationItem.to"
+        :color="navigationItem.color"
+      />
+      <v-row class="mt-4">
+        <v-col cols="2">
+          <v-img max-width="150" contain :src="hasLogo(appActive)" />
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="5" class="d-flex justify-space-between flex-column">
+          <h1 class="headline font-weight-bold">{{ appActive.name }}</h1>
+          <p class="mt-4">{{ appActive.description }}</p>
+          <div class="d-flex">
+            <base-button
+              color="error"
+              class="mr-3"
+              :button-title="$t('button.uninstall')"
+              :on-click="() => uninstall(appActive.key)"
+              :disabled="isRequestPending"
+              :loading="isUninstalling"
+            />
+          </div>
+        </v-col>
+      </v-row>
 
-    <v-tabs-items v-model="tab" class="mt-4">
-      <v-tab-item
-        v-for="(form, index) in settingsConfig"
-        :key="form.key"
-        class="w-400"
-      >
-        <v-row v-if="form.description.length > 0" dense class="mt-2">
-          {{ form.description }}
-        </v-row>
-        <v-row dense class="mt-2">
-          <v-col>
-            <validation-observer
-              :ref="form.key"
-              tag="form"
-              slim
-              @submit.prevent="() => saveForm(form.key)"
+      <v-row>
+        <v-col>
+          <v-tabs v-model="tab" height="24">
+            <v-tab
+              v-for="form in settingsConfig"
+              :key="form.key"
+              class="text-transform-none body-2 font-weight-medium primary--text"
             >
-              <div v-for="field in form.fields" :key="field.key">
-                <validation-provider
-                  v-if="field.type === 'text'"
-                  v-slot="{ errors }"
-                  slim
-                  :name="field.key"
-                  :rules="field.required ? 'required' : ''"
-                >
-                  <base-input
-                    v-model="settingsForms[index].fields[field.key]"
-                    dense
-                    outlined
-                    :readonly="field.readonly"
-                    :disabled="field.disabled"
-                    :label="field.label"
-                    :error-messages="errors"
-                  />
-                </validation-provider>
-                <validation-provider
-                  v-if="field.type === 'selectbox'"
-                  :name="field.key"
-                  slim
-                >
-                  <v-select
-                    v-model="settingsForms[index].fields[field.key]"
-                    dense
-                    outlined
-                    :readonly="field.readonly"
-                    :disabled="field.disabled"
-                    :label="field.label"
-                    :items="getEntries(field.choices)"
-                    item-value="value"
-                    item-text="key"
-                  />
-                </validation-provider>
-                <app-item-password-modal
-                  v-if="field.type === 'password' && !form.readOnly"
-                  :form-key="form.key"
-                  :field-key="field.key"
-                  :app-key="appActive.key"
-                  :input="field"
-                />
-              </div>
-            </validation-observer>
-          </v-col>
-        </v-row>
+              {{ form.publicName }}
+            </v-tab>
+          </v-tabs>
+        </v-col>
+      </v-row>
 
-        <v-row v-if="!form.readOnly" dense>
-          <v-col>
-            <actions-wrapper>
-              <base-button
-                color="primary"
-                :button-title="$t('button.save')"
-                :on-click="() => saveForm(form.key)"
-              />
-              <base-button
-                v-if="hasOauthAuthorization"
-                :disabled="!isFormValid(form.key)"
-                :on-click="authorizeApp"
-                :button-title="$t('button.authorize')"
-              />
-            </actions-wrapper>
-          </v-col>
-        </v-row>
-      </v-tab-item>
-    </v-tabs-items>
+      <v-tabs-items v-model="tab" class="mt-4">
+        <v-tab-item
+          v-for="(form, index) in settingsConfig"
+          :key="form.key"
+          class="w-400"
+        >
+          <v-row v-if="form.description.length > 0" dense class="mt-2">
+            {{ form.description }}
+          </v-row>
+          <v-row dense class="mt-2">
+            <v-col>
+              <validation-observer
+                :ref="form.key"
+                tag="form"
+                slim
+                @submit.prevent="() => saveForm(form.key)"
+              >
+                <div v-for="field in form.fields" :key="field.key">
+                  <validation-provider
+                    v-if="field.type === 'text'"
+                    v-slot="{ errors }"
+                    slim
+                    :name="field.key"
+                    :rules="field.required ? 'required' : ''"
+                  >
+                    <base-input
+                      v-model="settingsForms[index].fields[field.key]"
+                      dense
+                      outlined
+                      :readonly="field.readonly"
+                      :disabled="field.disabled"
+                      :label="field.label"
+                      :error-messages="errors"
+                    />
+                  </validation-provider>
+                  <validation-provider
+                    v-if="field.type === 'selectbox'"
+                    :name="field.key"
+                    slim
+                  >
+                    <v-select
+                      v-model="settingsForms[index].fields[field.key]"
+                      dense
+                      outlined
+                      :readonly="field.readonly"
+                      :disabled="field.disabled"
+                      :label="field.label"
+                      :items="getEntries(field.choices)"
+                      item-value="value"
+                      item-text="key"
+                    />
+                  </validation-provider>
+                  <app-item-password-modal
+                    v-if="field.type === 'password' && !form.readOnly"
+                    :form-key="form.key"
+                    :field-key="field.key"
+                    :app-key="appActive.key"
+                    :input="field"
+                    :disabled="isRequestPending"
+                  />
+                </div>
+              </validation-observer>
+            </v-col>
+          </v-row>
+
+          <v-row v-if="!form.readOnly" dense>
+            <v-col>
+              <actions-wrapper>
+                <base-button
+                  color="primary"
+                  :button-title="$t('button.save')"
+                  :on-click="() => saveForm(form.key)"
+                  :disabled="isRequestPending"
+                  :loading="isSaving"
+                />
+                <base-button
+                  v-if="hasOauthAuthorization"
+                  :disabled="!isFormValid(form.key) || isRequestPending"
+                  :loading="isSaving"
+                  :on-click="authorizeApp"
+                  :button-title="$t('button.authorize')"
+                />
+              </actions-wrapper>
+            </v-col>
+          </v-row>
+        </v-tab-item>
+      </v-tabs-items>
+    </div>
   </div>
 </template>
 
@@ -136,10 +151,12 @@ import NavigationItem from '@/components/commons/NavigationItem'
 import { ROUTES } from '@/router/routes'
 import AppItemPasswordModal from '@/components/commons/AppInstalledPasswordModal'
 import ActionsWrapper from '@/components/commons/ActionsWrapper'
+import BaseProgressBarLinear from '@/components/commons/BaseProgressBarLinear'
 
 export default {
   name: 'InstalledApp',
   components: {
+    BaseProgressBarLinear,
     AppItemPasswordModal,
     ActionsWrapper,
     NavigationItem,
@@ -155,6 +172,9 @@ export default {
       webhooksSettings: {},
       hasOauthAuthorization: false,
       appActive: null,
+      loading: false,
+      isUninstalling: false,
+      isSaving: false,
       navigationItem: {
         to: ROUTES.APPLICATIONS,
         icon: 'mdi-arrow-left-circle',
@@ -163,8 +183,14 @@ export default {
       },
     }
   },
+  computed: {
+    isRequestPending() {
+      return this.isSaving || this.loading || this.isUninstalling
+    },
+  },
   methods: {
     async uninstall(key) {
+      this.isUninstalling = true
       await callApi({
         requestData: API.appStore.uninstallApp,
         params: { key },
@@ -172,6 +198,7 @@ export default {
       await this.redirectTo(this.$router, {
         name: ROUTES.APPLICATIONS,
       })
+      this.isUninstalling = false
     },
 
     isFormValid(key) {
@@ -180,6 +207,8 @@ export default {
     },
 
     async saveForm(key) {
+      this.isSaving = true
+
       const form = this.getFormByKey(key)
 
       const formSettings = {
@@ -200,15 +229,18 @@ export default {
           params: { key: this.appActive.key },
         })
       }
+      this.isSaving = false
     },
 
     async authorizeApp() {
+      this.isSaving = true
       const authorizeURL = new URL(
         `/api/application/${this.appActive.key}/authorize`,
         config.backend.apiBaseUrl
       )
       authorizeURL.searchParams.append('redirect_url', window.location.href)
       window.open(authorizeURL.href, '_blank').focus()
+      this.isSaving = false
     },
 
     getEntries(choices) {
@@ -303,11 +335,13 @@ export default {
     },
   },
   async created() {
+    this.loading = true
     this.appActive = await callApi({
       requestData: API.appStore.getApp,
       params: { key: this.$route.params.id },
     })
     this.$emit('appChanged', this.appActive.name)
+    this.loading = false
   },
   beforeDestroy() {
     this.$emit('appChanged', null)

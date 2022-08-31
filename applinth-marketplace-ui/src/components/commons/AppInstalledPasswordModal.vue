@@ -10,6 +10,7 @@
         :on="on"
         :button-title="$t('button.password')"
         outlined
+        :disabled="disabled"
       />
     </template>
     <template #content>
@@ -55,6 +56,10 @@ export default {
     formKey: {
       type: String,
       required: true,
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
