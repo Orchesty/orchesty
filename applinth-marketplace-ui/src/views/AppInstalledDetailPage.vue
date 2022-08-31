@@ -23,7 +23,7 @@
         <v-col cols="5" class="d-flex justify-space-between flex-column">
           <h1 class="headline font-weight-bold">{{ appActive.name }}</h1>
           <p class="mt-4">{{ appActive.description }}</p>
-          <div class="d-flex">
+          <div v-if="appActive.isInstallable" class="d-flex">
             <base-button
               color="error"
               class="mr-3"
