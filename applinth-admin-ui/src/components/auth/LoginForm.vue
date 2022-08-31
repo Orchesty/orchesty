@@ -30,14 +30,7 @@
           Zapomenuté heslo?
         </router-link>
       </div>
-      <Button
-        type="submit"
-        color="primary"
-        no-text-transform
-        large
-        block
-        class="button"
-      >
+      <Button type="submit" color="primary" :on-click="submit">
         {{ $t("button.login") }}
       </Button>
     </v-form>
@@ -98,11 +91,6 @@ export default class LoginForm extends Vue {
 </script>
 
 <style lang="scss" scoped>
-.button {
-  font-size: 20px;
-  padding: 10px;
-}
-
 .link {
   text-decoration: none;
 

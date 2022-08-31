@@ -15,6 +15,7 @@
     :outlined="outlined"
     :loading="loading"
     :to="!!to ? to : null"
+    @click="onClick"
     v-bind="attrs"
     v-on="on"
   >
@@ -84,6 +85,10 @@ export default class Button extends Vue {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   @Prop({ required: false, type: Object, default: () => {} })
   private customStyle!: boolean;
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  @Prop({ required: false, type: Function, default: () => {} })
+  private onClick!: any;
 
   @Prop({ required: false, type: Number, default: 110 })
   private minWidth?: number;
