@@ -124,19 +124,19 @@ export default class UsersService {
             uid: user.uid,
             email: user.email,
             emailVerified: user.emailVerified,
-            displayName: user.displayName ?? null,
-            photoUrl: user.photoURL ?? null,
-            phoneNumber: user.phoneNumber ?? null,
+            displayName: user.displayName ?? undefined,
+            photoUrl: user.photoURL ?? undefined,
+            phoneNumber: user.phoneNumber ?? undefined,
             disabled: user.disabled,
             metadata: {
                 creationTime: user.metadata.creationTime,
-                lastSignTime: user.metadata.lastSignInTime ?? null,
+                lastSignTime: user.metadata.lastSignInTime ?? undefined,
             },
             providerData: user.providerData,
             passwordHash: user.passwordHash,
             passwordSalt: user.passwordSalt,
             tokensValidAfterTime: user.tokensValidAfterTime,
-            tenantId: user.tenantId ?? null,
+            tenantId: user.tenantId ?? undefined,
         };
     }
 

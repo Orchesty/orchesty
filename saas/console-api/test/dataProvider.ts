@@ -106,8 +106,6 @@ export function generateUsersExport(name = 'neco'): unknown {
         email: 'neco@neco.com',
         emailVerified: false,
         displayName: name,
-        photoUrl: null,
-        phoneNumber: null,
         disabled: false,
         metadata: {
             creationTime: 'Thu, 28 Jul 2022 08:21:20 GMT',
@@ -120,15 +118,22 @@ export function generateUsersExport(name = 'neco'): unknown {
 }
 
 export function generateTenantsExport(name = 'neco'): unknown {
-    return {
+    let tenant = {
         tenantId: 't1234',
-        displayName: name || null,
         emailSignInConfig: {
             enabled: true,
             passwordRequired: true,
         },
         anonymousSignInEnabled: false,
     };
+
+    if (name) {
+        tenant = Object.assign(tenant, {
+            displayName: name,
+        });
+    }
+
+    return tenant;
 }
 
 export async function createUsageStats(): Promise<void> {

@@ -1,3 +1,4 @@
+import cors from 'cors';
 import express, { Express, RequestHandler } from 'express';
 import { initializeApp } from 'firebase/app';
 import admin from 'firebase-admin';
@@ -12,7 +13,6 @@ import Mongo from './storage/mongo/Mongo';
 import TenantService from './tenants/TenantService';
 import UsageStatsService from './usageStats/UsageStatsService';
 import UsersService from './users/UsersService';
-import cors from 'cors'
 
 /* eslint-disable import/no-mutable-exports */
 let db: Mongo;
@@ -50,16 +50,19 @@ async function initServices(): Promise<void> {
 function createServer(): Express {
     server = express();
     server.use(
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         cors({
-            origin: '*',
+            origin: app.corsOrigin,
             optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
             credentials: true,
         }),
     );
+
     const spec = fs.readFileSync(app.openapiPath, 'utf8');
     const oasDoc = jsyaml.load(spec);
     const options = {
         controllers: `${__dirname}/controllers`,
+        loglevel: 'warn',
     };
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     configure(options);
