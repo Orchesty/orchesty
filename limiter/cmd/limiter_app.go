@@ -69,7 +69,7 @@ func createIndexes(store storage.Storage, indexes []mongo.IndexModel) error {
 
 func prepareStorage() storage.Storage {
 	db := storage.NewMongo(
-		env.GetEnv("MONGO_COLLECTION", "messages"),
+		env.GetEnv("MONGO_COLLECTION", "limiter"),
 		logger.GetLogger(),
 	)
 	db.Connect()
