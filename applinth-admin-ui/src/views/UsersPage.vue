@@ -34,6 +34,7 @@ import { api } from "@/api";
 import { authNamespace, AuthGetters, User } from "../store/modules/auth";
 import { callApi } from "@/utils/apiClient";
 import { eventBus } from "../utils/eventBus";
+import {UsageStatsAppsRequest, UsersListRequest} from "@/api/generated";
 
 @Component({
   components: {
@@ -87,7 +88,9 @@ export default class UsersPage extends Vue {
   }
 
   async created() {
-    this.users = await callApi(api.users.list);
+    this.users = await callApi<UsersListRequest>(api.users.list, {
+      tenantId: this.currentUser.tenantId ?? undefined,
+    });
   }
 }
 </script>

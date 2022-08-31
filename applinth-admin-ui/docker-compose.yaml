@@ -12,10 +12,10 @@ services:
     environment:
       # Envs for tests are load from .jest/testEnvs.js
       JEST_DOCKER: 1
-      APP_ENV: "debug"
+      NODE_ENV: "debug"
       MONGODB_DSN: mongodb://mongo/console-api
       FIREBASE_API_KEY: AIzaSyANIRePUXX1f8fr-IS2ljSU8FgLkC53a0o
-    command: sleep infinity
+    command: sh -c 'pnpm install && pnpm start'
 
   mongo:
     image: mongo:latest
