@@ -1,0 +1,20 @@
+{
+  "navigation": {
+    "link": {
+      "customers": "Zákazníci",
+      "users": "Uživatelé",
+      "overview": "Přehled",
+      "profile": "Profil"
+    },
+    "item": {
+      "integrations": "Integrace",
+      "customers": "Zákazníci",
+      "customerDetail": "Zákazník - Detail",
+      "customerBilling": "Zákazník - Fakturace",
+      "users": "Uživatelé",
+      "userUpdate": "Uživatel - Edit",
+      "overview": "Přehled",
+      "profile": "Profil"
+    }
+  }
+}

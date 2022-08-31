@@ -17,18 +17,28 @@ const baseRoutes = [
     redirect: { name: Routes.Overview },
   },
   {
-    path: "/profil",
+    path: "/profile",
     name: Routes.Profile,
     component: () => import("../views/ProfilePage.vue"),
     meta: {
       auth: ViewAuth.Private,
+      breadcrumbs: [
+        {
+          text: "navigation.item.integrations",
+          to: null,
+        },
+        {
+          text: "navigation.item.profile",
+          to: { name: Routes.Profile },
+        },
+      ],
     },
   },
 ];
 
 const authRoutes = [
   {
-    path: "/prihlaseni",
+    path: "/login",
     name: Routes.Login,
     component: () => import("../views/LoginPage.vue"),
     meta: {
@@ -36,7 +46,7 @@ const authRoutes = [
     },
   },
   {
-    path: "/zapomenute-heslo",
+    path: "/lost-password",
     name: Routes.ForgotPassword,
     component: () => import("../views/ForgotPasswordPage.vue"),
     meta: {
@@ -44,7 +54,7 @@ const authRoutes = [
     },
   },
   {
-    path: "/reset-hesla",
+    path: "/reset-password",
     name: Routes.ResetPassword,
     component: () => import("../views/ResetPasswordPage.vue"),
     meta: {
@@ -52,7 +62,7 @@ const authRoutes = [
     },
   },
   {
-    path: "/nove-heslo/:token",
+    path: "/new-password/:token",
     name: Routes.NewPassword,
     component: () => import("../views/NewPasswordPage.vue"),
     meta: {
@@ -60,7 +70,7 @@ const authRoutes = [
     },
   },
   {
-    path: "/heslo-zmeneno",
+    path: "/password-changed",
     name: Routes.ChangedPassword,
     component: () => import("../views/ChangedPasswordPage.vue"),
     meta: {
@@ -75,6 +85,16 @@ const overview = {
   component: () => import("../views/OverviewPage.vue"),
   meta: {
     auth: ViewAuth.Private,
+    breadcrumbs: [
+      {
+        text: "navigation.item.integrations",
+        to: null,
+      },
+      {
+        text: "navigation.item.overview",
+        to: Routes.Overview,
+      },
+    ],
   },
 };
 
@@ -85,6 +105,18 @@ const applications = [
     component: () => import("../views/ApplicationDetailPage.vue"),
     meta: {
       auth: ViewAuth.Private,
+      breadcrumbs: (appActiveName: string) => {
+        return [
+          {
+            text: "navigation.item.integrations",
+            to: null,
+          },
+          {
+            text: appActiveName,
+            to: { name: Routes.ApplicationDetail },
+          },
+        ];
+      },
     },
   },
 ];
@@ -96,6 +128,16 @@ const usersRoutes = [
     component: () => import("../views/UsersPage.vue"),
     meta: {
       auth: ViewAuth.Private,
+      breadcrumbs: [
+        {
+          text: "navigation.item.integrations",
+          to: null,
+        },
+        {
+          text: "navigation.item.users",
+          to: { name: Routes.Users },
+        },
+      ],
     },
   },
   {
@@ -104,6 +146,20 @@ const usersRoutes = [
     component: () => import("../views/UserUpdatePage.vue"),
     meta: {
       auth: ViewAuth.Private,
+      breadcrumbs: [
+        {
+          text: "navigation.item.integrations",
+          to: null,
+        },
+        {
+          text: "navigation.item.users",
+          to: { name: Routes.Users },
+        },
+        {
+          text: "navigation.item.userUpdate",
+          to: { name: Routes.UserUpdate },
+        },
+      ],
     },
   },
 ];
@@ -115,6 +171,16 @@ const customersRoutes = [
     component: () => import("../views/CustomersPage.vue"),
     meta: {
       auth: ViewAuth.Private,
+      breadcrumbs: [
+        {
+          text: "navigation.item.integrations",
+          to: null,
+        },
+        {
+          text: "navigation.item.customers",
+          to: { name: Routes.Customers },
+        },
+      ],
     },
   },
   {
@@ -123,6 +189,20 @@ const customersRoutes = [
     component: () => import("../views/CustomerBillingPage.vue"),
     meta: {
       auth: ViewAuth.Private,
+      breadcrumbs: [
+        {
+          text: "navigation.item.integrations",
+          to: null,
+        },
+        {
+          text: "navigation.item.customers",
+          to: { name: Routes.Customers },
+        },
+        {
+          text: "navigation.item.customerBilling",
+          to: { name: Routes.CustomerBilling },
+        },
+      ],
     },
   },
   {
@@ -131,6 +211,20 @@ const customersRoutes = [
     component: () => import("../views/CustomerDetailPage.vue"),
     meta: {
       auth: ViewAuth.Private,
+      breadcrumbs: [
+        {
+          text: "navigation.item.integrations",
+          to: null,
+        },
+        {
+          text: "navigation.item.customers",
+          to: { name: Routes.Customers },
+        },
+        {
+          text: "navigation.item.customerDetail",
+          to: { name: Routes.CustomerDetail },
+        },
+      ],
     },
   },
 ];

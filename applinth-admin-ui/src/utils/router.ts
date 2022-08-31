@@ -31,7 +31,7 @@ router.beforeEach(async (to, from, next) => {
 });
 
 router.afterEach((to) => {
-  document.title = `${i18n.t("pageTitle.siteName")} | ${i18n.t(
-    `pageTitle.route.${to.name}`
+  document.title = `Applinth | ${i18n.t(
+    `navigation.item.${to.name?.toLowerCase()}`
   )}`;
 });

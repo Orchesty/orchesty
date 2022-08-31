@@ -1,12 +1,12 @@
 <template>
-  <div>
-    <slot></slot>
-  </div>
+  <h1 class="headline font-weight-bold"><slot /></h1>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 
 @Component
-export default class AppLayout extends Vue {}
+export default class Heading extends Vue {}
 </script>
+
+<style scoped></style>
