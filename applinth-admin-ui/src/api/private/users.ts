@@ -7,7 +7,7 @@ export type UsersApi = "list";
 export const users: ApiConfigs<UsersApi> = {
   list: {
     id: "USERS_LIST",
-    request: () => apiClient.usersApi.usersList(),
+    request: (params) => apiClient.usersApi.usersList(params),
     transform: (data: UsersRows) => data.rows,
   },
 };
