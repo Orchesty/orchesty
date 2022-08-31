@@ -246,7 +246,7 @@ paths:
                 - Users
             parameters:
                 - $ref: "#/components/parameters/tenantId"
-                - $ref: "#/components/parameters/uid"
+                - $ref: "#/components/parameters/uidPath"
             responses:
                 '200':
                     description: Success
@@ -272,7 +272,7 @@ paths:
             tags:
                 - Users
             parameters:
-                - $ref: "#/components/parameters/uid"
+                - $ref: "#/components/parameters/uidPath"
                 - $ref: "#/components/parameters/tenantId"
             requestBody:
                 $ref: '#/components/requestBodies/UpdateUserBody'
@@ -301,7 +301,7 @@ paths:
             tags:
                 - Users
             parameters:
-                - $ref: "#/components/parameters/uid"
+                - $ref: "#/components/parameters/uidPath"
                 - $ref: "#/components/parameters/tenantId"
             responses:
                 '200':
@@ -363,7 +363,7 @@ paths:
             tags:
                 - Tenants
             parameters:
-                - $ref: "#/components/parameters/tenantId"
+                - $ref: "#/components/parameters/tenantIdPath"
             responses:
                 '200':
                     description: Success
@@ -389,7 +389,7 @@ paths:
             tags:
                 - Tenants
             parameters:
-                -   $ref: "#/components/parameters/tenantId"
+                -   $ref: "#/components/parameters/tenantIdPath"
             requestBody:
                 $ref: '#/components/requestBodies/UpdateTenantBody'
             responses:
@@ -417,7 +417,7 @@ paths:
             tags:
                 - Tenants
             parameters:
-                -   $ref: "#/components/parameters/tenantId"
+                -   $ref: "#/components/parameters/tenantIdPath"
             responses:
                 '200':
                     description: Success
@@ -512,6 +512,13 @@ components:
             required: false
             schema:
                 type: string
+        tenantIdPath:
+            in: path
+            name: tenantId
+            description: Tenant ID to get data for. If not specified, logged-in user is assumed
+            required: true
+            schema:
+                type: string
         timeRangeStart:
             in: query
             name: timeRangeStart
@@ -590,6 +597,13 @@ components:
             required: false
             schema:
                 type: string
+        uidPath:
+            in: path
+            name: uid
+            description: User identifier
+            required: true
+            schema:
+                type: string
 
     requestBodies:
         UserBody:
@@ -648,6 +662,8 @@ components:
                             instanceIds:
                                 description: Array of instance ids
                                 type: array
+                                items:
+                                    type: string
         UsageStatsInstalledApps:
             type: object
             properties:
@@ -711,6 +727,8 @@ components:
                             appNames:
                                 description: Array of application names
                                 type: array
+                                items:
+                                    type: string
                             totalCost:
                                 description: Total installs cost for this user
                                 type: integer
@@ -864,6 +882,7 @@ components:
                 displayName:
                     type: string
                     nullable: true
+
                 emailSignInConfig:
                     type: object
                     nullable: true
