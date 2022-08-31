@@ -23,7 +23,7 @@ interface IPersistedMessage {
     created_at: number;
 }
 
-const COLLECTION_NAME = "messages";
+const COLLECTION_NAME = "repeater";
 
 class MongoMessageStorage implements IMessageStorage {
 
