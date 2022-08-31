@@ -102,7 +102,7 @@ export default class TenantService {
     private mapTenantRecordToExport(tenant: Tenant): unknown {
         return {
             tenantId: tenant.tenantId,
-            displayName: tenant.displayName ?? null,
+            displayName: tenant.displayName ?? undefined,
             emailSignInConfig: tenant.emailSignInConfig,
             anonymousSignInEnabled: tenant.anonymousSignInEnabled,
         };
