@@ -35,7 +35,9 @@
             :text="$t('button.installed')"
             color="primary"
             :to="{
-              name: ROUTES.APPLICATION_AVAILABLE,
+              name: app.installed
+                ? ROUTES.APPLICATION_INSTALLED
+                : ROUTES.APPLICATION_AVAILABLE,
               params: { id: app.key },
             }"
           />
