@@ -146,6 +146,7 @@ import { config } from '@/config'
 import BaseInput from '@/components/commons/BaseInput'
 import BaseButton from '@/components/commons/BaseButton'
 import { callApi } from '@/utils/apiFetch'
+import { redirectTo } from '@/utils/redirect'
 import { API } from '@/api'
 import NavigationItem from '@/components/commons/NavigationItem'
 import { ROUTES } from '@/router/routes'
@@ -181,6 +182,7 @@ export default {
         text: 'navigation.link.backToTheApplications',
         color: 'primary',
       },
+      redirectTo,
     }
   },
   computed: {
