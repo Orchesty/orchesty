@@ -28,6 +28,7 @@ services:
         image: orchesty/notification-sender:${VERSION}
         working_dir: /var/www
         environment:
+            MONGO_DB: ${MAIN_DB}
             MONGO_CONNECTION: ${MONGO_DSN}
 
     starting-point:
@@ -51,7 +52,7 @@ services:
     topology-api:
         image: orchesty/topology-api:${VERSION}
         environment:
-            DEPLOYMENT_PREFIX: demo
+            DEPLOYMENT_PREFIX: ${MAIN_DB}
             GENERATOR_NETWORK: ${NETWORK_NAME}
             GENERATOR_MODE: ${GENERATOR_MODE}
             GENERATOR_PATH: /srv/topology
@@ -93,7 +94,7 @@ services:
             NOTIFICATION_DSN: notification-sender-api
             RABBITMQ_DSN: ${RABBITMQ_DSN}
             MONGODB_DSN: ${MONGO_DSN}
-            MONGODB_DB: demo
+            MONGODB_DB: ${MAIN_DB}
             METRICS_DSN: ${METRICS_DSN}
             METRICS_DB: metrics
             METRICS_SERVICE: mongo
@@ -136,7 +137,7 @@ services:
         image: orchesty/logstash:${VERSION}
         environment:
             - MONGO_DSN=mongodb://mongo:27017
-            - MONGO_DB=demo
+            - MONGO_DB=${MAIN_DB}
             - MONGO_COLLECTION=Logs
             - LS_JAVA_OPTS=-Xms512m -Xmx512m
 

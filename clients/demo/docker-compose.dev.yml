@@ -33,6 +33,7 @@ services:
         environment:
             RABBITMQ_DSN: ${RABBITMQ_DSN}
             MONGO_CONNECTION: ${MONGO_DSN}
+            MONGO_DB: ${MAIN_DB}
 
     multi-counter:
         image: orchesty/counter:${VERSION}
