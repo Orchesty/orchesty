@@ -8,7 +8,6 @@ import (
 	"github.com/hanaboso/pipes/bridge/pkg/bridge/types"
 	"github.com/hanaboso/pipes/bridge/pkg/enum"
 	"github.com/hanaboso/pipes/bridge/pkg/model"
-	"github.com/hanaboso/pipes/bridge/pkg/utils/stringx"
 	"net/http"
 	"time"
 )
@@ -68,8 +67,13 @@ func (h httpBeforeProcess) BeforeProcess(node types.Node, dto *model.ProcessMess
 		Lock(host)
 		return dto.Error(fmt.Errorf("result status [%d]", response.StatusCode))
 	} else if response.StatusCode >= 300 {
-		dto.SetHeader(enum.Header_ResultMessage, stringx.Truncate(string(dto.Body), 200))
-		return dto.Trash(fmt.Errorf("result status [%d], message: %s", response.StatusCode, string(dto.Body)))
+		return dto.Trash(
+			fmt.Errorf(
+				"result status [%d], message: %s",
+				response.StatusCode,
+				dto.GetHeaderOrDefault(enum.Header_ResultMessage, ""),
+			),
+		)
 	}
 
 	// Only check for result code existence -> process is outside http worker
