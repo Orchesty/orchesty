@@ -1,0 +1,45 @@
+---
+documentation build:
+  stage: build
+  only:
+    changes:
+      - docusaurus/documentation/**/*
+  script:
+    - cd docusaurus/documentation
+    - make build PORTAL_API_URL=%PORTAL_API_URL% # placeholder to be replaced by deploy job (Makefile)
+  cache:
+    key: "$CI_COMMIT_REF_SLUG"
+    paths:
+      - docusaurus/documentation/node_modules
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - docusaurus/documentation/build
+
+.site_deploy:
+  stage: deploy
+  when: manual
+  only:
+    changes:
+      - docusaurus/documentation/**/*
+  dependencies:
+    - documentation build
+  script:
+    - cd docusaurus/documentation
+    - make deploy BUCKET=pipes-website-${ENV} PORTAL_API_URL=${PORTAL_API_URL}
+    - echo Deployed to http://pipes-website-${ENV}.s3-website-eu-west-1.amazonaws.com/
+
+documentation deploy stage:
+  variables:
+    ENV: stage
+    PORTAL_API_URL: "${PORTAL_API_URL_STAGE}"
+  extends: .site_deploy
+
+documentation deploy prod:
+  variables:
+    ENV: prod
+    PORTAL_API_URL: ${PORTAL_API_URL_PROD}
+  extends: .site_deploy
+  only:
+    refs:
+      - master

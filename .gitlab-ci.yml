@@ -15,6 +15,7 @@ include:
   - local: "/counter/.gitlab-ci.yml"
   - local: "/cron/.gitlab-ci.yml"
   - local: "/detector/.gitlab-ci.yml"
+  - local: "/docusaurus/documentation/.gitlab-ci.yml"
   - local: "/influxdb/.gitlab-ci.yml"
   - local: "/kapacitor/.gitlab-ci.yml"
   - local: "/limiter/.gitlab-ci.yml"
