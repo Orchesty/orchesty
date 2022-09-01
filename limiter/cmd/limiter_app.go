@@ -91,7 +91,9 @@ func prepareRabbit() (rabbitmq.Consumer, rabbitmq.Publisher, error) {
 	)
 
 	// Input queue
-	conn.AddQueue(rabbitmq.Queue{Name: inputQueue, Durable: true})
+	conn.AddQueue(rabbitmq.Queue{Name: inputQueue, Durable: true, Args: map[string]interface{}{
+		"x-queue-type": "quorum",
+	}})
 	conn.Connect()
 	conn.Setup()
 

@@ -3,8 +3,8 @@ package rabbitmq
 import (
 	"context"
 	"github.com/hanaboso/pipes/bridge/pkg/model"
+	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/rs/zerolog/log"
-	"github.com/streadway/amqp"
 	"time"
 )
 
@@ -59,7 +59,9 @@ func declareExchange(channel *amqp.Channel, exchange string) {
 }
 
 func declareQueue(channel *amqp.Channel, queueName string) {
-	if _, err := channel.QueueDeclare(queueName, true, false, false, false, nil); err != nil {
+	if _, err := channel.QueueDeclare(queueName, true, false, false, false, map[string]interface{}{
+		"x-queue-type": "quorum",
+	}); err != nil {
 		log.Fatal().Err(err).Send()
 	}
 }

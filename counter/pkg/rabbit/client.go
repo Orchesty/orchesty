@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/hanaboso/pipes/counter/pkg/config"
 	"github.com/hanaboso/pipes/counter/pkg/utils/intx"
-	"github.com/streadway/amqp"
+	amqp "github.com/rabbitmq/amqp091-go"
 	"sync"
 	"time"
 )
