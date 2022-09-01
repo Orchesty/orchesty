@@ -1,6 +1,3 @@
-# reset workflow rules from essentials (this is a stand alone pipeline)
-workflow: {}
-
 include:
   - local: "/.gitlab/ci/essentials.gitlab-ci.yml"
 

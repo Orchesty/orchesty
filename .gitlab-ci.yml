@@ -1,5 +1,6 @@
 include:
   - local: "/.gitlab/ci/essentials.gitlab-ci.yml"
+  - local: "/.gitlab/ci/default-workflow.gitlab-ci.yml"
 
   - local: "/.gitlab/ci/build.gitlab-ci.yml"
   - local: "/.gitlab/ci/deploy.gitlab-ci.yml"
