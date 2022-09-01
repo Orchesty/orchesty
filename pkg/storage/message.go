@@ -114,9 +114,11 @@ func NewMessage(delivery *amqp.Delivery) (*Message, error) {
 	delete(processDto.Headers, ReturnRoutingKeyHeader)
 
 	newBody, _ := json.Marshal(processDto)
+	headers := delivery.Headers
+	headers["published-timestamp"] = time.Now().UnixNano() / 1_000_000
 
 	innerMsg := amqp.Publishing{
-		Headers:     delivery.Headers,
+		Headers:     headers,
 		Body:        newBody,
 		ContentType: delivery.ContentType,
 		Priority:    delivery.Priority,
