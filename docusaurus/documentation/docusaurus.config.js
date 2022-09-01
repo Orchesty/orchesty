@@ -1,0 +1,62 @@
+const lightCodeTheme = require('prism-react-renderer/themes/github');
+const darkCodeTheme = require('prism-react-renderer/themes/dracula');
+
+/** @type {import('@docusaurus/types').DocusaurusConfig} */
+module.exports = {
+  title: 'Integration and Orchestration layer',
+  tagline: 'Orchesty documentation',
+  url: 'https://www.hanaboso.com',
+  baseUrl: '/',
+  onBrokenLinks: 'throw',
+  onBrokenMarkdownLinks: 'warn',
+  favicon: 'img/Orch_fav.ico',
+  organizationName: 'Orchesty', // Usually your GitHub org/user name.
+  projectName: 'Orchesty', // Usually your repo name.
+  themeConfig: {
+    navbar: {
+      title: 'Docs',
+      logo: {
+        alt: 'Orchesty logo',
+        src: 'img/Orch_logo_big.svg',
+        srcDark: 'img/Orch_logo.svg',
+      },
+      items: [
+        {
+          type: 'docsVersionDropdown',
+          docId: 'intro',
+          position: 'left',
+          label: 'Tutorial',
+        },
+        {
+          href: 'https://github.com/hanaboso',
+          label: 'GitHub',
+          position: 'right',
+        },
+      ],
+    },
+    footer: {
+      style: 'light',
+      copyright: `Copyright © ${new Date().getFullYear()} Orchesty.`,
+    },
+    prism: {
+      theme: lightCodeTheme,
+      darkTheme: darkCodeTheme,
+      additionalLanguages: ['php'],
+    },
+  },
+  presets: [
+    [
+      '@docusaurus/preset-classic',
+      {
+        docs: {
+          includeCurrentVersion: true,
+          sidebarPath: require.resolve('./sidebars.js'),
+          // Please change this to your repo.
+        },
+        theme: {
+          customCss: require.resolve('./src/css/custom.css'),
+        },
+      },
+    ],
+  ],
+};
