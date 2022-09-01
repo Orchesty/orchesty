@@ -6,6 +6,7 @@ import (
 	"github.com/hanaboso/pipes/bridge/pkg/bridge/types"
 	"github.com/hanaboso/pipes/bridge/pkg/enum"
 	"github.com/hanaboso/pipes/bridge/pkg/model"
+	"github.com/hanaboso/pipes/bridge/pkg/utils/timex"
 	"github.com/rs/zerolog/log"
 	"github.com/streadway/amqp"
 )
@@ -52,13 +53,17 @@ func (c counter) send(result model.ProcessResult, followers int) {
 		Body:    string(bodyString),
 	}
 	msgDtoBytes, _ := json.Marshal(msgDto)
+	published := msg.Published
+	if published <= 0 {
+		published = timex.UnixMs()
+	}
 
 	// TODO prozatím se ignoruje non-delivery, dokud se nevyřeší couter do funkční podoby
 	_ = c.publisher.Publish(amqp.Publishing{
 		ContentType: "application/json",
 		Body:        msgDtoBytes,
 		Headers: map[string]interface{}{
-			enum.Header_PublishedTimestamp: msg.Published,
+			enum.Header_PublishedTimestamp: published,
 		},
 	})
 }
