@@ -111,6 +111,7 @@ class Repeater implements IStoppable {
 
             const props: Options.Publish = ObjectUtils.removeNullableProperties(message.properties);
             props.headers = message.properties.headers;
+            props.headers['published-timestamp'] = Date.now();
             props.priority ? props.priority++ : props.priority = 1;
 
             return this.publisher.sendToQueue(target, Buffer.from(body), props);
