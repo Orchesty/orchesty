@@ -30,7 +30,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
 
         $this->client->request(
             'POST',
-            '/custom_node/null/process',
+            '/custom-node/null/process',
             [],
             [],
             [],
@@ -57,7 +57,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
 
         $this->client->request(
             'POST',
-            '/custom_node/null/process',
+            '/custom-node/null/process',
             [],
             [],
             [],
@@ -83,7 +83,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
 
         $this->client->request(
             'POST',
-            '/custom_node/null/process',
+            '/custom-node/null/process',
             [],
             [],
             [],
@@ -102,7 +102,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
     public function testSendActionTest(): void
     {
         $this->mockHandler();
-        $response = $this->sendGet('/custom_node/null/process/test');
+        $response = $this->sendGet('/custom-node/null/process/test');
 
         self::assertEquals(200, $response->status);
     }
@@ -116,7 +116,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
     {
         $this->mockNodeControllerException();
 
-        $this->client->request('GET', '/custom_node/null/process/test', [], [], [], '');
+        $this->client->request('GET', '/custom-node/null/process/test', [], [], [], '');
 
         $response = $this->client->getResponse();
 
@@ -131,7 +131,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
     public function testGetListOfCustomNodes(): void
     {
         $this->mockNodeControllerHandler();
-        $this->client->request('GET', '/custom_node/list');
+        $this->client->request('GET', '/custom-node/list');
 
         $response = $this->client->getResponse();
 
@@ -151,7 +151,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
     public function testGetListOfCustomNodesAction(): void
     {
         $this->mockNodeControllerException();
-        $this->client->request('GET', '/custom_node/list');
+        $this->client->request('GET', '/custom-node/list');
 
         $response = $this->client->getResponse();
 

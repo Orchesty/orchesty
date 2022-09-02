@@ -230,7 +230,7 @@ paths:
                 500:
                     $ref: '#/components/responses/500'
 
-    /custom_node/list:
+    /custom-node/list:
         get:
             tags: [ Custom Nodes ]
             responses:
@@ -239,7 +239,7 @@ paths:
                 500:
                     $ref: '#/components/responses/500'
 
-    /custom_node/{id}/process:
+    /custom-node/{id}/process:
         post:
             tags: [ Custom Nodes ]
             parameters:
@@ -250,7 +250,7 @@ paths:
                 500:
                     $ref: '#/components/responses/500'
 
-    /custom_node/{id}/process/test:
+    /custom-node/{id}/process/test:
         get:
             tags: [ Custom Nodes ]
             parameters:
