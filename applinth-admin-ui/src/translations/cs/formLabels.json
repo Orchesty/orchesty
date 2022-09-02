@@ -1,0 +1,7 @@
+{
+  "formLabels": {
+    "tenantId": "Tenant ID",
+    "email": "Email",
+    "password": "Heslo"
+  }
+}

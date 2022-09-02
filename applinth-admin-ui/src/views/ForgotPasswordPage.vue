@@ -1,34 +1,30 @@
 <template>
-  <LoginLayout>
-    <template #title> Zapomenuté heslo </template>
-    <p class="subtitle-2 color-main-text mb-6">
-      Zadejte email na který odešleme link pro změnu hesla.
-    </p>
-    <ValidationObserver v-slot="{ handleSubmit }">
-      <v-form class="form mb-8" @submit.prevent="handleSubmit(submit)">
-        <TextField
-          label="Email"
-          type="email"
-          rules="required|email"
-          name="email"
-          big-label
-          autofocus
-          v-model="email"
-        />
-        <div class="text-right">
-          <Button
-            type="submit"
-            color="primary"
-            no-text-transform
-            large
-            block
-            class="button"
-            >Odeslat</Button
-          >
-        </div>
-      </v-form>
-    </ValidationObserver>
-  </LoginLayout>
+  <CenteredLayout>
+    <AuthSplitLayout>
+      <template #heading> {{ $t("forgotPasswordPage.header") }}</template>
+      <template #form>
+        <p>
+          {{ $t("forgotPasswordPage.body") }}
+        </p>
+        <ValidationObserver v-slot="{ handleSubmit }">
+          <v-form class="form mb-8" @submit.prevent="handleSubmit(submit)">
+            <TextField
+              :label="$t('formLabels.email')"
+              type="email"
+              rules="required|email"
+              :name="$t('formLabels.email')"
+              big-label
+              autofocus
+              v-model="email"
+            />
+            <div class="text-right">
+              <Button type="submit">{{ $t("button.send") }}</Button>
+            </div>
+          </v-form>
+        </ValidationObserver>
+      </template>
+    </AuthSplitLayout>
+  </CenteredLayout>
 </template>
 
 <script lang="ts">
@@ -37,9 +33,13 @@ import LoginLayout from "../components/commons/layouts/LoginLayout.vue";
 import TextField from "../components/commons/inputsAndControls/TextField.vue";
 import { Component, Vue } from "vue-property-decorator";
 import { ValidationObserver } from "vee-validate";
+import AuthSplitLayout from "@/components/commons/layouts/AuthSplitLayout.vue";
+import CenteredLayout from "@/components/commons/layouts/CenteredLayout.vue";
 
 @Component({
   components: {
+    CenteredLayout,
+    AuthSplitLayout,
     Button,
     LoginLayout,
     TextField,

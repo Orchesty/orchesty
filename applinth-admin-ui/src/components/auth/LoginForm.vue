@@ -1,39 +1,36 @@
 <template>
-  <ValidationObserver v-slot="{ handleSubmit }">
-    <v-form class="mb-8" @submit.prevent="handleSubmit(submit)">
-      <TextField
-        label="Tenant ID"
-        big-label
-        name="Tenant"
-        v-model="form.tenant"
-        type="text"
-      />
-      <TextField
-        label="Email"
-        big-label
-        :name="$t('login.form.email.name')"
-        v-model="form.email"
-        type="email"
-        :rules="rules.email"
-      />
-      <TextField
-        label="Heslo"
-        big-label
-        :name="$t('login.form.password.name')"
-        :rules="rules.password"
-        v-model="form.password"
-        type="password"
-        autocomplete="current-password"
-      />
-      <div class="text-right mb-4">
-        <router-link :to="{ name: Routes.ForgotPassword }" class="link">
-          Zapomenuté heslo?
-        </router-link>
-      </div>
+  <ValidationObserver tag="form" @submit.prevent="submit">
+    <TextField
+      :label="$t('formLabels.tenantId')"
+      :name="$t('formLabels.tenantId')"
+      v-model="form.tenant"
+      type="text"
+    />
+    <TextField
+      :label="$t('formLabels.email')"
+      :name="$t('formLabels.email')"
+      v-model="form.email"
+      type="email"
+      :rules="rules.email"
+    />
+    <TextField
+      :label="$t('formLabels.password')"
+      :name="$t('formLabels.password')"
+      :rules="rules.password"
+      v-model="form.password"
+      type="password"
+      autocomplete="current-password"
+    />
+    <div class="text-right mb-4">
+      <router-link :to="{ name: Routes.ForgotPassword }" class="link">
+        {{ $t("loginPage.forgotPasswordLink") }}
+      </router-link>
+    </div>
+    <div class="text-right">
       <Button type="submit" color="primary" :on-click="submit">
         {{ $t("button.login") }}
       </Button>
-    </v-form>
+    </div>
   </ValidationObserver>
 </template>
 
