@@ -39,7 +39,7 @@ final class CustomNodeController implements LoggerAwareInterface
     }
 
     /**
-     * @Route("/custom_node/{id}/process", methods={"POST", "OPTIONS"})
+     * @Route("/custom-node/{id}/process", methods={"POST", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $id
@@ -62,7 +62,7 @@ final class CustomNodeController implements LoggerAwareInterface
     }
 
     /**
-     * @Route("/custom_node/{id}/process/test", methods={"GET", "OPTIONS"})
+     * @Route("/custom-node/{id}/process/test", methods={"GET", "OPTIONS"})
      *
      * @param string $id
      *
@@ -80,7 +80,7 @@ final class CustomNodeController implements LoggerAwareInterface
     }
 
     /**
-     * @Route("/custom_node/list", methods={"GET"})
+     * @Route("/custom-node/list", methods={"GET"})
      *
      * @return Response
      */
