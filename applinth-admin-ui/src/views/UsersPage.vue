@@ -1,9 +1,7 @@
 <template>
   <AppLayout>
-    <h1 class="mb-4">Uživatelé</h1>
-    <Button class="mb-4" @click="addItem" color="secondary" outlined
-      >Přidat</Button
-    >
+    <Heading class="mb-4">Uživatelé</Heading>
+    <Button class="mb-4" @click="addItem">Přidat</Button>
     <SimpleTable class="table-medium" :headers="headers" :items="users">
       <template #actions="{ item }">
         <RoundButton @click="() => updateItem(item)" icon="pencil" />
@@ -30,10 +28,12 @@ import { api } from "@/api";
 import { authNamespace, AuthGetters, User } from "../store/modules/auth";
 import { callApi } from "@/utils/apiClient";
 import { eventBus } from "../utils/eventBus";
-import {UsageStatsAppsRequest, UsersListRequest} from "@/api/generated";
+import { UsersListRequest } from "@/api/generated";
+import Heading from "@/components/Heading.vue";
 
 @Component({
   components: {
+    Heading,
     AppLayout,
     Button,
     RoundButton,

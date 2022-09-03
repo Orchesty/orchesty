@@ -1,7 +1,7 @@
 <template>
   <AppLayout>
     <div class="table-medium">
-      <h1>Customers</h1>
+      <Heading>Customers</Heading>
       <div class="wrapper my-5">
         <TextField v-model="textSearch" hide-details name="" label="Search" />
         <SelectBox
@@ -36,6 +36,7 @@ import {
 import { Getter } from "vuex-class";
 import { authNamespace, AuthGetters } from "@/store/modules/auth";
 import { User } from "firebase/auth";
+import Heading from "@/components/Heading.vue";
 
 interface UsersTable {
   [key: string]: any;
@@ -44,6 +45,7 @@ interface UsersTable {
 
 @Component({
   components: {
+    Heading,
     TextField,
     SelectBox,
     AppLayout,

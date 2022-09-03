@@ -1,0 +1,14 @@
+{
+  "overviewPage": {
+    "header": "Overview",
+    "statusCards": {
+      "applications": "Applications",
+      "installations": "Installations",
+      "users": "Users",
+      "billing": "Billing"
+    },
+    "apps": {
+      "users": "Users"
+    }
+  }
+}

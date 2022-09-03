@@ -94,12 +94,4 @@ export default class LoginForm extends Vue {
 }
 </script>
 
-<style lang="scss" scoped>
-.link {
-  text-decoration: none;
-
-  &:hover {
-    text-decoration: underline;
-  }
-}
-</style>
+<style lang="scss" scoped></style>

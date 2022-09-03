@@ -112,7 +112,7 @@ const applications = [
             to: null,
           },
           {
-            text: appActiveName,
+            text: 'Application Item',
             to: { name: Routes.ApplicationDetail },
           },
         ];

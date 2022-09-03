@@ -1,82 +1,66 @@
 <template>
   <AppLayout>
-    <v-container fluid>
-      <v-row dense>
-        <v-col>
-          <h1 class="mb-8">Účet</h1>
-        </v-col>
-      </v-row>
-      <v-row dense>
-        <v-col>
-          <ValidationObserver v-slot="{ handleSubmit }">
-            <v-form
-              class="form mb-8 text-center"
-              @submit.prevent="handleSubmit(submitFormName)"
-            >
-              <TextField
-                name="firstname"
-                label="Jméno"
-                v-model="formLoggedAdmin.firstname"
-              />
-              <TextField
-                name="surename"
-                label="Příjmení"
-                v-model="formLoggedAdmin.surname"
-              />
-              <TextField
-                name="username"
-                rules="required|email"
-                label="Email"
-                v-model="formLoggedAdmin.username"
-              />
-              <Button type="submit" color="secondary">Uložit</Button>
-            </v-form>
-          </ValidationObserver>
-        </v-col>
-      </v-row>
-      <v-row dense>
-        <v-col>
-          <ValidationObserver
-            v-slot="{ handleSubmit }"
-            ref="observerNewPassword"
-          >
-            <v-form
-              class="form text-center"
-              v-model="isFormNewPasswordValid"
-              @submit.prevent="handleSubmit(submitFormNewPassword)"
-              ref="formNewPassword"
-            >
-              <TextField
-                name="stare-heslo"
-                label="Staré heslo"
-                rules="required"
-                v-model="formNewPassword.oldPassword"
-                type="password"
-                autocomplete="current-password"
-              />
-              <TextField
-                vid="nove-heslo-1"
-                name="nove-heslo-1"
-                rules="required"
-                label="Nové heslo"
-                v-model="formNewPassword.newPasswordOne"
-                type="password"
-                autocomplete="new-password"
-              />
-              <TextField
-                name="nove-heslo-2"
-                label="Nové heslo znova"
-                rules="confirmed:nove-heslo-1"
-                v-model="formNewPassword.newPasswordTwo"
-                type="password"
-                autocomplete="new-password"
-              />
-              <Button type="submit" color="secondary">Uložit</Button>
-            </v-form>
-          </ValidationObserver>
-        </v-col>
-      </v-row>
-    </v-container>
+    <Heading class="mb-2">Update Profile</Heading>
+    <ValidationObserver v-slot="{ handleSubmit }">
+      <v-form class="form" @submit.prevent="handleSubmit(submitFormName)">
+        <TextField
+          name="firstname"
+          label="Jméno"
+          v-model="formLoggedAdmin.firstname"
+        />
+        <TextField
+          name="surename"
+          label="Příjmení"
+          v-model="formLoggedAdmin.surname"
+        />
+        <TextField
+          name="username"
+          rules="required|email"
+          label="Email"
+          v-model="formLoggedAdmin.username"
+        />
+        <Button type="submit">Uložit</Button>
+      </v-form>
+    </ValidationObserver>
+
+    <v-divider class="form my-6" />
+
+    <Heading class="mb-2">Password Change</Heading>
+    <ValidationObserver v-slot="{ handleSubmit }" ref="observerNewPassword">
+      <v-form
+        class="form"
+        v-model="isFormNewPasswordValid"
+        @submit.prevent="handleSubmit(submitFormNewPassword)"
+        ref="formNewPassword"
+      >
+        <TextField
+          name="stare-heslo"
+          label="Staré heslo"
+          rules="required"
+          v-model="formNewPassword.oldPassword"
+          type="password"
+          autocomplete="current-password"
+        />
+        <TextField
+          vid="nove-heslo-1"
+          name="nove-heslo-1"
+          rules="required"
+          label="Nové heslo"
+          v-model="formNewPassword.newPasswordOne"
+          type="password"
+          autocomplete="new-password"
+        />
+        <TextField
+          name="nove-heslo-2"
+          label="Nové heslo znova"
+          rules="confirmed:nove-heslo-1"
+          v-model="formNewPassword.newPasswordTwo"
+          type="password"
+          autocomplete="new-password"
+        />
+        <Button type="submit">Uložit</Button>
+      </v-form>
+    </ValidationObserver>
   </AppLayout>
 </template>
 
@@ -94,9 +78,11 @@ import {
   UpdateLoggedAdminInput,
   UpdateLoggedAdminPasswordInput,
 } from "../types/gqlGeneratedPrivate";
+import Heading from "@/components/Heading.vue";
 
 @Component({
   components: {
+    Heading,
     AppLayout,
     Button,
     Table,

@@ -1,9 +1,9 @@
 <template>
   <div class="wrapper">
-    <StatusCard :score="3" title="Applications" />
-    <StatusCard :score="142" title="Installations" />
-    <StatusCard :score="150" title="Users" />
-    <StatusCard :score="28258" title="Billing" />
+    <StatusCard :loading="true" :score="3" :title="$t('overviewPage.statusCards.applications')" />
+    <StatusCard :loading="false" :score="142" :title="$t('overviewPage.statusCards.installations')" />
+    <StatusCard :loading="true" :score="150" :title="$t('overviewPage.statusCards.users')" />
+    <StatusCard :loading="true" :score="28258" :title="$t('overviewPage.statusCards.billing')" />
   </div>
 </template>
 

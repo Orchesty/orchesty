@@ -1,0 +1,14 @@
+{
+  "overviewPage": {
+    "header": "Přehled",
+    "statusCards": {
+      "applications": "Aplikace",
+      "installations": "Instalace",
+      "users": "Uživatelé",
+      "billing": "Fakturace"
+    },
+    "apps": {
+      "users": "Uživatelé"
+    }
+  }
+}

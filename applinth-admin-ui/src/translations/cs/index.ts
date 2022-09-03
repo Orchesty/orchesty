@@ -5,6 +5,7 @@ import loginPage from "./loginPage.json";
 import forgotPasswordPage from "./forgotPasswordPage.json";
 import formLabels from "./formLabels.json";
 import newPasswordPage from "./newPasswordPage.json";
+import overviewPage from "./overviewPage.json";
 
 export default {
   ...button,
@@ -14,4 +15,5 @@ export default {
   ...loginPage,
   ...formLabels,
   ...newPasswordPage,
+  ...overviewPage,
 };

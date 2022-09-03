@@ -76,3 +76,11 @@ $gap-amounts: (
 .router-icon {
   font-size: 2rem !important;
 }
+
+.link {
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

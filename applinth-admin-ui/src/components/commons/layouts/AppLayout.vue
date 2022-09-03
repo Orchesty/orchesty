@@ -57,22 +57,22 @@ export default class AppLayout extends Vue {
   navigationItems = [
     {
       to: Routes.Overview,
-      icon: "mdi-toy-brick",
+      icon: "mdi-format-list-bulleted",
       text: "navigation.link.overview",
     },
     {
       to: Routes.Customers,
-      icon: "mdi-apps",
+      icon: "mdi-face-agent",
       text: "navigation.link.customers",
     },
     {
       to: Routes.Profile,
-      icon: "mdi-delete",
+      icon: "mdi-account",
       text: "navigation.link.profile",
     },
     {
       to: Routes.Users,
-      icon: "mdi-account-cog",
+      icon: "mdi-account-multiple",
       text: "navigation.link.users",
     },
   ];
