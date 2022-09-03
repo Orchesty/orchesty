@@ -2,6 +2,8 @@
   "formLabels": {
     "tenantId": "Tenant ID",
     "email": "Email",
-    "password": "Password"
+    "password": "Password",
+    "newPassword": "Nové heslo",
+    "passwordCheck": "Kontrola hesla"
   }
 }

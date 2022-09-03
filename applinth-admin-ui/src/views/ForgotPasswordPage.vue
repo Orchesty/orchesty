@@ -6,21 +6,24 @@
         <p>
           {{ $t("forgotPasswordPage.body") }}
         </p>
-        <ValidationObserver v-slot="{ handleSubmit }">
-          <v-form class="form mb-8" @submit.prevent="handleSubmit(submit)">
-            <TextField
-              :label="$t('formLabels.email')"
-              type="email"
-              rules="required|email"
-              :name="$t('formLabels.email')"
-              big-label
-              autofocus
-              v-model="email"
-            />
-            <div class="text-right">
-              <Button type="submit">{{ $t("button.send") }}</Button>
-            </div>
-          </v-form>
+        <ValidationObserver
+          tag="form"
+          @submit.prevent="submit"
+          @keydown.enter="submit"
+        >
+          <TextField
+            :label="$t('formLabels.email')"
+            type="email"
+            rules="required|email"
+            :name="$t('formLabels.email')"
+            autofocus
+            v-model="email"
+          />
+          <div class="text-right">
+            <Button type="submit" :on-click="submit">{{
+              $t("button.send")
+            }}</Button>
+          </div>
         </ValidationObserver>
       </template>
     </AuthSplitLayout>
@@ -29,7 +32,6 @@
 
 <script lang="ts">
 import Button from "../components/commons/inputsAndControls/Button.vue";
-import LoginLayout from "../components/commons/layouts/LoginLayout.vue";
 import TextField from "../components/commons/inputsAndControls/TextField.vue";
 import { Component, Vue } from "vue-property-decorator";
 import { ValidationObserver } from "vee-validate";
@@ -41,7 +43,6 @@ import CenteredLayout from "@/components/commons/layouts/CenteredLayout.vue";
     CenteredLayout,
     AuthSplitLayout,
     Button,
-    LoginLayout,
     TextField,
     ValidationObserver,
   },
@@ -67,9 +68,4 @@ export default class ForgotPasswordPage extends Vue {
 }
 </script>
 
-<style lang="scss" scoped>
-.button {
-  font-size: 20px;
-  padding: 10px;
-}
-</style>
+<style lang="scss" scoped></style>

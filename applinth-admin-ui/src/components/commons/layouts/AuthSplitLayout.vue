@@ -37,7 +37,7 @@ export default class AuthSplitLayout extends Vue {}
   margin-top: 20px;
 }
 .content-form {
-  margin: 20px 20px 20px 20px;
+  margin: 20px;
   width: 300px;
 }
 .login-image-wrapper {

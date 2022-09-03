@@ -1,5 +1,9 @@
 <template>
-  <ValidationObserver tag="form" @submit.prevent="submit">
+  <ValidationObserver
+    tag="form"
+    @submit.prevent="submit"
+    @keydown.enter="submit"
+  >
     <TextField
       :label="$t('formLabels.tenantId')"
       :name="$t('formLabels.tenantId')"
@@ -27,7 +31,7 @@
       </router-link>
     </div>
     <div class="text-right">
-      <Button type="submit" color="primary" :on-click="submit">
+      <Button :loading="loading" type="submit" :on-click="submit">
         {{ $t("button.login") }}
       </Button>
     </div>
@@ -37,7 +41,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { TLoginForm, TLoginRules } from "./types";
-import { ValidationObserver, ValidationProvider } from "vee-validate";
+import { ValidationObserver } from "vee-validate";
 import TextField from "../commons/inputsAndControls/TextField.vue";
 import Logo from "../commons/Logo.vue";
 import Button from "../commons/inputsAndControls/Button.vue";
@@ -47,7 +51,6 @@ import { Routes } from "../../enums/Routes";
   components: {
     Logo,
     ValidationObserver,
-    ValidationProvider,
     TextField,
     Button,
   },
@@ -57,6 +60,8 @@ export default class LoginForm extends Vue {
 
   @Prop({ required: true, type: Function })
   private onSubmit!: (payload: TLoginForm) => Promise<boolean>;
+
+  loading = false;
 
   form: TLoginForm = {
     email: "",
@@ -75,6 +80,7 @@ export default class LoginForm extends Vue {
   };
 
   async submit(): Promise<void> {
+    this.loading = true;
     const result = await this.onSubmit(this.form);
     if (result) {
       if (this.$route.query?.redirect) {
@@ -83,6 +89,7 @@ export default class LoginForm extends Vue {
         this.$router.push("/");
       }
     }
+    this.loading = false;
   }
 }
 </script>
