@@ -14,7 +14,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import SubHeading from "@/components/SubHeading.vue";
+import SubHeading from "@/components/commons/typography/SubHeading.vue";
 @Component({
   components: { SubHeading },
 })

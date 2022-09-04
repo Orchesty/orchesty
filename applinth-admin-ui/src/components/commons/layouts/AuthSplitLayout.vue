@@ -22,7 +22,7 @@
 
 <script>
 import { Component, Vue } from "vue-property-decorator";
-import Heading from "@/components/Heading";
+import Heading from "@/components/commons/typography/Heading";
 @Component({
   components: { Heading },
 })

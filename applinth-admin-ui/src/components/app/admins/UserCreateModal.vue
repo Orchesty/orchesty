@@ -30,7 +30,7 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import Modal from "../../commons/Modal.vue";
+import Modal from "../../commons/layouts/Modal.vue";
 import { ValidationObserver } from "vee-validate";
 import Button from "../../commons/inputsAndControls/Button.vue";
 import TextField from "../../commons/inputsAndControls/TextField.vue";

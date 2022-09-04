@@ -24,7 +24,7 @@ import { Component, Vue } from "vue-property-decorator";
 import AppLayout from "../components/commons/layouts/AppLayout.vue";
 import StatusCardList from "@/components/app/StatusCardList.vue";
 import AppsOverview from "@/components/app/AppsOverview.vue";
-import Heading from "@/components/Heading.vue";
+import Heading from "@/components/commons/typography/Heading.vue";
 
 @Component({
   components: {

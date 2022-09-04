@@ -78,7 +78,7 @@ import {
   UpdateLoggedAdminInput,
   UpdateLoggedAdminPasswordInput,
 } from "../types/gqlGeneratedPrivate";
-import Heading from "@/components/Heading.vue";
+import Heading from "@/components/commons/typography/Heading.vue";
 
 @Component({
   components: {

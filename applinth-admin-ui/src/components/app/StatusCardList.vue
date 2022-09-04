@@ -26,7 +26,7 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import StatusCard from "../commons/StatusCard.vue";
+import StatusCard from "../commons/layouts/StatusCard.vue";
 
 @Component({
   components: {

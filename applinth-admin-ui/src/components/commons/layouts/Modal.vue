@@ -65,7 +65,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
-import Button from "./inputsAndControls/Button.vue";
+import Button from "../inputsAndControls/Button.vue";
 
 @Component({
   components: {

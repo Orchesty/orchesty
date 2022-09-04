@@ -41,7 +41,7 @@ import {
 import { Getter } from "vuex-class";
 import { authNamespace, AuthGetters } from "@/store/modules/auth";
 import { User } from "firebase/auth";
-import Heading from "@/components/Heading.vue";
+import Heading from "@/components/commons/typography/Heading.vue";
 
 interface UsersTable {
   [key: string]: any;

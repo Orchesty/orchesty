@@ -43,7 +43,7 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 import { TLoginForm, TLoginRules } from "./types";
 import { ValidationObserver } from "vee-validate";
 import TextField from "../commons/inputsAndControls/TextField.vue";
-import Logo from "../commons/Logo.vue";
+import Logo from "../commons/layouts/Logo.vue";
 import Button from "../commons/inputsAndControls/Button.vue";
 import { Routes } from "../../enums/Routes";
 

@@ -30,7 +30,7 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 import { EventBus } from "../../../../enums";
 import { userSettings } from "../../../../utils/userSettings";
 import { eventBus } from "../../../../utils/eventBus";
-import Modal from "../../Modal.vue";
+import Modal from "../../layouts/Modal.vue";
 import { TableFilter, TableOptions } from "../types";
 import TextField from "../../inputsAndControls/TextField.vue";
 import Button from "../../inputsAndControls/Button.vue";

@@ -16,7 +16,7 @@ import { Component, Vue } from "vue-property-decorator";
 import NewPassword from "../components/auth/NewPassword.vue";
 import CenteredLayout from "@/components/commons/layouts/CenteredLayout.vue";
 import AuthSplitLayout from "@/components/commons/layouts/AuthSplitLayout.vue";
-import Heading from "@/components/Heading.vue";
+import Heading from "@/components/commons/typography/Heading.vue";
 
 @Component({
   components: {

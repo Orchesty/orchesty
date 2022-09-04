@@ -30,11 +30,11 @@
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import AppLayout from "../components/commons/layouts/AppLayout.vue";
-import StatusCard from "@/components/commons/StatusCard.vue";
+import StatusCard from "@/components/commons/layouts/StatusCard.vue";
 import { Routes } from "@/enums";
 import LineChart from "@/components/app/LineChart.vue";
-import BaseProgressBarLinear from "@/components/BaseProgressBarLinear.vue";
-import Heading from "@/components/Heading.vue";
+import BaseProgressBarLinear from "@/components/commons/BaseProgressBarLinear.vue";
+import Heading from "@/components/commons/typography/Heading.vue";
 
 @Component({
   components: {

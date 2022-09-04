@@ -34,7 +34,7 @@ import { authNamespace, AuthGetters, User } from "../store/modules/auth";
 import { callApi } from "@/utils/apiClient";
 import { eventBus } from "../utils/eventBus";
 import { UsersListRequest } from "@/api/generated";
-import Heading from "@/components/Heading.vue";
+import Heading from "@/components/commons/typography/Heading.vue";
 
 @Component({
   components: {

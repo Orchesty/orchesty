@@ -14,8 +14,8 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import Modal from "./Modal.vue";
-import { eventBus } from "../../utils/eventBus";
-import { EventBus } from "../../enums";
+import { eventBus } from "../../../utils/eventBus";
+import { EventBus } from "../../../enums";
 
 @Component({
   components: { Modal },

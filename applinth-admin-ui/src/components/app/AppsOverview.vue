@@ -51,8 +51,8 @@ import { Component, Vue } from "vue-property-decorator";
 import { authNamespace, AuthGetters, User } from "@/store/modules/auth";
 import { Getter } from "vuex-class";
 import { Routes } from "@/enums/Routes";
-import BaseProgressBarLinear from "@/components/BaseProgressBarLinear.vue";
-import SubHeading from "@/components/SubHeading.vue";
+import BaseProgressBarLinear from "@/components/commons/BaseProgressBarLinear.vue";
+import SubHeading from "@/components/commons/typography/SubHeading.vue";
 
 @Component({
   components: { SubHeading, BaseProgressBarLinear },

@@ -18,10 +18,10 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import AppLayout from "../components/commons/layouts/AppLayout.vue";
-import StatusCard from "@/components/commons/StatusCard.vue";
+import StatusCard from "@/components/commons/layouts/StatusCard.vue";
 import CustomerAppsTable from "@/components/app/CustomerAppsTable.vue";
 import CustomerBillingTable from "@/components/app/CustomerBillingTable.vue";
-import Heading from "@/components/Heading.vue";
+import Heading from "@/components/commons/typography/Heading.vue";
 
 @Component({
   components: {

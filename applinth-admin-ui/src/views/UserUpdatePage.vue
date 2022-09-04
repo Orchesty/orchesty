@@ -57,7 +57,7 @@ import { TablesActions, TablesNamespaces } from "../store/modules/tables";
 import { TableRefreshPayload } from "../types";
 import { UpdateAdminInput } from "../types/gqlGeneratedPrivate";
 import { Routes } from "../enums";
-import Heading from "@/components/Heading.vue";
+import Heading from "@/components/commons/typography/Heading.vue";
 
 const emptyFormData: UpdateAdminInput = {
   username: "",

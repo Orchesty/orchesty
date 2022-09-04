@@ -1,15 +1,18 @@
 import button from "./button.json";
-import notFoundPage from "./notFoundPage.json";
+import notFoundPage from "./pages/notFoundPage.json";
 import navigation from "./navigation.json";
-import loginPage from "./loginPage.json";
-import forgotPasswordPage from "./forgotPasswordPage.json";
+import loginPage from "./pages/loginPage.json";
+import forgotPasswordPage from "./pages/forgotPasswordPage.json";
 import formLabels from "./formLabels.json";
-import newPasswordPage from "./newPasswordPage.json";
-import overviewPage from "./overviewPage.json";
-import customersPage from "./customersPage.json";
+import newPasswordPage from "./pages/newPasswordPage.json";
+import overviewPage from "./pages/overviewPage.json";
+import customersPage from "./pages/customersPage.json";
 import grids from "./grids.json";
-import profilePage from "./profilePage.json";
-import userUpdatePage from "./userUpdatePage.json";
+import profilePage from "./pages/profilePage.json";
+import userUpdatePage from "./pages/userUpdatePage.json";
+import usersPage from "./pages/usersPage.json";
+import customerBillingPage from "./pages/customerBillingPage.json";
+import customerDetailPage from "./pages/customerDetailPage.json";
 
 export default {
   ...button,
@@ -24,4 +27,7 @@ export default {
   ...grids,
   ...profilePage,
   ...userUpdatePage,
+  ...usersPage,
+  ...customerBillingPage,
+  ...customerDetailPage,
 };
