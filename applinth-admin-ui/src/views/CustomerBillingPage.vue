@@ -1,7 +1,8 @@
 <template>
   <AppLayout>
     <div class="table-medium">
-      <Heading>{{$t('customerBillingPage.header')}}</Heading>
+      <Heading>{{ $t("customerBillingPage.header") }}</Heading>
+      <!--      TODO HARDCOCED-->
       <StatusCard
         class="customer-info-card my-5"
         :score="199"

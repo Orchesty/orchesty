@@ -1,6 +1,8 @@
 <template>
   <AppLayout>
     <div class="table-medium">
+      <!--      TODO HARDCOCED-->
+
       <heading>John Doe</heading>
       <StatusCard
         class="cusotmer-info-card my-5"

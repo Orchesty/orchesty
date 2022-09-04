@@ -7,7 +7,8 @@
         </v-icon>
       </router-link>
       <Heading>
-        {{$t('userUpdatePage.header')}} {{ formData.firstname }} {{ formData.surname }}
+        {{ $t("userUpdatePage.header") }} {{ formData.firstname }}
+        {{ formData.surname }}
       </Heading>
     </div>
     <ValidationObserver slim ref="form">
@@ -37,7 +38,9 @@
           v-model="formData.isSuperAdmin"
           :label="$t('formLabels.superAdmin')"
         />
-        <Button type="submit" :loading="isSending"> {{$t('button.save')}} </Button>
+        <Button type="submit" :loading="isSending">
+          {{ $t("button.save") }}
+        </Button>
       </v-form>
     </ValidationObserver>
   </AppLayout>

@@ -1,7 +1,7 @@
 <template>
   <AppLayout>
     <div class="wrapper">
-      <h1>Stránka na této adrese neexistuje!</h1>
+      <Heading>{{$t('notFoundPage.header')}}</Heading>
     </div>
   </AppLayout>
 </template>
@@ -9,9 +9,11 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import AppLayout from "../components/commons/layouts/AppLayout.vue";
+import Heading from "@/components/Heading.vue";
 
 @Component({
   components: {
+    Heading,
     AppLayout,
   },
 })

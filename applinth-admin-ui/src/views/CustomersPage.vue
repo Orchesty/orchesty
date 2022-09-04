@@ -67,7 +67,7 @@ export default class CustomersPage extends Vue {
     this.appSearch = null;
   }
 
-  isLoading = false
+  isLoading = false;
   textSearch = null;
   appSearch = null;
 
@@ -95,13 +95,13 @@ export default class CustomersPage extends Vue {
   ];
 
   async created() {
-    this.isLoading = true
+    this.isLoading = true;
     this.customers = await callApi<UsageStatsUsersRequest>(api.customers.list, {
       timeRangeStart: new Date(0).toISOString(),
       timeRangeEnd: new Date().toISOString(),
       tenantId: this.currentUser.tenantId ?? undefined,
     });
-    this.isLoading = false
+    this.isLoading = false;
   }
 }
 </script>

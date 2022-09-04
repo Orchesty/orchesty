@@ -4,6 +4,7 @@
       <BaseProgressBarLinear />
     </div>
     <div v-else class="w-600">
+      <!--      TODO HARDCOCED-->
       <v-img
         max-width="400"
         contain
