@@ -20,7 +20,7 @@
       :outlined="!flat"
       :clearable="clearable"
       :placeholder="placeholder"
-      no-data-text="Žádná data"
+      :no-data-text="$t('formLabels.noData')"
     >
       <template v-if="customData" #item="{ item }">
         <slot :item="item" />

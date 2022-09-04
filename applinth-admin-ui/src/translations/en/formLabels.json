@@ -10,6 +10,7 @@
     "passwordCheck": "Password Check",
     "filterByApplication": "Filter by Application",
     "search": "Search",
-    "superAdmin": "Superadmin"
+    "superAdmin": "Superadmin",
+    "noData": "No data"
   }
 }
