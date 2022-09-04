@@ -7,13 +7,13 @@
     <TextField
       :name="$t('formLabels.newPassword')"
       rules="required"
-      :label="$t('formLabels.passwordCheck')"
+      :label="$t('formLabels.newPassword')"
       v-model="newPasswordOne"
       type="password"
       autofocus
     />
     <TextField
-      :name="$t('formLabels.newPassword')"
+      :name="$t('formLabels.passwordCheck')"
       :label="$t('formLabels.passwordCheck')"
       :rules="`confirmed:${$t('formLabels.newPassword')}`"
       v-model="newPasswordTwo"

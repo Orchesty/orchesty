@@ -14,6 +14,8 @@ import usersPage from "./pages/usersPage.json";
 import customerBillingPage from "./pages/customerBillingPage.json";
 import customerDetailPage from "./pages/customerDetailPage.json";
 import table from "./table.json";
+import resetPasswordPage from "./pages/resetPasswordPage.json";
+import passwordChangedPage from "./pages/passwordChangedPage.json";
 import cs from "vuetify/src/locale/cs";
 
 
@@ -34,5 +36,7 @@ export default {
   ...customerBillingPage,
   ...customerDetailPage,
   ...table,
+  ...resetPasswordPage,
+  ...passwordChangedPage,
   ...cs,
 };
