@@ -3,7 +3,9 @@
     "tenantId": "Tenant ID",
     "email": "Email",
     "password": "Heslo",
-    "newPassword": "New Password",
-    "passwordCheck": "Password Check"
+    "newPassword": "Nové heslo",
+    "passwordCheck": "Kontrola hesla",
+    "filterByApplication": "Filtrovat podle aplikace",
+    "search": "Hledat"
   }
 }

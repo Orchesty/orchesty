@@ -1,0 +1,14 @@
+{
+  "grids": {
+    "headers": {
+      "user": "User",
+      "activeApps": "Active Apps",
+      "billing": "Billing",
+      "email": "Email",
+      "name": "Name",
+      "installed": "Installed",
+      "month": "Month",
+      "application": "Application"
+    }
+  }
+}

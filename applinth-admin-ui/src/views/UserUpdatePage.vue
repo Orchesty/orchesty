@@ -7,37 +7,37 @@
         </v-icon>
       </router-link>
       <Heading>
-        Uživatel {{ formData.firstname }} {{ formData.surname }}
+        {{$t('userUpdatePage.header')}} {{ formData.firstname }} {{ formData.surname }}
       </Heading>
     </div>
     <ValidationObserver slim ref="form">
       <v-form class="form" @submit.prevent="onSubmit">
         <input type="submit" hidden />
         <TextField
-          label="Jméno"
+          :label="$t('formLabels.firstName')"
           v-model="formData.firstname"
-          name="firstname"
+          :name="$t('formLabels.firstName')"
           rules="required"
           autofocus
         />
         <TextField
-          label="Příjmení"
+          :label="$t('formLabels.surname')"
           v-model="formData.surname"
-          name="surname"
+          :name="$t('formLabels.surname')"
           rules="required"
         />
         <TextField
-          label="Email"
+          :label="$t('formLabels.userName')"
           v-model="formData.username"
-          name="username"
+          :name="$t('formLabels.userName')"
           rules="required|email"
         />
         <v-checkbox
           class="mt-0 mb-2"
           v-model="formData.isSuperAdmin"
-          label="Superadmin"
+          :label="$t('formLabels.superAdmin')"
         />
-        <Button type="submit" :loading="isSending"> Uložit </Button>
+        <Button type="submit" :loading="isSending"> {{$t('button.save')}} </Button>
       </v-form>
     </ValidationObserver>
   </AppLayout>

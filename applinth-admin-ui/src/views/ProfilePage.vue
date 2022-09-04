@@ -1,31 +1,31 @@
 <template>
   <AppLayout>
-    <Heading class="mb-2">Update Profile</Heading>
+    <Heading class="mb-2">{{ $t("profilePage.header.profile") }}</Heading>
     <ValidationObserver v-slot="{ handleSubmit }">
       <v-form class="form" @submit.prevent="handleSubmit(submitFormName)">
         <TextField
-          name="firstname"
-          label="Jméno"
+          :name="$t('formLabels.firstName')"
+          :label="$t('formLabels.firstName')"
           v-model="formLoggedAdmin.firstname"
         />
         <TextField
-          name="surename"
-          label="Příjmení"
+          :name="$t('formLabels.surname')"
+          :label="$t('formLabels.surname')"
           v-model="formLoggedAdmin.surname"
         />
         <TextField
-          name="username"
+          :name="$t('formLabels.userName')"
           rules="required|email"
-          label="Email"
+          :label="$t('formLabels.userName')"
           v-model="formLoggedAdmin.username"
         />
-        <Button type="submit">Uložit</Button>
+        <Button type="submit">{{ $t("button.save") }}</Button>
       </v-form>
     </ValidationObserver>
 
     <v-divider class="form my-6" />
 
-    <Heading class="mb-2">Password Change</Heading>
+    <Heading class="mb-2">{{ $t("profilePage.header.password") }}</Heading>
     <ValidationObserver v-slot="{ handleSubmit }" ref="observerNewPassword">
       <v-form
         class="form"
@@ -34,31 +34,31 @@
         ref="formNewPassword"
       >
         <TextField
-          name="stare-heslo"
-          label="Staré heslo"
+          :name="$t('formLabels.password')"
+          :label="$t('formLabels.password')"
           rules="required"
           v-model="formNewPassword.oldPassword"
           type="password"
-          autocomplete="current-password"
+          :autocomplete="$t('formLabels.password')"
         />
         <TextField
-          vid="nove-heslo-1"
-          name="nove-heslo-1"
+          vid="newPassword"
+          :name="$t('formLabels.newPassword')"
           rules="required"
-          label="Nové heslo"
+          :label="$t('formLabels.newPassword')"
           v-model="formNewPassword.newPasswordOne"
           type="password"
-          autocomplete="new-password"
+          :autocomplete="$t('formLabels.newPassword')"
         />
         <TextField
-          name="nove-heslo-2"
-          label="Nové heslo znova"
-          rules="confirmed:nove-heslo-1"
+          :name="$t('formLabels.passwordCheck')"
+          :label="$t('formLabels.passwordCheck')"
+          :rules="`confirmed:${$t('formLabels.newPassword')}`"
           v-model="formNewPassword.newPasswordTwo"
           type="password"
-          autocomplete="new-password"
+          :autocomplete="$t('formLabels.passwordCheck')"
         />
-        <Button type="submit">Uložit</Button>
+        <Button type="submit">{{ $t("button.save") }}</Button>
       </v-form>
     </ValidationObserver>
   </AppLayout>

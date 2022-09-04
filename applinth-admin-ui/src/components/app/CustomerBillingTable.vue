@@ -18,19 +18,19 @@ export default class CustomerBillingTable extends Vue {
     defaultSortBy: ["month"],
     headers: [
       {
-        text: "Month",
+        text: "grids.headers.month",
         sortable: true,
         align: "start",
         value: "month",
       },
       {
-        text: "Application",
+        text: "grids.headers.application",
         sortable: true,
         align: "start",
         value: "application",
       },
       {
-        text: "Billing",
+        text: "grids.headers.billing",
         sortable: true,
         align: "start",
         value: "billing",

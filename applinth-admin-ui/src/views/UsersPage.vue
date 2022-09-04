@@ -1,8 +1,13 @@
 <template>
   <AppLayout>
-    <Heading class="mb-4">Uživatelé</Heading>
-    <Button class="mb-4" @click="addItem">Přidat</Button>
-    <SimpleTable class="table-medium" :headers="headers" :items="users">
+    <Heading class="mb-4">{{ $t("usersPage.header") }}</Heading>
+    <Button class="mb-4" @click="addItem">{{ $t("button.add") }}</Button>
+    <SimpleTable
+      :loading="isLoading"
+      class="table-medium"
+      :headers="headers"
+      :items="users"
+    >
       <template #actions="{ item }">
         <RoundButton @click="() => updateItem(item)" icon="pencil" />
         <RoundButton
@@ -44,17 +49,19 @@ export default class UsersPage extends Vue {
   @Getter(`${authNamespace}/${AuthGetters.GetUser}`)
   currentUser!: User;
 
+  isLoading = false;
+
   users: User[] = [];
 
   headers = [
     {
-      text: "Email",
+      text: "grids.headers.email",
       sortable: true,
       align: "start",
       value: "email",
     },
     {
-      text: "Name",
+      text: "grids.headers.name",
       sortable: true,
       align: "start",
       value: "displayName",
@@ -82,9 +89,11 @@ export default class UsersPage extends Vue {
   }
 
   async created() {
+    this.isLoading = true
     this.users = await callApi<UsersListRequest>(api.users.list, {
       tenantId: this.currentUser.tenantId ?? undefined,
     });
+    this.isLoading = false
   }
 }
 </script>

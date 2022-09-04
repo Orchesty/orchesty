@@ -6,6 +6,9 @@ import forgotPasswordPage from "./forgotPasswordPage.json";
 import formLabels from "./formLabels.json";
 import newPasswordPage from "./newPasswordPage.json";
 import overviewPage from "./overviewPage.json";
+import customersPage from "./customersPage.json";
+import grids from "./grids.json";
+import profilePage from "./profilePage.json";
 
 export default {
   ...button,
@@ -16,4 +19,7 @@ export default {
   ...formLabels,
   ...newPasswordPage,
   ...overviewPage,
+  ...customersPage,
+  ...grids,
+  ...profilePage,
 };
