@@ -1,6 +1,6 @@
 <template>
   <AppLayout>
-    <Heading class="mb-2">{{ $t("profilePage.header.profile") }}</Heading>
+    <Heading class="mb-5">{{ $t("profilePage.header.profile") }}</Heading>
     <ValidationObserver v-slot="{ handleSubmit }">
       <v-form class="form" @submit.prevent="handleSubmit(submitFormName)">
         <TextField

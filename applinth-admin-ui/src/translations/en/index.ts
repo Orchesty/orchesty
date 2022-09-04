@@ -13,6 +13,8 @@ import userUpdatePage from "./pages/userUpdatePage.json";
 import usersPage from "./pages/usersPage.json";
 import customerBillingPage from "./pages/customerBillingPage.json";
 import customerDetailPage from "./pages/customerDetailPage.json";
+import table from "./table.json";
+import en from "vuetify/src/locale/en";
 
 export default {
   ...button,
@@ -30,4 +32,6 @@ export default {
   ...usersPage,
   ...customerBillingPage,
   ...customerDetailPage,
+  ...table,
+  ...en,
 };

@@ -1,7 +1,7 @@
 <template>
   <AppLayout>
-    <div class="d-flex align-center mb-4">
-      <router-link :to="{ name: Routes.Users }">
+    <div class="d-flex align-center mb-5">
+      <router-link :to="{ name: Routes.Users }" class="text-decoration-none">
         <v-icon class="router-icon mr-4 color-primary-blue">
           mdi-arrow-left-circle-outline
         </v-icon>

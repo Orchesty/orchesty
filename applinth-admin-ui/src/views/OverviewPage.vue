@@ -1,21 +1,8 @@
 <template>
   <AppLayout>
-    <v-row>
-      <v-col>
-        <Heading>{{ $t("overviewPage.header") }}</Heading>
-      </v-col>
-    </v-row>
-
-    <v-row>
-      <v-col>
-        <StatusCardList />
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col>
-        <AppsOverview />
-      </v-col>
-    </v-row>
+    <Heading>{{ $t("overviewPage.header") }}</Heading>
+    <StatusCardList class="my-5" />
+    <AppsOverview />
   </AppLayout>
 </template>
 
