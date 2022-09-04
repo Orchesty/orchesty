@@ -5,6 +5,7 @@
     </div>
     <div v-else-if="!isLoading && apps.length">
       <v-card outlined v-for="app of apps" :key="app.id" class="mb-2 pa-5">
+        <!--        TODO HARDCODED-->
         <v-container>
           <v-row>
             <v-col cols="auto" class="d-flex">
@@ -20,7 +21,10 @@
               <SubHeading>{{ app.appName }}</SubHeading>
             </v-col>
             <v-col class="d-flex flex-column justify-center align-center">
-              <SubHeading>{{$t('overviewPage.apps.users')}}: {{ app.endUsers }}</SubHeading>
+              <SubHeading
+                >{{ $t("overviewPage.apps.users") }}:
+                {{ app.endUsers }}</SubHeading
+              >
             </v-col>
             <v-col class="d-flex flex-column justify-center align-end">
               <router-link
