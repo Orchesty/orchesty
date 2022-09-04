@@ -3,7 +3,12 @@
     "headers": {
       "user": "Uživatel",
       "activeApps": "Aktivní Aplikace",
-      "billing": "Fakturace"
+      "billing": "Fakturace",
+      "email": "Email",
+      "name": "Jméno",
+      "installed": "Instalace",
+      "month": "Měsíc",
+      "application": "Aplikace"
     }
   }
 }

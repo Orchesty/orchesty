@@ -9,7 +9,7 @@ import overviewPage from "./overviewPage.json";
 import customersPage from "./customersPage.json";
 import grids from "./grids.json";
 import profilePage from "./profilePage.json";
-import userUpdatePage from "./userUpdatePage.json"
+import userUpdatePage from "./userUpdatePage.json";
 
 export default {
   ...button,

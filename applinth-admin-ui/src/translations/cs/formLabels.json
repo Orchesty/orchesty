@@ -6,6 +6,10 @@
     "newPassword": "Nové heslo",
     "passwordCheck": "Kontrola hesla",
     "filterByApplication": "Filtrovat podle aplikace",
-    "search": "Hledat"
+    "search": "Hledat",
+    "firstName": "Jméno",
+    "surname": "Příjmení",
+    "userName": "Uživatelské jméno",
+    "superAdmin": "Superadmin"
   }
 }
