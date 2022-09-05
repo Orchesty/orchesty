@@ -77,6 +77,8 @@ import { ROUTES } from '@/router/routes'
 import Heading from '@/components/commons/Heading'
 import moment from 'moment'
 import prettifyMills from 'pretty-ms'
+import { callApi } from '@/utils/apiFetch'
+import { API } from '@/api'
 
 export default {
   name: 'OverviewPage',
@@ -84,6 +86,21 @@ export default {
     Heading,
     AppInstalledItems,
     DataGrid,
+  },
+  async beforeRouteEnter(_to, _from, next) {
+    const installedApps = await callApi({
+      requestData: API.appStore.getInstalledApps,
+    })
+    if (installedApps.items.length <= 0) {
+      next((vm) => {
+        // In case there are no installed apps yet,
+        // the user will be redirected to choose
+        // an app to install.
+        vm.$router.push({ name: ROUTES.APPLICATIONS })
+      })
+    } else {
+      next()
+    }
   },
   data() {
     return {
