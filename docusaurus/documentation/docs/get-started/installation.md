@@ -102,7 +102,7 @@ For more detailed information, we recommend visiting [The introduction of Orches
 Once installed, admin will be available at http://127.0.0.10.
 Create a new user before first logging in. 
 ```shell
-docker-compose exec backend bin/pipes u:c
+docker-compose exec backend bin/orchesty u:c
 ```
 
 Now we can log into the UI.
