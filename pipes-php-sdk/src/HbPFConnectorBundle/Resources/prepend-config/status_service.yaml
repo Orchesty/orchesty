@@ -3,8 +3,12 @@ rabbit_mq:
     queues:
         pipes.results:
             durable: true
+            arguments:
+                x-queue-type: 'quorum'
         pipes.notifications:
             durable: true
+            arguments:
+                x-queue-type: 'quorum'
 
     publishers:
         pipes-notifications:

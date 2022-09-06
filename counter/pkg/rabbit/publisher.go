@@ -71,7 +71,9 @@ func (p *Publisher) connect() {
 			}
 		}()
 
-		if _, err := ch.QueueDeclare(p.RoutingKey, true, false, false, false, nil); err != nil {
+		if _, err := ch.QueueDeclare(p.RoutingKey, true, false, false, false, map[string]interface{}{
+			"x-queue-type": "quorum",
+		}); err != nil {
 			config.Log.Error(err)
 			cancel()
 			continue
