@@ -12,5 +12,4 @@ return [
 
     HbPFCommonsBundle::class   => ['all' => TRUE],
     RabbitMqBundle::class      => ['all' => TRUE],
-    HbPFConnectorBundle::class => ['all' => TRUE],
 ];

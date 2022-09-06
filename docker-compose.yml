@@ -16,7 +16,7 @@ services:
             APP_DEBUG: 1
             PHP_WEBROOT: /var/www/public
             COMPOSER_HOME: ${HOME}/dev/.composer
-            KERNEL_CLASS: Pipes\PhpSdk\Kernel
+            KERNEL_CLASS: Pipes\StatusService\Kernel
             RABBITMQ_DSN: amqp://rabbitmq:5672
             METRICS_SERVICE: mongodb
 

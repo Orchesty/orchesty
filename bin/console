@@ -1,23 +1,15 @@
 #!/usr/bin/env php
 <?php declare(strict_types=1);
-
-use Pipes\StatusService\Kernel;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Pipes\StatusService\Kernel;
 use Symfony\Component\Console\Input\ArgvInput;
-use Symfony\Component\Debug\Debug;
-
 set_time_limit(0);
-require __DIR__ . '/../vendor/autoload.php';
+
+require __DIR__.'/../vendor/autoload.php';
 
 $input = new ArgvInput();
-$env   = $input->getParameterOption(['--env', '-e'], $_SERVER['APP_ENV'] ?? 'dev');
+$env = $input->getParameterOption(['--env', '-e'], $_SERVER['APP_ENV'] ?? 'dev');
 $debug = ($_SERVER['APP_DEBUG'] ?? ('prod' !== $env)) && !$input->hasParameterOption(['--no-debug', '']);
-if ($debug) {
-    umask(0000);
-    if (class_exists(Debug::class)) {
-        Debug::enable();
-    }
-}
-$kernel      = new Kernel($env, (bool) $debug);
+$kernel      = new Kernel($env, $debug);
 $application = new Application($kernel);
 $application->run($input);
