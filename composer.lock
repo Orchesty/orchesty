@@ -3191,11 +3191,11 @@
         },
         {
             "name": "orchesty/php-sdk",
-            "version": "2.2.1",
+            "version": "2.2.2",
             "dist": {
                 "type": "path",
                 "url": "../pipes-php-sdk",
-                "reference": "3d36bb6cffc020ac2745e27932c23b4855f99f58"
+                "reference": "e49bcc349b116ca3d30aee06c783a0374873c05a"
             },
             "require": {
                 "doctrine/mongodb-odm-bundle": "^4.5",
