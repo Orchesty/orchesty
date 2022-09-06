@@ -1,21 +1,21 @@
 <?php declare(strict_types=1);
 
-namespace PipesPhpSdkTests\Integration\StatusService;
+namespace PipesStatusServiceTests\Integration\StatusService;
 
 use Exception;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\CustomAssertTrait;
-use Hanaboso\PipesPhpSdk\StatusService\StatusServiceCallback;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
-use PipesPhpSdkTests\KernelTestCaseAbstract;
+use Pipes\StatusService\StatusService\StatusServiceCallback;
+use PipesStatusServiceTests\KernelTestCaseAbstract;
 use RabbitMqBundle\Connection\Connection;
 use RabbitMqBundle\Utils\Message;
 
 /**
  * Class StatusServiceCallbackTest
  *
- * @package PipesPhpSdkTests\Integration\StatusService
+ * @package PipesStatusServiceTests\Integration\StatusService
  *
- * @covers  \Hanaboso\PipesPhpSdk\StatusService\StatusServiceCallback
+ * @covers  \Pipes\StatusService\StatusService\StatusServiceCallback
  */
 final class StatusServiceCallbackTest extends KernelTestCaseAbstract
 {
@@ -95,7 +95,7 @@ final class StatusServiceCallbackTest extends KernelTestCaseAbstract
     {
         parent::setUp();
 
-        $this->callback   = self::getContainer()->get('hbpf.custom_nodes.status_service.status_service_callback');
+        $this->callback   = self::getContainer()->get('hbpf.status_service.status_service_callback');
         $this->connection = self::createMock(Connection::class);
     }
 

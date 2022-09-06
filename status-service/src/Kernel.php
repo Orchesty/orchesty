@@ -9,13 +9,11 @@ use Symfony\Component\Config\Resource\FileResource;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Symfony\Component\HttpKernel\Kernel as BaseKernel;
-use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 
 /**
  * Class Kernel
  *
  * @package Pipes\StatusService
- * @codeCoverageIgnore
  */
 final class Kernel extends BaseKernel
 {
@@ -30,6 +28,10 @@ final class Kernel extends BaseKernel
     public function registerBundles(): iterable
     {
         $contents = require sprintf('%s/config/Bundles.php', $this->getProjectDir());
+        /**
+         * @var BundleInterface $class
+         * @var mixed $envs
+         */
         foreach ($contents as $class => $envs) {
             if ($envs[$this->environment] ?? $envs['all'] ?? FALSE) {
                 yield new $class();

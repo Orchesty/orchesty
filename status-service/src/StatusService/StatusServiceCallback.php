@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Hanaboso\PipesPhpSdk\StatusService;
+namespace Pipes\StatusService\StatusService;
 
 use Exception;
 use Hanaboso\CommonsBundle\Enum\NotificationEventEnum;
@@ -17,7 +17,7 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 /**
  * Class StatusServiceCallback
  *
- * @package Hanaboso\PipesPhpSdk\StatusService
+ * @package Pipes\StatusService\StatusService
  */
 class StatusServiceCallback implements CallbackInterface
 {

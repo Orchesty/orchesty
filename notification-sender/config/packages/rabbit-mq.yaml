@@ -11,9 +11,6 @@ rabbit_mq:
             arguments:
                 x-queue-type: 'quorum'
 
-    publishers:
-        notification-rabbit:
-
     consumers:
         notification:
             queue: pipes.notifications

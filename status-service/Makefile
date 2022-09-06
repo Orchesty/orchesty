@@ -51,8 +51,18 @@ docker-compose.ci.yml:
 	# Comment out any port forwarding
 	sed -r 's/^(\s+ports:)$$/#\1/g; s/^(\s+- \$$\{DEV_IP\}.*)$$/#\1/g' docker-compose.yml > docker-compose.ci.yml
 
+#CI
+codesniffer:
+	$(DA) ./vendor/bin/phpcs --parallel=$$(nproc) --standard=tests/ruleset.xml src tests
+
+phpstan:
+	$(DA) ./vendor/bin/phpstan analyse -c tests/phpstan.neon -l 8 src tests
+
+phpintegration:
+	$(DA) vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --colors=always tests/Integration
+
 ci-test: test
 
 test: docker-up-force composer-install fasttest docker-down-clean
 
-fasttest: clear-cache
+fasttest: clear-cache codesniffer phpstan phpintegration

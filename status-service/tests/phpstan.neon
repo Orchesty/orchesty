@@ -1,0 +1,14 @@
+includes:
+	- ../vendor/hanaboso/php-check-utils/phpstan.neon
+
+parameters:
+	symfony:
+		container_xml_path: %rootDir%/../../../var/cache/test/Pipes_StatusService_KernelTestDebugContainer.xml
+	ignoreErrors:
+	ergebnis:
+		classesAllowedToBeExtended:
+			- PipesStatusServiceTests\KernelTestCaseAbstract
+			- RabbitMqBundle\Consumer\Consumer
+
+		classesNotRequiredToBeAbstractOrFinal:
+			- Pipes\StatusService\StatusService\StatusServiceCallback

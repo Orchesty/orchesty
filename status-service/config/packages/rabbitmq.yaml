@@ -3,3 +3,32 @@ rabbit_mq:
     connections:
         default:
             dsn: '%env(string:RABBITMQ_DSN)%'
+
+    queues:
+        pipes.results:
+            durable: true
+            arguments:
+                x-queue-type: 'quorum'
+        pipes.notifications:
+            durable: true
+            arguments:
+                x-queue-type: 'quorum'
+
+    publishers:
+        pipes-notifications:
+            routing_key: pipes.notifications
+
+    consumers:
+        status-service:
+            class: Pipes\StatusService\StatusService\StatusServiceConsumer
+            queue: pipes.results
+            callback:     hbpf.status_service.status_service_callback
+            prefetch_count: 100
+
+services:
+    # callback for status service
+    hbpf.status_service.status_service_callback:
+        class: Pipes\StatusService\StatusService\StatusServiceCallback
+        arguments:
+            - '@event_dispatcher'
+            - '@rabbit_mq.publisher.pipes-notifications'
