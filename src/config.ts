@@ -92,7 +92,12 @@ export const limiterOptions: ILimiterSettings = {
     port: parseInt(process.env.LIMITER_PORT, 10) || 3333,
     queue: {
         name: process.env.LIMITER_QUEUE || "pipes.limiter",
-        options: {},
+        options: {
+            durable: persistentQueues,
+            arguments: {
+                'x-queue-type': 'quorum',
+            },
+        },
     },
 };
 
