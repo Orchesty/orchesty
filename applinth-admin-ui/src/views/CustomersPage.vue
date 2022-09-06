@@ -1,15 +1,20 @@
 <template>
   <AppLayout>
     <div class="table-medium">
-      <h1>Customers</h1>
+      <Heading>{{ $t("customersPage.header") }}</Heading>
       <div class="wrapper my-5">
-        <TextField v-model="textSearch" hide-details name="" label="Search" />
+        <TextField
+          v-model="textSearch"
+          hide-details
+          :name="$t('formLabels.search')"
+          :label="$t('formLabels.search')"
+        />
         <SelectBox
           v-model="appSearch"
           hide-details
-          label="Filter by application"
+          :label="$t('formLabels.filterByApplication')"
           :items="applications"
-          name="name"
+          :name="$t('formLabels.filterByApplication')"
         />
         <Button class="ma-auto" icon min-width="0" @click="resetFilters">
           <v-icon>close</v-icon>
@@ -36,6 +41,7 @@ import {
 import { Getter } from "vuex-class";
 import { authNamespace, AuthGetters } from "@/store/modules/auth";
 import { User } from "firebase/auth";
+import Heading from "@/components/commons/typography/Heading.vue";
 
 interface UsersTable {
   [key: string]: any;
@@ -44,6 +50,7 @@ interface UsersTable {
 
 @Component({
   components: {
+    Heading,
     TextField,
     SelectBox,
     AppLayout,
@@ -60,6 +67,7 @@ export default class CustomersPage extends Vue {
     this.appSearch = null;
   }
 
+  isLoading = false;
   textSearch = null;
   appSearch = null;
 
@@ -67,19 +75,19 @@ export default class CustomersPage extends Vue {
 
   headers: Array<UsersTable> = [
     {
-      text: "User",
+      text: "grids.headers.user",
       sortable: true,
       align: "start",
       value: "endUserDisplayId",
     },
     {
-      text: "Active Apps",
+      text: "grids.headers.activeApps",
       sortable: true,
       align: "start",
       value: "appNames",
     },
     {
-      text: "Billing",
+      text: "grids.headers.billing",
       sortable: true,
       align: "start",
       value: "totalCost",
@@ -87,11 +95,13 @@ export default class CustomersPage extends Vue {
   ];
 
   async created() {
+    this.isLoading = true;
     this.customers = await callApi<UsageStatsUsersRequest>(api.customers.list, {
       timeRangeStart: new Date(0).toISOString(),
       timeRangeEnd: new Date().toISOString(),
       tenantId: this.currentUser.tenantId ?? undefined,
     });
+    this.isLoading = false;
   }
 }
 </script>

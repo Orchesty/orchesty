@@ -1,59 +1,48 @@
 <template>
   <AppLayout>
-    <v-container fluid>
-      <v-row dense>
-        <v-col>
-          <h1 class="mb-8">
-            <router-link
-              :to="{ name: Routes.Users }"
-              title="Zpět na přehled uživatelů"
-              class="text-decoration-none"
-            >
-              <v-icon class="router-icon mr-4 color-primary-blue">
-                mdi-arrow-left-circle-outline
-              </v-icon>
-            </router-link>
-            Uživatel {{ formData.firstname }} {{ formData.surname }}
-          </h1>
-        </v-col>
-      </v-row>
-      <v-row dense>
-        <v-col>
-          <ValidationObserver slim ref="form">
-            <v-form class="form" @submit.prevent="onSubmit">
-              <input type="submit" hidden />
-              <TextField
-                label="Jméno"
-                v-model="formData.firstname"
-                name="firstname"
-                rules="required"
-                autofocus
-              />
-              <TextField
-                label="Příjmení"
-                v-model="formData.surname"
-                name="surname"
-                rules="required"
-              />
-              <TextField
-                label="Email"
-                v-model="formData.username"
-                name="username"
-                rules="required|email"
-              />
-              <v-checkbox
-                class="mt-0 mb-2"
-                v-model="formData.isSuperAdmin"
-                label="Superadmin"
-              />
-              <Button type="submit" :loading="isSending" color="secondary">
-                Uložit
-              </Button>
-            </v-form>
-          </ValidationObserver>
-        </v-col>
-      </v-row>
-    </v-container>
+    <div class="d-flex align-center mb-5">
+      <router-link :to="{ name: Routes.Users }" class="text-decoration-none">
+        <v-icon class="router-icon mr-4 color-primary-blue">
+          mdi-arrow-left-circle-outline
+        </v-icon>
+      </router-link>
+      <Heading>
+        {{ $t("userUpdatePage.header") }} {{ formData.firstname }}
+        {{ formData.surname }}
+      </Heading>
+    </div>
+    <ValidationObserver slim ref="form">
+      <v-form class="form" @submit.prevent="onSubmit">
+        <input type="submit" hidden />
+        <TextField
+          :label="$t('formLabels.firstName')"
+          v-model="formData.firstname"
+          :name="$t('formLabels.firstName')"
+          rules="required"
+          autofocus
+        />
+        <TextField
+          :label="$t('formLabels.surname')"
+          v-model="formData.surname"
+          :name="$t('formLabels.surname')"
+          rules="required"
+        />
+        <TextField
+          :label="$t('formLabels.userName')"
+          v-model="formData.username"
+          :name="$t('formLabels.userName')"
+          rules="required|email"
+        />
+        <v-checkbox
+          class="mt-0 mb-2"
+          v-model="formData.isSuperAdmin"
+          :label="$t('formLabels.superAdmin')"
+        />
+        <Button type="submit" :loading="isSending">
+          {{ $t("button.save") }}
+        </Button>
+      </v-form>
+    </ValidationObserver>
   </AppLayout>
 </template>
 
@@ -68,6 +57,7 @@ import { TablesActions, TablesNamespaces } from "../store/modules/tables";
 import { TableRefreshPayload } from "../types";
 import { UpdateAdminInput } from "../types/gqlGeneratedPrivate";
 import { Routes } from "../enums";
+import Heading from "@/components/commons/typography/Heading.vue";
 
 const emptyFormData: UpdateAdminInput = {
   username: "",
@@ -78,6 +68,7 @@ const emptyFormData: UpdateAdminInput = {
 
 @Component({
   components: {
+    Heading,
     AppLayout,
     Button,
     TextField,

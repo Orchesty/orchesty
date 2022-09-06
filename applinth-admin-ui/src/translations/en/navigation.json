@@ -8,13 +8,20 @@
     },
     "item": {
       "integrations": "Integrations",
+      "login": "Login",
+      "forgot_password": "Forgot Password",
+      "reset_password": "Reset Password",
+      "new_password": "New Password",
+      "changed_password": "Changed Password",
       "customers": "Customers",
-      "customerDetail": "Customer - Detail",
-      "customerBilling": "Customer - Billing",
+      "customer_detail": "Customer - Detail",
+      "customer_billing": "Customer - Billing",
       "users": "Users",
       "userUpdate": "User - Edit",
       "overview": "Overview",
-      "profile": "Profile"
+      "profile": "Profile",
+      "not_found": "Not found",
+      "user_update": "User Update"
     }
   }
 }

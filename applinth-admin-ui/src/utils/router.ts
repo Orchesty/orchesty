@@ -17,14 +17,20 @@ export const routerHistory: RawLocation[] = [];
 
 router.beforeEach(async (to, from, next) => {
   // Check auth
+
+  const authenticated: boolean =
+    store.getters[`${authNamespace}/${AuthGetters.GetAccessToken}`];
+
   if (to.meta?.auth === ViewAuth.Private || to.meta?.auth === undefined) {
-    const authenticated: boolean =
-      store.getters[`${authNamespace}/${AuthGetters.GetAccessToken}`];
     if (!authenticated && to.name !== Routes.Login) {
       next({ name: Routes.Login, query: { redirect: to.path } });
       return;
     }
+  } else if (authenticated && to.name === Routes.Login) {
+    next({ name: Routes.Overview });
+    return;
   }
+
   // Log route into router history list
   routerHistory.push(from.path);
   next();

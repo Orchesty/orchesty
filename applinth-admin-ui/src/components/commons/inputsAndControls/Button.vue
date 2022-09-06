@@ -38,7 +38,7 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 
 @Component
 export default class Button extends Vue {
-  @Prop({ required: false, type: String, default: "" })
+  @Prop({ required: false, type: String, default: "primary" })
   private color!: string;
 
   @Prop({ required: false, type: String, default: "" })

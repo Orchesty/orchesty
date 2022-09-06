@@ -1,21 +1,24 @@
 <template>
-  <LoginLayout>
-    <template #subtitle>
-      <div class="subtitle-1">Vítejte zpět</div>
-    </template>
-    <template #title> Přihlaste se ke svému účtu </template>
-    <LoginHandler />
-  </LoginLayout>
+  <CenteredLayout>
+    <AuthSplitLayout>
+      <template #heading> {{ $t("loginPage.header") }}</template>
+      <template #form>
+        <LoginHandler />
+      </template>
+    </AuthSplitLayout>
+  </CenteredLayout>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import LoginLayout from "../components/commons/layouts/LoginLayout.vue";
 import LoginHandler from "../components/auth/LoginHandler.vue";
+import AuthSplitLayout from "@/components/commons/layouts/AuthSplitLayout.vue";
+import CenteredLayout from "@/components/commons/layouts/CenteredLayout.vue";
 
 @Component({
   components: {
-    LoginLayout,
+    CenteredLayout,
+    AuthSplitLayout,
     LoginHandler,
   },
 })

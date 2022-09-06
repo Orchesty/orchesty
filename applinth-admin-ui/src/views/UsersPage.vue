@@ -1,10 +1,13 @@
 <template>
   <AppLayout>
-    <h1 class="mb-4">Uživatelé</h1>
-    <Button class="mb-4" @click="addItem" color="secondary" outlined
-      >Přidat</Button
+    <Heading class="mb-4">{{ $t("usersPage.header") }}</Heading>
+    <Button class="mb-4" @click="addItem">{{ $t("button.add") }}</Button>
+    <SimpleTable
+      :loading="isLoading"
+      class="table-medium"
+      :headers="headers"
+      :items="users"
     >
-    <SimpleTable class="table-medium" :headers="headers" :items="users">
       <template #actions="{ item }">
         <RoundButton @click="() => updateItem(item)" icon="pencil" />
         <RoundButton
@@ -30,10 +33,12 @@ import { api } from "@/api";
 import { authNamespace, AuthGetters, User } from "../store/modules/auth";
 import { callApi } from "@/utils/apiClient";
 import { eventBus } from "../utils/eventBus";
-import {UsageStatsAppsRequest, UsersListRequest} from "@/api/generated";
+import { UsersListRequest } from "@/api/generated";
+import Heading from "@/components/commons/typography/Heading.vue";
 
 @Component({
   components: {
+    Heading,
     AppLayout,
     Button,
     RoundButton,
@@ -44,17 +49,19 @@ export default class UsersPage extends Vue {
   @Getter(`${authNamespace}/${AuthGetters.GetUser}`)
   currentUser!: User;
 
+  isLoading = false;
+
   users: User[] = [];
 
   headers = [
     {
-      text: "Email",
+      text: "grids.headers.email",
       sortable: true,
       align: "start",
       value: "email",
     },
     {
-      text: "Name",
+      text: "grids.headers.name",
       sortable: true,
       align: "start",
       value: "displayName",
@@ -82,9 +89,11 @@ export default class UsersPage extends Vue {
   }
 
   async created() {
+    this.isLoading = true;
     this.users = await callApi<UsersListRequest>(api.users.list, {
       tenantId: this.currentUser.tenantId ?? undefined,
     });
+    this.isLoading = false;
   }
 }
 </script>

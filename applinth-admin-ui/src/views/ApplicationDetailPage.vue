@@ -1,23 +1,24 @@
 <template>
   <AppLayout>
-    <div class="w-600">
-      <router-link :to="{ name: routes.Dashboard }" class="link">
-        <span>Back to applications</span>
-      </router-link>
+    <div v-if="loading">
+      <BaseProgressBarLinear />
+    </div>
+    <div v-else class="w-600">
+      <!--      TODO HARDCOCED-->
       <v-img
         max-width="400"
         contain
         src="https://picsum.photos/id/11/500/300"
         class="my-5"
       />
-      <h1>Amazon Lambda</h1>
+      <Heading class="mb-2">Application Name</Heading>
       <p>
         Lambda is a compute service that lets you run code without prosivioning
         or managing servers
       </p>
       <div class="wrapper my-5">
         <StatusCard :score="92" title="Users" />
-        <StatusCard :score="199" title="Price" />
+        <StatusCard loading :score="199" title="Price" />
         <StatusCard :score="18308" title="Billing" />
       </div>
       <LineChart class="chart-js" :chart-data="data" :chart-labels="labels" />
@@ -29,12 +30,16 @@
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import AppLayout from "../components/commons/layouts/AppLayout.vue";
-import StatusCard from "@/components/commons/StatusCard.vue";
+import StatusCard from "@/components/commons/layouts/StatusCard.vue";
 import { Routes } from "@/enums";
 import LineChart from "@/components/app/LineChart.vue";
+import BaseProgressBarLinear from "@/components/commons/BaseProgressBarLinear.vue";
+import Heading from "@/components/commons/typography/Heading.vue";
 
 @Component({
   components: {
+    Heading,
+    BaseProgressBarLinear,
     LineChart,
     StatusCard,
     AppLayout,
@@ -42,6 +47,8 @@ import LineChart from "@/components/app/LineChart.vue";
 })
 export default class ApplicationDetailPage extends Vue {
   routes = Routes;
+
+  loading = false;
 
   labels = ["January", "February", "March", "April", "May", "June"];
   data = [16, 10, 5, 2, 20, 30, 45];

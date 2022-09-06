@@ -22,13 +22,13 @@ export default class CustomerAppsTable extends Vue {
     defaultSortBy: ["installed"],
     headers: [
       {
-        text: "Active apps",
+        text: "grids.headers.activeApps",
         sortable: true,
         align: "start",
         value: "activeApps",
       },
       {
-        text: "Installed",
+        text: "grids.headers.installed",
         sortable: true,
         align: "start",
         value: "installed",

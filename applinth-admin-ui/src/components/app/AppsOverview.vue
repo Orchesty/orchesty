@@ -1,34 +1,46 @@
 <template>
   <div>
-    <v-card outlined v-for="app of apps" :key="app.id" class="mb-2 pa-5">
-      <div class="wrapper">
-        <div>
-          <v-img
-            lazy-src="https://picsum.photos/id/11/10/6"
-            height="150"
-            width="150"
-            src="https://picsum.photos/id/11/500/300"
-          />
-        </div>
-        <div class="d-flex align-center justify-start">
-          <h1>{{ app.appName }}</h1>
-        </div>
-        <div class="d-flex flex-column align-center justify-center">
-          <h1 class="font-weight-light">Users</h1>
-          <span class="display-1 font-weight-bold">{{ app.endUsers }}</span>
-        </div>
-        <div class="d-flex align-center justify-center">
-          <router-link
-            :to="{
-              name: Routes.ApplicationDetail,
-              params: { id: app.appName },
-            }"
-          >
-            <h1 class="font-weight-light">Detail</h1>
-          </router-link>
-        </div>
-      </div>
-    </v-card>
+    <div v-if="isLoading">
+      <BaseProgressBarLinear />
+    </div>
+    <div v-else-if="!isLoading && apps.length">
+      <v-card outlined v-for="app of apps" :key="app.id" class="mb-2 pa-5">
+        <!--        TODO HARDCODED-->
+        <v-container>
+          <v-row>
+            <v-col cols="auto" class="d-flex">
+              <v-img
+                class="ma-auto"
+                max-height="70"
+                max-width="70"
+                contain
+                src="https://img.icons8.com/windows/512/ios-application-placeholder.png"
+              />
+            </v-col>
+            <v-col class="d-flex justify-center align-center">
+              <SubHeading>{{ app.appName }}</SubHeading>
+            </v-col>
+            <v-col class="d-flex flex-column justify-center align-center">
+              <SubHeading
+                >{{ $t("overviewPage.apps.users") }}:
+                {{ app.endUsers }}</SubHeading
+              >
+            </v-col>
+            <v-col class="d-flex flex-column justify-center align-end">
+              <router-link
+                class="link"
+                :to="{
+                  name: Routes.ApplicationDetail,
+                  params: { id: app.appName },
+                }"
+              >
+                <span>Detail</span>
+              </router-link>
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-card>
+    </div>
   </div>
 </template>
 
@@ -43,24 +55,29 @@ import { Component, Vue } from "vue-property-decorator";
 import { authNamespace, AuthGetters, User } from "@/store/modules/auth";
 import { Getter } from "vuex-class";
 import { Routes } from "@/enums/Routes";
+import BaseProgressBarLinear from "@/components/commons/BaseProgressBarLinear.vue";
+import SubHeading from "@/components/commons/typography/SubHeading.vue";
 
 @Component({
-  components: {},
+  components: { SubHeading, BaseProgressBarLinear },
 })
 export default class AppsOverview extends Vue {
   @Getter(`${authNamespace}/${AuthGetters.GetUser}`)
   currentUser!: User;
 
   apps: UsageStatsAppsRowsInner = [] as UsageStatsAppsRowsInner;
+  isLoading = false;
 
   Routes = Routes;
 
   async created() {
+    this.isLoading = true;
     this.apps = await callApi<UsageStatsAppsRequest>(api.overview.apps, {
       timeRangeStart: new Date(0).toISOString(),
       timeRangeEnd: new Date().toISOString(),
       tenantId: this.currentUser.tenantId ?? undefined,
     });
+    this.isLoading = false;
   }
 }
 </script>

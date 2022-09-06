@@ -1,5 +1,5 @@
 import TabRouter from "./TabRouter.vue";
-import { Routes } from "../../enums";
+import { Routes } from "../../../enums";
 
 /**
  * Issue viewing this component in Storybook

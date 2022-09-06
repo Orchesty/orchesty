@@ -34,7 +34,7 @@
 </template>
 
 <script lang="ts">
-import Modal from "../../Modal.vue";
+import Modal from "../../layouts/Modal.vue";
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { eventBus } from "../../../../utils/eventBus";
 import { userSettings } from "../../../../utils/userSettings";

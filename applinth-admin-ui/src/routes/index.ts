@@ -112,7 +112,7 @@ const applications = [
             to: null,
           },
           {
-            text: appActiveName,
+            text: 'Application Item',
             to: { name: Routes.ApplicationDetail },
           },
         ];
@@ -199,7 +199,7 @@ const customersRoutes = [
           to: { name: Routes.Customers },
         },
         {
-          text: "navigation.item.customerBilling",
+          text: "navigation.item.customer_billing",
           to: { name: Routes.CustomerBilling },
         },
       ],
@@ -221,7 +221,7 @@ const customersRoutes = [
           to: { name: Routes.Customers },
         },
         {
-          text: "navigation.item.customerDetail",
+          text: "navigation.item.customer_detail",
           to: { name: Routes.CustomerDetail },
         },
       ],

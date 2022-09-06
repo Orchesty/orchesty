@@ -1,5 +1,13 @@
 <template>
-  <v-data-table :headers="headers" :items="items" class="elevation-1">
+  <v-data-table
+    :loading="loading"
+    :headers="headers"
+    :items="items"
+    class="elevation-1"
+  >
+    <template v-for="item in headers" #[`header.${item.value}`]="{ header }">
+      <span :key="item.value">{{ $t(header.text) }}</span>
+    </template>
     <template v-slot:[`item.actions`]="{ item }">
       <ActionsWrapper>
         <slot name="actions" :item="item" />
@@ -23,6 +31,9 @@ export default class SimpleTable extends Vue {
 
   @Prop({ type: Array, required: true })
   readonly items!: any[];
+
+  @Prop({ type: Boolean, required: false, default: false })
+  readonly loading!: boolean;
 
   editItem(item: any) {
     this.$emit("edit", item);

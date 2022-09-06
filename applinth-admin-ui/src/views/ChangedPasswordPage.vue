@@ -1,56 +1,32 @@
 <template>
-  <LoginLayout>
-    <template #title>
-      Heslo změněno <v-icon class="icon">mdi-check</v-icon>
-    </template>
-    <p class="subtitle-2 color-main-text mb-8">
-      Nové heslo bylo úspěšně změněno, nyní se můžete přihlásit.
-    </p>
-    <Button
-      class="button"
-      color="primary"
-      large
-      no-text-transform
-      :to="{ name: Routes.Login }"
-    >
-      Přihlásit
-    </Button>
-  </LoginLayout>
+  <CenteredLayout>
+    <AuthSplitLayout>
+      <template #heading>
+        {{ $t("passwordChangedPage.header") }}
+      </template>
+      <template #form>
+        <p>{{ $t("passwordChangedPage.body") }}</p>
+        <Button :to="{ name: Routes.Login }"> {{ $t("button.login") }} </Button>
+      </template>
+    </AuthSplitLayout>
+  </CenteredLayout>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import Button from "../components/commons/inputsAndControls/Button.vue";
-import LoginLayout from "../components/commons/layouts/LoginLayout.vue";
 import { Routes } from "../enums";
+import CenteredLayout from "@/components/commons/layouts/CenteredLayout.vue";
+import AuthSplitLayout from "@/components/commons/layouts/AuthSplitLayout.vue";
 
 @Component({
   components: {
+    AuthSplitLayout,
+    CenteredLayout,
     Button,
-    LoginLayout,
   },
 })
 export default class ChangedPasswordPage extends Vue {
   Routes = Routes;
 }
 </script>
-
-<style lang="scss" scoped>
-.icon {
-  position: relative;
-  top: -3px;
-  margin-left: 1rem;
-  padding: 4px;
-  color: $color-dark-blue;
-  font-size: 0.7em;
-  border: 2px solid;
-  border-radius: 50%;
-}
-
-.button {
-  font-size: 20px;
-  padding: 10px;
-  width: 25ch !important;
-  min-width: initial !important;
-}
-</style>

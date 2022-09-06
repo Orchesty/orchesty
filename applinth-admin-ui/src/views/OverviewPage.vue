@@ -1,15 +1,8 @@
 <template>
   <AppLayout>
-    <v-row>
-      <v-col>
-        <StatusCardList />
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col>
-        <AppsOverview />
-      </v-col>
-    </v-row>
+    <Heading>{{ $t("overviewPage.header") }}</Heading>
+    <StatusCardList class="my-5" />
+    <AppsOverview />
   </AppLayout>
 </template>
 
@@ -18,9 +11,11 @@ import { Component, Vue } from "vue-property-decorator";
 import AppLayout from "../components/commons/layouts/AppLayout.vue";
 import StatusCardList from "@/components/app/StatusCardList.vue";
 import AppsOverview from "@/components/app/AppsOverview.vue";
+import Heading from "@/components/commons/typography/Heading.vue";
 
 @Component({
   components: {
+    Heading,
     AppLayout,
     StatusCardList,
     AppsOverview,

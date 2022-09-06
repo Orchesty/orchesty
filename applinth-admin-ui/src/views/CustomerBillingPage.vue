@@ -1,11 +1,12 @@
 <template>
   <AppLayout>
     <div class="table-medium">
-      <h1>Billing</h1>
+      <Heading>{{ $t("customerBillingPage.header") }}</Heading>
+      <!--      TODO HARDCOCED-->
       <StatusCard
         class="customer-info-card my-5"
         :score="199"
-        title="Actual billing"
+        :title="$t('customerBillingPage.statusCard.actualBilling')"
       />
       <CustomerBillingTable />
     </div>
@@ -15,11 +16,13 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import AppLayout from "../components/commons/layouts/AppLayout.vue";
-import StatusCard from "@/components/commons/StatusCard.vue";
+import StatusCard from "@/components/commons/layouts/StatusCard.vue";
 import CustomerBillingTable from "@/components/app/CustomerBillingTable.vue";
+import Heading from "@/components/commons/typography/Heading.vue";
 
 @Component({
   components: {
+    Heading,
     CustomerBillingTable,
     StatusCard,
     AppLayout,

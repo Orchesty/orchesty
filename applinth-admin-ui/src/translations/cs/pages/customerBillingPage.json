@@ -1,0 +1,8 @@
+{
+  "customerBillingPage": {
+    "header": "Fakturace",
+    "statusCard": {
+      "actualBilling": "Aktuální fakturace"
+    }
+  }
+}

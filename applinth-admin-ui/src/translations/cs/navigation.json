@@ -8,13 +8,20 @@
     },
     "item": {
       "integrations": "Integrace",
+      "login": "Přihlášení",
+      "forgot_password": "Zapomenuté Heslo",
+      "reset_password": "Reset Hesla",
+      "new_password": "Nové Heslo",
+      "changed_password": "Heslo Změněno",
       "customers": "Zákazníci",
-      "customerDetail": "Zákazník - Detail",
-      "customerBilling": "Zákazník - Fakturace",
+      "customer_detail": "Zákazník - Detail",
+      "customer_billing": "Zákazník - Fakturace",
       "users": "Uživatelé",
       "userUpdate": "Uživatel - Edit",
       "overview": "Přehled",
-      "profile": "Profil"
+      "profile": "Profil",
+      "not_found": "Stránka nenalezena",
+      "user_update": "Upravit uživatele"
     }
   }
 }

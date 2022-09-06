@@ -1,0 +1,16 @@
+{
+  "formLabels": {
+    "tenantId": "Tenant ID",
+    "email": "Email",
+    "password": "Heslo",
+    "newPassword": "Nové heslo",
+    "passwordCheck": "Kontrola hesla",
+    "filterByApplication": "Filtrovat podle aplikace",
+    "search": "Hledat",
+    "firstName": "Jméno",
+    "surname": "Příjmení",
+    "userName": "Uživatelské jméno",
+    "superAdmin": "Superadmin",
+    "noData": "Žádná data k dispozici"
+  }
+}

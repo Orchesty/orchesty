@@ -1,36 +1,27 @@
 <template>
-  <ValidationObserver v-slot="{ handleSubmit }">
-    <v-form class="mb-8" @submit.prevent="handleSubmit(submit)">
-      <TextField
-        vid="nove-heslo-1"
-        name="nove-heslo-1"
-        rules="required"
-        label="Nové heslo"
-        v-model="newPasswordOne"
-        type="password"
-        autocomplete="new-password"
-        autofocus
-      />
-      <TextField
-        name="nove-heslo-2"
-        label="Nové heslo znova"
-        rules="confirmed:nove-heslo-1"
-        v-model="newPasswordTwo"
-        type="password"
-        autocomplete="new-password"
-        class="d-block mb-4"
-      />
-      <Button
-        type="submit"
-        color="primary"
-        no-text-transform
-        large
-        block
-        class="button"
-      >
-        Změnit
-      </Button>
-    </v-form>
+  <ValidationObserver
+    tag="form"
+    @submit.prevent="submit"
+    @keydown.enter="submit"
+  >
+    <TextField
+      :name="$t('formLabels.newPassword')"
+      rules="required"
+      :label="$t('formLabels.newPassword')"
+      v-model="newPasswordOne"
+      type="password"
+      autofocus
+    />
+    <TextField
+      :name="$t('formLabels.passwordCheck')"
+      :label="$t('formLabels.passwordCheck')"
+      :rules="`confirmed:${$t('formLabels.newPassword')}`"
+      v-model="newPasswordTwo"
+      type="password"
+    />
+    <Button type="submit" :on-click="submit">
+      {{ $t("button.change") }}
+    </Button>
   </ValidationObserver>
 </template>
 
@@ -72,9 +63,4 @@ export default class NewPassword extends Vue {
 }
 </script>
 
-<style lang="scss" scoped>
-.button {
-  font-size: 20px;
-  padding: 10px;
-}
-</style>
+<style lang="scss" scoped></style>

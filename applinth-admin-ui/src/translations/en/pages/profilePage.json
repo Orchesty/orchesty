@@ -1,0 +1,8 @@
+{
+  "profilePage": {
+    "header":{
+      "profile": "Update Profile",
+      "password": "Change Password"
+    }
+  }
+}

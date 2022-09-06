@@ -1,0 +1,16 @@
+{
+  "formLabels": {
+    "firstName": "First Name",
+    "surname": "Surname",
+    "userName": "User Name",
+    "tenantId": "Tenant ID",
+    "email": "Email",
+    "password": "Password",
+    "newPassword": "New Password",
+    "passwordCheck": "Password Check",
+    "filterByApplication": "Filter by Application",
+    "search": "Search",
+    "superAdmin": "Superadmin",
+    "noData": "No data"
+  }
+}

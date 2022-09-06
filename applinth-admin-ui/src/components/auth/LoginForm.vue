@@ -1,48 +1,49 @@
 <template>
-  <ValidationObserver v-slot="{ handleSubmit }">
-    <v-form class="mb-8" @submit.prevent="handleSubmit(submit)">
-      <TextField
-        label="Tenant ID"
-        big-label
-        name="Tenant"
-        v-model="form.tenant"
-        type="text"
-      />
-      <TextField
-        label="Email"
-        big-label
-        :name="$t('login.form.email.name')"
-        v-model="form.email"
-        type="email"
-        :rules="rules.email"
-      />
-      <TextField
-        label="Heslo"
-        big-label
-        :name="$t('login.form.password.name')"
-        :rules="rules.password"
-        v-model="form.password"
-        type="password"
-        autocomplete="current-password"
-      />
-      <div class="text-right mb-4">
-        <router-link :to="{ name: Routes.ForgotPassword }" class="link">
-          Zapomenuté heslo?
-        </router-link>
-      </div>
-      <Button type="submit" color="primary" :on-click="submit">
+  <ValidationObserver
+    tag="form"
+    @submit.prevent="submit"
+    @keydown.enter="submit"
+  >
+    <TextField
+      :label="$t('formLabels.tenantId')"
+      :name="$t('formLabels.tenantId')"
+      v-model="form.tenant"
+      type="text"
+    />
+    <TextField
+      :label="$t('formLabels.email')"
+      :name="$t('formLabels.email')"
+      v-model="form.email"
+      type="email"
+      :rules="rules.email"
+    />
+    <TextField
+      :label="$t('formLabels.password')"
+      :name="$t('formLabels.password')"
+      :rules="rules.password"
+      v-model="form.password"
+      type="password"
+      autocomplete="current-password"
+    />
+    <div class="text-right mb-4">
+      <router-link :to="{ name: Routes.ForgotPassword }" class="link">
+        {{ $t("loginPage.forgotPasswordLink") }}
+      </router-link>
+    </div>
+    <div class="text-right">
+      <Button :loading="loading" type="submit" :on-click="submit">
         {{ $t("button.login") }}
       </Button>
-    </v-form>
+    </div>
   </ValidationObserver>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { TLoginForm, TLoginRules } from "./types";
-import { ValidationObserver, ValidationProvider } from "vee-validate";
+import { ValidationObserver } from "vee-validate";
 import TextField from "../commons/inputsAndControls/TextField.vue";
-import Logo from "../commons/Logo.vue";
+import Logo from "../commons/layouts/Logo.vue";
 import Button from "../commons/inputsAndControls/Button.vue";
 import { Routes } from "../../enums/Routes";
 
@@ -50,7 +51,6 @@ import { Routes } from "../../enums/Routes";
   components: {
     Logo,
     ValidationObserver,
-    ValidationProvider,
     TextField,
     Button,
   },
@@ -60,6 +60,8 @@ export default class LoginForm extends Vue {
 
   @Prop({ required: true, type: Function })
   private onSubmit!: (payload: TLoginForm) => Promise<boolean>;
+
+  loading = false;
 
   form: TLoginForm = {
     email: "",
@@ -78,6 +80,7 @@ export default class LoginForm extends Vue {
   };
 
   async submit(): Promise<void> {
+    this.loading = true;
     const result = await this.onSubmit(this.form);
     if (result) {
       if (this.$route.query?.redirect) {
@@ -86,16 +89,9 @@ export default class LoginForm extends Vue {
         this.$router.push("/");
       }
     }
+    this.loading = false;
   }
 }
 </script>
 
-<style lang="scss" scoped>
-.link {
-  text-decoration: none;
-
-  &:hover {
-    text-decoration: underline;
-  }
-}
-</style>
+<style lang="scss" scoped></style>

@@ -1,0 +1,14 @@
+{
+  "grids": {
+    "headers": {
+      "user": "Uživatel",
+      "activeApps": "Aktivní Aplikace",
+      "billing": "Fakturace",
+      "email": "Email",
+      "name": "Jméno",
+      "installed": "Instalace",
+      "month": "Měsíc",
+      "application": "Aplikace"
+    }
+  }
+}

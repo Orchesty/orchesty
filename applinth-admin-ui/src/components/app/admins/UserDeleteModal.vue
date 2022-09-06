@@ -9,7 +9,7 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import ConfirmModal from "../../commons/ConfirmModal.vue";
+import ConfirmModal from "../../commons/layouts/ConfirmModal.vue";
 import { Admin } from "../../../types/gqlGeneratedPrivate";
 import { EventBus } from "../../../enums";
 import { TablesActions, TablesNamespaces } from "../../../store/modules/tables";
