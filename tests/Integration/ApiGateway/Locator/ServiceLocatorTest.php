@@ -378,7 +378,7 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
      */
     public function testRunSyncActions(): void
     {
-        $dto = new ResponseDto(200, '', Json::encode([]), []);
+        $dto = new ResponseDto(205, '', Json::encode([]), []);
         $req = new Request(['aa' => 'bb']);
         $req->setMethod('post');
 
