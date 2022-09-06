@@ -391,16 +391,16 @@
         },
         {
             "name": "doctrine/dbal",
-            "version": "3.4.3",
+            "version": "3.4.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/dbal.git",
-                "reference": "a24b89d663d8f261199bc0a91c48016042ebda85"
+                "reference": "4cbbe6e4b9ef6c69d5f4c968c637476f47bb54f5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/dbal/zipball/a24b89d663d8f261199bc0a91c48016042ebda85",
-                "reference": "a24b89d663d8f261199bc0a91c48016042ebda85",
+                "url": "https://api.github.com/repos/doctrine/dbal/zipball/4cbbe6e4b9ef6c69d5f4c968c637476f47bb54f5",
+                "reference": "4cbbe6e4b9ef6c69d5f4c968c637476f47bb54f5",
                 "shasum": ""
             },
             "require": {
@@ -415,14 +415,14 @@
             "require-dev": {
                 "doctrine/coding-standard": "10.0.0",
                 "jetbrains/phpstorm-stubs": "2022.2",
-                "phpstan/phpstan": "1.8.2",
+                "phpstan/phpstan": "1.8.3",
                 "phpstan/phpstan-strict-rules": "^1.3",
-                "phpunit/phpunit": "9.5.21",
+                "phpunit/phpunit": "9.5.24",
                 "psalm/plugin-phpunit": "0.17.0",
                 "squizlabs/php_codesniffer": "3.7.1",
                 "symfony/cache": "^5.4|^6.0",
                 "symfony/console": "^4.4|^5.4|^6.0",
-                "vimeo/psalm": "4.24.0"
+                "vimeo/psalm": "4.27.0"
             },
             "suggest": {
                 "symfony/console": "For helpful console commands such as SQL execution and import of files."
@@ -482,7 +482,7 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/dbal/issues",
-                "source": "https://github.com/doctrine/dbal/tree/3.4.3"
+                "source": "https://github.com/doctrine/dbal/tree/3.4.4"
             },
             "funding": [
                 {
@@ -498,7 +498,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-08-28T17:26:36+00:00"
+            "time": "2022-09-01T21:26:42+00:00"
         },
         {
             "name": "doctrine/deprecations",
@@ -3391,11 +3391,11 @@
         },
         {
             "name": "orchesty/php-sdk",
-            "version": "2.2.0",
+            "version": "2.2.1",
             "dist": {
                 "type": "path",
                 "url": "../pipes-php-sdk",
-                "reference": "8452bb07eb8a0318e414c22730ae7bee5fb7b8d7"
+                "reference": "3d36bb6cffc020ac2745e27932c23b4855f99f58"
             },
             "require": {
                 "doctrine/mongodb-odm-bundle": "^4.5",
@@ -3744,16 +3744,16 @@
         },
         {
             "name": "phpseclib/phpseclib",
-            "version": "3.0.14",
+            "version": "3.0.16",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpseclib/phpseclib.git",
-                "reference": "2f0b7af658cbea265cbb4a791d6c29a6613f98ef"
+                "reference": "7181378909ed8890be4db53d289faac5b77f8b05"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/2f0b7af658cbea265cbb4a791d6c29a6613f98ef",
-                "reference": "2f0b7af658cbea265cbb4a791d6c29a6613f98ef",
+                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/7181378909ed8890be4db53d289faac5b77f8b05",
+                "reference": "7181378909ed8890be4db53d289faac5b77f8b05",
                 "shasum": ""
             },
             "require": {
@@ -3765,6 +3765,7 @@
                 "phpunit/phpunit": "*"
             },
             "suggest": {
+                "ext-dom": "Install the DOM extension to load XML formatted public keys.",
                 "ext-gmp": "Install the GMP (GNU Multiple Precision) extension in order to speed up arbitrary precision integer arithmetic operations.",
                 "ext-libsodium": "SSH2/SFTP can make use of some algorithms provided by the libsodium-php extension.",
                 "ext-mcrypt": "Install the Mcrypt extension in order to speed up a few other cryptographic operations.",
@@ -3833,7 +3834,7 @@
             ],
             "support": {
                 "issues": "https://github.com/phpseclib/phpseclib/issues",
-                "source": "https://github.com/phpseclib/phpseclib/tree/3.0.14"
+                "source": "https://github.com/phpseclib/phpseclib/tree/3.0.16"
             },
             "funding": [
                 {
@@ -3849,7 +3850,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-04-04T05:15:45+00:00"
+            "time": "2022-09-05T18:03:08+00:00"
         },
         {
             "name": "psr/cache",
@@ -7545,7 +7546,7 @@
         },
         {
             "name": "web-token/jwt-bundle",
-            "version": "3.1.1",
+            "version": "3.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/web-token/jwt-bundle.git",
@@ -7615,7 +7616,7 @@
                 "symfony"
             ],
             "support": {
-                "source": "https://github.com/web-token/jwt-bundle/tree/3.1.1"
+                "source": "https://github.com/web-token/jwt-bundle/tree/3.1.2"
             },
             "funding": [
                 {
@@ -7631,7 +7632,7 @@
         },
         {
             "name": "web-token/jwt-core",
-            "version": "3.1.1",
+            "version": "3.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/web-token/jwt-core.git",
@@ -7695,7 +7696,7 @@
                 "symfony"
             ],
             "support": {
-                "source": "https://github.com/web-token/jwt-core/tree/3.1.1"
+                "source": "https://github.com/web-token/jwt-core/tree/3.1.2"
             },
             "funding": [
                 {
@@ -7707,7 +7708,7 @@
         },
         {
             "name": "web-token/jwt-encryption",
-            "version": "3.1.1",
+            "version": "3.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/web-token/jwt-encryption.git",
@@ -7775,7 +7776,7 @@
                 "symfony"
             ],
             "support": {
-                "source": "https://github.com/web-token/jwt-encryption/tree/3.1.1"
+                "source": "https://github.com/web-token/jwt-encryption/tree/3.1.2"
             },
             "funding": [
                 {
@@ -7787,7 +7788,7 @@
         },
         {
             "name": "web-token/jwt-encryption-algorithm-aesgcm",
-            "version": "3.1.1",
+            "version": "3.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/web-token/jwt-encryption-algorithm-aesgcm.git",
@@ -7845,7 +7846,7 @@
                 "symfony"
             ],
             "support": {
-                "source": "https://github.com/web-token/jwt-encryption-algorithm-aesgcm/tree/3.1.1"
+                "source": "https://github.com/web-token/jwt-encryption-algorithm-aesgcm/tree/3.1.2"
             },
             "funding": [
                 {
@@ -7857,7 +7858,7 @@
         },
         {
             "name": "web-token/jwt-encryption-algorithm-ecdh-es",
-            "version": "3.1.1",
+            "version": "3.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/web-token/jwt-encryption-algorithm-ecdh-es.git",
@@ -7920,7 +7921,7 @@
                 "symfony"
             ],
             "support": {
-                "source": "https://github.com/web-token/jwt-encryption-algorithm-ecdh-es/tree/3.1.1"
+                "source": "https://github.com/web-token/jwt-encryption-algorithm-ecdh-es/tree/3.1.2"
             },
             "funding": [
                 {
@@ -7932,7 +7933,7 @@
         },
         {
             "name": "web-token/jwt-encryption-algorithm-rsa",
-            "version": "3.1.1",
+            "version": "3.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/web-token/jwt-encryption-algorithm-rsa.git",
@@ -7996,7 +7997,7 @@
                 "symfony"
             ],
             "support": {
-                "source": "https://github.com/web-token/jwt-encryption-algorithm-rsa/tree/3.1.1"
+                "source": "https://github.com/web-token/jwt-encryption-algorithm-rsa/tree/3.1.2"
             },
             "funding": [
                 {
@@ -8008,7 +8009,7 @@
         },
         {
             "name": "web-token/jwt-key-mgmt",
-            "version": "3.1.1",
+            "version": "3.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/web-token/jwt-key-mgmt.git",
@@ -8074,7 +8075,7 @@
                 "symfony"
             ],
             "support": {
-                "source": "https://github.com/web-token/jwt-key-mgmt/tree/3.1.1"
+                "source": "https://github.com/web-token/jwt-key-mgmt/tree/3.1.2"
             },
             "funding": [
                 {
@@ -8086,7 +8087,7 @@
         },
         {
             "name": "web-token/jwt-signature",
-            "version": "3.1.1",
+            "version": "3.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/web-token/jwt-signature.git",
@@ -8151,7 +8152,7 @@
                 "symfony"
             ],
             "support": {
-                "source": "https://github.com/web-token/jwt-signature/tree/3.1.1"
+                "source": "https://github.com/web-token/jwt-signature/tree/3.1.2"
             },
             "funding": [
                 {
@@ -8163,7 +8164,7 @@
         },
         {
             "name": "web-token/jwt-signature-algorithm-eddsa",
-            "version": "3.1.1",
+            "version": "3.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/web-token/jwt-signature-algorithm-eddsa.git",
@@ -8221,7 +8222,7 @@
                 "symfony"
             ],
             "support": {
-                "source": "https://github.com/web-token/jwt-signature-algorithm-eddsa/tree/3.1.1"
+                "source": "https://github.com/web-token/jwt-signature-algorithm-eddsa/tree/3.1.2"
             },
             "funding": [
                 {
@@ -8233,7 +8234,7 @@
         },
         {
             "name": "web-token/jwt-signature-algorithm-hmac",
-            "version": "3.1.1",
+            "version": "3.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/web-token/jwt-signature-algorithm-hmac.git",
@@ -8290,7 +8291,7 @@
                 "symfony"
             ],
             "support": {
-                "source": "https://github.com/web-token/jwt-signature-algorithm-hmac/tree/3.1.1"
+                "source": "https://github.com/web-token/jwt-signature-algorithm-hmac/tree/3.1.2"
             },
             "funding": [
                 {
@@ -8302,7 +8303,7 @@
         },
         {
             "name": "web-token/jwt-util-ecc",
-            "version": "3.1.1",
+            "version": "3.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/web-token/jwt-util-ecc.git",
@@ -8363,7 +8364,7 @@
                 "symfony"
             ],
             "support": {
-                "source": "https://github.com/web-token/jwt-util-ecc/tree/3.1.1"
+                "source": "https://github.com/web-token/jwt-util-ecc/tree/3.1.2"
             },
             "funding": [
                 {
@@ -9344,16 +9345,16 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v4.14.0",
+            "version": "v4.15.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "34bea19b6e03d8153165d8f30bba4c3be86184c1"
+                "reference": "0ef6c55a3f47f89d7a374e6f835197a0b5fcf900"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/34bea19b6e03d8153165d8f30bba4c3be86184c1",
-                "reference": "34bea19b6e03d8153165d8f30bba4c3be86184c1",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/0ef6c55a3f47f89d7a374e6f835197a0b5fcf900",
+                "reference": "0ef6c55a3f47f89d7a374e6f835197a0b5fcf900",
                 "shasum": ""
             },
             "require": {
@@ -9394,9 +9395,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nikic/PHP-Parser/issues",
-                "source": "https://github.com/nikic/PHP-Parser/tree/v4.14.0"
+                "source": "https://github.com/nikic/PHP-Parser/tree/v4.15.1"
             },
-            "time": "2022-05-31T20:59:12+00:00"
+            "time": "2022-09-04T07:30:47+00:00"
         },
         {
             "name": "phar-io/manifest",
@@ -9746,16 +9747,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.8.2",
+            "version": "1.8.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "c53312ecc575caf07b0e90dee43883fdf90ca67c"
+                "reference": "eed4c9da531f6ebb4787235b6fb486e2c20f34e5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/c53312ecc575caf07b0e90dee43883fdf90ca67c",
-                "reference": "c53312ecc575caf07b0e90dee43883fdf90ca67c",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/eed4c9da531f6ebb4787235b6fb486e2c20f34e5",
+                "reference": "eed4c9da531f6ebb4787235b6fb486e2c20f34e5",
                 "shasum": ""
             },
             "require": {
@@ -9779,9 +9780,13 @@
                 "MIT"
             ],
             "description": "PHPStan - PHP Static Analysis Tool",
+            "keywords": [
+                "dev",
+                "static analysis"
+            ],
             "support": {
                 "issues": "https://github.com/phpstan/phpstan/issues",
-                "source": "https://github.com/phpstan/phpstan/tree/1.8.2"
+                "source": "https://github.com/phpstan/phpstan/tree/1.8.4"
             },
             "funding": [
                 {
@@ -9793,15 +9798,11 @@
                     "type": "github"
                 },
                 {
-                    "url": "https://www.patreon.com/phpstan",
-                    "type": "patreon"
-                },
-                {
                     "url": "https://tidelift.com/funding/github/packagist/phpstan/phpstan",
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-07-20T09:57:31+00:00"
+            "time": "2022-09-03T13:08:04+00:00"
         },
         {
             "name": "phpstan/phpstan-doctrine",
@@ -9925,21 +9926,21 @@
         },
         {
             "name": "phpstan/phpstan-strict-rules",
-            "version": "1.4.2",
+            "version": "1.4.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-strict-rules.git",
-                "reference": "4e57160a710dea304fbd1a177ce38edd9b3848db"
+                "reference": "431b3d6e8040075de196680cd5bc95735987b4ae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-strict-rules/zipball/4e57160a710dea304fbd1a177ce38edd9b3848db",
-                "reference": "4e57160a710dea304fbd1a177ce38edd9b3848db",
+                "url": "https://api.github.com/repos/phpstan/phpstan-strict-rules/zipball/431b3d6e8040075de196680cd5bc95735987b4ae",
+                "reference": "431b3d6e8040075de196680cd5bc95735987b4ae",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.2 || ^8.0",
-                "phpstan/phpstan": "^1.7.15"
+                "phpstan/phpstan": "^1.8.3"
             },
             "require-dev": {
                 "nikic/php-parser": "^4.13.0",
@@ -9967,9 +9968,9 @@
             "description": "Extra strict and opinionated rules for PHPStan",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan-strict-rules/issues",
-                "source": "https://github.com/phpstan/phpstan-strict-rules/tree/1.4.2"
+                "source": "https://github.com/phpstan/phpstan-strict-rules/tree/1.4.3"
             },
-            "time": "2022-08-25T15:04:21+00:00"
+            "time": "2022-08-26T15:05:46+00:00"
         },
         {
             "name": "phpstan/phpstan-symfony",

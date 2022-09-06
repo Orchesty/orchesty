@@ -453,13 +453,15 @@ final class ServiceLocator implements LoggerAwareInterface
                 }
 
                 $res = $this->curlManager->send($dto);
-                if ($res->getStatusCode() === 200 && !empty($res->getJsonBody())) {
-                    if (!$multiple) {
-                        $out = array_merge($res->getJsonBody(), ['host' => $ip]);
+                if (in_array($res->getStatusCode(), [200, 201], TRUE)) {
+                    if (!empty($res->getJsonBody())) {
+                        if (!$multiple) {
+                            $out = array_merge($res->getJsonBody(), ['host' => $ip]);
 
-                        break;
-                    } else {
-                        $out = array_merge($out, $res->getJsonBody());
+                            break;
+                        } else {
+                            $out = array_merge($out, $res->getJsonBody());
+                        }
                     }
                 } else if ($res->getStatusCode() === 404) {
                     throw new LogicException(sprintf('Route not found. Message: %s', $res->getBody()));

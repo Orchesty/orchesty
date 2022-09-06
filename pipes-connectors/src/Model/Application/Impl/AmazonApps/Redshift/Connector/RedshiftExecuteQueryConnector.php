@@ -35,10 +35,8 @@ final class RedshiftExecuteQueryConnector extends RedshiftObjectConnectorAbstrac
         $connection  = $application->getConnection($applicationInstall);
 
         try {
-            /** @var resource $c */
-            $c = $connection;
             /** @var Result $result */
-            $result = pg_query($c, $content[self::QUERY]);
+            $result = pg_query($connection, $content[self::QUERY]);
         } catch (Throwable){
             throw new ConnectorException(sprintf("Connector 'redshift-query': %s", pg_last_error($connection)));
         }

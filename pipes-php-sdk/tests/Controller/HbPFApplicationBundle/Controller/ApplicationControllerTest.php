@@ -2,7 +2,6 @@
 
 namespace PipesPhpSdkTests\Controller\HbPFApplicationBundle\Controller;
 
-use _PHPStan_9a6ded56a\Symfony\Component\Console\Exception\LogicException;
 use Exception;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
@@ -13,6 +12,7 @@ use Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler;
 use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Base64;
 use Hanaboso\Utils\String\Json;
+use LogicException;
 use PipesPhpSdkTests\ControllerTestCaseAbstract;
 use PipesPhpSdkTests\Integration\Application\Manager\NullApplication;
 use Symfony\Component\HttpFoundation\Response;
@@ -464,7 +464,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
             'PUT',
             '/applications/someApp/users/bar/password',
             [
-                'formKey' => ApplicationInterface::AUTHORIZATION_FORM,
+                'formKey'  => ApplicationInterface::AUTHORIZATION_FORM,
                 'fieldKey' => BasicApplicationInterface::PASSWORD,
                 'password' => 'Passw0rd',
             ],
@@ -476,7 +476,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
             'PUT',
             '/applications/application/users/user/password',
             [
-                'formKey' => ApplicationInterface::AUTHORIZATION_FORM,
+                'formKey'  => ApplicationInterface::AUTHORIZATION_FORM,
                 'fieldKey' => BasicApplicationInterface::PASSWORD,
                 'password' => 'Passw0rd',
             ],

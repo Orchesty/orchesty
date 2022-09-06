@@ -86,7 +86,7 @@ final class AuthorizationHandler
     /**
      * @param string $jwsToken
      *
-     * @return string[]
+     * @return mixed[]
      */
     public function jwsFromJws(string $jwsToken): array
     {
@@ -114,7 +114,7 @@ final class AuthorizationHandler
     /**
      * @param mixed[] $payload
      *
-     * @return string[]
+     * @return mixed[]
      */
     public function jwsFromJwe(array $payload): array
     {
