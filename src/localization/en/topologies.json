@@ -44,6 +44,7 @@
     "detail": {
       "tabs": {
         "overview": "Overview",
+        "processes": "Processes",
         "editor": "BPMN Chart",
         "statistic": "Statistics",
         "userTask": "User Tasks",

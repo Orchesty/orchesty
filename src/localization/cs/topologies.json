@@ -41,6 +41,7 @@
     "detail": {
       "tabs": {
         "overview": "Přehled",
+        "processes": "Procesy",
         "editor": "BPNM Chart",
         "statistic": "Statistika",
         "userTask": "UserTasky",
