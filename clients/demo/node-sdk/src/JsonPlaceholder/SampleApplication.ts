@@ -16,7 +16,7 @@ import { BodyInit } from 'node-fetch';
 
 export default class SampleApplication extends ABasicApplication implements IWebhookApplication {
 
-    protected isInstallable = false;
+    protected infoFilename = `${__dirname}/info.html`
 
     public getDescription(): string {
         return 'Sample application description';
@@ -47,11 +47,21 @@ export default class SampleApplication extends ABasicApplication implements IWeb
 
     public getFormStack(): FormStack {
         const form = new Form(AUTHORIZATION_FORM, 'Authorization settings')
-            .addField(new Field(FieldType.TEXT, 'user', 'User'))
-            .addField(new Field(FieldType.PASSWORD, 'pass', 'Password'));
+            .addField(new Field(FieldType.TEXT, 'name', 'Name'))
+            .addField(new Field(FieldType.TEXT, 'disName', 'Disabled Name'))
+            .addField(new Field(FieldType.URL, 'url', 'Url'))
+            .addField(new Field(FieldType.CHECKBOX, 'check', 'IsOk'))
+            .addField(new Field(FieldType.NUMBER, 'number', 'Number'))
+            .addField(new Field(FieldType.CHECKBOX, 'forced', 'Forced', true)
+                .setReadOnly(true)
+                .setDescription('Forced read-only field')
+            )
+            .addField(new Field(FieldType.PASSWORD, 'pass', 'Password'))
+            .addField(new Field(FieldType.PASSWORD, 'pass2', 'Password2'));
 
         const readOnlyForm = new Form('read_only_form_test', 'Readonly form')
-            .addField(new Field(FieldType.TEXT, 'pin', 'PIN', 123))
+            .addField(new Field(FieldType.TEXT, 'pin', 'PIN', 123).setReadOnly(true))
+            .addField(new Field(FieldType.NUMBER, 'count', 'Counter', 666).setReadOnly(true))
             .setReadOnly(true);
 
         return new FormStack().addForm(form).addForm(readOnlyForm);
