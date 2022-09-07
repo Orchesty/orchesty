@@ -26,7 +26,6 @@ services:
 
   applinth-admin-ui:
     image: hanabosocom/nodejs-build:dev
-    user: ${DEV_UID}:${DEV_GID}
     working_dir: /var/www/applinth-admin-ui
     environment:
       VUE_APP_BACKEND_URL: ${DEV_IP}:3000
