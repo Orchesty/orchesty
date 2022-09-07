@@ -13,4 +13,3 @@ parameters:
 			- Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract
 			- Hanaboso\PipesPhpSdk\CustomNode\CommonNodeAbstract
 			- Hanaboso\PipesPhpSdk\CustomNode\Impl\RabbitCustomNode
-			- Hanaboso\PipesPhpSdk\StatusService\StatusServiceCallback

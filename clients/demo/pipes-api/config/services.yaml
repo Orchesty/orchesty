@@ -103,14 +103,6 @@ services:
         calls:
             -   setSender: [ '@hbpf.transport.curl_manager' ]
 
-    hbpf.custom_node.split-file2:
-        class: Demo\CustomNode\SplitFileBatch2
-        calls:
-            -   setDb: [ '@doctrine_mongodb.odm.default_document_manager' ]
-        arguments:
-            - '@hbpf.rabbit_mq.connection'
-            - '@rabbit_mq.publisher.pipes-notifications'
-
     hbpf.rabbit_mq.connection:
         class: RabbitMqBundle\Connection\Connection
         arguments:

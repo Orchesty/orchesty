@@ -19,8 +19,6 @@ final class IncludeCommands extends BundleApplication
     protected array $defaultCommands = [
         'authorization:install',
         'cron:refresh',
-        'rabbit_mq:consumer:status-service',
-        'rabbit_mq:publisher:pipes-notifications',
         'rabbit_mq:publisher:pipes-user-task',
         'rabbit_mq:publisher:pipes.messages',
         'topology:install',

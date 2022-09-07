@@ -47,4 +47,3 @@ parameters:
 			- Hanaboso\PipesPhpSdk\Database\Document\Node
 			- Hanaboso\PipesPhpSdk\Database\Document\Topology
 			- Hanaboso\PipesPhpSdk\Listener\RepeaterListener
-			- Hanaboso\PipesPhpSdk\StatusService\StatusServiceCallback

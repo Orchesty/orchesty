@@ -16,7 +16,7 @@ import { BodyInit } from 'node-fetch';
 
 export default class SampleApplication extends ABasicApplication implements IWebhookApplication {
 
-    protected infoFilename = `${__dirname}/info.html`
+    protected infoFilename = `${__dirname}/info.html`;
 
     public getDescription(): string {
         return 'Sample application description';
@@ -54,8 +54,7 @@ export default class SampleApplication extends ABasicApplication implements IWeb
             .addField(new Field(FieldType.NUMBER, 'number', 'Number'))
             .addField(new Field(FieldType.CHECKBOX, 'forced', 'Forced', true)
                 .setReadOnly(true)
-                .setDescription('Forced read-only field')
-            )
+                .setDescription('Forced read-only field'))
             .addField(new Field(FieldType.PASSWORD, 'pass', 'Password'))
             .addField(new Field(FieldType.PASSWORD, 'pass2', 'Password2'));
 
