@@ -14,6 +14,8 @@ use Symfony\Component\HttpKernel\Kernel as BaseKernel;
  * Class Kernel
  *
  * @package Pipes\StatusService
+ *
+ * @codeCoverageIgnore
  */
 final class Kernel extends BaseKernel
 {

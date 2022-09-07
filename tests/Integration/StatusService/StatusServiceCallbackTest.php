@@ -33,7 +33,7 @@ final class StatusServiceCallbackTest extends KernelTestCaseAbstract
     private Connection $connection;
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\StatusService\StatusServiceCallback::processMessage
+     * @covers \Pipes\StatusService\StatusService\StatusServiceCallback::processMessage
      *
      * @throws Exception
      */
@@ -48,7 +48,7 @@ final class StatusServiceCallbackTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\StatusService\StatusServiceCallback::processMessage
+     * @covers \Pipes\StatusService\StatusService\StatusServiceCallback::processMessage
      *
      * @throws Exception
      */
@@ -63,7 +63,7 @@ final class StatusServiceCallbackTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\StatusService\StatusServiceCallback::processMessage
+     * @covers \Pipes\StatusService\StatusService\StatusServiceCallback::processMessage
      *
      * @throws Exception
      */
@@ -76,7 +76,7 @@ final class StatusServiceCallbackTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\StatusService\StatusServiceCallback::processMessage
+     * @covers \Pipes\StatusService\StatusService\StatusServiceCallback::processMessage
      *
      * @throws Exception
      */

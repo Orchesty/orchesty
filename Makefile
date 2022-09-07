@@ -59,10 +59,16 @@ phpstan:
 	$(DA) ./vendor/bin/phpstan analyse -c tests/phpstan.neon -l 8 src tests
 
 phpintegration:
-	$(DA) vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --colors=always tests/Integration
+	$(DA) ./vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --colors=always tests/Integration
+
+phpcoverage:
+	$(DA) ./vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --coverage-html var/coverage --whitelist src tests
+
+phpcoverage-ci:
+	$(DA) ./vendor/hanaboso/php-check-utils/bin/coverage.sh -c 90
 
 ci-test: test
 
 test: docker-up-force composer-install fasttest docker-down-clean
 
-fasttest: clear-cache codesniffer phpstan phpintegration
+fasttest: clear-cache codesniffer phpstan phpintegration phpcoverage-ci
