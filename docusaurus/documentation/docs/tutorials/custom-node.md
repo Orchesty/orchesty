@@ -14,28 +14,56 @@ which do not send requests. Let's create a simple custom node for data transform
 
 ## Creating Custom Node
 
-Nejprve v aplikaci, kterou jsme registrovali v Orchesty, vytvoříme ve složce **src** novou třídu, která bude dědit z **ACommonNode**. Třída zatím nic nedělá, pouze nastavíme jméno akce, kterou bude vykonávat.
-
 <Tabs>
 <TabItem value="typescript" label="Typescript">
 
+Nejprve v aplikaci, kterou jsme registrovali v Orchesty, vytvoříme ve složce **src** novou třídu, která bude dědit z **ACommonNode**. Třída zatím nic nedělá, pouze nastavíme jméno akce, kterou bude vykonávat.
+
 ```typescript
-import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
 import ACommonNode from '@orchesty/nodejs-sdk/dist/lib/Commons/ACommonNode';
+import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
+
+export const NAME = 'hello-world';
 
 export default class HelloWorld extends ACommonNode {
-    public getName = (): string => 'hello-world';
 
-    public async processAction(_dto: ProcessDto): Promise<ProcessDto> {
-        return _dto;
+    public getName(): string {
+        return NAME;
     }
+
+    public processAction(dto: ProcessDto): ProcessDto {
+        return dto;
+    }
+
 }
 ```
 </TabItem>
 <TabItem value="php" label="PHP">
 
-```PHP
+Nejprve v aplikaci, kterou jsme registrovali v Orchesty, vytvoříme ve složce **src** novou třídu, která bude dědit z **CommonNodeAbstract**. Třída zatím nic nedělá, pouze nastavíme jméno akce, kterou bude vykonávat.
 
+```php
+namespace Pipes\PhpSdk\Mapper;
+
+use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\PipesPhpSdk\CustomNode\CommonNodeAbstract;
+
+final class HelloWorld extends CommonNodeAbstract
+{
+
+    public const NAME = 'hello-world';
+
+    function getName(): string
+    {
+        return self::NAME;
+    }
+
+    function processAction(ProcessDto $dto): ProcessDto
+    {
+        return $dto;
+    }
+
+}
 ```
 </TabItem>
 </Tabs>
@@ -53,18 +81,22 @@ Objekt **ProcessDto** představuje datovou strukturu zprávy, která protéká t
 <TabItem value="typescript" label="Typescript">
 
 ```typescript
-    //...
-    public async processAction(_dto: ProcessDto): Promise<ProcessDto> {
-        _dto.jsonData = {"message":"Hello world!"}
-        return _dto;
+    // ...
+    public processAction(dto: ProcessDto): ProcessDto {
+        return dto.setJsonData({ message: 'Hello world!' });
     }
-    //...
+    // ...
 ```
 </TabItem>
 <TabItem value="php" label="PHP">
 
-```PHP
-
+```php
+    // ...
+    function processAction(ProcessDto $dto): ProcessDto
+    {
+        return $dto->setJsonData(['message' => 'Hello world']);
+    }
+    // ...
 ```
 </TabItem>
 </Tabs>
@@ -72,23 +104,33 @@ Objekt **ProcessDto** představuje datovou strukturu zprávy, která protéká t
 
 
 ## Registering into SDK container
-Nyní je potřeba registrovat novou třídu v **SDK kontejneru**. Tím se stane dostupnou pro orchestrační vrstvu a my ji budeme moc použít v topologiích. Otevřeme si soubor **index.ts** ve složce **src** a registrujeme naší třídu **HelloWorld**:
-
 
 <Tabs>
 <TabItem value="typescript" label="Typescript">
 
+Nyní je potřeba registrovat novou třídu v **SDK kontejneru**. Tím se stane dostupnou pro orchestrační vrstvu a my ji budeme moc použít v topologiích. Otevřeme si soubor **index.ts** ve složce **src** a registrujeme naší třídu **HelloWorld**:
+
 ```typescript
 // ...
 import { container } from '@orchesty/nodejs-sdk';
-import CustomNode from './CustomNode';
 // ...
 
 export default async function prepare(): Promise<void> {
-  // ...
-  container.setCustomNode(new HelloWorld());
-  // ...
+    // ...
+    container.setCustomNode(new HelloWorld());
+    // ...
 }
+```
+</TabItem>
+<TabItem value="php" label="PHP">
+
+Nyní je potřeba registrovat novou třídu v **SDK kontejneru**. Tím se stane dostupnou pro orchestrační vrstvu a my ji budeme moc použít v topologiích. Ve složce **config** si vytvoříme soubor **custom_node.yaml** a registrujeme naší třídu **HelloWorld**:
+
+```php
+# ./config/custom_node/custom_node.yaml
+services:
+    hbpf.custom_node.hello-world:
+        class: Pipes\PhpSdk\Mapper\HelloWorld
 ```
 </TabItem>
 </Tabs>
