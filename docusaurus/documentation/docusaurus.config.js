@@ -28,7 +28,7 @@ module.exports = {
           label: 'Tutorial',
         },
         {
-          href: 'https://github.com/hanaboso',
+          href: 'https://github.com/Orchesty',
           label: 'GitHub',
           position: 'right',
         },
