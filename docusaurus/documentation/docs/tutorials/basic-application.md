@@ -15,12 +15,12 @@ In this tutorial we'll create a BasicAuthorization application which will prepar
 - [Installed and running Orchesty](../get-started/installation).
 - [Connected SDK](SDK-settings)
 
-## Creating application
-
-Nejprve vytvoříme ve složce **src** třídu aplikace, dědící z **ABasicApplication**. 
+## Creating application 
 
 <Tabs>
 <TabItem value="typescript" label="Typescript">
+
+Nejprve vytvoříme ve složce **src** třídu aplikace, dědící z **ABasicApplication**.
 
 ```typescript
 import AProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/AProcessDto';
@@ -29,10 +29,57 @@ import RequestDto from '@orchesty/nodejs-sdk/dist/lib/Transport/Curl/RequestDto'
 import { ABasicApplication } from '@orchesty/nodejs-sdk/dist/lib/Authorization/Type/Basic/ABasicApplication';
 import { ApplicationInstall } from '@orchesty/nodejs-sdk/dist/lib/Application/Database/ApplicationInstall';
 
+export const NAME = 'git-hub';
+
 export default class GitHubApplication extends ABasicApplication {
-    public getName = (): string => 'git-hub';
-    public getPublicName = (): string => 'Git Hub';
-    public getDescription = (): string => 'Git Hub application';
+
+    public getName(): string {
+        return NAME;
+    }
+
+    public getPublicName(): string {
+        return 'Git Hub';
+    }
+
+    public getDescription(): string {
+        return 'Git Hub application';
+    }
+}
+```
+</TabItem>
+<TabItem value="php" label="PHP">
+
+Nejprve vytvoříme ve složce **src** třídu aplikace, dědící z **BasicApplicationAbstract**.
+
+```php
+namespace Pipes\PhpSdk\Application;
+
+use Hanaboso\CommonsBundle\Process\ProcessDtoAbstract;
+use Hanaboso\PipesPhpSdk\Application\Model\Form\FormStack;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
+use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
+use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
+use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+
+final class GitHubApplication extends BasicApplicationAbstract
+{
+
+    public const NAME = 'git-hub';
+    
+    public function getName(): string
+    {
+        return self::NAME;
+    }
+    
+    public function getPublicName(): string
+    {
+        return 'Git hub';
+    }
+    
+    public function getDescription(): string
+    {
+        return 'Git Hub application';
+    }
 }
 ```
 </TabItem>
@@ -53,26 +100,56 @@ Pro každou aplikaci můžeme vytvořit libovolný počet [formulářů](../docu
 import Field from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/Field';
 import FieldType from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/FieldType';
 import Form from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/Form';
-import { USER } from '@orchesty/nodejs-sdk/dist/lib/Authorization/Type/Basic/ABasicApplication';
 import { AUTHORIZATION_FORM } from '@orchesty/nodejs-sdk/dist/lib/Application/Base/AApplication';
+import {
+    ABasicApplication,
+    TOKEN,
+    USER,
+} from '@orchesty/nodejs-sdk/dist/lib/Authorization/Type/Basic/ABasicApplication';
 // ...
 
 // ...
-export const USER = 'user';
-export const TOKEN = 'token';
-// ...
-
 export default class GitHubApplication extends ABasicApplication {
 
-  // ...
-    public getFormStack = (): FormStack => {
+    // ...
+    public getFormStack(): FormStack {
         const form = new Form(AUTHORIZATION_FORM, 'Authorization settings')
             .addField(new Field(FieldType.TEXT, USER, ' User name', undefined, true))
             .addField(new Field(FieldType.TEXT, TOKEN, ' Token', undefined, true));
 
         return new FormStack().addForm(form);
-    };
+    }
     // ...
+
+}
+```
+</TabItem>
+<TabItem value="php" label="PHP">
+
+```php
+// ...
+use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
+use Hanaboso\PipesPhpSdk\Application\Model\Form\Form;
+// ...
+
+// ...
+final class GitHubApplication extends BasicApplicationAbstract
+{
+
+  // ...
+  public function getFormStack(): FormStack
+  {
+      $authForm = new Form(self::AUTHORIZATION_FORM, 'Authorization settings');
+      $authForm
+          ->addField(new Field(Field::TEXT, self::USER, 'Username', NULL, TRUE))
+          ->addField(new Field(Field::TEXT, self::TOKEN, 'Token', NULL, TRUE));
+
+      $stack = new FormStack();
+      $stack->addForm($authForm);
+
+      return $stack;
+  }
+  // ...
 
 }
 ```
@@ -89,33 +166,74 @@ Next step is finishing method for setting up RequestDto for connectors. This met
 ```typescript
 // ...
 import { encode } from '@orchesty/nodejs-sdk/dist/lib/Utils/Base64';
-import { JSON_TYPE, CommonHeaders } from '@orchesty/nodejs-sdk/dist/lib/Utils/Headers';
-import { parseHttpMethod } from '@orchesty/nodejs-sdk/dist/lib/Transport/HttpMethods';
+import { CommonHeaders, JSON_TYPE } from '@orchesty/nodejs-sdk/dist/lib/Utils/Headers';
+import { HttpMethods } from '@orchesty/nodejs-sdk/dist/lib/Transport/HttpMethods';
 // ...
 
 export default class GitHubApplication extends ABasicApplication {
 
-  // ...
-    public getRequestDto = (
+    // ...
+    public getRequestDto(
         dto: AProcessDto,
         applicationInstall: ApplicationInstall,
         method: HttpMethods,
-        _url?: string,
+        url?: string,
         data?: unknown,
-    ): RequestDto => {
-        const request = new RequestDto(`https://api.github.com${_url}`, method, dto);
-        request.headers = {
+    ): RequestDto {
+        const request = new RequestDto(`https://api.github.com${url}`, method, dto);
+        const form = applicationInstall.getSettings()[AUTHORIZATION_FORM] ?? {};
+        request.setHeaders({
             [CommonHeaders.CONTENT_TYPE]: JSON_TYPE,
             [CommonHeaders.ACCEPT]: JSON_TYPE,
-            [CommonHeaders.AUTHORIZATION]: encode(`${TOKEN}:${USER}`),
-        };
+            [CommonHeaders.AUTHORIZATION]: encode(`${form[USER] ?? ''}:${form[TOKEN] ?? ''}`),
+        });
 
         if (data) {
             request.setJsonBody(data);
         }
 
         return request;
-    };
+    }
+    // ...
+
+}
+```
+</TabItem>
+<TabItem value="php" label="PHP">
+
+```php
+// ...
+use GuzzleHttp\Psr7\Uri;
+// ...
+
+final class GitHubApplication extends BasicApplicationAbstract
+{
+
+    // ...
+    public function getRequestDto(
+        ProcessDtoAbstract $dto,
+        ApplicationInstall $applicationInstall,
+        string $method,
+        ?string $url = NULL,
+        ?string $data = NULL,
+    ): RequestDto
+    {
+        $form = $applicationInstall->getSettings()[self::AUTHORIZATION_FORM] ?? [];
+
+        return new RequestDto(
+            new Uri(sprintf('https://api.github.com%s', $url)),
+            $method,
+            $dto,
+            $data ?? '',
+            [
+                'Content-Type'  => 'application/json',
+                'Accept'        => 'application/json',
+                'Authorization' => base64_encode(
+                    sprintf('%s:%s', $form[self::USER] ?? '', $form[self::TOKEN] ?? ''),
+                ),
+            ],
+        );
+    }
     // ...
     
 }
@@ -130,57 +248,150 @@ To je vše.  Níže si můžete prohlédnout celý kód aplikace.
 <TabItem value="typescript" label="Typescript">
 
 ```typescript
-import AProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/AProcessDto';
-import Form from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/Form';
-import FormStack from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/FormStack';
-import HttpMethods from '@orchesty/nodejs-sdk/dist/lib/Transport/HttpMethods';
-import RequestDto from '@orchesty/nodejs-sdk/dist/lib/Transport/Curl/RequestDto';
-import { ABasicApplication } from '@orchesty/nodejs-sdk/dist/lib/Authorization/Type/Basic/ABasicApplication';
-import { ApplicationInstall } from '@orchesty/nodejs-sdk/dist/lib/Application/Database/ApplicationInstall';
 import { AUTHORIZATION_FORM } from '@orchesty/nodejs-sdk/dist/lib/Application/Base/AApplication';
-import { CommonHeaders, JSON_TYPE } from '@orchesty/nodejs-sdk/dist/lib/Utils/Headers';
+import { ApplicationInstall } from '@orchesty/nodejs-sdk/dist/lib/Application/Database/ApplicationInstall';
 import Field from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/Field';
 import FieldType from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/FieldType';
+import Form from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/Form';
+import FormStack from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/FormStack';
+import {
+    ABasicApplication,
+    TOKEN,
+    USER,
+} from '@orchesty/nodejs-sdk/dist/lib/Authorization/Type/Basic/ABasicApplication';
+import RequestDto from '@orchesty/nodejs-sdk/dist/lib/Transport/Curl/RequestDto';
+import { HttpMethods } from '@orchesty/nodejs-sdk/dist/lib/Transport/HttpMethods';
+import AProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/AProcessDto';
 import { encode } from '@orchesty/nodejs-sdk/dist/lib/Utils/Base64';
+import { CommonHeaders, JSON_TYPE } from '@orchesty/nodejs-sdk/dist/lib/Utils/Headers';
 
-export const USER = 'user';
 export const NAME = 'git-hub';
-export const TOKEN = 'token';
 
 export default class GitHubApplication extends ABasicApplication {
-    public getName = (): string => NAME;
-    public getPublicName = (): string => 'Git Hub';
-    public getDescription = (): string => 'Git Hub application';
 
-    public getFormStack = (): FormStack => {
+    public getName(): string {
+        return NAME;
+    }
+
+    public getPublicName(): string {
+        return 'Git Hub';
+    }
+
+    public getDescription(): string {
+        return 'Git Hub application';
+    }
+
+    public getFormStack(): FormStack {
         const form = new Form(AUTHORIZATION_FORM, 'Authorization settings')
-            .addField(new Field(FieldType.TEXT, USER, ' User name', undefined, true))
-            .addField(new Field(FieldType.TEXT, TOKEN, ' Token', undefined, true));
+            .addField(new Field(FieldType.TEXT, USER, ' User name', undefined, false))
+            .addField(new Field(FieldType.TEXT, TOKEN, ' Token', undefined, false));
 
         return new FormStack().addForm(form);
-    };
+    }
 
-    public getRequestDto = (
+    public getRequestDto(
         dto: AProcessDto,
         applicationInstall: ApplicationInstall,
         method: HttpMethods,
-        _url?: string,
+        url?: string,
         data?: unknown,
-    ): RequestDto => {
-        const request = new RequestDto(`https://api.github.com${_url}`, method, dto);
-        request.headers = {
+    ): RequestDto {
+        const request = new RequestDto(`https://api.github.com${url}`, method, dto);
+        const form = applicationInstall.getSettings()[AUTHORIZATION_FORM] ?? {};
+        request.setHeaders({
             [CommonHeaders.CONTENT_TYPE]: JSON_TYPE,
             [CommonHeaders.ACCEPT]: JSON_TYPE,
-            [CommonHeaders.AUTHORIZATION]: encode(`${TOKEN}:${USER}`),
-        };
+            [CommonHeaders.AUTHORIZATION]: encode(`${form[USER] ?? ''}:${form[TOKEN] ?? ''}`),
+        });
 
         if (data) {
             request.setJsonBody(data);
         }
 
         return request;
-    };
+    }
+
 }
+
+
+```
+</TabItem>
+<TabItem value="php" label="PHP">
+
+```php
+namespace Pipes\PhpSdk\Application;
+
+use GuzzleHttp\Psr7\Uri;
+use Hanaboso\CommonsBundle\Process\ProcessDtoAbstract;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
+use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
+use Hanaboso\PipesPhpSdk\Application\Model\Form\Form;
+use Hanaboso\PipesPhpSdk\Application\Model\Form\FormStack;
+use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
+use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
+
+final class GitHubApplication extends BasicApplicationAbstract
+{
+
+    public const NAME = 'git-hub';
+
+    public function getName(): string
+    {
+        return self::NAME;
+    }
+
+    public function getPublicName(): string
+    {
+        return 'Git hub';
+    }
+
+    public function getDescription(): string
+    {
+        return 'Git Hub application';
+    }
+
+    public function getRequestDto(
+        ProcessDtoAbstract $dto,
+        ApplicationInstall $applicationInstall,
+        string $method,
+        ?string $url = NULL,
+        ?string $data = NULL,
+    ): RequestDto
+    {
+        $form = $applicationInstall->getSettings()[self::AUTHORIZATION_FORM] ?? [];
+
+        return new RequestDto(
+            new Uri(sprintf('https://api.github.com%s', $url)),
+            $method,
+            $dto,
+            $data ?? '',
+            [
+                'Content-Type'  => 'application/json',
+                'Accept'        => 'application/json',
+                'Authorization' => base64_encode(
+                    sprintf('%s:%s', $form[self::USER] ?? '', $form[self::TOKEN] ?? ''),
+                ),
+            ],
+        );
+    }
+
+    public function getFormStack(): FormStack
+    {
+        $authForm = new Form(self::AUTHORIZATION_FORM, 'Authorization settings');
+        $authForm
+            ->addField(new Field(Field::TEXT, self::USER, 'Username', NULL, FALSE))
+            ->addField(new Field(Field::TEXT, self::TOKEN, 'Token', NULL, FALSE));
+
+        $stack = new FormStack();
+        $stack->addForm($authForm);
+
+        return $stack;
+    }
+
+}
+
 
 ```
 </TabItem>
@@ -188,10 +399,9 @@ export default class GitHubApplication extends ABasicApplication {
 
 ## Registrace aplikace v kontejneru
 
-The last step is to register our Application into container. This is once again done in index.ts file.
-
 <Tabs>
 <TabItem value="typescript" label="Typescript">
+The last step is to register our Application into container. This is once again done in index.ts file.
 
 ```typescript
 // ...
@@ -200,10 +410,21 @@ import GitHubApplication from './GitHubApplication';
 // ...
 
 export default async function prepare(): Promise<void> {
-  // ...
-  container.setApplication(new GitHubApplication());
-  // ...
+    // ...
+    const gitHubApplication = new GitHubApplication();
+    container.setApplication(gitHubApplication);
+    // ...
 }
+```
+</TabItem>
+<TabItem value="php" label="PHP">
+The last step is to register our Application into container. This is once again done in config folder.
+
+```php
+# ./config/application/application.yaml
+services:
+    hbpf.application.git-hub:
+        class: Pipes\PhpSdk\Application\GitHubApplication
 ```
 </TabItem>
 </Tabs>
@@ -230,39 +451,94 @@ Nyní vytvoříme konektor, který bude aplikaci využívat. Konektor  bude oče
 
 ```typescript
 import AConnector from '@orchesty/nodejs-sdk/dist/lib/Connector/AConnector';
-import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
-import HttpMethods from '@orchesty/nodejs-sdk/dist/lib/Transport/HttpMethods';
 import OnRepeatException from '@orchesty/nodejs-sdk/dist/lib/Exception/OnRepeatException';
+import { HttpMethods } from '@orchesty/nodejs-sdk/dist/lib/Transport/HttpMethods';
+import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
 import ResultCode from '@orchesty/nodejs-sdk/dist/lib/Utils/ResultCode';
 
-export default class GitHubGetRepositoryConnector extends AConnector {
-    public getName = () => 'github-get-repository';
+export const NAME = 'github-get-repository';
 
-    public async processAction(dto: ProcessDto): Promise<ProcessDto> {
-        const data = dto.jsonData as IInput;
-        const appInstall = await this._getApplicationInstall();
+export default class GitHubGetRepositoryConnector extends AConnector {
+
+    public getName(): string {
+        return NAME;
+    }
+
+    public async processAction(dto: ProcessDto<IInput>): Promise<ProcessDto> {
+        const data = dto.getJsonData();
+        const appInstall = await this.getApplicationInstallFromProcess(dto);
 
         if (!data.user || !data.repo) {
             dto.setStopProcess(ResultCode.STOP_AND_FAILED, 'Connector has no required data.');
         } else {
-            const request = await this._application.getRequestDto(dto, appInstall, HttpMethods.GET, '/repos/' + data.user + '/' + data.repo);
-            const response = await this._sender.send(request);
+            const request = await this.getApplication().getRequestDto(dto, appInstall, HttpMethods.GET, `/repos/${data.user}/${data.repo}`);
+            const response = await this.getSender().send(request);
 
-            if (response.responseCode >= 300 && response.responseCode < 400) {
-                throw new OnRepeatException(30, 5, response.body);
-            } else if (response.responseCode >= 400) {
-                dto.setStopProcess(ResultCode.STOP_AND_FAILED, 'Failed with code ' + response.responseCode);
+            if (response.getResponseCode() >= 300 && response.getResponseCode() < 400) {
+                throw new OnRepeatException(30, 5, response.getBody());
+            } else if (response.getResponseCode() >= 400) {
+                dto.setStopProcess(ResultCode.STOP_AND_FAILED, `Failed with code ${response.getResponseCode()}`);
             }
 
-            dto.data = response.body;
+            dto.setData(response.getBody());
         }
         return dto;
     }
+
 }
 
-interface IInput {
-    user: string
-    repo: string
+export interface IInput {
+    user: string;
+    repo: string;
+}
+```
+</TabItem>
+<TabItem value="php" label="PHP">
+
+```php
+namespace Pipes\PhpSdk\Connector;
+
+use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDtoAbstract;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
+use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
+use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
+use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
+use Hanaboso\PipesPhpSdk\CustomNode\Exception\CustomNodeException;
+use Hanaboso\Utils\Exception\PipesFrameworkException;
+
+final class GitHubRepositoryConnector extends ConnectorAbstract
+{
+
+    public const NAME = 'git-hub-get-repository';
+    
+    function getName(): string
+    {
+        return self::NAME;
+    }
+    
+    function processAction(ProcessDto $dto): ProcessDto
+    {
+        $data       = $dto->getJsonData();
+        $appInstall = $this->getApplicationInstallFromProcess($dto);
+
+        if (!isset($data['user']) || !isset($data['repo'])) {
+            return $dto->setStopProcess(ProcessDtoAbstract::STOP_AND_FAILED, 'Missing required data [user, repo]');
+        }
+
+        $request  = $this->getApplication()->getRequestDto(
+            $dto,
+            $appInstall,
+            CurlManager::METHOD_GET,
+            sprintf('/repos/%s/%s', $data['user'], $data['repo']),
+        );
+        $response = $this->getSender()->send($request);
+        $dto->setData($response->getBody());
+
+        return $dto;
+    }
+
 }
 ```
 </TabItem>
@@ -279,25 +555,39 @@ Nyní musíme zaregistrovat nový konektor v kontejneru. Konektory aplikací vy�
 ```typescript
 // ...
 import { initiateContainer, listen, container } from '@orchesty/nodejs-sdk';
-import GitHubGetRepositoryConnector from "./GitHubGetRepositoryConnector";
+import GitHubGetRepositoryConnector from './GitHubGetRepositoryConnector';
 // ...
 
 export default async function prepare(): Promise<void> {
 
-  // ...
-    const mongoDbClient = container.get(CoreServices.MONGO);
-    const curlSender = container.get(CoreServices.CURL);
+    // ...
+    const curlSender = container.get<CurlSender>(CoreServices.CURL);
+    const mongoDbClient = container.get<MongoDbClient>(CoreServices.MONGO);
     const gitHubApplication = new GitHubApplication();
-    const gitHubGetRepositoryConn = new GitHubGetRepositoryConnector();
+    const gitHubGetRepositoryConnector = new GitHubGetRepositoryConnector();
 
-    gitHubGetRepositoryConn
+    gitHubGetRepositoryConnector
         .setSender(curlSender)
         .setDb(mongoDbClient)
         .setApplication(gitHubApplication);
 
-    container.setConnector(gitHubGetRepositoryConn);
-  // ...
+    container.setConnector(gitHubGetRepositoryConnector);
+    // ...
 }
+```
+</TabItem>
+<TabItem value="php" label="PHP">
+
+```php
+# ./config/connector/connector.yaml
+services:
+    // ...
+    hbpf.connector.git-hub-get-repository:
+        class: Pipes\PhpSdk\Connector\GitHubRepositoryConnector
+        calls:
+            - ['setApplication', ['@hbpf.application.git-hub']]
+            - ['setSender', ['@hbpf.transport.curl_manager']]
+            - ['setDb', ['@doctrine_mongodb.odm.default_document_manager']]
 ```
 </TabItem>
 </Tabs>
