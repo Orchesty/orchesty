@@ -27,9 +27,9 @@
           </v-tab>
         </v-tabs>
       </v-col>
-      <v-col v-if="isTopology && isCrone" cols="12" lg="3" class="d-flex justify-lg-end">
+      <v-col v-if="isTopology && isCrone && topologyActive.enabled" cols="12" lg="3" class="d-flex justify-lg-end">
         <span class="mr-5">{{ $t('pages.nextRun') }}: </span>
-        <span class="font-weight-bold"> {{ nextRun(topologyActive.cronSettings) }} </span>
+        <span :key="now.getMilliseconds()" class="font-weight-bold"> {{ nextRun(topologyActive.cronSettings) }} </span>
       </v-col>
     </v-row>
   </div>
@@ -69,6 +69,13 @@ export default {
     return {
       TOPOLOGY_ENUMS,
       cronParser,
+      timer: null,
+      now: new Date(),
+    }
+  },
+  created() {
+    if (this.isTopology && this.isCrone && this.topologyActive?.enabled) {
+      this.timer = setInterval(this.refresh, 60000)
     }
   },
   computed: {
@@ -109,6 +116,12 @@ export default {
       })
       return moment(next[next.length - 1]).format('DD. MM. YYYY HH:mm')
     },
+    refresh() {
+      this.now = new Date()
+    },
+  },
+  beforeDestroy() {
+    clearInterval(this.timer)
   },
 }
 </script>
