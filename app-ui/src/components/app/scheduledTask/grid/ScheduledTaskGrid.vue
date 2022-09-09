@@ -10,13 +10,16 @@
     @row-props="redirect"
   >
     <template #default="{ items, isVisible }">
-      <td v-if="isVisible('topology')">
+      <td v-if="isVisible('topology')" @click="redirect(items)">
         {{ `${items.item.topology.name}.v${items.item.topology.version}` }}
       </td>
       <td v-if="isVisible('node')">
         {{ items.item.node.name }}
       </td>
       <td v-if="isVisible('time')">
+        {{ items.item.time }}
+      </td>
+      <td v-if="isVisible('time')" :key="now.getMilliseconds()">
         {{ $options.filters.internationalFormat(timeParser(items.item.time)) }}
       </td>
       <td
@@ -55,6 +58,9 @@ export default {
       return this[REQUESTS_STATE.GETTERS.GET_STATE]([API.scheduledTask.grid.id])
     },
   },
+  created() {
+    this.timer = setInterval(this.refreshTime, 60000) // run every minute
+  },
   methods: {
     isEnabled(item) {
       if (item) {
@@ -69,11 +75,20 @@ export default {
       interval = interval.next().toString().slice(0, 24)
       return interval
     },
+    refreshTime() {
+      this.now = new Date()
+    },
+  },
+  beforeDestroy() {
+    clearInterval(this.timer)
   },
   data() {
     return {
       cronParser,
       DATA_GRIDS,
+      renderContent: true,
+      timer: null,
+      now: new Date(),
       headers: [
         {
           text: 'scheduledTask.grid.topology',
@@ -93,6 +108,14 @@ export default {
         },
         {
           text: 'scheduledTask.grid.settings',
+          value: 'time',
+          align: 'left',
+          sortable: true,
+          visible: true,
+          width: '120px',
+        },
+        {
+          text: 'scheduledTask.grid.nextRun',
           value: 'time',
           align: 'left',
           sortable: true,
