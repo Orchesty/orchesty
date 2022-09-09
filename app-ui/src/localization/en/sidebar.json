@@ -73,7 +73,8 @@
         "editor": "BPMN Chart",
         "statistic": "Statistics",
         "userTask": "User Tasks",
-        "logs": "Log List"
+        "logs": "Log List",
+        "processes": "Processes"
       }
     },
     "create": {
