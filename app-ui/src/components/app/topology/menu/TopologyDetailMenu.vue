@@ -3,7 +3,7 @@
     <template #activator="{ on, attrs }">
       <app-button icon :on="on" :attrs="attrs">
         <template #icon>
-          <app-icon> mdi-dots-vertical </app-icon>
+          <app-icon color="gray"> mdi-dots-vertical </app-icon>
         </template>
       </app-button>
     </template>
