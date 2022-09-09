@@ -35,6 +35,11 @@ import { Routes } from "@/enums";
 import LineChart from "@/components/app/LineChart.vue";
 import BaseProgressBarLinear from "@/components/commons/BaseProgressBarLinear.vue";
 import Heading from "@/components/commons/typography/Heading.vue";
+import { callApi } from "@/utils";
+import { UsageStatsAppsRequest } from "@/api/generated";
+import { api } from "@/api";
+import { Getter } from "vuex-class";
+import { AuthGetters, authNamespace, User } from "@/store/modules/auth";
 
 @Component({
   components: {
@@ -46,12 +51,27 @@ import Heading from "@/components/commons/typography/Heading.vue";
   },
 })
 export default class ApplicationDetailPage extends Vue {
+  @Getter(`${authNamespace}/${AuthGetters.GetUser}`)
+  currentUser!: User;
+
   routes = Routes;
 
   loading = false;
 
+  application = {};
+
   labels = ["January", "February", "March", "April", "May", "June"];
   data = [16, 10, 5, 2, 20, 30, 45];
+
+  async created() {
+    this.loading = true;
+    this.application = await callApi<UsageStatsAppsRequest>(api.overview.apps, {
+      timeRangeStart: new Date(0).toISOString(),
+      timeRangeEnd: new Date().toISOString(),
+      tenantId: this.currentUser.tenantId ?? undefined,
+    });
+    this.loading = false;
+  }
 }
 </script>
 

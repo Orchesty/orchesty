@@ -32,8 +32,9 @@ services:
       VUE_APP_STARTINGPONT_URL: ${DEV_IP}:82
     ports:
       - ${DEV_IP}:83:8080
+      - ${DEV_IP}:4010:4010
     volumes:
-      - ./:/var/www/applinth-admin-ui:cached
+      - ./../:/var/www:cached
     command: sh -c 'yarn install && yarn start'
 
 volumes:

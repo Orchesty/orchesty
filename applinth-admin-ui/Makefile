@@ -22,6 +22,9 @@ init: .env .lo0-up
 	docker-compose pull --ignore-pull-failures
 	docker-compose up -d --force-recreate --remove-orphans
 
+start-mock:
+	docker-compose exec applinth-admin-ui yarn run api:mock
+
 down: .lo0-down
 	docker-compose down -v
 
