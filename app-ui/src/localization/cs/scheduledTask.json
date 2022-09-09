@@ -4,7 +4,8 @@
       "status": "Stav",
       "topology": "Topologie",
       "node": "Uzel",
-      "settings": "Nastavení"
+      "settings": "Nastavení",
+      "nextRun": "Další běh"
     }
   }
 }

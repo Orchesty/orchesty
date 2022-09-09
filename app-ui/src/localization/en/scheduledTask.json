@@ -4,7 +4,8 @@
       "status": "Status",
       "topology": "Topology",
       "node": "Node",
-      "settings": "Settings"
+      "settings": "Settings",
+      "nextRun": "Next run"
     }
   }
 }
