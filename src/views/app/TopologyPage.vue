@@ -20,11 +20,11 @@ export default {
     return {
       tabs: [
         {
-          name: 'topologies.detail.tabs.editor',
+          name: 'topologies.detail.tabs.overview',
           route: ROUTES.TOPOLOGY.VIEWER,
         },
         {
-          name: 'topologies.detail.tabs.overview',
+          name: 'topologies.detail.tabs.processes',
           route: ROUTES.TOPOLOGY.OVERVIEW,
         },
         {
