@@ -4,8 +4,47 @@
       version: <span class="font-weight-bold">{{ topologyActive.version }}</span>
     </div>
     <div class="mr-3">
-      status: <span class="font-weight-bold" :class="topologyStatusColor">{{ topologyStatus }}</span>
+      Status: <span class="font-weight-bold info--text">{{ topologyStatus }}</span>
     </div>
+
+    <div class="mr-3 mr-md-5">
+      <app-icon-with-text-button
+        v-if="!topologyActive.enabled && topologyActive.visibility === PAGE_TABS_ENUMS.PUBLIC"
+        :loading="enableState"
+        :disabled="isSending"
+        :text="$t('pages.enable')"
+        @click="enable"
+      >
+        <template #icon>
+          <app-icon color="gray"> mdi-play </app-icon>
+        </template>
+      </app-icon-with-text-button>
+
+      <app-icon-with-text-button
+        v-if="topologyActive.enabled && topologyActive.visibility === PAGE_TABS_ENUMS.PUBLIC"
+        :loading="disableState"
+        :disabled="isSending"
+        :text="$t('pages.disable')"
+        @click="disable"
+      >
+        <template #icon>
+          <app-icon color="gray"> mdi-pause </app-icon>
+        </template>
+      </app-icon-with-text-button>
+
+      <app-icon-with-text-button
+        v-if="topologyActive.visibility !== PAGE_TABS_ENUMS.PUBLIC"
+        :loading="publishState"
+        :disabled="isSending"
+        :text="$t('pages.publish')"
+        @click="publish"
+      >
+        <template #icon>
+          <app-icon color="gray"> mdi-publish </app-icon>
+        </template>
+      </app-icon-with-text-button>
+    </div>
+
     <tooltip>
       <template #activator="{ on, attrs }">
         <app-button
@@ -17,98 +56,12 @@
           :on-click="() => events.emit(EVENTS.MODAL.TOPOLOGY.RUN, topologyActive)"
         >
           <template #icon>
-            <app-icon color="success"> mdi-play-circle </app-icon>
+            <app-icon color="gray"> mdi-play-circle-outline </app-icon>
           </template>
         </app-button>
       </template>
       <template #tooltip>
         {{ $t('pages.run') }}
-      </template>
-    </tooltip>
-
-    <tooltip>
-      <template #activator="{ on, attrs }">
-        <app-button
-          :attrs="attrs"
-          :class="buttonClass"
-          :to="{ name: ROUTES.EDITOR }"
-          :disabled="isSending"
-          icon
-          :on="on"
-        >
-          <template #icon>
-            <app-icon> edit </app-icon>
-          </template>
-        </app-button>
-      </template>
-      <template #tooltip>
-        {{ $t('pages.editor') }}
-      </template>
-    </tooltip>
-
-    <tooltip v-if="!topologyActive.enabled && topologyActive.visibility === PAGE_TABS_ENUMS.PUBLIC">
-      <template #activator="{ on, attrs }">
-        <app-button
-          v-if="!topologyActive.enabled && topologyActive.visibility === PAGE_TABS_ENUMS.PUBLIC"
-          :bind="attrs"
-          :loading="enableState"
-          :class="buttonClass"
-          :disabled="isSending"
-          icon
-          :on="on"
-          :on-click="enable"
-        >
-          <template #icon>
-            <app-icon> mdi-check-circle</app-icon>
-          </template>
-        </app-button>
-      </template>
-      <template #tooltip>
-        {{ $t('pages.enable') }}
-      </template>
-    </tooltip>
-
-    <tooltip v-if="topologyActive.enabled && topologyActive.visibility === PAGE_TABS_ENUMS.PUBLIC">
-      <template #activator="{ on, attrs }">
-        <app-button
-          v-if="topologyActive.enabled && topologyActive.visibility === PAGE_TABS_ENUMS.PUBLIC"
-          :bind="attrs"
-          :class="buttonClass"
-          :loading="disableState"
-          :disabled="isSending"
-          icon
-          :on="on"
-          :on-click="disable"
-        >
-          <template #icon>
-            <app-icon> mdi-cancel </app-icon>
-          </template>
-        </app-button>
-      </template>
-      <template #tooltip>
-        {{ $t('pages.disable') }}
-      </template>
-    </tooltip>
-
-    <tooltip v-if="topologyActive.visibility !== PAGE_TABS_ENUMS.PUBLIC">
-      <template #activator="{ on, attrs }">
-        <app-button
-          v-if="topologyActive.visibility !== PAGE_TABS_ENUMS.PUBLIC"
-          :bind="attrs"
-          :class="buttonClass"
-          :loading="publishState"
-          :disabled="isSending"
-          icon
-          :on="on"
-          :on-click="publish"
-        >
-          <template #icon>
-            <app-icon>mdi-publish</app-icon>
-          </template>
-        </app-button>
-      </template>
-      <template #tooltip>
-        {{ $t('pages.publish') }}
       </template>
     </tooltip>
 
@@ -124,12 +77,32 @@
           :on-click="test"
         >
           <template #icon>
-            <app-icon> mdi-gauge-full </app-icon>
+            <app-icon color="gray"> mdi-check-network-outline </app-icon>
           </template>
         </app-button>
       </template>
       <template #tooltip>
         {{ $t('pages.test') }}
+      </template>
+    </tooltip>
+
+    <tooltip>
+      <template #activator="{ on, attrs }">
+        <app-button
+          :attrs="attrs"
+          :class="buttonClass"
+          :to="{ name: ROUTES.EDITOR }"
+          :disabled="isSending"
+          icon
+          :on="on"
+        >
+          <template #icon>
+            <app-icon color="gray"> edit </app-icon>
+          </template>
+        </app-button>
+      </template>
+      <template #tooltip>
+        {{ $t('pages.editor') }}
       </template>
     </tooltip>
 
@@ -153,10 +126,11 @@ import Tooltip from '@/components/commons/Tooltip'
 import AppButton from '@/components/commons/button/AppButton'
 import AppIcon from '@/components/commons/icon/AppIcon'
 import { redirectTo } from '@/services/utils/utils'
+import AppIconWithTextButton from '@/components/commons/button/AppIconWithTextButton'
 
 export default {
   name: 'TopologyActionButtons',
-  components: { AppIcon, AppButton, Tooltip, TopologyDetailMenu },
+  components: { AppIconWithTextButton, AppIcon, AppButton, Tooltip, TopologyDetailMenu },
   data() {
     return {
       PAGE_TABS_ENUMS: TOPOLOGY_ENUMS,
@@ -194,22 +168,6 @@ export default {
     },
     isSending() {
       return this.enableState || this.publishState || this.disableState || this.testState
-    },
-
-    topologyStatusColor() {
-      if (this.topologyActive) {
-        if (this.topologyActive.visibility === TOPOLOGY_ENUMS.PUBLIC) {
-          if (this.topologyActive.enabled) {
-            return 'success--text'
-          } else {
-            return 'error--text'
-          }
-        } else {
-          return 'secondary--text'
-        }
-      } else {
-        return ''
-      }
     },
     topologyStatus() {
       if (this.topologyActive) {
