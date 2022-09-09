@@ -24,17 +24,43 @@ Rozdělení dat provádíme v uzlu typu `BatchNode`. Ten vychází v podstatě z
 import ABatchNode from '@orchesty/nodejs-sdk/dist/lib/Batch/ABatchNode';
 import BatchProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/BatchProcessDto';
 
+export const NAME = 'split-batch';
+
 export default class SplitBatch extends ABatchNode {
     public getName(): string {
-        return 'split-batch';
+        return NAME;
     }
 
-    public processAction(_dto: BatchProcessDto): Promise<BatchProcessDto> | BatchProcessDto {
-        const dto = _dto;
+    public processAction(dto: BatchProcessDto): Promise<BatchProcessDto> | BatchProcessDto {
         dto.setItemList([{ id: 1 }, { id: 2 }, { id: 3 }]);
-
         return dto;
     }
+}
+
+```
+</TabItem>
+<TabItem value="php" label="PHP">
+
+```php
+use Hanaboso\CommonsBundle\Process\BatchProcessDto;
+use Hanaboso\PipesPhpSdk\Batch\BatchAbstract;
+
+final class SplitBatch extends BatchAbstract
+{
+
+    public const NAME = 'split-batch';
+
+    function getName(): string
+    {
+        return self::NAME;
+    }
+
+    function processAction(BatchProcessDto $dto): BatchProcessDto
+    {
+        $dto->setItemList([['id' => 1], ['id' => 2], ['id' => 3]]);
+        return $dto;
+    }
+
 }
 
 ```
@@ -50,6 +76,8 @@ Register Batch action into a container.
 <Tabs>
 <TabItem value="typescript" label="Typescript">
 
+Batch konektor v index.ts zaregistrujeme do kontejneru.
+
 ```typescript
 // ...
 import { container } from '@orchesty/nodejs-sdk';
@@ -61,6 +89,20 @@ const prepare = async (): Promise<void> => {
   container.setBatch(new SplitBatch());
   // ...
 };
+```
+</TabItem>
+<TabItem value="php" label="PHP">
+
+Batch konektor registrujeme do yaml souboru: "./config/batch/batch.yaml"
+
+```yaml
+# ./config/batch/batch.yaml
+services:
+  // ...
+    hbpf.batch.split-batch:
+        class: Pipes\PhpSdk\Batch\SplitBatch
+  // ...
+
 ```
 </TabItem>
 </Tabs>

@@ -54,6 +54,55 @@ export default class GitHubRepositoriesBatch extends ABatchNode {
 
 ```
 </TabItem>
+
+<TabItem value="php" label="PHP">
+
+```php
+use Hanaboso\CommonsBundle\Process\BatchProcessDto;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
+use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
+use Hanaboso\PipesPhpSdk\Batch\BatchAbstract;
+use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
+use Hanaboso\PipesPhpSdk\CustomNode\Exception\CustomNodeException;
+
+final class GitHubGetRepositoriesBatch extends BatchAbstract
+{
+
+    public const NAME = 'git-hub-repositories-batch';
+
+    private const PER_PAGE = 5;
+
+    function getName(): string
+    {
+        return self::NAME;
+    }
+
+    function processAction(BatchProcessDto $dto): BatchProcessDto
+    {
+        $currentPage = intval($dto->getBatchCursor('1'));
+        $org         = $dto->getJsonData()['org'] ?? '';
+        $appInstall  = $this->getApplicationInstallFromProcess($dto);
+
+        $request = $this->getApplication()->getRequestDto(
+            $dto,
+            $appInstall,
+            CurlManager::METHOD_GET,
+            sprintf('/orgs/%s/repos?per_page=%s&page=%s', $org, self::PER_PAGE, $currentPage),
+        );
+        $result  = $this->getSender()->send($request)->getJsonBody();
+        $dto->setItemList($result);
+        if (count($result) >= self::PER_PAGE) {
+            $dto->setBatchCursor((string) ($currentPage + 1));
+        }
+
+        return $dto;
+    }
+
+}
+
+```
+</TabItem>
 </Tabs>
 
 ## Registrace konektoru
@@ -62,6 +111,8 @@ Konektor nezapomeneme registrovat do kontejneru:
 
 <Tabs>
 <TabItem value="typescript" label="Typescript">
+
+Konektor v `index.ts` zaregistrujeme do kontejneru .
 
 ```typescript
 // ...
@@ -85,6 +136,28 @@ export default async function prepare(): Promise<void> {
     container.setBatch(gitHubRepositoriesBatch);
   // ...
 }
+```
+</TabItem>
+<TabItem value="php" label="PHP">
+
+Batch konektor registrujeme do yaml souboru: "./config/batch/batch.yaml"
+
+```yaml
+# ./config/batch/batch.yaml
+services:
+    _defaults:
+        autowire: false
+        autoconfigure: false
+        public: '%public.services%'
+
+    hbpf.batch.git-hub-repositories-batch:
+        class: Pipes\PhpSdk\Batch\GitHubGetRepositoriesBatch
+        calls:
+            - ['setApplication', ['@hbpf.application.git-hub']]
+            - ['setSender', ['@hbpf.transport.curl_manager']]
+            - ['setDb', ['@doctrine_mongodb.odm.default_document_manager']]
+    // ...
+
 ```
 </TabItem>
 </Tabs>
@@ -112,6 +185,12 @@ use a second parameter in setBatchCursor method.
 
 ```typescript
 setBatchCursor(cursor: string, iterateOnly = true)
+```
+</TabItem>
+<TabItem value="php" label="PHP">
+
+```php
+setBatchCursor(string $cursor, bool $iterateOnly = FALSE)
 ```
 </TabItem>
 </Tabs>
