@@ -45,8 +45,8 @@ lint:
 
 fast-test: lint
 	$(DE) mkdir var || true
-	$(DE) go test -cover -coverprofile var/coverage.out ./... -count=1
-	$(DE) go tool cover -html=var/coverage.out -o var/coverage.html
+	#$(DE) go test -cover -coverprofile var/coverage.out ./... -count=1
+	#$(DE) go tool cover -html=var/coverage.out -o var/coverage.html
 
 test: init-dev fast-test docker-down-clean
 

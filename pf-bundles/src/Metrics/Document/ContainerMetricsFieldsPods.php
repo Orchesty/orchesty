@@ -2,7 +2,9 @@
 
 namespace Hanaboso\PipesFramework\Metrics\Document;
 
+use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Hanaboso\Utils\Date\DateTimeUtils;
 
 /**
  * Class ContainerMetricsFieldsPods
@@ -29,11 +31,11 @@ class ContainerMetricsFieldsPods
     private bool $up;
 
     /**
-     * @var string
+     * @var DateTime
      *
-     * @ODM\Field(type="string")
+     * @ODM\Field(type="date")
      */
-    private string $age;
+    private DateTime $created;
 
     /**
      * @var int
@@ -59,11 +61,11 @@ class ContainerMetricsFieldsPods
     }
 
     /**
-     * @return string
+     * @return DateTime
      */
-    public function getAge(): string
+    public function getCreated(): DateTime
     {
-        return $this->age;
+        return $this->created;
     }
 
     /**
@@ -83,7 +85,7 @@ class ContainerMetricsFieldsPods
             'restarts' => $this->restarts,
             'up'       => $this->up,
             'message'  => $this->message,
-            'age'      => $this->age,
+            'created'  => $this->created->format(DateTimeUtils::DATE_TIME_UTC),
         ];
     }
 
