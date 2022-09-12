@@ -28,7 +28,7 @@ use Throwable;
 final class CronManager
 {
 
-    private const CURL_COMMAND = 'echo "[CRON] [$(date +"%%Y-%%m-%%dT%%TZ")] Requesting %s: $(curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d "{%s}" %s)" &> /proc/1/fd/1';
+    private const CURL_COMMAND = 'echo "[CRON] [$(date +"%%Y-%%m-%%dT%%TZ")] Requesting %s: $(curl -H "orchesty-api-key: %s" -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d "{%s}" %s)" &> /proc/1/fd/1';
 
     private const GET    = '%s/crons';
     private const CREATE = '%s/crons';
@@ -54,12 +54,14 @@ final class CronManager
      * @param CurlManagerInterface $curlManager
      * @param string               $backend
      * @param string               $cronHost
+     * @param string               $apiKey
      */
     public function __construct(
         DocumentManager $documentManager,
         private CurlManagerInterface $curlManager,
         private string $backend,
         private string $cronHost,
+        private readonly string $apiKey,
     )
     {
         $this->topologyRepository = $documentManager->getRepository(Topology::class);
@@ -286,7 +288,7 @@ final class CronManager
         $topology = $this->topologyRepository->findOneBy(['id' => $node->getTopology()]);
         $url      = sprintf('%s%s', rtrim($this->backend, '/'), CronUtils::getTopologyUrl($topology, $node));
 
-        return sprintf(self::CURL_COMMAND, $url, $node->getCronParams(), $url);
+        return sprintf(self::CURL_COMMAND, $url, $this->apiKey, $node->getCronParams(), $url);
     }
 
     /**

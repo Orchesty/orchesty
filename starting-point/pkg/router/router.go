@@ -3,6 +3,7 @@ package router
 import (
 	"encoding/json"
 	"net/http"
+	"starting-point/pkg/config"
 
 	"github.com/gorilla/mux"
 )
@@ -12,6 +13,7 @@ type Route struct {
 	Name        string
 	Method      string
 	Pattern     string
+	Protected   bool
 	HandlerFunc http.HandlerFunc
 }
 
@@ -27,13 +29,36 @@ func Router(routes Routes) *mux.Router {
 	}
 
 	for _, route := range routes {
-		router.Methods(route.Method, http.MethodOptions).Path(route.Pattern).Name(route.Name).Handler(route.HandlerFunc)
+		if route.Protected {
+			router.
+				Methods(route.Method, http.MethodOptions).
+				Path(route.Pattern).
+				Name(route.Name).
+				Handler(authorizationHandler(route.HandlerFunc))
+		} else {
+			router.
+				Methods(route.Method, http.MethodOptions).
+				Path(route.Pattern).
+				Name(route.Name).
+				Handler(route.HandlerFunc)
+		}
 	}
 
 	router.NotFoundHandler = http.HandlerFunc(notFoundHandler)
 	router.MethodNotAllowedHandler = http.HandlerFunc(methodNotAllowedHandler)
 
 	return router
+}
+
+func authorizationHandler(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if apiKey := r.Header.Get("orchesty-api-key"); config.Config.ApiKey != "" && apiKey != config.Config.ApiKey {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
 }
 
 func notFoundHandler(w http.ResponseWriter, _ *http.Request) {
