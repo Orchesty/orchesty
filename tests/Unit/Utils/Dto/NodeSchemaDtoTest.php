@@ -33,6 +33,7 @@ final class NodeSchemaDtoTest extends KernelTestCaseAbstract
                 'cron_params'    => '',
                 'pipes_type'     => 'pipes',
                 'system_configs' => new SystemConfigDto(),
+                'application'    => '',
             ],
             $dto->toArray(),
         );

@@ -40,6 +40,7 @@ final class TopologySchemaUtils
     private const REPEATER_ENABLED  = '@pipes:repeaterEnabled';
     private const REPEATER_HOPS     = '@pipes:repeaterHops';
     private const REPEATER_INTERVAL = '@pipes:repeaterInterval';
+    private const TIMEOUT           = '@pipes:timeout';
 
     /**
      * @var string[]
@@ -99,6 +100,7 @@ final class TopologySchemaUtils
                         $innerProcess['@name'] ?? '',
                         $innerProcess['@pipes:cronTime'] ?? '',
                         $innerProcess['@pipes:cronParams'] ?? '',
+                        $innerProcess['@pipes:app_name'] ?? '',
                     );
 
                     $schema->addNode($innerProcess['@id'], $topologyDto);
@@ -198,6 +200,7 @@ final class TopologySchemaUtils
             ($data[self::REPEATER_ENABLED] ?? 'false') === 'true',
             intval($data[self::REPEATER_HOPS] ?? 0),
             intval($data[self::REPEATER_INTERVAL] ?? 0),
+            intval($data[self::TIMEOUT] ?? 60),
         );
     }
 

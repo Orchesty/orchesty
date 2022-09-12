@@ -26,6 +26,7 @@ use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
 use Hanaboso\PipesPhpSdk\Database\Document\Embed\EmbedNode;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
+use Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository;
 use Hanaboso\PipesPhpSdk\Database\Repository\TopologyRepository;
 use Hanaboso\Utils\Cron\CronParser;
 use Hanaboso\Utils\Exception\EnumException;
@@ -59,6 +60,11 @@ final class TopologyManager
     private TopologyRepository $topologyRepository;
 
     /**
+     * @var NodeRepository
+     */
+    private NodeRepository $nodeRepository;
+
+    /**
      * TopologyManager constructor.
      *
      * @param DatabaseManagerLocator $dml
@@ -78,10 +84,18 @@ final class TopologyManager
     )
     {
         /** @var DocumentManager $dm */
-        $dm                       = $dml->getDm();
-        $this->dm                 = $dm;
-        $this->topologyRepository = $this->dm->getRepository(Topology::class);
-        $this->host               = rtrim($startingPointHost, '/');
+        $dm       = $dml->getDm();
+        $this->dm = $dm;
+
+        /** @var TopologyRepository $topoRepo */
+        $topoRepo                 = $this->dm->getRepository(Topology::class);
+        $this->topologyRepository = $topoRepo;
+
+        /** @var NodeRepository $nodeRepo */
+        $nodeRepo             = $this->dm->getRepository(Node::class);
+        $this->nodeRepository = $nodeRepo;
+
+        $this->host = rtrim($startingPointHost, '/');
     }
 
     /**
@@ -209,6 +223,7 @@ final class TopologyManager
         }
 
         $topology
+            ->setApplications($newSchemaObject->getApplicationList())
             ->setBpmn($data)
             ->setRawBpmn($content);
         $this->dm->flush();
@@ -244,7 +259,7 @@ final class TopologyManager
      */
     public function publishTopology(Topology $topology): Topology
     {
-        $nodes = $this->dm->getRepository(Node::class)->findBy(['topology' => $topology->getId()]);
+        $nodes = $this->nodeRepository->findBy(['topology' => $topology->getId()]);
         if (empty($nodes)) {
             throw new TopologyException(
                 'Topology has no nodes. Please save your topology before publish it.',
@@ -287,7 +302,7 @@ final class TopologyManager
         $res = $this->cloneTopologyShallow($topology, $topology->getContentHash());
 
         /** @var Node[] $topologyNodes */
-        $topologyNodes = $this->dm->getRepository(Node::class)->findBy(['topology' => $topology->getId()]);
+        $topologyNodes = $this->nodeRepository->findBy(['topology' => $topology->getId()]);
         $nodesMap      = [];
 
         foreach ($topologyNodes as $topologyNode) {
@@ -452,7 +467,7 @@ final class TopologyManager
     private function removeNodesByTopology(Topology $topology): void
     {
         /** @var Node $node */
-        foreach ($this->dm->getRepository(Node::class)->findBy(['topology' => $topology->getId()]) as $node) {
+        foreach ($this->nodeRepository->findBy(['topology' => $topology->getId()]) as $node) {
             $node->setDeleted(TRUE);
             if ($node->getType() === TypeEnum::CRON) {
                 $this->cronManager->delete($node);
@@ -524,7 +539,7 @@ final class TopologyManager
         foreach ($nodes as $node) {
             $nodeIds[] = $node->getId();
         }
-        $this->dm->getRepository(Node::class)->createQueryBuilder()->remove()
+        $this->nodeRepository->createQueryBuilder()->remove()
             ->field('topology')->equals($topology->getId())
             ->field('_id')->notIn($nodeIds)
             ->getQuery()->execute();
@@ -589,7 +604,8 @@ final class TopologyManager
             ->setTopology($topology->getId())
             ->setHandler(Strings::endsWith($dto->getHandler(), 'vent') ? HandlerEnum::EVENT : HandlerEnum::ACTION)
             ->setCronParams(urldecode($dto->getCronParams()))
-            ->setCron($dto->getCronTime());
+            ->setCron($dto->getCronTime())
+            ->setApplication($dto->getApplication());
 
         return $node;
     }
@@ -644,7 +660,7 @@ final class TopologyManager
     private function getNodeBySchemaId(Topology $topology, string $schemaId): Node
     {
         /** @var Node|null $node */
-        $node = $this->dm->getRepository(Node::class)->findOneBy(
+        $node = $this->nodeRepository->findOneBy(
             [
                 'topology' => $topology->getId(),
                 'schemaId' => $schemaId,

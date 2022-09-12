@@ -46,6 +46,8 @@ final class TopologyConfigFactory
     public const SETTINGS    = 'settings';
     public const FAUCET      = 'faucet';
     public const PREFETCH    = 'prefetch';
+    public const TIMEOUT     = 'timeout';
+    public const APPLICATION = 'application';
 
     public const WORKER_NULL            = 'worker.null';
     public const WORKER_HTTP_XML_PARSER = 'worker.http_xml_parser';
@@ -192,6 +194,9 @@ final class TopologyConfigFactory
                         self::METHOD       => CurlManager::METHOD_POST,
                         self::PORT         => (int) ($parsed[1] ?? $this->getPort($node->getType())),
                         self::HEADERS      => $this->sdkRepository->findByHost($host),
+                        self::APPLICATION  => $node->getApplication(),
+                        self::PREFETCH     => $node->getSystemConfigs()?->getPrefetch(),
+                        self::TIMEOUT      => $node->getSystemConfigs()?->getSdkHost(),
                     ],
                 ];
         }
