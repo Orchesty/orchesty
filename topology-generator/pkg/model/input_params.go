@@ -78,7 +78,7 @@ type Environment struct {
 	MongodbDsn        string   `json:"mongodb_dsn"`
 	MetricsService    string   `json:"metrics_service"`
 	WorkerDefaultPort int      `json:"worker_default_port"`
-	GeneratorMode     Adapter  `json:"generator_mode"`
+	GeneratorMode     Adapter  `json:"platform"`
 	Limits            Limits   `json:"limits"`
 	Requests          Requests `json:"requests"`
 	UdpLoggerUrl      string   `json:"udp_logger_url"`

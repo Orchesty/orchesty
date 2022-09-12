@@ -30,8 +30,8 @@ type (
 	}
 
 	generator struct {
-		Network string `env:"GENERATOR_NETWORK"`
-		Mode    string `env:"GENERATOR_MODE"`
+		Network string `env:"DOCKER_NETWORK"`
+		Mode    string `env:"PLATFORM"`
 	}
 
 	config struct {

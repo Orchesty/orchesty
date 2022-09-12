@@ -55,7 +55,7 @@ services:
         environment:
             DEPLOYMENT_PREFIX: ${MAIN_DB}
             GENERATOR_NETWORK: ${NETWORK_NAME}
-            GENERATOR_MODE: ${GENERATOR_MODE}
+            PLATFORM: ${PLATFORM}
             GENERATOR_PATH: /srv/topology
             MONGO_DSN: ${MONGO_DSN}
             PROJECT_SOURCE_PATH: ${PROJECT_SOURCE_PATH}/../topology

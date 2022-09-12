@@ -90,7 +90,7 @@ components:
                                         type: string
                                     worker_default_port:
                                         type: integer
-                                    generator_mode:
+                                    platform:
                                         type: string
                             node_config:
                                 type: object

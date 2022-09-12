@@ -50,6 +50,8 @@ spec:
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
             - name: RABBIT_HOST
               value: "http://$(__RABBITMQ_HOST):15672/"
+            - name: PLATFORM
+              value: k8s
             - name: RABBIT_VHOST  # probably not supported yet
               valueFrom:
                 configMapKeyRef:

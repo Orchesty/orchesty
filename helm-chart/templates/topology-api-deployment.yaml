@@ -46,7 +46,7 @@ spec:
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
             - name: K8S_NAMESPACE
               value: {{ .Release.Namespace }}
-            - name: GENERATOR_MODE
+            - name: PLATFORM
               value: k8s
             - name: GENERATOR_PATH
               value: /srv/topology
