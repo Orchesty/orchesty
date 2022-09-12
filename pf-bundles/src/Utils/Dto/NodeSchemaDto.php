@@ -19,6 +19,7 @@ final class NodeSchemaDto
     private const CRON_PARAMS    = 'cron_params';
     private const PIPES_TYPE     = 'pipes_type';
     private const SYSTEM_CONFIGS = 'system_configs';
+    private const APPLICATION    = 'application';
 
     /**
      * NodeSchemaDto constructor.
@@ -30,6 +31,7 @@ final class NodeSchemaDto
      * @param string          $name
      * @param string          $cronTime
      * @param string          $cronParams
+     * @param string          $application
      */
     public function __construct(
         private string $handler,
@@ -39,6 +41,7 @@ final class NodeSchemaDto
         private string $name,
         private string $cronTime = '',
         private string $cronParams = '',
+        private string $application = '',
     )
     {
     }
@@ -115,6 +118,14 @@ final class NodeSchemaDto
     }
 
     /**
+     * @return string
+     */
+    public function getApplication(): string
+    {
+        return $this->application;
+    }
+
+    /**
      * @return mixed[]
      */
     public function toArray(): array
@@ -127,6 +138,7 @@ final class NodeSchemaDto
             self::CRON_PARAMS    => $this->getCronParams(),
             self::PIPES_TYPE     => $this->getPipesType(),
             self::SYSTEM_CONFIGS => $this->getSystemConfigs(),
+            self::APPLICATION    => $this->getApplication(),
         ];
     }
 

@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesFramework\Utils\Dto;
 
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
+use Hanaboso\PipesPhpSdk\Database\Document\TopologyApplication;
 
 /**
  * Class Schema
@@ -141,6 +142,23 @@ final class Schema
         }
 
         return $topology;
+    }
+
+    /**
+     * @return TopologyApplication[]
+     */
+    public function getApplicationList(): array {
+
+        $appList = [];
+
+        foreach ($this->getNodes() as $node) {
+            $app  = $node->getApplication();
+            $host = $node->getSystemConfigs()->getSdkHost();
+
+            $appList[sprintf('%s_%s',$app, $host)] = new TopologyApplication($app, $host);
+        }
+
+        return array_values($appList);
     }
 
     /**

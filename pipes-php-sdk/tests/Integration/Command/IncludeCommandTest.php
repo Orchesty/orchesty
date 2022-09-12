@@ -17,7 +17,6 @@ final class IncludeCommandTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\Command\IncludeCommands::addIncludedCommand
      * @covers \Hanaboso\PipesPhpSdk\Command\IncludeCommands::getIncludedCommands
-     * @covers \Hanaboso\PipesPhpSdk\Command\IncludeCommands::addIncludedCommand
      * @covers \Hanaboso\PipesPhpSdk\Command\IncludeCommands::add
      */
     public function testIncludeCommands(): void
@@ -29,19 +28,17 @@ final class IncludeCommandTest extends DatabaseTestCaseAbstract
         $commands = $commands->getIncludedCommands();
         self::assertEquals(
             [
-                0  => 'authorization:install',
-                1  => 'cron:refresh',
-                2  => 'rabbit_mq:consumer:status-service',
-                3  => 'rabbit_mq:publisher:pipes-notifications',
-                4  => 'rabbit_mq:publisher:pipes-user-task',
-                5  => 'rabbit_mq:publisher:pipes.messages',
-                6  => 'topology:install',
-                7  => 'usage_stats:send-events',
-                8  => 'user:create',
-                9  => 'user:delete',
-                10 => 'user:list',
-                11 => 'user:password:change',
-                12 => 'test:command',
+                'authorization:install',
+                'cron:refresh',
+                'rabbit_mq:publisher:pipes-user-task',
+                'rabbit_mq:publisher:pipes.messages',
+                'topology:install',
+                'usage_stats:send-events',
+                'user:create',
+                'user:delete',
+                'user:list',
+                'user:password:change',
+                'test:command',
             ],
             $commands,
         );

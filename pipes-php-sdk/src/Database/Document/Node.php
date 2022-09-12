@@ -28,6 +28,13 @@ class Node
     use DeletedTrait;
 
     /**
+     * @var string|null
+     *
+     * @ODM\Field(type="string")
+     */
+    protected ?string $application;
+
+    /**
      * @var string
      *
      * @ODM\Field(type="string")
@@ -112,6 +119,27 @@ class Node
         $this->schemaId      = '';
         $this->systemConfigs = NULL;
         $this->type          = TypeEnum::CUSTOM;
+        $this->application   = '';
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getApplication(): string |null
+    {
+        return $this->application;
+    }
+
+    /**
+     * @param string $application
+     *
+     * @return Node
+     */
+    public function setApplication(string $application): Node
+    {
+        $this->application = $application;
+
+        return $this;
     }
 
     /**

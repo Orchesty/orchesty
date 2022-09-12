@@ -46,4 +46,5 @@ parameters:
 			- Hanaboso\PipesPhpSdk\Database\Document\Embed\EmbedNode
 			- Hanaboso\PipesPhpSdk\Database\Document\Node
 			- Hanaboso\PipesPhpSdk\Database\Document\Topology
+			- Hanaboso\PipesPhpSdk\Database\Document\TopologyApplication
 			- Hanaboso\PipesPhpSdk\Listener\RepeaterListener

@@ -19,6 +19,7 @@ final class SystemConfigDto
 
     public const HOST     = 'host';
     public const PREFETCH = 'prefetch';
+    public const TIMEOUT  = 'timeout';
     public const ENABLED  = 'enabled';
     public const HOPS     = 'hops';
     public const INTERVAL = 'interval';
@@ -32,6 +33,7 @@ final class SystemConfigDto
      * @param bool   $repeaterEnabled
      * @param int    $repeaterHops
      * @param int    $repeaterInterval
+     * @param int    $timeout
      */
     public function __construct(
         private string $sdkHost = '',
@@ -40,6 +42,7 @@ final class SystemConfigDto
         private bool $repeaterEnabled = FALSE,
         private int $repeaterHops = 0,
         private int $repeaterInterval = 0,
+        private int $timeout = 60,
     )
     {
     }
@@ -60,6 +63,7 @@ final class SystemConfigDto
             $result[self::REPEATER][self::ENABLED],
             $result[self::REPEATER][self::HOPS],
             $result[self::REPEATER][self::INTERVAL],
+            $result[self::BRIDGE][self::TIMEOUT],
         );
     }
 
@@ -71,7 +75,10 @@ final class SystemConfigDto
         return Json::encode(
             [
                 self::SDK      => [self::HOST => $this->getSdkHost()],
-                self::BRIDGE   => [self::HOST => $this->getBridgeHost()],
+                self::BRIDGE   => [
+                    self::HOST    => $this->getBridgeHost(),
+                    self::TIMEOUT => $this->getTimeout(),
+                ],
                 self::RABBIT   => [self::PREFETCH => $this->getPrefetch()],
                 self::REPEATER => [
                     self::ENABLED  => $this->isRepeaterEnabled(),
@@ -128,6 +135,14 @@ final class SystemConfigDto
     public function getRepeaterHops(): int
     {
         return $this->repeaterHops;
+    }
+
+    /**
+     * @return int
+     */
+    public function getTimeout(): int
+    {
+        return $this->timeout;
     }
 
 }
