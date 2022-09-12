@@ -39,6 +39,7 @@ export interface UsageStatsAppsRequest {
     timeRangeStart: string;
     timeRangeEnd: string;
     tenantId?: string;
+    instanceId?: string;
     appName?: string;
     granularity?: UsageStatsAppsGranularityEnum;
 }
@@ -46,6 +47,7 @@ export interface UsageStatsAppsRequest {
 export interface UsageStatsInstalledAppsRequest {
     endUserId: string;
     tenantId?: string;
+    instanceId?: string;
     installedDate?: string;
 }
 
@@ -54,6 +56,7 @@ export interface UsageStatsTimeBucketAppsRequest {
     timeRangeEnd: string;
     endUserId: string;
     tenantId?: string;
+    instanceId?: string;
 }
 
 export interface UsageStatsTimeBucketUsersRequest {
@@ -61,12 +64,14 @@ export interface UsageStatsTimeBucketUsersRequest {
     timeRangeEnd: string;
     appName: string;
     tenantId?: string;
+    instanceId?: string;
 }
 
 export interface UsageStatsUsersRequest {
     timeRangeStart: string;
     timeRangeEnd: string;
     tenantId?: string;
+    instanceId?: string;
     appName?: string;
     granularity?: UsageStatsUsersGranularityEnum;
     endUserDisplayId?: string;
@@ -93,6 +98,10 @@ export class BillingApi extends runtime.BaseAPI {
 
         if (requestParameters.tenantId !== undefined) {
             queryParameters['tenantId'] = requestParameters.tenantId;
+        }
+
+        if (requestParameters.instanceId !== undefined) {
+            queryParameters['instanceId'] = requestParameters.instanceId;
         }
 
         if (requestParameters.timeRangeStart !== undefined) {
@@ -145,6 +154,10 @@ export class BillingApi extends runtime.BaseAPI {
             queryParameters['tenantId'] = requestParameters.tenantId;
         }
 
+        if (requestParameters.instanceId !== undefined) {
+            queryParameters['instanceId'] = requestParameters.instanceId;
+        }
+
         if (requestParameters.endUserId !== undefined) {
             queryParameters['endUserId'] = requestParameters.endUserId;
         }
@@ -193,6 +206,10 @@ export class BillingApi extends runtime.BaseAPI {
 
         if (requestParameters.tenantId !== undefined) {
             queryParameters['tenantId'] = requestParameters.tenantId;
+        }
+
+        if (requestParameters.instanceId !== undefined) {
+            queryParameters['instanceId'] = requestParameters.instanceId;
         }
 
         if (requestParameters.timeRangeStart !== undefined) {
@@ -249,6 +266,10 @@ export class BillingApi extends runtime.BaseAPI {
             queryParameters['tenantId'] = requestParameters.tenantId;
         }
 
+        if (requestParameters.instanceId !== undefined) {
+            queryParameters['instanceId'] = requestParameters.instanceId;
+        }
+
         if (requestParameters.timeRangeStart !== undefined) {
             queryParameters['timeRangeStart'] = requestParameters.timeRangeStart;
         }
@@ -297,6 +318,10 @@ export class BillingApi extends runtime.BaseAPI {
 
         if (requestParameters.tenantId !== undefined) {
             queryParameters['tenantId'] = requestParameters.tenantId;
+        }
+
+        if (requestParameters.instanceId !== undefined) {
+            queryParameters['instanceId'] = requestParameters.instanceId;
         }
 
         if (requestParameters.timeRangeStart !== undefined) {

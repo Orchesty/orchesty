@@ -43,6 +43,12 @@ export interface UsageStatsAppsRowsInner {
      * @memberof UsageStatsAppsRowsInner
      */
     installCount?: number;
+    /**
+     * Array of instance ids
+     * @type {Array<string>}
+     * @memberof UsageStatsAppsRowsInner
+     */
+    instanceIds?: Array<string>;
 }
 
 export function UsageStatsAppsRowsInnerFromJSON(json: any): UsageStatsAppsRowsInner {
@@ -59,6 +65,7 @@ export function UsageStatsAppsRowsInnerFromJSONTyped(json: any, ignoreDiscrimina
         'endUsers': !exists(json, 'endUsers') ? undefined : json['endUsers'],
         'totalCost': !exists(json, 'totalCost') ? undefined : json['totalCost'],
         'installCount': !exists(json, 'installCount') ? undefined : json['installCount'],
+        'instanceIds': !exists(json, 'instanceIds') ? undefined : json['instanceIds'],
     };
 }
 
@@ -75,6 +82,7 @@ export function UsageStatsAppsRowsInnerToJSON(value?: UsageStatsAppsRowsInner | 
         'endUsers': value.endUsers,
         'totalCost': value.totalCost,
         'installCount': value.installCount,
+        'instanceIds': value.instanceIds,
     };
 }
 

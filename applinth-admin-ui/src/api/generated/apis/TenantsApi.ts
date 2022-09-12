@@ -40,16 +40,16 @@ export interface TenantsCreateOperationRequest {
 }
 
 export interface TenantsDeleteRequest {
-    tenantId?: string;
+    tenantId: string;
 }
 
 export interface TenantsGetRequest {
-    tenantId?: string;
+    tenantId: string;
 }
 
 export interface TenantsUpdateOperationRequest {
+    tenantId: string;
     tenantsUpdateRequest: TenantsUpdateRequest;
-    tenantId?: string;
 }
 
 /**
@@ -94,16 +94,16 @@ export class TenantsApi extends runtime.BaseAPI {
      * Fill
      */
     async tenantsDeleteRaw(requestParameters: TenantsDeleteRequest, initOverrides?: RequestInit | runtime.InitOverideFunction): Promise<runtime.ApiResponse<UsersDelete200Response>> {
-        const queryParameters: any = {};
-
-        if (requestParameters.tenantId !== undefined) {
-            queryParameters['tenantId'] = requestParameters.tenantId;
+        if (requestParameters.tenantId === null || requestParameters.tenantId === undefined) {
+            throw new runtime.RequiredError('tenantId','Required parameter requestParameters.tenantId was null or undefined when calling tenantsDelete.');
         }
+
+        const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/tenants/{tenantId}`,
+            path: `/tenants/{tenantId}`.replace(`{${"tenantId"}}`, encodeURIComponent(String(requestParameters.tenantId))),
             method: 'DELETE',
             headers: headerParameters,
             query: queryParameters,
@@ -115,7 +115,7 @@ export class TenantsApi extends runtime.BaseAPI {
     /**
      * Fill
      */
-    async tenantsDelete(requestParameters: TenantsDeleteRequest = {}, initOverrides?: RequestInit | runtime.InitOverideFunction): Promise<UsersDelete200Response> {
+    async tenantsDelete(requestParameters: TenantsDeleteRequest, initOverrides?: RequestInit | runtime.InitOverideFunction): Promise<UsersDelete200Response> {
         const response = await this.tenantsDeleteRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -124,16 +124,16 @@ export class TenantsApi extends runtime.BaseAPI {
      * Fill
      */
     async tenantsGetRaw(requestParameters: TenantsGetRequest, initOverrides?: RequestInit | runtime.InitOverideFunction): Promise<runtime.ApiResponse<OneTenant>> {
-        const queryParameters: any = {};
-
-        if (requestParameters.tenantId !== undefined) {
-            queryParameters['tenantId'] = requestParameters.tenantId;
+        if (requestParameters.tenantId === null || requestParameters.tenantId === undefined) {
+            throw new runtime.RequiredError('tenantId','Required parameter requestParameters.tenantId was null or undefined when calling tenantsGet.');
         }
+
+        const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/tenants/{tenantId}`,
+            path: `/tenants/{tenantId}`.replace(`{${"tenantId"}}`, encodeURIComponent(String(requestParameters.tenantId))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -145,7 +145,7 @@ export class TenantsApi extends runtime.BaseAPI {
     /**
      * Fill
      */
-    async tenantsGet(requestParameters: TenantsGetRequest = {}, initOverrides?: RequestInit | runtime.InitOverideFunction): Promise<OneTenant> {
+    async tenantsGet(requestParameters: TenantsGetRequest, initOverrides?: RequestInit | runtime.InitOverideFunction): Promise<OneTenant> {
         const response = await this.tenantsGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -180,22 +180,22 @@ export class TenantsApi extends runtime.BaseAPI {
      * Fill
      */
     async tenantsUpdateRaw(requestParameters: TenantsUpdateOperationRequest, initOverrides?: RequestInit | runtime.InitOverideFunction): Promise<runtime.ApiResponse<OneTenant>> {
+        if (requestParameters.tenantId === null || requestParameters.tenantId === undefined) {
+            throw new runtime.RequiredError('tenantId','Required parameter requestParameters.tenantId was null or undefined when calling tenantsUpdate.');
+        }
+
         if (requestParameters.tenantsUpdateRequest === null || requestParameters.tenantsUpdateRequest === undefined) {
             throw new runtime.RequiredError('tenantsUpdateRequest','Required parameter requestParameters.tenantsUpdateRequest was null or undefined when calling tenantsUpdate.');
         }
 
         const queryParameters: any = {};
 
-        if (requestParameters.tenantId !== undefined) {
-            queryParameters['tenantId'] = requestParameters.tenantId;
-        }
-
         const headerParameters: runtime.HTTPHeaders = {};
 
         headerParameters['Content-Type'] = 'application/json';
 
         const response = await this.request({
-            path: `/tenants/{tenantId}`,
+            path: `/tenants/{tenantId}`.replace(`{${"tenantId"}}`, encodeURIComponent(String(requestParameters.tenantId))),
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,

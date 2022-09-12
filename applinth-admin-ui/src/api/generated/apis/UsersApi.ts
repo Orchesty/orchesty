@@ -45,13 +45,13 @@ export interface UsersCreateOperationRequest {
 }
 
 export interface UsersDeleteRequest {
-    uid?: string;
+    uid: string;
     tenantId?: string;
 }
 
 export interface UsersGetRequest {
+    uid: string;
     tenantId?: string;
-    uid?: string;
 }
 
 export interface UsersListRequest {
@@ -60,8 +60,8 @@ export interface UsersListRequest {
 }
 
 export interface UsersUpdateOperationRequest {
+    uid: string;
     usersUpdateRequest: UsersUpdateRequest;
-    uid?: string;
     tenantId?: string;
 }
 
@@ -141,11 +141,11 @@ export class UsersApi extends runtime.BaseAPI {
      * Fill
      */
     async usersDeleteRaw(requestParameters: UsersDeleteRequest, initOverrides?: RequestInit | runtime.InitOverideFunction): Promise<runtime.ApiResponse<UsersDelete200Response>> {
-        const queryParameters: any = {};
-
-        if (requestParameters.uid !== undefined) {
-            queryParameters['uid'] = requestParameters.uid;
+        if (requestParameters.uid === null || requestParameters.uid === undefined) {
+            throw new runtime.RequiredError('uid','Required parameter requestParameters.uid was null or undefined when calling usersDelete.');
         }
+
+        const queryParameters: any = {};
 
         if (requestParameters.tenantId !== undefined) {
             queryParameters['tenantId'] = requestParameters.tenantId;
@@ -154,7 +154,7 @@ export class UsersApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/users/{uid}`,
+            path: `/users/{uid}`.replace(`{${"uid"}}`, encodeURIComponent(String(requestParameters.uid))),
             method: 'DELETE',
             headers: headerParameters,
             query: queryParameters,
@@ -166,7 +166,7 @@ export class UsersApi extends runtime.BaseAPI {
     /**
      * Fill
      */
-    async usersDelete(requestParameters: UsersDeleteRequest = {}, initOverrides?: RequestInit | runtime.InitOverideFunction): Promise<UsersDelete200Response> {
+    async usersDelete(requestParameters: UsersDeleteRequest, initOverrides?: RequestInit | runtime.InitOverideFunction): Promise<UsersDelete200Response> {
         const response = await this.usersDeleteRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -175,20 +175,20 @@ export class UsersApi extends runtime.BaseAPI {
      * Fill
      */
     async usersGetRaw(requestParameters: UsersGetRequest, initOverrides?: RequestInit | runtime.InitOverideFunction): Promise<runtime.ApiResponse<OneUser>> {
+        if (requestParameters.uid === null || requestParameters.uid === undefined) {
+            throw new runtime.RequiredError('uid','Required parameter requestParameters.uid was null or undefined when calling usersGet.');
+        }
+
         const queryParameters: any = {};
 
         if (requestParameters.tenantId !== undefined) {
             queryParameters['tenantId'] = requestParameters.tenantId;
         }
 
-        if (requestParameters.uid !== undefined) {
-            queryParameters['uid'] = requestParameters.uid;
-        }
-
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/users/{uid}`,
+            path: `/users/{uid}`.replace(`{${"uid"}}`, encodeURIComponent(String(requestParameters.uid))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -200,7 +200,7 @@ export class UsersApi extends runtime.BaseAPI {
     /**
      * Fill
      */
-    async usersGet(requestParameters: UsersGetRequest = {}, initOverrides?: RequestInit | runtime.InitOverideFunction): Promise<OneUser> {
+    async usersGet(requestParameters: UsersGetRequest, initOverrides?: RequestInit | runtime.InitOverideFunction): Promise<OneUser> {
         const response = await this.usersGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -243,15 +243,15 @@ export class UsersApi extends runtime.BaseAPI {
      * Fill
      */
     async usersUpdateRaw(requestParameters: UsersUpdateOperationRequest, initOverrides?: RequestInit | runtime.InitOverideFunction): Promise<runtime.ApiResponse<OneUser>> {
+        if (requestParameters.uid === null || requestParameters.uid === undefined) {
+            throw new runtime.RequiredError('uid','Required parameter requestParameters.uid was null or undefined when calling usersUpdate.');
+        }
+
         if (requestParameters.usersUpdateRequest === null || requestParameters.usersUpdateRequest === undefined) {
             throw new runtime.RequiredError('usersUpdateRequest','Required parameter requestParameters.usersUpdateRequest was null or undefined when calling usersUpdate.');
         }
 
         const queryParameters: any = {};
-
-        if (requestParameters.uid !== undefined) {
-            queryParameters['uid'] = requestParameters.uid;
-        }
 
         if (requestParameters.tenantId !== undefined) {
             queryParameters['tenantId'] = requestParameters.tenantId;
@@ -262,7 +262,7 @@ export class UsersApi extends runtime.BaseAPI {
         headerParameters['Content-Type'] = 'application/json';
 
         const response = await this.request({
-            path: `/users/{uid}`,
+            path: `/users/{uid}`.replace(`{${"uid"}}`, encodeURIComponent(String(requestParameters.uid))),
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
