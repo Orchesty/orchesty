@@ -33,7 +33,7 @@ Topology generator se dále stará i o korektní ukončení běžící topologie
     - Povinný: `ANO`
     - Pod jakou interní docker sití vznikne nově spuštěná topologie
     - Například: `demo_default`
-- GENERATOR_MODE
+- PLATFORM
     - Povinný: `ANO`
     - Umožňuje přepínat mezi adaptéry
     - Povolené volby: `compose`, `k8s` ??
