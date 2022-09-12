@@ -40,6 +40,11 @@
         <v-col>
           <v-tabs v-model="tab" height="24">
             <v-tab
+              v-if="appActive.info"
+              class="text-transform-none body-2 font-weight-medium primary--text"
+              >Info</v-tab
+            >
+            <v-tab
               v-for="form in settingsConfig"
               :key="form.key"
               class="text-transform-none body-2 font-weight-medium primary--text"
@@ -51,6 +56,9 @@
       </v-row>
 
       <v-tabs-items v-model="tab" class="mt-4">
+        <v-tab-item v-if="appActive.info">
+          <div class="mt-2" v-html="appActive.info" />
+        </v-tab-item>
         <v-tab-item
           v-for="(form, index) in settingsConfig"
           :key="form.key"
