@@ -38,6 +38,7 @@ services:
             DEV_UID: ${DEV_UID}
             DEV_GID: ${DEV_GID}
             APP_DEBUG: 'true'
+            ORCHESTY_API_KEY: ${ORCHESTY_API_KEY}
             MONGO_DSN: ${MONGO_DSN}
             METRICS_DSN: ${METRICS_DSN}
             RABBIT_COUNTER_QUEUE_DURABLE: 'true'
@@ -88,6 +89,7 @@ services:
             APP_ENV: dev
             APP_DEBUG: 'true'
             PHP_WEBROOT: /var/www/pipes/applinth/public
+            ORCHESTY_API_KEY: ${ORCHESTY_API_KEY}
             COMPOSER_HOME: ${HOME}/dev/.composer
             BACKEND_DSN: ${BACKEND_URL}/
             FRONTEND_DSN: ${FRONTEND_URL}/

@@ -11,6 +11,7 @@ services:
             - '@hbpf.transport.curl_manager'
             - '%startingPointHost%'
             - '%cronHost%'
+            - '%orchestyApikey%'
 
     hbpf.topology.configurator:
         class: Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory
