@@ -65,6 +65,7 @@ final class TopologyManager
      * @param CronManager            $cronManager
      * @param bool                   $checkInfiniteLoop
      * @param CurlManagerInterface   $curl
+     * @param string                 $apiKey
      * @param string                 $startingPointHost
      */
     function __construct(
@@ -72,6 +73,7 @@ final class TopologyManager
         private CronManager $cronManager,
         private bool $checkInfiniteLoop,
         private CurlManagerInterface $curl,
+        private readonly string $apiKey,
         string $startingPointHost,
     )
     {
@@ -100,6 +102,10 @@ final class TopologyManager
                 new Uri($this->getUrl(self::RUN_ENDPOINT, $topologyId, $startingPointId)),
                 CurlManager::METHOD_POST,
                 new ProcessDto(),
+                '',
+                [
+                    'orchesty-api-key' => $this->apiKey,
+                ],
             );
             $request->setBody($data);
 

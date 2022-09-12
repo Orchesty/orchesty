@@ -12,3 +12,6 @@ parameters:
   notificationHost: "%env(NOTIFICATION_DSN)%"
   activateLink: '%backendHost%/user/%s/activate'
   passwordLink: 'restore-password/%s'
+
+  env(ORCHESTY_API_KEY): ''
+  orchestyApikey: "%env(string:ORCHESTY_API_KEY)%"
