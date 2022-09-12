@@ -11,6 +11,7 @@ import (
 var Config config
 
 type config struct {
+	ApiKey   string
 	MongoDB  *mongoDb
 	RabbitMQ *rabbitMq
 	Metrics  *metrics
@@ -66,6 +67,7 @@ func init() {
 	}
 
 	Config = config{
+		ApiKey: getEnv("ORCHESTY_API_KEY", ""),
 		MongoDB: &mongoDb{
 			Dsn:          getEnv("MONGO_DSN", ""),
 			NodeColl:     getEnv("MONGO_NODE_COLL", "Node"),

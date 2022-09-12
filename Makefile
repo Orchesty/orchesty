@@ -8,6 +8,7 @@ PUBLIC_IMAGE=hanaboso/pipes-starting-point
 	sed -e 's/{DEV_UID}/$(shell id -u)/g' \
 		-e 's/{DEV_GID}/$(shell id -g)/g' \
 		-e 's/{GITLAB_CI}/$(echo $GITLAB_CI)/g' \
+		-e 's/{ORCHESTY_API_KEY}/$(shell tr -dc A-Za-z0-9 </dev/urandom | head -c 20)/g' \
 		.env.dist >> .env; \
 
 build:
