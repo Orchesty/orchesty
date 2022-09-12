@@ -2,6 +2,8 @@
 
 namespace Hanaboso\PipesPhpSdk\Database\Document;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Hanaboso\CommonsBundle\Database\Traits\Document\DeletedTrait;
 use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
@@ -98,6 +100,22 @@ class Topology
      * @ODM\Field(type="string")
      */
     protected string $contentHash = '';
+
+    /**
+     * @var Collection<int, TopologyApplication>
+     *
+     * @ODM\EmbedMany(targetDocument="Hanaboso\PipesPhpSdk\Database\Document\TopologyApplication")
+     */
+    protected Collection $applications;
+
+    /**
+     * Topology constructor.
+     */
+    public function __construct()
+    {
+        $this->applications = new ArrayCollection([]);
+    }
+
 
     /**
      * @return string
@@ -299,6 +317,26 @@ class Topology
     public function getContentHash(): string
     {
         return $this->contentHash;
+    }
+
+    /**
+     * @return TopologyApplication[]
+     */
+    public function getApplications(): array
+    {
+        return $this->applications->toArray();
+    }
+
+    /**
+     * @param TopologyApplication[] $applications
+     *
+     * @return Topology
+     */
+    public function setApplications(array $applications): Topology
+    {
+        $this->applications = new ArrayCollection($applications);
+
+        return $this;
     }
 
 }
