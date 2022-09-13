@@ -9,24 +9,6 @@ import (
 
 const (
 	passPrefix = "APP_PASS_"
-	//RabbitDsn      = "RABBITMQ_DSN"
-
-	// RabbitMqHost RabbitMqHost
-	RabbitMqHost = "RABBITMQ_HOST"
-	// RabbitMqPort RabbitMqPort
-	RabbitMqPort = "RABBITMQ_PORT"
-	// RabbitMqUser RabbitMqUser
-	RabbitMqUser = "RABBITMQ_USER"
-	// RabbitMqPass RabbitMqPass
-	RabbitMqPass = "RABBITMQ_PASS"
-	// RabbitMqVHost RabbitMqVHost
-	RabbitMqVHost = "RABBITMQ_VHOST"
-	// MetricsHost MetricsHost
-	MetricsHost = "METRICS_HOST"
-	// MetricsPort MetricsPort
-	MetricsPort = "METRICS_PORT"
-	// MetricsService MetricsService
-	MetricsService = "METRICS_SERVICE"
 )
 
 // Adapter Adapter
@@ -67,21 +49,20 @@ type NodeUserParams struct {
 
 // Environment Environment
 type Environment struct {
-	DockerRegistry      string `json:"docker_registry"`
-	DockerPfBridgeImage string `json:"docker_pf_bridge_image"`
-	//RabbitMqDsn         string  `json:"rabbitmq_dsn"`
-	RabbitMqHost      string   `json:"rabbitmq_host"`
-	RabbitMqUser      string   `json:"rabbitmq_user"`
-	RabbitMqPass      string   `json:"rabbitmq_pass"`
-	RabbitMqVHost     string   `json:"rabbitmq_vhost"`
-	MetricsDsn        string   `json:"metrics_dsn"`
-	MongodbDsn        string   `json:"mongodb_dsn"`
-	MetricsService    string   `json:"metrics_service"`
-	WorkerDefaultPort int      `json:"worker_default_port"`
-	GeneratorMode     Adapter  `json:"platform"`
-	Limits            Limits   `json:"limits"`
-	Requests          Requests `json:"requests"`
-	UdpLoggerUrl      string   `json:"udp_logger_url"`
+	DockerRegistry      string   `json:"docker_registry"`
+	DockerPfBridgeImage string   `json:"docker_pf_bridge_image"`
+	RabbitMqHost        string   `json:"rabbitmq_host"`
+	RabbitMqUser        string   `json:"rabbitmq_user"`
+	RabbitMqPass        string   `json:"rabbitmq_pass"`
+	RabbitMqVHost       string   `json:"rabbitmq_vhost"`
+	MetricsDsn          string   `json:"metrics_dsn"`
+	MongodbDsn          string   `json:"mongodb_dsn"`
+	MetricsService      string   `json:"metrics_service"`
+	WorkerDefaultPort   int      `json:"worker_default_port"`
+	GeneratorMode       Adapter  `json:"platform"`
+	Limits              Limits   `json:"limits"`
+	Requests            Requests `json:"requests"`
+	UdpLoggerUrl        string   `json:"udp_logger_url"`
 }
 
 func (p *NodeConfig) GetTopologyJson(t *Topology, nodes []Node) (TopologyJson, error) {
