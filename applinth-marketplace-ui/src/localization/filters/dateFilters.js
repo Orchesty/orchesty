@@ -3,18 +3,29 @@ import { LOCALE } from '@/localization'
 export const toLocalDateTime = (datetime) => {
   if (datetime === null || datetime.length === 0) return ''
 
-  return Intl.DateTimeFormat(LOCALE).format(new Date(datetime))
+  const options = {
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric',
+    hour12: false,
+  }
+
+  return new Intl.DateTimeFormat(LOCALE, options).format(new Date(datetime))
 }
 
 export const toLocalDate = (datetime) => {
   if (datetime === null || datetime.length === 0) return ''
 
   const options = {
-    day: 'numeric',
-    month: 'numeric',
     year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
   }
-  return Intl.DateTimeFormat(LOCALE, options).format(new Date(datetime))
+
+  return new Intl.DateTimeFormat(LOCALE, options).format(new Date(datetime))
 }
 
 export const toMonthYear = (datetime) => {
@@ -24,7 +35,7 @@ export const toMonthYear = (datetime) => {
     month: 'long',
     year: 'numeric',
   }
-  return Intl.DateTimeFormat(LOCALE, options).format(new Date(datetime))
+  return new Intl.DateTimeFormat(LOCALE, options).format(new Date(datetime))
 }
 
 export const toLocalTime = (datetime) => {
@@ -34,5 +45,5 @@ export const toLocalTime = (datetime) => {
     hour: 'numeric',
     minute: 'numeric',
   }
-  return Intl.DateTimeFormat(LOCALE, options).format(new Date(datetime))
+  return new Intl.DateTimeFormat(LOCALE, options).format(new Date(datetime))
 }
