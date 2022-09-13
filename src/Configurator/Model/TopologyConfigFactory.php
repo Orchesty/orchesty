@@ -196,7 +196,7 @@ final class TopologyConfigFactory
                         self::HEADERS      => $this->sdkRepository->findByHost($host),
                         self::APPLICATION  => $node->getApplication(),
                         self::PREFETCH     => $node->getSystemConfigs()?->getPrefetch(),
-                        self::TIMEOUT      => $node->getSystemConfigs()?->getSdkHost(),
+                        self::TIMEOUT      => $node->getSystemConfigs()?->getTimeout(),
                     ],
                 ];
         }
