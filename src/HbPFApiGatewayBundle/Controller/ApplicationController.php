@@ -140,6 +140,21 @@ final class ApplicationController extends AbstractController
     }
 
     /**
+     * @Route("/applications/{key}/users/{user}/changeState", methods={"PUT", "OPTIONS"})
+     *
+     * @param Request $request
+     * @param string  $key
+     * @param string  $user
+     *
+     * @return Response
+     */
+    public function changeStateApplicationAction(Request $request, string $key, string $user): Response
+    {
+        //TODO: refactor after ServiceLocatorMS will be done
+        return new JsonResponse($this->locator->changeState($key, $user, $request->request->all()));
+    }
+
+    /**
      * @Route("/applications/{key}/users/{user}/password", methods={"PUT", "OPTIONS"})
      *
      * @param Request $request
