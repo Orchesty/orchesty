@@ -9,13 +9,15 @@ import jsyaml from 'js-yaml';
 import { configure, initializeMiddleware } from 'oas-tools';
 import { app, firebase, mongo } from './config/config';
 import initializeLogger from './logger/logger';
-import Mongo from './storage/mongo/Mongo';
+import BillingMongo from './storage/mongo/BillingMongo';
+import CloudMongo from './storage/mongo/CloudMongo';
 import TenantService from './tenants/TenantService';
 import UsageStatsService from './usageStats/UsageStatsService';
 import UsersService from './users/UsersService';
 
 /* eslint-disable import/no-mutable-exports */
-let db: Mongo;
+let db: BillingMongo;
+let dbCloud: CloudMongo;
 let usageStatsService: UsageStatsService;
 let usersService: UsersService;
 let tenantService: TenantService;
@@ -38,13 +40,16 @@ const fbApp = initializeApp({
 });
 
 async function initServices(): Promise<void> {
-    db = new Mongo(mongo.dsn);
+    db = new BillingMongo(mongo.dsn);
+    dbCloud = new CloudMongo(mongo.dsn);
     await db.connect();
     await db.createIndexes();
+    await dbCloud.connect();
+    await dbCloud.createIndexes();
     logger.info('Database connected');
     usageStatsService = new UsageStatsService(db);
     usersService = new UsersService();
-    tenantService = new TenantService();
+    tenantService = new TenantService(dbCloud);
 }
 
 function createServer(): Express {
@@ -76,5 +81,5 @@ function createServer(): Express {
 }
 
 export {
-    authApp, createServer, db, fbApp,
+    authApp, createServer, db, dbCloud, fbApp,
     initServices, logger, server, tenantService, usageStatsService, usersService };

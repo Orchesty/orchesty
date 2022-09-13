@@ -879,6 +879,8 @@ components:
             properties:
                 tenantId:
                     type: string
+                instanceId:
+                    type: string
                 displayName:
                     type: string
                     nullable: true
