@@ -235,6 +235,22 @@ final class ServiceLocator implements LoggerAwareInterface
      *
      * @return mixed[]
      */
+    public function changeState(string $key, string $user, array $data): array
+    {
+        return $this->doRequest(
+            sprintf('applications/%s/users/%s/changeState', $key, $user),
+            CurlManager::METHOD_PUT,
+            $data,
+        );
+    }
+
+    /**
+     * @param string  $key
+     * @param string  $user
+     * @param mixed[] $data
+     *
+     * @return mixed[]
+     */
     public function updateApp(string $key, string $user, array $data): array
     {
         return $this->doRequest(

@@ -13,3 +13,6 @@ parameters:
   activateLink: '%backendHost%/user/%s/activate'
   passwordLink: 'restore-password/%s'
   cryptSecret: '%env(CRYPT_SECRET)%'
+
+  env(ORCHESTY_API_KEY): ''
+  orchestyApikey: "%env(string:ORCHESTY_API_KEY)%"
