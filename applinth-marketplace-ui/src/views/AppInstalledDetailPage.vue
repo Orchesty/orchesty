@@ -23,7 +23,10 @@
         <v-col cols="5" class="d-flex justify-space-between flex-column">
           <h1 class="headline font-weight-bold">{{ appActive.name }}</h1>
           <p class="mt-4">{{ appActive.description }}</p>
-          <div v-if="appActive.isInstallable" class="d-flex">
+          <div
+            v-if="appActive.isInstallable"
+            class="d-flex justify-space-between align-center"
+          >
             <base-button
               color="error"
               class="mr-3"
@@ -32,6 +35,18 @@
               :disabled="isRequestPending"
               :loading="isUninstalling"
             />
+            <v-switch
+              v-if="isActivationEnabled"
+              :input-value="isActivated"
+              color="secondary"
+              :loading="isActivationLoading"
+              inset
+              @change="onActivationChange($event)"
+            >
+              <template #label>
+                <span class="activation-label">{{ onOrOff }}</span>
+              </template>
+            </v-switch>
           </div>
         </v-col>
       </v-row>
@@ -42,8 +57,9 @@
             <v-tab
               v-if="appActive.info"
               class="text-transform-none body-2 font-weight-medium primary--text"
-              >Info</v-tab
             >
+              Info
+            </v-tab>
             <v-tab
               v-for="form in settingsConfig"
               :key="form.key"
@@ -164,7 +180,7 @@ import ActionsWrapper from '@/components/commons/ActionsWrapper'
 import BaseProgressBarLinear from '@/components/commons/BaseProgressBarLinear'
 
 export default {
-  name: 'InstalledApp',
+  name: 'InstalledAppDetailPage',
   components: {
     BaseProgressBarLinear,
     AppItemPasswordModal,
@@ -185,6 +201,9 @@ export default {
       loading: false,
       isUninstalling: false,
       isSaving: false,
+      isActivated: false,
+      isActivationEnabled: false,
+      isActivationLoading: false,
       navigationItem: {
         to: ROUTES.APPLICATIONS,
         icon: 'mdi-arrow-left-circle',
@@ -197,6 +216,9 @@ export default {
   computed: {
     isRequestPending() {
       return this.isSaving || this.loading || this.isUninstalling
+    },
+    onOrOff() {
+      return this.isActivated ? 'ON' : 'OFF'
     },
   },
   methods: {
@@ -264,6 +286,9 @@ export default {
       })
     },
     initSettings() {
+      this.isActivated = this.appActive.enabled
+      this.isActivationEnabled = Boolean(this.appActive.applicationSettings)
+
       this.settingsConfig = Object.values(this.appActive.applicationSettings)
 
       this.settingsSnapshots = this.settingsConfig.map((form) => ({
@@ -324,6 +349,38 @@ export default {
     hasLogo(app) {
       return app?.logo ? app.logo : ''
     },
+    async onActivationChange(newState) {
+      this.isActivationLoading = true
+
+      let result
+      try {
+        result = await callApi({
+          requestData: API.appStore.activateApp,
+          params: {
+            key: this.$route.params.id,
+            data: {
+              enabled: newState,
+            },
+          },
+        })
+      } catch (err) {
+        // TODO add flash message with error
+        // Force rerendering of v-switch component, because it seems like can't be kept
+        // in sync with this component internal state (this.isActivated)
+        this.isActivationEnabled = false
+        this.$nextTick(() => {
+          this.isActivated = !newState
+          this.isActivationEnabled = true
+        })
+      }
+      if (result) {
+        // TODO add flash message with success message
+        this.isActivated = newState
+      } else {
+        // TODO handle wrong response
+      }
+      this.isActivationLoading = false
+    },
   },
   watch: {
     appActive: {
@@ -368,5 +425,9 @@ export default {
 
 .w-400 {
   max-width: 400px;
+}
+
+.activation-label {
+  width: 4ch;
 }
 </style>

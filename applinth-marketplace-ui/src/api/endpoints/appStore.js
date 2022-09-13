@@ -65,4 +65,12 @@ export default {
       data,
     }),
   },
+  activateApp: {
+    id: 'ACTIVATE_APP',
+    request: ({ key, data }) => ({
+      url: `/application/${key}/changeState`,
+      method: 'PUT',
+      data,
+    }),
+  },
 }
