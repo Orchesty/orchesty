@@ -138,6 +138,22 @@ final class ApplicationController extends AbstractController
     }
 
     /**
+     * @Route("/{key}/changeState", methods={"PUT"})
+     *
+     * @param Request $request
+     * @param string  $key
+     *
+     * @return Response
+     */
+    public function changeStateApplication(Request $request, string $key): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::changeStateApplicationAction',
+            ['request' => $request, 'key' => $key, 'user' => $this->authenticator->getAuthUser()],
+        );
+    }
+
+    /**
      * @Route("/{key}", methods={"DELETE"})
      *
      * @param string $key
