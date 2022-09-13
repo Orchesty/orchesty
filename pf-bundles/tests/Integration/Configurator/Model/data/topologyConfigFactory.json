@@ -30,7 +30,7 @@
                     "port": 80,
                     "application": "",
                     "prefetch": 10,
-                    "timeout": "someSdkHost",
+                    "timeout": 60,
                     "headers": {
                         "key": "value"
                     }
