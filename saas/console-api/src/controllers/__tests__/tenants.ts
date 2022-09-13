@@ -2,6 +2,7 @@ import assert from 'assert';
 import * as admin from 'firebase-admin';
 import supertest from 'supertest';
 import {
+    createDbTenants,
     generateDeleteUsersResultMockedData,
     generateListTenantsResultMockedData,
     generateTenantMockedData,
@@ -14,7 +15,8 @@ import { server } from '../../index';
 const tenantManager = admin.auth().tenantManager();
 const adminAuth = admin.auth().tenantManager().authForTenant('t123');
 describe('tenantsController', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
+        await createDbTenants();
         jest.spyOn(tenantManager, 'listTenants')
             .mockResolvedValue(generateListTenantsResultMockedData(''));
         jest.spyOn(tenantManager, 'getTenant')
@@ -74,6 +76,7 @@ describe('tenantsController', () => {
                 displayName: 'neco',
             });
             assert.deepEqual(resp.statusCode, 200);
+            resp.body.tenant.instanceId = 't123456789';
             assert.deepEqual(resp.body, {
                 tenant: generateTenantsExport(),
             });
@@ -92,6 +95,7 @@ describe('tenantsController', () => {
                 userDisplayName: 'neco',
             });
             assert.deepEqual(resp.statusCode, 200);
+            resp.body.tenant.instanceId = 't123456789';
             assert.deepEqual(resp.body, {
                 tenant: generateTenantsExport(),
             });
@@ -114,6 +118,9 @@ describe('tenantsController', () => {
     });
 
     describe('delete', () => {
+        beforeEach(async () => {
+            await createDbTenants('t123');
+        });
         it('shouldReturnData', async () => {
             const resp = await supertest(server).delete('/tenants/t123').set(authorization);
             assert.deepEqual(resp.statusCode, 200);

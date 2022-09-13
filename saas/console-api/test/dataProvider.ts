@@ -9,10 +9,11 @@ import {
 import { sign } from 'jsonwebtoken';
 import { DateTime } from 'luxon';
 import { Document } from 'mongodb';
-import { db } from '../src';
+import { db, dbCloud } from '../src';
 import { CollectionEnum } from '../src/enums/CollectionEnum';
 import { getAllResources } from '../src/enums/ResourceEnum';
 import GetUsersResult = auth.GetUsersResult;
+import { IDbTenant } from '../src/tenants/TenantService';
 
 function generateUsageStatsRow(
     start: DateTime,
@@ -53,6 +54,13 @@ export function generateTenantMockedData(name = 'neco'): Tenant {
         },
         anonymousSignInEnabled: false,
     } as Tenant;
+}
+
+export function generateDbTenantMockedData(tenantId = ''): IDbTenant {
+    return {
+        instanceId: 't123456789',
+        tenantId: tenantId || 't1234',
+    };
 }
 
 export function generateListTenantsResultMockedData(name = 'neco'): ListTenantsResult {
@@ -119,6 +127,7 @@ export function generateUsersExport(name = 'neco'): unknown {
 
 export function generateTenantsExport(name = 'neco'): unknown {
     let tenant = {
+        instanceId: 't123456789',
         tenantId: 't1234',
         emailSignInConfig: {
             enabled: true,
@@ -134,6 +143,11 @@ export function generateTenantsExport(name = 'neco'): unknown {
     }
 
     return tenant;
+}
+
+export async function createDbTenants(tenantId = ''): Promise<void> {
+    await dbCloud.getCollection(CollectionEnum.TENANT).drop();
+    await dbCloud.getCollection(CollectionEnum.TENANT).insertOne(generateDbTenantMockedData(tenantId));
 }
 
 export async function createUsageStats(): Promise<void> {

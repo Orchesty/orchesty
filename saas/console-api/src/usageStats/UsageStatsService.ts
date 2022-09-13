@@ -2,7 +2,7 @@ import { DateTime } from 'luxon';
 import { IAppsAggregationParams } from '../controllers/usageStats';
 import { CollectionEnum, switchGranularity } from '../enums/CollectionEnum';
 import DateParseError from '../errors/DateParseError';
-import Mongo from '../storage/mongo/Mongo';
+import BillingMongo from '../storage/mongo/Mongo';
 
 interface IMongoQuery {
     tenantId?: string;
@@ -16,7 +16,7 @@ interface IMongoQuery {
 
 export default class UsageStatsService {
 
-    public constructor(private readonly db: Mongo) {
+    public constructor(private readonly db: BillingMongo) {
     }
 
     public async getDataForAppsAggregation(

@@ -12,6 +12,7 @@ export interface ITenantCreateRequest {
 }
 
 export interface ITenantSearchQuery {
+    instanceId?: string;
     tenantId?: string;
 }
 

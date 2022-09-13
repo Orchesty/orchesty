@@ -5,6 +5,7 @@ export enum CollectionEnum {
     USAGE_STATS_MONTHLY = 'usage_stats_monthly',
     USAGE_STATS_DAILY = 'usage_stats_daily',
     USAGE_STATS_HOURLY = 'usage_stats_hourly',
+    TENANT = 'tenant',
 }
 
 export function switchGranularity(_shortName?: string): CollectionEnum {
