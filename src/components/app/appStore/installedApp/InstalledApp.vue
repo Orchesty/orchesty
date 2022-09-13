@@ -37,6 +37,7 @@
 
     <v-tabs-items v-model="tab" class="mt-4">
       <v-tab-item v-if="appActive.info">
+        <!-- eslint-disable-next-line vue/no-v-html -->
         <div class="mt-2" v-html="appActive.info" />
       </v-tab-item>
       <v-tab-item v-for="(form, index) in settingsConfig" :key="form.key" class="w-400">
