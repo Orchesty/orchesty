@@ -81,20 +81,26 @@ demo:deploy:
     HELM_ARGS: -f helm/values.demo.yaml
 
   rules:
-    - if: $DEPLOY_DEMO_VERSION != ""
-      when: manual
+    - if: $DEPLOY_DEMO1_VERSION != ""
+      when: always
     - when: never
  
   before_script:
-    - sed -E "s/VERSION_TAG/${DEPLOY_DEMO_VERSION}/g" -i clients/demo/helm/values.demo.yaml
+    - sed -E "s/VERSION_TAG/${DEPLOY_DEMO1_VERSION}/g" -i clients/demo/helm/values.demo.yaml
 
 demo2:deploy:
-  extends: .base-deploy-current
+  extends: .base-deploy
   environment: demo2
   when: manual
   variables:
     PROJECT_DIR: clients/demo
     HELM_ARGS: -f helm/values.demo2.yaml
 
+  rules:
+    - if: $DEPLOY_DEMO2_VERSION != ""
+      when: always
+    - when: never
+
   before_script:
     - echo "${DEMO2_VALUES}" > clients/demo/helm/values.demo2.yaml
+    - sed -E "s/VERSION_TAG/${DEPLOY_DEMO2_VERSION}/g" -i clients/demo/helm/values.demo2.yaml

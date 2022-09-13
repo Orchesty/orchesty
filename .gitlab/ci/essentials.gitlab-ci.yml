@@ -16,8 +16,12 @@ variables:
     description: Force running pipeline for a subset of components or ALL of them
     value: ""
 
-  DEPLOY_DEMO_VERSION:
-    description: Enter version [x.y.z] to deploy it to the demo environment.
+  DEPLOY_DEMO1_VERSION:
+    description: Enter version [x.y.z] to deploy it to the demo1 environment.
+    value: ""
+
+  DEPLOY_DEMO2_VERSION:
+    description: Enter version [x.y.z] to deploy it to the demo2 environment.
     value: ""
 
   _BANNED_RUN_ALL_SHA: "0000000000000000000000000000000000000000"
