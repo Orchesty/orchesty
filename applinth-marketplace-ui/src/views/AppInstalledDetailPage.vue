@@ -23,11 +23,9 @@
         <v-col cols="5" class="d-flex justify-space-between flex-column">
           <h1 class="headline font-weight-bold">{{ appActive.name }}</h1>
           <p class="mt-4">{{ appActive.description }}</p>
-          <div
-            v-if="appActive.isInstallable"
-            class="d-flex justify-space-between align-center"
-          >
+          <div class="d-flex justify-space-between align-center">
             <base-button
+              v-if="appActive.isInstallable"
               color="error"
               class="mr-3"
               :button-title="$t('button.uninstall')"
@@ -35,6 +33,9 @@
               :disabled="isRequestPending"
               :loading="isUninstalling"
             />
+            <div v-else>
+              <!-- placeholder -->
+            </div>
             <v-switch
               v-if="isActivationEnabled"
               :input-value="isActivated"
