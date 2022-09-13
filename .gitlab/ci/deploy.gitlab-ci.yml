@@ -89,7 +89,7 @@ demo:deploy:
     - sed -E "s/VERSION_TAG/${DEPLOY_DEMO1_VERSION}/g" -i clients/demo/helm/values.demo.yaml
 
 demo2:deploy:
-  extends: .base-deploy
+  extends: .base-deploy-current
   environment: demo2
   variables:
     PROJECT_DIR: clients/demo
