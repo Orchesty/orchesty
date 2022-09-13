@@ -33,11 +33,13 @@
                 }"
                 color="primary"
                 custom-class="mb-2"
+                :disabled="isUninstalling"
               />
               <base-button
                 color="error"
                 :button-title="$t('button.uninstall')"
                 :on-click="() => uninstall(app.key)"
+                :loading="isUninstalling"
               />
             </v-col>
           </v-row>
@@ -66,6 +68,7 @@ export default {
       apps: null,
       ROUTES,
       isLoading: false,
+      isUninstalling: false,
     }
   },
   methods: {
@@ -86,10 +89,12 @@ export default {
     },
 
     async uninstall(key) {
+      this.isUninstalling = true
       await callApi({
         requestData: API.appStore.uninstallApp,
         params: { key },
       })
+      this.isUninstalling = false
       await this.fetchApplications()
     },
     async fetchApplications() {
