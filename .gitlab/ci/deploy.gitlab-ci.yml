@@ -25,7 +25,6 @@
   needs: ["collect-tags"]
   stage: deploy
   environment: stage
-  when: manual
 
   image:
     name: alpine/helm
@@ -72,6 +71,9 @@ stage:deploy:
     PROJECT_DIR: clients/demo
     HELM_ARGS: -f helm/values.stage.yaml
 
+  rules:
+    - when: manual
+
 
 demo:deploy:
   extends: .base-deploy
@@ -88,6 +90,7 @@ demo:deploy:
   before_script:
     - sed -E "s/VERSION_TAG/${DEPLOY_DEMO1_VERSION}/g" -i clients/demo/helm/values.demo.yaml
 
+
 demo2:deploy:
   extends: .base-deploy-current
   environment: demo2
@@ -98,7 +101,7 @@ demo2:deploy:
   rules:
     - if: $DEPLOY_DEMO2_VERSION != ""
       when: always
-    - when: never
+    - when: manual
 
   before_script:
     - echo "${DEMO2_VALUES}" > clients/demo/helm/values.demo2.yaml
