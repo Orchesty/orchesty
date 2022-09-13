@@ -46,7 +46,7 @@ final class ApplicationInstallTest extends DatabaseTestCaseAbstract
 
         self::assertInstanceOf(DateTime::class, $applicationInstall->getExpires());
         self::assertEquals(['lock' => TRUE, 'unlock' => FALSE], $applicationInstall->getNonEncryptedSettings());
-        self::assertEquals(7, count($applicationInstall->toArray()));
+        self::assertEquals(8, count($applicationInstall->toArray()));
 
         $applicationInstall->setSettings(['secret' => 'settings']);
         $applicationInstall->addSettings(['token' => '123']);

@@ -100,7 +100,7 @@ final class TopologySchemaUtils
                         $innerProcess['@name'] ?? '',
                         $innerProcess['@pipes:cronTime'] ?? '',
                         $innerProcess['@pipes:cronParams'] ?? '',
-                        $innerProcess['@pipes:app_name'] ?? '',
+                        $innerProcess['@pipes:appName'] ?? '',
                     );
 
                     $schema->addNode($innerProcess['@id'], $topologyDto);

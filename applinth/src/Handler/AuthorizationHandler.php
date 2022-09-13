@@ -178,6 +178,7 @@ final class AuthorizationHandler
 
             try {
                 $app = $this->appInstallRepository->findUserApp($key, $user);
+                $app->setEnabled(TRUE);
                 $app->setNonEncryptedSettings([self::PIN => $pin, self::EU_ALIAS => $jwePayload[self::EU_ALIAS]]);
                 $this->dm->flush();
 

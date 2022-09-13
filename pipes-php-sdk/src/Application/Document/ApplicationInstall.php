@@ -45,6 +45,13 @@ class ApplicationInstall
     private string $key;
 
     /**
+     * @var bool
+     *
+     * @ODM\Field(type="bool")
+     */
+    private bool $enabled = FALSE;
+
+    /**
      * @var DateTime|null
      *
      * @ODM\Field(type="date", nullable=true)
@@ -228,6 +235,26 @@ class ApplicationInstall
     }
 
     /**
+     * @return bool
+     */
+    public function isEnabled(): bool
+    {
+        return $this->enabled;
+    }
+
+    /**
+     * @param bool $enabled
+     *
+     * @return ApplicationInstall
+     */
+    public function setEnabled(bool $enabled): ApplicationInstall
+    {
+        $this->enabled = $enabled;
+
+        return $this;
+    }
+
+    /**
      * @return mixed[]
      */
     public function toArray(): array
@@ -242,6 +269,7 @@ class ApplicationInstall
             'created'                => $this->getCreated()->format(DateTimeUtils::DATE_TIME),
             'updated'                => $this->getUpdated()->format(DateTimeUtils::DATE_TIME),
             'expires'                => $expires ? $expires->format(DateTimeUtils::DATE_TIME) : NULL,
+            'enabled'                => $this->isEnabled(),
         ];
     }
 
