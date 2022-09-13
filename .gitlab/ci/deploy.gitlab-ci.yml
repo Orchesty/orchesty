@@ -91,7 +91,6 @@ demo:deploy:
 demo2:deploy:
   extends: .base-deploy
   environment: demo2
-  when: manual
   variables:
     PROJECT_DIR: clients/demo
     HELM_ARGS: -f helm/values.demo2.yaml
