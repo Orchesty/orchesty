@@ -146,7 +146,12 @@ func (p *publisher) Publish(pm amqp.Publishing) error {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 
-	if p.updateTimestamp {
+	if pm.Headers == nil {
+		pm.Headers = make(map[string]interface{})
+	}
+
+	_, timed := pm.Headers[enum.Header_PublishedTimestamp]
+	if p.updateTimestamp || !timed { // TODO sometimes to limiter/counter this was missing - find out why
 		pm.Headers[enum.Header_PublishedTimestamp] = timex.UnixMs()
 	}
 	if err := p.channel.Publish(p.exchange, p.routingKey, false, false, pm); err != nil {
