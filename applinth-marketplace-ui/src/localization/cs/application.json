@@ -1,8 +1,10 @@
 {
   "application": {
-      "details": "Detaily",
-      "webhooks": "Webhooky",
-      "settings": "Nastavení",
+    "details": "Detaily",
+    "webhooks": "Webhooky",
+    "settings": "Nastavení",
+    "activated": "Aktivováno",
+    "notactivated": "Neaktivováno",
     "form": {
       "clientID": "ID Klienta",
       "clientID_name": "id klienta",

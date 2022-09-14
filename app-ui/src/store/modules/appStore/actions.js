@@ -142,7 +142,11 @@ export default {
         requestData: { ...API.appStore.activateApp },
         params: payload,
       })
-      addSuccessMessage(dispatch, API.appStore.activateApp.id, 'flashMessages.appStore.activated')
+      addSuccessMessage(
+        dispatch,
+        API.appStore.activateApp.id,
+        payload.data.enabled ? 'flashMessages.appStore.activated' : 'flashMessages.appStore.deactivated'
+      )
 
       return true
     } catch (e) {
