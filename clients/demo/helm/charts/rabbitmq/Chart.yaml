@@ -3,4 +3,4 @@ name: rabbitmq
 description: RabbitMQ server
 type: application
 version: 0.1.0
-appVersion: 3.8.9
+appVersion: 3.10.7
