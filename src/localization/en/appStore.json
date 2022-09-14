@@ -5,6 +5,7 @@
     "authorized": "Authorized",
     "unauthorized": "Unauthorized",
     "activated": "Activated",
+    "notactivated": "Not activated",
     "app": {
       "detail": "Detail",
       "install": "Install",

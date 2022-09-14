@@ -11,6 +11,7 @@
         <p class="mt-4">{{ appActive.description }}</p>
         <div class="d-flex justify-space-between align-center">
           <app-button
+            v-if="appActive.isInstallable"
             color="error"
             class="mr-3"
             :button-title="$t('appStore.detail.uninstall')"
@@ -50,7 +51,7 @@
     <v-tabs-items v-model="tab" class="mt-4">
       <v-tab-item v-if="appActive.info">
         <!-- eslint-disable-next-line vue/no-v-html -->
-        <div class="mt-2" v-html="appActive.info" />
+        <div class="info-wrapper mt-2" v-html="appActive.info" />
       </v-tab-item>
       <v-tab-item v-for="(form, index) in settingsConfig" :key="form.key" class="w-400">
         <v-row v-if="form.description.length > 0" dense class="mt-2">
@@ -201,7 +202,7 @@ export default {
       return Object.entries(this.webhooksSettings).length > 0
     },
     onOrOff() {
-      return this.isActivated ? 'ON' : 'OFF'
+      return this.isActivated ? this.$t('appStore.activated') : this.$t('appStore.notactivated')
     },
   },
   methods: {
@@ -427,6 +428,10 @@ export default {
 }
 
 .activation-label {
-  width: 4ch;
+  width: 12ch;
+}
+
+.info-wrapper {
+  max-width: 80ch;
 }
 </style>

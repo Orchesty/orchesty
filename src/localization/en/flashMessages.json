@@ -42,7 +42,9 @@
       "appInstalled": "App installed",
       "appUninstalled": "App uninstalled",
       "appSaved": "App saved",
-      "subscribed": "Webhook subscribed"
+      "subscribed": "Webhook subscribed",
+      "activated": "App has been activated",
+      "deactivated": "App has been deactivated"
     }
   }
 }

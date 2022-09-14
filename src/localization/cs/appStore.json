@@ -5,6 +5,7 @@
     "authorized": "Autorizované",
     "unauthorized": "Neautorizované",
     "activated": "Aktivováno",
+    "notactivated": "Neaktivováno",
     "app": {
       "detail": "Detail",
       "install": "Instalovat",
