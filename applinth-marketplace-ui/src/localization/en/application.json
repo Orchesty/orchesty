@@ -1,8 +1,10 @@
 {
   "application": {
-      "details": "Details",
-      "webhooks": "Webhooks",
-      "settings": "Settings",
+    "details": "Details",
+    "webhooks": "Webhooks",
+    "settings": "Settings",
+    "activated": "Activated",
+    "notactivated": "Not activated",
     "form": {
       "clientID": "Client ID",
       "clientID_name": "client id",

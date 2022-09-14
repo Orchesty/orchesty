@@ -33,9 +33,6 @@
               :disabled="isRequestPending"
               :loading="isUninstalling"
             />
-            <div v-else>
-              <!-- placeholder -->
-            </div>
             <v-switch
               v-if="isActivationEnabled"
               :input-value="isActivated"
@@ -75,7 +72,7 @@
       <v-tabs-items v-model="tab" class="mt-4">
         <v-tab-item v-if="appActive.info">
           <!-- eslint-disable-next-line vue/no-v-html -->
-          <div class="mt-2" v-html="appActive.info" />
+          <div class="info-wrapper mt-2" v-html="appActive.info" />
         </v-tab-item>
         <v-tab-item
           v-for="(form, index) in settingsConfig"
@@ -219,7 +216,9 @@ export default {
       return this.isSaving || this.loading || this.isUninstalling
     },
     onOrOff() {
-      return this.isActivated ? 'ON' : 'OFF'
+      return this.isActivated
+        ? this.$t('application.activated')
+        : this.$t('application.notactivated')
     },
   },
   methods: {
@@ -429,6 +428,10 @@ export default {
 }
 
 .activation-label {
-  width: 4ch;
+  width: 12ch;
+}
+
+.info-wrapper {
+  max-width: 80ch;
 }
 </style>
