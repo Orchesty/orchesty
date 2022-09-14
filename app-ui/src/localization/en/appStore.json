@@ -2,8 +2,9 @@
   "appStore": {
     "installed": "Installed",
     "available": "Available",
-    "authorized":  "Authorized",
-    "unauthorized":  "Unauthorized",
+    "authorized": "Authorized",
+    "unauthorized": "Unauthorized",
+    "activated": "Activated",
     "app": {
       "detail": "Detail",
       "install": "Install",
