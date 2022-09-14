@@ -56,3 +56,7 @@ services:
 
     Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\StatusController:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\StatusController
+
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UsageStatsController:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UsageStatsController
+

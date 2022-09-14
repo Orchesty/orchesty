@@ -46,3 +46,7 @@ hb_pf_user:
 hb_pf_user_task:
     resource: "@HbPFUserTaskBundle"
     type: annotation
+
+hb_pf_usage_stats:
+    resource: "@HbPFUsageStatsBundle"
+    type: annotation

@@ -23,7 +23,14 @@ security:
         unsecured_status_api:
             pattern: ^/api/status
             security: false
-        unsecured_applications:
+
+        secured_usage_stats_events:
+            pattern: ^/api/usage-stats/.*
+            stateless: true
+            provider: api_provider
+            custom_authenticator:
+                - Hanaboso\PipesFramework\ApiGateway\Authenticator\ApiKey\ApiKeyAuthenticator
+        secured_applications:
             pattern: ^/api/applications/.*/(sync|users)/.*
             stateless: true
             provider: api_provider

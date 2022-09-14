@@ -237,11 +237,24 @@ final class ServiceLocator implements LoggerAwareInterface
      */
     public function changeState(string $key, string $user, array $data): array
     {
-        return $this->doRequest(
+        $resp = $this->doRequest(
             sprintf('applications/%s/users/%s/changeState', $key, $user),
             CurlManager::METHOD_PUT,
             $data,
         );
+
+        $action = ($data['enabled'] ?? false) === FALSE? 'afterDisableCallback' : 'afterEnableCallback';
+
+        $this->doRequest(
+            sprintf('applications/%s/sync/%s', $key, $action),
+            CurlManager::METHOD_POST,
+            ['user' => $user, 'name' => $key],
+            FALSE,
+            [],
+            TRUE,
+        );
+
+        return $resp;
     }
 
     /**

@@ -9,3 +9,8 @@ services:
             - '%alpha_instance_id%'
         tags:
             - { name: kernel.event_subscriber }
+
+    hbpf.usage_stats.handler.usage_stats:
+        class: Hanaboso\PipesFramework\HbPFUsageStatsBundle\Handler\UsageStatsHandler
+        arguments:
+            - '@event_dispatcher'
