@@ -86,7 +86,7 @@ func (pm ProcessMessage) GetTimeHeaderOrDefault(header enum.HeaderType) time.Tim
 
 func (pm ParsedMessage) ProcessInitQuery() mongo.WriteModel {
 	var user *string
-	if tmp := pm.ProcessMessage.GetHeaderOrDefault(enum.Header_TopologyId, ""); tmp != "" {
+	if tmp := pm.ProcessMessage.GetHeaderOrDefault(enum.Header_User, ""); tmp != "" {
 		user = &tmp
 	}
 
