@@ -136,4 +136,17 @@ export default {
       return false
     }
   },
+  [APP_STORE.ACTIONS.ACTIVATE]: async ({ dispatch }, payload) => {
+    try {
+      await callApi(dispatch, {
+        requestData: { ...API.appStore.activateApp },
+        params: payload,
+      })
+      addSuccessMessage(dispatch, API.appStore.activateApp.id, 'flashMessages.appStore.activated')
+
+      return true
+    } catch (e) {
+      return false
+    }
+  },
 }

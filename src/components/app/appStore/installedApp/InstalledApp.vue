@@ -212,6 +212,7 @@ export default {
       APP_STORE.ACTIONS.SUBSCRIBE_WEBHOOK,
       APP_STORE.ACTIONS.UNINSTALL_APP_REQUEST,
       APP_STORE.ACTIONS.AUTHORIZE,
+      APP_STORE.ACTIONS.ACTIVATE,
     ]),
 
     async uninstall(key) {
@@ -357,20 +358,15 @@ export default {
     },
     async onActivationChange(newState) {
       this.isActivationLoading = true
-
-      let result
-      try {
-        result = await callApi({
-          requestData: API.appStore.activateApp,
-          params: {
-            key: this.$route.params.id,
-            data: {
-              enabled: newState,
-            },
-          },
-        })
-      } catch (err) {
-        // TODO add flash message with error
+      const isActivated = await this[APP_STORE.ACTIONS.ACTIVATE]({
+        key: this.$route.params.id,
+        data: {
+          enabled: newState,
+        },
+      })
+      if (isActivated) {
+        this.isActivated = newState
+      } else {
         // Force rerendering of v-switch component, because it seems like can't be kept
         // in sync with this component internal state (this.isActivated)
         this.isActivationEnabled = false
@@ -378,12 +374,6 @@ export default {
           this.isActivated = !newState
           this.isActivationEnabled = true
         })
-      }
-      if (result) {
-        // TODO add flash message with success message
-        this.isActivated = newState
-      } else {
-        // TODO handle wrong response
       }
       this.isActivationLoading = false
     },

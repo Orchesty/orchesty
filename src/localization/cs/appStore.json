@@ -2,8 +2,9 @@
   "appStore": {
     "installed": "Nainstalované",
     "available": "Dostupné",
-    "authorized":  "Autorizované",
-    "unauthorized":  "Neautorizované",
+    "authorized": "Autorizované",
+    "unauthorized": "Neautorizované",
+    "activated": "Aktivováno",
     "app": {
       "detail": "Detail",
       "install": "Instalovat",
