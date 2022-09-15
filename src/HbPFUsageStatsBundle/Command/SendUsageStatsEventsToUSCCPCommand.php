@@ -149,12 +149,14 @@ final class SendUsageStatsEventsToUSCCPCommand extends Command
      */
     private function sendRequest(UsageStatsEvent $billingEvent, int $startTime, OutputInterface $output): bool
     {
-        $dto = new RequestDto(new Uri($this->usccpUri), CurlManager::METHOD_PUT, new ProcessDto());
+        $dto = new RequestDto(new Uri($this->usccpUri), CurlManager::METHOD_PUT, new ProcessDto(), '', [
+            'Content-Type' => 'application/json',
+        ]);
         $dto->setBody(Json::encode($billingEvent->toArray()));
         try {
-            $this->curlManager->send($dto);
+            $response = $this->curlManager->send($dto);
 
-            return TRUE;
+            return $response->getStatusCode() < 300;
         } catch (CurlException) {
             if (time() + self::BATCH_SEND_AGAIN_TIME - $startTime < self::BATCH_TIME_LIMIT) {
                 sleep(self::BATCH_SEND_AGAIN_TIME);
