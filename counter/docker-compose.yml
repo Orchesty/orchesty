@@ -29,7 +29,7 @@ services:
             - rabbitmq:/var/lib/rabbitmq
 
     mongodb:
-        image: mongo
+        image: mongo:5
         ports:
             - ${DEV_IP}:27017:27017
         volumes:
