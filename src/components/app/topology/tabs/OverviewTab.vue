@@ -163,7 +163,7 @@ export default {
     },
 
     isInProgress(value) {
-      return value.toLowerCase() === 'in progress' || value.toLowerCase() === 'failed'
+      return value.toLowerCase() === 'in progress'
     },
 
     prettifyMilliseconds(milliseconds) {
