@@ -243,7 +243,7 @@ final class ServiceLocator implements LoggerAwareInterface
             $data,
         );
 
-        $action = ($data['enabled'] ?? false) === FALSE? 'afterDisableCallback' : 'afterEnableCallback';
+        $action = ($data['enabled'] ?? FALSE) === FALSE? 'afterDisableCallback' : 'afterEnableCallback';
 
         $this->doRequest(
             sprintf('applications/%s/sync/%s', $key, $action),
