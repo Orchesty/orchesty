@@ -179,7 +179,7 @@ func (pm ParsedMessage) FinishProcessQuery() mongo.WriteModel {
 				"finished": bson.M{
 					"$cond": bson.A{
 						bson.M{
-							"$eq": bson.A{
+							"$gte": bson.A{
 								bson.M{
 									"$sum": bson.A{"$ok", "$nok"},
 								},
