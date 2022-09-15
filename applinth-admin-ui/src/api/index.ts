@@ -1,4 +1,4 @@
-import { overview } from "./private/overview";
+import { overview, timeBucketUsers } from "./private/overview";
 import { customers } from "./private/customers";
 import { dashboard } from "./private/dashboard";
 import { users } from "./private/users";
@@ -8,4 +8,5 @@ export const api = {
   users,
   customers,
   dashboard,
+  timeBucketUsers,
 };
