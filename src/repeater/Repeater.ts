@@ -181,6 +181,9 @@ class Repeater implements IStoppable {
                 return Promise.resolve();
             },
             {
+                arguments: {
+                    'x-queue-type': 'quorum',
+                },
                 durable: persistentQueues,
             },
         );
