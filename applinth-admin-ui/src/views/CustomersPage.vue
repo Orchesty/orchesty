@@ -15,9 +15,13 @@
           :label="$t('formLabels.filterByApplication')"
           :items="applications"
           :name="$t('formLabels.filterByApplication')"
+          item-text="appName"
+          item-value="appName"
         />
-        <Button class="ma-auto" icon min-width="0" @click="resetFilters">
-          <v-icon>close</v-icon>
+        <Button class="ma-auto" icon :on-click="resetFilters">
+          <template #icon>
+            <v-icon>close</v-icon>
+          </template>
         </Button>
       </div>
       <SimpleTable class="table-medium" :headers="headers" :items="customers" />
@@ -26,7 +30,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Vue, Watch } from "vue-property-decorator";
 import SimpleTable from "@/components/commons/tables/SimpleTable.vue";
 import AppLayout from "../components/commons/layouts/AppLayout.vue";
 import Button from "../components/commons/inputsAndControls/Button.vue";
@@ -35,6 +39,8 @@ import TextField from "@/components/commons/inputsAndControls/TextField.vue";
 import { callApi } from "@/utils/apiClient";
 import { api } from "@/api";
 import {
+  UsageStatsAppsRequest,
+  UsageStatsAppsRowsInner,
   UsageStatsUsersRequest,
   UsageStatsUsersRowsInner,
 } from "@/api/generated";
@@ -68,10 +74,11 @@ export default class CustomersPage extends Vue {
   }
 
   isLoading = false;
-  textSearch = null;
-  appSearch = null;
+  textSearch: string | null = null;
+  appSearch: string | null = null;
 
   customers = [] as UsageStatsUsersRowsInner[];
+  applications = [] as UsageStatsAppsRowsInner[];
 
   headers: Array<UsersTable> = [
     {
@@ -96,12 +103,35 @@ export default class CustomersPage extends Vue {
 
   async created() {
     this.isLoading = true;
-    this.customers = await callApi<UsageStatsUsersRequest>(api.customers.list, {
+
+    [this.customers, this.applications] = await Promise.all([
+      this.fetchCustomers(),
+      callApi<UsageStatsAppsRequest>(api.overview.apps, {
+        timeRangeStart: new Date(0).toISOString(),
+        timeRangeEnd: new Date().toISOString(),
+        tenantId: this.currentUser.tenantId ?? undefined,
+      }),
+    ]);
+
+    this.isLoading = false;
+  }
+
+  private fetchCustomers(
+    appName?: string
+  ): Promise<UsageStatsUsersRowsInner[]> {
+    return callApi<UsageStatsUsersRequest>(api.customers.list, {
       timeRangeStart: new Date(0).toISOString(),
       timeRangeEnd: new Date().toISOString(),
       tenantId: this.currentUser.tenantId ?? undefined,
+      appName,
     });
-    this.isLoading = false;
+  }
+
+  @Watch("appSearch")
+  private async searchByApp(val: string): Promise<void> {
+    if (!val) return;
+
+    this.customers = await this.fetchCustomers(val);
   }
 }
 </script>
