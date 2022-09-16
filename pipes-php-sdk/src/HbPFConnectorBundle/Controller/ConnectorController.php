@@ -4,9 +4,9 @@ namespace Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Controller;
 
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Handler\ConnectorHandler;
+use Hanaboso\PipesPhpSdk\Utils\ProcessDtoControllerTrait;
 use Hanaboso\Utils\Exception\PipesFrameworkExceptionAbstract;
 use Hanaboso\Utils\System\ControllerUtils;
-use Hanaboso\Utils\Traits\ControllerTrait;
 use Psr\Log\LoggerAwareInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,7 +21,7 @@ use Throwable;
 final class ConnectorController implements LoggerAwareInterface
 {
 
-    use ControllerTrait;
+    use ProcessDtoControllerTrait;
 
     /**
      * ConnectorController constructor.
@@ -47,7 +47,7 @@ final class ConnectorController implements LoggerAwareInterface
         try {
             $dto = $this->connectorHandler->processAction($id, $request);
 
-            return $this->getResponse($dto->getData(), 200, ControllerUtils::createHeaders($dto->getHeaders()));
+            return $this->getResponseFromDto($dto);
         } catch (PipesFrameworkExceptionAbstract | OnRepeatException $e) {
             throw $e;
         } catch (Throwable $e) {

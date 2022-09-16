@@ -14,10 +14,10 @@ parameters:
     access_token_refresh_interval: 3600
     node_services_dirs:
         - '%kernel.project_dir%/config'
-        - '%kernel.project_dir%/vendor/hanaboso/pipes-connectors/src/Resources/config/'
+        - '%kernel.project_dir%/vendor/orchesty/php-connectors/src/Resources/config/'
 
     applications:
-        - '%kernel.project_dir%/vendor/hanaboso/pipes-connectors/src/Resources/config/'
+        - '%kernel.project_dir%/vendor/orchesty/php-connectors/src/Resources/config/'
 
     kernel.root_dir: '%kernel.project_dir%/src'
 
