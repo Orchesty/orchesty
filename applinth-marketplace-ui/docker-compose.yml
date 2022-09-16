@@ -47,6 +47,34 @@ services:
                 GcXwowJ2vWSQ6pyW17FLVqmUy2ZW5VSowkPp29CvYQ==
                 -----END EC PRIVATE KEY-----
 
+    frontend:
+        image: orchesty/frontend:1.0.4
+        environment:
+            BACKEND_URL: http://${DEV_IP}
+            FRONTEND_URL: '/'
+            STARTINGPOINT_URL: http://${DEV_IP}:82
+        ports:
+            - ${DEV_IP}:81:80
+
+    node-sdk:
+        image: node-sdk:tag
+        build: ../clients/demo/node-sdk/docker
+        user: ${DEV_UID}:${DEV_GID}
+        working_dir: /var/www
+        volumes:
+            - ../clients/demo/node-sdk/:/var/www:cached
+        environment:
+            # Envs for tests are load from node-sdk/.jest/testEnvs.js
+            JEST_DOCKER: 1
+            APP_ENV: debug
+            CRYPT_SECRET: ThisIsNotSoSecret
+            BACKEND_URL: ${DEV_IP}
+            STARTING_POINT_URL: starting-point:8080
+            UDP_LOGGER_DSN: logstash:5005
+            METRICS_DSN: mongodb://mongo/pipes
+            MONGODB_DSN: mongodb://mongo/metrics
+        command: sh -c 'pnpm install && pnpm run start'
+
     mongo:
         image: mongo:latest
         ports:

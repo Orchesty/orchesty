@@ -4,7 +4,7 @@ PUBLIC_BASE_IMAGE=hanabosocom/nodejs-build
 IMAGE?=dkr.hanaboso.net/pipes/pipes/applinth-marketplace-ui
 PUBLIC_IMAGE?=hanaboso/pipes-applinth-marketplace-ui
 
-init:
+init: .env
 	docker-compose up -d --force-recreate
 
 rebuild:
