@@ -62,6 +62,7 @@ final class ProgressManager
                 'failed'         => $doc['nok'],
                 'user'           => $doc['user'] ?? '',
                 'process'        => $topo?->getDescr() ?? '',
+                'name'           => $topo?->getName() ?? '',
             ];
         }, $res);
     }

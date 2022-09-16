@@ -37,4 +37,21 @@ final class TopologyProgressController extends AbstractController
         );
     }
 
+    /**
+     * @Route("/progress", methods={"GET", "OPTIONS"})
+     *
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function getProgressesAction(Request $request): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyProgressController::getProgressesAction',
+            [
+                'request'    => $request,
+            ],
+        );
+    }
+
 }

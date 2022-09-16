@@ -29,7 +29,7 @@ final class TopologyProgressController
      *
      * @param TopologyProgressHandler $handler
      */
-    public function __construct(private TopologyProgressHandler $handler)
+    public function __construct(private readonly TopologyProgressHandler $handler)
     {
         $this->logger = new NullLogger();
     }
@@ -48,17 +48,37 @@ final class TopologyProgressController
     {
         $query = Json::decode($request->query->get('filter', '{}'));
         $dto   = new GridRequestDto($query);
-        $dto->setAdditionalFilters(
-            [
+
+            $dto->setAdditionalFilters(
                 [
                     [
-                        GridFilterAbstract::COLUMN   => 'topologyId',
-                        GridFilterAbstract::OPERATOR => GridFilterAbstract::EQ,
-                        GridFilterAbstract::VALUE    => [$topologyId],
+                        [
+                            GridFilterAbstract::COLUMN   => 'topologyId',
+                            GridFilterAbstract::OPERATOR => GridFilterAbstract::EQ,
+                            GridFilterAbstract::VALUE    => [$topologyId],
+                        ],
                     ],
                 ],
-            ],
-        );
+            );
+
+        $data = $this->handler->getProgress($dto);
+
+        return $this->getResponse($data);
+    }
+
+    /**
+     * @Route("/progress}", methods={"GET", "OPTIONS"})
+     *
+     * @param Request $request
+     *
+     * @return Response
+     * @throws MongoDBException
+     */
+    public function getProgressesAction(Request $request): Response
+    {
+        $query = Json::decode($request->query->get('filter', '{}'));
+        $dto   = new GridRequestDto($query);
+
         $data = $this->handler->getProgress($dto);
 
         return $this->getResponse($data);

@@ -24,7 +24,7 @@ final class TopologyProgressControllerTest extends ControllerTestCaseAbstract
      *
      * @throws Exception
      */
-    public function testGetAllAction(): void
+    public function testGetTopologyProgressAction(): void
     {
         $this->createProgress();
         $this->assertResponseLogged(
@@ -34,6 +34,23 @@ final class TopologyProgressControllerTest extends ControllerTestCaseAbstract
                 'correlationId' => 'corr-id-1234',
             ],
             [':topologyId' => '123456789'],
+        );
+    }
+
+    /**
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyProgressController::getProgressesAction
+     *
+     * @throws Exception
+     */
+    public function testGetAllAction(): void
+    {
+        $this->createProgress();
+        $this->assertResponseLogged(
+            $this->jwt,
+            __DIR__ . '/data/TopologyProgressController/getProgressesRequest.json',
+            [
+                'correlationId' => 'corr-id-1234',
+            ],
         );
     }
 
