@@ -10,14 +10,25 @@ npm run dev
 Local server will be running on:
 - http://localhost:8080 for frontend
 - http://localhost:4010 for fake backend
+- http://localhost:4011 for swagger ui
 
 ### Run with docker
+
 Start app and backend via Makefile
 ```
-make init
 make start-mock
 ```
 
 App will be running here:
-- http://127.0.0.42:83 FE
-- http://127.0.0.42:4010 fake BE
+- http://127.0.0.42:83 for frontend
+- http://127.0.0.42:4010 for fake backend
+
+### Run with local backend
+
+Start app and backend via Makefile
+```
+make init
+```
+App will be running here:
+- http://127.0.0.42:83 for frontend
+- http://127.0.0.42:3000 for local console API backend

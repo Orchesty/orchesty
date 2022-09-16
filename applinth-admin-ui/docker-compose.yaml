@@ -28,8 +28,7 @@ services:
     image: hanabosocom/nodejs-build:dev
     working_dir: /var/www/applinth-admin-ui
     environment:
-      VUE_APP_BACKEND_URL: ${DEV_IP}:3000
-      VUE_APP_STARTINGPONT_URL: ${DEV_IP}:82
+      VUE_APP_BACKEND_URL: http://${DEV_IP}:3000
     ports:
       - ${DEV_IP}:83:8080
       - ${DEV_IP}:4010:4010
