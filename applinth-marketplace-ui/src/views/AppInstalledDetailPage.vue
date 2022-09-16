@@ -117,6 +117,7 @@
                       v-model="settingsForms[index].fields[field.key]"
                       dense
                       outlined
+                      clearable
                       :readonly="field.readonly"
                       :disabled="field.disabled"
                       :label="field.label"
