@@ -207,8 +207,7 @@ func (s *subscriber) parseMessage(msg amqp.Delivery, wg *sync.WaitGroup) *model.
 		return nil
 	}
 
-	stampHeader := enum.Header_PublishedTimestamp
-	published, _ := msg.Headers[stampHeader].(int64)
+	published, _ := msg.Headers[enum.Header_PublishedTimestamp].(int64)
 
 	return &model.ProcessMessage{
 		Body:           []byte(fullBody.Body),
