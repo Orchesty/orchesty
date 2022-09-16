@@ -36,7 +36,7 @@
 
     - mkdir -p /kaniko/.docker
     - echo "{\"auths\":{" > /kaniko/.docker/config.json
-    - echo "\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}" >> /kaniko/.docker/config.json
+    - echo "\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}," >> /kaniko/.docker/config.json
     - echo "\"$RELEASE_REGISTRY_HOST\":{\"username\":\"$RELEASE_REGISTRY_USERNAME\",\"password\":\"$RELEASE_REGISTRY_PASSWORD\"}" >> /kaniko/.docker/config.json
     - echo "}}" >> /kaniko/.docker/config.json
 
