@@ -8,6 +8,7 @@
           hide-details
           :name="$t('formLabels.search')"
           :label="$t('formLabels.search')"
+          @input="filterDebounced"
         />
         <SelectBox
           v-model="appSearch"
@@ -68,14 +69,11 @@ export default class CustomersPage extends Vue {
   @Getter(`${authNamespace}/${AuthGetters.GetUser}`)
   currentUser!: User;
 
-  resetFilters() {
-    this.textSearch = null;
-    this.appSearch = null;
-  }
-
   isLoading = false;
-  textSearch: string | null = null;
-  appSearch: string | null = null;
+  textSearch = "";
+  lastSearchedText = "";
+  appSearch = "";
+  timerId: any = null;
 
   customers = [] as UsageStatsUsersRowsInner[];
   applications = [] as UsageStatsAppsRowsInner[];
@@ -116,22 +114,51 @@ export default class CustomersPage extends Vue {
     this.isLoading = false;
   }
 
-  private fetchCustomers(
-    appName?: string
-  ): Promise<UsageStatsUsersRowsInner[]> {
+  private filterDebounced() {
+    clearTimeout(this.timerId);
+
+    this.timerId = setTimeout(() => {
+      this.filterByName();
+    }, 700);
+  }
+
+  private async resetFilters(): Promise<void> {
+    let sendRequest = false;
+
+    if (this.appSearch || this.lastSearchedText) sendRequest = true;
+
+    this.textSearch = "";
+    this.lastSearchedText = "";
+    this.appSearch = "";
+
+    if (sendRequest) {
+      this.customers = await this.fetchCustomers();
+    }
+  }
+
+  private fetchCustomers(): Promise<UsageStatsUsersRowsInner[]> {
+    // todo filter by appName (LIKE) ?
     return callApi<UsageStatsUsersRequest>(api.customers.list, {
       timeRangeStart: new Date(0).toISOString(),
       timeRangeEnd: new Date().toISOString(),
       tenantId: this.currentUser.tenantId ?? undefined,
-      appName,
+      appName: this.appSearch,
+      endUserDisplayId: this.textSearch,
     });
+  }
+
+  private async filterByName(): Promise<void> {
+    if (this.textSearch !== this.lastSearchedText) {
+      this.lastSearchedText = this.textSearch;
+      this.customers = await this.fetchCustomers();
+    }
   }
 
   @Watch("appSearch")
   private async searchByApp(val: string): Promise<void> {
     if (!val) return;
 
-    this.customers = await this.fetchCustomers(val);
+    this.customers = await this.fetchCustomers();
   }
 }
 </script>
