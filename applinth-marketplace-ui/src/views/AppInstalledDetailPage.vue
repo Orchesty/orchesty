@@ -152,7 +152,6 @@
                 <base-button
                   v-if="hasOauthAuthorization"
                   :disabled="!isFormValid(form.key) || isRequestPending"
-                  :loading="isSaving"
                   :on-click="authorizeApp"
                   :button-title="$t('button.authorize')"
                 />
@@ -241,6 +240,11 @@ export default {
     },
 
     async saveForm(key) {
+      const isOk = await this.$refs[key][0].validate()
+      if (!isOk) {
+        return
+      }
+
       this.isSaving = true
 
       const form = this.getFormByKey(key)
@@ -263,6 +267,7 @@ export default {
           params: { key: this.appActive.key },
         })
       }
+      await this.$refs[key][0].reset()
       this.isSaving = false
     },
 

@@ -4,7 +4,13 @@ import router from './router'
 import store from './store'
 import vuetify from './plugins/vuetify'
 import { i18n } from '@/localization'
-import { ValidationObserver, ValidationProvider } from 'vee-validate'
+import {
+  setInteractionMode,
+  ValidationObserver,
+  ValidationProvider,
+} from 'vee-validate'
+
+setInteractionMode('eager')
 
 Vue.component('ValidationProvider', ValidationProvider)
 Vue.component('ValidationObserver', ValidationObserver)

@@ -10,6 +10,7 @@
     :hide-details="hideDetails"
     :clearable="clearable"
     :prepend-icon="prependIcon"
+    :error-messages="errorMessages"
   />
 </template>
 
@@ -21,6 +22,10 @@ export default {
       type: String,
       required: false,
       default: () => 'text',
+    },
+    errorMessages: {
+      type: Array,
+      required: true,
     },
     dense: {
       type: Boolean,

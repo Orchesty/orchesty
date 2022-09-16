@@ -5,10 +5,12 @@ import App from './App.vue'
 import router, { beforeEach } from './services/router'
 import { createStore } from './store'
 import { i18n } from './localization'
-import { ValidationProvider, ValidationObserver } from 'vee-validate'
+import { ValidationProvider, ValidationObserver, setInteractionMode } from 'vee-validate'
 import { vuetify, ability } from './config'
 import CountryFlag from '@dzangolab/vue-country-flag-icon'
 import { abilitiesPlugin } from '@casl/vue'
+
+setInteractionMode('eager')
 
 Vue.config.productionTip = false
 
