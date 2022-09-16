@@ -2,7 +2,7 @@ services:
     _defaults:
         public: '%public.services%'
 
-    hbpf.connector.batch-get_application_for_refresh:
+    hbpf.batch.batch-get_application_for_refresh:
         class: Hanaboso\HbPFConnectors\Model\Application\Impl\OAuth2\Connector\GetApplicationForRefreshBatchConnector
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'

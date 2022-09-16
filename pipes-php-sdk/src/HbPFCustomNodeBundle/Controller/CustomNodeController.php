@@ -4,9 +4,9 @@ namespace Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Controller;
 
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Handler\CustomNodeHandler;
+use Hanaboso\PipesPhpSdk\Utils\ProcessDtoControllerTrait;
 use Hanaboso\Utils\Exception\PipesFrameworkExceptionAbstract;
 use Hanaboso\Utils\System\ControllerUtils;
-use Hanaboso\Utils\Traits\ControllerTrait;
 use Psr\Log\LoggerAwareInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,7 +21,7 @@ use Throwable;
 final class CustomNodeController implements LoggerAwareInterface
 {
 
-    use ControllerTrait;
+    use ProcessDtoControllerTrait;
 
     /**
      * @var CustomNodeHandler
@@ -51,10 +51,10 @@ final class CustomNodeController implements LoggerAwareInterface
     public function sendAction(Request $request, string $id): Response
     {
         try {
-            $data = $this->handler->processAction($id, $request);
+            $dto = $this->handler->processAction($id, $request);
 
-            return $this->getResponse($data->getData(), 200, ControllerUtils::createHeaders($data->getHeaders()));
-        } catch (PipesFrameworkExceptionAbstract | OnRepeatException $e) {
+            return $this->getResponseFromDto($dto);
+        } catch (PipesFrameworkExceptionAbstract|OnRepeatException $e) {
             throw $e;
         } catch (Throwable $e) {
             return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());

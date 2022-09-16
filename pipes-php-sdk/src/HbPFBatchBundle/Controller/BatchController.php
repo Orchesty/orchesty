@@ -4,9 +4,9 @@ namespace Hanaboso\PipesPhpSdk\HbPFBatchBundle\Controller;
 
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\PipesPhpSdk\HbPFBatchBundle\Handler\BatchHandler;
+use Hanaboso\PipesPhpSdk\Utils\ProcessDtoControllerTrait;
 use Hanaboso\Utils\Exception\PipesFrameworkExceptionAbstract;
 use Hanaboso\Utils\System\ControllerUtils;
-use Hanaboso\Utils\Traits\ControllerTrait;
 use Psr\Log\LoggerAwareInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,7 +21,7 @@ use Throwable;
 final class BatchController implements LoggerAwareInterface
 {
 
-    use ControllerTrait;
+    use ProcessDtoControllerTrait;
 
     /**
      * BatchController constructor.
@@ -47,8 +47,8 @@ final class BatchController implements LoggerAwareInterface
         try {
             $dto = $this->batchHandler->processAction($id, $request);
 
-            return $this->getResponse($dto->getBridgeData(), 200, ControllerUtils::createHeaders($dto->getHeaders()));
-        } catch (PipesFrameworkExceptionAbstract | OnRepeatException $e) {
+            return $this->getResponseFromDto($dto);
+        } catch (PipesFrameworkExceptionAbstract|OnRepeatException $e) {
             throw $e;
         } catch (Throwable $e) {
             return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());

@@ -17,6 +17,9 @@ use Symfony\Component\HttpFoundation\Request;
 final class ProcessDtoFactory
 {
 
+    public const BODY    = 'body';
+    public const HEADERS = 'headers';
+
     /**
      * @param Request $request
      *
@@ -24,7 +27,9 @@ final class ProcessDtoFactory
      */
     public static function createFromRequest(Request $request): ProcessDto
     {
-        return self::createDto($request->getContent(), $request->headers->all());
+        $data = Json::decode($request->getContent());
+
+        return self::createDto($data[self::BODY], $data[self::HEADERS]);
     }
 
     /**
@@ -34,9 +39,10 @@ final class ProcessDtoFactory
      */
     public static function createBatchFromRequest(Request $request): BatchProcessDto
     {
-        return self::createBatchDto([$request->getContent()], $request->headers->all());
-    }
+        $data = Json::decode($request->getContent());
 
+        return self::createBatchDto($data[self::BODY], $data[self::HEADERS]);
+    }
 
     /**
      * @param AMQPMessage $message
@@ -70,16 +76,16 @@ final class ProcessDtoFactory
     }
 
     /**
-     * @param mixed[] $content
+     * @param string  $content
      * @param mixed[] $headers
      *
      * @return BatchProcessDto
      */
-    private static function createBatchDto(array $content, array $headers): BatchProcessDto
+    private static function createBatchDto(string $content, array $headers): BatchProcessDto
     {
         $dto = new BatchProcessDto();
         $dto
-            ->setBridgeData(Json::encode($content))
+            ->setBridgeData($content)
             ->setHeaders($headers)
             ->setSuccessProcess();
 
