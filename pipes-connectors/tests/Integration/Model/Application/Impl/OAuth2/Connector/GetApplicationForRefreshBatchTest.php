@@ -28,7 +28,7 @@ final class GetApplicationForRefreshBatchTest extends DatabaseTestCaseAbstract
     {
         $this->pfd((new ApplicationInstall())->setExpires(DateTimeUtils::getUtcDateTime())->setUser('testUser'));
         /** @var GetApplicationForRefreshBatchConnector $conn */
-        $conn = self::getContainer()->get('hbpf.connector.batch-get_application_for_refresh');
+        $conn = self::getContainer()->get('hbpf.batch.batch-get_application_for_refresh');
 
         $dto = $conn->processAction(new BatchProcessDto());
         self::assertCount(1, Json::decode($dto->getBridgeData()));

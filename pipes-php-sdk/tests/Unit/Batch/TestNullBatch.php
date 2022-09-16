@@ -28,9 +28,7 @@ final class TestNullBatch extends BatchAbstract
      */
     public function processAction(BatchProcessDto $dto): BatchProcessDto
     {
-        $dto;
-
-        return new BatchProcessDto();
+        return $dto;
     }
 
 }

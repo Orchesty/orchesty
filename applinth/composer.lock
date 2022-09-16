@@ -2108,16 +2108,16 @@
         },
         {
             "name": "hanaboso/commons-bundle",
-            "version": "2.6.4",
+            "version": "2.6.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/commons-bundle.git",
-                "reference": "b470396e1508fc2f51667f921a2c89851aa45d1a"
+                "reference": "e2bbe209d53d22ff293b9be9d3efecf52b591527"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/commons-bundle/zipball/b470396e1508fc2f51667f921a2c89851aa45d1a",
-                "reference": "b470396e1508fc2f51667f921a2c89851aa45d1a",
+                "url": "https://api.github.com/repos/hanaboso/commons-bundle/zipball/e2bbe209d53d22ff293b9be9d3efecf52b591527",
+                "reference": "e2bbe209d53d22ff293b9be9d3efecf52b591527",
                 "shasum": ""
             },
             "require": {
@@ -2160,9 +2160,9 @@
             ],
             "description": "Hanaboso - commons-bundle",
             "support": {
-                "source": "https://github.com/hanaboso/commons-bundle/tree/2.6.4"
+                "source": "https://github.com/hanaboso/commons-bundle/tree/2.6.5"
             },
-            "time": "2022-07-28T08:00:00+00:00"
+            "time": "2022-09-16T08:57:41+00:00"
         },
         {
             "name": "hanaboso/email-service-bundle",
@@ -3322,11 +3322,11 @@
         },
         {
             "name": "orchesty/backend",
-            "version": "2.14.1",
+            "version": "2.15.0",
             "dist": {
                 "type": "path",
                 "url": "../pf-bundles",
-                "reference": "a47694d33cf5f1306eeeb7ffc43b8afb3459cdce"
+                "reference": "5fc466ac437897345b65af5fe6c4aebdeb43c8f9"
             },
             "require": {
                 "doctrine/orm": "^2.13",
@@ -3391,11 +3391,11 @@
         },
         {
             "name": "orchesty/php-sdk",
-            "version": "2.2.3",
+            "version": "2.2.4",
             "dist": {
                 "type": "path",
                 "url": "../pipes-php-sdk",
-                "reference": "75314d7b0cfa4fec23f0f5c5471e88c5fff68edd"
+                "reference": "43b7d41fdcca9c05c261beb0d552428298d6f0c6"
             },
             "require": {
                 "doctrine/mongodb-odm-bundle": "^4.5",

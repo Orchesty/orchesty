@@ -4,6 +4,8 @@ namespace PipesPhpSdkTests\Integration\HbPFConnectorBundle\Handler;
 
 use Exception;
 use Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Handler\ConnectorHandler;
+use Hanaboso\PipesPhpSdk\Utils\ProcessDtoFactory;
+use Hanaboso\Utils\String\Json;
 use PipesPhpSdkTests\DatabaseTestCaseAbstract;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -39,7 +41,10 @@ final class ConnectorHandlerTest extends DatabaseTestCaseAbstract
      */
     public function testProcessAction(): void
     {
-        $dto = $this->handler->processAction('null', new Request());
+        $dto = $this->handler->processAction(
+            'null',
+            new Request(content: Json::encode([ProcessDtoFactory::BODY => '', ProcessDtoFactory::HEADERS => []])),
+        );
 
         self::assertEquals('', $dto->getData());
     }

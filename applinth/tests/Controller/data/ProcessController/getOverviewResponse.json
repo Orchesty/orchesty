@@ -13,7 +13,8 @@
                 "status": "IN PROGRESS",
                 "failed": 0,
                 "user": "endUser",
-                "process": ""
+                "process": "",
+                "name": ""
             }
         ],
         "filter": [],

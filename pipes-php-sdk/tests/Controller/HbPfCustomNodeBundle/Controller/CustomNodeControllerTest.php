@@ -41,7 +41,9 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
 
         self::assertEquals(200, $response->getStatusCode());
         self::assertEquals(
-            ['test' => 'test'],
+            ['body'    => Json::encode(['test' => 'test']),
+             'headers' => ['result-code' => 0, 'result-message' => '', 'result-detail' => '',  'test' => 'test'],
+            ],
             Json::decode((string) $response->getContent()),
         );
     }

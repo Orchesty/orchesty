@@ -4,6 +4,8 @@ namespace PipesPhpSdkTests\Unit\Batch\Model;
 
 use Exception;
 use Hanaboso\PipesPhpSdk\Batch\Model\BatchManager;
+use Hanaboso\PipesPhpSdk\Utils\ProcessDtoFactory;
+use Hanaboso\Utils\String\Json;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 use PipesPhpSdkTests\Unit\HbPFBatchBundle\Loader\NullBatch;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,7 +31,10 @@ final class BatchManagerTest extends KernelTestCaseAbstract
 
         /** @var NullBatch $batch */
         $batch = self::getContainer()->get('hbpf.batch.null');
-        $dto   = $manager->processAction($batch, new Request());
+        $dto   = $manager->processAction(
+            $batch,
+            new Request(content: Json::encode([ProcessDtoFactory::BODY => '', ProcessDtoFactory::HEADERS => []])),
+        );
         self::assertEquals('[]', $dto->getBridgeData());
     }
 

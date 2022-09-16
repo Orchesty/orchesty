@@ -1291,16 +1291,16 @@
         },
         {
             "name": "hanaboso/commons-bundle",
-            "version": "2.6.4",
+            "version": "2.6.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/commons-bundle.git",
-                "reference": "b470396e1508fc2f51667f921a2c89851aa45d1a"
+                "reference": "e2bbe209d53d22ff293b9be9d3efecf52b591527"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/commons-bundle/zipball/b470396e1508fc2f51667f921a2c89851aa45d1a",
-                "reference": "b470396e1508fc2f51667f921a2c89851aa45d1a",
+                "url": "https://api.github.com/repos/hanaboso/commons-bundle/zipball/e2bbe209d53d22ff293b9be9d3efecf52b591527",
+                "reference": "e2bbe209d53d22ff293b9be9d3efecf52b591527",
                 "shasum": ""
             },
             "require": {
@@ -1343,9 +1343,9 @@
             ],
             "description": "Hanaboso - commons-bundle",
             "support": {
-                "source": "https://github.com/hanaboso/commons-bundle/tree/2.6.4"
+                "source": "https://github.com/hanaboso/commons-bundle/tree/2.6.5"
             },
-            "time": "2022-07-28T08:00:00+00:00"
+            "time": "2022-09-16T08:57:41+00:00"
         },
         {
             "name": "hanaboso/mongo-data-grid",
@@ -2103,11 +2103,11 @@
         },
         {
             "name": "orchesty/php-sdk",
-            "version": "2.2.3",
+            "version": "2.2.4",
             "dist": {
                 "type": "path",
                 "url": "../pipes-php-sdk",
-                "reference": "75314d7b0cfa4fec23f0f5c5471e88c5fff68edd"
+                "reference": "43b7d41fdcca9c05c261beb0d552428298d6f0c6"
             },
             "require": {
                 "doctrine/mongodb-odm-bundle": "^4.5",
@@ -5580,16 +5580,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.235.7",
+            "version": "3.235.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "0f5d86c0dbed9b413cae6b77c4b5811bb857c9cb"
+                "reference": "103d38254ef7fc6659ecb08f4b18bc1299011f8a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/0f5d86c0dbed9b413cae6b77c4b5811bb857c9cb",
-                "reference": "0f5d86c0dbed9b413cae6b77c4b5811bb857c9cb",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/103d38254ef7fc6659ecb08f4b18bc1299011f8a",
+                "reference": "103d38254ef7fc6659ecb08f4b18bc1299011f8a",
                 "shasum": ""
             },
             "require": {
@@ -5668,9 +5668,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.235.7"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.235.9"
             },
-            "time": "2022-09-13T18:19:11+00:00"
+            "time": "2022-09-15T18:22:15+00:00"
         },
         {
             "name": "aws/aws-sdk-php-symfony",
@@ -7995,16 +7995,16 @@
         },
         {
             "name": "sebastian/comparator",
-            "version": "4.0.7",
+            "version": "4.0.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/comparator.git",
-                "reference": "7fa545db548c90bdebeb9da0583001a252be5578"
+                "reference": "fa0f136dd2334583309d32b62544682ee972b51a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/comparator/zipball/7fa545db548c90bdebeb9da0583001a252be5578",
-                "reference": "7fa545db548c90bdebeb9da0583001a252be5578",
+                "url": "https://api.github.com/repos/sebastianbergmann/comparator/zipball/fa0f136dd2334583309d32b62544682ee972b51a",
+                "reference": "fa0f136dd2334583309d32b62544682ee972b51a",
                 "shasum": ""
             },
             "require": {
@@ -8057,7 +8057,7 @@
             ],
             "support": {
                 "issues": "https://github.com/sebastianbergmann/comparator/issues",
-                "source": "https://github.com/sebastianbergmann/comparator/tree/4.0.7"
+                "source": "https://github.com/sebastianbergmann/comparator/tree/4.0.8"
             },
             "funding": [
                 {
@@ -8065,7 +8065,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-09-14T06:33:43+00:00"
+            "time": "2022-09-14T12:41:17+00:00"
         },
         {
             "name": "sebastian/complexity",

@@ -4,7 +4,6 @@ namespace PipesFrameworkTests\Controller\HbPFConfiguratorBundle\Controller;
 
 use Exception;
 use Hanaboso\PipesFramework\Configurator\Model\DashboardManager;
-use Hanaboso\PipesFramework\Logs\LogsInterface;
 use Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager;
 use Hanaboso\PipesFramework\Metrics\Manager\MetricsManagerLoader;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
@@ -13,7 +12,6 @@ use InfluxDB\Database;
 use InfluxDB\Point;
 use JsonException;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
-use PipesFrameworkTests\DataProvider;
 use PipesFrameworkTests\InfluxTestTrait;
 
 /**
@@ -49,10 +47,7 @@ final class DashboardControllerTest extends ControllerTestCaseAbstract
         $man->method('getManager')->willReturn($this->getManager());
         self::getContainer()->set('hbpf.metrics.manager_loader', $man);
 
-        $log = self::createMock(LogsInterface::class);
-        $log->method('getData')->willReturn(DataProvider::filter(DataProvider::dashboardLogs(2)));
-
-        $dashManager = new DashboardManager($log, $man, $this->dm);
+        $dashManager = new DashboardManager($man, $this->dm);
         self::getContainer()->set('hbpf.configurator.manager.dashboard', $dashManager);
 
         $this->setFakeData($topology, $node);

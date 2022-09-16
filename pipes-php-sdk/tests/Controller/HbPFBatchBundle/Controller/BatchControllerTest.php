@@ -13,7 +13,7 @@ use PipesPhpSdkTests\ControllerTestCaseAbstract;
  *
  * @package PipesPhpSdkTests\Controller\HbPFBatchBundle\Controller
  *
- * @covers \Hanaboso\PipesPhpSdk\HbPFBatchBundle\Controller\BatchController
+ * @covers  \Hanaboso\PipesPhpSdk\HbPFBatchBundle\Controller\BatchController
  */
 final class BatchControllerTest extends ControllerTestCaseAbstract
 {
@@ -91,7 +91,10 @@ final class BatchControllerTest extends ControllerTestCaseAbstract
 
         self::assertEquals(200, $response->getStatusCode());
         self::assertEquals(
-            [['body' => '{"test":"test"}', 'headers' => []]],
+            [
+                'body'    => '[{"headers":{},"body":"{\"test\":\"test\"}"}]',
+                'headers' => ['result-code' => 0, 'result-message' => '', 'result-detail' => ''],
+            ],
             Json::decode((string) $response->getContent()),
         );
     }

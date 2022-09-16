@@ -4,6 +4,8 @@ namespace PipesPhpSdkTests\Integration\HbPFCustomNodeBundle\Handler;
 
 use Exception;
 use Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Handler\CustomNodeHandler;
+use Hanaboso\PipesPhpSdk\Utils\ProcessDtoFactory;
+use Hanaboso\Utils\String\Json;
 use PipesPhpSdkTests\DatabaseTestCaseAbstract;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -28,7 +30,10 @@ final class CustomNodeHandlerTest extends DatabaseTestCaseAbstract
      */
     public function testProcess(): void
     {
-        $dto = $this->handler->processAction('null', new Request());
+        $dto = $this->handler->processAction(
+            'null',
+            new Request(content: Json::encode([ProcessDtoFactory::BODY => '', ProcessDtoFactory::HEADERS => []])),
+        );
 
         self::assertEquals('', $dto->getData());
     }

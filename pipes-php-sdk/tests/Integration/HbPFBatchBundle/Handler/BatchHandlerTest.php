@@ -4,6 +4,8 @@ namespace PipesPhpSdkTests\Integration\HbPFBatchBundle\Handler;
 
 use Exception;
 use Hanaboso\PipesPhpSdk\HbPFBatchBundle\Handler\BatchHandler;
+use Hanaboso\PipesPhpSdk\Utils\ProcessDtoFactory;
+use Hanaboso\Utils\String\Json;
 use PipesPhpSdkTests\DatabaseTestCaseAbstract;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -41,7 +43,10 @@ final class BatchHandlerTest extends DatabaseTestCaseAbstract
      */
     public function testProcessAction(): void
     {
-        $dto = $this->handler->processAction('null', new Request());
+        $dto = $this->handler->processAction(
+            'null',
+            new Request(content: Json::encode([ProcessDtoFactory::BODY => '', ProcessDtoFactory::HEADERS => []])),
+        );
 
         self::assertEquals('[]', $dto->getBridgeData());
     }
