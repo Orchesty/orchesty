@@ -21,7 +21,6 @@ type publisher struct {
 	notifyConfirm   chan amqp.Confirmation
 	mu              *sync.Mutex
 	lastDeliveryTag uint64
-	updateTimestamp bool
 }
 
 type publishers struct {
@@ -85,12 +84,11 @@ func newPublishers(shards []model.NodeShard) *publishers {
 			log.Fatal().Msgf("mismatch of shard addresses [want=%s, got=%s]", address, shard.RabbitMQDSN)
 		}
 		pubList[i] = &publisher{
-			queue:           queue(shard),
-			exchange:        exchange(shard),
-			routingKey:      routingKey(shard),
-			notifyConfirm:   make(chan amqp.Confirmation, 1),
-			mu:              &sync.Mutex{},
-			updateTimestamp: true,
+			queue:         queue(shard),
+			exchange:      exchange(shard),
+			routingKey:    routingKey(shard),
+			notifyConfirm: make(chan amqp.Confirmation, 1),
+			mu:            &sync.Mutex{},
 		}
 		address = shard.RabbitMQDSN
 	}
@@ -150,10 +148,7 @@ func (p *publisher) Publish(pm amqp.Publishing) error {
 		pm.Headers = make(map[string]interface{})
 	}
 
-	_, timed := pm.Headers[enum.Header_PublishedTimestamp]
-	if p.updateTimestamp || !timed { // TODO sometimes to limiter/counter this was missing - find out why
-		pm.Headers[enum.Header_PublishedTimestamp] = timex.UnixMs()
-	}
+	pm.Headers[enum.Header_PublishedTimestamp] = timex.UnixMs()
 	if err := p.channel.Publish(p.exchange, p.routingKey, false, false, pm); err != nil {
 		return err
 	}
