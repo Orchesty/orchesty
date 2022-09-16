@@ -14,12 +14,19 @@
       />
     </template>
     <template #content>
-      <base-input
-        v-model="password"
-        :label="$t('profile.changePassword.form.current-password.label')"
-        input-type="password"
-        outlined
-      />
+      <validation-provider
+        v-slot="{ errors }"
+        slim
+        :name="$t('application.form.password_name')"
+        rules="required"
+      >
+        <base-input
+          v-model="password"
+          :error-messages="errors"
+          :label="$t('application.form.password')"
+          input-type="password"
+        />
+      </validation-provider>
     </template>
     <template #actions>
       <base-button :button-title="$t('button.update')" :on-click="submit" />
