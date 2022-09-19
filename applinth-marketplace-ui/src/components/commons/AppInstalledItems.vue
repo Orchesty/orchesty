@@ -36,6 +36,7 @@
                 :disabled="isUninstalling"
               />
               <base-button
+                v-if="app.isInstallable"
                 color="error"
                 :button-title="$t('button.uninstall')"
                 :on-click="() => uninstall(app.key)"
