@@ -29,17 +29,7 @@
             :color="app.installed ? 'success' : 'primary'"
             :disabled="app.installed"
             @click="install(app.key)"
-          />
-          <app-store-item-button
-            v-else
-            :text="$t('button.installed')"
-            color="primary"
-            :to="{
-              name: app.installed
-                ? ROUTES.APPLICATION_INSTALLED
-                : ROUTES.APPLICATION_AVAILABLE,
-              params: { id: app.key },
-            }"
+            class="mt-2"
           />
           <app-store-item-button
             outlined

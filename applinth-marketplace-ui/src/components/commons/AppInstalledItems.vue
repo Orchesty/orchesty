@@ -35,12 +35,12 @@
                 custom-class="mb-2"
                 :disabled="isUninstalling"
               />
-              <base-button
+              <uninstall-app-modal
                 v-if="app.isInstallable"
                 color="error"
-                :button-title="$t('button.uninstall')"
+                :is-uninstalling="isUninstalling"
+                :app-name="app.name"
                 :on-click="() => uninstall(app.key)"
-                :loading="isUninstalling"
               />
             </v-col>
           </v-row>
@@ -60,10 +60,16 @@ import SubHeading from '@/components/commons/SubHeading'
 import { ROUTES } from '@/router/routes'
 import BaseButton from '@/components/commons/BaseButton'
 import BaseProgressBarLinear from '@/components/commons/BaseProgressBarLinear'
+import UninstallAppModal from '@/components/applications/UninstallAppModal'
 
 export default {
   name: 'AppInstalledItems',
-  components: { BaseProgressBarLinear, BaseButton, SubHeading },
+  components: {
+    BaseProgressBarLinear,
+    BaseButton,
+    SubHeading,
+    UninstallAppModal,
+  },
   data() {
     return {
       apps: null,
@@ -85,6 +91,7 @@ export default {
           ...item,
           logo: matchingApp?.logo,
           name: matchingApp?.name,
+          isInstallable: matchingApp?.isInstallable,
         }
       })
     },

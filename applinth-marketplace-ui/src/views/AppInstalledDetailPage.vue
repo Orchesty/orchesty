@@ -24,14 +24,14 @@
           <h1 class="headline font-weight-bold">{{ appActive.name }}</h1>
           <p class="mt-4">{{ appActive.description }}</p>
           <div class="d-flex justify-space-between align-center">
-            <base-button
+            <uninstall-app-modal
               v-if="appActive.isInstallable"
-              color="error"
               class="mr-3"
-              :button-title="$t('button.uninstall')"
-              :on-click="() => uninstall(appActive.key)"
+              color="error"
+              :is-uninstalling="isUninstalling"
               :disabled="isRequestPending"
-              :loading="isUninstalling"
+              :app-name="appActive.name"
+              :on-click="() => uninstall(appActive.key)"
             />
             <v-switch
               v-if="isActivationEnabled"
@@ -176,16 +176,18 @@ import { ROUTES } from '@/router/routes'
 import AppItemPasswordModal from '@/components/commons/AppInstalledPasswordModal'
 import ActionsWrapper from '@/components/commons/ActionsWrapper'
 import BaseProgressBarLinear from '@/components/commons/BaseProgressBarLinear'
+import UninstallAppModal from '@/components/applications/UninstallAppModal'
 
 export default {
   name: 'InstalledAppDetailPage',
   components: {
-    BaseProgressBarLinear,
-    AppItemPasswordModal,
     ActionsWrapper,
-    NavigationItem,
+    AppItemPasswordModal,
     BaseButton,
     BaseInput,
+    BaseProgressBarLinear,
+    NavigationItem,
+    UninstallAppModal,
   },
   data() {
     return {
