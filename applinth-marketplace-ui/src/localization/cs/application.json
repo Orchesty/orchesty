@@ -5,6 +5,8 @@
     "settings": "Nastavení",
     "activated": "Aktivováno",
     "notactivated": "Neaktivováno",
+    "appUninstall": "Odinstalování aplikace",
+    "appUninstallConfirmation": "Skutečně si přejete odinstalovat aplikaci {app}?",
     "form": {
       "clientID": "ID Klienta",
       "clientID_name": "id klienta",

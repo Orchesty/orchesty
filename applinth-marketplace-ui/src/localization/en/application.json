@@ -5,6 +5,8 @@
     "settings": "Settings",
     "activated": "Activated",
     "notactivated": "Not activated",
+    "appUninstall": "Uninstall app",
+    "appUninstallConfirmation": "Do you really want to uninstall app {app}?",
     "form": {
       "clientID": "Client ID",
       "clientID_name": "client id",

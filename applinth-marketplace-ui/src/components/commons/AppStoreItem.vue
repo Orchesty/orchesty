@@ -9,7 +9,7 @@
           <v-col
             cols="6"
             sm="7"
-            class="d-flex flex-column align-end justify-space-around"
+            class="d-flex flex-column align-end justify-start"
           >
             <slot name="buttons"></slot>
           </v-col>
