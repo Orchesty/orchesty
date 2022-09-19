@@ -51,6 +51,7 @@
                 : ROUTES.APPLICATION_AVAILABLE,
               params: { id: app.key },
             }"
+            class="mt-2"
           />
         </template>
       </app-store-item>
