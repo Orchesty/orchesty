@@ -28,8 +28,8 @@
             "
             :color="app.installed ? 'success' : 'primary'"
             :disabled="app.installed"
-            @click="install(app.key)"
             class="mt-2"
+            @click="install(app.key)"
           />
           <app-store-item-button
             outlined
