@@ -19,7 +19,7 @@
       v-model="newPasswordTwo"
       type="password"
     />
-    <Button type="submit" :on-click="submit">
+    <Button type="submit" @click="submit">
       {{ $t("button.change") }}
     </Button>
   </ValidationObserver>
