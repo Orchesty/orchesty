@@ -105,8 +105,6 @@ export default class ApplicationDetailPage extends Vue {
 
     if (data.length > 0) this.graphData = data[0];
 
-    console.log("app", selectedApplications);
-    console.log("data", data);
     this.loading = false;
 
     //todo change page title

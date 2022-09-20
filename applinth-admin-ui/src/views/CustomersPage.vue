@@ -25,7 +25,24 @@
           </template>
         </Button>
       </div>
-      <SimpleTable class="table-medium" :headers="headers" :items="customers" />
+      <SimpleTable
+        class="table-medium"
+        :headers="headers"
+        :items="customers"
+        :loading="isLoading"
+      >
+        <template #actions="{ item }">
+          <router-link
+            class="link"
+            :to="{
+              name: Routes.CustomerDetail,
+              params: { id: item.endUserId },
+            }"
+          >
+            <span>Detail</span>
+          </router-link>
+        </template>
+      </SimpleTable>
     </div>
   </AppLayout>
 </template>
@@ -49,10 +66,11 @@ import { Getter } from "vuex-class";
 import { authNamespace, AuthGetters } from "@/store/modules/auth";
 import { User } from "firebase/auth";
 import Heading from "@/components/commons/typography/Heading.vue";
+import { Routes } from "@/enums/Routes";
 
 interface UsersTable {
   [key: string]: any;
-  value: keyof UsageStatsUsersRowsInner;
+  value: keyof UsageStatsUsersRowsInner | "actions";
 }
 
 @Component({
@@ -68,6 +86,7 @@ interface UsersTable {
 export default class CustomersPage extends Vue {
   @Getter(`${authNamespace}/${AuthGetters.GetUser}`)
   currentUser!: User;
+  Routes = Routes;
 
   isLoading = false;
   textSearch = "";
@@ -96,6 +115,10 @@ export default class CustomersPage extends Vue {
       sortable: true,
       align: "start",
       value: "totalCost",
+    },
+    {
+      text: "",
+      value: "actions",
     },
   ];
 
