@@ -10,7 +10,9 @@
       "detail": "Detail",
       "install": "Install",
       "uninstall": "Uninstall",
-      "installed": "Installed"
+      "installed": "Installed",
+      "appUninstall": "Uninstall Application",
+      "appUninstallConfirmation": "Uninstall application {app}"
     },
     "detail": {
       "appStore": "Applications",

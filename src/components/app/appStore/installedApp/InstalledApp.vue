@@ -10,11 +10,9 @@
         <h1 class="headline font-weight-bold">{{ appActive.name }}</h1>
         <p class="mt-4">{{ appActive.description }}</p>
         <div class="d-flex justify-space-between align-center">
-          <app-button
-            v-if="appActive.isInstallable"
-            color="error"
-            class="mr-3"
-            :button-title="$t('appStore.detail.uninstall')"
+          <uninstall-app-modal
+            :app-name="appActive.name"
+            :is-uninstalling="isUninstalling"
             :on-click="() => uninstall(appActive.key)"
           />
           <v-switch
@@ -178,10 +176,12 @@ import AppInput from '@/components/commons/input/AppInput'
 import AppButton from '@/components/commons/button/AppButton'
 import ActionsWrapper from '@/components/layout/actions/ActionsWrapper'
 import ContentBasic from '@/components/layout/content/ContentBasic'
+import UninstallAppModal from '@/components/app/appStore/modal/UninstallAppModal'
+import { API } from "@/api";
 
 export default {
   name: 'InstalledApp',
-  components: { ContentBasic, ActionsWrapper, AppButton, AppInput, AppItemPasswordModal },
+  components: { UninstallAppModal, ContentBasic, ActionsWrapper, AppButton, AppInput, AppItemPasswordModal },
   data() {
     return {
       tab: null,
@@ -205,6 +205,9 @@ export default {
     },
     onOrOff() {
       return this.isActivated ? this.$t('appStore.activated') : this.$t('appStore.notactivated')
+    },
+    isUninstalling() {
+      return this[REQUESTS_STATE.GETTERS.GET_STATE]([API.appStore.uninstallApp.id])
     },
     activationDisabled() {
       return !this.appActive.authorized
