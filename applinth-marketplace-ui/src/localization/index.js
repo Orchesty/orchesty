@@ -19,7 +19,9 @@ extend('passwordConfirm', {
 
 Vue.use(VueI18n)
 
-export const LOCALE = 'en'
+const browserLang = navigator.language || window.navigator.language || 'cs'
+
+export const LOCALE = browserLang.substring(0, 2)
 
 export const i18n = new VueI18n({
   locale: LOCALE,

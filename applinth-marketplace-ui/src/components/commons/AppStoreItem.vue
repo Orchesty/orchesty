@@ -34,7 +34,9 @@
               </template>
               <template #tooltip>
                 <span class="text-capitalize">{{
-                  authorized ? 'authorized' : 'unauthorized'
+                  authorized
+                    ? $t('appInstalledItem.authorized')
+                    : $t('appInstalledItem.unauthorized')
                 }}</span>
               </template>
             </base-tooltip>

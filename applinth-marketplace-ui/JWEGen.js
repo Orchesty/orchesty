@@ -10,7 +10,7 @@ lMtmVuVUqMJD6dvQr2E=
 
 jose.importSPKI(publicKey, 'ECDH-ES').then((key) => {
   new jose.EncryptJWT({
-    sub: 'tenant_id',
+    sub: 'tenant',
     eu_sub: 'endUser',
     eu_alias: 'end_user_human_readable_alias_name',
   })

@@ -11,6 +11,8 @@ import notFoundPage from './notFoundPage.json'
 import notLoggedInPage from './notLoggedInPage.json'
 import settingsPage from './settingsPage.json'
 import appInstalledItem from './appInstalledItem.json'
+import profile from './profile.json'
+import label from './label.json'
 
 export default Object.assign(
   appInstalledItem,
@@ -27,5 +29,7 @@ export default Object.assign(
   trashModal,
   {
     $vuetify: vuetify,
-  }
+  },
+  profile,
+  label
 )
