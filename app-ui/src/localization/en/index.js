@@ -24,6 +24,7 @@ import enums from './enums.json'
 import pages from './pages.json'
 import logs from './logs.json'
 import auth from './auth.json'
+import topologies from './topologies.json'
 
 export default Object.assign(
   navigation,
@@ -51,5 +52,6 @@ export default Object.assign(
   pages,
   logs,
   auth,
-  sidebar
+  sidebar,
+  topologies
 )

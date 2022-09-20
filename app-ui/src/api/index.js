@@ -11,6 +11,7 @@ import statistic from './endpoints/statistic'
 import overview from './endpoints/overview'
 import trash from './endpoints/trash'
 import healthCheck from './endpoints/healthCheck'
+import dashboard from './endpoints/dashboard'
 
 export const API = {
   auth,
@@ -26,4 +27,5 @@ export const API = {
   statistic,
   trash,
   healthCheck,
+  dashboard,
 }
