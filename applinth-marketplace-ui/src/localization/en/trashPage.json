@@ -2,6 +2,7 @@
   "trashPage": {
     "heading": "Trash",
     "selectAll": "Select all",
-    "selectionActions": "Selection actions"
+    "selectionActions": "Selection actions",
+    "clickOnTheRow": "Please, click on one of the rows."
   }
 }

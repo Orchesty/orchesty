@@ -21,7 +21,9 @@
             </v-col>
             <v-col class="d-flex">
               <span class="my-auto">{{
-                app.authorized ? 'Authorized' : 'Unauthorized'
+                app.authorized
+                  ? $t('appInstalledItem.authorized')
+                  : $t('appInstalledItem.unauthorized')
               }}</span>
             </v-col>
             <v-col class="d-flex flex-column justify-center align-end">

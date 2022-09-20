@@ -1,7 +1,9 @@
 <template>
   <base-modal
     v-model="isOpen"
-    :title="input.value ? 'Change password' : 'Set password'"
+    :title="
+      input.value ? $t('profile.changePassword') : $t('profile.setPassword')
+    "
   >
     <template #activator="{ attrs, on }">
       <base-button

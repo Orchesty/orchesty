@@ -2,6 +2,7 @@
   "trashPage": {
     "heading": "Koš",
     "selectAll": "Vybrat vše",
-    "selectionActions": "Akce nad výběrem"
+    "selectionActions": "Akce nad výběrem",
+    "clickOnTheRow": "Prosím, klikněte na některý řádek."
   }
 }

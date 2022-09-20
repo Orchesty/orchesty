@@ -2,7 +2,9 @@
   <div class="pt-8">
     <v-row>
       <v-col>
-        <span>Please, click on one of the rows.</span>
+        <span>
+          {{ $t('trashPage.clickOnTheRow') }}
+        </span>
       </v-col>
     </v-row>
   </div>
