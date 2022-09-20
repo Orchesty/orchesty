@@ -17,6 +17,8 @@ import table from "./table.json";
 import resetPasswordPage from "./pages/resetPasswordPage.json";
 import passwordChangedPage from "./pages/passwordChangedPage.json";
 import en from "vuetify/src/locale/en";
+import error from "./error.json";
+import message from "./message.json";
 
 export default {
   ...button,
@@ -38,4 +40,6 @@ export default {
   ...resetPasswordPage,
   ...passwordChangedPage,
   ...en,
+  ...error,
+  ...message,
 };

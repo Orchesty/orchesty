@@ -1,10 +1,19 @@
 import { transformUser } from "@/firebase";
 import { alerts, assignTokenToApiCall, i18n } from "@/utils";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  updatePassword,
+  User,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+  updateProfile,
+} from "firebase/auth";
 import { TLoginForm } from "../../../components/auth/types";
 import { Actions } from "../../../types";
 import { AuthState } from "./state";
 import { AuthActions, AuthMutations } from "./types";
+import { UpdateUserInfo } from "@/types/CurrentUser";
 
 export const actions: Actions<AuthActions, AuthState> = {
   async login({ commit }, payload: TLoginForm): Promise<boolean> {
@@ -32,7 +41,11 @@ export const actions: Actions<AuthActions, AuthState> = {
         return false;
       }
     } catch (error: any) {
-      if (error.code === "auth/user-not-found") {
+      if (
+        error.code === "auth/user-not-found" ||
+        error.code === "auth/wrong-password" ||
+        error.code === "auth/invalid-tenant-id"
+      ) {
         alerts.addErrorAlert(
           "login-not-successful",
           i18n.t("login.failed") as string
@@ -43,7 +56,77 @@ export const actions: Actions<AuthActions, AuthState> = {
       return false;
     }
   },
-  updateSettings() {
-    // TODO not implemented yet
+  async updateSettings({ commit }, payload: UpdateUserInfo): Promise<boolean> {
+    try {
+      const auth = getAuth();
+      const user = auth.currentUser;
+      if (!user) throw new Error(i18n.t("auth.userNotFound") as string);
+
+      await updateProfile(user, {
+        displayName: payload.displayName,
+      });
+
+      commit(
+        AuthMutations.SetUser,
+        transformUser({ ...user, displayName: payload.displayName })
+      );
+
+      return true;
+    } catch (error: any) {
+      alerts.addErrorAlert("update-user-failed", error.message as string);
+
+      return false;
+    }
+  },
+  async changePassword({ commit }, payload: string): Promise<boolean> {
+    const auth = getAuth();
+
+    const user = auth.currentUser;
+
+    try {
+      await updatePassword(user as User, payload);
+      return true;
+    } catch (error: any) {
+      if (error.code === "auth/invalid-password") {
+        alerts.addErrorAlert(
+          "invalid-password",
+          i18n.t("password.changeFailed") as string
+        );
+      } else if (error.code === "auth/weak-password") {
+        alerts.addErrorAlert(
+          "weak-password",
+          i18n.t("password.weakPassword") as string
+        );
+      }
+
+      return false;
+    }
+  },
+  async reauthenticate({ commit }, payload: string) {
+    try {
+      const auth = getAuth();
+      const user = auth.currentUser;
+
+      if (!user) throw new Error(i18n.t("auth.userNotFound") as string);
+
+      const credential = EmailAuthProvider.credential(
+        user.email as string,
+        payload // password
+      );
+
+      await reauthenticateWithCredential(user, credential);
+
+      return true;
+    } catch (error: any) {
+      if (error.code === "auth/wrong-password") {
+        alerts.addErrorAlert(
+          "wrong-password",
+          i18n.t("login.wrongPassword") as string
+        );
+      } else
+        alerts.addErrorAlert("reauthenticate-failed", error.message as string);
+
+      return false;
+    }
   },
 };

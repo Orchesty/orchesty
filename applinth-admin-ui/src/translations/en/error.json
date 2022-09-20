@@ -1,0 +1,13 @@
+{
+  "login": {
+    "failed": "Login failed",
+    "wrongPassword": "Wrong password"
+  },
+  "password": {
+    "changeFailed": "Failed to change password",
+    "weakPassword": "Password should be at least 6 characters"
+  },
+  "auth": {
+    "userNotFound": "User not found"
+  }
+}

@@ -1,36 +1,30 @@
 <template>
   <AppLayout>
     <Heading class="mb-5">{{ $t("profilePage.header.profile") }}</Heading>
-    <ValidationObserver v-slot="{ handleSubmit }">
-      <v-form class="form" @submit.prevent="handleSubmit(submitFormName)">
-        <TextField
-          :name="$t('formLabels.firstName')"
-          :label="$t('formLabels.firstName')"
-          v-model="formLoggedAdmin.firstname"
-        />
-        <TextField
-          :name="$t('formLabels.surname')"
-          :label="$t('formLabels.surname')"
-          v-model="formLoggedAdmin.surname"
-        />
+    <ValidationObserver v-slot="{ invalid, validate }">
+      <v-form class="form" @submit.prevent="validate().then(submitFormName)">
         <TextField
           :name="$t('formLabels.userName')"
-          rules="required|email"
+          rules="required"
           :label="$t('formLabels.userName')"
-          v-model="formLoggedAdmin.username"
+          v-model="formLoggedAdmin.displayName"
         />
-        <Button type="submit">{{ $t("button.save") }}</Button>
+        <Button type="submit" :disabled="invalid">{{
+          $t("button.save")
+        }}</Button>
       </v-form>
     </ValidationObserver>
 
     <v-divider class="form my-6" />
 
     <Heading class="mb-2">{{ $t("profilePage.header.password") }}</Heading>
-    <ValidationObserver v-slot="{ handleSubmit }" ref="observerNewPassword">
+    <ValidationObserver
+      v-slot="{ invalid, validate }"
+      ref="observerNewPassword"
+    >
       <v-form
         class="form"
-        v-model="isFormNewPasswordValid"
-        @submit.prevent="handleSubmit(submitFormNewPassword)"
+        @submit.prevent="validate().then(submitFormNewPassword)"
         ref="formNewPassword"
       >
         <TextField
@@ -58,7 +52,9 @@
           type="password"
           :autocomplete="$t('formLabels.passwordCheck')"
         />
-        <Button type="submit">{{ $t("button.save") }}</Button>
+        <Button type="submit" :disabled="invalid">{{
+          $t("button.save")
+        }}</Button>
       </v-form>
     </ValidationObserver>
   </AppLayout>
@@ -71,14 +67,16 @@ import Table from "../components/commons/tables/Table.vue";
 import TextField from "../components/commons/inputsAndControls/TextField.vue";
 import { Component, Vue } from "vue-property-decorator";
 import { ValidationObserver } from "vee-validate";
-import { alerts } from "../utils";
-import { AuthGetters, authNamespace, User } from "../store/modules/auth";
-import { Getter } from "vuex-class";
+import { alerts, i18n } from "../utils";
 import {
-  UpdateLoggedAdminInput,
-  UpdateLoggedAdminPasswordInput,
-} from "../types/gqlGeneratedPrivate";
+  AuthActions,
+  AuthGetters,
+  authNamespace,
+  User,
+} from "../store/modules/auth";
+import { Action, Getter } from "vuex-class";
 import Heading from "@/components/commons/typography/Heading.vue";
+import { ChangePassword, UpdateUserInfo } from "@/types/CurrentUser";
 
 @Component({
   components: {
@@ -92,54 +90,57 @@ import Heading from "@/components/commons/typography/Heading.vue";
 })
 export default class ProfilePage extends Vue {
   @Getter(`${authNamespace}/${AuthGetters.GetUser}`)
-  user!: User;
+  currentUser!: User;
 
-  isFormNameValid = false;
-  formLoggedAdmin: UpdateLoggedAdminInput = {
-    username: "",
-    firstname: "",
-    surname: "",
+  @Action(`${authNamespace}/${AuthActions.ChangePassword}`)
+  private firebaseChangePassword!: (payload: string) => Promise<boolean>;
+
+  @Action(`${authNamespace}/${AuthActions.Reauthenticate}`)
+  private reauthenticate!: (payload: string) => Promise<boolean>;
+
+  @Action(`${authNamespace}/${AuthActions.UpdateSettings}`)
+  private updateUserInfo!: (payload: UpdateUserInfo) => Promise<boolean>;
+
+  formLoggedAdmin: UpdateUserInfo = {
+    displayName: "",
   };
 
-  isFormNewPasswordValid = false;
-  formNewPassword: UpdateLoggedAdminPasswordInput = {
+  isFormNewPasswordValid = true;
+  formNewPassword: ChangePassword = {
     oldPassword: "",
     newPasswordOne: "",
     newPasswordTwo: "",
   };
 
   mounted() {
-    // TODO redo the form
-    // this.formLoggedAdmin = {
-    // firstname: this.user.firstname,
-    // surname: this.user.surname,
-    // username: this.user.username,
-    // };
+    this.formLoggedAdmin = {
+      displayName: this.currentUser.name || "",
+    };
   }
 
   async submitFormName() {
     const result = await this.updateLoggedAdmin(this.formLoggedAdmin);
-    if (result.data) {
-      alerts.addSuccessAlert("UPDATE_LOGGED_ADMIN", "Uloženo");
+    if (result) {
+      alerts.addSuccessAlert(
+        "UPDATE_LOGGED_ADMIN",
+        i18n.t("message.saved") as string
+      );
     }
   }
 
-  async updateLoggedAdmin(input: UpdateLoggedAdminInput) {
-    // TODO implement using Firebase
-    // return await apiClient.callGraphqlPrivate<
-    //   Admin,
-    //   UpdateLoggedAdminMutationVariables
-    // >({
-    //   ...api.users.updateLoggedUser,
-    //   variables: { input },
-    // });
-    return { data: {} };
+  async updateLoggedAdmin(input: UpdateUserInfo) {
+    return await this.updateUserInfo(input);
   }
 
   async submitFormNewPassword() {
+    this.isFormNewPasswordValid = true;
     const result = await this.updateLoggedAdminPassword(this.formNewPassword);
-    if (result.data) {
-      alerts.addSuccessAlert("UPDATE_LOGGED_ADMIN_PASSWORD", "Uloženo");
+
+    if (result) {
+      alerts.addSuccessAlert(
+        "UPDATE_LOGGED_ADMIN_PASSWORD",
+        i18n.t("message.saved") as string
+      );
       (this.$refs.formNewPassword as HTMLFormElement).reset();
       this.$nextTick(() => {
         (this.$refs.observerNewPassword as any).reset();
@@ -147,16 +148,18 @@ export default class ProfilePage extends Vue {
     }
   }
 
-  async updateLoggedAdminPassword(input: UpdateLoggedAdminPasswordInput) {
-    // TODO implement using Firebase
-    // return await apiClient.callGraphqlPrivate<
-    //   boolean,
-    //   UpdateLoggedAdminPasswordMutationVariables
-    // >({
-    //   ...api.users.updateLoggedUserPassword,
-    //   variables: { input },
-    // });
-    return { data: {} };
+  async updateLoggedAdminPassword(input: ChangePassword): Promise<boolean> {
+    if (input.newPasswordOne !== input.newPasswordTwo) {
+      this.isFormNewPasswordValid = false;
+      return false;
+    }
+
+    const currentPasswordIsValid = await this.reauthenticate(input.oldPassword);
+    if (currentPasswordIsValid) {
+      return await this.firebaseChangePassword(input.newPasswordOne);
+    }
+
+    return false;
   }
 }
 </script>
