@@ -48,6 +48,7 @@ export default [
         path: 'topology',
         name: ROUTES.TOPOLOGY.DEFAULT,
         component: () => import('../../views/app/TopologyPage'),
+        meta: { title: 'Topology' },
         children: [
           {
             path: ':id/overview',
