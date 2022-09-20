@@ -62,13 +62,11 @@ export default {
   },
   rejectAll: {
     id: 'REJECT_ALL_TRASH_ITEMS',
-    request: ({ ids }) => {
+    request: (ids) => {
       return {
         url: `/trash/reject`,
         method: 'POST',
-        data: {
-          ids,
-        },
+        data: ids,
       }
     },
   },
