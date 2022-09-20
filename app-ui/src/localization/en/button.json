@@ -38,6 +38,7 @@
     "disable": "Disable",
     "import": "Import",
     "authorize": "Authorize",
-    "login": "Login"
+    "login": "Login",
+    "uninstall": "Uninstall"
   }
 }
