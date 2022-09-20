@@ -11,11 +11,6 @@
         <topology-add-handler ref="topologyAddHandler" />
       </v-list-item>
 
-      <v-list-item active-class="navigation-item-active" @click="toggleSidebar">
-        <v-list-item-content>
-          <app-icon> account_tree </app-icon>
-        </v-list-item-content>
-      </v-list-item>
       <template v-for="(item, index) in navigationItems">
         <navigation-item
           :key="item.tooltip"
@@ -24,7 +19,7 @@
           :to="item.to"
           :on-click="item.onClick"
         />
-        <v-divider v-if="index === 6" :key="index" />
+        <v-divider v-if="index === 7" :key="index" />
       </template>
     </v-list>
   </v-navigation-drawer>
@@ -33,25 +28,36 @@
 <script>
 import { ROUTES } from '@/services/enums/routerEnums'
 import { ACL } from '@/services/enums/aclEnums'
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import { AUTH } from '@/store/modules/auth/types'
 import TopologyAddHandler from '@/components/app/topology/menu/TopologyAddHandler'
 import NavigationItem from '@/components/layout/navigation/NavigationItem'
 import { EVENTS, events } from '@/services/utils/events'
-import AppIcon from '@/components/commons/icon/AppIcon'
+import { TOPOLOGIES } from '@/store/modules/topologies/types'
+import { redirectTo } from '@/services/utils/utils'
 
 export default {
   name: 'Navigation',
   components: {
-    AppIcon,
     NavigationItem,
     TopologyAddHandler,
+  },
+  computed: {
+    ...mapGetters(TOPOLOGIES.NAMESPACE, {
+      topologyActive: TOPOLOGIES.GETTERS.GET_ACTIVE_TOPOLOGY,
+    }),
   },
   data() {
     return {
       ACL: ACL,
       ROUTES: ROUTES,
       navigationItems: [
+        {
+          to: ROUTES.TOPOLOGY.DEFAULT,
+          icon: 'account_tree',
+          tooltip: this.$t('navigation.topologies'),
+          onClick: this.toggleSidebarAndRedirect,
+        },
         { to: ROUTES.NOTIFICATION, icon: 'notifications', tooltip: this.$t('navigation.notifications') },
         { to: ROUTES.SCHEDULED_TASK, icon: 'mdi-clock', tooltip: this.$t('navigation.scheduledTask') },
         { to: ROUTES.APP_STORE.DEFAULT, icon: 'apps', tooltip: this.$t('navigation.appStore') },
@@ -77,8 +83,11 @@ export default {
     emitButtonClick() {
       this.$refs.topologyAddHandler.$refs.actionButton.click()
     },
-    toggleSidebar() {
-      this.events.emit(EVENTS.SIDEBAR.TOGGLE)
+    async toggleSidebarAndRedirect() {
+      this.events.emit(EVENTS.SIDEBAR.OPEN)
+      if (this.$router.currentRoute.name === ROUTES.TOPOLOGY.DEFAULT && this.topologyActive?._id) {
+        await redirectTo(this.$router, { name: ROUTES.TOPOLOGY.VIEWER, params: { id: this.topologyActive._id } })
+      }
     },
   },
 }

@@ -111,8 +111,16 @@ export default {
     },
     async onActive(activeItems) {
       if (!activeItems[0]) {
+        if (
+          !this.active[0]?._id &&
+          [ROUTES.TOPOLOGY.DEFAULT, ROUTES.TOPOLOGY.VIEWER].includes(this.$router.currentRoute.name)
+        ) {
+          await redirectTo(this.$router, { name: ROUTES.TOPOLOGY.DEFAULT, params: { hideTopology: true } })
+        }
+
         return
       }
+
       if (activeItems[0].type === TOPOLOGY_ENUMS.CATEGORY) {
         return
       }
@@ -124,9 +132,11 @@ export default {
   watch: {
     async $route(route) {
       if (
-        !route.matched.some(
+        (!route.matched.some(
           (matchedRoutes) => matchedRoutes.name === ROUTES.TOPOLOGY.DEFAULT || matchedRoutes.name === ROUTES.EDITOR
-        )
+        ) &&
+          this.active[0]) ||
+        route.params.hideTopology
       ) {
         this.active = []
         await this[TOPOLOGIES.ACTIONS.TOPOLOGY.RESET]()
@@ -153,6 +163,7 @@ export default {
   },
   async created() {
     await this[TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES]()
+
     if (this.$route.params.id) {
       this.active = [{ _id: this.$route.params.id }]
     }
@@ -165,8 +176,21 @@ export default {
   max-width: 210px;
   display: block;
 }
+
 .topology-tree-view-overflow {
   height: calc(100vh - 100px);
   overflow-y: auto;
+}
+</style>
+
+<style lang="scss">
+.topology-tree-view-overflow {
+  .v-treeview-node__root.v-treeview-node--active {
+    pointer-events: none;
+
+    .v-treeview-node__append {
+      pointer-events: auto;
+    }
+  }
 }
 </style>
