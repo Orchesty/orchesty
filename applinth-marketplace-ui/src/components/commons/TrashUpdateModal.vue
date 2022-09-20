@@ -11,7 +11,6 @@
     </template>
     <template #content>
       <div class="d-flex flex-column">
-        <p>{{ $t('trashModal.update.body') }}</p>
         <json-editor v-if="isBodyJson" v-model="body" />
       </div>
     </template>
