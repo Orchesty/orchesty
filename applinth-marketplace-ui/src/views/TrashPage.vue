@@ -120,7 +120,7 @@ export default {
     async itemsRejectAll() {
       await callApi({
         requestData: API.trash.rejectAll,
-        params: { ids: this.getSelectedIds },
+        params: [...this.getSelectedIds],
       })
       await this.$refs.gridTrash.gridFetch()
     },

@@ -1,16 +1,15 @@
 {
   "trashModal": {
     "update": {
-      "title": "Upravit položku koše",
-      "body": "Body"
+      "title": "Upravit položku koše"
     },
     "accept": {
       "title": "Potvrdit položku koše",
-      "body": "Body"
+      "body": "Potvrdit položku s id: {0}, procesu {1}"
     },
     "reject": {
       "title": "Zamítnout položku koše",
-      "body": "Body"
+      "body": "Zamítnout položku s id: {0}, procesu {1}"
     }
   }
 }

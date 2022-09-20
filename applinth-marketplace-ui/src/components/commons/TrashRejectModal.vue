@@ -5,7 +5,7 @@
         color="secondary"
         :attrs="attrs"
         :on="on"
-        :button-title="$t('button.reject')"
+        :button-title="$t('button.deny')"
         outlined
       />
     </template>
@@ -20,7 +20,7 @@
     </template>
     <template #actions>
       <base-button
-        :button-title="$t('button.reject')"
+        :button-title="$t('button.deny')"
         :on-click="rejectTrashItem"
       />
     </template>
