@@ -3,6 +3,8 @@ export const authNamespace = "auth";
 export enum AuthActions {
   Login = "login",
   UpdateSettings = "updateSettings",
+  ChangePassword = "changePassword",
+  Reauthenticate = "reauthenticate",
 }
 
 export enum AuthMutations {

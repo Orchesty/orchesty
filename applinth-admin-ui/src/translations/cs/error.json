@@ -1,0 +1,13 @@
+{
+  "login": {
+    "failed": "Přihlášení se nezdařilo",
+    "wrongPassword": "Špatné heslo"
+  },
+  "password": {
+    "changeFailed": "Nepodařilo se změnit heslo",
+    "weakPassword": "Heslo musí mít nejméně 6 znaků"
+  },
+  "auth": {
+    "userNotFound": "Uživatel nenalezen"
+  }
+}
