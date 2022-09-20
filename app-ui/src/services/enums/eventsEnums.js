@@ -19,6 +19,7 @@ export const EVENT_TYPES = {
   },
   SIDEBAR: {
     TOGGLE: 'SIDEBAR_TOGGLE',
+    OPEN: 'SIDEBAR_OPEN',
   },
   EDITOR: {
     COMPARE_XML: 'EDITOR_COMPARE_XML',

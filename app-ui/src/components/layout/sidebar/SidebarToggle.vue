@@ -97,6 +97,9 @@ export default {
     events.listen(EVENTS.SIDEBAR.TOGGLE, () => {
       this.toggleSideMenu()
     })
+    events.listen(EVENTS.SIDEBAR.OPEN, () => {
+      if (!this.show) this.toggleSideMenu()
+    })
     this.sidePageWidth = document.querySelector('.side-page-column').offsetWidth
   },
 }
