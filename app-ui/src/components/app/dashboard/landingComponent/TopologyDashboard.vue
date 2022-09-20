@@ -21,12 +21,11 @@
     </v-row>
     <v-row>
       <v-col cols="12">
-        <h3 class="title font-weight-bold">Error Logs</h3>
+        <h3 class="title font-weight-bold">{{ $t('topologies.dashboard.processes') }}</h3>
       </v-col>
     </v-row>
     <v-row dense>
-      <error-logs :headers="headers" :state="state" :items="errorLogs ? errorLogs : []" />
-      <!--      <alert-logs v-if="false" :headers="headers" :state="state" :items="alertLogs ? alertLogs : []" />-->
+      <topology-processes :headers="headers" :state="state" :items="processes || []" />
     </v-row>
     <!--    <v-row v-if="false">-->
     <!--      <v-col cols="12">-->
@@ -70,13 +69,16 @@ import { mapActions, mapGetters } from 'vuex'
 import { TOPOLOGIES } from '@/store/modules/topologies/types'
 import { REQUESTS_STATE } from '@/store/modules/api/types'
 import { API } from '@/api'
-import ErrorLogs from '@/components/app/dashboard/grid/ErrorLogs'
+import TopologyProcesses from '@/components/app/dashboard/grid/TopologyProcesses'
 
 export default {
   name: 'TopologyDashboard',
-  components: { ErrorLogs },
+  components: { TopologyProcesses },
   methods: {
-    ...mapActions(TOPOLOGIES.NAMESPACE, [TOPOLOGIES.ACTIONS.DATA.GET_DASHBOARD]),
+    ...mapActions(TOPOLOGIES.NAMESPACE, [
+      TOPOLOGIES.ACTIONS.DATA.GET_DASHBOARD,
+      TOPOLOGIES.ACTIONS.DATA.GET_DASHBOARD_PROCESSES,
+    ]),
     color(value) {
       return value >= 60 ? (value >= 80 ? '#cc0000' : '#f7b500') : '#0e7d00'
     },
@@ -123,10 +125,17 @@ export default {
     return {
       ROUTES,
       headers: [
-        { text: this.$t('topologies.dashboard.headers.time'), value: 'time', width: '15%' },
-        { text: this.$t('topologies.dashboard.headers.topologyName'), value: 'name', align: 'left', width: '20%' },
-        { text: this.$t('topologies.dashboard.headers.message'), value: 'message', align: 'left', width: '45%' },
-        { text: this.$t('topologies.dashboard.headers.level'), value: 'level', align: 'left', width: '20%' },
+        { text: this.$t('topologies.dashboard.headers.topologyName'), value: 'topologyId' },
+        { text: this.$t('topologies.dashboard.headers.created'), value: 'started' },
+        { text: this.$t('topologies.dashboard.headers.duration'), value: 'duration', align: 'left' },
+        { text: this.$t('topologies.dashboard.headers.progress'), value: 'progress', align: 'left' },
+        { text: this.$t('topologies.dashboard.headers.status'), value: 'status', align: 'left' },
+        {
+          text: this.$t('topologies.dashboard.headers.correlation_id'),
+          value: 'correlation_id',
+          align: 'right',
+          width: '150px',
+        },
       ],
       stats: {
         activeTopologies: this.$t('topologies.dashboard.cards.activeTopologies'),
@@ -140,15 +149,12 @@ export default {
   },
   computed: {
     ...mapGetters(REQUESTS_STATE.NAMESPACE, [REQUESTS_STATE.GETTERS.GET_STATE]),
-    ...mapGetters(TOPOLOGIES.NAMESPACE, { topologiesOverview: TOPOLOGIES.GETTERS.GET_TOPOLOGIES_OVERVIEW }),
+    ...mapGetters(TOPOLOGIES.NAMESPACE, {
+      topologiesOverview: TOPOLOGIES.GETTERS.GET_TOPOLOGIES_OVERVIEW,
+      processes: TOPOLOGIES.GETTERS.GET_DASHBOARD_PROCESSES,
+    }),
     state() {
       return this[REQUESTS_STATE.GETTERS.GET_STATE]([API.topology.getDashboard.id])
-    },
-    alertLogs() {
-      return this.topologiesOverview?.alertLogs
-    },
-    errorLogs() {
-      return this.topologiesOverview?.errorLogs
     },
     process() {
       return this.topologiesOverview?.process
@@ -162,6 +168,7 @@ export default {
   },
   async created() {
     await this[TOPOLOGIES.ACTIONS.DATA.GET_DASHBOARD]()
+    await this[TOPOLOGIES.ACTIONS.DATA.GET_DASHBOARD_PROCESSES]()
   },
 }
 </script>

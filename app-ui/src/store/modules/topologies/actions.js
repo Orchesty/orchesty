@@ -52,6 +52,18 @@ export default {
       return false
     }
   },
+  [TOPOLOGIES.ACTIONS.DATA.GET_DASHBOARD_PROCESSES]: async ({ dispatch, commit }) => {
+    try {
+      const data = await callApi(dispatch, {
+        requestData: { ...API.dashboard.getProcesses },
+      })
+      commit(TOPOLOGIES.MUTATIONS.DATA.MUTATE_DASHBOARD_PROCESSES, data.items)
+
+      return true
+    } catch {
+      return false
+    }
+  },
 
   //SDK-NODES
   [TOPOLOGIES.ACTIONS.DATA.GET_SDK_NODES]: async ({ dispatch, commit }) => {

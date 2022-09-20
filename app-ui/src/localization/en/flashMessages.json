@@ -12,7 +12,8 @@
       "tested": "Tested",
       "disabled": "Disabled",
       "enabled": "Enabled",
-      "run": "Run successfully"
+      "run": "Run successfully",
+      "idCopied": "ID copied!"
     },
     "userTask": {
       "accept": "Task accepted",

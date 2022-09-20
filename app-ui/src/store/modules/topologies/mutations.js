@@ -27,6 +27,9 @@ export default {
   [TOPOLOGIES.MUTATIONS.DATA.MUTATE_DASHBOARD]: (state, data) => {
     state.topologiesOverview = data
   },
+  [TOPOLOGIES.MUTATIONS.DATA.MUTATE_DASHBOARD_PROCESSES]: (state, data) => {
+    state.processes = data
+  },
   [TOPOLOGIES.MUTATIONS.RESET]: (state) => {
     resetState(state, createState())
   },
