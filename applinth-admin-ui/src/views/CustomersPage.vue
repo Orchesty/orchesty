@@ -19,7 +19,7 @@
           item-text="appName"
           item-value="appName"
         />
-        <Button class="ma-auto" icon :on-click="resetFilters">
+        <Button class="ma-auto" icon @click="resetFilters">
           <template #icon>
             <v-icon>close</v-icon>
           </template>

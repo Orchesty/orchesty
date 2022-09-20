@@ -20,7 +20,7 @@
             v-model="email"
           />
           <div class="text-right">
-            <Button type="submit" :on-click="submit">{{
+            <Button type="submit" @click="submit">{{
               $t("button.send")
             }}</Button>
           </div>

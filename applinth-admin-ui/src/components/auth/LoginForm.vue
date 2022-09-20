@@ -3,6 +3,7 @@
     tag="form"
     @submit.prevent="submit"
     @keydown.enter="submit"
+    ref="formRef"
   >
     <TextField
       :label="$t('formLabels.tenantId')"
@@ -31,7 +32,7 @@
       </router-link>
     </div>
     <div class="text-right">
-      <Button :loading="loading" type="submit" :on-click="submit">
+      <Button :loading="loading" type="submit">
         {{ $t("button.login") }}
       </Button>
     </div>
@@ -39,7 +40,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Prop, Ref, Vue } from "vue-property-decorator";
 import { TLoginForm, TLoginRules } from "./types";
 import { ValidationObserver } from "vee-validate";
 import TextField from "../commons/inputsAndControls/TextField.vue";
@@ -61,6 +62,9 @@ export default class LoginForm extends Vue {
   @Prop({ required: true, type: Function })
   private onSubmit!: (payload: TLoginForm) => Promise<boolean>;
 
+  @Ref()
+  readonly formRef!: InstanceType<typeof ValidationObserver>;
+
   loading = false;
 
   form: TLoginForm = {
@@ -81,14 +85,19 @@ export default class LoginForm extends Vue {
 
   async submit(): Promise<void> {
     this.loading = true;
-    const result = await this.onSubmit(this.form);
-    if (result) {
-      if (this.$route.query?.redirect) {
-        this.$router.push(this.$route.query.redirect as string);
-      } else {
-        this.$router.push("/");
+    const isValid = await this.formRef.validate();
+
+    if (isValid) {
+      const result = await this.onSubmit(this.form);
+      if (result) {
+        if (this.$route.query?.redirect) {
+          this.$router.push(this.$route.query.redirect as string);
+        } else {
+          this.$router.push("/");
+        }
       }
     }
+
     this.loading = false;
   }
 }
