@@ -19,4 +19,7 @@ export default {
   [TOPOLOGIES.GETTERS.GET_ACTIVE_TOPOLOGY_STATISTICS]: (state) => {
     return state.topologyActiveStatistics
   },
+  [TOPOLOGIES.GETTERS.GET_DASHBOARD_PROCESSES]: (state) => {
+    return state.processes
+  },
 }

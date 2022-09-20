@@ -8,4 +8,5 @@ export default () => ({
   topologyActiveDiagram: null,
   topologiesOverview: null,
   topologiesAll: [],
+  processes: [],
 })

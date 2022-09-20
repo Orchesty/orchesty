@@ -151,9 +151,15 @@
         "topologyId": "Topology ID",
         "topologyName": "Topology Name",
         "level": "Level",
-        "message": "Message"
+        "message": "Message",
+        "created": "Created",
+        "duration": "Duration",
+        "status": "Status",
+        "correlation_id": "Correlation ID",
+        "progress": "Progress"
       },
-      "metrics": "Metrics"
+      "metrics": "Metrics",
+      "processes": "Processes"
     },
     "logs": {
       "title": "Logs",

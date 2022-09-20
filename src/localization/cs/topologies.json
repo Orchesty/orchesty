@@ -106,9 +106,17 @@
       "headers": {
         "time": "Čas",
         "topologyId": "TopologyID",
-        "level": "level"
+        "topologyName": "Název Topologie",
+        "level": "level",
+        "message": "Zpráva",
+        "created": "Vytvořeno",
+        "duration": "Průběh",
+        "status": "Status",
+        "correlation_id": "Correlation ID",
+        "progress": "Progress"
       },
-      "metrics": "Metriky"
+      "metrics": "Metriky",
+      "processes": "Procesy"
     },
     "logs": {
       "title": "Logy",

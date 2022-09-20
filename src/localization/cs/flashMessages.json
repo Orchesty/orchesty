@@ -15,6 +15,9 @@
     },
     "notifications": {
       "update": "Notifikace byla aktualizována!"
+    },
+    "topologies": {
+      "idCopied": "ID zkopírováno!"
     }
   }
 }

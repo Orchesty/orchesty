@@ -13,14 +13,6 @@
         <td v-if="isVisible('started')">
           {{ internationalFormat(items.item.started) }}
         </td>
-        <td v-if="isVisible('finished')">
-          {{ getProcessFinishTime(items.item) }}
-        </td>
-        <td v-if="isVisible('correlation_id')">
-          <v-btn v-if="items.item.correlationId" icon @click.stop="copyToClipboard(items.item.correlationId)">
-            <app-icon>mdi-content-copy</app-icon>
-          </v-btn>
-        </td>
         <td v-if="isVisible('duration')">
           {{ getProcessDurationTime(items.item) }}
         </td>
@@ -31,6 +23,11 @@
           <span :class="`text-uppercase ${getStatusColor(items.item.status)}--text`">
             {{ items.item.status }}
           </span>
+        </td>
+        <td v-if="isVisible('correlation_id')">
+          <v-btn v-if="items.item.correlationId" icon @click.stop="copyToClipboard(items.item.correlationId)">
+            <app-icon>mdi-content-copy</app-icon>
+          </v-btn>
         </td>
       </template>
     </data-grid>
@@ -81,22 +78,6 @@ export default {
           width: '15%',
         },
         {
-          text: 'topologies.overview.headers.finished',
-          value: 'finished',
-          align: 'left',
-          sortable: true,
-          visible: true,
-          width: '15%',
-        },
-        {
-          text: 'topologies.overview.headers.correlation_id',
-          value: 'correlation_id',
-          align: 'left',
-          sortable: true,
-          visible: true,
-          width: '15%',
-        },
-        {
           text: 'topologies.overview.headers.duration',
           value: 'duration',
           align: 'left',
@@ -117,6 +98,14 @@ export default {
           value: 'status',
           align: 'left',
           sortable: false,
+          visible: true,
+          width: '15%',
+        },
+        {
+          text: 'topologies.overview.headers.correlation_id',
+          value: 'correlation_id',
+          align: 'left',
+          sortable: true,
           visible: true,
           width: '15%',
         },
@@ -159,7 +148,7 @@ export default {
 
     copyToClipboard(correlationId) {
       navigator.clipboard.writeText(correlationId)
-      this.showFlashMessage(false, 'ID copied!')
+      this.showFlashMessage(false, this.$t('flashMessages.topologies.idCopied'))
     },
 
     isInProgress(value) {
