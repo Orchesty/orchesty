@@ -23,6 +23,7 @@
             color="secondary"
             :loading="isActivationLoading"
             inset
+            :disabled="activationDisabled"
             @change="onActivationChange($event)"
           >
             <template #label>
@@ -204,6 +205,9 @@ export default {
     },
     onOrOff() {
       return this.isActivated ? this.$t('appStore.activated') : this.$t('appStore.notactivated')
+    },
+    activationDisabled() {
+      return !this.appActive.authorized
     },
   },
   methods: {

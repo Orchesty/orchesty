@@ -39,6 +39,7 @@
               color="secondary"
               :loading="isActivationLoading"
               inset
+              :disabled="activationDisabled"
               @change="onActivationChange($event)"
             >
               <template #label>
@@ -221,6 +222,9 @@ export default {
       return this.isActivated
         ? this.$t('application.activated')
         : this.$t('application.notactivated')
+    },
+    activationDisabled() {
+      return !this.appActive.authorized
     },
   },
   methods: {
