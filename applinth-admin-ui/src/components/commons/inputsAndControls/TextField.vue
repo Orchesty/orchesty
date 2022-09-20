@@ -19,6 +19,8 @@
       @input="(val) => $emit('input', val)"
       :hide-details="hideDetails"
       :prepend-inner-icon="prependInnerIcon"
+      @blur="$emit('blur')"
+      @keydown.enter="onEnterPress"
     />
   </ValidationProvider>
 </template>
@@ -81,6 +83,12 @@ export default class TextField extends Vue {
 
   @Prop({ type: String, default: () => null })
   private autocomplete?: string | null;
+
+  @Prop({ required: false, type: Function, default: () => null })
+  private blur!: any;
+
+  @Prop({ required: false, type: Function, default: () => null })
+  private onEnterPress!: any;
 }
 </script>
 

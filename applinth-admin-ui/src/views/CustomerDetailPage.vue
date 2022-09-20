@@ -9,8 +9,8 @@
         :score="199"
         :title="$t('customerDetailPage.statusCard.actualBilling')"
       />
-      <CustomerAppsTable class="mb-5" />
-      <CustomerBillingTable />
+      <CustomerAppsTable class="mb-5" :customer-id="customerId" />
+      <CustomerBillingTable :customer-id="customerId" />
     </div>
   </AppLayout>
 </template>
@@ -32,7 +32,14 @@ import Heading from "@/components/commons/typography/Heading.vue";
     StatusCard,
   },
 })
-export default class UserDetailPage extends Vue {}
+export default class CustomerDetailPage extends Vue {
+  customerId!: string;
+
+  created() {
+    //todo fetch customer detail (PIP-1296)
+    this.customerId = this.$route.params.id;
+  }
+}
 </script>
 
 <style lang="scss" scoped>
