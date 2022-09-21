@@ -75,6 +75,7 @@ import QuickFiltersMixin from '@/services/mixins/QuickFiltersMixin'
 import { SIMPLE_FILTER } from '@/services/enums/dataGridFilterEnums'
 import { GRID } from '@/store/modules/grid/types'
 import { redirectTo } from '@/services/utils/utils'
+
 export default {
   name: 'TrashGrid',
   components: { UserTaskActionsModal, UserTaskInformation, DataGrid },
@@ -143,6 +144,8 @@ export default {
   async mounted() {
     await this.$refs.grid.fetchGridWithInitials(null, null, null, this.pagingInitial, this.sorterInitial)
     this.init('updated')
+
+    if (this.$route.params?.trashId) this.updateInfo({ item: { id: this.$route.params.trashId } })
   },
 }
 </script>
