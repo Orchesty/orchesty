@@ -8,8 +8,9 @@ import {
   EmailAuthProvider,
   reauthenticateWithCredential,
   updateProfile,
+  sendPasswordResetEmail,
 } from "firebase/auth";
-import { TLoginForm } from "../../../components/auth/types";
+import { TLoginForm, TResetPasswordForm } from "../../../components/auth/types";
 import { Actions } from "../../../types";
 import { AuthState } from "./state";
 import { AuthActions, AuthMutations } from "./types";
@@ -126,6 +127,40 @@ export const actions: Actions<AuthActions, AuthState> = {
       } else
         alerts.addErrorAlert("reauthenticate-failed", error.message as string);
 
+      return false;
+    }
+  },
+  async sendResetPasswordLink(
+    { commit },
+    payload: TResetPasswordForm
+  ): Promise<boolean> {
+    try {
+      const auth = getAuth();
+      auth.tenantId = payload.tenantId;
+
+      await sendPasswordResetEmail(auth, payload.email);
+
+      alerts.addSuccessAlert(
+        "reset-password-sent",
+        i18n.t("message.resetPasswordLinkSent") as string
+      );
+
+      return true;
+    } catch (error: any) {
+      if (error.code === "auth/user-not-found") {
+        alerts.addErrorAlert(
+          "reset-password-failed",
+          i18n.t("auth.userNotFound") as string
+        );
+      } else if (error.code === "auth/invalid-tenant-id") {
+        alerts.addErrorAlert(
+          "reset-password-failed",
+          i18n.t("auth.tenantNotFound") as string
+        );
+      } else
+        alerts.addErrorAlert("reset-password-failed", error.message as string);
+
+      console.error(error.code, error);
       return false;
     }
   },

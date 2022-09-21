@@ -8,6 +8,7 @@
     "weakPassword": "Password should be at least 6 characters"
   },
   "auth": {
-    "userNotFound": "User not found"
+    "userNotFound": "User not found",
+    "tenantNotFound": "Tenant not found"
   }
 }

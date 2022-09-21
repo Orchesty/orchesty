@@ -5,6 +5,7 @@ export enum AuthActions {
   UpdateSettings = "updateSettings",
   ChangePassword = "changePassword",
   Reauthenticate = "reauthenticate",
+  SendResetPasswordLink = "sendResetPasswordLink",
 }
 
 export enum AuthMutations {

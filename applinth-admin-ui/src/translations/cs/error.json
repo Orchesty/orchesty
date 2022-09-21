@@ -8,6 +8,7 @@
     "weakPassword": "Heslo musí mít nejméně 6 znaků"
   },
   "auth": {
-    "userNotFound": "Uživatel nenalezen"
+    "userNotFound": "Uživatel nenalezen",
+    "tenantNotFound": "Tenant nenalezen"
   }
 }

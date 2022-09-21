@@ -1,5 +1,6 @@
 {
   "message": {
-    "saved": "Saved"
+    "saved": "Saved",
+    "resetPasswordLinkSent": "The password reset link has been sent"
   }
 }
