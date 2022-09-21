@@ -10,6 +10,7 @@
     item-key="id"
     show-select
     :quick-filters="quickFilters"
+    :fixed-filter="[[{ column: 'type', operator: 'EQ', value: ['trash'] }]]"
     :content-enabled="true"
     two-column-layout
     simple-filter
@@ -17,7 +18,7 @@
     @input="onSelect"
   >
     <template #content>
-      <user-task-information :item="item" :is-trash="true" @reset="reset" />
+      <user-task-information :item="item" :is-trash="true" @reset="reset" @fetchGrid="fetchGrid" />
     </template>
     <template #default="{ items, isVisible }">
       <td
@@ -126,6 +127,9 @@ export default {
     },
     async rejectAll() {
       return await this[TRASH.ACTIONS.TRASH_REJECT_LIST]({ ids: this.selected.map((item) => item.id) })
+    },
+    async fetchGrid() {
+      await this.$refs.grid.fetchGrid(null, null, this.gridFilter, null, null)
     },
     async updateInfo(item) {
       this.item = item.item
