@@ -12,10 +12,7 @@ export const createTree = (topologies = [], categories = []) => {
         {
           ...item,
           id: item._id,
-          name: item.name,
           type: TOPOLOGY_ENUMS.TOPOLOGY,
-          parent: item.parent,
-          description: item.descr,
         },
       ])
     } else {
@@ -24,10 +21,7 @@ export const createTree = (topologies = [], categories = []) => {
         {
           ...item,
           id: item._id,
-          name: item.name,
           type: TOPOLOGY_ENUMS.TOPOLOGY,
-          parent: item.parent,
-          description: item.descr,
         },
       ])
     }

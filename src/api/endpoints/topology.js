@@ -6,7 +6,7 @@ export default {
       method: 'POST',
       data: {
         name,
-        descr: description,
+        description,
         category: folder || null,
       },
     }),
