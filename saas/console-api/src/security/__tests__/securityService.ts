@@ -1,5 +1,6 @@
 import assert from 'assert';
 import { Request } from 'express';
+import { createDbTenants } from '../../../test/dataProvider';
 import { AUTHORIZATION, getJWTPayload, getLoggedUser, getLoggedUserPermissions, X_ENDPOINT_API_USER_INFO } from '../securityService';
 
 const validPayload = {
@@ -55,9 +56,12 @@ describe('getJWTPayload with AUTHORIZATION', () => {
 });
 
 describe('getLoggedUser', () => {
-    it('should return tenant id', () => {
-        const tenant = getLoggedUser(validMockRequest);
-        assert.equal(tenant, validPayload.firebase.tenant);
+    beforeEach(async () => {
+        await createDbTenants('abcde-fghij');
+    });
+    it('should return tenant id', async () => {
+        const tenant = await getLoggedUser(validMockRequest);
+        assert.equal(tenant.tenantId, validPayload.firebase.tenant);
     });
 });
 

@@ -9,15 +9,13 @@ import jsyaml from 'js-yaml';
 import { configure, initializeMiddleware } from 'oas-tools';
 import { app, firebase, mongo } from './config/config';
 import initializeLogger from './logger/logger';
-import BillingMongo from './storage/mongo/BillingMongo';
-import CloudMongo from './storage/mongo/CloudMongo';
+import Mongo from './storage/mongo/Mongo';
 import TenantService from './tenants/TenantService';
 import UsageStatsService from './usageStats/UsageStatsService';
 import UsersService from './users/UsersService';
 
 /* eslint-disable import/no-mutable-exports */
-let db: BillingMongo;
-let dbCloud: CloudMongo;
+let db: Mongo;
 let usageStatsService: UsageStatsService;
 let usersService: UsersService;
 let tenantService: TenantService;
@@ -29,7 +27,7 @@ let fbAdminConfig = {};
 const fbAdminPrivKey = `${__dirname}/../privateKey.json`;
 if (fs.existsSync(fbAdminPrivKey)) {
     fbAdminConfig = {
-        credential: admin.credential.cert(fbAdminPrivKey),
+        credential: app.env === 'prod' ? admin.credential.applicationDefault() : admin.credential.cert(fbAdminPrivKey),
     };
 }
 
@@ -40,16 +38,14 @@ const fbApp = initializeApp({
 });
 
 async function initServices(): Promise<void> {
-    db = new BillingMongo(mongo.dsn);
-    dbCloud = new CloudMongo(mongo.dsn);
+    db = new Mongo(mongo.dsn);
     await db.connect();
-    await db.createIndexes();
-    await dbCloud.connect();
-    await dbCloud.createIndexes();
+    await db.createBillingIndexes();
+    await db.createCloudIndexes();
     logger.info('Database connected');
     usageStatsService = new UsageStatsService(db);
     usersService = new UsersService();
-    tenantService = new TenantService(dbCloud);
+    tenantService = new TenantService(db);
 }
 
 function createServer(): Express {
@@ -81,5 +77,5 @@ function createServer(): Express {
 }
 
 export {
-    authApp, createServer, db, dbCloud, fbApp,
+    authApp, createServer, db, fbApp,
     initServices, logger, server, tenantService, usageStatsService, usersService };

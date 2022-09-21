@@ -29,7 +29,7 @@ describe('tenantsController', () => {
             .mockResolvedValue(undefined);
         jest.spyOn(adminAuth, 'listUsers')
             .mockResolvedValue({ users: [generateUserMockedData()] });
-        jest.spyOn(admin.auth().tenantManager().authForTenant('t1234'), 'createUser')
+        jest.spyOn(admin.auth().tenantManager().authForTenant('t-123456789'), 'createUser')
             .mockResolvedValue(generateUserMockedData());
         jest.spyOn(adminAuth, 'deleteUsers')
             .mockResolvedValue(generateDeleteUsersResultMockedData());
@@ -54,7 +54,7 @@ describe('tenantsController', () => {
 
     describe('get', () => {
         it('shouldReturnData', async () => {
-            const resp = await supertest(server).get('/tenants/t1234').set(authorization);
+            const resp = await supertest(server).get('/tenants/t123456789').set(authorization);
             assert.deepEqual(resp.statusCode, 200);
             assert.deepEqual(resp.body, {
                 tenant: generateTenantsExport(),
@@ -76,7 +76,8 @@ describe('tenantsController', () => {
                 displayName: 'neco',
             });
             assert.deepEqual(resp.statusCode, 200);
-            resp.body.tenant.instanceId = 't123456789';
+            resp.body.tenant.instances = [{ instanceId: '1234567890' }];
+            resp.body.tenant.tenantId = 't123456789';
             assert.deepEqual(resp.body, {
                 tenant: generateTenantsExport(),
             });
@@ -95,7 +96,8 @@ describe('tenantsController', () => {
                 userDisplayName: 'neco',
             });
             assert.deepEqual(resp.statusCode, 200);
-            resp.body.tenant.instanceId = 't123456789';
+            resp.body.tenant.instances = [{ instanceId: '1234567890' }];
+            resp.body.tenant.tenantId = 't123456789';
             assert.deepEqual(resp.body, {
                 tenant: generateTenantsExport(),
             });
@@ -106,7 +108,7 @@ describe('tenantsController', () => {
         it('shouldReturnData', async () => {
             jest.spyOn(tenantManager, 'updateTenant')
                 .mockResolvedValue(generateTenantMockedData('neco1'));
-            const resp = await supertest(server).put('/tenants/t1234').set(authorization)
+            const resp = await supertest(server).put('/tenants/t123456789').set(authorization)
                 .send({
                     displayName: 'neco1',
                 });
@@ -119,15 +121,17 @@ describe('tenantsController', () => {
 
     describe('delete', () => {
         beforeEach(async () => {
-            await createDbTenants('t123');
+            await createDbTenants('t123', false);
         });
         it('shouldReturnData', async () => {
+            jest.spyOn(admin.auth().tenantManager().authForTenant('t123'), 'listUsers')
+                .mockResolvedValue({ users: [generateUserMockedData()] });
             const resp = await supertest(server).delete('/tenants/t123').set(authorization);
             assert.deepEqual(resp.statusCode, 200);
             assert.deepEqual(resp.body, { msg: 'Tenant successfully deleted!' });
         });
         it('shouldReturn403', async () => {
-            const resp = await supertest(server).delete('/tenants/t1234').set(authorization);
+            const resp = await supertest(server).delete('/tenants/t123456789').set(authorization);
             assert.deepEqual(resp.statusCode, 403);
         });
     });

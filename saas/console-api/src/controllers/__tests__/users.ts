@@ -3,6 +3,7 @@ import * as firebase from 'firebase/auth';
 import * as admin from 'firebase-admin';
 import supertest from 'supertest';
 import {
+    createDbTenants,
     generateGetUsersResultMockedData,
     generateUserMockedData,
     generateUsersExport,
@@ -10,9 +11,10 @@ import {
 } from '../../../test/dataProvider';
 import { server } from '../../index';
 
-const adminAuth = admin.auth().tenantManager().authForTenant('t1234');
+const adminAuth = admin.auth().tenantManager().authForTenant('t-123456789');
 describe('usersController', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
+        await createDbTenants();
         jest.spyOn(adminAuth, 'listUsers')
             .mockResolvedValue({ users: [generateUserMockedData()] });
         jest.spyOn(adminAuth, 'getUser')
@@ -30,7 +32,7 @@ describe('usersController', () => {
     const authorization = getJWTToken(true);
     describe('list', () => {
         it('shouldReturnDataForAll', async () => {
-            const resp = await supertest(server).get('/users').query({ tenantId: 't1234' }).set(authorization);
+            const resp = await supertest(server).get('/users').query({ tenantId: 't123456789' }).set(authorization);
             assert.deepEqual(resp.statusCode, 200);
             assert.deepEqual(resp.body.rows.length, 1);
             assert.deepEqual(resp.body, {
@@ -38,7 +40,7 @@ describe('usersController', () => {
             });
         });
         it('shouldReturnDataForFilter', async () => {
-            const resp = await supertest(server).get('/users').query({ tenantId: 't1234', emails: ['neco@neco.com'] })
+            const resp = await supertest(server).get('/users').query({ tenantId: 't123456789', emails: ['neco@neco.com'] })
                 .set(authorization);
             assert.deepEqual(resp.statusCode, 200);
             assert.deepEqual(resp.body.rows.length, 1);
@@ -66,7 +68,7 @@ describe('usersController', () => {
     describe('get', () => {
         it('shouldReturnData', async () => {
             const resp = await supertest(server).get('/users/BjDKHoIseJR5zd0bixYnRR6Dt9i2')
-                .query({ tenantId: 't1234' }).set(authorization);
+                .query({ tenantId: 't123456789' }).set(authorization);
             assert.deepEqual(resp.statusCode, 200);
             assert.deepEqual(resp.body, {
                 user: generateUsersExport(),
@@ -77,7 +79,7 @@ describe('usersController', () => {
     describe('create', () => {
         it('shouldReturnData', async () => {
             const resp = await supertest(server).post('/users')
-                .query({ tenantId: 't1234' }).set(authorization)
+                .query({ tenantId: 't123456789' }).set(authorization)
                 .send({
                     email: 'neco@neco.cz',
                     displayName: 'neco',
@@ -92,7 +94,7 @@ describe('usersController', () => {
     describe('update', () => {
         it('shouldReturnData', async () => {
             const resp = await supertest(server).put('/users/BjDKHoIseJR5zd0bixYnRR6Dt9i2')
-                .query({ tenantId: 't1234' })
+                .query({ tenantId: 't123456789' })
                 .set(authorization)
                 .send({ displayName: 'neco1' });
             assert.deepEqual(resp.statusCode, 200);
@@ -116,7 +118,7 @@ describe('usersController', () => {
     describe('delete', () => {
         it('shouldReturnData', async () => {
             const resp = await supertest(server).delete('/users/BjDKHoIseJR5zd0bixYnRR6Dt9i2')
-                .query({ tenantId: 't1234' })
+                .query({ tenantId: 't123456789' })
                 .set(authorization);
             assert.deepEqual(resp.statusCode, 200);
             assert.deepEqual(resp.body, { msg: 'User successfully deleted!' });
@@ -135,7 +137,7 @@ describe('usersController', () => {
 
     describe('sendResetPasswordEmail', () => {
         it('shouldReturnData', async () => {
-            const resp = await supertest(server).post('/users/sendResetPasswordEmail').query({ tenantId: 't1234' })
+            const resp = await supertest(server).post('/users/sendResetPasswordEmail').query({ tenantId: 't123456789' })
                 .set(authorization);
 
             assert.deepEqual(resp.statusCode, 200);

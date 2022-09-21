@@ -1,10 +1,12 @@
 import assert from 'assert';
 import supertest from 'supertest';
-import { createUsageStats, getJWTToken } from '../../../test/dataProvider';
+import { createDbTenants, createUsageStats, getJWTToken } from '../../../test/dataProvider';
 import { db, server } from '../../index';
 
 describe('usageStatsController', () => {
     beforeEach(async () => {
+        await createDbTenants();
+        await createDbTenants('t123', false);
         await createUsageStats();
     });
     const authorization = getJWTToken();
@@ -43,7 +45,7 @@ describe('usageStatsController', () => {
             assert.deepEqual(resp.body.rows.length, 1);
             assert.deepEqual(resp.body.rows, [
                 {
-                    appName: 'neco1', endUsers: 1, installCount: 1, instanceIds: ['inst1234'], totalCost: 100000,
+                    appId: 'neco1', appName: 'neco1', endUsers: 1, installCount: 1, instanceIds: ['inst1234'], totalCost: 100000,
                 },
             ]);
         });
@@ -58,7 +60,7 @@ describe('usageStatsController', () => {
             assert.deepEqual(resp.body.rows.length, 1);
             assert.deepEqual(resp.body.rows, [
                 {
-                    appName: 'neco1', endUsers: 1, installCount: 2, instanceIds: ['inst1234', 'inst1235'], totalCost: 200000,
+                    appId: 'neco1', appName: 'neco1', endUsers: 1, installCount: 2, instanceIds: ['inst1234', 'inst1235'], totalCost: 200000,
                 },
             ]);
         });
@@ -99,9 +101,9 @@ describe('usageStatsController', () => {
             assert.deepEqual(resp.body.rows.length, 2);
             assert.deepEqual(resp.body.rows, [
                 {
-                    appName: 'neco', instanceIds: ['inst1234', 'inst1235'], endUsers: 1, installCount: 6, totalCost: 5000000,
+                    appId: 'neco', appName: 'neco', instanceIds: ['inst1234', 'inst1235'], endUsers: 1, installCount: 6, totalCost: 5000000,
                 }, {
-                    appName: 'neco1', instanceIds: ['inst1234', 'inst1235'], endUsers: 2, installCount: 6, totalCost: 600000,
+                    appId: 'neco1', appName: 'neco1', instanceIds: ['inst1234', 'inst1235'], endUsers: 2, installCount: 6, totalCost: 600000,
                 },
             ]);
             assert.deepEqual(resp.statusCode, 200);
@@ -115,7 +117,7 @@ describe('usageStatsController', () => {
             }).set(authorization);
             assert.deepEqual(resp.body.rows.length, 1);
             assert.deepEqual(resp.body.rows, [{
-                appName: 'neco', instanceIds: ['inst1234', 'inst1235'], endUsers: 1, installCount: 6, totalCost: 5000000,
+                appId: 'neco', appName: 'neco', instanceIds: ['inst1234', 'inst1235'], endUsers: 1, installCount: 6, totalCost: 5000000,
             },
             ]);
             assert.deepEqual(resp.statusCode, 200);
@@ -133,6 +135,7 @@ describe('usageStatsController', () => {
             assert.deepEqual(resp.body.rows.length, 2);
             assert.deepEqual(resp.body.rows, [
                 {
+                    appIds: ['neco1'],
                     appNames: ['neco1'],
                     instanceIds: ['inst1234', 'inst1235'],
                     endUserDisplayId: '1234',
@@ -141,6 +144,7 @@ describe('usageStatsController', () => {
                     totalCost: 200000,
                 },
                 {
+                    appIds: ['neco', 'neco1'],
                     appNames: ['neco', 'neco1'],
                     instanceIds: ['inst1234', 'inst1235'],
                     endUserDisplayId: '1235',
@@ -164,23 +168,23 @@ describe('usageStatsController', () => {
         });
         it('shouldReturnData', async () => {
             const resp = await supertest(server).get('/billing/reports/installedApps').query({
-                tenantId: 't1234',
+                tenantId: 't123456789',
                 installedDate: '2021-02-18T23:59:59Z',
                 endUserId: '1235',
             }).set(authorization);
             assert.deepEqual(resp.body.rows.length, 4);
             assert.deepEqual(resp.body.rows, [
                 {
-                    appName: 'neco', installed: '2021-01-01T00:00:00.000Z', instanceId: 'inst1234',
+                    appId: 'neco', appName: 'neco', installed: '2021-01-01T00:00:00.000Z', instanceId: 'inst1234',
                 },
                 {
-                    appName: 'neco', installed: '2021-01-01T00:00:00.000Z', instanceId: 'inst1235',
+                    appId: 'neco', appName: 'neco', installed: '2021-01-01T00:00:00.000Z', instanceId: 'inst1235',
                 },
                 {
-                    appName: 'neco1', installed: '2021-02-01T00:00:00.000Z', instanceId: 'inst1234',
+                    appId: 'neco1', appName: 'neco1', installed: '2021-02-01T00:00:00.000Z', instanceId: 'inst1234',
                 },
                 {
-                    appName: 'neco1', installed: '2021-02-01T00:00:00.000Z', instanceId: 'inst1235',
+                    appId: 'neco1', appName: 'neco1', installed: '2021-02-01T00:00:00.000Z', instanceId: 'inst1235',
                 },
             ]);
             assert.deepEqual(resp.statusCode, 200);
@@ -190,7 +194,7 @@ describe('usageStatsController', () => {
     describe('usageStatsTimeBucketApps', () => {
         it('shouldReturnData', async () => {
             const resp = await supertest(server).get('/billing/reports/timeBucketApps').query({
-                tenantId: 't1234',
+                tenantId: 't123456789',
                 timeRangeStart: '2018-07-20T05:17:36Z',
                 timeRangeEnd: '2024-07-20T05:17:36Z',
                 endUserId: '1235',
@@ -198,15 +202,17 @@ describe('usageStatsController', () => {
             assert.deepEqual(resp.body.rows.length, 3);
             assert.deepEqual(resp.body.rows, [
                 {
-                    appNames: ['neco'], instanceIds: ['inst1234', 'inst1235'], formattedDate: '01/21', totalCost: 1000000,
+                    appIds: ['neco'], appNames: ['neco'], instanceIds: ['inst1234', 'inst1235'], formattedDate: '01/21', totalCost: 1000000,
                 },
                 {
+                    appIds: ['neco', 'neco1'],
                     appNames: ['neco', 'neco1'],
                     instanceIds: ['inst1234', 'inst1235'],
                     formattedDate: '02/21',
                     totalCost: 2200000,
                 },
                 {
+                    appIds: ['neco', 'neco1'],
                     appNames: ['neco', 'neco1'],
                     instanceIds: ['inst1234', 'inst1235'],
                     formattedDate: '03/21',
@@ -220,7 +226,7 @@ describe('usageStatsController', () => {
     describe('usageStatsTimeBucketUsers', () => {
         it('shouldReturnData', async () => {
             const resp = await supertest(server).get('/billing/reports/timeBucketUsers').query({
-                tenantId: 't1234',
+                tenantId: 't123456789',
                 timeRangeStart: '2018-07-20T05:17:36Z',
                 timeRangeEnd: '2024-07-20T05:17:36Z',
                 appName: 'neco1',

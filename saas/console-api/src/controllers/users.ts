@@ -1,15 +1,15 @@
 import { Request, Response } from 'express';
 import { ResourceEnum } from '../enums/ResourceEnum';
-import PermissionsError from '../errors/PermissionsError';
 import handleError from '../handlers/errorHandler';
 import { usersService } from '../index';
-import { getLoggedUser, getLoggedUserPermissions, hasPermission } from '../security/securityService';
+import { preprocessRequest } from '../security/securityService';
 
 export interface IUserCreateParams extends IUserUpdateParams {
     email?: string;
 }
 
 export interface IUserUpdateParams {
+    customTenantId?: string;
     phoneNumber?: string;
     displayName?: string;
     photoUrl?: string;
@@ -21,32 +21,13 @@ export interface IUserSearchQuery {
     email?: string;
     uid?: string;
     tenantId?: string;
-}
-
-function preprocessRequest(req: Request, permission: ResourceEnum): { query: IUserSearchQuery; tenantId: string } {
-    const tenantId = getLoggedUser(req);
-    const query = { ...req.query, ...req.params } as unknown as IUserSearchQuery;
-    const permissions = getLoggedUserPermissions(req);
-
-    let allowed = true;
-
-    if (!hasPermission(permissions, permission)) {
-        allowed = false;
-    } else if (query.tenantId && query.tenantId !== tenantId) {
-        allowed = hasPermission(permissions, ResourceEnum.USE_ANOTHER_TENANT_ID);
-    }
-
-    if (!allowed) {
-        throw new PermissionsError();
-    }
-
-    return { query, tenantId };
+    gTenantId?: string;
 }
 
 export async function usersList(req: Request, res: Response): Promise<void> {
     try {
-        const { query, tenantId } = preprocessRequest(req, ResourceEnum.USERS_SEARCH);
-        res.status(200).send(await usersService.getUsersList(query, tenantId));
+        const { query, gTenantId } = await preprocessRequest<IUserSearchQuery>(req, ResourceEnum.USERS_SEARCH);
+        res.status(200).send(await usersService.getUsersList(query, gTenantId));
     } catch (e) {
         handleError(e as Error, req, res);
     }
@@ -54,8 +35,8 @@ export async function usersList(req: Request, res: Response): Promise<void> {
 
 export async function usersGet(req: Request, res: Response): Promise<void> {
     try {
-        const { query, tenantId } = preprocessRequest(req, ResourceEnum.GET_USER);
-        res.status(200).send(await usersService.getUser(query, tenantId));
+        const { query, gTenantId } = await preprocessRequest<IUserSearchQuery>(req, ResourceEnum.GET_USER);
+        res.status(200).send(await usersService.getUser(query, gTenantId));
     } catch (e) {
         handleError(e as Error, req, res);
     }
@@ -63,8 +44,8 @@ export async function usersGet(req: Request, res: Response): Promise<void> {
 
 export async function usersCreate(req: Request, res: Response): Promise<void> {
     try {
-        const { query, tenantId } = preprocessRequest(req, ResourceEnum.CREATE_USER);
-        res.status(200).send(await usersService.createUser(query, req.body as unknown as IUserCreateParams, tenantId));
+        const { query, gTenantId } = await preprocessRequest<IUserSearchQuery>(req, ResourceEnum.CREATE_USER);
+        res.status(200).send(await usersService.createUser(query, req.body as unknown as IUserCreateParams, gTenantId));
     } catch (e) {
         handleError(e as Error, req, res);
     }
@@ -72,8 +53,8 @@ export async function usersCreate(req: Request, res: Response): Promise<void> {
 
 export async function usersUpdate(req: Request, res: Response): Promise<void> {
     try {
-        const { query, tenantId } = preprocessRequest(req, ResourceEnum.UPDATE_USER);
-        res.status(200).send(await usersService.updateUser(query, req.body as unknown as IUserUpdateParams, tenantId));
+        const { query, gTenantId } = await preprocessRequest<IUserSearchQuery>(req, ResourceEnum.UPDATE_USER);
+        res.status(200).send(await usersService.updateUser(query, req.body as unknown as IUserUpdateParams, gTenantId));
     } catch (e) {
         handleError(e as Error, req, res);
     }
@@ -81,8 +62,8 @@ export async function usersUpdate(req: Request, res: Response): Promise<void> {
 
 export async function usersDelete(req: Request, res: Response): Promise<void> {
     try {
-        const { query, tenantId } = preprocessRequest(req, ResourceEnum.DELETE_USER);
-        res.status(200).send(await usersService.deleteUser(query, tenantId));
+        const { query, gTenantId } = await preprocessRequest<IUserSearchQuery>(req, ResourceEnum.DELETE_USER);
+        res.status(200).send(await usersService.deleteUser(query, gTenantId));
     } catch (e) {
         handleError(e as Error, req, res);
     }
@@ -90,8 +71,11 @@ export async function usersDelete(req: Request, res: Response): Promise<void> {
 
 export async function userSendResetPasswordEmail(req: Request, res: Response): Promise<void> {
     try {
-        const { query, tenantId } = preprocessRequest(req, ResourceEnum.GENERATE_RESET_PASSWORD_LINK);
-        res.status(200).send(await usersService.sendResetPasswordEmail(query, tenantId));
+        const { query, gTenantId } = await preprocessRequest<IUserSearchQuery>(
+            req,
+            ResourceEnum.GENERATE_RESET_PASSWORD_LINK,
+        );
+        res.status(200).send(await usersService.sendResetPasswordEmail(query, gTenantId));
     } catch (e) {
         handleError(e as Error, req, res);
     }

@@ -11,13 +11,14 @@ import UserDeleteError from '../errors/UserDeleteError';
 
 export default class UsersService {
 
-    public async getUsersList(query: IUserSearchQuery, tenantId: string): Promise<{ rows: unknown }> {
-        const tenantAuth = this.prepTenantAuth(query, tenantId);
+    public async getUsersList(query: IUserSearchQuery, gTenantId: string): Promise<{ rows: unknown }> {
+        const tenantAuth = this.prepTenantAuth(query, gTenantId);
         let users;
 
         try {
             if (query.emails) {
-                const emails = query.emails.split(',').map((email) => ({ email }));
+                const emails = query.emails.split(',')
+                    .map((email) => ({ email }));
 
                 users = await tenantAuth.getUsers(emails);
             } else {
@@ -30,14 +31,15 @@ export default class UsersService {
         return { rows: users.users.map(this.mapUserRecordToExport.bind(this)) };
     }
 
-    public async getUser(query: IUserSearchQuery, tenantId: string): Promise<{ user: unknown }> {
-        const tenantAuth = this.prepTenantAuth(query, tenantId);
+    public async getUser(query: IUserSearchQuery, gTenantId: string): Promise<{ user: unknown }> {
+        const tenantAuth = this.prepTenantAuth(query, gTenantId);
         let user = null;
 
         try {
-            await tenantAuth.getUser(query.uid ?? '').then((userRecord) => {
-                user = this.mapUserRecordToExport(userRecord);
-            });
+            await tenantAuth.getUser(query.uid ?? '')
+                .then((userRecord) => {
+                    user = this.mapUserRecordToExport(userRecord);
+                });
         } catch (e) {
             throw new UserSearchError((e as Error).message);
         }
@@ -48,22 +50,29 @@ export default class UsersService {
     public async createUser(
         query: IUserSearchQuery,
         userCreateParams: IUserCreateParams,
-        tenantId: string,
+        gTenantId: string,
     ): Promise<{ user: unknown }> {
-        const tenantAuth = this.prepTenantAuth(query, tenantId);
-        let createdUser = null;
+        const tenantAuth = this.prepTenantAuth(query, gTenantId);
+        let createdUser: IUser | undefined;
 
         try {
             await tenantAuth
                 .createUser(userCreateParams)
-                .then((userRecord) => {
-                    createdUser = this.mapUserRecordToExport(userRecord);
+                .then(async (userRecord) => {
+                    let user = userRecord;
+                    if (userCreateParams.customTenantId) {
+                        await tenantAuth.setCustomUserClaims(user.uid, {
+                            customTenantId: userCreateParams.customTenantId,
+                        });
+                        user = await tenantAuth.getUser(user.uid ?? '');
+                    }
+                    createdUser = this.mapUserRecordToExport(user);
                 });
         } catch (e) {
             throw new UserCreationError((e as Error).message);
         }
 
-        await this.sendResetPasswordEmail(query, tenantId, userCreateParams.email);
+        await this.sendResetPasswordEmail(query, gTenantId, userCreateParams.email);
 
         return { user: createdUser };
     }
@@ -71,16 +80,23 @@ export default class UsersService {
     public async updateUser(
         query: IUserSearchQuery,
         userCreateParams: IUserUpdateParams,
-        tenantId: string,
+        gTenantId: string,
     ): Promise<{ user: unknown }> {
-        const tenantAuth = this.prepTenantAuth(query, tenantId);
-        let updatedUser = null;
+        const tenantAuth = this.prepTenantAuth(query, gTenantId);
+        let updatedUser: IUser | undefined;
 
         try {
             await tenantAuth
                 .updateUser(query.uid ?? '', userCreateParams)
-                .then((userRecord) => {
-                    updatedUser = this.mapUserRecordToExport(userRecord);
+                .then(async (userRecord) => {
+                    let user = userRecord;
+                    if (userCreateParams.customTenantId) {
+                        await tenantAuth.setCustomUserClaims(user.uid, {
+                            customTenantId: userCreateParams.customTenantId,
+                        });
+                        user = await tenantAuth.getUser(user.uid ?? '');
+                    }
+                    updatedUser = this.mapUserRecordToExport(user);
                 });
         } catch (e) {
             throw new UserCreationError((e as Error).message);
@@ -89,8 +105,8 @@ export default class UsersService {
         return { user: updatedUser };
     }
 
-    public async deleteUser(query: IUserSearchQuery, tenantId: string): Promise<{ msg: string }> {
-        const tenantAuth = this.prepTenantAuth(query, tenantId);
+    public async deleteUser(query: IUserSearchQuery, gTenantId: string): Promise<{ msg: string }> {
+        const tenantAuth = this.prepTenantAuth(query, gTenantId);
 
         try {
             await tenantAuth
@@ -104,11 +120,11 @@ export default class UsersService {
 
     public async sendResetPasswordEmail(
         query: IUserSearchQuery,
-        tenantId: string,
+        gTenantId: string,
         email: string | null = null,
     ): Promise<{ msg: string }> {
         const fbAuth = getAuth(fbApp);
-        fbAuth.tenantId = query.tenantId ?? tenantId;
+        fbAuth.tenantId = query.gTenantId ?? gTenantId;
 
         try {
             await sendPasswordResetEmail(fbAuth, email ?? query.email ?? '');
@@ -119,7 +135,8 @@ export default class UsersService {
         return { msg: 'Reset password link successfully sent!' };
     }
 
-    private mapUserRecordToExport(user: UserRecord): unknown {
+    private mapUserRecordToExport(user: UserRecord): IUser {
+        const customTenantId = user.customClaims?.customTenantId ? user.customClaims?.customTenantId : undefined;
         return {
             uid: user.uid,
             email: user.email,
@@ -144,12 +161,39 @@ export default class UsersService {
             passwordSalt: user.passwordSalt,
             tokensValidAfterTime: user.tokensValidAfterTime,
             tenantId: user.tenantId ?? undefined,
+            customTenantId,
         };
     }
 
-    private prepTenantAuth(query: IUserSearchQuery, tenantId: string): TenantAwareAuth {
+    private prepTenantAuth(query: IUserSearchQuery, gTenantId: string): TenantAwareAuth {
         return authApp
-            .auth().tenantManager().authForTenant(query.tenantId ?? tenantId);
+            .auth()
+            .tenantManager()
+            .authForTenant(query.gTenantId ?? gTenantId);
     }
 
+}
+
+export interface IUser {
+    metadata: { lastSignTime: string; creationTime: string };
+    providerData: {
+        uid: string;
+        photoUrl: string;
+        phoneNumber: string;
+        displayName: string;
+        providerId: string;
+        email: string;
+    }[];
+    displayName: string | undefined;
+    passwordHash: string | undefined;
+    uid: string;
+    emailVerified: boolean;
+    photoUrl: string | undefined;
+    phoneNumber: string | undefined;
+    tenantId: string | undefined;
+    customTenantId: string | undefined;
+    disabled: boolean;
+    passwordSalt: string | undefined;
+    tokensValidAfterTime: string | undefined;
+    email: string | undefined;
 }
