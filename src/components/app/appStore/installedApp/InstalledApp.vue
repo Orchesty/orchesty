@@ -177,7 +177,7 @@ import AppButton from '@/components/commons/button/AppButton'
 import ActionsWrapper from '@/components/layout/actions/ActionsWrapper'
 import ContentBasic from '@/components/layout/content/ContentBasic'
 import UninstallAppModal from '@/components/app/appStore/modal/UninstallAppModal'
-import { API } from "@/api";
+import { API } from '@/api'
 
 export default {
   name: 'InstalledApp',

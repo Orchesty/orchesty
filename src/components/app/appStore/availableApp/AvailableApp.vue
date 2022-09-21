@@ -14,6 +14,18 @@
         </div>
       </v-col>
     </v-row>
+    <v-row>
+      <v-col>
+        <v-tabs height="24">
+          <v-tab v-if="appActive.info" class="text-transform-none body-2 font-weight-medium primary--text">
+            {{ $t('appStore.app.tabs.info') }}
+          </v-tab>
+        </v-tabs>
+      </v-col>
+    </v-row>
+
+    <!-- eslint-disable-next-line vue/no-v-html -->
+    <div class="info-wrapper mt-5" v-html="appActive.info" />
   </content-basic>
 </template>
 
@@ -53,3 +65,15 @@ export default {
   },
 }
 </script>
+
+<style lang="scss" scoped>
+.text-transform-none {
+  text-align: start;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.info-wrapper {
+  max-width: 80ch;
+}
+</style>

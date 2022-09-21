@@ -12,7 +12,10 @@
       "uninstall": "Uninstall",
       "installed": "Installed",
       "appUninstall": "Uninstall Application",
-      "appUninstallConfirmation": "Uninstall application {app}"
+      "appUninstallConfirmation": "Uninstall application {app}",
+      "tabs": {
+        "info": "Info"
+      }
     },
     "detail": {
       "appStore": "Applications",
