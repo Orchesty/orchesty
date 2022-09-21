@@ -1,8 +1,6 @@
 import { TRASH } from './types'
-import { callApi, dispatchRoot, withNamespace } from '../../utils'
+import { callApi } from '../../utils'
 import { API } from '../../../api'
-import { GRID } from '../grid/types'
-import { DATA_GRIDS } from '@/services/enums/dataGridEnums'
 import { addSuccessMessage } from '../../../services/utils/flashMessages'
 
 export default {
@@ -15,10 +13,6 @@ export default {
         },
       })
 
-      dispatchRoot(dispatch, withNamespace(DATA_GRIDS.TRASH, GRID.ACTIONS.FETCH_WITH_INITIAL_STATE), {
-        namespace: DATA_GRIDS.TRASH,
-      })
-
       addSuccessMessage(dispatch, API.userTask.accept.id, 'flashMessages.trash.accept')
 
       return true
@@ -26,18 +20,13 @@ export default {
       return false
     }
   },
-  [TRASH.ACTIONS.TRASH_ACCEPT_LIST]: async ({ dispatch, rootState }, payload) => {
+  [TRASH.ACTIONS.TRASH_ACCEPT_LIST]: async ({ dispatch }, payload) => {
     try {
       await callApi(dispatch, {
         requestData: { ...API.userTask.acceptAll },
         params: {
           ...payload,
         },
-      })
-
-      dispatchRoot(dispatch, withNamespace(DATA_GRIDS.TRASH, GRID.ACTIONS.FETCH_WITH_INITIAL_STATE), {
-        namespace: DATA_GRIDS.TRASH,
-        paging: rootState[DATA_GRIDS.TRASH].paging,
       })
 
       addSuccessMessage(dispatch, API.userTask.acceptAll.id, 'flashMessages.trash.acceptList')
@@ -70,10 +59,6 @@ export default {
         },
       })
 
-      dispatchRoot(dispatch, withNamespace(DATA_GRIDS.TRASH, GRID.ACTIONS.FETCH_WITH_INITIAL_STATE), {
-        namespace: DATA_GRIDS.TRASH,
-      })
-
       addSuccessMessage(dispatch, API.userTask.reject.id, 'flashMessages.trash.reject')
 
       return true
@@ -81,18 +66,13 @@ export default {
       return false
     }
   },
-  [TRASH.ACTIONS.TRASH_REJECT_LIST]: async ({ dispatch, rootState }, payload) => {
+  [TRASH.ACTIONS.TRASH_REJECT_LIST]: async ({ dispatch }, payload) => {
     try {
       await callApi(dispatch, {
         requestData: { ...API.userTask.rejectAll },
         params: {
           ...payload,
         },
-      })
-
-      dispatchRoot(dispatch, withNamespace(DATA_GRIDS.TRASH, GRID.ACTIONS.FETCH_WITH_INITIAL_STATE), {
-        namespace: DATA_GRIDS.TRASH,
-        paging: rootState[DATA_GRIDS.TRASH].paging,
       })
 
       addSuccessMessage(dispatch, API.userTask.rejectAll.id, 'flashMessages.trash.rejectList')
@@ -109,10 +89,6 @@ export default {
         params: {
           ...payload,
         },
-      })
-
-      dispatchRoot(dispatch, withNamespace(DATA_GRIDS.TRASH, GRID.ACTIONS.FETCH_WITH_INITIAL_STATE), {
-        namespace: DATA_GRIDS.TRASH,
       })
 
       dispatch(TRASH.ACTIONS.TRASH_TASK_GET, payload.id)
