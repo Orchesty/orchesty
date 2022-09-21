@@ -17,8 +17,6 @@ import {
 import { callApi } from "@/utils";
 import { api } from "@/api";
 import SimpleTable from "@/components/commons/tables/SimpleTable.vue";
-import { Getter } from "vuex-class";
-import { AuthGetters, authNamespace, User } from "@/store/modules/auth";
 
 @Component({
   components: {
@@ -27,9 +25,6 @@ import { AuthGetters, authNamespace, User } from "@/store/modules/auth";
   },
 })
 export default class CustomerBillingTable extends Vue {
-  @Getter(`${authNamespace}/${AuthGetters.GetUser}`)
-  currentUser!: User;
-
   @Prop({ type: String, required: true })
   customerId!: string;
 
@@ -64,7 +59,6 @@ export default class CustomerBillingTable extends Vue {
       {
         timeRangeStart: new Date(0).toISOString(),
         timeRangeEnd: new Date().toISOString(),
-        tenantId: this.currentUser.tenantId ?? undefined,
         endUserId: this.customerId,
       }
     );

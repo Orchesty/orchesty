@@ -90,9 +90,7 @@ export default class UsersPage extends Vue {
 
   async created() {
     this.isLoading = true;
-    this.users = await callApi<UsersListRequest>(api.users.list, {
-      tenantId: this.currentUser.tenantId ?? undefined,
-    });
+    this.users = await callApi<UsersListRequest>(api.users.list);
     this.isLoading = false;
   }
 }

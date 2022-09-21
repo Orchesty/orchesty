@@ -52,8 +52,6 @@ import {
 } from "@/api/generated";
 import { callApi } from "@/utils/apiClient";
 import { Component, Vue } from "vue-property-decorator";
-import { authNamespace, AuthGetters, User } from "@/store/modules/auth";
-import { Getter } from "vuex-class";
 import { Routes } from "@/enums/Routes";
 import BaseProgressBarLinear from "@/components/commons/BaseProgressBarLinear.vue";
 import SubHeading from "@/components/commons/typography/SubHeading.vue";
@@ -62,9 +60,6 @@ import SubHeading from "@/components/commons/typography/SubHeading.vue";
   components: { SubHeading, BaseProgressBarLinear },
 })
 export default class AppsOverview extends Vue {
-  @Getter(`${authNamespace}/${AuthGetters.GetUser}`)
-  currentUser!: User;
-
   apps: UsageStatsAppsRowsInner = [] as UsageStatsAppsRowsInner;
   isLoading = false;
 
@@ -75,7 +70,6 @@ export default class AppsOverview extends Vue {
     this.apps = await callApi<UsageStatsAppsRequest>(api.overview.apps, {
       timeRangeStart: new Date(0).toISOString(),
       timeRangeEnd: new Date().toISOString(),
-      tenantId: this.currentUser.tenantId ?? undefined,
     });
     this.isLoading = false;
   }
