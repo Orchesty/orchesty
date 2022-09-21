@@ -75,7 +75,7 @@ export default {
         return
       }
       if (this.callbackData && this.callbackData.visibility === TOPOLOGY_ENUMS.PUBLIC) {
-        this.onSubmit({ descr: this.form.description, folder: this.form.folder })
+        this.onSubmit({ description: this.form.description, folder: this.form.folder })
       } else {
         this.onSubmit(this.form)
       }
