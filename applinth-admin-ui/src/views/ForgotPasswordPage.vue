@@ -10,17 +10,25 @@
           tag="form"
           @submit.prevent="submit"
           @keydown.enter="submit"
+          v-slot="{ invalid }"
         >
+          <TextField
+            :label="$t('formLabels.tenantId')"
+            type="text"
+            rules="required"
+            :name="$t('formLabels.tenantId')"
+            autofocus
+            v-model="formData.tenantId"
+          />
           <TextField
             :label="$t('formLabels.email')"
             type="email"
             rules="required|email"
             :name="$t('formLabels.email')"
-            autofocus
-            v-model="email"
+            v-model="formData.email"
           />
           <div class="text-right">
-            <Button type="submit" @click="submit">{{
+            <Button type="submit" :disabled="invalid">{{
               $t("button.send")
             }}</Button>
           </div>
@@ -37,6 +45,9 @@ import { Component, Vue } from "vue-property-decorator";
 import { ValidationObserver } from "vee-validate";
 import AuthSplitLayout from "@/components/commons/layouts/AuthSplitLayout.vue";
 import CenteredLayout from "@/components/commons/layouts/CenteredLayout.vue";
+import { Action } from "vuex-class";
+import { AuthActions, authNamespace } from "@/store/modules/auth";
+import { TResetPasswordForm } from "@/components/auth/types";
 
 @Component({
   components: {
@@ -48,22 +59,21 @@ import CenteredLayout from "@/components/commons/layouts/CenteredLayout.vue";
   },
 })
 export default class ForgotPasswordPage extends Vue {
-  email = "";
+  @Action(`${authNamespace}/${AuthActions.SendResetPasswordLink}`)
+  private sendResetPasswordLink!: (
+    payload: TResetPasswordForm
+  ) => Promise<boolean>;
+
+  formData: TResetPasswordForm = {
+    email: "",
+    tenantId: "",
+  };
 
   async submit(): Promise<void> {
-    // TODO implement using firebase
-    // const { data } = await apiClient.callGraphqlPublic<
-    //   ResetPasswordMutation,
-    //   ResetPasswordMutationVariables
-    // >({
-    //   ...api.auth.resetPassword,
-    //   variables: {
-    //     input: { username: this.email },
-    //   },
-    // });
-    // if (data?.resetPassword) {
-    //   this.$router.push({ name: Routes.ResetPassword });
-    // }
+    if (await this.sendResetPasswordLink(this.formData)) {
+      this.formData.email = "";
+      this.formData.tenantId = "";
+    }
   }
 }
 </script>

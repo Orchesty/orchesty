@@ -4,7 +4,6 @@ import navigation from "./navigation.json";
 import loginPage from "./pages/loginPage.json";
 import forgotPasswordPage from "./pages/forgotPasswordPage.json";
 import formLabels from "./formLabels.json";
-import newPasswordPage from "./pages/newPasswordPage.json";
 import overviewPage from "./pages/overviewPage.json";
 import customersPage from "./pages/customersPage.json";
 import grids from "./grids.json";
@@ -14,8 +13,6 @@ import usersPage from "./pages/usersPage.json";
 import customerBillingPage from "./pages/customerBillingPage.json";
 import customerDetailPage from "./pages/customerDetailPage.json";
 import table from "./table.json";
-import resetPasswordPage from "./pages/resetPasswordPage.json";
-import passwordChangedPage from "./pages/passwordChangedPage.json";
 import en from "vuetify/src/locale/en";
 import error from "./error.json";
 import message from "./message.json";
@@ -27,7 +24,6 @@ export default {
   ...forgotPasswordPage,
   ...loginPage,
   ...formLabels,
-  ...newPasswordPage,
   ...overviewPage,
   ...customersPage,
   ...grids,
@@ -37,8 +33,6 @@ export default {
   ...customerBillingPage,
   ...customerDetailPage,
   ...table,
-  ...resetPasswordPage,
-  ...passwordChangedPage,
   ...en,
   ...error,
   ...message,

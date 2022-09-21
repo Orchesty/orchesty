@@ -53,30 +53,6 @@ const authRoutes = [
       auth: ViewAuth.Public,
     },
   },
-  {
-    path: "/reset-password",
-    name: Routes.ResetPassword,
-    component: () => import("../views/ResetPasswordPage.vue"),
-    meta: {
-      auth: ViewAuth.Public,
-    },
-  },
-  {
-    path: "/new-password/:token",
-    name: Routes.NewPassword,
-    component: () => import("../views/NewPasswordPage.vue"),
-    meta: {
-      auth: ViewAuth.Public,
-    },
-  },
-  {
-    path: "/password-changed",
-    name: Routes.ChangedPassword,
-    component: () => import("../views/ChangedPasswordPage.vue"),
-    meta: {
-      auth: ViewAuth.Public,
-    },
-  },
 ];
 
 const overview = {
@@ -112,7 +88,7 @@ const applications = [
             to: null,
           },
           {
-            text: 'Application Item',
+            text: "Application Item",
             to: { name: Routes.ApplicationDetail },
           },
         ];

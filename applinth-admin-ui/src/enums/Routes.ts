@@ -12,9 +12,6 @@ export enum Routes {
   Login = "LOGIN",
   Profile = "PROFILE",
   ForgotPassword = "FORGOT_PASSWORD",
-  ResetPassword = "RESET_PASSWORD",
-  NewPassword = "NEW_PASSWORD",
-  ChangedPassword = "CHANGED_PASSWORD",
 
   // Users
   Users = "USERS",

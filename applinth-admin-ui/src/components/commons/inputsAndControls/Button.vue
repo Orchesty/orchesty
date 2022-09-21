@@ -2,7 +2,7 @@
   <v-btn
     :fab="fab"
     :icon="icon"
-    :[type]="type"
+    :type="type"
     :height="icon ? '36' : height"
     :class="customClass"
     :color="color"
