@@ -1,7 +1,13 @@
 import { Request } from 'express';
 import { decode } from 'jsonwebtoken';
 import { app } from '../config/config';
+import { CollectionEnum } from '../enums/CollectionEnum';
+import { ResourceEnum } from '../enums/ResourceEnum';
 import JWTError, { BAD_JWT_PAYLOAD, ERROR_PARSING_AUTHORIZATION_HEADER, MISSING_JWT_TOKEN } from '../errors/JWTError';
+import PermissionsError from '../errors/PermissionsError';
+import TenantSearchError from '../errors/TenantSearchError';
+import { db } from '../index';
+import { ITenant } from '../tenants/TenantService';
 
 export const AUTHORIZATION = 'authorization';
 export const X_ENDPOINT_API_USER_INFO = 'x-endpoint-api-userinfo';
@@ -50,10 +56,12 @@ export function getJWTPayload(req: Request): IJWTPayload {
     throw new JWTError(MISSING_JWT_TOKEN);
 }
 
-export function getLoggedUser(req: Request): string {
+export async function getLoggedUser(req: Request): Promise<ITenant> {
     const jwtPayload = getJWTPayload(req);
     if (jwtPayload.firebase?.tenant) {
-        return jwtPayload.firebase.tenant;
+        return await db.getCloudCollection(CollectionEnum.TENANT).findOne({
+            tenantId: jwtPayload.firebase.tenant,
+        }) as unknown as ITenant;
     }
 
     throw new JWTError(BAD_JWT_PAYLOAD);
@@ -70,4 +78,44 @@ export function hasPermission(permissions: string[], resource: string): boolean 
     // return permissions.includes(resource);
 
     return true;
+}
+
+export async function preprocessRequest<IQuery extends { tenantId?: string; gTenantId?: string }>(
+    req: Request,
+    permission: ResourceEnum,
+): Promise<{ query: IQuery; tenantId: string; gTenantId: string }> {
+    const tenant = await getLoggedUser(req);
+    const query: IQuery = { ...req.query, ...req.params } as unknown as IQuery;
+    const permissions = getLoggedUserPermissions(req);
+
+    let allowed = true;
+
+    if (!hasPermission(permissions, permission)) {
+        allowed = false;
+    } else if (query.tenantId && tenant && query.tenantId !== tenant.tenantId) {
+        allowed = hasPermission(permissions, ResourceEnum.USE_ANOTHER_TENANT_ID);
+    }
+
+    if (!allowed) {
+        throw new PermissionsError();
+    }
+
+    if (permission === ResourceEnum.DELETE_TENANT && tenant && query.tenantId === tenant.tenantId) {
+        throw new PermissionsError('Tenant cannot delete himself!');
+    }
+
+    if (query.tenantId) {
+        const queriedTenant = await db.getCloudCollection(CollectionEnum.TENANT).findOne<ITenant>({
+            tenantId: query.tenantId,
+        });
+
+        if (queriedTenant) {
+            query.tenantId = queriedTenant.tenantId;
+            query.gTenantId = queriedTenant.gTenantId;
+        } else {
+            throw new TenantSearchError(`Tenant with tenantId ${query.tenantId} not found!`);
+        }
+    }
+
+    return { query, tenantId: tenant.tenantId, gTenantId: tenant.gTenantId };
 }

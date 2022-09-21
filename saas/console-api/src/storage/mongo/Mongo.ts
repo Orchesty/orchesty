@@ -1,8 +1,8 @@
-import { Collection, MongoClient } from 'mongodb';
+import { Collection, IndexDescription, MongoClient } from 'mongodb';
+import { app } from '../../config/config';
+import { CollectionEnum } from '../../enums/CollectionEnum';
 
 export default class Mongo {
-
-    protected readonly dbName: string | undefined = undefined;
 
     protected readonly client: MongoClient;
 
@@ -18,9 +18,34 @@ export default class Mongo {
         return this.client.close();
     }
 
-    public getCollection(collection: string): Collection {
-        return this.client.db(this.dbName)
-            .collection(collection);
+    public getBillingCollection(collection: string): Collection {
+        return this.client.db(app.mongoBillingDbName).collection(collection);
+    }
+
+    public getCloudCollection(collection: string): Collection {
+        return this.client.db(app.mongoCloudDbName).collection(collection);
+    }
+
+    public async createBillingIndexes(): Promise<void> {
+        const specs: IndexDescription[] = [
+            { key: { start: 1 } },
+            { key: { end: 1 } },
+            { key: { tenantId: 1 } },
+            { key: { endUserId: 1 } },
+            { key: { endUserDisplayId: 1 } },
+            { key: { appName: 1 } },
+        ];
+        await this.getBillingCollection(CollectionEnum.USAGE_STATS_HOURLY).createIndexes(specs);
+        await this.getBillingCollection(CollectionEnum.USAGE_STATS_DAILY).createIndexes(specs);
+        await this.getBillingCollection(CollectionEnum.USAGE_STATS_MONTHLY).createIndexes(specs);
+    }
+
+    public async createCloudIndexes(): Promise<void> {
+        const specs: IndexDescription[] = [
+            { key: { instanceId: 1 } },
+            { key: { tenantId: 1 } },
+        ];
+        await this.getCloudCollection(CollectionEnum.TENANT).createIndexes(specs);
     }
 
 }

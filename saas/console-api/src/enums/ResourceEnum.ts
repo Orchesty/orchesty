@@ -1,5 +1,5 @@
 export enum ResourceEnum {
-    GET_USAGE_STATS_FROM_ANOTHER_TENANT = 'get_usage_stats_from_another_tenant',
+    LIST_USAGE_STATS = 'list_usage_stats',
 
     USERS_LIST_ALL = 'users_list_all',
     USERS_SEARCH = 'users_search',
@@ -19,7 +19,7 @@ export enum ResourceEnum {
 
 export function getAllResources(): ResourceEnum[] {
     return [
-        ResourceEnum.GET_USAGE_STATS_FROM_ANOTHER_TENANT,
+        ResourceEnum.LIST_USAGE_STATS,
         ResourceEnum.USERS_LIST_ALL,
         ResourceEnum.USERS_SEARCH,
         ResourceEnum.GET_USER,

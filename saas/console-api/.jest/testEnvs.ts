@@ -2,6 +2,7 @@
 import * as process from 'process';
 
 process.env.APP_ENV = 'debug'
+process.env.NODE_ENV = 'dev'
 
 if (process.env.JEST_DOCKER) {
   // --- DOCKER ---

@@ -650,6 +650,9 @@ components:
                             appName:
                                 description: Application name (also ID)
                                 type: string
+                            appId:
+                                description: Application id (also Name)
+                                type: string
                             endUsers:
                                 description: Number of unique end users having the app installed within the given period
                                 type: integer
@@ -674,6 +677,9 @@ components:
                         properties:
                             appName:
                                 description: Application name (also ID)
+                                type: string
+                            appId:
+                                description: Application ID (also Name)
                                 type: string
                             installed:
                                 description: App installation date
@@ -709,6 +715,9 @@ components:
                             appName:
                                 description: Application name (also ID)
                                 type: string
+                            appId:
+                                description: Application Id (also Name)
+                                type: string
                             totalCost:
                                 description: Total installs cost for this app
                                 type: integer
@@ -726,6 +735,11 @@ components:
                                 type: string
                             appNames:
                                 description: Array of application names
+                                type: array
+                                items:
+                                    type: string
+                            appIds:
+                                description: Array of application ids
                                 type: array
                                 items:
                                     type: string
@@ -878,6 +892,8 @@ components:
             type: object
             properties:
                 tenantId:
+                    type: string
+                gTenantId:
                     type: string
                 instanceId:
                     type: string

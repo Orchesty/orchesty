@@ -1,9 +1,8 @@
 import { Request, Response } from 'express';
 import { ResourceEnum } from '../enums/ResourceEnum';
-import PermissionsError from '../errors/PermissionsError';
 import handleError from '../handlers/errorHandler';
 import { usageStatsService } from '../index';
-import { getLoggedUser, getLoggedUserPermissions, hasPermission } from '../security/securityService';
+import { preprocessRequest } from '../security/securityService';
 
 export interface IAppsAggregationParams {
     tenantId?: string;
@@ -17,24 +16,9 @@ export interface IAppsAggregationParams {
     granularity?: string;
 }
 
-function preprocessRequest(req: Request): { query: IAppsAggregationParams; tenantId: string } {
-    const query = req.query as unknown as IAppsAggregationParams;
-    const tenantId = getLoggedUser(req);
-    let allowed = true;
-
-    if (query.tenantId && query.tenantId !== tenantId) {
-        allowed = hasPermission(getLoggedUserPermissions(req), ResourceEnum.GET_USAGE_STATS_FROM_ANOTHER_TENANT);
-    }
-
-    if (!allowed) {
-        throw new PermissionsError();
-    }
-    return { query, tenantId };
-}
-
 export async function usageStatsApps(req: Request, res: Response): Promise<void> {
     try {
-        const { query, tenantId } = preprocessRequest(req);
+        const { query, tenantId } = await preprocessRequest<IAppsAggregationParams>(req, ResourceEnum.LIST_USAGE_STATS);
         const result = await usageStatsService.getDataForAppsAggregation(query, tenantId);
 
         res.status(200).send(result);
@@ -45,7 +29,7 @@ export async function usageStatsApps(req: Request, res: Response): Promise<void>
 
 export async function usageStatsInstalledApps(req: Request, res: Response): Promise<void> {
     try {
-        const { query, tenantId } = preprocessRequest(req);
+        const { query, tenantId } = await preprocessRequest<IAppsAggregationParams>(req, ResourceEnum.LIST_USAGE_STATS);
         const result = await usageStatsService.getDataForInstalledAppsAggregation(query, tenantId);
 
         res.status(200).send(result);
@@ -56,7 +40,7 @@ export async function usageStatsInstalledApps(req: Request, res: Response): Prom
 
 export async function usageStatsTimeBucketApps(req: Request, res: Response): Promise<void> {
     try {
-        const { query, tenantId } = preprocessRequest(req);
+        const { query, tenantId } = await preprocessRequest<IAppsAggregationParams>(req, ResourceEnum.LIST_USAGE_STATS);
         const result = await usageStatsService.getDataForTimeBucketAppsAggregation(query, tenantId);
 
         res.status(200).send(result);
@@ -67,7 +51,7 @@ export async function usageStatsTimeBucketApps(req: Request, res: Response): Pro
 
 export async function usageStatsTimeBucketUsers(req: Request, res: Response): Promise<void> {
     try {
-        const { query, tenantId } = preprocessRequest(req);
+        const { query, tenantId } = await preprocessRequest<IAppsAggregationParams>(req, ResourceEnum.LIST_USAGE_STATS);
         const result = await usageStatsService.getDataForTimeBucketUsersAggregation(query, tenantId);
 
         res.status(200).send(result);
@@ -78,7 +62,7 @@ export async function usageStatsTimeBucketUsers(req: Request, res: Response): Pr
 
 export async function usageStatsUsers(req: Request, res: Response): Promise<void> {
     try {
-        const { query, tenantId } = preprocessRequest(req);
+        const { query, tenantId } = await preprocessRequest<IAppsAggregationParams>(req, ResourceEnum.LIST_USAGE_STATS);
         const result = await usageStatsService.getDataForUsersAggregation(query, tenantId);
 
         res.status(200).send(result);

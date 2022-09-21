@@ -1,4 +1,4 @@
-import { db, initServices, createServer, dbCloud } from '../src';
+import { db, initServices, createServer } from '../src';
 import { generateAuth } from '../test/dataProvider';
 
 beforeAll(async () => {
@@ -8,7 +8,6 @@ beforeAll(async () => {
 
 afterAll(async () => {
   await db.disconnect();
-  await dbCloud.disconnect();
 })
 
 jest.mock('firebase/auth', () => ({

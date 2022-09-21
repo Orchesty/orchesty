@@ -9,24 +9,26 @@ import {
 import { sign } from 'jsonwebtoken';
 import { DateTime } from 'luxon';
 import { Document } from 'mongodb';
-import { db, dbCloud } from '../src';
+import { db } from '../src';
 import { CollectionEnum } from '../src/enums/CollectionEnum';
 import { getAllResources } from '../src/enums/ResourceEnum';
 import GetUsersResult = auth.GetUsersResult;
-import { IDbTenant } from '../src/tenants/TenantService';
+import { ITenant } from '../src/tenants/TenantService';
 
 function generateUsageStatsRow(
     start: DateTime,
     end: DateTime,
+    appId = 'neco1',
     appName = 'neco1',
     endUserId = '1235',
     instanceId = 'inst1234',
     installId = 'i1235',
-    tenantId = 't1234',
+    tenantId = 't123456789',
     cost = 100000,
 ): Document {
     return {
         appName,
+        appId,
         endUserId,
         endUserDisplayId: endUserId,
         installId,
@@ -46,7 +48,7 @@ export function generateAuth(): Auth {
 
 export function generateTenantMockedData(name = 'neco'): Tenant {
     return {
-        tenantId: 't1234',
+        tenantId: 't-123456789',
         displayName: name || null,
         emailSignInConfig: {
             enabled: true,
@@ -56,10 +58,11 @@ export function generateTenantMockedData(name = 'neco'): Tenant {
     } as Tenant;
 }
 
-export function generateDbTenantMockedData(tenantId = ''): IDbTenant {
+export function generateDbTenantMockedData(tenantId = ''): ITenant {
     return {
-        instanceId: 't123456789',
-        tenantId: tenantId || 't1234',
+        instances: [{ instanceId: '1234567890' }],
+        tenantId: tenantId || 't123456789',
+        gTenantId: tenantId || 't-123456789',
     };
 }
 
@@ -86,7 +89,7 @@ export function generateUserMockedData(name = 'neco'): UserRecord {
         },
         providerData: [],
         tokensValidAfterTime: 'Thu, 28 Jul 2022 08:21:20 GMT',
-        tenantId: 't1234',
+        tenantId: 't123456789',
         toJSON(): object {
             return {};
         },
@@ -121,14 +124,15 @@ export function generateUsersExport(name = 'neco'): unknown {
         },
         providerData: [],
         tokensValidAfterTime: 'Thu, 28 Jul 2022 08:21:20 GMT',
-        tenantId: 't1234',
+        tenantId: 't123456789',
     };
 }
 
 export function generateTenantsExport(name = 'neco'): unknown {
     let tenant = {
-        instanceId: 't123456789',
-        tenantId: 't1234',
+        instances: [{ instanceId: '1234567890' }],
+        tenantId: 't123456789',
+        gTenantId: 't-123456789',
         emailSignInConfig: {
             enabled: true,
             passwordRequired: true,
@@ -145,13 +149,15 @@ export function generateTenantsExport(name = 'neco'): unknown {
     return tenant;
 }
 
-export async function createDbTenants(tenantId = ''): Promise<void> {
-    await dbCloud.getCollection(CollectionEnum.TENANT).drop();
-    await dbCloud.getCollection(CollectionEnum.TENANT).insertOne(generateDbTenantMockedData(tenantId));
+export async function createDbTenants(tenantId = '', drop = true): Promise<void> {
+    if (drop) {
+        await db.getCloudCollection(CollectionEnum.TENANT).drop();
+    }
+    await db.getCloudCollection(CollectionEnum.TENANT).insertOne(generateDbTenantMockedData(tenantId));
 }
 
 export async function createUsageStats(): Promise<void> {
-    await db.getCollection(CollectionEnum.USAGE_STATS_MONTHLY)
+    await db.getBillingCollection(CollectionEnum.USAGE_STATS_MONTHLY)
         .drop();
     const startDate1 = DateTime.local(2021, 1, 1);
     const endDate1 = DateTime.local(2021, 1, 1)
@@ -163,29 +169,29 @@ export async function createUsageStats(): Promise<void> {
     const endDate3 = DateTime.local(2021, 3, 1)
         .endOf('month');
 
-    await db.getCollection(CollectionEnum.USAGE_STATS_MONTHLY)
+    await db.getBillingCollection(CollectionEnum.USAGE_STATS_MONTHLY)
         .insertMany([
-            generateUsageStatsRow(startDate1, endDate1, 'neco', '1235', 'inst1234', 'i1234', 't1234', 500000),
-            generateUsageStatsRow(startDate2, endDate2, 'neco', '1235', 'inst1234', 'i1234', 't1234', 1000000),
-            generateUsageStatsRow(startDate3, endDate3, 'neco', '1235', 'inst1234', 'i1234', 't1234', 1000000),
+            generateUsageStatsRow(startDate1, endDate1, 'neco', 'neco', '1235', 'inst1234', 'i1234', 't123456789', 500000),
+            generateUsageStatsRow(startDate2, endDate2, 'neco', 'neco', '1235', 'inst1234', 'i1234', 't123456789', 1000000),
+            generateUsageStatsRow(startDate3, endDate3, 'neco', 'neco', '1235', 'inst1234', 'i1234', 't123456789', 1000000),
             generateUsageStatsRow(startDate2, endDate2),
             generateUsageStatsRow(startDate3, endDate3),
-            generateUsageStatsRow(startDate3, endDate3, 'neco1', '1234', 'inst1234', 'i1236'),
-            generateUsageStatsRow(startDate3, endDate3, 'neco1', '1234', 'inst1234', 'i1236', 't123'),
-            generateUsageStatsRow(startDate1, endDate1, 'neco', '1235', 'inst1235', 'i1237', 't1234', 500000),
-            generateUsageStatsRow(startDate2, endDate2, 'neco', '1235', 'inst1235', 'i1237', 't1234', 1000000),
-            generateUsageStatsRow(startDate3, endDate3, 'neco', '1235', 'inst1235', 'i1237', 't1234', 1000000),
-            generateUsageStatsRow(startDate2, endDate2, 'neco1', '1235', 'inst1235', 'i1238'),
-            generateUsageStatsRow(startDate3, endDate3, 'neco1', '1235', 'inst1235', 'i1238'),
-            generateUsageStatsRow(startDate3, endDate3, 'neco1', '1234', 'inst1235', 'i1239'),
-            generateUsageStatsRow(startDate3, endDate3, 'neco1', '1234', 'inst1235', 'i1239', 't123'),
+            generateUsageStatsRow(startDate3, endDate3, 'neco1', 'neco1', '1234', 'inst1234', 'i1236'),
+            generateUsageStatsRow(startDate3, endDate3, 'neco1', 'neco1', '1234', 'inst1234', 'i1236', 't123'),
+            generateUsageStatsRow(startDate1, endDate1, 'neco', 'neco', '1235', 'inst1235', 'i1237', 't123456789', 500000),
+            generateUsageStatsRow(startDate2, endDate2, 'neco', 'neco', '1235', 'inst1235', 'i1237', 't123456789', 1000000),
+            generateUsageStatsRow(startDate3, endDate3, 'neco', 'neco', '1235', 'inst1235', 'i1237', 't123456789', 1000000),
+            generateUsageStatsRow(startDate2, endDate2, 'neco1', 'neco1', '1235', 'inst1235', 'i1238'),
+            generateUsageStatsRow(startDate3, endDate3, 'neco1', 'neco1', '1235', 'inst1235', 'i1238'),
+            generateUsageStatsRow(startDate3, endDate3, 'neco1', 'neco1', '1234', 'inst1235', 'i1239'),
+            generateUsageStatsRow(startDate3, endDate3, 'neco1', 'neco1', '1234', 'inst1235', 'i1239', 't123'),
         ]);
 }
 
 export function getJWTToken(withPermissions = false): { authorization: string } {
     const token = sign({
         /* eslint-disable @typescript-eslint/naming-convention */
-        firebase: { tenant: 't1234' },
+        firebase: { tenant: 't123456789' },
         first_name: 'John',
         last_name: 'Doe',
         /* eslint-enable @typescript-eslint/naming-convention */

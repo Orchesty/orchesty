@@ -1,4 +1,4 @@
-FROM node:slim as precache
+FROM node:18-alpine as precache
 
 RUN npm i -g pnpm
 
@@ -23,7 +23,7 @@ COPY ./ /srv/app
 
 RUN npm run build
 
-FROM node:slim as prod
+FROM node:18-alpine as prod
 
 ENV APP_PORT=8000
 ENV NODE_ENV=prod
