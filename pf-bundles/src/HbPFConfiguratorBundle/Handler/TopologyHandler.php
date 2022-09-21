@@ -433,7 +433,7 @@ final class TopologyHandler
             '_id'          => $topology->getId(),
             'type'         => count($cronNodes) >= 1 ? TypeEnum::CRON : TypeEnum::WEBHOOK,
             'name'         => $topology->getName(),
-            'descr'        => $topology->getDescr(),
+            'description'  => $topology->getDescr(),
             'status'       => $topology->getStatus(),
             'visibility'   => $topology->getVisibility(),
             'version'      => $topology->getVersion(),

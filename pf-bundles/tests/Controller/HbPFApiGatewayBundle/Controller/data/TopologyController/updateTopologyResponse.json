@@ -4,7 +4,7 @@
         "_id": "123456789",
         "type": "webhook",
         "name": "another-topology",
-        "descr": "",
+        "description": "",
         "status": "New",
         "visibility": "draft",
         "version": 1,
