@@ -9,7 +9,10 @@
     "app": {
       "detail": "Detail",
       "install": "Instalovat",
-      "uninstall": "Odinstalovat"
+      "uninstall": "Odinstalovat",
+      "tabs": {
+        "info": "Info"
+      }
     },
     "detail": {
       "appStore": "Aplikace",
