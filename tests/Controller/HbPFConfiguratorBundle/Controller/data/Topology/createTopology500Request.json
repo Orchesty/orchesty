@@ -2,7 +2,7 @@
     "http": "POST /api/topologies",
     "body": {
         "name": "Topology",
-        "descr": "'Topology",
+        "description": "'Topology",
         "enabled": true
     },
     "headers": {

@@ -699,11 +699,11 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         $this->mockHandler(
             'cloneTopology',
             [
-                '_id'    => '999',
-                'type'   => 'type',
-                'name'   => 'name',
-                'descr'  => 'desc',
-                'status' => 'status',
+                '_id'         => '999',
+                'type'        => 'type',
+                'name'        => 'name',
+                'description' => 'desc',
+                'status'      => 'status',
             ],
         );
 

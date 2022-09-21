@@ -4,7 +4,7 @@
         "_id": "999",
         "type": "type",
         "name": "name",
-        "descr": "desc",
+        "description": "desc",
         "status": "status"
     }
 }

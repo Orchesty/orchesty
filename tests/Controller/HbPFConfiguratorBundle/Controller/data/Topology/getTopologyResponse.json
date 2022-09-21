@@ -4,7 +4,7 @@
         "_id": "5e32b3de8602642bb3758653",
         "type": "webhook",
         "name": "name 1",
-        "descr": "descr 1",
+        "description": "descr 1",
         "status": "New",
         "visibility": "draft",
         "version": 1,

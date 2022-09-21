@@ -4,7 +4,7 @@
         "_id": "5e395287c5317130b67a4e83",
         "type": "webhook",
         "name": "Topology",
-        "descr": "Topology",
+        "description": "Topology",
         "status": "New",
         "visibility": "draft",
         "version": 1,

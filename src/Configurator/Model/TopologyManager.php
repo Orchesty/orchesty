@@ -712,8 +712,8 @@ final class TopologyManager
             $topology->setName($data['name']);
         }
 
-        if (isset($data['descr'])) {
-            $topology->setDescr($data['descr']);
+        if (isset($data['description'])) {
+            $topology->setDescr($data['description']);
         }
 
         if (isset($data['enabled'])) {

@@ -130,10 +130,10 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $this->dm->persist($top);
 
         $expt = [
-            'name'    => 'name',
-            'descr'   => 'desc',
-            'bpmn'    => 'fgdgfd',
-            'enabled' => FALSE,
+            'name'        => 'name',
+            'description' => 'desc',
+            'bpmn'        => 'fgdgfd',
+            'enabled'     => FALSE,
         ];
 
         $this->manager->updateTopology($top, $expt);
