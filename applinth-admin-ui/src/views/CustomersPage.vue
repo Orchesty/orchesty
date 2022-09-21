@@ -62,9 +62,6 @@ import {
   UsageStatsUsersRequest,
   UsageStatsUsersRowsInner,
 } from "@/api/generated";
-import { Getter } from "vuex-class";
-import { authNamespace, AuthGetters } from "@/store/modules/auth";
-import { User } from "firebase/auth";
 import Heading from "@/components/commons/typography/Heading.vue";
 import { Routes } from "@/enums/Routes";
 
@@ -84,8 +81,6 @@ interface UsersTable {
   },
 })
 export default class CustomersPage extends Vue {
-  @Getter(`${authNamespace}/${AuthGetters.GetUser}`)
-  currentUser!: User;
   Routes = Routes;
 
   isLoading = false;
@@ -130,7 +125,6 @@ export default class CustomersPage extends Vue {
       callApi<UsageStatsAppsRequest>(api.overview.apps, {
         timeRangeStart: new Date(0).toISOString(),
         timeRangeEnd: new Date().toISOString(),
-        tenantId: this.currentUser.tenantId ?? undefined,
       }),
     ]);
 
@@ -164,7 +158,6 @@ export default class CustomersPage extends Vue {
     return callApi<UsageStatsUsersRequest>(api.customers.list, {
       timeRangeStart: new Date(0).toISOString(),
       timeRangeEnd: new Date().toISOString(),
-      tenantId: this.currentUser.tenantId ?? undefined,
       appName: this.appSearch,
       endUserDisplayId: this.textSearch,
     });
