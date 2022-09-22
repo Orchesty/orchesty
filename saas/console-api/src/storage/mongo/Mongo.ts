@@ -1,5 +1,5 @@
 import { Collection, IndexDescription, MongoClient } from 'mongodb';
-import { app } from '../../config/config';
+import { mongo } from '../../config/config';
 import { CollectionEnum } from '../../enums/CollectionEnum';
 
 export default class Mongo {
@@ -19,11 +19,11 @@ export default class Mongo {
     }
 
     public getBillingCollection(collection: string): Collection {
-        return this.client.db(app.mongoBillingDbName).collection(collection);
+        return this.client.db(mongo.mongoBillingDbName).collection(collection);
     }
 
     public getCloudCollection(collection: string): Collection {
-        return this.client.db(app.mongoCloudDbName).collection(collection);
+        return this.client.db(mongo.mongoCloudDbName).collection(collection);
     }
 
     public async createBillingIndexes(): Promise<void> {
