@@ -297,6 +297,7 @@ export default class UsageStatsService {
             throw new DateParseError('Parameter installedDated is in invalid format!', 2);
         }
 
+        // TODO az bude v DB datech hodnota endUserDisplayId tak to rozdelit do samostatnych if
         if (query.endUserDisplayId) {
             mongoQuery.endUserId = new RegExp(query.endUserDisplayId, 'i');
         } else if (query.endUserId) {
