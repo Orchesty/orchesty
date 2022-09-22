@@ -164,6 +164,12 @@ paths:
                   required: false
                   schema:
                       type: string
+                - in: query
+                  name: endUserId
+                  description: Filter by endUserId
+                  required: false
+                  schema:
+                      type: string
             responses:
                 '200':
                     description: Success
