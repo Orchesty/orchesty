@@ -202,20 +202,20 @@ describe('usageStatsController', () => {
             assert.deepEqual(resp.body.rows.length, 3);
             assert.deepEqual(resp.body.rows, [
                 {
-                    appIds: ['neco'], appNames: ['neco'], instanceIds: ['inst1234', 'inst1235'], formattedDate: '01/21', totalCost: 1000000,
+                    appIds: ['neco'], appNames: ['neco'], instanceIds: ['inst1234', 'inst1235'], timeBucketName: '01/21', totalCost: 1000000,
                 },
                 {
                     appIds: ['neco', 'neco1'],
                     appNames: ['neco', 'neco1'],
                     instanceIds: ['inst1234', 'inst1235'],
-                    formattedDate: '02/21',
+                    timeBucketName: '02/21',
                     totalCost: 2200000,
                 },
                 {
                     appIds: ['neco', 'neco1'],
                     appNames: ['neco', 'neco1'],
                     instanceIds: ['inst1234', 'inst1235'],
-                    formattedDate: '03/21',
+                    timeBucketName: '03/21',
                     totalCost: 2200000,
                 },
             ]);
@@ -234,10 +234,10 @@ describe('usageStatsController', () => {
             assert.deepEqual(resp.body.rows.length, 2);
             assert.deepEqual(resp.body.rows, [
                 {
-                    endUsers: 1, formattedDate: '02/21',
+                    endUsers: 1, timeBucketName: '02/21',
                 },
                 {
-                    endUsers: 2, formattedDate: '03/21',
+                    endUsers: 2, timeBucketName: '03/21',
                 },
             ]);
             assert.deepEqual(resp.statusCode, 200);

@@ -137,7 +137,7 @@ export default class UsageStatsService {
                     appIds: 1,
                     appNames: 1,
                     instanceIds: 1,
-                    formattedDate: this.getFormattedDate(),
+                    timeBucketName: this.getFormattedDate(),
                     totalCost: 1,
                 },
             },
@@ -179,7 +179,7 @@ export default class UsageStatsService {
                 $project: {
                     _id: 0,
                     endUsers: { $size: '$userIds' },
-                    formattedDate: this.getFormattedDate(),
+                    timeBucketName: this.getFormattedDate(),
                 },
             },
         ];
