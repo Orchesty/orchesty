@@ -63,7 +63,7 @@ paths:
                 - $ref: "#/components/parameters/requiredEndUserId"
                 - in: query
                   name: installedDate
-                  description: Filter by installedDate
+                  description: Filter by installedDate, used now if not sent
                   required: false
                   schema:
                       type: string
@@ -712,12 +712,15 @@ components:
                             timeBucketName:
                                 description: Name of time bucket in format (MM/YY)
                                 type: string
-                            appName:
-                                description: Application name (also ID)
-                                type: string
-                            appId:
-                                description: Application Id (also Name)
-                                type: string
+                            appNames:
+                                description: Application names (also ID)
+                                type: array
+                            appIds:
+                                description: Application Ids (also Name)
+                                type: array
+                            instanceIds:
+                                description: Instance Ids (also Name)
+                                type: array
                             totalCost:
                                 description: Total installs cost for this app
                                 type: integer
