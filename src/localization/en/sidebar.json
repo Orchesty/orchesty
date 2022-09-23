@@ -129,6 +129,7 @@
     },
     "editor": {
       "startingPoint": "Starting point",
+      "noStartingPointFound": "Please save the topology first in order to fetch topology nodes and generate the URL address.",
       "actions": {
         "import": "Import",
         "export": "Export"

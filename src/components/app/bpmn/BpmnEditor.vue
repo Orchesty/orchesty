@@ -6,10 +6,10 @@
           <div id="canvas-edit"></div>
           <div class="canvas-properties">
             <div id="properties"></div>
-            <div v-if="selectedShape === 'start'" class="mx-3 subtitle-2">
+            <div v-if="isStartingPoint" class="mx-3 subtitle-2">
               <hr class="mb-2 mt-3" />
               <span class="font-weight-bold">{{ $t('topologies.editor.startingPoint') }}: </span>
-              <div>{{ startingPoint }}</div>
+              <div>{{ startingPointMessage }}</div>
             </div>
           </div>
         </div>
@@ -53,8 +53,8 @@ export default {
   data() {
     return {
       firstFetchDone: false,
-      selectedShape: '',
-      startingPoint: '',
+      selectedShape: null,
+      startingPoint: null,
       modeler: null,
     }
   },
@@ -72,6 +72,12 @@ export default {
         API.topology.getTopologyNodes.id,
         API.implementation.getList.id,
       ])
+    },
+    isStartingPoint() {
+      return this.selectedShape?.businessObject?.pipesType === 'start'
+    },
+    startingPointMessage() {
+      return this.startingPoint ?? this.$t('topologies.editor.noStartingPointFound')
     },
     modelerOptions() {
       return {
@@ -126,6 +132,30 @@ export default {
       }
 
       return xmlNodes
+    },
+
+    setNewStartingPoint() {
+      if (this.selectedShape) {
+        const topologyNodes = Object.values(this.topologyActiveNodes)
+
+        const node = topologyNodes.filter((node) => {
+          return node.schema_id === this.selectedShape.id
+        })
+
+        if (node[0]) {
+          this.startingPoint = this.getNodeRunUrl(
+            config.backend.apiStartingPoint,
+            node[0]._id,
+            node[0].name,
+            node[0].type,
+            node[0].topology_id,
+            this.topologyActive.name,
+            this.userId
+          )
+        } else {
+          this.startingPoint = null
+        }
+      }
     },
 
     getNodeRunUrl(baseURL, nodeId, nodeName, nodeType, topologyId, topologyName, userId, data = {}) {
@@ -271,24 +301,10 @@ export default {
 
       this.modeler.on('selection.changed', (event) => {
         if (event.newSelection[0]) {
-          this.selectedShape = event.newSelection[0].businessObject.pipesType
-          const node = Object.values(this.topologyActiveNodes).filter((n) => {
-            return n.schema_id === event.newSelection[0].id
-          })[0]
-          if (node) {
-            this.selectedShape = node.type
-            this.startingPoint = this.getNodeRunUrl(
-              config.backend.apiStartingPoint,
-              node._id,
-              node.name,
-              node.type,
-              node.topology_id,
-              this.topologyActive.name,
-              this.userId
-            )
-          }
+          this.selectedShape = event.newSelection[0]
+          this.setNewStartingPoint()
         } else {
-          this.selectedShape = ''
+          this.selectedShape = null
         }
       })
       try {
@@ -335,6 +351,7 @@ export default {
           id: this.topologyActive._id,
           xml,
         }).then(async (response) => {
+          await this.initData()
           return this.hasNewId(response)
         })
       } else {
