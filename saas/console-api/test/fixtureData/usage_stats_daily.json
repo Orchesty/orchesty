@@ -1,0 +1,98 @@
+[
+    {
+        "instanceId": "i1234",
+        "tenantId": "t6789",
+        "endUserId": "62e8eeb29f19584a5e0da623",
+        "installId": "AID1663067247564",
+        "appId": "woocommerce",
+        "start": "2022-09-13T11:07:27.564Z",
+        "end": "2022-09-14T07:36:26.733Z",
+        "cost": 1000000,
+        "appName": "woocommerce",
+        "endUserDisplayId": "62e8eeb29f19584a5e0da623"
+    },
+    {
+        "instanceId": "i1234",
+        "tenantId": "t6789",
+        "endUserId": "endUser",
+        "installId": "AID1659445890006",
+        "appId": "authentica",
+        "start": "2022-09-13T11:00:0000Z",
+        "end": "2022-09-14T11:00:0000Z",
+        "cost": 1000000,
+        "appName": "authentica",
+        "endUserDisplayId": "endUser"
+    },
+    {
+        "instanceId": "i1234",
+        "tenantId": "t6789",
+        "endUserId": "62e8eeb29f19584a5e0da623",
+        "installId": "AID1663071717371",
+        "appId": "shopify",
+        "start": "2022-09-13T12:21:57.371Z",
+        "end": "2022-09-13T12:31:52.162Z",
+        "cost": 1000000,
+        "appName": "shopify",
+        "endUserDisplayId": "62e8eeb29f19584a5e0da623"
+    },
+    {
+        "instanceId": "i1234",
+        "tenantId": "t6789",
+        "endUserId": "endUser",
+        "installId": "AID1659435672195",
+        "appId": "tenant_id",
+        "start": "2022-09-13T11:00:0000Z",
+        "end": "2022-09-14T11:00:0000Z",
+        "cost": 1000000,
+        "appName": "tenant_id",
+        "endUserDisplayId": "endUser"
+    },
+    {
+        "instanceId": "iqnb4x3vhd",
+        "tenantId": "tr6pw-v0pqy",
+        "endUserId": "endUser",
+        "installId": "AID1659445890006",
+        "appId": "authentica",
+        "start": "2022-09-13T11:00:0000Z",
+        "end": "2022-09-14T11:00:0000Z",
+        "cost": 1000000,
+        "appName": "authentica",
+        "endUserDisplayId": "endUser"
+    },
+    {
+        "instanceId": "iqnb4x3vhd",
+        "tenantId": "tr6pw-v0pqy",
+        "endUserId": "endUser",
+        "installId": "AID1659435672195",
+        "appId": "tenant_id",
+        "start": "2022-09-13T11:00:0000Z",
+        "end": "2022-09-14T11:00:0000Z",
+        "cost": 1000000,
+        "appName": "tenant_id",
+        "endUserDisplayId": "endUser"
+    },
+    {
+        "instanceId": "iqnb4x3vhd",
+        "tenantId": "tr6pw-v0pqy",
+        "endUserId": "62e8eeb29f19584a5e0da623",
+        "installId": "AID1663067247564",
+        "appId": "woocommerce",
+        "start": "2022-09-13T11:07:27.564Z",
+        "end": "2022-09-14T07:36:26.733Z",
+        "cost": 1000000,
+        "appName": "woocommerce",
+        "endUserDisplayId": "62e8eeb29f19584a5e0da623"
+    },
+    {
+        "instanceId": "iqnb4x3vhd",
+        "tenantId": "tr6pw-v0pqy",
+        "endUserId": "62e8eeb29f19584a5e0da623",
+        "installId": "AID1663071717371",
+        "appId": "shopify",
+        "start": "2022-09-13T12:21:57.371Z",
+        "end": "2022-09-13T12:31:52.162Z",
+        "cost": 1000000,
+        "appName": "shopify",
+        "endUserDisplayId": "62e8eeb29f19584a5e0da623"
+    }
+]

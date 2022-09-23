@@ -1,0 +1,31 @@
+import { readFileSync } from 'fs';
+import path from 'path';
+import { mongo } from '../src/config/config';
+import { CollectionEnum } from '../src/enums/CollectionEnum';
+import Mongo from '../src/storage/mongo/Mongo';
+
+async function createFixtureData(): Promise<void> {
+    const db = new Mongo(mongo.dsn);
+    await db.connect();
+
+    await db.dropCollections();
+    await db.createBillingIndexes();
+    await db.createCloudIndexes();
+
+    const tenant = readFileSync(path.resolve(__dirname, 'fixtureData/tenant.json')).toString();
+    await db.getCloudCollection(CollectionEnum.TENANT).insertOne(JSON.parse(tenant));
+
+    const usageStatsHourly = readFileSync(path.resolve(__dirname, 'fixtureData/usage_stats_hourly.json')).toString();
+    await db.getBillingCollection(CollectionEnum.USAGE_STATS_HOURLY).insertMany(JSON.parse(usageStatsHourly));
+    const usageStatsDaily = readFileSync(path.resolve(__dirname, 'fixtureData/usage_stats_daily.json')).toString();
+    await db.getBillingCollection(CollectionEnum.USAGE_STATS_DAILY).insertMany(JSON.parse(usageStatsDaily));
+    const usageStatsMonthly = readFileSync(path.resolve(__dirname, 'fixtureData/usage_stats_monthly.json')).toString();
+    await db.getBillingCollection(CollectionEnum.USAGE_STATS_MONTHLY).insertMany(JSON.parse(usageStatsMonthly));
+
+    await db.disconnect();
+}
+
+// eslint-disable-next-line
+createFixtureData().then(() => {
+    process.exit();
+});
