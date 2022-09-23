@@ -1,7 +1,7 @@
 import { Settings } from 'luxon';
 
 export const mongo = {
-    dsn: process.env.MONGODB_DSN ?? '',
+    dsn: process.env.MONGODB_DSN ?? 'mongodb://mongo',
     mongoCloudDbName: process.env.MONGODB_CLOUDDB_NAME ?? 'cloud',
     mongoBillingDbName: process.env.MONGODB_BILLINGDB_NAME ?? 'billing',
 };
