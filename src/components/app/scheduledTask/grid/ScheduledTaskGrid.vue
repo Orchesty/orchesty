@@ -19,7 +19,11 @@
       <td v-if="isVisible('time')">
         {{ items.item.time }}
       </td>
-      <td v-if="isVisible('time')" :key="now.getMilliseconds()">
+      <td
+        v-if="isVisible('time')"
+        :key="now.getMilliseconds()"
+        :class="isEnabled(items.item) ? '' : 'grey--text darken-1--text'"
+      >
         {{ $options.filters.internationalFormat(timeParser(items.item.time)) }}
       </td>
       <td
@@ -39,11 +43,12 @@ import { DATA_GRIDS } from '@/services/enums/dataGridEnums'
 import DataGrid from '../../../commons/grid/DataGrid'
 import { REQUESTS_STATE } from '../../../../store/modules/api/types'
 import { API } from '../../../../api'
-import { mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import { ROUTES } from '@/services/enums/routerEnums'
 import cronParser from 'cron-parser'
 import { internationalFormat } from '@/services/utils/dateFilters'
 import { GRID } from '@/store/modules/grid/types'
+import { TOPOLOGIES } from '@/store/modules/topologies/types'
 
 export default {
   name: 'ScheduledTaskGrid',
@@ -62,13 +67,15 @@ export default {
     this.timer = setInterval(this.refreshTime, 60000) // run every minute
   },
   methods: {
+    ...mapActions(TOPOLOGIES.NAMESPACE, [TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID]),
     isEnabled(item) {
       if (item) {
         return item.topology.status
       }
     },
-    redirect({ item }) {
-      this.$router.push({ name: ROUTES.TOPOLOGY.VIEWER, params: { id: item.node.name } })
+    async redirect({ item }) {
+      await this[TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID](item.topology.id)
+      this.$router.push({ name: ROUTES.TOPOLOGY.VIEWER, params: { id: item.topology.id } })
     },
     timeParser(time) {
       let interval = this.cronParser.parseExpression(time)
