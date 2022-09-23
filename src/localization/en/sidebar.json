@@ -194,18 +194,6 @@
         "severity": "Severity"
       }
     },
-    "healthCheck": {
-      "headers": {
-        "queue": {
-          "name": "Queues",
-          "status": "Status"
-        },
-        "container": {
-          "name": "Containers",
-          "status": "Status"
-        }
-      }
-    },
     "userTask": {
       "title": "User Tasks",
       "titleTrash": "Trash",

@@ -128,6 +128,18 @@
         "severity": "Severenity"
       }
     },
+    "healthCheck": {
+      "headers": {
+        "queue": {
+          "name": "Fronty",
+          "status": "Status"
+        },
+        "container": {
+          "name": "Kontejnery",
+          "status": "Status"
+        }
+      }
+    },
     "userTask": {
       "title": "User Tasky",
       "headers": {
