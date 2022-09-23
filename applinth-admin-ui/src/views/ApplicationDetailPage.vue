@@ -3,7 +3,7 @@
     <div v-if="loading">
       <BaseProgressBarLinear />
     </div>
-    <div v-else class="w-600">
+    <div v-else class="application-settings-wrapper">
       <!--      TODO HARDCOCED-->
       <v-img
         max-width="400"
@@ -120,9 +120,9 @@ export default class ApplicationDetailPage extends Vue {
   gap: 0 16px;
 }
 .chart-js {
-  max-height: 200px;
+  max-height: 50px;
 }
-.w-600 {
-  width: 600px;
+.application-settings-wrapper {
+  max-width: 80ch;
 }
 </style>
