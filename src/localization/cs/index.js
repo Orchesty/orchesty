@@ -24,6 +24,7 @@ import form from './form.json'
 import appStore from './appStore.json'
 import enums from './enums.json'
 import pages from './pages.json'
+import sidebar from '@/localization/en/sidebar.json'
 
 export default Object.assign(
   navigation,
@@ -51,5 +52,6 @@ export default Object.assign(
   form,
   appStore,
   enums,
-  pages
+  pages,
+  sidebar
 )

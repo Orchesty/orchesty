@@ -175,8 +175,14 @@
     },
     "healthCheck": {
       "headers": {
-        "queue": "Name",
-        "consumers": "Status"
+        "queue": {
+          "name": "Queues",
+          "status": "Status"
+        },
+        "container": {
+          "name": "Containers",
+          "status": "Status"
+        }
       }
     },
     "userTask": {
