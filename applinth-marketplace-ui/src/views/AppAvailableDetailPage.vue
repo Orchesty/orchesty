@@ -16,7 +16,7 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-col class="d-flex justify-space-between flex-column">
+      <v-col class="d-flex justify-space-between flex-column available-app-wrapper">
         <h1 class="headline font-weight-bold">{{ app.name }}</h1>
         <p class="mt-4">{{ app.description }}</p>
         <div v-if="app.isInstallable">
@@ -96,8 +96,10 @@ export default {
   },
 }
 </script>
-
-<style lang="scss" scoped>
+<style scoped lang="scss">
+.available-app-wrapper {
+  max-width: 50ch;
+}
 .text-transform-none {
   text-align: start;
   text-transform: none;
