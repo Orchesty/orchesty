@@ -24,8 +24,12 @@
       </v-col>
     </v-row>
 
-    <!-- eslint-disable-next-line vue/no-v-html -->
-    <div class="info-wrapper mt-5" v-html="appActive.info" />
+    <v-row v-if="appActive">
+      <v-col class="info-wrapper">
+        <!-- eslint-disable-next-line vue/no-v-html -->
+        <div v-html="appActive.info" />
+      </v-col>
+    </v-row>
   </content-basic>
 </template>
 
