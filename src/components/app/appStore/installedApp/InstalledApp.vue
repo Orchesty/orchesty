@@ -208,7 +208,8 @@ export default {
       return this.isActivated ? this.$t('appStore.activated') : this.$t('appStore.notactivated')
     },
     isUninstalling() {
-      return this[REQUESTS_STATE.GETTERS.GET_STATE]([API.appStore.uninstallApp.id]).isSending
+      const state = this[REQUESTS_STATE.GETTERS.GET_STATE]([API.appStore.uninstallApp.id])
+      return state?.isSending || false
     },
     activationDisabled() {
       return !this.appActive.authorized
