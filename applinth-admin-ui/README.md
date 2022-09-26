@@ -32,3 +32,9 @@ make init
 App will be running here:
 - http://127.0.0.42:83 for frontend
 - http://127.0.0.42:3000 for local console API backend
+
+### Generate fixture data
+Drop collections and create new fixture data
+```
+make generate-fixture-data
+```
