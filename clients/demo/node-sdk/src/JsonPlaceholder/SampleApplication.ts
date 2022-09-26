@@ -1,4 +1,5 @@
 import { AUTHORIZATION_FORM } from '@orchesty/nodejs-sdk/dist/lib/Application/Base/AApplication';
+import ApplicationTypeEnum from '@orchesty/nodejs-sdk/dist/lib/Application/Base/ApplicationTypeEnum';
 import { IWebhookApplication } from '@orchesty/nodejs-sdk/dist/lib/Application/Base/IWebhookApplication';
 import { ApplicationInstall } from '@orchesty/nodejs-sdk/dist/lib/Application/Database/ApplicationInstall';
 import Field from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/Field';
@@ -17,6 +18,10 @@ import { BodyInit } from 'node-fetch';
 export default class SampleApplication extends ABasicApplication implements IWebhookApplication {
 
     protected infoFilename = `${__dirname}/info.html`;
+
+    public getApplicationType(): ApplicationTypeEnum {
+        return ApplicationTypeEnum.WEBHOOK;
+    }
 
     public getDescription(): string {
         return 'Sample application description';
@@ -47,16 +52,30 @@ export default class SampleApplication extends ABasicApplication implements IWeb
 
     public getFormStack(): FormStack {
         const form = new Form(AUTHORIZATION_FORM, 'Authorization settings')
+            .setDescription('Some form description')
+
             .addField(new Field(FieldType.TEXT, 'name', 'Name'))
-            .addField(new Field(FieldType.TEXT, 'disName', 'Disabled Name'))
+            .addField(new Field(FieldType.TEXT, 'disName', 'Disabled Name')).setReadOnly(true)
+
             .addField(new Field(FieldType.URL, 'url', 'Url'))
+            .addField(new Field(FieldType.URL, 'disUrl', 'Disabled Url')).setReadOnly(true)
+
             .addField(new Field(FieldType.CHECKBOX, 'check', 'IsOk'))
-            .addField(new Field(FieldType.NUMBER, 'number', 'Number'))
             .addField(new Field(FieldType.CHECKBOX, 'forced', 'Forced', true)
                 .setReadOnly(true)
                 .setDescription('Forced read-only field'))
+
+            .addField(new Field(FieldType.NUMBER, 'number', 'Number'))
+            .addField(new Field(FieldType.NUMBER, 'disNumber', 'Disabled Number'))
+
             .addField(new Field(FieldType.PASSWORD, 'pass', 'Password'))
-            .addField(new Field(FieldType.PASSWORD, 'pass2', 'Password2'));
+            .addField(new Field(FieldType.PASSWORD, 'pass2', 'Password2'))
+
+            .addField(new Field(FieldType.SELECT_BOX, 'sel', 'Select').setChoices([{ key: 'val' }]))
+            .addField(new Field(FieldType.SELECT_BOX, 'disSel', 'Disabled Select', 'key')
+                .setChoices([{ key: 'val' }])
+                .setDescription('Some desc for selectbox')
+                .setReadOnly(true));
 
         const readOnlyForm = new Form('read_only_form_test', 'Readonly form')
             .addField(new Field(FieldType.TEXT, 'pin', 'PIN', 123).setReadOnly(true))

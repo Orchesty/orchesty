@@ -71,6 +71,7 @@ import ListPosts from './JsonPlaceholder/Batch/ListPosts';
 import ListUsers from './JsonPlaceholder/Batch/ListUsers';
 import BinSender from './JsonPlaceholder/Connector/BinSender';
 import Node from './JsonPlaceholder/Custom/Node';
+import NonInstallableApplication from './JsonPlaceholder/NonInstallableApplication';
 import SampleApplication from './JsonPlaceholder/SampleApplication';
 import TenantApplication from './JsonPlaceholder/TenantApplication';
 
@@ -88,6 +89,9 @@ export async function start(): Promise<void> {
 
     const tenantApp = new TenantApplication();
     container.setApplication(tenantApp);
+
+    const nonInstallableApp = new NonInstallableApplication();
+    container.setApplication(nonInstallableApp);
 
     const airtableApp = new AirtableApplication();
     container.setApplication(airtableApp);
