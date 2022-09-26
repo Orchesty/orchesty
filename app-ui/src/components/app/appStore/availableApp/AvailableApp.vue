@@ -49,7 +49,11 @@ export default {
     ...mapGetters(APP_STORE.NAMESPACE, { appActive: APP_STORE.GETTERS.GET_ACTIVE_APP }),
   },
   methods: {
-    ...mapActions(APP_STORE.NAMESPACE, [APP_STORE.ACTIONS.INSTALL_APP_REQUEST, APP_STORE.ACTIONS.GET_AVAILABLE_APP]),
+    ...mapActions(APP_STORE.NAMESPACE, [
+      APP_STORE.ACTIONS.INSTALL_APP_REQUEST,
+      APP_STORE.ACTIONS.GET_AVAILABLE_APP,
+      APP_STORE.ACTIONS.RESET,
+    ]),
     async install() {
       let isInstalled = await this[APP_STORE.ACTIONS.INSTALL_APP_REQUEST]({
         key: this.$route.params.key,
@@ -66,6 +70,9 @@ export default {
   },
   async created() {
     await this[APP_STORE.ACTIONS.GET_AVAILABLE_APP](this.$route.params.key)
+  },
+  beforeDestroy() {
+    this[APP_STORE.ACTIONS.RESET]()
   },
 }
 </script>
