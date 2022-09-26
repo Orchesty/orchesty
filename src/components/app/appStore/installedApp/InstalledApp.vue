@@ -35,7 +35,6 @@
     <v-row>
       <v-col>
         <v-tabs v-model="tab" height="24">
-          <v-tab v-if="appActive.info" class="text-transform-none body-2 font-weight-medium primary--text">Info</v-tab>
           <v-tab
             v-for="form in settingsConfig"
             :key="form.key"
@@ -48,76 +47,78 @@
     </v-row>
 
     <v-tabs-items v-model="tab" class="mt-4">
-      <v-tab-item v-if="appActive.info">
-        <!-- eslint-disable-next-line vue/no-v-html -->
-        <div class="info-wrapper mt-2" v-html="appActive.info" />
-      </v-tab-item>
-      <v-tab-item v-for="(form, index) in settingsConfig" :key="form.key" class="w-400">
-        <v-row v-if="form.description.length > 0" dense class="mt-2">
-          {{ form.description }}
-        </v-row>
-        <v-row dense class="mt-2">
-          <v-col>
-            <validation-observer :ref="form.key" tag="form" slim @submit.prevent="() => saveForm(form.key)">
-              <div v-for="field in form.fields" :key="field.key">
-                <validation-provider
-                  v-if="field.type === 'text'"
-                  v-slot="{ errors }"
-                  slim
-                  :name="field.key"
-                  :rules="field.required ? 'required' : ''"
-                >
-                  <app-input
-                    v-model="settingsForms[index].fields[field.key]"
-                    dense
-                    outlined
-                    :readonly="field.readonly"
-                    :disabled="field.disabled"
-                    :label="field.label"
-                    :error-messages="errors"
+      <v-tab-item v-for="(form, index) in settingsConfig" :key="form.key" class="application-settings-wrapper">
+        <template v-if="form.key === 'info'">
+          <!-- eslint-disable-next-line vue/no-v-html -->
+          <div class="mt-2" v-html="form.info" />
+        </template>
+        <template v-else>
+          <v-row v-if="form.description.length > 0" dense class="mt-2">
+            {{ form.description }}
+          </v-row>
+          <v-row dense class="mt-2">
+            <v-col>
+              <validation-observer :ref="form.key" tag="form" slim @submit.prevent="() => saveForm(form.key)">
+                <div v-for="field in form.fields" :key="field.key">
+                  <validation-provider
+                    v-if="field.type === 'text'"
+                    v-slot="{ errors }"
+                    slim
+                    :name="field.key"
+                    :rules="field.required ? 'required' : ''"
+                  >
+                    <app-input
+                      v-model="settingsForms[index].fields[field.key]"
+                      dense
+                      outlined
+                      :readonly="field.readonly"
+                      :disabled="field.disabled"
+                      :label="field.label"
+                      :error-messages="errors"
+                    />
+                  </validation-provider>
+                  <validation-provider v-if="field.type === 'selectbox'" :name="field.key" slim>
+                    <v-select
+                      v-model="settingsForms[index].fields[field.key]"
+                      dense
+                      outlined
+                      clearable
+                      :readonly="field.readonly"
+                      :disabled="field.disabled"
+                      :label="field.label"
+                      :items="getEntries(field.choices)"
+                      item-value="value"
+                      item-text="key"
+                    />
+                  </validation-provider>
+                  <app-item-password-modal
+                    v-if="field.type === 'password' && !form.readOnly"
+                    :form-key="form.key"
+                    :field-key="field.key"
+                    :app-key="appActive.key"
+                    :input="field"
                   />
-                </validation-provider>
-                <validation-provider v-if="field.type === 'selectbox'" :name="field.key" slim>
-                  <v-select
-                    v-model="settingsForms[index].fields[field.key]"
-                    dense
-                    outlined
-                    clearable
-                    :readonly="field.readonly"
-                    :disabled="field.disabled"
-                    :label="field.label"
-                    :items="getEntries(field.choices)"
-                    item-value="value"
-                    item-text="key"
-                  />
-                </validation-provider>
-                <app-item-password-modal
-                  v-if="field.type === 'password' && !form.readOnly"
-                  :form-key="form.key"
-                  :field-key="field.key"
-                  :app-key="appActive.key"
-                  :input="field"
-                />
-              </div>
-            </validation-observer>
-          </v-col>
-        </v-row>
+                </div>
+              </validation-observer>
+            </v-col>
+          </v-row>
 
-        <v-row v-if="!form.readOnly" dense>
-          <v-col>
-            <actions-wrapper>
-              <app-button color="primary" :button-title="$t('button.save')" :on-click="() => saveForm(form.key)" />
-              <app-button
-                v-if="hasOauthAuthorization"
-                color="secondary"
-                :disabled="!isFormValid(form.key)"
-                :on-click="authorizeApp"
-                :button-title="$t('button.authorize')"
-                outlined
-              />
-            </actions-wrapper>
-          </v-col>
-        </v-row>
+          <v-row v-if="!form.readOnly" dense>
+            <v-col>
+              <actions-wrapper>
+                <app-button color="primary" :button-title="$t('button.save')" :on-click="() => saveForm(form.key)" />
+                <app-button
+                  v-if="hasOauthAuthorization"
+                  color="secondary"
+                  :disabled="!isFormValid(form.key)"
+                  :on-click="authorizeApp"
+                  :button-title="$t('button.authorize')"
+                  outlined
+                />
+              </actions-wrapper>
+            </v-col>
+          </v-row>
+        </template>
       </v-tab-item>
     </v-tabs-items>
 
@@ -184,7 +185,7 @@ export default {
   components: { UninstallAppModal, ContentBasic, ActionsWrapper, AppButton, AppInput, AppItemPasswordModal },
   data() {
     return {
-      tab: null,
+      tab: 0,
       settingsForms: [],
       settingsConfig: [],
       settingsSnapshots: [],
@@ -207,7 +208,7 @@ export default {
       return this.isActivated ? this.$t('appStore.activated') : this.$t('appStore.notactivated')
     },
     isUninstalling() {
-      return this[REQUESTS_STATE.GETTERS.GET_STATE]([API.appStore.uninstallApp.id])
+      return this[REQUESTS_STATE.GETTERS.GET_STATE]([API.appStore.uninstallApp.id]).isSending
     },
     activationDisabled() {
       return !this.appActive.authorized
@@ -222,6 +223,7 @@ export default {
       APP_STORE.ACTIONS.UNINSTALL_APP_REQUEST,
       APP_STORE.ACTIONS.AUTHORIZE,
       APP_STORE.ACTIONS.ACTIVATE,
+      APP_STORE.ACTIONS.RESET,
     ]),
 
     async uninstall(key) {
@@ -298,6 +300,15 @@ export default {
       this.isActivated = this.appActive.enabled
       this.isActivationEnabled = Boolean(this.appActive.applicationSettings)
       this.settingsConfig = Object.values(this.appActive.applicationSettings)
+
+      if (this.appActive.info) {
+        this.settingsConfig.unshift({
+          info: this.appActive.info,
+          key: 'info',
+          publicName: 'Info',
+          fields: [],
+        })
+      }
 
       this.settingsSnapshots = this.settingsConfig.map((form) => ({
         key: form.key,
@@ -402,6 +413,9 @@ export default {
     await this[TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES]()
     await this[APP_STORE.ACTIONS.GET_INSTALLED_APP]({ key: this.$route.params.key, userId: this.userId })
   },
+  beforeDestroy() {
+    this[APP_STORE.ACTIONS.RESET]()
+  },
 }
 </script>
 <style scoped lang="scss">
@@ -419,15 +433,11 @@ export default {
   border-color: var(--v-gray-base) !important;
 }
 
-.w-400 {
-  max-width: 400px;
+.application-settings-wrapper {
+  max-width: 80ch;
 }
 
 .activation-label {
   width: 12ch;
-}
-
-.info-wrapper {
-  max-width: 80ch;
 }
 </style>
