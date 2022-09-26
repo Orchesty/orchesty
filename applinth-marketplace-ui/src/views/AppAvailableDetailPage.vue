@@ -16,7 +16,9 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-col class="d-flex justify-space-between flex-column available-app-wrapper">
+      <v-col
+        class="d-flex justify-space-between flex-column available-app-wrapper"
+      >
         <h1 class="headline font-weight-bold">{{ app.name }}</h1>
         <p class="mt-4">{{ app.description }}</p>
         <div v-if="app.isInstallable">
