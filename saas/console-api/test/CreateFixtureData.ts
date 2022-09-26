@@ -16,11 +16,29 @@ async function createFixtureData(): Promise<void> {
     await db.getCloudCollection(CollectionEnum.TENANT).insertOne(JSON.parse(tenant));
 
     const usageStatsHourly = readFileSync(path.resolve(__dirname, 'fixtureData/usage_stats_hourly.json')).toString();
-    await db.getBillingCollection(CollectionEnum.USAGE_STATS_HOURLY).insertMany(JSON.parse(usageStatsHourly));
+    await db.getBillingCollection(CollectionEnum.USAGE_STATS_HOURLY)
+        .insertMany(JSON.parse(usageStatsHourly)
+            .map((item: IUsageStat) => ({
+                ...item,
+                start: new Date(item.start),
+                end: new Date(item.end),
+            })));
     const usageStatsDaily = readFileSync(path.resolve(__dirname, 'fixtureData/usage_stats_daily.json')).toString();
-    await db.getBillingCollection(CollectionEnum.USAGE_STATS_DAILY).insertMany(JSON.parse(usageStatsDaily));
+    await db.getBillingCollection(CollectionEnum.USAGE_STATS_DAILY)
+        .insertMany(JSON.parse(usageStatsDaily)
+            .map((item: IUsageStat) => ({
+                ...item,
+                start: new Date(item.start),
+                end: new Date(item.end),
+            })));
     const usageStatsMonthly = readFileSync(path.resolve(__dirname, 'fixtureData/usage_stats_monthly.json')).toString();
-    await db.getBillingCollection(CollectionEnum.USAGE_STATS_MONTHLY).insertMany(JSON.parse(usageStatsMonthly));
+    await db.getBillingCollection(CollectionEnum.USAGE_STATS_MONTHLY)
+        .insertMany(JSON.parse(usageStatsMonthly)
+            .map((item: IUsageStat) => ({
+                ...item,
+                start: new Date(item.start),
+                end: new Date(item.end),
+            })));
 
     await db.disconnect();
 }
@@ -29,3 +47,8 @@ async function createFixtureData(): Promise<void> {
 createFixtureData().then(() => {
     process.exit();
 });
+
+interface IUsageStat {
+    start: string;
+    end: string;
+}

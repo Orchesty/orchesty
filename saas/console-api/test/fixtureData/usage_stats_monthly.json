@@ -6,10 +6,11 @@
         "endUserId": "endUser",
         "installId": "AID1659445890006",
         "appId": "authentica",
-        "start": "2022-08-02T13:11:3006Z",
-        "end": "2022-08-31T00:00:0000Z",
-        "cost": 1000000,
+        "start": "2022-08-02T13:11:30.006Z",
+        "end": "2022-08-31T00:00:00.000Z",
+        "cost": 1000000.0,
         "appName": "authentica",
+        "endUserDIsplayId": "endUser",
         "endUserDisplayId": "endUser"
     },
     {
@@ -21,8 +22,9 @@
         "appId": "woocommerce",
         "start": "2022-09-13T11:07:27.564Z",
         "end": "2022-09-14T07:36:26.733Z",
-        "cost": 1000000,
+        "cost": 1000000.0,
         "appName": "woocommerce",
+        "endUserDIsplayId": "62e8eeb29f19584a5e0da623",
         "endUserDisplayId": "62e8eeb29f19584a5e0da623"
     },
     {
@@ -33,9 +35,10 @@
         "installId": "AID1659435672195",
         "appId": "tenant_id",
         "start": "2022-08-02T10:21:12.195Z",
-        "end": "2022-08-31T00:00:0000Z",
-        "cost": 1000000,
+        "end": "2022-08-31T00:00:00.000Z",
+        "cost": 1000000.0,
         "appName": "tenant_id",
+        "endUserDIsplayId": "endUser",
         "endUserDisplayId": "endUser"
     },
     {
@@ -45,10 +48,11 @@
         "endUserId": "endUser",
         "installId": "AID1659445890006",
         "appId": "authentica",
-        "start": "2022-08-31T00:00:0000Z",
-        "end": "2022-09-30T00:00:0000Z",
-        "cost": 1000000,
+        "start": "2022-08-31T00:00:00.000Z",
+        "end": "2022-09-30T00:00:00.000Z",
+        "cost": 1000000.0,
         "appName": "authentica",
+        "endUserDIsplayId": "endUser",
         "endUserDisplayId": "endUser"
     },
     {
@@ -58,10 +62,11 @@
         "endUserId": "endUser",
         "installId": "AID1659435672195",
         "appId": "tenant_id",
-        "start": "2022-09-30T00:00:0000Z",
-        "end": "2022-10-30T00:00:0000Z",
-        "cost": 1000000,
+        "start": "2022-09-30T00:00:00.000Z",
+        "end": "2022-10-30T00:00:00.000Z",
+        "cost": 1000000.0,
         "appName": "tenant_id",
+        "endUserDIsplayId": "endUser",
         "endUserDisplayId": "endUser"
     },
     {
@@ -73,8 +78,9 @@
         "appId": "shopify",
         "start": "2022-09-13T12:21:57.371Z",
         "end": "2022-09-13T12:31:52.162Z",
-        "cost": 1000000,
+        "cost": 1000000.0,
         "appName": "shopify",
+        "endUserDIsplayId": "62e8eeb29f19584a5e0da623",
         "endUserDisplayId": "62e8eeb29f19584a5e0da623"
     },
     {
@@ -84,10 +90,11 @@
         "endUserId": "endUser",
         "installId": "AID1659435672195",
         "appId": "tenant_id",
-        "start": "2022-08-31T00:00:0000Z",
-        "end": "2022-09-30T00:00:0000Z",
-        "cost": 1000000,
+        "start": "2022-08-31T00:00:00.000Z",
+        "end": "2022-09-30T00:00:00.000Z",
+        "cost": 1000000.0,
         "appName": "tenant_id",
+        "endUserDIsplayId": "endUser",
         "endUserDisplayId": "endUser"
     },
     {
@@ -97,10 +104,11 @@
         "endUserId": "endUser",
         "installId": "AID1659445890006",
         "appId": "authentica",
-        "start": "2022-09-30T00:00:0000Z",
-        "end": "2022-10-30T00:00:0000Z",
-        "cost": 1000000,
+        "start": "2022-09-30T00:00:00.000Z",
+        "end": "2022-10-30T00:00:00.000Z",
+        "cost": 1000000.0,
         "appName": "authentica",
+        "endUserDIsplayId": "endUser",
         "endUserDisplayId": "endUser"
     },
     {
@@ -110,10 +118,11 @@
         "endUserId": "endUser",
         "installId": "AID1659445890006",
         "appId": "authentica",
-        "start": "2022-08-02T13:11:3006Z",
-        "end": "2022-08-31T00:00:0000Z",
-        "cost": 1000000,
+        "start": "2022-08-02T13:11:30.006Z",
+        "end": "2022-08-31T00:00:00.000Z",
+        "cost": 1000000.0,
         "appName": "authentica",
+        "endUserDIsplayId": "endUser",
         "endUserDisplayId": "endUser"
     },
     {
@@ -124,9 +133,10 @@
         "installId": "AID1659435672195",
         "appId": "tenant_id",
         "start": "2022-08-02T10:21:12.195Z",
-        "end": "2022-08-31T00:00:0000Z",
-        "cost": 1000000,
+        "end": "2022-08-31T00:00:00.000Z",
+        "cost": 1000000.0,
         "appName": "tenant_id",
+        "endUserDIsplayId": "endUser",
         "endUserDisplayId": "endUser"
     },
     {
@@ -136,10 +146,11 @@
         "endUserId": "endUser",
         "installId": "AID1659445890006",
         "appId": "authentica",
-        "start": "2022-08-31T00:00:0000Z",
-        "end": "2022-09-30T00:00:0000Z",
-        "cost": 1000000,
+        "start": "2022-08-31T00:00:00.000Z",
+        "end": "2022-09-30T00:00:00.000Z",
+        "cost": 1000000.0,
         "appName": "authentica",
+        "endUserDIsplayId": "endUser",
         "endUserDisplayId": "endUser"
     },
     {
@@ -149,10 +160,11 @@
         "endUserId": "endUser",
         "installId": "AID1659435672195",
         "appId": "tenant_id",
-        "start": "2022-08-31T00:00:0000Z",
-        "end": "2022-09-30T00:00:0000Z",
-        "cost": 1000000,
+        "start": "2022-08-31T00:00:00.000Z",
+        "end": "2022-09-30T00:00:00.000Z",
+        "cost": 1000000.0,
         "appName": "tenant_id",
+        "endUserDIsplayId": "endUser",
         "endUserDisplayId": "endUser"
     },
     {
@@ -164,8 +176,9 @@
         "appId": "woocommerce",
         "start": "2022-09-13T11:07:27.564Z",
         "end": "2022-09-14T07:36:26.733Z",
-        "cost": 1000000,
+        "cost": 1000000.0,
         "appName": "woocommerce",
+        "endUserDIsplayId": "62e8eeb29f19584a5e0da623",
         "endUserDisplayId": "62e8eeb29f19584a5e0da623"
     },
     {
@@ -177,8 +190,9 @@
         "appId": "shopify",
         "start": "2022-09-13T12:21:57.371Z",
         "end": "2022-09-13T12:31:52.162Z",
-        "cost": 1000000,
+        "cost": 1000000.0,
         "appName": "shopify",
+        "endUserDIsplayId": "62e8eeb29f19584a5e0da623",
         "endUserDisplayId": "62e8eeb29f19584a5e0da623"
     },
     {
@@ -188,10 +202,11 @@
         "endUserId": "endUser",
         "installId": "AID1659445890006",
         "appId": "authentica",
-        "start": "2022-09-30T00:00:0000Z",
-        "end": "2022-10-30T00:00:0000Z",
-        "cost": 1000000,
+        "start": "2022-09-30T00:00:00.000Z",
+        "end": "2022-10-30T00:00:00.000Z",
+        "cost": 1000000.0,
         "appName": "authentica",
+        "endUserDIsplayId": "endUser",
         "endUserDisplayId": "endUser"
     },
     {
@@ -201,10 +216,11 @@
         "endUserId": "endUser",
         "installId": "AID1659435672195",
         "appId": "tenant_id",
-        "start": "2022-09-30T00:00:0000Z",
-        "end": "2022-10-30T00:00:0000Z",
-        "cost": 1000000,
+        "start": "2022-09-30T00:00:00.000Z",
+        "end": "2022-10-30T00:00:00.000Z",
+        "cost": 1000000.0,
         "appName": "tenant_id",
+        "endUserDIsplayId": "endUser",
         "endUserDisplayId": "endUser"
     }
 ]
