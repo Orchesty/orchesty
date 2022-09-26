@@ -153,4 +153,7 @@ export default {
       return false
     }
   },
+  [APP_STORE.ACTIONS.RESET]: async ({ commit }) => {
+    commit(APP_STORE.MUTATIONS.RESET)
+  },
 }
