@@ -1,6 +1,6 @@
 <template>
   <Modal
-    title="Nový uživatel"
+    :title="$t('usersPage.newUser')"
     :cancel-btn-text="$t('button.cancel')"
     :is-sending="isSending"
     v-model="isOpen"
@@ -11,18 +11,24 @@
         <v-form class="form" @submit.prevent="onSubmit">
           <input type="submit" hidden />
           <TextField
-            label="Email"
-            v-model="formData.username"
-            name="username"
+            :label="$t('formLabels.email')"
+            v-model="formData.email"
+            name="email"
             rules="required|email"
             autofocus
+          />
+          <TextField
+            :label="$t('formLabels.userName')"
+            v-model="formData.displayName"
+            name="displayName"
+            rules="required"
           />
         </v-form>
       </ValidationObserver>
     </template>
     <template slot="actions-right">
       <Button :loading="isSending" color="secondary" @click="onSubmit">
-        Uložit
+        {{ $t("button.save") }}
       </Button>
     </template>
   </Modal>
@@ -34,15 +40,20 @@ import Modal from "../../commons/layouts/Modal.vue";
 import { ValidationObserver } from "vee-validate";
 import Button from "../../commons/inputsAndControls/Button.vue";
 import TextField from "../../commons/inputsAndControls/TextField.vue";
-import { EventBus } from "../../../enums";
-import { eventBus } from "../../../utils/eventBus";
-import { CreateAdminInput } from "../../../types/gqlGeneratedPrivate";
-import { Action } from "vuex-class";
+import { EventBus } from "@/enums";
+import { eventBus } from "@/utils/eventBus";
+import { Action, Getter } from "vuex-class";
 import { TablesActions, TablesNamespaces } from "../../../store/modules/tables";
 import { TableRefreshPayload } from "../../../types";
+import { AuthGetters, authNamespace, User } from "@/store/modules/auth";
+import { api } from "@/api";
+import { CreateUser, UsersCreateOperationRequest } from "@/api/generated";
+import { alerts, callApi } from "@/utils";
 
-const emptyFormData: CreateAdminInput = {
-  username: "",
+const emptyFormData: CreateUser = {
+  email: "",
+  disabled: false,
+  displayName: "",
 };
 
 @Component({
@@ -54,10 +65,13 @@ const emptyFormData: CreateAdminInput = {
   },
 })
 export default class UserCreateModal extends Vue {
+  @Getter(`${authNamespace}/${AuthGetters.GetUser}`)
+  currentUser!: User;
+
   isOpen = false;
   isSending = false;
 
-  formData: CreateAdminInput = {
+  formData: CreateUser = {
     ...emptyFormData,
   };
 
@@ -80,26 +94,26 @@ export default class UserCreateModal extends Vue {
     }
   }
 
-  async sendForm(formData: CreateAdminInput): Promise<void> {
+  async sendForm(formData: CreateUser): Promise<void> {
     this.isSending = true;
-    // TODO call backend API
-    // const result = await apiClient.callGraphqlPrivate<
-    //   MutationUpdateAdminArgs,
-    //   MutationCreateAdminArgs
-    // >({
-    //   ...api.users.createUser,
-    //   variables: {
-    //     input: formData,
-    //   },
-    // });
-    // if (result.data) {
-    //   alerts.addSuccessAlert("CREATE_ADMIN", "Uloženo");
-    //   this.refreshTable({
-    //     namespace: TablesNamespaces.UsersTable,
-    //   });
-    // }
-    this.initForm();
-    this.isOpen = false;
+
+    const res = await callApi<UsersCreateOperationRequest>(api.users.create, {
+      usersCreateRequest: formData,
+    });
+
+    if (res?.user) {
+      alerts.addSuccessAlert(
+        "CREATE_ADMIN",
+        this.$t("message.userCreated") as string
+      );
+
+      eventBus.$emit(EventBus.UsersRefreshList);
+
+      this.initForm();
+      this.isOpen = false;
+    }
+
+    this.isSending = false;
   }
 
   initForm(): void {

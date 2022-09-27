@@ -37,6 +37,18 @@ export interface OutputTenant {
      * @type {string}
      * @memberof OutputTenant
      */
+    gTenantId?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OutputTenant
+     */
+    instanceId?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OutputTenant
+     */
     displayName?: string | null;
     /**
      * 
@@ -63,6 +75,8 @@ export function OutputTenantFromJSONTyped(json: any, ignoreDiscriminator: boolea
     return {
         
         'tenantId': !exists(json, 'tenantId') ? undefined : json['tenantId'],
+        'gTenantId': !exists(json, 'gTenantId') ? undefined : json['gTenantId'],
+        'instanceId': !exists(json, 'instanceId') ? undefined : json['instanceId'],
         'displayName': !exists(json, 'displayName') ? undefined : json['displayName'],
         'emailSignInConfig': !exists(json, 'emailSignInConfig') ? undefined : OutputTenantEmailSignInConfigFromJSON(json['emailSignInConfig']),
         'anonymousSignInEnabled': !exists(json, 'anonymousSignInEnabled') ? undefined : json['anonymousSignInEnabled'],
@@ -79,6 +93,8 @@ export function OutputTenantToJSON(value?: OutputTenant | null): any {
     return {
         
         'tenantId': value.tenantId,
+        'gTenantId': value.gTenantId,
+        'instanceId': value.instanceId,
         'displayName': value.displayName,
         'emailSignInConfig': OutputTenantEmailSignInConfigToJSON(value.emailSignInConfig),
         'anonymousSignInEnabled': value.anonymousSignInEnabled,

@@ -48,6 +48,8 @@
     "deny": "Zamítnout",
     "reject": "Zamítnout",
     "update": "Aktualizovat",
-    "addApplication": "Přidat aplikaci"
+    "addApplication": "Přidat aplikaci",
+    "yes": "Ano",
+    "no": "Ne"
   }
 }

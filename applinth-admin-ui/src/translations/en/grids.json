@@ -8,7 +8,8 @@
       "name": "Name",
       "installed": "Installed",
       "month": "Month",
-      "application": "Application"
+      "application": "Application",
+      "disabled": "Disabled"
     }
   }
 }

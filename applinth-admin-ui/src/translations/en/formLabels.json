@@ -11,6 +11,9 @@
     "filterByApplication": "Filter by Application",
     "search": "Search",
     "superAdmin": "Superadmin",
-    "noData": "No data"
+    "noData": "No data",
+    "phoneNumber": "Phone number",
+    "disabled": "Disabled",
+    "photoUrl": "Photo url"
   }
 }

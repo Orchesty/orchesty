@@ -7,36 +7,23 @@
         </v-icon>
       </router-link>
       <Heading>
-        {{ $t("userUpdatePage.header") }} {{ formData.firstname }}
-        {{ formData.surname }}
+        {{ $t("userUpdatePage.header") }} {{ formData.displayName }}
       </Heading>
     </div>
     <ValidationObserver slim ref="form">
       <v-form class="form" @submit.prevent="onSubmit">
         <input type="submit" hidden />
         <TextField
-          :label="$t('formLabels.firstName')"
-          v-model="formData.firstname"
-          :name="$t('formLabels.firstName')"
+          :label="$t('formLabels.userName')"
+          v-model="formData.displayName"
+          name="username"
           rules="required"
           autofocus
         />
-        <TextField
-          :label="$t('formLabels.surname')"
-          v-model="formData.surname"
-          :name="$t('formLabels.surname')"
-          rules="required"
-        />
-        <TextField
-          :label="$t('formLabels.userName')"
-          v-model="formData.username"
-          :name="$t('formLabels.userName')"
-          rules="required|email"
-        />
         <v-checkbox
           class="mt-0 mb-2"
-          v-model="formData.isSuperAdmin"
-          :label="$t('formLabels.superAdmin')"
+          v-model="formData.disabled"
+          :label="$t('formLabels.disabled')"
         />
         <Button type="submit" :loading="isSending">
           {{ $t("button.save") }}
@@ -52,18 +39,23 @@ import { ValidationObserver } from "vee-validate";
 import AppLayout from "../components/commons/layouts/AppLayout.vue";
 import Button from "../components/commons/inputsAndControls/Button.vue";
 import TextField from "../components/commons/inputsAndControls/TextField.vue";
-import { Action } from "vuex-class";
-import { TablesActions, TablesNamespaces } from "../store/modules/tables";
+import { Action, Getter } from "vuex-class";
+import { TablesActions, TablesNamespaces } from "@/store/modules/tables";
 import { TableRefreshPayload } from "../types";
-import { UpdateAdminInput } from "../types/gqlGeneratedPrivate";
-import { Routes } from "../enums";
+import { Routes } from "@/enums";
 import Heading from "@/components/commons/typography/Heading.vue";
+import {
+  UpdateUser,
+  UsersGetRequest,
+  UsersUpdateOperationRequest,
+} from "@/api/generated";
+import { api } from "@/api";
+import { alerts, callApi } from "@/utils";
+import { AuthGetters, authNamespace, User } from "@/store/modules/auth";
 
-const emptyFormData: UpdateAdminInput = {
-  username: "",
-  firstname: "",
-  surname: "",
-  isSuperAdmin: false,
+const emptyFormData: UpdateUser = {
+  displayName: "",
+  disabled: false,
 };
 
 @Component({
@@ -76,13 +68,16 @@ const emptyFormData: UpdateAdminInput = {
   },
 })
 export default class UserUpdatePage extends Vue {
+  @Getter(`${authNamespace}/${AuthGetters.GetUser}`)
+  currentUser!: User;
+
   Routes = Routes;
 
   isSending = false;
 
-  adminId = 0;
+  adminId = "";
 
-  formData: UpdateAdminInput = {
+  formData: UpdateUser = {
     ...emptyFormData,
   };
 
@@ -92,29 +87,23 @@ export default class UserUpdatePage extends Vue {
   refreshTable!: (payload: TableRefreshPayload) => Promise<void>;
 
   mounted() {
-    const id = parseInt(this.$route.params.id);
-    this.adminId = id;
-    this.initialData(id);
+    this.adminId = this.$route.params.id;
+    this.initialData(this.adminId);
   }
 
-  async initialData(id: number): Promise<void> {
+  async initialData(id: string): Promise<void> {
     this.isSending = true;
-    // TODO implement using Firebase
-    // const result = await apiClient.callGraphqlPrivate<
-    //   AdminQuery,
-    //   AdminQueryVariables
-    // >({
-    //   ...api.users.user,
-    //   variables: { id },
-    // });
-    // if (result.data) {
-    //   this.formData = {
-    //     username: result.data.admin.username,
-    //     firstname: result.data.admin.firstname,
-    //     surname: result.data.admin.surname,
-    //     isSuperAdmin: result.data.admin.isSuperAdmin,
-    //   };
-    // }
+
+    const res = await callApi<UsersGetRequest>(api.users.get, {
+      uid: id,
+    });
+
+    if (res?.user) {
+      this.formData = {
+        displayName: res.user.displayName,
+        disabled: res.user.disabled,
+      };
+    }
     this.isSending = false;
   }
 
@@ -125,25 +114,24 @@ export default class UserUpdatePage extends Vue {
     }
   }
 
-  async sendForm(formData: UpdateAdminInput): Promise<void> {
+  async sendForm(formData: UpdateUser): Promise<void> {
     this.isSending = true;
-    // TODO implement using Firebase
-    // const result = await apiClient.callGraphqlPrivate<
-    //   UpdateAdminMutation,
-    //   UpdateAdminMutationVariables
-    // >({
-    //   ...api.users.updateUser,
-    //   variables: {
-    //     id: this.adminId,
-    //     input: formData,
-    //   },
-    // });
-    // if (result.data) {
-    //   alerts.addSuccessAlert("UPDATE_ADMIN", "Uloženo");
-    //   this.$router.push({
-    //     name: Routes.Users,
-    //   });
-    // }
+
+    const res = await callApi<UsersUpdateOperationRequest>(api.users.update, {
+      uid: this.adminId,
+      usersUpdateRequest: formData,
+    });
+
+    if (res?.user) {
+      alerts.addSuccessAlert(
+        "UPDATE_ADMIN",
+        this.$t("message.saved") as string
+      );
+      this.$router.push({
+        name: Routes.Users,
+      });
+    }
+
     this.isSending = false;
   }
 }

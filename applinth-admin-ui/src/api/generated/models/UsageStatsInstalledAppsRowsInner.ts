@@ -26,6 +26,12 @@ export interface UsageStatsInstalledAppsRowsInner {
      */
     appName?: string;
     /**
+     * Application ID (also Name)
+     * @type {string}
+     * @memberof UsageStatsInstalledAppsRowsInner
+     */
+    appId?: string;
+    /**
      * App installation date
      * @type {string}
      * @memberof UsageStatsInstalledAppsRowsInner
@@ -50,6 +56,7 @@ export function UsageStatsInstalledAppsRowsInnerFromJSONTyped(json: any, ignoreD
     return {
         
         'appName': !exists(json, 'appName') ? undefined : json['appName'],
+        'appId': !exists(json, 'appId') ? undefined : json['appId'],
         'installed': !exists(json, 'installed') ? undefined : json['installed'],
         'instanceId': !exists(json, 'instanceId') ? undefined : json['instanceId'],
     };
@@ -65,6 +72,7 @@ export function UsageStatsInstalledAppsRowsInnerToJSON(value?: UsageStatsInstall
     return {
         
         'appName': value.appName,
+        'appId': value.appId,
         'installed': value.installed,
         'instanceId': value.instanceId,
     };

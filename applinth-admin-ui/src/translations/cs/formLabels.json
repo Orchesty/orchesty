@@ -11,6 +11,9 @@
     "surname": "Příjmení",
     "userName": "Uživatelské jméno",
     "superAdmin": "Superadmin",
-    "noData": "Žádná data k dispozici"
+    "noData": "Žádná data k dispozici",
+    "phoneNumber": "Telefon",
+    "disabled": "Deaktivován",
+    "photoUrl": "Url obrázku"
   }
 }

@@ -1,7 +1,8 @@
 {
   "login": {
     "failed": "Login failed",
-    "wrongPassword": "Wrong password"
+    "wrongPassword": "Wrong password",
+    "userDisabled": "User disabled"
   },
   "password": {
     "changeFailed": "Failed to change password",
