@@ -29,37 +29,34 @@ export default {
     },
     dense: {
       type: Boolean,
-      required: false,
       default: true,
     },
     hideDetails: {
       type: Boolean,
-      required: false,
       default: false,
     },
     disabled: {
       type: Boolean,
-      required: false,
       default: false,
     },
     outlined: {
       type: Boolean,
-      required: false,
       default: true,
     },
     prependIcon: {
       type: String,
-      required: false,
       default: undefined,
     },
     clearable: {
       type: Boolean,
-      required: false,
       default: false,
     },
     readonly: {
       type: Boolean,
-      required: false,
+      default: false,
+    },
+    numbersOnly: {
+      type: Boolean,
       default: false,
     },
     value: {

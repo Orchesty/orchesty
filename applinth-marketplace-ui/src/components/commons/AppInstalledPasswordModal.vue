@@ -10,9 +10,10 @@
         color="secondary"
         :attrs="attrs"
         :on="on"
-        :button-title="$t('button.password')"
+        :button-title="$t('button.setPassword')"
         outlined
         :disabled="disabled"
+        :class="buttonClass"
       />
     </template>
     <template #content>
@@ -31,7 +32,7 @@
       </validation-provider>
     </template>
     <template #actions>
-      <base-button :button-title="$t('button.update')" :on-click="submit" />
+      <base-button :button-title="$t('button.set')" :on-click="submit" />
     </template>
   </base-modal>
 </template>
@@ -69,6 +70,10 @@ export default {
     disabled: {
       type: Boolean,
       default: false,
+    },
+    buttonClass: {
+      type: String,
+      default: () => '',
     },
   },
   data() {

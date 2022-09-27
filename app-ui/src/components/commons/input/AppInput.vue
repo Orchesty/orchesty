@@ -1,17 +1,17 @@
 <template>
   <v-text-field
-    v-model="input"
+    v-model="innerValue"
     :autofocus="autofocus"
     :dense="dense"
     :label="label"
     :type="inputType"
     :outlined="outlined"
-    :error-messages="errorMessages[0]"
     :readonly="readonly"
     :disabled="disabled"
     :hide-details="hideDetails"
     :clearable="clearable"
-    @keypress="onKeyup"
+    :prepend-icon="prependIcon"
+    :error-messages="errorMessages[0]"
   />
 </template>
 
@@ -57,16 +57,13 @@ export default {
       type: Boolean,
       default: false,
     },
-    numbersOnly: {
-      type: Boolean,
-      default: false,
-    },
     readonly: {
       type: Boolean,
       default: false,
     },
     value: {
-      type: [String, Number],
+      type: [String, Number, Boolean],
+      required: false,
       default: () => '',
     },
     label: {
@@ -76,31 +73,17 @@ export default {
   },
   data() {
     return {
-      input: '',
+      innerValue: '',
     }
   },
-  methods: {
-    onKeyup(event) {
-      if (this.numbersOnly) {
-        event = event ? event : window.event
-        let expect = event.target.value.toString() + event.key.toString()
-
-        if (!/^[-+]?[0-9]*\.?[0-9]*$/.test(expect)) {
-          event.preventDefault()
-        } else {
-          return true
-        }
-      }
-    },
-  },
   watch: {
-    input(value) {
+    innerValue(value) {
       this.$emit('input', value)
     },
     value: {
       immediate: true,
       handler(value) {
-        this.input = value
+        this.innerValue = value
       },
     },
   },

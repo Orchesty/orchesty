@@ -48,6 +48,7 @@
     "deny": "Deny",
     "reject": "Reject",
     "update": "Update",
-    "addApplication": "Add an Application"
+    "addApplication": "Add an Application",
+    "setPassword": "Set password"
   }
 }

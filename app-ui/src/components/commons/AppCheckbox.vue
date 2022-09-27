@@ -1,16 +1,10 @@
 <template>
-  <v-checkbox
-    v-model="innerValue"
-    :label="label"
-    :readonly="readonly"
-    :disabled="disabled"
-    dense
-  />
+  <v-checkbox v-model="innerValue" :label="label" :readonly="readonly" :disabled="disabled" dense />
 </template>
 
 <script>
 export default {
-  name: 'BaseCheckbox',
+  name: 'AppCheckbox',
   props: {
     label: {
       type: String,
