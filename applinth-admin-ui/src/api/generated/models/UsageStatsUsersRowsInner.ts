@@ -38,6 +38,12 @@ export interface UsageStatsUsersRowsInner {
      */
     appNames?: Array<string>;
     /**
+     * Array of application ids
+     * @type {Array<string>}
+     * @memberof UsageStatsUsersRowsInner
+     */
+    appIds?: Array<string>;
+    /**
      * Total installs cost for this user
      * @type {number}
      * @memberof UsageStatsUsersRowsInner
@@ -64,6 +70,7 @@ export function UsageStatsUsersRowsInnerFromJSONTyped(json: any, ignoreDiscrimin
         'endUserId': !exists(json, 'endUserId') ? undefined : json['endUserId'],
         'endUserDisplayId': !exists(json, 'endUserDisplayId') ? undefined : json['endUserDisplayId'],
         'appNames': !exists(json, 'appNames') ? undefined : json['appNames'],
+        'appIds': !exists(json, 'appIds') ? undefined : json['appIds'],
         'totalCost': !exists(json, 'totalCost') ? undefined : json['totalCost'],
         'installCount': !exists(json, 'installCount') ? undefined : json['installCount'],
     };
@@ -81,6 +88,7 @@ export function UsageStatsUsersRowsInnerToJSON(value?: UsageStatsUsersRowsInner 
         'endUserId': value.endUserId,
         'endUserDisplayId': value.endUserDisplayId,
         'appNames': value.appNames,
+        'appIds': value.appIds,
         'totalCost': value.totalCost,
         'installCount': value.installCount,
     };

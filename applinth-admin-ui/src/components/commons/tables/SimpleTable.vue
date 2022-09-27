@@ -8,6 +8,11 @@
     <template v-for="item in headers" #[`header.${item.value}`]="{ header }">
       <span :key="item.value">{{ $t(header.text) }}</span>
     </template>
+
+    <template v-for="header in headers" #[`item.${header.value}`]="{ item }">
+      <slot :name="header.value" :item="item">{{ item[header.value] }}</slot>
+    </template>
+
     <template v-slot:[`item.actions`]="{ item }">
       <ActionsWrapper>
         <slot name="actions" :item="item" />

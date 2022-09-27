@@ -55,8 +55,15 @@ export async function callApi<P>(
     // TODO add info message from server
     // TODO localize
     if (err instanceof ResponseError) {
-      const msg = `${err.name}: ${err.response.statusText} (${err.response.status})`;
-      alerts.addErrorAlert("API: ResponseError", msg);
+      const errorData = await err.response.json();
+
+      if (errorData.msg) {
+        // error message from our BE
+        alerts.addErrorAlert("API: ResponseError", errorData.msg);
+      } else {
+        const msg = `${err.name}: ${err.response.statusText} (${err.response.status})`;
+        alerts.addErrorAlert("API: ResponseError", msg);
+      }
     } else {
       alerts.addErrorAlert("API: ResponseError", err);
     }

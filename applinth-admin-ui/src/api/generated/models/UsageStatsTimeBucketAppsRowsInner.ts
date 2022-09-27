@@ -26,11 +26,23 @@ export interface UsageStatsTimeBucketAppsRowsInner {
      */
     timeBucketName?: string;
     /**
-     * Application name (also ID)
-     * @type {string}
+     * Application names (also ID)
+     * @type {Array}
      * @memberof UsageStatsTimeBucketAppsRowsInner
      */
-    appName?: string;
+    appNames?: Array;
+    /**
+     * Application Ids (also Name)
+     * @type {Array}
+     * @memberof UsageStatsTimeBucketAppsRowsInner
+     */
+    appIds?: Array;
+    /**
+     * Instance Ids (also Name)
+     * @type {Array}
+     * @memberof UsageStatsTimeBucketAppsRowsInner
+     */
+    instanceIds?: Array;
     /**
      * Total installs cost for this app
      * @type {number}
@@ -50,7 +62,9 @@ export function UsageStatsTimeBucketAppsRowsInnerFromJSONTyped(json: any, ignore
     return {
         
         'timeBucketName': !exists(json, 'timeBucketName') ? undefined : json['timeBucketName'],
-        'appName': !exists(json, 'appName') ? undefined : json['appName'],
+        'appNames': !exists(json, 'appNames') ? undefined : json['appNames'],
+        'appIds': !exists(json, 'appIds') ? undefined : json['appIds'],
+        'instanceIds': !exists(json, 'instanceIds') ? undefined : json['instanceIds'],
         'totalCost': !exists(json, 'totalCost') ? undefined : json['totalCost'],
     };
 }
@@ -65,7 +79,9 @@ export function UsageStatsTimeBucketAppsRowsInnerToJSON(value?: UsageStatsTimeBu
     return {
         
         'timeBucketName': value.timeBucketName,
-        'appName': value.appName,
+        'appNames': value.appNames,
+        'appIds': value.appIds,
+        'instanceIds': value.instanceIds,
         'totalCost': value.totalCost,
     };
 }

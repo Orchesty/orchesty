@@ -26,6 +26,12 @@ export interface UsageStatsAppsRowsInner {
      */
     appName?: string;
     /**
+     * Application id (also Name)
+     * @type {string}
+     * @memberof UsageStatsAppsRowsInner
+     */
+    appId?: string;
+    /**
      * Number of unique end users having the app installed within the given period
      * @type {number}
      * @memberof UsageStatsAppsRowsInner
@@ -62,6 +68,7 @@ export function UsageStatsAppsRowsInnerFromJSONTyped(json: any, ignoreDiscrimina
     return {
         
         'appName': !exists(json, 'appName') ? undefined : json['appName'],
+        'appId': !exists(json, 'appId') ? undefined : json['appId'],
         'endUsers': !exists(json, 'endUsers') ? undefined : json['endUsers'],
         'totalCost': !exists(json, 'totalCost') ? undefined : json['totalCost'],
         'installCount': !exists(json, 'installCount') ? undefined : json['installCount'],
@@ -79,6 +86,7 @@ export function UsageStatsAppsRowsInnerToJSON(value?: UsageStatsAppsRowsInner | 
     return {
         
         'appName': value.appName,
+        'appId': value.appId,
         'endUsers': value.endUsers,
         'totalCost': value.totalCost,
         'installCount': value.installCount,

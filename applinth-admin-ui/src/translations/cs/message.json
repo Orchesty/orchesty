@@ -1,6 +1,8 @@
 {
   "message": {
     "saved": "Uloženo",
-    "resetPasswordLinkSent": "Odkaz pro obnovu hesla byl odeslán"
+    "resetPasswordLinkSent": "Odkaz pro obnovu hesla byl odeslán",
+    "userCreated": "Uživatel vytvořen",
+    "deleted": "Smazáno"
   }
 }

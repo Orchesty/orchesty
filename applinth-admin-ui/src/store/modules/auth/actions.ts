@@ -47,10 +47,15 @@ export const actions: Actions<AuthActions, AuthState> = {
           "login-not-successful",
           i18n.t("login.failed") as string
         );
+      } else if (error.code === "auth/user-disabled") {
+        alerts.addErrorAlert(
+          "login-not-successful",
+          i18n.t("login.userDisabled") as string
+        );
       } else {
         alerts.addErrorAlert(
-          "init-user-not-successful",
-          i18n.t("error.errorOccurredTryItLater") as string
+            "init-user-not-successful",
+            i18n.t("error.errorOccurredTryItLater") as string
         );
       }
       // TODO log errors to error tracking service

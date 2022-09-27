@@ -75,6 +75,7 @@ export interface UsageStatsUsersRequest {
     appName?: string;
     granularity?: UsageStatsUsersGranularityEnum;
     endUserDisplayId?: string;
+    endUserId?: string;
 }
 
 /**
@@ -342,6 +343,10 @@ export class BillingApi extends runtime.BaseAPI {
 
         if (requestParameters.endUserDisplayId !== undefined) {
             queryParameters['endUserDisplayId'] = requestParameters.endUserDisplayId;
+        }
+
+        if (requestParameters.endUserId !== undefined) {
+            queryParameters['endUserId'] = requestParameters.endUserId;
         }
 
         const headerParameters: runtime.HTTPHeaders = {};

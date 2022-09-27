@@ -8,15 +8,22 @@
       :headers="headers"
       :items="users"
     >
+      <template #disabled="{ item }">
+        <span v-if="item.disabled">{{ $t("button.yes") }}</span>
+        <span v-else>{{ $t("button.no") }}</span>
+      </template>
       <template #actions="{ item }">
         <RoundButton @click="() => updateItem(item)" icon="pencil" />
         <RoundButton
           @click="() => deleteItem(item)"
           icon="delete"
-          :disabled="!(currentUser && currentUser.id !== item.id)"
+          :disabled="!(currentUser && currentUser.id !== item.uid)"
         />
       </template>
     </SimpleTable>
+
+    <user-create-modal />
+    <user-delete-modal />
   </AppLayout>
 </template>
 
@@ -33,11 +40,15 @@ import { api } from "@/api";
 import { authNamespace, AuthGetters, User } from "../store/modules/auth";
 import { callApi } from "@/utils/apiClient";
 import { eventBus } from "../utils/eventBus";
-import { UsersListRequest } from "@/api/generated";
+import { OutputUser, UsersListRequest } from "@/api/generated";
 import Heading from "@/components/commons/typography/Heading.vue";
+import UserCreateModal from "@/components/app/admins/UserCreateModal.vue";
+import UserDeleteModal from "@/components/app/admins/UserDeleteModal.vue";
 
 @Component({
   components: {
+    UserDeleteModal,
+    UserCreateModal,
     Heading,
     AppLayout,
     Button,
@@ -51,7 +62,7 @@ export default class UsersPage extends Vue {
 
   isLoading = false;
 
-  users: User[] = [];
+  users: OutputUser[] = [];
 
   headers = [
     {
@@ -67,13 +78,19 @@ export default class UsersPage extends Vue {
       value: "displayName",
     },
     {
+      text: "grids.headers.disabled",
+      sortable: false,
+      align: "start",
+      value: "disabled",
+    },
+    {
       text: "",
       sortable: false,
       value: "actions",
     },
   ];
 
-  deleteItem(user: User): void {
+  deleteItem(user: OutputUser): void {
     eventBus.$emit(EventBus.UserDeleteModal, user);
   }
 
@@ -81,14 +98,19 @@ export default class UsersPage extends Vue {
     eventBus.$emit(EventBus.UserCreateModal);
   }
 
-  updateItem(user: User): void {
+  updateItem(user: OutputUser): void {
     this.$router.push({
       name: Routes.UserUpdate,
-      params: { id: user.id },
+      params: { id: user.uid as string },
     });
   }
+  created() {
+    eventBus.$on(EventBus.UsersRefreshList, this.fetchUsers);
 
-  async created() {
+    this.fetchUsers();
+  }
+
+  private async fetchUsers(): Promise<void> {
     this.isLoading = true;
     this.users = await callApi<UsersListRequest>(api.users.list);
     this.isLoading = false;

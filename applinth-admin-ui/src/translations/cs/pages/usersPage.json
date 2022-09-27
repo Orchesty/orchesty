@@ -1,5 +1,7 @@
 {
   "usersPage": {
-    "header": "Uživatelé"
+    "header": "Uživatelé",
+    "newUser": "Nový uživatel",
+    "removeUser": "Smazat uživatele"
   }
 }

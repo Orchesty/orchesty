@@ -1,7 +1,8 @@
 {
   "login": {
     "failed": "Přihlášení se nezdařilo",
-    "wrongPassword": "Špatné heslo"
+    "wrongPassword": "Špatné heslo",
+    "userDisabled": "Uživatel je deaktivován"
   },
   "password": {
     "changeFailed": "Nepodařilo se změnit heslo",
