@@ -15,7 +15,7 @@
 
 <script>
 export default {
-  name: 'BaseSelect',
+  name: 'AppSelect',
   props: {
     items: {
       type: Array,

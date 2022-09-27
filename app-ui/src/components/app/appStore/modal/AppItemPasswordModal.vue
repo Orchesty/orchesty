@@ -1,8 +1,12 @@
 <template>
-  <modal-template v-model="isOpen" :title="input.value ? 'Change password' : 'Set password'">
+  <modal-template
+    v-model="isOpen"
+    :title="input.value ? $t('appItemPasswordModal.changePassword') : $t('appItemPasswordModal.setPassword')"
+  >
     <template #button>
       <app-button
-        :button-title="input.value ? 'Change password' : 'Set password'"
+        :button-title="input.value ? $t('appItemPasswordModal.changePassword') : $t('appItemPasswordModal.setPassword')"
+        :class="buttonClass"
         :on-click="
           () => {
             isOpen = !isOpen
@@ -36,7 +40,7 @@
     <template #sendingButton>
       <v-row dense>
         <v-col cols="12" class="d-flex justify-end">
-          <app-button :button-title="$t('button.create')" :on-click="submit" :flat="false" />
+          <app-button :button-title="$t('button.set')" :on-click="submit" />
         </v-col>
       </v-row>
     </template>
@@ -69,6 +73,10 @@ export default {
     formKey: {
       type: String,
       required: true,
+    },
+    buttonClass: {
+      type: String,
+      default: () => '',
     },
   },
   data() {

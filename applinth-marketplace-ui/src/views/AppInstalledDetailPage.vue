@@ -76,7 +76,9 @@
           </template>
           <template v-else>
             <v-row v-if="form.description.length > 0" dense class="mt-2">
-              {{ form.description }}
+              <v-col>
+                {{ form.description }}
+              </v-col>
             </v-row>
             <v-row dense class="mt-2">
               <v-col>
@@ -87,18 +89,21 @@
                   @submit.prevent="() => saveForm(form.key)"
                 >
                   <div v-for="field in form.fields" :key="field.key">
+                    <div v-if="field.description" class="mb-2">
+                      {{ field.description }}
+                    </div>
                     <validation-provider
-                      v-if="field.type === 'text'"
+                      v-if="field.type === 'text' || field.type === 'url'"
                       v-slot="{ errors }"
                       slim
                       :name="field.key"
-                      :rules="field.required ? 'required' : ''"
+                      :rules="{
+                        required: field.required,
+                      }"
                     >
                       <base-input
                         v-model="settingsForms[index].fields[field.key]"
-                        dense
-                        outlined
-                        :readonly="field.readonly"
+                        :readonly="field.readOnly"
                         :disabled="field.disabled"
                         :label="field.label"
                         :error-messages="errors"
@@ -109,17 +114,13 @@
                       :name="field.key"
                       slim
                     >
-                      <v-select
+                      <base-select
                         v-model="settingsForms[index].fields[field.key]"
-                        dense
-                        outlined
                         clearable
-                        :readonly="field.readonly"
+                        :readonly="field.readOnly"
                         :disabled="field.disabled"
                         :label="field.label"
                         :items="getEntries(field.choices)"
-                        item-value="value"
-                        item-text="key"
                       />
                     </validation-provider>
                     <app-item-password-modal
@@ -129,7 +130,38 @@
                       :app-key="appActive.key"
                       :input="field"
                       :disabled="isRequestPending"
+                      button-class="mb-3"
                     />
+                    <validation-provider
+                      v-if="field.type === 'checkbox'"
+                      :name="field.key"
+                      slim
+                    >
+                      <base-checkbox
+                        v-model="settingsForms[index].fields[field.key]"
+                        :readonly="field.readOnly"
+                        :disabled="field.disabled"
+                        :label="field.label"
+                      />
+                    </validation-provider>
+                    <validation-provider
+                      v-if="field.type === 'number'"
+                      v-slot="{ errors }"
+                      slim
+                      :name="field.key"
+                      :rules="{
+                        required: field.required,
+                        numeric: true,
+                      }"
+                    >
+                      <base-input
+                        v-model="settingsForms[index].fields[field.key]"
+                        :readonly="field.readOnly"
+                        :disabled="field.disabled"
+                        :label="field.label"
+                        :error-messages="errors"
+                      />
+                    </validation-provider>
                   </div>
                 </validation-observer>
               </v-col>
@@ -165,6 +197,7 @@
 import { config } from '@/config'
 import BaseInput from '@/components/commons/BaseInput'
 import BaseButton from '@/components/commons/BaseButton'
+import BaseCheckbox from '@/components/commons/BaseCheckbox'
 import { callApi } from '@/utils/apiFetch'
 import { redirectTo } from '@/utils/redirect'
 import { API } from '@/api'
@@ -174,13 +207,16 @@ import AppItemPasswordModal from '@/components/commons/AppInstalledPasswordModal
 import ActionsWrapper from '@/components/commons/ActionsWrapper'
 import BaseProgressBarLinear from '@/components/commons/BaseProgressBarLinear'
 import UninstallAppModal from '@/components/applications/UninstallAppModal'
+import BaseSelect from '@/components/commons/BaseSelect'
 
 export default {
   name: 'InstalledAppDetailPage',
   components: {
+    BaseSelect,
     ActionsWrapper,
     AppItemPasswordModal,
     BaseButton,
+    BaseCheckbox,
     BaseInput,
     BaseProgressBarLinear,
     NavigationItem,
