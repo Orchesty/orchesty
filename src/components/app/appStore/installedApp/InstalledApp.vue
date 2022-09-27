@@ -54,41 +54,42 @@
         </template>
         <template v-else>
           <v-row v-if="form.description.length > 0" dense class="mt-2">
-            {{ form.description }}
+            <v-col>
+              {{ form.description }}
+            </v-col>
           </v-row>
           <v-row dense class="mt-2">
             <v-col>
               <validation-observer :ref="form.key" tag="form" slim @submit.prevent="() => saveForm(form.key)">
                 <div v-for="field in form.fields" :key="field.key">
+                  <div v-if="field.description" class="mb-2">
+                    {{ field.description }}
+                  </div>
                   <validation-provider
-                    v-if="field.type === 'text'"
+                    v-if="field.type === 'text' || field.type === 'url'"
                     v-slot="{ errors }"
                     slim
                     :name="field.key"
-                    :rules="field.required ? 'required' : ''"
+                    :rules="{
+                      required: field.required,
+                    }"
                   >
                     <app-input
                       v-model="settingsForms[index].fields[field.key]"
-                      dense
-                      outlined
-                      :readonly="field.readonly"
+                      :readonly="field.readOnly"
                       :disabled="field.disabled"
                       :label="field.label"
                       :error-messages="errors"
                     />
                   </validation-provider>
                   <validation-provider v-if="field.type === 'selectbox'" :name="field.key" slim>
-                    <v-select
+                    <app-select
                       v-model="settingsForms[index].fields[field.key]"
-                      dense
-                      outlined
                       clearable
-                      :readonly="field.readonly"
+                      :readonly="field.readOnly"
                       :disabled="field.disabled"
                       :label="field.label"
                       :items="getEntries(field.choices)"
-                      item-value="value"
-                      item-text="key"
                     />
                   </validation-provider>
                   <app-item-password-modal
@@ -97,7 +98,36 @@
                     :field-key="field.key"
                     :app-key="appActive.key"
                     :input="field"
+                    :disabled="isRequestPending"
+                    button-class="mb-3"
                   />
+                  <validation-provider v-if="field.type === 'checkbox'" :name="field.key" slim>
+                    <app-checkbox
+                      v-model="settingsForms[index].fields[field.key]"
+                      :readonly="field.readOnly"
+                      :disabled="field.disabled"
+                      :label="field.label"
+                    />
+                  </validation-provider>
+                  <validation-provider
+                    v-if="field.type === 'number'"
+                    v-slot="{ errors }"
+                    slim
+                    :name="field.key"
+                    :rules="{
+                      required: field.required,
+                      numeric: true,
+                    }"
+                  >
+                    <app-input
+                      v-model="settingsForms[index].fields[field.key]"
+                      :readonly="field.readOnly"
+                      :disabled="field.disabled"
+                      :label="field.label"
+                      input-type="number"
+                      :error-messages="errors"
+                    />
+                  </validation-provider>
                 </div>
               </validation-observer>
             </v-col>
@@ -106,14 +136,18 @@
           <v-row v-if="!form.readOnly" dense>
             <v-col>
               <actions-wrapper>
-                <app-button color="primary" :button-title="$t('button.save')" :on-click="() => saveForm(form.key)" />
+                <app-button
+                  color="primary"
+                  :button-title="$t('button.save')"
+                  :on-click="() => saveForm(form.key)"
+                  :disabled="isRequestPending"
+                  :loading="isSaving"
+                />
                 <app-button
                   v-if="hasOauthAuthorization"
-                  color="secondary"
-                  :disabled="!isFormValid(form.key)"
+                  :disabled="!isFormValid(form.key) || isRequestPending"
                   :on-click="authorizeApp"
                   :button-title="$t('button.authorize')"
-                  outlined
                 />
               </actions-wrapper>
             </v-col>
@@ -130,7 +164,7 @@
         <template v-for="item in webhooksSettings">
           <validation-observer :key="item.name" :ref="item.name" slim @submit.prevent="saveWebhook(item.name)">
             <v-row dense>
-              <v-col> <app-input dense outlined readonly label="Webhook Name" :value="item.name" /></v-col>
+              <v-col> <app-input readonly label="Webhook Name" :value="item.name" /></v-col>
               <v-col>
                 <validation-provider v-slot="{ errors }" :name="item.name" rules="required">
                   <v-autocomplete
@@ -179,10 +213,21 @@ import ActionsWrapper from '@/components/layout/actions/ActionsWrapper'
 import ContentBasic from '@/components/layout/content/ContentBasic'
 import UninstallAppModal from '@/components/app/appStore/modal/UninstallAppModal'
 import { API } from '@/api'
+import AppSelect from '@/components/commons/AppSelect'
+import AppCheckbox from '@/components/commons/AppCheckbox'
 
 export default {
   name: 'InstalledApp',
-  components: { UninstallAppModal, ContentBasic, ActionsWrapper, AppButton, AppInput, AppItemPasswordModal },
+  components: {
+    AppCheckbox,
+    AppSelect,
+    UninstallAppModal,
+    ContentBasic,
+    ActionsWrapper,
+    AppButton,
+    AppInput,
+    AppItemPasswordModal,
+  },
   data() {
     return {
       tab: 0,
@@ -209,6 +254,14 @@ export default {
     },
     isUninstalling() {
       const state = this[REQUESTS_STATE.GETTERS.GET_STATE]([API.appStore.uninstallApp.id])
+      return state?.isSending || false
+    },
+    isSaving() {
+      const state = this[REQUESTS_STATE.GETTERS.GET_STATE]([API.appStore.saveSettings.id])
+      return state?.isSending || false
+    },
+    isRequestPending() {
+      const state = this[REQUESTS_STATE.GETTERS.GET_STATE]([API.appStore.saveSettings.id, API.appStore.uninstallApp.id, API.appStore.activateApp.id])
       return state?.isSending || false
     },
     activationDisabled() {

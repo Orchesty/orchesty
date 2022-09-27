@@ -25,6 +25,7 @@ import pages from './pages.json'
 import logs from './logs.json'
 import auth from './auth.json'
 import topologies from './topologies.json'
+import appItemPasswordModal from './appItemPasswordModal.json'
 
 export default Object.assign(
   navigation,
@@ -53,5 +54,6 @@ export default Object.assign(
   logs,
   auth,
   sidebar,
-  topologies
+  topologies,
+  appItemPasswordModal
 )
