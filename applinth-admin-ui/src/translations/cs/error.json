@@ -10,5 +10,8 @@
   "auth": {
     "userNotFound": "Uživatel nenalezen",
     "tenantNotFound": "Tenant nenalezen"
+  },
+  "error": {
+    "errorOccurredTryItLater": "Nastala chyba, zkuste to později"
   }
 }
