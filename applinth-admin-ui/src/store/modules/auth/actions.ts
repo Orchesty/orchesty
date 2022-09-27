@@ -1,5 +1,5 @@
 import { transformUser } from "@/firebase";
-import { alerts, assignTokenToApiCall, i18n } from "@/utils";
+import { alerts, i18n, saveUserWithTokenToStore } from "@/utils";
 import {
   getAuth,
   signInWithEmailAndPassword,
@@ -31,12 +31,8 @@ export const actions: Actions<AuthActions, AuthState> = {
       const user = userCredential.user;
 
       if (user) {
-        const token = await user.getIdToken();
+        await saveUserWithTokenToStore(user);
 
-        commit(AuthMutations.SetUser, transformUser(user));
-        commit(AuthMutations.SetAccessToken, token);
-
-        assignTokenToApiCall(token);
         return true;
       } else {
         return false;
@@ -50,6 +46,11 @@ export const actions: Actions<AuthActions, AuthState> = {
         alerts.addErrorAlert(
           "login-not-successful",
           i18n.t("login.failed") as string
+        );
+      } else {
+        alerts.addErrorAlert(
+          "init-user-not-successful",
+          i18n.t("error.errorOccurredTryItLater") as string
         );
       }
       // TODO log errors to error tracking service

@@ -4,8 +4,8 @@ import {
   onAuthStateChanged,
   User as FirebaseUser,
 } from "firebase/auth";
-import store from "./store";
-import { AuthMutations, authNamespace, User } from "./store/modules/auth";
+import { User } from "./store/modules/auth";
+import { alerts, i18n, saveUserWithTokenToStore } from "@/utils";
 
 const config = {
   apiKey: "AIzaSyANIRePUXX1f8fr-IS2ljSU8FgLkC53a0o",
@@ -25,11 +25,16 @@ export function transformUser(user: FirebaseUser | null): User | null {
 export function initializeFirebaseAuth(initVue: () => void) {
   initializeApp(config);
   const auth = getAuth();
-  onAuthStateChanged(auth, (user) => {
-    store.commit(
-      `${authNamespace}/${AuthMutations.SetUser}`,
-      transformUser(user)
-    );
+  onAuthStateChanged(auth, async (user) => {
+    try {
+      if (user) await saveUserWithTokenToStore(user);
+    } catch (error: any) {
+      alerts.addErrorAlert(
+        "init-user-not-successful",
+        i18n.t("error.errorOccurredTryItLater") as string
+      );
+    }
+
     initVue();
   });
 }
