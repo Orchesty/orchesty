@@ -31,6 +31,13 @@
         :items="customers"
         :loading="isLoading"
       >
+        <template #appNames="{ item }">
+          {{ stringifyArray(item.appNames) }}
+        </template>
+        <template #totalCost="{ item }">
+          {{ formatNumber(item.totalCost) }}
+        </template>
+
         <template #actions="{ item }">
           <router-link
             class="link"
@@ -64,6 +71,7 @@ import {
 } from "@/api/generated";
 import Heading from "@/components/commons/typography/Heading.vue";
 import { Routes } from "@/enums/Routes";
+import { formatNumber } from "@/filters/number";
 
 interface UsersTable {
   [key: string]: any;
@@ -149,12 +157,13 @@ export default class CustomersPage extends Vue {
     this.appSearch = "";
 
     if (sendRequest) {
+      this.isLoading = true;
       this.customers = await this.fetchCustomers();
+      this.isLoading = false;
     }
   }
 
   private fetchCustomers(): Promise<UsageStatsUsersRowsInner[]> {
-    // todo filter by appName (LIKE) ?
     return callApi<UsageStatsUsersRequest>(api.customers.list, {
       timeRangeStart: new Date(0).toISOString(),
       timeRangeEnd: new Date().toISOString(),
@@ -165,16 +174,27 @@ export default class CustomersPage extends Vue {
 
   private async filterByName(): Promise<void> {
     if (this.textSearch !== this.lastSearchedText) {
+      this.isLoading = true;
       this.lastSearchedText = this.textSearch;
       this.customers = await this.fetchCustomers();
+      this.isLoading = false;
     }
   }
+
+  private stringifyArray(array: Array<string> | undefined) {
+    if (Array.isArray(array)) return array.join(", ");
+    return "";
+  }
+
+  formatNumber = formatNumber;
 
   @Watch("appSearch")
   private async searchByApp(val: string): Promise<void> {
     if (!val) return;
 
+    this.isLoading = true;
     this.customers = await this.fetchCustomers();
+    this.isLoading = false;
   }
 }
 </script>
