@@ -25,7 +25,10 @@
       :server-items-length="tableState.pager.total"
       single-select
     >
-      <template v-for="item in tableOptions.headers" #[`header.${item.value}`]="{ header }">
+      <template
+        v-for="item in tableOptions.headers"
+        #[`header.${item.value}`]="{ header }"
+      >
         <span :key="item.value">{{ $t(header.text) }}</span>
       </template>
       <template v-slot:item="props">

@@ -54,8 +54,8 @@ export const actions: Actions<AuthActions, AuthState> = {
         );
       } else {
         alerts.addErrorAlert(
-            "init-user-not-successful",
-            i18n.t("error.errorOccurredTryItLater") as string
+          "init-user-not-successful",
+          i18n.t("error.errorOccurredTryItLater") as string
         );
       }
       // TODO log errors to error tracking service

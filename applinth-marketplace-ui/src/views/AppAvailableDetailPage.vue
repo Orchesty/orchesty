@@ -107,5 +107,4 @@ export default {
   text-transform: none;
   letter-spacing: 0;
 }
-
 </style>

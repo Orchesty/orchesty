@@ -1,7 +1,7 @@
 <template>
   <AppLayout>
     <div class="wrapper">
-      <Heading>{{$t('notFoundPage.header')}}</Heading>
+      <Heading>{{ $t("notFoundPage.header") }}</Heading>
     </div>
   </AppLayout>
 </template>
