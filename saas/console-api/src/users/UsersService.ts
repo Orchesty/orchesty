@@ -51,6 +51,7 @@ export default class UsersService {
         query: IUserSearchQuery,
         userCreateParams: IUserCreateParams,
         gTenantId: string,
+        tenantId: string,
     ): Promise<{ user: unknown }> {
         const tenantAuth = this.prepTenantAuth(query, gTenantId);
         let createdUser: IUser | undefined;
@@ -60,12 +61,10 @@ export default class UsersService {
                 .createUser(userCreateParams)
                 .then(async (userRecord) => {
                     let user = userRecord;
-                    if (userCreateParams.customTenantId) {
-                        await tenantAuth.setCustomUserClaims(user.uid, {
-                            customTenantId: userCreateParams.customTenantId,
-                        });
-                        user = await tenantAuth.getUser(user.uid ?? '');
-                    }
+                    await tenantAuth.setCustomUserClaims(user.uid, {
+                        customTenantId: userCreateParams.customTenantId ?? tenantId,
+                    });
+                    user = await tenantAuth.getUser(user.uid ?? '');
                     createdUser = this.mapUserRecordToExport(user);
                 });
         } catch (e) {

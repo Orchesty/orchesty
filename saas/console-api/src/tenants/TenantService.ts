@@ -173,6 +173,7 @@ export default class TenantService {
                     displayName: createTenantRequest.userDisplayName,
                 },
                 generatedTenant.tenantId,
+                tenantId,
             );
         }
 
