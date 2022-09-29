@@ -76,6 +76,7 @@ export interface UsageStatsUsersRequest {
     granularity?: UsageStatsUsersGranularityEnum;
     endUserDisplayId?: string;
     endUserId?: string;
+    endUserId2?: string;
 }
 
 /**
@@ -347,6 +348,10 @@ export class BillingApi extends runtime.BaseAPI {
 
         if (requestParameters.endUserId !== undefined) {
             queryParameters['endUserId'] = requestParameters.endUserId;
+        }
+
+        if (requestParameters.endUserId2 !== undefined) {
+            queryParameters['endUserId'] = requestParameters.endUserId2;
         }
 
         const headerParameters: runtime.HTTPHeaders = {};

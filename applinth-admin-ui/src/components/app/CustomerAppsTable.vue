@@ -4,7 +4,11 @@
     class="table-medium"
     :headers="headers"
     :items="installedApps"
-  />
+  >
+    <template #installed="{ item }">
+      <span>{{ toLocalDate(item.installed) }}</span>
+    </template>
+  </SimpleTable>
 </template>
 
 <script lang="ts">
@@ -19,6 +23,7 @@ import {
 import { callApi } from "@/utils";
 import { api } from "@/api";
 import SimpleTable from "@/components/commons/tables/SimpleTable.vue";
+import { toLocalDate } from "@/filters/datetime";
 
 @Component({
   components: {
@@ -26,6 +31,9 @@ import SimpleTable from "@/components/commons/tables/SimpleTable.vue";
     Table,
     TextField,
     SelectBox,
+  },
+  filters: {
+    toLocalDate,
   },
 })
 export default class CustomerAppsTable extends Vue {
@@ -56,9 +64,12 @@ export default class CustomerAppsTable extends Vue {
       api.installedApps.apps,
       {
         endUserId: this.customerId,
+        installedDate: new Date(0).toISOString(),
       }
     );
     this.isLoading = false;
   }
+
+  private toLocalDate = toLocalDate;
 }
 </script>

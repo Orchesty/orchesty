@@ -170,6 +170,12 @@ paths:
                   required: false
                   schema:
                       type: string
+                - in: query
+                  name: endUserId
+                  description: Filter by endUserId
+                  required: false
+                  schema:
+                      type: string
             responses:
                 '200':
                     description: Success
@@ -721,12 +727,18 @@ components:
                             appNames:
                                 description: Application names (also ID)
                                 type: array
+                                items:
+                                    type: string
                             appIds:
                                 description: Application Ids (also Name)
                                 type: array
+                                items:
+                                    type: string
                             instanceIds:
                                 description: Instance Ids (also Name)
                                 type: array
+                                items:
+                                    type: string
                             totalCost:
                                 description: Total installs cost for this app
                                 type: integer

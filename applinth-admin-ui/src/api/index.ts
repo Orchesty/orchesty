@@ -3,6 +3,7 @@ import {
   timeBucketUsers,
   timeBucketApps,
   installedApps,
+  overviewUsers,
 } from "./private/overview";
 import { customers } from "./private/customers";
 import { dashboard } from "./private/dashboard";
@@ -16,4 +17,5 @@ export const api = {
   timeBucketUsers,
   installedApps,
   timeBucketApps,
+  overviewUsers,
 };

@@ -1,14 +1,14 @@
 <template>
   <AppLayout>
     <div class="table-medium">
-      <!--      TODO HARDCOCED-->
-
-      <heading>John Doe</heading>
-      <StatusCard
-        class="cusotmer-info-card my-5"
-        :score="199"
-        :title="$t('customerDetailPage.statusCard.actualBilling')"
-      />
+      <template v-if="!isLoading && customerDetail">
+        <heading>{{ customerDetail.endUserDisplayId }}</heading>
+        <StatusCard
+          class="cusotmer-info-card my-5"
+          :score="formatTotalCost"
+          :title="$t('customerDetailPage.statusCard.actualBilling')"
+        />
+      </template>
       <CustomerAppsTable class="mb-5" :customer-id="customerId" />
       <CustomerBillingTable :customer-id="customerId" />
     </div>
@@ -22,6 +22,13 @@ import StatusCard from "@/components/commons/layouts/StatusCard.vue";
 import CustomerAppsTable from "@/components/app/CustomerAppsTable.vue";
 import CustomerBillingTable from "@/components/app/CustomerBillingTable.vue";
 import Heading from "@/components/commons/typography/Heading.vue";
+import { callApi } from "@/utils";
+import { api } from "@/api";
+import {
+  UsageStatsUsersRequest,
+  UsageStatsUsersRowsInner,
+} from "@/api/generated";
+import { formatNumber } from "@/filters/number";
 
 @Component({
   components: {
@@ -34,10 +41,29 @@ import Heading from "@/components/commons/typography/Heading.vue";
 })
 export default class CustomerDetailPage extends Vue {
   customerId!: string;
+  customerDetail!: UsageStatsUsersRowsInner;
+  isLoading = false;
+  totalCost!: number;
 
-  created() {
-    //todo fetch customer detail (PIP-1296)
+  get formatTotalCost(): string {
+    if (typeof this.customerDetail.totalCost === "number")
+      return formatNumber(this.customerDetail.totalCost);
+    return "";
+  }
+
+  async created() {
+    this.isLoading = true;
     this.customerId = this.$route.params.id;
+
+    const customer = await callApi<UsageStatsUsersRequest>(api.customers.list, {
+      timeRangeStart: new Date(0).toISOString(),
+      timeRangeEnd: new Date().toISOString(),
+      endUserId: this.customerId,
+    });
+
+    if (customer.length > 0) this.customerDetail = customer[0];
+
+    this.isLoading = false;
   }
 }
 </script>

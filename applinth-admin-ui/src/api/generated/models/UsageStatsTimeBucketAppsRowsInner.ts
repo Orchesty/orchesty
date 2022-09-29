@@ -27,22 +27,22 @@ export interface UsageStatsTimeBucketAppsRowsInner {
     timeBucketName?: string;
     /**
      * Application names (also ID)
-     * @type {Array}
+     * @type {Array<string>}
      * @memberof UsageStatsTimeBucketAppsRowsInner
      */
-    appNames?: Array;
+    appNames?: Array<string>;
     /**
      * Application Ids (also Name)
-     * @type {Array}
+     * @type {Array<string>}
      * @memberof UsageStatsTimeBucketAppsRowsInner
      */
-    appIds?: Array;
+    appIds?: Array<string>;
     /**
      * Instance Ids (also Name)
-     * @type {Array}
+     * @type {Array<string>}
      * @memberof UsageStatsTimeBucketAppsRowsInner
      */
-    instanceIds?: Array;
+    instanceIds?: Array<string>;
     /**
      * Total installs cost for this app
      * @type {number}
