@@ -20,7 +20,7 @@
         </v-col>
       </v-row>
       <v-row>
-        <v-col cols="5" class="d-flex justify-space-between flex-column">
+        <v-col cols="5" class="d-flex justify-space-between flex-column application-settings-wrapper">
           <h1 class="headline font-weight-bold">{{ appActive.name }}</h1>
           <p class="mt-4">{{ appActive.description }}</p>
           <div class="d-flex justify-space-between align-center">
@@ -68,7 +68,7 @@
         <v-tab-item
           v-for="(form, index) in settingsConfig"
           :key="form.key"
-          class="application-settings-wrapper"
+          class="application-settings-wrapper-form"
         >
           <template v-if="form.key === 'info'">
             <!-- eslint-disable-next-line vue/no-v-html -->
@@ -479,7 +479,12 @@ export default {
 .activation-label {
   width: 12ch;
 }
+
 .application-settings-wrapper {
   max-width: 80ch;
+}
+
+.application-settings-wrapper-form {
+  max-width: 50ch;
 }
 </style>

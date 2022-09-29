@@ -30,7 +30,7 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-col>
+      <v-col class="available-app-wrapper">
         <v-tabs height="24">
           <v-tab
             v-if="app.info"
@@ -43,7 +43,7 @@
     </v-row>
 
     <!-- eslint-disable-next-line vue/no-v-html -->
-    <div class="info-wrapper mt-5" v-html="app.info" />
+    <div class="mt-5" v-html="app.info" />
   </div>
 </template>
 
@@ -100,7 +100,7 @@ export default {
 </script>
 <style scoped lang="scss">
 .available-app-wrapper {
-  max-width: 50ch;
+  max-width: 80ch;
 }
 .text-transform-none {
   text-align: start;
@@ -108,7 +108,4 @@ export default {
   letter-spacing: 0;
 }
 
-.info-wrapper {
-  max-width: 80ch;
-}
 </style>
