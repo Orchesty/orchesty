@@ -897,6 +897,9 @@ components:
                 tenantId:
                     type: string
                     nullable: true
+                customTenantId:
+                    type: string
+                    nullable: true
         TenantsRows:
             type: object
             properties:

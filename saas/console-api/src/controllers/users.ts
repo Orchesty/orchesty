@@ -44,8 +44,13 @@ export async function usersGet(req: Request, res: Response): Promise<void> {
 
 export async function usersCreate(req: Request, res: Response): Promise<void> {
     try {
-        const { query, gTenantId } = await preprocessRequest<IUserSearchQuery>(req, ResourceEnum.CREATE_USER);
-        res.status(200).send(await usersService.createUser(query, req.body as unknown as IUserCreateParams, gTenantId));
+        const { query, gTenantId, tenantId } = await preprocessRequest<IUserSearchQuery>(req, ResourceEnum.CREATE_USER);
+        res.status(200).send(await usersService.createUser(
+            query,
+            req.body as unknown as IUserCreateParams,
+            gTenantId,
+            tenantId,
+        ));
     } catch (e) {
         handleError(e as Error, req, res);
     }

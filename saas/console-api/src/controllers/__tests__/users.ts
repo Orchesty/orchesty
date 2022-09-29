@@ -23,6 +23,8 @@ describe('usersController', () => {
             .mockResolvedValue(generateGetUsersResultMockedData());
         jest.spyOn(adminAuth, 'createUser')
             .mockResolvedValue(generateUserMockedData());
+        jest.spyOn(adminAuth, 'setCustomUserClaims')
+            .mockResolvedValue();
         jest.spyOn(adminAuth, 'updateUser')
             .mockResolvedValue(generateUserMockedData('neco1'));
         jest.spyOn(adminAuth, 'deleteUser')

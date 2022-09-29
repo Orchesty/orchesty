@@ -14,6 +14,7 @@ import { server } from '../../index';
 
 const tenantManager = admin.auth().tenantManager();
 const adminAuth = admin.auth().tenantManager().authForTenant('t123');
+const userAdminAuth = admin.auth().tenantManager().authForTenant('t-123456789');
 describe('tenantsController', () => {
     beforeEach(async () => {
         await createDbTenants();
@@ -29,8 +30,12 @@ describe('tenantsController', () => {
             .mockResolvedValue(undefined);
         jest.spyOn(adminAuth, 'listUsers')
             .mockResolvedValue({ users: [generateUserMockedData()] });
-        jest.spyOn(admin.auth().tenantManager().authForTenant('t-123456789'), 'createUser')
+        jest.spyOn(userAdminAuth, 'createUser')
             .mockResolvedValue(generateUserMockedData());
+        jest.spyOn(userAdminAuth, 'getUser')
+            .mockResolvedValue(generateUserMockedData());
+        jest.spyOn(userAdminAuth, 'setCustomUserClaims')
+            .mockResolvedValue();
         jest.spyOn(adminAuth, 'deleteUsers')
             .mockResolvedValue(generateDeleteUsersResultMockedData());
     });
