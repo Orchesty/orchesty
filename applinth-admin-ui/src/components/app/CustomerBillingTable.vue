@@ -4,7 +4,14 @@
     class="table-medium"
     :headers="headers"
     :items="monthlyBills"
-  />
+  >
+    <template #appNames="{ item }">
+      {{ stringifyArray(item.appNames) }}
+    </template>
+    <template #totalCost="{ item }">
+      <slot>{{ formatNumber(item.totalCost) }}</slot>
+    </template>
+  </SimpleTable>
 </template>
 
 <script lang="ts">
@@ -17,6 +24,7 @@ import {
 import { callApi } from "@/utils";
 import { api } from "@/api";
 import SimpleTable from "@/components/commons/tables/SimpleTable.vue";
+import { formatNumber } from "@/filters/number";
 
 @Component({
   components: {
@@ -36,13 +44,13 @@ export default class CustomerBillingTable extends Vue {
       text: "grids.headers.month",
       sortable: true,
       align: "start",
-      value: "month",
+      value: "timeBucketName",
     },
     {
       text: "grids.headers.application",
       sortable: true,
       align: "start",
-      value: "appName",
+      value: "appNames",
     },
     {
       text: "grids.headers.billing",
@@ -55,7 +63,7 @@ export default class CustomerBillingTable extends Vue {
   async created() {
     this.isLoading = true;
     this.monthlyBills = await callApi<UsageStatsTimeBucketAppsRequest>(
-      api.overview.apps,
+      api.timeBucketApps.apps,
       {
         timeRangeStart: new Date(0).toISOString(),
         timeRangeEnd: new Date().toISOString(),
@@ -64,5 +72,12 @@ export default class CustomerBillingTable extends Vue {
     );
     this.isLoading = false;
   }
+
+  private stringifyArray(array: Array<string> | undefined): string {
+    if (Array.isArray(array)) return array.join(", ");
+    return "";
+  }
+
+  private formatNumber = formatNumber;
 }
 </script>

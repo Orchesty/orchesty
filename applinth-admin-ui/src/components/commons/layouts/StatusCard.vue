@@ -20,7 +20,7 @@ import SubHeading from "@/components/commons/typography/SubHeading.vue";
 })
 export default class StatusCard extends Vue {
   @Prop({ type: Number, default: null })
-  readonly score!: number;
+  readonly score!: number | string;
 
   @Prop({ type: String, default: "" })
   readonly title!: string;
