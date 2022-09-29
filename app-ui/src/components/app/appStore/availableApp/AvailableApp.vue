@@ -6,7 +6,7 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-col cols="5" class="d-flex justify-space-between flex-column">
+      <v-col class="d-flex justify-space-between flex-column info-wrapper">
         <h1 class="headline font-weight-bold">{{ appActive.name }}</h1>
         <p class="mt-4">{{ appActive.description }}</p>
         <div v-if="appActive.isInstallable">
