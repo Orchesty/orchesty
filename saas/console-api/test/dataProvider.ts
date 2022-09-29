@@ -191,7 +191,7 @@ export async function createUsageStats(): Promise<void> {
 export function getJWTToken(withPermissions = false): { authorization: string } {
     const token = sign({
         /* eslint-disable @typescript-eslint/naming-convention */
-        firebase: { tenant: 't123456789' },
+        firebase: { tenant: 't-123456789' },
         first_name: 'John',
         last_name: 'Doe',
         /* eslint-enable @typescript-eslint/naming-convention */

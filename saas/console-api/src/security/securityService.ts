@@ -60,7 +60,7 @@ export async function getLoggedUser(req: Request): Promise<ITenant> {
     const jwtPayload = getJWTPayload(req);
     if (jwtPayload.firebase?.tenant) {
         return await db.getCloudCollection(CollectionEnum.TENANT).findOne({
-            tenantId: jwtPayload.firebase.tenant,
+            gTenantId: jwtPayload.firebase.tenant,
         }) as unknown as ITenant;
     }
 
