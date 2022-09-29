@@ -74,9 +74,7 @@ export default {
     }
   },
   created() {
-    if (this.isTopology && this.isCrone && this.topologyActive?.enabled) {
-      this.timer = setInterval(this.refresh, 60000)
-    }
+    this.startRefreshNextRun()
   },
   computed: {
     ...mapGetters(TOPOLOGIES.NAMESPACE, { topologyActive: TOPOLOGIES.GETTERS.GET_ACTIVE_TOPOLOGY }),
@@ -119,9 +117,19 @@ export default {
     refresh() {
       this.now = new Date()
     },
+    startRefreshNextRun() {
+      if (this.isTopology && this.isCrone && this.topologyActive?.enabled) {
+        this.timer = setInterval(this.refresh, 60_000)
+      } else clearInterval(this.timer)
+    },
   },
   beforeDestroy() {
     clearInterval(this.timer)
+  },
+  watch: {
+    topologyActive() {
+      this.startRefreshNextRun()
+    },
   },
 }
 </script>
