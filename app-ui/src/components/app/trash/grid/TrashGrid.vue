@@ -112,7 +112,11 @@ export default {
   },
   computed: {
     ...mapGetters(REQUESTS_STATE.NAMESPACE, [REQUESTS_STATE.GETTERS.GET_STATE]),
-    ...mapGetters(DATA_GRIDS.TRASH, { sorterInitial: GRID.GETTERS.GET_SORTER, pagingInitial: GRID.GETTERS.GET_PAGING }),
+    ...mapGetters(DATA_GRIDS.TRASH, {
+      activeSorter: GRID.GETTERS.GET_SORTER,
+      activePaging: GRID.GETTERS.GET_PAGING,
+      activeFilter: GRID.GETTERS.GET_FILTER,
+    }),
     state() {
       return this[REQUESTS_STATE.GETTERS.GET_STATE](API.trash.grid.id)
     },
@@ -123,13 +127,15 @@ export default {
   methods: {
     ...mapActions(TRASH.NAMESPACE, [TRASH.ACTIONS.TRASH_ACCEPT_LIST, TRASH.ACTIONS.TRASH_REJECT_LIST]),
     async acceptAll() {
-      return await this[TRASH.ACTIONS.TRASH_ACCEPT_LIST]({ ids: this.selected.map((item) => item.id) })
+      await this[TRASH.ACTIONS.TRASH_ACCEPT_LIST]({ ids: this.selected.map((item) => item.id) })
+      await this.fetchGrid()
     },
     async rejectAll() {
-      return await this[TRASH.ACTIONS.TRASH_REJECT_LIST]({ ids: this.selected.map((item) => item.id) })
+      await this[TRASH.ACTIONS.TRASH_REJECT_LIST]({ ids: this.selected.map((item) => item.id) })
+      await this.fetchGrid()
     },
     async fetchGrid() {
-      await this.$refs.grid.fetchGrid(null, null, this.gridFilter, null, null)
+      await this.$refs.grid.fetchGrid(null, null, this.activeFilter, this.activePaging, this.activeSorter)
     },
     async updateInfo(item) {
       this.item = item.item
