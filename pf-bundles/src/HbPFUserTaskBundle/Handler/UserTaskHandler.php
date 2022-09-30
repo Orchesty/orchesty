@@ -25,11 +25,7 @@ final class UserTaskHandler
 
     use GridHandlerTrait;
 
-    private const IDS            = 'ids';
-    private const NODE_ID        = 'nodeId';
-    private const TOPOLOGY_ID    = 'topologyId';
-    private const CORRELATION_ID = 'correlationId';
-    private const TYPE           = 'type';
+    public const IDS = 'ids';
 
     /**
      * UserTaskHandler constructor.
@@ -185,7 +181,7 @@ final class UserTaskHandler
      */
     private function filterBody(array $data): GridRequestDto
     {
-        $fields = [self::IDS, self::CORRELATION_ID, self::TOPOLOGY_ID, self::NODE_ID, self::TYPE];
+        $fields = [self::IDS, UserTask::CORRELATION_ID, UserTask::TOPOLOGY_ID, UserTask::NODE_ID, UserTask::TYPE];
         Validations::checkParamsAny($fields, $data);
         $dto = new GridRequestDto([]);
         $dto->setItemsPerPage(99);

@@ -7,10 +7,10 @@ import RedshiftExecuteQueryConnector
 import RedshiftApplication from '@orchesty/nodejs-connectors/dist/lib/AmazonApps/Redshift/RedshiftApplication';
 import S3Application from '@orchesty/nodejs-connectors/dist/lib/AmazonApps/S3/S3Application';
 import AsanaApplication from '@orchesty/nodejs-connectors/dist/lib/Asana/AsanaApplication';
-import AsanaCreateTaskConnector from '@orchesty/nodejs-connectors/dist/lib/Asana/Connectors/AsanaCreateTaskConnector';
+import AsanaCreateTaskConnector from '@orchesty/nodejs-connectors/dist/lib/Asana/Connector/AsanaCreateTaskConnector';
 import BigcommerceApplication from '@orchesty/nodejs-connectors/dist/lib/Bigcommerce/BigcommerceApplication';
 import DiscordSendMessageConnector
-    from '@orchesty/nodejs-connectors/dist/lib/Discord/Connectors/DiscordSendMessageConnector';
+    from '@orchesty/nodejs-connectors/dist/lib/Discord/Connector/DiscordSendMessageConnector';
 import DiscordApplication from '@orchesty/nodejs-connectors/dist/lib/Discord/DiscordApplication';
 import DropboxApplication from '@orchesty/nodejs-connectors/dist/lib/Dropbox/DropboxApplication';
 import FacebookAdsApplication from '@orchesty/nodejs-connectors/dist/lib/FacebookAds/FacebookAdsApplication';
@@ -26,7 +26,7 @@ import HubSpotCreateContactConnector
 import HubSpotApplication from '@orchesty/nodejs-connectors/dist/lib/Hubspot/HubSpotApplication';
 import HubSpotCreateContactMapper from '@orchesty/nodejs-connectors/dist/lib/Hubspot/Mapper/HubSpotCreateContactMapper';
 import IDokladApplication from '@orchesty/nodejs-connectors/dist/lib/IDoklad/IDokladApplication';
-import JiraCreateIssueConnector from '@orchesty/nodejs-connectors/dist/lib/Jira/Connectors/JiraCreateIssueConnector';
+import JiraCreateIssueConnector from '@orchesty/nodejs-connectors/dist/lib/Jira/Connector/JiraCreateIssueConnector';
 import JiraApplication from '@orchesty/nodejs-connectors/dist/lib/Jira/JiraApplication';
 import Magento2Application from '@orchesty/nodejs-connectors/dist/lib/Magento2/Magento2Application';
 import MailchimpApplication from '@orchesty/nodejs-connectors/dist/lib/Mailchimp/MailchimpApplication';
@@ -49,7 +49,7 @@ import SqliteApplication from '@orchesty/nodejs-connectors/dist/lib/Sql/SqliteAp
 import StripeApplication from '@orchesty/nodejs-connectors/dist/lib/Stripe/StripeApplication';
 import TableauApplication from '@orchesty/nodejs-connectors/dist/lib/Tableau/TableauApplication';
 import TrelloCreateCardConnector from
-    '@orchesty/nodejs-connectors/dist/lib/Trello/Connectors/TrelloCreateCardConnector';
+    '@orchesty/nodejs-connectors/dist/lib/Trello/Connector/TrelloCreateCardConnector';
 import TrelloApplication from '@orchesty/nodejs-connectors/dist/lib/Trello/TrelloApplication';
 import TwilioApplication from '@orchesty/nodejs-connectors/dist/lib/Twilio/TwilioApplication';
 import UpgatesApplication from '@orchesty/nodejs-connectors/dist/lib/Upgates/UpgatesApplication';

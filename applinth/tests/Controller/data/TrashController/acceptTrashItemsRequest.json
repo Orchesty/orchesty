@@ -1,5 +1,5 @@
 {
-    "http": "GET /api/applinth/trash/accept",
+    "http": "POST /api/applinth/trash/accept",
     "headers": {
         "HTTP_Authorization": "jwt"
     },

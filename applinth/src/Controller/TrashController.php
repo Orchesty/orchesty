@@ -75,7 +75,7 @@ final class TrashController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/accept", methods={"GET"})
+     * @Route("/{id}/accept", methods={"POST"})
      *
      * @param string $id
      *
@@ -91,7 +91,7 @@ final class TrashController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/reject", methods={"GET"})
+     * @Route("/{id}/reject", methods={"POST"})
      *
      * @param string $id
      *
@@ -107,28 +107,48 @@ final class TrashController extends AbstractController
     }
 
     /**
-     * @Route("/accept", methods={"GET"})
+     * @Route("/accept", methods={"POST"})
+     *
+     * @param Request $request
      *
      * @return Response
      */
-    public function acceptTrashItems(): Response
+    public function acceptTrashItems(Request $request): Response
     {
         try {
-            return $this->getResponse($this->userTaskHandler->acceptBatch([UserTask::TYPE => 'trash']));
+            $ids    = $request->request->all()[UserTaskHandler::IDS] ?? [];
+            $filter = [];
+            if (!empty($ids)) {
+                $filter = [UserTaskHandler::IDS => $ids];
+            }
+
+            return $this->getResponse(
+                $this->userTaskHandler->acceptBatch([UserTask::TYPE => 'trash', ...$filter]),
+            );
         } catch (Throwable $t) {
             return $this->getErrorResponse($t);
         }
     }
 
     /**
-     * @Route("/reject", methods={"GET"})
+     * @Route("/reject", methods={"POST"})
+     *
+     * @param Request $request
      *
      * @return Response
      */
-    public function rejectTrashItems(): Response
+    public function rejectTrashItems(Request $request): Response
     {
         try {
-            return $this->getResponse($this->userTaskHandler->rejectBatch([UserTask::TYPE => 'trash']));
+            $ids    = $request->request->all()[UserTaskHandler::IDS] ?? [];
+            $filter = [];
+            if (!empty($ids)) {
+                $filter = [UserTaskHandler::IDS => $ids];
+            }
+
+            return $this->getResponse(
+                $this->userTaskHandler->rejectBatch([UserTask::TYPE => 'trash', ...$filter]),
+            );
         } catch (Throwable $t) {
             return $this->getErrorResponse($t);
         }
