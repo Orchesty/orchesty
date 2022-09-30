@@ -22,7 +22,7 @@ export default class UsageStatsService {
         query: IAppsAggregationParams,
         tenantId: string,
     ): Promise<{ rows: unknown }> {
-        const mongoQuery = this.prepareMongoQuery(query, tenantId);
+        const mongoQuery = this.prepareMongoQuery(query, tenantId, false, true);
         const collectionName = switchGranularity(query.granularity);
 
         const aggregations = [
@@ -192,7 +192,7 @@ export default class UsageStatsService {
         query: IAppsAggregationParams,
         tenantId: string,
     ): Promise<{ rows: unknown }> {
-        const mongoQuery = this.prepareMongoQuery(query, tenantId);
+        const mongoQuery = this.prepareMongoQuery(query, tenantId, false, true);
         const collectionName = switchGranularity(query.granularity);
 
         const aggregations = [
@@ -259,6 +259,7 @@ export default class UsageStatsService {
         query: IAppsAggregationParams,
         tenantId: string,
         requireInstalledDate = false,
+        setDefaultDateIfNotSet = false,
     ): IMongoQuery {
         const mongoQuery = {} as IMongoQuery;
         if (query.tenantId) {
@@ -280,6 +281,19 @@ export default class UsageStatsService {
                 mongoQuery.end = {
                     $lt: endDate,
                 };
+            }
+
+            if (setDefaultDateIfNotSet) {
+                if (!mongoQuery.start) {
+                    mongoQuery.start = {
+                        $gte: DateTime.local().startOf('month'),
+                    };
+                }
+                if (!mongoQuery.end) {
+                    mongoQuery.end = {
+                        $lt: DateTime.local().endOf('month'),
+                    };
+                }
             }
         } catch (e) {
             throw new DateParseError('Parameter timeRangeStart and/or timeRangeEnd is/are in invalid format!', 1);

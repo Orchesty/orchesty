@@ -6,8 +6,8 @@ import { preprocessRequest } from '../security/securityService';
 
 export interface IAppsAggregationParams {
     tenantId?: string;
-    timeRangeStart: string;
-    timeRangeEnd: string;
+    timeRangeStart?: string;
+    timeRangeEnd?: string;
     endUserId?: string;
     endUserDisplayId?: string;
     instanceId?: string;
