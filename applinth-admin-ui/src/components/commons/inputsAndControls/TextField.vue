@@ -1,6 +1,7 @@
 <template>
   <ValidationProvider v-slot="{ errors }" :name="name" :rules="rules || {}">
     <v-text-field
+      :id="id"
       :value="value"
       :type="type"
       :readonly="readonly"
@@ -36,6 +37,9 @@ import { Rules } from "../../../utils/veeValidate";
   },
 })
 export default class TextField extends Vue {
+  @Prop({ required: false, type: String })
+  private id?: string;
+
   @Prop({ required: false, type: [Number, String], default: "" })
   private value!: number | string;
 

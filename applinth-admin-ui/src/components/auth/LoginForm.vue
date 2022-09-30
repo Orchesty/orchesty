@@ -4,27 +4,34 @@
     @submit.prevent="submit"
     @keydown.enter="submit"
     ref="formRef"
+    autocomplete="on"
   >
     <TextField
       :label="$t('formLabels.tenantId')"
-      :name="$t('formLabels.tenantId')"
+      name="tenantId"
       v-model="form.tenant"
       type="text"
+      autofocus
+      autocomplete="username"
+      id="loginTenant"
     />
     <TextField
       :label="$t('formLabels.email')"
-      :name="$t('formLabels.email')"
+      name="email"
       v-model="form.email"
       type="email"
       :rules="rules.email"
+      autocomplete="email"
+      id="loginEmail"
     />
     <TextField
       :label="$t('formLabels.password')"
-      :name="$t('formLabels.password')"
+      name="password"
       :rules="rules.password"
       v-model="form.password"
       type="password"
       autocomplete="current-password"
+      id="loginPassword"
     />
     <div class="text-right mb-4">
       <router-link :to="{ name: Routes.ForgotPassword }" class="link">
