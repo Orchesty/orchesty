@@ -13,7 +13,7 @@ describe('usageStatsController', () => {
     describe('apps', () => {
         it('shouldReturn400', async () => {
             const resp = await supertest(server).get('/billing/reports/apps');
-            assert.deepEqual(resp.statusCode, 400);
+            assert.deepEqual(resp.statusCode, 401);
         });
         it('shouldReturn500', async () => {
             await db.disconnect();
