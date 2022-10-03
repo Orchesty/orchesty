@@ -3332,7 +3332,7 @@
             "dist": {
                 "type": "path",
                 "url": "../pf-bundles",
-                "reference": "5fc466ac437897345b65af5fe6c4aebdeb43c8f9"
+                "reference": "0a91f5a826a50c5627db76f2cb3ccc2de562ce36"
             },
             "require": {
                 "doctrine/orm": "^2.13",
@@ -3387,7 +3387,7 @@
                 }
             },
             "license": [
-                "Apache-2.0"
+                "Elastic"
             ],
             "description": "Orchesty backend",
             "transport-options": {

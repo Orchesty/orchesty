@@ -49,9 +49,9 @@ final class CategoryParser
     private array $tmpPath = [];
 
     /**
-     * @var string
+     * @var string|null
      */
-    private string $matchedRootAlias = '';
+    private string|null $matchedRootAlias = '';
 
     /**
      * @var ObjectRepository<Category>&CategoryRepository
@@ -135,12 +135,14 @@ final class CategoryParser
 
             if (!empty($category) && ($category->getParent() == $parent || empty($parent))) {
                 $category = $this->categoryManager->updateCategory($category, ['parent' => $parent]);
-            } else {
+            } else if ($name) {
                 $category = $this->createCategory($name, $parent);
             }
 
-            $topology->setCategory($category->getId());
-            $parent = $category->getId();
+            if ($category) {
+                $topology->setCategory($category->getId());
+                $parent = $category->getId();
+            }
         }
 
         $this->dm->flush();
@@ -190,7 +192,7 @@ final class CategoryParser
             }
 
             if (empty($this->tmpPath)) {
-                $this->matchedRootAlias = $alias;
+                $this->matchedRootAlias = is_numeric($alias) ? NULL : $alias;
                 $this->tmpFilePath      = array_unique($this->tmpFilePath);
                 array_unshift($categories, $alias);
 

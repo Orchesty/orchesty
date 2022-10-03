@@ -40,12 +40,12 @@ final class InstallManagerTest extends KernelTestCaseAbstract
         $topo    = new Topology();
         $manager = $this->createManager($topo);
         $manager->setLogger(new Logger('logger'));
-        $output = $manager->prepareInstall(TRUE, TRUE, TRUE);
+        $output = $manager->prepareInstall(TRUE, TRUE, TRUE, '');
         self::assertArrayHasKey('create', $output);
         self::assertArrayHasKey('update', $output);
         self::assertArrayHasKey('delete', $output);
 
-        $output = $manager->prepareInstall(TRUE, TRUE, TRUE, TRUE);
+        $output = $manager->prepareInstall(TRUE, TRUE, TRUE, '',TRUE);
         self::assertArrayHasKey('create', $output);
         self::assertArrayHasKey('update', $output);
         self::assertArrayHasKey('delete', $output);
@@ -68,7 +68,7 @@ final class InstallManagerTest extends KernelTestCaseAbstract
         $this->setProperty($topo, 'id', '123');
 
         $manager = $this->createManager($topo);
-        $output  = $manager->makeInstall(TRUE, TRUE, TRUE);
+        $output  = $manager->makeInstall(TRUE, TRUE, TRUE, '');
         self::assertArrayHasKey('create', $output);
         self::assertArrayHasKey('update', $output);
         self::assertArrayHasKey('delete', $output);
@@ -86,7 +86,7 @@ final class InstallManagerTest extends KernelTestCaseAbstract
         $this->setProperty($topo, 'id', '123');
 
         $manager = $this->createManager($topo);
-        $output  = $manager->makeInstall(TRUE, TRUE, TRUE);
+        $output  = $manager->makeInstall(TRUE, TRUE, TRUE, '');
         self::assertArrayHasKey('create', $output);
         self::assertArrayHasKey('update', $output);
         self::assertArrayHasKey('delete', $output);
@@ -113,7 +113,7 @@ final class InstallManagerTest extends KernelTestCaseAbstract
         $dto = new CompareResultDto();
         $dto->addCreate(new TopologyFile('file.tplg', __DIR__ . '/data/file.tplg'));
 
-        $result = $this->invokeMethod($manager, 'makeCreate', [$dto]);
+        $result = $this->invokeMethod($manager, 'makeCreate', [$dto, '']);
 
         self::assertArrayHasKey('file', $result);
     }
@@ -139,7 +139,7 @@ final class InstallManagerTest extends KernelTestCaseAbstract
         $dto = new CompareResultDto();
         $dto->addUpdate(new UpdateObject($topo, new TopologyFile('file-upl.tplg', __DIR__ . '/data/file-upl.tplg')));
 
-        $result = $this->invokeMethod($manager, 'makeUpdate', [$dto]);
+        $result = $this->invokeMethod($manager, 'makeUpdate', [$dto, '']);
 
         self::assertArrayHasKey('name', $result);
     }

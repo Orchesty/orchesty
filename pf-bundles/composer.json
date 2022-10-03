@@ -1,8 +1,8 @@
 {
     "name": "orchesty/backend",
     "description": "Orchesty backend",
-    "version": "2.15.0",
     "license": "Elastic",
+    "version": "2.15.0",
     "require": {
         "php": "^8.1",
         "ext-ctype": "*",

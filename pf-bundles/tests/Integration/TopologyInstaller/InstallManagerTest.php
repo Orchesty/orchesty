@@ -52,7 +52,7 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
     {
         $this->createTopologies();
         $manager = $this->getManager();
-        $output  = $manager->prepareInstall(TRUE, TRUE, TRUE);
+        $output  = $manager->prepareInstall(TRUE, TRUE, TRUE, 'worker');
         self::assertArrayHasKey('create', $output);
         self::assertArrayHasKey('update', $output);
         self::assertArrayHasKey('delete', $output);
@@ -93,11 +93,11 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
         $this->dm->getClient()->dropDatabase('pipes');
         $this->createTopologies();
         $manager = $this->getManager();
-        $manager->prepareInstall(TRUE, TRUE, TRUE);
+        $manager->prepareInstall(TRUE, TRUE, TRUE, '');
         $res = $this->redis->get(InstallManager::AUTO_INSTALL_KEY);
         self::assertNotEmpty($res);
 
-        $output = $manager->makeInstall(TRUE, TRUE, TRUE);
+        $output = $manager->makeInstall(TRUE, TRUE, TRUE, 'worker');
         self::assertArrayHasKey('create', $output);
         self::assertArrayHasKey('update', $output);
         self::assertArrayHasKey('delete', $output);
@@ -118,7 +118,7 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
     public function testMakeInstallEx(): void
     {
         $manager = $this->getManager();
-        $output  = $manager->makeInstall(TRUE, TRUE, TRUE);
+        $output  = $manager->makeInstall(TRUE, TRUE, TRUE, '');
         self::assertArrayHasKey('create', $output);
         self::assertArrayHasKey('update', $output);
         self::assertArrayHasKey('delete', $output);

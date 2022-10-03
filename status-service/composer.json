@@ -1,7 +1,7 @@
 {
     "name": "orchesty/status-service",
-    "version": "1.0.0",
     "license": "Elastic",
+    "version": "1.0.0",
     "require": {
         "php": "^8.1",
         "hanaboso/commons-bundle": "^2.6",

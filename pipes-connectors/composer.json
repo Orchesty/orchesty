@@ -1,8 +1,8 @@
 {
     "name": "orchesty/php-connectors",
     "description": "Connectors for Orchesty",
-    "version": "2.1.2",
     "license": "Apache-2.0",
+    "version": "2.1.2",
     "require": {
         "php": "^8.1",
         "ext-ctype": "*",

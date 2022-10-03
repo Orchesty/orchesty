@@ -1,8 +1,8 @@
 {
     "name": "orchesty/applinth",
     "description": "Orchesty - applinth - Backend",
-    "version": "1.0.0",
     "license": "Elastic",
+    "version": "1.0.0",
     "require": {
         "doctrine/annotations": "^1.13",
         "orchesty/backend": "^2.1",
