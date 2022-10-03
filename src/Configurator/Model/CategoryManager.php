@@ -106,7 +106,7 @@ final class CategoryManager
             $category->setName($data['name']);
         }
 
-        if (array_key_exists('parent', $data)) {
+        if (isset($data['parent']) && $data['parent'] !== '') {
             if ($data['parent'] && ($data['parent'] != $category->getParent())) {
                 if (!$this->dm->getRepository(Category::class)->find($data['parent'])) {
                     throw new CategoryException(

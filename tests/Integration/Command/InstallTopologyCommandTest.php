@@ -30,11 +30,12 @@ final class InstallTopologyCommandTest extends DatabaseTestCaseAbstract
         $commandTester = new CommandTester($command);
         $commandTester->execute(
             [
-                'command' => $command->getName(),
-                '-c'      => NULL,
-                '-u'      => NULL,
-                '-d'      => NULL,
-                '--force' => NULL,
+                'command'   => $command->getName(),
+                '-c'        => NULL,
+                '-u'        => NULL,
+                '-d'        => NULL,
+                '--force'   => NULL,
+                'forceHost' => '',
             ],
         );
 

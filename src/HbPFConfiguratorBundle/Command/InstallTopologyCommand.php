@@ -8,6 +8,7 @@ use Hanaboso\PipesFramework\TopologyInstaller\InstallManager;
 use Hanaboso\RestBundle\Exception\XmlDecoderException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -20,10 +21,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 final class InstallTopologyCommand extends Command
 {
 
-    private const CREATE = 'create';
-    private const UPDATE = 'update';
-    private const DELETE = 'delete';
-    private const FORCE  = 'force';
+    private const CREATE     = 'create';
+    private const UPDATE     = 'update';
+    private const DELETE     = 'delete';
+    private const FORCE      = 'force';
+    private const FORCE_HOST = 'forceHost';
 
     /**
      * InstallTopologyCommand constructor.
@@ -46,6 +48,7 @@ final class InstallTopologyCommand extends Command
             ->addOption(self::UPDATE, 'u', InputOption::VALUE_NONE, 'Update')
             ->addOption(self::DELETE, 'd', InputOption::VALUE_NONE, 'Delete')
             ->addOption(self::FORCE, 'force', InputOption::VALUE_NONE, 'Force')
+            ->addArgument(self::FORCE_HOST, InputArgument::OPTIONAL, 'Force SDK Host')
             ->setDescription(
                 'Possible params are: -c for create, -u for update, -d for delete, --force for apply your changes.',
             )
@@ -65,10 +68,11 @@ final class InstallTopologyCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $create = FALSE;
-        $update = FALSE;
-        $delete = FALSE;
-        $force  = FALSE;
+        $create    = FALSE;
+        $update    = FALSE;
+        $delete    = FALSE;
+        $force     = FALSE;
+        $forceHost = '';
 
         if ($input->getOption(self::CREATE)) {
             $create = TRUE;
@@ -86,7 +90,11 @@ final class InstallTopologyCommand extends Command
             $force = TRUE;
         }
 
-        $result = $this->manager->prepareInstall($create, $update, $delete, $force);
+        if ($input->hasArgument(self::FORCE_HOST)) {
+            $forceHost = $input->getArgument(self::FORCE_HOST);
+        }
+
+        $result = $this->manager->prepareInstall($create, $update, $delete, $forceHost, $force);
 
         $table = new Table($output);
         $table->setHeaders(['Topology name', 'Action', 'Error']);
