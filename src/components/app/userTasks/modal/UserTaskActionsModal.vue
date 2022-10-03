@@ -133,16 +133,16 @@ export default {
     },
   },
   methods: {
-    async confirm() {
+    confirm() {
       if (this.type === 'update') {
-        await this.onSubmit({ headers: this.headers, body: JSON.stringify(this.body) }).then((res) => {
+        this.onSubmit({ headers: this.headers, body: JSON.stringify(this.body) }).then((res) => {
           if (res) {
             this.$emit('reset')
             this.isOpen = false
           }
         })
       } else {
-        await this.onSubmit().then((res) => {
+        this.onSubmit().then((res) => {
           if (res) {
             this.$emit('reset')
             this.isOpen = false
