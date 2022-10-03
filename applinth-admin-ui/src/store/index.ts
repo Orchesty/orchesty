@@ -20,6 +20,11 @@ import {
   createTablesModule,
   createState as tableCreateState,
 } from "./modules/tables";
+import {
+  applicationsNamespace,
+  applicationsModule,
+  createState as applicationsCreateState,
+} from "./modules/applications";
 
 Vue.use(Vuex);
 
@@ -42,6 +47,7 @@ export default new Vuex.Store({
       state[alertsNamespace] = alertsCreateState();
       state[authNamespace] = authCreateState();
       state[apiNamespace] = apiCreateState();
+      state[applicationsNamespace] = applicationsCreateState();
     },
   },
   modules: {
@@ -49,5 +55,6 @@ export default new Vuex.Store({
     [alertsNamespace]: alertsModule,
     [authNamespace]: authModule,
     [apiNamespace]: apiModule,
+    [applicationsNamespace]: applicationsModule,
   },
 });

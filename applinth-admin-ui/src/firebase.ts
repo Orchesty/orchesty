@@ -27,7 +27,9 @@ export function initializeFirebaseAuth(initVue: () => void) {
   const auth = getAuth();
   onAuthStateChanged(auth, async (user) => {
     try {
-      if (user) await saveUserWithTokenToStore(user);
+      if (user) {
+        await saveUserWithTokenToStore(user);
+      }
     } catch (error: any) {
       alerts.addErrorAlert(
         "init-user-not-successful",

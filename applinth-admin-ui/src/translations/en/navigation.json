@@ -21,7 +21,8 @@
       "overview": "Overview",
       "profile": "Profile",
       "not_found": "Not found",
-      "user_update": "User Update"
+      "user_update": "User Update",
+      "application_detail": "Application Item"
     }
   }
 }

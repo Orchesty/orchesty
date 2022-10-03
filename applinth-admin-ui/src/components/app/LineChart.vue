@@ -36,7 +36,7 @@ export default class LineChart extends Vue {
       labels: this.chartLabels,
       datasets: [
         {
-          label: "My First dataset",
+          label: "",
           backgroundColor: "rgb(255, 99, 132)",
           borderColor: "rgb(255, 99, 132)",
           data: this.chartData,

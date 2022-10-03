@@ -5,6 +5,7 @@ export * from "./vuex";
 export * from "./api";
 export * from "../components/commons/tables/types";
 export * from "./userSettings";
+export * from "./application";
 
 export enum SorterDirectionEnum {
   Ascending = "ASCENDING",

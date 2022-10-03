@@ -4,39 +4,52 @@
       <BaseProgressBarLinear />
     </div>
     <div v-else class="application-settings-wrapper">
-      <!--      TODO HARDCOCED-->
       <v-img
-        max-width="400"
+        max-width="300"
         contain
-        src="https://picsum.photos/id/11/500/300"
+        :src="
+          applicationDetail && applicationDetail.logo
+            ? applicationDetail.logo
+            : require('@/assets/svg/app-item-placeholder.svg')
+        "
         class="my-5"
       />
-      <Heading class="mb-2">{{ application.appName }}</Heading>
+      <Heading class="mb-2">{{
+        applicationDetail ? applicationDetail.publicName : application.appName
+      }}</Heading>
       <p>
-        Lambda is a compute service that lets you run code without prosivioning
-        or managing servers todo...
+        {{ applicationDetail && applicationDetail.description }}
       </p>
       <div class="wrapper my-5">
         <StatusCard
           :loading="loading"
           :score="application.endUsers"
-          title="Users"
+          :title="$t('applicationDetailPage.users')"
         />
-        <StatusCard :loading="loading" :score="199" title="Price" />
         <StatusCard
           :loading="loading"
-          :score="application.totalCost"
-          title="Billing"
+          :score="application.installCount"
+          :title="$t('applicationDetailPage.installations')"
+        />
+        <StatusCard
+          :loading="loading"
+          :score="formatNumber(application.totalCost)"
+          :title="$t('applicationDetailPage.cost')"
         />
       </div>
-      <LineChart class="chart-js" :chart-data="data" :chart-labels="labels" />
+      <LineChart
+        class="chart-js"
+        v-if="labels.length > 0"
+        :chart-data="data"
+        :chart-labels="labels"
+      />
     </div>
   </AppLayout>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import { Component } from "vue-property-decorator";
+import { Component, Watch } from "vue-property-decorator";
 import AppLayout from "../components/commons/layouts/AppLayout.vue";
 import StatusCard from "@/components/commons/layouts/StatusCard.vue";
 import { Routes } from "@/enums";
@@ -50,9 +63,14 @@ import {
   UsageStatsAppsRequest,
   UsageStatsAppsRowsInner,
   UsageStatsTimeBucketUsersRequest,
-  UsageStatsTimeBucketUsersRowsInner,
 } from "@/api/generated";
 import { api } from "@/api";
+import { ApplicationDetail, IndexedApplicationDetail } from "@/types";
+import { formatNumber } from "@/filters/number";
+import {
+  ApplicationsGetters,
+  applicationsNamespace,
+} from "@/store/modules/applications";
 
 @Component({
   components: {
@@ -67,15 +85,26 @@ export default class ApplicationDetailPage extends Vue {
   @Getter(`${authNamespace}/${AuthGetters.GetUser}`)
   currentUser!: User;
 
+  @Getter(
+    `${applicationsNamespace}/${ApplicationsGetters.IsFetchingApplicationsMetadata}`
+  )
+  fetchingMetadata!: boolean;
+
+  @Getter(
+    `${applicationsNamespace}/${ApplicationsGetters.GetApplicationsMetadata}`
+  )
+  applicationsMetadata!: IndexedApplicationDetail;
+
   routes = Routes;
 
   loading = false;
 
-  application: UsageStatsAppsRowsInner = {};
-  graphData: UsageStatsTimeBucketUsersRowsInner = {};
+  applicationDetail!: ApplicationDetail | null;
 
-  labels = ["January", "February", "March", "April", "May", "June"];
-  data = [16, 10, 5, 2, 20, 30, 45];
+  application: UsageStatsAppsRowsInner = {};
+
+  labels: string[] = [];
+  data: number[] = [];
 
   async created() {
     this.loading = true;
@@ -90,10 +119,13 @@ export default class ApplicationDetailPage extends Vue {
       }
     );
 
-    if (selectedApplications.length > 0)
+    if (selectedApplications.length > 0) {
       this.application = selectedApplications[0];
+      this.applicationDetail =
+        this.applicationsMetadata[this.application.appId as string];
+    }
 
-    const data = await callApi<UsageStatsTimeBucketUsersRequest>(
+    const graphData = await callApi<UsageStatsTimeBucketUsersRequest>(
       api.timeBucketUsers.data,
       {
         timeRangeStart: new Date(0).toISOString(),
@@ -103,12 +135,26 @@ export default class ApplicationDetailPage extends Vue {
       }
     );
 
-    if (data.length > 0) this.graphData = data[0];
+    if (graphData.length > 0) {
+      for (const item of graphData) {
+        this.labels.push(item.timeBucketName);
+        this.data.push(item.endUsers);
+      }
+    }
 
     this.loading = false;
+  }
 
-    //todo change page title
-    // document.title = `Applinth | ${this.application.displayName}`;
+  private formatNumber = formatNumber;
+
+  @Watch("fetchingMetadata")
+  private updateApplicationMetadata() {
+    if (!this.fetchingMetadata) {
+      this.loading = true;
+      this.applicationDetail =
+        this.applicationsMetadata[this.application.appId as string];
+      this.loading = false;
+    }
   }
 }
 </script>
