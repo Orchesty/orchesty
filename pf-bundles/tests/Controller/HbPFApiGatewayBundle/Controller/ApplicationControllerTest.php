@@ -11,7 +11,6 @@ use Hanaboso\PipesFramework\Configurator\Document\Sdk;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\Utils\String\Json;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -172,13 +171,10 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
             ->method('send')
             ->willReturn(new ResponseDto(200, '', Json::encode(['authorizeUrl' => 'redirect/url']), []));
 
-        $eventDispatcher = $this->createMock(EventDispatcherInterface::class);
-
         $loader = new ServiceLocator(
             $this->dm,
             $curl,
             self::createMock(RedirectInterface::class),
-            $eventDispatcher,
         );
 
         self::getContainer()->set('hbpp.service.locator', $loader);
@@ -202,7 +198,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
             $this->dm,
             self::getContainer()->get('hbpf.transport.curl_manager'),
             self::createMock(RedirectInterface::class),
-            self::createMock(EventDispatcherInterface::class),
         );
 
         self::getContainer()->set('hbpp.service.locator', $loader);

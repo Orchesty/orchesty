@@ -11,7 +11,6 @@ use Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator;
 use Hanaboso\PipesFramework\Configurator\Document\Sdk;
 use Hanaboso\Utils\String\Json;
 use Psr\Log\NullLogger;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Class ApplicationControllerTest
@@ -94,7 +93,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
             $this->dm,
             $curl,
             self::createMock(RedirectInterface::class),
-            self::createMock(EventDispatcherInterface::class),
         );
 
         self::getContainer()->set('hbpp.service.locator', $loader);
@@ -175,10 +173,9 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
             $curl->method('send')->willReturn($dto);
         }
 
-        $redirect        = $this->createMock(RedirectInterface::class);
-        $eventDispatcher = $this->createMock(EventDispatcherInterface::class);
+        $redirect = $this->createMock(RedirectInterface::class);
 
-        $locator = new ServiceLocator($this->dm, $curl, $redirect, $eventDispatcher);
+        $locator = new ServiceLocator($this->dm, $curl, $redirect);
         $locator->setLogger(new NullLogger());
 
         $container = $this->client->getContainer();

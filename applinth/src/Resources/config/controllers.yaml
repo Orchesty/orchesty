@@ -13,6 +13,7 @@ services:
         class: Hanaboso\Applinth\Controller\ApplicationController
         arguments:
             - '@Hanaboso\Applinth\Authenticator\EndUserAuthenticator'
+            - '@hbpf.usage_stats.handler.usage_stats'
         calls:
             - [ 'setLogger', [ '@monolog.logger.commons' ] ]
             - [ 'setContainer', [ '@service_container' ] ]

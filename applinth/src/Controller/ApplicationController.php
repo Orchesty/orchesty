@@ -3,6 +3,8 @@
 namespace Hanaboso\Applinth\Controller;
 
 use Hanaboso\Applinth\Authenticator\EndUserAuthenticator;
+use Hanaboso\PipesFramework\HbPFUsageStatsBundle\Handler\UsageStatsHandler;
+use Hanaboso\PipesFramework\UsageStats\Enum\EventTypeEnum;
 use Hanaboso\Utils\Traits\ControllerTrait;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,8 +27,12 @@ final class ApplicationController extends AbstractController
      * ApplicationController constructor.
      *
      * @param EndUserAuthenticator $authenticator
+     * @param UsageStatsHandler    $usageStatsHandler
      */
-    public function __construct(private readonly EndUserAuthenticator $authenticator)
+    public function __construct(
+        private readonly EndUserAuthenticator $authenticator,
+        private readonly UsageStatsHandler $usageStatsHandler,
+    )
     {
     }
 
@@ -115,10 +121,15 @@ final class ApplicationController extends AbstractController
      */
     public function installApplication(string $key): Response
     {
-        return $this->forward(
+        $user = $this->authenticator->getAuthUser();
+        $resp =  $this->forward(
             'Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::installApplicationAction',
-            ['key' => $key, 'user' => $this->authenticator->getAuthUser()],
+            ['key' => $key, 'user' => $user],
         );
+
+        $this->usageStatsHandler->emitEvent(['event' => EventTypeEnum::INSTALL, 'aid' => $key, 'euid' => $user]);
+
+        return $resp;
     }
 
     /**
@@ -162,10 +173,15 @@ final class ApplicationController extends AbstractController
      */
     public function uninstallApplication(string $key): Response
     {
-        return $this->forward(
+        $user = $this->authenticator->getAuthUser();
+        $resp = $this->forward(
             'Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::uninstallApplicationAction',
             ['key' => $key, 'user' => $this->authenticator->getAuthUser()],
         );
+
+        $this->usageStatsHandler->emitEvent(['event' => EventTypeEnum::UNINSTALL, 'aid' => $key, 'euid' => $user]);
+
+        return $resp;
     }
 
     /**
