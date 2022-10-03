@@ -9,9 +9,12 @@
           :label="$t('formLabels.userName')"
           v-model="formLoggedAdmin.displayName"
         />
-        <Button type="submit" :disabled="invalid">{{
-          $t("button.save")
-        }}</Button>
+        <Button
+          type="submit"
+          :disabled="invalid"
+          :loading="isSendingUpdateUser"
+          >{{ $t("button.save") }}</Button
+        >
       </v-form>
     </ValidationObserver>
 
@@ -52,9 +55,12 @@
           type="password"
           :autocomplete="$t('formLabels.passwordCheck')"
         />
-        <Button type="submit" :disabled="invalid">{{
-          $t("button.save")
-        }}</Button>
+        <Button
+          type="submit"
+          :disabled="invalid"
+          :loading="isSendingNewPassword"
+          >{{ $t("button.save") }}</Button
+        >
       </v-form>
     </ValidationObserver>
   </AppLayout>
@@ -101,11 +107,13 @@ export default class ProfilePage extends Vue {
   @Action(`${authNamespace}/${AuthActions.UpdateSettings}`)
   private updateUserInfo!: (payload: UpdateUserInfo) => Promise<boolean>;
 
+  isSendingUpdateUser = false;
   formLoggedAdmin: UpdateUserInfo = {
     displayName: "",
   };
 
   isFormNewPasswordValid = true;
+  isSendingNewPassword = false;
   formNewPassword: ChangePassword = {
     oldPassword: "",
     newPasswordOne: "",
@@ -119,21 +127,20 @@ export default class ProfilePage extends Vue {
   }
 
   async submitFormName() {
-    const result = await this.updateLoggedAdmin(this.formLoggedAdmin);
+    this.isSendingUpdateUser = true;
+    const result = await this.updateUserInfo(this.formLoggedAdmin);
     if (result) {
       alerts.addSuccessAlert(
         "UPDATE_LOGGED_ADMIN",
         i18n.t("message.saved") as string
       );
     }
-  }
-
-  async updateLoggedAdmin(input: UpdateUserInfo) {
-    return await this.updateUserInfo(input);
+    this.isSendingUpdateUser = false;
   }
 
   async submitFormNewPassword() {
     this.isFormNewPasswordValid = true;
+    this.isSendingNewPassword = true;
     const result = await this.updateLoggedAdminPassword(this.formNewPassword);
 
     if (result) {
@@ -146,6 +153,7 @@ export default class ProfilePage extends Vue {
         (this.$refs.observerNewPassword as any).reset();
       });
     }
+    this.isSendingNewPassword = false;
   }
 
   async updateLoggedAdminPassword(input: ChangePassword): Promise<boolean> {
