@@ -5,8 +5,6 @@ import {
   signInWithEmailAndPassword,
   updatePassword,
   User,
-  EmailAuthProvider,
-  reauthenticateWithCredential,
   updateProfile,
   sendPasswordResetEmail,
 } from "firebase/auth";
@@ -104,24 +102,25 @@ export const actions: Actions<AuthActions, AuthState> = {
           "weak-password",
           i18n.t("password.weakPassword") as string
         );
+      } else {
+        alerts.addErrorAlert(
+          "init-user-not-successful",
+          i18n.t("error.errorOccurredTryItLater") as string
+        );
       }
 
       return false;
     }
   },
-  async reauthenticate({ commit }, payload: string) {
+  async reauthenticate({ commit }, password: string) {
     try {
       const auth = getAuth();
       const user = auth.currentUser;
 
       if (!user) throw new Error(i18n.t("auth.userNotFound") as string);
 
-      const credential = EmailAuthProvider.credential(
-        user.email as string,
-        payload // password
-      );
-
-      await reauthenticateWithCredential(user, credential);
+      auth.tenantId = user.tenantId;
+      await signInWithEmailAndPassword(auth, user.email as string, password);
 
       return true;
     } catch (error: any) {

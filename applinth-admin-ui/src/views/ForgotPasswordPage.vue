@@ -28,7 +28,7 @@
             v-model="formData.email"
           />
           <div class="text-right">
-            <Button type="submit" :disabled="invalid">{{
+            <Button type="submit" :disabled="invalid" :loading="isSending">{{
               $t("button.send")
             }}</Button>
           </div>
@@ -63,6 +63,7 @@ export default class ForgotPasswordPage extends Vue {
   private sendResetPasswordLink!: (
     payload: TResetPasswordForm
   ) => Promise<boolean>;
+  isSending = false;
 
   formData: TResetPasswordForm = {
     email: "",
@@ -70,10 +71,12 @@ export default class ForgotPasswordPage extends Vue {
   };
 
   async submit(): Promise<void> {
+    this.isSending = true;
     if (await this.sendResetPasswordLink(this.formData)) {
       this.formData.email = "";
       this.formData.tenantId = "";
     }
+    this.isSending = false;
   }
 }
 </script>
