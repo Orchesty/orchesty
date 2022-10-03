@@ -374,7 +374,7 @@ export default {
           ]
         }
         if (this.initialsFetched) {
-          this.fetchGrid(null, null, null, paging, sorter)
+          this.fetchGrid(this.search, this.fixedParams, this.filter, paging, sorter)
         }
       },
       deep: true,
