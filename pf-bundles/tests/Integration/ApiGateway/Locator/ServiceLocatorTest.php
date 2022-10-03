@@ -12,7 +12,6 @@ use Hanaboso\Utils\String\Json;
 use LogicException;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 use Psr\Log\NullLogger;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -413,10 +412,9 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
             $curl->method('send')->willReturn($dto);
         }
 
-        $redirect        = $this->createMock(RedirectInterface::class);
-        $eventDispatcher = $this->createMock(EventDispatcherInterface::class);
+        $redirect = $this->createMock(RedirectInterface::class);
 
-        $locator = new ServiceLocator($this->dm, $curl, $redirect, $eventDispatcher);
+        $locator = new ServiceLocator($this->dm, $curl, $redirect);
         $locator->setLogger(new NullLogger());
 
         return $locator;

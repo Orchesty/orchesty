@@ -10,7 +10,6 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator;
 use Hanaboso\PipesFramework\Configurator\Document\Sdk;
 use Hanaboso\Utils\String\Json;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Class SettingsControllerTest
@@ -52,7 +51,6 @@ final class SettingsControllerTest extends ControllerTestCaseAbstract
             $this->dm,
             $curl,
             self::createMock(RedirectInterface::class),
-            self::createMock(EventDispatcherInterface::class),
         );
 
         self::getContainer()->set('hbpp.service.locator', $loader);
