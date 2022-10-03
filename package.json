@@ -1,7 +1,8 @@
 {
   "name": "pipes",
-  "version": "1.0.0",
   "description": "Hanaboso pipes and filters basic node skeleton implementation",
+  "version": "1.0.0",
+  "license": "Elastic",
   "main": "dist/src/bin/pipes.js",
   "scripts": {
     "build": "rm -rf ./dist & ./node_modules/.bin/tsc",
@@ -22,7 +23,6 @@
     "node"
   ],
   "author": "Hanaboso s.r.o.",
-  "license": "ISC",
   "homepage": "https://bitbucket.org/HANABOSO/pipes#readme",
   "dependencies": {
     "amqplib": "^0.7.1",
