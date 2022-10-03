@@ -114,7 +114,6 @@ export default class ApplicationDetailPage extends Vue {
       {
         timeRangeStart: new Date(0).toISOString(),
         timeRangeEnd: new Date().toISOString(),
-        tenantId: this.currentUser.tenantId ?? undefined,
         appName: this.$route.params.id,
       }
     );
@@ -130,7 +129,6 @@ export default class ApplicationDetailPage extends Vue {
       {
         timeRangeStart: new Date(0).toISOString(),
         timeRangeEnd: new Date().toISOString(),
-        tenantId: this.currentUser.tenantId ?? undefined,
         appName: this.$route.params.id,
       }
     );

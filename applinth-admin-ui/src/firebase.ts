@@ -18,7 +18,7 @@ export function transformUser(user: FirebaseUser | null): User | null {
     id: user.uid,
     name: user.displayName,
     email: user.email,
-    tenantId: user.tenantId, // todo set our tenantId from custom claims
+    tenantId: user.tenantId, // todo PIP-1334 set our tenantId from custom claims
   };
 }
 
