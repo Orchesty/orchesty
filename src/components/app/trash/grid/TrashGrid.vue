@@ -127,12 +127,18 @@ export default {
   methods: {
     ...mapActions(TRASH.NAMESPACE, [TRASH.ACTIONS.TRASH_ACCEPT_LIST, TRASH.ACTIONS.TRASH_REJECT_LIST]),
     async acceptAll() {
-      await this[TRASH.ACTIONS.TRASH_ACCEPT_LIST]({ ids: this.selected.map((item) => item.id) })
-      await this.fetchGrid()
+      const requestResponse = await this[TRASH.ACTIONS.TRASH_ACCEPT_LIST]({ ids: this.selected.map((item) => item.id) })
+      if (requestResponse) {
+        await this.fetchGrid()
+        return requestResponse
+      }
     },
     async rejectAll() {
-      await this[TRASH.ACTIONS.TRASH_REJECT_LIST]({ ids: this.selected.map((item) => item.id) })
-      await this.fetchGrid()
+      const requestResponse = await this[TRASH.ACTIONS.TRASH_REJECT_LIST]({ ids: this.selected.map((item) => item.id) })
+      if (requestResponse) {
+        await this.fetchGrid()
+        return requestResponse
+      }
     },
     async fetchGrid() {
       await this.$refs.grid.fetchGrid(null, null, this.activeFilter, this.activePaging, this.activeSorter)
