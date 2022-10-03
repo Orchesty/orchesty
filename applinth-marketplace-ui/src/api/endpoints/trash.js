@@ -35,7 +35,7 @@ export default {
     request: ({ id }) => {
       return {
         url: `/trash/${id}/accept`,
-        method: 'GET',
+        method: 'POST',
       }
     },
   },
@@ -56,7 +56,7 @@ export default {
     request: ({ id }) => {
       return {
         url: `/trash/${id}/reject`,
-        method: 'GET',
+        method: 'POST',
       }
     },
   },
