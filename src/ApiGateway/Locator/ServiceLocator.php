@@ -12,14 +12,11 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesFramework\Configurator\Document\Sdk;
 use Hanaboso\PipesFramework\Configurator\Enum\NodeImplementationEnum;
 use Hanaboso\PipesFramework\Configurator\Repository\SdkRepository;
-use Hanaboso\PipesFramework\UsageStats\Enum\EventTypeEnum;
-use Hanaboso\PipesFramework\UsageStats\Event\BillingEvent;
 use Hanaboso\Utils\String\Json;
 use LogicException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Throwable;
 
@@ -46,16 +43,14 @@ final class ServiceLocator implements LoggerAwareInterface
     /**
      * ServiceLocator constructor.
      *
-     * @param DocumentManager          $dm
-     * @param CurlManager              $curlManager
-     * @param RedirectInterface        $redirect
-     * @param EventDispatcherInterface $eventDispatcher
+     * @param DocumentManager   $dm
+     * @param CurlManager       $curlManager
+     * @param RedirectInterface $redirect
      */
     public function __construct(
         DocumentManager $dm,
         private CurlManager $curlManager,
         private RedirectInterface $redirect,
-        private EventDispatcherInterface $eventDispatcher,
     )
     {
         $this->sdkRepository = $dm->getRepository(Sdk::class);
@@ -170,11 +165,6 @@ final class ServiceLocator implements LoggerAwareInterface
                 TRUE,
             );
 
-            $this->dispatchUsageStatsEvent(
-                EventTypeEnum::INSTALL,
-                ['aid' => $key, 'euid' => $user],
-            );
-
             $this->doRequest(
                 sprintf('applications/%s/sync/afterInstallCallback', $key),
                 CurlManager::METHOD_POST,
@@ -206,11 +196,6 @@ final class ServiceLocator implements LoggerAwareInterface
                 FALSE,
                 [],
                 TRUE,
-            );
-
-            $this->dispatchUsageStatsEvent(
-                EventTypeEnum::UNINSTALL,
-                ['aid' => $key, 'euid' => $user],
             );
 
             $this->doRequest(
@@ -542,18 +527,6 @@ final class ServiceLocator implements LoggerAwareInterface
         }
 
         return $s;
-    }
-
-    /**
-     * @param string  $type
-     * @param mixed[] $data
-     *
-     * @return void
-     */
-    private function dispatchUsageStatsEvent(string $type, array $data): void
-    {
-        $billingEvent = new BillingEvent($type, $data);
-        $this->eventDispatcher->dispatch($billingEvent, BillingEvent::NAME);
     }
 
     /**
