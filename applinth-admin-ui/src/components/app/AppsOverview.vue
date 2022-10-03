@@ -5,7 +5,6 @@
     </div>
     <div v-else-if="!isLoading && apps.length">
       <v-card outlined v-for="app of apps" :key="app.id" class="mb-2 pa-5">
-        <!--        TODO HARDCODED-->
         <v-container>
           <v-row>
             <v-col cols="auto" class="d-flex">
@@ -14,11 +13,17 @@
                 max-height="70"
                 max-width="70"
                 contain
-                src="https://img.icons8.com/windows/512/ios-application-placeholder.png"
+                :src="
+                  app.logo
+                    ? app.logo
+                    : require('@/assets/svg/app-item-placeholder.svg')
+                "
               />
             </v-col>
             <v-col class="d-flex justify-center align-center">
-              <SubHeading>{{ app.appName }}</SubHeading>
+              <SubHeading>{{
+                app.publicName ? app.publicName : app.appName
+              }}</SubHeading>
             </v-col>
             <v-col class="d-flex flex-column justify-center align-center">
               <SubHeading
@@ -51,16 +56,37 @@ import {
   UsageStatsAppsRowsInner,
 } from "@/api/generated";
 import { callApi } from "@/utils/apiClient";
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Vue, Watch } from "vue-property-decorator";
 import { Routes } from "@/enums/Routes";
 import BaseProgressBarLinear from "@/components/commons/BaseProgressBarLinear.vue";
 import SubHeading from "@/components/commons/typography/SubHeading.vue";
+import { IndexedApplicationDetail } from "@/types";
+import { Getter } from "vuex-class";
+import {
+  ApplicationsGetters,
+  applicationsNamespace,
+} from "@/store/modules/applications";
+
+type UsageStatsAppsRowsInnerRich = UsageStatsAppsRowsInner & {
+  logo?: string | null;
+  publicName?: string | null;
+};
 
 @Component({
   components: { SubHeading, BaseProgressBarLinear },
 })
 export default class AppsOverview extends Vue {
-  apps: UsageStatsAppsRowsInner = [] as UsageStatsAppsRowsInner;
+  @Getter(
+    `${applicationsNamespace}/${ApplicationsGetters.IsFetchingApplicationsMetadata}`
+  )
+  fetchingMetadata!: boolean;
+
+  @Getter(
+    `${applicationsNamespace}/${ApplicationsGetters.GetApplicationsMetadata}`
+  )
+  applicationsMetadata!: IndexedApplicationDetail;
+
+  apps!: UsageStatsAppsRowsInnerRich[];
   isLoading = false;
 
   Routes = Routes;
@@ -71,7 +97,29 @@ export default class AppsOverview extends Vue {
       timeRangeStart: new Date(0).toISOString(),
       timeRangeEnd: new Date().toISOString(),
     });
+
+    this.addMetadataToApplications();
+
     this.isLoading = false;
+  }
+
+  private addMetadataToApplications() {
+    for (const app of this.apps) {
+      const metadata = this.applicationsMetadata[app.appId as string];
+      if (metadata) {
+        app.publicName = metadata.publicName;
+        app.logo = metadata.logo;
+      }
+    }
+  }
+
+  @Watch("fetchingMetadata")
+  private rerenderList() {
+    if (!this.fetchingMetadata) {
+      this.isLoading = true;
+      this.addMetadataToApplications();
+      this.isLoading = false;
+    }
   }
 }
 </script>

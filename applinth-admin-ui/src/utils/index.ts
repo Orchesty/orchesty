@@ -4,3 +4,4 @@ export * from "./apiClient";
 export * from "./alerts";
 export * from "./authService";
 export * from "./router";
+export * from "./utils";

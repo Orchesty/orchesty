@@ -12,6 +12,12 @@ Local server will be running on:
 - http://localhost:4010 for fake backend
 - http://localhost:4011 for swagger ui
 
+### Applications metadata
+Download with npm command
+```
+npm run download:apps-metadata
+```
+
 ### Run with docker
 
 Start app and backend via Makefile

@@ -16,6 +16,7 @@ import table from "./table.json";
 import cs from "vuetify/src/locale/cs";
 import error from "./error.json";
 import message from "./message.json";
+import applicationDetailPage from "./pages/applicationDetailPage.json";
 
 export default {
   ...button,
@@ -36,4 +37,5 @@ export default {
   ...cs,
   ...error,
   ...message,
+  ...applicationDetailPage,
 };

@@ -12,7 +12,8 @@
     "storybook:build": "vue-cli-service storybook:build",
     "api:generate": "rimraf src/api/generated/; openapi-generator-cli generate --skip-validate-spec -i ../saas/console-api/openapi.yaml -g typescript-fetch -o src/api/generated/ --additional-properties=supportsES6=true",
     "api:mock": "prism mock --dynamic --host 0.0.0.0 --port 4010 ../saas/console-api/openapi.yaml",
-    "api:ui": "npx swagger-ui-cli --port 4011 ../saas/console-api/openapi.yaml"
+    "api:ui": "npx swagger-ui-cli --port 4011 ../saas/console-api/openapi.yaml",
+    "download:apps-metadata": "node src/script/downloadAppsMetadata.ts"
   },
   "dependencies": {
     "@mdi/font": "^6.2.95",
