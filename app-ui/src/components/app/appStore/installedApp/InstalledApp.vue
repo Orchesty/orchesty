@@ -261,7 +261,11 @@ export default {
       return state?.isSending || false
     },
     isRequestPending() {
-      const state = this[REQUESTS_STATE.GETTERS.GET_STATE]([API.appStore.saveSettings.id, API.appStore.uninstallApp.id, API.appStore.activateApp.id])
+      const state = this[REQUESTS_STATE.GETTERS.GET_STATE]([
+        API.appStore.saveSettings.id,
+        API.appStore.uninstallApp.id,
+        API.appStore.activateApp.id,
+      ])
       return state?.isSending || false
     },
     activationDisabled() {

@@ -44,7 +44,7 @@ export default {
   },
   computed: {
     ...mapGetters(TOPOLOGIES.NAMESPACE, {
-      topologyActive: TOPOLOGIES.GETTERS.GET_ACTIVE_TOPOLOGY,
+      lastSelectedTopology: TOPOLOGIES.GETTERS.GET_LAST_SELECTED_TOPOLOGY,
     }),
   },
   data() {
@@ -74,6 +74,7 @@ export default {
   },
   methods: {
     ...mapActions(AUTH.NAMESPACE, [AUTH.ACTIONS.LOGOUT_REQUEST]),
+    ...mapActions(TOPOLOGIES.NAMESPACE, [TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID]),
     async logout() {
       await this[AUTH.ACTIONS.LOGOUT_REQUEST]()
     },
@@ -85,8 +86,9 @@ export default {
     },
     async toggleSidebarAndRedirect() {
       this.events.emit(EVENTS.SIDEBAR.OPEN)
-      if (this.$router.currentRoute.name === ROUTES.TOPOLOGY.DEFAULT && this.topologyActive?._id) {
-        await redirectTo(this.$router, { name: ROUTES.TOPOLOGY.VIEWER, params: { id: this.topologyActive._id } })
+      if (this.$router.currentRoute.name === ROUTES.TOPOLOGY.DEFAULT && this.lastSelectedTopology?._id) {
+        await this[TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID](this.lastSelectedTopology._id)
+        await redirectTo(this.$router, { name: ROUTES.TOPOLOGY.VIEWER, params: { id: this.lastSelectedTopology._id } })
       }
     },
   },

@@ -9,4 +9,5 @@ export default () => ({
   topologiesOverview: null,
   topologiesAll: [],
   processes: [],
+  topologyLastSelected: null,
 })
