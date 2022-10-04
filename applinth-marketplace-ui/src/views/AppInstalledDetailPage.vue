@@ -21,7 +21,6 @@
       </v-row>
       <v-row>
         <v-col
-          cols="5"
           class="d-flex justify-space-between flex-column application-settings-wrapper"
         >
           <h1 class="headline font-weight-bold">{{ appActive.name }}</h1>
