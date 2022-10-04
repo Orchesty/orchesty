@@ -22,7 +22,8 @@
       "profile": "Profile",
       "not_found": "Not found",
       "user_update": "User Update",
-      "application_detail": "Application Item"
+      "application_detail": "Application Item",
+      "applinth": "Applinth"
     }
   }
 }

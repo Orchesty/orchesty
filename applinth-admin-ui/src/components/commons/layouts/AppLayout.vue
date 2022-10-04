@@ -40,20 +40,23 @@
             </v-breadcrumbs>
           </v-col>
         </v-row>
-        <slot></slot>
+        <slot />
       </v-container>
     </v-main>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Prop, Vue } from "vue-property-decorator";
 import NavigationItem from "@/components/app/NavigationItem.vue";
 import { Routes } from "@/enums";
 @Component({
   components: { NavigationItem },
 })
 export default class AppLayout extends Vue {
+  @Prop({ type: String, required: false })
+  detailPageTitle: string | undefined = undefined;
+
   navigationItems = [
     {
       to: Routes.Overview,
@@ -77,12 +80,10 @@ export default class AppLayout extends Vue {
     },
   ];
 
-  currentAppName: null | string = null;
-
   get breadCrumbs() {
     if (this.$route.meta) {
       if (typeof this.$route.meta.breadcrumbs === "function") {
-        return this.$route.meta.breadcrumbs(this.currentAppName);
+        return this.$route.meta.breadcrumbs(this.detailPageTitle);
       }
       return this.$route.meta.breadcrumbs;
     } else {

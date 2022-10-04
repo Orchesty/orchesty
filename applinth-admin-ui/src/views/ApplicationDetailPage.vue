@@ -1,5 +1,5 @@
 <template>
-  <AppLayout>
+  <AppLayout :detail-page-title="breadcrumbTitle">
     <div v-if="loading">
       <BaseProgressBarLinear />
     </div>
@@ -96,15 +96,12 @@ export default class ApplicationDetailPage extends Vue {
   applicationsMetadata!: IndexedApplicationDetail;
 
   routes = Routes;
-
   loading = false;
-
   applicationDetail!: ApplicationDetail | null;
-
   application: UsageStatsAppsRowsInner = {};
-
   labels: string[] = [];
   data: number[] = [];
+  breadcrumbTitle: string | undefined = "";
 
   async created() {
     this.loading = true;
@@ -122,6 +119,8 @@ export default class ApplicationDetailPage extends Vue {
       this.application = selectedApplications[0];
       this.applicationDetail =
         this.applicationsMetadata[this.application.appId as string];
+
+      this.breadcrumbTitle = this.applicationDetail?.publicName;
     }
 
     const graphData = await callApi<UsageStatsTimeBucketUsersRequest>(
