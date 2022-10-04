@@ -75,13 +75,13 @@ export default {
       TOPOLOGY_ENUMS,
       opened: JSON.parse(localStorage.getItem(TOPOLOGY_ENUMS.TREE_VIEW)) || [],
       active: [],
-      lastOpened: {},
     }
   },
   computed: {
     ...mapGetters(TOPOLOGIES.NAMESPACE, {
       topologiesAll: TOPOLOGIES.GETTERS.GET_ALL_TOPOLOGIES,
       topologyActive: TOPOLOGIES.GETTERS.GET_ACTIVE_TOPOLOGY,
+      lastSelectedTopology: TOPOLOGIES.GETTERS.GET_LAST_SELECTED_TOPOLOGY,
     }),
     ...mapGetters(REQUESTS_STATE.NAMESPACE, [REQUESTS_STATE.GETTERS.GET_STATE]),
     state() {
@@ -125,6 +125,8 @@ export default {
         return
       }
 
+      if (activeItems[0]?._id === this.lastSelectedTopology?._id) return
+
       await this[TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID](activeItems[0]._id)
       await redirectTo(this.$router, { name: ROUTES.TOPOLOGY.VIEWER, params: { id: activeItems[0]._id } })
     },
@@ -138,14 +140,13 @@ export default {
           this.active[0]) ||
         route.params.hideTopology
       ) {
-        this.active = []
         await this[TOPOLOGIES.ACTIONS.TOPOLOGY.RESET]()
       }
     },
     topologyActive: {
       deep: true,
       handler(topologyActive) {
-        this.active = [topologyActive]
+        if (topologyActive._id) this.active = [topologyActive]
       },
     },
     topologiesAll: {
@@ -166,6 +167,8 @@ export default {
 
     if (this.$route.params.id) {
       this.active = [{ _id: this.$route.params.id }]
+    } else if (this.lastSelectedTopology?._id) {
+      this.active = [this.lastSelectedTopology]
     }
   },
 }

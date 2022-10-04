@@ -46,7 +46,8 @@
         "statistic": "Statistika",
         "userTask": "UserTasky",
         "logs": "Seznam Logů"
-      }
+      },
+      "noTopologySelected": "Není vybrána žádná topologie"
     },
     "create": {
       "form": {
