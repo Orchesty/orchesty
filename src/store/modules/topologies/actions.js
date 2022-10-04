@@ -231,6 +231,7 @@ export default {
       })
 
       commit(TOPOLOGIES.MUTATIONS.TOPOLOGY.MUTATE_TOPOLOGY, response)
+      commit(TOPOLOGIES.MUTATIONS.DATA.MUTATE_LAST_SELECTED, response)
 
       return true
     } catch {
