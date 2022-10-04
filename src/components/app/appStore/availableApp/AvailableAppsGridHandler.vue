@@ -1,7 +1,7 @@
 <template>
   <v-data-iterator
     :items="appsMerged"
-    :loading="state.isSending"
+    :loading="isRequestSending"
     hide-default-footer
     :items-per-page="Number.MAX_SAFE_INTEGER"
   >
@@ -25,31 +25,35 @@
     </template>
     <template #default="{ items }">
       <v-row>
-        <template v-for="item in items">
+        <template v-for="(app, index) in items">
           <app-item
-            :key="item.name"
-            :image="hasLogo(item)"
-            :title="item.name"
-            :description="item.description"
-            :installed="item.installed"
-            :authorized="'authorized' in item ? item.authorized : false"
+            :key="index"
+            :logo="app.logo"
+            :title="app.name"
+            :authorized="app.authorized"
+            :description="app.description"
+            :installed="app.installed"
           >
-            <template #redirect>
-              <app-item-button v-if="'authorized' in item" :text="$t('appStore.app.installed')" class="success" />
+            <template #buttons>
               <app-item-button
-                v-else-if="item.isInstallable"
-                :text="$t('appStore.app.install')"
-                @click="appInstall(item.key)"
+                v-if="isAppInstallable(app)"
+                :loading="appInProgress === app.key"
+                :text="app.installed ? $t('button.installed') : $t('button.install')"
+                :color="app.installed ? 'success' : 'primary'"
+                :disabled="app.installed || isRequestSending"
+                class="mt-2"
+                @click="install(app.key)"
               />
               <app-item-button
-                v-else
-                :text="$t('appStore.app.install')"
-                @click="redirectToAppPage(item.key, item.installed)"
-              />
-              <app-item-button
-                :white="true"
-                :text="$t('appStore.app.detail')"
-                @click="redirectToAppPage(item.key, item.installed)"
+                outlined
+                color="secondary"
+                :text="$t('button.detail')"
+                :to="{
+                  name: app.installed ? ROUTES.APP_STORE.INSTALLED_APP : ROUTES.APP_STORE.DETAIL_APP,
+                  params: { key: app.key },
+                }"
+                class="mt-2"
+                :disabled="isRequestSending"
               />
             </template>
           </app-item>
@@ -75,6 +79,7 @@ export default {
   components: { ProgressBarLinear, AppItemButton, AppItem },
   data() {
     return {
+      appInProgress: null,
       appsMerged: [],
       ROUTES,
     }
@@ -86,13 +91,13 @@ export default {
       appsAvailable: APP_STORE.GETTERS.GET_AVAILABLE_APPS,
       appsInstalled: APP_STORE.GETTERS.GET_INSTALLED_APPS,
     }),
-    state() {
+    isRequestSending() {
       return this[REQUESTS_STATE.GETTERS.GET_STATE]([
         API.appStore.getAvailableApps.id,
         API.appStore.getInstalledApps.id,
         API.appStore.getInstalledApp.id,
         API.appStore.installApp.id,
-      ])
+      ]).isSending
     },
   },
   methods: {
@@ -103,32 +108,32 @@ export default {
       APP_STORE.ACTIONS.GET_INSTALLED_APP,
       APP_STORE.ACTIONS.GET_AVAILABLE_APPS,
     ]),
-    hasLogo(item) {
-      return item?.logo ? item.logo : ''
-    },
     mergeWithInstalledApps() {
       if (this.appsAvailable)
-        this.appsMerged = this.appsAvailable.map((item) => {
-          let installed = this.appsInstalled.filter((installed) => installed.key === item.key)
-          if (installed.length > 0) {
-            return { ...item, ...installed[0], installed: true }
+        this.appsMerged = this.appsAvailable.map((availableAppData) => {
+          const installedAppData = this.appsInstalled.find((installedApp) => installedApp.key === availableAppData.key)
+          if (installedAppData) {
+            const app = { ...availableAppData, ...installedAppData, installed: true }
+            app.logo = app.logo ?? ''
+            return app
           } else {
-            return { ...item, installed: false }
+            const app = { ...availableAppData, installed: false, authorized: false }
+            app.logo = app.logo ?? ''
+            return app
           }
         })
     },
-    async redirectToAppPage(key, isInstalled) {
-      if (isInstalled) {
-        await this.$router.push({ name: ROUTES.APP_STORE.INSTALLED_APP, params: { key } })
-      } else {
-        await this.$router.push({ name: ROUTES.APP_STORE.DETAIL_APP, params: { key } })
-      }
+    isAppInstallable(app) {
+      //First condition is for the case in which the application was installed via third party resource, but is labeled as {isInstallable: false} in backend.
+      return (!app.isInstallable && app.installed) || app.isInstallable
     },
-    async appInstall(key) {
+    async install(key) {
+      this.appInProgress = key
       await this[APP_STORE.ACTIONS.INSTALL_APP_REQUEST]({ key, userId: this.userId })
       await this[APP_STORE.ACTIONS.GET_AVAILABLE_APPS]()
       await this[APP_STORE.ACTIONS.GET_INSTALLED_APPS](this.userId)
       await this[APP_STORE.ACTIONS.GET_INSTALLED_APP]({ key, userId: this.userId })
+      this.appInProgress = null
       await this.$router.push({ name: ROUTES.APP_STORE.INSTALLED_APP, params: { key } })
     },
   },

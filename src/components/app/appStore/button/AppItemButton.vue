@@ -1,16 +1,16 @@
 <template>
   <v-btn
-    class="app-item-redirect"
     :to="to"
     :disabled="loading ? true : disabled"
-    :color="white ? 'white' : red ? `error` : `primary`"
+    :loading="loading"
     small
     min-width="104"
+    :color="color"
     :text="installed"
-    :elevation="white ? 2 : 0"
+    :outlined="outlined"
     @click="handleClick"
   >
-    <span class="subtitle-2">{{ loading ? loadingText : text }}</span>
+    <span class="subtitle-2">{{ text }}</span>
   </v-btn>
 </template>
 
@@ -26,10 +26,6 @@ export default {
       type: String,
       default: '',
     },
-    loadingText: {
-      type: String,
-      default: '',
-    },
     to: {
       type: [String, Object],
       default: '',
@@ -38,19 +34,15 @@ export default {
       type: Boolean,
       default: false,
     },
-    icon: {
-      type: String,
-      default: 'mdi-menu-right',
-    },
-    white: {
-      type: Boolean,
-      default: false,
-    },
-    red: {
-      type: Boolean,
-      default: false,
-    },
     installed: {
+      type: Boolean,
+      default: false,
+    },
+    color: {
+      type: String,
+      required: true,
+    },
+    outlined: {
       type: Boolean,
       default: false,
     },

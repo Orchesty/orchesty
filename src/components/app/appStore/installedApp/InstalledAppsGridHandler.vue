@@ -1,7 +1,7 @@
 <template>
   <v-data-iterator
     :items="appsMerged"
-    :loading="state.isSending"
+    :loading="isRequestSending"
     hide-default-footer
     :items-per-page="Number.MAX_SAFE_INTEGER"
   >
@@ -30,18 +30,28 @@
         </v-col>
       </v-row>
       <v-row>
-        <template v-for="item in items">
+        <template v-for="(app, index) in items">
           <app-item
-            v-if="!item.authorized"
-            :key="item.name"
-            :title="item.name"
-            :description="item.description"
-            :image="hasLogo(item)"
-            :authorized="'authorized' in item ? item.authorized : false"
+            v-if="!app.authorized"
+            :key="index"
+            :logo="app.logo"
+            :title="app.name"
+            :authorized="app.authorized"
+            :description="app.description"
+            installed
           >
-            <template #redirect>
-              <app-item-button :text="$t('appStore.app.installed')" class="mb-2 success" />
-              <app-item-button :white="true" :text="$t('appStore.app.detail')" @click="redirectToAppDetail(item.key)" />
+            <template #buttons>
+              <app-item-button color="primary" disabled :text="$t('appStore.app.installed')" />
+              <app-item-button
+                outlined
+                color="secondary"
+                :text="$t('button.detail')"
+                :to="{
+                  name: ROUTES.APP_STORE.INSTALLED_APP,
+                  params: { key: app.key },
+                }"
+                class="mt-2"
+              />
             </template>
           </app-item>
         </template>
@@ -52,18 +62,28 @@
         </v-col>
       </v-row>
       <v-row>
-        <template v-for="item in items">
+        <template v-for="(app, index) in items">
           <app-item
-            v-if="item.authorized"
-            :key="item.name"
-            :title="item.name"
-            :description="item.description"
-            :image="hasLogo(item)"
-            :authorized="item.authorized"
+            v-if="app.authorized"
+            :key="index"
+            :logo="app.logo"
+            :title="app.name"
+            :authorized="app.authorized"
+            :description="app.description"
+            installed
           >
-            <template #redirect>
-              <app-item-button v-if="'authorized' in item" :text="$t('appStore.app.installed')" class="mb-2 success" />
-              <app-item-button :white="true" :text="$t('appStore.app.detail')" @click="redirectToAppDetail(item.key)" />
+            <template #buttons>
+              <app-item-button disabled color="primary" :text="$t('appStore.app.installed')" />
+              <app-item-button
+                outlined
+                color="secondary"
+                :text="$t('button.detail')"
+                :to="{
+                  name: ROUTES.APP_STORE.INSTALLED_APP,
+                  params: { key: app.key },
+                }"
+                class="mt-2"
+              />
             </template>
           </app-item>
         </template>
@@ -100,8 +120,8 @@ export default {
       appsAvailable: APP_STORE.GETTERS.GET_AVAILABLE_APPS,
       appsInstalled: APP_STORE.GETTERS.GET_INSTALLED_APPS,
     }),
-    state() {
-      return this[REQUESTS_STATE.GETTERS.GET_STATE]([API.appStore.getInstalledApps.id])
+    isRequestSending() {
+      return this[REQUESTS_STATE.GETTERS.GET_STATE]([API.appStore.getInstalledApps.id]).isSending
     },
   },
   methods: {
@@ -110,19 +130,13 @@ export default {
       APP_STORE.ACTIONS.GET_AVAILABLE_APPS,
       APP_STORE.ACTIONS.GET_INSTALLED_APPS,
     ]),
-    async redirectToAppDetail(key) {
-      await this.$router.push({ name: ROUTES.APP_STORE.INSTALLED_APP, params: { key } })
-    },
-    hasLogo(item) {
-      return item?.logo ? item.logo : ''
-    },
     mergeWithInstalledApps() {
-      this.appsMerged = this.appsInstalled.map((item) => {
-        let installed = this.appsAvailable.filter((installed) => installed.key === item.key)
-        if (installed.length > 0) {
-          return { ...item, ...installed[0] }
-        } else {
-          return item
+      this.appsMerged = this.appsInstalled.map((availableAppData) => {
+        const installedAppData = this.appsAvailable.find((installedApp) => installedApp.key === availableAppData.key)
+        if (installedAppData) {
+          const app = { ...availableAppData, ...installedAppData }
+          app.logo = app.logo ?? ''
+          return app
         }
       })
     },
