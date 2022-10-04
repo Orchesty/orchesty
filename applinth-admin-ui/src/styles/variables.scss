@@ -46,12 +46,12 @@ $data-table-regular-header-font-size: 0.875rem;
 //Button
 $btn-text-transform: none;
 $btn-font-sizes: (
-        'small': .875rem,
+  "small": 0.875rem,
 );
 
 //Font Family
-$body-font-family: 'Montserrat', sans-serif;
-$heading-font-family: 'Montserrat', sans-serif;
+$body-font-family: "Montserrat", sans-serif;
+$heading-font-family: "Montserrat", sans-serif;
 
 //Tooltip
 $tooltip-background-color: rgba(28, 40, 73, 1);
@@ -87,12 +87,12 @@ $headings: (
 
 // Colors
 
-$primary: #03233A;
+$primary: #03233a;
 $gray: #bbbbbb;
-$white: #FFFFFF;
-$success: #4CAF50;
-$error: #BB2124;
-$secondary: #339CB4;
+$white: #ffffff;
+$success: #4caf50;
+$error: #bb2124;
+$secondary: #339cb4;
 $black: #212121;
 
 // Component / v-btn
