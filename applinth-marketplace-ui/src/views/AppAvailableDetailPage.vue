@@ -53,6 +53,8 @@ import { callApi } from '@/utils/apiFetch'
 import { API } from '@/api'
 import NavigationItem from '@/components/commons/NavigationItem'
 import { ROUTES } from '@/router/routes'
+import showFlashMessage from '@/utils/flashMessage'
+import { FLASH_MESSAGES_TYPES } from '@/store/flashMessages/types'
 export default {
   name: 'AppAvailableDetailPage',
   components: { NavigationItem, BaseButton },
@@ -84,6 +86,10 @@ export default {
         name: ROUTES.APPLICATION_INSTALLED,
         params: { id: this.$route.params.id },
       })
+      showFlashMessage(
+        this.$t('flashMessage.installed', { item: this.app.name }),
+        FLASH_MESSAGES_TYPES.SUCCESS
+      )
     },
   },
   async created() {

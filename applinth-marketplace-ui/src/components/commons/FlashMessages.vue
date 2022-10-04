@@ -1,44 +1,76 @@
 <template>
-  <v-snackbar v-model="snackbarOpen">
-    {{ $t(flashMessage) }}
-
-    <template #action="{ attrs }">
-      <v-btn color="pink" text v-bind="attrs" @click="snackbarOpen = false">
+  <v-snackbar v-model="snackbar" top :color="type" :timeout="timeout">
+    <div class="d-flex align-center justify-around">
+      <span class="font-weight-bold">{{ text }}</span>
+      <v-btn dark text small class="ml-auto" @click="snackbar = false">
         {{ $t('button.close') }}
       </v-btn>
-    </template>
+    </div>
   </v-snackbar>
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
+import {
+  FLASH_MESSAGES,
+  FLASH_MESSAGES_TYPES,
+} from '@/store/flashMessages/types'
 
 export default {
   name: 'FlashMessages',
+  computed: {
+    ...mapState(FLASH_MESSAGES.NAMESPACE, ['flashMessages']),
+  },
   data() {
     return {
-      snackbarOpen: false,
+      id: null,
+      text: null,
+      type: null,
+      snackbar: false,
+      timeout: 5000,
     }
   },
-  computed: {
-    ...mapState('flashMessages', ['flashMessage']),
-  },
   methods: {
-    ...mapActions('flashMessages', ['flashMessageSet', 'flashMessageRemove']),
-  },
-  watch: {
-    snackbarOpen(value) {
-      if (value === false) {
-        this.flashMessageRemove()
+    ...mapActions(FLASH_MESSAGES.NAMESPACE, [FLASH_MESSAGES.ACTIONS.REMOVE]),
+    getType(type) {
+      switch (type) {
+        case FLASH_MESSAGES_TYPES.SUCCESS: {
+          return 'success'
+        }
+        case FLASH_MESSAGES_TYPES.ERROR: {
+          return 'error'
+        }
+        default: {
+          return 'primary'
+        }
       }
     },
-    flashMessage(value) {
-      if (value) {
-        this.snackbarOpen = true
+    setSnackbar(notification) {
+      this.id = notification.id
+      this.text = notification.message
+      this.type = this.getType(notification.type)
+    },
+    clearSnackbar() {
+      this.id = null
+      this.text = null
+      this.type = null
+    },
+  },
+  watch: {
+    flashMessages() {
+      const last = this.flashMessages[this.flashMessages.length - 1]
+
+      if (last) {
+        this.setSnackbar(last)
+        this.snackbar = true
+      }
+    },
+    snackbar(value) {
+      if (value === false) {
+        this[FLASH_MESSAGES.ACTIONS.REMOVE]({ id: this.id })
+        this.clearSnackbar()
       }
     },
   },
 }
 </script>
-
-<style scoped></style>
