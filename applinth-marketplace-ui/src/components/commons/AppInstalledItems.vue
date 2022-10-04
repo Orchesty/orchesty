@@ -3,7 +3,7 @@
     <div v-if="isLoading">
       <base-progress-bar-linear />
     </div>
-    <div v-else-if="!isLoading && apps.length">
+    <div v-if="apps.length">
       <v-card v-for="app in apps" :key="app.key" flat outlined class="mb-2">
         <v-container fluid>
           <v-row>
@@ -35,11 +35,12 @@
                 }"
                 color="primary"
                 custom-class="mb-2"
-                :disabled="isUninstalling"
+                :disabled="isUninstalling || isLoading"
               />
               <uninstall-app-modal
                 v-if="app.isInstallable"
                 color="error"
+                :disabled="isLoading"
                 :is-uninstalling="isUninstalling"
                 :app-name="app.name"
                 :on-click="() => uninstall(app.key)"

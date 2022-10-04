@@ -5,6 +5,7 @@
         color="error"
         :button-title="$t('button.uninstall')"
         :loading="isUninstalling"
+        :disabled="disabled"
         :attrs="attrs"
         :on="on"
       />
@@ -49,6 +50,10 @@ export default {
     isUninstalling: {
       type: Boolean,
       required: true,
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
