@@ -31,6 +31,7 @@
     "install": "Install",
     "move": "Move",
     "edit": "Edit",
+    "settings": "Settings",
     "create": "Create",
     "back": "Back",
     "subscribe": "Subscribe",
@@ -39,6 +40,15 @@
     "import": "Import",
     "authorize": "Authorize",
     "login": "Login",
-    "uninstall": "Uninstall"
+    "installed": "Installed",
+    "uninstall": "Uninstall",
+    "detail": "Detail",
+    "approve": "Approve",
+    "accept": "Approve",
+    "deny": "Deny",
+    "reject": "Reject",
+    "update": "Update",
+    "addApplication": "Add an Application",
+    "setPassword": "Set password"
   }
 }
