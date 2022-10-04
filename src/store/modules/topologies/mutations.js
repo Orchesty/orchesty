@@ -30,7 +30,22 @@ export default {
   [TOPOLOGIES.MUTATIONS.DATA.MUTATE_DASHBOARD_PROCESSES]: (state, data) => {
     state.processes = data
   },
+  [TOPOLOGIES.MUTATIONS.DATA.MUTATE_LAST_SELECTED]: (state, data) => {
+    state.topologyLastSelected = data
+  },
   [TOPOLOGIES.MUTATIONS.RESET]: (state) => {
-    resetState(state, createState())
+    resetState(
+      {
+        topologyActive: state.topologyActive,
+        topologyActiveStatistics: state.topologyActiveStatistics,
+        topologyActiveNodes: state.topologyActiveNodes,
+        topologyActiveNodeNames: state.topologyActiveNodeNames,
+        topologyActiveDiagram: state.topologyActiveDiagram,
+        topologiesOverview: state.topologiesOverview,
+        topologiesAll: state.topologiesAll,
+        processes: state.processes,
+      },
+      createState()
+    )
   },
 }

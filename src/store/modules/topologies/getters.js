@@ -22,4 +22,7 @@ export default {
   [TOPOLOGIES.GETTERS.GET_DASHBOARD_PROCESSES]: (state) => {
     return state.processes
   },
+  [TOPOLOGIES.GETTERS.GET_LAST_SELECTED_TOPOLOGY]: (state) => {
+    return state.topologyLastSelected
+  },
 }
