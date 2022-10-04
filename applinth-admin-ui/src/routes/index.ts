@@ -24,7 +24,7 @@ const baseRoutes = [
       auth: ViewAuth.Private,
       breadcrumbs: [
         {
-          text: "navigation.item.integrations",
+          text: "navigation.item.applinth",
           to: null,
         },
         {
@@ -63,7 +63,7 @@ const overview = {
     auth: ViewAuth.Private,
     breadcrumbs: [
       {
-        text: "navigation.item.integrations",
+        text: "navigation.item.applinth",
         to: null,
       },
       {
@@ -84,11 +84,11 @@ const applications = [
       breadcrumbs: (appActiveName: string) => {
         return [
           {
-            text: "navigation.item.integrations",
+            text: "navigation.item.applinth",
             to: null,
           },
           {
-            text: "Application Item",
+            text: appActiveName,
             to: { name: Routes.ApplicationDetail },
           },
         ];
@@ -106,7 +106,7 @@ const usersRoutes = [
       auth: ViewAuth.Private,
       breadcrumbs: [
         {
-          text: "navigation.item.integrations",
+          text: "navigation.item.applinth",
           to: null,
         },
         {
@@ -124,16 +124,12 @@ const usersRoutes = [
       auth: ViewAuth.Private,
       breadcrumbs: [
         {
-          text: "navigation.item.integrations",
+          text: "navigation.item.applinth",
           to: null,
         },
         {
           text: "navigation.item.users",
           to: { name: Routes.Users },
-        },
-        {
-          text: "navigation.item.userUpdate",
-          to: { name: Routes.UserUpdate },
         },
       ],
     },
@@ -149,7 +145,7 @@ const customersRoutes = [
       auth: ViewAuth.Private,
       breadcrumbs: [
         {
-          text: "navigation.item.integrations",
+          text: "navigation.item.applinth",
           to: null,
         },
         {
@@ -165,9 +161,9 @@ const customersRoutes = [
     component: () => import("../views/CustomerBillingPage.vue"),
     meta: {
       auth: ViewAuth.Private,
-      breadcrumbs: [
+      breadcrumbs: (name: string) => [
         {
-          text: "navigation.item.integrations",
+          text: "navigation.item.applinth",
           to: null,
         },
         {
@@ -176,7 +172,11 @@ const customersRoutes = [
         },
         {
           text: "navigation.item.customer_billing",
-          to: { name: Routes.CustomerBilling },
+          to: null,
+        },
+        {
+          text: name,
+          to: null,
         },
       ],
     },
@@ -187,9 +187,9 @@ const customersRoutes = [
     component: () => import("../views/CustomerDetailPage.vue"),
     meta: {
       auth: ViewAuth.Private,
-      breadcrumbs: [
+      breadcrumbs: (name: string) => [
         {
-          text: "navigation.item.integrations",
+          text: "navigation.item.applinth",
           to: null,
         },
         {
@@ -197,7 +197,7 @@ const customersRoutes = [
           to: { name: Routes.Customers },
         },
         {
-          text: "navigation.item.customer_detail",
+          text: name,
           to: { name: Routes.CustomerDetail },
         },
       ],

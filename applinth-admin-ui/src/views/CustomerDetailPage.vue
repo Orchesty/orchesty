@@ -1,5 +1,5 @@
 <template>
-  <AppLayout>
+  <AppLayout :detail-page-title="breadcrumbTitle">
     <div class="table-medium">
       <template v-if="!isLoading && customerDetail">
         <heading>{{ customerDetail.endUserDisplayId }}</heading>
@@ -44,6 +44,7 @@ export default class CustomerDetailPage extends Vue {
   customerDetail!: UsageStatsUsersRowsInner;
   isLoading = false;
   totalCost!: number;
+  breadcrumbTitle: string | undefined = "";
 
   get formatTotalCost(): string {
     if (typeof this.customerDetail.totalCost === "number")
@@ -61,7 +62,10 @@ export default class CustomerDetailPage extends Vue {
       endUserId: this.customerId,
     });
 
-    if (customer.length > 0) this.customerDetail = customer[0];
+    if (customer.length > 0) {
+      this.customerDetail = customer[0];
+      this.breadcrumbTitle = this.customerDetail?.endUserDisplayId;
+    }
 
     this.isLoading = false;
   }
