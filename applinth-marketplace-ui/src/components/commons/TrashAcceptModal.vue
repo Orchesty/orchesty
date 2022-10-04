@@ -31,6 +31,8 @@ import BaseModal from '@/components/commons/BaseModal'
 import BaseButton from '@/components/commons/BaseButton'
 import { callApi } from '@/utils/apiFetch'
 import { API } from '@/api'
+import showFlashMessage from '@/utils/flashMessage'
+import { FLASH_MESSAGES_TYPES } from '@/store/flashMessages/types'
 export default {
   name: 'TrashAcceptModal',
   components: { BaseButton, BaseModal },
@@ -55,6 +57,12 @@ export default {
         },
       })
       this.$emit('taskSubmitted')
+      showFlashMessage(
+        this.$t('flashMessage.accepted', {
+          item: this.trashItem.name,
+        }),
+        FLASH_MESSAGES_TYPES.SUCCESS
+      )
       this.isOpen = false
     },
   },

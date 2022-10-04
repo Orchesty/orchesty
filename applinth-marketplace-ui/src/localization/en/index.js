@@ -13,6 +13,7 @@ import settingsPage from './settingsPage.json'
 import appInstalledItem from './appInstalledItem.json'
 import profile from './profile.json'
 import label from './label.json'
+import flashMessages from './flashMessages.json'
 
 export default Object.assign(
   appInstalledItem,
@@ -27,6 +28,7 @@ export default Object.assign(
   notFoundPage,
   notLoggedInPage,
   settingsPage,
+  flashMessages,
   {
     $vuetify: vuetify,
   },

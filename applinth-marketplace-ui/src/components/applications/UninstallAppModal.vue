@@ -31,6 +31,8 @@
 <script>
 import BaseModal from '@/components/commons/BaseModal'
 import BaseButton from '@/components/commons/BaseButton'
+import { FLASH_MESSAGES_TYPES } from '@/store/flashMessages/types'
+import showFlashMessage from '@/utils/flashMessage'
 
 export default {
   name: 'UninstallAppModal',
@@ -57,6 +59,10 @@ export default {
   methods: {
     async onConfirm() {
       await this.onClick()
+      showFlashMessage(
+        this.$t('flashMessage.uninstalled', { item: this.appName }),
+        FLASH_MESSAGES_TYPES.SUCCESS
+      )
       this.isOpen = false
     },
     onReject() {

@@ -29,6 +29,8 @@ import BaseButton from '@/components/commons/BaseButton'
 import JsonEditor from '@/components/commons/JsonEditor'
 import { callApi } from '@/utils/apiFetch'
 import { API } from '@/api'
+import { FLASH_MESSAGES_TYPES } from '@/store/flashMessages/types'
+import showFlashMessage from '@/utils/flashMessage'
 export default {
   name: 'TrashUpdateModal',
   components: { JsonEditor, BaseButton, BaseModal },
@@ -58,6 +60,10 @@ export default {
         },
       })
       this.$emit('refreshItemData')
+      showFlashMessage(
+        this.$t('flashMessage.updated', { item: this.trashItem.name }),
+        FLASH_MESSAGES_TYPES.SUCCESS
+      )
       this.isOpen = false
     },
     checkBodyDataFormat(body) {

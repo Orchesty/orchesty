@@ -29,7 +29,7 @@
             :color="app.installed ? 'success' : 'primary'"
             :disabled="app.installed"
             class="mt-2"
-            @click="install(app.key)"
+            @click="install(app.key, app.name)"
           />
           <app-store-item-button
             outlined
@@ -62,6 +62,8 @@ import AppStoreItemButton from '@/components/commons/AppStoreItemButton'
 import { ROUTES } from '@/router/routes'
 import Heading from '@/components/commons/Heading'
 import BaseProgressBarLinear from '@/components/commons/BaseProgressBarLinear'
+import showFlashMessage from '@/utils/flashMessage'
+import { FLASH_MESSAGES_TYPES } from '@/store/flashMessages/types'
 
 export default {
   name: 'ApplicationsPage',
@@ -79,7 +81,7 @@ export default {
     }
   },
   methods: {
-    async install(key) {
+    async install(key, name) {
       await callApi({
         requestData: API.appStore.installApp,
         params: { key },
@@ -88,6 +90,10 @@ export default {
         name: ROUTES.APPLICATION_INSTALLED,
         params: { id: key },
       })
+      showFlashMessage(
+        this.$t('flashMessage.installed', { item: name }),
+        FLASH_MESSAGES_TYPES.SUCCESS
+      )
     },
     async initData() {
       this.isLoading = true

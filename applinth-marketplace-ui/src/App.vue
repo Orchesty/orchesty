@@ -1,5 +1,7 @@
 <template>
   <v-app>
+    <flash-messages />
+
     <v-app-bar app color="primary">
       <router-link class="d-flex align-center" to="/">
         <v-img
@@ -49,10 +51,11 @@
 <script>
 import { ROUTES } from '@/router/routes'
 import NavigationItem from '@/components/commons/NavigationItem'
+import FlashMessages from '@/components/commons/FlashMessages'
 
 export default {
   name: 'App',
-  components: { NavigationItem },
+  components: { FlashMessages, NavigationItem },
   computed: {
     breadCrumbs() {
       if (typeof this.$route.meta.breadcrumbs === 'function') {

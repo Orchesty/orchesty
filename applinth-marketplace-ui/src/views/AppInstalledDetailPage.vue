@@ -89,7 +89,7 @@
                   :ref="form.key"
                   tag="form"
                   slim
-                  @submit.prevent="() => saveForm(form.key)"
+                  @submit.prevent="() => saveForm(form.key, form.publicName)"
                 >
                   <div v-for="field in form.fields" :key="field.key">
                     <div v-if="field.description" class="mb-2">
@@ -174,9 +174,10 @@
               <v-col>
                 <actions-wrapper>
                   <base-button
+                    type="submit"
                     color="primary"
                     :button-title="$t('button.save')"
-                    :on-click="() => saveForm(form.key)"
+                    :on-click="() => saveForm(form.key, form.publicName)"
                     :disabled="isRequestPending"
                     :loading="isSaving"
                   />
@@ -211,6 +212,8 @@ import ActionsWrapper from '@/components/commons/ActionsWrapper'
 import BaseProgressBarLinear from '@/components/commons/BaseProgressBarLinear'
 import UninstallAppModal from '@/components/applications/UninstallAppModal'
 import BaseSelect from '@/components/commons/BaseSelect'
+import showFlashMessage from '@/utils/flashMessage'
+import { FLASH_MESSAGES_TYPES } from '@/store/flashMessages/types'
 
 export default {
   name: 'InstalledAppDetailPage',
@@ -280,7 +283,7 @@ export default {
       return form.matchesWithSnapshot && form.hasValidSettings
     },
 
-    async saveForm(key) {
+    async saveForm(key, formName) {
       const isOk = await this.$refs[key][0].validate()
       if (!isOk) {
         return
@@ -309,7 +312,12 @@ export default {
         })
       }
       await this.$refs[key][0].reset()
+
       this.isSaving = false
+      showFlashMessage(
+        this.$t('flashMessage.saved', { item: formName }),
+        FLASH_MESSAGES_TYPES.SUCCESS
+      )
     },
 
     async authorizeApp() {
@@ -419,6 +427,15 @@ export default {
             },
           },
         })
+        showFlashMessage(
+          this.$t(
+            newState ? 'flashMessage.activated' : 'flashMessage.deactivated',
+            {
+              item: this.appActive.name,
+            }
+          ),
+          FLASH_MESSAGES_TYPES.SUCCESS
+        )
       } catch (err) {
         // TODO add flash message with error
         // Force rerendering of v-switch component, because it seems like can't be kept

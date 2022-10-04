@@ -41,13 +41,11 @@ export default {
   },
   acceptAll: {
     id: 'ACCEPT_ALL_TRASH_ITEMS',
-    request: ({ ids }) => {
+    request: (ids) => {
       return {
         url: `/trash/accept`,
         method: 'POST',
-        data: {
-          ids,
-        },
+        data: ids,
       }
     },
   },

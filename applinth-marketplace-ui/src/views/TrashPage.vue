@@ -65,6 +65,8 @@ import Heading from '@/components/commons/Heading'
 import { redirectTo } from '@/utils/redirect'
 import { callApi } from '@/utils/apiFetch'
 import { API } from '@/api'
+import showFlashMessage from '@/utils/flashMessage'
+import { FLASH_MESSAGES_TYPES } from '@/store/flashMessages/types'
 
 export default {
   name: 'TrashPage',
@@ -116,6 +118,12 @@ export default {
         params: { ids: this.getSelectedIds },
       })
       await this.$refs.gridTrash.gridFetch()
+      showFlashMessage(
+        this.$t('flashMessage.acceptedList', {
+          number: this.getSelectedIds.length,
+        }),
+        FLASH_MESSAGES_TYPES.SUCCESS
+      )
     },
     async itemsRejectAll() {
       await callApi({
@@ -123,6 +131,12 @@ export default {
         params: [...this.getSelectedIds],
       })
       await this.$refs.gridTrash.gridFetch()
+      showFlashMessage(
+        this.$t('flashMessage.rejectedList', {
+          number: this.getSelectedIds.length,
+        }),
+        FLASH_MESSAGES_TYPES.SUCCESS
+      )
     },
     onSelect(selectedItems) {
       this.gridHasSelection = !!selectedItems.length
