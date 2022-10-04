@@ -2,6 +2,7 @@
   <v-btn
     :to="to"
     :disabled="loading ? true : disabled"
+    :loading="loading"
     small
     min-width="104"
     :color="color"
@@ -9,7 +10,7 @@
     :outlined="outlined"
     @click="handleClick"
   >
-    <span>{{ loading ? textLoading : text }}</span>
+    <span class="subtitle-2">{{ text }}</span>
   </v-btn>
 </template>
 
@@ -22,10 +23,6 @@ export default {
       default: false,
     },
     text: {
-      type: String,
-      default: '',
-    },
-    textLoading: {
       type: String,
       default: '',
     },

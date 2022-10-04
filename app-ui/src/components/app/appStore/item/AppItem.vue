@@ -1,34 +1,43 @@
 <template>
-  <v-col xl="2" lg="3" md="6" sm="6" cols="12">
+  <v-col xl="2" lg="4" md="6" sm="6" cols="12">
     <v-card rounded="lg" elevation="2" min-height="205">
       <v-container fluid>
-        <v-row>
+        <v-row dense>
           <v-col cols="6" sm="5">
-            <v-img max-height="70" max-width="70" contain :src="imageSource" />
+            <v-img max-height="70" max-width="70" contain :src="appLogo" />
           </v-col>
-          <v-col cols="6" sm="7" class="d-flex flex-column align-end justify-space-around">
-            <slot name="redirect"></slot>
+          <v-col cols="6" sm="7" class="d-flex flex-column align-end justify-start">
+            <slot name="buttons"></slot>
           </v-col>
         </v-row>
-        <v-row>
+        <v-row dense>
           <v-col class="d-flex justify-start">
-            <h3 class="custom-truncate-title title font-weight-bold">
+            <h3 class="title font-weight-bold text-truncate">
               {{ title }}
             </h3>
             <tooltip>
-              <template #activator>
-                <app-icon v-if="installed" dense :color="authorized ? 'success' : 'error'" class="ml-3">
+              <template #activator="{ on, attrs }">
+                <v-icon
+                  v-if="installed"
+                  v-bind="attrs"
+                  dense
+                  :color="authorized ? 'success' : 'error'"
+                  class="ml-3"
+                  v-on="on"
+                >
                   mdi-circle
-                </app-icon>
+                </v-icon>
               </template>
               <template #tooltip>
-                {{ authorized ? 'authorized' : 'unauthorized' }}
+                <span class="text-capitalize">{{
+                  authorized ? $t('appInstalledItem.authorized') : $t('appInstalledItem.unauthorized')
+                }}</span>
               </template>
             </tooltip>
           </v-col>
         </v-row>
-        <v-row>
-          <v-col class="custom-truncate-description py-0">
+        <v-row dense>
+          <v-col class="truncate-3-rows py-0 mb-3">
             <span>{{ description }}</span>
           </v-col>
         </v-row>
@@ -39,23 +48,21 @@
 
 <script>
 import Tooltip from '@/components/commons/Tooltip'
-import AppIcon from '@/components/commons/icon/AppIcon'
 export default {
   name: 'AppItem',
-  components: { AppIcon, Tooltip },
+  components: { Tooltip },
   props: {
     title: {
       type: String,
       required: true,
     },
-    image: {
+    logo: {
       type: String,
       required: true,
     },
     description: {
       type: String,
-      required: false,
-      default: () => '',
+      required: true,
     },
     authorized: {
       type: Boolean,
@@ -63,30 +70,27 @@ export default {
     },
     installed: {
       type: Boolean,
-      required: false,
+      required: true,
     },
   },
   computed: {
-    imageSource() {
-      return this.image ? this.image : require('@/assets/svg/app-item-placeholder.svg')
+    appLogo() {
+      return this.logo ? this.logo : require('@/assets/svg/app-item-placeholder.svg')
     },
   },
 }
 </script>
 
 <style lang="scss" scoped>
-.custom-truncate {
-  display: -webkit-box;
+.truncate-3-rows {
+  /*
+  Line clamp documentation
+  https://css-tricks.com/line-clampin/
+  https://caniuse.com/css-line-clamp
+  */
   -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  display: -webkit-box;
   overflow: hidden;
-}
-.custom-truncate-description {
-  @extend .custom-truncate;
-  -webkit-line-clamp: 2;
-}
-.custom-truncate-title {
-  @extend .custom-truncate;
-  -webkit-line-clamp: 1;
-  max-width: 88%;
 }
 </style>

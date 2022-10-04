@@ -22,12 +22,13 @@
       >
         <template #buttons>
           <app-store-item-button
-            v-if="app.isInstallable"
+            v-if="isAppInstallable(app)"
+            :loading="appInProgress === app.key"
             :text="
               app.installed ? $t('button.installed') : $t('button.install')
             "
             :color="app.installed ? 'success' : 'primary'"
-            :disabled="app.installed"
+            :disabled="app.installed || isRequestSending"
             class="mt-2"
             @click="install(app.key, app.name)"
           />
@@ -42,6 +43,7 @@
               params: { id: app.key },
             }"
             class="mt-2"
+            :disabled="isRequestSending"
           />
         </template>
       </app-store-item>
@@ -78,14 +80,22 @@ export default {
       apps: null,
       ROUTES,
       isLoading: false,
+      appInProgress: null,
     }
   },
   methods: {
     async install(key, name) {
+      this.appInProgress = key
+      this.isLoading = true
+
       await callApi({
         requestData: API.appStore.installApp,
         params: { key },
       })
+
+      this.appInProgress = null
+      this.isLoading = false
+
       await this.$router.push({
         name: ROUTES.APPLICATION_INSTALLED,
         params: { id: key },
@@ -104,18 +114,34 @@ export default {
         requestData: API.appStore.getInstalledApps,
       })
       if (availableAppsResponse.items && installedAppsResponse.items) {
-        this.apps = availableAppsResponse.items.map((availableApp) => {
-          let installedApp = installedAppsResponse.items.find(
-            (installedApp) => installedApp.key === availableApp.key
+        this.apps = availableAppsResponse.items.map((availableAppData) => {
+          const installedAppData = installedAppsResponse.items.find(
+            (installedApp) => installedApp.key === availableAppData.key
           )
-          if (installedApp) {
-            return { ...availableApp, ...installedApp, installed: true }
+          if (installedAppData) {
+            const app = {
+              ...availableAppData,
+              ...installedAppData,
+              installed: true,
+            }
+            app.logo = app.logo ?? ''
+            return app
           } else {
-            return { ...availableApp, installed: false, authorized: false }
+            const app = {
+              ...availableAppData,
+              installed: false,
+              authorized: false,
+            }
+            app.logo = app.logo ?? ''
+            return app
           }
         })
       }
       this.isLoading = false
+    },
+    isAppInstallable(app) {
+      //First condition is for the case in which the application was installed via third party resource, but is labeled as {isInstallable: false} in backend.
+      return (!app.isInstallable && app.installed) || app.isInstallable
     },
   },
   async created() {
