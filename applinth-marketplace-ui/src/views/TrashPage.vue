@@ -14,9 +14,9 @@
               :headers="headers"
               :grid-settings="GRIDS.TRASH"
               fetch-on-init
-              @select="onSelect"
               sort-desc
               sort-by="created"
+              @select="onSelect"
             >
               <template #default="{ items }">
                 <td @click="onRowClick(items)">
