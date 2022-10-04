@@ -29,6 +29,8 @@
         item-key="id"
         :loading="isLoading"
         :loading-text="$t('grid.state.loading')"
+        :sort-desc="sortDesc"
+        :sort-by="sortBy"
       >
         <template #[`header.data-table-select`]>
           <!-- Intentionally nothing - replaced by independent checkbox -->
@@ -95,6 +97,14 @@ export default {
       type: Boolean,
       default: false,
     },
+    sortDesc: {
+      type: Boolean,
+      default: false,
+    },
+    sortBy: {
+      type: [String, null],
+      default: null,
+    },
   },
   data() {
     return {
@@ -109,10 +119,6 @@ export default {
   methods: {
     optionsParser(data) {
       return {
-        sortBy: data.sorter.length ? [data.sorter[0].column] : [],
-        sortDesc: data.sorter.length
-          ? [data.sorter[0].direction === 'DESC']
-          : [],
         page: data.paging ? data.paging.page : 1,
         itemsPerPage: data.paging ? data.paging.itemsPerPage : 10,
       }
