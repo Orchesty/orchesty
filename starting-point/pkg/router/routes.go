@@ -38,10 +38,9 @@ func GetDefaultRoutes() Routes {
 			HandlerFunc: HandleClear(HandleRunByName),
 		},
 		Route{
-			Name:        "Run topology by application",
+			Name:        "Run topology by application (webhook)",
 			Method:      "POST",
 			Pattern:     "/topologies/{topology}/nodes/{node}/token/{token}/run",
-			Protected:   true,
 			HandlerFunc: HandleClear(HandleRunByApplication),
 		},
 		Route{
