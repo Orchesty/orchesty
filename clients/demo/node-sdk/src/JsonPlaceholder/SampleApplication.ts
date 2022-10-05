@@ -55,18 +55,22 @@ export default class SampleApplication extends ABasicApplication implements IWeb
             .setDescription('Some form description')
 
             .addField(new Field(FieldType.TEXT, 'name', 'Name'))
-            .addField(new Field(FieldType.TEXT, 'disName', 'Disabled Name')).setReadOnly(true)
+            .addField(new Field(FieldType.TEXT, 'disName', 'Disabled Name', 'default').setDisabled(true))
+            .addField(new Field(FieldType.TEXT, 'readName', 'Read Name', 'default').setReadOnly(true))
 
             .addField(new Field(FieldType.URL, 'url', 'Url'))
-            .addField(new Field(FieldType.URL, 'disUrl', 'Disabled Url')).setReadOnly(true)
+            .addField(new Field(FieldType.URL, 'disUrl', 'Disabled Url', 'default').setDisabled(true))
+            .addField(new Field(FieldType.URL, 'readUrl', 'Read Url', 'default').setReadOnly(true))
 
             .addField(new Field(FieldType.CHECKBOX, 'check', 'IsOk'))
+            .addField(new Field(FieldType.CHECKBOX, 'disCheck', 'IsOk').setDisabled(true))
             .addField(new Field(FieldType.CHECKBOX, 'forced', 'Forced', true)
                 .setReadOnly(true)
                 .setDescription('Forced read-only field'))
 
             .addField(new Field(FieldType.NUMBER, 'number', 'Number'))
-            .addField(new Field(FieldType.NUMBER, 'disNumber', 'Disabled Number'))
+            .addField(new Field(FieldType.NUMBER, 'disNumber', 'Disabled Number').setDisabled(true))
+            .addField(new Field(FieldType.NUMBER, 'readNumber', 'Read Number').setReadOnly(true))
 
             .addField(new Field(FieldType.PASSWORD, 'pass', 'Password'))
             .addField(new Field(FieldType.PASSWORD, 'pass2', 'Password2'))
@@ -75,6 +79,9 @@ export default class SampleApplication extends ABasicApplication implements IWeb
             .addField(new Field(FieldType.SELECT_BOX, 'disSel', 'Disabled Select', 'key')
                 .setChoices([{ key: 'val' }])
                 .setDescription('Some desc for selectbox')
+                .setDisabled(true))
+            .addField(new Field(FieldType.SELECT_BOX, 'readSel', 'Read Select', 'key')
+                .setChoices([{ key: 'val' }])
                 .setReadOnly(true));
 
         const readOnlyForm = new Form('read_only_form_test', 'Readonly form')
