@@ -245,7 +245,7 @@ final class MongoMetricsManager extends MetricsManagerAbstract
     {
         $qb  = $this->metricsDm->createQueryBuilder(ContainerMetrics::class);
         $res = $qb
-            ->field('up')->equals(FALSE)
+            ->field('fields.up')->equals(FALSE)
             ->getQuery()
             ->toArray();
 
@@ -554,7 +554,7 @@ final class MongoMetricsManager extends MetricsManagerAbstract
     {
         $qb  = $this->metricsDm->createQueryBuilder(RabbitConsumerMetrics::class);
         $res = $qb
-            ->field('consumers')->lte(0)
+            ->field('fields.consumers')->lte(0)
             ->getQuery()
             ->toArray();
 
