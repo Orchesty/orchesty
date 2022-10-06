@@ -33,7 +33,7 @@
         />
         <StatusCard
           :loading="loading"
-          :score="formatNumber(application.totalCost)"
+          :score="toCZK(application.totalCost)"
           :title="$t('applicationDetailPage.cost')"
         />
       </div>
@@ -66,7 +66,7 @@ import {
 } from "@/api/generated";
 import { api } from "@/api";
 import { ApplicationDetail, IndexedApplicationDetail } from "@/types";
-import { formatNumber } from "@/filters/number";
+import { toCZK } from "@/filters/money";
 import {
   ApplicationsGetters,
   applicationsNamespace,
@@ -142,7 +142,7 @@ export default class ApplicationDetailPage extends Vue {
     this.loading = false;
   }
 
-  private formatNumber = formatNumber;
+  readonly toCZK = toCZK;
 
   @Watch("fetchingMetadata")
   private updateApplicationMetadata() {

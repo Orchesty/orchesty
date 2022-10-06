@@ -17,7 +17,7 @@
     />
     <StatusCard
       :loading="isLoading"
-      :score="formatNumber(amount)"
+      :score="toCZK(amount)"
       :title="$t('overviewPage.statusCards.amount')"
     />
     <StatusCard
@@ -34,7 +34,7 @@ import StatusCard from "../commons/layouts/StatusCard.vue";
 import { callApi } from "@/utils";
 import { UsageStatsAppsRequest, UsageStatsUsersRequest } from "@/api/generated";
 import { api } from "@/api";
-import { formatNumber } from "@/filters/number";
+import { toCZK } from "@/filters/money";
 
 @Component({
   components: {
@@ -73,7 +73,7 @@ export default class StatusCardList extends Vue {
     this.isLoading = false;
   }
 
-  readonly formatNumber = formatNumber;
+  readonly toCZK = toCZK;
 }
 </script>
 

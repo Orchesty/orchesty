@@ -28,7 +28,7 @@ import {
   UsageStatsUsersRequest,
   UsageStatsUsersRowsInner,
 } from "@/api/generated";
-import { formatNumber } from "@/filters/number";
+import { toCZK } from "@/filters/money";
 
 @Component({
   components: {
@@ -48,7 +48,7 @@ export default class CustomerDetailPage extends Vue {
 
   get formatTotalCost(): string {
     if (typeof this.customerDetail.totalCost === "number")
-      return formatNumber(this.customerDetail.totalCost);
+      return toCZK(this.customerDetail.totalCost);
     return "";
   }
 
