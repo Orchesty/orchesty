@@ -21,18 +21,9 @@
     </v-row>
     <v-row>
       <v-col>
-        <v-divider class="my-5" />
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col>
         <heading class="mb-4">
           {{ $t('overviewPage.overview.heading') }}
         </heading>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col>
         <data-grid
           ref="gridOverview"
           fetch-on-init
