@@ -59,6 +59,8 @@ init: up
 	$(DC_DEV) run --rm wait-for-it rabbitmq:15672 -t 600
 	$(DE_DEV) rabbitmq rabbitmq-plugins enable rabbitmq_consistent_hash_exchange
 	$(DE_DEV) rabbitmq rabbitmq-plugins enable rabbitmq_management
+	$(DE_DEV) backend bin/console service:install node-sdk node-sdk:8080
+	$(DE_DEV) backend bin/console topology:install -c -u --force node-sdk:8080
 
 destroy: .env .lo0-down
 	$(DC_DEV) down -v

@@ -1,11 +1,12 @@
 #!/usr/bin/env php
 <?php declare(strict_types=1);
 
-use Hanaboso\PipesFramework\Kernel;
+use Hanaboso\Applinth\Kernel;
 use Hanaboso\PipesPhpSdk\Command\IncludeCommands;
 use Symfony\Component\Console\Input\ArgvInput;
 
 set_time_limit(0);
+
 require __DIR__.'/../vendor/autoload.php';
 require_once __DIR__ . '/../public/odm_metrics.php';
 
