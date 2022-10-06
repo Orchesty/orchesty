@@ -17,6 +17,13 @@ services:
         tags:
             - { name: console.command }
 
+    hbpf.command.service_install:
+        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\InstallServiceCommand
+        arguments:
+            - '@hbpf.configurator.manager.sdk'
+        tags:
+            - { name: console.command }
+
     hbpf.command.create_indexes:
         class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\UpdateMongoIndexesCommand
         arguments:
