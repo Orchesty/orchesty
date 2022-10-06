@@ -17,6 +17,7 @@ import cs from "vuetify/src/locale/cs";
 import error from "./error.json";
 import message from "./message.json";
 import applicationDetailPage from "./pages/applicationDetailPage.json";
+import general from "./general.json";
 
 export default {
   ...button,
@@ -38,4 +39,5 @@ export default {
   ...error,
   ...message,
   ...applicationDetailPage,
+  ...general,
 };

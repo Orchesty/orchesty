@@ -4,7 +4,8 @@
       "customers": "Zákazníci",
       "users": "Uživatelé",
       "overview": "Přehled",
-      "profile": "Profil"
+      "profile": "Profil",
+      "logout": "Odhlásit se"
     },
     "item": {
       "integrations": "Integrace",

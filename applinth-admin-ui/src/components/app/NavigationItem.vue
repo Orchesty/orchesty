@@ -1,6 +1,6 @@
 <template>
   <router-link
-    class="d-flex align-center text-decoration-none ml-2"
+    class="d-flex align-center text-decoration-none ml-1"
     :to="{ name: to }"
   >
     <v-icon :color="color">

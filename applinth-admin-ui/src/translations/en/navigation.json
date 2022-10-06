@@ -4,7 +4,8 @@
       "customers": "Customers",
       "users": "Users",
       "overview": "Overview",
-      "profile": "Profile"
+      "profile": "Profile",
+      "logout": "Log out"
     },
     "item": {
       "integrations": "Integrations",
