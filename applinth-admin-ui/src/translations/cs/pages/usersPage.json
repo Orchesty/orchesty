@@ -2,6 +2,7 @@
   "usersPage": {
     "header": "Uživatelé",
     "newUser": "Nový uživatel",
+    "updateUser": "Upravit uživatele",
     "removeUser": "Smazat uživatele"
   }
 }
