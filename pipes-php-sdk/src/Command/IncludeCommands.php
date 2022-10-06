@@ -21,6 +21,7 @@ final class IncludeCommands extends BundleApplication
         'cron:refresh',
         'rabbit_mq:publisher:pipes-user-task',
         'rabbit_mq:publisher:pipes.messages',
+        'service:install',
         'topology:install',
         'usage_stats:send-events',
         'user:create',
