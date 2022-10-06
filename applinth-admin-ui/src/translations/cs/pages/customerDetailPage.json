@@ -1,7 +1,8 @@
 {
   "customerDetailPage": {
     "statusCard": {
-      "actualBilling": "Aktuální fakturace"
+      "actualBilling": "Aktuální fakturace",
+      "estimatedCost": "Odhadovaná cena"
     }
   }
 }

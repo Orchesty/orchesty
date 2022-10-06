@@ -36,10 +36,10 @@ import {
 } from '../models';
 
 export interface UsageStatsAppsRequest {
-    timeRangeStart: string;
-    timeRangeEnd: string;
     tenantId?: string;
     instanceId?: string;
+    timeRangeStart?: string;
+    timeRangeEnd?: string;
     appName?: string;
     granularity?: UsageStatsAppsGranularityEnum;
 }
@@ -68,15 +68,14 @@ export interface UsageStatsTimeBucketUsersRequest {
 }
 
 export interface UsageStatsUsersRequest {
-    timeRangeStart: string;
-    timeRangeEnd: string;
     tenantId?: string;
     instanceId?: string;
+    timeRangeStart?: string;
+    timeRangeEnd?: string;
     appName?: string;
     granularity?: UsageStatsUsersGranularityEnum;
     endUserDisplayId?: string;
     endUserId?: string;
-    endUserId2?: string;
 }
 
 /**
@@ -88,14 +87,6 @@ export class BillingApi extends runtime.BaseAPI {
      * Get billing report aggregated by an appName
      */
     async usageStatsAppsRaw(requestParameters: UsageStatsAppsRequest, initOverrides?: RequestInit | runtime.InitOverideFunction): Promise<runtime.ApiResponse<UsageStatsApps>> {
-        if (requestParameters.timeRangeStart === null || requestParameters.timeRangeStart === undefined) {
-            throw new runtime.RequiredError('timeRangeStart','Required parameter requestParameters.timeRangeStart was null or undefined when calling usageStatsApps.');
-        }
-
-        if (requestParameters.timeRangeEnd === null || requestParameters.timeRangeEnd === undefined) {
-            throw new runtime.RequiredError('timeRangeEnd','Required parameter requestParameters.timeRangeEnd was null or undefined when calling usageStatsApps.');
-        }
-
         const queryParameters: any = {};
 
         if (requestParameters.tenantId !== undefined) {
@@ -137,7 +128,7 @@ export class BillingApi extends runtime.BaseAPI {
     /**
      * Get billing report aggregated by an appName
      */
-    async usageStatsApps(requestParameters: UsageStatsAppsRequest, initOverrides?: RequestInit | runtime.InitOverideFunction): Promise<UsageStatsApps> {
+    async usageStatsApps(requestParameters: UsageStatsAppsRequest = {}, initOverrides?: RequestInit | runtime.InitOverideFunction): Promise<UsageStatsApps> {
         const response = await this.usageStatsAppsRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -308,14 +299,6 @@ export class BillingApi extends runtime.BaseAPI {
      * Get billing report aggregated by an users
      */
     async usageStatsUsersRaw(requestParameters: UsageStatsUsersRequest, initOverrides?: RequestInit | runtime.InitOverideFunction): Promise<runtime.ApiResponse<UsageStatsUsers>> {
-        if (requestParameters.timeRangeStart === null || requestParameters.timeRangeStart === undefined) {
-            throw new runtime.RequiredError('timeRangeStart','Required parameter requestParameters.timeRangeStart was null or undefined when calling usageStatsUsers.');
-        }
-
-        if (requestParameters.timeRangeEnd === null || requestParameters.timeRangeEnd === undefined) {
-            throw new runtime.RequiredError('timeRangeEnd','Required parameter requestParameters.timeRangeEnd was null or undefined when calling usageStatsUsers.');
-        }
-
         const queryParameters: any = {};
 
         if (requestParameters.tenantId !== undefined) {
@@ -350,10 +333,6 @@ export class BillingApi extends runtime.BaseAPI {
             queryParameters['endUserId'] = requestParameters.endUserId;
         }
 
-        if (requestParameters.endUserId2 !== undefined) {
-            queryParameters['endUserId'] = requestParameters.endUserId2;
-        }
-
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
@@ -369,7 +348,7 @@ export class BillingApi extends runtime.BaseAPI {
     /**
      * Get billing report aggregated by an users
      */
-    async usageStatsUsers(requestParameters: UsageStatsUsersRequest, initOverrides?: RequestInit | runtime.InitOverideFunction): Promise<UsageStatsUsers> {
+    async usageStatsUsers(requestParameters: UsageStatsUsersRequest = {}, initOverrides?: RequestInit | runtime.InitOverideFunction): Promise<UsageStatsUsers> {
         const response = await this.usageStatsUsersRaw(requestParameters, initOverrides);
         return await response.value();
     }

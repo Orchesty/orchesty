@@ -5,7 +5,9 @@
       "applications": "Aplikace",
       "installations": "Instalace",
       "users": "Uživatelé",
-      "billing": "Fakturace"
+      "billing": "Fakturace",
+      "amount": "Cena",
+      "estimatedCosts": "Odhadovaná cena"
     },
     "apps": {
       "users": "Uživatelé"

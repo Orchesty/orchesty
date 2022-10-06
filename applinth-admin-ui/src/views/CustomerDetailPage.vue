@@ -6,7 +6,7 @@
         <StatusCard
           class="cusotmer-info-card my-5"
           :score="formatTotalCost"
-          :title="$t('customerDetailPage.statusCard.actualBilling')"
+          :title="$t('customerDetailPage.statusCard.estimatedCost')"
         />
       </template>
       <CustomerAppsTable class="mb-5" :customer-id="customerId" />
