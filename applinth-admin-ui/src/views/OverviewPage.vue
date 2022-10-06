@@ -1,8 +1,8 @@
 <template>
   <AppLayout>
     <Heading>{{ $t("overviewPage.header") }}</Heading>
-    <StatusCardList class="my-5" />
-    <AppsOverview />
+    <StatusCardList class="mt-5" />
+    <AppsOverview class="mt-6" />
   </AppLayout>
 </template>
 

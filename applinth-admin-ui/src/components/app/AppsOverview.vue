@@ -4,32 +4,32 @@
       <BaseProgressBarLinear />
     </div>
     <div v-else-if="!isLoading && apps.length">
-      <v-card outlined v-for="app of apps" :key="app.id" class="mb-2 pa-5">
+      <v-card outlined v-for="app of apps" :key="app.id" class="mb-2 px-3">
         <v-container>
           <v-row>
-            <v-col cols="auto" class="d-flex">
-              <v-img
-                class="ma-auto"
-                max-height="70"
-                max-width="70"
-                contain
-                :src="
-                  app.logo
-                    ? app.logo
-                    : require('@/assets/svg/app-item-placeholder.svg')
-                "
-              />
+            <v-col cols="1" class="d-flex">
+              <div class="logo-wrapper">
+                <v-img
+                  class="ma-auto"
+                  max-height="50"
+                  max-width="70"
+                  contain
+                  :src="
+                    app.logo
+                      ? app.logo
+                      : require('@/assets/svg/app-item-placeholder.svg')
+                  "
+                />
+              </div>
             </v-col>
-            <v-col class="d-flex justify-center align-center">
+            <v-col class="d-flex align-center">
               <SubHeading>{{
                 app.publicName ? app.publicName : app.appName
               }}</SubHeading>
             </v-col>
             <v-col class="d-flex flex-column justify-center align-center">
-              <SubHeading
-                >{{ $t("overviewPage.apps.users") }}:
-                {{ app.endUsers }}</SubHeading
-              >
+              {{ $t("overviewPage.apps.users") }}
+              <div class="users-number">{{ app.endUsers }}</div>
             </v-col>
             <v-col class="d-flex flex-column justify-center align-end">
               <router-link
@@ -129,5 +129,17 @@ export default class AppsOverview extends Vue {
   display: grid;
   grid-template-columns: 150px minmax(auto, 350px) 1fr 60px;
   gap: 0 16px;
+}
+
+.logo-wrapper {
+  display: grid;
+  place-items: center;
+  width: 70px;
+  height: 50px;
+}
+
+.users-number {
+  font-size: 1.4rem;
+  font-weight: bold;
 }
 </style>

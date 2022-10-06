@@ -1,8 +1,7 @@
 {
   "customerDetailPage": {
-    "statusCard": {
-      "actualBilling": "Actual billing",
-      "estimatedCost": "Estimated costs"
-    }
+    "estimatedCosts": "Estimated costs",
+    "monthlyPayments": "Monthly payments",
+    "activeApps": "Active apps"
   }
 }

@@ -35,7 +35,7 @@
           {{ stringifyArray(item.appNames) }}
         </template>
         <template #totalCost="{ item }">
-          {{ formatNumber(item.totalCost) }}
+          {{ formatPrice(item.totalCost) }}
         </template>
 
         <template #actions="{ item }">
@@ -71,7 +71,7 @@ import {
 } from "@/api/generated";
 import Heading from "@/components/commons/typography/Heading.vue";
 import { Routes } from "@/enums/Routes";
-import { formatNumber } from "@/filters/number";
+import { toCZK } from "@/filters/money";
 
 interface UsersTable {
   [key: string]: any;
@@ -114,7 +114,7 @@ export default class CustomersPage extends Vue {
       value: "appNames",
     },
     {
-      text: "grids.headers.billing",
+      text: "grids.headers.amount",
       sortable: true,
       align: "start",
       value: "totalCost",
@@ -139,7 +139,7 @@ export default class CustomersPage extends Vue {
     this.isLoading = false;
   }
 
-  private filterDebounced() {
+  filterDebounced() {
     clearTimeout(this.timerId);
 
     this.timerId = setTimeout(() => {
@@ -147,7 +147,7 @@ export default class CustomersPage extends Vue {
     }, 700);
   }
 
-  private async resetFilters(): Promise<void> {
+  async resetFilters(): Promise<void> {
     let sendRequest = false;
 
     if (this.appSearch || this.lastSearchedText) sendRequest = true;
@@ -181,15 +181,15 @@ export default class CustomersPage extends Vue {
     }
   }
 
-  private stringifyArray(array: Array<string> | undefined) {
+  stringifyArray(array: Array<string> | undefined) {
     if (Array.isArray(array)) return array.join(", ");
     return "";
   }
 
-  formatNumber = formatNumber;
+  formatPrice = toCZK;
 
   @Watch("appSearch")
-  private async searchByApp(val: string): Promise<void> {
+  async searchByApp(val: string): Promise<void> {
     if (!val) return;
 
     this.isLoading = true;

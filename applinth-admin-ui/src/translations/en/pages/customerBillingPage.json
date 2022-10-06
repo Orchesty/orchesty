@@ -1,8 +1,5 @@
 {
   "customerBillingPage": {
-    "header": "Billing",
-    "statusCard": {
-      "actualBilling": "Actual billing"
-    }
+    "header": "Billing"
   }
 }

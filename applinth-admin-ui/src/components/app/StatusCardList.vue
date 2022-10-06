@@ -17,12 +17,12 @@
     />
     <StatusCard
       :loading="isLoading"
-      :score="formatNumber(amount)"
+      :score="toCZK(amount)"
       :title="$t('overviewPage.statusCards.amount')"
     />
     <StatusCard
       :loading="isLoading"
-      :score="estimatedCost"
+      :score="estimatedCosts"
       :title="$t('overviewPage.statusCards.estimatedCosts')"
     />
   </div>
@@ -34,7 +34,7 @@ import StatusCard from "../commons/layouts/StatusCard.vue";
 import { callApi } from "@/utils";
 import { UsageStatsAppsRequest, UsageStatsUsersRequest } from "@/api/generated";
 import { api } from "@/api";
-import { formatNumber } from "@/filters/number";
+import { toCZK } from "@/filters/money";
 
 @Component({
   components: {
@@ -46,7 +46,7 @@ export default class StatusCardList extends Vue {
   installationsCount = 0;
   usersCount = 0;
   amount = 0;
-  estimatedCost = 0; // todo PIP-1344 počkat, až bude připravený endpoint
+  estimatedCosts = 0; // todo PIP-1344 počkat, až bude připravený endpoint
   isLoading = false;
 
   async created() {
@@ -73,7 +73,7 @@ export default class StatusCardList extends Vue {
     this.isLoading = false;
   }
 
-  readonly formatNumber = formatNumber;
+  readonly toCZK = toCZK;
 }
 </script>
 

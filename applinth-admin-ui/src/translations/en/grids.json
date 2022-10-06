@@ -3,7 +3,7 @@
     "headers": {
       "user": "User",
       "activeApps": "Active Apps",
-      "billing": "Billing",
+      "amount": "Amount",
       "email": "Email",
       "name": "Name",
       "installed": "Installed",

@@ -1,6 +1,8 @@
 <template>
   <AppLayout>
-    <Heading class="mb-5">{{ $t("profilePage.header.profile") }}</Heading>
+    <Heading class="mb-5">
+      {{ $t("profilePage.header.profile") }} {{ currentUser.email }}
+    </Heading>
     <ValidationObserver v-slot="{ invalid, validate }">
       <v-form class="form" @submit.prevent="validate().then(submitFormName)">
         <TextField
@@ -174,6 +176,6 @@ export default class ProfilePage extends Vue {
 
 <style lang="scss" scoped>
 .form {
-  max-width: 30ch;
+  max-width: 45ch;
 }
 </style>

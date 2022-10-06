@@ -9,7 +9,7 @@
       {{ stringifyArray(item.appNames) }}
     </template>
     <template #totalCost="{ item }">
-      <slot>{{ formatNumber(item.totalCost) }}</slot>
+      <slot>{{ toCZK(item.totalCost) }}</slot>
     </template>
   </SimpleTable>
 </template>
@@ -24,7 +24,7 @@ import {
 import { callApi } from "@/utils";
 import { api } from "@/api";
 import SimpleTable from "@/components/commons/tables/SimpleTable.vue";
-import { formatNumber } from "@/filters/number";
+import { toCZK } from "@/filters/money";
 
 @Component({
   components: {
@@ -53,7 +53,7 @@ export default class CustomerBillingTable extends Vue {
       value: "appNames",
     },
     {
-      text: "grids.headers.billing",
+      text: "grids.headers.amount",
       sortable: true,
       align: "start",
       value: "totalCost",
@@ -73,11 +73,11 @@ export default class CustomerBillingTable extends Vue {
     this.isLoading = false;
   }
 
-  private stringifyArray(array: Array<string> | undefined): string {
+  stringifyArray(array: Array<string> | undefined): string {
     if (Array.isArray(array)) return array.join(", ");
     return "";
   }
 
-  private formatNumber = formatNumber;
+  readonly toCZK = toCZK;
 }
 </script>
