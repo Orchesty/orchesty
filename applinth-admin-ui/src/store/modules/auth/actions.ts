@@ -1,5 +1,5 @@
 import { transformUser } from "@/firebase";
-import { alerts, i18n, saveUserWithTokenToStore } from "@/utils";
+import { alerts, i18n, router, saveUserWithTokenToStore } from "@/utils";
 import {
   getAuth,
   signInWithEmailAndPassword,
@@ -7,12 +7,14 @@ import {
   User,
   updateProfile,
   sendPasswordResetEmail,
+  signOut,
 } from "firebase/auth";
 import { TLoginForm, TResetPasswordForm } from "../../../components/auth/types";
 import { Actions } from "../../../types";
 import { AuthState } from "./state";
 import { AuthActions, AuthMutations } from "./types";
 import { UpdateUserInfo } from "@/types/CurrentUser";
+import { Routes } from "@/enums";
 
 export const actions: Actions<AuthActions, AuthState> = {
   async login({ commit }, payload: TLoginForm): Promise<boolean> {
@@ -167,6 +169,17 @@ export const actions: Actions<AuthActions, AuthState> = {
 
       console.error(error.code, error);
       return false;
+    }
+  },
+  async logout({ commit }) {
+    try {
+      const auth = getAuth();
+      await signOut(auth);
+      commit(AuthMutations.LogoutUser);
+      await router.push({ path: Routes.Login });
+    } catch (error: any) {
+      alerts.addErrorAlert("logout-failed", error.message as string);
+      console.error(error.code, error);
     }
   },
 };

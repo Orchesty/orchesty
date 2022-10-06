@@ -6,11 +6,13 @@ export enum AuthActions {
   ChangePassword = "changePassword",
   Reauthenticate = "reauthenticate",
   SendResetPasswordLink = "sendResetPasswordLink",
+  Logout = "logout",
 }
 
 export enum AuthMutations {
   SetUser = "setUser",
   SetAccessToken = "setAccessToken",
+  LogoutUser = "logoutUser",
 }
 
 export enum AuthGetters {
