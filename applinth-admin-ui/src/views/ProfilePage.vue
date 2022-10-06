@@ -176,6 +176,6 @@ export default class ProfilePage extends Vue {
 
 <style lang="scss" scoped>
 .form {
-  max-width: 30ch;
+  max-width: 45ch;
 }
 </style>
