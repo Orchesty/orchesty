@@ -130,13 +130,14 @@ export default {
       const response = await this[TRASH.ACTIONS.TRASH_ACCEPT_LIST]({ ids: this.selected.map((item) => item.id) })
       if (response) await this.fetchGrid()
 
+      this.selected = []
       return response
     },
     async rejectAll() {
       const response = await this[TRASH.ACTIONS.TRASH_REJECT_LIST]({ ids: this.selected.map((item) => item.id) })
-
       if (response) await this.fetchGrid()
 
+      this.selected = []
       return response
     },
     async fetchGrid() {
