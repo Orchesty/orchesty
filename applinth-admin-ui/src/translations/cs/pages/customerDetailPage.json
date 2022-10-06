@@ -1,8 +1,7 @@
 {
   "customerDetailPage": {
-    "statusCard": {
-      "actualBilling": "Aktuální fakturace",
-      "estimatedCost": "Odhadovaná cena"
-    }
+    "estimatedCosts": "Odhadovaná cena",
+    "monthlyPayments": "Měsíční platby",
+    "activeApps": "Aktivní aplikace"
   }
 }

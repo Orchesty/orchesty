@@ -1,17 +1,21 @@
 <template>
   <AppLayout :detail-page-title="breadcrumbTitle">
-    <div class="table-medium">
-      <template v-if="!isLoading && customerDetail">
-        <heading>{{ customerDetail.endUserDisplayId }}</heading>
-        <StatusCard
-          class="cusotmer-info-card my-5"
-          :score="formatTotalCost"
-          :title="$t('customerDetailPage.statusCard.estimatedCost')"
-        />
-      </template>
-      <CustomerAppsTable class="mb-5" :customer-id="customerId" />
-      <CustomerBillingTable :customer-id="customerId" />
-    </div>
+    <template v-if="!isLoading && customerDetail">
+      <heading>{{ customerDetail.endUserDisplayId }}</heading>
+      <StatusCard
+        class="customer-info-card my-5"
+        :score="formatTotalCost"
+        :title="$t('customerDetailPage.estimatedCosts')"
+      />
+    </template>
+    <SubHeading class="mb-2">{{
+      $t("customerDetailPage.activeApps")
+    }}</SubHeading>
+    <CustomerAppsTable class="apps-table mb-5" :customer-id="customerId" />
+    <SubHeading class="mb-2">{{
+      $t("customerDetailPage.monthlyPayments")
+    }}</SubHeading>
+    <CustomerBillingTable :customer-id="customerId" />
   </AppLayout>
 </template>
 
@@ -22,6 +26,7 @@ import StatusCard from "@/components/commons/layouts/StatusCard.vue";
 import CustomerAppsTable from "@/components/app/CustomerAppsTable.vue";
 import CustomerBillingTable from "@/components/app/CustomerBillingTable.vue";
 import Heading from "@/components/commons/typography/Heading.vue";
+import SubHeading from "@/components/commons/typography/SubHeading.vue";
 import { callApi } from "@/utils";
 import { api } from "@/api";
 import {
@@ -33,6 +38,7 @@ import { toCZK } from "@/filters/money";
 @Component({
   components: {
     Heading,
+    SubHeading,
     CustomerBillingTable,
     CustomerAppsTable,
     AppLayout,
@@ -73,7 +79,11 @@ export default class CustomerDetailPage extends Vue {
 </script>
 
 <style lang="scss" scoped>
-.cusotmer-info-card {
+.customer-info-card {
   max-width: 200px;
+}
+
+.apps-table {
+  max-width: clamp(50ch, 50vw, 700px);
 }
 </style>

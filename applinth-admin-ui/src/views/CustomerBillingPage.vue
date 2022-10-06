@@ -6,7 +6,7 @@
       <StatusCard
         class="customer-info-card my-5"
         :score="199"
-        :title="$t('customerBillingPage.statusCard.actualBilling')"
+        :title="$t('customerBillingPage.statusCard.estimatedCosts')"
       />
       <CustomerBillingTable />
     </div>

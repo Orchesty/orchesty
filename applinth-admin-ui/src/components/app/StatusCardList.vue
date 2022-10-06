@@ -22,7 +22,7 @@
     />
     <StatusCard
       :loading="isLoading"
-      :score="estimatedCost"
+      :score="estimatedCosts"
       :title="$t('overviewPage.statusCards.estimatedCosts')"
     />
   </div>
@@ -46,7 +46,7 @@ export default class StatusCardList extends Vue {
   installationsCount = 0;
   usersCount = 0;
   amount = 0;
-  estimatedCost = 0; // todo PIP-1344 počkat, až bude připravený endpoint
+  estimatedCosts = 0; // todo PIP-1344 počkat, až bude připravený endpoint
   isLoading = false;
 
   async created() {
