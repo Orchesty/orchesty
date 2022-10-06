@@ -5,7 +5,9 @@
       "applications": "Applications",
       "installations": "Installations",
       "users": "Users",
-      "billing": "Billing"
+      "billing": "Billing",
+      "amount": "Amount",
+      "estimatedCosts": "Estimated costs"
     },
     "apps": {
       "users": "Users"

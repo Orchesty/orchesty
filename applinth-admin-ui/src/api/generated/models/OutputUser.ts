@@ -110,6 +110,12 @@ export interface OutputUser {
      * @memberof OutputUser
      */
     tenantId?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof OutputUser
+     */
+    customTenantId?: string | null;
 }
 
 export function OutputUserFromJSON(json: any): OutputUser {
@@ -135,6 +141,7 @@ export function OutputUserFromJSONTyped(json: any, ignoreDiscriminator: boolean)
         'passwordSalt': !exists(json, 'passwordSalt') ? undefined : json['passwordSalt'],
         'tokensValidAfterTime': !exists(json, 'tokensValidAfterTime') ? undefined : json['tokensValidAfterTime'],
         'tenantId': !exists(json, 'tenantId') ? undefined : json['tenantId'],
+        'customTenantId': !exists(json, 'customTenantId') ? undefined : json['customTenantId'],
     };
 }
 
@@ -160,6 +167,7 @@ export function OutputUserToJSON(value?: OutputUser | null): any {
         'passwordSalt': value.passwordSalt,
         'tokensValidAfterTime': value.tokensValidAfterTime,
         'tenantId': value.tenantId,
+        'customTenantId': value.customTenantId,
     };
 }
 
