@@ -8,10 +8,6 @@
       :headers="headers"
       :items="users"
     >
-      <template #disabled="{ item }">
-        <span v-if="item.disabled">{{ $t("button.yes") }}</span>
-        <span v-else>{{ $t("button.no") }}</span>
-      </template>
       <template #actions="{ item }">
         <RoundButton @click="() => updateItem(item)" icon="pencil" />
         <RoundButton
@@ -22,8 +18,8 @@
       </template>
     </SimpleTable>
 
-    <user-create-modal />
-    <user-delete-modal />
+    <UserFormModal />
+    <UserDeleteModal />
   </AppLayout>
 </template>
 
@@ -42,13 +38,13 @@ import { callApi } from "@/utils/apiClient";
 import { eventBus } from "../utils/eventBus";
 import { OutputUser, UsersListRequest } from "@/api/generated";
 import Heading from "@/components/commons/typography/Heading.vue";
-import UserCreateModal from "@/components/app/admins/UserCreateModal.vue";
 import UserDeleteModal from "@/components/app/admins/UserDeleteModal.vue";
+import UserFormModal from "@/components/app/admins/UserFormModal.vue";
 
 @Component({
   components: {
+    UserFormModal,
     UserDeleteModal,
-    UserCreateModal,
     Heading,
     AppLayout,
     Button,
@@ -78,12 +74,6 @@ export default class UsersPage extends Vue {
       value: "displayName",
     },
     {
-      text: "grids.headers.disabled",
-      sortable: false,
-      align: "start",
-      value: "disabled",
-    },
-    {
       text: "",
       sortable: false,
       value: "actions",
@@ -104,6 +94,7 @@ export default class UsersPage extends Vue {
       params: { id: user.uid as string },
     });
   }
+
   created() {
     eventBus.$on(EventBus.UsersRefreshList, this.fetchUsers);
 

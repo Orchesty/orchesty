@@ -1,16 +1,18 @@
 <template>
   <Modal
-    :title="$t('usersPage.newUser')"
+    :title="title"
     :cancel-btn-text="$t('button.cancel')"
     :is-sending="isSending"
     v-model="isOpen"
-    :on-cancel="cancel"
+    :on-cancel="closeModal"
+    :persistent="isEdit"
   >
     <template>
       <ValidationObserver slim ref="form">
         <v-form class="form" @submit.prevent="onSubmit">
           <input type="submit" hidden />
           <TextField
+            v-if="!isEdit"
             :label="$t('formLabels.email')"
             v-model="formData.email"
             name="email"
@@ -35,22 +37,28 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Vue, Watch } from "vue-property-decorator";
 import Modal from "../../commons/layouts/Modal.vue";
 import { ValidationObserver } from "vee-validate";
 import Button from "../../commons/inputsAndControls/Button.vue";
 import TextField from "../../commons/inputsAndControls/TextField.vue";
-import { EventBus } from "@/enums";
+import { EventBus, Routes } from "@/enums";
 import { eventBus } from "@/utils/eventBus";
-import { Action, Getter } from "vuex-class";
+import { Action } from "vuex-class";
 import { TablesActions, TablesNamespaces } from "../../../store/modules/tables";
 import { TableRefreshPayload } from "../../../types";
-import { AuthGetters, authNamespace, User } from "@/store/modules/auth";
 import { api } from "@/api";
-import { CreateUser, UsersCreateOperationRequest } from "@/api/generated";
+import {
+  CreateUser,
+  UpdateUser,
+  UsersCreateOperationRequest,
+  UsersGetRequest,
+  UsersUpdateOperationRequest,
+} from "@/api/generated";
 import { alerts, callApi } from "@/utils";
+import { Route } from "vue-router";
 
-const emptyFormData: CreateUser = {
+const emptyFormData: CreateUser | UpdateUser = {
   email: "",
   disabled: false,
   displayName: "",
@@ -64,14 +72,13 @@ const emptyFormData: CreateUser = {
     ValidationObserver,
   },
 })
-export default class UserCreateModal extends Vue {
-  @Getter(`${authNamespace}/${AuthGetters.GetUser}`)
-  currentUser!: User;
-
+export default class UserFormModal extends Vue {
   isOpen = false;
   isSending = false;
+  isEdit = false;
+  email = "";
 
-  formData: CreateUser = {
+  formData: CreateUser | UpdateUser = {
     ...emptyFormData,
   };
 
@@ -85,6 +92,32 @@ export default class UserCreateModal extends Vue {
       this.initForm();
       this.isOpen = true;
     });
+
+    if (this.$route.name === Routes.UserUpdate) {
+      this.initForm();
+      this.isOpen = this.isEdit = true;
+      this.fetchUserDetail();
+    }
+  }
+
+  async fetchUserDetail() {
+    this.isSending = true;
+    if (this.$route.params.id) {
+      const userResponse = await callApi<UsersGetRequest>(api.users.get, {
+        uid: this.$route.params.id,
+      });
+
+      if (userResponse?.user) {
+        this.email = userResponse.user.email;
+        this.formData = {
+          displayName: userResponse.user.displayName,
+        };
+      }
+    } else {
+      this.closeModal();
+    }
+
+    this.isSending = false;
   }
 
   async onSubmit(): Promise<void> {
@@ -94,26 +127,40 @@ export default class UserCreateModal extends Vue {
     }
   }
 
-  async sendForm(formData: CreateUser): Promise<void> {
+  async sendForm(formData: CreateUser | UpdateUser): Promise<void> {
     this.isSending = true;
 
-    const res = await callApi<UsersCreateOperationRequest>(api.users.create, {
-      usersCreateRequest: formData,
-    });
+    let response;
 
-    if (res?.user) {
+    if (this.isEdit) {
+      response = await callApi<UsersUpdateOperationRequest>(api.users.update, {
+        uid: this.$route.params.id,
+        usersUpdateRequest: formData,
+      });
+    } else {
+      response = await callApi<UsersCreateOperationRequest>(api.users.create, {
+        usersCreateRequest: formData as CreateUser,
+      });
+    }
+
+    if (response?.user) {
       alerts.addSuccessAlert(
-        "CREATE_ADMIN",
-        this.$t("message.userCreated") as string
+        this.isEdit ? "UPDATE_ADMIN" : "CREATE_ADMIN",
+        this.isEdit ? "message.saved" : "message.userCreated"
       );
 
       eventBus.$emit(EventBus.UsersRefreshList);
 
-      this.initForm();
-      this.isOpen = false;
+      this.closeModal();
     }
 
     this.isSending = false;
+  }
+
+  get title() {
+    return this.isEdit
+      ? `${this.$t("usersPage.updateUser")} ${this.email}`
+      : this.$t("usersPage.newUser");
   }
 
   initForm(): void {
@@ -128,11 +175,25 @@ export default class UserCreateModal extends Vue {
     });
   }
 
-  cancel(): void {
-    this.isOpen = false;
+  closeModal() {
     this.initForm();
+
+    if (this.isEdit) {
+      this.$router.push({
+        name: Routes.Users,
+      });
+    }
+
+    this.isOpen = this.isEdit = false;
+  }
+
+  @Watch("$route")
+  onChangeRoute(route: Route) {
+    if (route.name === Routes.UserUpdate) {
+      this.initForm();
+      this.isOpen = this.isEdit = true;
+      this.fetchUserDetail();
+    }
   }
 }
 </script>
-
-<style lang="scss" scoped></style>

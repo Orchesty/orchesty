@@ -119,7 +119,7 @@ const usersRoutes = [
   {
     path: "/users/:id/update",
     name: Routes.UserUpdate,
-    component: () => import("../views/UserUpdatePage.vue"),
+    component: () => import("../views/UsersPage.vue"),
     meta: {
       auth: ViewAuth.Private,
       breadcrumbs: [
