@@ -3,22 +3,6 @@ hb_pf_api_gateway:
     type:     annotation
     prefix:   /api
 
-hb_pf_application:
-    resource: "@HbPFApplicationBundle"
-    type: annotation
-
-hb_pf_connector:
-    resource: "@HbPFConnectorBundle"
-    type: annotation
-
-hb_pf_custom_node:
-    resource: "@HbPFCustomNodeBundle"
-    type: annotation
-
-hb_pf_table_parser:
-    resource: "@HbPFTableParserBundle"
-    type: annotation
-
 hb_pf_configurator:
     resource: '@HbPFConfiguratorBundle'
     type: annotation

@@ -7,7 +7,6 @@ use Exception;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
-use Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Handler\ConnectorHandler;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 
 /**
@@ -140,31 +139,6 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
     /**
      * @throws Exception
      */
-    public function testListOfNodes(): void
-    {
-        $type = 'connector';
-        $this->prepareNodeMock();
-
-        $response = $this->sendGet(sprintf('/api/nodes/%s/list_nodes', $type), TRUE);
-        $content  = $response->content;
-
-        self::assertEquals(200, $response->status);
-        self::assertEquals(['null'], (array) $content);
-
-        $type = 'config';
-        $this->client->request(
-            'GET',
-            sprintf('/api/nodes/%s/list_nodes', $type),
-            server: [self::$AUTHORIZATION => $this->jwt],
-        );
-        $response = $this->client->getResponse();
-
-        self::assertEquals(404, $response->getStatusCode());
-    }
-
-    /**
-     * @throws Exception
-     */
     private function prepareNodeHandlerMock(): void
     {
         $nodeHandlerMock = self::createMock(NodeHandler::class);
@@ -173,18 +147,6 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
             ->willThrowException(new LockException('Its lock.'));
         $container = $this->client->getContainer();
         $container->set('hbpf.configurator.handler.node', $nodeHandlerMock);
-    }
-
-    /**
-     *
-     */
-    private function prepareNodeMock(): void
-    {
-        $nodeHandlerMock = $this->getMockBuilder(ConnectorHandler::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $nodeHandlerMock->method('getConnectors');
     }
 
 }
