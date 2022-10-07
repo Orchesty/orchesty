@@ -7,8 +7,6 @@ use Hanaboso\PipesPhpSdk\HbPFBatchBundle\HbPFBatchBundle;
 use Hanaboso\PipesPhpSdk\HbPFConnectorBundle\HbPFConnectorBundle;
 use Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\HbPFCustomNodeBundle;
 use Hanaboso\PipesPhpSdk\HbPFTableParserBundle\HbPFTableParserBundle;
-use Hanaboso\RestBundle\RestBundle;
-use RabbitMqBundle\RabbitMqBundle;
 use Symfony\Bundle\DebugBundle\DebugBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\MonologBundle\MonologBundle;
@@ -27,6 +25,4 @@ return [
     HbPFBatchBundle::class       => ['all' => TRUE],
     HbPFCustomNodeBundle::class  => ['all' => TRUE],
     HbPFTableParserBundle::class => ['all' => TRUE],
-    RabbitMqBundle::class        => ['all' => TRUE],
-    RestBundle::class            => ['all' => TRUE],
 ];

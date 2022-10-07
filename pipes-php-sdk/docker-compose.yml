@@ -26,12 +26,6 @@ services:
         volumes:
             - mongo:/data/db
 
-    rabbitmq:
-        image: rabbitmq:management-alpine
-        ports:
-            - ${DEV_IP}:15672:15672
-            - ${DEV_IP}:5672:5672
-
     swagger-ui:
         image: swaggerapi/swagger-ui
         ports:

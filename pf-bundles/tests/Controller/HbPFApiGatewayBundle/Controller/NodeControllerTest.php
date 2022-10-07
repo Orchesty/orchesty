@@ -64,26 +64,6 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NodeController::listOfNodesAction
-     *
-     * @throws Exception
-     */
-    public function testListNodesAction(): void
-    {
-        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/NodeController/listConnectorNodesRequest.json');
-    }
-
-    /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NodeController::listOfNodesAction
-     *
-     * @throws Exception
-     */
-    public function testListNodesAction2(): void
-    {
-        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/NodeController/listCustomNodesRequest.json');
-    }
-
-    /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NodeController::listOfNodesAction
      */
     public function testListOfNodesEmpty(): void
     {
