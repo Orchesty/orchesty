@@ -29,8 +29,9 @@
         item-key="id"
         :loading="isLoading"
         :loading-text="$t('grid.state.loading')"
-        :sort-desc="sortDesc"
+        :server-items-length="total"
         :sort-by="sortBy"
+        :sort-desc="sortDesc"
       >
         <template #[`header.data-table-select`]>
           <!-- Intentionally nothing - replaced by independent checkbox -->
@@ -89,20 +90,16 @@ export default {
       type: Object,
       required: true,
     },
-    fetchOnInit: {
-      type: Boolean,
-      default: false,
-    },
     isSelectable: {
       type: Boolean,
       default: false,
     },
-    sortDesc: {
-      type: Boolean,
-      default: false,
-    },
     sortBy: {
-      type: [String, null],
+      type: Array,
+      default: null,
+    },
+    sortDesc: {
+      type: Array,
       default: null,
     },
   },
@@ -114,23 +111,35 @@ export default {
       activeIndex: null,
       activeIndexId: null,
       isLoading: false,
+      total: 0,
     }
   },
   methods: {
-    optionsParser(data) {
-      return {
-        page: data.paging ? data.paging.page : 1,
-        itemsPerPage: data.paging ? data.paging.itemsPerPage : 10,
+    async gridFetch() {
+      function optionsToRequestParams(options) {
+        const { page, itemsPerPage, sortBy, sortDesc } = options
+        const paging = { page, itemsPerPage }
+        const sorter =
+          sortBy?.map((column, index) => {
+            return { column, direction: sortDesc[index] ? 'DESC' : 'ASC' }
+          }) ?? []
+        return {
+          paging,
+          sorter,
+        }
       }
-    },
-    async gridFetch(params) {
+
+      function responseDataToTotal(data) {
+        return data.paging?.total ?? 0
+      }
+
       this.isLoading = true
-      const gridResponseData = await callApi({
+      const data = await callApi({
         requestData: this.gridSettings,
-        params: params,
+        params: optionsToRequestParams(this.options),
       })
-      this.items = gridResponseData.items
-      this.options = this.optionsParser(gridResponseData)
+      this.items = data.items
+      this.total = responseDataToTotal(data)
       this.isLoading = false
     },
     onRowClicked(props) {
@@ -154,6 +163,12 @@ export default {
   watch: {
     selectedItems(selectedItems) {
       this.$emit('select', selectedItems)
+    },
+    options: {
+      deep: true,
+      handler() {
+        this.gridFetch()
+      },
     },
   },
   computed: {
@@ -179,10 +194,8 @@ export default {
       return this.selectedItems.length > 0
     },
   },
-  async mounted() {
-    if (this.fetchOnInit) {
-      await this.gridFetch()
-    }
+  mounted() {
+    this.gridFetch()
   },
 }
 </script>

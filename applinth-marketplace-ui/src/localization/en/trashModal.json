@@ -11,6 +11,12 @@
     "reject": {
       "title": "Deny trash item",
       "body": "Reject item id: {0}, of process {1}"
+    },
+    "acceptAll": {
+      "title": "Accept selected trash items?"
+    },
+    "rejectAll": {
+      "title": "Deny selected trash items?"
     }
   }
 }

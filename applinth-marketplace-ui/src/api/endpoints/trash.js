@@ -1,9 +1,9 @@
 export default {
   grid: {
     id: 'GET_TRASH_ITEMS',
-    request: () => {
+    request: ({ paging, sorter }) => {
       return {
-        url: `/trash`,
+        url: `/trash?filter=${JSON.stringify({ paging, sorter })}`,
         method: 'GET',
       }
     },
