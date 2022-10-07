@@ -10,6 +10,12 @@
     "reject": {
       "title": "Zamítnout položku koše",
       "body": "Zamítnout položku s id: {0}, procesu {1}"
+    },
+    "acceptAll": {
+      "title": "Potvrdit vybrané položky koše?"
+    },
+    "rejectAll": {
+      "title": "Zamítnout vybrané položky koše?"
     }
   }
 }

@@ -27,21 +27,10 @@
                 </td>
               </template>
               <template v-if="gridHasSelection" #actions>
-                <base-button
-                  class="mr-2"
-                  :button-title="$t('button.approve')"
-                  :min-width="50"
-                  :height="24"
-                  :on-click="itemsAcceptAll"
-                />
-                <base-button
-                  :button-title="$t('button.deny')"
-                  color="secondary"
-                  :min-width="50"
-                  :height="24"
-                  outlined
-                  :on-click="itemsRejectAll"
-                />
+                <ActionsWrapper>
+                  <TrashAcceptAllModal @confirm="itemsAcceptAll" />
+                  <TrashRejectAllModal @confirm="itemsRejectAll" />
+                </ActionsWrapper>
               </template>
             </data-grid-selectable>
           </v-col>
@@ -60,7 +49,6 @@ import {
   toLocalDateTime,
   toLocalTime,
 } from '@/localization/filters/dateFilters'
-import BaseButton from '@/components/commons/BaseButton'
 import DataGridSelectable from '@/components/commons/DataGridSelectable'
 import { ROUTES } from '@/router/routes'
 import Heading from '@/components/commons/Heading'
@@ -69,10 +57,19 @@ import { callApi } from '@/utils/apiFetch'
 import { API } from '@/api'
 import showFlashMessage from '@/utils/flashMessage'
 import { FLASH_MESSAGES_TYPES } from '@/store/flashMessages/types'
+import ActionsWrapper from '@/components/commons/ActionsWrapper'
+import TrashAcceptAllModal from '@/components/commons/TrashAcceptAllModal'
+import TrashRejectAllModal from '@/components/commons/TrashRejectAllModal'
 
 export default {
   name: 'TrashPage',
-  components: { Heading, DataGridSelectable, BaseButton },
+  components: {
+    ActionsWrapper,
+    TrashRejectAllModal,
+    TrashAcceptAllModal,
+    Heading,
+    DataGridSelectable,
+  },
   data() {
     return {
       headers: [
@@ -98,7 +95,7 @@ export default {
     }
   },
   computed: {
-    getSelectedIds() {
+    selectedIds() {
       return this.selectedItems.map((item) => item.id)
     },
   },
@@ -117,12 +114,12 @@ export default {
     async itemsAcceptAll() {
       await callApi({
         requestData: API.trash.acceptAll,
-        params: { ids: this.getSelectedIds },
+        params: [...this.selectedIds],
       })
       await this.$refs.gridTrash.gridFetch()
       showFlashMessage(
         this.$t('flashMessage.acceptedList', {
-          number: this.getSelectedIds.length,
+          number: this.selectedIds.length,
         }),
         FLASH_MESSAGES_TYPES.SUCCESS
       )
@@ -130,19 +127,19 @@ export default {
     async itemsRejectAll() {
       await callApi({
         requestData: API.trash.rejectAll,
-        params: [...this.getSelectedIds],
+        params: [...this.selectedIds],
       })
       await this.$refs.gridTrash.gridFetch()
       showFlashMessage(
         this.$t('flashMessage.rejectedList', {
-          number: this.getSelectedIds.length,
+          number: this.selectedIds.length,
         }),
         FLASH_MESSAGES_TYPES.SUCCESS
       )
     },
     onSelect(selectedItems) {
       this.gridHasSelection = !!selectedItems.length
-      this.selectedItems = selectedItems
+      this.selectedItems = [...selectedItems]
     },
   },
 }
