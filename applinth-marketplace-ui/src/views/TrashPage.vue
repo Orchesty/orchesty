@@ -13,9 +13,8 @@
               ref="gridTrash"
               :headers="headers"
               :grid-settings="GRIDS.TRASH"
-              fetch-on-init
-              sort-desc
-              sort-by="created"
+              :sort-by="['updated']"
+              :sort-desc="[true]"
               @select="onSelect"
             >
               <template #default="{ items }">
@@ -80,8 +79,8 @@ export default {
           sortable: true,
         },
         {
-          text: 'grid.trash.header.created',
-          value: 'created',
+          text: 'grid.trash.header.updated',
+          value: 'updated',
           align: 'start',
           sortable: true,
         },

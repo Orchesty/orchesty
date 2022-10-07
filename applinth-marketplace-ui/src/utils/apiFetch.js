@@ -47,7 +47,10 @@ const call = ({ requestData, params = null, throwError = true }, sender) => {
   }
 
   if (mock) {
-    console.log(`App using mock request id=[${id}]`)
+    const renderedRequest = request(params)
+    console.log(
+      `App using mock request id=[${id}], instead of a ${renderedRequest.method}: ${renderedRequest.url}`
+    )
 
     if (reduce) {
       return reduce(mock())
