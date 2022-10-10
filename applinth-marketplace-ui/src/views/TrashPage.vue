@@ -27,8 +27,14 @@
               </template>
               <template v-if="gridHasSelection" #actions>
                 <ActionsWrapper>
-                  <TrashAcceptAllModal @confirm="itemsAcceptAll" />
-                  <TrashRejectAllModal @confirm="itemsRejectAll" />
+                  <TrashAcceptAllModal
+                    :number-of-items="selectedItems.length"
+                    @confirm="itemsAcceptAll"
+                  />
+                  <TrashRejectAllModal
+                    :number-of-items="selectedItems.length"
+                    @confirm="itemsRejectAll"
+                  />
                 </ActionsWrapper>
               </template>
             </data-grid-selectable>

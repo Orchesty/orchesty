@@ -45,7 +45,9 @@ export default {
       return {
         url: `/trash/accept`,
         method: 'POST',
-        data: ids,
+        data: {
+          ids,
+        },
       }
     },
   },
@@ -64,7 +66,9 @@ export default {
       return {
         url: `/trash/reject`,
         method: 'POST',
-        data: ids,
+        data: {
+          ids,
+        },
       }
     },
   },

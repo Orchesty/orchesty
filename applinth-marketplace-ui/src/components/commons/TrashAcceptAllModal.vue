@@ -9,6 +9,13 @@
         :height="24"
       />
     </template>
+    <template #content>
+      <div class="d-flex flex-column">
+        <p>
+          {{ $tc('trashModal.acceptAll.body', numberOfItems) }}
+        </p>
+      </div>
+    </template>
     <template #actions>
       <base-button
         :button-title="$t('button.cancel')"
@@ -27,6 +34,12 @@ import BaseButton from '@/components/commons/BaseButton'
 export default {
   name: 'TrashAcceptAllModal',
   components: { BaseButton, BaseModal },
+  props: {
+    numberOfItems: {
+      type: Number,
+      required: true,
+    },
+  },
   data() {
     return {
       isOpen: false,
