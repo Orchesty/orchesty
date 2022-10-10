@@ -36,6 +36,34 @@ export const i18n = new VueI18n({
       ...cs,
     },
   },
+  // https://kazupon.github.io/vue-i18n/guide/pluralization.html#custom-pluralization
+  pluralizationRules: {
+    /**
+     * @param choice {number} a choice index given by the input to $tc: `$tc('path.to.rule', choiceIndex)`
+     * @param choicesLength {number} an overall amount of available choices
+     * @returns a final choice index to select plural word by
+     */
+    cs: function (choice, choicesLength) {
+      // Expecting 4 choices
+      if (choicesLength < 4) {
+        return choicesLength - 1
+      }
+
+      if (choice === 0) {
+        return 0
+      }
+
+      if (choice === 1) {
+        return 1
+      }
+
+      if (choice >= 2 && choice <= 4) {
+        return 2
+      }
+
+      return 3
+    },
+  },
 })
 
 configure({

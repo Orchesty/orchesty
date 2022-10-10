@@ -12,10 +12,12 @@
       "body": "Zamítnout položku s id: {0}, procesu {1}"
     },
     "acceptAll": {
-      "title": "Potvrdit vybrané položky koše?"
+      "title": "Potvrdit položky",
+      "body": "Opravdu si přejete potvrdit {n} položek koše? | Opravdu si přejete potvrdit {n} položku koše? | Opravdu si přejete potvrdit {n} položky koše? | Opravdu si přejete potvrdit {n} položek koše?"
     },
     "rejectAll": {
-      "title": "Zamítnout vybrané položky koše?"
+      "title": "Zamítnout položky",
+      "body": "Opravdu si přejete zamítnout {n} položek koše? | Opravdu si přejete zamítnout {n} položku koše? | Opravdu si přejete zamítnout {n} položky koše? | Opravdu si přejete zamítnout {n} položek koše?"
     }
   }
 }

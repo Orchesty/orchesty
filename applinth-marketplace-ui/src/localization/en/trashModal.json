@@ -9,14 +9,16 @@
       "body": "Accept item id: {0}, of process {1}"
     },
     "reject": {
-      "title": "Deny trash item",
+      "title": "Reject trash item",
       "body": "Reject item id: {0}, of process {1}"
     },
     "acceptAll": {
-      "title": "Accept selected trash items?"
+      "title": "Accept items",
+      "body": "Do you really want to accept {n} trash item? | Do you really want to accept {n} trash items?"
     },
     "rejectAll": {
-      "title": "Deny selected trash items?"
+      "title": "Reject items",
+      "body": "Do you really want to reject {n} trash item? | Do you really want to reject {n} trash items?"
     }
   }
 }
