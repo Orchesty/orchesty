@@ -2,34 +2,11 @@ services:
     _defaults:
         public: '%public.services%'
 
-    hbpf.metrics.metrics_client:
-        class: Hanaboso\PipesFramework\Metrics\Client\MetricsClient
-        arguments:
-            - "%influx.host%"
-            - "%influx.api_port%"
-            - "%influx.user%"
-            - "%influx.password%"
-            - "%influx.database%"
-
     hbpf.metrics.handler.metrics:
         class: Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler
         arguments:
             - "@doctrine_mongodb.odm.default_document_manager"
-            - "@hbpf.metrics.manager_loader"
-
-    hbpf.metrics.manager.influx_metrics:
-        class: Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager
-        arguments:
-            - "@hbpf.metrics.metrics_client"
-            - "@doctrine_mongodb.odm.default_document_manager"
-            - "%influx.node_table%"
-            - "%influx.monolith_table%"
-            - "%influx.rabbit_table%"
-            - "%influx.counter_table%"
-            - "%influx.connector_table%"
-            - "%influx.rabbit_consumer_table%"
-        calls:
-            - ['setLogger', ['@monolog.logger.commons']]
+            - "@hbpf.metrics.manager.mongo_metrics"
 
     hbpf.metrics.manager.mongo_metrics:
         class: Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager
@@ -45,10 +22,3 @@ services:
             - '%mongodb.rabbit_consumer_table%'
         calls:
             - ['setLogger', ['@monolog.logger.commons']]
-
-    hbpf.metrics.manager_loader:
-        class: Hanaboso\PipesFramework\Metrics\Manager\MetricsManagerLoader
-        arguments:
-            - '%metrics_service%'
-            - '@hbpf.metrics.manager.influx_metrics'
-            - '@hbpf.metrics.manager.mongo_metrics'

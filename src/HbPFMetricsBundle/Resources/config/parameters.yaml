@@ -2,19 +2,6 @@ parameters:
     # Kapacitor
     kapacitor.host: kapacitor
     kapacitor.port: 9092
-    # InfluxDb
-    influx.host: influxdb
-    influx.udp_port: 8089
-    influx.api_port: 8086
-    influx.user: admin
-    influx.password: password
-    influx.database: pipes
-    influx.node_table: bridges
-    influx.connector_table: connectors
-    influx.monolith_table: monolith
-    influx.rabbit_table: rabbitmq
-    influx.counter_table: processes
-    influx.rabbit_consumer_table: rabbitmq_consumer
 
     env(METRICS_RABBIT_INTERVAL): 5
     metrics_rabbit_interval: '%env(int:METRICS_RABBIT_INTERVAL)%'

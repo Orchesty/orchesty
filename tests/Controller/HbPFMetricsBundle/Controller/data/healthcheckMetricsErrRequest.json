@@ -1,5 +1,5 @@
 {
-    "http": "GET /api/metrics/consumers",
+    "http": "GET /metrics/healthcheck",
     "body": [],
     "headers": {
         "HTTP_Authorization": "jwt"

@@ -30,7 +30,6 @@ parameters:
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::DOCKER_REGISTRY: "%docker_registry%"
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::DOCKER_PF_BRIDGE_IMAGE: "%docker_pf_bridge_image%"
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::METRICS_DSN: "%metrics_dsn%"
-        !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::METRICS_SERVICE: "%metrics_service%"
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::WORKER_DEFAULT_PORT: "%worker_default_port%"
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::MONOLITH_API_HOST: "%monolith_api_host%"
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::XML_PARSER_API_HOST: "%xml_parser_api_host%"

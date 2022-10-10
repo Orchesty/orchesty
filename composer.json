@@ -18,7 +18,6 @@
         "hanaboso/rabbit-mq-bundle": "^1.5",
         "hanaboso/rest-bundle": "^1.1",
         "hanaboso/user-bundle": "^1.5",
-        "influxdb/influxdb-php": "^1.15",
         "lcobucci/jwt": "^4.1",
         "orchesty/php-sdk": "^2.2",
         "ruflin/elastica": "^7.2",

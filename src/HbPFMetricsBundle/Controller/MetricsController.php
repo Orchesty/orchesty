@@ -68,28 +68,14 @@ final class MetricsController
     }
 
     /**
-     * @Route("/metrics/consumers", methods={"GET", "OPTIONS"})
+     * @Route("/metrics/healthcheck", methods={"GET", "OPTIONS"})
      *
      * @return Response
      */
-    public function consumerMetricsAction(): Response
+    public function healthcheckMetricsAction(): Response
     {
         try {
-            return $this->getResponse($this->metricsHandler->getConsumerMetrics());
-        } catch (Throwable $e) {
-            return $this->getErrorResponse($e, 400);
-        }
-    }
-
-    /**
-     * @Route("/metrics/containers", methods={"GET", "OPTIONS"})
-     *
-     * @return Response
-     */
-    public function containerMetricsAction(): Response
-    {
-        try {
-            return $this->getResponse($this->metricsHandler->getContainerMetrics());
+            return $this->getResponse($this->metricsHandler->getHealthcheckMetrics());
         } catch (Throwable $e) {
             return $this->getErrorResponse($e, 400);
         }

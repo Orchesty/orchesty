@@ -3,7 +3,7 @@
 namespace Hanaboso\PipesFramework\Configurator\Model;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Hanaboso\PipesFramework\Metrics\Manager\MetricsManagerLoader;
+use Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use Hanaboso\Utils\Exception\DateTimeException;
@@ -19,11 +19,11 @@ final class DashboardManager
     /**
      * DashboardManager constructor.
      *
-     * @param MetricsManagerLoader $metricsManager
-     * @param DocumentManager      $documentManager
+     * @param MongoMetricsManager $metricsManager
+     * @param DocumentManager     $documentManager
      */
     public function __construct(
-        private readonly MetricsManagerLoader $metricsManager,
+        private readonly MongoMetricsManager $metricsManager,
         private readonly DocumentManager $documentManager,
     )
     {
@@ -40,7 +40,7 @@ final class DashboardManager
         $data = new DashboardDto();
         $data->setRange($range);
 
-        $topologiesMetrics = $this->metricsManager->getManager()->getTopologiesProcessTimeMetrics(
+        $topologiesMetrics = $this->metricsManager->getTopologiesProcessTimeMetrics(
             $this->rangeToWord($range),
         );
         if (array_key_exists('process', $topologiesMetrics)) {

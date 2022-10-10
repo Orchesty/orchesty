@@ -22,9 +22,8 @@ services:
             - BACKEND_DSN=${DEV_IP}
             - MONGODB_DSN=mongodb://mongo
             - MONGODB_DB=pipes
-            - METRICS_DSN=influx://8089
+            - METRICS_DSN=mongodb://mongo
             - METRICS_DB=metrics
-            - METRICS_SERVICE=influx
             - CHECK_INFINITY_LOOP=true
             - NOTIFICATION_DSN=http://notification-sender-api
             - TOPOLOGY_API_DSN=topology-api:80
@@ -88,15 +87,6 @@ services:
         volumes:
             - elasticsearch:/usr/share/elasticsearch/data
 
-    influxdb:
-        image: dkr.hanaboso.net/pipes/pipes/influxdb:dev
-        ports:
-            - ${DEV_IP}:8083:8083
-            - ${DEV_IP}:8086:8086
-            - ${DEV_IP}:8089:8089/udp
-        volumes:
-            - influxdb:/var/lib/influxdb
-
     swagger-ui:
         image: swaggerapi/swagger-ui
         ports:
@@ -110,5 +100,4 @@ volumes:
     mongo: {}
     rabbit-mq: {}
     redis: {}
-    influxdb: {}
     elasticsearch: {}

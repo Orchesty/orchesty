@@ -7,7 +7,6 @@ parameters:
     ##########################
     #        Metrics         #
     ##########################
-    metrics_service: '%env(string:METRICS_SERVICE)%'
     #MongoDb sender
     mongodb.monolith_table: monolith
     mongodb.connector_table: connectors
@@ -58,20 +57,6 @@ services:
             - { name: kernel.event_subscriber, event: kernel.terminate }
             - { name: kernel.event_subscriber, event: kernel.controller }
 
-    hbpf.influxdb_sender_connector:
-        class: Hanaboso\CommonsBundle\Metrics\Impl\InfluxDbSender
-        arguments:
-            - '@hbpf.transport.udp_sender'
-            - '%kapacitor.host%:%kapacitor.port%'
-            - '%influx.connector_table%'
-
-    hbpf.influxdb_sender_monolith:
-        class: Hanaboso\CommonsBundle\Metrics\Impl\InfluxDbSender
-        arguments:
-            - '@hbpf.transport.udp_sender'
-            - '%kapacitor.host%:%kapacitor.port%'
-            - '%influx.monolith_table%'
-
     hbpf.metrics.mongodb_connector:
         class: Hanaboso\CommonsBundle\Metrics\Impl\MongoDbSender
         arguments:
@@ -87,15 +72,11 @@ services:
     hbpf.metrics_connector.loader:
         class: Hanaboso\CommonsBundle\Metrics\MetricsSenderLoader
         arguments:
-            - '%metrics_service%'
-            - '@hbpf.influxdb_sender_connector'
             - '@hbpf.metrics.mongodb_connector'
 
     hbpf.metrics_monolith.loader:
         class: Hanaboso\CommonsBundle\Metrics\MetricsSenderLoader
         arguments:
-            - '%metrics_service%'
-            - '@hbpf.influxdb_sender_monolith'
             - '@hbpf.metrics.mongodb_monolith'
 
     ##########################

@@ -89,4 +89,40 @@ class Tags
         return $this->queue;
     }
 
+    /**
+     * @param string $nodeId
+     *
+     * @return $this
+     */
+    public function setNodeId(string $nodeId): Tags
+    {
+        $this->nodeId = $nodeId;
+
+        return $this;
+    }
+
+    /**
+     * @param string $topologyId
+     *
+     * @return $this
+     */
+    public function setTopologyId(string $topologyId): Tags
+    {
+        $this->topologyId = $topologyId;
+
+        return $this;
+    }
+
+    /**
+     * @param string $queue
+     *
+     * @return Tags
+     */
+    public function setQueue(string $queue): Tags
+    {
+        $this->queue = $queue;
+
+        return $this;
+    }
+
 }

@@ -1,9 +1,0 @@
-{
-    "http": "GET /dashboards/default",
-    "body": {
-        "range": "10000h"
-    },
-    "headers": {
-        "HTTP_Authorization": "jwt"
-    }
-}

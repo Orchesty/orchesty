@@ -30,6 +30,17 @@ class ConnectorsMetricsFields
     private DateTime $created;
 
     /**
+     * ConnectorsMetricsFields constructor.
+     *
+     * @param int $totalDuration
+     */
+    public function __construct(int $totalDuration)
+    {
+        $this->totalDuration = $totalDuration;
+        $this->created       = new DateTime();
+    }
+
+    /**
      * @return int
      */
     public function getTotalDuration(): int

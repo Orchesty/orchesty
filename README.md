@@ -103,7 +103,6 @@ Obsahuje moduly pro práci s BPMN schématem, generování topologií, konfigura
 - Pipes-PHP-SDK
 - MongoDB
 - RabbitMQ
-- InfluxDB
 - Redis
 - MariaDB (optional)
 

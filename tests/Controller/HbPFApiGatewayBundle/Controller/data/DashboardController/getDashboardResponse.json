@@ -4,9 +4,9 @@
         "process": {
             "activeTopologies": 0,
             "disabledTopologies": 0,
-            "totalRuns": 0,
-            "errorsCount": 0,
-            "successCount": 0,
+            "totalRuns": 2,
+            "errorsCount": 1,
+            "successCount": 1,
             "installedApps": 0
         },
         "errorLogs": [],

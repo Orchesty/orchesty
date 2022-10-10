@@ -4,14 +4,13 @@ namespace PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller;
 
 use Exception;
 use Hanaboso\PipesFramework\Configurator\Model\DashboardManager;
-use Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager;
-use Hanaboso\PipesFramework\Metrics\Manager\MetricsManagerLoader;
+use Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetrics;
+use Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetricsFields;
+use Hanaboso\PipesFramework\Metrics\Document\Tags;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
-use InfluxDB\Database;
-use InfluxDB\Point;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
-use PipesFrameworkTests\InfluxTestTrait;
+use PipesFrameworkTests\MongoTestTrait;
 
 /**
  * Class DashboardControllerTest
@@ -23,10 +22,19 @@ use PipesFrameworkTests\InfluxTestTrait;
 final class DashboardControllerTest extends ControllerTestCaseAbstract
 {
 
-    use InfluxTestTrait;
+    use MongoTestTrait;
 
     /**
      * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\DashboardController::getDashboardAction
+     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\DashboardHandler::getMetrics
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\DashboardManager::getDashboardData
+     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MetricsManagerAbstract::getTopologiesProcessTimeMetrics
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\DashboardDto::setTotalRuns
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\DashboardDto::setErrorsCount
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\DashboardDto::setSuccessCount
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\DashboardDto::setActiveTopologies
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\DashboardDto::setDisabledTopologies
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\DashboardDto::setInstalledApps
      *
      * @throws Exception
      */
@@ -35,11 +43,7 @@ final class DashboardControllerTest extends ControllerTestCaseAbstract
         $topology = $this->createTopology();
         $node     = $this->createNode($topology);
 
-        $man = self::createPartialMock(MetricsManagerLoader::class, ['getManager']);
-        $man->method('getManager')->willReturn($this->getManager());
-        self::getContainer()->set('hbpf.metrics.manager_loader', $man);
-
-        $dashManager = new DashboardManager($man, $this->dm);
+        $dashManager = new DashboardManager($this->getManager(), $this->dm);
         self::getContainer()->set('hbpf.configurator.manager.dashboard', $dashManager);
 
         $this->setFakeData($topology, $node);
@@ -48,129 +52,32 @@ final class DashboardControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @param Topology    $topology
-     * @param Node        $node
-     * @param string|null $key
-     * @param string|null $user
+     * @param Topology $topology
+     * @param Node     $node
      *
+     * @return void
      * @throws Exception
      */
-    private function setFakeData(Topology $topology, Node $node, ?string $key = NULL, ?string $user = NULL): void
+    private function setFakeData(Topology $topology, Node $node): void
     {
-        $database = $this->getClient()->getDatabase('test');
+        $database = self::getContainer()->get('doctrine_mongodb.odm.metrics_document_manager');
 
-        $points = [
-            new Point(
-                'connectors',
-                NULL,
-                [
-                    InfluxMetricsManager::TOPOLOGY => $topology->getId(),
-                    InfluxMetricsManager::NODE     => $node->getId(),
-                ],
-                [
-                    InfluxMetricsManager::MAX_TIME => 10,
-                    InfluxMetricsManager::MIN_TIME => 2,
-                    InfluxMetricsManager::AVG_TIME => 6,
-                ],
-            ),
-        ];
+        $conMetrics1 = new ConnectorsMetrics(
+            new ConnectorsMetricsFields(2),
+            (new Tags())
+                ->setTopologyId($topology->getId())
+                ->setNodeId($node->getId()),
+        );
+        $conMetrics2 = new ConnectorsMetrics(
+            new ConnectorsMetricsFields(10),
+            (new Tags())
+                ->setTopologyId($topology->getId())
+                ->setNodeId($node->getId()),
+        );
+        $database->persist($conMetrics1);
+        $database->persist($conMetrics2);
 
-        $database->writePoints($points, Database::PRECISION_NANOSECONDS);
-
-        usleep(10);
-        $points = [
-            new Point(
-                'connectors',
-                NULL,
-                [
-                    InfluxMetricsManager::USER        => $user,
-                    InfluxMetricsManager::APPLICATION => $key,
-                    InfluxMetricsManager::CORRELATION => '123',
-                ],
-                [
-                    InfluxMetricsManager::APP_COUNT  => 1,
-                    InfluxMetricsManager::USER_COUNT => 1,
-                ],
-            ),
-        ];
-
-        $database->writePoints($points, Database::PRECISION_NANOSECONDS);
-
-        usleep(10);
-        $points = [
-            new Point(
-                'connectors',
-                NULL,
-                [
-                    InfluxMetricsManager::USER        => $user,
-                    InfluxMetricsManager::APPLICATION => $key,
-                    InfluxMetricsManager::CORRELATION => '123',
-                ],
-                [
-                    InfluxMetricsManager::APP_COUNT  => 1,
-                    InfluxMetricsManager::USER_COUNT => 1,
-                ],
-            ),
-        ];
-
-        $database->writePoints($points, Database::PRECISION_NANOSECONDS);
-
-        usleep(10);
-        $points = [
-            new Point(
-                'connectors',
-                NULL,
-                [
-                    InfluxMetricsManager::USER        => $user,
-                    InfluxMetricsManager::APPLICATION => $key,
-                    InfluxMetricsManager::CORRELATION => '123',
-                ],
-                [
-                    InfluxMetricsManager::APP_COUNT  => 1,
-                    InfluxMetricsManager::USER_COUNT => 1,
-                ],
-            ),
-        ];
-
-        $database->writePoints($points, Database::PRECISION_NANOSECONDS);
-
-        usleep(10);
-        $points = [
-            new Point(
-                'connectors',
-                NULL,
-                [
-                    InfluxMetricsManager::USER        => $user,
-                    InfluxMetricsManager::APPLICATION => $key,
-                    InfluxMetricsManager::CORRELATION => '123',
-                ],
-                [
-                    InfluxMetricsManager::APP_COUNT  => 1,
-                    InfluxMetricsManager::USER_COUNT => 1,
-                ],
-            ),
-        ];
-
-        $database->writePoints($points, Database::PRECISION_NANOSECONDS);
-
-        usleep(10);
-        $points = [
-            new Point(
-                'connectors',
-                NULL,
-                [
-                    InfluxMetricsManager::USER        => $user,
-                    InfluxMetricsManager::APPLICATION => $key,
-                    InfluxMetricsManager::CORRELATION => '123',
-                ],
-                [
-                    InfluxMetricsManager::APP_COUNT  => 1,
-                    InfluxMetricsManager::USER_COUNT => 1,
-                ],
-            ),
-        ];
-
-        $database->writePoints($points, Database::PRECISION_NANOSECONDS);
+        $database->flush();
     }
 
 }

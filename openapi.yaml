@@ -390,6 +390,15 @@ paths:
                 500:
                     $ref: '#/components/responses/500'
 
+    /api/metrics/healthcheck:
+        get:
+            tags: [ Metrics ]
+            responses:
+                200:
+                    $ref: '#/components/responses/HealthcheckMetrics'
+                500:
+                    $ref: '#/components/responses/500'
+
     /api/metrics/topology/{topology}:
         get:
             tags: [ Metrics ]
@@ -1331,6 +1340,13 @@ components:
                     schema:
                         $ref: '#/components/schemas/LongRunningData'
 
+        HealthcheckMetrics:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/HealthcheckMetrics'
+
         TopologyMetrics:
             description: ''
             content:
@@ -1920,6 +1936,22 @@ components:
                     type: string
                 errors:
                     type: string
+
+        HealthcheckMetrics:
+            type: object
+            description: 'Type queue return fields service and topology.'
+            properties:
+                type:
+                    type: string
+                    enum: ['queue', 'service']
+                name:
+                    type: string
+                service:
+                    type: string
+                    required: false
+                topology:
+                    type: string
+                    required: false
 
         TopologyMetrics:
             type: object
