@@ -64,7 +64,7 @@ export default {
       DATA_GRIDS,
       headers: [
         {
-          text: 'notifications.service',
+          text: this.$t('notifications.service'),
           value: 'title',
           align: 'left',
           sortable: false,
@@ -72,7 +72,7 @@ export default {
           width: '100px',
         },
         {
-          text: 'notifications.set',
+          text: this.$t('notifications.set'),
           value: 'title',
           align: 'left',
           sortable: false,
@@ -80,7 +80,7 @@ export default {
           width: '200px',
         },
         {
-          text: 'notifications.edit',
+          text: this.$t('notifications.edit'),
           value: 'edit',
           align: 'right',
           sortable: false,

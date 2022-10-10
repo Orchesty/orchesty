@@ -62,13 +62,13 @@ export default class UsersPage extends Vue {
 
   headers = [
     {
-      text: "grids.headers.email",
+      text: this.$t("grids.headers.email"),
       sortable: true,
       align: "start",
       value: "email",
     },
     {
-      text: "grids.headers.name",
+      text: this.$t("grids.headers.name"),
       sortable: true,
       align: "start",
       value: "displayName",

@@ -87,7 +87,7 @@ export default {
       selected: [],
       headers: [
         {
-          text: 'topologies.userTask.headers.nodeName',
+          text: this.$t('topologies.userTask.headers.nodeName'),
           value: 'nodeName',
           align: 'left',
           sortable: true,
@@ -96,7 +96,7 @@ export default {
           width: '50%',
         },
         {
-          text: 'topologies.userTask.headers.created',
+          text: this.$t('topologies.userTask.headers.created'),
           value: 'created',
           align: 'left',
           sortable: true,

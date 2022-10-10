@@ -6,7 +6,7 @@
     class="elevation-1"
   >
     <template v-for="item in headers" #[`header.${item.value}`]="{ header }">
-      <span :key="item.value">{{ $t(header.text) }}</span>
+      <span :key="item.value">{{ header.text }}</span>
     </template>
 
     <template v-for="header in headers" #[`item.${header.value}`]="{ item }">

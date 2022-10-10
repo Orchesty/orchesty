@@ -97,37 +97,37 @@ export default {
     return {
       headers: [
         {
-          text: 'grid.overview.header.process',
+          text: this.$t('grid.overview.header.process'),
           value: 'process',
           align: 'start',
           sortable: true,
         },
         {
-          text: 'grid.overview.header.started',
+          text: this.$t('grid.overview.header.started'),
           value: 'started',
           align: 'start',
           sortable: true,
         },
         {
-          text: 'grid.overview.header.finished',
+          text: this.$t('grid.overview.header.finished'),
           value: 'finished',
           align: 'start',
           sortable: true,
         },
         {
-          text: 'grid.overview.header.duration',
+          text: this.$t('grid.overview.header.duration'),
           value: 'duration',
           align: 'start',
           sortable: true,
         },
         {
-          text: 'grid.overview.header.progress',
+          text: this.$t('grid.overview.header.progress'),
           value: 'progress',
           align: 'start',
           sortable: true,
         },
         {
-          text: 'grid.overview.header.status',
+          text: this.$t('grid.overview.header.status'),
           value: 'status',
           align: 'start',
           sortable: true,
