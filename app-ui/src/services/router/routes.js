@@ -91,12 +91,6 @@ export default [
         ],
       },
       {
-        path: 'notifications',
-        name: ROUTES.NOTIFICATION,
-        component: () => import('../../views/app/NotificationPage'),
-        meta: { title: 'Notifications' },
-      },
-      {
         path: 'scheduled-tasks',
         name: ROUTES.SCHEDULED_TASK,
         component: () => import('../../views/app/ScheduledTaskPage'),
