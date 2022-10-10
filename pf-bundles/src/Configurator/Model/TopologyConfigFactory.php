@@ -32,7 +32,6 @@ final class TopologyConfigFactory
     public const RABBITMQ_PASS          = 'rabbitmq_pass';
     public const RABBITMQ_VHOST         = 'rabbitmq_vhost';
     public const METRICS_DSN            = 'metrics_dsn';
-    public const METRICS_SERVICE        = 'metrics_service';
     public const WORKER_DEFAULT_PORT    = 'worker_default_port';
     public const MONOLITH_API_HOST      = 'monolith_api_host';
     public const XML_PARSER_API_HOST    = 'xml_parser_api_host';
@@ -131,7 +130,6 @@ final class TopologyConfigFactory
             self::RABBITMQ_VHOST         => $this->configs[self::RABBITMQ_VHOST],
             self::MONGODB_DSN            => $this->configs[self::MONGODB_DSN],
             self::METRICS_DSN            => $this->configs[self::METRICS_DSN],
-            self::METRICS_SERVICE        => $this->configs[self::METRICS_SERVICE],
             self::WORKER_DEFAULT_PORT    => (int) $this->configs[self::WORKER_DEFAULT_PORT],
             self::UDP_LOGGER_URL         => $this->configs[self::UDP_LOGGER_URL],
             self::TOPOLOGY_POD_LABELS    => $this->configs[self::TOPOLOGY_POD_LABELS],

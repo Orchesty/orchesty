@@ -7,9 +7,10 @@ use Hanaboso\MongoDataGrid\GridFilterAbstract;
 use Hanaboso\MongoDataGrid\GridHandlerTrait;
 use Hanaboso\MongoDataGrid\GridRequestDtoInterface;
 use Hanaboso\PipesFramework\Metrics\Exception\MetricsException;
-use Hanaboso\PipesFramework\Metrics\Manager\MetricsManagerLoader;
+use Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
+use Hanaboso\Utils\Exception\DateTimeException;
 
 /**
  * Class MetricsHandler
@@ -24,10 +25,10 @@ final class MetricsHandler
     /**
      * MetricsHandler constructor.
      *
-     * @param DocumentManager      $dm
-     * @param MetricsManagerLoader $loader
+     * @param DocumentManager     $dm
+     * @param MongoMetricsManager $mongoMetricsManager
      */
-    public function __construct(private DocumentManager $dm, private MetricsManagerLoader $loader)
+    public function __construct(private DocumentManager $dm, private MongoMetricsManager $mongoMetricsManager)
     {
     }
 
@@ -40,7 +41,7 @@ final class MetricsHandler
      */
     public function getTopologyMetrics(string $topologyId, array $params): array
     {
-        return $this->loader->getManager()->getTopologyMetrics($this->getTopologyById($topologyId), $params);
+        return $this->mongoMetricsManager->getTopologyMetrics($this->getTopologyById($topologyId), $params);
     }
 
     /**
@@ -49,11 +50,12 @@ final class MetricsHandler
      * @param mixed[] $params
      *
      * @return mixed[]
+     * @throws DateTimeException
      * @throws MetricsException
      */
     public function getNodeMetrics(string $topologyId, string $nodeId, array $params): array
     {
-        return $this->loader->getManager()->getNodeMetrics(
+        return $this->mongoMetricsManager->getNodeMetrics(
             $this->getNodeByTopologyAndNodeId($topologyId, $nodeId),
             $this->getTopologyById($topologyId),
             $params,
@@ -62,18 +64,11 @@ final class MetricsHandler
 
     /**
      * @return mixed[]
+     * @throws DateTimeException
      */
-    public function getConsumerMetrics(): array
+    public function getHealthcheckMetrics(): array
     {
-        return $this->loader->getManager()->getConsumerMetrics();
-    }
-
-    /**
-     * @return mixed[]
-     */
-    public function getContainerMetrics(): array
-    {
-        return $this->loader->getManager()->getContainerMetrics();
+        return $this->mongoMetricsManager->getHealthcheckMetrics();
     }
 
     /**
@@ -81,12 +76,13 @@ final class MetricsHandler
      * @param GridRequestDtoInterface $dto
      *
      * @return mixed[]
+     * @throws DateTimeException
      * @throws MetricsException
      */
     public function getRequestsCountMetrics(string $topologyId, GridRequestDtoInterface $dto): array
     {
         $params = $this->parseDateRangeFromFilter($dto);
-        $items  = $this->loader->getManager()->getTopologyRequestCountMetrics(
+        $items  = $this->mongoMetricsManager->getTopologyRequestCountMetrics(
             $this->getTopologyById($topologyId),
             $params,
         );

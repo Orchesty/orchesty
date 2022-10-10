@@ -6,7 +6,6 @@ use Symfony\Component\Console\Input\ArgvInput;
 set_time_limit(0);
 
 require __DIR__.'/../vendor/autoload.php';
-require_once __DIR__ . '/../public/odm_metrics.php';
 
 $input = new ArgvInput();
 $env = $input->getParameterOption(['--env', '-e'], $_SERVER['APP_ENV'] ?? 'dev');

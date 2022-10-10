@@ -4,6 +4,7 @@ namespace Hanaboso\PipesFramework\Metrics\Manager;
 
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Hanaboso\PipesFramework\Metrics\Document\BridgesMetrics;
 use Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetrics;
 use Hanaboso\PipesFramework\Metrics\Document\ContainerMetrics;
@@ -13,6 +14,8 @@ use Hanaboso\PipesFramework\Metrics\Document\RabbitConsumerMetrics;
 use Hanaboso\PipesFramework\Metrics\Document\RabbitMetrics;
 use Hanaboso\PipesFramework\Metrics\Document\Tags;
 use Hanaboso\PipesFramework\Metrics\Dto\MetricsDto;
+use Hanaboso\PipesFramework\Metrics\Enum\HealthcheckTypeEnum;
+use Hanaboso\PipesFramework\Metrics\Enum\ServiceNameByQueueEnum;
 use Hanaboso\PipesFramework\Metrics\Retention\RetentionFactory;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
@@ -42,7 +45,7 @@ final class MongoMetricsManager extends MetricsManagerAbstract
      * @param string          $consumerTable
      */
     public function __construct(
-        DocumentManager $dm,
+        private DocumentManager $dm,
         string $nodeTable,
         string $fpmTable,
         string $rabbitTable,
@@ -175,9 +178,68 @@ final class MongoMetricsManager extends MetricsManagerAbstract
      * @return mixed[]
      * @throws DateTimeException
      */
-    public function getConsumerMetrics(): array
+    public function getHealthcheckMetrics(): array
     {
-        return $this->rabbitConsumerMetrics();
+        $qb  = $this->metricsDm->createQueryBuilder(RabbitConsumerMetrics::class);
+        $res = $qb
+            ->field('fields.consumers')->lte(0)
+            ->getQuery()
+            ->toArray();
+
+        if (!$res) {
+            $res = [];
+        }
+
+        $healthcheckArray = array_map(
+            function (RabbitConsumerMetrics $item): array {
+                $service = ServiceNameByQueueEnum::getNameAndNodeId($item->getTags()->getQueue());
+                if ($service['name'] === ServiceNameByQueueEnum::BRIDGE) {
+                    $node = $this->dm->find(Node::class, $service['nodeId']);
+                    if (!$node) {
+                        throw new DocumentNotFoundException(sprintf('Node with id %s not found', $service['nodeId']));
+                    }
+                    $topology = $this->dm->find(Topology::class, $node->getTopology());
+                    if (!$topology) {
+                        throw new DocumentNotFoundException(
+                            sprintf('Topology with id %s not found', $node->getTopology()),
+                        );
+                    }
+
+                    $service['name'] = sprintf('topology-%s', $topology->getId());
+                    $topology        = sprintf('%s v.%s', $topology->getName(), $topology->getVersion());
+                }
+
+                return [
+                    'type'     => HealthcheckTypeEnum::QUEUE,
+                    'name'     => $item->getTags()->getQueue(),
+                    'service'  => $service['name'],
+                    'topology' => $topology ?? NULL,
+                ];
+            },
+            $res,
+        );
+
+        $qb  = $this->metricsDm->createQueryBuilder(ContainerMetrics::class);
+        $res = $qb
+            ->field('fields.up')->equals(FALSE)
+            ->getQuery()
+            ->toArray();
+
+        if (!$res) {
+            $res = [];
+        }
+
+        return array_merge(
+            $healthcheckArray,
+            array_map(
+                static fn(ContainerMetrics $item): array => [
+                    'type'    => HealthcheckTypeEnum::SERVICE,
+                    'name'    => $item->getFields()->getName(),
+                    'message' => $item->getFields()->getMessage(),
+                ],
+                $res,
+            ),
+        );
     }
 
     /**
@@ -236,27 +298,6 @@ final class MongoMetricsManager extends MetricsManagerAbstract
             ->toArray();
 
         return ['user' => count($result)];
-    }
-
-    /**
-     * @return mixed[]
-     */
-    public function getContainerMetrics(): array
-    {
-        $qb  = $this->metricsDm->createQueryBuilder(ContainerMetrics::class);
-        $res = $qb
-            ->field('fields.up')->equals(FALSE)
-            ->getQuery()
-            ->toArray();
-
-        if (!$res) {
-            $res = [];
-        }
-
-        return array_map(
-            static fn(ContainerMetrics $item): array => $item->getFields()->toArray(),
-            $res,
-        );
     }
 
     /**
@@ -544,34 +585,6 @@ final class MongoMetricsManager extends MetricsManagerAbstract
         }
 
         return $sorted;
-    }
-
-    /**
-     * @return mixed[]
-     * @throws DateTimeException
-     */
-    private function rabbitConsumerMetrics(): array
-    {
-        $qb  = $this->metricsDm->createQueryBuilder(RabbitConsumerMetrics::class);
-        $res = $qb
-            ->field('fields.consumers')->lte(0)
-            ->getQuery()
-            ->toArray();
-
-        if (!$res) {
-            $res = [];
-        }
-
-        return array_map(
-            static fn(RabbitConsumerMetrics $item): array => [
-                'queue'     => $item->getTags()->getQueue(),
-                'consumers' => $item->getFields()->getConsumers(),
-                'created'   => $item->getFields()->getCreated()->format(
-                    DateTimeUtils::DATE_TIME_UTC,
-                ),
-            ],
-            $res,
-        );
     }
 
     /**

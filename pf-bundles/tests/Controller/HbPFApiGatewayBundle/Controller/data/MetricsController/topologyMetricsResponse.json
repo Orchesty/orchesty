@@ -3,13 +3,13 @@
     "body": {
         "topology": {
             "process_time": {
-                "min": "0",
-                "avg": "0.00",
-                "max": "0"
+                "min": "2",
+                "avg": "2.00",
+                "max": "2"
             },
             "process": {
-                "total": "0",
-                "errors": "0"
+                "total": "3",
+                "errors": "2"
             }
         }
     }

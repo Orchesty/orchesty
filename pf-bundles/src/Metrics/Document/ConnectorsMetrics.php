@@ -35,6 +35,18 @@ class ConnectorsMetrics
     private Tags $tags;
 
     /**
+     * ConnectorsMetrics constructor.
+     *
+     * @param ConnectorsMetricsFields $fields
+     * @param Tags                    $tags
+     */
+    public function __construct(ConnectorsMetricsFields $fields, Tags $tags)
+    {
+        $this->fields = $fields;
+        $this->tags   = $tags;
+    }
+
+    /**
      * @return ConnectorsMetricsFields
      */
     public function getFields(): ConnectorsMetricsFields
