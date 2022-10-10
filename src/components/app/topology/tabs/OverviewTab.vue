@@ -70,7 +70,7 @@ export default {
       internationalFormat,
       headers: [
         {
-          text: 'topologies.overview.headers.created',
+          text: this.$t('topologies.overview.headers.created'),
           value: 'started',
           align: 'left',
           sortable: true,
@@ -78,7 +78,7 @@ export default {
           width: '15%',
         },
         {
-          text: 'topologies.overview.headers.duration',
+          text: this.$t('topologies.overview.headers.duration'),
           value: 'duration',
           align: 'left',
           sortable: false,
@@ -86,7 +86,7 @@ export default {
           width: '15%',
         },
         {
-          text: 'topologies.overview.headers.progress',
+          text: this.$t('topologies.overview.headers.progress'),
           value: 'progress',
           align: 'left',
           sortable: false,
@@ -94,7 +94,7 @@ export default {
           width: '15%',
         },
         {
-          text: 'topologies.overview.headers.status',
+          text: this.$t('topologies.overview.headers.status'),
           value: 'status',
           align: 'left',
           sortable: false,
@@ -102,7 +102,7 @@ export default {
           width: '15%',
         },
         {
-          text: 'topologies.overview.headers.correlation_id',
+          text: this.$t('topologies.overview.headers.correlation_id'),
           value: 'correlation_id',
           align: 'left',
           sortable: true,

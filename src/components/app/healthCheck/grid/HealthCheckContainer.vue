@@ -38,7 +38,7 @@ export default {
       DATA_GRIDS,
       headers: [
         {
-          text: 'topologies.healthCheck.headers.container.name',
+          text: this.$t('topologies.healthCheck.headers.container.name'),
           value: 'container',
           align: 'left',
           sortable: false,
@@ -46,7 +46,7 @@ export default {
           width: '50%',
         },
         {
-          text: 'topologies.healthCheck.headers.container.status',
+          text: this.$t('topologies.healthCheck.headers.container.status'),
           value: 'status',
           align: 'left',
           sortable: false,

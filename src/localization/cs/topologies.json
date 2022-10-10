@@ -126,7 +126,8 @@
         "correlation_id": "Correlation ID",
         "nodeID": "ID Uzlu",
         "nodeName": "Název Uzlu",
-        "severity": "Severenity"
+        "severity": "Severenity",
+        "topologyName": "Název Topologie"
       }
     },
     "healthCheck": {
@@ -143,9 +144,11 @@
     },
     "userTask": {
       "title": "User Tasky",
+      "titleTrash": "Koš",
       "headers": {
         "nodeName": "Název Uzlu",
-        "updated": "Aktualizováno"
+        "updated": "Aktualizováno",
+        "created": "Vytvořeno"
       },
       "information": {
         "nodeName": "Název Uzlu",

@@ -168,7 +168,7 @@
         "timestamp": "Created",
         "correlation_id": "Correlation ID",
         "nodeID": "Node ID",
-        "topology_name": "Topology Name",
+        "topologyName": "Topology Name",
         "nodeName": "Node name",
         "message": "Message",
         "severity": "Severity"
@@ -192,7 +192,8 @@
       "headers": {
         "nodeName": "Node name",
         "nodeNameTopology": "Topology / Node name",
-        "updated": "Updated"
+        "updated": "Updated",
+        "created": "Created"
       },
       "information": {
         "nodeName": "Node Name",
