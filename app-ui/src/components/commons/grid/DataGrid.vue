@@ -48,7 +48,7 @@
               <slot name="top" />
             </template>
             <template v-for="item in visibleHeaders" #[`header.${item.value}`]="{ header }">
-              <span :key="item.value" class="text-capitalize white--text font-weight-bold">{{ $t(header.text) }}</span>
+              <span :key="item.value" class="text-capitalize white--text font-weight-bold">{{ header.text }}</span>
               <slot :header="header" name="header.append"></slot>
             </template>
             <template #no-data>

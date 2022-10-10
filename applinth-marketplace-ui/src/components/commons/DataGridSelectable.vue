@@ -41,7 +41,7 @@
           #[`header.${item.value}`]="{ header }"
         >
           <span :key="item.value" class="text-capitalize font-weight-bold">
-            {{ $t(header.text) }}
+            {{ header.text }}
           </span>
         </template>
         <template #item="props">

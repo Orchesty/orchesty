@@ -79,13 +79,13 @@ export default {
     return {
       headers: [
         {
-          text: 'grid.trash.header.topologyName',
+          text: this.$t('grid.trash.header.topologyName'),
           value: 'topologyDescr',
           align: 'start',
           sortable: true,
         },
         {
-          text: 'grid.trash.header.updated',
+          text: this.$t('grid.trash.header.updated'),
           value: 'updated',
           align: 'start',
           sortable: true,

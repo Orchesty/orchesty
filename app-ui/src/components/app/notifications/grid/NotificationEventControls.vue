@@ -59,7 +59,7 @@ export default {
       selectedKey: [null, null],
       headers: [
         {
-          text: 'notifications.event',
+          text: this.$t('notifications.event'),
           value: 'title',
           align: 'left',
           sortable: false,

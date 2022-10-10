@@ -45,13 +45,13 @@ export default class CustomerAppsTable extends Vue {
 
   headers = [
     {
-      text: "grids.headers.activeApps",
+      text: this.$t("grids.headers.activeApps"),
       sortable: true,
       align: "start",
       value: "appName",
     },
     {
-      text: "grids.headers.installed",
+      text: this.$t("grids.headers.installed"),
       sortable: true,
       align: "start",
       value: "installed",

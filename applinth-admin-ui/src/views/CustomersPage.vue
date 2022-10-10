@@ -102,19 +102,19 @@ export default class CustomersPage extends Vue {
 
   headers: Array<UsersTable> = [
     {
-      text: "grids.headers.user",
+      text: this.$t("grids.headers.user"),
       sortable: true,
       align: "start",
       value: "endUserDisplayId",
     },
     {
-      text: "grids.headers.activeApps",
+      text: this.$t("grids.headers.activeApps"),
       sortable: true,
       align: "start",
       value: "appNames",
     },
     {
-      text: "grids.headers.amount",
+      text: this.$t("grids.headers.amount"),
       sortable: true,
       align: "start",
       value: "totalCost",
