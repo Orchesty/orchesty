@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2f602728aca7e1e02b86ea2ce1d0ec53",
+    "content-hash": "5d905fcfee328a93320010c12a11f74c",
     "packages": [
         {
             "name": "azuyalabs/yasumi",
@@ -1489,16 +1489,16 @@
         },
         {
             "name": "hanaboso/commons-bundle",
-            "version": "2.6.6",
+            "version": "2.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/commons-bundle.git",
-                "reference": "6283509cc15cb3e4adcf96c011821693cec15acf"
+                "reference": "f2c4e486c7b93e16ef3148c4e0e986e4ee52328a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/commons-bundle/zipball/6283509cc15cb3e4adcf96c011821693cec15acf",
-                "reference": "6283509cc15cb3e4adcf96c011821693cec15acf",
+                "url": "https://api.github.com/repos/hanaboso/commons-bundle/zipball/f2c4e486c7b93e16ef3148c4e0e986e4ee52328a",
+                "reference": "f2c4e486c7b93e16ef3148c4e0e986e4ee52328a",
                 "shasum": ""
             },
             "require": {
@@ -1541,9 +1541,9 @@
             ],
             "description": "Hanaboso - commons-bundle",
             "support": {
-                "source": "https://github.com/hanaboso/commons-bundle/tree/2.6.6"
+                "source": "https://github.com/hanaboso/commons-bundle/tree/2.7.0"
             },
-            "time": "2022-09-21T15:07:38+00:00"
+            "time": "2022-10-07T12:11:46+00:00"
         },
         {
             "name": "hanaboso/email-service-bundle",
@@ -1628,50 +1628,6 @@
                 "source": "https://github.com/hanaboso/mongo-data-grid/tree/1.6.4"
             },
             "time": "2022-06-02T14:24:49+00:00"
-        },
-        {
-            "name": "hanaboso/rabbit-mq-bundle",
-            "version": "1.5.5",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/hanaboso/rabbit-mq-bundle.git",
-                "reference": "c30915d75a92858f1126357eaf0b1a8e1e4d7d1c"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/rabbit-mq-bundle/zipball/c30915d75a92858f1126357eaf0b1a8e1e4d7d1c",
-                "reference": "c30915d75a92858f1126357eaf0b1a8e1e4d7d1c",
-                "shasum": ""
-            },
-            "require": {
-                "ext-ctype": "*",
-                "ext-intl": "*",
-                "ext-mbstring": "*",
-                "guzzlehttp/promises": "^1.5",
-                "hanaboso/utils": "^1.1",
-                "php": "^8.1",
-                "php-amqplib/php-amqplib": "^v3.2",
-                "symfony/monolog-bundle": "^3.8",
-                "symfony/yaml": "^v6.1"
-            },
-            "require-dev": {
-                "hanaboso/php-check-utils": "^1.4"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "RabbitMqBundle\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "Apache-2.0"
-            ],
-            "description": "Hanaboso - rabbit-mq-bundle",
-            "support": {
-                "source": "https://github.com/hanaboso/rabbit-mq-bundle/tree/1.5.5"
-            },
-            "time": "2022-06-02T14:09:20+00:00"
         },
         {
             "name": "hanaboso/rest-bundle",
@@ -2394,13 +2350,12 @@
             "dist": {
                 "type": "path",
                 "url": "../../../pipes-connectors",
-                "reference": "7150c4a17dd0709e46ac7e4eb7b4b65ad62792a1"
+                "reference": "8a7a0d8347c8c72f01c12764c43988abdc799deb"
             },
             "require": {
                 "ext-ctype": "*",
                 "ext-intl": "*",
                 "ext-mbstring": "*",
-                "hanaboso/rabbit-mq-bundle": "^1.5",
                 "orchesty/php-sdk": "^2.2",
                 "php": "^8.1"
             },
@@ -2428,7 +2383,7 @@
             "license": [
                 "Apache-2.0"
             ],
-            "description": "Connectors for Orchesty",
+            "description": "PHP Connectors and Applications for Orchesty",
             "transport-options": {
                 "symlink": true,
                 "relative": true
@@ -2436,11 +2391,11 @@
         },
         {
             "name": "orchesty/php-sdk",
-            "version": "2.2.4",
+            "version": "2.2.5",
             "dist": {
                 "type": "path",
                 "url": "../../../pipes-php-sdk",
-                "reference": "43b7d41fdcca9c05c261beb0d552428298d6f0c6"
+                "reference": "de08a12223801da4c7e4e5ab2c902505d93e6bfa"
             },
             "require": {
                 "doctrine/mongodb-odm-bundle": "^4.5",
@@ -2450,8 +2405,6 @@
                 "ext-oauth": "*",
                 "hanaboso/commons-bundle": "^2.6",
                 "hanaboso/mongo-data-grid": "^1.6",
-                "hanaboso/rabbit-mq-bundle": "^1.5",
-                "hanaboso/utils": "^1.2",
                 "league/oauth2-client": "^2.6",
                 "php": "^8.1",
                 "phpoffice/phpspreadsheet": "^1.24.0",
@@ -2460,7 +2413,6 @@
             },
             "require-dev": {
                 "hanaboso/php-check-utils": "^1.4",
-                "hanaboso/rest-bundle": "^1.1",
                 "symfony/debug-bundle": "^v6.1",
                 "symfony/security-bundle": "^v6.1",
                 "symfony/serializer": "^v6.1"
@@ -2601,87 +2553,6 @@
                 "source": "https://github.com/paragonie/random_compat"
             },
             "time": "2020-10-15T08:29:30+00:00"
-        },
-        {
-            "name": "php-amqplib/php-amqplib",
-            "version": "v3.2.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/php-amqplib/php-amqplib.git",
-                "reference": "0bec5b392428e0ac3b3f34fbc4e02d706995833e"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/php-amqplib/php-amqplib/zipball/0bec5b392428e0ac3b3f34fbc4e02d706995833e",
-                "reference": "0bec5b392428e0ac3b3f34fbc4e02d706995833e",
-                "shasum": ""
-            },
-            "require": {
-                "ext-mbstring": "*",
-                "ext-sockets": "*",
-                "php": "^7.1||^8.0",
-                "phpseclib/phpseclib": "^2.0|^3.0"
-            },
-            "conflict": {
-                "php": "7.4.0 - 7.4.1"
-            },
-            "replace": {
-                "videlalvaro/php-amqplib": "self.version"
-            },
-            "require-dev": {
-                "ext-curl": "*",
-                "nategood/httpful": "^0.2.20",
-                "phpunit/phpunit": "^7.5|^9.5",
-                "squizlabs/php_codesniffer": "^3.6"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.0-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "PhpAmqpLib\\": "PhpAmqpLib/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "LGPL-2.1-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "Alvaro Videla",
-                    "role": "Original Maintainer"
-                },
-                {
-                    "name": "Raúl Araya",
-                    "email": "nubeiro@gmail.com",
-                    "role": "Maintainer"
-                },
-                {
-                    "name": "Luke Bakken",
-                    "email": "luke@bakken.io",
-                    "role": "Maintainer"
-                },
-                {
-                    "name": "Ramūnas Dronga",
-                    "email": "github@ramuno.lt",
-                    "role": "Maintainer"
-                }
-            ],
-            "description": "Formerly videlalvaro/php-amqplib.  This library is a pure PHP implementation of the AMQP protocol. It's been tested against RabbitMQ.",
-            "homepage": "https://github.com/php-amqplib/php-amqplib/",
-            "keywords": [
-                "message",
-                "queue",
-                "rabbitmq"
-            ],
-            "support": {
-                "issues": "https://github.com/php-amqplib/php-amqplib/issues",
-                "source": "https://github.com/php-amqplib/php-amqplib/tree/v3.2.0"
-            },
-            "time": "2022-03-10T19:16:00+00:00"
         },
         {
             "name": "phpoffice/phpspreadsheet",
@@ -8377,16 +8248,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.8.6",
+            "version": "1.8.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "c386ab2741e64cc9e21729f891b28b2b10fe6618"
+                "reference": "08310ce271984587e2a4cda94e1ac66510a6ea07"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/c386ab2741e64cc9e21729f891b28b2b10fe6618",
-                "reference": "c386ab2741e64cc9e21729f891b28b2b10fe6618",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/08310ce271984587e2a4cda94e1ac66510a6ea07",
+                "reference": "08310ce271984587e2a4cda94e1ac66510a6ea07",
                 "shasum": ""
             },
             "require": {
@@ -8416,7 +8287,7 @@
             ],
             "support": {
                 "issues": "https://github.com/phpstan/phpstan/issues",
-                "source": "https://github.com/phpstan/phpstan/tree/1.8.6"
+                "source": "https://github.com/phpstan/phpstan/tree/1.8.8"
             },
             "funding": [
                 {
@@ -8432,20 +8303,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-09-23T09:54:39+00:00"
+            "time": "2022-10-06T12:51:57+00:00"
         },
         {
             "name": "phpstan/phpstan-doctrine",
-            "version": "1.3.15",
+            "version": "1.3.16",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-doctrine.git",
-                "reference": "93fe8c18ee955009e2033efeb64284b4e4df66a0"
+                "reference": "2d1ddae7ef9a6263ba708538ef7d0fbe362e6e25"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-doctrine/zipball/93fe8c18ee955009e2033efeb64284b4e4df66a0",
-                "reference": "93fe8c18ee955009e2033efeb64284b4e4df66a0",
+                "url": "https://api.github.com/repos/phpstan/phpstan-doctrine/zipball/2d1ddae7ef9a6263ba708538ef7d0fbe362e6e25",
+                "reference": "2d1ddae7ef9a6263ba708538ef7d0fbe362e6e25",
                 "shasum": ""
             },
             "require": {
@@ -8499,9 +8370,9 @@
             "description": "Doctrine extensions for PHPStan",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan-doctrine/issues",
-                "source": "https://github.com/phpstan/phpstan-doctrine/tree/1.3.15"
+                "source": "https://github.com/phpstan/phpstan-doctrine/tree/1.3.16"
             },
-            "time": "2022-09-29T20:11:01+00:00"
+            "time": "2022-10-05T08:47:34+00:00"
         },
         {
             "name": "phpstan/phpstan-phpunit",
@@ -8605,16 +8476,16 @@
         },
         {
             "name": "phpstan/phpstan-symfony",
-            "version": "1.2.13",
+            "version": "1.2.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-symfony.git",
-                "reference": "016e441a19a2af79ca0c60920ba0d61747b4e855"
+                "reference": "f7dd737329504115adaa987697a759a66dd2ee8a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-symfony/zipball/016e441a19a2af79ca0c60920ba0d61747b4e855",
-                "reference": "016e441a19a2af79ca0c60920ba0d61747b4e855",
+                "url": "https://api.github.com/repos/phpstan/phpstan-symfony/zipball/f7dd737329504115adaa987697a759a66dd2ee8a",
+                "reference": "f7dd737329504115adaa987697a759a66dd2ee8a",
                 "shasum": ""
             },
             "require": {
@@ -8670,9 +8541,9 @@
             "description": "Symfony Framework extensions and rules for PHPStan",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan-symfony/issues",
-                "source": "https://github.com/phpstan/phpstan-symfony/tree/1.2.13"
+                "source": "https://github.com/phpstan/phpstan-symfony/tree/1.2.14"
             },
-            "time": "2022-08-28T13:34:45+00:00"
+            "time": "2022-10-05T11:19:29+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -10121,20 +9992,20 @@
         },
         {
             "name": "spaze/phpstan-disallowed-calls",
-            "version": "v2.5.0",
+            "version": "v2.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spaze/phpstan-disallowed-calls.git",
-                "reference": "80945f8fa346b1d8b50d6922cde56b309fb6008f"
+                "reference": "1cd98848bc1805156b4547e75e97274be70af4a7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spaze/phpstan-disallowed-calls/zipball/80945f8fa346b1d8b50d6922cde56b309fb6008f",
-                "reference": "80945f8fa346b1d8b50d6922cde56b309fb6008f",
+                "url": "https://api.github.com/repos/spaze/phpstan-disallowed-calls/zipball/1cd98848bc1805156b4547e75e97274be70af4a7",
+                "reference": "1cd98848bc1805156b4547e75e97274be70af4a7",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.1 || ^8.0",
+                "php": "^7.2 || ^8.0",
                 "phpstan/phpstan": "^1.0"
             },
             "require-dev": {
@@ -10143,7 +10014,7 @@
                 "php-parallel-lint/php-console-highlighter": "^1.0",
                 "php-parallel-lint/php-parallel-lint": "^1.2",
                 "phpunit/phpunit": "^7.0 || ^9.4.2",
-                "spaze/coding-standard": "^0.0"
+                "spaze/coding-standard": "^1.3"
             },
             "type": "phpstan-extension",
             "extra": {
@@ -10172,9 +10043,9 @@
             "description": "PHPStan rules to detect disallowed method & function calls, constant, namespace & superglobal usages",
             "support": {
                 "issues": "https://github.com/spaze/phpstan-disallowed-calls/issues",
-                "source": "https://github.com/spaze/phpstan-disallowed-calls/tree/v2.5.0"
+                "source": "https://github.com/spaze/phpstan-disallowed-calls/tree/v2.7.0"
             },
-            "time": "2022-07-21T00:34:16+00:00"
+            "time": "2022-10-08T18:34:05+00:00"
         },
         {
             "name": "squizlabs/php_codesniffer",

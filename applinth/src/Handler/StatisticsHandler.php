@@ -3,7 +3,7 @@
 namespace Hanaboso\Applinth\Handler;
 
 use Hanaboso\Applinth\Manager\StatisticsManager;
-use Hanaboso\PipesFramework\Metrics\Manager\MetricsManagerLoader;
+use Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager;
 use Hanaboso\Utils\Exception\DateTimeException;
 
 /**
@@ -17,10 +17,10 @@ final class StatisticsHandler
     /**
      * StatisticsHandler constructor.
      *
-     * @param StatisticsManager    $statisticsManager
-     * @param MetricsManagerLoader $loader
+     * @param StatisticsManager   $statisticsManager
+     * @param MongoMetricsManager $manager
      */
-    public function __construct(private StatisticsManager $statisticsManager, private MetricsManagerLoader $loader)
+    public function __construct(private StatisticsManager $statisticsManager, private MongoMetricsManager $manager)
     {
     }
 
@@ -58,10 +58,11 @@ final class StatisticsHandler
      * @param string|null $key
      *
      * @return mixed[]
+     * @throws DateTimeException
      */
     public function getApplicationMetrics(array $params, ?string $key): array
     {
-        return $this->loader->getManager()->getApplicationMetrics($params, $key);
+        return $this->manager->getApplicationMetrics($params, $key);
     }
 
     /**
@@ -69,10 +70,11 @@ final class StatisticsHandler
      * @param string|null $user
      *
      * @return mixed[]
+     * @throws DateTimeException
      */
     public function getUserMetrics(array $params, ?string $user): array
     {
-        return $this->loader->getManager()->getUserMetrics($params, $user);
+        return $this->manager->getUserMetrics($params, $user);
     }
 
 }

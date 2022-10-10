@@ -6,13 +6,6 @@ services:
         class: Hanaboso\Applinth\Handler\StatisticsHandler
         arguments:
             - '@hbpf._application.manager.statistics'
-            - '@hbpf.metrics.manager_loader'
-
-    hbpf.metrics.manager_loader:
-        class: Hanaboso\PipesFramework\Metrics\Manager\MetricsManagerLoader
-        arguments:
-            - '%metrics_service%'
-            - '@hbpf.metrics.manager.influx_metrics'
             - '@hbpf.metrics.manager.mongo_metrics'
 
     Hanaboso\Applinth\Authenticator\EndUserAuthenticator:

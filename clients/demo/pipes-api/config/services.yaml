@@ -40,13 +40,6 @@ services:
         tags:
             - { name: 'console.command', command: 'downloader:run' }
 
-    Demo\Command\KapacitorCommand:
-        arguments:
-            - 'kapacitor:run'
-        tags:
-            - { name: 'console.command', command: 'kapacitor:run' }
-
-
     # Connector
     hbpf.connector.pager-duty:
         class: Demo\Connector\PagerDutyConnector
@@ -102,12 +95,6 @@ services:
         class: Demo\Connector\IdnesConnector
         calls:
             -   setSender: [ '@hbpf.transport.curl_manager' ]
-
-    hbpf.rabbit_mq.connection:
-        class: RabbitMqBundle\Connection\Connection
-        arguments:
-            - 'default'
-            - '@rabbit_mq.client_factory'
 
     hbpf.custom_node.send-duty-email:
         class: Demo\CustomNode\SendDutyEmail

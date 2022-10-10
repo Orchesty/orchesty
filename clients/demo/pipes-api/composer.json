@@ -8,7 +8,6 @@
         "azuyalabs/yasumi": "^2.5",
         "hanaboso/commons-bundle": "^2.6",
         "hanaboso/email-service-bundle": "^1.2",
-        "hanaboso/rabbit-mq-bundle": "^1.5",
         "hanaboso/rest-bundle": "^1.1",
         "orchesty/php-connectors": "^2.1",
         "orchesty/php-sdk": "^2.2",
