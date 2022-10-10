@@ -113,7 +113,7 @@ describe('usageStatsController', () => {
                 timeRangeStart: '2018-07-20T05:17:36Z',
                 timeRangeEnd: '2024-07-20T05:17:36Z',
                 granularity: 'monthly',
-                appName: 'neco',
+                appId: 'neco',
             }).set(authorization);
             assert.deepEqual(resp.body.rows.length, 1);
             assert.deepEqual(resp.body.rows, [{
@@ -229,7 +229,7 @@ describe('usageStatsController', () => {
                 tenantId: 't123456789',
                 timeRangeStart: '2018-07-20T05:17:36Z',
                 timeRangeEnd: '2024-07-20T05:17:36Z',
-                appName: 'neco1',
+                appId: 'neco1',
             }).set(authorization);
             assert.deepEqual(resp.body.rows.length, 2);
             assert.deepEqual(resp.body.rows, [

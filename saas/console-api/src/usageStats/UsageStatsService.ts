@@ -10,7 +10,7 @@ interface IMongoQuery {
     end?: object | string;
     endUserId?: RegExp | string;
     instanceId?: string;
-    appName?: string;
+    appId?: string;
 }
 
 export default class UsageStatsService {
@@ -322,8 +322,8 @@ export default class UsageStatsService {
             mongoQuery.instanceId = query.instanceId;
         }
 
-        if (query.appName) {
-            mongoQuery.appName = query.appName;
+        if (query.appId) {
+            mongoQuery.appId = query.appId;
         }
 
         return mongoQuery;

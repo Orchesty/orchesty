@@ -21,7 +21,7 @@ paths:
                     description: Healthy
     /billing/reports/apps:
         get:
-            description: Get billing report aggregated by an appName
+            description: Get billing report aggregated by an appId
             x-swagger-router-controller: usageStats
             operationId: usageStatsApps
             tags:
@@ -31,7 +31,7 @@ paths:
                 - $ref: "#/components/parameters/instanceId"
                 - $ref: "#/components/parameters/timeRangeStart"
                 - $ref: "#/components/parameters/timeRangeEnd"
-                - $ref: "#/components/parameters/appName"
+                - $ref: "#/components/parameters/appId"
                 - $ref: "#/components/parameters/granularity"
             responses:
                 '200':
@@ -96,7 +96,7 @@ paths:
                 - $ref: "#/components/parameters/instanceId"
                 - $ref: "#/components/parameters/requiredTimeRangeStart"
                 - $ref: "#/components/parameters/requiredTimeRangeEnd"
-                - $ref: "#/components/parameters/requiredAppName"
+                - $ref: "#/components/parameters/requiredAppId"
             responses:
                 '200':
                     description: Success
@@ -156,7 +156,7 @@ paths:
                 - $ref: "#/components/parameters/instanceId"
                 - $ref: "#/components/parameters/timeRangeStart"
                 - $ref: "#/components/parameters/timeRangeEnd"
-                - $ref: "#/components/parameters/appName"
+                - $ref: "#/components/parameters/appId"
                 - $ref: "#/components/parameters/granularity"
                 - in: query
                   name: endUserDisplayId
@@ -585,10 +585,24 @@ components:
             required: false
             schema:
                 type: string
+        appId:
+            in: query
+            name: appName
+            description: Filter by appId
+            required: false
+            schema:
+                type: string
         requiredAppName:
             in: query
             name: appName
             description: Filter by appName
+            required: true
+            schema:
+                type: string
+        requiredAppId:
+            in: query
+            name: appId
+            description: Filter by appId
             required: true
             schema:
                 type: string

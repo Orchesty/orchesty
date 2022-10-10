@@ -11,7 +11,7 @@ export interface IAppsAggregationParams {
     endUserId?: string;
     endUserDisplayId?: string;
     instanceId?: string;
-    appName?: string;
+    appId?: string;
     installedDate?: string;
     granularity?: string;
 }
