@@ -58,7 +58,6 @@ export default {
           tooltip: this.$t('navigation.topologies'),
           onClick: this.toggleSidebarAndRedirect,
         },
-        { to: ROUTES.NOTIFICATION, icon: 'notifications', tooltip: this.$t('navigation.notifications') },
         { to: ROUTES.SCHEDULED_TASK, icon: 'mdi-clock', tooltip: this.$t('navigation.scheduledTask') },
         { to: ROUTES.APP_STORE.DEFAULT, icon: 'apps', tooltip: this.$t('navigation.appStore') },
         { to: ROUTES.LOGS, icon: 'list_alt', tooltip: this.$t('navigation.logs') },

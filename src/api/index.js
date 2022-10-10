@@ -4,7 +4,6 @@ import topology from './endpoints/topology'
 import implementation from './endpoints/implementation'
 import scheduledTask from './endpoints/scheduledTask'
 import userTask from './endpoints/userTask'
-import notification from './endpoints/notification'
 import appStore from './endpoints/appStore'
 import folder from './endpoints/folder'
 import statistic from './endpoints/statistic'
@@ -21,7 +20,6 @@ export const API = {
   implementation,
   scheduledTask,
   userTask,
-  notification,
   appStore,
   folder,
   statistic,

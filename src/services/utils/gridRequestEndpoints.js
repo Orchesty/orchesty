@@ -1,4 +1,4 @@
-import { API } from '../../api'
+import { API } from '@/api'
 import { DATA_GRIDS } from '@/services/enums/dataGridEnums'
 
 export const GRID_REQUESTS = {
@@ -9,8 +9,6 @@ export const GRID_REQUESTS = {
   [DATA_GRIDS.STATISTICS]: API.statistic.grid,
   [DATA_GRIDS.SCHEDULED_TASK]: API.scheduledTask.grid,
   [DATA_GRIDS.IMPLEMENTATIONS_LIST]: API.implementation.grid,
-  [DATA_GRIDS.NOTIFICATIONS]: API.notification.grid,
-  [DATA_GRIDS.EVENTS]: API.notification.events,
   [DATA_GRIDS.AVAILABLE_APPS]: API.appStore.getAvailableApps,
   [DATA_GRIDS.LOGS]: API.topology.getLogs,
   [DATA_GRIDS.NODE_LOGS]: API.topology.getNodeLogsByID,
