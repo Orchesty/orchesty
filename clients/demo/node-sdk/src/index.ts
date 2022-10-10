@@ -301,5 +301,6 @@ export async function start(): Promise<void> {
     container.setConnector(redShiftExecQuery);
 
     const node = new Node();
+
     container.setCustomNode(node);
 }
