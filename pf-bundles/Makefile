@@ -57,6 +57,9 @@ init: .env docker-up-force composer-install
 codesniffer:
 	$(DE) ./vendor/bin/phpcs --parallel=$$(nproc) --standard=tests/ruleset.xml src tests
 
+codesnifferfix:
+	$(DE) ./vendor/bin/phpcbf --parallel=$$(nproc) --standard=tests/ruleset.xml src tests
+
 phpstan:
 	$(DE) ./vendor/bin/phpstan analyse -c tests/phpstan.neon -l 8 src tests
 

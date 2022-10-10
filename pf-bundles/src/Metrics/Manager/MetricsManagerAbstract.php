@@ -136,12 +136,7 @@ abstract class MetricsManagerAbstract implements LoggerAwareInterface
     /**
      * @return mixed[]
      */
-    abstract public function getContainerMetrics(): array;
-
-    /**
-     * @return mixed[]
-     */
-    abstract public function getConsumerMetrics(): array;
+    abstract public function getHealthcheckMetrics(): array;
 
     /**
      * @param Topology $topology
@@ -260,7 +255,7 @@ abstract class MetricsManagerAbstract implements LoggerAwareInterface
         MetricsDto $waiting,
         MetricsDto $process,
         MetricsDto $cpu,
-        MetricsDto | NULL $request,
+        MetricsDto|null $request,
         MetricsDto $error,
         MetricsDto $counter,
     ): array
@@ -294,7 +289,7 @@ abstract class MetricsManagerAbstract implements LoggerAwareInterface
             ],
         ];
 
-        if ($request){
+        if ($request) {
             $metrics[self::REQUEST_TIME] = [
                 self::MAX_KEY => $request->getMax(),
                 self::AVG_KEY => $request->getAvg() == 0 ? 'n/a' : $request->getAvg(),
