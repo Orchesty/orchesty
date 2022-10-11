@@ -3,6 +3,7 @@
 namespace PipesFrameworkTests\Integration\Command;
 
 use Hanaboso\CommonsBundle\Exception\CronException;
+use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\RefreshCronCommand;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
@@ -24,13 +25,9 @@ final class RefreshCronCommandTest extends DatabaseTestCaseAbstract
      */
     public function testExecute(): void
     {
-        $application = new Application(self::$kernel);
-        $command     = $application->get('cron:refresh');
+        self::getContainer()->set('hbpf.transport.curl_manager', self::createMock(CurlManagerInterface::class));
 
-        $commandTester = new CommandTester($command);
-        $result        = $commandTester->execute([]);
-
-        self::assertEquals(0, $result);
+        self::assertEquals(0, (new CommandTester((new Application(self::$kernel))->get('cron:refresh')))->execute([]));
     }
 
     /**
@@ -38,16 +35,12 @@ final class RefreshCronCommandTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\RefreshCronCommand::execute
      * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\RefreshCronCommand::configure
      */
-    public function testExecuteErr(): void
+    public function testExecuteError(): void
     {
-        $manager = self::createPartialMock(CronManager::class, ['batchCreate']);
-        $manager->expects(self::any())->method('batchCreate')->willThrowException(new CronException());
-        $command = new RefreshCronCommand($this->dm, $manager);
+        $manager = self::createPartialMock(CronManager::class, ['batchUpsert']);
+        $manager->expects(self::any())->method('batchUpsert')->willThrowException(new CronException());
 
-        $commandTester = new CommandTester($command);
-        $result        = $commandTester->execute([]);
-
-        self::assertEquals(1, $result);
+        self::assertEquals(1, (new CommandTester(new RefreshCronCommand($this->dm, $manager)))->execute([]));
     }
 
 }

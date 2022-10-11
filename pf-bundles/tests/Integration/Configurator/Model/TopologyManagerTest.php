@@ -8,6 +8,7 @@ use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\CommonsBundle\Exception\NodeException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
+use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
@@ -950,6 +951,10 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         parent::setUp();
 
         $this->manager = self::getContainer()->get('hbpf.configurator.manager.topology');
+
+        $cronManager = self::getContainer()->get('hbpf.cron.manager');
+        $this->setProperty($cronManager, 'curlManager', self::createMock(CurlManagerInterface::class));
+        $this->setProperty($this->manager, 'cronManager', $cronManager);
     }
 
     /**

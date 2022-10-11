@@ -1,0 +1,17 @@
+{
+    "http": "PATCH /crons",
+    "body": [
+        {
+            "topology": "Topology One",
+            "node": "Node One",
+            "time": "* * * * *",
+            "parameters": ""
+        },
+        {
+            "topology": "Topology Two",
+            "node": "Node Two",
+            "time": "* * * * *",
+            "parameters": ""
+        }
+    ]
+}

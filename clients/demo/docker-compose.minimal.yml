@@ -65,20 +65,20 @@ services:
             - ../topology:/srv/topology
 
     cron-api:
-        image: hanabosocom/go-base:1.18
+        image: hanabosocom/go-base:1.19
         user: ${DEV_UID}:${DEV_GID}
         environment:
             DEV_UID: ${DEV_UID}
             DEV_GID: ${DEV_GID}
             APP_DEBUG: 'true'
             MONGO_DSN: ${MONGO_DSN}
-            MONGO_COLLECTION: cron
+            MONGO_COLLECTION: Cron
+            ORCHESTY_API_KEY: ${ORCHESTY_API_KEY}
+            STARTING_POINT_DSN: http://starting-point:8080
         volumes:
             - ../../cron:/app:cached
-        command: /bin/sh -c '
-            su-exec root chmod u+s /usr/bin/crontab &&
-            su-exec root crond -l 0 -L /var/log/cron.log &&
-            go run cmd/cron.go'
+        command: /run.sh -p cmd/cron.go -c api -l 2345
+        security_opt: ['seccomp:unconfined']
 
     backend:
         image: hanabosocom/php-dev:php-8.1-alpine

@@ -43,11 +43,13 @@ lint:
 	done;\
 	$(DE) revive -config config.toml $${excludes} -formatter friendly ./...
 
-fast-test: lint
+fasttest: lint
 	$(DE) mkdir var || true
-	$(DE) go test -count 1 -cover -coverprofile var/coverage.out -p 1 ./...
+	$(DE) echo -e "\033[1;32mTests may run for up to one minute due to CRON!\033[0m";
+	$(DE) go test -coverpkg=./... -p 1 -count 1 --parallel 1 -cover -coverprofile var/coverage.out ./...
 	$(DE) go tool cover -html=var/coverage.out -o var/coverage.html
+	$(DE) /coverage.sh -c 80
 
-test: init-dev fast-test docker-down-clean
+test: init-dev fasttest docker-down-clean
 
 ci-test: test
