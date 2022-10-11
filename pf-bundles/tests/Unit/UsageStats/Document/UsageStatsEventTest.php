@@ -19,7 +19,7 @@ final class UsageStatsEventTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesFramework\UsageStats\Document\UsageStatsEvent
      * @covers \Hanaboso\PipesFramework\UsageStats\Document\UsageStatsEvent::getId
-     * @covers \Hanaboso\PipesFramework\UsageStats\Document\UsageStatsEvent::setId
+     * @covers \Hanaboso\PipesFramework\UsageStats\Document\UsageStatsEvent::setIid
      * @covers \Hanaboso\PipesFramework\UsageStats\Document\UsageStatsEvent::getType
      * @covers \Hanaboso\PipesFramework\UsageStats\Document\UsageStatsEvent::setType
      * @covers \Hanaboso\PipesFramework\UsageStats\Document\UsageStatsEvent::getVersion

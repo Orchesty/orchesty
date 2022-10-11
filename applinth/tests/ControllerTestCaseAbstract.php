@@ -54,7 +54,6 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     {
         parent::setUp();
 
-        putenv('METRICS_ODM_DSN=mongodb://mongo');
         $this->setupClient();
 
         // Login

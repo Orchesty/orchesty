@@ -69,7 +69,6 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\Metrics\Manager\MetricsManagerAbstract::getHealthcheckMetrics
      * @covers \Hanaboso\PipesFramework\Metrics\Enum\ServiceNameByQueueEnum::getNameAndNodeId
      * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getHealthcheckMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getRabbitHealthcheckMetrics
      *
      * @throws Exception
      */
