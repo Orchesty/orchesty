@@ -63,7 +63,7 @@ services:
             LIMITER_ADDR: 0.0.0.0:3333
             RABBITMQ_DSN: ${RABBITMQ_DSN}
             MONGO_DSN: ${MONGO_DSN}
-            LOGSTASH_HOST: logstash
+            LOGSTASH_HOST: fluentd
             LOGSTASH_PORT: "5120"
 
     detector:
