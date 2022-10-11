@@ -12,19 +12,36 @@ API pro opakované spouštění topologií Pipes Frameworku.
 - MONGO_DSN
     - Povinný: Ano
     - MongoDB DSN
-    - Například: `mongodb://mongodb/starting-point?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500`
+    - Například: `mongodb://mongodb/cron`
+
 - MONGO_COLLECTION
     - Povinný: Ano
     - MongoDB kolekce topologií
     - Například: `Cron`
+
+- STARTING_POINT_DSN
+    - Povinný: Ano
+    - StartingPoint DSN
+    - Například: `http://starting-point:8080`
 
 - APP_DEBUG
     - Povinný: Ne (výchozí `false`)
     - Nastavení granularity logování
     - Například: `true` nebo `false`
 
+- ORCHESTY_API_KEY
+    - Povinný: Ne (výchozí ` `)
+    - Nastavení Orchesty-Api-Key hlavičky
+    - Například: `ThisIsNotSoSecret`
+
+- STARTING_POINT_TIMEOUT
+    - Povinný: Ne (výchozí `30`)
+    - Nastavení timeoutu v sekundách
+    - Například: `30`
+
 ## Použité technologie
-- Go 1.13+
+- Go 1.19+
 
 ## Závislosti
 - MongoDB
+- StartingPoint

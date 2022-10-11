@@ -8,24 +8,25 @@ import (
 	"syscall"
 
 	"cron/pkg/config"
-	"cron/pkg/router"
+	"cron/pkg/handler"
 	"cron/pkg/service"
-	"cron/pkg/storage"
 
 	log "github.com/hanaboso/go-log/pkg"
 )
 
 func main() {
-	logContext().Info("Starting HTTP server...")
-	storage.MongoDB.Connect()
-	service.Cron.Start()
+	logContext().Info("Connecting to StartingPoint: %s", config.StartingPoint.Dsn)
 
-	server := &http.Server{Addr: ":8080", Handler: router.Router(router.Routes())}
+	if err := service.Load(); err != nil {
+		logContext().Error(err)
+
+		panic(err)
+	}
+
+	logContext().Info("Starting HTTP server: http://0.0.0.0:8080")
+	server := &http.Server{Addr: ":8080", Handler: handler.Router(handler.Routes())}
 
 	defer func() {
-		storage.MongoDB.Disconnect()
-		service.Cron.Stop()
-
 		if err := server.Shutdown(context.Background()); err != nil {
 			logContext().Error(err)
 		}
@@ -47,8 +48,6 @@ func gracefulShutdown(server *http.Server) {
 		_ = <-signals
 
 		logContext().Info("Stopping HTTP server...")
-		storage.MongoDB.Disconnect()
-		service.Cron.Stop()
 
 		if err := server.Shutdown(context.Background()); err != nil {
 			logContext().Error(err)
@@ -60,7 +59,7 @@ func gracefulShutdown(server *http.Server) {
 
 func logContext() log.Logger {
 	return config.Logger.WithFields(map[string]interface{}{
-		"service": "cron",
-		"type":    "cmd",
+		"service": "CRON",
+		"type":    "App",
 	})
 }

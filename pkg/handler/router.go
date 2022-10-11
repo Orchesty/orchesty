@@ -1,20 +1,20 @@
-package router
+package handler
 
 import (
 	"encoding/json"
 	"net/http"
 	"reflect"
 
-	"cron/pkg/utils"
 	"github.com/julienschmidt/httprouter"
+
+	"cron/pkg/utils"
 )
 
 const (
 	contentType     = "Content-Type"
-	applicationJSON = "application/json; charset=utf-8"
+	applicationJson = "application/json; charset=utf-8"
 )
 
-// Route represents HTTP route configuration
 type Route struct {
 	Name    string
 	Method  string
@@ -22,7 +22,6 @@ type Route struct {
 	Handler httprouter.Handle
 }
 
-// Router creates HTTP router
 func Router(routes []Route) *httprouter.Router {
 	router := httprouter.New()
 	options := map[string]bool{}
@@ -66,28 +65,28 @@ func corsHandler(handle httprouter.Handle) httprouter.Handle {
 }
 
 func notFoundHandler(writer http.ResponseWriter, _ *http.Request) {
-	writer.Header().Set(contentType, applicationJSON)
+	writer.Header().Set(contentType, applicationJson)
 	writer.WriteHeader(http.StatusNotFound)
 }
 
 func methodNotAllowedHandler(writer http.ResponseWriter, _ *http.Request) {
-	writer.Header().Set(contentType, applicationJSON)
+	writer.Header().Set(contentType, applicationJson)
 	writer.WriteHeader(http.StatusMethodNotAllowed)
 }
 
 func writeResponse(writer http.ResponseWriter, content interface{}) {
-	writer.Header().Set(contentType, applicationJSON)
+	writer.Header().Set(contentType, applicationJson)
 
 	if err := json.NewEncoder(writer).Encode(content); err != nil {
-		logJSONError(err)
+		logContext().Error(err)
 	}
 }
 
 func writeSuccessResponse(writer http.ResponseWriter) {
-	writer.Header().Set(contentType, applicationJSON)
+	writer.Header().Set(contentType, applicationJson)
 
 	if err := json.NewEncoder(writer).Encode(map[string]interface{}{}); err != nil {
-		logJSONError(err)
+		logContext().Error(err)
 	}
 }
 
@@ -100,10 +99,10 @@ func writeErrorResponse(writer http.ResponseWriter, error error) {
 		message = error.(*utils.Error).Message
 	}
 
-	writer.Header().Set(contentType, applicationJSON)
+	writer.Header().Set(contentType, applicationJson)
 	writer.WriteHeader(status)
 
 	if err := json.NewEncoder(writer).Encode(map[string]interface{}{"message": message}); err != nil {
-		logJSONError(err)
+		logContext().Error(err)
 	}
 }
