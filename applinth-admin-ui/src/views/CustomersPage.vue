@@ -167,7 +167,7 @@ export default class CustomersPage extends Vue {
     return callApi<UsageStatsUsersRequest>(api.customers.list, {
       timeRangeStart: new Date(0).toISOString(),
       timeRangeEnd: new Date().toISOString(),
-      appName: this.appSearch,
+      appId: this.appSearch,
       endUserDisplayId: this.textSearch,
     });
   }
