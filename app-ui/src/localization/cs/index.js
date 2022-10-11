@@ -24,7 +24,8 @@ import form from './form.json'
 import appStore from './appStore.json'
 import enums from './enums.json'
 import pages from './pages.json'
-import sidebar from '@/localization/en/sidebar.json'
+import sidebar from '@/localization/en/sidebar.json' // TODO PIP-1374 dodat překlady pro češtinu
+import healthcheck from './healthcheck.json'
 
 export default Object.assign(
   navigation,
@@ -53,5 +54,6 @@ export default Object.assign(
   appStore,
   enums,
   pages,
-  sidebar
+  sidebar,
+  { healthcheck: healthcheck }
 )

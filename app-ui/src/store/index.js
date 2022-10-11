@@ -19,6 +19,7 @@ import appStore from './modules/appStore'
 import { DIRECTION, OPERATOR } from '@/services/enums/gridEnums'
 import moment from 'moment'
 import { QUICK_FILTERS } from '@/services/utils/quickFilters'
+import healthcheck from '@/store/modules/healthcheck'
 
 Vue.use(Vuex)
 
@@ -49,6 +50,7 @@ export const createStore = (router) => {
       appStore,
       userTasks,
       trash,
+      healthcheck,
       [DATA_GRIDS.ADMIN_USERS_LIST]: createGrid(DATA_GRIDS.ADMIN_USERS_LIST, {}),
       [DATA_GRIDS.OVERVIEW]: createGrid(DATA_GRIDS.OVERVIEW, {
         sorter: [
