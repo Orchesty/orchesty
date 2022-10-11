@@ -1,10 +1,7 @@
 <template>
-  <v-col cols="auto" class="d-flex justify-end align-center">
+  <v-col cols="auto" class="d-flex justify-end align-center ml-auto">
     <div class="mr-3">
-      version: <span class="font-weight-bold">{{ topologyActive.version }}</span>
-    </div>
-    <div class="mr-3">
-      Status: <span class="font-weight-bold info--text">{{ topologyStatus }}</span>
+      {{ $t('topologies.detail.status') }}: <span class="font-weight-bold info--text">{{ topologyStatus }}</span>
     </div>
 
     <div class="mr-3 mr-md-5">

@@ -47,7 +47,9 @@
         "userTask": "UserTasky",
         "logs": "Seznam Logů"
       },
-      "noTopologySelected": "Není vybrána žádná topologie"
+      "noTopologySelected": "Není vybrána žádná topologie",
+      "version": "Verze",
+      "status": "Stav"
     },
     "create": {
       "form": {

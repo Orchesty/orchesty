@@ -1,8 +1,16 @@
 <template>
-  <v-col cols="12" md="7">
+  <v-col cols="12" md="5" sm="12">
     <div class="d-flex" style="height: 100%">
-      <span class="headline my-auto font-weight-bold truncate" style="max-width: 100%">
-        {{ topologyActive.name }}
+      <v-tooltip bottom>
+        <template #activator="{ on, attrs }">
+          <span class="headline font-weight-bold truncate my-auto max-w-100" v-bind="attrs" v-on="on">
+            {{ topologyActive.name }}
+          </span>
+        </template>
+        <span>{{ topologyActive.name }}</span>
+      </v-tooltip>
+      <span class="ml-3 my-auto text-lowercase" style="min-width: 70px">
+        {{ $t('topologies.detail.version') }}: <strong class="font-weight-bold">{{ topologyActive.version }}</strong>
       </span>
     </div>
   </v-col>
