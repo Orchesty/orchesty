@@ -27,7 +27,6 @@ export default {
       method: 'GET',
     }),
   },
-
   uninstallApp: {
     id: 'UNINSTALL_APP',
     request: ({ key }) => ({

@@ -1,6 +1,7 @@
 <template>
   <v-text-field
     v-model="innerValue"
+    :autofocus="autofocus"
     :dense="dense"
     :label="label"
     :type="inputType"
@@ -10,7 +11,9 @@
     :hide-details="hideDetails"
     :clearable="clearable"
     :prepend-icon="prependIcon"
-    :error-messages="errorMessages"
+    :error-messages="errorMessages[0]"
+    :append-icon="appendIcon"
+    @click:append="$emit('appendIconClicked')"
   />
 </template>
 
@@ -18,18 +21,21 @@
 export default {
   name: 'BaseInput',
   props: {
-    inputType: {
-      type: String,
-      required: false,
-      default: () => 'text',
-    },
     errorMessages: {
       type: Array,
-      required: true,
+      default: () => [],
+    },
+    inputType: {
+      type: String,
+      default: 'text',
     },
     dense: {
       type: Boolean,
       default: true,
+    },
+    autofocus: {
+      type: Boolean,
+      default: false,
     },
     hideDetails: {
       type: Boolean,
@@ -55,18 +61,17 @@ export default {
       type: Boolean,
       default: false,
     },
-    numbersOnly: {
-      type: Boolean,
-      default: false,
-    },
     value: {
       type: [String, Number, Boolean],
-      required: false,
-      default: () => '',
+      default: '',
     },
     label: {
       type: String,
       required: true,
+    },
+    appendIcon: {
+      type: String,
+      default: '',
     },
   },
   data() {
