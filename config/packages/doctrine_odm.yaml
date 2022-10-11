@@ -75,7 +75,7 @@ doctrine_mongodb:
                     prefix: Hanaboso\PipesFramework\UserTask\Document
         metrics:
             connection: metrics
-            database: "%env(string:METRICS_DB)%"
+            database: "%env(string:METRICS_DSN)%"
             mappings:
                 MetricsDocument:
                     type: annotation
