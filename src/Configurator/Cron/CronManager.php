@@ -2,9 +2,8 @@
 
 namespace Hanaboso\PipesFramework\Configurator\Cron;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\Persistence\ObjectRepository;
 use GuzzleHttp\Psr7\Uri;
+use GuzzleHttp\RequestOptions;
 use Hanaboso\CommonsBundle\Exception\CronException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
@@ -12,12 +11,8 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
-use Hanaboso\PipesFramework\Configurator\Utils\CronUtils;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
-use Hanaboso\PipesPhpSdk\Database\Document\Topology;
-use Hanaboso\PipesPhpSdk\Database\Repository\TopologyRepository;
 use Hanaboso\Utils\String\Json;
-use stdClass;
 use Throwable;
 
 /**
@@ -28,43 +23,21 @@ use Throwable;
 final class CronManager
 {
 
-    private const CURL_COMMAND = 'echo "[CRON] [$(date +"%%Y-%%m-%%dT%%TZ")] Requesting %s: $(curl -H "orchesty-api-key: %s" -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d "{%s}" %s)" &> /proc/1/fd/1';
+    private const URL = '%s/crons';
 
-    private const GET    = '%s/crons';
-    private const CREATE = '%s/crons';
-    private const UPDATE = '%s/crons/%s';
-    private const PATCH  = '%s/crons/%s';
-    private const DELETE = '%s/crons/%s';
-    private const BATCH  = '%s/crons-batches';
-
-    private const TOPOLOGY = 'topology';
-    private const NODE     = 'node';
-    private const TIME     = 'time';
-    private const COMMAND  = 'command';
-
-    /**
-     * @var ObjectRepository<Topology>&TopologyRepository
-     */
-    private TopologyRepository $topologyRepository;
+    private const TOPOLOGY   = 'topology';
+    private const NODE       = 'node';
+    private const TIME       = 'time';
+    private const PARAMETERS = 'parameters';
 
     /**
      * CronManager constructor.
      *
-     * @param DocumentManager      $documentManager
      * @param CurlManagerInterface $curlManager
-     * @param string               $backend
      * @param string               $cronHost
-     * @param string               $apiKey
      */
-    public function __construct(
-        DocumentManager $documentManager,
-        private CurlManagerInterface $curlManager,
-        private string $backend,
-        private string $cronHost,
-        private readonly string $apiKey,
-    )
+    public function __construct(private CurlManagerInterface $curlManager, private readonly string $cronHost)
     {
-        $this->topologyRepository = $documentManager->getRepository(Topology::class);
     }
 
     /**
@@ -75,7 +48,7 @@ final class CronManager
     public function getAll(): ResponseDto
     {
         return $this->sendAndProcessRequest(
-            new RequestDto($this->getUrl(self::GET), CurlManager::METHOD_GET, new ProcessDto()),
+            new RequestDto($this->getUrl(self::URL), CurlManager::METHOD_GET, new ProcessDto()),
         );
     }
 
@@ -86,72 +59,9 @@ final class CronManager
      * @throws CronException
      * @throws CurlException
      */
-    public function create(Node $node): ResponseDto
+    public function upsert(Node $node): ResponseDto
     {
-        [$topologyName, $nodeName] = $this->getTopologyAndNode($node);
-
-        $url = $this->getUrl(self::CREATE);
-        $dto = (new RequestDto($url, CurlManager::METHOD_POST, new ProcessDto()))
-            ->setBody(
-                Json::encode(
-                    [
-                        self::TOPOLOGY => $topologyName,
-                        self::NODE     => $nodeName,
-                        self::TIME     => $node->getCron(),
-                        self::COMMAND  => $this->getCommand($node),
-                    ],
-                ),
-            );
-
-        return $this->sendAndProcessRequest($dto);
-    }
-
-    /**
-     * @param Node $node
-     *
-     * @return ResponseDto
-     * @throws CronException
-     * @throws CurlException
-     */
-    public function update(Node $node): ResponseDto
-    {
-        $url = $this->getUrl(self::UPDATE, $this->getHash($node));
-        $dto = (new RequestDto($url, CurlManager::METHOD_PUT, new ProcessDto()))
-            ->setBody(
-                Json::encode(
-                    [
-                        self::TIME    => $node->getCron(),
-                        self::COMMAND => $this->getCommand($node),
-                    ],
-                ),
-            );
-
-        return $this->sendAndProcessRequest($dto);
-    }
-
-    /**
-     * @param Node $node
-     * @param bool $empty
-     *
-     * @return ResponseDto
-     * @throws CronException
-     * @throws CurlException
-     */
-    public function patch(Node $node, bool $empty = FALSE): ResponseDto
-    {
-        $body = [
-            self::TIME    => $node->getCron(),
-            self::COMMAND => $this->getCommand($node),
-        ];
-
-        if ($empty) {
-            $body = new stdClass();
-        }
-
-        $url = $this->getUrl(self::PATCH, $this->getHash($node));
-        $dto = (new RequestDto($url, CurlManager::METHOD_PATCH, new ProcessDto()))->setBody(Json::encode($body));
-
-        return $this->sendAndProcessRequest($dto);
+        return $this->batchUpsert([$node]);
     }
 
     /**
@@ -163,8 +73,18 @@ final class CronManager
      */
     public function delete(Node $node): ResponseDto
     {
-        $url = $this->getUrl(self::DELETE, $this->getHash($node));
-        $dto = new RequestDto($url, CurlManager::METHOD_DELETE, new ProcessDto());
+        $body = [
+            [
+                self::TOPOLOGY => $node->getTopology(),
+                self::NODE     => $node->getId(),
+            ],
+        ];
+
+        $dto = (new RequestDto(
+            $this->getUrl(self::URL),
+            CurlManager::METHOD_DELETE,
+            new ProcessDto(),
+        ))->setBody(Json::encode($body));
 
         return $this->sendAndProcessRequest($dto);
     }
@@ -176,149 +96,34 @@ final class CronManager
      * @throws CronException
      * @throws CurlException
      */
-    public function batchCreate(array $nodes): ResponseDto
+    public function batchUpsert(array $nodes): ResponseDto
     {
-        $body = $this->processNodes($nodes);
-        $dto  = (new RequestDto($this->getUrl(self::BATCH), CurlManager::METHOD_POST, new ProcessDto()))
-            ->setBody($body);
+        $body = array_values(
+            array_map(static fn(Node $node): array => [
+                self::TOPOLOGY   => $node->getTopology(),
+                self::NODE       => $node->getId(),
+                self::TIME       => $node->getCron(),
+                self::PARAMETERS => $node->getCronParams(),
+            ], $nodes),
+        );
+
+        $dto = (new RequestDto(
+            $this->getUrl(self::URL),
+            CurlManager::METHOD_PATCH,
+            new ProcessDto(),
+        ))->setBody(Json::encode($body));
 
         return $this->sendAndProcessRequest($dto);
     }
 
     /**
-     * @param Node[] $nodes
-     *
-     * @return ResponseDto
-     * @throws CronException
-     * @throws CurlException
-     */
-    public function batchUpdate(array $nodes): ResponseDto
-    {
-        $body = $this->processNodes($nodes);
-        $dto  = (new RequestDto($this->getUrl(self::BATCH), CurlManager::METHOD_PUT, new ProcessDto()))->setBody($body);
-
-        return $this->sendAndProcessRequest($dto);
-    }
-
-    /**
-     * @param Node[] $nodes
-     * @param bool   $empty
-     *
-     * @return ResponseDto
-     * @throws CronException
-     * @throws CurlException
-     */
-    public function batchPatch(array $nodes, bool $empty = FALSE): ResponseDto
-    {
-        $exclude = [];
-        if ($empty) {
-            $exclude = [self::TIME, self::COMMAND];
-        }
-
-        $body = $this->processNodes($nodes, $exclude);
-        $dto  = (new RequestDto($this->getUrl(self::BATCH), CurlManager::METHOD_PATCH, new ProcessDto()))
-            ->setBody($body);
-
-        return $this->sendAndProcessRequest($dto);
-    }
-
-    /**
-     * @param Node[] $nodes
-     *
-     * @return ResponseDto
-     * @throws CronException
-     * @throws CurlException
-     */
-    public function batchDelete(array $nodes): ResponseDto
-    {
-        $body = $this->processNodes($nodes, [self::TIME, self::COMMAND]);
-        $dto  = (new RequestDto($this->getUrl(self::BATCH), CurlManager::METHOD_DELETE, new ProcessDto()))
-            ->setBody($body);
-
-        return $this->sendAndProcessRequest($dto);
-    }
-
-    /**
-     * @param string      $url
-     * @param string|null $hash
+     * @param string $url
      *
      * @return Uri
      */
-    private function getUrl(string $url, ?string $hash = NULL): Uri
+    private function getUrl(string $url): Uri
     {
-        $backend = rtrim($this->cronHost, '/');
-
-        return new Uri($hash ? sprintf($url, $backend, $hash) : sprintf($url, $backend));
-    }
-
-    /**
-     * @param Node $node
-     *
-     * @return string
-     */
-    private function getHash(Node $node): string
-    {
-        /** @var Topology $topology */
-        $topology = $this->topologyRepository->findOneBy(['id' => $node->getTopology()]);
-
-        return CronUtils::getHash($topology, $node);
-    }
-
-    /**
-     * @param Node $node
-     *
-     * @return mixed[]
-     */
-    private function getTopologyAndNode(Node $node): array
-    {
-        /** @var Topology $topology */
-        $topology = $this->topologyRepository->findOneBy(['id' => $node->getTopology()]);
-
-        return [$topology->getName(), $node->getName()];
-    }
-
-    /**
-     * @param Node $node
-     *
-     * @return string
-     */
-    private function getCommand(Node $node): string
-    {
-        /** @var Topology $topology */
-        $topology = $this->topologyRepository->findOneBy(['id' => $node->getTopology()]);
-        $url      = sprintf('%s%s', rtrim($this->backend, '/'), CronUtils::getTopologyUrl($topology, $node));
-
-        return sprintf(self::CURL_COMMAND, $url, $this->apiKey, $node->getCronParams(), $url);
-    }
-
-    /**
-     * @param Node[]  $nodes
-     * @param mixed[] $exclude
-     *
-     * @return string
-     */
-    private function processNodes(array $nodes, array $exclude = []): string
-    {
-        $processedNodes = [];
-        $processedNode  = [];
-
-        foreach ($nodes as $node) {
-            if ($node->getCron()) {
-                [$processedNode[self::TOPOLOGY], $processedNode[self::NODE]] = $this->getTopologyAndNode($node);
-
-                if (!in_array(self::TIME, $exclude, TRUE)) {
-                    $processedNode[self::TIME] = $node->getCron();
-                }
-
-                if (!in_array(self::COMMAND, $exclude, TRUE)) {
-                    $processedNode[self::COMMAND] = $this->getCommand($node);
-                }
-
-                $processedNodes[] = $processedNode;
-            }
-        }
-
-        return Json::encode($processedNodes);
+        return new Uri(sprintf($url, rtrim($this->cronHost, '/')));
     }
 
     /**
@@ -337,7 +142,7 @@ final class CronManager
         );
 
         try {
-            return $this->curlManager->send($dto);
+            return $this->curlManager->send($dto, [RequestOptions::HTTP_ERRORS => TRUE]);
         } catch (Throwable $e) {
             throw new CronException(sprintf('Cron API failed: %s', $e->getMessage()), CronException::CRON_EXCEPTION);
         }
