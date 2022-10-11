@@ -1,7 +1,7 @@
 {
   "list": {
     "errorQueueItemTitle": "Missing consumer for queue {name}",
-    "errorQueueItemText": "Restart service Bridge {service} for topology {topology}",
+    "errorQueueItemText": "Restart service {service} for topology {topology}",
     "errorServiceItem": "Service {name} is not running"
   }
 }
