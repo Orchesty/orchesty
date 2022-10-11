@@ -1,0 +1,7 @@
+{
+  "list": {
+    "errorQueueItemTitle": "Chybějící spotřebitel pro frontu {name}",
+    "errorQueueItemText": "Restart služby Bridge {service} pro topologii {topology}",
+    "errorServiceItem": "Služba {name} neběží"
+  }
+}

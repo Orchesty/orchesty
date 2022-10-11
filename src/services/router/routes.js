@@ -32,12 +32,12 @@ export default [
         component: () => import('../../views/app/EditorPage'),
         meta: { title: 'Editor' },
       },
-      // {
-      //   path: 'health-check',
-      //   name: ROUTES.HEALTH_CHECK,
-      //   component: () => import('../../views/app/HealthCheckPage'),
-      //   meta: { title: 'Health Check' },
-      // },
+      {
+        path: 'health-check',
+        name: ROUTES.HEALTH_CHECK,
+        component: () => import('../../views/app/HealthCheckPage'),
+        meta: { title: 'Health Check' },
+      },
       {
         path: 'logs',
         name: ROUTES.LOGS,
