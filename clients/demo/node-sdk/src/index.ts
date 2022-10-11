@@ -9,6 +9,7 @@ import S3Application from '@orchesty/nodejs-connectors/dist/lib/AmazonApps/S3/S3
 import AsanaApplication from '@orchesty/nodejs-connectors/dist/lib/Asana/AsanaApplication';
 import AsanaCreateTaskConnector from '@orchesty/nodejs-connectors/dist/lib/Asana/Connector/AsanaCreateTaskConnector';
 import BigcommerceApplication from '@orchesty/nodejs-connectors/dist/lib/Bigcommerce/BigcommerceApplication';
+import BoxApplication from '@orchesty/nodejs-connectors/dist/lib/Box/BoxApplication';
 import DiscordSendMessageConnector
     from '@orchesty/nodejs-connectors/dist/lib/Discord/Connector/DiscordSendMessageConnector';
 import DiscordApplication from '@orchesty/nodejs-connectors/dist/lib/Discord/DiscordApplication';
@@ -43,6 +44,7 @@ import SlackApplication from '@orchesty/nodejs-connectors/dist/lib/Slack/SlackAp
 import MariaDbApplication from '@orchesty/nodejs-connectors/dist/lib/Sql/MariaDbApplication';
 import MsSqlApplication from '@orchesty/nodejs-connectors/dist/lib/Sql/MsSqlApplication';
 import MySqlApplication from '@orchesty/nodejs-connectors/dist/lib/Sql/MySqlApplication';
+import OracleDbApplication from '@orchesty/nodejs-connectors/dist/lib/Sql/OracleDbApplication';
 import PostgreSqlApplication from '@orchesty/nodejs-connectors/dist/lib/Sql/PostgreSqlApplication';
 import SqliteApplication from '@orchesty/nodejs-connectors/dist/lib/Sql/SqliteApplication';
 import StripeApplication from '@orchesty/nodejs-connectors/dist/lib/Stripe/StripeApplication';
@@ -55,6 +57,7 @@ import UpgatesApplication from '@orchesty/nodejs-connectors/dist/lib/Upgates/Upg
 import WebflowApplication from '@orchesty/nodejs-connectors/dist/lib/Webflow/WebflowApplication';
 import WisepopsApplication from '@orchesty/nodejs-connectors/dist/lib/Wisepops/WisepopsApplication';
 import WooCommerceApplication from '@orchesty/nodejs-connectors/dist/lib/WooCommerce/WooCommerceApplication';
+import XeroApplication from '@orchesty/nodejs-connectors/dist/lib/Xero/XeroApplication';
 import ZendeskApplication from '@orchesty/nodejs-connectors/dist/lib/Zendesk/ZendeskApplication';
 import ZohoApplication from '@orchesty/nodejs-connectors/dist/lib/Zoho/ZohoApplication';
 import ZoomApplication from '@orchesty/nodejs-connectors/dist/lib/Zoom/ZoomApplication';
@@ -301,6 +304,14 @@ export async function start(): Promise<void> {
     container.setConnector(redShiftExecQuery);
 
     const node = new Node();
-
     container.setCustomNode(node);
+
+    const xeroApplication = new XeroApplication(provider);
+    container.setApplication(xeroApplication);
+
+    const oracleDbApplication = new OracleDbApplication();
+    container.setApplication(oracleDbApplication);
+
+    const boxApplication = new BoxApplication(provider);
+    container.setApplication(boxApplication);
 }
