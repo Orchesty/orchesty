@@ -26,11 +26,11 @@
             >
               <app-input
                 v-model="password"
-                dense
                 :label="$t('profile.changePassword.form.current-password.label')"
-                input-type="password"
-                outlined
+                :input-type="isPasswordVisible ? 'text' : 'password'"
+                :append-icon="isPasswordVisible ? 'visibility' : 'visibility_off'"
                 :error-messages="errors"
+                @appendIconClicked="togglePasswordVisibility"
               />
             </validation-provider>
           </ValidationObserver>
@@ -83,6 +83,7 @@ export default {
     return {
       isOpen: false,
       password: '',
+      isPasswordVisible: false,
     }
   },
   computed: {
@@ -90,6 +91,9 @@ export default {
   },
   methods: {
     ...mapActions(APP_STORE.NAMESPACE, [APP_STORE.ACTIONS.APP_SET_PASSWORD]),
+    togglePasswordVisibility() {
+      this.isPasswordVisible = !this.isPasswordVisible
+    },
     async submit() {
       const isValid = await this.$refs.form.validate()
       if (!isValid) {

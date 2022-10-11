@@ -72,6 +72,7 @@
                     :name="field.key"
                     :rules="{
                       required: field.required,
+                      url: field.type === 'url',
                     }"
                   >
                     <app-input
@@ -85,7 +86,7 @@
                   <validation-provider v-if="field.type === 'selectbox'" :name="field.key" slim>
                     <app-select
                       v-model="settingsForms[index].fields[field.key]"
-                      clearable
+                      :clearable="!field.readOnly"
                       :readonly="field.readOnly"
                       :disabled="field.disabled"
                       :label="field.label"
@@ -107,6 +108,7 @@
                       :readonly="field.readOnly"
                       :disabled="field.disabled"
                       :label="field.label"
+                      class="ml-3"
                     />
                   </validation-provider>
                   <validation-provider
@@ -124,7 +126,6 @@
                       :readonly="field.readOnly"
                       :disabled="field.disabled"
                       :label="field.label"
-                      input-type="number"
                       :error-messages="errors"
                     />
                   </validation-provider>
