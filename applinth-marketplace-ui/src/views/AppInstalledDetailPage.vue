@@ -101,6 +101,7 @@
                       :name="field.key"
                       :rules="{
                         required: field.required,
+                        url: field.type === 'url',
                       }"
                     >
                       <base-input
@@ -118,7 +119,7 @@
                     >
                       <base-select
                         v-model="settingsForms[index].fields[field.key]"
-                        clearable
+                        :clearable="!field.readOnly"
                         :readonly="field.readOnly"
                         :disabled="field.disabled"
                         :label="field.label"
@@ -144,6 +145,7 @@
                         :readonly="field.readOnly"
                         :disabled="field.disabled"
                         :label="field.label"
+                        class="ml-3"
                       />
                     </validation-provider>
                     <validation-provider
@@ -284,6 +286,7 @@ export default {
 
     async saveForm(key, formName) {
       const isOk = await this.$refs[key][0].validate()
+
       if (!isOk) {
         return
       }

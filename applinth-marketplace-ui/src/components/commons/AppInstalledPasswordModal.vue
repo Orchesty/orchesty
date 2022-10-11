@@ -27,12 +27,19 @@
           v-model="password"
           :error-messages="errors"
           :label="$t('application.form.password')"
-          input-type="password"
+          :input-type="isPasswordVisible ? 'text' : 'password'"
+          :append-icon="isPasswordVisible ? 'mdi-eye' : 'mdi-eye-off'"
+          @appendIconClicked="togglePasswordVisibility"
         />
       </validation-provider>
     </template>
     <template #actions>
-      <base-button :button-title="$t('button.set')" :on-click="submit" />
+      <base-button
+        :button-title="$t('button.set')"
+        :loading="isSaving"
+        :disabled="isSaving"
+        :on-click="submit"
+      />
     </template>
   </base-modal>
 </template>
@@ -79,14 +86,17 @@ export default {
   data() {
     return {
       isOpen: false,
+      isSaving: false,
       password: '',
+      isPasswordVisible: false,
     }
   },
   methods: {
     async submit() {
+      this.isSaving = true
       await callApi({
         requestData: API.appStore.setPasswordApp,
-        data: {
+        params: {
           key: this.appKey,
           data: {
             password: this.password,
@@ -95,6 +105,10 @@ export default {
           },
         },
       })
+      this.isSaving = false
+    },
+    togglePasswordVisibility() {
+      this.isPasswordVisible = !this.isPasswordVisible
     },
   },
 }

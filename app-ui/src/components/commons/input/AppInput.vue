@@ -12,6 +12,8 @@
     :clearable="clearable"
     :prepend-icon="prependIcon"
     :error-messages="errorMessages[0]"
+    :append-icon="appendIcon"
+    @click:append="$emit('appendIconClicked')"
   />
 </template>
 
@@ -21,13 +23,11 @@ export default {
   props: {
     errorMessages: {
       type: Array,
-      required: false,
       default: () => [],
     },
     inputType: {
       type: String,
-      required: false,
-      default: () => 'text',
+      default: 'text',
     },
     dense: {
       type: Boolean,
@@ -63,12 +63,15 @@ export default {
     },
     value: {
       type: [String, Number, Boolean],
-      required: false,
-      default: () => '',
+      default: '',
     },
     label: {
       type: String,
       required: true,
+    },
+    appendIcon: {
+      type: String,
+      default: '',
     },
   },
   data() {

@@ -14,6 +14,7 @@ import appInstalledItem from './appInstalledItem.json'
 import profile from './profile.json'
 import label from './label.json'
 import flashMessages from './flashMessages.json'
+import validation from './validation.json'
 
 export default Object.assign(
   appInstalledItem,
@@ -33,5 +34,6 @@ export default Object.assign(
     $vuetify: vuetify,
   },
   profile,
-  label
+  label,
+  validation
 )

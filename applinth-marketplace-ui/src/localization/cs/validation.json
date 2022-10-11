@@ -1,0 +1,5 @@
+{
+  "validation": {
+    "url": "{_field_} musí začínat na https:// nebo http://"
+  }
+}
