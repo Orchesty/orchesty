@@ -48,12 +48,18 @@ func (service startingPointService) RunTopology(topology, node, parameters strin
 }
 
 func (service startingPointService) createContent(parameters string) interface{} {
-	var content interface{}
+	jsonParameters := "{}"
 
 	if parameters != "" {
-		if err := json.Unmarshal([]byte(fmt.Sprintf("{%s}", parameters)), &content); err != nil {
-			service.logContext().Error(err)
-		}
+		jsonParameters = fmt.Sprintf("{%s}", parameters)
+	}
+
+	var content interface{}
+
+	if err := json.Unmarshal([]byte(jsonParameters), &content); err != nil {
+		service.logContext().Error(err)
+
+		return map[string]interface{}{}
 	}
 
 	return content
