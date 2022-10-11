@@ -9,7 +9,7 @@
             <template v-if="item.type === 'queue'">
               <strong>{{ $t('healthcheck.list.errorQueueItemTitle', { name: item.name }) }} </strong> <br />
               <span class="text-sm-body-2">
-                {{ $t('healthcheck.list.errorQueueItemText', { name: item.service, topology: item.topology }) }}
+                {{ $t('healthcheck.list.errorQueueItemText', { service: item.service, topology: item.topology }) }}
               </span>
             </template>
             <strong v-else>{{ $t('healthcheck.list.errorServiceItem', { name: item.name }) }} </strong>
