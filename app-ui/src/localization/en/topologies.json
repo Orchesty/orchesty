@@ -50,7 +50,9 @@
         "userTask": "User Tasks",
         "logs": "Log List"
       },
-      "noTopologySelected": "No topology selected"
+      "noTopologySelected": "No topology selected",
+      "version": "Version",
+      "status": "Status"
     },
     "create": {
       "form": {
