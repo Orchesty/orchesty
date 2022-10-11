@@ -26,6 +26,7 @@ import logs from './logs.json'
 import auth from './auth.json'
 import topologies from './topologies.json'
 import appItemPasswordModal from './appItemPasswordModal.json'
+import validation from './validation.json'
 import healthcheck from './healthcheck.json'
 
 export default Object.assign(
@@ -57,5 +58,6 @@ export default Object.assign(
   sidebar,
   topologies,
   appItemPasswordModal,
-  { healthcheck: healthcheck }
+  { healthcheck: healthcheck },
+  validation
 )
