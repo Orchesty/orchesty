@@ -24,7 +24,6 @@ import YoutubeApplication from '@orchesty/nodejs-connectors/dist/lib/Google/Yout
 import HubSpotCreateContactConnector
     from '@orchesty/nodejs-connectors/dist/lib/Hubspot/Connector/HubSpotCreateContactConnector';
 import HubSpotApplication from '@orchesty/nodejs-connectors/dist/lib/Hubspot/HubSpotApplication';
-import HubSpotCreateContactMapper from '@orchesty/nodejs-connectors/dist/lib/Hubspot/Mapper/HubSpotCreateContactMapper';
 import IDokladApplication from '@orchesty/nodejs-connectors/dist/lib/IDoklad/IDokladApplication';
 import JiraCreateIssueConnector from '@orchesty/nodejs-connectors/dist/lib/Jira/Connector/JiraCreateIssueConnector';
 import JiraApplication from '@orchesty/nodejs-connectors/dist/lib/Jira/JiraApplication';
@@ -71,6 +70,7 @@ import ListPosts from './JsonPlaceholder/Batch/ListPosts';
 import ListUsers from './JsonPlaceholder/Batch/ListUsers';
 import BinSender from './JsonPlaceholder/Connector/BinSender';
 import Node from './JsonPlaceholder/Custom/Node';
+import HubSpotCreateContactMapper from './JsonPlaceholder/HubSpotCreateContactMapper';
 import NonInstallableApplication from './JsonPlaceholder/NonInstallableApplication';
 import SampleApplication from './JsonPlaceholder/SampleApplication';
 import TenantApplication from './JsonPlaceholder/TenantApplication';
