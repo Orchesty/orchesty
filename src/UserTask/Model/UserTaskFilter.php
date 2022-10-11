@@ -58,6 +58,7 @@ final class UserTaskFilter extends GridFilterAbstract
             UserTask::CREATED        => UserTask::CREATED,
             UserTask::UPDATED        => UserTask::UPDATED,
             UserTask::USER           => UserTask::USER,
+            UserTask::MESSAGE        => 'message.body',
         ];
     }
 
@@ -75,6 +76,16 @@ final class UserTaskFilter extends GridFilterAbstract
     }
 
     /**
+     * @return mixed[]
+     */
+    protected function searchableCols(): array
+    {
+        return [
+            UserTask::MESSAGE,
+        ];
+    }
+
+    /**
      * @return Builder
      */
     protected function prepareSearchQuery(): Builder
@@ -86,19 +97,11 @@ final class UserTaskFilter extends GridFilterAbstract
     }
 
     /**
-     * @return mixed[]
-     */
-    protected function searchableCols(): array
-    {
-        return [];
-    }
-
-    /**
      * @return bool
      */
     protected function useTextSearch(): bool
     {
-        return FALSE;
+        return TRUE;
     }
 
 }
