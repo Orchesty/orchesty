@@ -7,11 +7,8 @@ services:
     hbpf.cron.manager:
         class: Hanaboso\PipesFramework\Configurator\Cron\CronManager
         arguments:
-            - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
-            - '%startingPointHost%'
             - '%cronHost%'
-            - '%orchestyApikey%'
 
     hbpf.topology.configurator:
         class: Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory

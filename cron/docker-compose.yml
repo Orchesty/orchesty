@@ -2,26 +2,26 @@ version: '3.5'
 
 services:
     app:
-        image: hanabosocom/go-base:1.18
+        image: hanabosocom/go-base:1.19
         user: ${DEV_UID}:${DEV_GID}
         environment:
             DEV_UID: ${DEV_UID}
             DEV_GID: ${DEV_GID}
             APP_DEBUG: 'true'
-            MONGO_DSN: mongodb://mongodb/cron?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
-            MONGO_COLLECTION: cron
+            MONGO_DSN: mongodb://mongodb/cron
+            MONGO_COLLECTION: Cron
+            STARTING_POINT_DSN: https://example.com
         volumes:
             - ./:/app
             - ${GOPATH}/pkg:/go/pkg
         ports:
             - ${DEV_IP}:80:8080
-        command: /bin/sh -c '
-            su-exec root chmod u+s /usr/bin/crontab &&
-            su-exec root crond -l 0 -L /var/log/cron.log &&
-            go run cmd/cron.go'
+            - ${DEV_IP}:2345:2345
+        command: /run.sh -p cmd/cron.go -c api -l 2345
+        security_opt: ['seccomp:unconfined']
 
     mongodb:
-        image: mongo:latest
+        image: mongo
         ports:
             - ${DEV_IP}:27017:27017
         volumes:
