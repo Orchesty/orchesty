@@ -587,7 +587,7 @@ components:
                 type: string
         appId:
             in: query
-            name: appName
+            name: appId
             description: Filter by appId
             required: false
             schema:
