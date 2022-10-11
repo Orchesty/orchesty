@@ -543,32 +543,6 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getConsumerMetrics
-     * @throws DateTimeException
-     * @throws Exception
-     */
-    public function testConsumerMetrics(): void
-    {
-        self::markTestSkipped();
-        //        $topo = $this->createTopo();
-        //        $node = $this->createNode($topo);
-        //        $this->setFakeData($topo, $node);
-        //
-        //        $manager = $this->getManager();
-        //        $result  = $manager->getConsumerMetrics([]);
-        //        self::assertEquals(
-        //            [
-        //                [
-        //                    'queue'     => 'pipes.limiter',
-        //                    'consumers' => 0,
-        //                    'created'   => $result[0]['created'],
-        //                ],
-        //            ],
-        //            $result,
-        //        );
-    }
-
-    /**
      * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getUserMetrics
      * @throws DateTimeException
      * @throws Exception
