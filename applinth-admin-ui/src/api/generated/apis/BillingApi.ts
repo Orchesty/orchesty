@@ -62,7 +62,7 @@ export interface UsageStatsTimeBucketAppsRequest {
 export interface UsageStatsTimeBucketUsersRequest {
     timeRangeStart: string;
     timeRangeEnd: string;
-    appName: string;
+    appId: string;
     tenantId?: string;
     instanceId?: string;
 }
@@ -84,7 +84,7 @@ export interface UsageStatsUsersRequest {
 export class BillingApi extends runtime.BaseAPI {
 
     /**
-     * Get billing report aggregated by an appName
+     * Get billing report aggregated by an appId
      */
     async usageStatsAppsRaw(requestParameters: UsageStatsAppsRequest, initOverrides?: RequestInit | runtime.InitOverideFunction): Promise<runtime.ApiResponse<UsageStatsApps>> {
         const queryParameters: any = {};
@@ -126,7 +126,7 @@ export class BillingApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get billing report aggregated by an appName
+     * Get billing report aggregated by an appId
      */
     async usageStatsApps(requestParameters: UsageStatsAppsRequest = {}, initOverrides?: RequestInit | runtime.InitOverideFunction): Promise<UsageStatsApps> {
         const response = await this.usageStatsAppsRaw(requestParameters, initOverrides);
@@ -249,8 +249,8 @@ export class BillingApi extends runtime.BaseAPI {
             throw new runtime.RequiredError('timeRangeEnd','Required parameter requestParameters.timeRangeEnd was null or undefined when calling usageStatsTimeBucketUsers.');
         }
 
-        if (requestParameters.appName === null || requestParameters.appName === undefined) {
-            throw new runtime.RequiredError('appName','Required parameter requestParameters.appName was null or undefined when calling usageStatsTimeBucketUsers.');
+        if (requestParameters.appId === null || requestParameters.appId === undefined) {
+            throw new runtime.RequiredError('appId','Required parameter requestParameters.appId was null or undefined when calling usageStatsTimeBucketUsers.');
         }
 
         const queryParameters: any = {};
@@ -271,8 +271,8 @@ export class BillingApi extends runtime.BaseAPI {
             queryParameters['timeRangeEnd'] = requestParameters.timeRangeEnd;
         }
 
-        if (requestParameters.appName !== undefined) {
-            queryParameters['appName'] = requestParameters.appName;
+        if (requestParameters.appId !== undefined) {
+            queryParameters['appId'] = requestParameters.appId;
         }
 
         const headerParameters: runtime.HTTPHeaders = {};
