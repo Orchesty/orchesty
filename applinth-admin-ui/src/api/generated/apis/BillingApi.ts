@@ -40,7 +40,7 @@ export interface UsageStatsAppsRequest {
     instanceId?: string;
     timeRangeStart?: string;
     timeRangeEnd?: string;
-    appName?: string;
+    appId?: string;
     granularity?: UsageStatsAppsGranularityEnum;
 }
 
@@ -72,7 +72,7 @@ export interface UsageStatsUsersRequest {
     instanceId?: string;
     timeRangeStart?: string;
     timeRangeEnd?: string;
-    appName?: string;
+    appId?: string;
     granularity?: UsageStatsUsersGranularityEnum;
     endUserDisplayId?: string;
     endUserId?: string;
@@ -105,8 +105,8 @@ export class BillingApi extends runtime.BaseAPI {
             queryParameters['timeRangeEnd'] = requestParameters.timeRangeEnd;
         }
 
-        if (requestParameters.appName !== undefined) {
-            queryParameters['appName'] = requestParameters.appName;
+        if (requestParameters.appId !== undefined) {
+            queryParameters['appId'] = requestParameters.appId;
         }
 
         if (requestParameters.granularity !== undefined) {
@@ -317,8 +317,8 @@ export class BillingApi extends runtime.BaseAPI {
             queryParameters['timeRangeEnd'] = requestParameters.timeRangeEnd;
         }
 
-        if (requestParameters.appName !== undefined) {
-            queryParameters['appName'] = requestParameters.appName;
+        if (requestParameters.appId !== undefined) {
+            queryParameters['appId'] = requestParameters.appId;
         }
 
         if (requestParameters.granularity !== undefined) {
