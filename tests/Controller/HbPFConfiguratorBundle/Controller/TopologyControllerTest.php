@@ -8,6 +8,7 @@ use Exception;
 use Hanaboso\CommonsBundle\Exception\CronException;
 use Hanaboso\CommonsBundle\Exception\NodeException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
+use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
@@ -373,6 +374,10 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             ->setDescr('Topology')
             ->setEnabled(TRUE);
         $this->pfd($topology);
+
+        $this->client
+            ->getContainer()
+            ->set('hbpf.transport.curl_manager', self::createMock(CurlManagerInterface::class));
 
         $this->client->request(
             'PUT',
