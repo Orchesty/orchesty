@@ -14,6 +14,7 @@ import appInstalledItem from './appInstalledItem.json'
 import profile from './profile.json'
 import label from './label.json'
 import flashMessages from './flashMessages.json'
+import jsonEditor from './jsonEditor.json'
 import validation from './validation.json'
 
 export default Object.assign(
@@ -35,5 +36,6 @@ export default Object.assign(
   },
   profile,
   label,
+  jsonEditor,
   validation
 )

@@ -14,7 +14,6 @@
     "core-js": "^3.8.3",
     "moment": "^2.29.3",
     "pretty-ms": "^8.0.0",
-    "v-jsoneditor": "^1.4.5",
     "validator": "^13.7.0",
     "vee-validate": "3",
     "vue": "^2.6.14",

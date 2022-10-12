@@ -1,61 +1,60 @@
 <template>
-  <v-jsoneditor
-    v-model="JSONData"
-    :options="options"
-    :plus="false"
-    :height="height"
-    @error="onError"
-  />
+  <div>
+    <v-textarea v-model="parsedJsonData" :height="height" full-width />
+    <div className="parsing-error-message">
+      <span v-if="isNotJson" className="font-weight-bold error--text">
+        {{ $t('userTask.jsonEditor.parsingError') }}
+      </span>
+    </div>
+  </div>
 </template>
 
 <script>
-import VJsoneditor from 'v-jsoneditor'
-
 export default {
   name: 'JsonEditor',
-  components: { VJsoneditor },
   props: {
     value: {
       type: Object,
       required: true,
     },
-    mode: {
-      type: String,
-      default: 'tree',
-      isExpand: true,
-    },
   },
   data() {
     return {
-      options: {
-        mode: this.mode,
-        mainMenuBar: false,
-      },
-      height: '300px',
-      JSONData: null,
+      isNotJson: false,
+      height: '300',
+      JsonData: null,
+      parsedJsonData: null,
     }
   },
-  methods: {
-    onError(err) {
-      console.error(err)
-    },
-  },
   watch: {
+    parsedJsonData(newValue) {
+      try {
+        this.JsonData = JSON.parse(newValue)
+        this.isNotJson = false
+      } catch (e) {
+        this.isNotJson = true
+      }
+    },
     value: {
       deep: true,
       immediate: true,
       handler(newValue) {
-        this.JSONData = newValue
+        this.isNotJson = false
+        this.parsedJsonData = JSON.stringify(newValue, null, 4)
       },
     },
-    JSONData: {
+    JsonData: {
       deep: true,
-      handler(JSONData) {
-        this.$emit('input', JSONData)
+      handler(JsonData) {
+        this.$emit('input', JsonData)
       },
     },
   },
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.parsing-error-message {
+  height: 1rem;
+}
+</style>

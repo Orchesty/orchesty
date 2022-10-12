@@ -1,0 +1,5 @@
+{
+  "jsonEditor": {
+    "parsingError": "Error occured while trying to parse provided input into a JSON format!"
+  }
+}
