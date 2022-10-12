@@ -2,6 +2,8 @@
   "applicationDetailPage": {
     "cost": "Cena",
     "users": "Uživatelé",
-    "installations": "Instalace"
+    "installations": "Instalace",
+    "monthlyPrice": "Měsíční cena",
+    "customers": "Zákazníci"
   }
 }

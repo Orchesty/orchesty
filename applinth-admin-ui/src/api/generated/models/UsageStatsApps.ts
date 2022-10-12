@@ -2,7 +2,7 @@
 /* eslint-disable */
 /**
  * Sample API
- * # Error codes: ## DateTime format error - 1001 - timeRangeStart and/or timeRangeEnd are in invalid format - 1002 - installedDate are in invalid format 
+ * # Error codes: ## DateTime format error - 1001 - timeRangeStart and/or timeRangeEnd are in invalid format - 1002 - installedDate is in invalid format - 1003 - tail is used with timeRange parameters 
  *
  * The version of the OpenAPI document: 0.1.9
  * 

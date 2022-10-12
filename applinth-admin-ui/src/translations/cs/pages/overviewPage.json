@@ -7,7 +7,8 @@
       "users": "Uživatelé",
       "billing": "Fakturace",
       "amount": "Cena",
-      "estimatedCosts": "Odhadovaná cena"
+      "estimatedCosts": "Odhadovaná cena",
+      "estimatedCostsEom": "Odhadované náklady"
     },
     "apps": {
       "users": "Uživatelé"

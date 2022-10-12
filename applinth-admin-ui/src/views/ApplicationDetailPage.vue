@@ -5,7 +5,7 @@
     </div>
     <div v-else class="application-settings-wrapper">
       <v-img
-        max-width="300"
+        max-width="150"
         contain
         :src="
           applicationDetail && applicationDetail.logo
@@ -13,9 +13,10 @@
             : require('@/assets/svg/app-item-placeholder.svg')
         "
         class="my-5"
+        :alt="breadcrumbTitle"
       />
       <Heading class="mb-2">{{
-        applicationDetail ? applicationDetail.publicName : application.appName
+        applicationDetail ? applicationDetail.publicName : breadcrumbTitle
       }}</Heading>
       <p>
         {{ applicationDetail && applicationDetail.description }}
@@ -23,18 +24,23 @@
       <div class="wrapper my-5">
         <StatusCard
           :loading="loading"
-          :score="application.endUsers"
-          :title="$t('applicationDetailPage.users')"
+          :score="toCZK(monthlyPrice)"
+          :title="$t('applicationDetailPage.monthlyPrice')"
         />
         <StatusCard
           :loading="loading"
-          :score="application.installCount"
-          :title="$t('applicationDetailPage.installations')"
+          :score="application.endUsers"
+          :title="$t('applicationDetailPage.customers')"
         />
         <StatusCard
           :loading="loading"
           :score="toCZK(application.totalCost)"
           :title="$t('applicationDetailPage.cost')"
+        />
+        <StatusCard
+          :loading="loading"
+          :score="toCZK(application.estimatedTotalCost)"
+          :title="$t('overviewPage.statusCards.estimatedCostsEom')"
         />
       </div>
       <LineChart
@@ -102,6 +108,7 @@ export default class ApplicationDetailPage extends Vue {
   labels: string[] = [];
   data: number[] = [];
   breadcrumbTitle: string | undefined = "";
+  monthlyPrice = 19900000;
 
   async created() {
     this.loading = true;
@@ -109,18 +116,20 @@ export default class ApplicationDetailPage extends Vue {
     const selectedApplications = await callApi<UsageStatsAppsRequest>(
       api.overview.apps,
       {
-        timeRangeStart: new Date(0).toISOString(),
-        timeRangeEnd: new Date().toISOString(),
         appId: this.$route.params.id,
+        granularity: "monthly",
+        tail: true,
       }
     );
 
+    this.applicationDetail = this.applicationsMetadata[this.$route.params.id];
+
     if (selectedApplications.length > 0) {
       this.application = selectedApplications[0];
-      this.applicationDetail =
-        this.applicationsMetadata[this.application.appId as string];
 
       this.breadcrumbTitle = this.applicationDetail?.publicName;
+    } else {
+      this.breadcrumbTitle = this.$route.params.id;
     }
 
     const graphData = await callApi<UsageStatsTimeBucketUsersRequest>(
@@ -159,8 +168,8 @@ export default class ApplicationDetailPage extends Vue {
 <style lang="scss" scoped>
 .wrapper {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0 16px;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px;
 }
 .chart-js {
   max-height: 50px;
