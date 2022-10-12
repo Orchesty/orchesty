@@ -44,6 +44,10 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
                     'authorization_type' => 'basic',
                     'application_type'   => 'cron',
                     'description'        => 'Application for test purposes',
+                    'info'               => '',
+                    'logo'               => NULL,
+                    'isInstallable'      => TRUE,
+
                 ],
                 [
                     'key'                => 'null2',
@@ -51,6 +55,9 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
                     'authorization_type' => 'oauth2',
                     'application_type'   => 'cron',
                     'description'        => 'Application for test purposes',
+                    'info'               => '',
+                    'logo'               => NULL,
+                    'isInstallable'      => TRUE,
                 ],
                 [
                     'key'                => 'null1',
@@ -58,6 +65,9 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
                     'authorization_type' => 'oauth',
                     'application_type'   => 'webhook',
                     'description'        => 'This is null ouath1 app.',
+                    'info'               => '',
+                    'logo'               => NULL,
+                    'isInstallable'      => TRUE,
                 ],
             ],
         ];
@@ -80,6 +90,9 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
                 'application_type'   => 'cron',
                 'description'        => 'Application for test purposes',
                 'syncMethods'        => ['testSynchronous', 'returnBody'],
+                'info'               => '',
+                'logo'               => NULL,
+                'isInstallable'      => TRUE,
             ],
             $this->handler->getApplicationByKey('null'),
         );

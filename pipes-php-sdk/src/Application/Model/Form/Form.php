@@ -105,7 +105,7 @@ final class Form
         }
 
         return [
-            'key' => $this->publicName,
+            'key' => $this->key,
             'publicName' => $this->publicName,
             'description' => $this->description,
             ApplicationInterface::FIELDS => $fields,

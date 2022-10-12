@@ -256,6 +256,30 @@ final class ApplicationController
     }
 
     /**
+     * @Route("/applications/:{key}/users/{user}/changeState'", methods={"PUT"})
+     *
+     * @param Request $request
+     * @param string  $key
+     * @param string  $user
+     *
+     * @return Response
+     */
+    public function changeStateOfApplication(Request $request, string $key, string $user): Response
+    {
+        try {
+            return $this->getResponse($this->applicationHandler->changeStateOfApplication(
+                $key,
+                $user,
+                $request->get('enabled'),
+            ));
+        } catch (ApplicationInstallException $e) {
+            return $this->getErrorResponse($e, 404, ControllerUtils::NOT_FOUND);
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
+        }
+    }
+
+    /**
      * @Route("/applications/{key}/users/{user}/settings", methods={"PUT"})
      *
      * @param Request $request

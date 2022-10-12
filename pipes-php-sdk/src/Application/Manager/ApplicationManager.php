@@ -346,4 +346,24 @@ final class ApplicationManager
         return $application->getApplicationForms($applicationInstall);
     }
 
+    /**
+     * @param string $key
+     * @param string $user
+     * @param bool   $enabled
+     *
+     * @return ApplicationInstall
+     * @throws ApplicationInstallException
+     * @throws MongoDBException
+     */
+    public function changeStateOfApplication(string $key, string $user, bool $enabled): ApplicationInstall
+    {
+        $applicationInstall = $this->repository->findUserApp($key, $user);
+        $applicationInstall->setEnabled($enabled);
+
+        $this->dm->refresh($applicationInstall);
+        $this->dm->flush();
+
+        return $applicationInstall;
+    }
+
 }

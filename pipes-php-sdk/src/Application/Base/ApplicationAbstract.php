@@ -23,6 +23,16 @@ abstract class ApplicationAbstract implements ApplicationInterface
     protected $logoFilename = 'logo.svg';
 
     /**
+     * @var string
+     */
+    protected $infoFilename = '';
+
+    /**
+     * @var bool
+     */
+    protected $isInstallable = TRUE;
+
+    /**
      * @return string|null
      */
     public function getLogo(): ?string
@@ -40,6 +50,21 @@ abstract class ApplicationAbstract implements ApplicationInterface
         }
 
         return NULL;
+    }
+
+    /**
+     * @return string
+     */
+    public function getInfo(): string {
+        try {
+            if ($this->infoFilename && file_exists($this->infoFilename)) {
+                return File::getContent($this->infoFilename);
+            }
+        } catch (Exception) {
+
+        }
+
+        return '';
     }
 
     /**
@@ -150,6 +175,9 @@ abstract class ApplicationAbstract implements ApplicationInterface
             'application_type'   => $this->getApplicationType(),
             'key'                => $this->getName(),
             'description'        => $this->getDescription(),
+            'info'               => $this->getInfo(),
+            'logo'               => $this->getLogo(),
+            'isInstallable'      => $this->isInstallable,
         ];
     }
 
