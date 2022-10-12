@@ -5,7 +5,8 @@ info:
         # Error codes:
         ## DateTime format error
         - 1001 - timeRangeStart and/or timeRangeEnd are in invalid format
-        - 1002 - installedDate are in invalid format
+        - 1002 - installedDate is in invalid format
+        - 1003 - tail is used with timeRange parameters
     version: 0.1.9
 paths:
     /status:
@@ -32,6 +33,7 @@ paths:
                 - $ref: "#/components/parameters/timeRangeStart"
                 - $ref: "#/components/parameters/timeRangeEnd"
                 - $ref: "#/components/parameters/appId"
+                - $ref: "#/components/parameters/tail"
                 - $ref: "#/components/parameters/granularity"
             responses:
                 '200':
@@ -157,6 +159,7 @@ paths:
                 - $ref: "#/components/parameters/timeRangeStart"
                 - $ref: "#/components/parameters/timeRangeEnd"
                 - $ref: "#/components/parameters/appId"
+                - $ref: "#/components/parameters/tail"
                 - $ref: "#/components/parameters/granularity"
                 - in: query
                   name: endUserDisplayId
@@ -585,6 +588,13 @@ components:
             required: false
             schema:
                 type: string
+        tail:
+            in: query
+            name: tail
+            description: Show installed data. Not to use with time range parameters.
+            required: false
+            schema:
+                type: boolean
         appId:
             in: query
             name: appId
@@ -695,6 +705,9 @@ components:
                             totalCost:
                                 description: Total installs cost for this app
                                 type: integer
+                            estimatedTotalCost:
+                                description: Total estimated installs cost for this app
+                                type: integer
                             installCount:
                                 description: Total number of installs
                                 type: integer
@@ -790,6 +803,9 @@ components:
                                     type: string
                             totalCost:
                                 description: Total installs cost for this user
+                                type: integer
+                            estimatedTotalCost:
+                                description: Total estimated installs cost for this user
                                 type: integer
                             installCount:
                                 description: Total installs count for this user

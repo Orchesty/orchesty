@@ -24,6 +24,42 @@ describe('usageStatsController', () => {
             assert.deepEqual(resp.statusCode, 500);
             await db.connect();
         });
+        it('shouldReturnTailError', async () => {
+            const resp = await supertest(server).get('/billing/reports/apps').query({
+                timeRangeStart: '2018-07-20T05:17:36Z',
+                timeRangeEnd: '2018-07-20T05:17:36Z',
+                tail: true,
+            }).set(getJWTToken(true));
+            assert.deepEqual(resp.statusCode, 400);
+        });
+        it('shouldReturnTailData', async () => {
+            const resp = await supertest(server).get('/billing/reports/apps').query({
+                granularity: 'monthly',
+                tail: true,
+            }).set(getJWTToken(true));
+            assert.deepEqual(resp.body.rows.length, 2);
+            assert.deepEqual(resp.body.rows, [
+                {
+                    appId: 'neco',
+                    appName: 'neco',
+                    endUsers: 1,
+                    estimatedTotalCost: 0,
+                    installCount: 2,
+                    instanceIds: ['inst1234', 'inst1235'],
+                    totalCost: 2000000,
+                },
+                {
+                    appId: 'neco1',
+                    appName: 'neco1',
+                    endUsers: 2,
+                    estimatedTotalCost: 0,
+                    installCount: 4,
+                    instanceIds: ['inst1234', 'inst1235'],
+                    totalCost: 400000,
+                },
+            ]);
+            assert.deepEqual(resp.statusCode, 200);
+        });
         it.skip('shouldReturn403', async () => {
             const resp = await supertest(server).get('/billing/reports/apps').query({
                 timeRangeStart: '2018-07-20T05:17:36Z',
@@ -45,7 +81,13 @@ describe('usageStatsController', () => {
             assert.deepEqual(resp.body.rows.length, 1);
             assert.deepEqual(resp.body.rows, [
                 {
-                    appId: 'neco1', appName: 'neco1', endUsers: 1, installCount: 1, instanceIds: ['inst1234'], totalCost: 100000,
+                    appId: 'neco1',
+                    appName: 'neco1',
+                    endUsers: 1,
+                    installCount: 1,
+                    instanceIds: ['inst1234'],
+                    totalCost: 100000,
+                    estimatedTotalCost: 0,
                 },
             ]);
         });
@@ -60,7 +102,13 @@ describe('usageStatsController', () => {
             assert.deepEqual(resp.body.rows.length, 1);
             assert.deepEqual(resp.body.rows, [
                 {
-                    appId: 'neco1', appName: 'neco1', endUsers: 1, installCount: 2, instanceIds: ['inst1234', 'inst1235'], totalCost: 200000,
+                    appId: 'neco1',
+                    appName: 'neco1',
+                    endUsers: 1,
+                    installCount: 2,
+                    instanceIds: ['inst1234', 'inst1235'],
+                    totalCost: 200000,
+                    estimatedTotalCost: 0,
                 },
             ]);
         });
@@ -72,7 +120,7 @@ describe('usageStatsController', () => {
             }).set(authorization);
             assert.deepEqual(resp.statusCode, 400);
             assert.deepEqual(resp.text, '{"msg":"Parameter timeRangeStart and/or timeRangeEnd is/are in'
-        + ' invalid format!","code":1001}');
+                + ' invalid format!","code":1001}');
         });
         it('shouldReturn400BadDateGranularity', async () => {
             const resp = await supertest(server).get('/billing/reports/apps').query({
@@ -82,7 +130,7 @@ describe('usageStatsController', () => {
             }).set(authorization);
             assert.deepEqual(resp.statusCode, 400);
             assert.deepEqual(resp.text, '[{"message":"Wrong parameter granularity in query. ","error":'
-        + '[{"code":"ENUM_MISMATCH","params":["afbrbre"],"message":"No enum match for: afbrbre","path":"#/"}]}]');
+                + '[{"code":"ENUM_MISMATCH","params":["afbrbre"],"message":"No enum match for: afbrbre","path":"#/"}]}]');
         });
         it('shouldReturn401', async () => {
             const resp = await supertest(server).get('/billing/reports/apps').query({
@@ -101,9 +149,21 @@ describe('usageStatsController', () => {
             assert.deepEqual(resp.body.rows.length, 2);
             assert.deepEqual(resp.body.rows, [
                 {
-                    appId: 'neco', appName: 'neco', instanceIds: ['inst1234', 'inst1235'], endUsers: 1, installCount: 6, totalCost: 5000000,
+                    appId: 'neco',
+                    appName: 'neco',
+                    instanceIds: ['inst1234', 'inst1235'],
+                    endUsers: 1,
+                    installCount: 6,
+                    totalCost: 5000000,
+                    estimatedTotalCost: 0,
                 }, {
-                    appId: 'neco1', appName: 'neco1', instanceIds: ['inst1234', 'inst1235'], endUsers: 2, installCount: 6, totalCost: 600000,
+                    appId: 'neco1',
+                    appName: 'neco1',
+                    instanceIds: ['inst1234', 'inst1235'],
+                    endUsers: 2,
+                    installCount: 6,
+                    totalCost: 600000,
+                    estimatedTotalCost: 0,
                 },
             ]);
             assert.deepEqual(resp.statusCode, 200);
@@ -117,7 +177,13 @@ describe('usageStatsController', () => {
             }).set(authorization);
             assert.deepEqual(resp.body.rows.length, 1);
             assert.deepEqual(resp.body.rows, [{
-                appId: 'neco', appName: 'neco', instanceIds: ['inst1234', 'inst1235'], endUsers: 1, installCount: 6, totalCost: 5000000,
+                appId: 'neco',
+                appName: 'neco',
+                instanceIds: ['inst1234', 'inst1235'],
+                endUsers: 1,
+                installCount: 6,
+                totalCost: 5000000,
+                estimatedTotalCost: 0,
             },
             ]);
             assert.deepEqual(resp.statusCode, 200);
@@ -142,6 +208,7 @@ describe('usageStatsController', () => {
                     endUserId: '1234',
                     installCount: 2,
                     totalCost: 200000,
+                    estimatedTotalCost: 200000,
                 },
                 {
                     appIds: ['neco', 'neco1'],
@@ -151,6 +218,7 @@ describe('usageStatsController', () => {
                     endUserId: '1235',
                     installCount: 10,
                     totalCost: 5400000,
+                    estimatedTotalCost: 5400000,
                 },
             ]);
             assert.deepEqual(resp.statusCode, 200);
@@ -202,7 +270,11 @@ describe('usageStatsController', () => {
             assert.deepEqual(resp.body.rows.length, 3);
             assert.deepEqual(resp.body.rows, [
                 {
-                    appIds: ['neco'], appNames: ['neco'], instanceIds: ['inst1234', 'inst1235'], timeBucketName: '01/21', totalCost: 1000000,
+                    appIds: ['neco'],
+                    appNames: ['neco'],
+                    instanceIds: ['inst1234', 'inst1235'],
+                    timeBucketName: '01/21',
+                    totalCost: 1000000,
                 },
                 {
                     appIds: ['neco', 'neco1'],
