@@ -6,16 +6,12 @@
     "require": {
         "doctrine/annotations": "^1.13",
         "orchesty/backend": "^2.1",
-        "web-token/jwt-bundle": "^v3.0",
-        "web-token/jwt-core": "^v3.0",
-        "web-token/jwt-encryption": "^v3.0",
-        "web-token/jwt-encryption-algorithm-aesgcm": "^v3.0",
-        "web-token/jwt-encryption-algorithm-ecdh-es": "^v3.0",
-        "web-token/jwt-encryption-algorithm-rsa": "^v3.0",
-        "web-token/jwt-key-mgmt": "^v3.0",
-        "web-token/jwt-signature": "^v3.0",
-        "web-token/jwt-signature-algorithm-eddsa": "^v3.0",
-        "web-token/jwt-signature-algorithm-hmac": "^v3.0"
+        "web-token/jwt-bundle": "^3.1",
+        "web-token/jwt-encryption": "^3.1",
+        "web-token/jwt-encryption-algorithm-aesgcm": "^3.1",
+        "web-token/jwt-encryption-algorithm-ecdh-es": "^3.1",
+        "web-token/jwt-encryption-algorithm-rsa": "^3.1",
+        "web-token/jwt-signature-algorithm-eddsa": "^3.1"
     },
     "require-dev": {
         "hanaboso/php-check-utils": "^1.3"

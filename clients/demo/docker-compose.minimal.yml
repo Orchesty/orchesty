@@ -108,14 +108,13 @@ services:
             WORKER_DEFAULT_PORT: 8000
             DOCKER_REGISTRY: orchesty
             DOCKER_PF_BRIDGE_IMAGE: bridge:${VERSION}
-            JWT_KEY: demo_keydemo_keydemo_keydemo_keydemo_keydemo_keydemo_keydemo_keydemo_keydemo_key
+            JWT_KEY: BWoCz4gxw3YHDMkqE5HD1WT2u6zqIAtiJkYVyf6UucL4ZtbhhatQooP5IgTQRwowYR6z8wE3biqZTl37
             X_AUTH_KEY: demo_key
             EMAIL_DSN: smtp://mailhog:1025
             CRYPT_SECRET: 'ThisIsNotSoSecret'
             USCCP_URI: ${BACKEND_URL}
             ALPHA_INSTANCE_ID: 'demo'
             INSTALLER_DIRS: '["/var/www/pipes/applinth/topology"]'
-            JWS_KEY: BWoCz4gxw3YHDMkqE5HD1WT2u6zqIAtiJkYVyf6UucL4ZtbhhatQooP5IgTQRwowYR6z8wE3biqZTl37
             JWE_PRIVATE_KEY: |
                 -----BEGIN RSA PRIVATE KEY-----
                 MIICWgIBAAKBgH3O2axPpFRQpeq1uqDUrpCpOTNcbYLusMZWBDE6G3CFRKfH7L8v

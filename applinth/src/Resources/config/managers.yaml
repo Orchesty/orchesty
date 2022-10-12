@@ -1,6 +1,5 @@
 parameters:
     jwe_private_key: '%env(string:JWE_PRIVATE_KEY)%'
-    jws_key: '%env(string:JWS_KEY)%'
 
 services:
     _defaults:
@@ -15,7 +14,7 @@ services:
         class: Hanaboso\Applinth\Manager\AuthorizationManager
         arguments:
             - '%jwe_private_key%'
-            - '%jws_key%'
+            - '%jwt_key%'
             - '@jose.jwe_serializer.serializer'
             - '@jose.jwe_decrypter.decrypter'
             - '@jose.jws_serializer.serializer'
