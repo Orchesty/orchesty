@@ -1,7 +1,7 @@
 {
   "flashMessage": {
     "uninstalled": "{item} odintalován",
-    "installed": "{item} naintalován",
+    "installed": "{item} nainstalován",
     "saved": "{item} - formulář uložen",
     "activated": "{item} aktivován",
     "deactivated": "{item} deaktivován",

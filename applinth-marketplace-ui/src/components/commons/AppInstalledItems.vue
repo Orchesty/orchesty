@@ -3,7 +3,7 @@
     <div v-if="isLoading">
       <base-progress-bar-linear />
     </div>
-    <div v-if="apps.length">
+    <div v-if="apps && apps.length">
       <v-card v-for="app in apps" :key="app.key" flat outlined class="mb-2">
         <v-container fluid>
           <v-row>
