@@ -122,7 +122,7 @@ final class ApplicationManagerTest extends DatabaseTestCaseAbstract
         $this->dm->clear();
 
         self::assertEquals(
-            'testPublicName',
+            'authorization_form',
             $res[ApplicationManager::APPLICATION_SETTINGS][ApplicationInterface::AUTHORIZATION_FORM]['key'],
         );
 

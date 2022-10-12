@@ -27,6 +27,7 @@ final class ApplicationHandler
 
     private const SYNC_METHODS         = 'syncMethods';
     private const AUTHORIZED           = 'authorized';
+    private const ENABLED              = 'enabled';
     private const WEBHOOK_SETTINGS     = 'webhookSettings';
     private const APPLICATION_SETTINGS = 'applicationSettings';
 
@@ -139,6 +140,7 @@ final class ApplicationHandler
             $application->toArray(),
             [
                 self::AUTHORIZED           => $application->isAuthorized($applicationInstall),
+                self::ENABLED              => $applicationInstall->isEnabled(),
                 self::APPLICATION_SETTINGS => $application->getApplicationForms($applicationInstall),
                 self::WEBHOOK_SETTINGS     => $application->getApplicationType() === ApplicationTypeEnum::WEBHOOK ?
                     $this->webhookManager->getWebhooks($application, $user) :
@@ -261,6 +263,20 @@ final class ApplicationHandler
     public function saveAuthToken(string $key, string $user, array $token): string
     {
         return $this->applicationManager->saveAuthorizationToken($key, $user, $token);
+    }
+
+    /**
+     * @param string $key
+     * @param string $user
+     * @param bool   $enabled
+     *
+     * @return ApplicationInstall
+     * @throws ApplicationInstallException
+     * @throws MongoDBException
+     */
+    public function changeStateOfApplication(string $key, string $user, bool $enabled): ApplicationInstall
+    {
+        return $this->applicationManager->changeStateOfApplication($key, $user, $enabled);
     }
 
 }

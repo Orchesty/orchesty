@@ -50,6 +50,9 @@ final class ApplicationAbstractTest extends DatabaseTestCaseAbstract
                 'application_type'   => 'cron',
                 'key'                => 'null-key',
                 'description'        => 'Application for test purposes',
+                'info'               => '',
+                'logo'               => NULL,
+                'isInstallable'      => TRUE,
             ],
             $this->application->toArray(),
         );
