@@ -3,13 +3,16 @@
         "title": "Errors"
     },
     "userTask": {
-    "grid": {
-        "node": "Node",
-        "created": "Created",
-        "data": "Data",
-        "logs": "Logs",
-        "actions": "Actions"
-    },
+        "grid": {
+            "node": "Node",
+            "created": "Created",
+            "data": "Data",
+            "logs": "Logs",
+            "actions": "Actions"
+        },
+        "jsonEditor": {
+            "parsingError": "Error occured while trying to parse provided input into a JSON format!"
+        },
         "modal": {
             "accept": {
                 "title": "Approve",
@@ -33,5 +36,5 @@
                 "body": "{0} will be denied."
             }
         }
-}
+    }
 }

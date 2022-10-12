@@ -14,7 +14,7 @@
           </v-col>
         </template>
         <template v-else>
-          <v-col cols="12">
+          <v-col cols="12" class="mb-3">
             <span class="pb-1">Headers:</span>
             <json-editor v-model="headers" />
           </v-col>
