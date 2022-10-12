@@ -4,14 +4,13 @@
       <v-col>
         <v-row>
           <v-col>
-            <sub-heading>{{ trash.topologyName }}</sub-heading>
+            <sub-heading>{{ trash[columnTopologyKey] }}</sub-heading>
           </v-col>
         </v-row>
         <v-row>
           <v-col>
             <span>
-              {{ toLocalDate(trash.created) }}
-              {{ toLocalTime(trash.created) }}
+              {{ toLocalDateTime(trash[columnDateKey]) }}
             </span>
           </v-col>
         </v-row>
@@ -53,12 +52,13 @@
 import SubHeading from '@/components/commons/SubHeading'
 import { callApi } from '@/utils/apiFetch'
 import { API } from '@/api'
-import { toLocalDate, toLocalTime } from '@/localization/filters/dateFilters'
+import { toLocalDateTime } from '@/localization/filters/dateFilters'
 import TrashUpdateModal from '@/components/commons/TrashUpdateModal'
 import JsonEditor from '@/components/commons/JsonEditor'
 import TrashApproveModal from '@/components/commons/TrashAcceptModal'
 import TrashRejectModal from '@/components/commons/TrashRejectModal'
 import ActionsWrapper from '@/components/commons/ActionsWrapper'
+import { COLUMN_TOPOLOGY_KEY, COLUMN_DATE_KEY } from '@/store/trash/types'
 
 export default {
   name: 'TrashDetail',
@@ -73,8 +73,9 @@ export default {
   data() {
     return {
       trash: null,
-      toLocalDate,
-      toLocalTime,
+      toLocalDateTime,
+      columnTopologyKey: COLUMN_TOPOLOGY_KEY,
+      columnDateKey: COLUMN_DATE_KEY,
     }
   },
   computed: {
