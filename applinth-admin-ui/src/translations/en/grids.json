@@ -9,7 +9,9 @@
       "installed": "Installed",
       "month": "Month",
       "application": "Application",
-      "disabled": "Disabled"
+      "disabled": "Disabled",
+      "customer": "Customer",
+      "activeApplications": "Active applications"
     }
   }
 }

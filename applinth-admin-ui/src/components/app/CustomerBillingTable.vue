@@ -4,6 +4,7 @@
     class="table-medium"
     :headers="headers"
     :items="monthlyBills"
+    hide-footer
   >
     <template #appNames="{ item }">
       {{ stringifyArray(item.appNames) }}

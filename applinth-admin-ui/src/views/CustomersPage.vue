@@ -30,12 +30,10 @@
         :headers="headers"
         :items="customers"
         :loading="isLoading"
+        hide-footer
       >
         <template #appNames="{ item }">
           {{ stringifyArray(item.appNames) }}
-        </template>
-        <template #totalCost="{ item }">
-          {{ formatPrice(item.totalCost) }}
         </template>
 
         <template #actions="{ item }">
@@ -102,22 +100,16 @@ export default class CustomersPage extends Vue {
 
   headers: Array<UsersTable> = [
     {
-      text: this.$t("grids.headers.user"),
+      text: this.$t("grids.headers.customer"),
       sortable: true,
       align: "start",
       value: "endUserDisplayId",
     },
     {
-      text: this.$t("grids.headers.activeApps"),
+      text: this.$t("grids.headers.activeApplications"),
       sortable: true,
       align: "start",
       value: "appNames",
-    },
-    {
-      text: this.$t("grids.headers.amount"),
-      sortable: true,
-      align: "start",
-      value: "totalCost",
     },
     {
       text: "",

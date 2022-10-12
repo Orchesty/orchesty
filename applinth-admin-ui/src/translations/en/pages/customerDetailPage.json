@@ -1,7 +1,9 @@
 {
   "customerDetailPage": {
-    "estimatedCosts": "Estimated costs",
+    "estimatedCosts": "Estimated EoM cost",
     "monthlyPayments": "Monthly payments",
-    "activeApps": "Active apps"
+    "activeApps": "Active apps",
+    "activeApplications": "Active applications",
+    "currentCost": "Current cost"
   }
 }

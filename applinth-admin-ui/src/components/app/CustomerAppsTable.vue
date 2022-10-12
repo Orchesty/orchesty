@@ -4,6 +4,7 @@
     class="table-medium"
     :headers="headers"
     :items="installedApps"
+    hide-footer
   >
     <template #installed="{ item }">
       <span>{{ toLocalDate(item.installed) }}</span>
@@ -45,7 +46,7 @@ export default class CustomerAppsTable extends Vue {
 
   headers = [
     {
-      text: this.$t("grids.headers.activeApps"),
+      text: this.$t("grids.headers.activeApplications"),
       sortable: true,
       align: "start",
       value: "appName",
@@ -64,7 +65,6 @@ export default class CustomerAppsTable extends Vue {
       api.installedApps.apps,
       {
         endUserId: this.customerId,
-        installedDate: new Date(0).toISOString(),
       }
     );
     this.isLoading = false;
