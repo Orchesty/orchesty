@@ -15,19 +15,30 @@
             :is-uninstalling="isUninstalling"
             :on-click="() => uninstall(appActive.key)"
           />
-          <v-switch
-            v-if="isActivationEnabled"
-            :input-value="isActivated"
-            color="secondary"
-            :loading="isActivationLoading"
-            inset
-            :disabled="activationDisabled"
-            @change="onActivationChange($event)"
-          >
-            <template #label>
-              <span class="activation-label">{{ onOrOff }}</span>
-            </template>
-          </v-switch>
+
+          <template v-if="isActivationEnabled">
+            <div v-if="activationDisabled" @click="toggleModal">
+              <v-switch v-model="isActivated" color="secondary" disabled>
+                <template #label>
+                  <span class="activation-label">{{ onOrOff }}</span>
+                </template>
+              </v-switch>
+            </div>
+
+            <v-switch
+              v-else
+              v-model="isActivated"
+              color="secondary"
+              :loading="isActivationLoading"
+              @change="onActivationChange($event)"
+            >
+              <template #label>
+                <span class="activation-label">{{ onOrOff }}</span>
+              </template>
+            </v-switch>
+          </template>
+
+          <app-not-authorized-modal v-model="showModal" />
         </div>
       </v-col>
     </v-row>
@@ -138,6 +149,7 @@
             <v-col>
               <actions-wrapper>
                 <app-button
+                  type="submit"
                   color="primary"
                   :button-title="$t('button.save')"
                   :on-click="() => saveForm(form.key)"
@@ -216,10 +228,12 @@ import UninstallAppModal from '@/components/app/appStore/modal/UninstallAppModal
 import { API } from '@/api'
 import AppSelect from '@/components/commons/AppSelect'
 import AppCheckbox from '@/components/commons/AppCheckbox'
+import AppNotAuthorizedModal from '../modal/AppNotAuthorizedModal'
 
 export default {
   name: 'InstalledApp',
   components: {
+    AppNotAuthorizedModal,
     AppCheckbox,
     AppSelect,
     UninstallAppModal,
@@ -231,6 +245,7 @@ export default {
   },
   data() {
     return {
+      showModal: false,
       tab: 0,
       settingsForms: [],
       settingsConfig: [],
@@ -250,9 +265,6 @@ export default {
     hasWebhookSettings() {
       return Object.entries(this.webhooksSettings).length > 0
     },
-    onOrOff() {
-      return this.isActivated ? this.$t('appStore.activated') : this.$t('appStore.notactivated')
-    },
     isUninstalling() {
       const state = this[REQUESTS_STATE.GETTERS.GET_STATE]([API.appStore.uninstallApp.id])
       return state?.isSending || false
@@ -271,6 +283,9 @@ export default {
     },
     activationDisabled() {
       return !this.appActive.authorized
+    },
+    onOrOff() {
+      return this.isActivated ? this.$t('appStore.activated') : this.$t('appStore.notactivated')
     },
   },
   methods: {
@@ -303,6 +318,34 @@ export default {
       }
     },
 
+    async onActivationChange(newState) {
+      this.isActivationLoading = true
+
+      const isActivated = await this[APP_STORE.ACTIONS.ACTIVATE]({
+        key: this.$route.params.key,
+        userId: this.userId,
+        data: {
+          enabled: newState,
+        },
+      })
+      if (isActivated) {
+        this.isActivated = newState
+      } else {
+        // Force rerendering of v-switch component, because it seems like can't be kept
+        // in sync with this component internal state (this.isActivated)
+        this.isActivationEnabled = false
+        this.$nextTick(() => {
+          this.isActivated = !newState
+          this.isActivationEnabled = true
+        })
+      }
+
+      this.isActivationLoading = false
+    },
+
+    toggleModal() {
+      this.showModal = !this.showModal
+    },
     isFormValid(key) {
       const form = this.getFormByKey(key)
       return form.matchesWithSnapshot && form.hasValidSettings
@@ -426,28 +469,8 @@ export default {
     hasLogo(app) {
       return app?.logo ? app.logo : require('@/assets/svg/app-item-placeholder.svg')
     },
-    async onActivationChange(newState) {
-      this.isActivationLoading = true
-      const isActivated = await this[APP_STORE.ACTIONS.ACTIVATE]({
-        key: this.$route.params.id,
-        data: {
-          enabled: newState,
-        },
-      })
-      if (isActivated) {
-        this.isActivated = newState
-      } else {
-        // Force rerendering of v-switch component, because it seems like can't be kept
-        // in sync with this component internal state (this.isActivated)
-        this.isActivationEnabled = false
-        this.$nextTick(() => {
-          this.isActivated = !newState
-          this.isActivationEnabled = true
-        })
-      }
-      this.isActivationLoading = false
-    },
   },
+
   watch: {
     appActive: {
       immediate: true,
