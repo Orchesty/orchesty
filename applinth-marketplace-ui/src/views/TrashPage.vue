@@ -13,16 +13,16 @@
               ref="gridTrash"
               :headers="headers"
               :grid-settings="GRIDS.TRASH"
-              :sort-by="['updated']"
+              :sort-by="[columnDateKey]"
               :sort-desc="[true]"
               @select="onSelect"
             >
               <template #default="{ items }">
                 <td @click="onRowClick(items)">
-                  {{ items.item.topologyName }}
+                  {{ items.item[columnTopologyKey] }}
                 </td>
                 <td @click="onRowClick(items)">
-                  {{ toLocalDateTime(items.item.created) }}
+                  {{ toLocalDateTime(items.item[columnDateKey]) }}
                 </td>
               </template>
               <template v-if="gridHasSelection" #actions>
@@ -65,6 +65,7 @@ import { FLASH_MESSAGES_TYPES } from '@/store/flashMessages/types'
 import ActionsWrapper from '@/components/commons/ActionsWrapper'
 import TrashAcceptAllModal from '@/components/commons/TrashAcceptAllModal'
 import TrashRejectAllModal from '@/components/commons/TrashRejectAllModal'
+import { COLUMN_TOPOLOGY_KEY, COLUMN_DATE_KEY } from '@/store/trash/types'
 
 export default {
   name: 'TrashPage',
@@ -77,16 +78,18 @@ export default {
   },
   data() {
     return {
+      columnTopologyKey: COLUMN_TOPOLOGY_KEY,
+      columnDateKey: COLUMN_DATE_KEY,
       headers: [
         {
           text: this.$t('grid.trash.header.topologyName'),
-          value: 'topologyDescr',
+          value: this.columnTopologyKey,
           align: 'start',
           sortable: true,
         },
         {
           text: this.$t('grid.trash.header.updated'),
-          value: 'updated',
+          value: this.columnDateKey,
           align: 'start',
           sortable: true,
         },
