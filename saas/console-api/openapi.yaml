@@ -63,9 +63,10 @@ paths:
                 - $ref: "#/components/parameters/tenantId"
                 - $ref: "#/components/parameters/instanceId"
                 - $ref: "#/components/parameters/requiredEndUserId"
+                - $ref: "#/components/parameters/tail"
                 - in: query
                   name: installedDate
-                  description: Filter by installedDate, used now if not sent
+                  description: Filter by installedDate, used now if not sent, cannot be used with tail
                   required: false
                   schema:
                       type: string
@@ -793,6 +794,11 @@ components:
                                 type: string
                             appNames:
                                 description: Array of application names
+                                type: array
+                                items:
+                                    type: string
+                            activeAppNames:
+                                description: Array of active application names
                                 type: array
                                 items:
                                     type: string
