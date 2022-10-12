@@ -35,19 +35,30 @@
               :app-name="appActive.name"
               :on-click="() => uninstall(appActive.key)"
             />
-            <v-switch
-              v-if="isActivationEnabled"
-              :input-value="isActivated"
-              color="secondary"
-              :loading="isActivationLoading"
-              inset
-              :disabled="activationDisabled"
-              @change="onActivationChange($event)"
-            >
-              <template #label>
-                <span class="activation-label">{{ onOrOff }}</span>
-              </template>
-            </v-switch>
+
+            <template v-if="isActivationEnabled">
+              <div v-if="activationDisabled" @click="toggleModal">
+                <v-switch v-model="isActivated" color="secondary" disabled>
+                  <template #label>
+                    <span class="activation-label">{{ onOrOff }}</span>
+                  </template>
+                </v-switch>
+              </div>
+
+              <v-switch
+                v-else
+                v-model="isActivated"
+                color="secondary"
+                :loading="false"
+                @change="onActivationChange($event)"
+              >
+                <template #label>
+                  <span class="activation-label">{{ onOrOff }}</span>
+                </template>
+              </v-switch>
+            </template>
+
+            <app-not-authorized-modal v-model="showModal" />
           </div>
         </v-col>
       </v-row>
@@ -182,6 +193,7 @@
                     :disabled="isRequestPending"
                     :loading="isSaving"
                   />
+
                   <base-button
                     v-if="hasOauthAuthorization"
                     :disabled="!isFormValid(form.key) || isRequestPending"
@@ -215,10 +227,12 @@ import UninstallAppModal from '@/components/applications/UninstallAppModal'
 import BaseSelect from '@/components/commons/BaseSelect'
 import showFlashMessage from '@/utils/flashMessage'
 import { FLASH_MESSAGES_TYPES } from '@/store/flashMessages/types'
+import AppNotAuthorizedModal from '@/components/applications/AppNotAuthorizedModal'
 
 export default {
   name: 'InstalledAppDetailPage',
   components: {
+    AppNotAuthorizedModal,
     BaseSelect,
     ActionsWrapper,
     AppItemPasswordModal,
@@ -231,6 +245,7 @@ export default {
   },
   data() {
     return {
+      showModal: false,
       tab: 0,
       settingsForms: [],
       settingsConfig: [],
@@ -257,16 +272,63 @@ export default {
     isRequestPending() {
       return this.isSaving || this.loading || this.isUninstalling
     },
+    activationDisabled() {
+      return !this.appActive.authorized
+    },
     onOrOff() {
       return this.isActivated
         ? this.$t('application.activated')
         : this.$t('application.notactivated')
     },
-    activationDisabled() {
-      return !this.appActive.authorized
-    },
   },
   methods: {
+    toggleModal() {
+      this.showModal = !this.showModal
+    },
+    async onActivationChange(newState) {
+      this.isActivationLoading = true
+
+      let result
+      try {
+        result = await callApi({
+          requestData: API.appStore.activateApp,
+          params: {
+            key: this.$route.params.id,
+            data: {
+              enabled: newState,
+            },
+          },
+        })
+      } catch (err) {
+        showFlashMessage(err.message, FLASH_MESSAGES_TYPES.ERROR)
+
+        // Force rerendering of v-switch component, because it seems like can't be kept
+        // in sync with this component internal state (this.isActivated)
+        this.isActivationEnabled = false
+        this.$nextTick(() => {
+          this.isActivated = !newState
+          this.isActivationEnabled = true
+          this.isActivationLoading = false
+        })
+      }
+
+      if (result) {
+        showFlashMessage(
+          this.$t(
+            newState ? 'flashMessage.activated' : 'flashMessage.deactivated',
+            {
+              item: this.appActive.name,
+            }
+          ),
+          FLASH_MESSAGES_TYPES.SUCCESS
+        )
+        this.isActivated = newState
+      } else {
+        // TODO handle wrong response
+      }
+      this.isActivationLoading = false
+    },
+
     async uninstall(key) {
       this.isUninstalling = true
       await callApi({
@@ -414,47 +476,6 @@ export default {
     },
     hasLogo(app) {
       return app?.logo ? app.logo : ''
-    },
-    async onActivationChange(newState) {
-      this.isActivationLoading = true
-
-      let result
-      try {
-        result = await callApi({
-          requestData: API.appStore.activateApp,
-          params: {
-            key: this.$route.params.id,
-            data: {
-              enabled: newState,
-            },
-          },
-        })
-        showFlashMessage(
-          this.$t(
-            newState ? 'flashMessage.activated' : 'flashMessage.deactivated',
-            {
-              item: this.appActive.name,
-            }
-          ),
-          FLASH_MESSAGES_TYPES.SUCCESS
-        )
-      } catch (err) {
-        // TODO add flash message with error
-        // Force rerendering of v-switch component, because it seems like can't be kept
-        // in sync with this component internal state (this.isActivated)
-        this.isActivationEnabled = false
-        this.$nextTick(() => {
-          this.isActivated = !newState
-          this.isActivationEnabled = true
-        })
-      }
-      if (result) {
-        // TODO add flash message with success message
-        this.isActivated = newState
-      } else {
-        // TODO handle wrong response
-      }
-      this.isActivationLoading = false
     },
   },
   watch: {
