@@ -2,12 +2,16 @@
 
 namespace PipesFrameworkTests\Unit\Utils;
 
-use DateTimeImmutable;
 use Hanaboso\PipesFramework\Utils\JWTParser;
+use Hanaboso\Utils\Date\DateTimeUtils;
+use Hanaboso\Utils\Exception\DateTimeException;
 use Hanaboso\Utils\File\File;
-use Lcobucci\JWT\Configuration;
-use Lcobucci\JWT\Signer\Key\InMemory;
-use Lcobucci\JWT\Signer\Rsa\Sha256;
+use Hanaboso\Utils\String\Json;
+use Jose\Component\Core\AlgorithmManager;
+use Jose\Component\KeyManagement\JWKFactory;
+use Jose\Component\Signature\Algorithm\RS256;
+use Jose\Component\Signature\JWSBuilder;
+use Jose\Component\Signature\Serializer\CompactSerializer;
 use LogicException;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 
@@ -114,31 +118,34 @@ final class JWTParserTest extends KernelTestCaseAbstract
      * @param string $timeModify
      *
      * @return string
+     * @throws DateTimeException
      */
     private function createJwtToken(string $timeModify = '+1 minute'): string
     {
-        $configuration = Configuration::forAsymmetricSigner(
-            new Sha256(),
-            InMemory::file(sprintf('%s%s', __DIR__, '/jwt.pem')),
-            InMemory::base64Encoded('ZjlqU2VncVl3dmRsSTRDOXN0bFc='),
-        );
+        $dateTime = DateTimeUtils::getUtcDateTime();
+        $jws      = (new JWSBuilder(new AlgorithmManager([new RS256()])))
+            ->create()
+            ->withPayload(
+                Json::encode(
+                    [
+                        'version'      => 1,
+                        'users'        => 10,
+                        'applications' => 300,
+                        'type'         => 'free',
+                        'email'        => 'public@orchesty.io',
+                        'name'         => 'Free account',
+                        'number'       => '1',
+                        'iss'          => 'Hanaboso s.r.o.',
+                        'iat'          => $dateTime->getTimestamp(),
+                        'nbf'          => $dateTime->getTimestamp(),
+                        'exp'          => $dateTime->modify($timeModify)->getTimestamp(),
+                    ],
+                ),
+            )
+            ->addSignature(JWKFactory::createFromKeyFile(__DIR__ . '/jwt.pem'), ['alg' => 'RS256'])
+            ->build();
 
-        $now        = new DateTimeImmutable();
-        $validToken = $configuration->builder()
-            ->withClaim('version', 1)
-            ->withClaim('users', 10)
-            ->withClaim('applications', 300)
-            ->withClaim('type', 'free')
-            ->withClaim('email', 'public@orchesty.io')
-            ->withClaim('name', 'Free account')
-            ->withClaim('number', '1')
-            ->issuedBy('Hanaboso s.r.o.')
-            ->issuedAt($now)
-            ->canOnlyBeUsedAfter($now)
-            ->expiresAt($now->modify($timeModify))
-            ->getToken($configuration->signer(), $configuration->signingKey());
-
-        return $validToken->toString();
+        return (new CompactSerializer())->serialize($jws);
     }
 
 }

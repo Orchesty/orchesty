@@ -2,15 +2,22 @@
 
 namespace Hanaboso\PipesFramework\Utils;
 
-use DateTimeZone;
 use Hanaboso\Utils\File\File;
-use Lcobucci\Clock\SystemClock;
-use Lcobucci\JWT\Configuration;
-use Lcobucci\JWT\Signer\Key\InMemory;
-use Lcobucci\JWT\Signer\Rsa\Sha256;
-use Lcobucci\JWT\UnencryptedToken;
-use Lcobucci\JWT\Validation\Constraint\StrictValidAt;
+use Hanaboso\Utils\String\Json;
+use Jose\Component\Checker\ClaimCheckerManager;
+use Jose\Component\Checker\ExpirationTimeChecker;
+use Jose\Component\Checker\IssuedAtChecker;
+use Jose\Component\Checker\NotBeforeChecker;
+use Jose\Component\Core\AlgorithmManager;
+use Jose\Component\KeyManagement\JWKFactory;
+use Jose\Component\Signature\Algorithm\RS256;
+use Jose\Component\Signature\JWS;
+use Jose\Component\Signature\JWSLoader;
+use Jose\Component\Signature\JWSVerifier;
+use Jose\Component\Signature\Serializer\CompactSerializer;
+use Jose\Component\Signature\Serializer\JWSSerializerManager;
 use LogicException;
+use Throwable;
 
 /**
  * Class JWTParser
@@ -30,7 +37,7 @@ final class JWTParser
      */
     public static function verifyAndReturn(?string $rootPath = NULL): array
     {
-        return self::jwtVerify($rootPath)->claims()->all();
+        return Json::decode(self::jwtVerify($rootPath)->getPayload() ?? '{}');
     }
 
     /**
@@ -40,25 +47,17 @@ final class JWTParser
      */
     public static function getJwtLicense(?string $rootPath = NULL): string
     {
-        return self::jwtVerify($rootPath)->toString();
+        return (new CompactSerializer())->serialize(self::jwtVerify($rootPath));
     }
 
     /**
      * @param string|null $rootPath
      *
-     * @return UnencryptedToken
+     * @return JWS
      */
-    private static function jwtVerify(?string $rootPath = NULL): UnencryptedToken
+    private static function jwtVerify(?string $rootPath = NULL): JWS
     {
-        $jwt           = self::DEFAULT_JWT;
-        $configuration = Configuration::forAsymmetricSigner(
-            new Sha256(),
-            InMemory::file(sprintf('%s%s', __DIR__, '/jwt.pem')),
-            InMemory::base64Encoded('ZjlqU2VncVl3dmRsSTRDOXN0bFc='),
-        );
-        $configuration->setValidationConstraints(
-            new StrictValidAt(new SystemClock(new DateTimeZone('UTC'))),
-        );
+        $jwt = self::DEFAULT_JWT;
 
         if (getenv(self::ORCHESTY_LICENSE)) {
             $jwt = getenv(self::ORCHESTY_LICENSE);
@@ -66,14 +65,27 @@ final class JWTParser
             $jwt = trim(File::getContent(sprintf('%s/license/license', $rootPath)));
         }
 
-        /** @var UnencryptedToken $token */
-        $token       = $configuration->parser()->parse($jwt);
-        $constraints = $configuration->validationConstraints();
-        if (!$configuration->validator()->validate($token, ...$constraints)) {
+        try {
+            $jws = (new JWSLoader(
+                new JWSSerializerManager([new CompactSerializer()]),
+                new JWSVerifier(new AlgorithmManager([new RS256()])),
+                NULL,
+            ))->loadAndVerifyWithKey(
+                $jwt,
+                JWKFactory::createFromKeyFile(__DIR__ . '/jwt.pem'),
+                $signature,
+            );
+
+            (new ClaimCheckerManager([
+                new ExpirationTimeChecker(),
+                new NotBeforeChecker(),
+                new IssuedAtChecker(),
+            ]))->check(Json::decode($jws->getPayload() ?? '{}'));
+
+            return $jws;
+        } catch (Throwable) {
             throw new LogicException('Jwt is not valid');
         }
-
-        return $token;
     }
 
 }
