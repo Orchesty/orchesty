@@ -2,7 +2,7 @@
 /* eslint-disable */
 /**
  * Sample API
- * # Error codes: ## DateTime format error - 1001 - timeRangeStart and/or timeRangeEnd are in invalid format - 1002 - installedDate are in invalid format 
+ * # Error codes: ## DateTime format error - 1001 - timeRangeStart and/or timeRangeEnd are in invalid format - 1002 - installedDate is in invalid format - 1003 - tail is used with timeRange parameters 
  *
  * The version of the OpenAPI document: 0.1.9
  * 
@@ -41,6 +41,7 @@ export interface UsageStatsAppsRequest {
     timeRangeStart?: string;
     timeRangeEnd?: string;
     appId?: string;
+    tail?: boolean;
     granularity?: UsageStatsAppsGranularityEnum;
 }
 
@@ -73,6 +74,7 @@ export interface UsageStatsUsersRequest {
     timeRangeStart?: string;
     timeRangeEnd?: string;
     appId?: string;
+    tail?: boolean;
     granularity?: UsageStatsUsersGranularityEnum;
     endUserDisplayId?: string;
     endUserId?: string;
@@ -107,6 +109,10 @@ export class BillingApi extends runtime.BaseAPI {
 
         if (requestParameters.appId !== undefined) {
             queryParameters['appId'] = requestParameters.appId;
+        }
+
+        if (requestParameters.tail !== undefined) {
+            queryParameters['tail'] = requestParameters.tail;
         }
 
         if (requestParameters.granularity !== undefined) {
@@ -319,6 +325,10 @@ export class BillingApi extends runtime.BaseAPI {
 
         if (requestParameters.appId !== undefined) {
             queryParameters['appId'] = requestParameters.appId;
+        }
+
+        if (requestParameters.tail !== undefined) {
+            queryParameters['tail'] = requestParameters.tail;
         }
 
         if (requestParameters.granularity !== undefined) {

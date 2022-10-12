@@ -2,7 +2,7 @@
 /* eslint-disable */
 /**
  * Sample API
- * # Error codes: ## DateTime format error - 1001 - timeRangeStart and/or timeRangeEnd are in invalid format - 1002 - installedDate are in invalid format 
+ * # Error codes: ## DateTime format error - 1001 - timeRangeStart and/or timeRangeEnd are in invalid format - 1002 - installedDate is in invalid format - 1003 - tail is used with timeRange parameters 
  *
  * The version of the OpenAPI document: 0.1.9
  * 
@@ -44,6 +44,12 @@ export interface UsageStatsAppsRowsInner {
      */
     totalCost?: number;
     /**
+     * Total estimated installs cost for this app
+     * @type {number}
+     * @memberof UsageStatsAppsRowsInner
+     */
+    estimatedTotalCost?: number;
+    /**
      * Total number of installs
      * @type {number}
      * @memberof UsageStatsAppsRowsInner
@@ -71,6 +77,7 @@ export function UsageStatsAppsRowsInnerFromJSONTyped(json: any, ignoreDiscrimina
         'appId': !exists(json, 'appId') ? undefined : json['appId'],
         'endUsers': !exists(json, 'endUsers') ? undefined : json['endUsers'],
         'totalCost': !exists(json, 'totalCost') ? undefined : json['totalCost'],
+        'estimatedTotalCost': !exists(json, 'estimatedTotalCost') ? undefined : json['estimatedTotalCost'],
         'installCount': !exists(json, 'installCount') ? undefined : json['installCount'],
         'instanceIds': !exists(json, 'instanceIds') ? undefined : json['instanceIds'],
     };
@@ -89,6 +96,7 @@ export function UsageStatsAppsRowsInnerToJSON(value?: UsageStatsAppsRowsInner | 
         'appId': value.appId,
         'endUsers': value.endUsers,
         'totalCost': value.totalCost,
+        'estimatedTotalCost': value.estimatedTotalCost,
         'installCount': value.installCount,
         'instanceIds': value.instanceIds,
     };

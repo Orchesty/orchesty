@@ -88,6 +88,10 @@ const applications = [
             to: null,
           },
           {
+            text: "navigation.item.applicationDetail",
+            to: { name: Routes.ApplicationDetail },
+          },
+          {
             text: appActiveName,
             to: { name: Routes.ApplicationDetail },
           },
