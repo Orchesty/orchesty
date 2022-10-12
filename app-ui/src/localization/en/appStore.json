@@ -6,6 +6,8 @@
     "unauthorized": "Unauthorized",
     "activated": "Activated",
     "notactivated": "Not activated",
+    "applicationNotAuthorized": "Application has not been authorized yet",
+    "applicationNotAuthorizedMessage": "The application must first be authorized. Make sure you fill in and save all the necessary settings.",
     "app": {
       "detail": "Detail",
       "install": "Install",

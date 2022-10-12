@@ -1,0 +1,14 @@
+{
+  "flashMessage": {
+    "uninstalled": "{item} odintalován",
+    "installed": "{item} naintalován",
+    "saved": "{item} - formulář uložen",
+    "activated": "{item} aktivován",
+    "deactivated": "{item} deaktivován",
+    "updated": "{item} upraven",
+    "acceptedList": "{number} položek akceptováno",
+    "rejectedList": "{number} položek zamítnuto",
+    "rejected": "{number} akceptován",
+    "accepted": "{number} zamítnut"
+  }
+}

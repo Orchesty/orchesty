@@ -13,6 +13,7 @@ import settingsPage from './settingsPage.json'
 import appInstalledItem from './appInstalledItem.json'
 import profile from './profile.json'
 import label from './label.json'
+import flashMessages from './flashMessages.json'
 import validation from './validation.json'
 
 export default Object.assign(
@@ -28,6 +29,7 @@ export default Object.assign(
   notLoggedInPage,
   settingsPage,
   trashModal,
+  flashMessages,
   {
     $vuetify: vuetify,
   },
