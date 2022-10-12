@@ -12,18 +12,18 @@
     />
     <StatusCard
       :loading="isLoading"
-      :score="usersCount"
-      :title="$t('overviewPage.statusCards.users')"
+      :score="customersCount"
+      :title="$t('overviewPage.statusCards.activeCustomers')"
     />
     <StatusCard
       :loading="isLoading"
       :score="toCZK(amount)"
-      :title="$t('overviewPage.statusCards.amount')"
+      :title="$t('overviewPage.statusCards.currentCost')"
     />
     <StatusCard
       :loading="isLoading"
       :score="estimatedCosts"
-      :title="$t('overviewPage.statusCards.estimatedCosts')"
+      :title="$t('overviewPage.statusCards.estimatedCostsEom')"
     />
   </div>
 </template>
@@ -44,31 +44,40 @@ import { toCZK } from "@/filters/money";
 export default class StatusCardList extends Vue {
   applicationsCount = 0;
   installationsCount = 0;
-  usersCount = 0;
+  customersCount = 0;
   amount = 0;
-  estimatedCosts = 0; // todo PIP-1344 počkat, až bude připravený endpoint
+  estimatedCosts = 0;
   isLoading = false;
 
   async created() {
     this.isLoading = true;
 
-    const [apps, users] = await Promise.all([
-      callApi<UsageStatsAppsRequest>(api.overview.apps),
-      callApi<UsageStatsUsersRequest>(api.users.list),
+    const [apps, customers] = await Promise.all([
+      callApi<UsageStatsAppsRequest>(api.overview.apps, {
+        granularity: "monthly",
+        tail: true,
+      }),
+      callApi<UsageStatsUsersRequest>(api.customers.list, {
+        granularity: "monthly",
+        tail: true,
+      }),
     ]);
 
     this.applicationsCount = apps.length;
-    this.usersCount = users.length;
+    this.customersCount = customers.length;
 
     let installationsCountAccumulator = 0;
     let amountAccumulator = 0;
+    let estimatedCostAccumulator = 0;
     for (const app of apps) {
       installationsCountAccumulator += app.endUsers ?? 0;
       amountAccumulator += app.totalCost ?? 0;
+      estimatedCostAccumulator += app.estimatedTotalCost ?? 0;
     }
 
     this.installationsCount = installationsCountAccumulator;
     this.amount = amountAccumulator;
+    this.estimatedCosts = estimatedCostAccumulator;
 
     this.isLoading = false;
   }
