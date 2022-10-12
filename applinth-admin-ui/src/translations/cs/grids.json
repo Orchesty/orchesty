@@ -8,7 +8,9 @@
       "name": "Jméno",
       "installed": "Instalace",
       "month": "Měsíc",
-      "application": "Aplikace"
+      "application": "Aplikace",
+      "customer": "Zákazník",
+      "activeApplications": "Aktivní aplikace"
     }
   }
 }

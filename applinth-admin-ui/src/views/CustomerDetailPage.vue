@@ -1,15 +1,23 @@
 <template>
   <AppLayout :detail-page-title="breadcrumbTitle">
-    <template v-if="!isLoading && customerDetail">
-      <heading>{{ customerDetail.endUserDisplayId }}</heading>
+    <heading>{{ breadcrumbTitle }}</heading>
+    <div class="wrapper">
       <StatusCard
         class="customer-info-card my-5"
-        :score="formatTotalCost"
-        :title="$t('customerDetailPage.estimatedCosts')"
+        :score="toCZK(totalCost)"
+        :title="$t('customerDetailPage.currentCost')"
+        :loading="isLoading"
       />
-    </template>
+      <StatusCard
+        class="customer-info-card my-5"
+        :score="toCZK(estimatedCost)"
+        :title="$t('customerDetailPage.estimatedCosts')"
+        :loading="isLoading"
+      />
+    </div>
+
     <SubHeading class="mb-2">{{
-      $t("customerDetailPage.activeApps")
+      $t("customerDetailPage.activeApplications")
     }}</SubHeading>
     <CustomerAppsTable class="apps-table mb-5" :customer-id="customerId" />
     <SubHeading class="mb-2">{{
@@ -49,32 +57,32 @@ export default class CustomerDetailPage extends Vue {
   customerId!: string;
   customerDetail!: UsageStatsUsersRowsInner;
   isLoading = false;
-  totalCost!: number;
+  totalCost!: number | undefined;
+  estimatedCost!: number | undefined;
   breadcrumbTitle: string | undefined = "";
-
-  get formatTotalCost(): string {
-    if (typeof this.customerDetail.totalCost === "number")
-      return toCZK(this.customerDetail.totalCost);
-    return "";
-  }
 
   async created() {
     this.isLoading = true;
     this.customerId = this.$route.params.id;
 
     const customer = await callApi<UsageStatsUsersRequest>(api.customers.list, {
-      timeRangeStart: new Date(0).toISOString(),
-      timeRangeEnd: new Date().toISOString(),
       endUserId: this.customerId,
+      tail: true,
     });
 
     if (customer.length > 0) {
       this.customerDetail = customer[0];
       this.breadcrumbTitle = this.customerDetail?.endUserDisplayId;
+      this.totalCost = this.customerDetail.totalCost;
+      this.estimatedCost = this.customerDetail.estimatedTotalCost;
+    } else {
+      this.breadcrumbTitle = this.customerId;
     }
 
     this.isLoading = false;
   }
+
+  readonly toCZK = toCZK;
 }
 </script>
 
@@ -85,5 +93,10 @@ export default class CustomerDetailPage extends Vue {
 
 .apps-table {
   max-width: clamp(50ch, 50vw, 700px);
+}
+.wrapper {
+  display: inline-grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0 16px;
 }
 </style>

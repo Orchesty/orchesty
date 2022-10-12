@@ -7,6 +7,7 @@
       class="table-medium"
       :headers="headers"
       :items="users"
+      hide-footer
     >
       <template #actions="{ item }">
         <RoundButton @click="() => updateItem(item)" icon="pencil" />

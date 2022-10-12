@@ -160,32 +160,6 @@ const customersRoutes = [
     },
   },
   {
-    path: "/customer/:id/billing",
-    name: Routes.CustomerBilling,
-    component: () => import("../views/CustomerBillingPage.vue"),
-    meta: {
-      auth: ViewAuth.Private,
-      breadcrumbs: (name: string) => [
-        {
-          text: "navigation.item.applinth",
-          to: null,
-        },
-        {
-          text: "navigation.item.customers",
-          to: { name: Routes.Customers },
-        },
-        {
-          text: "navigation.item.customer_billing",
-          to: null,
-        },
-        {
-          text: name,
-          to: null,
-        },
-      ],
-    },
-  },
-  {
     path: "/customer/:id/detail",
     name: Routes.CustomerDetail,
     component: () => import("../views/CustomerDetailPage.vue"),

@@ -4,6 +4,7 @@
     :headers="headers"
     :items="items"
     class="elevation-1"
+    :hide-default-footer="hideFooter"
   >
     <template v-for="item in headers" #[`header.${item.value}`]="{ header }">
       <span :key="item.value">{{ header.text }}</span>
@@ -39,6 +40,9 @@ export default class SimpleTable extends Vue {
 
   @Prop({ type: Boolean, required: false, default: false })
   readonly loading!: boolean;
+
+  @Prop({ type: Boolean, required: false, default: false })
+  readonly hideFooter!: boolean;
 
   editItem(item: any) {
     this.$emit("edit", item);
