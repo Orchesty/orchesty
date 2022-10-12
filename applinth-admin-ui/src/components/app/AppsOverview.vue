@@ -28,7 +28,7 @@
               }}</SubHeading>
             </v-col>
             <v-col class="d-flex flex-column justify-center align-center">
-              {{ $t("overviewPage.apps.users") }}
+              {{ $t("overviewPage.apps.customers") }}
               <div class="users-number">{{ app.endUsers }}</div>
             </v-col>
             <v-col class="d-flex flex-column justify-center align-end">
@@ -94,8 +94,8 @@ export default class AppsOverview extends Vue {
   async created() {
     this.isLoading = true;
     this.apps = await callApi<UsageStatsAppsRequest>(api.overview.apps, {
-      timeRangeStart: new Date(0).toISOString(),
-      timeRangeEnd: new Date().toISOString(),
+      granularity: "monthly",
+      tail: true,
     });
 
     this.addMetadataToApplications();

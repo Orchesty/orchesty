@@ -68,7 +68,7 @@ const overview = {
       },
       {
         text: "navigation.item.overview",
-        to: Routes.Overview,
+        to: { name: Routes.Overview },
       },
     ],
   },

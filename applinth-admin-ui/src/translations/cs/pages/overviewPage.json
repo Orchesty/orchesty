@@ -7,11 +7,14 @@
       "users": "Uživatelé",
       "billing": "Fakturace",
       "amount": "Cena",
-      "estimatedCosts": "Odhadovaná cena",
-      "estimatedCostsEom": "Odhadované náklady"
+      "estimatedCosts": "Odhadované náklady",
+      "estimatedCostsEom": "Odhadované měsíční náklady",
+      "activeCustomers": "Aktivní zákazníci",
+      "currentCost": "Aktuální náklady"
     },
     "apps": {
-      "users": "Uživatelé"
+      "users": "Uživatelé",
+      "customers": "Zákazníci"
     }
   }
 }

@@ -8,10 +8,13 @@
       "billing": "Billing",
       "amount": "Amount",
       "estimatedCosts": "Estimated cost",
-      "estimatedCostsEom": "Estimated EoM cost"
+      "estimatedCostsEom": "Estimated EoM cost",
+      "activeCustomers": "Active customers",
+      "currentCost": "Current cost"
     },
     "apps": {
-      "users": "Users"
+      "users": "Users",
+      "customers": "Customers"
     }
   }
 }
