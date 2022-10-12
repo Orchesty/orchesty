@@ -178,15 +178,15 @@ export async function createUsageStats(): Promise<void> {
             generateUsageStatsRow(startDate3, endDate3, true, 'neco', 'neco', '1235', 'inst1234', 'i1234', 't123456789', 1000000),
             generateUsageStatsRow(startDate2, endDate2),
             generateUsageStatsRow(startDate3, endDate3, true),
-            generateUsageStatsRow(startDate3, endDate3, true, 'neco1', 'neco1', '1234', 'inst1234', 'i1236'),
-            generateUsageStatsRow(startDate3, endDate3, true, 'neco1', 'neco1', '1234', 'inst1234', 'i1236', 't123'),
+            generateUsageStatsRow(startDate3, endDate3, false, 'neco1', 'neco1', '1234', 'inst1234', 'i1236'),
+            generateUsageStatsRow(startDate3, endDate3, false, 'neco1', 'neco1', '1234', 'inst1234', 'i1236', 't123'),
             generateUsageStatsRow(startDate1, endDate1, false, 'neco', 'neco', '1235', 'inst1235', 'i1237', 't123456789', 500000),
             generateUsageStatsRow(startDate2, endDate2, false, 'neco', 'neco', '1235', 'inst1235', 'i1237', 't123456789', 1000000),
             generateUsageStatsRow(startDate3, endDate3, true, 'neco', 'neco', '1235', 'inst1235', 'i1237', 't123456789', 1000000),
             generateUsageStatsRow(startDate2, endDate2, false, 'neco1', 'neco1', '1235', 'inst1235', 'i1238'),
             generateUsageStatsRow(startDate3, endDate3, true, 'neco1', 'neco1', '1235', 'inst1235', 'i1238'),
-            generateUsageStatsRow(startDate3, endDate3, true, 'neco1', 'neco1', '1234', 'inst1235', 'i1239'),
-            generateUsageStatsRow(startDate3, endDate3, true, 'neco1', 'neco1', '1234', 'inst1235', 'i1239', 't123'),
+            generateUsageStatsRow(startDate3, endDate3, false, 'neco1', 'neco1', '1234', 'inst1235', 'i1239'),
+            generateUsageStatsRow(startDate3, endDate3, false, 'neco1', 'neco1', '1234', 'inst1235', 'i1239', 't123'),
         ]);
 }
 
