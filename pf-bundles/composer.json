@@ -2,7 +2,7 @@
     "name": "orchesty/backend",
     "description": "Orchesty backend",
     "license": "Elastic",
-    "version": "2.15.1",
+    "version": "2.16.0",
     "require": {
         "php": "^8.1",
         "ext-ctype": "*",
@@ -12,17 +12,17 @@
         "ext-mbstring": "*",
         "ext-mongodb": "*",
         "doctrine/orm": "^2.13",
-        "hanaboso/acl-bundle": "^1.5",
+        "hanaboso/acl-bundle": "^1.6",
         "hanaboso/email-service-bundle": "^1.2",
         "hanaboso/mongo-data-grid": "^1.6",
         "hanaboso/rabbit-mq-bundle": "^1.5",
         "hanaboso/rest-bundle": "^1.1",
-        "hanaboso/user-bundle": "^1.5",
-        "lcobucci/jwt": "^4.1",
+        "hanaboso/user-bundle": "^1.6",
         "orchesty/php-sdk": "^2.2",
         "ruflin/elastica": "^7.2",
         "symfony/security-bundle": "^v6.1",
-        "symfony/serializer": "^v6.1"
+        "symfony/serializer": "^v6.1",
+        "web-token/jwt-signature-algorithm-rsa": "^3.1"
     },
     "require-dev": {
         "hanaboso/php-check-utils": "^1.4",
