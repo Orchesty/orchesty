@@ -2,7 +2,7 @@
   "name": "console-api",
   "description": "",
   "version": "1.0.0",
-  "license": "Elastic",
+  "license": "Elastic-2.0",
   "main": "server.js",
   "scripts": {
     "test": "jest --coverage --detectOpenHandles --passWithNoTests",

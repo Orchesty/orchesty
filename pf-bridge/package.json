@@ -2,7 +2,7 @@
   "name": "pipes",
   "description": "Hanaboso pipes and filters basic node skeleton implementation",
   "version": "1.0.0",
-  "license": "Elastic",
+  "license": "Elastic-2.0",
   "main": "dist/src/bin/pipes.js",
   "scripts": {
     "build": "rm -rf ./dist & ./node_modules/.bin/tsc",

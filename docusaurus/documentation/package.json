@@ -1,7 +1,7 @@
 {
   "name": "documentation",
   "version": "0.0.0",
-  "license": "Elastic",
+  "license": "Elastic-2.0",
   "scripts": {
     "docusaurus": "docusaurus",
     "start": "NODE_OPTIONS=--openssl-legacy-provider docusaurus start",
