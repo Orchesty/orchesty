@@ -18,6 +18,7 @@ import { ITenant } from '../src/tenants/TenantService';
 function generateUsageStatsRow(
     start: DateTime,
     end: DateTime,
+    installed = false,
     appId = 'neco1',
     appName = 'neco1',
     endUserId = '1235',
@@ -39,6 +40,7 @@ function generateUsageStatsRow(
         duration: 1,
         billedDuration: 1,
         cost,
+        installed,
     };
 }
 
@@ -171,20 +173,20 @@ export async function createUsageStats(): Promise<void> {
 
     await db.getBillingCollection(CollectionEnum.USAGE_STATS_MONTHLY)
         .insertMany([
-            generateUsageStatsRow(startDate1, endDate1, 'neco', 'neco', '1235', 'inst1234', 'i1234', 't123456789', 500000),
-            generateUsageStatsRow(startDate2, endDate2, 'neco', 'neco', '1235', 'inst1234', 'i1234', 't123456789', 1000000),
-            generateUsageStatsRow(startDate3, endDate3, 'neco', 'neco', '1235', 'inst1234', 'i1234', 't123456789', 1000000),
+            generateUsageStatsRow(startDate1, endDate1, false, 'neco', 'neco', '1235', 'inst1234', 'i1234', 't123456789', 500000),
+            generateUsageStatsRow(startDate2, endDate2, false, 'neco', 'neco', '1235', 'inst1234', 'i1234', 't123456789', 1000000),
+            generateUsageStatsRow(startDate3, endDate3, true, 'neco', 'neco', '1235', 'inst1234', 'i1234', 't123456789', 1000000),
             generateUsageStatsRow(startDate2, endDate2),
-            generateUsageStatsRow(startDate3, endDate3),
-            generateUsageStatsRow(startDate3, endDate3, 'neco1', 'neco1', '1234', 'inst1234', 'i1236'),
-            generateUsageStatsRow(startDate3, endDate3, 'neco1', 'neco1', '1234', 'inst1234', 'i1236', 't123'),
-            generateUsageStatsRow(startDate1, endDate1, 'neco', 'neco', '1235', 'inst1235', 'i1237', 't123456789', 500000),
-            generateUsageStatsRow(startDate2, endDate2, 'neco', 'neco', '1235', 'inst1235', 'i1237', 't123456789', 1000000),
-            generateUsageStatsRow(startDate3, endDate3, 'neco', 'neco', '1235', 'inst1235', 'i1237', 't123456789', 1000000),
-            generateUsageStatsRow(startDate2, endDate2, 'neco1', 'neco1', '1235', 'inst1235', 'i1238'),
-            generateUsageStatsRow(startDate3, endDate3, 'neco1', 'neco1', '1235', 'inst1235', 'i1238'),
-            generateUsageStatsRow(startDate3, endDate3, 'neco1', 'neco1', '1234', 'inst1235', 'i1239'),
-            generateUsageStatsRow(startDate3, endDate3, 'neco1', 'neco1', '1234', 'inst1235', 'i1239', 't123'),
+            generateUsageStatsRow(startDate3, endDate3, true),
+            generateUsageStatsRow(startDate3, endDate3, true, 'neco1', 'neco1', '1234', 'inst1234', 'i1236'),
+            generateUsageStatsRow(startDate3, endDate3, true, 'neco1', 'neco1', '1234', 'inst1234', 'i1236', 't123'),
+            generateUsageStatsRow(startDate1, endDate1, false, 'neco', 'neco', '1235', 'inst1235', 'i1237', 't123456789', 500000),
+            generateUsageStatsRow(startDate2, endDate2, false, 'neco', 'neco', '1235', 'inst1235', 'i1237', 't123456789', 1000000),
+            generateUsageStatsRow(startDate3, endDate3, true, 'neco', 'neco', '1235', 'inst1235', 'i1237', 't123456789', 1000000),
+            generateUsageStatsRow(startDate2, endDate2, false, 'neco1', 'neco1', '1235', 'inst1235', 'i1238'),
+            generateUsageStatsRow(startDate3, endDate3, true, 'neco1', 'neco1', '1235', 'inst1235', 'i1238'),
+            generateUsageStatsRow(startDate3, endDate3, true, 'neco1', 'neco1', '1234', 'inst1235', 'i1239'),
+            generateUsageStatsRow(startDate3, endDate3, true, 'neco1', 'neco1', '1234', 'inst1235', 'i1239', 't123'),
         ]);
 }
 

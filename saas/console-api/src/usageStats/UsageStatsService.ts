@@ -11,6 +11,7 @@ interface IMongoQuery {
     endUserId?: RegExp | string;
     instanceId?: string;
     appId?: string;
+    installed?: boolean;
 }
 
 export default class UsageStatsService {
@@ -36,6 +37,7 @@ export default class UsageStatsService {
                     instanceIds: { $addToSet: '$instanceId' },
                     userIds: { $addToSet: '$endUserId' },
                     totalCost: { $sum: '$cost' },
+                    estimatedTotalCost: { $sum: '$estimatedCost' },
                     installCount: { $push: '$_id' },
                 },
             },
@@ -51,6 +53,7 @@ export default class UsageStatsService {
                     totalCost: 1,
                     instanceIds: 1,
                     installCount: { $size: '$installCount' },
+                    estimatedTotalCost: { $sum: '$estimatedCost' },
                 },
             },
         ];
@@ -207,6 +210,7 @@ export default class UsageStatsService {
                     appNames: { $addToSet: '$appId' },
                     instanceIds: { $addToSet: '$instanceId' },
                     totalCost: { $sum: '$cost' },
+                    estimatedTotalCost: { $sum: '$cost' },
                     installCount: { $push: '$_id' },
                 },
             },
@@ -219,6 +223,7 @@ export default class UsageStatsService {
                     appNames: 1,
                     instanceIds: 1,
                     totalCost: 1,
+                    estimatedTotalCost: 1,
                     installCount: { $size: '$installCount' },
                 },
             },
@@ -268,35 +273,43 @@ export default class UsageStatsService {
             mongoQuery.tenantId = tenantId;
         }
 
-        try {
-            if (query.timeRangeStart) {
-                const startDate = DateTime.fromISO(query.timeRangeStart);
-                mongoQuery.start = {
-                    $gte: startDate,
-                };
+        if (query.tail) {
+            if (query.timeRangeStart || query.timeRangeEnd) {
+                throw new DateParseError('Parameter timeRangeStart and/or timeRangeEnd is/are set with tail!', 3);
             }
 
-            if (query.timeRangeEnd) {
-                const endDate = DateTime.fromISO(query.timeRangeEnd);
-                mongoQuery.end = {
-                    $lt: endDate,
-                };
-            }
-
-            if (setDefaultDateIfNotSet) {
-                if (!mongoQuery.start) {
+            mongoQuery.installed = true;
+        } else {
+            try {
+                if (query.timeRangeStart) {
+                    const startDate = DateTime.fromISO(query.timeRangeStart);
                     mongoQuery.start = {
-                        $gte: DateTime.local().startOf('month'),
+                        $gte: startDate,
                     };
                 }
-                if (!mongoQuery.end) {
+
+                if (query.timeRangeEnd) {
+                    const endDate = DateTime.fromISO(query.timeRangeEnd);
                     mongoQuery.end = {
-                        $lt: DateTime.local().endOf('month'),
+                        $lt: endDate,
                     };
                 }
+
+                if (setDefaultDateIfNotSet) {
+                    if (!mongoQuery.start) {
+                        mongoQuery.start = {
+                            $gte: DateTime.local().startOf('month'),
+                        };
+                    }
+                    if (!mongoQuery.end) {
+                        mongoQuery.end = {
+                            $lt: DateTime.local().endOf('month'),
+                        };
+                    }
+                }
+            } catch (e) {
+                throw new DateParseError('Parameter timeRangeStart and/or timeRangeEnd is/are in invalid format!', 1);
             }
-        } catch (e) {
-            throw new DateParseError('Parameter timeRangeStart and/or timeRangeEnd is/are in invalid format!', 1);
         }
 
         try {
