@@ -92,12 +92,9 @@ services:
             MONGODB_DB: ${MAIN_DB}
             METRICS_DSN: ${METRICS_DSN}
             METRICS_DB: metrics
-            METRICS_SERVICE: mongo
             CRON_DSN: cron-api:8080
-            MONOLITH_API_DSN: php-sdk
             STARTING_POINT_DSN: starting-point:8080
             TOPOLOGY_API_DSN: topology-api:8080
-            WORKER_DEFAULT_PORT: 8000
             DOCKER_REGISTRY: orchesty
             DOCKER_PF_BRIDGE_IMAGE: bridge:${VERSION}
             JWT_KEY: BWoCz4gxw3YHDMkqE5HD1WT2u6zqIAtiJkYVyf6UucL4ZtbhhatQooP5IgTQRwowYR6z8wE3biqZTl37

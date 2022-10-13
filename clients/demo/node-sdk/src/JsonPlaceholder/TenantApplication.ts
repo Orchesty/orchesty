@@ -1,4 +1,4 @@
-import { AUTHORIZATION_FORM } from '@orchesty/nodejs-sdk/dist/lib/Application/Base/AApplication';
+import CoreFormsEnum from '@orchesty/nodejs-sdk/dist/lib/Application/Base/CoreFormsEnum';
 import { ApplicationInstall } from '@orchesty/nodejs-sdk/dist/lib/Application/Database/ApplicationInstall';
 import Field from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/Field';
 import FieldType from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/FieldType';
@@ -44,7 +44,7 @@ export default class TenantApplication extends ABasicApplication {
     }
 
     public getFormStack(): FormStack {
-        const settingsForm = new Form(AUTHORIZATION_FORM, 'Auth token').setReadOnly(true);
+        const settingsForm = new Form(CoreFormsEnum.AUTHORIZATION_FORM, 'Auth token').setReadOnly(true);
         const tokenField = new Field(FieldType.TEXT, PIN, 'PIN').setReadOnly(true);
 
         settingsForm.addField(tokenField);
