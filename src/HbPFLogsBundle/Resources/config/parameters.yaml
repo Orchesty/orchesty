@@ -1,4 +1,0 @@
-parameters:
-    elasticsearch_dsn: "%env(string:ELASTICSEARCH_DSN)%"
-    logs_service: "%env(string:LOGS_SERVICE)%"
-    env(LOGS_SERVICE): "mongo"

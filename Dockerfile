@@ -11,7 +11,6 @@ RUN cd pf-bundles && \
     CRON_DSN=cron-api:8080 MONOLITH_API_DSN=php-sdk \
     TOPOLOGY_API_DSN=topology-api:8080 WORKER_DEFAULT_PORT=8000 STARTING_POINT_DSN=starting-point:8080 \
     FRONTEND_DSN=frontend BACKEND_DSN=backend JWT_KEY=key \
-    ELASTICSEARCH_DSN=elastic CRYPT_SECRET=key \
     ALPHA_INSTANCE_ID=orchesty USCCP_URI=localhost \
     bin/console cache:warmup
 
