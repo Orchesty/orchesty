@@ -8,8 +8,8 @@ use Hanaboso\PipesFramework\Metrics\Dto\MetricsDto;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository;
+use Hanaboso\Utils\Traits\LoggerTrait;
 use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
 /**
@@ -19,6 +19,8 @@ use Psr\Log\NullLogger;
  */
 abstract class MetricsManagerAbstract implements LoggerAwareInterface
 {
+
+    use LoggerTrait;
 
     // OUTPUT
     public const QUEUE_DEPTH          = 'queue_depth';
@@ -120,11 +122,6 @@ abstract class MetricsManagerAbstract implements LoggerAwareInterface
     protected NodeRepository $nodeRepository;
 
     /**
-     * @var LoggerInterface
-     */
-    protected LoggerInterface $logger;
-
-    /**
      * @param Node     $node
      * @param Topology $topology
      * @param mixed[]  $params
@@ -200,16 +197,6 @@ abstract class MetricsManagerAbstract implements LoggerAwareInterface
     {
         $this->nodeRepository = $dm->getRepository(Node::class);
         $this->logger         = new NullLogger();
-    }
-
-    /**
-     * Sets a logger instance on the object.
-     *
-     * @param LoggerInterface $logger
-     */
-    public function setLogger(LoggerInterface $logger): void
-    {
-        $this->logger = $logger;
     }
 
     /**

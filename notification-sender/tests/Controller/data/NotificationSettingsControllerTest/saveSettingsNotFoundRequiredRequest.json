@@ -1,7 +1,0 @@
-{
-    "http": "PUT /notifications/settings/:id",
-    "headers": [],
-    "body": {
-        "settings": []
-    }
-}

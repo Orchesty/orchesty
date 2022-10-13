@@ -21,20 +21,6 @@ services:
             - ../../:/var/www/pipes:cached
             - ${HOME}/dev/.composer:${HOME}/dev/.composer:cached
 
-    status-service:
-        image: orchesty/status-service:${VERSION}
-        environment:
-            RABBITMQ_DSN: ${RABBITMQ_DSN}
-
-    notification-sender-consumer:
-        image: orchesty/notification-sender:${VERSION}
-        command: bash -c 'while ! [ -f vendor/autoload.php ]; do sleep 1; echo "sleep 1"; done; bin/console rabbit_mq:consumer:notification'
-        working_dir: /var/www
-        environment:
-            RABBITMQ_DSN: ${RABBITMQ_DSN}
-            MONGO_CONNECTION: ${MONGO_DSN}
-            MONGO_DB: ${MAIN_DB}
-
     multi-counter:
         image: orchesty/counter:${VERSION}
         environment:

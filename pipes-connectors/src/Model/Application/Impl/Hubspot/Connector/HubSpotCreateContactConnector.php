@@ -13,8 +13,8 @@ use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\System\PipesHeaders;
+use Hanaboso\Utils\Traits\LoggerTrait;
 use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerInterface;
 
 /**
  * Class HubSpotCreateContactConnector
@@ -24,12 +24,9 @@ use Psr\Log\LoggerInterface;
 final class HubSpotCreateContactConnector extends ConnectorAbstract implements LoggerAwareInterface
 {
 
-    public const NAME = 'hub-spot.create-contact';
+    use LoggerTrait;
 
-    /**
-     * @var LoggerInterface
-     */
-    private LoggerInterface $logger;
+    public const NAME = 'hub-spot.create-contact';
 
     /**
      * @return string
@@ -37,14 +34,6 @@ final class HubSpotCreateContactConnector extends ConnectorAbstract implements L
     public function getName(): string
     {
         return self::NAME;
-    }
-
-    /**
-     * @param LoggerInterface $logger
-     */
-    public function setLogger(LoggerInterface $logger): void
-    {
-        $this->logger = $logger;
     }
 
     /**

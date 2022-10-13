@@ -29,9 +29,6 @@ services:
         arguments:
             - '@hbpp.service.locator'
 
-    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NotificationController:
-        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NotificationController
-
     Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyController:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyController
 

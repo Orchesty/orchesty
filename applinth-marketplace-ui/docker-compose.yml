@@ -27,7 +27,6 @@ services:
             METRICS_DB: metrics
             METRICS_SERVICE: mongo
             CHECK_INFINITY_LOOP: 'true'
-            NOTIFICATION_DSN: http://notification-sender-api
             TOPOLOGY_API_DSN: topology-api:80
             STARTING_POINT_DSN: starting-point:8080
             CRON_DSN: http://cron-api:8080

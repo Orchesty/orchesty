@@ -24,13 +24,6 @@ services:
             MONGODB_DSN: ${MONGO_DSN}
         command: sh -c 'pnpm install && pnpm run start'
 
-    notification-sender-api:
-        image: orchesty/notification-sender:${VERSION}
-        working_dir: /var/www
-        environment:
-            MONGO_DB: ${MAIN_DB}
-            MONGO_CONNECTION: ${MONGO_DSN}
-
     starting-point:
         image: hanabosocom/go-base:1.18
         user: ${DEV_UID}:${DEV_GID}
@@ -93,7 +86,6 @@ services:
             COMPOSER_HOME: ${HOME}/dev/.composer
             BACKEND_DSN: ${BACKEND_URL}/
             FRONTEND_DSN: ${FRONTEND_URL}/
-            NOTIFICATION_DSN: notification-sender-api
             UDP_LOGGER_URL: fluentd:5120
             RABBITMQ_DSN: ${RABBITMQ_DSN}
             MONGODB_DSN: ${MONGO_DSN}

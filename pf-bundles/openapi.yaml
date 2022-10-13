@@ -480,47 +480,6 @@ paths:
                 500:
                     $ref: '#/components/responses/500'
 
-    /api/notification_settings:
-        get:
-            tags: [ Notification Settings ]
-            responses:
-                200:
-                    $ref: '#/components/responses/Events'
-                500:
-                    $ref: '#/components/responses/500'
-
-    /api/notification_settings/events:
-        get:
-            tags: [ Notification Settings ]
-            responses:
-                200:
-                    $ref: '#/components/responses/Events'
-                500:
-                    $ref: '#/components/responses/500'
-
-    /api/notification_settings/{id}:
-        get:
-            tags: [ Notification Settings ]
-            parameters:
-                -   $ref: '#/components/parameters/Id'
-            responses:
-                200:
-                    $ref: '#/components/responses/Setting'
-                500:
-                    $ref: '#/components/responses/500'
-
-        put:
-            tags: [ Notification Settings ]
-            parameters:
-                -   $ref: '#/components/parameters/Id'
-            requestBody:
-                $ref: '#/components/requestBodies/NotificationSetting'
-            responses:
-                200:
-                    $ref: '#/components/responses/Setting'
-                500:
-                    $ref: '#/components/responses/500'
-
     /api/sdks:
         get:
             tags: [ SDKs ]
@@ -1082,21 +1041,6 @@ components:
                                 enum: [ action, event ]
                             enabled:
                                 type: boolean
-
-        NotificationSetting:
-            description: ''
-            content:
-                application/json:
-                    schema:
-                        type: object
-                        properties:
-                            events:
-                                type: array
-                                items:
-                                    type: string
-                                    enum: [ access_expiration, data_error, service_unavailable ]
-                            settings:
-                                type: object
 
         Sdk:
             description: ''
