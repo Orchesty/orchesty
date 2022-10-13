@@ -198,6 +198,14 @@ export default class UsageStatsService {
         const mongoQuery = this.prepareMongoQuery(query, tenantId, false, true);
         const collectionName = switchGranularity(query.granularity);
 
+        const appIdQuery: Record<string, boolean | string> = {};
+
+        if (mongoQuery.appId) {
+            appIdQuery['docs.appId'] = mongoQuery.appId;
+            appIdQuery['docs.installed'] = true;
+        }
+        delete mongoQuery.appId;
+
         const aggregations = [
             {
                 $match: mongoQuery,
@@ -205,14 +213,64 @@ export default class UsageStatsService {
             {
                 $group: {
                     _id: '$endUserId',
-                    endUserId: { $first: '$endUserId' },
-                    appIds: { $addToSet: '$appId' },
-                    appNames: { $addToSet: '$appId' },
-                    activeAppNames: { $addToSet: { $cond: { if: { $eq: ['$installed', true] }, then: '$appId', else: '$$REMOVE' } } },
-                    instanceIds: { $addToSet: '$instanceId' },
-                    totalCost: { $sum: '$cost' },
-                    estimatedTotalCost: { $sum: '$estimatedCost' },
-                    installCount: { $push: '$_id' },
+                    docs: { $push: '$$ROOT' },
+                    activeAppNames: {
+                        $addToSet: {
+                            $cond: {
+                                if: { $eq: ['$installed', true] },
+                                then: '$appId',
+                                else: '$$REMOVE',
+                            },
+                        },
+                    },
+                    totalCost: {
+                        $sum: {
+                            $cond: {
+                                if: { $eq: ['$appId', appIdQuery['docs.appId']] },
+                                then: '$cost',
+                                else: '$$REMOVE',
+                            },
+                        },
+                    },
+                    estimatedTotalCost: {
+                        $sum: {
+                            $cond: {
+                                if: { $eq: ['$appId', appIdQuery['docs.appId']] },
+                                then: '$estimatedCost',
+                                else: '$$REMOVE',
+                            },
+                        },
+                    },
+                    installCount: {
+                        $push: {
+                            $cond: {
+                                if: { $eq: ['$appId', appIdQuery['docs.appId']] },
+                                then: '$_id',
+                                else: '$$REMOVE',
+                            },
+                        },
+                    },
+                },
+            },
+            {
+                $unwind: {
+                    path: '$docs',
+                },
+            },
+            {
+                $match: appIdQuery,
+            },
+            {
+                $group: {
+                    _id: '$docs.endUserId',
+                    endUserId: { $first: '$docs.endUserId' },
+                    appIds: { $addToSet: '$docs.appId' },
+                    totalCost: { $first: '$totalCost' },
+                    estimatedTotalCost: { $first: '$estimatedTotalCost' },
+                    appNames: { $addToSet: '$docs.appId' },
+                    activeAppNames: { $first: '$activeAppNames' },
+                    instanceIds: { $addToSet: '$docs.instanceId' },
+                    installCount: { $first: '$installCount' },
                 },
             },
             {
