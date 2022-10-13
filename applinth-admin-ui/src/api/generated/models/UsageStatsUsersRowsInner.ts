@@ -38,6 +38,12 @@ export interface UsageStatsUsersRowsInner {
      */
     appNames?: Array<string>;
     /**
+     * Array of active application names
+     * @type {Array<string>}
+     * @memberof UsageStatsUsersRowsInner
+     */
+    activeAppNames?: Array<string>;
+    /**
      * Array of application ids
      * @type {Array<string>}
      * @memberof UsageStatsUsersRowsInner
@@ -76,6 +82,7 @@ export function UsageStatsUsersRowsInnerFromJSONTyped(json: any, ignoreDiscrimin
         'endUserId': !exists(json, 'endUserId') ? undefined : json['endUserId'],
         'endUserDisplayId': !exists(json, 'endUserDisplayId') ? undefined : json['endUserDisplayId'],
         'appNames': !exists(json, 'appNames') ? undefined : json['appNames'],
+        'activeAppNames': !exists(json, 'activeAppNames') ? undefined : json['activeAppNames'],
         'appIds': !exists(json, 'appIds') ? undefined : json['appIds'],
         'totalCost': !exists(json, 'totalCost') ? undefined : json['totalCost'],
         'estimatedTotalCost': !exists(json, 'estimatedTotalCost') ? undefined : json['estimatedTotalCost'],
@@ -95,6 +102,7 @@ export function UsageStatsUsersRowsInnerToJSON(value?: UsageStatsUsersRowsInner 
         'endUserId': value.endUserId,
         'endUserDisplayId': value.endUserDisplayId,
         'appNames': value.appNames,
+        'activeAppNames': value.activeAppNames,
         'appIds': value.appIds,
         'totalCost': value.totalCost,
         'estimatedTotalCost': value.estimatedTotalCost,

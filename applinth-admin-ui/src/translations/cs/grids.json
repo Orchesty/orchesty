@@ -10,7 +10,8 @@
       "month": "Měsíc",
       "application": "Aplikace",
       "customer": "Zákazník",
-      "activeApplications": "Aktivní aplikace"
+      "activeApplications": "Aktivní aplikace",
+      "cost": "Náklady"
     }
   }
 }

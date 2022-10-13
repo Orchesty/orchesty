@@ -51,9 +51,9 @@ export default class UsageStatsService {
                     appName: 1,
                     endUsers: { $size: '$userIds' },
                     totalCost: 1,
+                    estimatedTotalCost: 1,
                     instanceIds: 1,
                     installCount: { $size: '$installCount' },
-                    estimatedTotalCost: { $sum: '$estimatedCost' },
                 },
             },
         ];
@@ -71,7 +71,7 @@ export default class UsageStatsService {
         tenantId: string,
     ): Promise<{ rows: unknown }> {
         const collectionName = CollectionEnum.USAGE_STATS_MONTHLY;
-        const mongoQuery = this.prepareMongoQuery(query, tenantId, true);
+        const mongoQuery = this.prepareMongoQuery(query, tenantId, !query.tail);
 
         const apps = await this.db.getBillingCollection(collectionName).find(mongoQuery).toArray();
 
@@ -132,7 +132,7 @@ export default class UsageStatsService {
                 },
             },
             {
-                $sort: { date: 1 },
+                $sort: { date: -1 },
             },
             {
                 $project: {
@@ -208,9 +208,10 @@ export default class UsageStatsService {
                     endUserId: { $first: '$endUserId' },
                     appIds: { $addToSet: '$appId' },
                     appNames: { $addToSet: '$appId' },
+                    activeAppNames: { $addToSet: { $cond: { if: { $eq: ['$installed', true] }, then: '$appId', else: '$$REMOVE' } } },
                     instanceIds: { $addToSet: '$instanceId' },
                     totalCost: { $sum: '$cost' },
-                    estimatedTotalCost: { $sum: '$cost' },
+                    estimatedTotalCost: { $sum: '$estimatedCost' },
                     installCount: { $push: '$_id' },
                 },
             },
@@ -221,6 +222,7 @@ export default class UsageStatsService {
                     endUserId: 1,
                     appIds: 1,
                     appNames: 1,
+                    activeAppNames: 1,
                     instanceIds: 1,
                     totalCost: 1,
                     estimatedTotalCost: 1,
@@ -237,6 +239,7 @@ export default class UsageStatsService {
         rows.forEach((row) => {
             /* eslint-disable @typescript-eslint/no-unsafe-call */
             row.appNames.sort();
+            row.activeAppNames.sort();
             row.appIds.sort();
             row.instanceIds.sort();
             /* eslint-enable @typescript-eslint/no-unsafe-call */
@@ -274,8 +277,8 @@ export default class UsageStatsService {
         }
 
         if (query.tail) {
-            if (query.timeRangeStart || query.timeRangeEnd) {
-                throw new DateParseError('Parameter timeRangeStart and/or timeRangeEnd is/are set with tail!', 3);
+            if (query.timeRangeStart || query.timeRangeEnd || query.installedDate) {
+                throw new DateParseError('Parameter installedDate, timeRangeStart and/or timeRangeEnd is/are set with tail!', 3);
             }
 
             mongoQuery.installed = true;

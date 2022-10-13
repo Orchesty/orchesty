@@ -65,6 +65,7 @@ export default class CustomerAppsTable extends Vue {
       api.installedApps.apps,
       {
         endUserId: this.customerId,
+        tail: true,
       }
     );
     this.isLoading = false;

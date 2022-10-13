@@ -68,6 +68,7 @@ export default class CustomerDetailPage extends Vue {
     const customer = await callApi<UsageStatsUsersRequest>(api.customers.list, {
       endUserId: this.customerId,
       tail: true,
+      granularity: "monthly",
     });
 
     if (customer.length > 0) {

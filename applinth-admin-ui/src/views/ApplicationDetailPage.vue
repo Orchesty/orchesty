@@ -15,9 +15,7 @@
         class="my-5"
         :alt="breadcrumbTitle"
       />
-      <Heading class="mb-2">{{
-        applicationDetail ? applicationDetail.publicName : breadcrumbTitle
-      }}</Heading>
+      <Heading class="mb-2">{{ breadcrumbTitle }}</Heading>
       <p>
         {{ applicationDetail && applicationDetail.description }}
       </p>
@@ -43,12 +41,12 @@
           :title="$t('overviewPage.statusCards.estimatedCostsEom')"
         />
       </div>
-      <LineChart
-        class="chart-js"
-        v-if="labels.length > 0"
-        :chart-data="data"
-        :chart-labels="labels"
-      />
+      <!--      <LineChart-->
+      <!--        class="chart-js"-->
+      <!--        v-if="labels.length > 0"-->
+      <!--        :chart-data="data"-->
+      <!--        :chart-labels="labels"-->
+      <!--      />-->
     </div>
   </AppLayout>
 </template>
@@ -127,7 +125,8 @@ export default class ApplicationDetailPage extends Vue {
     if (selectedApplications.length > 0) {
       this.application = selectedApplications[0];
 
-      this.breadcrumbTitle = this.applicationDetail?.publicName;
+      this.breadcrumbTitle =
+        this.applicationDetail?.publicName || this.application.appName;
     } else {
       this.breadcrumbTitle = this.$route.params.id;
     }

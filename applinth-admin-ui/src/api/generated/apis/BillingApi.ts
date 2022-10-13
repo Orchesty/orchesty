@@ -49,6 +49,7 @@ export interface UsageStatsInstalledAppsRequest {
     endUserId: string;
     tenantId?: string;
     instanceId?: string;
+    tail?: boolean;
     installedDate?: string;
 }
 
@@ -159,6 +160,10 @@ export class BillingApi extends runtime.BaseAPI {
 
         if (requestParameters.endUserId !== undefined) {
             queryParameters['endUserId'] = requestParameters.endUserId;
+        }
+
+        if (requestParameters.tail !== undefined) {
+            queryParameters['tail'] = requestParameters.tail;
         }
 
         if (requestParameters.installedDate !== undefined) {
