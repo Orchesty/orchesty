@@ -9,7 +9,7 @@ RUN cd applinth && \
     MONGODB_DSN=mongodb://mongo:27017 MONGODB_DB=pipes \
     METRICS_DSN=mongodb://mongo:27017 METRICS_DB=metrics METRICS_SERVICE=mongo \
     CRON_DSN=cron-api:8080 MONOLITH_API_DSN=php-sdk \
-    TOPOLOGY_API_DSN=topology-api:8080 WORKER_DEFAULT_PORT=8008 STARTING_POINT_DSN=starting-point:8080 \
+    TOPOLOGY_API_DSN=topology-api:8080 STARTING_POINT_DSN=starting-point:8080 \
     FRONTEND_DSN=frontend BACKEND_DSN=backend JWT_KEY=key \
     ALPHA_INSTANCE_ID=applinth USCCP_URI=localhost JWE_PRIVATE_KEY=1 \
     bin/console cache:warmup
