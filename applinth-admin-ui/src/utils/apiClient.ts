@@ -52,8 +52,6 @@ export async function callApi<P>(
   try {
     response = await apiConfig.request(requestParams);
   } catch (err: any) {
-    // TODO add info message from server
-    // TODO localize
     if (err instanceof ResponseError) {
       const errorData = await err.response.json();
 
