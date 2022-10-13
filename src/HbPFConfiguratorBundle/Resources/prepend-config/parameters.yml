@@ -14,6 +14,8 @@ parameters:
     xml_parser_api_host: "%env(string:XML_PARSER_API_DSN)%"
 
     worker_default_port: "%env(int:WORKER_DEFAULT_PORT)%"
+    env(WORKER_DEFAULT_PORT): 8000
+
     topology_api: "%env(string:TOPOLOGY_API_DSN)%"
     starting_point: "%env(string:STARTING_POINT_DSN)%"
     monolith_api_host: "%env(string:MONOLITH_API_DSN)%"
