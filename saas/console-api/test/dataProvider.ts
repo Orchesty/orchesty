@@ -26,6 +26,7 @@ function generateUsageStatsRow(
     installId = 'i1235',
     tenantId = 't123456789',
     cost = 100000,
+    estimatedCost = 200000,
 ): Document {
     return {
         appName,
@@ -40,6 +41,7 @@ function generateUsageStatsRow(
         duration: 1,
         billedDuration: 1,
         cost,
+        estimatedCost,
         installed,
     };
 }

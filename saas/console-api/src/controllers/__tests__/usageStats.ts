@@ -61,7 +61,7 @@ describe('usageStatsController', () => {
                     appId: 'neco',
                     appName: 'neco',
                     endUsers: 1,
-                    estimatedTotalCost: 0,
+                    estimatedTotalCost: 400000,
                     installCount: 2,
                     instanceIds: ['inst1234', 'inst1235'],
                     totalCost: 2000000,
@@ -70,7 +70,7 @@ describe('usageStatsController', () => {
                     appId: 'neco1',
                     appName: 'neco1',
                     endUsers: 1,
-                    estimatedTotalCost: 0,
+                    estimatedTotalCost: 400000,
                     installCount: 2,
                     instanceIds: ['inst1234', 'inst1235'],
                     totalCost: 200000,
@@ -105,7 +105,7 @@ describe('usageStatsController', () => {
                     installCount: 1,
                     instanceIds: ['inst1234'],
                     totalCost: 100000,
-                    estimatedTotalCost: 0,
+                    estimatedTotalCost: 200000,
                 },
             ]);
         });
@@ -126,7 +126,7 @@ describe('usageStatsController', () => {
                     installCount: 2,
                     instanceIds: ['inst1234', 'inst1235'],
                     totalCost: 200000,
-                    estimatedTotalCost: 0,
+                    estimatedTotalCost: 400000,
                 },
             ]);
         });
@@ -173,7 +173,7 @@ describe('usageStatsController', () => {
                     endUsers: 1,
                     installCount: 6,
                     totalCost: 5000000,
-                    estimatedTotalCost: 0,
+                    estimatedTotalCost: 1200000,
                 }, {
                     appId: 'neco1',
                     appName: 'neco1',
@@ -181,7 +181,7 @@ describe('usageStatsController', () => {
                     endUsers: 2,
                     installCount: 6,
                     totalCost: 600000,
-                    estimatedTotalCost: 0,
+                    estimatedTotalCost: 1200000,
                 },
             ]);
             assert.deepEqual(resp.statusCode, 200);
@@ -201,7 +201,7 @@ describe('usageStatsController', () => {
                 endUsers: 1,
                 installCount: 6,
                 totalCost: 5000000,
-                estimatedTotalCost: 0,
+                estimatedTotalCost: 1200000,
             },
             ]);
             assert.deepEqual(resp.statusCode, 200);
@@ -215,29 +215,22 @@ describe('usageStatsController', () => {
                 timeRangeEnd: '2024-07-20T05:17:36Z',
                 granularity: 'monthly',
                 endUserDisplayId: '123',
+                appId: 'neco1',
             }).set(authorization);
-            assert.deepEqual(resp.body.rows.length, 2);
-            assert.deepEqual(resp.body.rows, [{
-                activeAppNames: [],
-                appIds: ['neco1'],
-                appNames: ['neco1'],
-                endUserDisplayId: '1234',
-                endUserId: '1234',
-                estimatedTotalCost: 0,
-                installCount: 2,
-                instanceIds: ['inst1234', 'inst1235'],
-                totalCost: 200000,
-            }, {
-                activeAppNames: ['neco', 'neco1'],
-                appIds: ['neco', 'neco1'],
-                appNames: ['neco', 'neco1'],
-                endUserDisplayId: '1235',
-                endUserId: '1235',
-                estimatedTotalCost: 0,
-                installCount: 10,
-                instanceIds: ['inst1234', 'inst1235'],
-                totalCost: 5400000,
-            }]);
+            assert.deepEqual(resp.body.rows.length, 1);
+            assert.deepEqual(resp.body.rows, [
+                {
+                    activeAppNames: ['neco', 'neco1'],
+                    appIds: ['neco1'],
+                    appNames: ['neco1'],
+                    endUserDisplayId: '1235',
+                    endUserId: '1235',
+                    estimatedTotalCost: 800000,
+                    installCount: 4,
+                    instanceIds: ['inst1234', 'inst1235'],
+                    totalCost: 400000,
+                },
+            ]);
             assert.deepEqual(resp.statusCode, 200);
         });
     });
