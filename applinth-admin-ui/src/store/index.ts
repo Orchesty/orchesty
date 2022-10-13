@@ -16,11 +16,6 @@ import {
   createState as apiCreateState,
 } from "./modules/api";
 import {
-  TablesNamespaces,
-  createTablesModule,
-  createState as tableCreateState,
-} from "./modules/tables";
-import {
   applicationsNamespace,
   applicationsModule,
   createState as applicationsCreateState,
@@ -28,22 +23,11 @@ import {
 
 Vue.use(Vuex);
 
-function getTableModules() {
-  const tableModules: any = {};
-  Object.values(TablesNamespaces).forEach((tableNamespace) => {
-    tableModules[tableNamespace] = createTablesModule();
-  });
-  return tableModules;
-}
-
 export default new Vuex.Store({
   state: {},
   actions: {},
   mutations: {
     resetStore(state: any) {
-      Object.values(TablesNamespaces).forEach((tableNamespace) => {
-        state[tableNamespace] = tableCreateState();
-      });
       state[alertsNamespace] = alertsCreateState();
       state[authNamespace] = authCreateState();
       state[apiNamespace] = apiCreateState();
@@ -51,7 +35,6 @@ export default new Vuex.Store({
     },
   },
   modules: {
-    ...getTableModules(),
     [alertsNamespace]: alertsModule,
     [authNamespace]: authModule,
     [apiNamespace]: apiModule,

@@ -44,9 +44,6 @@ import Button from "../../commons/inputsAndControls/Button.vue";
 import TextField from "../../commons/inputsAndControls/TextField.vue";
 import { EventBus, Routes } from "@/enums";
 import { eventBus } from "@/utils/eventBus";
-import { Action } from "vuex-class";
-import { TablesActions, TablesNamespaces } from "../../../store/modules/tables";
-import { TableRefreshPayload } from "../../../types";
 import { api } from "@/api";
 import {
   CreateUser,
@@ -81,11 +78,6 @@ export default class UserFormModal extends Vue {
   formData: CreateUser | UpdateUser = {
     ...emptyFormData,
   };
-
-  @Action(TablesActions.Refresh, {
-    namespace: TablesNamespaces.UsersTable,
-  })
-  refreshTable!: (payload: TableRefreshPayload) => Promise<void>;
 
   created(): void {
     eventBus.$on(EventBus.UserCreateModal, () => {

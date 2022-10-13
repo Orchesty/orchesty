@@ -19,7 +19,6 @@ export enum AuthGetters {
   GetUser = "getUser",
   GetDisplayName = "getDisplayName",
   GetAccessToken = "getAccessToken",
-  GetRawSettings = "getRawSettings",
 }
 
 export type User = {

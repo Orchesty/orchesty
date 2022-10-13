@@ -16,7 +16,4 @@ export const getters: Getters<AuthGetters, AuthState> = {
   getAccessToken(state: AuthState): string | null {
     return state.accessToken;
   },
-  getRawSettings(): any {
-    // TODO not implemented yet
-  },
 };

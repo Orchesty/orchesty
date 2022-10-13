@@ -17,7 +17,6 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import Table from "@/components/commons/tables/Table.vue";
 import {
   UsageStatsTimeBucketAppsRequest,
   UsageStatsTimeBucketAppsRowsInner,
@@ -30,7 +29,6 @@ import { toCZK } from "@/filters/money";
 @Component({
   components: {
     SimpleTable,
-    Table,
   },
 })
 export default class CustomerBillingTable extends Vue {
