@@ -37,10 +37,10 @@
 
 <script>
 import ImplementationsForm from '../form/ImplementationsForm'
-import { IMPLEMENTATIONS } from '../../../../store/modules/implementations/types'
+import { IMPLEMENTATIONS } from '@/store/modules/implementations/types'
 import { mapActions, mapGetters, mapState } from 'vuex'
-import { REQUESTS_STATE } from '../../../../store/modules/api/types'
-import { API } from '../../../../api'
+import { REQUESTS_STATE } from '@/store/modules/api/types'
+import { API } from '@/api'
 import ModalTemplate from '@/components/commons/modal/ModalTemplate'
 import AppButton from '@/components/commons/button/AppButton'
 export default {
