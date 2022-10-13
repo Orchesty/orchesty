@@ -16,7 +16,6 @@
 import { Component, Prop, Vue } from "vue-property-decorator";
 import SelectBox from "@/components/commons/inputsAndControls/SelectBox.vue";
 import TextField from "@/components/commons/inputsAndControls/TextField.vue";
-import Table from "@/components/commons/tables/Table.vue";
 import {
   UsageStatsInstalledAppsRequest,
   UsageStatsInstalledAppsRowsInner,
@@ -29,7 +28,6 @@ import { toLocalDate } from "@/filters/datetime";
 @Component({
   components: {
     SimpleTable,
-    Table,
     TextField,
     SelectBox,
   },

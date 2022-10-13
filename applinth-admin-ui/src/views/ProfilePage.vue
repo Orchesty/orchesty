@@ -71,7 +71,6 @@
 <script lang="ts">
 import AppLayout from "../components/commons/layouts/AppLayout.vue";
 import Button from "../components/commons/inputsAndControls/Button.vue";
-import Table from "../components/commons/tables/Table.vue";
 import TextField from "../components/commons/inputsAndControls/TextField.vue";
 import { Component, Vue } from "vue-property-decorator";
 import { ValidationObserver } from "vee-validate";
@@ -91,7 +90,6 @@ import { ChangePassword, UpdateUserInfo } from "@/types/CurrentUser";
     Heading,
     AppLayout,
     Button,
-    Table,
     TextField,
     ValidationObserver,
   },
