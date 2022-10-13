@@ -8,7 +8,6 @@ use Hanaboso\CommonsBundle\Exception\FileStorageException;
 use Hanaboso\CommonsBundle\Transport\Ftp\Exception\FtpException;
 use Hanaboso\CommonsBundle\Transport\Soap\SoapException;
 use Hanaboso\PipesFramework\ApiGateway\Exception\LicenseException;
-use Hanaboso\PipesFramework\Notification\Exception\NotificationException;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
@@ -55,7 +54,6 @@ final class ControllerExceptionListener implements EventSubscriberInterface, Log
         FtpException::class,
         LicenseException::class,
         MongoDBException::class,
-        NotificationException::class,
         PipesFrameworkException::class,
         PipesFrameworkException::class,
         SecurityManagerException::class,

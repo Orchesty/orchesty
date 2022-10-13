@@ -9,7 +9,6 @@ parameters:
   backendHost: "%env(string:BACKEND_DSN)%"
   cronHost: "%env(string:CRON_DSN)%"
   startingPointHost: "%env(string:STARTING_POINT_DSN)%"
-  notificationHost: "%env(NOTIFICATION_DSN)%"
   activateLink: '%backendHost%/user/%s/activate'
   passwordLink: 'restore-password/%s'
   cryptSecret: '%env(CRYPT_SECRET)%'

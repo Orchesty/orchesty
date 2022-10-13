@@ -19,9 +19,9 @@ use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use Hanaboso\RestBundle\Exception\XmlDecoderException;
 use Hanaboso\RestBundle\Model\Decoder\XmlDecoder;
 use Hanaboso\Utils\Exception\EnumException;
+use Hanaboso\Utils\Traits\LoggerTrait;
 use JsonException;
 use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Throwable;
 
@@ -33,6 +33,8 @@ use Throwable;
 final class InstallManager implements LoggerAwareInterface
 {
 
+    use LoggerTrait;
+
     public const AUTO_INSTALL_KEY = 'auto-install-key';
 
     private const CREATE = 'create';
@@ -43,11 +45,6 @@ final class InstallManager implements LoggerAwareInterface
      * @var TopologiesComparator
      */
     private TopologiesComparator $comparator;
-
-    /**
-     * @var LoggerInterface
-     */
-    private LoggerInterface $logger;
 
     /**
      * InstallManager constructor.
@@ -109,18 +106,6 @@ final class InstallManager implements LoggerAwareInterface
         }
 
         return $this->generateOutput($result, $makeCreate, $makeUpdate, $makeDelete);
-    }
-
-    /**
-     * Sets a logger instance on the object.
-     *
-     * @param LoggerInterface $logger
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger): void
-    {
-        $this->logger = $logger;
     }
 
     /**

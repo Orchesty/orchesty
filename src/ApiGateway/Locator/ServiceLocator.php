@@ -13,9 +13,9 @@ use Hanaboso\PipesFramework\Configurator\Document\Sdk;
 use Hanaboso\PipesFramework\Configurator\Enum\NodeImplementationEnum;
 use Hanaboso\PipesFramework\Configurator\Repository\SdkRepository;
 use Hanaboso\Utils\String\Json;
+use Hanaboso\Utils\Traits\LoggerTrait;
 use LogicException;
 use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\HttpFoundation\Request;
 use Throwable;
@@ -28,17 +28,14 @@ use Throwable;
 final class ServiceLocator implements LoggerAwareInterface
 {
 
+    use LoggerTrait;
+
     public const USER_TASK_LIST = ['user-task'];
 
     /**
      * @var ObjectRepository<Sdk>&SdkRepository
      */
     private SdkRepository $sdkRepository;
-
-    /**
-     * @var LoggerInterface
-     */
-    private LoggerInterface $logger;
 
     /**
      * ServiceLocator constructor.
@@ -60,14 +57,6 @@ final class ServiceLocator implements LoggerAwareInterface
     /**
      * --------------------------------------------- APP Store -----------------------------------------
      */
-
-    /**
-     * @param LoggerInterface $logger
-     */
-    public function setLogger(LoggerInterface $logger): void
-    {
-        $this->logger = $logger;
-    }
 
     /**
      * @param string $exclude

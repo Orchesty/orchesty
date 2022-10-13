@@ -25,7 +25,6 @@ services:
             - METRICS_DSN=mongodb://mongo
             - METRICS_DB=metrics
             - CHECK_INFINITY_LOOP=true
-            - NOTIFICATION_DSN=http://notification-sender-api
             - TOPOLOGY_API_DSN=topology-api:80
             - STARTING_POINT_DSN=starting-point:8080
             - CRON_DSN=http://cron-api:8080
@@ -49,12 +48,6 @@ services:
         environment:
             MONGO_DSN: mongodb://mongo/cron?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
             MONGO_COLLECTION: cron
-
-    notification-sender-api:
-        image: dkr.hanaboso.net/pipes/pipes/notification-sender:master
-        working_dir: /var/www
-        environment:
-            MONGO_HOST: mongo
 
     mongo:
         image: mongo:latest

@@ -1,7 +1,0 @@
-{
-    "http": "GET /api/notification_settings",
-    "body": [],
-    "headers": {
-        "HTTP_Authorization": "jwt"
-    }
-}
