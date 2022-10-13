@@ -17,9 +17,6 @@ test-php:
 	cd pipes-connectors && $(TEST)
 	cd pf-bundles && $(TEST)
 	cd applinth && $(TEST)
-	cd status-service && $(TEST)
-	cd portal && $(TEST)
-	cd notification-sender && $(TEST)
 	cd clients/demo/pipes-api && $(TEST)
 
 vendor-remove: var-remove
@@ -27,9 +24,6 @@ vendor-remove: var-remove
 	cd pipes-connectors && $(VENDOR)
 	cd pf-bundles && $(VENDOR)
 	cd applinth && $(VENDOR)
-	cd status-service && $(VENDOR)
-	cd portal && $(VENDOR)
-	cd notification-sender && $(VENDOR)
 	cd clients/demo/pipes-api && $(VENDOR)
 
 var-remove:
@@ -37,9 +31,6 @@ var-remove:
 	cd pipes-connectors && $(VAR)
 	cd pf-bundles && $(VAR)
 	cd applinth && $(VAR)
-	cd status-service && $(VAR)
-	cd portal && $(VAR)
-	cd notification-sender && $(VAR)
 	cd clients/demo/pipes-api && $(VAR)
 
 vendor-refresh:
@@ -47,9 +38,6 @@ vendor-refresh:
 	cd pipes-connectors && $(VENDOR) && $(DOCKER) && $(INSTALL) && $(COMPOSER)
 	cd pf-bundles && $(VENDOR) && $(DOCKER) && $(INSTALL) && $(COMPOSER)
 	cd applinth && $(VENDOR) && $(DOCKER) && $(INSTALL) && $(COMPOSER)
-	cd status-service && $(VENDOR) && $(DOCKER) && $(INSTALL) && $(COMPOSER)
-	cd portal && $(VENDOR) && $(DOCKER) && $(INSTALL) && $(COMPOSER)
-	cd notification-sender && $(VENDOR) && $(DOCKER) && $(INSTALL) && $(COMPOSER)
 	cd clients/demo/pipes-api && $(VENDOR) && $(DOCKER) && $(INSTALL) && $(COMPOSER)
 
 rebuild-all:

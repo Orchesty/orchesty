@@ -5,7 +5,7 @@ include:
   stage: rel-x.y.z
   needs:
     - collect-tags
-  
+
   variables:
     RELEASE_IMAGE: OVERRIDE
     SRC_TAG: OVERRIDE
@@ -89,13 +89,6 @@ frontend:rel-x.y.z:
     - export RELEASE_IMAGE=${IMAGE_PREFIX}frontend
     - export SRC_TAG=${TAG_FRONTEND}
 
-kapacitor:rel-x.y.z:
-  extends: .base-rel-x.y.z
-  before_script:
-    - . ./export_tags
-    - export RELEASE_IMAGE=${IMAGE_PREFIX}kapacitor
-    - export SRC_TAG=${TAG_KAPACITOR}
-
 limiter:rel-x.y.z:
   extends: .base-rel-x.y.z
   before_script:
@@ -103,19 +96,12 @@ limiter:rel-x.y.z:
     - export RELEASE_IMAGE=${IMAGE_PREFIX}limiter
     - export SRC_TAG=${TAG_LIMITER}
 
-logstash:rel-x.y.z:
+fluentd:rel-x.y.z:
   extends: .base-rel-x.y.z
   before_script:
     - . ./export_tags
-    - export RELEASE_IMAGE=${IMAGE_PREFIX}logstash
-    - export SRC_TAG=${TAG_LOGSTASH}
-
-notification-sender:rel-x.y.z:
-  extends: .base-rel-x.y.z
-  before_script:
-    - . ./export_tags
-    - export RELEASE_IMAGE=${IMAGE_PREFIX}notification-sender
-    - export SRC_TAG=${TAG_NOTIFICATION_SENDER}
+    - export RELEASE_IMAGE=${IMAGE_PREFIX}fluentd
+    - export SRC_TAG=${TAG_FLUENTD}
 
 pf-bridge:rel-x.y.z:
   extends: .base-rel-x.y.z
@@ -130,13 +116,6 @@ starting-point:rel-x.y.z:
     - . ./export_tags
     - export RELEASE_IMAGE=${IMAGE_PREFIX}starting-point
     - export SRC_TAG=${TAG_STARTING_POINT}
-
-status-service:rel-x.y.z:
-  extends: .base-rel-x.y.z
-  before_script:
-    - . ./export_tags
-    - export RELEASE_IMAGE=${IMAGE_PREFIX}status-service
-    - export SRC_TAG=${TAG_STATUS_SERVICE}
 
 topology-api:rel-x.y.z:
   extends: .base-rel-x.y.z
@@ -190,13 +169,6 @@ frontend:rel-x.y:
     - export RELEASE_IMAGE=${IMAGE_PREFIX}frontend
     - export SRC_TAG=${TAG_FRONTEND}
 
-kapacitor:rel-x.y:
-  extends: .base-rel-x.y
-  before_script:
-    - . ./export_tags
-    - export RELEASE_IMAGE=${IMAGE_PREFIX}kapacitor
-    - export SRC_TAG=${TAG_KAPACITOR}
-
 limiter:rel-x.y:
   extends: .base-rel-x.y
   before_script:
@@ -204,19 +176,12 @@ limiter:rel-x.y:
     - export RELEASE_IMAGE=${IMAGE_PREFIX}limiter
     - export SRC_TAG=${TAG_LIMITER}
 
-logstash:rel-x.y:
+fluentd:rel-x.y:
   extends: .base-rel-x.y
   before_script:
     - . ./export_tags
-    - export RELEASE_IMAGE=${IMAGE_PREFIX}logstash
-    - export SRC_TAG=${TAG_LOGSTASH}
-
-notification-sender:rel-x.y:
-  extends: .base-rel-x.y
-  before_script:
-    - . ./export_tags
-    - export RELEASE_IMAGE=${IMAGE_PREFIX}notification-sender
-    - export SRC_TAG=${TAG_NOTIFICATION_SENDER}
+    - export RELEASE_IMAGE=${IMAGE_PREFIX}fluentd
+    - export SRC_TAG=${TAG_FLUENTD}
 
 pf-bridge:rel-x.y:
   extends: .base-rel-x.y
@@ -231,13 +196,6 @@ starting-point:rel-x.y:
     - . ./export_tags
     - export RELEASE_IMAGE=${IMAGE_PREFIX}starting-point
     - export SRC_TAG=${TAG_STARTING_POINT}
-
-status-service:rel-x.y:
-  extends: .base-rel-x.y
-  before_script:
-    - . ./export_tags
-    - export RELEASE_IMAGE=${IMAGE_PREFIX}status-service
-    - export SRC_TAG=${TAG_STATUS_SERVICE}
 
 topology-api:rel-x.y:
   extends: .base-rel-x.y
