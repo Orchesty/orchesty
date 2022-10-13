@@ -34,6 +34,7 @@ final class SdkHandler
         $sdks = $this->manager->getAll();
 
         return [
+            'filter' => [],
             'items'  => array_map(static fn(Sdk $sdk): array => $sdk->toArray(), $sdks),
             'paging' => [
                 'page'         => 1,

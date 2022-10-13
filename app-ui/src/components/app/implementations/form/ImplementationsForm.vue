@@ -45,7 +45,6 @@ export default {
         site: {
           validations: {
             required: true,
-            url: [{ require_protocol: true, require_tld: false }, { protocols: ['https', 'http'] }],
           },
         },
         name: {
