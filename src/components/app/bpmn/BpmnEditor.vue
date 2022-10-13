@@ -236,7 +236,7 @@ export default {
           if (event.element.businessObject.$attrs?.sdkHostOptions) {
             event.element.businessObject.$attrs.sdkHostOptions.forEach((item) => {
               let option = document.createElement('option')
-              option.value = option.text = item.name
+              option.value = option.text = item.name ?? ''
               select.add(option)
             })
           }
@@ -292,7 +292,7 @@ export default {
           if (event.element.businessObject.$attrs?.sdkHostOptions) {
             event.element.businessObject.$attrs.sdkHostOptions.forEach((item) => {
               let option = document.createElement('option')
-              option.value = option.text = item.name
+              option.value = option.text = item.name ?? ''
               select.add(option)
             })
           }

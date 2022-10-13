@@ -22,8 +22,8 @@
 <script>
 import { DATA_GRIDS } from '@/services/enums/dataGridEnums'
 import DataGrid from '../../../commons/grid/DataGrid'
-import { REQUESTS_STATE } from '../../../../store/modules/api/types'
-import { API } from '../../../../api'
+import { REQUESTS_STATE } from '@/store/modules/api/types'
+import { API } from '@/api'
 import { mapGetters } from 'vuex'
 import ImplementationUpdateModal from '@/components/app/implementations/modal/ImplementationUpdateModal'
 import ImplementationDeleteModal from '@/components/app/implementations/modal/ImplementationDeleteModal'

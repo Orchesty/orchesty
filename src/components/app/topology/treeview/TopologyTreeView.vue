@@ -75,6 +75,7 @@ export default {
       TOPOLOGY_ENUMS,
       opened: JSON.parse(localStorage.getItem(TOPOLOGY_ENUMS.TREE_VIEW)) || [],
       active: [],
+      lastActive: null,
     }
   },
   computed: {
@@ -118,12 +119,19 @@ export default {
           await redirectTo(this.$router, { name: ROUTES.TOPOLOGY.DEFAULT, params: { hideTopology: true } })
         }
 
+        if (this.lastSelectedTopology._id === this.lastActive._id) {
+          this.active = [this.lastSelectedTopology]
+          await this[TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID](this.active[0]._id)
+          await redirectTo(this.$router, { name: ROUTES.TOPOLOGY.VIEWER, params: { id: this.active[0]._id } })
+        }
         return
       }
 
       if (activeItems[0].type === TOPOLOGY_ENUMS.CATEGORY) {
         return
       }
+
+      this.lastActive = activeItems[0]
 
       if (activeItems[0]?._id === this.lastSelectedTopology?._id) return
 
@@ -183,17 +191,5 @@ export default {
 .topology-tree-view-overflow {
   height: calc(100vh - 100px);
   overflow-y: auto;
-}
-</style>
-
-<style lang="scss">
-.topology-tree-view-overflow {
-  .v-treeview-node__root.v-treeview-node--active {
-    pointer-events: none;
-
-    .v-treeview-node__append {
-      pointer-events: auto;
-    }
-  }
 }
 </style>
