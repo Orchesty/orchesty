@@ -1,6 +1,5 @@
-{{- $componentName := "multi-probe" -}}
+{{- $componentName := "fluentd" -}}
 ---
-{{- if not .Values.global.alpha_go_bridge }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -9,9 +8,6 @@ metadata:
 {{ include "pipes.labels" . | indent 4 }}
 {{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 4 }}
 spec:
-  replicas: 1
-  strategy:
-    type: Recreate
   selector:
     matchLabels:
 {{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 6 }}
@@ -21,16 +17,31 @@ spec:
 {{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 8 }}
     spec:
 {{ include "pipes.imagePullSecrets" . | indent 6 }}
+      serviceAccountName: {{ include "pipes.fullname" (dict "suffix" $componentName "root" .) }}
       containers:
-        - name: multi-probe
+        - name: {{ $componentName }}
           image: {{ include "pipes.imageFullname" (dict "image" $componentName "root" .) }}
           imagePullPolicy: Always
           ports:
-            - name: http
-              containerPort: 8007
-          env: []
+            - name: default
+              containerPort: 9600
+              protocol: TCP
+            - name: ingest-tcp
+              containerPort: 5120
+              protocol: TCP
+            - name: ingest-udp
+              containerPort: 5120
+              protocol: UDP
+          env:
+            - name: MONGO_DSN
+              valueFrom:
+                secretKeyRef:
+                  key: mongodb_dsn
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: MONGO_COLLECTION
+              value: Logs
           resources:
-{{ toYaml .Values.global.multiProbe.resources | indent 12 }}
+{{ toYaml .Values.global.fluentd.resources | indent 12 }}
 
 {{- with .Values.global.nodeSelector }}
       nodeSelector:
@@ -39,6 +50,4 @@ spec:
 {{- with .Values.global.tolerations }}
       tolerations:
 {{ toYaml . | indent 8 }}
-{{- end }}
-
 {{- end }}

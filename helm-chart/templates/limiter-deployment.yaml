@@ -34,14 +34,14 @@ spec:
               value: "0.0.0.0:3333"
             - name: RABBITMQ_DSN
               valueFrom:
-                configMapKeyRef:
+                secretKeyRef:
                   key: rabbitmq_dsn
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
             - name: RABBITMQ_INPUT_QUEUE_PREFETCH_COUNT
               value: "500"
             - name: MONGO_DSN
               valueFrom:
-                configMapKeyRef:
+                secretKeyRef:
                   key: mongodb_dsn
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
             - name: LOGSTASH_HOST

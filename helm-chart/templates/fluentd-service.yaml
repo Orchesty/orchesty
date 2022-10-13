@@ -1,4 +1,4 @@
-{{- $componentName := "logstash" -}}
+{{- $componentName := "fluentd" -}}
 ---
 apiVersion: v1
 kind: Service

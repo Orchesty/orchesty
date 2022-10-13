@@ -3,13 +3,10 @@ global:
   backend_url: https://backend.pipes.example.com
   starting_point_url: http://starting-point.pipes.example.com
 
-  alpha_go_bridge: false # also needs image overrides when enabled
-  alpha_legacy: false
-
   imageRegistry:
     enablePullSecret: false
     server: docker.io
-    path: hanaboso
+    path: orchesty
     username: ""
     password: ""
   
@@ -18,34 +15,29 @@ global:
 
   images:
     applinth-marketplace-ui: ""
-    php-sdk: pipes-pf-bundle:master
-    backend: pipes-pf-bundle:master
-    status: status-service:dev
-    frontend: pipes-frontend:master
-    cron-api: pipes-cron:master
+    php-sdk: OVERRIDE
+    backend: backend:1.0.5
+    frontend: frontend:1.0.5
+    cron-api: cron:1.0.5
 
-    bridge: pipes-pf-bridge:master
-    counter: pipes-pf-bridge:master
-    repeater: pipes-pf-bridge:master
+    bridge: bridge:1.0.5
+    counter: counter:1.0.5
+    repeater: pf-bridge:1.0.5
 
-    limiter: limiter:master
-    multi-probe: pipes-multi-probe:master
-    notification-sender: pipes-notification-sender:master
-    starting-point: pipes-starting-point:master
-    stream: stream:dev
-    topology-api: pipes-topology-api-v2:master
-    logstash: pipes-logstash-mongo:master
-    kapacitor: kapacitor:master
-    detector: detector:master
-    logstash-fluentd-google: no-default-image-yet
+    limiter: limiter:1.0.5
+    starting-point: starting-point:1.0.5
+    topology-api: topology-api:1.0.5
+    fluentd: fluentd:1.0.5
+    kapacitor: kapacitor:1.0.5
+    detector: detector:1.0.5
 
   # Default global node selector
   nodeSelector: {}
   tolerations: []
 
   monitoring:
-    useInfluxDB: true
-    logStorage: elasticsearch
+    useInfluxDB: false
+    logStorage: mongodb
 
     # Used unly when logStorage is "google"
     # You must also add iam policy binding to that account:
@@ -62,28 +54,16 @@ global:
     serviceAnnotations: {}
 
   applinthMarketplaceUI:
+    auth_backlink: not-set
     serviceAnnotations: {}
 
   backend:
+    alpha_instance_id: not-set
     checkInfinityLoop: true
     # values for backward compat, will be reset
     resources:
       requests:
         memory: 512Mi
-        cpu: 25m
-      limits:
-        memory: 1Gi
-        cpu: "2"
-
-  batchConnector:
-    enabled: true
-    replicaCount: 1
-    nodeSelector: {}
-    tolerations: []
-    # values for backward compat, will be reset
-    resources:
-      requests:
-        memory: 128Mi
         cpu: 25m
       limits:
         memory: 1Gi
@@ -130,26 +110,15 @@ global:
         memory: 512Mi
         cpu: "2"
 
-  logstash:
+  fluentd:
     # values for backward compat, will be reset
     resources:
       requests:
-        memory: 1Gi
+        memory: 256Gi
         cpu: 50m
       limits:
         memory: 1Gi
-        cpu: "2"
-
-  longRunningNode:
-    enabled: true
-    # values for backward compat, will be reset
-    resources:
-      requests:
-        memory: 128Mi
-        cpu: 10m
-      limits:
-        memory: 1Gi
-        cpu: "2"
+        cpu: "1"
 
   multiCounter:
     progressSave: true
@@ -161,33 +130,6 @@ global:
       limits:
         memory: 128Mi
         cpu: "2"
-
-  multiProbe:
-    # values for backward compat, will be reset
-    resources:
-      requests:
-        memory: 64Mi
-        cpu: 10m
-      limits:
-        memory: 128Mi
-        cpu: "2"
-
-  notificationSender:
-    # values for backward compat, will be reset
-    apiResources:
-      requests:
-        memory: 128Mi
-        cpu: "25m"
-      limits:
-        memory: 512Mi
-        cpu: "1"
-    consumerResources:
-      requests:
-        memory: 128Mi
-        cpu: "25m"
-      limits:
-        memory: 512Mi
-        cpu: "1"
 
   phpSdk:
     extraEnv: {}
@@ -213,16 +155,6 @@ global:
         cpu: 10m
       limits:
         memory: 128Mi
-        cpu: "2"
-
-  status:
-    # values for backward compat, will be reset
-    resources:
-      requests:
-        memory: 128Mi
-        cpu: 25m
-      limits:
-        memory: 128Gi
         cpu: "2"
 
   detector:

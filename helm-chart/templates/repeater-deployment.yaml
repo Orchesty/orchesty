@@ -28,32 +28,32 @@ spec:
           env:
             - name: RABBITMQ_HOST
               valueFrom:
-                configMapKeyRef:
+                secretKeyRef:
                   key: rabbitmq_host
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
             - name: RABBITMQ_PORT
               valueFrom:
-                configMapKeyRef:
+                secretKeyRef:
                   key: rabbitmq_port
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
             - name: RABBITMQ_USER
               valueFrom:
-                configMapKeyRef:
+                secretKeyRef:
                   key: rabbitmq_user
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
             - name: RABBITMQ_PASS
               valueFrom:
-                configMapKeyRef:
+                secretKeyRef:
                   key: rabbitmq_password
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
             - name: RABBITMQ_VHOST
               valueFrom:
-                configMapKeyRef:
+                secretKeyRef:
                   key: rabbitmq_vhost
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
             - name: MONGO_DSN
               valueFrom:
-                configMapKeyRef:
+                secretKeyRef:
                   key: mongodb_dsn
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
             - name: REPEATER_CHECK_TIMEOUT

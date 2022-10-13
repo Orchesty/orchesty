@@ -29,21 +29,6 @@ spec:
             - name: http
               containerPort: 8080
           env:
-            - name: __MONGODB_DSN
-              valueFrom:
-                configMapKeyRef:
-                  key: mongodb_dsn
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: __MONGODB_AUTH_AND_HOSTS
-              valueFrom:
-                configMapKeyRef:
-                  key: mongodb_auth_and_hosts
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: __METRICS_DB
-              valueFrom:
-                configMapKeyRef:
-                  key: metrics_db
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
             - name: K8S_NAMESPACE
               value: {{ .Release.Namespace }}
             - name: PLATFORM
@@ -51,13 +36,15 @@ spec:
             - name: GENERATOR_PATH
               value: /srv/topology
             - name: MONGO_DSN
-              value: "$(__MONGODB_DSN)&connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500"
+              valueFrom:
+                secretKeyRef:
+                  key: mongodb_dsn
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
             - name: METRICS_DSN
-            {{- if .Values.global.monitoring.useInfluxDB }}
-              value: influxdb://kapacitor:9100
-            {{- else }}
-              value: mongodb://$(__MONGODB_AUTH_AND_HOSTS)/$(__METRICS_DB)?readPreference=secondaryPreferred
-            {{- end }}
+              valueFrom:
+                secretKeyRef:
+                  key: metrics_dsn
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
             - name: WORKER_DEFAULT_LIMIT_MEMORY
               value: "{{ .Values.global.topologyApi.topologiesResources.defaultLimitMemory }}"
             - name: WORKER_DEFAULT_LIMIT_CPU
@@ -66,6 +53,13 @@ spec:
               value: "{{ .Values.global.topologyApi.topologiesResources.defaultRequestMemory }}"
             - name: WORKER_DEFAULT_REQUEST_CPU
               value: "{{ .Values.global.topologyApi.topologiesResources.defaultRequestCpu }}"
+            - name: STARTING_POINT_DSN
+              value: "{{ .Values.global.starting_point_url }}"
+            - name: ORCHESTY_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: orchesty_api_key
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
 {{- range $name, $def := .Values.global.topologyApi.topologiesExtraEnv }}
             - name: APP_PASS_{{ $name }}
               {{- $def | toYaml | nindent 14}}

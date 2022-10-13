@@ -26,29 +26,16 @@ spec:
             - name: http
               containerPort: 8080
           env:
-            - name: __MONGODB_DSN
+            - name: MONGO_DSN
               valueFrom:
-                configMapKeyRef:
+                secretKeyRef:
                   key: mongodb_dsn
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: __MONGODB_AUTH_AND_HOSTS
-              valueFrom:
-                configMapKeyRef:
-                  key: mongodb_auth_and_hosts
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: __METRICS_DB
-              valueFrom:
-                configMapKeyRef:
-                  key: metrics_db
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: MONGO_DSN
-              value: "$(__MONGODB_DSN)&connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500"
             - name: METRICS_DSN
-            {{- if .Values.global.monitoring.useInfluxDB }}
-              value: influxdb://kapacitor:9100
-            {{- else }}
-              value: "mongodb://$(__MONGODB_AUTH_AND_HOSTS)/$(__METRICS_DB)?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500"
-            {{- end }}
+              valueFrom:
+                secretKeyRef:
+                  key: metrics_dsn
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
             - name: RABBIT_COUNTER_QUEUE_DURABLE
               value: "true"
             - name: RABBIT_QUEUE_DURABLE
@@ -57,28 +44,33 @@ spec:
               value: "2"
             - name: RABBIT_HOSTNAME
               valueFrom:
-                configMapKeyRef:
+                secretKeyRef:
                   key: rabbitmq_host
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
             - name: RABBIT_PORT
               valueFrom:
-                configMapKeyRef:
+                secretKeyRef:
                   key: rabbitmq_port
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
             - name: RABBIT_VHOST # probably not supported yet
               valueFrom:
-                configMapKeyRef:
+                secretKeyRef:
                   key: rabbitmq_vhost
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
             - name: RABBIT_USERNAME
               valueFrom:
-                configMapKeyRef:
+                secretKeyRef:
                   key: rabbitmq_user
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
             - name: RABBIT_PASSWORD
               valueFrom:
-                configMapKeyRef:
+                secretKeyRef:
                   key: rabbitmq_password
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: ORCHESTY_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: orchesty_api_key
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
           resources:
 {{ toYaml .Values.global.startingPoint.resources | indent 12 }}

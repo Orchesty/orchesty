@@ -1,6 +1,6 @@
 {{- $componentName := "worker" -}}
 ---
-{{- if not .Values.global.imageOverrides.alpha_nodejssdk }}
+{{- if not .Values.global.imageOverrides.nodejssdk }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -35,7 +35,7 @@ spec:
 {{- end }}
             - name: CRYPT_SECRET
               valueFrom:
-                configMapKeyRef:
+                secretKeyRef:
                   key: crypt_secret
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
           resources:

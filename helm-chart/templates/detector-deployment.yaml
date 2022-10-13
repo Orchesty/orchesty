@@ -26,26 +26,14 @@ spec:
           image: {{ include "pipes.imageFullname" (dict "image" $componentName "root" .) }}
           imagePullPolicy: Always
           env:
-            {{- if .Values.global.monitoring.useInfluxDB }}
             - name: METRICS_DSN
-              value: influxdb://kapacitor:9100
-            {{- else }}
-            - name: __MONGODB_AUTH_AND_HOSTS
               valueFrom:
-                configMapKeyRef:
-                  key: mongodb_auth_and_hosts
+                secretKeyRef:
+                  key: metrics_dsn
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: __METRICS_DB
-              valueFrom:
-                configMapKeyRef:
-                  key: metrics_db
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: METRICS_DSN
-              value: "mongodb://$(__MONGODB_AUTH_AND_HOSTS)/$(__METRICS_DB)?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500"
-            {{- end }}
             - name: __RABBITMQ_HOST
               valueFrom:
-                configMapKeyRef:
+                secretKeyRef:
                   key: rabbitmq_host
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
             - name: RABBIT_HOST
@@ -54,17 +42,17 @@ spec:
               value: k8s
             - name: RABBIT_VHOST  # probably not supported yet
               valueFrom:
-                configMapKeyRef:
+                secretKeyRef:
                   key: rabbitmq_vhost
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
             - name: RABBIT_USERNAME
               valueFrom:
-                configMapKeyRef:
+                secretKeyRef:
                   key: rabbitmq_user
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
             - name: RABBIT_PASSWORD
               valueFrom:
-                configMapKeyRef:
+                secretKeyRef:
                   key: rabbitmq_password
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
           resources:

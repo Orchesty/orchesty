@@ -1,6 +1,6 @@
 {{- $componentName := "worker" -}}
 ---
-{{- if .Values.global.imageOverrides.alpha_nodejssdk }}
+{{- if .Values.global.imageOverrides.nodejssdk }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -22,20 +22,20 @@ spec:
 {{ include "pipes.imagePullSecrets" . | indent 6 }}
       containers:
         - name: nodejs
-          image: {{ include "pipes.imageFullname" (dict "image" "alpha_nodejssdk" "root" .) }}
+          image: {{ include "pipes.imageFullname" (dict "image" "nodejssdk" "root" .) }}
           imagePullPolicy: Always
           ports:
             - name: http
               containerPort: 8000
           env:
 {{ include "pipes.monolithEnv" . | indent 12 }}
-{{- range $name, $def := .Values.global.alpha_nodejsSdk.extraEnv }}
+{{- range $name, $def := .Values.global.nodejsSdk.extraEnv }}
             - name: {{ $name }}
               {{- $def | toYaml | nindent 14}}
 {{- end }}
             - name: CRYPT_SECRET
               valueFrom:
-                configMapKeyRef:
+                secretKeyRef:
                   key: crypt_secret
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
           resources:

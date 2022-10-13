@@ -1,6 +1,5 @@
 {{- $componentName := "multi-counter" -}}
 ---
-{{- if not .Values.global.alpha_go_bridge }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -23,68 +22,30 @@ spec:
 {{ include "pipes.imagePullSecrets" . | indent 6 }}
       containers:
         - name: multi-counter
-          args: ["./dist/src/bin/pipes.js", "start", "multi_counter"]
+          args: ["/bin/counter", "start"]
           image: {{ include "pipes.imageFullname" (dict "image" "counter" "root" .) }}
           imagePullPolicy: Always
           ports:
+            # just to satisfy the Service, not used
             - name: http
               containerPort: 8005
           env:
             - name: UDP_LOGGER_URL
               value: {{ include "pipes.fullname" (dict "suffix" "logstash" "root" .) }}:5120
-            - name: PROGRESS_SAVE
-              value: "{{ .Values.global.multiCounter.progressSave }}"
-            - name: RABBITMQ_HOST
+            - name: RABBITMQ_DSN
               valueFrom:
-                configMapKeyRef:
-                  key: rabbitmq_host
+                secretKeyRef:
+                  key: rabbitmq_dsn
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: RABBITMQ_PORT
+            - name: MONGODB_DSN
               valueFrom:
-                configMapKeyRef:
-                  key: rabbitmq_port
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: RABBITMQ_USER
-              valueFrom:
-                configMapKeyRef:
-                  key: rabbitmq_user
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: RABBITMQ_PASS
-              valueFrom:
-                configMapKeyRef:
-                  key: rabbitmq_password
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: __RABBITMQ_VHOST
-              valueFrom:
-                configMapKeyRef:
-                  key: rabbitmq_vhost
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: RABBITMQ_VHOST # todo: fix / in code or start supporting DSN
-              value: "/$(__RABBITMQ_VHOST)"
-            - name: PROGRESS_DSN # mongodb DSN
-              valueFrom:
-                configMapKeyRef:
+                secretKeyRef:
                   key: mongodb_dsn
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: COUNTER_PREFETCH
-              value: "100"
-            - name: METRICS_HOST
-            {{- if .Values.global.monitoring.useInfluxDB }}
-              value: kapacitor
-            {{- else }}
+            - name: METRICS_DSN
               valueFrom:
-                configMapKeyRef:
-                  key: mongodb_auth_and_hosts
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            {{- end }}
-            - name: METRICS_PORT
-              value: "{{ if .Values.global.monitoring.useInfluxDB }}9100{{ else }}27017{{ end }}"
-            - name: METRICS_SERVICE
-              value: {{ if .Values.global.monitoring.useInfluxDB }}influx{{ else }}mongo{{ end }}
-            - name: METRICS_DB_NOT_CONFIGURABLE # todo: unhardcode, now hardcoded to "metrics"
-              valueFrom:
-                configMapKeyRef:
-                  key: metrics_db
+                secretKeyRef:
+                  key: metrics_dsn
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
           resources:
 {{ toYaml .Values.global.multiCounter.resources | indent 12 }}
@@ -97,6 +58,4 @@ spec:
 {{- with .Values.global.tolerations }}
       tolerations:
 {{ toYaml . | indent 8 }}
-{{- end }}
-
 {{- end }}
