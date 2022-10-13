@@ -35,7 +35,7 @@ export const actions: Actions<AuthActions, AuthState> = {
 
         return true;
       } else {
-        return false;
+        throw new Error("Login failed");
       }
     } catch (error: any) {
       if (
@@ -58,8 +58,7 @@ export const actions: Actions<AuthActions, AuthState> = {
           i18n.t("error.errorOccurredTryItLater") as string
         );
       }
-      // TODO log errors to error tracking service
-      console.error(`${error.code} ${error.message}`);
+
       return false;
     }
   },
