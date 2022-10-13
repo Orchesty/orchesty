@@ -48,6 +48,7 @@ import CenteredLayout from "@/components/commons/layouts/CenteredLayout.vue";
 import { Action } from "vuex-class";
 import { AuthActions, authNamespace } from "@/store/modules/auth";
 import { TResetPasswordForm } from "@/components/auth/types";
+import { Routes } from "@/enums";
 
 @Component({
   components: {
@@ -73,8 +74,7 @@ export default class ForgotPasswordPage extends Vue {
   async submit(): Promise<void> {
     this.isSending = true;
     if (await this.sendResetPasswordLink(this.formData)) {
-      this.formData.email = "";
-      this.formData.tenantId = "";
+      this.$router.push({ name: Routes.Login });
     }
     this.isSending = false;
   }
