@@ -11,7 +11,8 @@
       "application": "Application",
       "disabled": "Disabled",
       "customer": "Customer",
-      "activeApplications": "Active applications"
+      "activeApplications": "Active applications",
+      "cost": "Cost"
     }
   }
 }

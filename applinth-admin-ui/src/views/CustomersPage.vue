@@ -10,15 +10,15 @@
           :label="$t('formLabels.search')"
           @input="filterDebounced"
         />
-        <SelectBox
-          v-model="appSearch"
-          hide-details
-          :label="$t('formLabels.filterByApplication')"
-          :items="applications"
-          :name="$t('formLabels.filterByApplication')"
-          item-text="appName"
-          item-value="appName"
-        />
+        <!--        <SelectBox-->
+        <!--          v-model="appSearch"-->
+        <!--          hide-details-->
+        <!--          :label="$t('formLabels.filterByApplication')"-->
+        <!--          :items="applications"-->
+        <!--          :name="$t('formLabels.filterByApplication')"-->
+        <!--          item-text="appName"-->
+        <!--          item-value="appName"-->
+        <!--        />-->
         <Button class="ma-auto" icon @click="resetFilters">
           <template #icon>
             <v-icon>close</v-icon>
@@ -32,8 +32,8 @@
         :loading="isLoading"
         hide-footer
       >
-        <template #appNames="{ item }">
-          {{ stringifyArray(item.appNames) }}
+        <template #activeAppNames="{ item }">
+          {{ stringifyArray(item.activeAppNames) }}
         </template>
 
         <template #actions="{ item }">
@@ -69,7 +69,6 @@ import {
 } from "@/api/generated";
 import Heading from "@/components/commons/typography/Heading.vue";
 import { Routes } from "@/enums/Routes";
-import { toCZK } from "@/filters/money";
 
 interface UsersTable {
   [key: string]: any;
@@ -109,7 +108,7 @@ export default class CustomersPage extends Vue {
       text: this.$t("grids.headers.activeApplications"),
       sortable: true,
       align: "start",
-      value: "appNames",
+      value: "activeAppNames",
     },
     {
       text: "",
@@ -161,6 +160,7 @@ export default class CustomersPage extends Vue {
       timeRangeEnd: new Date().toISOString(),
       appId: this.appSearch,
       endUserDisplayId: this.textSearch,
+      granularity: "monthly",
     });
   }
 
@@ -178,8 +178,6 @@ export default class CustomersPage extends Vue {
     return "";
   }
 
-  formatPrice = toCZK;
-
   @Watch("appSearch")
   async searchByApp(val: string): Promise<void> {
     if (!val) return;
@@ -194,7 +192,7 @@ export default class CustomersPage extends Vue {
 <style lang="scss" scoped>
 .wrapper {
   display: grid;
-  grid-template-columns: 1fr 1fr auto;
+  grid-template-columns: 1fr auto;
   grid-gap: 16px;
 }
 </style>

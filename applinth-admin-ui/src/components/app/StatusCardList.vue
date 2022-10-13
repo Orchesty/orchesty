@@ -22,7 +22,7 @@
     />
     <StatusCard
       :loading="isLoading"
-      :score="estimatedCosts"
+      :score="toCZK(estimatedCosts)"
       :title="$t('overviewPage.statusCards.estimatedCostsEom')"
     />
   </div>

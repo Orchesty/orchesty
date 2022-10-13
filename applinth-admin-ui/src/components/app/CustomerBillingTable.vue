@@ -54,7 +54,7 @@ export default class CustomerBillingTable extends Vue {
       value: "appNames",
     },
     {
-      text: this.$t("grids.headers.amount"),
+      text: this.$t("grids.headers.cost"),
       sortable: true,
       align: "start",
       value: "totalCost",
