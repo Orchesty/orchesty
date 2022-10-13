@@ -11,7 +11,6 @@ RUN cd applinth && \
     CRON_DSN=cron-api:8080 MONOLITH_API_DSN=php-sdk \
     TOPOLOGY_API_DSN=topology-api:8080 WORKER_DEFAULT_PORT=8008 STARTING_POINT_DSN=starting-point:8080 \
     FRONTEND_DSN=frontend BACKEND_DSN=backend JWT_KEY=key \
-    ELASTICSEARCH_DSN=elastic CRYPT_SECRET=key \
     ALPHA_INSTANCE_ID=applinth USCCP_URI=localhost JWE_PRIVATE_KEY=1 \
     bin/console cache:warmup
 

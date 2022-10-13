@@ -29,12 +29,10 @@ services:
             - TOPOLOGY_API_DSN=topology-api:80
             - STARTING_POINT_DSN=starting-point:8080
             - CRON_DSN=http://cron-api:8080
-            - ELASTICSEARCH_DSN=elasticsearch://elasticsearch
             - RABBITMQ_DSN=amqp://rabbitmq:5672
             - MONOLITH_API_DSN=${DEV_IP}
             - WORKER_DEFAULT_PORT=8000
             - JWT_KEY=test1234test1234test1234test1234test1234test1234test1234test1234test1234
-            - LOGS_SERVICE=mongo
 
     starting-point:
         image: dkr.hanaboso.net/pipes/pipes/starting-point:master
@@ -79,14 +77,6 @@ services:
         volumes:
             - redis:/data
 
-    elasticsearch:
-        image: elasticsearch:7.4.2
-        environment:
-            LS_JAVA_OPTS: -Xms512m -Xmx512m
-            discovery.type: single-node
-        volumes:
-            - elasticsearch:/usr/share/elasticsearch/data
-
     swagger-ui:
         image: swaggerapi/swagger-ui
         ports:
@@ -100,4 +90,3 @@ volumes:
     mongo: {}
     rabbit-mq: {}
     redis: {}
-    elasticsearch: {}

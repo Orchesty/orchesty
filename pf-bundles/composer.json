@@ -19,7 +19,6 @@
         "hanaboso/rest-bundle": "^1.1",
         "hanaboso/user-bundle": "^1.6",
         "orchesty/php-sdk": "^2.2",
-        "ruflin/elastica": "^7.2",
         "symfony/security-bundle": "^v6.1",
         "symfony/serializer": "^v6.1",
         "web-token/jwt-signature-algorithm-rsa": "^3.1"
