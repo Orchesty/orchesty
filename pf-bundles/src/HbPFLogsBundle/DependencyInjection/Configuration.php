@@ -27,12 +27,12 @@ final class Configuration implements ConfigurationInterface
         $rootNode = $treeBuilder->getRootNode();
 
         $rootNode->children()
-            ->enumNode('type')->values(['mongodb', 'elastic'])->isRequired()
+            ->enumNode('type')->values(['mongodb'])->isRequired()
             ->end();
 
         $rootNode->children()
             ->scalarNode('storage_name')->isRequired()
-            ->info('Set name of mongodb database or elastic index.')
+            ->info('Set name of mongodb database.')
             ->end();
 
         return $treeBuilder;

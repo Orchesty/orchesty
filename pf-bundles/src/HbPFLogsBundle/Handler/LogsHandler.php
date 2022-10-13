@@ -4,7 +4,7 @@ namespace Hanaboso\PipesFramework\HbPFLogsBundle\Handler;
 
 use Hanaboso\MongoDataGrid\GridRequestDto;
 use Hanaboso\PipesFramework\Logs\LogsInterface;
-use Hanaboso\PipesFramework\Logs\Manager\LogsManagerLoader;
+use Hanaboso\PipesFramework\Logs\MongoDbLogs;
 
 /**
  * Class LogsHandler
@@ -19,11 +19,11 @@ final class LogsHandler
     /**
      * LogsHandler constructor.
      *
-     * @param LogsManagerLoader $logsLoader
+     * @param MongoDbLogs $logsManager
      */
-    public function __construct(LogsManagerLoader $logsLoader)
+    public function __construct(MongoDbLogs $logsManager)
     {
-        $this->logs = $logsLoader->getManager();
+        $this->logs = $logsManager;
     }
 
     /**
