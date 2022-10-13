@@ -12,7 +12,6 @@
       v-model="form.tenant"
       type="text"
       autofocus
-      autocomplete="username"
       id="loginTenant"
     />
     <TextField
@@ -21,7 +20,7 @@
       v-model="form.email"
       type="email"
       :rules="rules.email"
-      autocomplete="email"
+      autocomplete="username"
       id="loginEmail"
     />
     <TextField
