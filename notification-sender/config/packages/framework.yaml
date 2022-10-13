@@ -1,5 +1,0 @@
-framework:
-    secret: '%secret%'
-
-    serializer:
-        enabled: false
