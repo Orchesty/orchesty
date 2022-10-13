@@ -68,8 +68,7 @@ export async function callApi<P>(
   }
 
   if (!response) {
-    // TODO do something about empty response
-    return response;
+    throw new Error("Response is empty");
   }
 
   return apiConfig.transform ? apiConfig.transform(response) : response;
