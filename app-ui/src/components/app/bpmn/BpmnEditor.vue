@@ -224,8 +224,8 @@ export default {
         //check if node sdk name has service options for the provided pipes type
         if (sdkHostServices[sdkServiceName] && sdkHostServices[sdkServiceName][pipesType]) {
           const options = sdkHostServices[sdkServiceName][pipesType].map((item) => ({
-            name: item,
-            value: item,
+            name: item.name,
+            value: item.name,
           }))
           event.element.businessObject.set('sdkHostOptions', [''].concat(options))
         }
@@ -279,10 +279,16 @@ export default {
 
         //check if node sdk name has service options for the provided pipes type
         if (sdkHostServices[sdkServiceName] && sdkHostServices[sdkServiceName][pipesType]) {
-          const options = sdkHostServices[sdkServiceName][pipesType].map((item) => ({
-            name: item,
-            value: item,
-          }))
+          const options = sdkHostServices[sdkServiceName][pipesType].map((item) => {
+            if (event.element.businessObject.name === item.name) {
+              event.element.businessObject.set('appName', item.app || '')
+            }
+
+            return {
+              name: item.name,
+              value: item.name,
+            }
+          })
           event.element.businessObject.set('sdkHostOptions', [''].concat(options))
         }
 
