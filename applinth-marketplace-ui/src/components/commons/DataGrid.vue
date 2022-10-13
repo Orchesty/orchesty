@@ -9,6 +9,9 @@
       }"
       :loading="isLoading"
       :loading-text="$t('grid.state.loading')"
+      :server-items-length="total"
+      :sort-by="sortBy"
+      :sort-desc="sortDesc"
     >
       <template v-for="item in headers" #[`header.${item.value}`]="{ header }">
         <span :key="item.value" class="text-capitalize font-weight-bold">
@@ -42,34 +45,58 @@ export default {
       type: Boolean,
       default: false,
     },
+    sortBy: {
+      type: Array,
+      default: null,
+    },
+    sortDesc: {
+      type: Array,
+      default: null,
+    },
   },
   data() {
     return {
       options: {},
       items: [],
       isLoading: true,
+      total: 0,
     }
   },
   methods: {
-    optionsParser(data) {
-      return {
-        sortBy: data.sorter.length ? [data.sorter[0].column] : [],
-        sortDesc: data.sorter.length
-          ? [data.sorter[0].direction === 'DESC']
-          : [],
-        page: data.paging ? data.paging.page : 1,
-        itemsPerPage: data.paging ? data.paging.itemsPerPage : 10,
+    async gridFetch() {
+      function optionsToRequestParams(options) {
+        const { page, itemsPerPage, sortBy, sortDesc } = options
+        const paging = { page, itemsPerPage }
+        const sorter =
+          sortBy?.map((column, index) => {
+            return { column, direction: sortDesc[index] ? 'DESC' : 'ASC' }
+          }) ?? []
+        return {
+          paging,
+          sorter,
+        }
       }
-    },
-    async gridFetch(params) {
+
+      function responseDataToTotal(data) {
+        return data.paging?.total ?? 0
+      }
+
       this.isLoading = true
-      const gridResponseData = await callApi({
+      const data = await callApi({
         requestData: this.gridSettings,
-        params: params,
+        params: optionsToRequestParams(this.options),
       })
-      this.items = gridResponseData.items
-      this.options = this.optionsParser(gridResponseData)
+      this.items = data.items
+      this.total = responseDataToTotal(data)
       this.isLoading = false
+    },
+  },
+  watch: {
+    options: {
+      deep: true,
+      handler() {
+        this.gridFetch()
+      },
     },
   },
   async mounted() {

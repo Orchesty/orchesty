@@ -29,6 +29,8 @@
           fetch-on-init
           :headers="headers"
           :grid-settings="GRIDS.OVERVIEW"
+          :sort-by="['started']"
+          :sort-desc="[true]"
         >
           <template #default="{ items }">
             <td>
