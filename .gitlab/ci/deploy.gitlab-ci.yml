@@ -53,7 +53,7 @@
       --set global.imageOverrides.notification-sender=${REGISTRY}/${IMAGE_PREFIX}notification-sender:${TAG_NOTIFICATION_SENDER}
       --set global.imageOverrides.starting-point=${REGISTRY}/${IMAGE_PREFIX}starting-point:${TAG_STARTING_POINT}
       --set global.imageOverrides.topology-api=${REGISTRY}/${IMAGE_PREFIX}topology-api:${TAG_TOPOLOGY_API}
-      --set global.imageOverrides.logstash=${REGISTRY}/${IMAGE_PREFIX}logstash:${TAG_LOGSTASH}
+      --set global.imageOverrides.fluentd=${REGISTRY}/${IMAGE_PREFIX}fluentd:${TAG_FLUENTD}
       --set global.imageOverrides.kapacitor=${REGISTRY}/${IMAGE_PREFIX}kapacitor:${TAG_KAPACITOR}
       --set global.imageOverrides.detector=${REGISTRY}/${IMAGE_PREFIX}detector:${TAG_DETECTOR}
       ${HELM_ARGS_EXT}

@@ -16,3 +16,4 @@ fluentd:build:
   extends:
     - .base-kaniko-build
     - .base-fluentd
+
