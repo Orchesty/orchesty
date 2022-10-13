@@ -18,7 +18,7 @@ parameters:
 
     topology_api: "%env(string:TOPOLOGY_API_DSN)%"
     starting_point: "%env(string:STARTING_POINT_DSN)%"
-    monolith_api_host: "%env(string:MONOLITH_API_DSN)%"
+    monolith_api_host: "%env(string:BACKEND_DSN)%"
     metrics_dsn: "%env(string:METRICS_DSN)%"
 
     env(UDP_LOGGER_URL): "logstash:5120"
