@@ -20,6 +20,7 @@
       @input="(val) => $emit('input', val)"
       :hide-details="hideDetails"
       :prepend-inner-icon="prependInnerIcon"
+      :name="name"
       @blur="$emit('blur')"
       @keydown.enter="onEnterPress"
     />
