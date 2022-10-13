@@ -3,6 +3,5 @@ export * from "./ApiError";
 export * from "./ErrorType";
 export * from "./EventBus";
 export * from "./Locale";
-export * from "./LocalStorage";
 export * from "./Routes";
 export * from "./ViewAuth";
