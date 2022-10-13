@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-textarea v-model="parsedJsonData" :height="height" full-width />
+    <textarea v-model="parsedJsonData" class="textarea"></textarea>
     <div class="parsing-error-message">
       <span v-if="isNotJson" class="font-weight-bold error--text">
         {{ $t('userTask.jsonEditor.parsingError') }}
@@ -21,9 +21,9 @@ export default {
   data() {
     return {
       isNotJson: false,
-      height: '300',
       JsonData: null,
       parsedJsonData: null,
+      textareaHeightGrow: 0,
     }
   },
   watch: {
@@ -56,5 +56,13 @@ export default {
 <style scoped>
 .parsing-error-message {
   height: 1rem;
+}
+.textarea {
+  width: 100%;
+  max-height: 80vh;
+  height: 60vh;
+  border: 1px solid var(--v-gray-base);
+  border-radius: 4px;
+  padding: 1ch;
 }
 </style>

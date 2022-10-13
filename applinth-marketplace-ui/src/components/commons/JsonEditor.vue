@@ -1,9 +1,13 @@
 <template>
   <div>
-    <v-textarea v-model="parsedJsonData" :height="height" full-width />
-    <div className="parsing-error-message">
-      <span v-if="isNotJson" className="font-weight-bold error--text">
-        {{ $t('userTask.jsonEditor.parsingError') }}
+    <textarea
+      v-model="parsedJsonData"
+      :readonly="isReadonly"
+      class="textarea"
+    ></textarea>
+    <div class="parsing-error-message">
+      <span v-if="isNotJson" class="font-weight-bold error--text">
+        {{ $t('jsonEditor.parsingError') }}
       </span>
     </div>
   </div>
@@ -17,11 +21,14 @@ export default {
       type: Object,
       required: true,
     },
+    isReadonly: {
+      type: Boolean,
+      required: false,
+    },
   },
   data() {
     return {
       isNotJson: false,
-      height: '300',
       JsonData: null,
       parsedJsonData: null,
     }
@@ -56,5 +63,13 @@ export default {
 <style scoped>
 .parsing-error-message {
   height: 1rem;
+}
+.textarea {
+  width: 100%;
+  max-height: 80vh;
+  height: 60vh;
+  border: 1px solid var(--v-gray-base);
+  border-radius: 4px;
+  padding: 1ch;
 }
 </style>

@@ -42,7 +42,7 @@
     </v-row>
     <v-row>
       <v-col>
-        <json-editor v-model="messageBody" mode="view" />
+        <json-editor v-model="messageBody" is-readonly mode="view" />
       </v-col>
     </v-row>
   </div>
