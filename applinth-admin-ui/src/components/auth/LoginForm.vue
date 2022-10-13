@@ -21,6 +21,8 @@
       type="email"
       :rules="rules.email"
       autocomplete="username"
+      persistent-placeholder
+      placeholder=" "
       id="loginEmail"
     />
     <TextField
@@ -30,6 +32,8 @@
       v-model="form.password"
       type="password"
       autocomplete="current-password"
+      persistent-placeholder
+      placeholder=" "
       id="loginPassword"
     />
     <div class="text-right mb-4">

@@ -11,6 +11,7 @@
       :disabled="disabled"
       outlined
       :placeholder="placeholder"
+      :persistent-placeholder="persistentPlaceholder"
       :counter="counter"
       :maxLength="maxlength"
       dense
@@ -58,6 +59,9 @@ export default class TextField extends Vue {
 
   @Prop({ required: false, type: String, default: () => null })
   private placeholder!: string | null;
+
+  @Prop({ type: Boolean, default: false })
+  private persistentPlaceholder!: boolean;
 
   @Prop({ required: false, type: String, default: "text" })
   private type!: "number" | "password" | "text";
