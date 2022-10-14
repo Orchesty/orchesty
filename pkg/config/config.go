@@ -1,9 +1,11 @@
 package config
 
 import (
+	"fmt"
 	log "github.com/hanaboso/go-log/pkg"
 	"github.com/hanaboso/go-log/pkg/zap"
 	"github.com/jinzhu/configor"
+	"strings"
 )
 
 type (
@@ -42,7 +44,8 @@ type (
 	}
 
 	startingPoint struct {
-		Dsn string `env:"STARTING_POINT_DSN" required:"true" default:"http://starting-point:8080"`
+		Dsn    string `env:"STARTING_POINT_DSN" required:"true" default:"http://starting-point:8080"`
+		ApiKey string `env:"ORCHESTY_API_KEY" required:"false" default:""`
 	}
 )
 
@@ -74,5 +77,9 @@ func init() {
 
 	if App.Debug {
 		Log.SetLevel(log.DEBUG)
+	}
+
+	if !strings.HasPrefix(StartingPoint.Dsn, "http") {
+		StartingPoint.Dsn = fmt.Sprintf("http://%s", StartingPoint.Dsn)
 	}
 }
