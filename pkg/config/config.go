@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"github.com/hanaboso/pipes/bridge/pkg/enum"
 	"github.com/hanaboso/pipes/bridge/pkg/logger"
 	"github.com/hanaboso/pipes/bridge/pkg/utils/stringx"
@@ -42,7 +43,8 @@ type (
 	}
 
 	startingPoint struct {
-		Dsn string `env:"STARTING_POINT_DSN" default:"http://starting-point:8080"`
+		Dsn    string `env:"STARTING_POINT_DSN" default:"http://starting-point:8080"`
+		ApiKey string `env:"ORCHESTY_API_KEY" required:"false" default:""`
 	}
 )
 
@@ -86,6 +88,10 @@ func init() {
 		zerolog.ErrorStackMarshaler = func(err error) interface{} {
 			return parseTrace(debug.Stack())
 		}
+	}
+
+	if !strings.HasPrefix(StartingPoint.Dsn, "http") {
+		StartingPoint.Dsn = fmt.Sprintf("http://%s", StartingPoint.Dsn)
 	}
 }
 

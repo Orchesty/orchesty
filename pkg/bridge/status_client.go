@@ -8,6 +8,7 @@ import (
 	"github.com/hanaboso/pipes/bridge/pkg/config"
 	"github.com/hanaboso/pipes/bridge/pkg/enum"
 	"github.com/hanaboso/pipes/bridge/pkg/model"
+	"github.com/rs/zerolog/log"
 	"net/http"
 	"time"
 )
@@ -44,6 +45,7 @@ func sendFinishedProcess(process *model.ProcessMessage, status string, trashId *
 
 	body, err := json.Marshal(message)
 	if err != nil {
+		log.Err(err).Send()
 		return
 	}
 
@@ -53,8 +55,11 @@ func sendFinishedProcess(process *model.ProcessMessage, status string, trashId *
 		bytes.NewBuffer(body),
 	)
 	if err != nil {
+		log.Err(err).Send()
 		return
 	}
+
+	req.Header.Add("Orchesty-Api-Key", config.StartingPoint.ApiKey)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
@@ -62,6 +67,7 @@ func sendFinishedProcess(process *model.ProcessMessage, status string, trashId *
 
 	response, err := client.Do(req)
 	if err != nil {
+		log.Err(err).Send()
 		return
 	}
 
