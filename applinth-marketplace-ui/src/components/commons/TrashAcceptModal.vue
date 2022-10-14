@@ -21,6 +21,7 @@
       <base-button
         :button-title="$t('button.accept')"
         :on-click="acceptTrashItem"
+        :loading="isAccepting"
       />
     </template>
   </base-modal>
@@ -46,24 +47,31 @@ export default {
     return {
       isOpen: false,
       id: null,
+      isAccepting: false,
     }
   },
   methods: {
     async acceptTrashItem() {
-      await callApi({
-        requestData: API.trash.accept,
-        params: {
-          id: this.id,
-        },
-      })
-      this.$emit('taskSubmitted')
-      showFlashMessage(
-        this.$t('flashMessage.accepted', {
-          item: this.trashItem.name,
-        }),
-        FLASH_MESSAGES_TYPES.SUCCESS
-      )
-      this.isOpen = false
+      this.isAccepting = true
+      try {
+        await callApi({
+          requestData: API.trash.accept,
+          params: {
+            id: this.id,
+          },
+        })
+        this.$emit('taskSubmitted')
+        showFlashMessage(
+          this.$t('flashMessage.accepted', {
+            item: this.trashItem.id,
+          }),
+          FLASH_MESSAGES_TYPES.SUCCESS
+        )
+        this.isOpen = false
+      } catch (e) {
+        showFlashMessage(e.message, FLASH_MESSAGES_TYPES.ERROR)
+      }
+      this.isAccepting = false
     },
   },
   watch: {
