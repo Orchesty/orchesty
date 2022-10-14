@@ -174,6 +174,6 @@ export default class ApplicationDetailPage extends Vue {
   max-height: 50px;
 }
 .application-settings-wrapper {
-  max-width: 80ch;
+  max-width: 100ch;
 }
 </style>

@@ -76,7 +76,7 @@ const overview = {
 
 const applications = [
   {
-    path: "/application/:id",
+    path: "/overview/:id",
     name: Routes.ApplicationDetail,
     component: () => import("../views/ApplicationDetailPage.vue"),
     meta: {
@@ -88,8 +88,8 @@ const applications = [
             to: null,
           },
           {
-            text: "navigation.item.applicationDetail",
-            to: { name: Routes.ApplicationDetail },
+            text: "navigation.item.overview",
+            to: { name: Routes.Overview },
           },
           {
             text: appActiveName,
@@ -160,7 +160,7 @@ const customersRoutes = [
     },
   },
   {
-    path: "/customer/:id/detail",
+    path: "/customers/:id/detail",
     name: Routes.CustomerDetail,
     component: () => import("../views/CustomerDetailPage.vue"),
     meta: {

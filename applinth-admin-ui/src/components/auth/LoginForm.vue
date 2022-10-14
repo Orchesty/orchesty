@@ -110,6 +110,11 @@ export default class LoginForm extends Vue {
 
     this.loading = false;
   }
+
+  created(): void {
+    this.form.tenant = this.$route.query.tenantId;
+    this.form.email = this.$route.query.email;
+  }
 }
 </script>
 
