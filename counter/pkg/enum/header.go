@@ -11,4 +11,5 @@ const (
 	Header_ProcessId       HeaderType = "process-id"
 	Header_ParentProcessId HeaderType = "parent-id"
 	Header_User            HeaderType = "user"
+	Header_SystemEvent     HeaderType = "system-event"
 )

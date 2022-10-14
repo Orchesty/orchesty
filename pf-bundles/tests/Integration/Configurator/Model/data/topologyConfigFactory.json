@@ -10,7 +10,8 @@
         "worker_default_port": 8000,
         "mongodb_dsn": "mongodb://mongo",
         "udp_logger_url": "logstash:5120",
-        "topology_pod_labels": ""
+        "topology_pod_labels": "",
+        "starting_point_dsn": "http://starting-point:8080"
     },
     "node_config": {
         "5d6d17e1e7ad8800000000000": {

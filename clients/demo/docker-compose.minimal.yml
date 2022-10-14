@@ -52,6 +52,7 @@ services:
             GENERATOR_PATH: /srv/topology
             MONGO_DSN: ${MONGO_DSN}
             PROJECT_SOURCE_PATH: ${PROJECT_SOURCE_PATH}/../topology
+            STARTING_POINT_DSN: "http://starting-point:8080"
         volumes:
             - ./../../topology-generator/:/topology-generator
             - ${DOCKER_SOCKET_PATH}:/var/run/docker.sock

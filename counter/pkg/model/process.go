@@ -11,14 +11,15 @@ type UpdateProcess struct {
 }
 
 type Process struct {
-	Id         string     `bson:"_id"`
-	Ok         int        `bson:"ok"`
-	Nok        int        `bson:"nok"`
-	Total      int        `bson:"total"`
-	TopologyId string     `bson:"topologyId"`
-	User       string     `bson:"user"`
-	Created    time.Time  `bson:"created"`
-	Finished   *time.Time `bson:"finished"`
+	Id          string     `bson:"_id"`
+	Ok          int        `bson:"ok"`
+	Nok         int        `bson:"nok"`
+	Total       int        `bson:"total"`
+	TopologyId  string     `bson:"topologyId"`
+	User        string     `bson:"user"`
+	Created     time.Time  `bson:"created"`
+	Finished    *time.Time `bson:"finished"`
+	SystemEvent bool       `bson:"systemEvent"`
 }
 
 type ErrorMessage struct {

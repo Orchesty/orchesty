@@ -27,6 +27,7 @@ services:
             RABBITMQ_DSN: ${RABBITMQ_DSN}
             MONGODB_DSN: ${MONGO_DSN}
             METRICS_DSN: ${METRICS_DSN}
+            STARTING_POINT_DSN: "http://starting-point:8080"
         command: '/bin/counter start'
         ports:
             - ${DEV_IP}:8005:8005

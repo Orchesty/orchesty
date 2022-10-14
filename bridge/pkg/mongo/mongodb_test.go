@@ -31,7 +31,7 @@ func TestMongoDb_StoreUserTask(t *testing.T) {
 	_ = mongo.collection.Drop(nil)
 
 	dto := prepareDto()
-	err := mongo.StoreUserTask(dto.Ok(), "", "")
+	_, err := mongo.StoreUserTask(dto.Ok(), "", "")
 	require.Nil(t, err)
 
 	res, err := mongo.collection.Find(nil, bson.M{})
@@ -59,7 +59,7 @@ func TestMongoDb_StoreUserTaskError(t *testing.T) {
 	_ = mongo.collection.Drop(nil)
 
 	dto := prepareDto()
-	err := mongo.StoreUserTask(dto.Error(errors.New("go is shit")), "", "")
+	_, err := mongo.StoreUserTask(dto.Error(errors.New("go is shit")), "", "")
 	require.Nil(t, err)
 
 	res, err := mongo.collection.Find(nil, bson.M{})
