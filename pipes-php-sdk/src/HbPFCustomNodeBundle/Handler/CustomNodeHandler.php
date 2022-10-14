@@ -55,7 +55,7 @@ final class CustomNodeHandler
      */
     public function getCustomNodes(): array
     {
-        return $this->loader->getAllCustomNodes();
+        return array_map(static fn($customNode) => $customNode->toArray(), $this->loader->getList());
     }
 
 }

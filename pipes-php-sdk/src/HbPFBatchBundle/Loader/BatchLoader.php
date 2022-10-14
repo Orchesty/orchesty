@@ -2,10 +2,13 @@
 
 namespace Hanaboso\PipesPhpSdk\HbPFBatchBundle\Loader;
 
+use Exception;
 use Hanaboso\CommonsBundle\Utils\NodeServiceLoader;
+use Hanaboso\PipesPhpSdk\Application\Document\Dto\CommonObjectDto;
 use Hanaboso\PipesPhpSdk\Batch\BatchAbstract;
 use Hanaboso\PipesPhpSdk\Batch\Exception\BatchException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Throwable;
 
 /**
  * Class BatchLoader
@@ -54,11 +57,38 @@ final class BatchLoader
      *
      * @return string[]
      */
-    public function getAllBeaches(array $exclude = []): array
+    public function getAllBatches(array $exclude = []): array
     {
         $dirs = $this->container->getParameter('node_services_dirs');
 
         return NodeServiceLoader::getServices($dirs, self::BATCH_PREFIX, $exclude);
+    }
+
+    /**
+     * @return CommonObjectDto[]
+     */
+    public function getList(): array
+    {
+        $services = array_map(function($serviceName) {
+            try {
+                return $this->getBatch($serviceName);
+            } catch (Throwable) {
+                return NULL;
+            }
+        }, self::getAllBatches());
+
+        $services = array_filter($services);
+
+        return array_map(static function ($batch) {
+
+            try {
+                $applicationName = $batch->getApplication()->getName();
+            } catch (Exception) {
+                $applicationName = NULL;
+            }
+
+            return new CommonObjectDto($batch->getName(), $applicationName);
+        }, $services);
     }
 
 }

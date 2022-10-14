@@ -4,6 +4,7 @@ namespace PipesPhpSdkTests\Controller\HbPfCustomNodeBundle\Controller;
 
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\PipesPhpSdk\Application\Document\Dto\CommonObjectDto;
 use Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Exception\CustomNodeException;
 use Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Handler\CustomNodeHandler;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
@@ -137,13 +138,8 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
 
         $response = $this->client->getResponse();
 
-        self::assertTrue(
-            in_array(
-                'null',
-                Json::decode((string) $response->getContent()),
-                TRUE,
-            ),
-        );
+        $assert = new CommonObjectDto('null', NULL);
+        self::assertEquals([$assert->toArray()], Json::decode((string) $response->getContent()));
         self::assertEquals(200, $response->getStatusCode());
     }
 

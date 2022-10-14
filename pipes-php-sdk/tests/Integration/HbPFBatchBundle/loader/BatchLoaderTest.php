@@ -19,16 +19,16 @@ final class BatchLoaderTest extends KernelTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFBatchBundle\Loader\BatchLoader::getBatch
-     * @covers \Hanaboso\PipesPhpSdk\HbPFBatchBundle\Loader\BatchLoader::getAllBeaches
+     * @covers \Hanaboso\PipesPhpSdk\HbPFBatchBundle\Loader\BatchLoader::getAllBatches
      */
     public function testGetAllBatches(): void
     {
         $batch = new BatchLoader(self::getContainer());
 
-        $fields = $batch->getAllBeaches();
+        $fields = $batch->getAllBatches();
         self::assertCount(1, $fields);
 
-        $fields = $batch->getAllBeaches(['null']);
+        $fields = $batch->getAllBatches(['null']);
         self::assertCount(0, $fields);
     }
 

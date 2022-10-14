@@ -55,7 +55,7 @@ final class ConnectorHandler
      */
     public function getConnectors(): array
     {
-        return $this->loader->getAllConnectors();
+        return array_map(static fn($connector) => $connector->toArray(), $this->loader->getList());
     }
 
 }

@@ -6,7 +6,10 @@ use Exception;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
+use Hanaboso\PipesPhpSdk\Application\Model\Form\Form;
+use Hanaboso\PipesPhpSdk\Application\Model\Form\FormStack;
 use Hanaboso\Utils\File\File;
 
 /**
@@ -99,6 +102,13 @@ abstract class ApplicationAbstract implements ApplicationInterface
             }
         }
 
+        try {
+            self::customFormReplace($formStack, $applicationInstall);
+            self::autoInjectLimitForm($formStack, $applicationInstall);
+        } catch (Exception) {
+            //
+        }
+
         return $formStack->toArray();
     }
 
@@ -179,6 +189,57 @@ abstract class ApplicationAbstract implements ApplicationInterface
             'logo'               => $this->getLogo(),
             'isInstallable'      => $this->isInstallable,
         ];
+    }
+
+    /**
+     * @param FormStack          $formStack
+     * @param ApplicationInstall $applicationInstall
+     * @return void
+     */
+    protected function customFormReplace(FormStack $formStack, ApplicationInstall $applicationInstall): void
+    {
+        $formStack;
+        $applicationInstall;
+    }
+
+    /**
+     * @param FormStack          $formStack
+     * @param ApplicationInstall $applicationInstall
+     * @return void
+     * @throws ApplicationInstallException
+     */
+    protected function autoInjectLimitForm(FormStack $formStack, ApplicationInstall $applicationInstall): void
+    {
+        $limiterForm = $formStack->getForms()[self::LIMITER_FORM] ?? NULL;
+
+        if(!$limiterForm) {
+            $limiterForm = new Form(self::LIMITER_FORM, 'Limiter form');
+            $formStack->addForm($limiterForm);
+        }
+
+        $useLimit = $applicationInstall->getSettings()[self::LIMITER_FORM][self::USE_LIMIT] ?? NULL;
+        $limiterForm->addField(new Field(
+            Field::CHECKBOX,
+            self::USE_LIMIT,
+            'Use limit',
+            $useLimit,
+        ));
+
+        $value = $applicationInstall->getSettings()[self::LIMITER_FORM][self::VALUE] ?? NULL;
+        $limiterForm->addField(new Field(
+            Field::NUMBER,
+            self::VALUE,
+            'Limit per time',
+            $value,
+        ));
+
+        $time = $applicationInstall->getSettings()[self::LIMITER_FORM][self::TIME] ?? NULL;
+        $limiterForm->addField(new Field(
+            Field::NUMBER,
+            self::TIME,
+            'Time in seconds',
+            $time,
+        ));
     }
 
 }

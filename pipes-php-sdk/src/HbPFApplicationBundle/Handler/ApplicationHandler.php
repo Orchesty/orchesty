@@ -55,6 +55,17 @@ final class ApplicationHandler
         ];
     }
 
+
+    /**
+     * @param string   $user
+     * @param string[] $applications
+     * @return string[]
+     */
+    public function getApplicationsLimits(string $user, array $applications): array
+    {
+        return $this->applicationManager->getApplicationsLimits($user, $applications);
+    }
+
     /**
      * @param string $key
      *

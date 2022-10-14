@@ -3,9 +3,11 @@
 namespace Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Loader;
 
 use Hanaboso\CommonsBundle\Utils\NodeServiceLoader;
-use Hanaboso\PipesPhpSdk\CustomNode\CommonNodeInterface;
+use Hanaboso\PipesPhpSdk\Application\Document\Dto\CommonObjectDto;
+use Hanaboso\PipesPhpSdk\CustomNode\CommonNodeAbstract;
 use Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Exception\CustomNodeException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Throwable;
 
 /**
  * Class CustomNodeLoader
@@ -29,14 +31,14 @@ final class CustomNodeLoader
     /**
      * @param string $serviceName
      *
-     * @return CommonNodeInterface
+     * @return CommonNodeAbstract
      * @throws CustomNodeException
      */
-    public function get(string $serviceName): CommonNodeInterface
+    public function get(string $serviceName): CommonNodeAbstract
     {
         $name = sprintf('%s.%s', self::PREFIX, $serviceName);
         if ($this->container->has($name)) {
-            /** @var CommonNodeInterface $node */
+            /** @var CommonNodeAbstract $node */
             $node = $this->container->get($name);
 
             return $node;
@@ -58,6 +60,32 @@ final class CustomNodeLoader
         $dirs = $this->container->getParameter('node_services_dirs');
 
         return NodeServiceLoader::getServices($dirs, self::PREFIX, $exclude);
+    }
+
+    /**
+     * @return CommonObjectDto[]
+     */
+    public function getList(): array
+    {
+        $services = array_map(function($serviceName) {
+            try {
+                return $this->get($serviceName);
+            } catch (Throwable) {
+                return NULL;
+            }
+        }, self::getAllCustomNodes());
+
+        $services = array_filter($services);
+
+        return array_map(static function ($customNode) {
+            try {
+                $applicationName = $customNode->getApplication()->getName();
+            } catch (Throwable) {
+                $applicationName = NULL;
+            }
+
+            return new CommonObjectDto($customNode->getName(), $applicationName);
+        }, $services);
     }
 
 }

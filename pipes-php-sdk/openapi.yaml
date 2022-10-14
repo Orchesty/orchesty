@@ -16,6 +16,13 @@ paths:
             responses:
                 200:
                     $ref: '#/components/responses/Empty'
+
+    /applications/limits:
+        post:
+            tags: [ Applications]
+            responses:
+                200:
+                    $ref: '#/components/responses/Limits'
     /applications/{key}:
         get:
             tags: [ Applications ]
@@ -393,6 +400,15 @@ components:
                     schema:
                         type: object
 
+        Limits:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        type: array
+                        items:
+                            type: string
+                            example: "user|system;10;60"
         Connectors:
             description: ''
             content:
@@ -566,7 +582,14 @@ components:
         Connectors:
             type: array
             items:
-                type: string
+                type: object
+                properties:
+                    name:
+                        type: string
+                        example: 'get-user-connector'
+                    app:
+                        type: string
+                        example: 'shoptet'
 
         TopologyTask:
             type: object
