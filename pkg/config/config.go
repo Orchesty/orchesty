@@ -38,7 +38,7 @@ type (
 		WorkerDefaultLimitCPU      string        `default:"1" env:"WORKER_DEFAULT_LIMIT_CPU"`
 		WorkerDefaultRequestMemory string        `default:"128Mi" env:"WORKER_DEFAULT_REQUEST_MEMORY"`
 		WorkerDefaultRequestCPU    string        `default:"500m" env:"WORKER_DEFAULT_REQUEST_CPU"`
-		UdpLoggerUrl               string        `default:"logstash:5120" env:"UDP_LOGGER_URL"`
+		UdpLoggerUrl               string        `default:"fluentd:5120" env:"UDP_LOGGER_URL"`
 		TopologyPodLabels          string        `default:"" env:"TOPOLOGY_POD_LABELS"`
 	}
 
