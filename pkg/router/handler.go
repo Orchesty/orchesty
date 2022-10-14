@@ -164,7 +164,7 @@ func handleByApplication(w http.ResponseWriter, r *http.Request) {
 }
 
 func processMessage(topology *storage.Topology, r *http.Request, init map[string]float64) {
-	service.RabbitMq.SndMessage(r, *topology, init)
+	service.RabbitMq.SendMessage(r, *topology, init)
 }
 
 func getUser(r *http.Request) string {

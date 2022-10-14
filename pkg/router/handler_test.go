@@ -88,7 +88,7 @@ func mockCache(t int) {
 	}
 }
 
-func (r *RabbitMock) SndMessage(request *http.Request, topology storage.Topology, init map[string]float64) {
+func (r *RabbitMock) SendMessage(request *http.Request, topology storage.Topology, init map[string]float64) {
 	return
 }
 

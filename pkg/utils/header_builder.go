@@ -10,7 +10,7 @@ import (
 
 // HeaderBuilder represents headerBuilder
 type HeaderBuilder interface {
-	BldHeaders(topology storage.Topology) (h amqp.Table, c string, d uint8, t time.Time)
+	BuildHeaders(topology storage.Topology) (h amqp.Table, c string, d uint8, t time.Time)
 	BldProcessHeaders(storage.Topology) (h amqp.Table, c string, d uint8, t time.Time)
 }
 
@@ -26,6 +26,8 @@ const ApplicationID = "application"
 
 // UserID header
 const UserID = "user"
+const LimitKey = "limiter-key"
+const Applications = "applications"
 
 // NodeID header
 const NodeID = "node-id"
@@ -41,7 +43,7 @@ const processStarted = "process-started"
 
 const PublishedTimeStamp = "published-timestamp"
 
-func (b *headerBuilder) BldHeaders(topology storage.Topology) (h amqp.Table, c string, d uint8, t time.Time) {
+func (b *headerBuilder) BuildHeaders(topology storage.Topology) (h amqp.Table, c string, d uint8, t time.Time) {
 	return b.BldProcessHeaders(topology)
 }
 
