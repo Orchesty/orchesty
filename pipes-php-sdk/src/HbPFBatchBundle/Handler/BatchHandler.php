@@ -56,9 +56,9 @@ final class BatchHandler
     /**
      * @return mixed[]
      */
-    public function getBeaches(): array
+    public function getBatches(): array
     {
-        return $this->loader->getAllBeaches();
+        return array_map(static fn($batch) => $batch->toArray(), $this->loader->getList());
     }
 
 }

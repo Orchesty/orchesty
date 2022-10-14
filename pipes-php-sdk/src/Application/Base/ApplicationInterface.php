@@ -16,10 +16,15 @@ interface ApplicationInterface
 {
 
     public const  AUTHORIZATION_FORM    = 'authorization_form';
+    public const  LIMITER_FORM          = 'limiterForm';
     public const  TOKEN                 = 'token';
     public const  FIELDS                = 'fields';
     public const  FRONTEND_REDIRECT_URL = 'frontend_redirect_url';
     public const  OAUTH_REDIRECT_URL    = 'redirect_url';
+
+    public const  USE_LIMIT = 'useLimit';
+    public const  VALUE     = 'value';
+    public const  TIME      = 'time';
 
     /**
      * @return string

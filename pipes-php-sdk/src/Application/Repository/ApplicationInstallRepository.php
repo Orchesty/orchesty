@@ -46,6 +46,26 @@ final class ApplicationInstallRepository extends DocumentRepository
     }
 
     /**
+     * @param string   $user
+     * @param string[] $applications
+     * @return ApplicationInstall[]
+     */
+    public function findUserApps(string $user, array $applications): array
+    {
+        /** @var ApplicationInstall[] | null $appInstalls */
+        $appInstalls = $this->createQueryBuilder()
+            ->field(ApplicationInstall::USER)->equals($user)
+            ->field(ApplicationInstall::KEY)->in($applications)
+            ->getQuery()->getQuery();
+
+        if (!$appInstalls) {
+            return [];
+        }
+
+        return $appInstalls;
+    }
+
+    /**
      * @param string $key
      *
      * @return ApplicationInstall

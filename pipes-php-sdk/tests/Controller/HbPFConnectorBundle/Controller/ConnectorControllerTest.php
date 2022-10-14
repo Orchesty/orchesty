@@ -4,6 +4,7 @@ namespace PipesPhpSdkTests\Controller\HbPFConnectorBundle\Controller;
 
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\PipesPhpSdk\Application\Document\Dto\CommonObjectDto;
 use Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Handler\ConnectorHandler;
 use Hanaboso\Utils\String\Json;
 use PipesPhpSdkTests\ControllerTestCaseAbstract;
@@ -106,13 +107,8 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
 
         $response = $this->client->getResponse();
 
-        self::assertTrue(
-            in_array(
-                'null',
-                Json::decode((string) $response->getContent()),
-                TRUE,
-            ),
-        );
+        $assert = new CommonObjectDto('null-connector', 'null-key');
+        self::assertEquals([$assert->toArray()], Json::decode((string) $response->getContent()));
         self::assertEquals(200, $response->getStatusCode());
     }
 

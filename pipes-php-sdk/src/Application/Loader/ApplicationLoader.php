@@ -52,7 +52,7 @@ final class ApplicationLoader
     /**
      * @param mixed[] $exclude
      *
-     * @return mixed[]
+     * @return ApplicationInterface[]
      */
     public function getApplications($exclude = []): array
     {

@@ -82,7 +82,7 @@ final class BatchController implements LoggerAwareInterface
     public function listOfConnectorsAction(): Response
     {
         try {
-            return $this->getResponse($this->batchHandler->getBeaches());
+            return $this->getResponse($this->batchHandler->getBatches());
         } catch (Throwable $e) {
             return $this->getErrorResponse($e);
         }

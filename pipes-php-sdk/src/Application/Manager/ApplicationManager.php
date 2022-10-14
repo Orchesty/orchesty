@@ -16,11 +16,13 @@ use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Loader\ApplicationLoader;
 use Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookManager;
+use Hanaboso\PipesPhpSdk\Application\Model\Form\Form;
 use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\PipesPhpSdk\Application\Utils\SynchronousAction;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1\OAuth1ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
+use Hanaboso\Utils\System\PipesHeaders;
 use ReflectionClass;
 use ReflectionMethod;
 use Symfony\Component\HttpFoundation\Request;
@@ -344,6 +346,42 @@ final class ApplicationManager
         $application = $this->loader->getApplication($key);
 
         return $application->getApplicationForms($applicationInstall);
+    }
+
+    /**
+     * @param string   $user
+     * @param string[] $applications
+     * @return string[]
+     */
+    public function getApplicationsLimits(string $user, array $applications): array
+    {
+        $applicationInstalls = $this->repository->findUserApps($user, $applications);
+
+        $appLimits = array_map(static function(ApplicationInstall $appInstall) {
+            /** @var Form|null $limiterForm */
+            $limiterForm = $appInstall->getSettings()[ApplicationInterface::LIMITER_FORM] ?? NULL;
+            if (!$limiterForm) {
+                return NULL;
+            }
+
+            $fields = $limiterForm->getFields();
+
+            $useLimit = $fields[ApplicationInterface::USE_LIMIT] ?? NULL;
+            $time     = $fields[ApplicationInterface::TIME] ?? NULL;
+            $value    = $fields[ApplicationInterface::VALUE] ?? NULL;
+
+            if (!$useLimit || !$time || !$value) {
+                return NULL;
+            }
+
+            return PipesHeaders::getLimiterKey(
+                sprintf('%s|%s', $appInstall->getUser(), $appInstall->getKey()),
+                (int) $time->getValue(),
+                (int) $value->getValue(),
+            );
+        }, $applicationInstalls);
+
+        return array_filter($appLimits);
     }
 
     /**

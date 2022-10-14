@@ -5,6 +5,7 @@ namespace Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler;
+use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\System\ControllerUtils;
 use Hanaboso\Utils\Traits\ControllerTrait;
 use InvalidArgumentException;
@@ -42,6 +43,29 @@ final class ApplicationController
     {
         try {
             return $this->getResponse($this->applicationHandler->getApplications());
+        } catch (Throwable $t) {
+            return $this->getErrorResponse($t);
+        }
+    }
+
+    /**
+     * @Route("/applications/limits", methods={"POST"})
+     * @Route("/applications/limits/", methods={"POST"})
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function listOfApplicationsLimitsAction(Request $request): Response
+    {
+        try {
+            $parameters = Json::decode($request->getContent());
+
+            return $this->getResponse(
+                $this->applicationHandler->getApplicationsLimits(
+                    $parameters['user'] ?? '',
+                    $parameters['applications']?? '',
+                ),
+            );
         } catch (Throwable $t) {
             return $this->getErrorResponse($t);
         }
