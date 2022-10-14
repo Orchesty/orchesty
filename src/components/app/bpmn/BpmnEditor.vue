@@ -273,14 +273,14 @@ export default {
         )[0].name
 
         if (event.element.businessObject.get('sdkHost')) {
-          event.element.businessObject.set('sdkHostName', sdkServiceName)
+          event.element.businessObject.set('pipes:sdkHostName', sdkServiceName)
         }
 
         //check if node sdk name has service options for the provided pipes type
         if (sdkHostServices[sdkServiceName] && sdkHostServices[sdkServiceName][pipesType]) {
           const options = sdkHostServices[sdkServiceName][pipesType].map((item) => {
             if (event.element.businessObject.name === item.name) {
-              event.element.businessObject.set('appName', item.app || '')
+              event.element.businessObject.set('pipes:appName', item.app || '')
             }
 
             return {
