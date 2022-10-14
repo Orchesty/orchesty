@@ -1,9 +1,10 @@
 import * as crypto from 'crypto';
 import { auth } from 'firebase-admin';
 import { Collection } from 'mongodb';
+import fetch from 'node-fetch';
 import { ITenantCreateRequest } from '../controllers/tenants';
 import TenantSearchError from '../errors/TenantSearchError';
-import { authApp, usersService } from '../index';
+import { authApp, logger, usersService } from '../index';
 import Tenant = auth.Tenant;
 import { CollectionEnum } from '../enums/CollectionEnum';
 import UserCreationError from '../errors/UserCreationError';
@@ -180,6 +181,29 @@ export default class TenantService {
         const tenant = { instances, tenantId, gTenantId: gTenant.tenantId } as ITenant;
         await this.getTenantCollection().insertOne(tenant);
         tenant.gTenant = gTenant;
+
+        const { projectId } = authApp.options;
+        const oauthToken = (await authApp.options.credential?.getAccessToken())?.access_token;
+
+        const resp = await fetch(
+            `https://identitytoolkit.googleapis.com/v2/projects/${projectId}/tenants/${gTenant.tenantId}`,
+            {
+                method: 'PATCH',
+                body: JSON.stringify({
+                    displayName: gTenant.displayName,
+                    allowPasswordSignup: true,
+                    inheritance: {
+                        emailSendingConfig: true,
+                    },
+                }),
+                headers: {
+                    Authorization: `Bearer ${oauthToken}`,
+                },
+            },
+        );
+        if (resp.status !== 200) {
+            throw new UserCreationError(`Cannot enable emailSendingConfig for tenant with ID ${tenantId}.${await resp.text()}`);
+        }
 
         return tenant;
     }
