@@ -21,7 +21,7 @@ parameters:
     monolith_api_host: "%env(string:BACKEND_DSN)%"
     metrics_dsn: "%env(string:METRICS_DSN)%"
 
-    env(UDP_LOGGER_URL): "logstash:5120"
+    env(UDP_LOGGER_URL): "fluentd:5120"
     udp_logger_url: "%env(string:UDP_LOGGER_URL)%"
 
     env(TOPOLOGY_POD_LABELS): ""
