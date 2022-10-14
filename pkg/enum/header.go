@@ -11,10 +11,12 @@ const (
 	Header_NodeId           = "node-id"
 	Header_ResultCode       = "result-code"
 	Header_ResultMessage    = "result-message"
-	Header_ResultDetail     = "result-detail"
-	Header_TopologyId       = "topology-id"
+	// Debug detail
+	Header_ResultDetail = "result-detail"
+	Header_TopologyId   = "topology-id"
 	// TODO deprecated totok by mělo být vyřešeno novým gateway workerem
 	Header_WorkerFollowers = "worker-followers"
+	Header_SystemEvent     = "system-event"
 
 	// Target queue from repeater
 	Header_RepeatQueue = "repeat-queue"

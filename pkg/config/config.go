@@ -15,10 +15,11 @@ import (
 
 type (
 	config struct {
-		App     *app
-		MongoDb *mongoDb
-		Metrics *metrics
-		Logs    *logs
+		App           *app
+		MongoDb       *mongoDb
+		Metrics       *metrics
+		Logs          *logs
+		StartingPoint *startingPoint
 	}
 
 	mongoDb struct {
@@ -39,19 +40,25 @@ type (
 	logs struct {
 		Url string `env:"UDP_LOGGER_URL" default:"logstash:5120"`
 	}
+
+	startingPoint struct {
+		Dsn string `env:"STARTING_POINT_DSN" default:"http://starting-point:8080"`
+	}
 )
 
 var (
-	App     app
-	MongoDb mongoDb
-	Metrics metrics
-	Logs    logs
+	App           app
+	MongoDb       mongoDb
+	Metrics       metrics
+	Logs          logs
+	StartingPoint startingPoint
 
 	c = config{
-		App:     &App,
-		MongoDb: &MongoDb,
-		Metrics: &Metrics,
-		Logs:    &Logs,
+		App:           &App,
+		MongoDb:       &MongoDb,
+		Metrics:       &Metrics,
+		Logs:          &Logs,
+		StartingPoint: &StartingPoint,
 	}
 )
 

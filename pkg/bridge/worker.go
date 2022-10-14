@@ -10,6 +10,7 @@ import (
 	"github.com/hanaboso/pipes/bridge/pkg/model"
 	"github.com/hanaboso/pipes/bridge/pkg/mongo"
 	"github.com/hanaboso/pipes/bridge/pkg/rabbitmq"
+	"github.com/hanaboso/pipes/bridge/pkg/topology"
 	"github.com/hanaboso/pipes/bridge/pkg/utils/timex"
 	"github.com/hanaboso/pipes/bridge/pkg/worker"
 	"github.com/rs/zerolog"
@@ -94,6 +95,9 @@ func (n *node) process(dto *model.ProcessMessage) {
 	dto.SetHeader(enum.Header_NodeId, n.Node.ID)
 	dto.SetHeader(enum.Header_TopologyId, n.topologyId)
 	dto.SetHeader(enum.Header_WorkerFollowers, n.followersList)
+	if topology.IsSystemTopology(n.topologyName) {
+		dto.SetHeader(enum.Header_SystemEvent, "true")
+	}
 
 	for {
 		result, followers := n.innerProcess(dto)
@@ -129,9 +133,12 @@ func (n *node) process(dto *model.ProcessMessage) {
 				EmbedObject(result.Message()).
 				Bool(enum.LogHeader_IsForUi, true).
 				Send()
-			if err := n.mongodb.StoreUserTask(result, n.Node.Name, n.topologyName); err != nil {
+			if trashId, err := n.mongodb.StoreUserTask(result, n.Node.Name, n.topologyName); err != nil {
 				log.Error().Err(err).EmbedObject(result.Message()).Send()
 				ack = false
+			} else {
+				trashId := trashId.Hex()
+				sendFinishedProcess(result.Message(), enum.StatusType_TrashMessage, &trashId)
 			}
 		}
 

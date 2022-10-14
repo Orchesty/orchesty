@@ -4,6 +4,7 @@ import (
 	"github.com/hanaboso/go-mongodb"
 	"github.com/hanaboso/pipes/bridge/pkg/config"
 	"github.com/hanaboso/pipes/bridge/pkg/model"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -12,13 +13,13 @@ type MongoDb struct {
 	collection *mongo.Collection
 }
 
-func (m *MongoDb) StoreUserTask(dto model.ProcessResult, nodeName, topologyName string) error {
+func (m *MongoDb) StoreUserTask(dto model.ProcessResult, nodeName, topologyName string) (primitive.ObjectID, error) {
 	document := fromDto(dto, nodeName, topologyName)
 	ctx, cancel := m.connection.Context()
-	_, err := m.collection.InsertOne(ctx, document)
+	inserted, err := m.collection.InsertOne(ctx, document)
 	cancel()
 
-	return err
+	return inserted.InsertedID.(primitive.ObjectID), err
 }
 
 func (m *MongoDb) Close() {
