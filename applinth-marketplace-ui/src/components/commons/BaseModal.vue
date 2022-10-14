@@ -1,9 +1,5 @@
 <template>
-  <v-dialog
-    v-model="isOpen"
-    transition="dialog-bottom-transition"
-    max-width="800"
-  >
+  <v-dialog v-model="isOpen" :persistent="persistent" max-width="800">
     <template #activator="{ on, attrs }">
       <slot name="activator" :bind="attrs" :on="on"></slot>
     </template>
@@ -36,6 +32,10 @@ export default {
     value: {
       type: Boolean,
       required: true,
+    },
+    persistent: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
