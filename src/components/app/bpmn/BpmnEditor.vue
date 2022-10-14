@@ -149,8 +149,7 @@ export default {
             node[0].name,
             node[0].type,
             node[0].topology_id,
-            this.topologyActive.name,
-            this.userId
+            this.topologyActive.name
           )
         } else {
           this.startingPoint = null
@@ -158,10 +157,10 @@ export default {
       }
     },
 
-    getNodeRunUrl(baseURL, nodeId, nodeName, nodeType, topologyId, topologyName, userId, data = {}) {
+    getNodeRunUrl(baseURL, nodeId, nodeName, nodeType, topologyId, topologyName, data = {}) {
       return nodeType === 'webhook'
         ? `${baseURL}/topologies/${topologyName}/nodes/${nodeName}/token/${data.token ? data.token : 'token'}/run`
-        : `${baseURL}/topologies/${topologyId}/nodes/${nodeId}/user/${userId}/run`
+        : `${baseURL}/topologies/${topologyId}/nodes/${nodeId}/run`
     },
 
     centerNodeName(label) {

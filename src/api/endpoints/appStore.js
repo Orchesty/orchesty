@@ -1,75 +1,75 @@
 export default {
   getInstalledApps: {
     id: 'APP_STORE_LIST_INSTALLED_APPS',
-    request: (id) => ({
-      url: `/applications/users/${id}`,
+    request: () => ({
+      url: `/applications/installed`,
       method: 'GET',
     }),
   },
   getAvailableApps: {
     id: 'APP_STORE_LIST_AVAILABLE_APPS',
     request: () => ({
-      url: `/applications`,
+      url: `/applications/available`,
       method: 'GET',
     }),
   },
   getInstalledApp: {
     id: 'APP_STORE_GET_INSTALLED_APP',
-    request: ({ key, userId }) => ({
-      url: `/applications/${key}/users/${userId}`,
+    request: ({ key }) => ({
+      url: `/applications/${key}`,
       method: 'GET',
     }),
   },
   getAvailableApp: {
     id: 'APP_STORE_GET_AVAILABLE_APP',
     request: (key) => ({
-      url: `/applications/${key}`,
+      url: `/applications/${key}/preview`,
       method: 'GET',
     }),
   },
   installApp: {
     id: 'APP_STORE_INSTALL_APP',
-    request: ({ key, userId }) => ({
-      url: `/applications/${key}/users/${userId}`,
+    request: ({ key }) => ({
+      url: `/applications/${key}`,
       method: 'POST',
       data: {},
     }),
   },
   uninstallApp: {
     id: 'APP_STORE_UNINSTALL_APP',
-    request: ({ key, userId }) => ({
-      url: `/applications/${key}/users/${userId}`,
+    request: ({ key }) => ({
+      url: `/applications/${key}`,
       method: 'DELETE',
     }),
   },
   saveSettings: {
     id: 'APP_STORE_SAVE_SETTINGS',
-    request: ({ key, userId, data }) => ({
-      url: `/applications/${key}/users/${userId}`,
+    request: ({ key, data }) => ({
+      url: `/applications/${key}`,
       method: 'PUT',
       data,
     }),
   },
   subscribeToWebhook: {
     id: 'APP_STORE_WEBHOOK_SUBSCRIBE',
-    request: ({ key, userId, data }) => ({
-      url: `/webhook/applications/${key}/users/${userId}/subscribe`,
+    request: ({ key, data }) => ({
+      url: `/webhook/applications/${key}/subscribe`,
       method: 'POST',
       data,
     }),
   },
   setPasswordApp: {
     id: 'APP_SET_PASSWORD',
-    request: ({ key, userId, data }) => ({
-      url: `/applications/${key}/users/${userId}/password`,
+    request: ({ key, data }) => ({
+      url: `/applications/${key}/password`,
       method: 'PUT',
       data,
     }),
   },
   activateApp: {
     id: 'ACTIVATE_APP',
-    request: ({ key, userId, data }) => ({
-      url: `/applications/${key}/users/${userId}/changeState`,
+    request: ({ key, data }) => ({
+      url: `/applications/${key}/changeState`,
       method: 'PUT',
       data,
     }),

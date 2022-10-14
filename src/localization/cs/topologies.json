@@ -88,6 +88,20 @@
         }
       }
     },
+    "editor": {
+      "startingPoint": "Počáteční bod",
+      "noStartingPointFound": "Žádný počáteční bod nenalezen",
+      "actions": {
+        "import": "Importovat",
+        "export": "Exportovat"
+      }
+    },
+    "viewer": {
+      "errorsToggle": "Incidenty",
+      "userTasksToggle": "Uživatelské úkoly",
+      "queueDepthToggle": "Hloubka fronty",
+      "testResultsToggle": "Výsledky testů"
+    },
     "overview": {
       "title": "Seznam Procesů",
       "headers": {

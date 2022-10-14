@@ -106,6 +106,7 @@
     },
     "editor": {
       "startingPoint": "Starting point",
+      "noStartingPointFound": "No starting point found",
       "actions": {
         "import": "Import",
         "export": "Export"

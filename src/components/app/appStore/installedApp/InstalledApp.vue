@@ -303,7 +303,7 @@ export default {
     ]),
 
     async uninstall(key) {
-      const isInstalled = await this[APP_STORE.ACTIONS.UNINSTALL_APP_REQUEST]({ key, userId: this.userId })
+      const isInstalled = await this[APP_STORE.ACTIONS.UNINSTALL_APP_REQUEST]({ key })
       if (isInstalled) {
         await this.$router.push({ name: ROUTES.APP_STORE.INSTALLED_APPS })
       }
@@ -313,7 +313,6 @@ export default {
       const isValid = await this.$refs[name][0].validate()
       if (isValid) {
         await this[APP_STORE.ACTIONS.SUBSCRIBE_WEBHOOK]({
-          userId: this.userId,
           key: this.appActive.key,
           data: { name, topology: this.webhooksSettings[name].topology },
         })
@@ -325,7 +324,6 @@ export default {
 
       const isActivated = await this[APP_STORE.ACTIONS.ACTIVATE]({
         key: this.$route.params.key,
-        userId: this.userId,
         data: {
           enabled: newState,
         },
@@ -367,17 +365,16 @@ export default {
       }
 
       const isSaved = await this[APP_STORE.ACTIONS.SAVE_APP_SETTINGS]({
-        userId: this.userId,
         key: this.appActive.key,
         data: formSettings,
       })
 
       if (isSaved) {
-        await this[APP_STORE.ACTIONS.GET_INSTALLED_APP]({ key: this.$route.params.key, userId: this.userId })
+        await this[APP_STORE.ACTIONS.GET_INSTALLED_APP]({ key: this.$route.params.key })
       }
     },
     async authorizeApp() {
-      let authUrl = `${config.backend.apiBaseUrl}/api/applications/${this.appActive.key}/users/${this.userId}/authorize?redirect_url=${window.location.href}`
+      let authUrl = `${config.backend.apiBaseUrl}/api/applications/${this.appActive.key}/authorize?redirect_url=${window.location.href}`
       if (!config.backend.apiBaseUrl.startsWith('http')) {
         authUrl = 'https://'.concat(authUrl)
       }
@@ -495,7 +492,7 @@ export default {
   },
   async created() {
     await this[TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES]()
-    await this[APP_STORE.ACTIONS.GET_INSTALLED_APP]({ key: this.$route.params.key, userId: this.userId })
+    await this[APP_STORE.ACTIONS.GET_INSTALLED_APP]({ key: this.$route.params.key })
   },
   beforeDestroy() {
     this[APP_STORE.ACTIONS.RESET]()
