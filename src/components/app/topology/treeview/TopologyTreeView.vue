@@ -112,18 +112,21 @@ export default {
     },
     async onActive(activeItems) {
       if (!activeItems[0]) {
-        if (
-          !this.active[0]?._id &&
-          [ROUTES.TOPOLOGY.DEFAULT, ROUTES.TOPOLOGY.VIEWER].includes(this.$router.currentRoute.name)
-        ) {
-          await redirectTo(this.$router, { name: ROUTES.TOPOLOGY.DEFAULT, params: { hideTopology: true } })
-        }
-
-        if (this.lastSelectedTopology._id === this.lastActive._id) {
+        if ([ROUTES.TOPOLOGY.DEFAULT, ROUTES.TOPOLOGY.VIEWER].includes(this.$router.currentRoute.name)) {
+          if (this.lastActive?._id && this.lastSelectedTopology?._id === this.lastActive._id) {
+            this.active = [this.lastSelectedTopology]
+            await this[TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID](this.active[0]._id)
+            await redirectTo(this.$router, { name: ROUTES.TOPOLOGY.VIEWER, params: { id: this.active[0]._id } })
+          } else if (!this.active[0]?._id) {
+            await redirectTo(this.$router, { name: ROUTES.TOPOLOGY.DEFAULT, params: { hideTopology: true } })
+          }
+        } else if (this.lastActive?._id) {
           this.active = [this.lastSelectedTopology]
           await this[TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID](this.active[0]._id)
           await redirectTo(this.$router, { name: ROUTES.TOPOLOGY.VIEWER, params: { id: this.active[0]._id } })
         }
+
+        this.lastActive = null
         return
       }
 
@@ -133,6 +136,7 @@ export default {
 
       this.lastActive = activeItems[0]
 
+      // prevent redirect to topology when open sidebar
       if (activeItems[0]?._id === this.lastSelectedTopology?._id) return
 
       await this[TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID](activeItems[0]._id)
@@ -160,7 +164,8 @@ export default {
     topologiesAll: {
       deep: true,
       handler() {
-        this.active = [this.topologyActive]
+        this.active = [this.lastSelectedTopology]
+        this.lastActive = null
       },
     },
     opened: {
