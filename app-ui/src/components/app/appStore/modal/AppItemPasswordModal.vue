@@ -13,6 +13,7 @@
           }
         "
       />
+      <p class="mb-1">{{ label }}</p>
     </template>
     <template #default>
       <v-row dense>
@@ -20,13 +21,13 @@
           <ValidationObserver ref="form" tag="form" slim @submit.prevent="submit">
             <validation-provider
               v-slot="{ errors }"
-              :name="$t('profile.changePassword.form.current-password.name')"
+              :name="name"
               :rules="'required'"
               slim
             >
               <app-input
                 v-model="password"
-                :label="$t('profile.changePassword.form.current-password.label')"
+                :label="label"
                 :input-type="isPasswordVisible ? 'text' : 'password'"
                 :append-icon="isPasswordVisible ? 'visibility' : 'visibility_off'"
                 :error-messages="errors"
@@ -67,6 +68,14 @@ export default {
       required: true,
     },
     fieldKey: {
+      type: String,
+      required: true,
+    },
+    label: {
+      type: String,
+      required: true,
+    },
+    name: {
       type: String,
       required: true,
     },

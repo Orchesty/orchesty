@@ -1,21 +1,10 @@
 {
   "application": {
-    "details": "Details",
-    "webhooks": "Webhooks",
-    "settings": "Settings",
     "activated": "Activated",
     "notactivated": "Not activated",
     "appUninstall": "Uninstall app",
     "appUninstallConfirmation": "Do you really want to uninstall app {app}?",
     "applicationNotAuthorized": "Application has not been authorized yet",
-    "applicationNotAuthorizedMessage": "The application must first be authorized. Make sure you fill in and save all the necessary settings.",
-    "form": {
-      "clientID": "Client ID",
-      "clientID_name": "client id",
-      "clientSecret": "Client Secret",
-      "clientSecret_name": "client secret",
-      "password": "Password",
-      "password_name": "password"
-    }
+    "applicationNotAuthorizedMessage": "The application must first be authorized. Make sure you fill in and save all the necessary settings."
   }
 }

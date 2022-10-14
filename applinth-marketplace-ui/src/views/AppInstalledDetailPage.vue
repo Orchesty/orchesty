@@ -144,6 +144,8 @@
                       :app-key="appActive.key"
                       :input="field"
                       :disabled="isRequestPending"
+                      :label="field.label"
+                      :name="field.name"
                       button-class="mb-3"
                     />
                     <validation-provider

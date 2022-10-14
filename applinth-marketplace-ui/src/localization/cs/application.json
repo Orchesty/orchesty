@@ -1,21 +1,10 @@
 {
   "application": {
-    "details": "Detaily",
-    "webhooks": "Webhooky",
-    "settings": "Nastavení",
     "activated": "Aktivováno",
     "notactivated": "Neaktivováno",
     "appUninstall": "Odinstalování aplikace",
     "appUninstallConfirmation": "Skutečně si přejete odinstalovat aplikaci {app}?",
     "applicationNotAuthorized": "Aplikace nebyla autorizována",
-    "applicationNotAuthorizedMessage": "Aplikace musí být nejprve autorizovaná. Ujistěte se, že jste vyplnili a uložili všechna potřebná nastavení.",
-    "form": {
-      "clientID": "ID Klienta",
-      "clientID_name": "id klienta",
-      "clientSecret": "Heslo Klienta",
-      "clientSecret_name": "heslo klienta",
-      "password": "Heslo",
-      "password_name": "heslo"
-    }
+    "applicationNotAuthorizedMessage": "Aplikace musí být nejprve autorizovaná. Ujistěte se, že jste vyplnili a uložili všechna potřebná nastavení."
   }
 }
