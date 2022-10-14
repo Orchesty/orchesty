@@ -133,8 +133,13 @@ global:
 
   phpSdk:
     extraEnv: {}
-#     FOO:
-#       value: bar
+    # FOO:
+    # value: bar
+
+  nodejsSdk:
+    extraEnv: {}
+    # FOO:
+    # value: bar
 
   repeater:
     # values for backward compat, will be reset
