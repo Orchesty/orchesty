@@ -155,7 +155,9 @@ final class Schema
             $app  = $node->getApplication();
             $host = $node->getSystemConfigs()->getSdkHost();
 
-            $appList[sprintf('%s_%s',$app, $host)] = new TopologyApplication($app, $host);
+            if($app && $host){
+                $appList[sprintf('%s_%s',$app, $host)] = new TopologyApplication($app, $host);
+            }
         }
 
         return array_values($appList);
