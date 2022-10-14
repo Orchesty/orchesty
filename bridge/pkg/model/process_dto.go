@@ -85,6 +85,15 @@ func (pm ProcessMessage) GetIntHeaderOrDefault(header string, defaultValue int) 
 	return value
 }
 
+func (pm ProcessMessage) GetBoolHeaderOrDefault(header string, defaultValue bool) bool {
+	value, err := pm.GetHeader(header)
+	if err != nil {
+		return defaultValue
+	}
+
+	return value == "true" || value == "1"
+}
+
 func (pm *ProcessMessage) DeleteHeader(header string) *ProcessMessage {
 	delete(pm.Headers, header)
 

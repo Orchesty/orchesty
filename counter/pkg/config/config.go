@@ -8,11 +8,12 @@ import (
 
 type (
 	config struct {
-		App      *app
-		MongoDb  *mongoDb
-		RabbitMq *rabbitMq
-		Metrics  *metrics
-		Logs     *logs
+		App           *app
+		MongoDb       *mongoDb
+		RabbitMq      *rabbitMq
+		Metrics       *metrics
+		Logs          *logs
+		StartingPoint *startingPoint
 	}
 
 	app struct {
@@ -39,21 +40,27 @@ type (
 	logs struct {
 		Url string `env:"UDP_LOGGER_URL" default:"logstash:5120"`
 	}
+
+	startingPoint struct {
+		Dsn string `env:"STARTING_POINT_DSN" required:"true" default:"http://starting-point:8080"`
+	}
 )
 
 var (
-	App      app
-	MongoDb  mongoDb
-	RabbitMq rabbitMq
-	Metrics  metrics
-	Logs     logs
-	Log      log.Logger
-	c        = config{
-		App:      &App,
-		MongoDb:  &MongoDb,
-		RabbitMq: &RabbitMq,
-		Metrics:  &Metrics,
-		Logs:     &Logs,
+	App           app
+	MongoDb       mongoDb
+	RabbitMq      rabbitMq
+	Metrics       metrics
+	Logs          logs
+	Log           log.Logger
+	StartingPoint startingPoint
+	c             = config{
+		App:           &App,
+		MongoDb:       &MongoDb,
+		RabbitMq:      &RabbitMq,
+		Metrics:       &Metrics,
+		Logs:          &Logs,
+		StartingPoint: &StartingPoint,
 	}
 )
 

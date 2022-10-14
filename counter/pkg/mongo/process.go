@@ -129,3 +129,16 @@ func (m *MongoDb) UpdateProcesses(processes, subProcesses, finishes []mongo.Writ
 
 	return
 }
+
+func (m *MongoDb) FetchErrorMessages(correlationId string) ([]model.ErrorMessage, error) {
+	var processes []model.ErrorMessage
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	result, err := m.connection.Database.Collection(config.MongoDb.CounterErrCollection).Find(ctx, bson.M{
+		"correlationId": correlationId,
+	})
+
+	err = result.All(ctx, &processes)
+	cancel()
+
+	return processes, err
+}

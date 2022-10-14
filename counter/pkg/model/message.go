@@ -56,6 +56,15 @@ func (pm ProcessMessage) GetHeaderOrDefault(header enum.HeaderType, defaultValue
 	return value
 }
 
+func (pm ProcessMessage) GetBoolHeaderOrDefault(header enum.HeaderType, defaultValue bool) bool {
+	value, err := pm.GetHeader(header)
+	if err != nil {
+		return defaultValue
+	}
+
+	return value == "true" || value == "1"
+}
+
 func (pm ParsedMessage) GetPublishedTimestamp() time.Time {
 	value, err := pm.getHeader(enum.Header_PublishedTimestamp)
 	if err != nil {
@@ -96,13 +105,14 @@ func (pm ParsedMessage) ProcessInitQuery() mongo.WriteModel {
 	}
 	doc.Update = bson.M{
 		"$setOnInsert": bson.M{
-			"ok":         0,
-			"nok":        0,
-			"total":      1,
-			"created":    pm.ProcessMessage.GetTimeHeaderOrDefault(enum.Header_ProcessStarted),
-			"topologyId": pm.ProcessMessage.GetHeaderOrDefault(enum.Header_TopologyId, ""),
-			"user":       user,
-			"finished":   nil,
+			"ok":          0,
+			"nok":         0,
+			"total":       1,
+			"created":     pm.ProcessMessage.GetTimeHeaderOrDefault(enum.Header_ProcessStarted),
+			"topologyId":  pm.ProcessMessage.GetHeaderOrDefault(enum.Header_TopologyId, ""),
+			"user":        user,
+			"finished":    nil,
+			"systemEvent": pm.ProcessMessage.GetBoolHeaderOrDefault(enum.Header_SystemEvent, false),
 		},
 	}
 	t := true
@@ -144,6 +154,7 @@ func (pm ParsedMessage) SubProcessInitQuery() mongo.WriteModel {
 			"finished":      nil,
 			"correlationId": corrId,
 			"parentId":      pm.ProcessMessage.GetHeaderOrDefault(enum.Header_ParentProcessId, corrId),
+			"systemEvent":   pm.ProcessMessage.GetBoolHeaderOrDefault(enum.Header_SystemEvent, false),
 		},
 	}
 	t := true

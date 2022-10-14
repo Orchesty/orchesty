@@ -63,6 +63,7 @@ type Environment struct {
 	Limits              Limits   `json:"limits"`
 	Requests            Requests `json:"requests"`
 	UdpLoggerUrl        string   `json:"udp_logger_url"`
+	StartingPointDsn    string   `json:"starting_point_dsn"`
 }
 
 func (p *NodeConfig) GetTopologyJson(t *Topology, nodes []Node) (TopologyJson, error) {
@@ -146,6 +147,7 @@ func (e *Environment) GetEnvironment() (map[string]string, error) {
 	environment["METRICS_DSN"] = e.MetricsDsn
 	environment["MONGODB_DSN"] = e.MongodbDsn
 	environment["UDP_LOGGER_URL"] = e.UdpLoggerUrl
+	environment["STARTING_POINT_DSN"] = e.StartingPointDsn
 
 	for _, env := range os.Environ() {
 		if !strings.HasPrefix(env, passPrefix) {
