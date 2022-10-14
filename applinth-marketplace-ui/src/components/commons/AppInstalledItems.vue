@@ -3,8 +3,15 @@
     <div v-if="isLoading">
       <base-progress-bar-linear />
     </div>
-    <div v-if="apps && apps.length">
-      <v-card v-for="app in apps" :key="app.key" flat outlined class="mb-2">
+    <div v-else-if="apps && apps.length">
+      <v-card
+        v-for="app in apps"
+        v-show="!isUninstallingKeys.includes(app.key)"
+        :key="app.key"
+        flat
+        outlined
+        class="mb-2"
+      >
         <v-container fluid>
           <v-row>
             <v-col cols="auto" class="d-flex">
@@ -35,12 +42,10 @@
                 }"
                 color="primary"
                 custom-class="mb-2"
-                :disabled="isUninstalling || isLoading"
               />
               <uninstall-app-modal
                 v-if="app.isInstallable"
                 color="error"
-                :disabled="isLoading"
                 :is-uninstalling="isUninstalling"
                 :app-name="app.name"
                 :on-click="() => uninstall(app.key)"
@@ -79,6 +84,7 @@ export default {
       ROUTES,
       isLoading: false,
       isUninstalling: false,
+      isUninstallingKeys: [],
     }
   },
   methods: {
@@ -101,12 +107,14 @@ export default {
 
     async uninstall(key) {
       this.isUninstalling = true
+
       await callApi({
         requestData: API.appStore.uninstallApp,
         params: { key },
       })
+
+      this.isUninstallingKeys.push(key)
       this.isUninstalling = false
-      await this.fetchApplications()
     },
     async fetchApplications() {
       this.isLoading = true

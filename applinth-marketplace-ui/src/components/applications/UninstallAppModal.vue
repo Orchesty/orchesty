@@ -1,11 +1,13 @@
 <template>
-  <base-modal v-model="isOpen" :title="$t('application.appUninstall')">
+  <base-modal
+    v-model="isOpen"
+    :persistent="isUninstalling"
+    :title="$t('application.appUninstall')"
+  >
     <template #activator="{ attrs, on }">
       <base-button
         color="error"
         :button-title="$t('button.uninstall')"
-        :loading="isUninstalling"
-        :disabled="disabled"
         :attrs="attrs"
         :on="on"
       />
@@ -18,7 +20,11 @@
       </div>
     </template>
     <template #actions>
-      <base-button :button-title="$t('button.cancel')" :on-click="onReject" />
+      <base-button
+        :button-title="$t('button.cancel')"
+        :disabled="isUninstalling"
+        :on-click="onReject"
+      />
       <base-button
         color="error"
         :button-title="$t('button.uninstall')"
