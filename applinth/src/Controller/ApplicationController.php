@@ -97,22 +97,6 @@ final class ApplicationController extends AbstractController
     }
 
     /**
-     * @Route("/{key}/authorize", methods={"GET"})
-     *
-     * @param Request $request
-     * @param string  $key
-     *
-     * @return Response
-     */
-    public function authorizeApplication(Request $request, string $key): Response
-    {
-        return $this->forward(
-            'Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::authorizeApplicationAction',
-            ['request' => $request, 'key' => $key, 'user' => $this->authenticator->getAuthUser()],
-        );
-    }
-
-    /**
      * @Route("/{key}", methods={"POST"})
      *
      * @param string $key
@@ -122,7 +106,7 @@ final class ApplicationController extends AbstractController
     public function installApplication(string $key): Response
     {
         $user = $this->authenticator->getAuthUser();
-        $resp =  $this->forward(
+        $resp = $this->forward(
             'Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::installApplicationAction',
             ['key' => $key, 'user' => $user],
         );
@@ -149,22 +133,6 @@ final class ApplicationController extends AbstractController
     }
 
     /**
-     * @Route("/{key}/changeState", methods={"PUT"})
-     *
-     * @param Request $request
-     * @param string  $key
-     *
-     * @return Response
-     */
-    public function changeStateApplication(Request $request, string $key): Response
-    {
-        return $this->forward(
-            'Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::changeStateApplicationAction',
-            ['request' => $request, 'key' => $key, 'user' => $this->authenticator->getAuthUser()],
-        );
-    }
-
-    /**
      * @Route("/{key}", methods={"DELETE"})
      *
      * @param string $key
@@ -185,6 +153,22 @@ final class ApplicationController extends AbstractController
     }
 
     /**
+     * @Route("/{key}/changeState", methods={"PUT"})
+     *
+     * @param Request $request
+     * @param string  $key
+     *
+     * @return Response
+     */
+    public function changeStateApplication(Request $request, string $key): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::changeStateApplicationAction',
+            ['request' => $request, 'key' => $key, 'user' => $this->authenticator->getAuthUser()],
+        );
+    }
+
+    /**
      * @Route("/{key}/set-password", methods={"PUT"})
      *
      * @param Request $request
@@ -196,6 +180,22 @@ final class ApplicationController extends AbstractController
     {
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::saveApplicationPasswordAction',
+            ['request' => $request, 'key' => $key, 'user' => $this->authenticator->getAuthUser()],
+        );
+    }
+
+    /**
+     * @Route("/{key}/authorize", methods={"GET"})
+     *
+     * @param Request $request
+     * @param string  $key
+     *
+     * @return Response
+     */
+    public function authorizeApplication(Request $request, string $key): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::authorizeApplicationAction',
             ['request' => $request, 'key' => $key, 'user' => $this->authenticator->getAuthUser()],
         );
     }

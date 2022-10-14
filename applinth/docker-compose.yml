@@ -25,7 +25,6 @@ services:
             MONGODB_DB: pipes
             METRICS_DSN: mongodb://mongo
             METRICS_DB: metrics
-            METRICS_SERVICE: mongo
             CHECK_INFINITY_LOOP: 'true'
             TOPOLOGY_API_DSN: topology-api:80
             STARTING_POINT_DSN: starting-point:8080

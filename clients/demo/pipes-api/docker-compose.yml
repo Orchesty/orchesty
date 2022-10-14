@@ -18,7 +18,6 @@ services:
             MONGODB_DB: pipes
             METRICS_DSN: mongodb://mongo
             METRICS_DB: metrics
-            METRICS_SERVICE: mongo
             COMPOSER_HOME: ${HOME}/dev/.composer
             KERNEL_CLASS: Demo\Kernel
         volumes:

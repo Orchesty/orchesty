@@ -1,5 +1,5 @@
 {
-    "http": "GET /api/applications/null",
+    "http": "GET /api/applications/null/preview",
     "body": [],
     "headers": {
         "HTTP_Authorization": "jwt"

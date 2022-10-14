@@ -11,6 +11,7 @@ use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Form;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\FormStack;
 use Hanaboso\Utils\File\File;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class ApplicationAbstract
@@ -58,7 +59,8 @@ abstract class ApplicationAbstract implements ApplicationInterface
     /**
      * @return string
      */
-    public function getInfo(): string {
+    public function getInfo(): string
+    {
         try {
             if ($this->infoFilename && file_exists($this->infoFilename)) {
                 return File::getContent($this->infoFilename);
@@ -121,7 +123,7 @@ abstract class ApplicationAbstract implements ApplicationInterface
     public function saveApplicationForms(ApplicationInstall $applicationInstall, array $settings): ApplicationInstall
     {
         $preparedSetting = [];
-        foreach ($this->getFormStack()->getForms() as $form){
+        foreach ($this->getFormStack()->getForms() as $form) {
             foreach ($form->getFields() as $field) {
                 if (array_key_exists($form->getKey(), $settings) &&
                     array_key_exists($field->getKey(), $settings[$form->getKey()])) {
@@ -129,10 +131,10 @@ abstract class ApplicationAbstract implements ApplicationInterface
                     if ($currentForm) {
                         $preparedSetting[$form->getKey()][$field->getKey()] =
                             $settings[$form->getKey()][$field->getKey()];
-                    }
-                    else {
+                    } else {
                         $preparedSetting[$form->getKey()] = [
-                            $field->getKey() => $settings[$form->getKey()][$field->getKey()]];
+                            $field->getKey() => $settings[$form->getKey()][$field->getKey()],
+                        ];
                     }
 
                 }
@@ -175,6 +177,50 @@ abstract class ApplicationAbstract implements ApplicationInterface
     }
 
     /**
+     * @param Request $req
+     *
+     * @return void
+     */
+    public function afterInstallCallback(Request $req): void
+    {
+        $req;
+        // You can find AppInstall by user & name. E.g.: If you want to call topology
+    }
+
+    /**
+     * @param Request $req
+     *
+     * @return void
+     */
+    public function aterUninstallCallback(Request $req): void
+    {
+        $req;
+        // You can find AppInstall by user & name. E.g.: If you want to call topology
+    }
+
+    /**
+     * @param Request $req
+     *
+     * @return void
+     */
+    public function afterEnableCallback(Request $req): void
+    {
+        $req;
+        // You can find AppInstall by user & name. E.g.: If you want to call topology
+    }
+
+    /**
+     * @param Request $req
+     *
+     * @return void
+     */
+    public function afterDisableCallback(Request $req): void
+    {
+        $req;
+        // You can find AppInstall by user & name. E.g.: If you want to call topology
+    }
+
+    /**
      * @return mixed[]
      */
     public function toArray(): array
@@ -194,6 +240,7 @@ abstract class ApplicationAbstract implements ApplicationInterface
     /**
      * @param FormStack          $formStack
      * @param ApplicationInstall $applicationInstall
+     *
      * @return void
      */
     protected function customFormReplace(FormStack $formStack, ApplicationInstall $applicationInstall): void
@@ -205,6 +252,7 @@ abstract class ApplicationAbstract implements ApplicationInterface
     /**
      * @param FormStack          $formStack
      * @param ApplicationInstall $applicationInstall
+     *
      * @return void
      * @throws ApplicationInstallException
      */
@@ -212,34 +260,40 @@ abstract class ApplicationAbstract implements ApplicationInterface
     {
         $limiterForm = $formStack->getForms()[self::LIMITER_FORM] ?? NULL;
 
-        if(!$limiterForm) {
+        if (!$limiterForm) {
             $limiterForm = new Form(self::LIMITER_FORM, 'Limiter form');
             $formStack->addForm($limiterForm);
         }
 
         $useLimit = $applicationInstall->getSettings()[self::LIMITER_FORM][self::USE_LIMIT] ?? NULL;
-        $limiterForm->addField(new Field(
-            Field::CHECKBOX,
-            self::USE_LIMIT,
-            'Use limit',
-            $useLimit,
-        ));
+        $limiterForm->addField(
+            new Field(
+                Field::CHECKBOX,
+                self::USE_LIMIT,
+                'Use limit',
+                $useLimit,
+            ),
+        );
 
         $value = $applicationInstall->getSettings()[self::LIMITER_FORM][self::VALUE] ?? NULL;
-        $limiterForm->addField(new Field(
-            Field::NUMBER,
-            self::VALUE,
-            'Limit per time',
-            $value,
-        ));
+        $limiterForm->addField(
+            new Field(
+                Field::NUMBER,
+                self::VALUE,
+                'Limit per time',
+                $value,
+            ),
+        );
 
         $time = $applicationInstall->getSettings()[self::LIMITER_FORM][self::TIME] ?? NULL;
-        $limiterForm->addField(new Field(
-            Field::NUMBER,
-            self::TIME,
-            'Time in seconds',
-            $time,
-        ));
+        $limiterForm->addField(
+            new Field(
+                Field::NUMBER,
+                self::TIME,
+                'Time in seconds',
+                $time,
+            ),
+        );
     }
 
 }

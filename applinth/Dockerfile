@@ -7,7 +7,7 @@ RUN cd applinth && \
     composer install -a --no-dev && \
     APP_ENV=prod APP_DEBUG=0 RABBITMQ_DSN=amqp://rabbitmq:5672/ \
     MONGODB_DSN=mongodb://mongo:27017 MONGODB_DB=pipes \
-    METRICS_DSN=mongodb://mongo:27017 METRICS_DB=metrics METRICS_SERVICE=mongo \
+    METRICS_DSN=mongodb://mongo:27017 METRICS_DB=metrics \
     CRON_DSN=cron-api:8080 \
     TOPOLOGY_API_DSN=topology-api:8080 STARTING_POINT_DSN=starting-point:8080 \
     FRONTEND_DSN=frontend BACKEND_DSN=backend JWT_KEY=key \

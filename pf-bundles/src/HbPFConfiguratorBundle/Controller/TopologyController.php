@@ -203,7 +203,7 @@ final class TopologyController
     }
 
     /**
-     * @Route("/topologies/check/{id}/schema.bpmn", defaults={"_format"="xml"}, requirements={"id": "\w+"}, methods={"GET", "OPTIONS"})
+     * @Route("/topologies/check/{id}/schema.bpmn", defaults={"_format"="xml"}, requirements={"id": "\w+"}, methods={"POST", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $id

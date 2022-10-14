@@ -129,17 +129,17 @@ export default {
     },
     async install(key) {
       this.appInProgress = key
-      await this[APP_STORE.ACTIONS.INSTALL_APP_REQUEST]({ key, userId: this.userId })
+      await this[APP_STORE.ACTIONS.INSTALL_APP_REQUEST]({ key })
       await this[APP_STORE.ACTIONS.GET_AVAILABLE_APPS]()
-      await this[APP_STORE.ACTIONS.GET_INSTALLED_APPS](this.userId)
-      await this[APP_STORE.ACTIONS.GET_INSTALLED_APP]({ key, userId: this.userId })
+      await this[APP_STORE.ACTIONS.GET_INSTALLED_APPS]()
+      await this[APP_STORE.ACTIONS.GET_INSTALLED_APP]({ key })
       this.appInProgress = null
       await this.$router.push({ name: ROUTES.APP_STORE.INSTALLED_APP, params: { key } })
     },
   },
   async created() {
     await this[APP_STORE.ACTIONS.GET_AVAILABLE_APPS]()
-    await this[APP_STORE.ACTIONS.GET_INSTALLED_APPS](this.userId)
+    await this[APP_STORE.ACTIONS.GET_INSTALLED_APPS]()
     this.mergeWithInstalledApps()
   },
 }
