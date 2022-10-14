@@ -2,10 +2,12 @@
   <v-dialog
     v-model="isOpen"
     content-class="modal"
-    :persistent="isSending || persistent"
+    :persistent="isSending"
     :max-width="maxWidth"
     :fullscreen="fullscreen"
     :retain-focus="retainFocus"
+    @keydown.esc="handleCancel"
+    @click:outside="handleCancel"
   >
     <v-card class="card" :loading="isLoading">
       <v-card-title>
@@ -78,9 +80,6 @@ export default class Modal extends Vue {
 
   @Prop({ required: false, type: [String, Number], default: 550 })
   private maxWidth!: number | string;
-
-  @Prop({ required: false, type: Boolean, default: false })
-  private persistent!: boolean;
 
   @Prop({ required: false, type: Boolean, default: true })
   private closeable!: boolean;

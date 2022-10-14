@@ -18,14 +18,14 @@
             rules="required"
             :name="$t('formLabels.tenantId')"
             autofocus
-            v-model="formData.tenantId"
+            v-model.trim="formData.tenantId"
           />
           <TextField
             :label="$t('formLabels.email')"
             type="email"
             rules="required|email"
             :name="$t('formLabels.email')"
-            v-model="formData.email"
+            v-model.trim="formData.email"
           />
           <div class="text-right">
             <Button type="submit" :disabled="invalid" :loading="isSending">{{

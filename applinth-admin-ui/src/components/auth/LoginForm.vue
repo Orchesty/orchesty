@@ -9,7 +9,7 @@
     <TextField
       :label="$t('formLabels.tenantId')"
       name="tenantId"
-      v-model="form.tenant"
+      v-model.trim="form.tenant"
       type="text"
       autofocus
       id="loginTenant"
@@ -17,7 +17,7 @@
     <TextField
       :label="$t('formLabels.email')"
       name="email"
-      v-model="form.email"
+      v-model.trim="form.email"
       type="email"
       :rules="rules.email"
       autocomplete="username"
