@@ -39,6 +39,7 @@ final class TopologyConfigFactory
     public const UDP_LOGGER_URL         = 'udp_logger_url';
     public const TOPOLOGY_POD_LABELS    = 'topology_pod_labels';
     public const STARTING_POINT_DSN     = 'starting_point_dsn';
+    public const ORCHESTY_API_KEY       = 'orchesty_api_key';
 
     public const NODE_CONFIG = 'node_config';
     public const WORKER      = 'worker';
@@ -135,6 +136,7 @@ final class TopologyConfigFactory
             self::UDP_LOGGER_URL         => $this->configs[self::UDP_LOGGER_URL],
             self::TOPOLOGY_POD_LABELS    => $this->configs[self::TOPOLOGY_POD_LABELS],
             self::STARTING_POINT_DSN     => $this->configs[self::STARTING_POINT_DSN],
+            self::ORCHESTY_API_KEY       => $this->configs[self::ORCHESTY_API_KEY],
         ];
     }
 
