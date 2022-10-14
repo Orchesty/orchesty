@@ -1,0 +1,25 @@
+# This service is a backward compatibility hotfix, remove soon
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "pipes.fullname" (dict "suffix" "logstash" "root" .) }}
+  labels:
+{{ include "pipes.labels" . | indent 4 }}
+spec:
+  selector:
+{{ include "pipes.selectorLabels" (dict "suffix" "fluentd" "root" .) | indent 4 }}
+  ports:
+    - name: default
+      protocol: TCP
+      port: 9600
+      targetPort: default
+    - name: ingest-tcp
+      protocol: TCP
+      port: 5120
+      targetPort: ingest-tcp
+    - name: ingest-udp
+      protocol: UDP
+      port: 5120
+      targetPort: ingest-udp
