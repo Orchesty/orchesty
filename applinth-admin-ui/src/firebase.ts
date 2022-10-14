@@ -8,8 +8,8 @@ import { User } from "./store/modules/auth";
 import { alerts, i18n, saveUserWithTokenToStore } from "@/utils";
 
 const config = {
-  apiKey: "AIzaSyANIRePUXX1f8fr-IS2ljSU8FgLkC53a0o",
-  authDomain: "orchesty-cloud-stage.firebaseapp.com",
+  apiKey: "%firebase-api-key-placeholder%",
+  authDomain: "%firebase-auth-domain-placeholder%",
 };
 
 export function transformUser(user: FirebaseUser | null): User | null {
