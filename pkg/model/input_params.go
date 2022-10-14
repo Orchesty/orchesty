@@ -102,10 +102,11 @@ func (p *NodeConfig) GetTopologyJson(t *Topology, nodes []Node) (TopologyJson, e
 		}
 
 		nodeJson := NodeJson{
-			Id:        node.ID.Hex(),
-			Name:      node.Name,
-			Worker:    worker.Type,
-			Followers: make([]NodeJsonFollower, len(node.Next)),
+			Id:          node.ID.Hex(),
+			Name:        node.Name,
+			Worker:      worker.Type,
+			Application: worker.Application,
+			Followers:   make([]NodeJsonFollower, len(node.Next)),
 			Settings: NodeSettingsJson{
 				Url:        fmt.Sprintf("http://%s:%d", worker.Settings.Host, worker.Settings.Port),
 				ActionPath: worker.Settings.ProcessPath,
@@ -115,15 +116,6 @@ func (p *NodeConfig) GetTopologyJson(t *Topology, nodes []Node) (TopologyJson, e
 				// Bridge
 				Timeout:        worker.Settings.Timeout,
 				RabbitPrefetch: worker.Settings.RabbitPrefetch,
-				// Repeater
-				RepeaterEnabled:  worker.Settings.RepeaterEnabled,
-				RepeaterHops:     worker.Settings.RepeaterHops,
-				RepeaterInterval: worker.Settings.RepeaterInterval,
-				// UserTask
-				UserTask: worker.Settings.UserTask,
-				// Limiter
-				LimiterValue:    worker.Settings.LimiterValue,
-				LimiterInterval: worker.Settings.LimiterInterval,
 			},
 		}
 		for j, follower := range node.Next {
