@@ -15,6 +15,7 @@
                 "headers": []
             }
         ],
+        "filter": [],
         "paging": {
             "page": 1,
             "itemsPerPage": 50,

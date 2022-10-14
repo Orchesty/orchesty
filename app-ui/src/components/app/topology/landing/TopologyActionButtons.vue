@@ -226,10 +226,10 @@ export default {
       }
       await axios(options)
     },
-    getNodeRunUrl(baseURL, nodeId, nodeName, nodeType, topologyId, topologyName, userId, data = {}) {
+    getNodeRunUrl(baseURL, nodeId, nodeName, nodeType, topologyId, topologyName, data = {}) {
       return nodeType === 'webhook'
         ? `${baseURL}/topologies/${topologyName}/nodes/${nodeName}/token/${data.token ? data.token : 'token'}/run`
-        : `${baseURL}/topologies/${topologyId}/nodes/${nodeId}/user/${userId}/run`
+        : `${baseURL}/topologies/${topologyId}/nodes/${nodeId}/run`
     },
     createStartingPoint(item) {
       return this.getNodeRunUrl(
@@ -238,8 +238,7 @@ export default {
         item.name,
         item.type,
         item.topology_id,
-        this.topologyActive.name,
-        this.loggedUserId
+        this.topologyActive.name
       )
     },
   },

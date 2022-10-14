@@ -141,12 +141,12 @@ export default {
       })
     },
     async uninstall(key) {
-      await this[APP_STORE.ACTIONS.UNINSTALL_APP_REQUEST]({ key, userId: this.userId })
+      await this[APP_STORE.ACTIONS.UNINSTALL_APP_REQUEST]({ key })
     },
   },
   async created() {
     await this[APP_STORE.ACTIONS.GET_AVAILABLE_APPS]()
-    await this[APP_STORE.ACTIONS.GET_INSTALLED_APPS](this.userId)
+    await this[APP_STORE.ACTIONS.GET_INSTALLED_APPS]()
     this.mergeWithInstalledApps()
   },
 }

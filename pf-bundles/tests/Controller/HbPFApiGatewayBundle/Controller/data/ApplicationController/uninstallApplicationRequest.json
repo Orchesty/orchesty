@@ -1,5 +1,5 @@
 {
-    "http": "DELETE /api/applications/null/users/user",
+    "http": "DELETE /api/applications/null",
     "body": [],
     "headers": {
         "HTTP_Authorization": "jwt"

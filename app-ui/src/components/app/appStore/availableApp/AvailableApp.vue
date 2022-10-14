@@ -57,7 +57,6 @@ export default {
     async install() {
       let isInstalled = await this[APP_STORE.ACTIONS.INSTALL_APP_REQUEST]({
         key: this.$route.params.key,
-        userId: this.userId,
       })
       if (isInstalled) {
         await this.$router.push({ name: ROUTES.APP_STORE.INSTALLED_APP, params: { key: this.$route.params.key } })

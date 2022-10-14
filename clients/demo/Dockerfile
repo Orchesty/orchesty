@@ -4,7 +4,7 @@ RUN cd clients/demo/pipes-api && \
     sed -i -e 's/"symlink": true/"symlink": false/g' composer.json && \
     sed -i -e 's/"symlink": true/"symlink": false/g' composer.lock && \
     composer install -a --no-dev --ignore-platform-reqs && \
-    APP_ENV=prod APP_DEBUG=0 BACKEND_DSN=backend STARTING_POINT_DSN=start METRICS_SERVICE=metrics RABBIT_DSN=rabbit \
+    APP_ENV=prod APP_DEBUG=0 BACKEND_DSN=backend STARTING_POINT_DSN=start RABBIT_DSN=rabbit \
     bin/console cache:warmup
 
 FROM hanabosocom/php-base:php-8.1-alpine

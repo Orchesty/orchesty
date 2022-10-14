@@ -102,9 +102,7 @@ func handleByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if user := getUser(r); user != "" {
-		r.Header.Set(utils.UserID, user)
-	}
+	r.Header.Set(utils.UserID, getUser(r))
 
 	go processMessage(topology, r, init)
 
@@ -129,9 +127,7 @@ func handleByName(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if user := getUser(r); user != "" {
-		r.Header.Set(utils.UserID, user)
-	}
+	r.Header.Set(utils.UserID, getUser(r))
 
 	go processMessage(topology, r, init)
 
@@ -188,5 +184,9 @@ func getUser(r *http.Request) string {
 		}
 	}
 
-	return r.Header.Get(utils.UserID)
+	if user := r.Header.Get(utils.UserID); user != "" {
+		return user
+	}
+
+	return "orchesty"
 }

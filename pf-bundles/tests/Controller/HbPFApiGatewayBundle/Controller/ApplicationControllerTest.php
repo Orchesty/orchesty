@@ -293,7 +293,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
      */
     private function createApplication(): void
     {
-        $application = (new ApplicationInstall())->setKey('null')->setUser('user');
+        $application = (new ApplicationInstall())->setKey('null')->setUser('orchesty');
         $this->pfd($application);
 
         $sdk = new Sdk();

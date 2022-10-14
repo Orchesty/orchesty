@@ -296,7 +296,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         $this->pfd($topology);
 
         $this->client->request(
-            'GET',
+            'POST',
             sprintf('/api/topologies/check/%s/schema.bpmn', $topology->getId()),
             [],
             [],
@@ -341,7 +341,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     public function testCheckTopologySchemaNotFound(): void
     {
         $this->client->request(
-            'GET',
+            'POST',
             '/api/topologies/check/999/schema.bpmn',
             [],
             [],

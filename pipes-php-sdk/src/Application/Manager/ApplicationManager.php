@@ -40,7 +40,7 @@ final class ApplicationManager
     /**
      * @var ObjectRepository<ApplicationInstall>&ApplicationInstallRepository
      */
-    protected $repository;
+    private ApplicationInstallRepository $repository;
 
     /**
      * ApplicationManager constructor.
@@ -370,8 +370,22 @@ final class ApplicationManager
             $time     = $fields[ApplicationInterface::TIME] ?? NULL;
             $value    = $fields[ApplicationInterface::VALUE] ?? NULL;
 
+            $groupTime  = $fields[ApplicationInterface::GROUP_TIME] ?? NULL;
+            $groupValue = $fields[ApplicationInterface::GROUP_VALUE] ?? NULL;
+
             if (!$useLimit || !$time || !$value) {
                 return NULL;
+            }
+
+            if($groupTime && $groupValue){
+                return PipesHeaders::getLimiterKeyWithGroup(
+                    sprintf('%s|%s', $appInstall->getUser(), $appInstall->getKey()),
+                    (int) $time->getValue(),
+                    (int) $value->getValue(),
+                    sprintf('|%s', $appInstall->getKey()),
+                    (int) $groupTime->getValue(),
+                    (int) $groupValue->getValue(),
+                );
             }
 
             return PipesHeaders::getLimiterKey(
