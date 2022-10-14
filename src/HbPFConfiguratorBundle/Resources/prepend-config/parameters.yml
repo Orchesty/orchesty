@@ -38,6 +38,7 @@ parameters:
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::MONGODB_DSN: "%env(string:MONGODB_DSN)%"
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::UDP_LOGGER_URL: "%udp_logger_url%"
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::TOPOLOGY_POD_LABELS: "%topology_pod_labels%"
+        !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::STARTING_POINT_DSN: "%starting_point%"
 
     topology_generator_configs:
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge::TOPOLOGY_API: "%topology_api%"
