@@ -14,7 +14,7 @@
     - cp -a ./helm-chart ${PROJECT_DIR}/helm/charts/pipes
     - cd ${PROJECT_DIR}
     - >-
-      helm --kubeconfig /tmp/kubeconfig upgrade -i --wait -f helm/resources.yaml ${HELM_ARGS} ${HELM_ARGS_EXT}
+      helm --kubeconfig /tmp/kubeconfig upgrade -i --wait --reset-values -f helm/resources.yaml ${HELM_ARGS} ${HELM_ARGS_EXT}
       pipes ./helm
 
   tags:
@@ -38,7 +38,7 @@
     - cp -a ./helm-chart ${PROJECT_DIR}/helm/charts/pipes
     - cd ${PROJECT_DIR}
     - >-
-      helm --kubeconfig /tmp/kubeconfig upgrade -i --wait -f helm/resources.yaml ${HELM_ARGS}
+      helm --kubeconfig /tmp/kubeconfig upgrade -i --wait --reset-values -f helm/resources.yaml ${HELM_ARGS}
       --set global.imageOverrides.applinth-marketplace-ui=${REGISTRY}/${IMAGE_PREFIX}applinth-marketplace-ui:${TAG_APPLINTH_MARKETPLACE_UI}
       --set global.imageOverrides.php-sdk=${REGISTRY}/${IMAGE_PREFIX}backend:${TAG_BACKEND}
       --set global.imageOverrides.backend=${REGISTRY}/${IMAGE_PREFIX}backend:${TAG_BACKEND}
