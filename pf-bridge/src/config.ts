@@ -41,7 +41,7 @@ export const metricsOptions = {
 };
 
 export const loggerOptions = {
-    server: process.env.UDP_LOGGER_HOST || "logstash",
+    server: process.env.UDP_LOGGER_HOST || "fluentd",
     port: parseInt(process.env.UDP_LOGGER_PORT, 10) || 5120,
 };
 

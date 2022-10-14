@@ -2,6 +2,7 @@ import ApplicationTypeEnum from '@orchesty/nodejs-sdk/dist/lib/Application/Base/
 import CoreFormsEnum from '@orchesty/nodejs-sdk/dist/lib/Application/Base/CoreFormsEnum';
 import { IWebhookApplication } from '@orchesty/nodejs-sdk/dist/lib/Application/Base/IWebhookApplication';
 import { ApplicationInstall } from '@orchesty/nodejs-sdk/dist/lib/Application/Database/ApplicationInstall';
+import Webhook from '@orchesty/nodejs-sdk/dist/lib/Application/Database/Webhook';
 import Field from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/Field';
 import FieldType from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/FieldType';
 import Form from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/Form';
@@ -110,7 +111,7 @@ export default class SampleApplication extends ABasicApplication implements IWeb
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         applicationInstall: ApplicationInstall,
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        id: string,
+        webhook: Webhook,
     ): RequestDto {
         return new RequestDto('', HttpMethods.POST, new ProcessDto());
     }

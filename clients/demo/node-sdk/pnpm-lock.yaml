@@ -3,7 +3,7 @@ lockfileVersion: 5.4
 specifiers:
   '@hanaboso/eslint-plugin': ^1.0.4
   '@orchesty/nodejs-connectors': ^2.1.0
-  '@orchesty/nodejs-sdk': ^3.2.0
+  '@orchesty/nodejs-sdk': ^3.2.1
   '@types/jest': ^29.1.2
   '@types/node': ^18.8.5
   '@types/node-fetch': ^2.6.2
@@ -21,7 +21,7 @@ specifiers:
 
 dependencies:
   '@orchesty/nodejs-connectors': 2.1.0
-  '@orchesty/nodejs-sdk': 3.2.0
+  '@orchesty/nodejs-sdk': 3.2.1
   '@types/node': 18.8.5
   '@types/node-fetch': 2.6.2
   copyfiles: 2.4.1
@@ -2135,7 +2135,7 @@ packages:
   /@orchesty/nodejs-connectors/2.1.0:
     resolution: {integrity: sha512-UwrNj94G4ifXhrshBc528lB0u3flgma49Ek5yP/mlIIQL81Kj+O9StKKhIRG4H9k6n1KohGon6EMRQjcnoEBJw==}
     dependencies:
-      '@orchesty/nodejs-sdk': 3.2.0
+      '@orchesty/nodejs-sdk': 3.2.1
       '@types/luxon': 3.0.1
       '@types/node-fetch': 2.6.2
       form-data: 4.0.0
@@ -2175,8 +2175,8 @@ packages:
       - supports-color
     dev: false
 
-  /@orchesty/nodejs-sdk/3.2.0:
-    resolution: {integrity: sha512-cCDle4aW1FxzfxbpyUNWmXArE7mPY7nBxeDlS52i/q6CdgIUpCgqlvuKtQvQh1qJ8LewVLV6NEmbEmChdAJ3Dg==}
+  /@orchesty/nodejs-sdk/3.2.1:
+    resolution: {integrity: sha512-iIkOm+nhkDDMWHUikE5ShncycI6cchJLGBGcvTlyxZQ/Uia6NE2HrSq7ZOImcYHqt1d/nkQb6ieA+U2f5DIFzg==}
     dependencies:
       '@types/express': 4.17.14
       '@types/express-prometheus-middleware': 1.2.1

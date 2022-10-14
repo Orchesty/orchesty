@@ -14,7 +14,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@orchesty/nodejs-connectors": "^2.1.0",
-    "@orchesty/nodejs-sdk": "^3.2.0",
+    "@orchesty/nodejs-sdk": "^3.2.1",
     "@types/node": "^18.8.5",
     "@types/node-fetch": "^2.6.2",
     "copyfiles": "^2.4.1",

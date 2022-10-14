@@ -40,7 +40,7 @@ type (
 	}
 
 	logs struct {
-		Url string `env:"UDP_LOGGER_URL" default:"logstash:5120"`
+		Url string `env:"UDP_LOGGER_URL" default:"fluentd:5120"`
 	}
 
 	startingPoint struct {
