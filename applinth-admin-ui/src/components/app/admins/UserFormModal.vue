@@ -5,7 +5,6 @@
     :is-sending="isSending"
     v-model="isOpen"
     :on-cancel="closeModal"
-    :persistent="isEdit"
   >
     <template>
       <ValidationObserver slim ref="form">
@@ -14,7 +13,7 @@
           <TextField
             v-if="!isEdit"
             :label="$t('formLabels.email')"
-            v-model="formData.email"
+            v-model.trim="formData.email"
             name="email"
             rules="required|email"
             autofocus
