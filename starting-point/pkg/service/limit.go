@@ -28,6 +28,10 @@ func GetApplicationLimits(user string, topology storage.Topology) (string, error
 		}
 		jsonValue, _ := json.Marshal(body)
 
+		if !strings.HasPrefix(host, "http") {
+			host = fmt.Sprintf("http://%s", host)
+		}
+
 		resp, err := http.Post(
 			fmt.Sprintf("%s/applications/limits", strings.TrimRight(host, "/")),
 			"application/json",
@@ -49,7 +53,13 @@ func GetApplicationLimits(user string, topology storage.Topology) (string, error
 			return "", err
 		}
 
-		limits = fmt.Sprintf("%s;%s", limits, strings.Join(resData, ";"))
+		if len(resData) > 0 {
+			delimiter := ""
+			if len(limits) > 0 {
+				delimiter = ";"
+			}
+			limits = fmt.Sprintf("%s%s%s", limits, delimiter, strings.Join(resData, ";"))
+		}
 	}
 
 	return limits, nil

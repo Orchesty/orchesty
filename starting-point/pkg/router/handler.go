@@ -22,6 +22,7 @@ import (
 func HandleClear(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer context.Clear(r)
+		config.Config.Logger.Infof("Request: %s %s", r.Method, r.URL.String())
 
 		w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")

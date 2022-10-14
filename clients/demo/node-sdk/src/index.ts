@@ -10,6 +10,8 @@ import AsanaApplication from '@orchesty/nodejs-connectors/dist/lib/Asana/AsanaAp
 import AsanaCreateTaskConnector from '@orchesty/nodejs-connectors/dist/lib/Asana/Connector/AsanaCreateTaskConnector';
 import BigcommerceApplication from '@orchesty/nodejs-connectors/dist/lib/Bigcommerce/BigcommerceApplication';
 import BoxApplication from '@orchesty/nodejs-connectors/dist/lib/Box/BoxApplication';
+import { EventEnum } from '@orchesty/nodejs-connectors/dist/lib/Common/Events/EventEnum';
+import EventStatusFilter from '@orchesty/nodejs-connectors/dist/lib/Common/EventStatusFilter/EventStatusFilter';
 import DiscordSendMessageConnector
     from '@orchesty/nodejs-connectors/dist/lib/Discord/Connector/DiscordSendMessageConnector';
 import DiscordApplication from '@orchesty/nodejs-connectors/dist/lib/Discord/DiscordApplication';
@@ -86,6 +88,18 @@ export async function start(): Promise<void> {
     const runner = container.get<TopologyRunner>(CoreServices.TOPOLOGY_RUNNER);
     const redis = new Redis('');
     const cache = new CacheService(redis, sender);
+
+    const eventStatusFilterSuccess = new EventStatusFilter(EventEnum.PROCESS_SUCCESS);
+    container.setCustomNode(eventStatusFilterSuccess);
+
+    const eventStatusFilterError = new EventStatusFilter(EventEnum.PROCESS_FAILED);
+    container.setCustomNode(eventStatusFilterError);
+
+    const eventStatusFilterLimiter = new EventStatusFilter(EventEnum.LIMIT_OVERFLOW);
+    container.setCustomNode(eventStatusFilterLimiter);
+
+    const eventStatusFilterTrash = new EventStatusFilter(EventEnum.MESSAGE_IN_TRASH);
+    container.setCustomNode(eventStatusFilterTrash);
 
     const sampleApp = new SampleApplication();
     container.setApplication(sampleApp);
