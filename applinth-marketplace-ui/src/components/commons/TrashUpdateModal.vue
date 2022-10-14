@@ -18,6 +18,7 @@
       <base-button
         :button-title="$t('button.update')"
         :on-click="updateTrashItem"
+        :loading="isUpdating"
       />
     </template>
   </base-modal>
@@ -43,6 +44,7 @@ export default {
   data() {
     return {
       isOpen: false,
+      isUpdating: false,
       body: null,
       headers: null,
       id: null,
@@ -51,20 +53,26 @@ export default {
   },
   methods: {
     async updateTrashItem() {
-      await callApi({
-        requestData: API.trash.update,
-        params: {
-          id: this.id,
-          headers: this.headers,
-          body: JSON.stringify(this.body),
-        },
-      })
-      this.$emit('refreshItemData')
-      showFlashMessage(
-        this.$t('flashMessage.updated', { item: this.trashItem.name }),
-        FLASH_MESSAGES_TYPES.SUCCESS
-      )
-      this.isOpen = false
+      this.isUpdating = true
+      try {
+        await callApi({
+          requestData: API.trash.update,
+          params: {
+            id: this.id,
+            headers: this.headers,
+            body: JSON.stringify(this.body),
+          },
+        })
+        this.$emit('refreshItemData')
+        showFlashMessage(
+          this.$t('flashMessage.updated', { item: this.trashItem.id }),
+          FLASH_MESSAGES_TYPES.SUCCESS
+        )
+        this.isOpen = false
+      } catch (e) {
+        showFlashMessage(e.message, FLASH_MESSAGES_TYPES.ERROR)
+      }
+      this.isUpdating = false
     },
     checkBodyDataFormat(body) {
       try {

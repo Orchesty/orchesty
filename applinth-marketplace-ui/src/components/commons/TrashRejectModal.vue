@@ -22,6 +22,7 @@
       <base-button
         :button-title="$t('button.deny')"
         :on-click="rejectTrashItem"
+        :loading="isRejecting"
       />
     </template>
   </base-modal>
@@ -47,24 +48,31 @@ export default {
     return {
       isOpen: false,
       id: null,
+      isRejecting: false,
     }
   },
   methods: {
     async rejectTrashItem() {
-      await callApi({
-        requestData: API.trash.reject,
-        params: {
-          id: this.id,
-        },
-      })
-      this.$emit('taskSubmitted')
-      showFlashMessage(
-        this.$t('flashMessage.rejected', {
-          item: this.trashItem.name,
-        }),
-        FLASH_MESSAGES_TYPES.SUCCESS
-      )
-      this.isOpen = false
+      this.isRejecting = true
+      try {
+        await callApi({
+          requestData: API.trash.reject,
+          params: {
+            id: this.id,
+          },
+        })
+        this.$emit('taskSubmitted')
+        showFlashMessage(
+          this.$t('flashMessage.rejected', {
+            item: this.trashItem.id,
+          }),
+          FLASH_MESSAGES_TYPES.SUCCESS
+        )
+        this.isOpen = false
+      } catch (e) {
+        showFlashMessage(e.message, FLASH_MESSAGES_TYPES.ERROR)
+      }
+      this.isRejecting = false
     },
   },
   watch: {

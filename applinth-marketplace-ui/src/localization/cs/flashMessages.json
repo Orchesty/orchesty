@@ -8,7 +8,7 @@
     "updated": "{item} upraven",
     "acceptedList": "{number} položek akceptováno",
     "rejectedList": "{number} položek zamítnuto",
-    "rejected": "{number} akceptován",
-    "accepted": "{number} zamítnut"
+    "rejected": "{item} zamítnut",
+    "accepted": "{item} akceptován"
   }
 }
