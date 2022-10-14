@@ -34,7 +34,7 @@ func (p *publisher) Publish(msg amqp.Publishing, exchange, routingKey string) {
 		}
 	}
 
-	p.log.Info(fmt.Sprintf("Rabbit MQ publish message with exchange [%s] routingKey [%s]", exchange, routingKey))
+	p.log.Debug(fmt.Sprintf("Rabbit MQ publish message with exchange [%s] routingKey [%s]", exchange, routingKey))
 
 	go func() {
 		// TODO tady se může posrat confirm při předbíhání zpráv
