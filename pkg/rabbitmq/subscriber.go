@@ -209,7 +209,7 @@ func (s *subscriber) parseMessage(msg amqp.Delivery, wg *sync.WaitGroup) *model.
 
 	published, _ := msg.Headers[enum.Header_PublishedTimestamp].(int64)
 
-	return &model.ProcessMessage{
+	dto := model.ProcessMessage{
 		Body:           []byte(fullBody.Body),
 		Headers:        fullBody.Headers,
 		Ack:            ackFn,
@@ -220,6 +220,13 @@ func (s *subscriber) parseMessage(msg amqp.Delivery, wg *sync.WaitGroup) *model.
 		Exchange:       msg.Exchange,
 		RoutingKey:     msg.RoutingKey,
 	}
+
+	if limit, err := dto.GetHeader(enum.Header_LimitKeyBase); err == nil {
+		dto.SetHeader(enum.Header_LimitKey, limit)
+		dto.DeleteHeader(enum.Header_LimitKeyBase)
+	}
+
+	return &dto
 }
 
 // Adds queue - use as .Object("data", s)

@@ -8,12 +8,13 @@ import (
 
 // Worker node
 type Node struct {
-	ID        string
-	Name      string
-	Worker    enum.WorkerType
-	Settings  NodeSettings
-	Followers []Follower
-	Messages  chan *ProcessMessage
+	ID          string
+	Name        string
+	Application string
+	Worker      enum.WorkerType
+	Settings    NodeSettings
+	Followers   []Follower
+	Messages    chan *ProcessMessage
 }
 
 type NodeShard struct {
@@ -33,25 +34,12 @@ type NodeSettings struct {
 	TestPath   string
 	Headers    map[string]interface{}
 	// Side bar settings
-	Bridge   NodeSettingsBridge
-	Repeater NodeSettingsRepeater
-	Limiter  NodeSettingsLimiter
+	Bridge NodeSettingsBridge
 }
 
 type NodeSettingsBridge struct {
 	Prefetch int
 	Timeout  int // seconds
-}
-
-type NodeSettingsRepeater struct {
-	Enable   bool
-	Hops     int
-	Interval int // seconds
-}
-
-type NodeSettingsLimiter struct {
-	Messages int
-	Interval int // seconds
 }
 
 func (n NodeSettings) ActionUrl() string {
@@ -103,11 +91,12 @@ type NodeDebugV1 struct {
 }
 
 type NodeV2 struct {
-	Id        string           `json:"id"`
-	Name      string           `json:"name"`
-	Worker    enum.WorkerType  `json:"worker"`
-	Settings  NodeV2Settings   `json:"settings"`
-	Followers []NodeV2Follower `json:"followers"`
+	Id          string           `json:"id"`
+	Name        string           `json:"name"`
+	Application string           `json:"application"`
+	Worker      enum.WorkerType  `json:"worker"`
+	Settings    NodeV2Settings   `json:"settings"`
+	Followers   []NodeV2Follower `json:"followers"`
 }
 
 type NodeV2Follower struct {
@@ -124,15 +113,6 @@ type NodeV2Settings struct {
 	// Bridge
 	Timeout        int `json:"timeout"`
 	RabbitPrefetch int `json:"rabbitPrefetch"`
-	// Repeater
-	RepeaterEnabled  bool `json:"repeaterEnabled"`
-	RepeaterHops     int  `json:"repeaterHops"`
-	RepeaterInterval int  `json:"repeaterInterval"`
-	// UserTask
-	UserTask bool `json:"userTask"`
-	// Limiter
-	LimiterValue    int `json:"limiterValue"`
-	LimiterInterval int `json:"limiterInterval"`
 }
 
 // Adds nodeId - use as .EmbedObject(s)

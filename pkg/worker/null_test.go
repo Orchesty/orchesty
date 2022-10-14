@@ -74,6 +74,10 @@ func (n nullNode) Id() string {
 	return "node"
 }
 
+func (n nullNode) Application() string {
+	return ""
+}
+
 func (n nullNode) NodeName() string {
 	return "node"
 }
@@ -84,14 +88,6 @@ func (n nullNode) TopologyName() string {
 
 func (n nullNode) CursorPublisher() types.Publisher {
 	return testPublisher{}
-}
-
-func (n nullNode) RepeaterSettings() model.NodeSettingsRepeater {
-	return model.NodeSettingsRepeater{}
-}
-
-func (n nullNode) LimiterSettings() model.NodeSettingsLimiter {
-	return model.NodeSettingsLimiter{}
 }
 
 type testPublisher struct{}
