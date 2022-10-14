@@ -19,12 +19,7 @@
       <v-row dense>
         <v-col cols="12">
           <ValidationObserver ref="form" tag="form" slim @submit.prevent="submit">
-            <validation-provider
-              v-slot="{ errors }"
-              :name="name"
-              :rules="'required'"
-              slim
-            >
+            <validation-provider v-slot="{ errors }" :name="name" :rules="'required'" slim>
               <app-input
                 v-model="password"
                 :label="label"
