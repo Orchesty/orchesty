@@ -2,7 +2,6 @@ package counter
 
 import (
 	"context"
-	"encoding/json"
 	metrics "github.com/hanaboso/go-metrics/pkg"
 	"github.com/hanaboso/pipes/counter/pkg/config"
 	"github.com/hanaboso/pipes/counter/pkg/model"
@@ -10,7 +9,6 @@ import (
 	"github.com/hanaboso/pipes/counter/pkg/rabbit"
 	"github.com/hanaboso/pipes/counter/pkg/utils/intx"
 	"github.com/hanaboso/pipes/counter/pkg/utils/timex"
-	amqp "github.com/rabbitmq/amqp091-go"
 	"go.mongodb.org/mongo-driver/bson"
 	md "go.mongodb.org/mongo-driver/mongo"
 	"sync"
@@ -18,18 +16,17 @@ import (
 )
 
 type MultiCounter struct {
-	rabbit          *rabbit.RabbitMq
-	mongo           mongo.MongoDb
-	consumer        *rabbit.Consumer
-	statusPublisher *rabbit.Publisher
-	metrics         metrics.Interface
-	toCommit        bool
-	lastTag         uint64
-	wg              *sync.WaitGroup
-	processes       []md.WriteModel
-	subProcesses    []md.WriteModel
-	finishes        []md.WriteModel
-	errors          []bson.M
+	rabbit       *rabbit.RabbitMq
+	mongo        mongo.MongoDb
+	consumer     *rabbit.Consumer
+	metrics      metrics.Interface
+	toCommit     bool
+	lastTag      uint64
+	wg           *sync.WaitGroup
+	processes    []md.WriteModel
+	subProcesses []md.WriteModel
+	finishes     []md.WriteModel
+	errors       []bson.M
 }
 
 var relieve = 10
@@ -50,9 +47,7 @@ func NewMultiCounter(rabbit *rabbit.RabbitMq, mongo mongo.MongoDb) MultiCounter 
 
 func (c *MultiCounter) Start(ctx context.Context) {
 	consumer := c.rabbit.NewConsumer("pipes.multi-counter")
-	statusPublisher := c.rabbit.NewPublisher("", "pipes.results")
 	c.consumer = consumer
-	c.statusPublisher = statusPublisher
 	msgs := consumer.Consume(ctx)
 	config.Log.Info("Consumer started")
 
@@ -116,19 +111,8 @@ func (c *MultiCounter) commit() {
 }
 
 func (c *MultiCounter) finishProcess(process model.Process) {
-	body, _ := json.Marshal(struct {
-		ProcessId string `json:"process_id"`
-		Success   bool   `json:"success"`
-	}{
-		ProcessId: process.Id,
-		Success:   process.IsOk(),
-	})
-
-	c.statusPublisher.Publish(amqp.Publishing{
-		ContentType: "application/json",
-		Body:        body,
-	})
-
+	errs, _ := c.mongo.FetchErrorMessages(process.Id)
+	sendFinishedProcess(process, errs)
 	c.sendMetrics(process)
 }
 

@@ -1,7 +1,6 @@
 package rabbit
 
 import (
-	"fmt"
 	"github.com/hanaboso/pipes/counter/pkg/config"
 	"github.com/hanaboso/pipes/counter/pkg/utils/intx"
 	amqp "github.com/rabbitmq/amqp091-go"
@@ -13,7 +12,6 @@ type RabbitMq struct {
 	address    string
 	connection *amqp.Connection
 	consumers  map[string]*Consumer
-	publishers map[string]*Publisher
 	_lock      *sync.RWMutex
 }
 
@@ -23,7 +21,6 @@ func NewRabbitMq() *RabbitMq {
 		connection: nil,
 		_lock:      &sync.RWMutex{},
 		consumers:  make(map[string]*Consumer, 0),
-		publishers: make(map[string]*Publisher, 0),
 	}
 
 	go rb.connect()
@@ -46,30 +43,9 @@ func (r *RabbitMq) NewConsumer(queue string) *Consumer {
 	return consumer
 }
 
-func (r *RabbitMq) NewPublisher(exchange, routingKey string) *Publisher {
-	key := fmt.Sprintf("%s__%s", exchange, routingKey)
-	if c, ok := r.publishers[key]; ok {
-		return c
-	}
-
-	publisher := &Publisher{
-		Exchange:   exchange,
-		RoutingKey: routingKey,
-		rabbit:     r,
-	}
-
-	r.publishers[key] = publisher
-	publisher.connect()
-
-	return publisher
-}
-
 func (r *RabbitMq) Stop() {
 	for _, consumer := range r.consumers {
 		consumer.stop()
-	}
-	for _, publisher := range r.publishers {
-		publisher.stop()
 	}
 	if err := r.connection.Close(); err != nil {
 		config.Log.Error(err)
