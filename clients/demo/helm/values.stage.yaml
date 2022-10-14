@@ -16,6 +16,12 @@ global:
     starting-point: hanaboso/pipes-starting-point:dev
     logstash: hanaboso/pipes-logstash-mongo:dev
 
+  applinthMarketplaceUI:
+    auth_backlink: https://applinth-demo-client-page.netlify.app/hanaboso-stage/
+
+  backend:
+    alpha_instance_id: hb-stage
+
 customPersistence:
   node: node1
   pvDir: /srv/pipes3
