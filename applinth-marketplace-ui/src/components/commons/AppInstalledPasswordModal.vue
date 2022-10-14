@@ -15,18 +15,19 @@
         :disabled="disabled"
         :class="buttonClass"
       />
+      <p class="mb-1">{{ label }}</p>
     </template>
     <template #content>
       <validation-provider
         v-slot="{ errors }"
         slim
-        :name="$t('application.form.password_name')"
+        :name="name"
         rules="required"
       >
         <base-input
           v-model="password"
           :error-messages="errors"
-          :label="$t('application.form.password')"
+          :label="label"
           :input-type="isPasswordVisible ? 'text' : 'password'"
           :append-icon="isPasswordVisible ? 'mdi-eye' : 'mdi-eye-off'"
           @appendIconClicked="togglePasswordVisibility"
@@ -67,6 +68,14 @@ export default {
       required: true,
     },
     fieldKey: {
+      type: String,
+      required: true,
+    },
+    label: {
+      type: String,
+      required: true,
+    },
+    name: {
       type: String,
       required: true,
     },
