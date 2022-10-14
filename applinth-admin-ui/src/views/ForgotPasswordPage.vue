@@ -74,7 +74,10 @@ export default class ForgotPasswordPage extends Vue {
   async submit(): Promise<void> {
     this.isSending = true;
     if (await this.sendResetPasswordLink(this.formData)) {
-      this.$router.push({ name: Routes.Login });
+      this.$router.push({
+        name: Routes.Login,
+        query: { tenantId: this.formData.tenantId },
+      });
     }
     this.isSending = false;
   }
