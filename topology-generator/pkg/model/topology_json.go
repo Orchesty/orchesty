@@ -37,21 +37,13 @@ type TopologyBridgeWorkerSettingsJSON struct {
 	// Bridge
 	Timeout        int `json:"timeout"`
 	RabbitPrefetch int `json:"rabbitPrefetch"`
-	// Repeater
-	RepeaterEnabled  bool `json:"repeaterEnabled"`
-	RepeaterHops     int  `json:"repeaterHops"`
-	RepeaterInterval int  `json:"repeaterInterval"`
-	// UserTask
-	UserTask bool `json:"userTaskState"`
-	// Limiter
-	LimiterValue    int `json:"limiterValue"`
-	LimiterInterval int `json:"limiterInterval"`
 }
 
 // TopologyBridgeWorkerJSON TopologyBridgeWorkerJSON
 type TopologyBridgeWorkerJSON struct {
-	Type     string                           `json:"type"`
-	Settings TopologyBridgeWorkerSettingsJSON `json:"settings,omitempty"`
+	Type        string                           `json:"type"`
+	Application string                           `json:"application"`
+	Settings    TopologyBridgeWorkerSettingsJSON `json:"settings,omitempty"`
 }
 
 type TopologyJson struct {
@@ -66,11 +58,12 @@ type RabbitMqServer struct {
 }
 
 type NodeJson struct {
-	Id        string             `json:"id"`
-	Name      string             `json:"name"`
-	Worker    string             `json:"worker"`
-	Settings  NodeSettingsJson   `json:"settings"`
-	Followers []NodeJsonFollower `json:"followers"`
+	Id          string             `json:"id"`
+	Name        string             `json:"name"`
+	Worker      string             `json:"worker"`
+	Application string             `json:"application"`
+	Settings    NodeSettingsJson   `json:"settings"`
+	Followers   []NodeJsonFollower `json:"followers"`
 }
 
 type NodeJsonFollower struct {
@@ -87,15 +80,6 @@ type NodeSettingsJson struct {
 	// Bridge
 	Timeout        int `json:"timeout,omitempty"`
 	RabbitPrefetch int `json:"rabbitPrefetch,omitempty"`
-	// Repeater
-	RepeaterEnabled  bool `json:"repeaterEnabled,omitempty"`
-	RepeaterHops     int  `json:"repeaterHops,omitempty"`
-	RepeaterInterval int  `json:"repeaterInterval,omitempty"`
-	// UserTask
-	UserTask bool `json:"userTask"`
-	// Limiter
-	LimiterValue    int `json:"limiterValue"`
-	LimiterInterval int `json:"limiterInterval"`
 }
 
 // Topology Topology

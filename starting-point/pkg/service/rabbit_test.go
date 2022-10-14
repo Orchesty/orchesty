@@ -19,7 +19,7 @@ func TestRabbit(t *testing.T) {
 	r := &http.Request{Body: reader, Header: map[string][]string{"contentType": {"aaa"}}}
 	topology := storage.Topology{Name: "Topology", ID: primitive.NewObjectID(), Node: &storage.Node{ID: primitive.NewObjectID(), Name: "Node"}}
 
-	RabbitMq.SndMessage(r, topology, utils.InitFields())
+	RabbitMq.SendMessage(r, topology, utils.InitFields())
 	RabbitMq.ClearChannels()
 	RabbitMq.DisconnectRabbit()
 }

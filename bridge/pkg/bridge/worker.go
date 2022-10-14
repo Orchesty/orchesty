@@ -21,20 +21,18 @@ import (
 
 type node struct {
 	model.Node
-	worker           types.Worker
-	topologyId       string
-	topologyName     string
-	followers        types.Publishers
-	followersList    string
-	wg               *sync.WaitGroup
-	cursorer         types.Publisher
-	limiter          *limiter
-	repeater         *repeater
-	mongodb          *mongo.MongoDb
-	metrics          metrics.Interface
-	counter          counter
-	repeaterSettings model.NodeSettingsRepeater
-	limiterSettings  model.NodeSettingsLimiter
+	worker        types.Worker
+	topologyId    string
+	topologyName  string
+	followers     types.Publishers
+	followersList string
+	wg            *sync.WaitGroup
+	cursorer      types.Publisher
+	limiter       *limiter
+	repeater      *repeater
+	mongodb       *mongo.MongoDb
+	metrics       metrics.Interface
+	counter       counter
 }
 
 func (n *node) Followers() types.Publishers {
@@ -57,6 +55,10 @@ func (n *node) TopologyName() string {
 	return n.topologyName
 }
 
+func (n *node) Application() string {
+	return n.Node.Application
+}
+
 func (n *node) Settings() model.NodeSettings {
 	return n.Node.Settings
 }
@@ -67,14 +69,6 @@ func (n *node) CursorPublisher() types.Publisher {
 	}
 
 	return n.cursorer
-}
-
-func (n *node) RepeaterSettings() model.NodeSettingsRepeater {
-	return n.repeaterSettings
-}
-
-func (n *node) LimiterSettings() model.NodeSettingsLimiter {
-	return n.limiterSettings
 }
 
 func (n *node) start() {
