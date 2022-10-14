@@ -22,38 +22,40 @@ final class WebhookController extends AbstractController
      *
      * @param ServiceLocator $locator
      */
-    public function __construct(private ServiceLocator $locator)
+    public function __construct(private readonly ServiceLocator $locator)
     {
     }
 
     /**
-     * @Route("/webhook/applications/{key}/users/{user}/subscribe", methods={"POST", "OPTIONS"})
+     * @Route("/webhook/applications/{key}/subscribe", methods={"POST", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $key
-     * @param string  $user
      *
      * @return Response
      */
-    public function subscribeWebhooksAction(Request $request, string $key, string $user): Response
+    public function subscribeWebhooksAction(Request $request, string $key): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done
-        return new JsonResponse($this->locator->subscribeWebhook($key, $user, $request->request->all()));
+        return new JsonResponse(
+            $this->locator->subscribeWebhook($key, ApplicationController::SYSTEM_USER, $request->request->all()),
+        );
     }
 
     /**
-     * @Route("/webhook/applications/{key}/users/{user}/unsubscribe", methods={"POST", "OPTIONS"})
+     * @Route("/webhook/applications/{key}/unsubscribe", methods={"POST", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $key
-     * @param string  $user
      *
      * @return Response
      */
-    public function unsubscribeWebhooksAction(Request $request, string $key, string $user): Response
+    public function unsubscribeWebhooksAction(Request $request, string $key): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done
-        return new JsonResponse($this->locator->unSubscribeWebhook($key, $user, $request->request->all()));
+        return new JsonResponse(
+            $this->locator->unSubscribeWebhook($key, ApplicationController::SYSTEM_USER, $request->request->all()),
+        );
     }
 
 }

@@ -8,7 +8,6 @@ services:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController
         arguments:
             - '@hbpp.service.locator'
-            - '@doctrine_mongodb.odm.default_document_manager'
         calls:
             - [ 'setLogger', [ '@monolog.logger.commons' ] ]
 

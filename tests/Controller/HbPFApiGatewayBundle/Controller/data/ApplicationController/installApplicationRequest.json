@@ -1,5 +1,5 @@
 {
-    "http": "POST /api/applications/null/users/user",
+    "http": "POST /api/applications/null",
     "body": [],
     "headers": {
         "HTTP_Authorization": "jwt"

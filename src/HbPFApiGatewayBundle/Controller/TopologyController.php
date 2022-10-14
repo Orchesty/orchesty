@@ -134,7 +134,7 @@ final class TopologyController extends AbstractController
     }
 
     /**
-     * @Route("/topologies/check/{id}/schema.bpmn", defaults={"_format"="xml"}, requirements={"id": "\w+"}, methods={"GET", "OPTIONS"})
+     * @Route("/topologies/check/{id}/schema.bpmn", defaults={"_format"="xml"}, requirements={"id": "\w+"}, methods={"POST", "OPTIONS"})
      *
      * @param string $id
      *

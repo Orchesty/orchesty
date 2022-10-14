@@ -46,8 +46,8 @@ final class ServiceLocator implements LoggerAwareInterface
      */
     public function __construct(
         DocumentManager $dm,
-        private CurlManager $curlManager,
-        private RedirectInterface $redirect,
+        private readonly CurlManager $curlManager,
+        private readonly RedirectInterface $redirect,
     )
     {
         $this->sdkRepository = $dm->getRepository(Sdk::class);
@@ -62,11 +62,10 @@ final class ServiceLocator implements LoggerAwareInterface
      * @param string $exclude
      *
      * @return mixed[]
-     * @throws Throwable
      */
     public function getApps(string $exclude = ''): array
     {
-        $res = $this->doRequest('applications', CurlManager::METHOD_GET, [], TRUE);
+        $res = $this->doRequest('applications');
         if (empty($res) || !isset($res['items'])) {
             $res['items'] = [];
         }
@@ -78,8 +77,8 @@ final class ServiceLocator implements LoggerAwareInterface
             'page'         => 1,
             'itemsPerPage' => 50,
             'total'        => count($res['items']),
-            'nextPage'     => 2,
-            'lastPage'     => 2,
+            'nextPage'     => 1,
+            'lastPage'     => 1,
             'previousPage' => 1,
         ];
 
@@ -101,11 +100,10 @@ final class ServiceLocator implements LoggerAwareInterface
      * @param string $exclude
      *
      * @return mixed[]
-     * @throws Throwable
      */
     public function getUserApps(string $user, string $exclude = ''): array
     {
-        $res = $this->doRequest(sprintf('applications/users/%s', $user), CurlManager::METHOD_GET, [], TRUE);
+        $res = $this->doRequest(sprintf('applications/users/%s', $user));
         if (empty($res) || !isset($res['items'])) {
             $res['items'] = [];
         }
@@ -117,8 +115,8 @@ final class ServiceLocator implements LoggerAwareInterface
             'page'         => 1,
             'itemsPerPage' => 50,
             'total'        => count($res['items']),
-            'nextPage'     => 2,
-            'lastPage'     => 2,
+            'nextPage'     => 1,
+            'lastPage'     => 1,
             'previousPage' => 1,
         ];
 

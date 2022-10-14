@@ -2,12 +2,8 @@
 
 namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\Persistence\ObjectRepository;
 use Exception;
 use Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator;
-use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\Utils\Traits\ControllerTrait;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -26,24 +22,18 @@ final class ApplicationController extends AbstractController
 
     use ControllerTrait;
 
-    /**
-     * @var ObjectRepository<ApplicationInstall>&ApplicationInstallRepository
-     */
-    protected $repository;
+    public const SYSTEM_USER = 'orchesty';
 
     /**
      * ApplicationController constructor.
      *
-     * @param ServiceLocator  $locator
-     * @param DocumentManager $dm
+     * @param ServiceLocator $locator
      */
-    public function __construct(private ServiceLocator $locator, private DocumentManager $dm)
-    {
-        $this->repository = $this->dm->getRepository(ApplicationInstall::class);
-    }
+    public function __construct(private readonly ServiceLocator $locator)
+    {}
 
     /**
-     * @Route("/applications", methods={"GET", "OPTIONS"})
+     * @Route("/applications/available", methods={"GET", "OPTIONS"})
      *
      * @param Request $request
      *
@@ -56,7 +46,20 @@ final class ApplicationController extends AbstractController
     }
 
     /**
-     * @Route("/applications/{key}", methods={"GET", "OPTIONS"})
+     * @Route("/applications/installed", methods={"GET", "OPTIONS"})
+     *
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function getUsersApplicationAction(Request $request): Response
+    {
+        //TODO: refactor after ServiceLocatorMS will be done
+        return new JsonResponse($this->locator->getUserApps(self::SYSTEM_USER, $request->query->get('exclude', '')));
+    }
+
+    /**
+     * @Route("/applications/{key}/preview", methods={"GET", "OPTIONS"})
      *
      * @param string $key
      *
@@ -68,121 +71,101 @@ final class ApplicationController extends AbstractController
         return new JsonResponse($this->locator->getApp($key));
     }
 
-    /**
-     * @Route("/applications/users/{user}", methods={"GET", "OPTIONS"})
-     *
-     * @param Request $request
-     * @param string  $user
-     *
-     * @return Response
-     */
-    public function getUsersApplicationAction(Request $request, string $user): Response
-    {
-        //TODO: refactor after ServiceLocatorMS will be done
-        return new JsonResponse($this->locator->getUserApps($user, $request->query->get('exclude', '')));
-    }
 
     /**
-     * @Route("/applications/{key}/users/{user}", methods={"GET", "OPTIONS"})
+     * @Route("/applications/{key}", methods={"GET", "OPTIONS"})
      *
      * @param string $key
-     * @param string $user
      *
      * @return Response
      */
-    public function getApplicationDetailAction(string $key, string $user): Response
+    public function getApplicationDetailAction(string $key): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done
-        return new JsonResponse($this->locator->getAppDetail($key, $user));
+        return new JsonResponse($this->locator->getAppDetail($key, self::SYSTEM_USER));
     }
 
     /**
-     * @Route("/applications/{key}/users/{user}", methods={"POST", "OPTIONS"})
+     * @Route("/applications/{key}", methods={"POST", "OPTIONS"})
      *
      * @param string $key
-     * @param string $user
      *
      * @return Response
      */
-    public function installApplicationAction(string $key, string $user): Response
+    public function installApplicationAction(string $key): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done
-        return new JsonResponse($this->locator->installApp($key, $user));
+        return new JsonResponse($this->locator->installApp($key, self::SYSTEM_USER));
     }
 
     /**
-     * @Route("/applications/{key}/users/{user}", methods={"PUT", "OPTIONS"})
+     * @Route("/applications/{key}", methods={"PUT", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $key
-     * @param string  $user
      *
      * @return Response
      */
-    public function updateApplicationSettingsAction(Request $request, string $key, string $user): Response
+    public function updateApplicationSettingsAction(Request $request, string $key): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done
-        return new JsonResponse($this->locator->updateApp($key, $user, $request->request->all()));
+        return new JsonResponse($this->locator->updateApp($key, self::SYSTEM_USER, $request->request->all()));
     }
 
     /**
-     * @Route("/applications/{key}/users/{user}", methods={"DELETE", "OPTIONS"})
+     * @Route("/applications/{key}", methods={"DELETE", "OPTIONS"})
      *
      * @param string $key
-     * @param string $user
      *
      * @return Response
      */
-    public function uninstallApplicationAction(string $key, string $user): Response
+    public function uninstallApplicationAction(string $key): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done
-        return new JsonResponse($this->locator->uninstallApp($key, $user));
+        return new JsonResponse($this->locator->uninstallApp($key, self::SYSTEM_USER));
     }
 
     /**
-     * @Route("/applications/{key}/users/{user}/changeState", methods={"PUT", "OPTIONS"})
+     * @Route("/applications/{key}/changeState", methods={"PUT", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $key
-     * @param string  $user
      *
      * @return Response
      */
-    public function changeStateApplicationAction(Request $request, string $key, string $user): Response
+    public function changeStateApplicationAction(Request $request, string $key): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done
-        return new JsonResponse($this->locator->changeState($key, $user, $request->request->all()));
+        return new JsonResponse($this->locator->changeState($key, self::SYSTEM_USER, $request->request->all()));
     }
 
     /**
-     * @Route("/applications/{key}/users/{user}/password", methods={"PUT", "OPTIONS"})
+     * @Route("/applications/{key}/password", methods={"PUT", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $key
-     * @param string  $user
      *
      * @return Response
      */
-    public function saveApplicationPasswordAction(Request $request, string $key, string $user): Response
+    public function saveApplicationPasswordAction(Request $request, string $key): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done
-        return new JsonResponse($this->locator->updateAppPassword($key, $user, $request->request->all()));
+        return new JsonResponse($this->locator->updateAppPassword($key, self::SYSTEM_USER, $request->request->all()));
     }
 
     /**
-     * @Route("/applications/{key}/users/{user}/authorize", methods={"GET", "OPTIONS"})
+     * @Route("/applications/{key}/authorize", methods={"GET", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $key
-     * @param string  $user
      *
      * @return Response
      */
-    public function authorizeApplicationAction(Request $request, string $key, string $user): Response
+    public function authorizeApplicationAction(Request $request, string $key): Response
     {
         try {
             //TODO: refactor after ServiceLocatorMS will be done
-            $this->locator->authorize($key, $user, (string) $request->query->get('redirect_url'));
+            $this->locator->authorize($key, self::SYSTEM_USER, (string) $request->query->get('redirect_url'));
         } catch (Exception $e) {
             return new JsonResponse(['Error' => $e->getMessage()], 500);
         }
