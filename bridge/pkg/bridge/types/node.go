@@ -11,8 +11,7 @@ type Node interface {
 	Settings() model.NodeSettings
 	CursorPublisher() Publisher
 	NodeName() string
+	Application() string
 	TopologyName() string
-	RepeaterSettings() model.NodeSettingsRepeater
-	LimiterSettings() model.NodeSettingsLimiter
 	WorkerType() enum.WorkerType
 }

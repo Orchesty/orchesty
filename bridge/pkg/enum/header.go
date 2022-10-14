@@ -28,7 +28,8 @@ const (
 	Header_RepeatHops = "repeat-hops"
 
 	// Format: key;group;time;amount;key2;group2;time;amount
-	Header_LimitKey = "limiter-key"
+	Header_LimitKey     = "limiter-key"
+	Header_LimitKeyBase = "limiter-key-base"
 	// Routing headers for limiter service
 	Header_LimitReturnExchange   = "limit-return-exchange"
 	Header_LimitReturnRoutingKey = "limit-return-routing-key"

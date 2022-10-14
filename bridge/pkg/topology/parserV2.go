@@ -22,6 +22,7 @@ type jsonParserV2 struct{}
          "id":"5cc047dd4e9acc002a200c12",
          "name":"start",
          "worker":"worker.null",
+         "application": "losos",
          "settings":{
             "url":"http://:0",
             "actionPath":"",
@@ -81,9 +82,10 @@ func (jsonParserV2) getTopology(path string) (model.Topology, error) {
 		maxTimeout = intx.Max(maxTimeout, nodeV2.Settings.Timeout)
 
 		node := model.Node{
-			ID:     nodeV2.Id,
-			Name:   nodeV2.Name,
-			Worker: worker,
+			ID:          nodeV2.Id,
+			Name:        nodeV2.Name,
+			Application: nodeV2.Application,
+			Worker:      worker,
 			Settings: model.NodeSettings{
 				Url:        nodeV2.Settings.Url,
 				ActionPath: strings.TrimPrefix(nodeV2.Settings.ActionPath, "/"),
@@ -92,15 +94,6 @@ func (jsonParserV2) getTopology(path string) (model.Topology, error) {
 				Bridge: model.NodeSettingsBridge{
 					Prefetch: nodeV2.Settings.RabbitPrefetch,
 					Timeout:  nodeV2.Settings.Timeout,
-				},
-				Repeater: model.NodeSettingsRepeater{
-					Enable:   nodeV2.Settings.RepeaterEnabled,
-					Hops:     nodeV2.Settings.RepeaterHops,
-					Interval: nodeV2.Settings.RepeaterInterval,
-				},
-				Limiter: model.NodeSettingsLimiter{
-					Messages: nodeV2.Settings.LimiterValue,
-					Interval: nodeV2.Settings.LimiterInterval,
 				},
 			},
 			Followers: make([]model.Follower, len(nodeV2.Followers)),

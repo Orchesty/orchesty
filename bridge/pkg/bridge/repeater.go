@@ -13,25 +13,14 @@ type repeater struct {
 }
 
 func (r *repeater) publish(node types.Node, dto *model.ProcessMessage) model.ProcessResult {
-	settings := node.RepeaterSettings()
-
 	maxHops, err := dto.GetIntHeader(enum.Header_RepeatMaxHops)
 	if err != nil {
-		if settings.Enable {
-			maxHops = settings.Hops
-			dto.SetHeader(enum.Header_RepeatMaxHops, strconv.Itoa(settings.Hops))
-		} else {
-			return dto.Trash(err)
-		}
+		return dto.Trash(err)
 	}
 
 	_, err = dto.GetIntHeader(enum.Header_RepeatInterval)
 	if err != nil {
-		if settings.Enable {
-			dto.SetHeader(enum.Header_RepeatInterval, strconv.Itoa(settings.Interval))
-		} else {
-			return dto.Trash(err)
-		}
+		return dto.Trash(err)
 	}
 
 	hops := dto.GetIntHeaderOrDefault(enum.Header_RepeatHops, 1)
