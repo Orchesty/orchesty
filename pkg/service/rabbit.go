@@ -10,13 +10,14 @@ import (
 	"starting-point/pkg/rabbitmq"
 	"starting-point/pkg/storage"
 	"starting-point/pkg/utils"
+	"strings"
 
 	log "github.com/sirupsen/logrus"
 )
 
 // Rabbit represents rabbit
 type Rabbit interface {
-	SndMessage(r *http.Request, topology storage.Topology, init map[string]float64)
+	SendMessage(r *http.Request, topology storage.Topology, init map[string]float64)
 	DisconnectRabbit()
 	ClearChannels()
 	IsMetricsConnected() bool
@@ -46,17 +47,30 @@ type MessageDto struct {
 	Headers map[string]interface{} `json:"headers"`
 }
 
-// SndMessage sends message to RabbitMQ
-func (r *RabbitDefault) SndMessage(
+func (r *RabbitDefault) SendMessage(
 	request *http.Request,
 	topology storage.Topology,
 	init map[string]float64) {
 	// Create ProcessMessage headers
-	h, c, d, t := r.builder.BldHeaders(topology)
+	h, c, d, t := r.builder.BuildHeaders(topology)
 
-	if user := request.Header.Get(utils.UserID); user != "" {
+	user := ""
+	if user = request.Header.Get(utils.UserID); user != "" {
 		h[utils.UserID] = user
 	}
+
+	limitHeader, err := GetApplicationLimits(user, topology)
+	if err != nil {
+		log.Error(fmt.Sprintf("Cannot fetch sdk's limits: %+v", err))
+		return
+	}
+	h[utils.LimitKey] = limitHeader
+
+	apps := make([]string, len(topology.Applications))
+	for i, app := range topology.Applications {
+		apps[i] = app.Key
+	}
+	h[utils.Applications] = strings.Join(apps, ";")
 
 	dto := MessageDto{
 		Body:    string(utils.GetBodyFromStream(request)),

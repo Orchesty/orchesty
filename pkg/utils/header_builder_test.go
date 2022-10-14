@@ -15,7 +15,7 @@ func TestBldHeaders(t *testing.T) {
 	topology := storage.Topology{Name: "Topology", ID: primitive.NewObjectID(), Node: &storage.Node{ID: primitive.NewObjectID(), Name: "Node"}}
 	builder := NewHeaderBuilder(2)
 
-	h, c, d, ti := builder.BldHeaders(topology)
+	h, c, d, ti := builder.BuildHeaders(topology)
 
 	assert.NotEmpty(t, h)
 	assert.NotEmpty(t, c)
