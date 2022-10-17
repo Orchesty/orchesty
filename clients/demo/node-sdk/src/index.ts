@@ -12,6 +12,7 @@ import BigcommerceApplication from '@orchesty/nodejs-connectors/dist/lib/Bigcomm
 import BoxApplication from '@orchesty/nodejs-connectors/dist/lib/Box/BoxApplication';
 import { EventEnum } from '@orchesty/nodejs-connectors/dist/lib/Common/Events/EventEnum';
 import EventStatusFilter from '@orchesty/nodejs-connectors/dist/lib/Common/EventStatusFilter/EventStatusFilter';
+import ListUsersCommon from '@orchesty/nodejs-connectors/dist/lib/Common/ListUsers/ListUsers';
 import DiscordSendMessageConnector
     from '@orchesty/nodejs-connectors/dist/lib/Discord/Connector/DiscordSendMessageConnector';
 import DiscordApplication from '@orchesty/nodejs-connectors/dist/lib/Discord/DiscordApplication';
@@ -328,4 +329,9 @@ export async function start(): Promise<void> {
 
     const boxApplication = new BoxApplication(provider);
     container.setApplication(boxApplication);
+
+    const listUsersCommon = new ListUsersCommon()
+        .setApplication(sampleApp)
+        .setDb(mongoDb);
+    container.setBatch(listUsersCommon);
 }

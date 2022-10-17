@@ -67,7 +67,7 @@ services:
             CRYPT_SECRET: ThisIsNotSoSecret
             BACKEND_URL: ${DEV_IP}
             STARTING_POINT_URL: starting-point:8080
-            UDP_LOGGER_DSN: logstash:5005
+            UDP_LOGGER_DSN: fluentd:5120
             METRICS_DSN: mongodb://mongo/pipes
             MONGODB_DSN: mongodb://mongo/metrics
         command: sh -c 'pnpm install && pnpm run start'

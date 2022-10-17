@@ -18,7 +18,7 @@ services:
             APP_ENV: debug
             CRYPT_SECRET: ThisIsNotSoSecret
             BACKEND_URL: ${BACKEND_URL}
-            STARTING_POINT_URL: ${STATING_POINT_DSN}
+            STARTING_POINT_URL: ${STARTING_POINT_DSN}
             ORCHESTY_API_KEY: ${ORCHESTY_API_KEY}
             UDP_LOGGER_DSN: fluentd:5120
             METRICS_DSN: ${METRICS_DSN}
@@ -68,7 +68,7 @@ services:
             MONGO_DSN: ${MONGO_DSN}
             MONGO_COLLECTION: Cron
             ORCHESTY_API_KEY: ${ORCHESTY_API_KEY}
-            STARTING_POINT_DSN: ${STATING_POINT_DSN}
+            STARTING_POINT_DSN: ${STARTING_POINT_DSN}
         volumes:
             - ../../cron:/app:cached
         command: /run.sh -p cmd/cron.go -c api -l 2345
@@ -93,7 +93,7 @@ services:
             METRICS_DSN: ${METRICS_DSN}
             METRICS_DB: metrics
             CRON_DSN: cron-api:8080
-            STARTING_POINT_DSN: ${STATING_POINT_DSN}
+            STARTING_POINT_DSN: ${STARTING_POINT_DSN}
             ORCHESTY_API_KEY: ${ORCHESTY_API_KEY}
             TOPOLOGY_API_DSN: topology-api:8080
             DOCKER_REGISTRY: orchesty
