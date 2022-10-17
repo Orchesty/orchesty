@@ -11,6 +11,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shopify\ShopifyApplication;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Application\Document\Webhook;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\Utils\File\File;
 use HbPFConnectorsTests\DatabaseTestCaseAbstract;
@@ -145,7 +146,10 @@ final class ShopifyApplicationTest extends DatabaseTestCaseAbstract
     public function testGetWebhookUnsubscribeRequestDto(): void
     {
         $applicationInstall = $this->createApplication();
-        $dto                = $this->application->getWebhookUnsubscribeRequestDto($applicationInstall, '759136321675');
+        $dto                = $this->application->getWebhookUnsubscribeRequestDto(
+            $applicationInstall,
+            new Webhook('759136321675'),
+        );
 
         self::assertEquals('https://hana1.myshopify.com/admin/api/2020-01/webhooks/759136321675.json', $dto->getUri());
     }

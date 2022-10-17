@@ -9,6 +9,7 @@ use Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\MailchimpApplicatio
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Application\Document\Webhook;
 use Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookSubscription;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
@@ -105,7 +106,10 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
             ),
         );
 
-        $requestUn = $this->application->getWebhookUnsubscribeRequestDto($applicationInstall, '358');
+        $requestUn = $this->application->getWebhookUnsubscribeRequestDto(
+            $applicationInstall,
+            new Webhook('358'),
+        );
 
         self::assertEquals(
             sprintf(

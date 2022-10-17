@@ -173,7 +173,7 @@ final class WebhookManager
 
             $request = $application->getWebhookUnsubscribeRequestDto(
                 $this->repository->findUserApp($application->getName(), $userId),
-                $webhook->getWebhookId(),
+                $webhook,
             );
             if ($application->processWebhookUnsubscribeResponse($this->manager->send($request))) {
                 $this->dm->remove($webhook);

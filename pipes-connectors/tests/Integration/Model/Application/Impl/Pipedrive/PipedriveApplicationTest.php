@@ -7,6 +7,7 @@ use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Pipedrive\PipedriveApplication;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Application\Document\Webhook;
 use Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookSubscription;
 use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
@@ -49,7 +50,10 @@ final class PipedriveApplicationTest extends DatabaseTestCaseAbstract
             'https://seznam.cz',
         );
 
-        $requestUn = $this->application->getWebhookUnsubscribeRequestDto($applicationInstall, '388');
+        $requestUn = $this->application->getWebhookUnsubscribeRequestDto(
+            $applicationInstall,
+            new Webhook('388'),
+        );
 
         self::assertEquals(
             'https://api.pipedrive.com/v1/webhooks?api_token=ebcebe5e73aa8ba62**********80c05377fcd63',
