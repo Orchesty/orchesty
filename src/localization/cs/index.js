@@ -1,6 +1,5 @@
 import navigation from './navigation.json'
 import apiErrors from './apiErrors.json'
-import login from './login.json'
 import button from './button.json'
 import notFound from './notFound.json'
 import acl from './acl.json'
@@ -24,14 +23,16 @@ import form from './form.json'
 import appStore from './appStore.json'
 import enums from './enums.json'
 import pages from './pages.json'
-import sidebar from '@/localization/en/sidebar.json' // TODO PIP-1374 dodat překlady pro češtinu
 import healthcheck from './healthcheck.json'
+import auth from './auth.json'
+import logs from './logs.json'
+import sidebar from './sidebar.json'
+import validation from './validation.json'
 
 export default Object.assign(
   navigation,
   apiErrors,
   { $vuetify: vuetify },
-  login,
   button,
   notFound,
   acl,
@@ -54,6 +55,9 @@ export default Object.assign(
   appStore,
   enums,
   pages,
+  logs,
+  auth,
   sidebar,
-  { healthcheck: healthcheck }
+  { healthcheck: healthcheck },
+  validation
 )
