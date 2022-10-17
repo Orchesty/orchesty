@@ -64,6 +64,7 @@ export default {
       TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID,
       TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES,
       TOPOLOGIES.ACTIONS.TOPOLOGY.GET_DIAGRAM,
+      TOPOLOGIES.ACTIONS.TOPOLOGY.CHECK_DIAGRAM_CHANGED,
     ]),
     async saveHasNewId() {
       return await this.$refs.editor.saveDiagram()
@@ -94,11 +95,17 @@ export default {
   mounted() {
     events.listen(EVENTS.EDITOR.COMPARE_XML, async (redirectFunction) => {
       this.redirectFunction = redirectFunction
-      const diagramsMatch = await this.$refs.editor.compareDiagrams()
-      if (diagramsMatch) {
-        this.redirectFunction()
-      } else {
+      const xml = new XMLSerializer().serializeToString(await this.$refs.editor.getCurrentXMLDiagram())
+
+      const diagramChanged = await this[TOPOLOGIES.ACTIONS.TOPOLOGY.CHECK_DIAGRAM_CHANGED]({
+        xml,
+        id: this.$refs.editor.topologyActive._id,
+      })
+
+      if (diagramChanged) {
         this.$refs.dialog.isOpen = true
+      } else {
+        this.redirectFunction()
       }
     })
   },
