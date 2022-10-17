@@ -20,7 +20,7 @@
             <app-button
               :sending-title="$t('button.sending.creating')"
               :is-sending="state.isSending"
-              :button-title="$t('button.create')"
+              :button-title="$t('implementation.createModal.create')"
               :on-click="() => $refs.form.submit()"
               :flat="false"
             />
