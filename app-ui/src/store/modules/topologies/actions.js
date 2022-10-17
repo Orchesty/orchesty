@@ -38,6 +38,21 @@ export default {
     }
   },
 
+  [TOPOLOGIES.ACTIONS.TOPOLOGY.CHECK_DIAGRAM_CHANGED]: async ({ dispatch }, payload) => {
+    try {
+      const response = await callApi(dispatch, {
+        requestData: { ...API.topology.checkChangesInDiagram },
+        params: {
+          ...payload,
+        },
+      })
+
+      return response?.isDifferent
+    } catch {
+      return true
+    }
+  },
+
   //DASHBOARD
   [TOPOLOGIES.ACTIONS.DATA.GET_DASHBOARD]: async ({ dispatch, commit }) => {
     try {

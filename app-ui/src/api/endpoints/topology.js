@@ -98,6 +98,14 @@ export default {
       data: data.xml,
     }),
   },
+  checkChangesInDiagram: {
+    id: 'TOPOLOGY_CHECK_DIAGRAM',
+    request: (data) => ({
+      url: `/topologies/check/${data.id}/schema.bpmn`,
+      method: 'POST',
+      data: data.xml,
+    }),
+  },
   getProgress: {
     id: 'TOPOLOGY_GET_PROGRESS',
     request: ({ id }) => ({
