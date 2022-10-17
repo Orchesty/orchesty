@@ -310,7 +310,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
         $response = $this->client->getResponse();
         $response = $this->returnResponse($response);
-        self::assertEquals(TRUE, $response->content->is_different);
+        self::assertEquals(TRUE, $response->content->isDifferent);
         self::assertEquals(200, $response->status);
     }
 
