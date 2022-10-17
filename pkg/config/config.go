@@ -12,6 +12,7 @@ import (
 type (
 	rabbitMq struct {
 		Host     string `default:"http://rabbitmq:15672/" env:"RABBIT_HOST"`
+		VHost    string `default:"/" env:"RABBIT_VHOST"`
 		Username string `default:"guest" env:"RABBIT_USERNAME"`
 		Password string `default:"guest" env:"RABBIT_PASSWORD"`
 	}

@@ -14,7 +14,7 @@ type RabbitMqStats struct{}
 func (svc RabbitMqStats) GatherQueuesInfo() ([]Queue, error) {
 	var list []Queue
 
-	url := fmt.Sprintf("%s/api/queues", strings.TrimRight(config.RabbitMQ.Host, "/"))
+	url := fmt.Sprintf("%s/api/queues%s", strings.TrimRight(config.RabbitMQ.Host, "/"), config.RabbitMQ.VHost)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
