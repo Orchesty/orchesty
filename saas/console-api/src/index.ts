@@ -35,6 +35,7 @@ const authApp = admin.initializeApp(fbAdminConfig);
 
 const fbApp = initializeApp({
     apiKey: firebase.apiKey,
+    authDomain: firebase.authDomain,
 });
 
 async function initServices(): Promise<void> {
@@ -78,4 +79,5 @@ function createServer(): Express {
 
 export {
     authApp, createServer, db, fbApp,
-    initServices, logger, server, tenantService, usageStatsService, usersService };
+    initServices, logger, server, tenantService, usageStatsService, usersService,
+};

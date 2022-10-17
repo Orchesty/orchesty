@@ -17,6 +17,7 @@ services:
             NODE_ENV: 'dev'
             MONGODB_DSN: mongodb://mongo
             FIREBASE_API_KEY: AIzaSyANIRePUXX1f8fr-IS2ljSU8FgLkC53a0o
+            FIREBASE_AUTH_DOMAIN: 'orchesty-cloud-stage.firebaseapp.com'
         command: sleep infinity
 
     mongo:
@@ -27,4 +28,4 @@ services:
             - mongo:/data/db
 
 volumes:
-    mongo: {}
+    mongo: { }
