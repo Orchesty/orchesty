@@ -325,10 +325,6 @@ export default {
       }
     },
 
-    async compareDiagrams() {
-      return this.topologyActiveDiagram === new XMLSerializer().serializeToString(await this.getCurrentXMLDiagram())
-    },
-
     async importXMLDiagram(xml) {
       if (this.modeler) {
         try {

@@ -2,6 +2,8 @@ rest:
     routes:
         '^/api/topologies/\w+/schema.bpmn': ['xml']
         '^/topologies/\w+/schema.bpmn': ['xml']
+        '^/api/topologies/check/\w+/schema.bpmn': ['xml']
+        '^/topologies/check/\w+/schema.bpmn': ['xml']
         '^/api': ['json']
         '^/webhook': ['json', 'xml']
         '^/': ['json']
