@@ -49,7 +49,7 @@ final class MetricsController extends AbstractController
     }
 
     /**
-     * @Route("//metrics/healthcheck", methods={"GET", "OPTIONS"})
+     * @Route("/metrics/healthcheck", methods={"GET", "OPTIONS"})
      *
      * @param Request $request
      *
