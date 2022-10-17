@@ -233,6 +233,29 @@ describe('usageStatsController', () => {
             ]);
             assert.deepEqual(resp.statusCode, 200);
         });
+
+        it('shouldReturnData with tail', async () => {
+            const resp = await supertest(server).get('/billing/reports/users').query({
+                tail: true,
+                granularity: 'monthly',
+                endUserId: '1235',
+            }).set(authorization);
+            assert.deepEqual(resp.body.rows.length, 1);
+            assert.deepEqual(resp.body.rows, [
+                {
+                    activeAppNames: ['neco', 'neco1'],
+                    appIds: ['neco', 'neco1'],
+                    appNames: ['neco', 'neco1'],
+                    endUserDisplayId: '1235',
+                    endUserId: '1235',
+                    estimatedTotalCost: 800000,
+                    installCount: 4,
+                    instanceIds: ['inst1234', 'inst1235'],
+                    totalCost: 2200000,
+                },
+            ]);
+            assert.deepEqual(resp.statusCode, 200);
+        });
     });
 
     describe('usageStatsInstalledApps', () => {
