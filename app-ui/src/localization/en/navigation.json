@@ -12,7 +12,7 @@
     "healthCheck": "Health Check",
     "userTask": "User Tasks",
     "appStore": "Applications",
-    "implementations": "Services",
+    "implementations": "Workers",
     "trash": "Trash"
   }
 }
