@@ -140,7 +140,7 @@ final class WisepopsApplicationTest extends DatabaseTestCaseAbstract
         $applicationInstall = $this->createApplicationInstall();
         $dto                = $this->application->getWebhookUnsubscribeRequestDto(
             $applicationInstall,
-            new Webhook('1'),
+            (new Webhook())->setWebhookId('1'),
         );
 
         self::assertEquals('https://app.wisepops.com/api1/hooks?hook_id=1', $dto->getUriString());

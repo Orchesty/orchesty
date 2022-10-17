@@ -52,7 +52,7 @@ final class PipedriveApplicationTest extends DatabaseTestCaseAbstract
 
         $requestUn = $this->application->getWebhookUnsubscribeRequestDto(
             $applicationInstall,
-            new Webhook('388'),
+            (new Webhook())->setWebhookId('388'),
         );
 
         self::assertEquals(

@@ -148,7 +148,7 @@ final class ShopifyApplicationTest extends DatabaseTestCaseAbstract
         $applicationInstall = $this->createApplication();
         $dto                = $this->application->getWebhookUnsubscribeRequestDto(
             $applicationInstall,
-            new Webhook('759136321675'),
+            (new Webhook())->setWebhookId('759136321675'),
         );
 
         self::assertEquals('https://hana1.myshopify.com/admin/api/2020-01/webhooks/759136321675.json', $dto->getUri());
