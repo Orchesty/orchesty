@@ -6,10 +6,11 @@ import {
 } from "firebase/auth";
 import { User } from "./store/modules/auth";
 import { alerts, i18n, saveUserWithTokenToStore } from "@/utils";
+import { config } from "@/config";
 
-const config = {
-  apiKey: "%firebase-api-key-placeholder%",
-  authDomain: "%firebase-auth-domain-placeholder%",
+const firebaseConfig = {
+  apiKey: config.firebase.apiKey,
+  authDomain: config.firebase.authDomain,
 };
 
 export function transformUser(user: FirebaseUser | null): User | null {
@@ -23,7 +24,7 @@ export function transformUser(user: FirebaseUser | null): User | null {
 }
 
 export function initializeFirebaseAuth(initVue: () => void) {
-  initializeApp(config);
+  initializeApp(firebaseConfig);
   const auth = getAuth();
   onAuthStateChanged(auth, async (user) => {
     try {

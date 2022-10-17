@@ -4,6 +4,7 @@
     "monthlyPayments": "Monthly payments",
     "activeApps": "Active apps",
     "activeApplications": "Active applications",
-    "currentCost": "Current cost"
+    "currentCost": "Current cost",
+    "mayChange": "May change"
   }
 }
