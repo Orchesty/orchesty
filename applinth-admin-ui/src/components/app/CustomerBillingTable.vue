@@ -11,12 +11,16 @@
     </template>
     <template #totalCost="{ item }">
       <slot>{{ toCZK(item.totalCost) }}</slot>
+      <span class="text-lowercase">
+        {{ suffixToCurrentMonth(item.timeBucketName) }}
+      </span>
     </template>
   </SimpleTable>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
+import { DateTime } from "luxon";
 import {
   UsageStatsTimeBucketAppsRequest,
   UsageStatsTimeBucketAppsRowsInner,
@@ -69,7 +73,17 @@ export default class CustomerBillingTable extends Vue {
         endUserId: this.customerId,
       }
     );
+
     this.isLoading = false;
+  }
+
+  private suffixToCurrentMonth(monthString: string): string {
+    return DateTime.utc().hasSame(
+      DateTime.fromFormat(monthString, "MM/yy"),
+      "month"
+    )
+      ? `(${this.$t("customerDetailPage.mayChange")})`
+      : "";
   }
 
   stringifyArray(array: Array<string> | undefined): string {

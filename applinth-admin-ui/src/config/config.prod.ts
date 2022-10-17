@@ -4,4 +4,8 @@ export default {
     graphqlBaseUrl: "%api-base-url-placeholder%/gql/public/admin",
     graphqlPrivateUrl: "%api-base-url-placeholder%/gql/private/admin",
   },
+  firebase: {
+    apiKey: "%firebase-api-key-placeholder%",
+    authDomain: "%firebase-auth-domain-placeholder%",
+  },
 };
