@@ -163,7 +163,7 @@ export default {
 
     async authorizeApp() {
       const authorizeURL = new URL(
-        '/api/settings/authorize',
+        API.authorize.getAuthorizationSettingsLink(),
         config.backend.apiBaseUrl
       )
       authorizeURL.searchParams.append('redirect_url', window.location.href)
