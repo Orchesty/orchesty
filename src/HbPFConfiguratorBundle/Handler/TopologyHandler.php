@@ -253,7 +253,7 @@ final class TopologyHandler
     {
         $topology = $this->getTopologyById($id);
 
-        return ['is_different' => !$this->topologyManager->checkTopologySchemaIsSame($topology, $data)];
+        return ['isDifferent' => !$this->topologyManager->checkTopologySchemaIsSame($topology, $data)];
     }
 
     /**
