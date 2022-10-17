@@ -1,6 +1,8 @@
 import assert from 'assert';
 import * as admin from 'firebase-admin';
+import { GoogleOAuthAccessToken } from 'firebase-admin';
 import supertest from 'supertest';
+import { fetchMock } from '../../../.jest/testLifecycle';
 import {
     createDbTenants,
     generateDeleteUsersResultMockedData,
@@ -10,12 +12,17 @@ import {
     generateUserMockedData,
     getJWTToken,
 } from '../../../test/dataProvider';
-import { server } from '../../index';
+import { authApp, server } from '../../index';
 
 const tenantManager = admin.auth().tenantManager();
 const adminAuth = admin.auth().tenantManager().authForTenant('t123');
 const userAdminAuth = admin.auth().tenantManager().authForTenant('t-123456789');
+const { credential } = authApp.options;
+
 describe('tenantsController', () => {
+    beforeAll(() => {
+        fetchMock.patch('https://identitytoolkit.googleapis.com/v2/projects/undefined/tenants/t-123456789', 200);
+    });
     beforeEach(async () => {
         await createDbTenants();
         jest.spyOn(tenantManager, 'listTenants')
@@ -38,6 +45,10 @@ describe('tenantsController', () => {
             .mockResolvedValue();
         jest.spyOn(adminAuth, 'deleteUsers')
             .mockResolvedValue(generateDeleteUsersResultMockedData());
+        if (credential) {
+            jest.spyOn(credential, 'getAccessToken')
+                .mockResolvedValue({ access_token: 'neco' } as unknown as GoogleOAuthAccessToken);
+        }
     });
 
     const authorization = getJWTToken(true);

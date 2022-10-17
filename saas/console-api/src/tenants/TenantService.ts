@@ -4,7 +4,7 @@ import { Collection } from 'mongodb';
 import fetch from 'node-fetch';
 import { ITenantCreateRequest } from '../controllers/tenants';
 import TenantSearchError from '../errors/TenantSearchError';
-import { authApp, logger, usersService } from '../index';
+import { authApp, usersService } from '../index';
 import Tenant = auth.Tenant;
 import { CollectionEnum } from '../enums/CollectionEnum';
 import UserCreationError from '../errors/UserCreationError';
