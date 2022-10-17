@@ -1,10 +1,18 @@
 <template>
   <div class="data-table">
-    <SimpleList :headers="headers" item-key="name" :items="items" :loading="loading">
+    <SimpleList
+      :headers="headers"
+      item-key="name"
+      :items="items"
+      :loading="loading"
+      no-data-text="healthcheck.list.itWorks"
+    >
+      <template #no-data>
+        <p>The Table is Empty. Please insert data with the above Button.</p>
+      </template>
       <template #name="{ item }">
         <div class="d-flex align-center py-2">
           <v-icon large color="red" class="mr-3"> warning </v-icon>
-
           <div>
             <template v-if="item.type === 'queue'">
               <strong>{{ $t('healthcheck.list.errorQueueItemTitle', { name: item.name }) }} </strong> <br />
@@ -12,7 +20,12 @@
                 {{ $t('healthcheck.list.errorQueueItemText', { service: item.service, topology: item.topology }) }}
               </span>
             </template>
-            <strong v-else>{{ $t('healthcheck.list.errorServiceItem', { name: item.name }) }} </strong>
+            <template v-else>
+              <strong>{{ $t('healthcheck.list.errorServiceItem', { name: item.name }) }} </strong> <br />
+              <span class="text-sm-body-2">
+                {{ $t('healthcheck.list.errorServiceItemText', { name: item.name }) }}
+              </span>
+            </template>
           </div>
         </div>
       </template>
