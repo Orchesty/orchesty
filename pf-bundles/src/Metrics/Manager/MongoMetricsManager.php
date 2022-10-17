@@ -22,6 +22,8 @@ use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use Hanaboso\Utils\Date\DateTimeUtils;
 use Hanaboso\Utils\Exception\DateTimeException;
 use LogicException;
+use MongoDB\BSON\Regex;
+use MongoRegex;
 
 /**
  * Class MongoMetricsManager
@@ -205,7 +207,12 @@ final class MongoMetricsManager extends MetricsManagerAbstract
                         );
                     }
 
-                    $service['name'] = sprintf('topology-%s', $topology->getId());
+                    $service['name'] = sprintf(
+                        '%s-%s_topology-%s_1',
+                        $topology->getId(),
+                        $topology->getName(),
+                        $topology->getId()
+                    );
                     $topology        = sprintf('%s v.%s', $topology->getName(), $topology->getVersion());
                 }
 
@@ -222,6 +229,7 @@ final class MongoMetricsManager extends MetricsManagerAbstract
         $qb  = $this->metricsDm->createQueryBuilder(ContainerMetrics::class);
         $res = $qb
             ->field('fields.up')->equals(FALSE)
+            ->field('fields.name')->not(new Regex('wait-for-it'))
             ->getQuery()
             ->toArray();
 
