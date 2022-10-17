@@ -132,10 +132,10 @@ export default [
         meta: { title: 'Detail App' },
       },
       {
-        path: 'services',
+        path: 'workers',
         name: ROUTES.IMPLEMENTATION,
         component: () => import('../../views/app/ImplementationPage'),
-        meta: { title: 'Services' },
+        meta: { title: 'Workers' },
       },
       {
         path: 'trash',

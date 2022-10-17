@@ -1,20 +1,20 @@
 {
   "implementation": {
     "createModal": {
-      "create": "Create",
-      "title": "Create service"
+      "create": "Add worker",
+      "title": "New worker"
     },
     "updateModal": {
       "update": "Edit",
-      "title": "Edit service"
+      "title": "Edit worker"
     },
     "deleteModal": {
       "delete": "Delete",
-      "title": "Delete service"
+      "title": "Delete worker"
     },
     "delete": {
-      "title": "Delete service",
-      "body": "Do you really wish to delete service?"
+      "title": "Delete worker",
+      "body": "Do you really wish to delete worker?"
     },
     "form": {
       "name": {
