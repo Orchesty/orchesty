@@ -6,6 +6,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Application\Document\Webhook;
 
 /**
  * Interface WebhookApplicationInterface
@@ -35,11 +36,14 @@ interface WebhookApplicationInterface extends ApplicationInterface
 
     /**
      * @param ApplicationInstall $applicationInstall
-     * @param string             $id
+     * @param Webhook            $webhook
      *
      * @return RequestDto
      */
-    public function getWebhookUnsubscribeRequestDto(ApplicationInstall $applicationInstall, string $id): RequestDto;
+    public function getWebhookUnsubscribeRequestDto(
+        ApplicationInstall $applicationInstall,
+        Webhook $webhook,
+    ): RequestDto;
 
     /**
      * @param ResponseDto        $dto

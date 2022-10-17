@@ -13,6 +13,7 @@ use Hanaboso\PhpCheckUtils\PhpUnit\Traits\CustomAssertTrait;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Application\Document\Webhook;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookSubscription;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract;
@@ -305,7 +306,10 @@ final class ShoptetApplicationTest extends DatabaseTestCaseAbstract
                 ],
             );
         $this->pfd($applicationInstall);
-        $dto = $this->application->getWebhookUnsubscribeRequestDto($applicationInstall, '123');
+        $dto = $this->application->getWebhookUnsubscribeRequestDto(
+            $applicationInstall,
+            new Webhook('123'),
+        );
 
         self::assertEquals('/token.a.b.c', $dto->getHeaders()['Shoptet-Access-Token']);
     }

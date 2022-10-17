@@ -9,6 +9,7 @@ use Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Connector\HubSpotCrea
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\HubSpotApplication;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Application\Document\Webhook;
 use Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookSubscription;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
@@ -178,7 +179,10 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
             $webhookSubscription,
             '',
         );
-        $responseUn          = $this->application->getWebhookUnsubscribeRequestDto($applicationInstall, 'id123');
+        $responseUn          = $this->application->getWebhookUnsubscribeRequestDto(
+            $applicationInstall,
+            new Webhook('id123'),
+        );
 
         self::assertEquals('POST', $response->getMethod());
         self::assertEquals('DELETE', $responseUn->getMethod());

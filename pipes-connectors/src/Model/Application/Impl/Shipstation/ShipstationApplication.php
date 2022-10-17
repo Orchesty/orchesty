@@ -11,6 +11,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Application\Document\Webhook;
 use Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookSubscription;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
@@ -158,12 +159,15 @@ final class ShipstationApplication extends BasicApplicationAbstract implements W
 
     /**
      * @param ApplicationInstall $applicationInstall
-     * @param string             $id
+     * @param Webhook            $webhook
      *
      * @return RequestDto
      * @throws CurlException
      */
-    public function getWebhookUnsubscribeRequestDto(ApplicationInstall $applicationInstall, string $id): RequestDto
+    public function getWebhookUnsubscribeRequestDto(
+        ApplicationInstall $applicationInstall,
+        Webhook $webhook,
+    ): RequestDto
     {
         return $this->getRequestDto(
             new ProcessDto(),
@@ -172,7 +176,7 @@ final class ShipstationApplication extends BasicApplicationAbstract implements W
             sprintf(
                 '%s/webhooks/%s',
                 ShipstationApplication::SHIPSTATION_URL,
-                $id,
+                $webhook->getWebhookId(),
             ),
         );
     }

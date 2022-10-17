@@ -12,6 +12,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Application\Document\Webhook;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookSubscription;
@@ -252,13 +253,16 @@ final class MailchimpApplication extends OAuth2ApplicationAbstract implements We
 
     /**
      * @param ApplicationInstall $applicationInstall
-     * @param string             $id
+     * @param Webhook            $webhook
      *
      * @return RequestDto
      * @throws ApplicationInstallException
      * @throws CurlException
      */
-    public function getWebhookUnsubscribeRequestDto(ApplicationInstall $applicationInstall, string $id): RequestDto
+    public function getWebhookUnsubscribeRequestDto(
+        ApplicationInstall $applicationInstall,
+        Webhook $webhook,
+    ): RequestDto
     {
         return $this->getRequestDto(
             new ProcessDto(),
@@ -268,7 +272,7 @@ final class MailchimpApplication extends OAuth2ApplicationAbstract implements We
                 '%s/3.0/lists/%s/webhooks/%s',
                 $applicationInstall->getSettings()[self::API_KEYPOINT],
                 $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][self::AUDIENCE_ID],
-                $id,
+                $webhook->getWebhookId(),
             ),
         );
     }

@@ -7,6 +7,7 @@ use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shipstation\ShipstationApplication;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Application\Document\Webhook;
 use Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookSubscription;
 use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
@@ -54,7 +55,10 @@ final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
             ),
         );
 
-        $requestUn = $this->application->getWebhookUnsubscribeRequestDto($applicationInstall, '358');
+        $requestUn = $this->application->getWebhookUnsubscribeRequestDto(
+            $applicationInstall,
+            new Webhook('358'),
+        );
 
         self::assertEquals('https://ssapi.shipstation.com/webhooks/subscribe', $requestSub->getUriString());
         self::assertEquals('https://ssapi.shipstation.com/webhooks/358', $requestUn->getUriString());

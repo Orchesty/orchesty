@@ -10,6 +10,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Wisepop\WisepopsApplication;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Application\Document\Webhook;
 use Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookSubscription;
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DatabaseTestCaseAbstract;
@@ -137,7 +138,10 @@ final class WisepopsApplicationTest extends DatabaseTestCaseAbstract
     public function testGetWebhookUnsubscribeRequestDto(): void
     {
         $applicationInstall = $this->createApplicationInstall();
-        $dto                = $this->application->getWebhookUnsubscribeRequestDto($applicationInstall, '1');
+        $dto                = $this->application->getWebhookUnsubscribeRequestDto(
+            $applicationInstall,
+            new Webhook('1'),
+        );
 
         self::assertEquals('https://app.wisepops.com/api1/hooks?hook_id=1', $dto->getUriString());
     }
