@@ -10,15 +10,15 @@
           :label="$t('formLabels.search')"
           @input="filterDebounced"
         />
-        <!--        <SelectBox-->
-        <!--          v-model="appSearch"-->
-        <!--          hide-details-->
-        <!--          :label="$t('formLabels.filterByApplication')"-->
-        <!--          :items="applications"-->
-        <!--          :name="$t('formLabels.filterByApplication')"-->
-        <!--          item-text="appName"-->
-        <!--          item-value="appName"-->
-        <!--        />-->
+        <SelectBox
+          v-model="appSearch"
+          hide-details
+          :label="$t('formLabels.filterByApplication')"
+          :items="applications"
+          :name="$t('formLabels.filterByApplication')"
+          item-text="appName"
+          item-value="appName"
+        />
         <Button class="ma-auto" icon @click="resetFilters">
           <template #icon>
             <v-icon>close</v-icon>
@@ -192,7 +192,7 @@ export default class CustomersPage extends Vue {
 <style lang="scss" scoped>
 .wrapper {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 1fr 1fr auto;
   grid-gap: 16px;
 }
 </style>
