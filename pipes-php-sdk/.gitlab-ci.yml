@@ -6,7 +6,7 @@
     - if: '$FORCE_PIPELINE =~ /ALL/ || $FORCE_PIPELINE =~ /pipes-php-sdk/'
     - if: '$CI_COMMIT_BEFORE_SHA == $_BANNED_RUN_ALL_SHA'
       when: never
-    - if: '"$CI_COMMIT_REF_NAME" != "master" && "$CI_COMMIT_REF_NAME" != "dev" && "$CI_COMMIT_REF_NAME" != "new-ui"'
+    - if: '"$CI_COMMIT_REF_NAME" != "master" && "$CI_COMMIT_REF_NAME" != "dev"'
       when: never
     - changes:
       - ${DIR}/**/*
