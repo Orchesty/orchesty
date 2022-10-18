@@ -230,6 +230,7 @@ import BaseSelect from '@/components/commons/BaseSelect'
 import showFlashMessage from '@/utils/flashMessage'
 import { FLASH_MESSAGES_TYPES } from '@/store/flashMessages/types'
 import AppNotAuthorizedModal from '@/components/applications/AppNotAuthorizedModal'
+import { authService } from '@/utils/authService'
 
 export default {
   name: 'InstalledAppDetailPage',
@@ -393,6 +394,7 @@ export default {
         config.backend.apiBaseUrl
       )
       authorizeURL.searchParams.append('redirect_url', window.location.href)
+      authorizeURL.searchParams.append('Authorization', authService.accessToken)
       window.open(authorizeURL.href, '_blank').focus()
       this.isSaving = false
     },

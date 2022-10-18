@@ -59,12 +59,14 @@ final class EndUserAuthenticator extends AbstractAuthenticator
      */
     public function authenticate(Request $request): Passport
     {
-        if (!$request->headers->has(self::AUTHORIZATION)) {
+        $token = $request->headers->get(self::AUTHORIZATION) ?? $request->query->get(self::AUTHORIZATION) ?? '';
+
+        if (empty($token)) {
             throw new AuthenticationException('Missing token');
         }
 
         try {
-            $this->loggedUser = $this->manager->payloadFromJws($request->headers->get(self::AUTHORIZATION) ?? '');
+            $this->loggedUser = $this->manager->payloadFromJws($token);
 
             $apiUser = new User();
             $apiUser

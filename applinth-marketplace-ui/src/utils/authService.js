@@ -1,7 +1,7 @@
 import { API } from '@/api'
 import { callApi } from '@/utils/apiFetch'
 import router from '../router/index.js'
-import { ROUTES } from '../router/routes.js'
+import { ROUTES } from '@/router/routes'
 
 export class AuthService {
   /** @type {NodeJS.Timeout} */
