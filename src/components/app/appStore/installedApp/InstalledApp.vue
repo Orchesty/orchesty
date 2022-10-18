@@ -231,6 +231,7 @@ import { API } from '@/api'
 import AppSelect from '@/components/commons/AppSelect'
 import AppCheckbox from '@/components/commons/AppCheckbox'
 import AppNotAuthorizedModal from '../modal/AppNotAuthorizedModal'
+import { LOCAL_STORAGE } from '@/services/enums/localStorageEnums'
 
 export default {
   name: 'InstalledApp',
@@ -374,7 +375,12 @@ export default {
       }
     },
     async authorizeApp() {
-      let authUrl = `${config.backend.apiBaseUrl}/api/applications/${this.appActive.key}/authorize?redirect_url=${window.location.href}`
+      const authorizeURL = new URL(`/api/applications/${this.appActive.key}/authorize`, config.backend.apiBaseUrl)
+      authorizeURL.searchParams.append('redirect_url', window.location.href)
+      authorizeURL.searchParams.append('Authorization', localStorage.getItem(LOCAL_STORAGE.USER_TOKEN))
+      window.open(authorizeURL.href, '_blank').focus()
+
+      let authUrl = authorizeURL.href
       if (!config.backend.apiBaseUrl.startsWith('http')) {
         authUrl = 'https://'.concat(authUrl)
       }
