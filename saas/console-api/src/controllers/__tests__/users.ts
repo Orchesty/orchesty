@@ -42,7 +42,10 @@ describe('usersController', () => {
             });
         });
         it('shouldReturnDataForFilter', async () => {
-            const resp = await supertest(server).get('/users').query({ tenantId: 't123456789', emails: ['neco@neco.com'] })
+            const resp = await supertest(server).get('/users').query({
+                tenantId: 't123456789',
+                emails: ['neco@neco.com'],
+            })
                 .set(authorization);
             assert.deepEqual(resp.statusCode, 200);
             assert.deepEqual(resp.body.rows.length, 1);
@@ -154,6 +157,21 @@ describe('usersController', () => {
                 .set(authorization);
 
             assert.deepEqual(resp.statusCode, 400);
+        });
+    });
+
+    describe('getGTenantId', () => {
+        it('shouldReturnData', async () => {
+            const resp = await supertest(server).get('/users/getGTenantId/t123456789');
+
+            assert.deepEqual(resp.statusCode, 200);
+            assert.deepEqual(resp.body, { gTenantId: 't-123456789' });
+        });
+        it('shouldReturn404', async () => {
+            const resp = await supertest(server).get('/users/getGTenantId/t12345678');
+
+            assert.deepEqual(resp.statusCode, 404);
+            assert.deepEqual(resp.body, { msg: 'Tenant with given tenantId t12345678 not found!' });
         });
     });
 });

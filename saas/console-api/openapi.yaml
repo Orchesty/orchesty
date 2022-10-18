@@ -14,7 +14,7 @@ paths:
             description: Service status for health checking
             x-swagger-router-controller: status
             operationId: status
-            security: []
+            security: [ ]
             tags:
                 - Health check
             responses:
@@ -28,13 +28,13 @@ paths:
             tags:
                 - Billing
             parameters:
-                - $ref: "#/components/parameters/tenantId"
-                - $ref: "#/components/parameters/instanceId"
-                - $ref: "#/components/parameters/timeRangeStart"
-                - $ref: "#/components/parameters/timeRangeEnd"
-                - $ref: "#/components/parameters/appId"
-                - $ref: "#/components/parameters/tail"
-                - $ref: "#/components/parameters/granularity"
+                -   $ref: "#/components/parameters/tenantId"
+                -   $ref: "#/components/parameters/instanceId"
+                -   $ref: "#/components/parameters/timeRangeStart"
+                -   $ref: "#/components/parameters/timeRangeEnd"
+                -   $ref: "#/components/parameters/appId"
+                -   $ref: "#/components/parameters/tail"
+                -   $ref: "#/components/parameters/granularity"
             responses:
                 '200':
                     description: Success
@@ -60,16 +60,16 @@ paths:
             tags:
                 - Billing
             parameters:
-                - $ref: "#/components/parameters/tenantId"
-                - $ref: "#/components/parameters/instanceId"
-                - $ref: "#/components/parameters/requiredEndUserId"
-                - $ref: "#/components/parameters/tail"
-                - in: query
-                  name: installedDate
-                  description: Filter by installedDate, used now if not sent, cannot be used with tail
-                  required: false
-                  schema:
-                      type: string
+                -   $ref: "#/components/parameters/tenantId"
+                -   $ref: "#/components/parameters/instanceId"
+                -   $ref: "#/components/parameters/requiredEndUserId"
+                -   $ref: "#/components/parameters/tail"
+                -   in: query
+                    name: installedDate
+                    description: Filter by installedDate, used now if not sent, cannot be used with tail
+                    required: false
+                    schema:
+                        type: string
             responses:
                 '200':
                     description: Success
@@ -95,11 +95,11 @@ paths:
             tags:
                 - Billing
             parameters:
-                - $ref: "#/components/parameters/tenantId"
-                - $ref: "#/components/parameters/instanceId"
-                - $ref: "#/components/parameters/requiredTimeRangeStart"
-                - $ref: "#/components/parameters/requiredTimeRangeEnd"
-                - $ref: "#/components/parameters/requiredAppId"
+                -   $ref: "#/components/parameters/tenantId"
+                -   $ref: "#/components/parameters/instanceId"
+                -   $ref: "#/components/parameters/requiredTimeRangeStart"
+                -   $ref: "#/components/parameters/requiredTimeRangeEnd"
+                -   $ref: "#/components/parameters/requiredAppId"
             responses:
                 '200':
                     description: Success
@@ -125,11 +125,11 @@ paths:
             tags:
                 - Billing
             parameters:
-                - $ref: "#/components/parameters/tenantId"
-                - $ref: "#/components/parameters/instanceId"
-                - $ref: "#/components/parameters/requiredTimeRangeStart"
-                - $ref: "#/components/parameters/requiredTimeRangeEnd"
-                - $ref: "#/components/parameters/requiredEndUserId"
+                -   $ref: "#/components/parameters/tenantId"
+                -   $ref: "#/components/parameters/instanceId"
+                -   $ref: "#/components/parameters/requiredTimeRangeStart"
+                -   $ref: "#/components/parameters/requiredTimeRangeEnd"
+                -   $ref: "#/components/parameters/requiredEndUserId"
             responses:
                 '200':
                     description: Success
@@ -155,25 +155,25 @@ paths:
             tags:
                 - Billing
             parameters:
-                - $ref: "#/components/parameters/tenantId"
-                - $ref: "#/components/parameters/instanceId"
-                - $ref: "#/components/parameters/timeRangeStart"
-                - $ref: "#/components/parameters/timeRangeEnd"
-                - $ref: "#/components/parameters/appId"
-                - $ref: "#/components/parameters/tail"
-                - $ref: "#/components/parameters/granularity"
-                - in: query
-                  name: endUserDisplayId
-                  description: Filter by endUserDisplayId
-                  required: false
-                  schema:
-                      type: string
-                - in: query
-                  name: endUserId
-                  description: Filter by endUserId
-                  required: false
-                  schema:
-                      type: string
+                -   $ref: "#/components/parameters/tenantId"
+                -   $ref: "#/components/parameters/instanceId"
+                -   $ref: "#/components/parameters/timeRangeStart"
+                -   $ref: "#/components/parameters/timeRangeEnd"
+                -   $ref: "#/components/parameters/appId"
+                -   $ref: "#/components/parameters/tail"
+                -   $ref: "#/components/parameters/granularity"
+                -   in: query
+                    name: endUserDisplayId
+                    description: Filter by endUserDisplayId
+                    required: false
+                    schema:
+                        type: string
+                -   in: query
+                    name: endUserId
+                    description: Filter by endUserId
+                    required: false
+                    schema:
+                        type: string
             responses:
                 '200':
                     description: Success
@@ -199,8 +199,8 @@ paths:
             tags:
                 - Users
             parameters:
-                - $ref: "#/components/parameters/tenantId"
-                - $ref: "#/components/parameters/emails"
+                -   $ref: "#/components/parameters/tenantId"
+                -   $ref: "#/components/parameters/emails"
             responses:
                 '200':
                     description: Success
@@ -255,8 +255,8 @@ paths:
             tags:
                 - Users
             parameters:
-                - $ref: "#/components/parameters/tenantId"
-                - $ref: "#/components/parameters/uidPath"
+                -   $ref: "#/components/parameters/tenantId"
+                -   $ref: "#/components/parameters/uidPath"
             responses:
                 '200':
                     description: Success
@@ -282,8 +282,8 @@ paths:
             tags:
                 - Users
             parameters:
-                - $ref: "#/components/parameters/uidPath"
-                - $ref: "#/components/parameters/tenantId"
+                -   $ref: "#/components/parameters/uidPath"
+                -   $ref: "#/components/parameters/tenantId"
             requestBody:
                 $ref: '#/components/requestBodies/UpdateUserBody'
             responses:
@@ -311,8 +311,8 @@ paths:
             tags:
                 - Users
             parameters:
-                - $ref: "#/components/parameters/uidPath"
-                - $ref: "#/components/parameters/tenantId"
+                -   $ref: "#/components/parameters/uidPath"
+                -   $ref: "#/components/parameters/tenantId"
             responses:
                 '200':
                     description: Success
@@ -343,7 +343,7 @@ paths:
             tags:
                 - Users
             parameters:
-                - $ref: "#/components/parameters/tenantId"
+                -   $ref: "#/components/parameters/tenantId"
             responses:
                 '200':
                     description: Success
@@ -365,6 +365,25 @@ paths:
                     $ref: "#/components/responses/404NotFound"
                 '500':
                     $ref: "#/components/responses/500BadRequest"
+    /users/getGTenantId/{tenantId}:
+        get:
+            description: Return gTenantId
+            x-swagger-router-controller: users
+            operationId: userGetGTenantId
+            security: [ ]
+            tags:
+                - Users
+            parameters:
+                -   $ref: "#/components/parameters/tenantIdPath"
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/GTenantId"
+                '404':
+                    description: Not found
     /tenants/{tenantId}:
         get:
             description: Fill
@@ -373,7 +392,7 @@ paths:
             tags:
                 - Tenants
             parameters:
-                - $ref: "#/components/parameters/tenantIdPath"
+                -   $ref: "#/components/parameters/tenantIdPath"
             responses:
                 '200':
                     description: Success
@@ -502,7 +521,7 @@ paths:
                     $ref: "#/components/responses/500BadRequest"
 
 security:
-    - Bearer: []
+    -   Bearer: [ ]
 components:
     securitySchemes:
         identityPlatform:
@@ -510,7 +529,7 @@ components:
             flows:
                 implicit:
                     authorizationUrl: "https://localhost:3000"
-                    scopes: {}
+                    scopes: { }
                     x-google-issuer: "https://securetoken.google.com/orchesty-cloud-stage"
                     x-google-jwks_uri: "https://www.googleapis.com/service_accounts/v1/metadata/x509/securetoken@system.gserviceaccount.com"
                     x-google-audiences: "orchesty-cloud-stage"
@@ -525,7 +544,7 @@ components:
         tenantIdPath:
             in: path
             name: tenantId
-            description: Tenant ID to get data for. If not specified, logged-in user is assumed
+            description: Tenant ID to get data for.
             required: true
             schema:
                 type: string
@@ -660,7 +679,7 @@ components:
                 application/json:
                     schema:
                         oneOf:
-                            - $ref: '#/components/schemas/CreateUser'
+                            -   $ref: '#/components/schemas/CreateUser'
         UpdateUserBody:
             description: A JSON object containing user information
             required: true
@@ -668,7 +687,7 @@ components:
                 application/json:
                     schema:
                         oneOf:
-                            - $ref: '#/components/schemas/UpdateUser'
+                            -   $ref: '#/components/schemas/UpdateUser'
         TenantBody:
             description: A JSON object containing user information
             required: true
@@ -676,7 +695,7 @@ components:
                 application/json:
                     schema:
                         oneOf:
-                            - $ref: '#/components/schemas/CreateTenant'
+                            -   $ref: '#/components/schemas/CreateTenant'
         UpdateTenantBody:
             description: A JSON object containing user information
             required: true
@@ -684,7 +703,7 @@ components:
                 application/json:
                     schema:
                         oneOf:
-                            - $ref: '#/components/schemas/UpdateTenant'
+                            -   $ref: '#/components/schemas/UpdateTenant'
     schemas:
         UsageStatsApps:
             type: object
@@ -958,6 +977,11 @@ components:
             properties:
                 tenant:
                     $ref: "#/components/schemas/OutputTenant"
+        GTenantId:
+            type: object
+            properties:
+                gTenantId:
+                    type: string
         OutputTenant:
             type: object
             properties:
