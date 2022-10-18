@@ -34,5 +34,5 @@ func (p Process) IsOk() bool {
 }
 
 func (p Process) IsFinished() bool {
-	return p.Finished != nil
+	return p.Total <= p.Ok+p.Nok
 }
