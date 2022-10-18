@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import DateParseError from '../errors/DateParseError';
 import GranularityError from '../errors/GranularityError';
 import JWTError from '../errors/JWTError';
+import NotFoundError from '../errors/NotFoundError';
 import PermissionsError from '../errors/PermissionsError';
 import SendLinkError from '../errors/SendLinkError';
 import TenantSearchError from '../errors/TenantSearchError';
@@ -17,10 +18,10 @@ export default function handleError(err: Error, req: Request, res: Response): vo
 
     if (
         err instanceof UserCreationError
-    || err instanceof UserSearchError
-    || err instanceof TenantSearchError
-    || err instanceof UserDeleteError
-    || err instanceof SendLinkError
+        || err instanceof UserSearchError
+        || err instanceof TenantSearchError
+        || err instanceof UserDeleteError
+        || err instanceof SendLinkError
     ) {
         res.status(400).send({ msg: err.message });
         return;
@@ -33,6 +34,11 @@ export default function handleError(err: Error, req: Request, res: Response): vo
 
     if (err instanceof PermissionsError) {
         res.status(403).send({ msg: err.message });
+        return;
+    }
+
+    if (err instanceof NotFoundError) {
+        res.status(404).send({ msg: err.message });
         return;
     }
 

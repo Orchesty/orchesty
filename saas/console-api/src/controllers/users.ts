@@ -85,3 +85,12 @@ export async function userSendResetPasswordEmail(req: Request, res: Response): P
         handleError(e as Error, req, res);
     }
 }
+
+export async function userGetGTenantId(req: Request, res: Response): Promise<void> {
+    try {
+        const { tenantId } = req.params;
+        res.status(200).send(await usersService.getGTenantId(tenantId));
+    } catch (e) {
+        handleError(e as Error, req, res);
+    }
+}
