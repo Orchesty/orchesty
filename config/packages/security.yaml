@@ -14,7 +14,7 @@ security:
                 class: Hanaboso\UserBundle\Document\User
                 property: email
     firewalls:
-        unsecured_test_api:
+        unsecured_app_api:
             pattern: ^/api/applications/authorize/token
             security: false
         unsecured_user_api:
@@ -31,7 +31,7 @@ security:
             custom_authenticator:
                 - Hanaboso\PipesFramework\ApiGateway\Authenticator\ApiKey\ApiKeyAuthenticator
         secured_applications:
-            pattern: ^/api/applications/.*/(sync|users)/.*
+            pattern: ^/api/applications
             stateless: true
             provider: api_provider
             custom_authenticator:

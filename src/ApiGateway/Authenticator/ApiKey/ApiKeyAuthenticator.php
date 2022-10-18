@@ -61,7 +61,7 @@ final class ApiKeyAuthenticator extends AbstractAuthenticator
                 return $this->jwtAuthenticator->authenticate($request);
             }
 
-            if ($request->headers->get(self::AUTH_HEADER) !== $this->universalApiKey) {
+            if ($request->headers->get(self::AUTH_HEADER) !== $this->universalApiKey || empty($this->universalApiKey)) {
                 throw new SecurityManagerException(
                     'API key is not valid.',
                     SecurityManagerException::USER_OR_PASSWORD_NOT_VALID,

@@ -23,7 +23,6 @@ use Hanaboso\Utils\Date\DateTimeUtils;
 use Hanaboso\Utils\Exception\DateTimeException;
 use LogicException;
 use MongoDB\BSON\Regex;
-use MongoRegex;
 
 /**
  * Class MongoMetricsManager
@@ -211,7 +210,7 @@ final class MongoMetricsManager extends MetricsManagerAbstract
                         '%s-%s_topology-%s_1',
                         $topology->getId(),
                         $topology->getName(),
-                        $topology->getId()
+                        $topology->getId(),
                     );
                     $topology        = sprintf('%s v.%s', $topology->getName(), $topology->getVersion());
                 }
