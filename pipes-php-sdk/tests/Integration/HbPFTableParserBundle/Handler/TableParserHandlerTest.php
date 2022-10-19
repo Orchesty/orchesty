@@ -259,7 +259,8 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
     }
 
     /**
-     *
+     * @return void
+     * @throws Exception
      */
     protected function setUp(): void
     {
