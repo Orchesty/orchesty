@@ -10,12 +10,12 @@
 
 uncomment frontend 81
 
-
 docker-compose exec monolith-api php bin/console user:create
 docker-compose exec monolith-api php bin/console doctrine:mongodb:schema:create
 
 ### Setup pre-commit hook (FE only)
+
 (Only for projects: app-ui, applinth-admin-ui, applinth-marketplace-ui)
 
-In the root run `npm install` and `npm run prepare-husky` \
-This will install husky pre-commit hook for FE projects 
+In the root run `npm install` and `npm run prepare-husky`
+This will install husky pre-commit hook for FE projects
