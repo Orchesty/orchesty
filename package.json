@@ -1,0 +1,15 @@
+{
+  "name": "orchesty",
+  "scripts": {
+    "prepare-husky": "husky install .husky",
+    "pre-commit": "lint-staged"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@gitlab.hanaboso.net:pipes/pipes.git"
+  },
+  "devDependencies": {
+    "husky": "^8.0.0",
+    "lint-staged": "^13.0.3"
+  }
+}
