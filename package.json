@@ -2,11 +2,7 @@
   "name": "orchesty",
   "scripts": {
     "prepare-husky": "husky install .husky",
-    "pre-commit": "lint-staged"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git@gitlab.hanaboso.net:pipes/pipes.git"
+    "pre-commit": "lint-staged --concurrent false"
   },
   "devDependencies": {
     "husky": "^8.0.0",
