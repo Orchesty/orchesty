@@ -7,9 +7,9 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import AppLayout from "../components/commons/layouts/AppLayout.vue";
-import Heading from "@/components/commons/typography/Heading.vue";
+import { Component, Vue } from "vue-property-decorator"
+import AppLayout from "../components/commons/layouts/AppLayout.vue"
+import Heading from "@/components/commons/typography/Heading.vue"
 
 @Component({
   components: {

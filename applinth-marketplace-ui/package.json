@@ -6,7 +6,9 @@
     "serve": "vue-cli-service serve",
     "start": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint --no-fix",
+    "lint-autofix": "vue-cli-service lint",
+    "lint-and-format": "prettier --write & eslint --fix"
   },
   "dependencies": {
     "@mdi/font": "^6.4.95",
