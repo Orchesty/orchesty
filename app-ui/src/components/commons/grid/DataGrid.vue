@@ -5,15 +5,13 @@
       :disable-filter="disableFilter"
       :params="{ namespace: namespace, params: fixedParams, paging: paging, filter: filter }"
       :quick-filters="quickFilters"
-      :on-filter="fetchGrid"
-      :on-clear="fetchGridWithInitials"
-      :on-reload="fetchGrid"
       :headers="headers"
       :filter="filter"
       :filter-meta="filterMeta"
       :simple-filter="simpleFilter"
       :simple-filter-enum="simpleFilterEnum"
       :is-loading="isLoading"
+      @fetchGrid="onFetchGridWithoutStore"
     />
 
     <!--Title & Searchbar-->
@@ -282,16 +280,22 @@ export default {
     },
   },
   methods: {
-    async fetchGrid(search, params, filter, paging, sorter) {
-      let finalFilter = null
+    // This function fetches data form BE without using default values form the store, if the data is not provided in the parameters of this function
+    async onFetchGridWithoutStore({ search, filter, paging, sorter }) {
+      const finalFilter = [...this.fixedFilter, ...filter]
 
-      if (this.fixedFilter && filter) {
-        finalFilter = [].concat(this.fixedFilter, filter)
-      } else if (filter) {
-        finalFilter = [].concat(filter)
-      } else if (this.fixedFilter) {
-        finalFilter = [].concat(this.fixedFilter)
-      }
+      await this.$store.dispatch(withNamespace(this.namespace, GRID.ACTIONS.FETCH_DATA_WITHOUT_STORE), {
+        search: search || null,
+        namespace: this.namespace,
+        filter: finalFilter,
+        paging: paging || this.paging,
+        sorter: sorter || this.sorter,
+        params: this.fixedParams,
+      })
+    },
+
+    async fetchGrid(search, params, filter, paging, sorter) {
+      const finalFilter = [...this.fixedFilter, ...filter]
 
       await this.$store.dispatch(withNamespace(this.namespace, GRID.ACTIONS.FETCH_WITH_DATA), {
         search: search || null,
@@ -303,15 +307,7 @@ export default {
       })
     },
     async fetchGridWithInitials(search, params, filter, paging, sorter) {
-      let finalFilter = null
-
-      if (this.fixedFilter && filter) {
-        finalFilter = [].concat(this.fixedFilter, filter)
-      } else if (filter) {
-        finalFilter = [].concat(filter)
-      } else if (this.fixedFilter) {
-        finalFilter = [].concat(this.fixedFilter)
-      }
+      const finalFilter = [...this.fixedFilter, ...filter]
 
       await this.$store.dispatch(withNamespace(this.namespace, GRID.ACTIONS.FETCH_WITH_INITIAL_STATE), {
         search: search || '',

@@ -20,6 +20,18 @@ export default {
 
     commit(GRID.MUTATIONS.GRID_RESPONSE, data)
   },
+
+  [GRID.ACTIONS.FETCH_DATA_WITHOUT_STORE]: ({ dispatch }, payload) => {
+    dispatch(GRID.ACTIONS.GRID_FETCH, {
+      search: payload.search,
+      namespace: payload.namespace,
+      params: payload.params,
+      filter: payload.filter,
+      paging: payload.paging,
+      sorter: payload.sorter,
+    })
+  },
+
   [GRID.ACTIONS.FETCH_WITH_DATA]: ({ dispatch, state }, payload) => {
     dispatch(GRID.ACTIONS.GRID_FETCH, {
       search: payload.search || state.search,
