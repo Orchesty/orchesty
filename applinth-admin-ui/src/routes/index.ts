@@ -25,7 +25,7 @@ const baseRoutes = [
       breadcrumbs: [
         {
           text: "navigation.item.applinth",
-          to: null,
+          to: { name: Routes.Overview },
         },
         {
           text: "navigation.item.profile",
@@ -64,7 +64,7 @@ const overview = {
     breadcrumbs: [
       {
         text: "navigation.item.applinth",
-        to: null,
+        to: { name: Routes.Overview },
       },
       {
         text: "navigation.item.overview",
@@ -85,7 +85,7 @@ const applications = [
         return [
           {
             text: "navigation.item.applinth",
-            to: null,
+            to: { name: Routes.Overview },
           },
           {
             text: "navigation.item.overview",
@@ -111,7 +111,7 @@ const usersRoutes = [
       breadcrumbs: [
         {
           text: "navigation.item.applinth",
-          to: null,
+          to: { name: Routes.Overview },
         },
         {
           text: "navigation.item.users",
@@ -129,7 +129,7 @@ const usersRoutes = [
       breadcrumbs: [
         {
           text: "navigation.item.applinth",
-          to: null,
+          to: { name: Routes.Overview },
         },
         {
           text: "navigation.item.users",
@@ -150,7 +150,7 @@ const customersRoutes = [
       breadcrumbs: [
         {
           text: "navigation.item.applinth",
-          to: null,
+          to: { name: Routes.Overview },
         },
         {
           text: "navigation.item.customers",
@@ -168,7 +168,7 @@ const customersRoutes = [
       breadcrumbs: (name: string) => [
         {
           text: "navigation.item.applinth",
-          to: null,
+          to: { name: Routes.Overview },
         },
         {
           text: "navigation.item.customers",

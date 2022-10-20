@@ -52,10 +52,13 @@ export default class StatusCardList extends Vue {
   async created() {
     this.isLoading = true;
 
-    const [apps, customers] = await Promise.all([
+    const [appsTail, apps, customers] = await Promise.all([
       callApi<UsageStatsAppsRequest>(api.overview.apps, {
         granularity: "monthly",
         tail: true,
+      }),
+      callApi<UsageStatsAppsRequest>(api.overview.apps, {
+        granularity: "monthly",
       }),
       callApi<UsageStatsUsersRequest>(api.customers.list, {
         granularity: "monthly",
@@ -63,16 +66,18 @@ export default class StatusCardList extends Vue {
       }),
     ]);
 
-    this.applicationsCount = apps.length;
+    this.applicationsCount = appsTail.length;
     this.customersCount = customers.length;
 
     let installationsCountAccumulator = 0;
     let amountAccumulator = 0;
     let estimatedCostAccumulator = 0;
     for (const app of apps) {
-      installationsCountAccumulator += app.endUsers ?? 0;
       amountAccumulator += app.totalCost ?? 0;
       estimatedCostAccumulator += app.estimatedTotalCost ?? 0;
+    }
+    for (const app of appsTail) {
+      installationsCountAccumulator += app.endUsers ?? 0;
     }
 
     this.installationsCount = installationsCountAccumulator;

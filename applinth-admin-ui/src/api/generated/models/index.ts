@@ -2,6 +2,7 @@
 /* eslint-disable */
 export * from './CreateTenant';
 export * from './CreateUser';
+export * from './GTenantId';
 export * from './OneTenant';
 export * from './OneUser';
 export * from './OutputTenant';

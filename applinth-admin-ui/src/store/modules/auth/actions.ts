@@ -1,5 +1,11 @@
 import { transformUser } from "@/firebase";
-import { alerts, i18n, router, saveUserWithTokenToStore } from "@/utils";
+import {
+  alerts,
+  callApi,
+  i18n,
+  router,
+  saveUserWithTokenToStore,
+} from "@/utils";
 import {
   getAuth,
   signInWithEmailAndPassword,
@@ -14,15 +20,20 @@ import { Actions } from "../../../types";
 import { AuthState } from "./state";
 import { AuthActions, AuthMutations } from "./types";
 import { UpdateUserInfo } from "@/types/CurrentUser";
-import { Routes } from "@/enums";
+import { LocalStorage, Routes } from "@/enums";
+import { api } from "@/api";
 
 export const actions: Actions<AuthActions, AuthState> = {
   async login({ commit }, payload: TLoginForm): Promise<boolean> {
     try {
+      const googleTenantId = await getGoogleTenantId(payload.tenant);
+
+      if (!googleTenantId) return false;
+
       const auth = getAuth();
       const email = payload.email;
       const password = payload.password;
-      auth.tenantId = payload.tenant;
+      auth.tenantId = googleTenantId;
       const userCredential = await signInWithEmailAndPassword(
         auth,
         email,
@@ -31,6 +42,7 @@ export const actions: Actions<AuthActions, AuthState> = {
       const user = userCredential.user;
 
       if (user) {
+        localStorage.setItem(LocalStorage.tenantId, payload.tenant);
         await saveUserWithTokenToStore(user);
 
         return true;
@@ -141,8 +153,12 @@ export const actions: Actions<AuthActions, AuthState> = {
     payload: TResetPasswordForm
   ): Promise<boolean> {
     try {
+      const googleTenantId = await getGoogleTenantId(payload.tenantId);
+
+      if (!googleTenantId) return false;
+
       const auth = getAuth();
-      auth.tenantId = payload.tenantId;
+      auth.tenantId = googleTenantId;
 
       await sendPasswordResetEmail(auth, payload.email);
 
@@ -182,3 +198,13 @@ export const actions: Actions<AuthActions, AuthState> = {
     }
   },
 };
+
+async function getGoogleTenantId(tenantId: string): Promise<string | null> {
+  try {
+    return await callApi(api.users.getTenantId, {
+      tenantId: tenantId,
+    });
+  } catch (e) {
+    return null;
+  }
+}

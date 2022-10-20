@@ -8,6 +8,7 @@ import {
 import { customers } from "./private/customers";
 import { dashboard } from "./private/dashboard";
 import { users } from "./private/users";
+import { tenants } from "./private/tenants";
 
 export const api = {
   overview,
@@ -18,4 +19,5 @@ export const api = {
   installedApps,
   timeBucketApps,
   overviewUsers,
+  tenants,
 };

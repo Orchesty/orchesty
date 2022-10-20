@@ -15,6 +15,9 @@
 
 import * as runtime from '../runtime';
 import {
+    GTenantId,
+    GTenantIdFromJSON,
+    GTenantIdToJSON,
     OneUser,
     OneUserFromJSON,
     OneUserToJSON,
@@ -34,6 +37,10 @@ import {
     UsersUpdateRequestFromJSON,
     UsersUpdateRequestToJSON,
 } from '../models';
+
+export interface UserGetGTenantIdRequest {
+    tenantId: string;
+}
 
 export interface UserSendResetPasswordEmailRequest {
     tenantId?: string;
@@ -69,6 +76,36 @@ export interface UsersUpdateOperationRequest {
  * 
  */
 export class UsersApi extends runtime.BaseAPI {
+
+    /**
+     * Return gTenantId
+     */
+    async userGetGTenantIdRaw(requestParameters: UserGetGTenantIdRequest, initOverrides?: RequestInit | runtime.InitOverideFunction): Promise<runtime.ApiResponse<GTenantId>> {
+        if (requestParameters.tenantId === null || requestParameters.tenantId === undefined) {
+            throw new runtime.RequiredError('tenantId','Required parameter requestParameters.tenantId was null or undefined when calling userGetGTenantId.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/users/getGTenantId/{tenantId}`.replace(`{${"tenantId"}}`, encodeURIComponent(String(requestParameters.tenantId))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => GTenantIdFromJSON(jsonValue));
+    }
+
+    /**
+     * Return gTenantId
+     */
+    async userGetGTenantId(requestParameters: UserGetGTenantIdRequest, initOverrides?: RequestInit | runtime.InitOverideFunction): Promise<GTenantId> {
+        const response = await this.userGetGTenantIdRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
 
     /**
      * Fill
