@@ -1,6 +1,11 @@
 module.exports = {
-  plugins: ['prettier', 'vue'],
-  extends: ['prettier', 'plugin:vue/recommended', 'eslint:recommended'],
+  plugins: ['vue'],
+  extends: [
+    'plugin:vue/essential',
+    'plugin:vue/recommended',
+    'eslint:recommended',
+    '@vue/prettier',
+  ],
   parserOptions: {
     parser: 'babel-eslint',
   },
@@ -14,7 +19,10 @@ module.exports = {
     'vue/max-attributes-per-line': 'off',
     'vue/singleline-html-element-content-newline': 'off',
     'vue/order-in-components': 'off',
-    'vue/html-self-closing': ['error', { html: { void: 'any', normal: 'any', component: 'always' } }],
+    'vue/html-self-closing': [
+      'error',
+      { html: { void: 'any', normal: 'any', component: 'always' } },
+    ],
     'vue/valid-v-slot': 'off',
     'no-case-declarations': 'off',
   },
