@@ -7,6 +7,7 @@ apis/index.ts
 index.ts
 models/CreateTenant.ts
 models/CreateUser.ts
+models/GTenantId.ts
 models/OneTenant.ts
 models/OneUser.ts
 models/OutputTenant.ts

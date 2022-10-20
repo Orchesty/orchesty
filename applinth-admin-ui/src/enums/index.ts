@@ -5,3 +5,4 @@ export * from "./EventBus";
 export * from "./Locale";
 export * from "./Routes";
 export * from "./ViewAuth";
+export * from "./LocalStorage";

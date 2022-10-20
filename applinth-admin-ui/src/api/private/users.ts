@@ -7,9 +7,15 @@ export type UsersGetApi = "get";
 export type UsersCreateApi = "create";
 export type UsersUpdateApi = "update";
 export type UsersDeleteApi = "delete";
+export type UsersGetTenantIdApi = "getTenantId";
 
 export const users: ApiConfigs<
-  UsersApi | UsersCreateApi | UsersUpdateApi | UsersGetApi | UsersDeleteApi
+  | UsersApi
+  | UsersCreateApi
+  | UsersUpdateApi
+  | UsersGetApi
+  | UsersDeleteApi
+  | UsersGetTenantIdApi
 > = {
   list: {
     id: "USERS_LIST",
@@ -31,5 +37,10 @@ export const users: ApiConfigs<
   delete: {
     id: "USERS_DELETE",
     request: (data) => apiClient.usersApi.usersDelete(data),
+  },
+  getTenantId: {
+    id: "USERS_GET_TENANT_ID",
+    request: (data) => apiClient.usersApi.userGetGTenantId(data),
+    transform: (data) => data.gTenantId,
   },
 };

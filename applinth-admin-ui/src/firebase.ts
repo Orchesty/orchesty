@@ -7,6 +7,7 @@ import {
 import { User } from "./store/modules/auth";
 import { alerts, i18n, saveUserWithTokenToStore } from "@/utils";
 import { config } from "@/config";
+import { LocalStorage } from "@/enums";
 
 const firebaseConfig = {
   apiKey: config.firebase.apiKey,
@@ -15,11 +16,13 @@ const firebaseConfig = {
 
 export function transformUser(user: FirebaseUser | null): User | null {
   if (!user) return user;
+
   return {
     id: user.uid,
     name: user.displayName,
     email: user.email,
-    tenantId: user.tenantId, // todo PIP-1334 set our tenantId from custom claims
+    googleTenantId: user.tenantId,
+    tenantId: localStorage.getItem(LocalStorage.tenantId),
   };
 }
 

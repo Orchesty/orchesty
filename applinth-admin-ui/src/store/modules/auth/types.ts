@@ -26,4 +26,5 @@ export type User = {
   name: string | null;
   email: string | null;
   tenantId: string | null;
+  googleTenantId: string | null;
 };

@@ -1,6 +1,7 @@
 import { Mutations } from "../../../types";
 import { AuthState, createState } from "./state";
 import { AuthMutations } from "./types";
+import { LocalStorage } from "@/enums";
 
 export const mutations: Mutations<AuthMutations, AuthState> = {
   setUser(state, payload: AuthState["user"]) {
@@ -17,5 +18,6 @@ export const mutations: Mutations<AuthMutations, AuthState> = {
         initStateKey as keyof AuthState
       ] as null;
     }
+    localStorage.removeItem(LocalStorage.tenantId);
   },
 };
