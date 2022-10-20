@@ -53,15 +53,15 @@ final class DataStorageManager
     }
 
     /**
-     * @param string  $id
-     * @param mixed[] $data
-     * @param string  $application
-     * @param string  $user
+     * @param string      $id
+     * @param mixed[]     $data
+     * @param string|NULL $application
+     * @param string|NULL $user
      *
      * @return void
      * @throws MongoDBException
      */
-    public function store(string $id, array $data, string $application, string $user): void
+    public function store(string $id, array $data, ?string $application = NULL, ?string $user = NULL): void
     {
         foreach ($data as $item) {
             $dataStorageDocument = (new DataStorageDocument())
@@ -76,14 +76,14 @@ final class DataStorageManager
     }
 
     /**
-     * @param string $id
-     * @param string $application
-     * @param string $user
+     * @param string      $id
+     * @param string|NULL $application
+     * @param string|NULL $user
      *
      * @return void
      * @throws MongoDBException
      */
-    public function remove(string $id, string $application, string $user): void
+    public function remove(string $id, ?string $application = NULL, ?string $user = NULL): void
     {
         $queryBuilder = $this->getRepository()?->getDocumentManager()->createQueryBuilder();
         $queryBuilder?->remove(DataStorageDocument::class)
