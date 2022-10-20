@@ -2392,11 +2392,11 @@
         },
         {
             "name": "orchesty/php-sdk",
-            "version": "2.3.2",
+            "version": "2.3.5",
             "dist": {
                 "type": "path",
                 "url": "../../../pipes-php-sdk",
-                "reference": "5556bfd0df8671a94510d4e018346c761a537e5f"
+                "reference": "806ba7ebeb55eb7992dc23025159cb58bf1f7600"
             },
             "require": {
                 "doctrine/mongodb-odm-bundle": "^4.5",

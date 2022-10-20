@@ -23,7 +23,7 @@ final class IdnesConnectorTest extends KernelTestCaseAbstract
     public function testProcess(): void
     {
         /** @var IdnesConnector $connector */
-        $connector = self::getContainer()->get('hbpf.idnes-connector');
+        $connector = self::getContainer()->get('hbpf.connector.idnes-connector');
 
         $dto = $connector->processAction((new ProcessDto())->setData('{}'));
         self::assertEquals('{}', $dto->getData());

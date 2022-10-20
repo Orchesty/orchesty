@@ -280,7 +280,7 @@ final class ApplicationController
     }
 
     /**
-     * @Route("/applications/:{key}/users/{user}/changeState'", methods={"PUT"})
+     * @Route("/applications/{key}/users/{user}/changeState'", methods={"PUT"})
      *
      * @param Request $request
      * @param string  $key

@@ -2070,11 +2070,11 @@
         },
         {
             "name": "orchesty/php-sdk",
-            "version": "2.3.2",
+            "version": "2.3.5",
             "dist": {
                 "type": "path",
                 "url": "../pipes-php-sdk",
-                "reference": "5556bfd0df8671a94510d4e018346c761a537e5f"
+                "reference": "806ba7ebeb55eb7992dc23025159cb58bf1f7600"
             },
             "require": {
                 "doctrine/mongodb-odm-bundle": "^4.5",
@@ -5464,16 +5464,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.239.0",
+            "version": "3.239.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "33ae76381b77a1a2580817996dcc7b9e931ae5f4"
+                "reference": "47aa3e427371af4449cd9cb07af7209376a535bb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/33ae76381b77a1a2580817996dcc7b9e931ae5f4",
-                "reference": "33ae76381b77a1a2580817996dcc7b9e931ae5f4",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/47aa3e427371af4449cd9cb07af7209376a535bb",
+                "reference": "47aa3e427371af4449cd9cb07af7209376a535bb",
                 "shasum": ""
             },
             "require": {
@@ -5552,9 +5552,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.239.0"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.239.1"
             },
-            "time": "2022-10-18T18:17:00+00:00"
+            "time": "2022-10-19T18:15:49+00:00"
         },
         {
             "name": "aws/aws-sdk-php-symfony",

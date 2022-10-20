@@ -10,7 +10,7 @@ services:
             COMPOSER_HOME: ${HOME}/dev/.composer
             BACKEND_DSN: ${BACKEND_URL}
             MONGODB_DSN: ${MONGO_DSN}
-            MONGODB_DB: pipes
+            MONGODB_DB: ${MAIN_DB}
             METRICS_DSN: ${METRICS_DSN}
             METRICS_DB: metrics
             STARTING_POINT_DSN: ${STARTING_POINT_DSN}

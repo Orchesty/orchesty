@@ -351,6 +351,7 @@ final class ApplicationManager
     /**
      * @param string   $user
      * @param string[] $applications
+     *
      * @return string[]
      */
     public function getApplicationsLimits(string $user, array $applications): array
@@ -412,7 +413,6 @@ final class ApplicationManager
         $applicationInstall = $this->repository->findUserApp($key, $user);
         $applicationInstall->setEnabled($enabled);
 
-        $this->dm->refresh($applicationInstall);
         $this->dm->flush();
 
         return $applicationInstall;

@@ -93,18 +93,20 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
     {
         $form = parent::getApplicationForms($applicationInstall);
 
-        $form[ApplicationInterface::AUTHORIZATION_FORM][ApplicationInterface::FIELDS] = array_merge(
-            $form[ApplicationInterface::AUTHORIZATION_FORM][ApplicationInterface::FIELDS],
-            [
-                (new Field(
-                    Field::TEXT,
-                    ApplicationInterface::OAUTH_REDIRECT_URL,
-                    'Redirect URL',
-                    $this->provider->getRedirectUri(),
-                )
-                )->setReadOnly(TRUE)->toArray(),
-            ],
-        );
+        if($form[ApplicationInterface::AUTHORIZATION_FORM]){
+            $form[ApplicationInterface::AUTHORIZATION_FORM][ApplicationInterface::FIELDS] = array_merge(
+                $form[ApplicationInterface::AUTHORIZATION_FORM][ApplicationInterface::FIELDS],
+                [
+                    (new Field(
+                        Field::TEXT,
+                        ApplicationInterface::OAUTH_REDIRECT_URL,
+                        'Redirect URL',
+                        $this->provider->getRedirectUri(),
+                    )
+                    )->setReadOnly(TRUE)->toArray(),
+                ],
+            );
+        }
 
         return $form;
     }
