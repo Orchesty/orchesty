@@ -3,21 +3,29 @@
     <!--Filter-->
     <data-grid-filter
       :disable-filter="disableFilter"
-      :params="{ namespace: namespace, params: fixedParams, paging: paging, filter: filter }"
+      :params="{
+        namespace: namespace,
+        params: fixedParams,
+        paging: paging,
+        filter: filter,
+      }"
       :quick-filters="quickFilters"
-      :on-filter="fetchGrid"
-      :on-clear="fetchGridWithInitials"
-      :on-reload="fetchGrid"
       :headers="headers"
       :filter="filter"
       :filter-meta="filterMeta"
       :simple-filter="simpleFilter"
       :simple-filter-enum="simpleFilterEnum"
       :is-loading="isLoading"
+      @fetchGrid="onFetchGridWithoutStore"
     />
 
     <!--Title & Searchbar-->
-    <slot v-if="twoColumnLayout" :content-enabled="contentEnabled" name="groupActionButtons"> </slot>
+    <slot
+      v-if="twoColumnLayout"
+      :content-enabled="contentEnabled"
+      name="groupActionButtons"
+    >
+    </slot>
 
     <!--Data Grid & Iterator-->
     <v-row dense>
@@ -47,8 +55,15 @@
             <template #top>
               <slot name="top" />
             </template>
-            <template v-for="item in visibleHeaders" #[`header.${item.value}`]="{ header }">
-              <span :key="item.value" class="text-capitalize white--text font-weight-bold">{{ header.text }}</span>
+            <template
+              v-for="item in visibleHeaders"
+              #[`header.${item.value}`]="{ header }"
+            >
+              <span
+                :key="item.value"
+                class="text-capitalize white--text font-weight-bold"
+                >{{ header.text }}</span
+              >
               <slot :header="header" name="header.append"></slot>
             </template>
             <template #no-data>
@@ -60,13 +75,27 @@
             <template #item="props">
               <tr
                 :key="props.index"
-                :class="activeIndex === props.index && activeIndexId === props.item.id ? 'selected-row' : ''"
+                :class="
+                  activeIndex === props.index && activeIndexId === props.item.id
+                    ? 'selected-row'
+                    : ''
+                "
                 class="primary-row"
                 @click="() => props.expand(!props.isExpanded)"
               >
-                <td v-if="showExpand" :style="props.isExpanded ? 'border-bottom: none' : ''">
-                  <v-icon @click.stop="" @click="() => props.expand(!props.isExpanded)">
-                    {{ props.isExpanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}
+                <td
+                  v-if="showExpand"
+                  :style="props.isExpanded ? 'border-bottom: none' : ''"
+                >
+                  <v-icon
+                    @click.stop=""
+                    @click="() => props.expand(!props.isExpanded)"
+                  >
+                    {{
+                      props.isExpanded
+                        ? 'keyboard_arrow_up'
+                        : 'keyboard_arrow_down'
+                    }}
                   </v-icon>
                 </td>
                 <td v-if="showSelect">
@@ -83,7 +112,11 @@
                     "
                   />
                 </td>
-                <slot :items="props" :expanded="props.isExpanded" :is-visible="(key) => isItemVisible(key)" />
+                <slot
+                  :items="props"
+                  :expanded="props.isExpanded"
+                  :is-visible="(key) => isItemVisible(key)"
+                />
               </tr>
             </template>
             <template #expanded-item="expandedProps">
@@ -109,8 +142,8 @@
 </template>
 
 <script>
-import { GRID } from '../../../store/modules/grid/types'
-import { withNamespace } from '../../../store/utils'
+import { GRID } from '@/store/modules/grid/types'
+import { withNamespace } from '@/store/utils'
 import DataGridFilter from './filter/DataGridFilter'
 import { SIMPLE_FILTER } from '@/services/enums/dataGridFilterEnums'
 import { DIRECTION } from '@/services/enums/gridEnums'
@@ -240,20 +273,24 @@ export default {
   created() {
     this.options = {
       sortBy: this.sorter ? [this.sorter[0].column] : [],
-      sortDesc: this.sorter ? [this.sorter[0].direction === DIRECTION.DESCENDING] : [],
+      sortDesc: this.sorter
+        ? [this.sorter[0].direction === DIRECTION.DESCENDING]
+        : [],
       page: this.paging ? this.paging.page : 1,
       itemsPerPage: this.paging ? this.paging.itemsPerPage : 10,
     }
   },
   computed: {
     items() {
-      return this.fixedItems ? this.fixedItems : this.$store.state[this.namespace].items
+      return this.fixedItems
+        ? this.fixedItems
+        : this.$store.state[this.namespace].items
     },
     paging() {
       return this.$store.state[this.namespace].paging
     },
     filter() {
-      return this.$store.state[this.namespace].filter
+      return this.$store.state[this.namespace].filter ?? []
     },
     sorter() {
       return this.$store.state[this.namespace].sorter
@@ -282,45 +319,52 @@ export default {
     },
   },
   methods: {
+    // This function fetches data form BE without using default values form the store, if the data is not provided in the parameters of this function
+    async onFetchGridWithoutStore({ search, filter, paging, sorter }) {
+      const finalFilter = [...(this.fixedFilter ?? []), ...(filter ?? [])]
+
+      await this.$store.dispatch(
+        withNamespace(this.namespace, GRID.ACTIONS.FETCH_DATA_WITHOUT_STORE),
+        {
+          search: search || null,
+          namespace: this.namespace,
+          filter: finalFilter,
+          paging: paging || this.paging,
+          sorter: sorter || this.sorter,
+          params: this.fixedParams,
+        }
+      )
+    },
+
     async fetchGrid(search, params, filter, paging, sorter) {
-      let finalFilter = null
+      const finalFilter = [...(this.fixedFilter ?? []), ...(filter ?? [])]
 
-      if (this.fixedFilter && filter) {
-        finalFilter = [].concat(this.fixedFilter, filter)
-      } else if (filter) {
-        finalFilter = [].concat(filter)
-      } else if (this.fixedFilter) {
-        finalFilter = [].concat(this.fixedFilter)
-      }
-
-      await this.$store.dispatch(withNamespace(this.namespace, GRID.ACTIONS.FETCH_WITH_DATA), {
-        search: search || null,
-        namespace: this.namespace,
-        filter: finalFilter || null,
-        paging: paging || null,
-        sorter: sorter || null,
-        params: this.fixedParams,
-      })
+      await this.$store.dispatch(
+        withNamespace(this.namespace, GRID.ACTIONS.FETCH_WITH_DATA),
+        {
+          search: search || null,
+          namespace: this.namespace,
+          filter: finalFilter || null,
+          paging: paging || null,
+          sorter: sorter || null,
+          params: this.fixedParams,
+        }
+      )
     },
     async fetchGridWithInitials(search, params, filter, paging, sorter) {
-      let finalFilter = null
+      const finalFilter = [...(this.fixedFilter ?? []), ...(filter ?? [])]
 
-      if (this.fixedFilter && filter) {
-        finalFilter = [].concat(this.fixedFilter, filter)
-      } else if (filter) {
-        finalFilter = [].concat(filter)
-      } else if (this.fixedFilter) {
-        finalFilter = [].concat(this.fixedFilter)
-      }
-
-      await this.$store.dispatch(withNamespace(this.namespace, GRID.ACTIONS.FETCH_WITH_INITIAL_STATE), {
-        search: search || '',
-        namespace: this.namespace,
-        filter: finalFilter || null,
-        paging: paging || null,
-        sorter: sorter || null,
-        params: this.fixedParams,
-      })
+      await this.$store.dispatch(
+        withNamespace(this.namespace, GRID.ACTIONS.FETCH_WITH_INITIAL_STATE),
+        {
+          search: search || '',
+          namespace: this.namespace,
+          filter: finalFilter || null,
+          paging: paging || null,
+          sorter: sorter || null,
+          params: this.fixedParams,
+        }
+      )
 
       this.initialsFetched = true
     },
@@ -346,7 +390,9 @@ export default {
         }
         return truncatedHeader
       })
-      return truncatedHeaders.filter((item) => item.visible === true || item.alwaysVisible === true)
+      return truncatedHeaders.filter(
+        (item) => item.visible === true || item.alwaysVisible === true
+      )
     },
     isItemVisible(name) {
       const index = this.visibleHeaders.findIndex((item) => item.value === name)
@@ -369,12 +415,21 @@ export default {
           sorter = [
             {
               column: sortBy[0],
-              direction: sortDesc[0] === true ? DIRECTION.DESCENDING : DIRECTION.ASCENDING,
+              direction:
+                sortDesc[0] === true
+                  ? DIRECTION.DESCENDING
+                  : DIRECTION.ASCENDING,
             },
           ]
         }
         if (this.initialsFetched) {
-          this.fetchGrid(this.search, this.fixedParams, this.filter, paging, sorter)
+          this.fetchGrid(
+            this.search,
+            this.fixedParams,
+            this.filter,
+            paging,
+            sorter
+          )
         }
       },
       deep: true,
@@ -390,7 +445,9 @@ export default {
     },
   },
   async beforeDestroy() {
-    await this.$store.dispatch(withNamespace(this.namespace, GRID.ACTIONS.RESET))
+    await this.$store.dispatch(
+      withNamespace(this.namespace, GRID.ACTIONS.RESET)
+    )
   },
 }
 </script>

@@ -1,15 +1,18 @@
 import { IMPLEMENTATIONS } from './types'
 import { callApi, dispatchRoot, withNamespace } from '../../utils'
-import { API } from '../../../api'
+import { API } from '@/api'
 import { GRID } from '../grid/types'
 import { DATA_GRIDS } from '@/services/enums/dataGridEnums'
-import { addSuccessMessage } from '../../../services/utils/flashMessages'
+import { addSuccessMessage } from '@/services/utils/flashMessages'
 
 export default {
   [IMPLEMENTATIONS.ACTIONS.SET_FILE_IMPLEMENTATIONS]: ({ commit }, payload) => {
     commit(IMPLEMENTATIONS.MUTATIONS.SET_FILE_IMPLEMENTATIONS, payload)
   },
-  [IMPLEMENTATIONS.ACTIONS.CREATE_IMPLEMENTATIONS_REQUEST]: async ({ dispatch }, payload) => {
+  [IMPLEMENTATIONS.ACTIONS.CREATE_IMPLEMENTATIONS_REQUEST]: async (
+    { dispatch },
+    payload
+  ) => {
     try {
       await callApi(dispatch, {
         requestData: { ...API.implementation.create },
@@ -19,18 +22,29 @@ export default {
         throwError: true,
       })
 
-      dispatchRoot(dispatch, withNamespace(DATA_GRIDS.IMPLEMENTATIONS_LIST, GRID.ACTIONS.GRID_FETCH), {
-        namespace: DATA_GRIDS.IMPLEMENTATIONS_LIST,
-      })
+      dispatchRoot(
+        dispatch,
+        withNamespace(DATA_GRIDS.IMPLEMENTATIONS_LIST, GRID.ACTIONS.GRID_FETCH),
+        {
+          namespace: DATA_GRIDS.IMPLEMENTATIONS_LIST,
+        }
+      )
 
-      addSuccessMessage(dispatch, API.implementation.update.id, 'flashMessages.implementations.create')
+      addSuccessMessage(
+        dispatch,
+        API.implementation.update.id,
+        'flashMessages.implementations.create'
+      )
 
       return true
     } catch {
       return false
     }
   },
-  [IMPLEMENTATIONS.ACTIONS.UPDATE_IMPLEMENTATIONS_REQUEST]: async ({ dispatch }, payload) => {
+  [IMPLEMENTATIONS.ACTIONS.UPDATE_IMPLEMENTATIONS_REQUEST]: async (
+    { dispatch },
+    payload
+  ) => {
     try {
       await callApi(dispatch, {
         requestData: { ...API.implementation.update },
@@ -39,18 +53,29 @@ export default {
         },
       })
 
-      await dispatchRoot(dispatch, withNamespace(DATA_GRIDS.IMPLEMENTATIONS_LIST, GRID.ACTIONS.GRID_FETCH), {
-        namespace: DATA_GRIDS.IMPLEMENTATIONS_LIST,
-      })
+      await dispatchRoot(
+        dispatch,
+        withNamespace(DATA_GRIDS.IMPLEMENTATIONS_LIST, GRID.ACTIONS.GRID_FETCH),
+        {
+          namespace: DATA_GRIDS.IMPLEMENTATIONS_LIST,
+        }
+      )
 
-      addSuccessMessage(dispatch, API.implementation.update.id, 'flashMessages.implementations.update')
+      addSuccessMessage(
+        dispatch,
+        API.implementation.update.id,
+        'flashMessages.implementations.update'
+      )
 
       return true
     } catch {
       return false
     }
   },
-  [IMPLEMENTATIONS.ACTIONS.GET_IMPLEMENTATION_REQUEST]: async ({ dispatch, commit }, payload) => {
+  [IMPLEMENTATIONS.ACTIONS.GET_IMPLEMENTATION_REQUEST]: async (
+    { dispatch, commit },
+    payload
+  ) => {
     try {
       const data = await callApi(dispatch, {
         requestData: { ...API.implementation.getById },
@@ -65,7 +90,10 @@ export default {
       return false
     }
   },
-  [IMPLEMENTATIONS.ACTIONS.LIST_IMPLEMENTATIONS]: async ({ dispatch, commit }) => {
+  [IMPLEMENTATIONS.ACTIONS.LIST_IMPLEMENTATIONS]: async ({
+    dispatch,
+    commit,
+  }) => {
     try {
       const data = await callApi(dispatch, {
         requestData: { ...API.implementation.getList },
@@ -77,7 +105,10 @@ export default {
       return false
     }
   },
-  [IMPLEMENTATIONS.ACTIONS.DELETE_IMPLEMENTATIONS_REQUEST]: async ({ dispatch }, payload) => {
+  [IMPLEMENTATIONS.ACTIONS.DELETE_IMPLEMENTATIONS_REQUEST]: async (
+    { dispatch },
+    payload
+  ) => {
     try {
       await callApi(dispatch, {
         requestData: { ...API.implementation.delete },
@@ -86,11 +117,19 @@ export default {
         },
       })
 
-      dispatchRoot(dispatch, withNamespace(DATA_GRIDS.IMPLEMENTATIONS_LIST, GRID.ACTIONS.GRID_FETCH), {
-        namespace: DATA_GRIDS.IMPLEMENTATIONS_LIST,
-      })
+      dispatchRoot(
+        dispatch,
+        withNamespace(DATA_GRIDS.IMPLEMENTATIONS_LIST, GRID.ACTIONS.GRID_FETCH),
+        {
+          namespace: DATA_GRIDS.IMPLEMENTATIONS_LIST,
+        }
+      )
 
-      addSuccessMessage(dispatch, API.implementation.delete.id, 'flashMessages.implementations.delete')
+      addSuccessMessage(
+        dispatch,
+        API.implementation.delete.id,
+        'flashMessages.implementations.delete'
+      )
       return true
     } catch {
       return false
