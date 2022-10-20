@@ -169,4 +169,18 @@ class DataStorageDocument
         return $this;
     }
 
+    /**
+     * @return mixed[]
+     */
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'processId' => $this->processId,
+            'data' => $this->data,
+            'application' => $this->application,
+            'user' => $this->user,
+        ];
+    }
+
 }

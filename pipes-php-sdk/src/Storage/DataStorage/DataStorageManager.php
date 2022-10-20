@@ -26,10 +26,11 @@ final class DataStorageManager
 
     /**
      * @param string      $id
-     * @param string|NULL $application
-     * @param string|NULL $user
-     * @param int|NULL    $skip
-     * @param int|NULL    $limit
+     * @param string|null $application
+     * @param string|null $user
+     * @param int|null    $skip
+     * @param int|null    $limit
+     * @param bool|null   $toArray
      *
      * @return mixed[]|null
      */
@@ -39,6 +40,7 @@ final class DataStorageManager
         ?string $user = NULL,
         ?int $skip = NULL,
         ?int $limit = NULL,
+        ?bool $toArray = FALSE,
     ): array|null
     {
         $query = ['processId' => $id];
@@ -47,6 +49,13 @@ final class DataStorageManager
         }
         if ($user) {
             $query['user'] = $user;
+        }
+
+        if ($toArray) {
+            return array_map(
+                static fn($item) => $item->toArray(),
+                $this->getRepository()?->findBy($query, NULL, $limit, $skip) ?? [],
+            );
         }
 
         return $this->getRepository()?->findBy($query, NULL, $limit, $skip);
