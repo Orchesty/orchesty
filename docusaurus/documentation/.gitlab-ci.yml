@@ -43,3 +43,5 @@ documentation deploy prod:
   only:
     refs:
       - master
+      - dev
+      - jk-docs

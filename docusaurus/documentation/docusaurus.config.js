@@ -10,23 +10,27 @@ module.exports = {
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/Orch_fav.ico',
-  organizationName: 'Orchesty', // Usually your GitHub org/user name.
+  organizationName: 'Orchesty', // Usually your GitHub org/username.
   projectName: 'Orchesty', // Usually your repo name.
   themeConfig: {
+    colorMode: {
+      defaultMode: 'light',
+      disableSwitch: true,
+    },
     navbar: {
-      title: 'Docs',
+      // title: 'Docs',
       logo: {
         alt: 'Orchesty logo',
         src: 'img/Orch_logo_big.svg',
         srcDark: 'img/Orch_logo.svg',
       },
       items: [
-        {
-          type: 'docsVersionDropdown',
-          docId: 'intro',
-          position: 'left',
-          label: 'Tutorial',
-        },
+        // {
+        //  type: 'docsVersionDropdown',
+        //  docId: 'intro',
+        //  position: 'left',
+        //  label: 'Tutorial',
+        // },
         {
           href: 'https://github.com/Orchesty',
           label: 'GitHub',

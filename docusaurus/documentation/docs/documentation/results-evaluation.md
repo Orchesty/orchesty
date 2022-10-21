@@ -1,62 +1,14 @@
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# Result codes
+# Results evaluation
+Orchesty offers several options for evaluating remote service communication responses. In addition to a successful call, there are situations that indicate temporary problems where we may want to retry the call. We may also get a response with a code telling us that retrying is pointless. Then it depends on the specific case how the process should proceed.
 
-Result code also known as Result status is controlling header for message within Orchesty framework. By specifying this
-code we are telling how to treat given message. If it was processed ok, with an error, should be stopped, exceeded 3rd
-party limits, ...
+## Repeater
+If the called service does not answer us or answers with a code that indicates temporary unavailability, we use a repeater. This will ensure repeated calls according to the defined number and frequency. If all retries are unsuccessful, the process is terminated with an error and the message is redirected to [trash](../documentation/trash).
 
-Within nodejs-sdk is a number of prepared method for controlling it, so you don't have to set it manually.
-
-Possible values:
-
-- Ok
-- DoNotContinue
-- StopAndFail
-- Repeat
-- ForwardToQueue
-- LimitExceeded
-- CursorWithFollowers
-- CursorOnly
-
-### Ok
-
-Standard value that everything is as it should be and message continues.
-
-### Do not continue
-
-Ok status for successful process but does not continue in topology process
-so no following nodes are called.
-
-<Tabs>
-<TabItem value="typescript" label="Typescript">
-
-```typescript
-dto.setStopProcess(ResultCode.DO_NOT_CONTINUE);
-```
-</TabItem>
-</Tabs>
-
-### Stop and fail
-
-Error status, where messages falls into thrash and whole topology process is marked as failed.
-
-<Tabs>
-<TabItem value="typescript" label="Typescript">
-
-```typescript
-dto.setStopProcess(ResultCode.STOP_AND_FAILED);
-```
-</TabItem>
-</Tabs>
-
-### Repeat
-
-Message is send to repeater and after given delay returned to the same node to retry process. Usable for example when
-3rd party service is not responding.
-
-Common way is to throw an exception:
+### Repeater settings in the connector code
+In the connector, we set the repeater calls as an exception:
 
 <Tabs>
 <TabItem value="typescript" label="Typescript">
@@ -69,74 +21,68 @@ throw new OnRepeatException(delay, maxHops, 'reason of repeating');
 </TabItem>
 </Tabs>
 
-
-### Forward to queue
-
-When node has more than one follower, you can specify which of them should receive and continue to process this message.
-Message is by default sent to all followers and thus duplicated for each one of them.
-
-To name desired followers you have to call setForceFollowers method providing it with names of nodes.
+A simplified way is to set the repetition directly in the `send` method:
 
 <Tabs>
 <TabItem value="typescript" label="Typescript">
 
 ```typescript
-dto.setForceFollowers('some-connector', 'another-connector');
+const delay = 60;
+const maxHops = 10;
+const response = await this.getSender().send(request, [201, 409], delay, maxHops);
 ```
 </TabItem>
 </Tabs>
 
+This told the sender to repeat everything except codes 201 and 409. The default for the repeater setting is 10 repeats of 60 seconds each. So in our example, we didn't need to specify the last 2 parameters.
 
-:::tip
-Avoid misspelling by using exported node names
-:::
+We can specify the range of codes for repeating the call as follows:
 
 <Tabs>
 <TabItem value="typescript" label="Typescript">
 
 ```typescript
-export const NAME = 'some-connector';
-
-export class SomeConnector extends AConnector {
-
-  public getName(): string {
-    return NAME;
-  }
-
-}
+const delay = 60;
+const maxHops = 10;
+const response = await this.getSender().send(request, [createRepeatRange(300, 500)], delay, maxHops);
 ```
 </TabItem>
 </Tabs>
 
-### Limit exceeded
+So the repeater will repeat everything with codes between 300 and 500.
 
-For case where message exceeded 3rd party service API limits. Message is returned to limiter
-to wait for another round.
+### Settings in admin
+Repeater can also be configured in the topology editor. This is less common, but can be useful for example when debugging the topology, when we want to temporarily modify the repeater.
 
-!! TODO tohle teď nelze přímo nastavit -> musela by se nastavit přímo hlavička.
+![Repeater settings in editor](/img/documentation/repeater-settings-bar.svg)
 
-### Cursor with followers
+## Termination of processing by error
 
-Settings message for cursoring (repeated processing) while also sending result data to it's followers.
+If there is no point in repeating the call and we want to terminate the message processing, we have basically two options. Terminate only the message run and without affecting the evaluation of the process, or mark the process as failed.
+
+### End message processing
+
+In this case, sending the message to other nodes is stopped, but the evaluation of the process is not affected. The message is moved to the trash.
 
 <Tabs>
 <TabItem value="typescript" label="Typescript">
 
 ```typescript
-dto.setBatchCursor(cursorKey);
+dto.setStopProcess(ResultCode.DO_NOT_CONTINUE);
 ```
 </TabItem>
 </Tabs>
 
-### Cursor only
+### Termination of message and process with failure
 
-Settings message for cursoring (repeated processing) **without** sending result data to it's followers.
+Message processing is stopped and the process is marked as failed. The message is moved to the trash.
 
 <Tabs>
 <TabItem value="typescript" label="Typescript">
 
 ```typescript
-dto.setBatchCursor(cursorKey, true);
+dto.setStopProcess(ResultCode.STOP_AND_FAILED);
 ```
 </TabItem>
 </Tabs>
+

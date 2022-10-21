@@ -3,17 +3,17 @@ import TabItem from '@theme/TabItem';
 
 # Orchesty Store
 
-Orchesty store tvoří jedno z volně dostupných rozšíření Orchesty. Jedná se o kolekci připravených aplikací a konektorů, které lze navíc snadno upravovat a rozšiřovat. Orchesty Store je jednoduše knihovna, vytvořená pomocí SDK. Stejným způsobem můžeme vytvářet vlastní kolekce a používat je napříč našimi projekty. Jak budovat nové aplikace a konektory se naučíme v našich [návodech](../tutorials/getting-started-with-tutorials.md).
+Orchesty Store is one of the freely available Orchesty extensions. It is a collection of ready-made applications and connectors that can be easily modified and extended. Orchesty Store is simply a library, created using the SDK. In the same way, we can create our own collections and use them across our projects. We'll learn how to build new apps and connectors in our [tutorials](../tutorials/getting-started-with-tutorials.md).
 
-## Dostupné konektory
+## Available connectors
 
-Aktuálně je v Orchesty dostupný store pro PHP a Node.js. Dostupné aplikace a konektory lze ověřit v jejich repozitářích:
+There is currently a store for PHP and Node.js in Orchesty. We can check available applications and connectors in their repositories:
 
 - [Node.js repository](https://github.com/Orchesty/orchesty-nodejs-connectors)
 - [PHP repository](https://github.com/Orchesty/orchesty-php-connectors)
 
 :::tip
-Knihovny pro jednotlivé jazyky nejsou totožné. Pokud  vám chybí pro váš jazyk konektory, které jste našli ve store jiného jazyka, můžete je v projektu používat i současně.
+The libraries for each language do not contain the same range of connectors and applications. However, you can use the Store libraries in the project simultaneously.
 :::
 
 ## Installation
@@ -21,23 +21,23 @@ Knihovny pro jednotlivé jazyky nejsou totožné. Pokud  vám chybí pro váš j
 <Tabs>
 <TabItem value="nodejs" label="Node.js">
 
-Orchesty Store je k dispozici jako [veřejný balíček](https://www.npmjs.com/package/@orchesty/nodejs-connectors). Spuštěním přikazu `pnpm install @orchesty/nodejs-connectors` v adresáři `nodejs-sdk` se balíček stáhne a uloží mezi naše **node_modules**.
+The Orchesty Store is available as a [public package](https://www.npmjs.com/package/@orchesty/nodejs-connectors). Running `pnpm install @orchesty/nodejs-connectors` in the `nodejs-sdk` directory will download the package and store it among our **node_modules**.
 
 :::info
-Adresář `nodejs-sdk` platí při použití [Orchesty-skeletonu](../get-started/installation.md), který využívá package manager **pnpm**. Balíček lze samozřejmě instalovat do libovolné aplikace, kterou chcete integrovat pomocí Orchesty.
+The `nodejs-sdk` directory is valid when using [Orchesty-skeleton](../get-started/installation.md), which uses package manager **pnpm**. The package can of course be installed into any application you want to integrate with Orchesty.
 :::
 
 </TabItem>
 <TabItem value="php" label="PHP">
 
-Orchesty Store je k dispozici jako veřejný [balíček](https://packagist.org/packages/orchesty/php-connectors). Pro instalaci použijeme  nástroj [Composer](https://getcomposer.org/). Spuštěním přikazu `composer require orchesty/php-connectors` v adresáři `php-sdk` se balíček stáhne a uloží do našeho vendoru.
+The Orchesty Store is available as a public [package](https://packagist.org/packages/orchesty/php-connectors). Use the [Composer](https://getcomposer.org/) tool to install it. Running the `composer require orchesty/php-connectors` command in the `php-sdk` directory will download the package and save it to our vendor.
 
 :::info
-Adresář `php-sdk` platí při použití [Orchesty-skeletonu](../get-started/installation.md). Balíček lze instalovat do libovolné aplikace, kterou chcete integrovat pomocí Orchesty.
+The `php-sdk` directory is valid when using [Orchesty-skeleton](../get-started/installation.md). The package can be installed into any application you want to integrate with Orchesty.
 :::
 
 
-Dále je třeba zaregistrovat Symfony bundle. Do souboru `php-sdk/config/Bundles.php` přidáme následující řádek:
+You also need to register a Symfony bundle. Add the following line to the `php-sdk/config/Bundles.php` file:
 
 
 ```php
@@ -46,7 +46,7 @@ Dále je třeba zaregistrovat Symfony bundle. Do souboru `php-sdk/config/Bundles
 Hanaboso\HbPFConnectors\HbPFConnectorsBundle::class => ['all' => TRUE]
 ```
 
-Posledním krokem je zaregistrování aplikací a konektorů jako Symfony service.
+The last step is to register the applications and connectors as a Symfony service.
 
 ```yaml - title="./config/services.yaml"
 node_services_dirs:
@@ -58,6 +58,6 @@ applications:
 </TabItem>
 </Tabs>
 
-Pro přidání aplikací do marketplace v Orchesty Adminu musí být aplikace registrovaná jako služba v orchestrační vrstvě. Návod k registraci naleznete v kapitole [SDK settings](../tutorials/SDK-settings.md).
+To add applications to the marketplace in Orchesty Admin, the application must be registered as a service in the orchestration layer. For instructions on how to register, see [SDK settings](../tutorials/SDK-settings.md).
 
-Dále je třeba aplikaci a její konektory přidat do kontejneru dané služby. Viz kapitoly [Basic application](../tutorials/basic-application.md) a [OAuth2 application](../tutorials/oauth2-application.md). Takto přidané konektory jsou pak k dispozici pro budování topologií v editoru topologií.
+Next, you must add the application and its connectors to the service container. See chapters [Basic application](../tutorials/basic-application.md) and [OAuth2 application](../tutorials/oauth2-application.md). Connectors added in this way are then available for building topologies in the topology editor.

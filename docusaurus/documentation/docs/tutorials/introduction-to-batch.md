@@ -3,9 +3,7 @@ import TabItem from '@theme/TabItem';
 
 # Introduction to Batch
 
-V tomto návodu získáme úvod do zpracování polí dat. Pole dat můžeme samozřejmě zpracovávat stejným způsobem, jako jednotlivé datové objekty. Často je ale potřeba rozdělit data z pole na jednotlivé prvky a řídit jejich zpracování jednotlivě. Častým případem je stránkování zdrojových dat, které si ukážeme v příštím návodu. Teď se zaměříme na samotné rozdělení dat. 
-
-
+In this tutorial, we will get an introduction to processing arrays of data. Of course, we can process data arrays in the same way as individual data objects. However, it is often necessary to split the data from an array into individual elements and control their processing individually. A common case is pagination of the source data, which we will demonstrate in the next tutorial. For now, let's focus on data splitting.
 
 ### Prerequisites
 
@@ -15,7 +13,7 @@ V tomto návodu získáme úvod do zpracování polí dat. Pole dat můžeme sam
 
 ## Creating Batch
 
-Rozdělení dat provádíme v uzlu typu `BatchNode`. Ten vychází v podstatě z konektoru. Rozdíl je v tom, že vrací pole a orchestrační vrstva pak pole z tohoto konketoru rozdělí na jednotlivé zprávy. Připravíme si tedy třídu `SplitBatch`, do které rovnou vložíme pole dat. Jak už jsme uvedli, tato třída je v podstatě konektorem, takže data může data získat zavoláním nějakého zdroje. Pro naší ukázku si ale vystačíme s tím, že pole dat vložíme rovnou v kódu.
+We split the data in a node of the `BatchNode` type. This is basically based on a connector. The difference is that it returns an array, and the orchestration layer then splits the array from this connector into individual messages. So we prepare a `SplitBatch` class, into which we directly insert an array of data. As we said, this class is essentially a connector, so it can get the data by calling some source. For our demonstration, however, we'll make do with putting the data array directly in the code.
 
 <Tabs>
 <TabItem value="typescript" label="Typescript">
@@ -42,6 +40,8 @@ export default class SplitBatch extends ABatchNode {
 <TabItem value="php" label="PHP">
 
 ```php
+namespace Pipes\PhpSdk\Batch;
+
 use Hanaboso\CommonsBundle\Process\BatchProcessDto;
 use Hanaboso\PipesPhpSdk\Batch\BatchAbstract;
 
@@ -68,7 +68,7 @@ final class SplitBatch extends BatchAbstract
 </Tabs>
 
 :::tip
-Můžete si vyzkoušet použít v metodě `processAction` kód [basic konektoru](../tutorials/basic-connector.md). Rozdíl je především ve vložení dat do `BatchProcessDto`. Zde je nutné použít metodu `setItemList`.
+We can try using the [basic connector](../tutorials/basic-connector.md) code in the `processAction` method. The difference is mainly in inserting data into `BatchProcessDto`. In our case, we need to use the `setItemList` method.
 :::
 
 Register Batch action into a container.
@@ -76,15 +76,15 @@ Register Batch action into a container.
 <Tabs>
 <TabItem value="typescript" label="Typescript">
 
-Batch konektor v index.ts zaregistrujeme do kontejneru.
+Register the batch connector in `index.ts` into the container.
 
 ```typescript
 // ...
 import { container } from '@orchesty/nodejs-sdk';
-import { SplitBatch } from './Tutorial/Batch/SplitBatch';
+import SplitBatch from './SplitBatch';
 // ...
 
-const prepare = async (): Promise<void> => {
+export default async function prepare(): Promise<void> {
   // ...
   container.setBatch(new SplitBatch());
   // ...
@@ -93,12 +93,13 @@ const prepare = async (): Promise<void> => {
 </TabItem>
 <TabItem value="php" label="PHP">
 
-Batch konektor registrujeme do yaml souboru: "./config/batch/batch.yaml"
+Register the batch connector in the yaml file: `./config/batch/batch.yaml`.
 
-```yaml
-# ./config/batch/batch.yaml
+```php
+
+# ./config/batch.yaml
 services:
-  // ...
+  // ...    
     hbpf.batch.split-batch:
         class: Pipes\PhpSdk\Batch\SplitBatch
   // ...
@@ -109,13 +110,13 @@ services:
 
 ## Test
 
-Test bude tentokrát velmi jednoduchý. Vytvoříme si topologii, kde za start event zařadíme naší novou akci `split-batch` a nakonec opět přidáme user task, abychom se mohli podívat, zda náš uzel rozdělil data tak, jak jsme očekávali.
+The test will be very simple this time. We'll create a topology where we include our new `split-batch` action after the start event, and finally add the user task again to see if our node has split the data as we expected.
 
-![Split batch action](/img/tutorial/batch/split-batch.png "Split batch action")
+![Split batch action](/img/tutorial/batch/split-batch.svg "Split batch action")
 
-Proces spustíme bez vkládání dat. Výsledkem by měly být 3 zprávy v seznamu v záložce **User Tasks**.
+Start the process without entering data. The result should be 3 messages in the list on the **User Tasks** tab.
 
-![Splitted messages](/img/tutorial/batch/splitted-messages.png "Splitted messages")
+![Splitted messages](/img/tutorial/batch/splitted-messages.svg "Splitted messages")
 
-V tomto návodu jsme si ukázali základ pro práci s dávkami dat. Naučili jsme se rozdělit pole na jednotlivé objekty, které dál zpracujeme jednotlivě. To využijeme např. když získáváme zdrojová data stránkováním.  Ne vždy je totiž vhodné zpracovávat v procesu data po celých stránkách. V [následujícím návodu](../tutorials/pagination) si ukážeme, jak na samotné stránkování při získávání dat.
+In this tutorial, we've covered the basics of working with batches of data. We learned how to split an array into individual objects, which we will then process individually. We will use this, for example, when we retrieve source data by pagination.  This is because it is not always appropriate to process data in whole pages. In [the following tutorial](../tutorials/pagination) we will show how to do pagination when extracting data.
 
