@@ -33,7 +33,7 @@ export default {
       addSuccessMessage(
         dispatch,
         API.implementation.update.id,
-        'flashMessages.implementations.create'
+        'flashMessages.implementationCreated'
       )
 
       return true
@@ -64,7 +64,7 @@ export default {
       addSuccessMessage(
         dispatch,
         API.implementation.update.id,
-        'flashMessages.implementations.update'
+        'flashMessages.implementationUpdated'
       )
 
       return true
@@ -128,7 +128,7 @@ export default {
       addSuccessMessage(
         dispatch,
         API.implementation.delete.id,
-        'flashMessages.implementations.delete'
+        'flashMessages.implementationDeleted'
       )
       return true
     } catch {
