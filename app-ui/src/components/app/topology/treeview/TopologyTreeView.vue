@@ -19,7 +19,7 @@
     >
       <template #prepend="{ item, open }">
         <app-icon v-if="TOPOLOGY_ENUMS.CATEGORY === item.type">
-          {{ open ? 'mdi-folder-outline' : 'mdi-folder' }}
+          {{ open ? "mdi-folder-outline" : "mdi-folder" }}
         </app-icon>
         <app-icon v-else :color="topologyColor(item)"> account_tree </app-icon>
       </template>
@@ -27,7 +27,9 @@
         <tooltip>
           <template #activator="{ on, attrs }">
             <div class="d-flex" v-bind="attrs" v-on="on">
-              <span class="truncate topology-tree-view-name">{{ item.name }}</span>
+              <span class="truncate topology-tree-view-name">{{
+                item.name
+              }}</span>
               &nbsp;
               <span>{{ topologyTitleVersion(item) }}</span>
             </div>
@@ -47,28 +49,34 @@
       </template>
     </v-treeview>
     <div v-else class="text-center">
-      <span> {{ $t('page.status.noTopologySelected') }} </span>
+      <span> {{ $t("page.status.noTopologySelected") }} </span>
     </div>
   </div>
 </template>
 
 <script>
-import { TOPOLOGIES } from '@/store/modules/topologies/types'
-import { mapActions, mapGetters } from 'vuex'
-import { REQUESTS_STATE } from '@/store/modules/api/types'
-import { API } from '@/api'
-import FolderMenu from '../../folder/menu/FolderMenu'
-import { TOPOLOGY_ENUMS } from '@/services/enums/topologyEnums'
-import { ROUTES } from '@/services/enums/routerEnums'
-import TopologyTreeViewMenu from '@/components/app/topology/menu/TopologyTreeViewMenu'
-import Tooltip from '@/components/commons/Tooltip'
-import AppIcon from '@/components/commons/icon/AppIcon'
-import ProgressBarLinear from '@/components/commons/progressIndicators/ProgressBarLinear'
-import { redirectTo } from '@/services/utils/utils'
+import { TOPOLOGIES } from "@/store/modules/topologies/types"
+import { mapActions, mapGetters } from "vuex"
+import { REQUESTS_STATE } from "@/store/modules/api/types"
+import { API } from "@/api"
+import FolderMenu from "../../folder/menu/FolderMenu"
+import { TOPOLOGY_ENUMS } from "@/services/enums/topologyEnums"
+import { ROUTES } from "@/services/enums/routerEnums"
+import TopologyTreeViewMenu from "@/components/app/topology/menu/TopologyTreeViewMenu"
+import Tooltip from "@/components/commons/Tooltip"
+import AppIcon from "@/components/commons/icon/AppIcon"
+import ProgressBarLinear from "@/components/commons/progressIndicators/ProgressBarLinear"
+import { redirectTo } from "@/services/utils/utils"
 
 export default {
-  name: 'TopologyTreeView',
-  components: { ProgressBarLinear, AppIcon, Tooltip, TopologyTreeViewMenu, FolderMenu },
+  name: "TopologyTreeView",
+  components: {
+    ProgressBarLinear,
+    AppIcon,
+    Tooltip,
+    TopologyTreeViewMenu,
+    FolderMenu,
+  },
   data() {
     return {
       ROUTES,
@@ -86,7 +94,10 @@ export default {
     }),
     ...mapGetters(REQUESTS_STATE.NAMESPACE, [REQUESTS_STATE.GETTERS.GET_STATE]),
     state() {
-      return this[REQUESTS_STATE.GETTERS.GET_STATE]([API.topology.getList.id, API.folder.getList.id])
+      return this[REQUESTS_STATE.GETTERS.GET_STATE]([
+        API.topology.getList.id,
+        API.folder.getList.id,
+      ])
     },
   },
   methods: {
@@ -102,28 +113,47 @@ export default {
       return `${item.name} v.${item.version}`
     },
     topologyState(item) {
-      return item.visibility === TOPOLOGY_ENUMS.DRAFT ? 'draft' : item.enabled ? 'enabled' : 'disabled'
+      return item.visibility === TOPOLOGY_ENUMS.DRAFT
+        ? "draft"
+        : item.enabled
+        ? "enabled"
+        : "disabled"
     },
     topologyColor(item) {
-      return item.visibility === TOPOLOGY_ENUMS.DRAFT ? 'primary' : item.enabled ? 'success' : 'error'
+      return item.visibility === TOPOLOGY_ENUMS.DRAFT
+        ? "primary"
+        : item.enabled
+        ? "success"
+        : "error"
     },
     topologyTitleVersion(item) {
-      return TOPOLOGY_ENUMS.TOPOLOGY === item.type ? `v.${item.version}` : ''
+      return TOPOLOGY_ENUMS.TOPOLOGY === item.type ? `v.${item.version}` : ""
     },
     async onActive(activeItems) {
       if (!activeItems[0]) {
-        if ([ROUTES.TOPOLOGY.DEFAULT, ROUTES.TOPOLOGY.VIEWER].includes(this.$router.currentRoute.name)) {
-          if (this.lastActive?._id && this.lastSelectedTopology?._id === this.lastActive._id) {
+        if (
+          [ROUTES.TOPOLOGY.DEFAULT, ROUTES.TOPOLOGY.VIEWER].includes(
+            this.$router.currentRoute.name
+          )
+        ) {
+          if (
+            this.lastActive?._id &&
+            this.lastSelectedTopology?._id === this.lastActive._id
+          ) {
             this.active = [this.lastSelectedTopology]
-            await this[TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID](this.active[0]._id)
-            await redirectTo(this.$router, { name: ROUTES.TOPOLOGY.VIEWER, params: { id: this.active[0]._id } })
+            await this[TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID](
+              this.active[0]._id
+            )
+            await redirectTo(this.$router, {
+              name: ROUTES.TOPOLOGY.VIEWER,
+              params: { id: this.active[0]._id },
+            })
           } else if (!this.active[0]?._id) {
-            await redirectTo(this.$router, { name: ROUTES.TOPOLOGY.DEFAULT, params: { hideTopology: true } })
+            await redirectTo(this.$router, {
+              name: ROUTES.TOPOLOGY.DEFAULT,
+              params: { hideTopology: true },
+            })
           }
-        } else if (this.lastActive?._id) {
-          this.active = [this.lastSelectedTopology]
-          await this[TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID](this.active[0]._id)
-          await redirectTo(this.$router, { name: ROUTES.TOPOLOGY.VIEWER, params: { id: this.active[0]._id } })
         }
 
         this.lastActive = null
@@ -140,14 +170,19 @@ export default {
       if (activeItems[0]?._id === this.lastSelectedTopology?._id) return
 
       await this[TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID](activeItems[0]._id)
-      await redirectTo(this.$router, { name: ROUTES.TOPOLOGY.VIEWER, params: { id: activeItems[0]._id } })
+      await redirectTo(this.$router, {
+        name: ROUTES.TOPOLOGY.VIEWER,
+        params: { id: activeItems[0]._id },
+      })
     },
   },
   watch: {
     async $route(route) {
       if (
         (!route.matched.some(
-          (matchedRoutes) => matchedRoutes.name === ROUTES.TOPOLOGY.DEFAULT || matchedRoutes.name === ROUTES.EDITOR
+          (matchedRoutes) =>
+            matchedRoutes.name === ROUTES.TOPOLOGY.DEFAULT ||
+            matchedRoutes.name === ROUTES.EDITOR
         ) &&
           this.active[0]) ||
         route.params.hideTopology
@@ -171,7 +206,10 @@ export default {
     opened: {
       deep: true,
       handler(treeview) {
-        localStorage.setItem(TOPOLOGY_ENUMS.TREE_VIEW, JSON.stringify(treeview || []))
+        localStorage.setItem(
+          TOPOLOGY_ENUMS.TREE_VIEW,
+          JSON.stringify(treeview || [])
+        )
       },
     },
   },
