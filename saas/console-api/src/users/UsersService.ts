@@ -65,7 +65,7 @@ export default class UsersService {
                 .then(async (userRecord) => {
                     let user = userRecord;
                     await tenantAuth.setCustomUserClaims(user.uid, {
-                        customTenantId: userCreateParams.customTenantId ?? tenantId,
+                        tenantId: userCreateParams.customTenantId ?? tenantId,
                     });
                     user = await tenantAuth.getUser(user.uid ?? '');
                     createdUser = this.mapUserRecordToExport(user);
@@ -151,7 +151,7 @@ export default class UsersService {
     }
 
     private mapUserRecordToExport(user: UserRecord): IUser {
-        const customTenantId = user.customClaims?.customTenantId ? user.customClaims?.customTenantId : undefined;
+        const customTenantId = user.customClaims?.tenantId ? user.customClaims?.tenantId : undefined;
         return {
             uid: user.uid,
             email: user.email,

@@ -1,7 +1,7 @@
-import * as crypto from 'crypto';
 import { auth } from 'firebase-admin';
 import { Collection } from 'mongodb';
 import fetch from 'node-fetch';
+import * as randomstring from 'randomstring';
 import { ITenantCreateRequest } from '../controllers/tenants';
 import TenantSearchError from '../errors/TenantSearchError';
 import { authApp, usersService } from '../index';
@@ -66,7 +66,8 @@ export default class TenantService {
 
         const generatedTenant = await this.createGeneratedTenant();
 
-        const instanceId = crypto.randomBytes(5).toString('hex');
+        const instanceId = randomstring.generate({ length: 10, charset: 'alphanumeric' });
+        const generatedTenantId = randomstring.generate({ length: 10, charset: 'alphanumeric' });
 
         try {
             const tenant = await this.updateCreatedGeneratedTenant(
@@ -74,7 +75,7 @@ export default class TenantService {
                 createTenantRequest,
                 createUser,
                 [{ instanceId }],
-                `t-${instanceId}`,
+                generatedTenantId,
             );
 
             return { tenant: this.mapTenantRecordToExport(tenant) };
@@ -142,9 +143,16 @@ export default class TenantService {
     }
 
     private async createGeneratedTenant(): Promise<Tenant> {
-        const randomString = crypto.randomBytes(2).toString('hex');
+        const randomString1 = randomstring.generate({
+            length: 1,
+            charset: 'alphabetic',
+        });
+        const randomString2 = randomstring.generate({
+            length: 4,
+            charset: 'alphanumeric',
+        });
         const generatedCreateTenantRequest = {
-            displayName: `t${randomString}`,
+            displayName: `${randomString1}${randomString2}`,
             emailSignInConfig: {
                 enabled: true,
                 passwordRequired: true,

@@ -1,7 +1,7 @@
 import assert from 'assert';
-import supertest, {Response} from 'supertest';
-import {createDbTenants, createUsageStats, getJWTToken} from '../../../test/dataProvider';
-import {db, server} from '../../index';
+import supertest, { Response } from 'supertest';
+import { createDbTenants, createUsageStats, getJWTToken } from '../../../test/dataProvider';
+import { db, server } from '../../index';
 
 function assertUserData(resp: Response): void {
     assert.deepEqual(resp.body.rows.length, 4);
