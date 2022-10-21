@@ -7,21 +7,21 @@ import TabItem from '@theme/TabItem';
 Orchesty is a microservice platform whose individual services run in a virtualized environment of **Docker containers**.
 The whole system is designed to be scalable and extensible/expandable by connectors, custom codes or microservices.
 
-Orchesty jako integrační nástroj vytváří 2 základní vrstvy - **integrační vrstvu** a **orchestrační vrstvu**. Každá z nich má svůj význam a dohromady vytváří architekturu, která izoluje zodpovědnost jednotlivých integrovaných služeb od logiky procesů, kterých se účastní.
+Orchesty as an integration tool creates 2 basic layers - the **integration layer** and the **orchestration layer**. Each has its own importance and together they form an architecture that isolates the responsibility of the individual integrated services from the logic of the processes they participate in.
 
 ![Layers](/img/architecture/architecture-layers.svg "Orchesty layers")
 
-## Integrační vrstva
+## Integration layer
 
-Integrační vrstvu tvoříme pomocí [SDK balíčků](../get-started/SDK.md) a obsahuje námi vytvářené kódy pro transformace dat a konektory pro komunikaci s API integrovaných služeb. Jedná se o **code based** část projektu, kterou lze budovat s komfortem, na který jsme zvyklí při běžných vývojových projektech. Orchesty nelimituje svým vývojovým prostředím. Můžeme používat vlastní IDE i verzování v repozitářích dle naší volby. Naším pomocníkem je framework, obsažený v SDK balíčcích. 
+The integration layer is created using [SDK packages](../get-started/SDK.md) and contains the data transformation codes and connectors we create to communicate with the APIs of the integrated services. This is a **code based** part of the project that can be built with the comfort we are used to in normal development projects. Orchesty is not limited by its development environment in our work. We can use our own IDE and versioning in repositories of our choice. Our helper is the framework included in the SDK packages.
 
-## Orchestrační vrstva
+## Orchestration layer
 
-Orchestrační vrstva slouží k modelování a řízení asynchronních procesů z jednotlivých komponent integrační vrstvy. Mezi jednotlivými uzly procesu vytváří message fronty pomocí **RabbitMq**. K frontám dodává high level funkce a byznysovou diagnostiku, takže výrazně urychluje budování procesů a usnadňuje jejich následnou správu. 
+The orchestration layer is used to model and manage asynchronous processes that we compose from the individual components of the integration layer. It creates message queues between process nodes using **RabbitMq**. It adds high-level functionality and business diagnostics to the queues, greatly speeding up process building and facilitating subsequent process management.
 
 ## Orchesty Admin
 
-K práci s orchestrační vrstvou slouží uživatelské rozhraní Orchesty Admin, kde najdeme nástroje pro modelování, řízení i diagnostiku procesů.
+To work with the orchestration layer, we use the Orchesty Admin user interface, where we find tools for modelling, controlling and diagnosing processes.
  
 :::note Usefull links
 - [Integrations](../get-started/integration.md)
@@ -31,9 +31,9 @@ K práci s orchestrační vrstvou slouží uživatelské rozhraní Orchesty Admi
 
 ## Skeleton repository
 
-Základem pro práci s Orchesty je mono-repository [Orchesty-skeleton](https://github.com/Orchesty/orchesty-skeleton). Obsahuje výchozí adresáře pro budování služeb s instalovanými [SDK balíčky](../get-started/SDK.md) pro jednotlivé programovací jazyky. Je jen na nás, které SDK chceme využít. 
+To help you get started with Orchesty faster, we've prepared [Orchesty-skeleton](https://github.com/Orchesty/orchesty-skeleton) with the project base. The skeleton contains default directories with [SDK packages](../get-started/SDK.md), where we can start building our orchestration layer services. It's up to us which SDK we want to use.
 
-V rámci mono-repository můžeme budovat libovolný počet služeb pro [Direct Integration](../get-started/integration.md) jednoduše kopírováním obsahu složky zvoleného SDK do složky na stejné úrovni.
+Within the skeleton mono-repository, we can build any number of services for [Direct Integration](../get-started/integration.md) by simply copying the contents of the folder with the chosen SDK to a folder at the same level.
 
 ```- title="mono-repository folder structure"
 my-app/
@@ -52,7 +52,7 @@ my-app/
 └── docker-compose.yml
 ```
 
-Novou službu následně přidáme do **docker-compose.yml**.
+Then add the new service to **docker-compose.yml**.
 
 ```yaml title="docker-compose.yml"
 services:
@@ -67,6 +67,6 @@ services:
 If you don’t have any experience with **docker compose**, we recommend reading the [original documentation](https://docs.docker.com/compose/).
 :::
 
-## Integrace služeb mimo skeleton repository
+## Integration of services outside the skeleton repository
 
-V Orchesty lze registrovat pro **přímou integraci** jakoukoliv službu s instalovaným [Orchesty SDK](../get-started/SDK.md), spravovanou v libovolném repozitáři. Můžeme takto snadno orchestrovat servisní nebo mikroservisní architekturu napříč naší infrastrukturou.
+Any service with the [Orchesty SDK](../get-started/SDK.md) installed can be registered in Orchesty for **direct integration**. We can easily orchestrate a service or microservice architecture across our infrastructure this way.

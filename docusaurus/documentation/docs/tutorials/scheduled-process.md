@@ -3,24 +3,24 @@ import TabItem from '@theme/TabItem';
 
 # Scheduled process
 
-Plánované spouštění procesu je s Orchesty velice jednoduché a poskytuje stejné možnosti, jako plánování pomocí cronu.
+Scheduled process execution is very simple with Orchesty and provides the same options as scheduling with cron.
 
-## Vytvoření plánovaného procesu
+## Creating a scheduled process
 
-Pravidelné spuštění procesu zajistíme použitím **cron event** při sestavování procesu. Můžeme ho vyzkoušet na libovolném procesu, která jsme si již v rámci předchozích návodů sestavili. V našem procesu použijeme náš první [custom node](../tutorials/custom-node.md) a vytvoříme proces, který bude každou minutu posílat data do user task. Na začátek procesu zařadíme prvek **cron**.
+To ensure that a process runs on a schedule, use **cron event** when building the process. We can try it on any process we have already built in the previous tutorials. In our process, we will use our first [custom node](../tutorials/custom-node.md) and create a process that will send data to the user task every minute. We will include the **cron** element at the beginning of the process.
 
-![Scheduled process](/img/tutorial/cron/cron-topology.png "Scheduled process")
+![Scheduled process](/img/tutorial/cron/cron-topology.svg "Scheduled process")
 
-Cron event nastavíme použitím zápisu ve formátu **cron tab**. Nepovinně můžeme zadat i vstupní data procesu. Nastavení provedeme v editoru v pravém sloupci nastavení uzlu. Do pole **Cron time** vložíme zápis `*/1 * * * *`.
+Cron event is set using the **cron tab** format. Optionally, we can also specify the input data of the process. The settings are made in the editor in the right column of the node settings. We enter the expression `*/1 * * * * *` in the **Cron time** field.
 
-![Cron settings](/img/tutorial/cron/cron-settings.png "Cron settings")
+![Cron settings](/img/tutorial/cron/cron-settings.svg "Cron settings")
 
-## Spuštění
+## Starting
 
-Když nyní topologii uložíme a spustíme, v pravém horním rohu můžeme vidět čas příštího spuštění procesu. Pro jeho přerušení stačí proces deaktivovat tlačítkem **disable**.
+Now that we have saved and run the topology, we can see the time of the next process execution in the upper right corner. To abort the process, just deactivate it with the **disable** button.
 
-![Next run](/img/tutorial/cron/next-run.png "Next run")
+![Next run](/img/tutorial/cron/next-run.svg "Next run")
 
-## Přehled plánovaných úloh
+## Overview of planned tasks
 
-Přehled veškerých plánovaných úloh napříč všemi běžícími topologiemi naleznete v záložce **Scheduled tasks**.
+An overview of all scheduled tasks across all running topologies can be found in the **Scheduled tasks** tab.

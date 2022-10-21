@@ -1,10 +1,10 @@
 # Getting started with Orchesty tutorials
 
-V našich návodech projdeme kompletní práci s Orchesty od základních kroků při prvním spuštění, vytvoření konektoru a procesu, až po pokročilé funkce, jako je ošetření rate limitů integrovaných API.
+In our tutorials, we'll walk you through the complete Orchesty experience, from the basic steps of getting started for the first time, creating a connector and a process, to advanced features such as handling rate limits or processing large batches.
 
-Všechen kód, který budeme v průběhu návodů vytvářet, můžete pro lepší pochopení nainstalovat s naším ukázkovým projektem. Postup je stejný, jako v případě instalace Orchesty, popsané v článku [Instalace](../get-started/installation.md), jen použijeme jiný repozitář:
+You can download all the code we'll be creating throughout the tutorials with our sample project for a better understanding. The install process is the same as the Orchesty installation described in [Installation](../get-started/installation.md), we'll just use a different repository:
 
 ```shell
 git clone https://github.com/Orchesty/orchesty-tutorial myOrchesty
 ```
-Pokud tedy máme  nainstalováno, můžeme se pustit do práce...
+So if we have it installed, we can get to work...

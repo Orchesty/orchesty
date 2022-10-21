@@ -3,15 +3,15 @@ import TabItem from '@theme/TabItem';
 
 # Pagination
 
-Tento návod nám ukáže, jak řešit stránkování zdrojových dat. Orchesty v takovém případě opakuje dotazy na vzdálený systém, dokud nestáhne poslední stránku. Tu pozná kontrolou počtu položek v získaném poli. Pokud je to pole prázdné, nebo je počet položek menší než velikost stránky, iterace se ukončí.
+This tutorial will show us how to deal with pagination of source data. In this case, Orchesty repeats queries to the remote system until it downloads the last page. It knows this by checking the number of items in the retrieved array. If that field is empty or the number of items is less than the page size, we terminate the iteration.
 
-## Příprava konektoru
+## Application
 
-Pro ukázku stránkování využijeme aplikaci **GitHub**, kterou jsme již vytvořili v rámci návodu [Basic Application](../tutorials/basic-application.md). Vytvoříme konektor pro stažení repozitářů orgarnizace. 
+To demonstrate pagination, we will use the **GitHub** application that we have already created in the [Basic Application](../tutorials/basic-application.md) tutorial. We will create a connector to download the org repositories.
 
-## Cursoring
+## Connector with cursor
 
-Abychom zajistili opakování dotazů a stahování jednotlivých stránek, použijeme kurzor. Ten inkrementujeme vždy, dokud nedosáhneme poslední stránky. Tu poznáme podle menšího nebo prázdného pole. Metodě `getBatchCursor` předáme výchozí hodnotu pro první iteraci, kdy ještě není kurzor nastaven. Celý kód konektoru pak vypadá následovně:
+To ensure that the queries and downloads of each page are repeated, we use the cursor. We increment it until we reach the last page. We identify the last page by a smaller or empty array of retrieved data. For the first iteration, when the cursor is not yet set, we pass a default value to the `getBatchCursor` method. The entire connector code then looks like this:
 
 <Tabs>
 <TabItem value="typescript" label="Typescript">
@@ -20,6 +20,7 @@ Abychom zajistili opakování dotazů a stahování jednotlivých stránek, pou�
 import ABatchNode from '@orchesty/nodejs-sdk/dist/lib/Batch/ABatchNode';
 import { HttpMethods } from '@orchesty/nodejs-sdk/dist/lib/Transport/HttpMethods';
 import BatchProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/BatchProcessDto';
+import GitHubApplication from "./GitHubApplication";
 
 export const NAME = 'git-hub-repositories-batch';
 const PAGE_ITEMS = 100;
@@ -29,18 +30,18 @@ export default class GitHubRepositoriesBatch extends ABatchNode {
         return NAME;
     }
 
-    public async processAction(dto: BatchProcessDto): Promise<BatchProcessDto> {
+    public async processAction(dto: BatchProcessDto<IInput>): Promise<BatchProcessDto> {
         const page = dto.getBatchCursor('1');
-        const { org } = dto.jsonData as {org: string};
-        const appInstall = await this._getApplicationInstall();
-        const req = await this._application.getRequestDto(
+        const { org } = dto.getJsonData();
+        const appInstall = await this.getApplicationInstallFromProcess(dto);
+        const request = await this.getApplication<GitHubApplication>().getRequestDto(
             dto,
             appInstall,
             HttpMethods.GET,
             `/orgs/${org}/repos?per_page=${PAGE_ITEMS}&page=${page}`,
         );
-        const resp = await this._sender.send(req, [200]);
-        const response = resp.jsonBody as unknown[];
+        const resp = await this.getSender().send<unknown[]>(request, [200]);
+        const response = resp.getJsonBody();
 
         dto.setItemList(response ?? []);
         if (response.length >= PAGE_ITEMS) {
@@ -51,6 +52,9 @@ export default class GitHubRepositoriesBatch extends ABatchNode {
     }
 }
 
+export interface IInput {
+    org: string;
+}
 
 ```
 </TabItem>
@@ -58,6 +62,8 @@ export default class GitHubRepositoriesBatch extends ABatchNode {
 <TabItem value="php" label="PHP">
 
 ```php
+namespace Pipes\PhpSdk\Batch;
+
 use Hanaboso\CommonsBundle\Process\BatchProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
@@ -71,7 +77,7 @@ final class GitHubGetRepositoriesBatch extends BatchAbstract
 
     public const NAME = 'git-hub-repositories-batch';
 
-    private const PER_PAGE = 5;
+    private const PAGE_ITEMS = 5;
 
     function getName(): string
     {
@@ -88,11 +94,11 @@ final class GitHubGetRepositoriesBatch extends BatchAbstract
             $dto,
             $appInstall,
             CurlManager::METHOD_GET,
-            sprintf('/orgs/%s/repos?per_page=%s&page=%s', $org, self::PER_PAGE, $currentPage),
+            sprintf('/orgs/%s/repos?per_page=%s&page=%s', $org, self::PAGE_ITEMS, $currentPage),
         );
         $result  = $this->getSender()->send($request)->getJsonBody();
         $dto->setItemList($result);
-        if (count($result) >= self::PER_PAGE) {
+        if (count($result) >= self::PAGE_ITEMS) {
             $dto->setBatchCursor((string) ($currentPage + 1));
         }
 
@@ -105,14 +111,14 @@ final class GitHubGetRepositoriesBatch extends BatchAbstract
 </TabItem>
 </Tabs>
 
-## Registrace konektoru
+## Connector registration
 
-Konektor nezapomeneme registrovat do kontejneru:
+Do not forget to register the connector in the container:
 
 <Tabs>
 <TabItem value="typescript" label="Typescript">
 
-Konektor v `index.ts` zaregistrujeme do kontejneru .
+Register the connector into the container in `index.ts`.
 
 ```typescript
 // ...
@@ -140,14 +146,13 @@ export default async function prepare(): Promise<void> {
 </TabItem>
 <TabItem value="php" label="PHP">
 
-Batch konektor registrujeme do yaml souboru: "./config/batch/batch.yaml"
+Register the batch connector in the yaml file: `./config/batch/batch.yaml`.
 
-```yaml
-# ./config/batch/batch.yaml
+```php
+
+# ./config/batch.yaml
 services:
     _defaults:
-        autowire: false
-        autoconfigure: false
         public: '%public.services%'
 
     hbpf.batch.git-hub-repositories-batch:
@@ -164,21 +169,19 @@ services:
 
 ## Test
 
-Test provedeme jednoduše stejně jako v předchozích návodech. Za **start event** zařadíme náš nový konektor a výstup si necháme poslat do **user task**. Konektor očekává v datech název organizace. Při spuštění procesu je musíme vložit:
+The test is simply performed as in the previous tutorials. After the **start event** we include our new connector and have the output sent to the **user task**. The connector expects the organization name in the data. When the process starts, we need to insert it:
 
-![Pagination topology](/img/tutorial/batch/pagination-topology.png "Pagination topology")
+![Pagination topology](/img/tutorial/batch/pagination-topology.svg "Pagination topology")
 
-Naše topologie stáhla jednu stránku vstupních dat, která rozdělila do jednotlivých zpráv a poslala do user task. Pokud chceme vyzkoušet stránkování, musíme upravit proměnnou konektoru `PAGE_ITEMS`, aby byla její hodnota menší, než počet repozitářů organizace.
+Our topology downloaded one page of input data, which it split into individual messages and sent to the user task. If we want to try pagination, we need to modify the `PAGE_ITEMS` connector variable to make its value less than the number of repositories in the organization.
 
-Výsledek by měl být stejný. Pouze bylo provedeno víc dotazů pro získání dat.
-
-
+The result should be the same. Only more queries have been made to retrieve the data.
 
 ## Cursoring without output
 
-Previous example of cursoring was generating new messages with each iteration.
-If you want to for example store fetched data into database and not process send then any further
-use a second parameter in setBatchCursor method.
+Previous example of cursoring was generating new messages with each iteration. In some cases it is better not to send processed data through queues, but to use data storage to store the collection we are working with.
+
+If we don't want to send data to the followers in the topology with each iteration, we use the second parameter in the setBatchCursor method.
 
 <Tabs>
 <TabItem value="typescript" label="Typescript">
@@ -199,5 +202,5 @@ When you set `iterateOnly = true`, no message will be sent to following nodes.
 Orchesty will only repeater this action as describe above. 
 
 :::tip
-Toto je nejvhodnější způsob pro migrace a ETL procesy s velkými objemi dat v jedné dávce, kdy topologií prochází pouze **event message**, kterou řídíme spouštění jednotlivých akcí nad kolekcí dat v úložišti. Více o tomto postupu se dočtete v návodu [Stored data](../tutorials/stored-data).
+Using data storage is the most appropriate way for migrations and ETL processes with large volumes of batch data, where only **event message** is passed through the topology to control the execution of individual actions over the collection of data in the storage. You can read more about this in the [**Stored data**](../tutorials/stored-data) tutorial.
 :::

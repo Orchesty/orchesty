@@ -9,7 +9,7 @@ for every connector. Its setting should be based on return codes of the specific
 for which the Repeater should be used, which frequency try to call continuously and how many times to repeat the calling. 
 
 :::note More about
-- [Repeater documentation](../documentation/repeater)
+- [Results evaluation](../documentation/results-evaluation)
 - [How to use Repeater](../tutorials/basic-connector)
 :::
 

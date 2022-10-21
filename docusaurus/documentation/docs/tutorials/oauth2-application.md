@@ -22,15 +22,13 @@ We chose HubSpot CRM for this tutorial.
 
 ## Application create
 
+First, we create the AOAuth2Application extension application and complete all the basic methods described in the [Basic Application](basic-application) tutorial. We also prepare a form for entering access credentials for authorization.
+
 <Tabs>
 <TabItem value="typescript" label="Typescript">
 
-First create an Application extending AOAuth2Application and fill all base methods
-described in [Basic Application](basic-application) tutorial.
-
 ```typescript
-// ...
-import { AUTHORIZATION_FORM } from '@orchesty/nodejs-sdk/dist/lib/Application/Base/AApplication';
+import CoreFormsEnum from '@orchesty/nodejs-sdk/dist/lib/Application/Base/CoreFormsEnum';
 import { ApplicationInstall } from '@orchesty/nodejs-sdk/dist/lib/Application/Database/ApplicationInstall';
 import Field from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/Field';
 import FieldType from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/FieldType';
@@ -41,17 +39,13 @@ import { CLIENT_ID, CLIENT_SECRET } from '@orchesty/nodejs-sdk/dist/lib/Authoriz
 import RequestDto from '@orchesty/nodejs-sdk/dist/lib/Transport/Curl/RequestDto';
 import { HttpMethods } from '@orchesty/nodejs-sdk/dist/lib/Transport/HttpMethods';
 import AProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/AProcessDto';
-import { CommonHeaders, JSON_TYPE } from '@orchesty/nodejs-sdk/dist/lib/Utils/Headers';
-import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
-import { BodyInit, Headers } from 'node-fetch';
-// ...
+import { BodyInit } from 'node-fetch';
 
 const APP_ID = 'app_id';
 export const BASE_URL = 'https://api.hubapi.com';
 export const NAME = 'hub-spot';
 
 export default class HubSpotApplication extends AOAuth2Application {
-    // ...
     
     public getName(): string {
         return NAME;
@@ -72,11 +66,11 @@ export default class HubSpotApplication extends AOAuth2Application {
         url?: string,
         data?: BodyInit,
     ): RequestDto {
-        // Implementaci provedeme v dalších krocích.
+        // Implementated in next stepts
     }
 
     public getFormStack(): FormStack {
-        const form = new Form(AUTHORIZATION_FORM, 'Authorization settings')
+        const form = new Form(CoreFormsEnum.AUTHORIZATION_FORM, 'Authorization settings')
             .addField(new Field(FieldType.TEXT, CLIENT_ID, 'Client Id', null, true))
             .addField(new Field(FieldType.TEXT, CLIENT_SECRET, 'Client Secret', null, true))
             .addField(new Field(FieldType.TEXT, APP_ID, 'Application Id', null, true));
@@ -90,9 +84,6 @@ export default class HubSpotApplication extends AOAuth2Application {
 ```
 </TabItem>
 <TabItem value="php" label="PHP">
-
-First create an Application extending OAuth2ApplicationAbstract and fill all base methods
-described in [Basic Application](basic-application) tutorial.
 
 ```php
 // ...
@@ -142,7 +133,7 @@ final class HubSpotApplication extends OAuth2ApplicationAbstract
         ?string $url = NULL,
         ?string $data = NULL,
     ): RequestDto {
-    // Implementaci provedeme v dalších krocích.
+    // Implementated in next stepts
     }
 
     public function getFormStack(): FormStack
@@ -153,6 +144,8 @@ final class HubSpotApplication extends OAuth2ApplicationAbstract
             ->addField(new Field(Field::TEXT, self::CLIENT_ID, 'Client Id', NULL, TRUE))
             ->addField(new Field(Field::PASSWORD, self::CLIENT_SECRET, 'Client Secret', NULL, TRUE))
             ->addField(new Field(Field::TEXT, self::APPLICATION_ID, 'Application Id', NULL, TRUE));
+
+        $stack->addForm($authForm);
 
         return $stack;
     }
@@ -169,16 +162,12 @@ final class HubSpotApplication extends OAuth2ApplicationAbstract
 Following steps are unique for OAuth2 authorization, which are required to correctly set up
 an application for token fetching.
 
-:::danger
-Upravit následující - scopeseparator
-:::
-
 <Tabs>
 <TabItem value="typescript" label="Typescript">
 
 ```typescript
 // ...
-import ScopeSeparatorEnum from '../../lib/Authorization/ScopeSeparatorEnum';
+import ScopeSeparatorEnum from '@orchesty/nodejs-sdk/dist/lib/Authorization/ScopeSeparatorEnum';
 // ...
 
 export default class HubSpotApplication extends AOAuth2Application {
@@ -247,13 +236,17 @@ final class HubSpotApplication extends OAuth2ApplicationAbstract
 
 ## RequestDto
 
-Now we'll correctly implement Authorization for requestDto.
+Now we'll correctly implement Authorization for `requestDto`.
 
 <Tabs>
 <TabItem value="typescript" label="Typescript">
 
 ```typescript
 // ...
+import { CommonHeaders, JSON_TYPE } from '@orchesty/nodejs-sdk/dist/lib/Utils/Headers';
+import { BodyInit, Headers } from 'node-fetch';
+// ...
+
 export default class HubSpotApplication extends AOAuth2Application {
  //...
  
@@ -322,29 +315,28 @@ final class HubSpotApplication extends OAuth2ApplicationAbstract
 </TabItem>
 </Tabs>
 
-## Celý kód aplikace
+## Full application code
 
-Tím máme HubSpot aplikaci připravenou. Celý kód aplikace si můžeme skopírovat zde:
+That's the HubSpot application ready to go. You can copy the full application code here:
 
 <Tabs>
 <TabItem value="typescript" label="Typescript">
 
 ```typescript
-import { AUTHORIZATION_FORM } from '@orchesty/nodejs-sdk/dist/lib/Application/Base/AApplication';
-import ApplicationTypeEnum from '@orchesty/nodejs-sdk/dist/lib/Application/Base/ApplicationTypeEnum';
+import CoreFormsEnum from '@orchesty/nodejs-sdk/dist/lib/Application/Base/CoreFormsEnum';
 import { ApplicationInstall } from '@orchesty/nodejs-sdk/dist/lib/Application/Database/ApplicationInstall';
 import Field from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/Field';
 import FieldType from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/FieldType';
 import Form from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/Form';
 import FormStack from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/FormStack';
 import AOAuth2Application from '@orchesty/nodejs-sdk/dist/lib/Authorization/Type/OAuth2/AOAuth2Application';
+import ScopeSeparatorEnum from '@orchesty/nodejs-sdk/dist/lib/Authorization/ScopeSeparatorEnum';
 import { CLIENT_ID, CLIENT_SECRET } from '@orchesty/nodejs-sdk/dist/lib/Authorization/Type/OAuth2/IOAuth2Application';
 import RequestDto from '@orchesty/nodejs-sdk/dist/lib/Transport/Curl/RequestDto';
 import { HttpMethods } from '@orchesty/nodejs-sdk/dist/lib/Transport/HttpMethods';
 import AProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/AProcessDto';
-import { CommonHeaders, JSON_TYPE } from '@orchesty/nodejs-sdk/dist/lib/Utils/Headers';
-import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
 import { BodyInit, Headers } from 'node-fetch';
+import { CommonHeaders, JSON_TYPE } from '@orchesty/nodejs-sdk/dist/lib/Utils/Headers';
 
 const APP_ID = 'app_id';
 export const BASE_URL = 'https://api.hubapi.com';
@@ -389,7 +381,7 @@ export default class HubSpotApplication extends AOAuth2Application {
     }
 
     public getFormStack(): FormStack {
-        const form = new Form(AUTHORIZATION_FORM, 'Authorization settings')
+        const form = new Form(CoreFormsEnum.AUTHORIZATION_FORM, 'Authorization settings')
             .addField(new Field(FieldType.TEXT, CLIENT_ID, 'Client Id', null, true))
             .addField(new Field(FieldType.TEXT, CLIENT_SECRET, 'Client Secret', null, true))
             .addField(new Field(FieldType.TEXT, APP_ID, 'Application Id', null, true));
@@ -401,6 +393,10 @@ export default class HubSpotApplication extends AOAuth2Application {
     public getScopes(applicationInstall: ApplicationInstall): string[] {
         return ['contacts'];
     }
+
+    protected getScopesSeparator(): string {
+        return ScopeSeparatorEnum.SPACE;
+    }
 }
 
 ```
@@ -409,6 +405,8 @@ export default class HubSpotApplication extends AOAuth2Application {
 <TabItem value="php" label="PHP">
 
 ```php
+namespace Pipes\PhpSdk\Application;
+
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Process\ProcessDtoAbstract;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
@@ -419,6 +417,7 @@ use Hanaboso\PipesPhpSdk\Application\Model\Form\Form;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\FormStack;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
+use Hanaboso\PipesPhpSdk\Authorization\Utils\ScopeFormatter;
 
 final class HubSpotApplication extends OAuth2ApplicationAbstract
 {
@@ -427,7 +426,7 @@ final class HubSpotApplication extends OAuth2ApplicationAbstract
     public const NAME     = 'hub-spot';
 
     private const APPLICATION_ID = 'applicationId';
-    
+
     protected const SCOPE_SEPARATOR = ScopeFormatter::SPACE;
 
     public function getName(): string
@@ -479,6 +478,8 @@ final class HubSpotApplication extends OAuth2ApplicationAbstract
             ->addField(new Field(Field::PASSWORD, self::CLIENT_SECRET, 'Client Secret', NULL, TRUE))
             ->addField(new Field(Field::TEXT, self::APPLICATION_ID, 'Application Id', NULL, TRUE));
 
+        $stack->addForm($authForm);
+
         return $stack;
     }
 
@@ -508,34 +509,38 @@ final class HubSpotApplication extends OAuth2ApplicationAbstract
 
 ## Register into container
 
-Nesmíme zapomenout registrovat aplikaci do kontejneru.
+We must not forget to register the application to the container.
 
 <Tabs>
 <TabItem value="typescript" label="Typescript">
 
-Aplikaci v index.ts zaregistrujeme do kontejneru.
+Register the application in `index.ts` to the container.
 
 ```typescript
+// ...
+import { OAuth2Provider } from '@orchesty/nodejs-sdk/dist/lib/Authorization/Provider/OAuth2/OAuth2Provider';
 import { container, initiateContainer } from '@orchesty/nodejs-sdk';
-import TestOAuth2Application from './TestOAuth2Application';
+import HubSpotApplication from './HubSpotApplication';
 
 export default async function prepare(): Promise<void> {
-  await initiateContainer();
+    await initiateContainer();
 
-  container.setApplication(new TestOAuth2Application());
+    const oAuth2Provider = container.get<OAuth2Provider>(CoreServices.OAUTH2_PROVIDER);
+
+    // ...
+    const hubSpotApplication = new HubSpotApplication(oAuth2Provider);
+    container.setApplication(hubSpotApplication);
 }
 ```
 </TabItem>
 <TabItem value="php" label="PHP">
 
-Applikaci registrujeme do yaml souboru: "./config/application/application.yaml"
+Register the application in the yaml file: `./config/application/application.yaml`.
 
-```yaml
-# ./config/application/application.yaml
+```php
+# ./config/application.yaml
 services:
   _defaults:
-    autowire: false
-    autoconfigure: false
     public: '%public.services%'
 
   hbpf.application.hub-spot:
@@ -549,13 +554,11 @@ services:
 </TabItem>
 </Tabs>
 
+If we have done everything correctly, we will now see the new app in the marketplace. We install the app and in the settings we will see the authorization form we created.
 
+<Image path="/img/tutorial/oauth2/detail-app-hubspot.svg" alt="Application" />
 
-Pokud jsme vše provedli správně, v marketplace Orchesty Adminu nyní uvidíme novou aplikaci. Aplikaci nainstalujeme a v jejím nastavení se nám zobrazí formulář pro autorizaci, který jsme vytvořili.
-
-<Image path="/img/tutorial/oauth2/detail-app-hubspot.png" alt="Application" />
-
-Pokud již máme přístupové údaje z HubSpot, můžeme nainstalovanou aplikaci autorizovat a tím bude připravena k použití.
+If we already have HubSpot credentials, we can authorize the installed application and it will be ready for use.
 
 ## Connector creation
 
@@ -563,7 +566,7 @@ Pokud již máme přístupové údaje z HubSpot, můžeme nainstalovanou aplikac
 We recommend to first check out [Connector tutorial](basic-connector) to see how create connector to remove API. 
 :::
 
-Nyní vytvoříme konektor, který vloží do HubSpot nový kontakt. Celý konektor je velmi jednoduchý, pokud jsme již vytvořili konektory v předchozích návodech, měla by to být pro nás hračka. Ukážeme si tedy rovnou celý kód:
+Now we create a connector that inserts a new contact into the HubSpot. The whole connector is very simple, if we have already created connectors in the previous tutorials, this should be a piece of cake for us. So let's just show the whole code right away:
 
 <Tabs>
 <TabItem value="typescript" label="Typescript">
@@ -573,7 +576,7 @@ import AConnector from '@orchesty/nodejs-sdk/dist/lib/Connector/AConnector';
 import logger from '@orchesty/nodejs-sdk/dist/lib/Logger/Logger';
 import { HttpMethods } from '@orchesty/nodejs-sdk/dist/lib/Transport/HttpMethods';
 import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
-import { BASE_URL } from './HubSpotApplication';
+import HubSpotApplication, { BASE_URL } from './HubSpotApplication';
 
 export const NAME = 'hub-spot-create-contact';
 
@@ -586,7 +589,7 @@ export default class HubSpotCreateContactConnector extends AConnector {
     public async processAction(dto: ProcessDto): Promise<ProcessDto> {
         const applicationInstall = await this.getApplicationInstallFromProcess(dto);
 
-        const request = await this.getApplication().getRequestDto(
+        const request = await this.getApplication<HubSpotApplication>().getRequestDto(
             dto,
             applicationInstall,
             HttpMethods.POST,
@@ -618,6 +621,8 @@ interface IResponse {
 <TabItem value="php" label="PHP">
 
 ```php
+namespace Pipes\PhpSdk\Connector;
+
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
@@ -661,31 +666,31 @@ final class HubSpotCreateContactConnector extends ConnectorAbstract
 </TabItem>
 </Tabs>
 
-V metodě `send()` si můžeme všimnout zkráceného zápisu pro nastavení opakovaných volání. V tomto případě konektor opakuje všechna volání, která se vrátí s jiným kódem, než jsme definovali. Dalšími parametry můžeme nastavit interval a počet opakování. My jsme ponechali výchozí hodnoty, tedy 10 opakování po 60 sec.
+In the `send()` method we can notice a shortened notation for setting up repeated calls. In this case, the connector repeats any calls that return with a different code than we defined. We can use other parameters to set the interval and number of retries. We have left the default values, i.e. 10 repeats per 60 sec.
 
 :::tip
-Vše o nastavení opakovaných volání se dozvíme v kapitole [Repeater](../documentation/repeater.md).
+All about setting up repeat calls can be found in the [Results evaluation](../documentation/results-evaluation) chapter.
 :::
 
-Nakonec jsme v konektoru nastavili logování pro případ, že nový kontakt již v HubSpot existuje. Jak s touto situací naložíme v praxi je samozřejmě na nás.
+Finally, we set up logging in the connector in case a new contact already exists in HubSpot. How we handle this situation in practice is of course up to us.
 
 :::tip
-Doporučujeme nastudovat dokumentaci k [logování v Orchesty](../documentation/logs.md).
+We recommend studying the documentation for [logging in Orchesty](../documentation/logs.md).
 :::
 
-## Registrace konektoru
+## Registration of connector
 
 <Tabs>
 <TabItem value="typescript" label="Typescript">
 
-Nakonec konektor v `index.ts` zaregistrujeme do kontejneru .
+Finally, we register the connector in `index.ts` to the container.
 
 ```typescript
 //...
 
 import HubSpotCreateContactConnector from './HubSpotCreateContactConnector';
 
-const prepare = async (): Promise<void> => {
+export default async function prepare(): Promise<void> {
     //...
 
     const hubSpotCreateContactConn = new HubSpotCreateContactConnector();
@@ -704,14 +709,13 @@ const prepare = async (): Promise<void> => {
 </TabItem>
 <TabItem value="php" label="PHP">
 
-Nakonec konektor registrujeme do yaml souboru: "./config/connector/connector.yaml"
+Finally, register the connector in the yaml file `./config/connector/connector.yaml`.
 
-```yaml
-# ./config/connector/connector.yaml
+```php
+
+# ./config/connector.yaml
 services:
   _defaults:
-    autowire: false
-    autoconfigure: false
     public: '%public.services%'
 
   hbpf.connector.hub-spot-create-contact:
@@ -728,11 +732,11 @@ services:
 </TabItem>
 </Tabs>
 
-Tím máme vše připraveno. Nyní můžeme otestovat vložení kontaktu do HubSpot s OAuth2 autentizací.
+We're all set. Now we can test inserting a contact into HubSpot with OAuth 2 authentication.
 
-## Vytvoření topologie
+## Creating a topology
 
-Topologie pro otestování našeho příkladu bude tentokrát opravdu jednoduchá. Použijeme jen start event a náš konektor. Data pro tentokrát vložíme ručně.
+The topology to test our example will be really simple this time. We'll just use the start event and our connector. For this time, we'll enter the data manually.
 
-![Create contact HubSpot topology](/img/tutorial/oauth2/create-user-topology.png)
+![Create contact HubSpot topology](/img/tutorial/oauth2/create-user-topology.svg)
 

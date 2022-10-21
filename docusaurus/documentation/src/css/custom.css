@@ -92,3 +92,17 @@ a.button:hover {
 .docusaurus-mt-lg {
   margin-top: 6rem !important;
 }
+
+/* ===== Card ===== */
+
+.card {
+  border-radius: 5px;
+  box-shadow: rgba(0, 0, 0, 0) 0px 2px 5px 0px !important;
+  border: 2px solid #e7e7e7 !important;
+}
+
+.card:hover {
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 10px 0px !important;
+  border: 2px solid #6bb8c9 !important;
+  color: #6bb8c9;
+}

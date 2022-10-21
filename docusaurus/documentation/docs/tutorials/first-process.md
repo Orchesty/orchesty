@@ -2,73 +2,73 @@ import Image from '/src/components/ThemedImg';
 
 # First process
 
-Orchesty je nástroj pro datové integrace a orchestrace procesů. Jako první krok si ukážeme základní práci s orchestrační vrstvou a sestavíme si první jednoduchý proces.
+As a first step, we'll demonstrate basic orchestration layer work and set up a first simple process.
 
 ### Prerequisites
 
 - [Installed and running Orchesty](../get-started/installation)
 
-## Vytvoření topologie procesu
-Definici procesu nazýváme topologie. Novou topologii vytvoříme pomocí tlačítka **plus** v levé liště admina. Topologie můžeme organizovat ve složkách a kromě vytvoření nové topologie máme i možnost importovat topologii připravenou. To vše se nám bude v budoucnu hodit, ale zatím si vystačíme s jednoduchým vytvořením topologie v rootu projektu.
+## Creating a process topology
+The definition of a process is called a topology. To create a new topology, use the **plus** button in the left Admin bar. Topologies can be organized in folders and in addition to creating a new topology, we also have the option to import a ready-made topology. All of this will come in handy in the future, but for now we'll make do with simply creating a topology in the project root.
 
-<Image path="/img/firstProcess/plus-menu.png" lightOnly />
+<Image path="/img/firstProcess/plus-menu.svg" lightOnly />
 
-Z nabídky akcí vybereme "New topology" a topologii pojmenujeme.
+Select "New topology" from the action menu and name the topology.
 
-<Image path="/img/firstProcess/new-topology.png" lightOnly />
+<Image path="/img/firstProcess/new-topology.svg" lightOnly />
 
-Nyní se nám otevřel detail topologie. Jeho prostředí si budeme popisovat průběžně. Nejprve si ale otevřeme editor a sestavíme si náš první proces. Editor otevřeme tlačítkem s ikonou tužky v akčním menu v pravém horním rohu obrazovky.
+Now the detail of the topology has opened up. We will describe its environment continuously. But first, let's open the editor and set up our first process. We open the editor with the pencil icon button in the action menu in the upper right corner of the screen.
 
-<Image path="/img/firstProcess/action-menu.png" lightOnly />
+<Image path="/img/firstProcess/action-menu.svg" lightOnly />
 
-V levé části editoru vidíme panel nástrojů. Kromě nástrojů pro výběr prvků zde můžeme najít různé typy prvků. První (kulaté) jsou události. Ty používáme jako výchozí prvky topologií. Můžete zde najít 3 typy událostí - **timer**, **webhook** a **start**. My si vybereme **start** a přetáhneme ho na canvas.
+In the left part of the editor we can see the toolbar. The circular elements in the toolbar are events. We use these as the default elements of topologies. You can find here 3 types of events - **timer**, **webhook** and **start**. We'll choose **start** and drag it onto the canvas.
 
-<Image path="/img/firstProcess/editor-start.png" lightOnly />
-
-:::info
-**Start event** vytváří přístupový bod dané topologie. Poskytuje URL pro zaslání dat, která mají být procesem zpracována. URL se generuje při publikování topologie (viz níže). Poté naleznete URL start eventu v pravém sidebaru editoru při označení prvku.
-:::
-Další sekcí editoru nástrojů jsou **akce**. Pro naší topologii si vybereme **user task** a přetáhneme ho na canvas. Kliknutím na **start event** zobrazíme jeho nástroje. Pomocí šipek pak oba prvky topologie propojíme.
-
-<Image path="/img/firstProcess/first-process-topology.png" lightOnly />
-
-Tím jsme sestavili první ukázkovou topologii s využitím akce **user task**. 
+<Image path="/img/firstProcess/editor-start.svg" lightOnly />
 
 :::info
-**User task** se hodí pro ruční úpravy dat pomocí uživatelského rozhraní, ale také ho lze velice jednoduše použít pro krokování dat při sestavování topologií. Níže si ukážeme jak.
+The **Start event** creates an access point of the given topology. It provides a URL for sending data to be processed by the process. The URL is generated when the topology is saved. Then, the start event URL can be found in the right sidebar of the editor when the element is selected.
 :::
+The next section of the tool editor is **actions**. For our topology, we'll select **user task** and drag it to the canvas. Click on **start event** to display its tools. Then use the arrows to connect the two elements of the topology.
 
-## Publikování topologie
+<Image path="/img/firstProcess/first-process-topology.svg" lightOnly />
 
-Nyní připravenou topologii uložíme pomocí tlačítka **Save** v akčním menu a tlačítkem **Back** zavřeme editor. Tím jsme uložili změny. Topologii máme ale stále ve stavu **Draft**. Abychom připravený proces spustili, musíme ho ještě publikovat pomocí tlačítka **Publish**.
-
-<Image path="/img/firstProcess/action-menu.png" lightOnly />
+Thus, we built the first sample topology using the **user task** action.
 
 :::info
-Publikováním topologie vytvoří kontejner s řídící službou a fronty procesu. O vše se postará orchestrační vrstva.
+The **User task** action is useful for manually editing data using the user interface, but it can also be used very easily for stepping data when building topologies. Below we will show how.
 :::
 
-## Enable/disable procesu
+## Publishing a topology
 
-Nově publikovaný proces je ve stavu neaktivní. To znamená, že nepříjímá žádné signály start eventu. Jakmile přepneme proces do stavu enable, začne přijímat požadavky na URL start eventu.
+Now save the prepared topology using the **Save** button in the action menu and close the editor using the **Back** button. This saves the changes. However, the topology is still in the **Draft** state. To run the prepared topology, we still need to publish it using the **Publish** button.
 
-<Image path="/img/firstProcess/enable.png" lightOnly />
+<Image path="/img/firstProcess/action-menu.svg" lightOnly />
 
 :::info
-**Disable** topologie uzavírá její vstupní body. Topologie nepřijímá žádné signály a timery nespouští plánované procesy. Všechny probíhající instance procesů ale pokračují.
+By publishing the topology, Orchesty creates a container with a control service and queues between process nodes.
 :::
 
-## Ruční spuštění procesu
+## Enable/disable process
 
-Pokud máme připravenou topologii, proces můžeme spustit i ručně tlačítkem **Run** v akčním menu. V okně, které se nám otevře, můžeme vybrat požadovaný start event, pokud jich má topologie víc. Do těla zprávy vložíme požadovaná data ve formátu JSON.
+The newly published process is in the inactive state. That is, it does not receive any start event signals. As soon as we switch the process to the enable state, it starts receiving requests for the start event URL.
 
-<Image path="/img/firstProcess/run-modal.png" lightOnly />
+<Image path="/img/firstProcess/enable.svg" lightOnly />
 
-Spustíme proces a přesuneme se do záložky **User tasks** v detailu topologie. V této záložce můžeme vidět všechny zprávy všech user tasks topologie. Když klikneme na naší zprávu, v detailu můžeme vidět její hlavičky a data. Data je možné před odesláním upravit.
+:::info
+**Disable** of a topology closes its entry points. The topology receives no signals and timers do not start scheduled processes. However, all running process instances continue processing.
+:::
+
+## Manually starting a process
+
+If we have prepared a topology, we can also start the process manually by using the **Run** button in the action menu. In the window that opens, we can select the desired start event if the topology has more than one. In the body of the message we will insert the required data in JSON format.
+
+<Image path="/img/firstProcess/run.svg" lightOnly />
+
+Now start the process and move to the **User tasks** tab in the topology details. In this tab we can see all the messages of all the user tasks of the topology. When we click on our message, we can see its headers and data in the detail. The data can be edited before sending.
 
 
-Pokud tedy vidíte vaší první zprávu v přehledu user tasks, úspěšně jste spustili svůj první proces. Tlačítkem **Approve** proces dokončíte. 
+So if you see your first message in the user tasks overview, you have successfully started your first process. Use the **Approve** button to complete the process.
 
-V další kapitole si ukážeme, jak přihlásit k orchestrační vrstvě službu, ve které můžeme tvořit naše scripty a konektory s využitím SDK.
+In the next chapter, we will show how to register a worker to the orchestration layer. In the worker, we can create our scripts and connectors using the SDK.
 
 

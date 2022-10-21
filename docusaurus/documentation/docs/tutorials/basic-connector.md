@@ -7,7 +7,7 @@ Connector's job is mainly to communicate with another services. This tutorial sh
 how to create a connector fetching data from a REST API. In case of successful request, connector
 sends data to next node for further processing.
 
-Důležitou zodpovědností konektoru je vyhodnocení odpovědi a zpracování chybových stavů. Orchesty nabízí řadu možností pro nastavení chování při chybových stavech volání. Všechny jsou popsané na stránce [Response results](../documentation/results-evaluation.md). Zde uvedeme ty hlavní:
+An important responsibility of the connector is to evaluate the response and handle error conditions. Orchesty offers a number of options for setting the behavior of call error conditions. All are described on the [Response results](../documentation/results-evaluation.md) page. Here we list the main ones:
 
 - **Repeat** - to retry the same process again after specified time delay
 - **Stop** - to stop processing with either success of failure state
@@ -29,6 +29,8 @@ First we create a new class, which will for simplicity extends **AConnector**. T
 ```typescript
 import AConnector from '@orchesty/nodejs-sdk/dist/lib/Connector/AConnector';
 import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
+
+export const NAME = 'jsonplaceholder-get-users';
 
 export default class GetUsersConnector extends AConnector {
     public getName(): string {
@@ -299,6 +301,7 @@ Last step is to register connector into container. This is done in index.ts file
 // ...
 import { container } from '@orchesty/nodejs-sdk';
 import CoreServices from '@orchesty/nodejs-sdk/dist/lib/DIContainer/CoreServices';
+import CurlSender from '@orchesty/nodejs-sdk/dist/lib/Transport/Curl/CurlSender';
 import GetUsersConnector from './GetUsersConnector';
 // ...
 
@@ -317,8 +320,10 @@ export default async function prepare(): Promise<void> {
 Last step is to register connector into container. This is done in connector.yaml file located config directory.
 
 ```php
-# ./config/connector/connector.yaml
+# ./config/connector.yaml
 services:
+    _defaults:
+        public: '%public.services%'
     hbpf.connector.jsonplaceholder-get-users:
         class: Pipes\PhpSdk\Connector\GetUsersConnector
         calls:
@@ -329,11 +334,11 @@ services:
 
 ## Building topology
 
-Nyní můžeme v Adminu vytvořit novou topologii, kde si nový konektor vyzkoušíme. V topologii použijeme konektor a user task, kde si budeme moc stažená data prohlédnout.
+Now we can create a new topology in Admin to test the new connector. In the topology, we will use the connector and user task to view the downloaded data.
 
-![New connector](/img/tutorial/basicConnector/basic-connector-topology.png "Basic connector topology")
+![New connector](/img/tutorial/basicConnector/basic-connector-topology.svg "Basic connector topology")
 
-Publikujeme a aktivujeme novou topologii a spustíme ji s prázdnými daty. V záložce **User Tasks** bychom nyní měli vidět zprávu s daty, které jsme získali ze vzdálené služby.
+We publish and activate the new topology and run it with empty data. In the **User Tasks** tab, we should now see a report with the data we got from the remote service.
 
 
 
