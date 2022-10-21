@@ -1,0 +1,30 @@
+{
+  "id": "632d6bf4b4ddf0d2e8329cbd",
+  "nodeId": "632d697543e76d122108e067",
+  "nodeName": "hub-spot-create-contact",
+  "topologyId": "632d697543e76d122108e064",
+  "topologyName": "sync-users",
+  "type": "trash",
+  "correlationId": "9ffa2a6c-9db7-4416-aac2-523b736932ac",
+  "created": "2022-09-23T08:19:00Z",
+  "updated": "2022-09-23T08:19:00Z",
+  "message": {
+    "body": "{\"properties\":{\"company\":\"Johns Group\",\"email\":\"Telly.Hoeger@billy.biz\",\"firstname\":\"Kurtis\",\"lastname\":\"Weissnat\",\"website\":\"elvis.io\"}}",
+    "headers": {
+      "node-id": "632d697543e76d122108e067",
+      "parent-id": "39b64024-8177-48be-ac9b-84770e10c5b1",
+      "process-id": "39ca2ebe-1eb6-4340-8db5-567b8eb6b158",
+      "result-message": "result status [400], message: Error occurred: User not defined",
+      "content-type": "application/json",
+      "correlation-id": "9ffa2a6c-9db7-4416-aac2-523b736932ac",
+      "previous-node-id": "632d697543e76d122108e066",
+      "process-started": 1663921140387,
+      "topology-id": "632d697543e76d122108e064",
+      "worker-followers": "[]"
+    }
+  },
+  "auditLogs": [],
+  "user": "endUser",
+  "topologyDescr": "ycycyd",
+  "topologyVersion": 9
+}

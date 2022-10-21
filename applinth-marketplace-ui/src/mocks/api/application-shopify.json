@@ -1,0 +1,66 @@
+{
+  "name": "Shopify",
+  "authorization_type": "basic",
+  "application_type": "cron",
+  "key": "shopify",
+  "description": "Allows users to leverage Shoptet\u2019s core and infrastructure while building a customized frontend solution and customizing add-ons",
+  "info": "",
+  "logo": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI1LjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IlZyc3R2YV8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMTAwIDEwMDsiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8c3R5bGUgdHlwZT0idGV4dC9jc3MiPgoJLnN0MHtmaWxsOiM5NUJGNDY7fQoJLnN0MXtmaWxsOiM1RThFM0U7fQoJLnN0MntmaWxsOiNGRkZGRkY7fQo8L3N0eWxlPgo8Zz4KCTxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik04Mi45LDE5LjZjLTAuMS0wLjUtMC41LTAuOC0wLjktMC44Yy0wLjQsMC04LTAuNi04LTAuNnMtNS4zLTUuMy01LjktNS45Yy0wLjYtMC42LTEuNy0wLjQtMi4yLTAuMwoJCWMtMC4xLDAtMS4yLDAuNC0zLDAuOWMtMS44LTUuMS00LjktOS44LTEwLjQtOS44Yy0wLjIsMC0wLjMsMC0wLjUsMGMtMS42LTIuMS0zLjUtMy01LjItM2MtMTIuOCwwLTE5LDE2LTIwLjksMjQuMgoJCWMtNSwxLjUtOC41LDIuNi05LDIuOGMtMi44LDAuOS0yLjksMS0zLjIsMy42Yy0wLjMsMi03LjYsNTguMy03LjYsNTguM0w2Myw5OS44bDMwLjgtNi43QzkzLjgsOTMuMSw4MywyMC4xLDgyLjksMTkuNkw4Mi45LDE5LjZ6CgkJIE01OS44LDE0TDU1LDE1LjRjMC0wLjMsMC0wLjcsMC0xYzAtMy4yLTAuNC01LjctMS4xLTcuOEM1Ni43LDcsNTguNiwxMC4yLDU5LjgsMTR6IE01MC40LDcuM2MwLjgsMiwxLjMsNC44LDEuMyw4LjYKCQljMCwwLjIsMCwwLjQsMCwwLjZjLTMuMSwxLTYuNSwyLTkuOSwzLjFDNDMuNywxMi4yLDQ3LjIsOC42LDUwLjQsNy4zTDUwLjQsNy4zeiBNNDYuNiwzLjdjMC42LDAsMS4xLDAuMiwxLjYsMC42CgkJYy00LjEsMS45LTguNSw2LjgtMTAuNCwxNi42TDMwLDIzLjJDMzIuMiwxNS44LDM3LjMsMy43LDQ2LjYsMy43TDQ2LjYsMy43eiIvPgoJPHBhdGggY2xhc3M9InN0MSIgZD0iTTgyLDE4LjhjLTAuNCwwLTgtMC42LTgtMC42cy01LjMtNS4zLTUuOS01LjljLTAuMi0wLjItMC41LTAuMy0wLjgtMC40TDYzLDk5LjhsMzAuOC02LjcKCQljMCwwLTEwLjgtNzMtMTAuOS03My41QzgyLjgsMTkuMSw4Mi40LDE4LjgsODIsMTguOCIvPgoJPHBhdGggY2xhc3M9InN0MiIgZD0iTTUyLjYsMzUuOGwtMy44LDExLjNjMCwwLTMuMy0xLjgtNy40LTEuOGMtNiwwLTYuMywzLjctNi4zLDQuN2MwLDUuMiwxMy40LDcuMSwxMy40LDE5LjIKCQljMCw5LjUtNiwxNS42LTE0LjEsMTUuNmMtOS43LDAtMTQuNy02LjEtMTQuNy02LjFsMi42LTguNmMwLDAsNS4xLDQuNCw5LjQsNC40YzIuOCwwLDQtMi4yLDQtMy44YzAtNi43LTExLTctMTEtMTguMQoJCWMwLTkuMyw2LjctMTguMywyMC4xLTE4LjNDNTAsMzQuMyw1Mi42LDM1LjgsNTIuNiwzNS44Ii8+CjwvZz4KPC9zdmc+Cg==",
+  "isInstallable": true,
+  "enabled": false,
+  "applicationSettings": {
+    "authorization_form": {
+      "key": "authorization_form",
+      "publicName": "Authorization settings",
+      "description": "",
+      "readOnly": false,
+      "fields": [
+        {
+          "type": "text",
+          "key": "user",
+          "value": null,
+          "label": "User",
+          "description": "",
+          "required": true,
+          "readOnly": false,
+          "disabled": false,
+          "choices": []
+        },
+        {
+          "type": "text",
+          "key": "password",
+          "value": null,
+          "label": "Password",
+          "description": "",
+          "required": true,
+          "readOnly": false,
+          "disabled": false,
+          "choices": []
+        }
+      ]
+    },
+    "shopifyShippingForm": {
+      "key": "shopifyShippingForm",
+      "publicName": "Shippings from Shopify",
+      "description": "",
+      "readOnly": false,
+      "fields": []
+    },
+    "shopifyOrdersForm": {
+      "key": "shopifyOrdersForm",
+      "publicName": "Orders from Shopify",
+      "description": "",
+      "readOnly": false,
+      "fields": []
+    },
+    "authenticaOrdersForm": {
+      "key": "authenticaOrdersForm",
+      "publicName": "Orders to Shopify",
+      "description": "",
+      "readOnly": false,
+      "fields": []
+    }
+  },
+  "webhookSettings": [],
+  "host": "worker"
+}

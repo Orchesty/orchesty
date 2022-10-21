@@ -1,0 +1,54 @@
+{
+  "items": [
+    {
+      "name": "Shopify",
+      "authorization_type": "basic",
+      "application_type": "cron",
+      "key": "shopify",
+      "description": "Allows users to leverage Shoptet\u2019s core and infrastructure while building a customized frontend solution and customizing add-ons",
+      "info": "",
+      "logo": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI1LjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IlZyc3R2YV8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMTAwIDEwMDsiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8c3R5bGUgdHlwZT0idGV4dC9jc3MiPgoJLnN0MHtmaWxsOiM5NUJGNDY7fQoJLnN0MXtmaWxsOiM1RThFM0U7fQoJLnN0MntmaWxsOiNGRkZGRkY7fQo8L3N0eWxlPgo8Zz4KCTxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik04Mi45LDE5LjZjLTAuMS0wLjUtMC41LTAuOC0wLjktMC44Yy0wLjQsMC04LTAuNi04LTAuNnMtNS4zLTUuMy01LjktNS45Yy0wLjYtMC42LTEuNy0wLjQtMi4yLTAuMwoJCWMtMC4xLDAtMS4yLDAuNC0zLDAuOWMtMS44LTUuMS00LjktOS44LTEwLjQtOS44Yy0wLjIsMC0wLjMsMC0wLjUsMGMtMS42LTIuMS0zLjUtMy01LjItM2MtMTIuOCwwLTE5LDE2LTIwLjksMjQuMgoJCWMtNSwxLjUtOC41LDIuNi05LDIuOGMtMi44LDAuOS0yLjksMS0zLjIsMy42Yy0wLjMsMi03LjYsNTguMy03LjYsNTguM0w2Myw5OS44bDMwLjgtNi43QzkzLjgsOTMuMSw4MywyMC4xLDgyLjksMTkuNkw4Mi45LDE5LjZ6CgkJIE01OS44LDE0TDU1LDE1LjRjMC0wLjMsMC0wLjcsMC0xYzAtMy4yLTAuNC01LjctMS4xLTcuOEM1Ni43LDcsNTguNiwxMC4yLDU5LjgsMTR6IE01MC40LDcuM2MwLjgsMiwxLjMsNC44LDEuMyw4LjYKCQljMCwwLjIsMCwwLjQsMCwwLjZjLTMuMSwxLTYuNSwyLTkuOSwzLjFDNDMuNywxMi4yLDQ3LjIsOC42LDUwLjQsNy4zTDUwLjQsNy4zeiBNNDYuNiwzLjdjMC42LDAsMS4xLDAuMiwxLjYsMC42CgkJYy00LjEsMS45LTguNSw2LjgtMTAuNCwxNi42TDMwLDIzLjJDMzIuMiwxNS44LDM3LjMsMy43LDQ2LjYsMy43TDQ2LjYsMy43eiIvPgoJPHBhdGggY2xhc3M9InN0MSIgZD0iTTgyLDE4LjhjLTAuNCwwLTgtMC42LTgtMC42cy01LjMtNS4zLTUuOS01LjljLTAuMi0wLjItMC41LTAuMy0wLjgtMC40TDYzLDk5LjhsMzAuOC02LjcKCQljMCwwLTEwLjgtNzMtMTAuOS03My41QzgyLjgsMTkuMSw4Mi40LDE4LjgsODIsMTguOCIvPgoJPHBhdGggY2xhc3M9InN0MiIgZD0iTTUyLjYsMzUuOGwtMy44LDExLjNjMCwwLTMuMy0xLjgtNy40LTEuOGMtNiwwLTYuMywzLjctNi4zLDQuN2MwLDUuMiwxMy40LDcuMSwxMy40LDE5LjIKCQljMCw5LjUtNiwxNS42LTE0LjEsMTUuNmMtOS43LDAtMTQuNy02LjEtMTQuNy02LjFsMi42LTguNmMwLDAsNS4xLDQuNCw5LjQsNC40YzIuOCwwLDQtMi4yLDQtMy44YzAtNi43LTExLTctMTEtMTguMQoJCWMwLTkuMyw2LjctMTguMywyMC4xLTE4LjNDNTAsMzQuMyw1Mi42LDM1LjgsNTIuNiwzNS44Ii8+CjwvZz4KPC9zdmc+Cg==",
+      "isInstallable": true
+    },
+    {
+      "name": "Shoptet",
+      "authorization_type": "basic",
+      "application_type": "cron",
+      "key": "shoptet",
+      "description": "",
+      "info": "\u003Cp\u003E\u003Cstrong\u003EInstalace modulu:\u003C/strong\u003E\u003C/p\u003E\n\u003Col class=\u0022\u0022\u003E\n    \u003Cli\u003EVe va\u0161em Shoptet \u00fa\u010dtu nainstalujte dopln\u011bk \u003Ca href=\u0022https://doplnky.shoptet.cz/fulfillment-by-authentica-2\u0022\n                                                      target=\u0022_blank\u0022 rel=\u0022noopener noreferrer\u0022\u003EFulfillment by\n        Authentica 2\u003C/a\u003E.\n    \u003C/li\u003E\n    \u003Cli\u003EV nastaven\u00ed integrac\u00ed Authentica zkop\u00edrujte PIN a vlo\u017ete ho do nastaven\u00ed dopl\u0148ku v Shoptet.\u003C/li\u003E\n    \u003Cli\u003EV nastaven\u00ed integra\u010dn\u00edho modulu nap\u00e1rujte stavy objedn\u00e1vek, kter\u00e9 chcete p\u0159en\u00e1\u0161et mezi Authentica a Shoptet.\n    \u003C/li\u003E\n    \u003Cli\u003ENap\u00e1rujte dopravu Authentica na dopravu Shoptet.\u003C/li\u003E\n    \u003Cli\u003ETla\u010d\u00edtkem \u003Cem\u003EAktivovat\u003C/em\u003E aktivujte integra\u010dn\u00ed modul \u010d\u00edm\u017e se p\u0159enesou v\u0161echny produkty z Shoptet do Authentica.\u003C/li\u003E\n    \u003Cli\u003ESynchronizace objedn\u00e1vek produkt\u016f a stavy skladu budou prob\u00edhat automaticky v 15 min intervalech. Stavy\n        objedn\u00e1vek se p\u0159en\u00e1\u0161\u00ed do Shoptetu okam\u017eit\u011b p\u0159i zm\u011bn\u00e1ch v Authentice.\n    \u003C/li\u003E\n    \u003Cli\u003EPro odinstalaci Shoptetu nejprve deaktivujte modul a pot\u00e9 odinstalujte dopl\u0148ek v Shoptetu.\u003C/li\u003E\n\u003C/ol\u003E\n",
+      "logo": "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAIAAACzY+a1AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH5QkPCCQGybZHnQAAAY5JREFUeNrt3DFKA0EUgGGzDFZqiiwq6BEEq0Bgew9jk4NYpUnraVZMGbCyFEkRkiZBEsjCpNgLpAjkqd9fTTkz3+6Ur5NzPtNvrnAFCIVQCBEKoRAKIUIhFEIhRCiEQiiECIVQCIUQoRDqJKWY22qm42Y6jrar86fX4rbvLxRCIUQohEIohAiFUAiFEKEQCqEQIhRCIRRChEIohEKIUAiFUAgRCqEQCiFCIRRChEIohEKIUAiFUAgRCqEQCiFCIdSpCjpStrjpp8fnaLv66d5dxrurTs7Zh+wh1Z94SOer9/lqEu14D/fDdlEvmnrZhNpb1UtVmUIRTj6+R2EJXz639SIW4VuZqvLCQyqECIVQCBG6AoRCKIQIhVAIhRChEAqhECIUQiEUQoRCKIRCiFAIhVAIEQqhEAohQiEUQiFEKIRCKIQIhVAIhRChEAqhDu9os7nXm9lm9xXteNdXg3YRbZ5s21GmAhuv7iEVQiFEKIRCKIQIhVAIhRChEAqhECIUQiEUQoRCKIRC+D/bA1iSNiRst5axAAAAAElFTkSuQmCC",
+      "isInstallable": false
+    },
+    {
+      "name": "WooCommerce",
+      "authorization_type": "basic",
+      "application_type": "cron",
+      "key": "woocommerce",
+      "description": "Open-source e-commerce plugin for WordPress, designed for small to large-sized online merchants",
+      "info": "",
+      "logo": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI1LjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIKCSBpZD0iVnJzdHZhXzEiIHhtbG5zOmNjPSJodHRwOi8vY3JlYXRpdmVjb21tb25zLm9yZy9ucyMiIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIgoJIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIKCSBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCAxMDAgMTAwOyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI+Cgkuc3Qwe2ZpbGw6IzdGNTRCMzt9Cgkuc3Qxe2ZpbGw6I0ZGRkZGRjt9Cjwvc3R5bGU+CjxnPgoJPHBhdGggY2xhc3M9InN0MCIgZD0iTTkuMywyMC4zaDgxLjNjNS4xLDAsOS4zLDQuMiw5LjMsOS4zdjMxYzAsNS4xLTQuMiw5LjMtOS4zLDkuM0g2MS40bDQsOS44bC0xNy42LTkuOEg5LjQKCQljLTUuMSwwLTkuMy00LjItOS4zLTkuM3YtMzFDMCwyNC41LDQuMiwyMC4zLDkuMywyMC4zTDkuMywyMC4zeiIvPgoJPHBhdGggY2xhc3M9InN0MSIgZD0iTTUuNywyOC44YzAuNi0wLjgsMS40LTEuMiwyLjYtMS4zYzIuMS0wLjIsMy4yLDAuOCwzLjUsMi45YzEuMyw4LjUsMi42LDE1LjcsNC4xLDIxLjZsOC45LTE2LjkKCQljMC44LTEuNSwxLjgtMi40LDMtMi40YzEuOC0wLjEsMi45LDEsMy4zLDMuNGMxLDUuNCwyLjMsMTAsMy45LDEzLjljMS4xLTEwLjMsMi44LTE3LjcsNS40LTIyLjNjMC42LTEuMSwxLjUtMS43LDIuNy0xLjgKCQljMC45LTAuMSwxLjgsMC4yLDIuNiwwLjhjMC44LDAuNiwxLjIsMS40LDEuMywyLjNjMCwwLjctMC4xLDEuMy0wLjQsMS45Yy0xLjYsMi45LTIuOSw3LjgtMy45LDE0LjdjLTEsNi42LTEuNCwxMS44LTEuMSwxNS41CgkJYzAuMSwxLTAuMSwxLjktMC41LDIuN2MtMC41LDAuOS0xLjIsMS40LTIuMiwxLjVjLTEuMSwwLjEtMi4yLTAuNC0zLjItMS41Yy0zLjgtMy45LTYuOC05LjYtOS0xNy4zQzI0LDUxLjUsMjIsNTUuNCwyMC43LDU4CgkJYy0yLjQsNC42LTQuNCw2LjktNi4xLDcuMWMtMS4xLDAuMS0yLTAuOS0yLjgtMi44QzkuNyw1Nyw3LjUsNDYuNyw1LjEsMzEuNUM0LjksMzAuNCw1LjIsMjkuNSw1LjcsMjguOEw1LjcsMjguOHogTTkzLDM1LjEKCQljLTEuNS0yLjYtMy42LTQuMS02LjUtNC43Yy0wLjgtMC4yLTEuNS0wLjItMi4yLTAuMmMtMy45LDAtNy4xLDItOS41LDYuMWMtMi4xLDMuNC0zLjIsNy4zLTMuMiwxMS40YzAsMy4xLDAuNiw1LjgsMS45LDgKCQljMS41LDIuNiwzLjYsNC4xLDYuNSw0LjdjMC44LDAuMiwxLjUsMC4yLDIuMiwwLjJjMy45LDAsNy4xLTIsOS41LTYuMWMyLjEtMy41LDMuMi03LjMsMy4yLTExLjVDOTQuOSw0MCw5NC4zLDM3LjMsOTMsMzUuMXoKCQkgTTg3LjgsNDYuNGMtMC42LDIuNy0xLjYsNC43LTMuMSw2Yy0xLjIsMS4xLTIuMywxLjUtMy4zLDEuM2MtMS0wLjItMS44LTEuMS0yLjQtMi42Yy0wLjUtMS4zLTAuNy0yLjUtMC43LTMuN2MwLTEsMC4xLTIsMC4zLTMKCQljMC40LTEuNywxLjEtMy4zLDIuMi00LjhjMS4zLTIsMi44LTIuOCw0LjItMi41YzEsMC4yLDEuOCwxLjEsMi40LDIuNmMwLjUsMS4zLDAuNywyLjUsMC43LDMuN0M4OC4xLDQ0LjQsODgsNDUuNCw4Ny44LDQ2LjQKCQlMODcuOCw0Ni40eiBNNjcuNSwzNS4xYy0xLjUtMi42LTMuNy00LjEtNi41LTQuN2MtMC44LTAuMi0xLjUtMC4yLTIuMi0wLjJjLTMuOSwwLTcuMSwyLTkuNSw2LjFjLTIuMSwzLjQtMy4yLDcuMy0zLjIsMTEuNAoJCWMwLDMuMSwwLjYsNS44LDEuOSw4YzEuNSwyLjYsMy42LDQuMSw2LjUsNC43YzAuOCwwLjIsMS41LDAuMiwyLjIsMC4yYzMuOSwwLDcuMS0yLDkuNS02LjFjMi4xLTMuNSwzLjItNy4zLDMuMi0xMS41CgkJQzY5LjUsNDAsNjguOCwzNy4zLDY3LjUsMzUuMXogTTYyLjQsNDYuNGMtMC42LDIuNy0xLjYsNC43LTMuMSw2Yy0xLjIsMS4xLTIuMywxLjUtMy4zLDEuM2MtMS0wLjItMS44LTEuMS0yLjQtMi42CgkJYy0wLjUtMS4zLTAuNy0yLjUtMC43LTMuN2MwLTEsMC4xLTIsMC4zLTNjMC40LTEuNywxLjEtMy4zLDIuMi00LjhjMS4zLTIsMi44LTIuOCw0LjItMi41YzEsMC4yLDEuOCwxLjEsMi40LDIuNgoJCWMwLjUsMS4zLDAuNywyLjUsMC43LDMuN0M2Mi43LDQ0LjQsNjIuNiw0NS40LDYyLjQsNDYuNEw2Mi40LDQ2LjR6Ii8+CjwvZz4KPC9zdmc+Cg==",
+      "isInstallable": true
+    },
+    {
+      "name": "Amazon S3",
+      "authorization_type": "basic",
+      "application_type": "cron",
+      "key": "s3",
+      "description": "Object storage service that offers industry-leading scalability, data availability, security, and performance",
+      "info": "",
+      "logo": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI1LjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IlZyc3R2YV8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMTAwIDEwMDsiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8c3R5bGUgdHlwZT0idGV4dC9jc3MiPgoJLnN0MHtmaWxsOiM4QzMxMjM7fQoJLnN0MXtmaWxsOiNFMDUyNDM7fQoJLnN0MntmaWxsOiM1RTFGMTg7fQoJLnN0M3tmaWxsOiNGMkIwQTk7fQo8L3N0eWxlPgo8Zz4KCTxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0xNS4zLDE3LjRsLTYuNywzLjN2NTguNGw2LjcsMy4zbDAsMEwxNS4zLDE3LjRMMTUuMywxNy40eiIvPgoJPHBhdGggY2xhc3M9InN0MSIgZD0iTTUxLDc0bC0zNS42LDguNVYxNy40TDUxLDI1LjdWNzR6Ii8+Cgk8cGF0aCBjbGFzcz0ic3QwIiBkPSJNMzQuOSw2MC43TDUwLDYyLjZsMC4xLTAuMmwwLjEtMjQuOEw1MCwzNy41bC0xNS4xLDEuOVY2MC43eiIvPgoJPHBhdGggY2xhc3M9InN0MCIgZD0iTTUwLDc0LjFsMzQuNyw4LjRsMC4xLTAuMWwwLTY1bC0wLjEtMC4xTDUwLDI1LjhWNzQuMXoiLz4KCTxwYXRoIGNsYXNzPSJzdDEiIGQ9Ik02NS4xLDYwLjdMNTAsNjIuNlYzNy41bDE1LjEsMS45VjYwLjd6Ii8+Cgk8cGF0aCBjbGFzcz0ic3QyIiBkPSJNNjUuMSwyOUw1MCwzMS44TDM0LjksMjlsMTUuMS00TDY1LjEsMjl6Ii8+Cgk8cGF0aCBjbGFzcz0ic3QzIiBkPSJNNjUuMSw3MUw1MCw2OC4zTDM0LjksNzFMNTAsNzUuMkw2NS4xLDcxeiIvPgoJPHBhdGggY2xhc3M9InN0MCIgZD0iTTM0LjksMjlMNTAsMjUuM2wwLjEsMFYwLjJMNTAsMC4xTDM0LjksNy42VjI5eiIvPgoJPHBhdGggY2xhc3M9InN0MSIgZD0iTTY1LjEsMjlMNTAsMjUuM1YwLjFsMTUuMSw3LjZWMjl6Ii8+Cgk8cGF0aCBjbGFzcz0ic3QwIiBkPSJNNTAsMTAwbC0xNS4xLTcuNlY3MUw1MCw3NC44bDAuMiwwLjNsLTAuMSwyNC41TDUwLDEwMHoiLz4KCTxwYXRoIGNsYXNzPSJzdDEiIGQ9Ik01MCwxMDBsMTUuMS03LjZWNzFMNTAsNzQuOFYxMDB6IE04NC43LDE3LjRsNi43LDMuM3Y1OC40bC02LjcsMy4zVjE3LjR6Ii8+CjwvZz4KPC9zdmc+Cg==",
+      "isInstallable": true
+    }
+  ],
+  "filter": [],
+  "sorter": [],
+  "paging": {
+    "page": 1,
+    "itemsPerPage": 50,
+    "total": 3,
+    "nextPage": 2,
+    "lastPage": 2,
+    "previousPage": 1
+  }
+}

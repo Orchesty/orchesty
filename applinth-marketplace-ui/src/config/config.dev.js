@@ -8,6 +8,8 @@ export default {
       process.env.VUE_APP_STARTINGPONT_URL || 'http://127.0.0.66:82',
   },
   authBacklink: '/not-logged-in',
+  disableAuth: process.env.VUE_APP_DISABLE_AUTH === 'true',
+  msw: process.env.VUE_APP_MSW === 'true',
   checkLogged: {
     refreshTime: 30,
   },

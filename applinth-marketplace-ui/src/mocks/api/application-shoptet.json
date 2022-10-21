@@ -1,0 +1,1629 @@
+{
+  "name": "Shoptet",
+  "authorization_type": "basic",
+  "application_type": "cron",
+  "key": "shoptet",
+  "description": "",
+  "info": "\u003Cp\u003E\u003Cstrong\u003EInstalace modulu:\u003C/strong\u003E\u003C/p\u003E\n\u003Col class=\u0022\u0022\u003E\n    \u003Cli\u003EVe va\u0161em Shoptet \u00fa\u010dtu nainstalujte dopln\u011bk \u003Ca href=\u0022https://doplnky.shoptet.cz/fulfillment-by-authentica-2\u0022\n                                                      target=\u0022_blank\u0022 rel=\u0022noopener noreferrer\u0022\u003EFulfillment by\n        Authentica 2\u003C/a\u003E.\n    \u003C/li\u003E\n    \u003Cli\u003EV nastaven\u00ed integrac\u00ed Authentica zkop\u00edrujte PIN a vlo\u017ete ho do nastaven\u00ed dopl\u0148ku v Shoptet.\u003C/li\u003E\n    \u003Cli\u003EV nastaven\u00ed integra\u010dn\u00edho modulu nap\u00e1rujte stavy objedn\u00e1vek, kter\u00e9 chcete p\u0159en\u00e1\u0161et mezi Authentica a Shoptet.\n    \u003C/li\u003E\n    \u003Cli\u003ENap\u00e1rujte dopravu Authentica na dopravu Shoptet.\u003C/li\u003E\n    \u003Cli\u003ETla\u010d\u00edtkem \u003Cem\u003EAktivovat\u003C/em\u003E aktivujte integra\u010dn\u00ed modul \u010d\u00edm\u017e se p\u0159enesou v\u0161echny produkty z Shoptet do Authentica.\u003C/li\u003E\n    \u003Cli\u003ESynchronizace objedn\u00e1vek produkt\u016f a stavy skladu budou prob\u00edhat automaticky v 15 min intervalech. Stavy\n        objedn\u00e1vek se p\u0159en\u00e1\u0161\u00ed do Shoptetu okam\u017eit\u011b p\u0159i zm\u011bn\u00e1ch v Authentice.\n    \u003C/li\u003E\n    \u003Cli\u003EPro odinstalaci Shoptetu nejprve deaktivujte modul a pot\u00e9 odinstalujte dopl\u0148ek v Shoptetu.\u003C/li\u003E\n\u003C/ol\u003E\n",
+  "logo": "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAIAAACzY+a1AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH5QkPCCQGybZHnQAAAY5JREFUeNrt3DFKA0EUgGGzDFZqiiwq6BEEq0Bgew9jk4NYpUnraVZMGbCyFEkRkiZBEsjCpNgLpAjkqd9fTTkz3+6Ur5NzPtNvrnAFCIVQCBEKoRAKIUIhFEIhRCiEQiiECIVQCIUQoRDqJKWY22qm42Y6jrar86fX4rbvLxRCIUQohEIohAiFUAiFEKEQCqEQIhRCIRRChEIohEKIUAiFUAgRCqEQCiFCIRRChEIohEKIUAiFUAgRCqEQCiFCIdSpCjpStrjpp8fnaLv66d5dxrurTs7Zh+wh1Z94SOer9/lqEu14D/fDdlEvmnrZhNpb1UtVmUIRTj6+R2EJXz639SIW4VuZqvLCQyqECIVQCBG6AoRCKIQIhVAIhRChEAqhECIUQiEUQoRCKIRCiFAIhVAIEQqhEAohQiEUQiFEKIRCKIQIhVAIhRChEAqhDu9os7nXm9lm9xXteNdXg3YRbZ5s21GmAhuv7iEVQiFEKIRCKIQIhVAIhRChEAqhECIUQiEUQoRCKIRC+D/bA1iSNiRst5axAAAAAElFTkSuQmCC",
+  "isInstallable": false,
+  "enabled": true,
+  "applicationSettings": {
+    "authorization_form": {
+      "key": "authorization_form",
+      "publicName": "Authorization settings",
+      "description": "",
+      "readOnly": false,
+      "fields": [
+        {
+          "type": "text",
+          "key": "pin",
+          "value": "e25a2a3740bd6562cb4418b79a2eca2727aed6806b3356dea36f652a68fba157",
+          "label": "pin",
+          "description": "",
+          "required": true,
+          "readOnly": false,
+          "disabled": false,
+          "choices": []
+        }
+      ]
+    },
+    "shoptetShippingForm": {
+      "key": "shoptetShippingForm",
+      "publicName": "Shippings from Shoptet",
+      "description": "",
+      "readOnly": false,
+      "fields": [
+        {
+          "type": "selectbox",
+          "key": "d5637d4c-e915-11e0-baa3-7dc668b75ca8",
+          "value": null,
+          "label": "\u010cesk\u00e1 po\u0161ta na po\u0161tu",
+          "description": "",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "choices": [
+            {
+              "1": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk do ruky"
+            },
+            {
+              "2": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk na po\u0161tu"
+            },
+            {
+              "3": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk do bal\u00edkovny"
+            },
+            {
+              "4": "\u010cesk\u00e1 po\u0161ta - Doporu\u010den\u00e1 z\u00e1silka Ekonomick\u00e1"
+            },
+            {
+              "5": "\u010cesk\u00e1 po\u0161ta - RR Doporu\u010den\u00e1 z\u00e1silka do zahrani\u010d\u00ed Prioritn\u00ed"
+            },
+            {
+              "6": "\u010cesk\u00e1 po\u0161ta - EMS Expresn\u00ed p\u0159eprava do zahrani\u010d\u00ed"
+            },
+            {
+              "7": "\u010cesk\u00e1 po\u0161ta - Obchodn\u00ed bal\u00edk do zahrani\u010d\u00ed"
+            },
+            {
+              "8": "DPD - DPD Classic"
+            },
+            {
+              "9": "DPD - DPD Private"
+            },
+            {
+              "10": "GLS - Business Parcel"
+            },
+            {
+              "11": "FedEx - International Priority"
+            },
+            {
+              "12": "FedEx - International Economy"
+            },
+            {
+              "88": "Messenger - Standard"
+            },
+            {
+              "89": "DHL DE - DHL Paket"
+            },
+            {
+              "-1": "Z\u00e1silkovna"
+            }
+          ]
+        },
+        {
+          "type": "selectbox",
+          "key": "f3ce0d8d-e5f1-11ea-a065-0cc47a6c92bc",
+          "value": null,
+          "label": "\u010cesk\u00e1 po\u0161ta do ruky",
+          "description": "",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "choices": [
+            {
+              "1": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk do ruky"
+            },
+            {
+              "2": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk na po\u0161tu"
+            },
+            {
+              "3": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk do bal\u00edkovny"
+            },
+            {
+              "4": "\u010cesk\u00e1 po\u0161ta - Doporu\u010den\u00e1 z\u00e1silka Ekonomick\u00e1"
+            },
+            {
+              "5": "\u010cesk\u00e1 po\u0161ta - RR Doporu\u010den\u00e1 z\u00e1silka do zahrani\u010d\u00ed Prioritn\u00ed"
+            },
+            {
+              "6": "\u010cesk\u00e1 po\u0161ta - EMS Expresn\u00ed p\u0159eprava do zahrani\u010d\u00ed"
+            },
+            {
+              "7": "\u010cesk\u00e1 po\u0161ta - Obchodn\u00ed bal\u00edk do zahrani\u010d\u00ed"
+            },
+            {
+              "8": "DPD - DPD Classic"
+            },
+            {
+              "9": "DPD - DPD Private"
+            },
+            {
+              "10": "GLS - Business Parcel"
+            },
+            {
+              "11": "FedEx - International Priority"
+            },
+            {
+              "12": "FedEx - International Economy"
+            },
+            {
+              "88": "Messenger - Standard"
+            },
+            {
+              "89": "DHL DE - DHL Paket"
+            },
+            {
+              "-1": "Z\u00e1silkovna"
+            }
+          ]
+        },
+        {
+          "type": "selectbox",
+          "key": "8fdb2c89-3fae-11e2-a723-705ab6a2ba75",
+          "value": null,
+          "label": "Osobn\u00ed odb\u011br",
+          "description": "",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "choices": [
+            {
+              "1": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk do ruky"
+            },
+            {
+              "2": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk na po\u0161tu"
+            },
+            {
+              "3": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk do bal\u00edkovny"
+            },
+            {
+              "4": "\u010cesk\u00e1 po\u0161ta - Doporu\u010den\u00e1 z\u00e1silka Ekonomick\u00e1"
+            },
+            {
+              "5": "\u010cesk\u00e1 po\u0161ta - RR Doporu\u010den\u00e1 z\u00e1silka do zahrani\u010d\u00ed Prioritn\u00ed"
+            },
+            {
+              "6": "\u010cesk\u00e1 po\u0161ta - EMS Expresn\u00ed p\u0159eprava do zahrani\u010d\u00ed"
+            },
+            {
+              "7": "\u010cesk\u00e1 po\u0161ta - Obchodn\u00ed bal\u00edk do zahrani\u010d\u00ed"
+            },
+            {
+              "8": "DPD - DPD Classic"
+            },
+            {
+              "9": "DPD - DPD Private"
+            },
+            {
+              "10": "GLS - Business Parcel"
+            },
+            {
+              "11": "FedEx - International Priority"
+            },
+            {
+              "12": "FedEx - International Economy"
+            },
+            {
+              "88": "Messenger - Standard"
+            },
+            {
+              "89": "DHL DE - DHL Paket"
+            },
+            {
+              "-1": "Z\u00e1silkovna"
+            }
+          ]
+        },
+        {
+          "type": "selectbox",
+          "key": "2ec88ea7-3fb0-11e2-a723-705ab6a2ba75",
+          "value": null,
+          "label": "PPL",
+          "description": "",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "choices": [
+            {
+              "1": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk do ruky"
+            },
+            {
+              "2": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk na po\u0161tu"
+            },
+            {
+              "3": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk do bal\u00edkovny"
+            },
+            {
+              "4": "\u010cesk\u00e1 po\u0161ta - Doporu\u010den\u00e1 z\u00e1silka Ekonomick\u00e1"
+            },
+            {
+              "5": "\u010cesk\u00e1 po\u0161ta - RR Doporu\u010den\u00e1 z\u00e1silka do zahrani\u010d\u00ed Prioritn\u00ed"
+            },
+            {
+              "6": "\u010cesk\u00e1 po\u0161ta - EMS Expresn\u00ed p\u0159eprava do zahrani\u010d\u00ed"
+            },
+            {
+              "7": "\u010cesk\u00e1 po\u0161ta - Obchodn\u00ed bal\u00edk do zahrani\u010d\u00ed"
+            },
+            {
+              "8": "DPD - DPD Classic"
+            },
+            {
+              "9": "DPD - DPD Private"
+            },
+            {
+              "10": "GLS - Business Parcel"
+            },
+            {
+              "11": "FedEx - International Priority"
+            },
+            {
+              "12": "FedEx - International Economy"
+            },
+            {
+              "88": "Messenger - Standard"
+            },
+            {
+              "89": "DHL DE - DHL Paket"
+            },
+            {
+              "-1": "Z\u00e1silkovna"
+            }
+          ]
+        },
+        {
+          "type": "selectbox",
+          "key": "f72a566c-e5f1-11ea-a065-0cc47a6c92bc",
+          "value": null,
+          "label": "Z\u00e1silkovna Z point",
+          "description": "",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "choices": [
+            {
+              "1": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk do ruky"
+            },
+            {
+              "2": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk na po\u0161tu"
+            },
+            {
+              "3": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk do bal\u00edkovny"
+            },
+            {
+              "4": "\u010cesk\u00e1 po\u0161ta - Doporu\u010den\u00e1 z\u00e1silka Ekonomick\u00e1"
+            },
+            {
+              "5": "\u010cesk\u00e1 po\u0161ta - RR Doporu\u010den\u00e1 z\u00e1silka do zahrani\u010d\u00ed Prioritn\u00ed"
+            },
+            {
+              "6": "\u010cesk\u00e1 po\u0161ta - EMS Expresn\u00ed p\u0159eprava do zahrani\u010d\u00ed"
+            },
+            {
+              "7": "\u010cesk\u00e1 po\u0161ta - Obchodn\u00ed bal\u00edk do zahrani\u010d\u00ed"
+            },
+            {
+              "8": "DPD - DPD Classic"
+            },
+            {
+              "9": "DPD - DPD Private"
+            },
+            {
+              "10": "GLS - Business Parcel"
+            },
+            {
+              "11": "FedEx - International Priority"
+            },
+            {
+              "12": "FedEx - International Economy"
+            },
+            {
+              "88": "Messenger - Standard"
+            },
+            {
+              "89": "DHL DE - DHL Paket"
+            },
+            {
+              "-1": "Z\u00e1silkovna"
+            }
+          ]
+        },
+        {
+          "type": "selectbox",
+          "key": "fa641c60-e5f1-11ea-a065-0cc47a6c92bc",
+          "value": null,
+          "label": "Z\u00e1silkovna doru\u010den\u00ed na adresu (\u010cesko)",
+          "description": "",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "choices": [
+            {
+              "1": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk do ruky"
+            },
+            {
+              "2": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk na po\u0161tu"
+            },
+            {
+              "3": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk do bal\u00edkovny"
+            },
+            {
+              "4": "\u010cesk\u00e1 po\u0161ta - Doporu\u010den\u00e1 z\u00e1silka Ekonomick\u00e1"
+            },
+            {
+              "5": "\u010cesk\u00e1 po\u0161ta - RR Doporu\u010den\u00e1 z\u00e1silka do zahrani\u010d\u00ed Prioritn\u00ed"
+            },
+            {
+              "6": "\u010cesk\u00e1 po\u0161ta - EMS Expresn\u00ed p\u0159eprava do zahrani\u010d\u00ed"
+            },
+            {
+              "7": "\u010cesk\u00e1 po\u0161ta - Obchodn\u00ed bal\u00edk do zahrani\u010d\u00ed"
+            },
+            {
+              "8": "DPD - DPD Classic"
+            },
+            {
+              "9": "DPD - DPD Private"
+            },
+            {
+              "10": "GLS - Business Parcel"
+            },
+            {
+              "11": "FedEx - International Priority"
+            },
+            {
+              "12": "FedEx - International Economy"
+            },
+            {
+              "88": "Messenger - Standard"
+            },
+            {
+              "89": "DHL DE - DHL Paket"
+            },
+            {
+              "-1": "Z\u00e1silkovna"
+            }
+          ]
+        },
+        {
+          "type": "selectbox",
+          "key": "8c111bb4-3cae-11ec-8496-b8ca3a6063f8",
+          "value": null,
+          "label": "Z\u00e1silkovna doru\u010den\u00ed na adresu (Slovensko)",
+          "description": "",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "choices": [
+            {
+              "1": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk do ruky"
+            },
+            {
+              "2": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk na po\u0161tu"
+            },
+            {
+              "3": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk do bal\u00edkovny"
+            },
+            {
+              "4": "\u010cesk\u00e1 po\u0161ta - Doporu\u010den\u00e1 z\u00e1silka Ekonomick\u00e1"
+            },
+            {
+              "5": "\u010cesk\u00e1 po\u0161ta - RR Doporu\u010den\u00e1 z\u00e1silka do zahrani\u010d\u00ed Prioritn\u00ed"
+            },
+            {
+              "6": "\u010cesk\u00e1 po\u0161ta - EMS Expresn\u00ed p\u0159eprava do zahrani\u010d\u00ed"
+            },
+            {
+              "7": "\u010cesk\u00e1 po\u0161ta - Obchodn\u00ed bal\u00edk do zahrani\u010d\u00ed"
+            },
+            {
+              "8": "DPD - DPD Classic"
+            },
+            {
+              "9": "DPD - DPD Private"
+            },
+            {
+              "10": "GLS - Business Parcel"
+            },
+            {
+              "11": "FedEx - International Priority"
+            },
+            {
+              "12": "FedEx - International Economy"
+            },
+            {
+              "88": "Messenger - Standard"
+            },
+            {
+              "89": "DHL DE - DHL Paket"
+            },
+            {
+              "-1": "Z\u00e1silkovna"
+            }
+          ]
+        },
+        {
+          "type": "selectbox",
+          "key": "fdd64137-e5f1-11ea-a065-0cc47a6c92bc",
+          "value": null,
+          "label": "GLS",
+          "description": "",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "choices": [
+            {
+              "1": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk do ruky"
+            },
+            {
+              "2": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk na po\u0161tu"
+            },
+            {
+              "3": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk do bal\u00edkovny"
+            },
+            {
+              "4": "\u010cesk\u00e1 po\u0161ta - Doporu\u010den\u00e1 z\u00e1silka Ekonomick\u00e1"
+            },
+            {
+              "5": "\u010cesk\u00e1 po\u0161ta - RR Doporu\u010den\u00e1 z\u00e1silka do zahrani\u010d\u00ed Prioritn\u00ed"
+            },
+            {
+              "6": "\u010cesk\u00e1 po\u0161ta - EMS Expresn\u00ed p\u0159eprava do zahrani\u010d\u00ed"
+            },
+            {
+              "7": "\u010cesk\u00e1 po\u0161ta - Obchodn\u00ed bal\u00edk do zahrani\u010d\u00ed"
+            },
+            {
+              "8": "DPD - DPD Classic"
+            },
+            {
+              "9": "DPD - DPD Private"
+            },
+            {
+              "10": "GLS - Business Parcel"
+            },
+            {
+              "11": "FedEx - International Priority"
+            },
+            {
+              "12": "FedEx - International Economy"
+            },
+            {
+              "88": "Messenger - Standard"
+            },
+            {
+              "89": "DHL DE - DHL Paket"
+            },
+            {
+              "-1": "Z\u00e1silkovna"
+            }
+          ]
+        },
+        {
+          "type": "selectbox",
+          "key": "00efae09-e5f2-11ea-a065-0cc47a6c92bc",
+          "value": null,
+          "label": "DPD",
+          "description": "",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "choices": [
+            {
+              "1": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk do ruky"
+            },
+            {
+              "2": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk na po\u0161tu"
+            },
+            {
+              "3": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk do bal\u00edkovny"
+            },
+            {
+              "4": "\u010cesk\u00e1 po\u0161ta - Doporu\u010den\u00e1 z\u00e1silka Ekonomick\u00e1"
+            },
+            {
+              "5": "\u010cesk\u00e1 po\u0161ta - RR Doporu\u010den\u00e1 z\u00e1silka do zahrani\u010d\u00ed Prioritn\u00ed"
+            },
+            {
+              "6": "\u010cesk\u00e1 po\u0161ta - EMS Expresn\u00ed p\u0159eprava do zahrani\u010d\u00ed"
+            },
+            {
+              "7": "\u010cesk\u00e1 po\u0161ta - Obchodn\u00ed bal\u00edk do zahrani\u010d\u00ed"
+            },
+            {
+              "8": "DPD - DPD Classic"
+            },
+            {
+              "9": "DPD - DPD Private"
+            },
+            {
+              "10": "GLS - Business Parcel"
+            },
+            {
+              "11": "FedEx - International Priority"
+            },
+            {
+              "12": "FedEx - International Economy"
+            },
+            {
+              "88": "Messenger - Standard"
+            },
+            {
+              "89": "DHL DE - DHL Paket"
+            },
+            {
+              "-1": "Z\u00e1silkovna"
+            }
+          ]
+        },
+        {
+          "type": "selectbox",
+          "key": "0424a956-e5f2-11ea-a065-0cc47a6c92bc",
+          "value": null,
+          "label": "Vlastn\u00ed p\u0159eprava",
+          "description": "",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "choices": [
+            {
+              "1": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk do ruky"
+            },
+            {
+              "2": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk na po\u0161tu"
+            },
+            {
+              "3": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk do bal\u00edkovny"
+            },
+            {
+              "4": "\u010cesk\u00e1 po\u0161ta - Doporu\u010den\u00e1 z\u00e1silka Ekonomick\u00e1"
+            },
+            {
+              "5": "\u010cesk\u00e1 po\u0161ta - RR Doporu\u010den\u00e1 z\u00e1silka do zahrani\u010d\u00ed Prioritn\u00ed"
+            },
+            {
+              "6": "\u010cesk\u00e1 po\u0161ta - EMS Expresn\u00ed p\u0159eprava do zahrani\u010d\u00ed"
+            },
+            {
+              "7": "\u010cesk\u00e1 po\u0161ta - Obchodn\u00ed bal\u00edk do zahrani\u010d\u00ed"
+            },
+            {
+              "8": "DPD - DPD Classic"
+            },
+            {
+              "9": "DPD - DPD Private"
+            },
+            {
+              "10": "GLS - Business Parcel"
+            },
+            {
+              "11": "FedEx - International Priority"
+            },
+            {
+              "12": "FedEx - International Economy"
+            },
+            {
+              "88": "Messenger - Standard"
+            },
+            {
+              "89": "DHL DE - DHL Paket"
+            },
+            {
+              "-1": "Z\u00e1silkovna"
+            }
+          ]
+        },
+        {
+          "type": "selectbox",
+          "key": "2b9b4744-b7bb-11eb-bbb3-b8ca3a6063f8",
+          "value": null,
+          "label": "GEIS",
+          "description": "",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "choices": [
+            {
+              "1": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk do ruky"
+            },
+            {
+              "2": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk na po\u0161tu"
+            },
+            {
+              "3": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk do bal\u00edkovny"
+            },
+            {
+              "4": "\u010cesk\u00e1 po\u0161ta - Doporu\u010den\u00e1 z\u00e1silka Ekonomick\u00e1"
+            },
+            {
+              "5": "\u010cesk\u00e1 po\u0161ta - RR Doporu\u010den\u00e1 z\u00e1silka do zahrani\u010d\u00ed Prioritn\u00ed"
+            },
+            {
+              "6": "\u010cesk\u00e1 po\u0161ta - EMS Expresn\u00ed p\u0159eprava do zahrani\u010d\u00ed"
+            },
+            {
+              "7": "\u010cesk\u00e1 po\u0161ta - Obchodn\u00ed bal\u00edk do zahrani\u010d\u00ed"
+            },
+            {
+              "8": "DPD - DPD Classic"
+            },
+            {
+              "9": "DPD - DPD Private"
+            },
+            {
+              "10": "GLS - Business Parcel"
+            },
+            {
+              "11": "FedEx - International Priority"
+            },
+            {
+              "12": "FedEx - International Economy"
+            },
+            {
+              "88": "Messenger - Standard"
+            },
+            {
+              "89": "DHL DE - DHL Paket"
+            },
+            {
+              "-1": "Z\u00e1silkovna"
+            }
+          ]
+        },
+        {
+          "type": "selectbox",
+          "key": "0c73c730-3be9-11ec-8496-b8ca3a6063f8",
+          "value": null,
+          "label": "\u010cesk\u00e1 po\u0161ta - Bal\u00edkovna",
+          "description": "",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "choices": [
+            {
+              "1": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk do ruky"
+            },
+            {
+              "2": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk na po\u0161tu"
+            },
+            {
+              "3": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk do bal\u00edkovny"
+            },
+            {
+              "4": "\u010cesk\u00e1 po\u0161ta - Doporu\u010den\u00e1 z\u00e1silka Ekonomick\u00e1"
+            },
+            {
+              "5": "\u010cesk\u00e1 po\u0161ta - RR Doporu\u010den\u00e1 z\u00e1silka do zahrani\u010d\u00ed Prioritn\u00ed"
+            },
+            {
+              "6": "\u010cesk\u00e1 po\u0161ta - EMS Expresn\u00ed p\u0159eprava do zahrani\u010d\u00ed"
+            },
+            {
+              "7": "\u010cesk\u00e1 po\u0161ta - Obchodn\u00ed bal\u00edk do zahrani\u010d\u00ed"
+            },
+            {
+              "8": "DPD - DPD Classic"
+            },
+            {
+              "9": "DPD - DPD Private"
+            },
+            {
+              "10": "GLS - Business Parcel"
+            },
+            {
+              "11": "FedEx - International Priority"
+            },
+            {
+              "12": "FedEx - International Economy"
+            },
+            {
+              "88": "Messenger - Standard"
+            },
+            {
+              "89": "DHL DE - DHL Paket"
+            },
+            {
+              "-1": "Z\u00e1silkovna"
+            }
+          ]
+        },
+        {
+          "type": "selectbox",
+          "key": "58b97d1c-5dad-11ec-8496-b8ca3a6063f8",
+          "value": null,
+          "label": "Z\u00e1silkovna - Doru\u010den\u00ed N\u011bmecko",
+          "description": "",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "choices": [
+            {
+              "1": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk do ruky"
+            },
+            {
+              "2": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk na po\u0161tu"
+            },
+            {
+              "3": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk do bal\u00edkovny"
+            },
+            {
+              "4": "\u010cesk\u00e1 po\u0161ta - Doporu\u010den\u00e1 z\u00e1silka Ekonomick\u00e1"
+            },
+            {
+              "5": "\u010cesk\u00e1 po\u0161ta - RR Doporu\u010den\u00e1 z\u00e1silka do zahrani\u010d\u00ed Prioritn\u00ed"
+            },
+            {
+              "6": "\u010cesk\u00e1 po\u0161ta - EMS Expresn\u00ed p\u0159eprava do zahrani\u010d\u00ed"
+            },
+            {
+              "7": "\u010cesk\u00e1 po\u0161ta - Obchodn\u00ed bal\u00edk do zahrani\u010d\u00ed"
+            },
+            {
+              "8": "DPD - DPD Classic"
+            },
+            {
+              "9": "DPD - DPD Private"
+            },
+            {
+              "10": "GLS - Business Parcel"
+            },
+            {
+              "11": "FedEx - International Priority"
+            },
+            {
+              "12": "FedEx - International Economy"
+            },
+            {
+              "88": "Messenger - Standard"
+            },
+            {
+              "89": "DHL DE - DHL Paket"
+            },
+            {
+              "-1": "Z\u00e1silkovna"
+            }
+          ]
+        },
+        {
+          "type": "selectbox",
+          "key": "8562b051-5dae-11ec-8496-b8ca3a6063f8",
+          "value": null,
+          "label": "Z\u00e1silkovna - Expresn\u00ed doru\u010den\u00ed Ostrava",
+          "description": "",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "choices": [
+            {
+              "1": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk do ruky"
+            },
+            {
+              "2": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk na po\u0161tu"
+            },
+            {
+              "3": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk do bal\u00edkovny"
+            },
+            {
+              "4": "\u010cesk\u00e1 po\u0161ta - Doporu\u010den\u00e1 z\u00e1silka Ekonomick\u00e1"
+            },
+            {
+              "5": "\u010cesk\u00e1 po\u0161ta - RR Doporu\u010den\u00e1 z\u00e1silka do zahrani\u010d\u00ed Prioritn\u00ed"
+            },
+            {
+              "6": "\u010cesk\u00e1 po\u0161ta - EMS Expresn\u00ed p\u0159eprava do zahrani\u010d\u00ed"
+            },
+            {
+              "7": "\u010cesk\u00e1 po\u0161ta - Obchodn\u00ed bal\u00edk do zahrani\u010d\u00ed"
+            },
+            {
+              "8": "DPD - DPD Classic"
+            },
+            {
+              "9": "DPD - DPD Private"
+            },
+            {
+              "10": "GLS - Business Parcel"
+            },
+            {
+              "11": "FedEx - International Priority"
+            },
+            {
+              "12": "FedEx - International Economy"
+            },
+            {
+              "88": "Messenger - Standard"
+            },
+            {
+              "89": "DHL DE - DHL Paket"
+            },
+            {
+              "-1": "Z\u00e1silkovna"
+            }
+          ]
+        },
+        {
+          "type": "selectbox",
+          "key": "c8d2a2f0-7f70-11ec-8496-b8ca3a6063f8",
+          "value": null,
+          "label": "N\u00e1zev - PPL ParcelShop",
+          "description": "",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "choices": [
+            {
+              "1": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk do ruky"
+            },
+            {
+              "2": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk na po\u0161tu"
+            },
+            {
+              "3": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk do bal\u00edkovny"
+            },
+            {
+              "4": "\u010cesk\u00e1 po\u0161ta - Doporu\u010den\u00e1 z\u00e1silka Ekonomick\u00e1"
+            },
+            {
+              "5": "\u010cesk\u00e1 po\u0161ta - RR Doporu\u010den\u00e1 z\u00e1silka do zahrani\u010d\u00ed Prioritn\u00ed"
+            },
+            {
+              "6": "\u010cesk\u00e1 po\u0161ta - EMS Expresn\u00ed p\u0159eprava do zahrani\u010d\u00ed"
+            },
+            {
+              "7": "\u010cesk\u00e1 po\u0161ta - Obchodn\u00ed bal\u00edk do zahrani\u010d\u00ed"
+            },
+            {
+              "8": "DPD - DPD Classic"
+            },
+            {
+              "9": "DPD - DPD Private"
+            },
+            {
+              "10": "GLS - Business Parcel"
+            },
+            {
+              "11": "FedEx - International Priority"
+            },
+            {
+              "12": "FedEx - International Economy"
+            },
+            {
+              "88": "Messenger - Standard"
+            },
+            {
+              "89": "DHL DE - DHL Paket"
+            },
+            {
+              "-1": "Z\u00e1silkovna"
+            }
+          ]
+        },
+        {
+          "type": "selectbox",
+          "key": "8d66a447-836b-11ec-8496-b8ca3a6063f8",
+          "value": null,
+          "label": "PPL ParcelShop bez prep.spolecnosti",
+          "description": "",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "choices": [
+            {
+              "1": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk do ruky"
+            },
+            {
+              "2": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk na po\u0161tu"
+            },
+            {
+              "3": "\u010cesk\u00e1 po\u0161ta - Bal\u00edk do bal\u00edkovny"
+            },
+            {
+              "4": "\u010cesk\u00e1 po\u0161ta - Doporu\u010den\u00e1 z\u00e1silka Ekonomick\u00e1"
+            },
+            {
+              "5": "\u010cesk\u00e1 po\u0161ta - RR Doporu\u010den\u00e1 z\u00e1silka do zahrani\u010d\u00ed Prioritn\u00ed"
+            },
+            {
+              "6": "\u010cesk\u00e1 po\u0161ta - EMS Expresn\u00ed p\u0159eprava do zahrani\u010d\u00ed"
+            },
+            {
+              "7": "\u010cesk\u00e1 po\u0161ta - Obchodn\u00ed bal\u00edk do zahrani\u010d\u00ed"
+            },
+            {
+              "8": "DPD - DPD Classic"
+            },
+            {
+              "9": "DPD - DPD Private"
+            },
+            {
+              "10": "GLS - Business Parcel"
+            },
+            {
+              "11": "FedEx - International Priority"
+            },
+            {
+              "12": "FedEx - International Economy"
+            },
+            {
+              "88": "Messenger - Standard"
+            },
+            {
+              "89": "DHL DE - DHL Paket"
+            },
+            {
+              "-1": "Z\u00e1silkovna"
+            }
+          ]
+        }
+      ]
+    },
+    "shoptetOrdersForm": {
+      "key": "shoptetOrdersForm",
+      "publicName": "Orders from Shoptet",
+      "description": "",
+      "readOnly": false,
+      "fields": [
+        {
+          "type": "selectbox",
+          "key": "-4",
+          "value": null,
+          "label": "Stornov\u00e1na",
+          "description": "",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "choices": [
+            {
+              "draft": "Draft"
+            },
+            {
+              "received": "Received"
+            },
+            {
+              "preparation": "Preparation"
+            },
+            {
+              "label_printed": "Label printed"
+            },
+            {
+              "picked_up_carrier": "Picked up by carrier"
+            },
+            {
+              "delivered": "Delivered"
+            },
+            {
+              "returned_carrier": "Returned by carrier"
+            },
+            {
+              "returned_customer": "Returned by customer"
+            },
+            {
+              "canceled": "Canceled"
+            }
+          ]
+        },
+        {
+          "type": "selectbox",
+          "key": "-3",
+          "value": null,
+          "label": "Vy\u0159\u00edzena",
+          "description": "",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "choices": [
+            {
+              "draft": "Draft"
+            },
+            {
+              "received": "Received"
+            },
+            {
+              "preparation": "Preparation"
+            },
+            {
+              "label_printed": "Label printed"
+            },
+            {
+              "picked_up_carrier": "Picked up by carrier"
+            },
+            {
+              "delivered": "Delivered"
+            },
+            {
+              "returned_carrier": "Returned by carrier"
+            },
+            {
+              "returned_customer": "Returned by customer"
+            },
+            {
+              "canceled": "Canceled"
+            }
+          ]
+        },
+        {
+          "type": "selectbox",
+          "key": "-2",
+          "value": null,
+          "label": "Vy\u0159izuje se",
+          "description": "",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "choices": [
+            {
+              "draft": "Draft"
+            },
+            {
+              "received": "Received"
+            },
+            {
+              "preparation": "Preparation"
+            },
+            {
+              "label_printed": "Label printed"
+            },
+            {
+              "picked_up_carrier": "Picked up by carrier"
+            },
+            {
+              "delivered": "Delivered"
+            },
+            {
+              "returned_carrier": "Returned by carrier"
+            },
+            {
+              "returned_customer": "Returned by customer"
+            },
+            {
+              "canceled": "Canceled"
+            }
+          ]
+        },
+        {
+          "type": "selectbox",
+          "key": "-1",
+          "value": null,
+          "label": "Nevy\u0159\u00edzen\u00e1",
+          "description": "",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "choices": [
+            {
+              "draft": "Draft"
+            },
+            {
+              "received": "Received"
+            },
+            {
+              "preparation": "Preparation"
+            },
+            {
+              "label_printed": "Label printed"
+            },
+            {
+              "picked_up_carrier": "Picked up by carrier"
+            },
+            {
+              "delivered": "Delivered"
+            },
+            {
+              "returned_carrier": "Returned by carrier"
+            },
+            {
+              "returned_customer": "Returned by customer"
+            },
+            {
+              "canceled": "Canceled"
+            }
+          ]
+        },
+        {
+          "type": "selectbox",
+          "key": "7",
+          "value": null,
+          "label": "P\u0159ipravena k expedici",
+          "description": "",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "choices": [
+            {
+              "draft": "Draft"
+            },
+            {
+              "received": "Received"
+            },
+            {
+              "preparation": "Preparation"
+            },
+            {
+              "label_printed": "Label printed"
+            },
+            {
+              "picked_up_carrier": "Picked up by carrier"
+            },
+            {
+              "delivered": "Delivered"
+            },
+            {
+              "returned_carrier": "Returned by carrier"
+            },
+            {
+              "returned_customer": "Returned by customer"
+            },
+            {
+              "canceled": "Canceled"
+            }
+          ]
+        },
+        {
+          "type": "selectbox",
+          "key": "13",
+          "value": null,
+          "label": "Stornov\u00e1na na sklad\u011b",
+          "description": "",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "choices": [
+            {
+              "draft": "Draft"
+            },
+            {
+              "received": "Received"
+            },
+            {
+              "preparation": "Preparation"
+            },
+            {
+              "label_printed": "Label printed"
+            },
+            {
+              "picked_up_carrier": "Picked up by carrier"
+            },
+            {
+              "delivered": "Delivered"
+            },
+            {
+              "returned_carrier": "Returned by carrier"
+            },
+            {
+              "returned_customer": "Returned by customer"
+            },
+            {
+              "canceled": "Canceled"
+            }
+          ]
+        },
+        {
+          "type": "selectbox",
+          "key": "19",
+          "value": null,
+          "label": "Vy\u0159\u00edzena na sklad\u011b",
+          "description": "",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "choices": [
+            {
+              "draft": "Draft"
+            },
+            {
+              "received": "Received"
+            },
+            {
+              "preparation": "Preparation"
+            },
+            {
+              "label_printed": "Label printed"
+            },
+            {
+              "picked_up_carrier": "Picked up by carrier"
+            },
+            {
+              "delivered": "Delivered"
+            },
+            {
+              "returned_carrier": "Returned by carrier"
+            },
+            {
+              "returned_customer": "Returned by customer"
+            },
+            {
+              "canceled": "Canceled"
+            }
+          ]
+        },
+        {
+          "type": "selectbox",
+          "key": "22",
+          "value": null,
+          "label": "Vy\u0159\u00edzena nekompletn\u011b na sklad\u011b",
+          "description": "",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "choices": [
+            {
+              "draft": "Draft"
+            },
+            {
+              "received": "Received"
+            },
+            {
+              "preparation": "Preparation"
+            },
+            {
+              "label_printed": "Label printed"
+            },
+            {
+              "picked_up_carrier": "Picked up by carrier"
+            },
+            {
+              "delivered": "Delivered"
+            },
+            {
+              "returned_carrier": "Returned by carrier"
+            },
+            {
+              "returned_customer": "Returned by customer"
+            },
+            {
+              "canceled": "Canceled"
+            }
+          ]
+        }
+      ]
+    },
+    "authenticaOrdersForm": {
+      "key": "authenticaOrdersForm",
+      "publicName": "Orders to Shoptet",
+      "description": "",
+      "readOnly": false,
+      "fields": [
+        {
+          "type": "selectbox",
+          "key": "draft",
+          "value": null,
+          "label": "Draft",
+          "description": "",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "choices": [
+            {
+              "-4": "Stornov\u00e1na"
+            },
+            {
+              "-3": "Vy\u0159\u00edzena"
+            },
+            {
+              "-2": "Vy\u0159izuje se"
+            },
+            {
+              "-1": "Nevy\u0159\u00edzen\u00e1"
+            },
+            {
+              "7": "P\u0159ipravena k expedici"
+            },
+            {
+              "13": "Stornov\u00e1na na sklad\u011b"
+            },
+            {
+              "19": "Vy\u0159\u00edzena na sklad\u011b"
+            },
+            {
+              "22": "Vy\u0159\u00edzena nekompletn\u011b na sklad\u011b"
+            }
+          ]
+        },
+        {
+          "type": "selectbox",
+          "key": "received",
+          "value": null,
+          "label": "Received",
+          "description": "",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "choices": [
+            {
+              "-4": "Stornov\u00e1na"
+            },
+            {
+              "-3": "Vy\u0159\u00edzena"
+            },
+            {
+              "-2": "Vy\u0159izuje se"
+            },
+            {
+              "-1": "Nevy\u0159\u00edzen\u00e1"
+            },
+            {
+              "7": "P\u0159ipravena k expedici"
+            },
+            {
+              "13": "Stornov\u00e1na na sklad\u011b"
+            },
+            {
+              "19": "Vy\u0159\u00edzena na sklad\u011b"
+            },
+            {
+              "22": "Vy\u0159\u00edzena nekompletn\u011b na sklad\u011b"
+            }
+          ]
+        },
+        {
+          "type": "selectbox",
+          "key": "preparation",
+          "value": null,
+          "label": "Preparation",
+          "description": "",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "choices": [
+            {
+              "-4": "Stornov\u00e1na"
+            },
+            {
+              "-3": "Vy\u0159\u00edzena"
+            },
+            {
+              "-2": "Vy\u0159izuje se"
+            },
+            {
+              "-1": "Nevy\u0159\u00edzen\u00e1"
+            },
+            {
+              "7": "P\u0159ipravena k expedici"
+            },
+            {
+              "13": "Stornov\u00e1na na sklad\u011b"
+            },
+            {
+              "19": "Vy\u0159\u00edzena na sklad\u011b"
+            },
+            {
+              "22": "Vy\u0159\u00edzena nekompletn\u011b na sklad\u011b"
+            }
+          ]
+        },
+        {
+          "type": "selectbox",
+          "key": "label_printed",
+          "value": null,
+          "label": "Label printed",
+          "description": "",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "choices": [
+            {
+              "-4": "Stornov\u00e1na"
+            },
+            {
+              "-3": "Vy\u0159\u00edzena"
+            },
+            {
+              "-2": "Vy\u0159izuje se"
+            },
+            {
+              "-1": "Nevy\u0159\u00edzen\u00e1"
+            },
+            {
+              "7": "P\u0159ipravena k expedici"
+            },
+            {
+              "13": "Stornov\u00e1na na sklad\u011b"
+            },
+            {
+              "19": "Vy\u0159\u00edzena na sklad\u011b"
+            },
+            {
+              "22": "Vy\u0159\u00edzena nekompletn\u011b na sklad\u011b"
+            }
+          ]
+        },
+        {
+          "type": "selectbox",
+          "key": "picked_up_carrier",
+          "value": null,
+          "label": "Picked up by carrier",
+          "description": "",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "choices": [
+            {
+              "-4": "Stornov\u00e1na"
+            },
+            {
+              "-3": "Vy\u0159\u00edzena"
+            },
+            {
+              "-2": "Vy\u0159izuje se"
+            },
+            {
+              "-1": "Nevy\u0159\u00edzen\u00e1"
+            },
+            {
+              "7": "P\u0159ipravena k expedici"
+            },
+            {
+              "13": "Stornov\u00e1na na sklad\u011b"
+            },
+            {
+              "19": "Vy\u0159\u00edzena na sklad\u011b"
+            },
+            {
+              "22": "Vy\u0159\u00edzena nekompletn\u011b na sklad\u011b"
+            }
+          ]
+        },
+        {
+          "type": "selectbox",
+          "key": "delivered",
+          "value": null,
+          "label": "Delivered",
+          "description": "",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "choices": [
+            {
+              "-4": "Stornov\u00e1na"
+            },
+            {
+              "-3": "Vy\u0159\u00edzena"
+            },
+            {
+              "-2": "Vy\u0159izuje se"
+            },
+            {
+              "-1": "Nevy\u0159\u00edzen\u00e1"
+            },
+            {
+              "7": "P\u0159ipravena k expedici"
+            },
+            {
+              "13": "Stornov\u00e1na na sklad\u011b"
+            },
+            {
+              "19": "Vy\u0159\u00edzena na sklad\u011b"
+            },
+            {
+              "22": "Vy\u0159\u00edzena nekompletn\u011b na sklad\u011b"
+            }
+          ]
+        },
+        {
+          "type": "selectbox",
+          "key": "returned_carrier",
+          "value": null,
+          "label": "Returned by carrier",
+          "description": "",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "choices": [
+            {
+              "-4": "Stornov\u00e1na"
+            },
+            {
+              "-3": "Vy\u0159\u00edzena"
+            },
+            {
+              "-2": "Vy\u0159izuje se"
+            },
+            {
+              "-1": "Nevy\u0159\u00edzen\u00e1"
+            },
+            {
+              "7": "P\u0159ipravena k expedici"
+            },
+            {
+              "13": "Stornov\u00e1na na sklad\u011b"
+            },
+            {
+              "19": "Vy\u0159\u00edzena na sklad\u011b"
+            },
+            {
+              "22": "Vy\u0159\u00edzena nekompletn\u011b na sklad\u011b"
+            }
+          ]
+        },
+        {
+          "type": "selectbox",
+          "key": "returned_customer",
+          "value": null,
+          "label": "Returned by customer",
+          "description": "",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "choices": [
+            {
+              "-4": "Stornov\u00e1na"
+            },
+            {
+              "-3": "Vy\u0159\u00edzena"
+            },
+            {
+              "-2": "Vy\u0159izuje se"
+            },
+            {
+              "-1": "Nevy\u0159\u00edzen\u00e1"
+            },
+            {
+              "7": "P\u0159ipravena k expedici"
+            },
+            {
+              "13": "Stornov\u00e1na na sklad\u011b"
+            },
+            {
+              "19": "Vy\u0159\u00edzena na sklad\u011b"
+            },
+            {
+              "22": "Vy\u0159\u00edzena nekompletn\u011b na sklad\u011b"
+            }
+          ]
+        },
+        {
+          "type": "selectbox",
+          "key": "canceled",
+          "value": null,
+          "label": "Canceled",
+          "description": "",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "choices": [
+            {
+              "-4": "Stornov\u00e1na"
+            },
+            {
+              "-3": "Vy\u0159\u00edzena"
+            },
+            {
+              "-2": "Vy\u0159izuje se"
+            },
+            {
+              "-1": "Nevy\u0159\u00edzen\u00e1"
+            },
+            {
+              "7": "P\u0159ipravena k expedici"
+            },
+            {
+              "13": "Stornov\u00e1na na sklad\u011b"
+            },
+            {
+              "19": "Vy\u0159\u00edzena na sklad\u011b"
+            },
+            {
+              "22": "Vy\u0159\u00edzena nekompletn\u011b na sklad\u011b"
+            }
+          ]
+        }
+      ]
+    },
+    "shoptetStocksForm": {
+      "key": "shoptetStocksForm",
+      "publicName": "Stocks",
+      "description": "",
+      "readOnly": false,
+      "fields": [
+        {
+          "type": "selectbox",
+          "key": "stockId",
+          "value": null,
+          "label": "Sklad",
+          "description": "",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "choices": [
+            {
+              "1": "V\u00fdchoz\u00ed sklad"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "webhookSettings": [],
+  "host": "worker"
+}
