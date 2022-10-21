@@ -1,8 +1,10 @@
 package config
 
 import (
+	"fmt"
 	"github.com/hanaboso/go-log/pkg/zap"
 	"github.com/jinzhu/configor"
+	"strings"
 
 	log "github.com/hanaboso/go-log/pkg"
 )
@@ -58,6 +60,10 @@ func load() {
 		Logger.SetLevel(log.DEBUG)
 	} else {
 		Logger.SetLevel(log.INFO)
+	}
+
+	if strings.HasPrefix(StartingPoint.Dsn, "http") {
+		StartingPoint.Dsn = fmt.Sprintf("http://%s", StartingPoint.Dsn)
 	}
 }
 
