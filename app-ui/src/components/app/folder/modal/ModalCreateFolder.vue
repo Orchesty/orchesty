@@ -1,7 +1,7 @@
 <template>
   <modal-template
     v-model="isOpen"
-    :title="$t('folders.modals.create.title')"
+    :title="$t('modal.header.createFolder')"
     :on-close="onClose"
     :on-confirm="() => $refs.form.submit()"
   >

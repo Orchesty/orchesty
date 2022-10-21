@@ -1,18 +1,7 @@
 <template>
   <ValidationObserver ref="form" @submit.prevent="submit">
-    <validation-provider
-      v-slot="{ errors }"
-      :name="$t('folders.createFolder.form.name.name')"
-      :rules="fields.name.validations"
-      slim
-    >
-      <app-input
-        v-model="form.name"
-        autofocus
-        :label="$t('folders.createFolder.form.name.label')"
-        type="text"
-        :error-messages="errors"
-      />
+    <validation-provider v-slot="{ errors }" :name="$t('form.name')" :rules="fields.name.validations" slim>
+      <app-input v-model="form.name" autofocus :label="$t('form.name')" type="text" :error-messages="errors" />
     </validation-provider>
   </ValidationObserver>
 </template>

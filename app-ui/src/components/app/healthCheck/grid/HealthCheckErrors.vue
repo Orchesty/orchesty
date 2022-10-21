@@ -5,25 +5,30 @@
       item-key="name"
       :items="items"
       :loading="loading"
-      no-data-text="healthcheck.list.itWorks"
+      no-data-text="page.text.itWorks"
     >
       <template #no-data>
-        <p>The Table is Empty. Please insert data with the above Button.</p>
+        <p>{{ $t('page.text.emptyHealthCheckTable') }}</p>
       </template>
       <template #name="{ item }">
         <div class="d-flex align-center py-2">
           <v-icon large color="red" class="mr-3"> warning </v-icon>
           <div>
             <template v-if="item.type === 'queue'">
-              <strong>{{ $t('healthcheck.list.errorQueueItemTitle', { name: item.name }) }} </strong> <br />
+              <strong>{{ $t('page.text.errorQueueItemTitle', { name: item.name }) }} </strong> <br />
               <span class="text-sm-body-2">
-                {{ $t('healthcheck.list.errorQueueItemText', { service: item.service, topology: item.topology }) }}
+                {{
+                  $t('page.text.errorQueueItemText', {
+                    service: item.service,
+                    topology: item.topology,
+                  })
+                }}
               </span>
             </template>
             <template v-else>
-              <strong>{{ $t('healthcheck.list.errorServiceItem', { name: item.name }) }} </strong> <br />
+              <strong>{{ $t('page.text.errorServiceItemText', { name: item.name }) }} </strong> <br />
               <span class="text-sm-body-2">
-                {{ $t('healthcheck.list.errorServiceItemText', { name: item.name }) }}
+                {{ $t('page.text.errorServiceItemText', { name: item.name }) }}
               </span>
             </template>
           </div>

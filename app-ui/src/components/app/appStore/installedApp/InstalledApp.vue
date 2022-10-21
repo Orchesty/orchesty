@@ -1,5 +1,5 @@
 <template>
-  <content-basic v-if="appActive" redirect-in-title title="Back to the applications">
+  <content-basic v-if="appActive" redirect-in-title :title="$t('navigation.backToTheApplications')">
     <v-row class="mt-4">
       <v-col cols="2">
         <v-img max-width="150" contain :src="hasLogo(appActive)" />
@@ -288,7 +288,7 @@ export default {
       return !this.appActive.authorized
     },
     onOrOff() {
-      return this.isActivated ? this.$t('appStore.activated') : this.$t('appStore.notactivated')
+      return this.isActivated ? this.$t('page.status.activated') : this.$t('page.status.notActivated')
     },
   },
   methods: {

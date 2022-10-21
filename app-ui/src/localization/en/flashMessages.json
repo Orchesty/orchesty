@@ -1,51 +1,42 @@
 {
   "flashMessages": {
     "forgotPassword": "Email was sent successfully",
-    "user": {
-      "create": "User was created",
-      "delete": "User was deleted",
-      "update": "Changes were saved"
-    },
-    "topologies": {
-      "cloned": "Cloned",
-      "published": "Published",
-      "tested": "Tested",
-      "disabled": "Disabled",
-      "enabled": "Enabled",
-      "run": "Run successfully",
-      "idCopied": "ID copied!"
-    },
-    "userTask": {
-      "accept": "Task accepted",
-      "acceptList": "List of tasks accepted",
-      "reject": "Task rejected",
-      "rejectList": "List of tasks rejected",
-      "update": "Task updated"
-    },
-    "trash": {
-      "accept": "Accepted",
-      "acceptList": "List accepted",
-      "reject": "Rejected",
-      "rejectList": "List rejected",
-      "update": "Updated"
-    },
+    "userCreated": "User was created",
+    "userDeleted": "User was deleted",
+    "userUpdated": "User Updated",
+    "topologyCloned": "Cloned",
+    "topologyCreated": "Created",
+    "topologyMoved": "Moved",
+    "topologySaved": "Saved",
+    "folderCreated": "Folder created",
+    "folderEdited": "Folder edited",
+    "folderDeleted": "Folder deleted",
+    "topologyEdited": "Edited",
+    "topologyPublished": "Published",
+    "topologyTested": "Tested",
+    "topologyDisabled": "Disabled",
+    "topologyDeleted": "Deleted",
+    "topologyEnabled": "Enabled",
+    "topologyRan": "Run successfully",
+    "topologyIdCopied": "ID copied!",
+    "userTaskAccept": "Task accepted",
+    "userTaskAcceptList": "List of tasks accepted",
+    "userTaskReject": "Task rejected",
+    "userTaskRejectList": "List of tasks rejected",
+    "userTaskUpdate": "Task updated",
     "changePassword": "Password was changed",
     "emailSent": "Email was sent",
-    "implementations": {
-      "create": "Service was created",
-      "delete": "Service was deleted",
-      "update": "Service was updated"
-    },
-    "notifications": {
-      "update": "Notification was updated"
-    },
-    "appStore": {
-      "appInstalled": "App installed",
-      "appUninstalled": "App uninstalled",
-      "appSaved": "App saved",
-      "subscribed": "Webhook subscribed",
-      "activated": "App has been activated",
-      "deactivated": "App has been deactivated"
-    }
+    "passwordChanged": "Password changed",
+    "implementationCreated": "Worker was created",
+    "implementationDeleted": "Worker was deleted",
+    "implementationUpdated": "Worker was updated",
+    "notificationUpdated": "Notification was updated",
+    "appInstalled": "App installed",
+    "appUninstalled": "App uninstalled",
+    "appSaved": "App saved",
+    "subscribed": "Webhook subscribed",
+    "activated": "App has been activated",
+    "deactivated": "App has been deactivated",
+    "welcomeBack": "Welcome Back"
   }
 }

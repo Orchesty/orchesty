@@ -34,13 +34,13 @@ export default {
   data() {
     return {
       STATISTICS_ENUM: {
-        totalsErrors: 'Total / Error',
-        queue_depth: 'Queue depth',
-        waiting_time: 'Waiting time',
-        process_time: 'Process time',
-        cpu_time: 'CPU time',
-        request_time: 'Request time',
-        process: 'Process',
+        totalsErrors: this.$t('page.status.totalsErrors'),
+        queue_depth: this.$t('page.status.queue_depth'),
+        waiting_time: this.$t('page.status.waiting_time'),
+        process_time: this.$t('page.status.process_time'),
+        cpu_time: this.$t('page.status.cpu_time'),
+        request_time: this.$t('page.status.request_time'),
+        process: this.$t('page.status.process'),
       },
       nodeParameters: [],
       DATA_GRIDS,

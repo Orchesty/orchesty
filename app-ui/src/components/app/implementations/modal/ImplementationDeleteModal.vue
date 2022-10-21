@@ -1,9 +1,9 @@
 <template>
-  <modal-template v-model="isOpen" :title="$t('implementation.delete.title')" :on-confirm="submit">
+  <modal-template v-model="isOpen" :title="$t('modal.header.implementationDelete')" :on-confirm="submit">
     <template #default>
       <v-row dense>
         <v-col cols="12">
-          {{ $t('implementation.delete.body') }}
+          {{ $t('modal.text.implementationDelete') }}
         </v-col>
       </v-row>
     </template>

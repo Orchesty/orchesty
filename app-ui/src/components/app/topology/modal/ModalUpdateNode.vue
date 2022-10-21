@@ -2,18 +2,25 @@
   <modal-template
     v-if="node"
     v-model="isOpen"
-    :title="`${node.enabled ? 'Disable' : 'Enable'} node`"
+    :title="$t('page.text.toggleStartingNode', [node.enabled ? $t('page.status.disable') : $t('page.status.enable')])"
     :on-confirm="() => submit()"
   >
     <template #default>
       <v-row dense>
-        <v-col cols="12"> {{ node.enabled ? 'Disable' : 'Enable' }} starting point? </v-col>
+        <v-col cols="12">
+          {{
+            $t('page.text.toggleStartingPoint', [node.enabled ? $t('page.status.disable') : $t('page.status.enable')])
+          }}
+        </v-col>
       </v-row>
     </template>
     <template #sendingButton>
       <v-row dense>
         <v-col cols="12" class="d-flex justify-end">
-          <app-button :button-title="node.enabled ? 'Disable' : 'Enable'" :on-click="submit" />
+          <app-button
+            :button-title="node.enabled ? $t('page.status.disable') : $t('page.status.enable')"
+            :on-click="submit"
+          />
         </v-col>
       </v-row>
     </template>

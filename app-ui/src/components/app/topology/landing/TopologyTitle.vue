@@ -10,7 +10,7 @@
         <span>{{ topologyActive.name }}</span>
       </v-tooltip>
       <span class="ml-3 my-auto text-lowercase" style="min-width: 70px">
-        {{ $t('topologies.detail.version') }}: <strong class="font-weight-bold">{{ topologyActive.version }}</strong>
+        {{ $t('page.status.version') }}: <strong class="font-weight-bold">{{ topologyActive.version }}</strong>
       </span>
     </div>
   </v-col>

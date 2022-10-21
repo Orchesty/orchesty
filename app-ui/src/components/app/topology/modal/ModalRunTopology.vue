@@ -1,5 +1,5 @@
 <template>
-  <modal-template v-model="isOpen" :title="$t('topologies.run.title')" :on-confirm="submit" :on-close="reset">
+  <modal-template v-model="isOpen" :title="$t('modal.header.runTopology')" :on-confirm="submit" :on-close="reset">
     <template #default>
       <v-row dense>
         <v-col cols="12">
@@ -8,7 +8,7 @@
               <div>
                 Topology: <span class="font-weight-medium">{{ topologyName }}</span>
               </div>
-              <div>{{ $t('topologies.run.selectStartingPoint') }}</div>
+              <div>{{ $t('modal.text.selectStartingPoint') }}</div>
             </v-col>
           </v-row>
 
@@ -32,7 +32,7 @@
                         </template>
                       </v-list-item>
                     </v-list-item-group>
-                    <span v-if="errors[0]" class="error--text"> Please select one of the starting points </span>
+                    <span v-if="errors[0]" class="error--text">{{ $t('page.text.selectStartingPoint') }}</span>
                   </validation-provider>
                 </ValidationObserver>
               </v-list>
@@ -41,7 +41,7 @@
 
           <v-row dense>
             <v-col cols="12">
-              <div class="pb-1">{{ $t('topologies.run.bodyParameters') }}</div>
+              <div class="pb-1">{{ $t('modal.text.bodyParameters') }}</div>
               <v-textarea v-model="body" outlined dense placeholder="{ 'FORMAT': 'JSON' }" />
             </v-col>
           </v-row>

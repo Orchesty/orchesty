@@ -1,32 +1,22 @@
 <template>
   <ValidationObserver ref="form" tag="form" @submit.prevent="submit">
-    <validation-provider
-      v-slot="{ errors }"
-      :name="$t('topologies.create.form.name.label')"
-      :rules="fields.name.validations"
-      slim
-    >
+    <validation-provider v-slot="{ errors }" :name="$t('form.name')" :rules="fields.name.validations" slim>
       <app-input
         v-model="form.name"
         autofocus
         :disabled="callbackData ? callbackData.visibility === PAGE_TABS_ENUMS.PUBLIC : false"
-        :label="$t('topologies.create.form.name.label')"
+        :label="$t('form.name')"
         type="text"
         :error-messages="errors"
       />
     </validation-provider>
     <validation-provider
       v-slot="{ errors }"
-      :name="$t('topologies.create.form.description.label')"
+      :name="$t('form.description')"
       :rules="fields.description.validations"
       slim
     >
-      <app-input
-        v-model="form.description"
-        :label="$t('topologies.create.form.description.label')"
-        type="text"
-        :error-messages="errors"
-      />
+      <app-input v-model="form.description" :label="$t('form.description')" type="text" :error-messages="errors" />
     </validation-provider>
   </ValidationObserver>
 </template>

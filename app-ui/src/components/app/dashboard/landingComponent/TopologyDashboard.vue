@@ -21,7 +21,7 @@
     </v-row>
     <v-row>
       <v-col cols="12">
-        <h3 class="title font-weight-bold">{{ $t('topologies.dashboard.processes') }}</h3>
+        <h3 class="title font-weight-bold">{{ $t('page.heading.processes') }}</h3>
       </v-col>
     </v-row>
     <v-row dense>
@@ -125,25 +125,25 @@ export default {
     return {
       ROUTES,
       headers: [
-        { text: this.$t('topologies.dashboard.headers.topologyName'), value: 'topologyId' },
-        { text: this.$t('topologies.dashboard.headers.created'), value: 'started' },
-        { text: this.$t('topologies.dashboard.headers.duration'), value: 'duration', align: 'left' },
-        { text: this.$t('topologies.dashboard.headers.progress'), value: 'progress', align: 'left' },
-        { text: this.$t('topologies.dashboard.headers.status'), value: 'status', align: 'left' },
+        { text: this.$t('grid.header.topologyName'), value: 'topologyId' },
+        { text: this.$t('grid.header.created'), value: 'started' },
+        { text: this.$t('grid.header.duration'), value: 'duration', align: 'left' },
+        { text: this.$t('grid.header.progress'), value: 'progress', align: 'left' },
+        { text: this.$t('grid.header.status'), value: 'status', align: 'left' },
         {
-          text: this.$t('topologies.dashboard.headers.correlation_id'),
+          text: this.$t('grid.header.correlation_id'),
           value: 'correlation_id',
           align: 'right',
           width: '150px',
         },
       ],
       stats: {
-        activeTopologies: this.$t('topologies.dashboard.cards.activeTopologies'),
-        disabledTopologies: this.$t('topologies.dashboard.cards.disabledTopologies'),
-        totalRuns: this.$t('topologies.dashboard.cards.totalRuns'),
-        errorsCount: this.$t('topologies.dashboard.cards.errorsCount'),
-        successCount: this.$t('topologies.dashboard.cards.successCount'),
-        installedApps: this.$t('topologies.dashboard.cards.installedApps'),
+        activeTopologies: this.$t('page.status.activeTopologies'),
+        disabledTopologies: this.$t('page.status.disabledTopologies'),
+        totalRuns: this.$t('page.status.totalRuns'),
+        errorsCount: this.$t('page.status.errorsCount'),
+        successCount: this.$t('page.status.successCount'),
+        installedApps: this.$t('page.status.installedApps'),
       },
     }
   },

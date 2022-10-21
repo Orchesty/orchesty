@@ -91,7 +91,7 @@ export default {
       filterGrid: [],
       headers: [
         {
-          text: this.$t('topologies.userTask.headers.nodeNameTopology'),
+          text: this.$t('grid.header.nodeNameTopology'),
           value: 'nodeName',
           align: 'left',
           sortable: true,
@@ -100,7 +100,7 @@ export default {
           width: '50%',
         },
         {
-          text: this.$t('topologies.userTask.headers.updated'),
+          text: this.$t('grid.header.updated'),
           value: 'updated',
           align: 'left',
           sortable: true,

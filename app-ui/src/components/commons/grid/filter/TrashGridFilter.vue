@@ -13,7 +13,7 @@
       <app-input v-model="trashFilterValues.native" hide-details clearable label="Custom" placeholder="key:value" />
     </v-col>
     <v-col class="my-auto">
-      <app-button :on-click="sendFilter" :button-title="$t('button.filter')" />
+      <app-button :on-click="fetchGrid" :button-title="$t('button.filter')" />
       <app-button flat icon :on-click="resetFilter">
         <template #icon>
           <v-icon> mdi-close </v-icon>
@@ -28,7 +28,7 @@ import AppInput from '@/components/commons/input/AppInput'
 import AppButton from '@/components/commons/button/AppButton'
 import { OPERATOR } from '@/services/enums/gridEnums'
 export default {
-  name: 'TrashGridSimpleFilter',
+  name: 'TrashGridFilter',
   components: { AppButton, AppInput },
   data() {
     return {
@@ -42,7 +42,7 @@ export default {
     }
   },
   methods: {
-    sendFilter() {
+    fetchGrid() {
       this.$emit('fetchGrid', { filter: this.trashFilter })
     },
     resetFilter() {

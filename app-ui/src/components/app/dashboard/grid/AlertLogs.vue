@@ -26,7 +26,7 @@
       <template #top>
         <div class="bg-primary">
           <h3 class="pl-3 py-3">
-            {{ $t('topologies.dashboard.tables.alertLogs') }}
+            {{ $t('page.heading.alertLogs') }}
           </h3>
         </div>
       </template>

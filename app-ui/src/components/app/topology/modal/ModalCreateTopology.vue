@@ -1,7 +1,7 @@
 <template>
   <modal-template
     v-model="isOpen"
-    :title="$t('topologies.modals.create.title')"
+    :title="$t('modal.header.createTopology')"
     :on-close="onClose"
     :on-confirm="() => $refs.form.submit()"
   >

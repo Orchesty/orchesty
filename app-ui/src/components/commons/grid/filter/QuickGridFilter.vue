@@ -14,8 +14,7 @@
           :button-title="$t(item.name)"
           :on-click="() => onChangeFilter(index, item)"
         />
-        <slot name="resetClearButtons" :on-clear-button="() => {}" />
-        <slot name="advancedFilter" />
+        <slot />
       </v-col>
     </v-row>
   </div>
