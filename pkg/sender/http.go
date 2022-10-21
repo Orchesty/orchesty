@@ -75,6 +75,19 @@ func (sender httpSender) Send(method, url string, content interface{}, headers m
 	response, err := sender.client.Do(request)
 	timeTwo := time.Now()
 
+	if err != nil {
+		sender.logContext().Error(err)
+		sender.logContext().Info(
+			"[%.3f s] [HTTP 500] [%s %s] (%s)",
+			timeTwo.Sub(timeOne).Seconds(),
+			request.Method,
+			request.URL.String(),
+			requestBody,
+		)
+
+		return nil, err
+	}
+
 	requestHeadersMap := map[string]string{}
 
 	for key, value := range request.Header {
@@ -89,17 +102,12 @@ func (sender httpSender) Send(method, url string, content interface{}, headers m
 
 	if err != nil {
 		sender.logContext().Error(err)
-	}
-
-	if err != nil {
-		sender.logContext().Error(err)
 		sender.logContext().Info(
-			"[%.3f s] [HTTP 500] [%s %s] (%s) (%s)",
+			"[%.3f s] [HTTP 500] [%s %s] (%s)",
 			timeTwo.Sub(timeOne).Seconds(),
 			request.Method,
 			request.URL.String(),
 			requestBody,
-			strings.Trim(requestHeaders.String(), "\n"),
 		)
 
 		return nil, err
