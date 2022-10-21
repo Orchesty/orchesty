@@ -6,6 +6,7 @@ import RedshiftExecuteQueryConnector
     from '@orchesty/nodejs-connectors/dist/lib/AmazonApps/Redshift/Connector/RedshiftExecuteQueryConnector';
 import RedshiftApplication from '@orchesty/nodejs-connectors/dist/lib/AmazonApps/Redshift/RedshiftApplication';
 import S3Application from '@orchesty/nodejs-connectors/dist/lib/AmazonApps/S3/S3Application';
+import SESSendEmail from '@orchesty/nodejs-connectors/dist/lib/AmazonApps/SimpleEmailService/Connector/SESSendEmail';
 import AsanaApplication from '@orchesty/nodejs-connectors/dist/lib/Asana/AsanaApplication';
 import AsanaCreateTaskConnector from '@orchesty/nodejs-connectors/dist/lib/Asana/Connector/AsanaCreateTaskConnector';
 import BigcommerceApplication from '@orchesty/nodejs-connectors/dist/lib/Bigcommerce/BigcommerceApplication';
@@ -25,9 +26,10 @@ import GoogleCalendarApplication
 import GoogleDriveApplication from '@orchesty/nodejs-connectors/dist/lib/Google/GoogleDrive/GoogleDriveApplication';
 import GoogleSheetApplication from '@orchesty/nodejs-connectors/dist/lib/Google/GoogleSheet/GoogleSheetApplication';
 import YoutubeApplication from '@orchesty/nodejs-connectors/dist/lib/Google/Youtube/YoutubeApplication';
-import HubSpotCreateContactConnector
-    from '@orchesty/nodejs-connectors/dist/lib/Hubspot/Connector/HubSpotCreateContactConnector';
+import HubSpotSendTransactionEmailConnector
+    from '@orchesty/nodejs-connectors/dist/lib/Hubspot/Connector/HubSpotSendTransactionEmailConnector';
 import HubSpotApplication from '@orchesty/nodejs-connectors/dist/lib/Hubspot/HubSpotApplication';
+import HubSpotApplicationBasic from '@orchesty/nodejs-connectors/dist/lib/Hubspot/HubSpotApplicationBasic';
 import IDokladApplication from '@orchesty/nodejs-connectors/dist/lib/IDoklad/IDokladApplication';
 import JiraCreateIssueConnector from '@orchesty/nodejs-connectors/dist/lib/Jira/Connector/JiraCreateIssueConnector';
 import JiraApplication from '@orchesty/nodejs-connectors/dist/lib/Jira/JiraApplication';
@@ -52,8 +54,7 @@ import PostgreSqlApplication from '@orchesty/nodejs-connectors/dist/lib/Sql/Post
 import SqliteApplication from '@orchesty/nodejs-connectors/dist/lib/Sql/SqliteApplication';
 import StripeApplication from '@orchesty/nodejs-connectors/dist/lib/Stripe/StripeApplication';
 import TableauApplication from '@orchesty/nodejs-connectors/dist/lib/Tableau/TableauApplication';
-import TrelloCreateCardConnector from
-    '@orchesty/nodejs-connectors/dist/lib/Trello/Connector/TrelloCreateCardConnector';
+import TrelloCreateCardConnector from '@orchesty/nodejs-connectors/dist/lib/Trello/Connector/TrelloCreateCardConnector';
 import TrelloApplication from '@orchesty/nodejs-connectors/dist/lib/Trello/TrelloApplication';
 import TwilioApplication from '@orchesty/nodejs-connectors/dist/lib/Twilio/TwilioApplication';
 import UpgatesApplication from '@orchesty/nodejs-connectors/dist/lib/Upgates/UpgatesApplication';
@@ -80,6 +81,15 @@ import HubSpotCreateContactMapper from './JsonPlaceholder/HubSpotCreateContactMa
 import NonInstallableApplication from './JsonPlaceholder/NonInstallableApplication';
 import SampleApplication from './JsonPlaceholder/SampleApplication';
 import TenantApplication from './JsonPlaceholder/TenantApplication';
+import HubSpotAddEmailToListConnector from './OrchestyIo/Connector/HubSpotAddEmailToListConnector';
+import HubSpotCreateContactConnector from './OrchestyIo/Connector/HubSpotCreateContactConnector';
+import HubsoptAddContactToListMapper from './OrchestyIo/CustomNode/HubsoptAddContactToListMapper';
+import HubspotToSesTransactionEmailMapper from './OrchestyIo/CustomNode/HubspotToSesEmailMapper';
+import OrchestyToHubSpotContactMapper from './OrchestyIo/CustomNode/OrchestyToHubSpotContactMapper';
+import OrchestyToJiraMapper from './OrchestyIo/CustomNode/OrchestyToJiraMapper';
+import { HubspotListIdsEnums } from './OrchestyIo/Enum/HubspotListIdsEnums';
+import { OrchestyPageEnum } from './OrchestyIo/Enum/OrchestyPageEnum';
+import SESApplication from './OrchestyIo/SESApplication';
 
 export async function start(): Promise<void> {
     await initiateContainer();
@@ -128,6 +138,9 @@ export async function start(): Promise<void> {
 
     const lambdaApp = new LambdaApplication();
     container.setApplication(lambdaApp);
+
+    const sesApp = new SESApplication();
+    container.setApplication(sesApp);
 
     const dropBoxApp = new DropboxApplication(provider);
     container.setApplication(dropBoxApp);
@@ -182,6 +195,9 @@ export async function start(): Promise<void> {
 
     const hubspotApp = new HubSpotApplication(provider);
     container.setApplication(hubspotApp);
+
+    const hubspotAppBasic = new HubSpotApplicationBasic();
+    container.setApplication(hubspotAppBasic);
 
     const idokaldApp = new IDokladApplication(provider);
     container.setApplication(idokaldApp);
@@ -267,15 +283,45 @@ export async function start(): Promise<void> {
     const hubspotCreateContact = new HubSpotCreateContactConnector();
     hubspotCreateContact
         .setSender(sender)
-        .setApplication(hubspotApp)
+        .setApplication(hubspotAppBasic)
         .setDb(mongoDb);
     container.setConnector(hubspotCreateContact);
 
     const hubspotContactMapper = new HubSpotCreateContactMapper();
     hubspotContactMapper
         .setDb(mongoDb)
-        .setApplication(hubspotApp);
+        .setApplication(hubspotAppBasic);
     container.setCustomNode(hubspotContactMapper);
+
+    const orchestyToHubSpotContactMapper = new OrchestyToHubSpotContactMapper();
+    container.setCustomNode(orchestyToHubSpotContactMapper);
+
+    const hubSpotAddEmailToListConnector = new HubSpotAddEmailToListConnector()
+        .setSender(sender)
+        .setApplication(hubspotAppBasic)
+        .setDb(mongoDb);
+    container.setConnector(hubSpotAddEmailToListConnector);
+
+    const addContactToHubspotSalesListMapper = new HubsoptAddContactToListMapper(HubspotListIdsEnums.SALES);
+    container.setCustomNode(addContactToHubspotSalesListMapper);
+
+    const addContactToHubspotContactListMapper = new HubsoptAddContactToListMapper(HubspotListIdsEnums.CONTACT_FROM);
+    container.setCustomNode(addContactToHubspotContactListMapper);
+
+    const addContactToHubspotCommunityListMapper = new HubsoptAddContactToListMapper(HubspotListIdsEnums.COMMUNITY);
+    container.setCustomNode(addContactToHubspotCommunityListMapper);
+
+    const addContactToHubspotNewsletterListMapper = new HubsoptAddContactToListMapper(HubspotListIdsEnums.NEWSLETTER);
+    container.setCustomNode(addContactToHubspotNewsletterListMapper);
+
+    const hubspotToJiraSalesMapper = new OrchestyToJiraMapper(OrchestyPageEnum.SALES, ['sales']);
+    container.setCustomNode(hubspotToJiraSalesMapper);
+
+    const hubspotToJiraContactMapper = new OrchestyToJiraMapper(OrchestyPageEnum.CONTACT, ['contact']);
+    container.setCustomNode(hubspotToJiraContactMapper);
+
+    const hubspotToJiraCommunityMapper = new OrchestyToJiraMapper(OrchestyPageEnum.COMMUNITY, ['community']);
+    container.setCustomNode(hubspotToJiraCommunityMapper);
 
     const discordSendMessage = new DiscordSendMessageConnector()
         .setSender(sender)
@@ -312,6 +358,12 @@ export async function start(): Promise<void> {
         .setDb(mongoDb);
     container.setConnector(awsRdsRoleConnector);
 
+    const awsSesSendEmail = new SESSendEmail()
+        .setSender(sender)
+        .setApplication(sesApp)
+        .setDb(mongoDb);
+    container.setConnector(awsSesSendEmail);
+
     const redShiftExecQuery = new RedshiftExecuteQueryConnector()
         .setSender(sender)
         .setApplication(awsRedshift)
@@ -334,4 +386,30 @@ export async function start(): Promise<void> {
         .setApplication(sampleApp)
         .setDb(mongoDb);
     container.setBatch(listUsersCommon);
+
+    const hubspotToHubspotSalesTransactionEmail = new HubspotToSesTransactionEmailMapper(
+        OrchestyPageEnum.SALES,
+    );
+    container.setCustomNode(hubspotToHubspotSalesTransactionEmail);
+
+    const hubspotToHubspotContactTransactionEmail = new HubspotToSesTransactionEmailMapper(
+        OrchestyPageEnum.CONTACT,
+    );
+    container.setCustomNode(hubspotToHubspotContactTransactionEmail);
+
+    const hubspotToHubspotCommunityTransactionEmail = new HubspotToSesTransactionEmailMapper(
+        OrchestyPageEnum.COMMUNITY,
+    );
+    container.setCustomNode(hubspotToHubspotCommunityTransactionEmail);
+
+    const hubspotToHubspotNewsletterTransactionEmail = new HubspotToSesTransactionEmailMapper(
+        OrchestyPageEnum.NEWSLETTER,
+    );
+    container.setCustomNode(hubspotToHubspotNewsletterTransactionEmail);
+
+    const hubSpotSendTransactionEmailConnector = new HubSpotSendTransactionEmailConnector()
+        .setSender(sender)
+        .setApplication(hubspotAppBasic)
+        .setDb(mongoDb);
+    container.setConnector(hubSpotSendTransactionEmailConnector);
 }

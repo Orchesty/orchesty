@@ -13,6 +13,8 @@
   "author": "info@hanaboso.com",
   "license": "Apache-2.0",
   "dependencies": {
+    "@aws-sdk/client-ses": "^3.192.0",
+    "@aws-sdk/util-endpoints": "^3.192.0",
     "@orchesty/nodejs-connectors": "^2.1.7",
     "@orchesty/nodejs-sdk": "^3.2.4",
     "@types/node": "^18.11.3",
