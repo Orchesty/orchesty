@@ -1,0 +1,13 @@
+import Base from '@orchesty/nodejs-connectors/dist/lib/Hubspot/Connector/HubSpotCreateContactConnector';
+import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
+import { IOutput } from '../CustomNode/OrchestyToHubSpotContactMapper';
+
+export default class HubSpotCreateContactConnector extends Base {
+
+    public async processAction(dto: ProcessDto<IOutput>): Promise<ProcessDto> {
+        const { properties } = dto.getJsonData();
+        const superDto = await super.processAction(dto);
+        return superDto.setNewJsonData<unknown>({ ...(superDto.getJsonData() as object), email: properties.email });
+    }
+
+}

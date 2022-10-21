@@ -16,6 +16,8 @@ services:
             UDP_LOGGER_DSN: 'logstash:5005'
             METRICS_DSN: 'mongodb://mongo:27017/metrics'
             MONGODB_DSN: 'mongodb://mongo:27017/node-sdk'
+            AWS_SES_KEY: ${AWS_SES_KEY}
+            AWS_SES_SECRET: ${AWS_SES_SECRET}
         command: sh -c 'pnpm install && pnpm run start'
 
     mongo:
