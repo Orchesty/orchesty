@@ -62,7 +62,7 @@ func load() {
 		Logger.SetLevel(log.INFO)
 	}
 
-	if strings.HasPrefix(StartingPoint.Dsn, "http") {
+	if !strings.HasPrefix(StartingPoint.Dsn, "http") {
 		StartingPoint.Dsn = fmt.Sprintf("http://%s", StartingPoint.Dsn)
 	}
 }
