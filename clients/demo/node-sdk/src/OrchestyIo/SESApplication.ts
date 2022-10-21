@@ -5,7 +5,6 @@ import {
     LATEST,
     REGION,
     REGIONS,
-    VERSION,
 } from '@orchesty/nodejs-connectors/dist/lib/AmazonApps/AAwsApplication';
 import Base from '@orchesty/nodejs-connectors/dist/lib/AmazonApps/SimpleEmailService/SESApplication';
 import CoreFormsEnum from '@orchesty/nodejs-sdk/dist/lib/Application/Base/CoreFormsEnum';

@@ -3,7 +3,7 @@ export interface IOrchestyCommunity {
     'first-name': string;
     'last-name': string;
     email: string;
-    lang: string;
+    language: string;
     message: string;
     /* eslint-enable @typescript-eslint/naming-convention */
 }

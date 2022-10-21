@@ -25,14 +25,15 @@ export default class OrchestyToJiraMapper extends ACommonNode {
             company,
             phone,
             email,
-            lang,
+            language,
             message,
             applinth,
             course,
             aaas,
             team,
             support,
-            ...res } = dto.getJsonData();
+            ...res
+        } = dto.getJsonData();
 
         const hostedOrchesty = res['hosted-orchesty'];
 
@@ -66,7 +67,7 @@ export default class OrchestyToJiraMapper extends ACommonNode {
             Přijmení: ${res['last-name']}
             Email: ${email}
             Telefon: ${phone ?? ''}
-            Preferovaný jazyk: ${lang}
+            Preferovaný jazyk: ${language}
             Zpráva: ${message}`;
 
         if (interestedIn.length) {

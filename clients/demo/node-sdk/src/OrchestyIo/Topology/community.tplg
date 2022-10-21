@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:pipes="http://www.omg.org/spec/Pipes/20100524/MODEL" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
   <bpmn:process id="community" isExecutable="false">
-    <bpmn:task id="Activity_0tnjt1u" pipes:pipesType="custom" pipes:sdkHost="node-sdk:8080" name="orchesty-to-jira-community-nab-mapper" pipes:sdkHostName="node-sdk" pipes:appName="">
+    <bpmn:task id="Activity_0tnjt1u" pipes:pipesType="custom" pipes:sdkHost="worker" name="orchesty-to-community-jira-mapper" pipes:sdkHostName="nodeSdk" pipes:appName="">
       <bpmn:incoming>Flow_0kiu03e</bpmn:incoming>
       <bpmn:outgoing>Flow_1funvph</bpmn:outgoing>
     </bpmn:task>
@@ -9,36 +9,36 @@
       <bpmn:outgoing>Flow_0jptlvl</bpmn:outgoing>
     </bpmn:event>
     <bpmn:sequenceFlow id="Flow_0kiu03e" sourceRef="Event_0r7j8ak" targetRef="Activity_0tnjt1u"/>
-    <bpmn:task id="Activity_102p5fn" pipes:pipesType="connector" pipes:sdkHost="node-sdk:8080" name="jira-create-issue" pipes:sdkHostName="node-sdk" pipes:appName="jira">
+    <bpmn:task id="Activity_102p5fn" pipes:pipesType="connector" pipes:sdkHost="worker" name="jira-create-issue" pipes:sdkHostName="node-sdk" pipes:appName="jira">
       <bpmn:incoming>Flow_1funvph</bpmn:incoming>
     </bpmn:task>
     <bpmn:sequenceFlow id="Flow_1funvph" sourceRef="Activity_0tnjt1u" targetRef="Activity_102p5fn"/>
-    <bpmn:task id="Activity_0drke3c" pipes:pipesType="custom" pipes:sdkHost="node-sdk:8080" name="orchesty-sales-contact-to-hubspot-mapper" pipes:sdkHostName="node-sdk" pipes:appName="">
+    <bpmn:task id="Activity_0drke3c" pipes:pipesType="custom" pipes:sdkHost="worker" name="orchesty-to-hubspot-mapper" pipes:sdkHostName="nodeSdk" pipes:appName="">
       <bpmn:incoming>Flow_0jptlvl</bpmn:incoming>
       <bpmn:outgoing>Flow_1h4llsg</bpmn:outgoing>
     </bpmn:task>
     <bpmn:sequenceFlow id="Flow_0jptlvl" sourceRef="Event_0r7j8ak" targetRef="Activity_0drke3c"/>
-    <bpmn:task id="Activity_0wy7szf" pipes:pipesType="connector" pipes:sdkHost="node-sdk:8080" name="hub-spot-create-contact" pipes:sdkHostName="node-sdk" pipes:appName="hub-spot">
+    <bpmn:task id="Activity_0wy7szf" pipes:pipesType="connector" pipes:sdkHost="worker" name="hub-spot-create-contact" pipes:sdkHostName="node-sdk" pipes:appName="hub-spot">
       <bpmn:incoming>Flow_1h4llsg</bpmn:incoming>
       <bpmn:outgoing>Flow_0ewwxbx</bpmn:outgoing>
     </bpmn:task>
     <bpmn:sequenceFlow id="Flow_1h4llsg" sourceRef="Activity_0drke3c" targetRef="Activity_0wy7szf"/>
-    <bpmn:task id="Activity_167uzlk" pipes:pipesType="custom" pipes:sdkHost="node-sdk:8080" name="hubspot-add-contact-to-list-community-mapper" pipes:sdkHostName="node-sdk" pipes:appName="">
+    <bpmn:task id="Activity_167uzlk" pipes:pipesType="custom" pipes:sdkHost="worker" name="hubspot-add-contact-to-list-community-mapper" pipes:sdkHostName="node-sdk" pipes:appName="">
       <bpmn:incoming>Flow_0ewwxbx</bpmn:incoming>
       <bpmn:outgoing>Flow_0ad3pn0</bpmn:outgoing>
     </bpmn:task>
     <bpmn:sequenceFlow id="Flow_0ewwxbx" sourceRef="Activity_0wy7szf" targetRef="Activity_167uzlk"/>
-    <bpmn:task id="Activity_1lb7en4" pipes:pipesType="connector" pipes:sdkHost="node-sdk:8080" name="hub-spot-add-email-to-list" pipes:sdkHostName="node-sdk" pipes:appName="hub-spot">
+    <bpmn:task id="Activity_1lb7en4" pipes:pipesType="connector" pipes:sdkHost="worker" name="hub-spot-add-email-to-list" pipes:sdkHostName="node-sdk" pipes:appName="hub-spot">
       <bpmn:incoming>Flow_0ad3pn0</bpmn:incoming>
       <bpmn:outgoing>Flow_1e6lhgi</bpmn:outgoing>
     </bpmn:task>
     <bpmn:sequenceFlow id="Flow_0ad3pn0" sourceRef="Activity_167uzlk" targetRef="Activity_1lb7en4"/>
-    <bpmn:task id="Activity_0fke75f" pipes:pipesType="custom" pipes:sdkHost="node-sdk:8080" name="hubspot-to-ses-contact_form-transaction-email-mapper" pipes:sdkHostName="node-sdk" pipes:appName="">
+    <bpmn:task id="Activity_0fke75f" pipes:pipesType="custom" pipes:sdkHost="worker" name="hubspot-to-ses-community-email-mapper" pipes:sdkHostName="nodeSdk" pipes:appName="">
       <bpmn:incoming>Flow_1e6lhgi</bpmn:incoming>
       <bpmn:outgoing>Flow_06dwi2f</bpmn:outgoing>
     </bpmn:task>
     <bpmn:sequenceFlow id="Flow_1e6lhgi" sourceRef="Activity_1lb7en4" targetRef="Activity_0fke75f"/>
-    <bpmn:task id="Activity_1ix739j" pipes:pipesType="connector" pipes:sdkHost="node-sdk:8080" name="ses-send-email" pipes:sdkHostName="node-sdk" pipes:appName="amazon-ses">
+    <bpmn:task id="Activity_1ix739j" pipes:pipesType="connector" pipes:sdkHost="worker" name="ses-send-email" pipes:sdkHostName="node-sdk" pipes:appName="amazon-ses">
       <bpmn:incoming>Flow_06dwi2f</bpmn:incoming>
     </bpmn:task>
     <bpmn:sequenceFlow id="Flow_06dwi2f" sourceRef="Activity_0fke75f" targetRef="Activity_1ix739j"/>

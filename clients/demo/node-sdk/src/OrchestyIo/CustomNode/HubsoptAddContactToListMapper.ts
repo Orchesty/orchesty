@@ -18,7 +18,7 @@ export default class HubsoptAddContactToListMapper extends ACommonNode {
     public processAction(dto: ProcessDto<IInput>): ProcessDto<IInput | IOuput> {
         const { properties } = dto.getJsonData();
 
-        if (!properties.email) {
+        if (!properties?.email) {
             dto.setStopProcess(ResultCode.DO_NOT_CONTINUE, 'Email is not defined');
             return dto;
         }

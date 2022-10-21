@@ -7,7 +7,13 @@ export default class HubSpotCreateContactConnector extends Base {
     public async processAction(dto: ProcessDto<IOutput>): Promise<ProcessDto> {
         const { properties } = dto.getJsonData();
         const superDto = await super.processAction(dto);
-        return superDto.setNewJsonData<unknown>({ ...(superDto.getJsonData() as object), email: properties.email });
+
+        const out = {
+            ...(superDto.getJsonData() as object),
+            ...{ email: properties.email },
+        };
+
+        return superDto.setNewJsonData<unknown>({ properties: out });
     }
 
 }
