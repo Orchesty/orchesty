@@ -22,7 +22,7 @@ module.exports = {
       logo: {
         alt: 'Orchesty logo',
         src: 'img/Orch_logo_big.svg',
-        srcDark: 'img/Orch_logo.svg',
+        srcDark: 'img/Orch_logo_big.svg',
       },
       items: [
         // {

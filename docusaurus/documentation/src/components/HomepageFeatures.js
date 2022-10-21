@@ -10,14 +10,14 @@ const FeatureList = [
         title: 'Get started',
         description: 'Download and install Orchesty. Read about Orchesty architecture for understand how to build your own integration service.',
         linkText: 'Get started with Orchesty',
-        linkTo: '/docs/get-started/installation'
+        linkTo: '/docs/category/get-started'
     },
     {
         Svg: require('@site/static/img/study-svgrepo-com.svg').default,
         title: 'Tutorials',
         description: 'Learn step by step how to integrate services and orchestrate data processes between them.',
         linkText: 'Get started with Tutorials',
-        linkTo: '/docs/tutorials/getting-started-with-tutorials'
+        linkTo: '/docs/category/tutorials'
     },
     {
         Svg: require('@site/static/img/dvi-connector-svgrepo-com.svg').default,
