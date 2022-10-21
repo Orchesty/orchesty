@@ -1,75 +1,68 @@
 export default {
   grid: {
     id: 'GET_TRASH_ITEMS',
-    request: ({ paging, sorter }) => {
-      return {
-        url: `/trash?filter=${JSON.stringify({ paging, sorter })}`,
-        method: 'GET',
-      }
-    },
+    urlPattern: '/trash',
+    request: ({ paging, sorter }) => ({
+      url: `/trash?filter=${JSON.stringify({ paging, sorter })}`,
+      method: 'GET',
+    }),
   },
   getById: {
     id: 'GET_TRASH_ITEM_DETAIL',
-    request: ({ id }) => {
-      return {
-        url: `/trash/${id}`,
-        method: 'GET',
-      }
-    },
+    urlPattern: '/trash/:id',
+    request: ({ id }) => ({
+      url: `/trash/${id}`,
+      method: 'GET',
+    }),
   },
   update: {
     id: 'UPDATE_TRASH_ITEM',
-    request: ({ id, body, headers }) => {
-      return {
-        url: `/trash/${id}`,
-        method: 'PUT',
-        data: {
-          body,
-          headers,
-        },
-      }
-    },
+    urlPattern: '/trash/:id',
+    request: ({ id, body, headers }) => ({
+      url: `/trash/${id}`,
+      method: 'PUT',
+      data: {
+        body,
+        headers,
+      },
+    }),
   },
   accept: {
     id: 'ACCEPT_TRASH_ITEM',
-    request: ({ id }) => {
-      return {
-        url: `/trash/${id}/accept`,
-        method: 'POST',
-      }
-    },
+    urlPattern: '/trash/:id/accept',
+    request: ({ id }) => ({
+      url: `/trash/${id}/accept`,
+      method: 'POST',
+    }),
   },
   acceptAll: {
     id: 'ACCEPT_ALL_TRASH_ITEMS',
-    request: (ids) => {
-      return {
-        url: `/trash/accept`,
-        method: 'POST',
-        data: {
-          ids,
-        },
-      }
-    },
+    urlPattern: '/trash/accept',
+    request: (ids) => ({
+      url: `/trash/accept`,
+      method: 'POST',
+      data: {
+        ids,
+      },
+    }),
   },
   reject: {
     id: 'REJECT_TRASH_ITEM',
-    request: ({ id }) => {
-      return {
-        url: `/trash/${id}/reject`,
-        method: 'POST',
-      }
-    },
+    urlPattern: '/trash/:id/reject',
+    request: ({ id }) => ({
+      url: `/trash/${id}/reject`,
+      method: 'POST',
+    }),
   },
   rejectAll: {
     id: 'REJECT_ALL_TRASH_ITEMS',
-    request: (ids) => {
-      return {
-        url: `/trash/reject`,
-        method: 'POST',
-        data: {
-          ids,
-        },
-      }
-    },
+    urlPattern: '/trash/reject',
+    request: (ids) => ({
+      url: `/trash/reject`,
+      method: 'POST',
+      data: {
+        ids,
+      },
+    }),
   },
 }

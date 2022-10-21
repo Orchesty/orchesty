@@ -183,6 +183,10 @@ const router = new VueRouter({
 })
 
 router.beforeEach(async (to, _from, next) => {
+  if (config.disableAuth) {
+    next()
+    return
+  }
   const needsAuth = Boolean(to.meta?.auth)
   const hasTokenInQuery = Boolean(to.query?.u)
   if (needsAuth) {
