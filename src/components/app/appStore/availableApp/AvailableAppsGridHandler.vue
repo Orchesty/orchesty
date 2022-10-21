@@ -9,7 +9,7 @@
       <v-container fluid>
         <v-row>
           <v-col class="px-0">
-            <span>No apps available</span>
+            <span>{{ $t('page.status.noAppsAvailable') }}</span>
           </v-col>
         </v-row>
       </v-container>

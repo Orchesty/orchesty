@@ -1,5 +1,5 @@
 <template>
-  <content-basic v-if="appActive" redirect-in-title title="Back to the applications">
+  <content-basic v-if="appActive" redirect-in-title :title="$t('navigation.backToTheApplications')">
     <v-row v-if="appActive" class="mt-4">
       <v-col cols="2">
         <v-img max-width="150" contain :src="hasLogo(appActive)" />
@@ -10,7 +10,7 @@
         <h1 class="headline font-weight-bold">{{ appActive.name }}</h1>
         <p class="mt-4">{{ appActive.description }}</p>
         <div v-if="appActive.isInstallable">
-          <app-button color="primary" :button-title="$t('appStore.app.install')" :on-click="install" />
+          <app-button color="primary" :button-title="$t('button.install')" :on-click="install" />
         </div>
       </v-col>
     </v-row>
@@ -18,7 +18,7 @@
       <v-col>
         <v-tabs height="24">
           <v-tab v-if="appActive.info" class="text-transform-none body-2 font-weight-medium primary--text">
-            {{ $t('appStore.app.tabs.info') }}
+            {{ $t('page.status.info') }}
           </v-tab>
         </v-tabs>
       </v-col>

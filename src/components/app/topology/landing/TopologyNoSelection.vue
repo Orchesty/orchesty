@@ -1,6 +1,6 @@
 <template>
   <div class="topology-not-found-container">
-    <h4 class="display-2 gray--text darken-1--text">{{ $t('topologies.detail.noTopologySelected') }}</h4>
+    <h4 class="display-2 gray--text darken-1--text">{{ $t('page.status.noTopologySelected') }}</h4>
   </div>
 </template>
 

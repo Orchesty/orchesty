@@ -3,15 +3,14 @@
     v-model="isOpen"
     :sending-title="$t('button.sending.deleting')"
     async
-    :title="$t('users.delete.title')"
-    :body="$t('users.delete.body')"
+    :title="$t('modal.header.deleteUser')"
     :cancel-btn-text="$t('button.cancel')"
     :on-confirm="deleteAccount"
     :is-sending="state.isSending"
   >
     <template #default>
       <v-col cols="12">
-        {{ $t('users.delete.body') }}
+        {{ $t('modal.text.deleteUser') }}
       </v-col>
     </template>
     <template #button>

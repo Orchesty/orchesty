@@ -2,14 +2,14 @@
   <ValidationObserver ref="form" tag="form" slim @submit.prevent="submit">
     <v-row>
       <v-col cols="12">
-        <h3 class="title font-weight-bold">{{ $t('profile.changePassword.title') }}</h3>
+        <h3 class="title font-weight-bold">{{ $t('page.heading.changePassword') }}</h3>
       </v-col>
     </v-row>
     <v-row dense>
       <v-col cols="12">
         <validation-provider
           v-slot="{ errors }"
-          :name="$t('profile.changePassword.form.current-password.name')"
+          :name="$t('form.currentPassword')"
           :vid="fields.current.id"
           :rules="fields.current.validations"
           slim
@@ -18,7 +18,7 @@
             :ref="fields.current.id"
             v-model="form.current"
             dense
-            :label="$t('profile.changePassword.form.current-password.label')"
+            :label="$t('form.currentPassword')"
             input-type="password"
             outlined
             :error-messages="errors"
@@ -27,7 +27,7 @@
 
         <validation-provider
           v-slot="{ errors }"
-          :name="$t('profile.changePassword.form.password.name')"
+          :name="$t('form.newPassword')"
           :vid="fields.password.id"
           :rules="fields.password.validations"
           slim
@@ -37,7 +37,7 @@
             v-model="form.password"
             dense
             outlined
-            :label="$t('profile.changePassword.form.password.label')"
+            :label="$t('form.newPassword')"
             input-type="password"
             :error-messages="errors"
           />
@@ -45,14 +45,14 @@
 
         <validation-provider
           v-slot="{ errors }"
-          :name="$t('profile.changePassword.form.confirm.name')"
+          :name="$t('form.confirmPassword')"
           :rules="fields.confirm.validations"
           slim
         >
           <app-input
             v-model="form.confirm"
             dense
-            :label="$t('profile.changePassword.form.confirm.label')"
+            :label="$t('form.confirmPassword')"
             input-type="password"
             outlined
             :error-messages="errors"

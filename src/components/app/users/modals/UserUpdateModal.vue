@@ -3,7 +3,7 @@
     v-model="isOpen"
     :sending-title="$t('button.sending.editing')"
     async
-    :title="$t('users.update.title')"
+    :title="$t('modal.header.updateUser')"
     :cancel-btn-text="$t('button.cancel')"
     :on-confirm="() => $refs.form.submit()"
     :is-sending="updateState.isSending"

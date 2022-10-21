@@ -46,7 +46,7 @@ export default {
       DATA_GRIDS,
       headers: [
         {
-          text: this.$t('implementation.form.name.label'),
+          text: this.$t('grid.header.name'),
           value: 'name',
           align: 'left',
           sortable: true,
@@ -54,7 +54,7 @@ export default {
           width: '300px',
         },
         {
-          text: this.$t('implementation.form.url.label'),
+          text: this.$t('grid.header.url'),
           value: 'url',
           align: 'left',
           sortable: true,
@@ -62,7 +62,7 @@ export default {
           width: '300px',
         },
         {
-          text: this.$t('implementation.form.action.label'),
+          text: this.$t('grid.header.actions'),
           value: 'actions',
           align: 'right',
           sortable: true,

@@ -21,7 +21,7 @@ export default {
 
       commit(AUTH.MUTATIONS.LOGIN_RESPONSE, data)
       await router.push({ name: ROUTES.DASHBOARD })
-      addSuccessMessage(dispatch, API.auth.forgotPassword.id, 'Welcome back!')
+      addSuccessMessage(dispatch, API.auth.forgotPassword.id, 'flashMessages.welcomeBack')
     } catch (e) {
       addErrorMessage(dispatch, API.auth.forgotPassword.id, e)
     }

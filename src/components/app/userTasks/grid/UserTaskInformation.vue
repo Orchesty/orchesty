@@ -4,20 +4,24 @@
       <v-row class="flex-grow-0 flex-shrink-1" dense>
         <v-col v-if="isTrash" cols="6">
           <div>
-            <span class="font-weight-bold">Topology: </span> <span>{{ trashTaskSwitcher('topologyName') }}</span>
+            <span class="font-weight-bold">{{ $t('page.status.topology') }}: </span>
+            <span>{{ trashTaskSwitcher('topologyName') }}</span>
           </div>
           <div>
             <div class="my-3">
-              <span class="font-weight-bold">ID: </span><span>{{ trashTaskSwitcher('topologyId') }}</span>
+              <span class="font-weight-bold">{{ $t('page.status.id') }}: </span>
+              <span>{{ trashTaskSwitcher('topologyId') }}</span>
             </div>
           </div>
         </v-col>
         <v-col :cols="isTrash ? 6 : 12">
           <div>
-            <span class="font-weight-bold">Node: </span> <span> {{ trashTaskSwitcher('nodeName') }}</span>
+            <span class="font-weight-bold">{{ $t('page.status.node') }}: </span>
+            <span> {{ trashTaskSwitcher('nodeName') }}</span>
           </div>
           <div class="my-3">
-            <span class="font-weight-bold">ID: </span> <span>{{ trashTaskSwitcher('nodeId') }}</span>
+            <span class="font-weight-bold">{{ $t('page.status.id') }}: </span>
+            <span>{{ trashTaskSwitcher('nodeId') }}</span>
           </div>
         </v-col>
         <v-col cols="auto">
@@ -25,7 +29,7 @@
             <v-col cols="auto">
               <div>
                 <span class="font-weight-bold">
-                  {{ $t('topologies.userTask.information.created') }}
+                  {{ $t('page.status.created') }}
                 </span>
               </div>
               <div>
@@ -37,7 +41,7 @@
             <v-divider vertical class="mx-2" />
             <v-col cols="auto">
               <div>
-                <span class="font-weight-bold">{{ $t('topologies.userTask.information.updated') }}</span>
+                <span class="font-weight-bold">{{ $t('page.status.updated') }}</span>
               </div>
               <div>
                 <span>{{
@@ -49,7 +53,7 @@
             <v-col cols="auto">
               <div>
                 <span class="font-weight-bold">
-                  {{ $t('topologies.userTask.information.correlationId') }}
+                  {{ $t('page.status.correlationId') }}
                 </span>
               </div>
               <div>
@@ -93,7 +97,7 @@
               <v-card outlined>
                 <v-expansion-panel-header>
                   <span>
-                    {{ $t('topologies.userTask.information.headers') }}
+                    {{ $t('page.status.headers') }}
                   </span>
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
@@ -105,7 +109,7 @@
               <v-card outlined>
                 <v-expansion-panel-header>
                   <span>
-                    {{ $t('topologies.userTask.information.body') }}
+                    {{ $t('page.status.body') }}
                   </span>
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>

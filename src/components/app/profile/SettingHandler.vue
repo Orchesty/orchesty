@@ -3,7 +3,7 @@
     <v-list>
       <v-list-item>
         <v-list-item-content>
-          {{ $t('profile.setting.form.darkMode.label') }}
+          {{ $t('page.status.darkMode') }}
         </v-list-item-content>
         <v-list-item-action>
           <v-switch v-model="darkMode" />
@@ -11,7 +11,7 @@
       </v-list-item>
       <v-list-item>
         <v-list-item-content>
-          {{ $t('profile.setting.form.language.label') }}
+          {{ $t('page.status.language') }}
         </v-list-item-content>
         <v-list-item-action>
           <v-select v-model="language" :items="languages">

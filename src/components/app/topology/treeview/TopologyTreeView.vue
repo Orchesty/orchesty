@@ -47,7 +47,7 @@
       </template>
     </v-treeview>
     <div v-else class="text-center">
-      <span> {{ $t('sidebar.noTopologiesFound') }} </span>
+      <span> {{ $t('page.status.noTopologySelected') }} </span>
     </div>
   </div>
 </template>

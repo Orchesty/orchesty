@@ -1,9 +1,0 @@
-{
-  "list": {
-    "errorQueueItemTitle": "Missing consumer for queue {name}",
-    "errorQueueItemText": "Try to restart docker container {service} with bridge for topology {topology}.",
-    "errorServiceItem": "Service {name} is not running",
-    "errorServiceItemText": "Try to restart docker container {name}.",
-    "itWorks": "Everything works properly."
-  }
-}

@@ -2,23 +2,13 @@
   <div>
     <v-row v-for="(header, index) in headers" :key="index" dense justify="space-between">
       <v-col cols="5">
-        <validation-provider
-          v-slot="{ errors }"
-          :name="$t('form.keyValue.key.name')"
-          :rules="fields.input.validations"
-          slim
-        >
-          <app-input v-model="header.key" :label="$t('form.keyValue.key.label')" :error-messages="errors" />
+        <validation-provider v-slot="{ errors }" :name="$t('form.key')" :rules="fields.input.validations" slim>
+          <app-input v-model="header.key" :label="$t('form.key')" :error-messages="errors" />
         </validation-provider>
       </v-col>
       <v-col cols="5">
-        <validation-provider
-          v-slot="{ errors }"
-          :name="$t('form.keyValue.value.name')"
-          :rules="fields.input.validations"
-          slim
-        >
-          <app-input v-model="header.value" :label="$t('form.keyValue.value.label')" :error-messages="errors" />
+        <validation-provider v-slot="{ errors }" :name="$t('form.value')" :rules="fields.input.validations" slim>
+          <app-input v-model="header.value" :label="$t('form.value')" :error-messages="errors" />
         </validation-provider>
       </v-col>
       <v-col cols="auto">
@@ -34,7 +24,7 @@
         <app-special-button icon="mdi-plus" :disabled="headerAddAbility" @click="addLine" />
       </v-col>
       <v-col class="d-flex justify-start align-center">
-        <span>{{ $t('notifications.headers') }}</span>
+        <span>{{ $t('modal.text.headers') }}</span>
       </v-col>
     </v-row>
   </div>

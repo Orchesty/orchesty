@@ -1,7 +1,7 @@
 <template>
   <modal-template
     v-model="isOpen"
-    :title="$t('topologies.modals.import.title')"
+    :title="$t('modal.header.importTopology')"
     :on-close="onClose"
     :on-cancel="onClose"
     :on-confirm="submit"
@@ -11,8 +11,8 @@
         <v-col cols="12">
           <app-input
             v-model="altName"
-            label="alter the topology name | left blank if not desired to"
-            placeholder="alter the topology name | left blank if not desired to"
+            :label="$t('modal.text.importTopologyMessage')"
+            :placeholder="$t('modal.text.importTopologyMessage')"
           />
         </v-col>
       </v-row>
@@ -26,8 +26,8 @@
               v-model="file.replace"
               dense
               outlined
-              label="change diagram sdk value with"
-              placeholder="change diagram sdk value with"
+              :label="$t('form.changeSdkValue')"
+              :placeholder="$t('form.changeSdkValue')"
               :items="implementationsProject"
               item-value="url"
               item-text="name"

@@ -2,7 +2,7 @@
   <div>
     <modal-template
       v-model="isOpen"
-      :title="$t('implementation.createModal.title')"
+      :title="$t('modal.header.implementationCreate')"
       :on-confirm="() => $refs.form.submit()"
       :on-cancel="() => $refs.form.resetForm()"
       :on-close="() => $refs.form.resetForm()"
@@ -20,7 +20,7 @@
             <app-button
               :sending-title="$t('button.sending.creating')"
               :is-sending="state.isSending"
-              :button-title="$t('implementation.createModal.create')"
+              :button-title="$t('button.create')"
               :on-click="() => $refs.form.submit()"
               :flat="false"
             />
@@ -28,7 +28,7 @@
         </v-row>
       </template>
       <template #button>
-        <app-button :on-click="() => (isOpen = !isOpen)" :button-title="$t('implementation.createModal.create')" />
+        <app-button :on-click="() => (isOpen = !isOpen)" :button-title="$t('button.create')" />
       </template>
     </modal-template>
   </div>

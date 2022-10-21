@@ -1,5 +1,5 @@
 <template>
-  <modal-template v-model="isOpen" :title="$t('users.create.title')" :on-confirm="() => $refs.form.submit()">
+  <modal-template v-model="isOpen" :title="$t('modal.header.createUser')" :on-confirm="() => $refs.form.submit()">
     <template #default>
       <v-col cols="12">
         <user-form ref="form" :on-submit="submit" :is-sending="false" />
@@ -7,9 +7,9 @@
     </template>
     <template #sendingButton>
       <sending-button
-        :sending-title="$t('button.sending.save')"
+        :sending-title="$t('button.sending.create')"
         :is-sending="state.isSending"
-        :button-title="$t('button.save')"
+        :button-title="$t('button.create')"
         :on-click="() => $refs.form.submit()"
         :flat="false"
       />
@@ -17,7 +17,7 @@
 
     <template #button>
       <v-btn color="primary" @click="props.toggle">
-        {{ $t('users.list.createUser') }}
+        {{ $t('button.create') }}
       </v-btn>
     </template>
   </modal-template>

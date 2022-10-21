@@ -2,7 +2,7 @@
   <modal-template
     v-model="isOpen"
     :width="type === 'update' ? 800 : 500"
-    :title="$t(`userTask.modal.${type}.title`)"
+    :title="$t(`modal.header.${type}Tasks`)"
     :on-confirm="confirm"
     :disable-enter-confirm="isActionUpdate"
   >
@@ -10,7 +10,7 @@
       <v-row dense>
         <template v-if="!isActionUpdate">
           <v-col cols="12">
-            {{ $t(`userTask.modal.${type}.body`, [bodyMessage]) }}
+            {{ $t(`modal.text.${type}Tasks`, [bodyMessage]) }}
           </v-col>
         </template>
         <template v-else>
@@ -29,9 +29,9 @@
       <v-row dense>
         <v-col cols="12" class="d-flex justify-end">
           <app-button
-            :sending-title="$t('button.sending.creating')"
+            :sending-title="$t(`button.sending.${type}`)"
             :is-sending="state.isSending"
-            :button-title="$t(`topologies.userTask.buttons.${type}`)"
+            :button-title="$t(`button.${type}`)"
             :on-click="confirm"
           />
         </v-col>
@@ -39,9 +39,9 @@
     </template>
     <template #button>
       <app-button
-        :sending-title="$t('button.sending.creating')"
+        :sending-title="$t(`button.sending.${type}`)"
         :is-sending="state.isSending"
-        :button-title="$t(`topologies.userTask.buttons.${type}`)"
+        :button-title="$t(`button.${type}`)"
         :on-click="() => (isOpen = !isOpen)"
         :color="color"
         :custom-class="buttonClass"

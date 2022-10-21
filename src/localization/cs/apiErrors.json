@@ -1,6 +1,0 @@
-{
-  "apiErrors": {
-    "INTERNAL_SERVER_ERROR": "Internal server error occurred.",
-    "UNKNOWN": "Ups! Something went wrong :("
-  }
-}

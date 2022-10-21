@@ -1,21 +1,16 @@
 <template>
   <auth-split-layout>
-    <template #heading> {{ $t('auth.page.forgotPassword.title') }} </template>
+    <template #heading> {{ $t('page.heading.forgotPassword') }} </template>
     <template #form>
       <p>
-        {{ $t('auth.page.forgotPassword.body') }}
+        {{ $t('page.text.forgotPassword') }}
       </p>
       <ValidationObserver ref="forgotForm" tag="form" @submit.prevent="submit">
-        <validation-provider
-          v-slot="{ errors }"
-          :name="$t('auth.inputs.email.fieldName')"
-          :rules="fields.email.validations"
-          slim
-        >
+        <validation-provider v-slot="{ errors }" :name="$t('form.email')" :rules="fields.email.validations" slim>
           <app-input
             v-model="form.email"
             prepend-icon="email"
-            :label="$t('auth.inputs.email.label')"
+            :label="$t('form.email')"
             type="text"
             :name="fields.email.id"
             :error-messages="errors"

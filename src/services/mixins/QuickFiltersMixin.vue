@@ -8,7 +8,7 @@ export default {
     init(val) {
       this.quickFilters = [
         {
-          name: 'enums.duration.last5mins',
+          name: 'button.last5mins',
           filter: [
             [
               {
@@ -21,7 +21,7 @@ export default {
           ],
         },
         {
-          name: 'enums.duration.last30mins',
+          name: 'button.last30mins',
           filter: [
             [
               {
@@ -34,7 +34,7 @@ export default {
           ],
         },
         {
-          name: 'enums.duration.lastHour',
+          name: 'button.lastHour',
           filter: [
             [
               {
@@ -47,7 +47,7 @@ export default {
           ],
         },
         {
-          name: 'enums.duration.last6hours',
+          name: 'button.last6hours',
           filter: [
             [
               {
@@ -60,7 +60,7 @@ export default {
           ],
         },
         {
-          name: 'enums.duration.last24hours',
+          name: 'button.last24hours',
           filter: [
             [
               {

@@ -14,7 +14,7 @@ export default {
         },
       })
 
-      addSuccessMessage(dispatch, API.userTask.accept.id, 'flashMessages.userTask.accept')
+      addSuccessMessage(dispatch, API.userTask.accept.id, 'flashMessages.userTaskAccept')
 
       return true
     } catch {
@@ -30,7 +30,7 @@ export default {
         },
       })
 
-      addSuccessMessage(dispatch, API.userTask.acceptAll.id, 'flashMessages.userTask.acceptList')
+      addSuccessMessage(dispatch, API.userTask.acceptAll.id, 'flashMessages.userTaskAcceptList')
 
       return true
     } catch {
@@ -74,7 +74,7 @@ export default {
         },
       })
 
-      addSuccessMessage(dispatch, API.userTask.reject.id, 'flashMessages.userTask.reject')
+      addSuccessMessage(dispatch, API.userTask.reject.id, 'flashMessages.userTaskReject')
 
       return true
     } catch {
@@ -90,7 +90,7 @@ export default {
         },
       })
 
-      addSuccessMessage(dispatch, API.userTask.rejectAll.id, 'flashMessages.userTask.rejectList')
+      addSuccessMessage(dispatch, API.userTask.rejectAll.id, 'flashMessages.userTaskRejectList')
 
       return true
     } catch {
@@ -108,7 +108,7 @@ export default {
 
       await dispatch(USER_TASKS.ACTIONS.USER_TASK_GET, payload.id)
 
-      addSuccessMessage(dispatch, API.userTask.update.id, 'flashMessages.userTask.update')
+      addSuccessMessage(dispatch, API.userTask.update.id, 'flashMessages.userTaskUpdate')
 
       return true
     } catch {

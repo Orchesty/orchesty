@@ -14,7 +14,9 @@
       "creating": "creating...",
       "run": "running...",
       "disabling": "disabling...",
-      "importing": "Importing..."
+      "importing": "Importing...",
+      "acceptAll": "accepting all...",
+      "rejectAll": "rejecting all..."
     },
     "run": "Run",
     "save": "Save",
@@ -49,6 +51,17 @@
     "reject": "Reject",
     "update": "Update",
     "addApplication": "Add an Application",
-    "setPassword": "Set password"
+    "setPassword": "Set password",
+    "acceptAll": "Accept all",
+    "rejectAll": "Reject all",
+    "test": "Test",
+    "last5mins": "Last 5 mins",
+    "last30mins": "Last 30 mins",
+    "lastHour": "Last hour",
+    "last6hours": "Last 6 hours",
+    "last24hours": "Last 24 hours",
+    "filter": "Filter",
+    "discard": "Discard",
+    "publish": "Publish"
   }
 }

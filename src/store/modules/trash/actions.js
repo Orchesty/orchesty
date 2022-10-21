@@ -13,7 +13,7 @@ export default {
         },
       })
 
-      addSuccessMessage(dispatch, API.userTask.accept.id, 'flashMessages.trash.accept')
+      addSuccessMessage(dispatch, API.userTask.accept.id, 'flashMessages.userTaskAccept')
 
       return true
     } catch {
@@ -29,7 +29,7 @@ export default {
         },
       })
 
-      addSuccessMessage(dispatch, API.userTask.acceptAll.id, 'flashMessages.trash.acceptList')
+      addSuccessMessage(dispatch, API.userTask.acceptAll.id, 'flashMessages.userTaskAcceptList')
 
       return true
     } catch {
@@ -59,7 +59,7 @@ export default {
         },
       })
 
-      addSuccessMessage(dispatch, API.userTask.reject.id, 'flashMessages.trash.reject')
+      addSuccessMessage(dispatch, API.userTask.reject.id, 'flashMessages.userTaskReject')
 
       return true
     } catch {
@@ -75,7 +75,7 @@ export default {
         },
       })
 
-      addSuccessMessage(dispatch, API.userTask.rejectAll.id, 'flashMessages.trash.rejectList')
+      addSuccessMessage(dispatch, API.userTask.rejectAll.id, 'flashMessages.userTaskRejectList')
 
       return true
     } catch {
@@ -93,7 +93,7 @@ export default {
 
       dispatch(TRASH.ACTIONS.TRASH_TASK_GET, payload.id)
 
-      addSuccessMessage(dispatch, API.userTask.update.id, 'flashMessages.trash.update')
+      addSuccessMessage(dispatch, API.userTask.update.id, 'flashMessages.userTaskUpdate')
 
       return true
     } catch {

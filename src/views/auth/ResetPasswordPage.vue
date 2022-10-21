@@ -4,7 +4,7 @@
       {{ $t('auth.links.notValidToken') }}
     </v-alert>
     <auth-split-layout v-else>
-      <template #heading> {{ $t('auth.page.resetPassword.title') }} </template>
+      <template #heading> {{ $t('page.heading.setNewPassword') }} </template>
       <template #form>
         <password-form :email="email" :on-submit="submit" :is-sending="state.isSending" />
       </template>

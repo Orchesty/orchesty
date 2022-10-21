@@ -7,7 +7,7 @@
       :is-loading="logState.isSending"
       :namespace="DATA_GRIDS.NODE_LOGS"
       expand-click
-      :title="$t('topologies.logs.title')"
+      :title="$t('page.heading.logs')"
       :show-expand="nodeStatus"
       :placeholder="!nodeStatus"
       :permanent-filter="
@@ -97,7 +97,7 @@
           <v-row>
             <v-col cols="12" class="d-flex">
               <v-btn color="secondary" text class="font-weight-medium ma-auto" @click="redirectToLogs">
-                View all logs
+                {{ $t('page.text.viewAllLogs') }}
               </v-btn>
             </v-col>
           </v-row>

@@ -13,6 +13,12 @@
     "userTask": "User Tasks",
     "appStore": "Applications",
     "implementations": "Workers",
-    "trash": "Trash"
+    "trash": "Trash",
+    "forgotPassword": "Forgot password",
+    "backToTheApplications": "Back to the applications",
+    "overview": "Overview",
+    "processes": "Processes",
+    "statistic": "Statistics",
+    "editor": "Editor"
   }
 }

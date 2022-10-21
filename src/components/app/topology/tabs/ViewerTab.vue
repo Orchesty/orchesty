@@ -33,7 +33,7 @@
       <v-col cols="12">
         <v-card outlined :class="canvasHeight" class="mt-3 d-flex flex-column align-center justify-center">
           <progress-bar-linear />
-          <h4 class="font-weight-medium mt-5">{{ $t('enums.loading.editor') }}</h4>
+          <h4 class="font-weight-medium mt-5">{{ $t('page.status.loading') }}</h4>
         </v-card>
       </v-col>
     </v-row>

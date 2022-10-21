@@ -60,7 +60,7 @@ export default {
         params: { id: payload.userId },
       })
 
-      addSuccessMessage(dispatch, API.admin.delete.id, 'flashMessages.appStore.appUninstalled')
+      addSuccessMessage(dispatch, API.admin.delete.id, 'flashMessages.appUninstalled')
 
       return true
     } catch (e) {
@@ -73,7 +73,7 @@ export default {
         requestData: { ...API.appStore.installApp },
         params: payload,
       })
-      addSuccessMessage(dispatch, API.admin.delete.id, 'flashMessages.appStore.appInstalled')
+      addSuccessMessage(dispatch, API.admin.delete.id, 'flashMessages.appInstalled')
 
       return true
     } catch (e) {
@@ -86,7 +86,7 @@ export default {
         requestData: { ...API.appStore.saveSettings },
         params: payload,
       })
-      addSuccessMessage(dispatch, API.admin.delete.id, 'flashMessages.appStore.appSaved')
+      addSuccessMessage(dispatch, API.admin.delete.id, 'flashMessages.appSaved')
 
       return true
     } catch (e) {
@@ -114,12 +114,10 @@ export default {
         params: payload,
       })
 
-      addSuccessMessage(dispatch, API.admin.delete.id, 'flashMessages.appStore.passwordChanged')
+      addSuccessMessage(dispatch, API.admin.delete.id, 'flashMessages.passwordChanged')
 
       return true
     } catch {
-      addSuccessMessage(dispatch, API.admin.delete.id, 'flashMessages.appStore.passwordChanged')
-
       return false
     }
   },
@@ -129,7 +127,7 @@ export default {
         requestData: { ...API.appStore.subscribeToWebhook },
         params: payload,
       })
-      addSuccessMessage(dispatch, API.admin.delete.id, 'flashMessages.appStore.subscribed')
+      addSuccessMessage(dispatch, API.admin.delete.id, 'flashMessages.subscribed')
 
       return true
     } catch (e) {
@@ -145,7 +143,7 @@ export default {
       addSuccessMessage(
         dispatch,
         API.appStore.activateApp.id,
-        payload.data.enabled ? 'flashMessages.appStore.activated' : 'flashMessages.appStore.deactivated'
+        payload.data.enabled ? 'flashMessages.activated' : 'flashMessages.deactivated'
       )
 
       return true

@@ -1,5 +1,5 @@
 <template>
-  <modal-template v-model="isOpen" :title="$t('topologies.modals.move.title')">
+  <modal-template v-model="isOpen" :title="$t('modal.header.moveTopology')">
     <template #default>
       <v-row dense>
         <v-col cols="12">

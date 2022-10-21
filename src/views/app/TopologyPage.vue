@@ -27,23 +27,23 @@ export default {
       TOPOLOGY_ENUMS,
       tabs: [
         {
-          name: 'topologies.detail.tabs.overview',
+          name: 'navigation.overview',
           route: ROUTES.TOPOLOGY.VIEWER,
         },
         {
-          name: 'topologies.detail.tabs.processes',
+          name: 'navigation.processes',
           route: ROUTES.TOPOLOGY.OVERVIEW,
         },
         {
-          name: 'topologies.detail.tabs.statistic',
+          name: 'navigation.statistic',
           route: ROUTES.TOPOLOGY.STATISTIC,
         },
         {
-          name: 'topologies.detail.tabs.userTask',
+          name: 'navigation.userTask',
           route: ROUTES.TOPOLOGY.USER_TASK,
         },
         {
-          name: 'topologies.detail.tabs.logs',
+          name: 'navigation.logs',
           route: ROUTES.TOPOLOGY.LOGS,
         },
       ],

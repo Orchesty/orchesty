@@ -90,7 +90,7 @@ export default {
       search: null,
       headers: [
         {
-          text: this.$t('topologies.logs.headers.timestamp'),
+          text: this.$t('grid.header.timestamp'),
           value: 'timestamp',
           align: 'left',
           sortable: true,
@@ -98,7 +98,7 @@ export default {
           width: '20%',
         },
         {
-          text: this.$t('topologies.logs.headers.topologyName'),
+          text: this.$t('grid.header.topologyName'),
           value: 'topology_name',
           align: 'left',
           sortable: true,
@@ -106,7 +106,7 @@ export default {
           width: '20%',
         },
         {
-          text: this.$t('topologies.logs.headers.nodeID'),
+          text: this.$t('grid.header.nodeID'),
           value: 'node_id',
           align: 'left',
           sortable: true,
@@ -114,7 +114,7 @@ export default {
           width: '20%',
         },
         {
-          text: this.$t('topologies.logs.headers.nodeName'),
+          text: this.$t('grid.header.nodeName'),
           value: 'node_name',
           align: 'left',
           sortable: true,
@@ -122,7 +122,7 @@ export default {
           width: '15%',
         },
         {
-          text: this.$t('topologies.logs.headers.severity'),
+          text: this.$t('grid.header.severity'),
           value: 'severity',
           align: 'left',
           sortable: true,
@@ -130,7 +130,7 @@ export default {
           width: '10%',
         },
         {
-          text: this.$t('topologies.logs.headers.correlation_id'),
+          text: this.$t('grid.header.correlation_id'),
           value: 'correlation_id',
           align: 'right',
           sortable: true,

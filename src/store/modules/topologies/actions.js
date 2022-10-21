@@ -13,7 +13,7 @@ export default {
         },
       })
 
-      addSuccessMessage(dispatch, API.topology.enable.id, `Topology ${response.name} created!`)
+      addSuccessMessage(dispatch, API.topology.enable.id, 'flashMessages.topologyCreated')
 
       return response
     } catch {
@@ -30,7 +30,7 @@ export default {
         },
       })
 
-      addSuccessMessage(dispatch, API.topology.enable.id, `Topology ${response.name} saved!`)
+      addSuccessMessage(dispatch, API.topology.enable.id, `flashMessages.topologySaved`)
 
       return response
     } catch {
@@ -151,7 +151,7 @@ export default {
         params: payload,
       })
 
-      addSuccessMessage(dispatch, API.topology.enable.id, 'flashMessages.topologies.enabled')
+      addSuccessMessage(dispatch, API.topology.enable.id, 'flashMessages.topologyEnabled')
 
       return true
     } catch {
@@ -165,7 +165,7 @@ export default {
         params: payload,
       })
 
-      addSuccessMessage(dispatch, API.topology.disable.id, 'flashMessages.topologies.disabled')
+      addSuccessMessage(dispatch, API.topology.disable.id, 'flashMessages.topologyDisabled')
 
       return true
     } catch {
@@ -179,7 +179,7 @@ export default {
         params: { topologyId: payload.topologyID, startingPoints: payload.startingPoints, body: payload.body },
       })
 
-      addSuccessMessage(dispatch, API.topology.run.id, 'flashMessages.topologies.run')
+      addSuccessMessage(dispatch, API.topology.run.id, 'flashMessages.topologyRan')
 
       return true
     } catch {
@@ -193,7 +193,7 @@ export default {
         params: payload,
       })
 
-      addSuccessMessage(dispatch, API.topology.test.id, 'flashMessages.topologies.tested')
+      addSuccessMessage(dispatch, API.topology.test.id, 'flashMessages.topologyTested')
 
       return true
     } catch {
@@ -207,7 +207,7 @@ export default {
         params: payload,
       })
 
-      addSuccessMessage(dispatch, API.topology.publish.id, 'flashMessages.topologies.published')
+      addSuccessMessage(dispatch, API.topology.publish.id, 'flashMessages.topologyPublished')
 
       return true
     } catch {
@@ -260,7 +260,7 @@ export default {
         params: payload,
       })
 
-      addSuccessMessage(dispatch, API.topology.clone.id, `Topology ${response.name} cloned!`)
+      addSuccessMessage(dispatch, API.topology.clone.id, 'flashMessages.topologyCloned')
 
       return response
     } catch {
@@ -301,14 +301,14 @@ export default {
   },
   [TOPOLOGIES.ACTIONS.TOPOLOGY.MOVE]: async ({ dispatch }, payload) => {
     try {
-      const response = await callApi(dispatch, {
+      await callApi(dispatch, {
         requestData: { ...API.topology.move },
         params: {
           ...payload,
         },
       })
 
-      addSuccessMessage(dispatch, API.topology.enable.id, `Topology ${response.name} moved!`)
+      addSuccessMessage(dispatch, API.topology.enable.id, 'flashMessages.topologyMoved')
 
       return true
     } catch {
@@ -322,7 +322,7 @@ export default {
         params: payload.id,
       })
 
-      addSuccessMessage(dispatch, API.topology.enable.id, `Topology ${payload.name} deleted!`)
+      addSuccessMessage(dispatch, API.topology.enable.id, 'flashMessages.topologyDeleted')
 
       return true
     } catch {
@@ -331,14 +331,14 @@ export default {
   },
   [TOPOLOGIES.ACTIONS.TOPOLOGY.EDIT]: async ({ dispatch }, payload) => {
     try {
-      const response = await callApi(dispatch, {
+      await callApi(dispatch, {
         requestData: { ...API.topology.edit },
         params: {
           ...payload,
         },
       })
 
-      addSuccessMessage(dispatch, API.topology.enable.id, `Topology ${response.name} edited!`)
+      addSuccessMessage(dispatch, API.topology.enable.id, 'flashMessages.topologyEdited')
 
       return true
     } catch {
@@ -347,14 +347,14 @@ export default {
   },
   [TOPOLOGIES.ACTIONS.FOLDER.CREATE]: async ({ dispatch }, payload) => {
     try {
-      const response = await callApi(dispatch, {
+      await callApi(dispatch, {
         requestData: { ...API.folder.create },
         params: {
           ...payload,
         },
       })
 
-      addSuccessMessage(dispatch, API.topology.enable.id, `Folder ${response.name} created!`)
+      addSuccessMessage(dispatch, API.topology.enable.id, 'flashMessages.folderCreated')
 
       return true
     } catch {
@@ -363,12 +363,12 @@ export default {
   },
   [TOPOLOGIES.ACTIONS.FOLDER.DELETE]: async ({ dispatch }, payload) => {
     try {
-      const response = await callApi(dispatch, {
+      await callApi(dispatch, {
         requestData: { ...API.folder.delete },
         params: payload,
       })
 
-      addSuccessMessage(dispatch, API.topology.enable.id, `Folder ${response.name} deleted!`)
+      addSuccessMessage(dispatch, API.topology.enable.id, 'flashMessages.folderDeleted')
 
       return true
     } catch {
@@ -377,14 +377,14 @@ export default {
   },
   [TOPOLOGIES.ACTIONS.FOLDER.EDIT]: async ({ dispatch }, payload) => {
     try {
-      const response = await callApi(dispatch, {
+      await callApi(dispatch, {
         requestData: { ...API.folder.edit },
         params: {
           ...payload,
         },
       })
 
-      addSuccessMessage(dispatch, API.topology.enable.id, `Folder renamed to ${response.name}!`)
+      addSuccessMessage(dispatch, API.topology.enable.id, 'flashMessages.folderEdited')
 
       return true
     } catch {

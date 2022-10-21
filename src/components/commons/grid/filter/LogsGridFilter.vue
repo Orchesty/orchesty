@@ -1,7 +1,7 @@
 <template>
   <v-row dense>
     <v-col key="fulltext" cols="12" sm="6" md="2">
-      <app-input v-model="fullTextSearch" hide-details clearable :label="$t('page.text.fulltextSearch')" />
+      <app-input v-model="fullTextSearch" hide-details clearable label="Fulltext Search" />
     </v-col>
     <v-col key="timeMargin" cols="12" sm="6" md="2">
       <app-input
@@ -13,7 +13,7 @@
       />
     </v-col>
     <v-col class="my-auto">
-      <app-button :button-title="$t('button.filter')" :on-click="sendFilter" class="py-5" />
+      <app-button :button-title="$t('button.filter')" :on-click="fetchGrid" class="py-5" />
       <app-button flat icon :on-click="resetFilter">
         <template #icon>
           <v-icon> mdi-close </v-icon>
@@ -28,32 +28,39 @@ import AppInput from '@/components/commons/input/AppInput'
 import AppButton from '@/components/commons/button/AppButton'
 import { OPERATOR } from '@/services/enums/gridEnums'
 export default {
-  name: 'LogsGridSimpleFilter',
+  name: 'LogsGridFilter',
   components: { AppButton, AppInput },
   data() {
     return {
-      fullTextSearch: null,
+      fullTextSearch: '',
       timeMargin: 0,
-    }
-  },
-  methods: {
-    sendFilter() {
-      const filter = [
+      logsFilter: [
         [
           {
             column: 'time_margin',
             operator: OPERATOR.EQUAL,
-            value: this.timeMargin,
+            value: 0,
           },
         ],
-      ]
-      this.$emit('fetchGrid', { filter, search: this.fullTextSearch })
+      ],
+    }
+  },
+  methods: {
+    fetchGrid() {
+      this.$emit('fetchGrid', { filter: this.logsFilter, search: this.fullTextSearch })
     },
     resetFilter() {
-      this.fullTextSearch = null
+      this.fullTextSearch = ''
       this.timeMargin = 0
 
       this.$emit('fetchGrid')
+    },
+  },
+  watch: {
+    timeMargin: {
+      handler(timeMargin) {
+        this.logsFilter[0][0].value = timeMargin
+      },
     },
   },
 }

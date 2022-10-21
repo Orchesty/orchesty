@@ -51,7 +51,7 @@ export default {
       })
       // @todo missing group in response
       commit(ADMIN_USERS.MUTATIONS.UPDATE_USER_RESPONSE, payload.data)
-
+      addSuccessMessage(dispatch, API.admin.create.id, 'flashMessages.userUpdated')
       return true
     } catch {
       return false
@@ -70,7 +70,7 @@ export default {
       await dispatchRoot(dispatch, withNamespace(DATA_GRIDS.ADMIN_USERS_LIST, GRID.ACTIONS.GRID_FETCH), {
         namespace: DATA_GRIDS.ADMIN_USERS_LIST,
       })
-      addSuccessMessage(dispatch, API.admin.delete.id, 'flashMessages.user.delete')
+      addSuccessMessage(dispatch, API.admin.delete.id, 'flashMessages.userDeleted')
 
       return true
     } catch {

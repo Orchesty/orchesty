@@ -1,5 +1,5 @@
 <template>
-  <content-basic :title="$t('logs.title')">
+  <content-basic :title="$t('navigation.logs')">
     <logs-grid />
   </content-basic>
 </template>

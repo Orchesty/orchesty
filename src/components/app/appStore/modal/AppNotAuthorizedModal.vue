@@ -1,9 +1,9 @@
 <template>
-  <modal-template v-model="isOpen" :title="$t('appStore.applicationNotAuthorized')">
+  <modal-template v-model="isOpen" :title="$t('modal.header.applicationNotAuthorized')">
     <template #default>
       <div class="d-flex flex-column">
         <p class="text-body-1">
-          {{ $t('appStore.applicationNotAuthorizedMessage') }}
+          {{ $t('modal.text.applicationNotAuthorized') }}
         </p>
       </div>
     </template>

@@ -8,7 +8,7 @@
             <div id="properties"></div>
             <div v-if="isStartingPoint" class="mx-3 subtitle-2">
               <hr class="mb-2 mt-3" />
-              <span class="font-weight-bold">{{ $t('topologies.editor.startingPoint') }}: </span>
+              <span class="font-weight-bold">{{ $t('page.status.startingPoint') }}: </span>
               <div>{{ startingPointMessage }}</div>
             </div>
           </div>
@@ -19,7 +19,7 @@
   <v-row v-else key="1">
     <v-col cols="12" class="canvas-loader d-flex flex-column align-center justify-center">
       <progress-bar-linear />
-      <h4 class="font-weight-medium mt-5">{{ $t('enums.loading.editor') }}</h4>
+      <h4 class="font-weight-medium mt-5">{{ $t('page.status.loading') }}</h4>
     </v-col>
   </v-row>
 </template>
@@ -77,7 +77,7 @@ export default {
       return this.selectedShape?.businessObject?.pipesType === 'start'
     },
     startingPointMessage() {
-      return this.startingPoint ?? this.$t('topologies.editor.noStartingPointFound')
+      return this.startingPoint ?? this.$t('page.text.noStartingPointFound')
     },
     modelerOptions() {
       return {
