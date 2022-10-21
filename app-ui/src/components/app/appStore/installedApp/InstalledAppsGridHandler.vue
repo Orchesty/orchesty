@@ -9,7 +9,7 @@
       <v-container fluid>
         <v-row>
           <v-col class="px-0">
-            <span>No apps are installed</span>
+            <span>{{ $t('page.status.noAppsAvailable') }}</span>
           </v-col>
         </v-row>
       </v-container>
@@ -26,7 +26,7 @@
     <template #default="{ items }">
       <v-row>
         <v-col class="d-flex">
-          <h5>{{ $t('appStore.unauthorized') }}</h5>
+          <h5>{{ $t('page.status.unauthorized') }}</h5>
         </v-col>
       </v-row>
       <v-row>
@@ -41,7 +41,7 @@
             installed
           >
             <template #buttons>
-              <app-item-button color="primary" disabled :text="$t('appStore.app.installed')" />
+              <app-item-button color="primary" disabled :text="$t('button.installed')" />
               <app-item-button
                 outlined
                 color="secondary"
@@ -58,7 +58,7 @@
       </v-row>
       <v-row class="mt-5">
         <v-col class="d-flex">
-          <h5>{{ $t('appStore.authorized') }}</h5>
+          <h5>{{ $t('page.status.authorized') }}</h5>
         </v-col>
       </v-row>
       <v-row>
@@ -73,7 +73,7 @@
             installed
           >
             <template #buttons>
-              <app-item-button disabled color="primary" :text="$t('appStore.app.installed')" />
+              <app-item-button disabled color="primary" :text="$t('button.installed')" />
               <app-item-button
                 outlined
                 color="secondary"

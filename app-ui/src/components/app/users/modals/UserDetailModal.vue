@@ -1,5 +1,5 @@
 <template>
-  <modal-template v-model="isOpen" :title="$t('users.read.title')" :on-open="load">
+  <modal-template v-model="isOpen" :title="$t('modal.header.userDetail')" :on-open="load">
     <template #default>
       <v-col class="12">
         <user-form :user="user" readonly />

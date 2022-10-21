@@ -1,10 +1,10 @@
 <template>
   <ValidationObserver ref="form" tag="form" :disabled="readonly" @submit.prevent="submit">
-    <validation-provider v-slot="{ errors }" :name="$t('users.form.email.name')" :rules="fields.email.validations" slim>
+    <validation-provider v-slot="{ errors }" :name="$t('form.email')" :rules="fields.email.validations" slim>
       <app-input
         v-model="form.email"
         prepend-icon="email"
-        :label="$t('users.form.email.label')"
+        :label="$t('form.email')"
         type="email"
         :error-messages="errors[0]"
         :readonly="readonly"

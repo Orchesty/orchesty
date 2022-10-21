@@ -1,10 +1,10 @@
 <template>
-  <modal-template v-model="isOpen" :title="$t('topologies.modals.delete.title')" :on-confirm="() => submit()">
+  <modal-template v-model="isOpen" :title="$t('modal.header.deleteTopology')" :on-confirm="() => submit()">
     <template #default>
       <v-row dense>
         <v-col cols="12">
-          {{ $t('topologies.modals.delete.body', [topology ? `${topology.name} v.${topology.version}` : '']) }}
-          <template v-if="topology && topology.enabled">{{ $t('topologies.modals.delete.enabledWarning') }}</template>
+          {{ $t('modal.text.deleteTopology', [topology ? `${topology.name} v.${topology.version}` : '']) }}
+          <template v-if="topology && topology.enabled">{{ $t('modal.text.disableMessageTopology') }}</template>
         </v-col>
       </v-row>
     </template>

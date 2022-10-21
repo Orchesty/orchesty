@@ -1,7 +1,7 @@
 <template>
   <modal-template
     v-model="isOpen"
-    :title="$t('topologies.modals.edit.title', { msg: callbackData ? callbackData.name : '' })"
+    :title="$t('modal.header.editTopology', { msg: callbackData ? callbackData.name : '' })"
     :on-close="() => onClose"
     :on-confirm="() => $refs.form.submit()"
   >

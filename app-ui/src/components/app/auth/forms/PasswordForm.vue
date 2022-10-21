@@ -2,7 +2,7 @@
   <ValidationObserver ref="restoreForm" tag="form" @submit.prevent="submit">
     <validation-provider
       v-slot="{ errors }"
-      :name="$t('auth.inputs.password.fieldName')"
+      :name="$t('form.password')"
       :rules="fields.password.validations"
       :vid="fields.password.id"
       slim
@@ -10,21 +10,21 @@
       <app-input
         v-model="form.password"
         prepend-icon="key"
-        :label="$t('auth.inputs.password.label')"
+        :label="$t('form.password')"
         input-type="password"
         :error-messages="errors"
       />
     </validation-provider>
     <validation-provider
       v-slot="{ errors }"
-      :name="$t('auth.inputs.confirmPassword.fieldName')"
+      :name="$t('form.confirmPassword')"
       :rules="fields.confirm.validations"
       slim
     >
       <app-input
         v-model="form.confirm"
         prepend-icon="mdi-key-change"
-        :label="$t('auth.inputs.confirmPassword.label')"
+        :label="$t('form.confirmPassword')"
         input-type="password"
         :error-messages="errors"
       />

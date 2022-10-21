@@ -15,11 +15,11 @@ export default {
     return {
       tabs: [
         {
-          name: 'appStore.available',
+          name: 'page.heading.availableApps',
           route: ROUTES.APP_STORE.AVAILABLE_APPS,
         },
         {
-          name: 'appStore.installed',
+          name: 'page.heading.installedApps',
           route: ROUTES.APP_STORE.INSTALLED_APPS,
         },
       ],

@@ -1,11 +1,11 @@
 <template>
   <v-row dense>
     <v-col cols="2">
-      <app-input v-model="nodeName" hide-details clearable label="Node" />
+      <app-input v-model="userTaskFilter[0][0].value" hide-details clearable label="Node" />
     </v-col>
 
     <v-col class="my-auto">
-      <app-button :on-click="sendFilter" :button-title="$t('button.filter')" />
+      <app-button :on-click="fetchGrid" :button-title="$t('button.filter')" />
       <app-button flat icon :on-click="resetFilter">
         <template #icon>
           <v-icon> mdi-close </v-icon>
@@ -20,28 +20,27 @@ import AppInput from '@/components/commons/input/AppInput'
 import AppButton from '@/components/commons/button/AppButton'
 import { OPERATOR } from '@/services/enums/gridEnums'
 export default {
-  name: 'UserTaskGridSimpleFilter',
+  name: 'UserTaskGridFilter',
   components: { AppButton, AppInput },
   data() {
     return {
-      nodeName: null,
-    }
-  },
-  methods: {
-    sendFilter() {
-      const filter = [
+      userTaskFilter: [
         [
           {
             column: 'nodeName',
             operator: OPERATOR.LIKE,
-            value: this.nodeName,
+            value: '',
           },
         ],
-      ]
-      this.$emit('fetchGrid', { filter })
+      ],
+    }
+  },
+  methods: {
+    fetchGrid() {
+      this.$emit('fetchGrid', { filter: this.userTaskFilter })
     },
     resetFilter() {
-      this.nodeName = null
+      this.userTaskFilter[0][0].value = ''
 
       this.$emit('fetchGrid')
     },

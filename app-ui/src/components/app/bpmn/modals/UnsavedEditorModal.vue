@@ -1,21 +1,19 @@
 <template>
-  <modal-template v-model="isOpen" title="You have unsaved changes!">
+  <modal-template v-model="isOpen" :title="$t('modal.header.unsavedChanges')">
     <v-col cols="12" class="text-right">
       <app-button
         :sending-title="$t('button.sending.creating')"
         :is-sending="isSending"
-        :flat="false"
-        button-title="Discard changes"
+        :button-title="$t('button.discard')"
         :on-click="exitEditor"
         color="secondary"
         outlined
         class="mr-4"
       />
       <app-button
-        :sending-title="$t('button.sending.creating')"
+        :sending-title="$t('button.sending.saving')"
         :is-sending="isSending"
-        :flat="false"
-        button-title="Save changes"
+        :button-title="$t('button.save')"
         :on-click="saveDiagram"
         color="primary"
       />

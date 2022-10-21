@@ -1,14 +1,32 @@
 {
   "form": {
-    "keyValue": {
-      "key": {
-        "name": "key",
-        "label": "Key"
-      },
-      "value": {
-        "name": "value",
-        "label": "Value"
-      }
-    }
+    "host": "host",
+    "port": "port",
+    "vhost": "vhost",
+    "password": "password",
+    "username": "username",
+    "queue": "queue",
+    "clientID": "client ID",
+    "clientSecret": "client secret",
+    "confirmPassword": "confirm password",
+    "newPassword": "new password",
+    "email": "email",
+    "method": "method",
+    "url": "URL",
+    "encryption": "encryption",
+    "sender": "sender (from)",
+    "receiver": "receiver (to)",
+    "login": "login",
+    "key":"key",
+    "value": "value",
+    "name": "name",
+    "action": "action",
+    "darkMode": "dark mode",
+    "language": "language",
+    "currentPassword":"current password",
+    "confirm": "repeat password",
+    "register": "register",
+    "changeSdkValue": "change diagram sdk value with",
+    "description": "description"
   }
 }

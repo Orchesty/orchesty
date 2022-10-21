@@ -1,5 +1,5 @@
 <template>
-  <modal-template v-model="isOpen" :title="$t('appStore.app.appUninstall')">
+  <modal-template v-model="isOpen" :title="$t('modal.header.appUninstall')">
     <template #button>
       <app-button
         color="error"
@@ -11,7 +11,7 @@
     <template #default>
       <v-row dense>
         <v-col cols="12">
-          {{ $t('appStore.app.appUninstallConfirmation', { app: appName }) }}
+          {{ $t('modal.text.appUninstall', { app: appName }) }}
         </v-col>
       </v-row>
     </template>

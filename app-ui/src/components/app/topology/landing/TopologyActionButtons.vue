@@ -1,7 +1,7 @@
 <template>
   <v-col cols="auto" class="d-flex justify-end align-center ml-auto">
     <div class="mr-3">
-      {{ $t('topologies.detail.status') }}: <span class="font-weight-bold info--text">{{ topologyStatus }}</span>
+      {{ $t('page.status.status') }}: <span class="font-weight-bold info--text">{{ topologyStatus }}</span>
     </div>
 
     <div class="mr-3 mr-md-5">
@@ -9,7 +9,7 @@
         v-if="!topologyActive.enabled && topologyActive.visibility === PAGE_TABS_ENUMS.PUBLIC"
         :loading="enableState"
         :disabled="isSending"
-        :text="$t('pages.enable')"
+        :text="$t('button.enable')"
         @click="enable"
       >
         <template #icon>
@@ -21,7 +21,7 @@
         v-if="topologyActive.enabled && topologyActive.visibility === PAGE_TABS_ENUMS.PUBLIC"
         :loading="disableState"
         :disabled="isSending"
-        :text="$t('pages.disable')"
+        :text="$t('button.disable')"
         @click="disable"
       >
         <template #icon>
@@ -33,7 +33,7 @@
         v-if="topologyActive.visibility !== PAGE_TABS_ENUMS.PUBLIC"
         :loading="publishState"
         :disabled="isSending"
-        :text="$t('pages.publish')"
+        :text="$t('button.publish')"
         @click="publish"
       >
         <template #icon>
@@ -58,7 +58,7 @@
         </app-button>
       </template>
       <template #tooltip>
-        {{ $t('pages.run') }}
+        {{ $t('button.run') }}
       </template>
     </tooltip>
 
@@ -79,7 +79,7 @@
         </app-button>
       </template>
       <template #tooltip>
-        {{ $t('pages.test') }}
+        {{ $t('button.test') }}
       </template>
     </tooltip>
 
@@ -99,7 +99,7 @@
         </app-button>
       </template>
       <template #tooltip>
-        {{ $t('pages.editor') }}
+        {{ $t('navigation.editor') }}
       </template>
     </tooltip>
 

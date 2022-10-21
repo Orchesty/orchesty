@@ -1,6 +1,6 @@
 <template>
   <auth-split-layout>
-    <template #heading> Login to you workspace </template>
+    <template #heading>{{ $t('page.heading.loginToTheWorkspace') }}</template>
     <template #form>
       <ValidationObserver
         ref="loginForm"
@@ -9,39 +9,29 @@
         @submit.prevent="submit"
         @keydown.enter="submit"
       >
-        <validation-provider
-          v-slot="{ errors }"
-          :name="$t('auth.inputs.email.fieldName')"
-          :rules="fields.email.validations"
-          slim
-        >
+        <validation-provider v-slot="{ errors }" :name="$t('form.email')" :rules="fields.email.validations" slim>
           <app-input
             v-model="form.email"
             dense
             prepend-icon="mdi-account-circle"
-            :label="$t('auth.inputs.email.label')"
+            :label="$t('form.email')"
             type="text"
             :name="fields.email.id"
             :error-messages="errors"
           />
         </validation-provider>
-        <validation-provider
-          v-slot="{ errors }"
-          :name="$t('auth.inputs.password.fieldName')"
-          :rules="fields.password.validations"
-          slim
-        >
+        <validation-provider v-slot="{ errors }" :name="$t('form.password')" :rules="fields.password.validations" slim>
           <app-input
             v-model="form.password"
             dense
             prepend-icon="key"
-            :label="$t('auth.inputs.password.label')"
+            :label="$t('form.password')"
             input-type="password"
             :error-messages="errors"
           />
         </validation-provider>
         <router-link :to="{ name: ROUTES.FORGOT_PASSWORD }">
-          <span class="caption"> {{ $t('auth.links.forgotPassword') }} </span>
+          <span class="caption"> {{ $t('navigation.forgotPassword') }} </span>
         </router-link>
         <div class="mt-5">
           <app-button

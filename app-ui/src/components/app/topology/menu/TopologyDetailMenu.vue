@@ -47,19 +47,19 @@ export default {
       isOpen: false,
       topologyTreeViewMenuItems: [
         {
-          text: `topologies.menu.edit`,
+          text: `contextMenu.topology.edit`,
           icon: 'mdi-pencil',
           onClick: () => this.events.emit(EVENTS.MODAL.TOPOLOGY.EDIT, this.topologyActive),
         },
         {
-          text: `topologies.menu.delete`,
+          text: `contextMenu.topology.delete`,
           icon: 'mdi-delete',
           iconColor: 'error',
           spanClass: 'error--text',
           onClick: () => this.events.emit(EVENTS.MODAL.TOPOLOGY.DELETE, this.topologyActive),
         },
         {
-          text: `topologies.menu.move`,
+          text: `contextMenu.topology.move`,
           icon: 'mdi-arrow-bottom-right',
           onClick: () =>
             this.events.emit(EVENTS.MODAL.TOPOLOGY.MOVE, {
@@ -68,12 +68,12 @@ export default {
             }),
         },
         {
-          text: `topologies.menu.clone`,
+          text: `contextMenu.topology.clone`,
           icon: 'mdi-content-copy',
           onClick: this.clone,
         },
         {
-          text: `topologies.menu.export`,
+          text: `contextMenu.topology.export`,
           icon: 'mdi-export',
           onClick: this.exportXML,
         },

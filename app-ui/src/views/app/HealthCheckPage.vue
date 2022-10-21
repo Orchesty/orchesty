@@ -1,5 +1,5 @@
 <template>
-  <content-basic title="Health Check">
+  <content-basic :title="$t('navigation.healthCheck')">
     <health-check-wrapper />
   </content-basic>
 </template>

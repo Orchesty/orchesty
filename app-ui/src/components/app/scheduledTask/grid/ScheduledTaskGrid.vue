@@ -98,7 +98,7 @@ export default {
       now: new Date(),
       headers: [
         {
-          text: this.$t('scheduledTask.grid.topology'),
+          text: this.$t('grid.header.topology'),
           value: 'topology',
           align: 'left',
           sortable: true,
@@ -106,7 +106,7 @@ export default {
           width: '360px',
         },
         {
-          text: this.$t('scheduledTask.grid.node'),
+          text: this.$t('grid.header.node'),
           value: 'node',
           align: 'left',
           sortable: true,
@@ -114,7 +114,7 @@ export default {
           width: '200px',
         },
         {
-          text: this.$t('scheduledTask.grid.settings'),
+          text: this.$t('grid.header.settings'),
           value: 'time',
           align: 'left',
           sortable: true,
@@ -122,7 +122,7 @@ export default {
           width: '120px',
         },
         {
-          text: this.$t('scheduledTask.grid.nextRun'),
+          text: this.$t('grid.header.nextRun'),
           value: 'time',
           align: 'left',
           sortable: true,
@@ -130,7 +130,7 @@ export default {
           width: '161px',
         },
         {
-          text: this.$t('scheduledTask.grid.status'),
+          text: this.$t('grid.header.status'),
           value: 'status',
           align: 'left',
           sortable: true,

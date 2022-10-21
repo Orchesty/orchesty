@@ -1,7 +1,7 @@
 <template>
   <modal-template
     v-model="isOpen"
-    :title="$t('implementation.updateModal.title')"
+    :title="$t('modal.header.implementationUpdate')"
     :on-open="load"
     :on-confirm="() => $refs.form.submit()"
     :on-cancel="() => $refs.form.resetForm()"
