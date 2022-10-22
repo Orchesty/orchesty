@@ -18,8 +18,6 @@ The processes are modeled using the [graphical editor](../documentation/editor) 
 
 ## High level features
 
-Orchestrační vrstva za nás řeší řadu situací, které bychom jinak museli pro bezproblémový chod procesů ošetřit. Poradí si s [nedostupností integrované služby](../documentation/results-evaluation). Poskytuje možnost  konfigurovat počet a frekvenci opakovaných volání nedostupné služby a nastavení chování podle status kódů.
-
 The orchestration layer handles a number of situations for us that we would otherwise have to handle to keep processes running smoothly. It provides the ability to configure the number and frequency of repeated calls to an unavailable service and to set the behavior according to [status codes](../documentation/results-evaluation).
 
 Topologies can be configured for performance or message order compliance. We can write custom filters and message routing. We can fix the captured non-valid messages in [trash](../documentation/trash) and send them back to the process.

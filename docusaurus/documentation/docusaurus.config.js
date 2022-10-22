@@ -16,6 +16,7 @@ module.exports = {
     colorMode: {
       defaultMode: 'light',
       disableSwitch: true,
+      respectPrefersColorScheme: false,
     },
     navbar: {
       // title: 'Docs',
