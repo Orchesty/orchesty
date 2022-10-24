@@ -1,0 +1,23 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    hbpf.success_event_status_filter:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\Common\EventStatusFilter\EventStatusFilter
+        arguments:
+            - !php/const Hanaboso\HbPFConnectors\Model\Application\Impl\Common\Events\EventEnum::PROCESS_SUCCESS
+
+    hbpf.failed_event_status_filter:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\Common\EventStatusFilter\EventStatusFilter
+        arguments:
+            - !php/const Hanaboso\HbPFConnectors\Model\Application\Impl\Common\Events\EventEnum::PROCESS_FAILED
+
+    hbpf.limit_event_status_filter:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\Common\EventStatusFilter\EventStatusFilter
+        arguments:
+            - !php/const Hanaboso\HbPFConnectors\Model\Application\Impl\Common\Events\EventEnum::LIMIT_OVERFLOW
+
+    hbpf.trash_event_status_filter:
+        class: Hanaboso\HbPFConnectors\Model\Application\Impl\Common\EventStatusFilter\EventStatusFilter
+        arguments:
+            - !php/const Hanaboso\HbPFConnectors\Model\Application\Impl\Common\Events\EventEnum::MESSAGE_IN_TRASH
