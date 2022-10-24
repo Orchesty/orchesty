@@ -1,3 +1,3 @@
-import baseConfig from '../.lintstagedrc.mjs'
+import baseConfig from "../.lintstaged-frontend.mjs"
 
 export default baseConfig
