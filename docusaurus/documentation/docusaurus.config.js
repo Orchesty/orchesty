@@ -9,7 +9,7 @@ module.exports = {
   baseUrl: '/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
-  favicon: 'img/Orch_fav.ico',
+  favicon: 'img/favicon.ico',
   organizationName: 'Orchesty', // Usually your GitHub org/username.
   projectName: 'Orchesty', // Usually your repo name.
   themeConfig: {
