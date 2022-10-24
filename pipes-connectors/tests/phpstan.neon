@@ -23,6 +23,7 @@ parameters:
 			- Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract
 			- Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract
 			- Hanaboso\PipesPhpSdk\Batch\BatchAbstract
+			- Hanaboso\Utils\Enum\EnumAbstract
 			- Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract
 			- Hanaboso\PipesPhpSdk\CustomNode\CommonNodeAbstract
 			- Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract
