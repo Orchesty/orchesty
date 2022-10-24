@@ -5,10 +5,10 @@
 </template>
 
 <script>
-import ContentBasic from '@/components/layout/content/ContentBasic'
-import LogsGrid from '@/components/app/logs/grid/LogsGrid'
+import ContentBasic from "@/components/layout/content/ContentBasic"
+import LogsGrid from "@/components/app/logs/grid/LogsGrid"
 export default {
-  name: 'LogPage',
+  name: "LogPage",
   components: { LogsGrid, ContentBasic },
 }
 </script>

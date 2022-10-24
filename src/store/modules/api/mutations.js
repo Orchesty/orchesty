@@ -1,9 +1,12 @@
-import { REQUESTS_STATE } from './types'
-import createState from './state'
-import { resetState } from '../../utils'
+import { REQUESTS_STATE } from "./types"
+import createState from "./state"
+import { resetState } from "../../utils"
 
 export default {
-  [REQUESTS_STATE.MUTATIONS.START_SENDING]: (state, { id, errorType, loadingType }) => {
+  [REQUESTS_STATE.MUTATIONS.START_SENDING]: (
+    state,
+    { id, errorType, loadingType }
+  ) => {
     const items = { ...state.items }
 
     items[id] = {
@@ -11,7 +14,7 @@ export default {
       isSending: true,
       loadingType: loadingType,
       isError: false,
-      error: '',
+      error: "",
       errorType: errorType,
     }
 
@@ -40,7 +43,7 @@ export default {
 
     if (items[id]) {
       items[id].isError = false
-      items[id].error = ''
+      items[id].error = ""
     }
 
     state.items = items

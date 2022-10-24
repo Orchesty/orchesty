@@ -1,14 +1,23 @@
 <template>
   <modal-template
     v-model="isOpen"
-    :title="$t('modal.header.editTopology', { msg: callbackData ? callbackData.name : '' })"
+    :title="
+      $t('modal.header.editTopology', {
+        msg: callbackData ? callbackData.name : '',
+      })
+    "
     :on-close="() => onClose"
     :on-confirm="() => $refs.form.submit()"
   >
     <template #default>
       <v-row dense>
         <v-col cols="12">
-          <topology-form ref="form" :callback-data="callbackData" :sending-btn="false" :on-submit="submit" />
+          <topology-form
+            ref="form"
+            :callback-data="callbackData"
+            :sending-btn="false"
+            :on-submit="submit"
+          />
         </v-col>
       </v-row>
     </template>
@@ -30,17 +39,17 @@
 </template>
 
 <script>
-import { events, EVENTS } from '../../../../services/utils/events'
-import ModalTemplate from '../../../commons/modal/ModalTemplate'
-import { TOPOLOGIES } from '../../../../store/modules/topologies/types'
-import { mapActions, mapGetters } from 'vuex'
-import { REQUESTS_STATE } from '../../../../store/modules/api/types'
-import { API } from '../../../../api'
-import TopologyForm from '../form/TopologyForm'
-import AppButton from '@/components/commons/button/AppButton'
+import { events, EVENTS } from "../../../../services/utils/events"
+import ModalTemplate from "../../../commons/modal/ModalTemplate"
+import { TOPOLOGIES } from "../../../../store/modules/topologies/types"
+import { mapActions, mapGetters } from "vuex"
+import { REQUESTS_STATE } from "../../../../store/modules/api/types"
+import { API } from "../../../../api"
+import TopologyForm from "../form/TopologyForm"
+import AppButton from "@/components/commons/button/AppButton"
 
 export default {
-  name: 'ModalEditTopology',
+  name: "ModalEditTopology",
   components: { AppButton, ModalTemplate, TopologyForm },
   data: () => ({
     isOpen: false,
@@ -50,7 +59,10 @@ export default {
   computed: {
     ...mapGetters(REQUESTS_STATE.NAMESPACE, [REQUESTS_STATE.GETTERS.GET_STATE]),
     state() {
-      return this[REQUESTS_STATE.GETTERS.GET_STATE]([API.topology.edit.id, API.topology.getList.id])
+      return this[REQUESTS_STATE.GETTERS.GET_STATE]([
+        API.topology.edit.id,
+        API.topology.getList.id,
+      ])
     },
   },
   methods: {
@@ -60,7 +72,10 @@ export default {
       TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID,
     ]),
     submit(form) {
-      this[TOPOLOGIES.ACTIONS.TOPOLOGY.EDIT]({ data: { ...form }, id: this.topologyId }).then(async (res) => {
+      this[TOPOLOGIES.ACTIONS.TOPOLOGY.EDIT]({
+        data: { ...form },
+        id: this.topologyId,
+      }).then(async (res) => {
         if (res) {
           await this[TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES]()
           await this[TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID](this.topologyId)

@@ -1,5 +1,10 @@
 <template>
-  <data-grid :headers="headers" :is-loading="state.isSending" :namespace="DATA_GRIDS.ADMIN_USERS_LIST" disable-filter>
+  <data-grid
+    :headers="headers"
+    :is-loading="state.isSending"
+    :namespace="DATA_GRIDS.ADMIN_USERS_LIST"
+    disable-filter
+  >
     <template slot="toolbar">
       <user-create-modal />
     </template>
@@ -15,18 +20,18 @@
 </template>
 
 <script>
-import DataGrid from '../../../commons/grid/DataGrid'
-import { DATA_GRIDS } from '@/services/enums/dataGridEnums'
-import { mapGetters } from 'vuex'
-import { REQUESTS_STATE } from '../../../../store/modules/api/types'
-import { API } from '../../../../api'
-import { toLocalDateTime } from '../../../../services/utils/dateFilters'
-import UserCreateModal from '../modals/UserCreateModal'
-import UserDeleteModal from '../modals/UserDeleteModal'
-import UserUpdateModal from '../modals/UserUpdateModal'
+import DataGrid from "../../../commons/grid/DataGrid"
+import { DATA_GRIDS } from "@/services/enums/dataGridEnums"
+import { mapGetters } from "vuex"
+import { REQUESTS_STATE } from "../../../../store/modules/api/types"
+import { API } from "../../../../api"
+import { toLocalDateTime } from "../../../../services/utils/dateFilters"
+import UserCreateModal from "../modals/UserCreateModal"
+import UserDeleteModal from "../modals/UserDeleteModal"
+import UserUpdateModal from "../modals/UserUpdateModal"
 
 export default {
-  name: 'UserGrid',
+  name: "UserGrid",
   components: {
     UserCreateModal,
     UserUpdateModal,
@@ -44,28 +49,28 @@ export default {
       DATA_GRIDS,
       headers: [
         {
-          text: this.$t('grid.headers.id'),
-          value: 'name',
-          align: 'left',
+          text: this.$t("grid.headers.id"),
+          value: "name",
+          align: "left",
           sortable: true,
           visible: true,
-          width: '300px',
+          width: "300px",
         },
         {
-          text: this.$t('grid.headers.email'),
-          value: 'email',
-          align: 'left',
+          text: this.$t("grid.headers.email"),
+          value: "email",
+          align: "left",
           sortable: true,
           visible: true,
-          width: '300px',
+          width: "300px",
         },
         {
-          text: this.$t('grid.headers.actions'),
-          value: 'action',
-          align: 'right',
+          text: this.$t("grid.headers.actions"),
+          value: "action",
+          align: "right",
           sortable: false,
           alwaysVisible: true,
-          width: '150px',
+          width: "150px",
         },
       ],
     }

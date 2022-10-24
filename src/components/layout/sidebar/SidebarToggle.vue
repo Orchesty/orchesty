@@ -7,7 +7,13 @@
         :lg="toggleColumns(true, false)"
         :cols="toggleColumns(true, true)"
       >
-        <v-btn small color="secondary" class="sidebar-button" :style="{ left: offsetLeft }" @click="toggleSideMenu">
+        <v-btn
+          small
+          color="secondary"
+          class="sidebar-button"
+          :style="{ left: offsetLeft }"
+          @click="toggleSideMenu"
+        >
           <v-icon v-if="show">mdi-chevron-left</v-icon>
           <v-icon v-else>mdi-chevron-right</v-icon>
         </v-btn>
@@ -16,7 +22,10 @@
           <slot name="sidebar" />
         </v-sheet>
       </v-col>
-      <v-col :lg="toggleColumns(false, false)" :cols="toggleColumns(false, true)">
+      <v-col
+        :lg="toggleColumns(false, false)"
+        :cols="toggleColumns(false, true)"
+      >
         <slot />
       </v-col>
     </v-row>
@@ -24,36 +33,41 @@
 </template>
 
 <script>
-import { ADMIN_USERS } from '@/store/modules/adminUsers/types'
-import { mapActions, mapGetters } from 'vuex'
-import { AUTH } from '@/store/modules/auth/types'
-import { LOCAL_STORAGE } from '@/services/enums/localStorageEnums'
-import { EVENTS, events } from '@/services/utils/events'
+import { ADMIN_USERS } from "@/store/modules/adminUsers/types"
+import { mapActions, mapGetters } from "vuex"
+import { AUTH } from "@/store/modules/auth/types"
+import { LOCAL_STORAGE } from "@/services/enums/localStorageEnums"
+import { EVENTS, events } from "@/services/utils/events"
 
 export default {
-  name: 'SidebarToggle',
+  name: "SidebarToggle",
   props: {
     title: {
       type: String,
       required: false,
-      default: '',
+      default: "",
     },
   },
   computed: {
     ...mapGetters(AUTH.NAMESPACE, { userId: AUTH.GETTERS.GET_LOGGED_USER_ID }),
     offsetLeft() {
-      return this.show ? this.sidePageWidth + 33 + 'px' : '43px'
+      return this.show ? this.sidePageWidth + 33 + "px" : "43px"
     },
   },
   data() {
     return {
-      show: JSON.parse(localStorage.getItem(LOCAL_STORAGE.USER_SETTINGS)).show || false,
-      darkMode: JSON.parse(localStorage.getItem(LOCAL_STORAGE.USER_SETTINGS)).darkMode,
+      show:
+        JSON.parse(localStorage.getItem(LOCAL_STORAGE.USER_SETTINGS)).show ||
+        false,
+      darkMode: JSON.parse(localStorage.getItem(LOCAL_STORAGE.USER_SETTINGS))
+        .darkMode,
       sidePageWidth: 0,
     }
   },
   methods: {
-    ...mapActions(ADMIN_USERS.NAMESPACE, [ADMIN_USERS.ACTIONS.UPDATE_USER_REQUEST]),
+    ...mapActions(ADMIN_USERS.NAMESPACE, [
+      ADMIN_USERS.ACTIONS.UPDATE_USER_REQUEST,
+    ]),
     toggleColumns(isLeft) {
       if (this.show) {
         if (this.$vuetify.breakpoint.mdAndDown) {
@@ -69,7 +83,11 @@ export default {
       this.show = !this.show
       localStorage.setItem(
         LOCAL_STORAGE.USER_SETTINGS,
-        JSON.stringify({ darkMode: this.darkMode, language: this.$i18n.locale, show: this.show })
+        JSON.stringify({
+          darkMode: this.darkMode,
+          language: this.$i18n.locale,
+          show: this.show,
+        })
       )
     },
   },
@@ -79,19 +97,24 @@ export default {
         data: {
           settings: {
             show: this.show,
-            darkMode: JSON.parse(localStorage.getItem(LOCAL_STORAGE.USER_SETTINGS)).darkMode,
-            language: JSON.parse(localStorage.getItem(LOCAL_STORAGE.USER_SETTINGS)).language,
+            darkMode: JSON.parse(
+              localStorage.getItem(LOCAL_STORAGE.USER_SETTINGS)
+            ).darkMode,
+            language: JSON.parse(
+              localStorage.getItem(LOCAL_STORAGE.USER_SETTINGS)
+            ).language,
           },
         },
         id: this.userId,
       })
     },
-    '$vuetify.breakpoint.width'() {
-      this.sidePageWidth = document.querySelector('.side-page-column').offsetWidth
+    "$vuetify.breakpoint.width"() {
+      this.sidePageWidth =
+        document.querySelector(".side-page-column").offsetWidth
     },
   },
   updated() {
-    this.sidePageWidth = document.querySelector('.side-page-column').offsetWidth
+    this.sidePageWidth = document.querySelector(".side-page-column").offsetWidth
   },
   mounted() {
     events.listen(EVENTS.SIDEBAR.TOGGLE, () => {
@@ -100,7 +123,7 @@ export default {
     events.listen(EVENTS.SIDEBAR.OPEN, () => {
       if (!this.show) this.toggleSideMenu()
     })
-    this.sidePageWidth = document.querySelector('.side-page-column').offsetWidth
+    this.sidePageWidth = document.querySelector(".side-page-column").offsetWidth
   },
 }
 </script>

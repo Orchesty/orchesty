@@ -50,23 +50,23 @@
 </template>
 
 <script>
-import { events, EVENTS } from '../../../../services/utils/events'
-import ModalTemplate from '../../../commons/modal/ModalTemplate'
-import { mapActions, mapGetters, mapState } from 'vuex'
-import { REQUESTS_STATE } from '@/store/modules/api/types'
-import { API } from '@/api'
-import { IMPLEMENTATIONS } from '@/store/modules/implementations/types'
-import ImportTopologyMixin from '@/services/mixins/ImportTopologyMixin'
-import AppButton from '@/components/commons/button/AppButton'
-import AppInput from '@/components/commons/input/AppInput'
-import { TOPOLOGIES } from '@/store/modules/topologies/types'
+import { events, EVENTS } from "../../../../services/utils/events"
+import ModalTemplate from "../../../commons/modal/ModalTemplate"
+import { mapActions, mapGetters, mapState } from "vuex"
+import { REQUESTS_STATE } from "@/store/modules/api/types"
+import { API } from "@/api"
+import { IMPLEMENTATIONS } from "@/store/modules/implementations/types"
+import ImportTopologyMixin from "@/services/mixins/ImportTopologyMixin"
+import AppButton from "@/components/commons/button/AppButton"
+import AppInput from "@/components/commons/input/AppInput"
+import { TOPOLOGIES } from "@/store/modules/topologies/types"
 
 export default {
-  name: 'ModalImportTopology',
+  name: "ModalImportTopology",
   components: { AppInput, AppButton, ModalTemplate },
   mixins: [ImportTopologyMixin],
   data: () => ({
-    altName: '',
+    altName: "",
     folderId: null,
     isOpen: false,
     setDiagramState: false,
@@ -74,21 +74,32 @@ export default {
     implementationsFile: null,
   }),
   computed: {
-    ...mapState(IMPLEMENTATIONS.NAMESPACE, ['topologyImportState']),
+    ...mapState(IMPLEMENTATIONS.NAMESPACE, ["topologyImportState"]),
     ...mapGetters(REQUESTS_STATE.NAMESPACE, [REQUESTS_STATE.GETTERS.GET_STATE]),
     state() {
-      return this[REQUESTS_STATE.GETTERS.GET_STATE]([API.implementation.getList.id])
+      return this[REQUESTS_STATE.GETTERS.GET_STATE]([
+        API.implementation.getList.id,
+      ])
     },
   },
   methods: {
-    ...mapActions(IMPLEMENTATIONS.NAMESPACE, [IMPLEMENTATIONS.ACTIONS.LIST_IMPLEMENTATIONS]),
-    ...mapActions(TOPOLOGIES.NAMESPACE, [TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES]),
+    ...mapActions(IMPLEMENTATIONS.NAMESPACE, [
+      IMPLEMENTATIONS.ACTIONS.LIST_IMPLEMENTATIONS,
+    ]),
+    ...mapActions(TOPOLOGIES.NAMESPACE, [
+      TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES,
+    ]),
     async submit() {
-      await this.replaceTopologyData(this.event, this.altName.toString(), this.folderId, this.setDiagramState)
+      await this.replaceTopologyData(
+        this.event,
+        this.altName.toString(),
+        this.folderId,
+        this.setDiagramState
+      )
       this.isOpen = false
     },
     onClose() {
-      this.altName = ''
+      this.altName = ""
       this.folderId = null
       this.setDiagramState = false
     },
@@ -100,11 +111,13 @@ export default {
         this.implementationsProject = state.implementationsProject.slice(0)
         this.implementationsFile = state.implementationsFile.map((file) => {
           if (
-            this.implementationsProject.filter((implementationProject) => implementationProject.url === file).length
+            this.implementationsProject.filter(
+              (implementationProject) => implementationProject.url === file
+            ).length
           ) {
             return { name: file, replace: file }
           } else {
-            return { name: file, replace: '' }
+            return { name: file, replace: "" }
           }
         })
       },

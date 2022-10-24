@@ -18,7 +18,12 @@
     @input="onSelect"
   >
     <template #content>
-      <user-task-information :item="item" :is-trash="true" @reset="reset" @fetchGrid="fetchGrid" />
+      <user-task-information
+        :item="item"
+        :is-trash="true"
+        @reset="reset"
+        @fetchGrid="fetchGrid"
+      />
     </template>
     <template #default="{ items, isVisible }">
       <td
@@ -30,7 +35,11 @@
         <br />
         <span>{{ items.item.nodeName }}</span>
       </td>
-      <td v-if="isVisible('updated')" class="pointer" @click="$refs.grid.onRowClicked(items)">
+      <td
+        v-if="isVisible('updated')"
+        class="pointer"
+        @click="$refs.grid.onRowClicked(items)"
+      >
         <span>{{ items.item.updated | internationalFormat }}</span>
       </td>
     </template>
@@ -62,23 +71,23 @@
 </template>
 
 <script>
-import { DATA_GRIDS } from '@/services/enums/dataGridEnums'
-import DataGrid from '@/components/commons/grid/DataGrid'
-import { mapActions, mapGetters } from 'vuex'
-import { REQUESTS_STATE } from '@/store/modules/api/types'
-import { API } from '@/api'
-import { internationalFormat } from '@/services/utils/dateFilters'
-import UserTaskInformation from '@/components/app/userTasks/grid/UserTaskInformation'
-import UserTaskActionsModal from '@/components/app/userTasks/modal/UserTaskActionsModal'
-import { TRASH } from '@/store/modules/trash/types'
-import { ROUTES } from '@/services/enums/routerEnums'
-import QuickFiltersMixin from '@/services/mixins/QuickFiltersMixin'
-import { SIMPLE_FILTER } from '@/services/enums/dataGridFilterEnums'
-import { GRID } from '@/store/modules/grid/types'
-import { redirectTo } from '@/services/utils/utils'
+import { DATA_GRIDS } from "@/services/enums/dataGridEnums"
+import DataGrid from "@/components/commons/grid/DataGrid"
+import { mapActions, mapGetters } from "vuex"
+import { REQUESTS_STATE } from "@/store/modules/api/types"
+import { API } from "@/api"
+import { internationalFormat } from "@/services/utils/dateFilters"
+import UserTaskInformation from "@/components/app/userTasks/grid/UserTaskInformation"
+import UserTaskActionsModal from "@/components/app/userTasks/modal/UserTaskActionsModal"
+import { TRASH } from "@/store/modules/trash/types"
+import { ROUTES } from "@/services/enums/routerEnums"
+import QuickFiltersMixin from "@/services/mixins/QuickFiltersMixin"
+import { SIMPLE_FILTER } from "@/services/enums/dataGridFilterEnums"
+import { GRID } from "@/store/modules/grid/types"
+import { redirectTo } from "@/services/utils/utils"
 
 export default {
-  name: 'TrashGrid',
+  name: "TrashGrid",
   components: { UserTaskActionsModal, UserTaskInformation, DataGrid },
   mixins: [QuickFiltersMixin],
   data() {
@@ -91,21 +100,21 @@ export default {
       filterGrid: [],
       headers: [
         {
-          text: this.$t('grid.header.nodeNameTopology'),
-          value: 'nodeName',
-          align: 'left',
+          text: this.$t("grid.header.nodeNameTopology"),
+          value: "nodeName",
+          align: "left",
           sortable: true,
           visible: true,
-          class: 'pl-0',
-          width: '50%',
+          class: "pl-0",
+          width: "50%",
         },
         {
-          text: this.$t('grid.header.updated'),
-          value: 'updated',
-          align: 'left',
+          text: this.$t("grid.header.updated"),
+          value: "updated",
+          align: "left",
           sortable: true,
           visible: true,
-          width: '50%',
+          width: "50%",
         },
       ],
     }
@@ -125,27 +134,43 @@ export default {
     internationalFormat,
   },
   methods: {
-    ...mapActions(TRASH.NAMESPACE, [TRASH.ACTIONS.TRASH_ACCEPT_LIST, TRASH.ACTIONS.TRASH_REJECT_LIST]),
+    ...mapActions(TRASH.NAMESPACE, [
+      TRASH.ACTIONS.TRASH_ACCEPT_LIST,
+      TRASH.ACTIONS.TRASH_REJECT_LIST,
+    ]),
     async acceptAll() {
-      const response = await this[TRASH.ACTIONS.TRASH_ACCEPT_LIST]({ ids: this.selected.map((item) => item.id) })
+      const response = await this[TRASH.ACTIONS.TRASH_ACCEPT_LIST]({
+        ids: this.selected.map((item) => item.id),
+      })
       if (response) await this.fetchGrid()
 
       this.selected = []
       return response
     },
     async rejectAll() {
-      const response = await this[TRASH.ACTIONS.TRASH_REJECT_LIST]({ ids: this.selected.map((item) => item.id) })
+      const response = await this[TRASH.ACTIONS.TRASH_REJECT_LIST]({
+        ids: this.selected.map((item) => item.id),
+      })
       if (response) await this.fetchGrid()
 
       this.selected = []
       return response
     },
     async fetchGrid() {
-      await this.$refs.grid.fetchGrid(null, null, this.activeFilter, this.activePaging, this.activeSorter)
+      await this.$refs.grid.fetchGrid(
+        null,
+        null,
+        this.activeFilter,
+        this.activePaging,
+        this.activeSorter
+      )
     },
     async updateInfo(item) {
       this.item = item.item
-      await redirectTo(this.$router, { name: ROUTES.TRASH_DETAIL, params: { trashId: item.item.id } })
+      await redirectTo(this.$router, {
+        name: ROUTES.TRASH_DETAIL,
+        params: { trashId: item.item.id },
+      })
     },
     onSelect(items) {
       this.selected = items
@@ -158,10 +183,17 @@ export default {
     },
   },
   async mounted() {
-    await this.$refs.grid.fetchGridWithInitials(null, null, null, this.pagingInitial, this.sorterInitial)
-    this.init('updated')
+    await this.$refs.grid.fetchGridWithInitials(
+      null,
+      null,
+      null,
+      this.pagingInitial,
+      this.sorterInitial
+    )
+    this.init("updated")
 
-    if (this.$route.params?.trashId) this.updateInfo({ item: { id: this.$route.params.trashId } })
+    if (this.$route.params?.trashId)
+      this.updateInfo({ item: { id: this.$route.params.trashId } })
   },
 }
 </script>

@@ -1,4 +1,4 @@
-import { TOPOLOGY_ENUMS } from '@/services/enums/topologyEnums'
+import { TOPOLOGY_ENUMS } from "@/services/enums/topologyEnums"
 
 let tmpTop = null
 
@@ -32,7 +32,13 @@ export const createTree = (topologies = [], categories = []) => {
   const roots = findCategory(categories, null)
 
   roots.forEach((item) => {
-    const newItem = { _id: item._id, id: item._id, name: item.name, type: TOPOLOGY_ENUMS.CATEGORY, parent: item.parent }
+    const newItem = {
+      _id: item._id,
+      id: item._id,
+      name: item.name,
+      type: TOPOLOGY_ENUMS.CATEGORY,
+      parent: item.parent,
+    }
     tree.push(newItem)
 
     recursive(categories, findCategory(categories, item._id), newItem)
@@ -52,7 +58,12 @@ const findCategory = (categories, id) => {
 const recursive = (categories, items, parent) => {
   parent.children = []
   items.forEach((item) => {
-    const newItem = { id: item._id, name: item.name, type: TOPOLOGY_ENUMS.CATEGORY, parent: item.parent }
+    const newItem = {
+      id: item._id,
+      name: item.name,
+      type: TOPOLOGY_ENUMS.CATEGORY,
+      parent: item.parent,
+    }
     parent.children.push(newItem)
 
     recursive(categories, findCategory(categories, item._id), newItem)

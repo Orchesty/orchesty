@@ -1,26 +1,31 @@
-import inherits from 'inherits'
-import PropertiesActivator from 'bpmn-js-properties-panel/lib/PropertiesActivator'
-import processProps from 'bpmn-js-properties-panel/lib/provider/bpmn/parts/ProcessProps'
-import eventProps from 'bpmn-js-properties-panel/lib/provider/bpmn/parts/EventProps'
-import linkProps from 'bpmn-js-properties-panel/lib/provider/bpmn/parts/LinkProps'
-import CustomIdProps from './parts/CustomIdProps'
-import CustomNameProps from './parts/CustomNameProps'
-import ElementPipesTypeProps from './parts/PipesTypeProps'
-import CronTimeProps from './parts/CronTimeProps.js'
-import CronParamsProps from './parts/CronParamsProps.js'
-import ConnectorRepeaterEnabled from './parts/ConnectorRepeaterEnabled'
-import ConnectorRepeaterHops from './parts/ConnectorRepeaterHops'
-import ConnectorRepeaterInterval from './parts/ConnectorRepeaterInterval'
-import PrefetchProps from './parts/PrefetchProps.js'
-import { is } from 'bpmn-js/lib/util/ModelUtil'
+import inherits from "inherits"
+import PropertiesActivator from "bpmn-js-properties-panel/lib/PropertiesActivator"
+import processProps from "bpmn-js-properties-panel/lib/provider/bpmn/parts/ProcessProps"
+import eventProps from "bpmn-js-properties-panel/lib/provider/bpmn/parts/EventProps"
+import linkProps from "bpmn-js-properties-panel/lib/provider/bpmn/parts/LinkProps"
+import CustomIdProps from "./parts/CustomIdProps"
+import CustomNameProps from "./parts/CustomNameProps"
+import ElementPipesTypeProps from "./parts/PipesTypeProps"
+import CronTimeProps from "./parts/CronTimeProps.js"
+import CronParamsProps from "./parts/CronParamsProps.js"
+import ConnectorRepeaterEnabled from "./parts/ConnectorRepeaterEnabled"
+import ConnectorRepeaterHops from "./parts/ConnectorRepeaterHops"
+import ConnectorRepeaterInterval from "./parts/ConnectorRepeaterInterval"
+import PrefetchProps from "./parts/PrefetchProps.js"
+import { is } from "bpmn-js/lib/util/ModelUtil"
 
-function createGeneralTabGroups(element, bpmnFactory, elementRegistry, translate) {
-  if (is(element, 'bpmn:SequenceFlow')) {
+function createGeneralTabGroups(
+  element,
+  bpmnFactory,
+  elementRegistry,
+  translate
+) {
+  if (is(element, "bpmn:SequenceFlow")) {
     return
   }
   const generalGroup = {
-    id: 'node',
-    label: translate('Node'),
+    id: "node",
+    label: translate("Node"),
     entries: [],
   }
 
@@ -30,8 +35,8 @@ function createGeneralTabGroups(element, bpmnFactory, elementRegistry, translate
   ElementPipesTypeProps(generalGroup, element, translate)
 
   const cronGroup = {
-    id: 'cron',
-    label: translate('Cron'),
+    id: "cron",
+    label: translate("Cron"),
     entries: [],
   }
 
@@ -39,8 +44,8 @@ function createGeneralTabGroups(element, bpmnFactory, elementRegistry, translate
   CronParamsProps(cronGroup, element, translate)
 
   const detailsGroup = {
-    id: 'details',
-    label: translate('Details'),
+    id: "details",
+    label: translate("Details"),
     entries: [],
   }
 
@@ -48,18 +53,23 @@ function createGeneralTabGroups(element, bpmnFactory, elementRegistry, translate
   eventProps(detailsGroup, element, bpmnFactory, elementRegistry, translate)
 
   const userTaskGroup = {
-    id: 'userTaskGroup',
-    label: translate('User Task'),
+    id: "userTaskGroup",
+    label: translate("User Task"),
     entries: [],
   }
 
   return [generalGroup, detailsGroup, cronGroup, userTaskGroup]
 }
 
-function createRepeaterTabGroups(element, bpmnFactory, elementRegistry, translate) {
+function createRepeaterTabGroups(
+  element,
+  bpmnFactory,
+  elementRegistry,
+  translate
+) {
   const repeaterGroup = {
-    id: 'repeater',
-    label: translate('Repeater'),
+    id: "repeater",
+    label: translate("Repeater"),
     entries: [],
   }
 
@@ -70,10 +80,15 @@ function createRepeaterTabGroups(element, bpmnFactory, elementRegistry, translat
   return [repeaterGroup]
 }
 
-function createLimiterTabGroups(element, bpmnFactory, elementRegistry, translate) {
+function createLimiterTabGroups(
+  element,
+  bpmnFactory,
+  elementRegistry,
+  translate
+) {
   const limiterGroup = {
-    id: 'limiter',
-    label: translate('Limiter'),
+    id: "limiter",
+    label: translate("Limiter"),
     entries: [],
   }
 
@@ -83,10 +98,15 @@ function createLimiterTabGroups(element, bpmnFactory, elementRegistry, translate
   return [limiterGroup]
 }
 
-function createBridgeTabGroups(element, bpmnFactory, elementRegistry, translate) {
+function createBridgeTabGroups(
+  element,
+  bpmnFactory,
+  elementRegistry,
+  translate
+) {
   const bridgeGroup = {
-    id: 'bridge',
-    label: translate('Bridge'),
+    id: "bridge",
+    label: translate("Bridge"),
     entries: [],
   }
 
@@ -95,35 +115,65 @@ function createBridgeTabGroups(element, bpmnFactory, elementRegistry, translate)
   return [bridgeGroup]
 }
 
-export default function PipesPropertiesProvider(eventBus, bpmnFactory, elementRegistry, translate) {
+export default function PipesPropertiesProvider(
+  eventBus,
+  bpmnFactory,
+  elementRegistry,
+  translate
+) {
   PropertiesActivator.call(this, eventBus)
 
   this.getTabs = function (element) {
     return [
       {
-        id: 'node',
-        label: translate('Node'),
-        groups: createGeneralTabGroups(element, bpmnFactory, elementRegistry, translate),
+        id: "node",
+        label: translate("Node"),
+        groups: createGeneralTabGroups(
+          element,
+          bpmnFactory,
+          elementRegistry,
+          translate
+        ),
       },
       {
-        id: 'bridge',
-        label: translate('Bridge'),
-        groups: createBridgeTabGroups(element, bpmnFactory, elementRegistry, translate),
+        id: "bridge",
+        label: translate("Bridge"),
+        groups: createBridgeTabGroups(
+          element,
+          bpmnFactory,
+          elementRegistry,
+          translate
+        ),
       },
       {
-        id: 'repeater',
-        label: translate('Repeater'),
-        groups: createRepeaterTabGroups(element, bpmnFactory, elementRegistry, translate),
+        id: "repeater",
+        label: translate("Repeater"),
+        groups: createRepeaterTabGroups(
+          element,
+          bpmnFactory,
+          elementRegistry,
+          translate
+        ),
       },
       {
-        id: 'limiter',
-        label: translate('Limiter'),
-        groups: createLimiterTabGroups(element, bpmnFactory, elementRegistry, translate),
+        id: "limiter",
+        label: translate("Limiter"),
+        groups: createLimiterTabGroups(
+          element,
+          bpmnFactory,
+          elementRegistry,
+          translate
+        ),
       },
     ]
   }
 }
 
-PipesPropertiesProvider.$inject = ['eventBus', 'bpmnFactory', 'elementRegistry', 'translate']
+PipesPropertiesProvider.$inject = [
+  "eventBus",
+  "bpmnFactory",
+  "elementRegistry",
+  "translate",
+]
 
 inherits(PipesPropertiesProvider, PropertiesActivator)

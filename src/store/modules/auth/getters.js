@@ -1,4 +1,4 @@
-import { AUTH } from './types'
+import { AUTH } from "./types"
 
 export default {
   [AUTH.GETTERS.IS_LOGGED]: (state) => {

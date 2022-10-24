@@ -1,9 +1,12 @@
 <template>
-  <modal-template v-model="isOpen" :title="$t('modal.header.applicationNotAuthorized')">
+  <modal-template
+    v-model="isOpen"
+    :title="$t('modal.header.applicationNotAuthorized')"
+  >
     <template #default>
       <div class="d-flex flex-column">
         <p class="text-body-1">
-          {{ $t('modal.text.applicationNotAuthorized') }}
+          {{ $t("modal.text.applicationNotAuthorized") }}
         </p>
       </div>
     </template>
@@ -14,11 +17,11 @@
 </template>
 
 <script>
-import AppButton from '../../../commons/button/AppButton'
-import ModalTemplate from '../../../commons/modal/ModalTemplate'
+import AppButton from "../../../commons/button/AppButton"
+import ModalTemplate from "../../../commons/modal/ModalTemplate"
 
 export default {
-  name: 'AppNotAuthorizedModal',
+  name: "AppNotAuthorizedModal",
   components: { ModalTemplate, AppButton },
   props: {
     value: {
@@ -44,7 +47,7 @@ export default {
       },
     },
     isOpen(val) {
-      this.$emit('input', val)
+      this.$emit("input", val)
     },
   },
 }

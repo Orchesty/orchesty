@@ -1,34 +1,41 @@
-import entryFactory from 'bpmn-js-properties-panel/lib/factory/EntryFactory'
-import cmdHelper from 'bpmn-js-properties-panel/lib/helper/CmdHelper'
-import { getBusinessObject, is } from 'bpmn-js/lib/util/ModelUtil'
-import { LOCAL_STORAGE } from '@/services/enums/localStorageEnums'
+import entryFactory from "bpmn-js-properties-panel/lib/factory/EntryFactory"
+import cmdHelper from "bpmn-js-properties-panel/lib/helper/CmdHelper"
+import { getBusinessObject, is } from "bpmn-js/lib/util/ModelUtil"
+import { LOCAL_STORAGE } from "@/services/enums/localStorageEnums"
 
 export default function (group, element, translate) {
   const businessObject = getBusinessObject(element)
   if (
-    is(element, 'bpmn:Process') ||
-    is(element, 'bpmn:Collaboration') ||
-    (is(element, 'bpmn:Participant') && businessObject.get('processRef'))
+    is(element, "bpmn:Process") ||
+    is(element, "bpmn:Collaboration") ||
+    (is(element, "bpmn:Participant") && businessObject.get("processRef"))
   ) {
     return
   }
 
-  let modelProperty = 'name'
+  let modelProperty = "name"
 
-  if (is(element, 'bpmn:TextAnnotation')) {
-    modelProperty = 'text'
+  if (is(element, "bpmn:TextAnnotation")) {
+    modelProperty = "text"
   }
 
   const pipesType = getBusinessObject(element).pipesType
-  const implementationTypesNames = JSON.parse(localStorage.getItem(LOCAL_STORAGE.IMPLEMENTATIONS))?.items || []
+  const implementationTypesNames =
+    JSON.parse(localStorage.getItem(LOCAL_STORAGE.IMPLEMENTATIONS))?.items || []
 
-  if (!['bpmn:Event', 'bpmn:Process'].includes(element.type) && pipesType !== 'user') {
+  if (
+    !["bpmn:Event", "bpmn:Process"].includes(element.type) &&
+    pipesType !== "user"
+  ) {
     group.entries.push(
       entryFactory.selectBox(translate, {
-        id: 'sdkHost',
-        label: 'Service',
-        selectOptions: implementationTypesNames.map(({ name, url }) => ({ name, value: url })),
-        modelProperty: 'sdkHost',
+        id: "sdkHost",
+        label: "Service",
+        selectOptions: implementationTypesNames.map(({ name, url }) => ({
+          name,
+          value: url,
+        })),
+        modelProperty: "sdkHost",
         getProperty(element) {
           return getBusinessObject(element).sdkHost
         },
@@ -39,20 +46,20 @@ export default function (group, element, translate) {
     )
   }
 
-  if (['connector', 'batch', 'custom'].includes(pipesType)) {
+  if (["connector", "batch", "custom"].includes(pipesType)) {
     group.entries.push(
       entryFactory.selectBox(translate, {
-        id: 'name',
-        label: 'Name',
+        id: "name",
+        label: "Name",
         selectOptions: getBusinessObject(element).$attrs.sdkHostOptions,
         modelProperty,
         validate: (element, values) => {
-          if (element.type === 'bpmn:Process') {
+          if (element.type === "bpmn:Process") {
             return {}
           }
 
-          if (!values.name || values.name === 'Custom') {
-            return { name: 'Name must not be empty.' }
+          if (!values.name || values.name === "Custom") {
+            return { name: "Name must not be empty." }
           }
 
           return {}
@@ -71,20 +78,20 @@ export default function (group, element, translate) {
     }
     group.entries.push(
       entryFactory.validationAwareTextField(translate, {
-        id: 'name',
-        label: 'Name',
+        id: "name",
+        label: "Name",
         modelProperty,
         validate: (element, values) => {
-          if (element.type === 'bpmn:Process') {
+          if (element.type === "bpmn:Process") {
             return {}
           }
 
           if (/\s/.test(values.name)) {
-            return { name: 'Name must not contain spaces.' }
+            return { name: "Name must not contain spaces." }
           }
 
           if (!values.name) {
-            return { name: 'Name must not be empty.' }
+            return { name: "Name must not be empty." }
           }
 
           return {}

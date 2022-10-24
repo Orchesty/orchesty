@@ -7,9 +7,9 @@
 </template>
 
 <script>
-import TrashGrid from '@/components/app/trash/grid/TrashGrid'
+import TrashGrid from "@/components/app/trash/grid/TrashGrid"
 export default {
-  name: 'TrashHandler',
+  name: "TrashHandler",
   components: { TrashGrid },
 }
 </script>

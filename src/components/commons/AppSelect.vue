@@ -15,7 +15,7 @@
 
 <script>
 export default {
-  name: 'AppSelect',
+  name: "AppSelect",
   props: {
     items: {
       type: Array,
@@ -31,11 +31,11 @@ export default {
     },
     itemValue: {
       type: String,
-      default: () => 'value',
+      default: () => "value",
     },
     itemKey: {
       type: String,
-      default: () => 'key',
+      default: () => "key",
     },
     outlined: {
       type: Boolean,
@@ -55,7 +55,7 @@ export default {
     },
     value: {
       type: String,
-      default: () => '',
+      default: () => "",
     },
   },
   data() {
@@ -65,7 +65,7 @@ export default {
   },
   watch: {
     selectedItems(value) {
-      this.$emit('input', value)
+      this.$emit("input", value)
     },
     value: {
       immediate: true,

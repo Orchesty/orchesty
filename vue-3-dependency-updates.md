@@ -20,5 +20,4 @@ https://github.com/vuejs/vue-cli/issues/6759
 #`vue-cli 5.1.0`
 `vue-cli 5.1.0` doesn't work with `vue@2.6.12` since Vue 2 is using `webpack 4`. Upgrading to Vue 3 will be the solution. For now, it is being downgraded to `^4.5.13`
 
-
 https://stackoverflow.com/questions/66847329/vue-cli-using-webpack-4-instead-of-5-by-default

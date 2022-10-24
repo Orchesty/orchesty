@@ -10,9 +10,9 @@
 </template>
 
 <script>
-import ProgressBarLinear from '@/components/commons/progressIndicators/ProgressBarLinear'
+import ProgressBarLinear from "@/components/commons/progressIndicators/ProgressBarLinear"
 export default {
-  name: 'ExpandedRow',
+  name: "ExpandedRow",
   components: { ProgressBarLinear },
   props: {
     isSending: {

@@ -1,4 +1,4 @@
-import { EVENT_TYPES } from '../enums/eventsEnums'
+import { EVENT_TYPES } from "../enums/eventsEnums"
 
 const eventEmitter = {
   events: {},

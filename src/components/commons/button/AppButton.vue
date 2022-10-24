@@ -30,7 +30,7 @@
 
 <script>
 export default {
-  name: 'AppButton',
+  name: "AppButton",
   props: {
     icon: {
       type: Boolean,
@@ -55,7 +55,7 @@ export default {
     sendingTitle: {
       type: String,
       required: false,
-      default: () => '',
+      default: () => "",
     },
     loading: {
       type: Boolean,
@@ -63,17 +63,17 @@ export default {
     },
     width: {
       type: String,
-      default: 'auto',
+      default: "auto",
     },
     type: {
       type: String,
       required: false,
-      default: () => '',
+      default: () => "",
     },
     outlined: Boolean,
     buttonTitle: {
       type: String,
-      default: '',
+      default: "",
     },
     to: {
       type: Object,
@@ -87,7 +87,7 @@ export default {
     color: {
       type: String,
       required: false,
-      default: 'primary',
+      default: "primary",
     },
     flat: {
       type: Boolean,
@@ -100,7 +100,7 @@ export default {
     customClass: {
       type: String,
       required: false,
-      default: () => '',
+      default: () => "",
     },
     customStyle: {
       type: Object,

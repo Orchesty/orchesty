@@ -14,22 +14,40 @@
       <span>{{ items.item.message }}</span>
     </template>
     <template #default="{ items, isVisible, expanded }">
-      <td v-if="isVisible('timestamp')" :style="expanded ? 'border-bottom: none' : ''">
+      <td
+        v-if="isVisible('timestamp')"
+        :style="expanded ? 'border-bottom: none' : ''"
+      >
         {{ items.item.timestamp | internationalFormat }}
       </td>
-      <td v-if="isVisible('topology_name')" :style="expanded ? 'border-bottom: none' : ''">
+      <td
+        v-if="isVisible('topology_name')"
+        :style="expanded ? 'border-bottom: none' : ''"
+      >
         {{ items.item.topology_name }}
       </td>
-      <td v-if="isVisible('node_id')" :style="expanded ? 'border-bottom: none' : ''">
+      <td
+        v-if="isVisible('node_id')"
+        :style="expanded ? 'border-bottom: none' : ''"
+      >
         {{ items.item.node_id }}
       </td>
-      <td v-if="isVisible('node_name')" :style="expanded ? 'border-bottom: none' : ''">
+      <td
+        v-if="isVisible('node_name')"
+        :style="expanded ? 'border-bottom: none' : ''"
+      >
         {{ items.item.node_name }}
       </td>
-      <td v-if="isVisible('severity')" :style="expanded ? 'border-bottom: none' : ''">
-        <span :class="`font-weight-bold ${setColor(items.item.severity)}--text text-uppercase`">{{
-          items.item.severity
-        }}</span>
+      <td
+        v-if="isVisible('severity')"
+        :style="expanded ? 'border-bottom: none' : ''"
+      >
+        <span
+          :class="`font-weight-bold ${setColor(
+            items.item.severity
+          )}--text text-uppercase`"
+          >{{ items.item.severity }}</span
+        >
       </td>
       <tooltip>
         <template #activator="{ on, attrs }">
@@ -40,13 +58,21 @@
             class="text-end"
             v-on="on"
           >
-            <v-btn v-if="items.item.correlation_id" icon @click.stop="copyToClipboard(items.item.correlation_id)">
+            <v-btn
+              v-if="items.item.correlation_id"
+              icon
+              @click.stop="copyToClipboard(items.item.correlation_id)"
+            >
               <app-icon>mdi-content-copy</app-icon>
             </v-btn>
           </td>
         </template>
         <template #tooltip>
-          {{ items.item.correlation_id ? items.item.correlation_id : 'system log - no id' }}
+          {{
+            items.item.correlation_id
+              ? items.item.correlation_id
+              : "system log - no id"
+          }}
         </template>
       </tooltip>
     </template>
@@ -54,20 +80,20 @@
 </template>
 
 <script>
-import { internationalFormat } from '@/services/utils/dateFilters'
-import { DATA_GRIDS } from '@/services/enums/dataGridEnums'
-import DataGrid from '@/components/commons/grid/DataGrid'
-import { REQUESTS_STATE } from '@/store/modules/api/types'
-import { API } from '@/api'
-import { mapGetters } from 'vuex'
-import Tooltip from '@/components/commons/Tooltip'
-import FlashMessageMixin from '@/services/mixins/FlashMessageMixin'
-import QuickFiltersMixin from '@/services/mixins/QuickFiltersMixin'
-import { SIMPLE_FILTER } from '@/services/enums/dataGridFilterEnums'
-import AppIcon from '@/components/commons/icon/AppIcon'
-import { GRID } from '@/store/modules/grid/types'
+import { internationalFormat } from "@/services/utils/dateFilters"
+import { DATA_GRIDS } from "@/services/enums/dataGridEnums"
+import DataGrid from "@/components/commons/grid/DataGrid"
+import { REQUESTS_STATE } from "@/store/modules/api/types"
+import { API } from "@/api"
+import { mapGetters } from "vuex"
+import Tooltip from "@/components/commons/Tooltip"
+import FlashMessageMixin from "@/services/mixins/FlashMessageMixin"
+import QuickFiltersMixin from "@/services/mixins/QuickFiltersMixin"
+import { SIMPLE_FILTER } from "@/services/enums/dataGridFilterEnums"
+import AppIcon from "@/components/commons/icon/AppIcon"
+import { GRID } from "@/store/modules/grid/types"
 export default {
-  name: 'LogsGrid',
+  name: "LogsGrid",
   components: { AppIcon, Tooltip, DataGrid },
   mixins: [FlashMessageMixin, QuickFiltersMixin],
   computed: {
@@ -84,80 +110,86 @@ export default {
     return {
       SIMPLE_FILTER,
       DATA_GRIDS,
-      search: '',
+      search: "",
       headers: [
         {
-          text: this.$t('grid.header.timestamp'),
-          value: 'timestamp',
-          align: 'left',
+          text: this.$t("grid.header.timestamp"),
+          value: "timestamp",
+          align: "left",
           sortable: true,
           visible: true,
-          width: '20%',
+          width: "20%",
         },
         {
-          text: this.$t('grid.header.topologyName'),
-          value: 'topology_name',
-          align: 'left',
+          text: this.$t("grid.header.topologyName"),
+          value: "topology_name",
+          align: "left",
           sortable: true,
           visible: true,
-          width: '20%',
+          width: "20%",
         },
         {
-          text: this.$t('grid.header.nodeID'),
-          value: 'node_id',
-          align: 'left',
+          text: this.$t("grid.header.nodeID"),
+          value: "node_id",
+          align: "left",
           sortable: true,
           visible: true,
-          width: '20%',
+          width: "20%",
         },
         {
-          text: this.$t('grid.header.nodeName'),
-          value: 'node_name',
-          align: 'left',
+          text: this.$t("grid.header.nodeName"),
+          value: "node_name",
+          align: "left",
           sortable: true,
           visible: true,
-          width: '15%',
+          width: "15%",
         },
         {
-          text: this.$t('grid.header.severity'),
-          value: 'severity',
-          align: 'left',
+          text: this.$t("grid.header.severity"),
+          value: "severity",
+          align: "left",
           sortable: true,
           visible: true,
-          width: '10%',
+          width: "10%",
         },
         {
-          text: this.$t('grid.header.correlation_id'),
-          value: 'correlation_id',
-          align: 'right',
+          text: this.$t("grid.header.correlation_id"),
+          value: "correlation_id",
+          align: "right",
           sortable: true,
           visible: true,
-          width: '15%',
+          width: "15%",
         },
       ],
     }
   },
   methods: {
     setColor(props) {
-      if (props.toLowerCase() === 'error') {
-        return 'error'
+      if (props.toLowerCase() === "error") {
+        return "error"
       }
-      if (props.toLowerCase() === 'warning') {
-        return 'warning'
+      if (props.toLowerCase() === "warning") {
+        return "warning"
       }
-      if (props.toLowerCase() === 'ok') {
-        return 'info'
+      if (props.toLowerCase() === "ok") {
+        return "info"
       }
-      return 'black'
+      return "black"
     },
     copyToClipboard(correlationId) {
       navigator.clipboard.writeText(correlationId)
-      this.showFlashMessage(false, 'ID copied!')
+      this.showFlashMessage(false, "ID copied!")
     },
   },
   async mounted() {
-    this.init('timestamp')
-    await this.$refs.grid.fetchGridWithInitials(null, null, null, this.pagingInitial, this.sorterInitial)
+    this.init("timestamp")
+    await this.$refs.grid.fetchGridWithInitials(
+      null,
+      null,
+      null,
+      this.pagingInitial,
+      this.sorterInitial
+    )
   },
   filters: {
     internationalFormat,

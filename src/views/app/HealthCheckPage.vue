@@ -5,10 +5,10 @@
 </template>
 
 <script>
-import ContentBasic from '@/components/layout/content/ContentBasic'
-import HealthCheckWrapper from '@/components/app/healthCheck/landing/HealthCheckWrapper'
+import ContentBasic from "@/components/layout/content/ContentBasic"
+import HealthCheckWrapper from "@/components/app/healthCheck/landing/HealthCheckWrapper"
 export default {
-  name: 'HealthCheckPage',
+  name: "HealthCheckPage",
   components: { HealthCheckWrapper, ContentBasic },
 }
 </script>

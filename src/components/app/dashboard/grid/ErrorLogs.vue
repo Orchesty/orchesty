@@ -20,9 +20,11 @@
             <span>{{ item.message }}</span>
           </td>
           <td>
-            <span :class="`font-weight-bold ${setColor(item.level)}--text`" class="text-uppercase">{{
-              item.level
-            }}</span>
+            <span
+              :class="`font-weight-bold ${setColor(item.level)}--text`"
+              class="text-uppercase"
+              >{{ item.level }}</span
+            >
           </td>
         </tr>
       </template>
@@ -38,11 +40,11 @@
 </template>
 
 <script>
-import { ROUTES } from '@/services/enums/routerEnums'
-import { internationalFormat } from '@/services/utils/dateFilters'
+import { ROUTES } from "@/services/enums/routerEnums"
+import { internationalFormat } from "@/services/utils/dateFilters"
 
 export default {
-  name: 'ErrorLogs',
+  name: "ErrorLogs",
   props: {
     items: {
       type: Array,
@@ -59,23 +61,26 @@ export default {
   },
   methods: {
     async logRedirect(item) {
-      if (item.topologyId !== 'System') {
-        await this.$router.push({ name: ROUTES.TOPOLOGY.LOGS, params: { id: item.topologyId } })
+      if (item.topologyId !== "System") {
+        await this.$router.push({
+          name: ROUTES.TOPOLOGY.LOGS,
+          params: { id: item.topologyId },
+        })
       } else {
         await this.$router.push({ name: ROUTES.LOGS, params: { item: item } })
       }
     },
     setColor(item) {
-      if (item.toLowerCase() === 'error') {
-        return 'error'
+      if (item.toLowerCase() === "error") {
+        return "error"
       }
-      if (item.toLowerCase() === 'warning') {
-        return 'warning'
+      if (item.toLowerCase() === "warning") {
+        return "warning"
       }
-      if (item.toLowerCase() === 'info') {
-        return 'info'
+      if (item.toLowerCase() === "info") {
+        return "info"
       }
-      return 'black'
+      return "black"
     },
   },
   filters: {

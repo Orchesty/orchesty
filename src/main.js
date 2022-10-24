@@ -1,22 +1,26 @@
-import 'core-js/stable'
-import 'regenerator-runtime/runtime'
-import Vue from 'vue'
-import App from './App.vue'
-import router, { beforeEach } from './services/router'
-import { createStore } from './store'
-import { i18n } from './localization'
-import { ValidationProvider, ValidationObserver, setInteractionMode } from 'vee-validate'
-import { vuetify, ability } from './config'
-import CountryFlag from '@dzangolab/vue-country-flag-icon'
-import { abilitiesPlugin } from '@casl/vue'
+import "core-js/stable"
+import "regenerator-runtime/runtime"
+import Vue from "vue"
+import App from "./App.vue"
+import router, { beforeEach } from "./services/router"
+import { createStore } from "./store"
+import { i18n } from "./localization"
+import {
+  ValidationProvider,
+  ValidationObserver,
+  setInteractionMode,
+} from "vee-validate"
+import { vuetify, ability } from "./config"
+import CountryFlag from "@dzangolab/vue-country-flag-icon"
+import { abilitiesPlugin } from "@casl/vue"
 
-setInteractionMode('eager')
+setInteractionMode("eager")
 
 Vue.config.productionTip = false
 
-Vue.component('ValidationProvider', ValidationProvider)
-Vue.component('ValidationObserver', ValidationObserver)
-Vue.component('VueCountryFlagIcon', CountryFlag)
+Vue.component("ValidationProvider", ValidationProvider)
+Vue.component("ValidationObserver", ValidationObserver)
+Vue.component("VueCountryFlagIcon", CountryFlag)
 Vue.use(abilitiesPlugin, ability)
 
 const store = createStore(router)
@@ -29,4 +33,4 @@ new Vue({
   i18n,
   vuetify,
   render: (h) => h(App),
-}).$mount('#app')
+}).$mount("#app")

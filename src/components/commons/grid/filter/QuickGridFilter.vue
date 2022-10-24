@@ -21,12 +21,12 @@
 </template>
 
 <script>
-import { FILTER } from '@/services/enums/gridEnums'
-import moment from 'moment'
-import AppButton from '@/components/commons/button/AppButton'
+import { FILTER } from "@/services/enums/gridEnums"
+import moment from "moment"
+import AppButton from "@/components/commons/button/AppButton"
 
 export default {
-  name: 'QuickGridFilter',
+  name: "QuickGridFilter",
   components: { AppButton },
   props: {
     isViewer: {
@@ -56,7 +56,10 @@ export default {
   },
   data() {
     return {
-      items: this.createItems(this.quickFilters, this.filterMeta.index || undefined),
+      items: this.createItems(
+        this.quickFilters,
+        this.filterMeta.index || undefined
+      ),
     }
   },
   watch: {
@@ -72,7 +75,7 @@ export default {
           }
           let filteredVal = this.filter.filter((filter) => {
             return filter.some((filter1) => {
-              return Object.hasOwnProperty.call(filter1, 'isQuickFilter')
+              return Object.hasOwnProperty.call(filter1, "isQuickFilter")
             })
           })
           if (!filteredVal.length) {
@@ -81,7 +84,7 @@ export default {
 
           let date1 = moment(filteredVal[0][0].value[0])
           let date2 = moment(filteredVal[0][0].value[1])
-          var diff = date2.diff(date1, 'hours')
+          var diff = date2.diff(date1, "hours")
           if (diff === 1) {
             this.items[2].active = true
           }
@@ -98,7 +101,7 @@ export default {
         }
         let filteredVal = val.filter((filter) => {
           return filter.some((filter1) => {
-            return Object.hasOwnProperty.call(filter1, 'isQuickFilter')
+            return Object.hasOwnProperty.call(filter1, "isQuickFilter")
           })
         })
         if (!filteredVal.length) {
@@ -107,7 +110,7 @@ export default {
 
         let date1 = moment(filteredVal[0][0].value[0])
         let date2 = moment(filteredVal[0][0].value[1])
-        var diff = date2.diff(date1, 'hours')
+        var diff = date2.diff(date1, "hours")
         if (diff === 1) {
           this.items[2].active = true
         }

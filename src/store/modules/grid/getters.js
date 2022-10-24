@@ -1,4 +1,4 @@
-import { GRID } from '@/store/modules/grid/types'
+import { GRID } from "@/store/modules/grid/types"
 
 export default {
   [GRID.GETTERS.GET_PAGING]: (state) => {

@@ -1,5 +1,5 @@
-import { API } from '@/api'
-import { DATA_GRIDS } from '@/services/enums/dataGridEnums'
+import { API } from "@/api"
+import { DATA_GRIDS } from "@/services/enums/dataGridEnums"
 
 export const GRID_REQUESTS = {
   [DATA_GRIDS.INSTALLED_APPS]: API.appStore.getInstalledApps,

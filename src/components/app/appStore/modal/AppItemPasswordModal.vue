@@ -1,11 +1,19 @@
 <template>
   <modal-template
     v-model="isOpen"
-    :title="input.value ? $t('appItemPasswordModal.changePassword') : $t('appItemPasswordModal.setPassword')"
+    :title="
+      input.value
+        ? $t('appItemPasswordModal.changePassword')
+        : $t('appItemPasswordModal.setPassword')
+    "
   >
     <template #button>
       <app-button
-        :button-title="input.value ? $t('appItemPasswordModal.changePassword') : $t('appItemPasswordModal.setPassword')"
+        :button-title="
+          input.value
+            ? $t('appItemPasswordModal.changePassword')
+            : $t('appItemPasswordModal.setPassword')
+        "
         :class="buttonClass"
         :on-click="
           () => {
@@ -18,13 +26,25 @@
     <template #default>
       <v-row dense>
         <v-col cols="12">
-          <ValidationObserver ref="form" tag="form" slim @submit.prevent="submit">
-            <validation-provider v-slot="{ errors }" :name="name" :rules="'required'" slim>
+          <ValidationObserver
+            ref="form"
+            tag="form"
+            slim
+            @submit.prevent="submit"
+          >
+            <validation-provider
+              v-slot="{ errors }"
+              :name="name"
+              :rules="'required'"
+              slim
+            >
               <app-input
                 v-model="password"
                 :label="label"
                 :input-type="isPasswordVisible ? 'text' : 'password'"
-                :append-icon="isPasswordVisible ? 'visibility' : 'visibility_off'"
+                :append-icon="
+                  isPasswordVisible ? 'visibility' : 'visibility_off'
+                "
                 :error-messages="errors"
                 @appendIconClicked="togglePasswordVisibility"
               />
@@ -44,14 +64,14 @@
 </template>
 
 <script>
-import ModalTemplate from '@/components/commons/modal/ModalTemplate'
-import AppButton from '@/components/commons/button/AppButton'
-import { mapActions, mapGetters } from 'vuex'
-import { APP_STORE } from '@/store/modules/appStore/types'
-import { AUTH } from '@/store/modules/auth/types'
-import AppInput from '@/components/commons/input/AppInput'
+import ModalTemplate from "@/components/commons/modal/ModalTemplate"
+import AppButton from "@/components/commons/button/AppButton"
+import { mapActions, mapGetters } from "vuex"
+import { APP_STORE } from "@/store/modules/appStore/types"
+import { AUTH } from "@/store/modules/auth/types"
+import AppInput from "@/components/commons/input/AppInput"
 export default {
-  name: 'AppItemPasswordModal',
+  name: "AppItemPasswordModal",
   components: { AppInput, AppButton, ModalTemplate },
   props: {
     input: {
@@ -80,13 +100,13 @@ export default {
     },
     buttonClass: {
       type: String,
-      default: () => '',
+      default: () => "",
     },
   },
   data() {
     return {
       isOpen: false,
-      password: '',
+      password: "",
       isPasswordVisible: false,
     }
   },
@@ -105,11 +125,15 @@ export default {
       }
       await this[APP_STORE.ACTIONS.APP_SET_PASSWORD]({
         key: this.appKey,
-        data: { password: this.password, formKey: this.formKey, fieldKey: this.fieldKey },
+        data: {
+          password: this.password,
+          formKey: this.formKey,
+          fieldKey: this.fieldKey,
+        },
       }).then((res) => {
         if (res) {
           this.isOpen = false
-          this.password = ''
+          this.password = ""
           this.$refs.form.reset()
         }
       })

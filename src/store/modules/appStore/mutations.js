@@ -1,6 +1,6 @@
-import { APP_STORE } from './types'
-import createState from './state'
-import { resetState } from '../../utils'
+import { APP_STORE } from "./types"
+import createState from "./state"
+import { resetState } from "../../utils"
 
 export default {
   [APP_STORE.MUTATIONS.GET_APP_RESPONSE]: (state, data) => {

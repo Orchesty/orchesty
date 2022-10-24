@@ -8,7 +8,7 @@
           </template>
         </app-button>
       </template>
-      <template #tooltip> {{ $t('button.back') }} </template>
+      <template #tooltip> {{ $t("button.back") }} </template>
     </tooltip>
 
     <tooltip>
@@ -29,12 +29,18 @@
           </template>
         </app-button>
       </template>
-      <template #tooltip> {{ $t('button.save') }} </template>
+      <template #tooltip> {{ $t("button.save") }} </template>
     </tooltip>
 
     <v-menu offset-y>
       <template #activator="{ on, attrs }">
-        <app-button icon :disabled="isSending" class="ml-1" :attrs="attrs" :on="on">
+        <app-button
+          icon
+          :disabled="isSending"
+          class="ml-1"
+          :attrs="attrs"
+          :on="on"
+        >
           <template #icon>
             <app-icon>mdi-dots-vertical</app-icon>
           </template>
@@ -43,7 +49,9 @@
       <v-list dense>
         <v-list-item link @click="$refs.import.click()">
           <v-list-item-title class="d-flex justify-space-between align-center">
-            <span class="mr-2">{{ $t('topologies.editor.actions.import') }}</span>
+            <span class="mr-2">{{
+              $t("topologies.editor.actions.import")
+            }}</span>
             <app-icon dense>mdi-import</app-icon>
           </v-list-item-title>
           <input
@@ -61,7 +69,9 @@
 
         <v-list-item link @click="exportDiagram()">
           <v-list-item-title class="d-flex justify-space-between align-center">
-            <span class="mr-2">{{ $t('topologies.editor.actions.export') }}</span>
+            <span class="mr-2">{{
+              $t("topologies.editor.actions.export")
+            }}</span>
             <app-icon dense>mdi-export</app-icon>
           </v-list-item-title>
         </v-list-item>
@@ -71,11 +81,11 @@
 </template>
 
 <script>
-import Tooltip from '@/components/commons/Tooltip'
-import AppButton from '@/components/commons/button/AppButton'
-import AppIcon from '@/components/commons/icon/AppIcon'
+import Tooltip from "@/components/commons/Tooltip"
+import AppButton from "@/components/commons/button/AppButton"
+import AppIcon from "@/components/commons/icon/AppIcon"
 export default {
-  name: 'ActionButtons',
+  name: "ActionButtons",
   components: { AppIcon, AppButton, Tooltip },
   props: {
     saveDiagram: {

@@ -16,7 +16,7 @@
 
 <script>
 export default {
-  name: 'AppItemButton',
+  name: "AppItemButton",
   props: {
     disabled: {
       type: Boolean,
@@ -24,11 +24,11 @@ export default {
     },
     text: {
       type: String,
-      default: '',
+      default: "",
     },
     to: {
       type: [String, Object],
-      default: '',
+      default: "",
     },
     loading: {
       type: Boolean,
@@ -49,7 +49,7 @@ export default {
   },
   methods: {
     handleClick() {
-      this.$emit('click')
+      this.$emit("click")
     },
   },
 }

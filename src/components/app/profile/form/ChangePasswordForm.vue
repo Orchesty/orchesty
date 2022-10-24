@@ -2,7 +2,9 @@
   <ValidationObserver ref="form" tag="form" slim @submit.prevent="submit">
     <v-row>
       <v-col cols="12">
-        <h3 class="title font-weight-bold">{{ $t('page.heading.changePassword') }}</h3>
+        <h3 class="title font-weight-bold">
+          {{ $t("page.heading.changePassword") }}
+        </h3>
       </v-col>
     </v-row>
     <v-row dense>
@@ -73,17 +75,17 @@
 </template>
 
 <script>
-import { ROUTES } from '@/services/enums/routerEnums'
-import FormMixin from '../../../../services/mixins/FormMixin'
-import { AUTH } from '@/store/modules/auth/types'
-import { mapActions, mapGetters } from 'vuex'
-import { REQUESTS_STATE } from '@/store/modules/api/types'
-import { API } from '@/api'
-import AppButton from '@/components/commons/button/AppButton'
-import AppInput from '@/components/commons/input/AppInput'
+import { ROUTES } from "@/services/enums/routerEnums"
+import FormMixin from "../../../../services/mixins/FormMixin"
+import { AUTH } from "@/store/modules/auth/types"
+import { mapActions, mapGetters } from "vuex"
+import { REQUESTS_STATE } from "@/store/modules/api/types"
+import { API } from "@/api"
+import AppButton from "@/components/commons/button/AppButton"
+import AppInput from "@/components/commons/input/AppInput"
 
 export default {
-  name: 'ChangePasswordForm',
+  name: "ChangePasswordForm",
   components: { AppInput, AppButton },
   mixins: [FormMixin],
   data() {
@@ -94,22 +96,22 @@ export default {
       },
       fields: {
         current: {
-          id: 'current',
+          id: "current",
           validations: {
             required: true,
           },
         },
         password: {
-          id: 'password',
+          id: "password",
           validations: {
             required: true,
           },
         },
         confirm: {
-          id: 'confirm',
+          id: "confirm",
           validations: {
             required: true,
-            passwordConfirm: 'password',
+            passwordConfirm: "password",
           },
         },
       },
@@ -118,7 +120,9 @@ export default {
   computed: {
     ...mapGetters(REQUESTS_STATE.NAMESPACE, [REQUESTS_STATE.GETTERS.GET_STATE]),
     state() {
-      return this[REQUESTS_STATE.GETTERS.GET_STATE]([API.auth.changePassword.id])
+      return this[REQUESTS_STATE.GETTERS.GET_STATE]([
+        API.auth.changePassword.id,
+      ])
     },
   },
   methods: {

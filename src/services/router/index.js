@@ -1,20 +1,20 @@
-import Vue from 'vue'
-import Router from 'vue-router'
-import { ROUTES, SECURITY } from '../enums/routerEnums'
-import { withNamespace } from '../../store/utils'
-import { AUTH } from '../../store/modules/auth/types'
-import { config } from '../../config'
-import routes from './routes'
-import { events } from '@/services/utils/events'
-import { EVENT_TYPES } from '@/services/enums/eventsEnums'
+import Vue from "vue"
+import Router from "vue-router"
+import { ROUTES, SECURITY } from "../enums/routerEnums"
+import { withNamespace } from "../../store/utils"
+import { AUTH } from "../../store/modules/auth/types"
+import { config } from "../../config"
+import routes from "./routes"
+import { events } from "@/services/utils/events"
+import { EVENT_TYPES } from "@/services/enums/eventsEnums"
 
 Vue.use(Router)
 
 const router = new Router({
-  mode: 'history',
+  mode: "history",
   base: config.router.baseUrl,
-  linkActiveClass: 'active',
-  linkExactActiveClass: 'active',
+  linkActiveClass: "active",
+  linkExactActiveClass: "active",
   routes,
 })
 
@@ -22,8 +22,10 @@ let timer
 
 export const beforeEach = (store) => {
   return (to, from, next) => {
-    const isLogged = store.getters[withNamespace(AUTH.NAMESPACE, AUTH.GETTERS.IS_LOGGED)]
-    const isChecked = store.getters[withNamespace(AUTH.NAMESPACE, AUTH.GETTERS.IS_CHECKED)]
+    const isLogged =
+      store.getters[withNamespace(AUTH.NAMESPACE, AUTH.GETTERS.IS_LOGGED)]
+    const isChecked =
+      store.getters[withNamespace(AUTH.NAMESPACE, AUTH.GETTERS.IS_CHECKED)]
 
     if (!isChecked) {
       clearInterval(timer)
@@ -42,24 +44,35 @@ export const beforeEach = (store) => {
     }
 
     const checkLogged = () => {
-      store.dispatch(withNamespace(AUTH.NAMESPACE, AUTH.ACTIONS.CHECK_LOGGED_REQUEST)).then((res) => {
-        if (!res) {
-          notLogged()
-        }
-      })
+      store
+        .dispatch(
+          withNamespace(AUTH.NAMESPACE, AUTH.ACTIONS.CHECK_LOGGED_REQUEST)
+        )
+        .then((res) => {
+          if (!res) {
+            notLogged()
+          }
+        })
     }
 
     if (!isChecked) {
-      store.dispatch(withNamespace(AUTH.NAMESPACE, AUTH.ACTIONS.CHECK_LOGGED_REQUEST)).then((res) => {
-        if (res) {
-          timer = setInterval(checkLogged, config.checkLogged.refreshTime * 1000)
+      store
+        .dispatch(
+          withNamespace(AUTH.NAMESPACE, AUTH.ACTIONS.CHECK_LOGGED_REQUEST)
+        )
+        .then((res) => {
+          if (res) {
+            timer = setInterval(
+              checkLogged,
+              config.checkLogged.refreshTime * 1000
+            )
 
-          next()
-          return
-        }
+            next()
+            return
+          }
 
-        notLogged()
-      })
+          notLogged()
+        })
     }
 
     if (isChecked) {

@@ -1,7 +1,7 @@
-import { assign } from 'lodash'
-import inherits from 'inherits'
-import ElementFactory from 'bpmn-js/lib/features/modeling/ElementFactory'
-import { DEFAULT_LABEL_SIZE } from 'bpmn-js/lib/util/LabelUtil'
+import { assign } from "lodash"
+import inherits from "inherits"
+import ElementFactory from "bpmn-js/lib/features/modeling/ElementFactory"
+import { DEFAULT_LABEL_SIZE } from "bpmn-js/lib/util/LabelUtil"
 
 /**
  * A custom factory that knows how to create BPMN _and_ custom elements.
@@ -10,8 +10,11 @@ export default function CustomElementFactory(bpmnFactory, moddle, translate) {
   ElementFactory.call(this, bpmnFactory, moddle, translate)
 
   this.create = function (elementType, attrs) {
-    if (elementType === 'label') {
-      return this.baseCreate(elementType, assign({ type: 'label' }, DEFAULT_LABEL_SIZE, attrs))
+    if (elementType === "label") {
+      return this.baseCreate(
+        elementType,
+        assign({ type: "label" }, DEFAULT_LABEL_SIZE, attrs)
+      )
     }
     const element = this.createBpmnElement(elementType, attrs)
     // Creating of new shape from palette
@@ -26,4 +29,4 @@ export default function CustomElementFactory(bpmnFactory, moddle, translate) {
 
 inherits(CustomElementFactory, ElementFactory)
 
-CustomElementFactory.$inject = ['bpmnFactory', 'moddle', 'translate']
+CustomElementFactory.$inject = ["bpmnFactory", "moddle", "translate"]

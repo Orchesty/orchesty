@@ -1,7 +1,13 @@
 <template>
   <tooltip orientation="right">
     <template #activator="{ on, attrs }">
-      <v-list-item active-class="navigation-item-active" v-bind="attrs" :to="{ name: to }" v-on="on" @click="onClick">
+      <v-list-item
+        active-class="navigation-item-active"
+        v-bind="attrs"
+        :to="{ name: to }"
+        v-on="on"
+        @click="onClick"
+      >
         <v-list-item-content>
           <app-icon>
             {{ icon }}
@@ -16,10 +22,10 @@
 </template>
 
 <script>
-import Tooltip from '@/components/commons/Tooltip'
-import AppIcon from '@/components/commons/icon/AppIcon'
+import Tooltip from "@/components/commons/Tooltip"
+import AppIcon from "@/components/commons/icon/AppIcon"
 export default {
-  name: 'NavigationItem',
+  name: "NavigationItem",
   components: { AppIcon, Tooltip },
   props: {
     to: {

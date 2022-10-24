@@ -1,21 +1,31 @@
 <template>
-  <modal-template v-model="isOpen" :title="$t('modal.header.runTopology')" :on-confirm="submit" :on-close="reset">
+  <modal-template
+    v-model="isOpen"
+    :title="$t('modal.header.runTopology')"
+    :on-confirm="submit"
+    :on-close="reset"
+  >
     <template #default>
       <v-row dense>
         <v-col cols="12">
           <v-row dense>
             <v-col cols="12">
               <div>
-                Topology: <span class="font-weight-medium">{{ topologyName }}</span>
+                Topology:
+                <span class="font-weight-medium">{{ topologyName }}</span>
               </div>
-              <div>{{ $t('modal.text.selectStartingPoint') }}</div>
+              <div>{{ $t("modal.text.selectStartingPoint") }}</div>
             </v-col>
           </v-row>
 
           <v-row dense>
             <v-col cols="12">
               <v-list dense>
-                <ValidationObserver ref="form" tag="form" @submit.prevent="submit">
+                <ValidationObserver
+                  ref="form"
+                  tag="form"
+                  @submit.prevent="submit"
+                >
                   <validation-provider v-slot="{ errors }" rules="required">
                     <v-list-item-group v-model="selected" multiple class="mb-2">
                       <v-list-item
@@ -26,13 +36,21 @@
                       >
                         <template #default="{ active }">
                           <v-list-item-action class="mr-2">
-                            <v-checkbox :color="!!errors[0] ? 'error' : 'primary'" :input-value="active" />
+                            <v-checkbox
+                              :color="!!errors[0] ? 'error' : 'primary'"
+                              :input-value="active"
+                            />
                           </v-list-item-action>
-                          <v-list-item-title :class="{ 'error--text': !!errors[0] }" v-text="item.name" />
+                          <v-list-item-title
+                            :class="{ 'error--text': !!errors[0] }"
+                            v-text="item.name"
+                          />
                         </template>
                       </v-list-item>
                     </v-list-item-group>
-                    <span v-if="errors[0]" class="error--text">{{ $t('page.text.selectStartingPoint') }}</span>
+                    <span v-if="errors[0]" class="error--text">{{
+                      $t("page.text.selectStartingPoint")
+                    }}</span>
                   </validation-provider>
                 </ValidationObserver>
               </v-list>
@@ -41,8 +59,13 @@
 
           <v-row dense>
             <v-col cols="12">
-              <div class="pb-1">{{ $t('modal.text.bodyParameters') }}</div>
-              <v-textarea v-model="body" outlined dense placeholder="{ 'FORMAT': 'JSON' }" />
+              <div class="pb-1">{{ $t("modal.text.bodyParameters") }}</div>
+              <v-textarea
+                v-model="body"
+                outlined
+                dense
+                placeholder="{ 'FORMAT': 'JSON' }"
+              />
             </v-col>
           </v-row>
         </v-col>
@@ -65,21 +88,21 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
-import { REQUESTS_STATE } from '../../../../store/modules/api/types'
-import { API } from '../../../../api'
-import ModalTemplate from '@/components/commons/modal/ModalTemplate'
-import { TOPOLOGIES } from '@/store/modules/topologies/types'
-import { EVENTS, events } from '@/services/utils/events'
-import AppButton from '@/components/commons/button/AppButton'
+import { mapActions, mapGetters } from "vuex"
+import { REQUESTS_STATE } from "../../../../store/modules/api/types"
+import { API } from "../../../../api"
+import ModalTemplate from "@/components/commons/modal/ModalTemplate"
+import { TOPOLOGIES } from "@/store/modules/topologies/types"
+import { EVENTS, events } from "@/services/utils/events"
+import AppButton from "@/components/commons/button/AppButton"
 
 export default {
-  name: 'ModalRunTopology',
+  name: "ModalRunTopology",
   components: { AppButton, ModalTemplate },
   data() {
     return {
       isOpen: false,
-      body: '{}',
+      body: "{}",
       selected: [],
       selectedMemory: [],
       selectedTopologyMemory: null,
@@ -102,7 +125,9 @@ export default {
     },
     startingPoints() {
       if (this.nodeItems) {
-        return this.nodeItems.filter((node) => ['start', 'cron', 'webhook'].includes(node.type))
+        return this.nodeItems.filter((node) =>
+          ["start", "cron", "webhook"].includes(node.type)
+        )
       } else {
         return []
       }
@@ -127,12 +152,17 @@ export default {
   },
   mounted() {
     events.listen(EVENTS.MODAL.TOPOLOGY.RUN, async (topology) => {
-      if (this.selectedMemory && this.selectedTopologyMemory?._id === topology._id) {
+      if (
+        this.selectedMemory &&
+        this.selectedTopologyMemory?._id === topology._id
+      ) {
         this.selected = this.selectedMemory
       }
       this.selectedTopology = topology
       this.selectedTopologyMemory = topology
-      this.nodes = await this[TOPOLOGIES.ACTIONS.TOPOLOGY.RETURN_NODES](this.selectedTopology._id)
+      this.nodes = await this[TOPOLOGIES.ACTIONS.TOPOLOGY.RETURN_NODES](
+        this.selectedTopology._id
+      )
       this.setStartingPoints()
       this.loadRunSettings()
       this.isOpen = true
@@ -142,11 +172,14 @@ export default {
     events.remove(EVENTS.MODAL.TOPOLOGY.RUN)
   },
   methods: {
-    ...mapActions(TOPOLOGIES.NAMESPACE, [TOPOLOGIES.ACTIONS.TOPOLOGY.RUN, TOPOLOGIES.ACTIONS.TOPOLOGY.RETURN_NODES]),
+    ...mapActions(TOPOLOGIES.NAMESPACE, [
+      TOPOLOGIES.ACTIONS.TOPOLOGY.RUN,
+      TOPOLOGIES.ACTIONS.TOPOLOGY.RETURN_NODES,
+    ]),
     reset() {
       this.selectedMemory = this.selected
       this.selected = []
-      this.body = '{}'
+      this.body = "{}"
       this.nodes = {}
       this.selectedTopology = {}
     },
@@ -157,12 +190,14 @@ export default {
     },
     saveRunSettings() {
       localStorage.setItem(
-        'orchesty:runSettings',
+        "orchesty:runSettings",
         JSON.stringify({ id: this.selectedTopology._id, settings: this.body })
       )
     },
     loadRunSettings() {
-      const runSettings = JSON.parse(localStorage.getItem('orchesty:runSettings'))
+      const runSettings = JSON.parse(
+        localStorage.getItem("orchesty:runSettings")
+      )
       if (runSettings) {
         if (runSettings.id === this.selectedTopology._id) {
           this.body = runSettings.settings
@@ -176,12 +211,14 @@ export default {
         return
       }
 
-      await this[TOPOLOGIES.ACTIONS.TOPOLOGY.RUN](this.requestBody).then(async (res) => {
-        if (res) {
-          this.saveRunSettings()
-          this.isOpen = false
+      await this[TOPOLOGIES.ACTIONS.TOPOLOGY.RUN](this.requestBody).then(
+        async (res) => {
+          if (res) {
+            this.saveRunSettings()
+            this.isOpen = false
+          }
         }
-      })
+      )
     },
   },
 }

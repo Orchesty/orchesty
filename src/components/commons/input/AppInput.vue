@@ -19,7 +19,7 @@
 
 <script>
 export default {
-  name: 'AppInput',
+  name: "AppInput",
   props: {
     errorMessages: {
       type: Array,
@@ -27,7 +27,7 @@ export default {
     },
     inputType: {
       type: String,
-      default: 'text',
+      default: "text",
     },
     dense: {
       type: Boolean,
@@ -63,7 +63,7 @@ export default {
     },
     value: {
       type: [String, Number, Boolean],
-      default: '',
+      default: "",
     },
     label: {
       type: String,
@@ -71,17 +71,17 @@ export default {
     },
     appendIcon: {
       type: String,
-      default: '',
+      default: "",
     },
   },
   data() {
     return {
-      innerValue: '',
+      innerValue: "",
     }
   },
   watch: {
     innerValue(value) {
-      this.$emit('input', value)
+      this.$emit("input", value)
     },
     value: {
       immediate: true,

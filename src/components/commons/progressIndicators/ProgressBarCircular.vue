@@ -1,10 +1,15 @@
 <template>
-  <v-progress-circular indeterminate color="primary" :size="size" :width="width" />
+  <v-progress-circular
+    indeterminate
+    color="primary"
+    :size="size"
+    :width="width"
+  />
 </template>
 
 <script>
 export default {
-  name: 'ProgressBarCircular',
+  name: "ProgressBarCircular",
   props: {
     size: {
       type: Number,

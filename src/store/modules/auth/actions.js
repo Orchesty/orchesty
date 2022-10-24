@@ -1,11 +1,14 @@
-import { AUTH } from './types'
-import { API } from '@/api'
-import { callApi } from '../../utils'
-import router from '../../../services/router'
-import { ROUTES } from '@/services/enums/routerEnums'
-import { addErrorMessage, addSuccessMessage } from '@/services/utils/flashMessages'
-import { ERROR_TYPE } from '../api/types'
-import { logout } from '@/services/utils/utils'
+import { AUTH } from "./types"
+import { API } from "@/api"
+import { callApi } from "../../utils"
+import router from "../../../services/router"
+import { ROUTES } from "@/services/enums/routerEnums"
+import {
+  addErrorMessage,
+  addSuccessMessage,
+} from "@/services/utils/flashMessages"
+import { ERROR_TYPE } from "../api/types"
+import { logout } from "@/services/utils/utils"
 
 export default {
   [AUTH.ACTIONS.LOGIN_REQUEST]: async ({ commit, dispatch }, payload) => {
@@ -21,7 +24,11 @@ export default {
 
       commit(AUTH.MUTATIONS.LOGIN_RESPONSE, data)
       await router.push({ name: ROUTES.DASHBOARD })
-      addSuccessMessage(dispatch, API.auth.forgotPassword.id, 'flashMessages.welcomeBack')
+      addSuccessMessage(
+        dispatch,
+        API.auth.forgotPassword.id,
+        "flashMessages.welcomeBack"
+      )
     } catch (e) {
       addErrorMessage(dispatch, API.auth.forgotPassword.id, e)
     }
@@ -60,7 +67,11 @@ export default {
         },
       })
 
-      addSuccessMessage(dispatch, API.auth.forgotPassword.id, 'flashMessages.forgotPassword')
+      addSuccessMessage(
+        dispatch,
+        API.auth.forgotPassword.id,
+        "flashMessages.forgotPassword"
+      )
 
       return payload.email
     } catch {
@@ -100,10 +111,16 @@ export default {
       return false
     }
   },
-  [AUTH.ACTIONS.CHECK_REGISTER_TOKEN_REQUEST]: async ({ dispatch }, payload) => {
+  [AUTH.ACTIONS.CHECK_REGISTER_TOKEN_REQUEST]: async (
+    { dispatch },
+    payload
+  ) => {
     try {
       const data = await callApi(dispatch, {
-        requestData: { ...API.auth.checkRegisterToken, errorType: ERROR_TYPE.NONE },
+        requestData: {
+          ...API.auth.checkRegisterToken,
+          errorType: ERROR_TYPE.NONE,
+        },
         params: {
           token: payload.token,
         },
@@ -127,14 +144,21 @@ export default {
         throwError: true,
       })
 
-      addSuccessMessage(dispatch, API.auth.changePassword.id, 'flashMessages.changePassword')
+      addSuccessMessage(
+        dispatch,
+        API.auth.changePassword.id,
+        "flashMessages.changePassword"
+      )
 
       return true
     } catch {
       return false
     }
   },
-  [AUTH.ACTIONS.UPDATE_CONTACT_REQUEST]: async ({ dispatch, commit }, payload) => {
+  [AUTH.ACTIONS.UPDATE_CONTACT_REQUEST]: async (
+    { dispatch, commit },
+    payload
+  ) => {
     try {
       await callApi(dispatch, {
         requestData: { ...API.contact.update },

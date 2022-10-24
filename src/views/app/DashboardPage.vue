@@ -5,11 +5,11 @@
 </template>
 
 <script>
-import TopologyDashboard from '@/components/app/dashboard/landingComponent/TopologyDashboard'
-import ContentBasic from '@/components/layout/content/ContentBasic'
+import TopologyDashboard from "@/components/app/dashboard/landingComponent/TopologyDashboard"
+import ContentBasic from "@/components/layout/content/ContentBasic"
 
 export default {
-  name: 'DashboardPage',
+  name: "DashboardPage",
   components: { ContentBasic, TopologyDashboard },
 }
 </script>

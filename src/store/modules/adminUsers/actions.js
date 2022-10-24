@@ -1,9 +1,9 @@
-import { ADMIN_USERS } from './types'
-import { API } from '@/api'
-import { callApi, dispatchRoot, withNamespace } from '../../utils'
-import { DATA_GRIDS } from '@/services/enums/dataGridEnums'
-import { GRID } from '../grid/types'
-import { addSuccessMessage } from '@/services/utils/flashMessages'
+import { ADMIN_USERS } from "./types"
+import { API } from "@/api"
+import { callApi, dispatchRoot, withNamespace } from "../../utils"
+import { DATA_GRIDS } from "@/services/enums/dataGridEnums"
+import { GRID } from "../grid/types"
+import { addSuccessMessage } from "@/services/utils/flashMessages"
 
 export default {
   [ADMIN_USERS.ACTIONS.CREATE_USER_REQUEST]: async ({ dispatch }, payload) => {
@@ -15,13 +15,20 @@ export default {
         },
         throwError: true,
       })
-      addSuccessMessage(dispatch, API.admin.create.id, 'flashMessages.emailSent')
+      addSuccessMessage(
+        dispatch,
+        API.admin.create.id,
+        "flashMessages.emailSent"
+      )
       return true
     } catch {
       return false
     }
   },
-  [ADMIN_USERS.ACTIONS.GET_USER_REQUEST]: async ({ dispatch, commit }, payload) => {
+  [ADMIN_USERS.ACTIONS.GET_USER_REQUEST]: async (
+    { dispatch, commit },
+    payload
+  ) => {
     try {
       commit(ADMIN_USERS.MUTATIONS.GET_USER_RESPONSE, null)
 
@@ -40,7 +47,10 @@ export default {
       return false
     }
   },
-  [ADMIN_USERS.ACTIONS.UPDATE_USER_REQUEST]: async ({ dispatch, commit }, payload) => {
+  [ADMIN_USERS.ACTIONS.UPDATE_USER_REQUEST]: async (
+    { dispatch, commit },
+    payload
+  ) => {
     try {
       await callApi(dispatch, {
         requestData: { ...API.admin.update },
@@ -51,7 +61,11 @@ export default {
       })
       // @todo missing group in response
       commit(ADMIN_USERS.MUTATIONS.UPDATE_USER_RESPONSE, payload.data)
-      addSuccessMessage(dispatch, API.admin.create.id, 'flashMessages.userUpdated')
+      addSuccessMessage(
+        dispatch,
+        API.admin.create.id,
+        "flashMessages.userUpdated"
+      )
       return true
     } catch {
       return false
@@ -67,10 +81,18 @@ export default {
         throwError: true,
       })
 
-      await dispatchRoot(dispatch, withNamespace(DATA_GRIDS.ADMIN_USERS_LIST, GRID.ACTIONS.GRID_FETCH), {
-        namespace: DATA_GRIDS.ADMIN_USERS_LIST,
-      })
-      addSuccessMessage(dispatch, API.admin.delete.id, 'flashMessages.userDeleted')
+      await dispatchRoot(
+        dispatch,
+        withNamespace(DATA_GRIDS.ADMIN_USERS_LIST, GRID.ACTIONS.GRID_FETCH),
+        {
+          namespace: DATA_GRIDS.ADMIN_USERS_LIST,
+        }
+      )
+      addSuccessMessage(
+        dispatch,
+        API.admin.delete.id,
+        "flashMessages.userDeleted"
+      )
 
       return true
     } catch {

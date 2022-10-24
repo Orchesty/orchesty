@@ -1,5 +1,11 @@
 <template>
-  <v-btn elevation="0" class="px-2" :disabled="disabled" :loading="loading" @click="handleClick">
+  <v-btn
+    elevation="0"
+    class="px-2"
+    :disabled="disabled"
+    :loading="loading"
+    @click="handleClick"
+  >
     <slot name="icon" />
     <span class="mx-1">{{ text }}</span>
   </v-btn>
@@ -7,11 +13,11 @@
 
 <script>
 export default {
-  name: 'AppIconWithTextButton',
+  name: "AppIconWithTextButton",
   props: {
     text: {
       type: String,
-      default: '',
+      default: "",
       required: true,
     },
     loading: {
@@ -25,7 +31,7 @@ export default {
   },
   methods: {
     handleClick() {
-      this.$emit('click')
+      this.$emit("click")
     },
   },
 }

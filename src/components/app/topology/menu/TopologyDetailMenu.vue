@@ -25,20 +25,20 @@
 </template>
 
 <script>
-import { events, EVENTS } from '../../../../services/utils/events'
-import { mapActions, mapGetters } from 'vuex'
-import { TOPOLOGIES } from '@/store/modules/topologies/types'
-import download from '@/services/utils/download'
-import { REQUESTS_STATE } from '@/store/modules/api/types'
-import { API } from '@/api'
-import AppIcon from '@/components/commons/icon/AppIcon'
-import AppButton from '@/components/commons/button/AppButton'
-import AppListItem from '@/components/commons/AppListItem'
-import { ROUTES } from '@/services/enums/routerEnums'
-import { redirectTo } from '@/services/utils/utils'
+import { events, EVENTS } from "../../../../services/utils/events"
+import { mapActions, mapGetters } from "vuex"
+import { TOPOLOGIES } from "@/store/modules/topologies/types"
+import download from "@/services/utils/download"
+import { REQUESTS_STATE } from "@/store/modules/api/types"
+import { API } from "@/api"
+import AppIcon from "@/components/commons/icon/AppIcon"
+import AppButton from "@/components/commons/button/AppButton"
+import AppListItem from "@/components/commons/AppListItem"
+import { ROUTES } from "@/services/enums/routerEnums"
+import { redirectTo } from "@/services/utils/utils"
 
 export default {
-  name: 'TopologyDetailMenu',
+  name: "TopologyDetailMenu",
   components: { AppListItem, AppButton, AppIcon },
   data() {
     return {
@@ -48,19 +48,21 @@ export default {
       topologyTreeViewMenuItems: [
         {
           text: `contextMenu.topology.edit`,
-          icon: 'mdi-pencil',
-          onClick: () => this.events.emit(EVENTS.MODAL.TOPOLOGY.EDIT, this.topologyActive),
+          icon: "mdi-pencil",
+          onClick: () =>
+            this.events.emit(EVENTS.MODAL.TOPOLOGY.EDIT, this.topologyActive),
         },
         {
           text: `contextMenu.topology.delete`,
-          icon: 'mdi-delete',
-          iconColor: 'error',
-          spanClass: 'error--text',
-          onClick: () => this.events.emit(EVENTS.MODAL.TOPOLOGY.DELETE, this.topologyActive),
+          icon: "mdi-delete",
+          iconColor: "error",
+          spanClass: "error--text",
+          onClick: () =>
+            this.events.emit(EVENTS.MODAL.TOPOLOGY.DELETE, this.topologyActive),
         },
         {
           text: `contextMenu.topology.move`,
-          icon: 'mdi-arrow-bottom-right',
+          icon: "mdi-arrow-bottom-right",
           onClick: () =>
             this.events.emit(EVENTS.MODAL.TOPOLOGY.MOVE, {
               topologies: this.topologyAll,
@@ -69,12 +71,12 @@ export default {
         },
         {
           text: `contextMenu.topology.clone`,
-          icon: 'mdi-content-copy',
+          icon: "mdi-content-copy",
           onClick: this.clone,
         },
         {
           text: `contextMenu.topology.export`,
-          icon: 'mdi-export',
+          icon: "mdi-export",
           onClick: this.exportXML,
         },
       ],
@@ -88,7 +90,8 @@ export default {
     }),
     ...mapGetters(REQUESTS_STATE.NAMESPACE, [REQUESTS_STATE.GETTERS.GET_STATE]),
     cloneState() {
-      return this[REQUESTS_STATE.GETTERS.GET_STATE](API.topology.clone.id).isSending
+      return this[REQUESTS_STATE.GETTERS.GET_STATE](API.topology.clone.id)
+        .isSending
     },
   },
   methods: {
@@ -99,19 +102,26 @@ export default {
       TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES,
     ]),
     async clone() {
-      let response = await this[TOPOLOGIES.ACTIONS.TOPOLOGY.CLONE](this.topologyActive._id)
+      let response = await this[TOPOLOGIES.ACTIONS.TOPOLOGY.CLONE](
+        this.topologyActive._id
+      )
       if (response) {
         await this[TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES]()
         await this[TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID](response._id)
-        await redirectTo(this.$router, { name: ROUTES.TOPOLOGY.VIEWER, params: { id: response._id } })
+        await redirectTo(this.$router, {
+          name: ROUTES.TOPOLOGY.VIEWER,
+          params: { id: response._id },
+        })
       }
     },
     async exportXML() {
-      await this[TOPOLOGIES.ACTIONS.TOPOLOGY.GET_DIAGRAM](this.topologyActive._id)
+      await this[TOPOLOGIES.ACTIONS.TOPOLOGY.GET_DIAGRAM](
+        this.topologyActive._id
+      )
       download(
         this.topologyActiveDiagram,
-        `${this.topologyActive.name}.v${this.topologyActive.version}` + '.tplg',
-        'application/bpmn+xml'
+        `${this.topologyActive.name}.v${this.topologyActive.version}` + ".tplg",
+        "application/bpmn+xml"
       )
     },
   },

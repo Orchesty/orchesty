@@ -1,6 +1,6 @@
 <script>
 export default {
-  name: 'FormMixin',
+  name: "FormMixin",
   props: {
     onSubmit: {
       type: Function,

@@ -1,7 +1,12 @@
 @import "../assets/scss/msic/font";
 @import "~vuetify/src/styles/styles";
 
-$material-light: map_merge($material-light, ('background': #F0F0F0));
+$material-light: map_merge(
+  $material-light,
+  (
+    "background": #f0f0f0,
+  )
+);
 $btn-text-transform: none;
 $tooltip-background-color: rgba(28, 40, 73, 1);
 $skeleton-loader-image-height: 100%;

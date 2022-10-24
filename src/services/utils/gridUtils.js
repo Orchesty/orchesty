@@ -4,7 +4,7 @@ export const prepareSorter = (stateSorter, payloadSorter) => {
   }
 
   if (!Array.isArray(payloadSorter)) {
-    throw new Error('Sorter must be array.')
+    throw new Error("Sorter must be array.")
   }
 
   if (payloadSorter[0].column === null && payloadSorter[0].direction === null) {
@@ -15,7 +15,8 @@ export const prepareSorter = (stateSorter, payloadSorter) => {
 }
 
 export const prepareGridData = (state, payload) => {
-  state.filterMeta = payload && payload.filterMeta ? payload.filterMeta : state.filterMeta
+  state.filterMeta =
+    payload && payload.filterMeta ? payload.filterMeta : state.filterMeta
 
   let gridData = {
     filter: state.filter ? [...state.filter] : [],

@@ -1,22 +1,41 @@
 <template>
   <validation-observer ref="form" tag="form" @submit.prevent="submit">
-    <validation-provider v-slot="{ errors }" :name="$t('form.url')" :rules="fields.site.validations" slim>
-      <app-input v-model="form.site" autofocus :label="$t('form.url')" :error-messages="errors" />
+    <validation-provider
+      v-slot="{ errors }"
+      :name="$t('form.url')"
+      :rules="fields.site.validations"
+      slim
+    >
+      <app-input
+        v-model="form.site"
+        autofocus
+        :label="$t('form.url')"
+        :error-messages="errors"
+      />
     </validation-provider>
-    <validation-provider v-slot="{ errors }" :name="$t('form.name')" :rules="fields.name.validations" slim>
-      <app-input v-model="form.name" :label="$t('form.name')" :error-messages="errors" />
+    <validation-provider
+      v-slot="{ errors }"
+      :name="$t('form.name')"
+      :rules="fields.name.validations"
+      slim
+    >
+      <app-input
+        v-model="form.name"
+        :label="$t('form.name')"
+        :error-messages="errors"
+      />
     </validation-provider>
     <key-value-input v-model="form.headers" :headers-prop="form.headers" />
   </validation-observer>
 </template>
 
 <script>
-import FormMixin from '../../../../services/mixins/FormMixin'
-import AppInput from '@/components/commons/input/AppInput'
-import KeyValueInput from '@/components/commons/input/KeyValueInput'
+import FormMixin from "../../../../services/mixins/FormMixin"
+import AppInput from "@/components/commons/input/AppInput"
+import KeyValueInput from "@/components/commons/input/KeyValueInput"
 
 export default {
-  name: 'ImplementationsForm',
+  name: "ImplementationsForm",
   components: { KeyValueInput, AppInput },
   mixins: [FormMixin],
   props: {

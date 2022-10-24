@@ -35,7 +35,7 @@
 
 <script>
 export default {
-  name: 'DataList',
+  name: "DataList",
   props: {
     items: {
       type: Array,
@@ -52,7 +52,7 @@ export default {
     search: {
       type: String,
       required: false,
-      default: '',
+      default: "",
     },
     onPaging: {
       type: Function,
@@ -66,7 +66,7 @@ export default {
   },
   data() {
     return {
-      searchText: this.search ? this.search : '',
+      searchText: this.search ? this.search : "",
       options: {
         page: this.paging.page,
         itemsPerPage: this.paging.itemsPerPage,

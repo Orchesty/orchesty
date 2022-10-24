@@ -1,12 +1,26 @@
 <template>
   <div>
     <v-row v-if="state.isSending">
-      <v-col v-for="i in 6" :key="i + Math.random()" cols="12" sm="6" md="4" xl="2">
+      <v-col
+        v-for="i in 6"
+        :key="i + Math.random()"
+        cols="12"
+        sm="6"
+        md="4"
+        xl="2"
+      >
         <v-skeleton-loader class="mx-auto" height="102" type="image" />
       </v-col>
     </v-row>
     <v-row v-else>
-      <v-col v-for="(i, item) of process" :key="i + item" cols="12" sm="6" md="4" xl="2">
+      <v-col
+        v-for="(i, item) of process"
+        :key="i + item"
+        cols="12"
+        sm="6"
+        md="4"
+        xl="2"
+      >
         <v-card class="py-2">
           <v-card-title class="pb-0">
             <div class="text-center body-2 mx-auto">{{ stats[item] }}</div>
@@ -21,11 +35,17 @@
     </v-row>
     <v-row>
       <v-col cols="12">
-        <h3 class="title font-weight-bold">{{ $t('page.heading.processes') }}</h3>
+        <h3 class="title font-weight-bold">
+          {{ $t("page.heading.processes") }}
+        </h3>
       </v-col>
     </v-row>
     <v-row dense>
-      <topology-processes :headers="headers" :state="state" :items="processes || []" />
+      <topology-processes
+        :headers="headers"
+        :state="state"
+        :items="processes || []"
+      />
     </v-row>
     <!--    <v-row v-if="false">-->
     <!--      <v-col cols="12">-->
@@ -64,15 +84,15 @@
 </template>
 
 <script>
-import { ROUTES } from '@/services/enums/routerEnums'
-import { mapActions, mapGetters } from 'vuex'
-import { TOPOLOGIES } from '@/store/modules/topologies/types'
-import { REQUESTS_STATE } from '@/store/modules/api/types'
-import { API } from '@/api'
-import TopologyProcesses from '@/components/app/dashboard/grid/TopologyProcesses'
+import { ROUTES } from "@/services/enums/routerEnums"
+import { mapActions, mapGetters } from "vuex"
+import { TOPOLOGIES } from "@/store/modules/topologies/types"
+import { REQUESTS_STATE } from "@/store/modules/api/types"
+import { API } from "@/api"
+import TopologyProcesses from "@/components/app/dashboard/grid/TopologyProcesses"
 
 export default {
-  name: 'TopologyDashboard',
+  name: "TopologyDashboard",
   components: { TopologyProcesses },
   methods: {
     ...mapActions(TOPOLOGIES.NAMESPACE, [
@@ -80,7 +100,7 @@ export default {
       TOPOLOGIES.ACTIONS.DATA.GET_DASHBOARD_PROCESSES,
     ]),
     color(value) {
-      return value >= 60 ? (value >= 80 ? '#cc0000' : '#f7b500') : '#0e7d00'
+      return value >= 60 ? (value >= 80 ? "#cc0000" : "#f7b500") : "#0e7d00"
     },
     options(isBackground) {
       return {
@@ -104,20 +124,24 @@ export default {
     backgroundData() {
       return {
         data: [60, 20, 20],
-        backgroundColor: ['#0e7d00', '#f7b500', '#cc0000'],
+        backgroundColor: ["#0e7d00", "#f7b500", "#cc0000"],
       }
     },
     foregroundData(metric) {
       return {
         data: [metric.value, 100 - metric.value],
-        backgroundColor: [this.color(metric.value), 'transparent'],
+        backgroundColor: [this.color(metric.value), "transparent"],
         label: metric.name,
       }
     },
     datasets(metric, isBackground) {
       return {
-        datasets: [isBackground ? { ...this.backgroundData() } : { ...this.foregroundData(metric) }],
-        labels: [metric.name, 'remaining'],
+        datasets: [
+          isBackground
+            ? { ...this.backgroundData() }
+            : { ...this.foregroundData(metric) },
+        ],
+        labels: [metric.name, "remaining"],
       }
     },
   },
@@ -125,25 +149,33 @@ export default {
     return {
       ROUTES,
       headers: [
-        { text: this.$t('grid.header.topologyName'), value: 'topologyId' },
-        { text: this.$t('grid.header.created'), value: 'started' },
-        { text: this.$t('grid.header.duration'), value: 'duration', align: 'left' },
-        { text: this.$t('grid.header.progress'), value: 'progress', align: 'left' },
-        { text: this.$t('grid.header.status'), value: 'status', align: 'left' },
+        { text: this.$t("grid.header.topologyName"), value: "topologyId" },
+        { text: this.$t("grid.header.created"), value: "started" },
         {
-          text: this.$t('grid.header.correlation_id'),
-          value: 'correlation_id',
-          align: 'right',
-          width: '150px',
+          text: this.$t("grid.header.duration"),
+          value: "duration",
+          align: "left",
+        },
+        {
+          text: this.$t("grid.header.progress"),
+          value: "progress",
+          align: "left",
+        },
+        { text: this.$t("grid.header.status"), value: "status", align: "left" },
+        {
+          text: this.$t("grid.header.correlation_id"),
+          value: "correlation_id",
+          align: "right",
+          width: "150px",
         },
       ],
       stats: {
-        activeTopologies: this.$t('page.status.activeTopologies'),
-        disabledTopologies: this.$t('page.status.disabledTopologies'),
-        totalRuns: this.$t('page.status.totalRuns'),
-        errorsCount: this.$t('page.status.errorsCount'),
-        successCount: this.$t('page.status.successCount'),
-        installedApps: this.$t('page.status.installedApps'),
+        activeTopologies: this.$t("page.status.activeTopologies"),
+        disabledTopologies: this.$t("page.status.disabledTopologies"),
+        totalRuns: this.$t("page.status.totalRuns"),
+        errorsCount: this.$t("page.status.errorsCount"),
+        successCount: this.$t("page.status.successCount"),
+        installedApps: this.$t("page.status.installedApps"),
       },
     }
   },
@@ -154,7 +186,9 @@ export default {
       processes: TOPOLOGIES.GETTERS.GET_DASHBOARD_PROCESSES,
     }),
     state() {
-      return this[REQUESTS_STATE.GETTERS.GET_STATE]([API.topology.getDashboard.id])
+      return this[REQUESTS_STATE.GETTERS.GET_STATE]([
+        API.topology.getDashboard.id,
+      ])
     },
     process() {
       return this.topologiesOverview?.process

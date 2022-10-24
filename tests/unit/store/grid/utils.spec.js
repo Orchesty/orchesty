@@ -3,21 +3,21 @@ import {
   prepareGridHeaderStateForSave,
   prepareGridStateForSave,
   prepareSorter,
-} from '@/services/utils/gridUtils'
-import { DIRECTION, OPERATOR } from '@/services/enums/gridEnums'
-import { createDefaultGridState } from '@/store/modules/grid/state'
-import { FILTER } from '@/services/utils/gridUtils'
+} from "@/services/utils/gridUtils"
+import { DIRECTION, OPERATOR } from "@/services/enums/gridEnums"
+import { createDefaultGridState } from "@/store/modules/grid/state"
+import { FILTER } from "@/services/utils/gridUtils"
 
 // PREPARE SORTER
-test('Grid::prepareSorter - null', () => {
+test("Grid::prepareSorter - null", () => {
   expect(prepareSorter(null, null)).toEqual(null)
 })
 
-test('Grid::prepareSorter - column and direction null', () => {
+test("Grid::prepareSorter - column and direction null", () => {
   const stateSorter = [
     {
-      column: 'id',
-      direction: 'ascending',
+      column: "id",
+      direction: "ascending",
     },
   ]
 
@@ -33,25 +33,25 @@ test('Grid::prepareSorter - column and direction null', () => {
   expect(prepareSorter(stateSorter, payloadSorter)).toEqual(result)
 })
 
-test('Grid::prepareSorter - default', () => {
+test("Grid::prepareSorter - default", () => {
   const stateSorter = [
     {
-      column: 'id',
-      direction: 'ascending',
+      column: "id",
+      direction: "ascending",
     },
   ]
 
   const payloadSorter = [
     {
-      column: 'created',
-      direction: 'descending',
+      column: "created",
+      direction: "descending",
     },
   ]
 
   const result = [
     {
-      column: 'created',
-      direction: 'descending',
+      column: "created",
+      direction: "descending",
     },
   ]
 
@@ -59,8 +59,8 @@ test('Grid::prepareSorter - default', () => {
 })
 
 // GRID STATE
-test('Grid::prepareData - default', () => {
-  const state = createDefaultGridState('test')
+test("Grid::prepareData - default", () => {
+  const state = createDefaultGridState("test")
 
   const result = {
     filter: [],
@@ -70,7 +70,7 @@ test('Grid::prepareData - default', () => {
     },
     sorter: [
       {
-        column: 'id',
+        column: "id",
         direction: DIRECTION.DESCENDING,
       },
     ],
@@ -80,8 +80,8 @@ test('Grid::prepareData - default', () => {
   expect(prepareGridData(state)).toEqual(result)
 })
 
-test('Grid::prepareData - null sorter', () => {
-  const state = createDefaultGridState('test')
+test("Grid::prepareData - null sorter", () => {
+  const state = createDefaultGridState("test")
   state.sorter = null
 
   const result = {
@@ -97,8 +97,8 @@ test('Grid::prepareData - null sorter', () => {
   expect(prepareGridData(state)).toEqual(result)
 })
 
-test('Grid::prepareData - paging, sorter', () => {
-  const state = createDefaultGridState('test')
+test("Grid::prepareData - paging, sorter", () => {
+  const state = createDefaultGridState("test")
 
   const payload = {
     paging: {
@@ -107,7 +107,7 @@ test('Grid::prepareData - paging, sorter', () => {
     },
     sorter: [
       {
-        column: 'created',
+        column: "created",
         direction: DIRECTION.ASCENDING,
       },
     ],
@@ -121,7 +121,7 @@ test('Grid::prepareData - paging, sorter', () => {
     },
     sorter: [
       {
-        column: 'created',
+        column: "created",
         direction: DIRECTION.ASCENDING,
       },
     ],
@@ -131,8 +131,8 @@ test('Grid::prepareData - paging, sorter', () => {
   expect(prepareGridData(state, payload)).toEqual(result)
 })
 
-test('Grid::prepareData - paging, sorter null', () => {
-  const state = createDefaultGridState('test')
+test("Grid::prepareData - paging, sorter null", () => {
+  const state = createDefaultGridState("test")
 
   const payload = {
     paging: {
@@ -155,12 +155,12 @@ test('Grid::prepareData - paging, sorter null', () => {
   expect(prepareGridData(state, payload)).toEqual(result)
 })
 
-test('Grid::prepareData - search', () => {
-  const state = createDefaultGridState('test')
-  state.search = 'test'
+test("Grid::prepareData - search", () => {
+  const state = createDefaultGridState("test")
+  state.search = "test"
 
   const payload = {
-    search: 'value',
+    search: "value",
   }
 
   const result = {
@@ -171,19 +171,19 @@ test('Grid::prepareData - search', () => {
     },
     sorter: [
       {
-        column: 'id',
+        column: "id",
         direction: DIRECTION.DESCENDING,
       },
     ],
-    search: 'value',
+    search: "value",
   }
 
   expect(prepareGridData(state, payload)).toEqual(result)
 })
 
-test('Grid::prepareData - delete null', () => {
-  const state = createDefaultGridState('test')
-  state.search = 'test'
+test("Grid::prepareData - delete null", () => {
+  const state = createDefaultGridState("test")
+  state.search = "test"
 
   const payload = {
     search: null,
@@ -197,7 +197,7 @@ test('Grid::prepareData - delete null', () => {
     },
     sorter: [
       {
-        column: 'id',
+        column: "id",
         direction: DIRECTION.DESCENDING,
       },
     ],
@@ -207,12 +207,12 @@ test('Grid::prepareData - delete null', () => {
   expect(prepareGridData(state, payload)).toEqual(result)
 })
 
-test('Grid::prepareData - delete empty string', () => {
-  const state = createDefaultGridState('test')
-  state.search = 'test'
+test("Grid::prepareData - delete empty string", () => {
+  const state = createDefaultGridState("test")
+  state.search = "test"
 
   const payload = {
-    search: '',
+    search: "",
   }
 
   const result = {
@@ -223,46 +223,48 @@ test('Grid::prepareData - delete empty string', () => {
     },
     sorter: [
       {
-        column: 'id',
+        column: "id",
         direction: DIRECTION.DESCENDING,
       },
     ],
-    search: '',
+    search: "",
   }
 
   expect(prepareGridData(state, payload)).toEqual(result)
 })
 
 // create state for save
-test('Grid::prepareGridStateForSave', () => {
-  const state = createDefaultGridState('test')
-  state.search = 'test'
-  state.filter = [[{ column: 'test', operator: OPERATOR.EQUAL, values: ['test'] }]]
+test("Grid::prepareGridStateForSave", () => {
+  const state = createDefaultGridState("test")
+  state.search = "test"
+  state.filter = [
+    [{ column: "test", operator: OPERATOR.EQUAL, values: ["test"] }],
+  ]
   state.filterMeta = { type: FILTER.SIMPLE_FILTER }
 
   const result = {
-    filter: [[{ column: 'test', operator: OPERATOR.EQUAL, values: ['test'] }]],
+    filter: [[{ column: "test", operator: OPERATOR.EQUAL, values: ["test"] }]],
     filterMeta: { type: FILTER.SIMPLE_FILTER },
     sorter: [
       {
-        column: 'id',
-        direction: 'DESCENDING',
+        column: "id",
+        direction: "DESCENDING",
       },
     ],
-    version: '1.0.0',
+    version: "1.0.0",
   }
 
   expect(prepareGridStateForSave(state)).toEqual(result)
 })
 
 // create state for save
-test('Grid::prepareGridStateForSave', () => {
-  const state = createDefaultGridState('test')
-  state.headersMeta = [{ value: 'id', visible: true }]
+test("Grid::prepareGridStateForSave", () => {
+  const state = createDefaultGridState("test")
+  state.headersMeta = [{ value: "id", visible: true }]
 
   const result = {
-    headersMeta: [{ value: 'id', visible: true }],
-    version: '1.0.0',
+    headersMeta: [{ value: "id", visible: true }],
+    version: "1.0.0",
   }
 
   expect(prepareGridHeaderStateForSave(state)).toEqual(result)

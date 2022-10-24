@@ -1,12 +1,16 @@
 <template>
   <div class="text-center">
-    <img class="logo" src="@/assets/svg/logo-small.svg" alt="HANABOSO, s.r.o." />
+    <img
+      class="logo"
+      src="@/assets/svg/logo-small.svg"
+      alt="HANABOSO, s.r.o."
+    />
   </div>
 </template>
 
 <script>
 export default {
-  name: 'Logo',
+  name: "Logo",
 }
 </script>
 <style scoped>

@@ -1,9 +1,11 @@
 <script>
 export default {
-  name: 'DataTableMixin',
+  name: "DataTableMixin",
   computed: {
     visibleHeaders() {
-      return this.headers.filter((header) => header.visible || header.alwaysVisible === true)
+      return this.headers.filter(
+        (header) => header.visible || header.alwaysVisible === true
+      )
     },
   },
   methods: {

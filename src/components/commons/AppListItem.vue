@@ -8,9 +8,9 @@
 </template>
 
 <script>
-import AppIcon from '@/components/commons/icon/AppIcon'
+import AppIcon from "@/components/commons/icon/AppIcon"
 export default {
-  name: 'AppListItem',
+  name: "AppListItem",
   components: { AppIcon },
   props: {
     conditional: {

@@ -3,7 +3,12 @@
     <v-container fluid>
       <v-row dense>
         <v-col style="z-index: 1">
-          <span v-if="redirectInTitle" class="text-decoration-underline pointer" @click="redirect">{{ title }}</span>
+          <span
+            v-if="redirectInTitle"
+            class="text-decoration-underline pointer"
+            @click="redirect"
+            >{{ title }}</span
+          >
           <h1 v-else class="headline font-weight-bold">{{ title }}</h1>
         </v-col>
         <v-col class="text-right">
@@ -20,16 +25,16 @@
 </template>
 
 <script>
-import { redirectTo } from '@/services/utils/utils'
-import { ROUTES } from '@/services/enums/routerEnums'
+import { redirectTo } from "@/services/utils/utils"
+import { ROUTES } from "@/services/enums/routerEnums"
 
 export default {
-  name: 'ContentBasic',
+  name: "ContentBasic",
   props: {
     title: {
       type: String,
       required: false,
-      default: '',
+      default: "",
     },
     center: {
       type: Boolean,

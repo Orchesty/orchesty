@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import Chart from 'chart.js/auto'
+import Chart from "chart.js/auto"
 export default {
   data() {
     return {
@@ -14,7 +14,7 @@ export default {
   props: {
     chartKey: {
       type: String,
-      default: '',
+      default: "",
     },
     chartData: {
       type: Object,
@@ -27,9 +27,11 @@ export default {
   },
   methods: {
     canvasDraw() {
-      this.ctx = document.getElementById(`chartWithKey${this.chartKey}`).getContext('2d')
+      this.ctx = document
+        .getElementById(`chartWithKey${this.chartKey}`)
+        .getContext("2d")
       this.chart = new Chart(this.ctx, {
-        type: 'bar',
+        type: "bar",
         data: this.chartData,
         options: this.options,
       })
@@ -45,7 +47,10 @@ export default {
   watch: {
     chartData(newValue, oldValue) {
       for (let i = 0; i < newValue.datasets.length; i++) {
-        if (JSON.stringify(newValue.datasets[i].data) !== JSON.stringify(oldValue.datasets[i].data)) {
+        if (
+          JSON.stringify(newValue.datasets[i].data) !==
+          JSON.stringify(oldValue.datasets[i].data)
+        ) {
           this.canvasReDraw()
         }
       }

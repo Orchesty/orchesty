@@ -1,4 +1,4 @@
-import { REQUESTS_STATE } from './types'
+import { REQUESTS_STATE } from "./types"
 
 const getState = (requests) => {
   let isSending = false
@@ -22,16 +22,25 @@ const getState = (requests) => {
 
 export default {
   [REQUESTS_STATE.GETTERS.GET_GLOBAL_ERRORS]: (state) => {
-    return Object.values(state.items).filter((item) => item.isError && item.errorType === undefined) || []
+    return (
+      Object.values(state.items).filter(
+        (item) => item.isError && item.errorType === undefined
+      ) || []
+    )
   },
   [REQUESTS_STATE.GETTERS.GET_STATE]:
     (state) =>
     (ids = [], type) => {
       let requests = []
       if (!type) {
-        requests = Object.values(state.items).filter((item) => ids.includes(item.id)) || []
+        requests =
+          Object.values(state.items).filter((item) => ids.includes(item.id)) ||
+          []
       } else {
-        requests = Object.values(state.items).filter((item) => ids.includes(item.id) && type === item.errorType) || []
+        requests =
+          Object.values(state.items).filter(
+            (item) => ids.includes(item.id) && type === item.errorType
+          ) || []
       }
 
       return getState(requests)

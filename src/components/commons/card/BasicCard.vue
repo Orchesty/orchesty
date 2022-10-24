@@ -35,17 +35,17 @@
 </template>
 
 <script>
-import ProgressBarCircular from '../progressIndicators/ProgressBarCircular'
-import InfoText from './InfoText'
-import Tooltip from '../Tooltip'
+import ProgressBarCircular from "../progressIndicators/ProgressBarCircular"
+import InfoText from "./InfoText"
+import Tooltip from "../Tooltip"
 
 export default {
-  name: 'BasicCard',
+  name: "BasicCard",
   components: { InfoText, ProgressBarCircular, Tooltip },
   props: {
     title: {
       type: String,
-      default: '',
+      default: "",
     },
     isSending: {
       type: Boolean,
@@ -61,7 +61,7 @@ export default {
     },
     infoTitle: {
       type: String,
-      default: '',
+      default: "",
     },
     flat: {
       type: Boolean,
@@ -69,7 +69,7 @@ export default {
     },
     tooltip: {
       type: String,
-      default: '',
+      default: "",
     },
   },
 }

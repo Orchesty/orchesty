@@ -1,16 +1,22 @@
-import axios from 'axios'
+import axios from "axios"
 
-import { config } from '../../config'
-import { LOCAL_STORAGE } from '../enums/localStorageEnums'
-import { logout, onError, removeError, startSending, stopSending } from './utils'
+import { config } from "../../config"
+import { LOCAL_STORAGE } from "../enums/localStorageEnums"
+import {
+  logout,
+  onError,
+  removeError,
+  startSending,
+  stopSending,
+} from "./utils"
 
 const graphqlClient = axios.create({
   baseURL: config.backend.graphqlBaseUrl,
-  method: 'POST',
+  method: "POST",
   withCredentials: false,
   headers: {
-    Accept: 'application/json',
-    'Content-Type': 'application/json; charset=utf-8',
+    Accept: "application/json",
+    "Content-Type": "application/json; charset=utf-8",
   },
 })
 
@@ -19,7 +25,7 @@ const send = (config) => {
 
   const token = localStorage.getItem(LOCAL_STORAGE.USER_TOKEN)
   if (token) {
-    headers['Authorization'] = `${token}`
+    headers["Authorization"] = `${token}`
   }
 
   return graphqlClient.request({ ...config, headers: { ...headers } })
@@ -40,21 +46,24 @@ const query =
 const checkError = (errors, store, id, errorType) => {
   errors.forEach((item) => {
     // logout
-    if (item.code === 'UNAUTHORIZED') {
+    if (item.code === "UNAUTHORIZED") {
       logout(store.commit, store.dispatch)
 
       return
     }
 
-    onError(store, id, item.code ? item.code : 'UNKNOWN', errorType)
+    onError(store, id, item.code ? item.code : "UNKNOWN", errorType)
   })
 }
 
-const call = ({ requestData, params = null, throwError = false, store }, sender) => {
+const call = (
+  { requestData, params = null, throwError = false, store },
+  sender
+) => {
   const { id, errorType, loadingType, request, reduce, mock } = requestData
 
   if (!id) {
-    throw new Error('Request must have id.')
+    throw new Error("Request must have id.")
   }
 
   if (mock) {
@@ -97,7 +106,7 @@ const call = ({ requestData, params = null, throwError = false, store }, sender)
       })
       .catch((err) => {
         // eslint-disable-next-line
-        console.error('Response ERROR!', err)
+        console.error("Response ERROR!", err)
 
         if (err.response) {
           // logout
@@ -113,7 +122,7 @@ const call = ({ requestData, params = null, throwError = false, store }, sender)
           }
         } else {
           // unknown error
-          onError(store, id, 'UNKNOWN', errorType)
+          onError(store, id, "UNKNOWN", errorType)
         }
 
         stopSending(store.commit, id)

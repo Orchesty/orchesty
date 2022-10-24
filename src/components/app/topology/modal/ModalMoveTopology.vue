@@ -3,7 +3,11 @@
     <template #default>
       <v-row dense>
         <v-col cols="12">
-          <topology-move-tree-view v-model="selectedCategoryId" :topologies="topologies" :topology="topology" />
+          <topology-move-tree-view
+            v-model="selectedCategoryId"
+            :topologies="topologies"
+            :topology="topology"
+          />
         </v-col>
       </v-row>
     </template>
@@ -25,17 +29,17 @@
 </template>
 
 <script>
-import { events, EVENTS } from '../../../../services/utils/events'
-import ModalTemplate from '../../../commons/modal/ModalTemplate'
-import { TOPOLOGIES } from '@/store/modules/topologies/types'
-import { mapActions, mapGetters } from 'vuex'
-import { REQUESTS_STATE } from '@/store/modules/api/types'
-import { API } from '@/api'
-import TopologyMoveTreeView from '../treeview/TopologyMoveTreeView'
-import AppButton from '@/components/commons/button/AppButton'
+import { events, EVENTS } from "../../../../services/utils/events"
+import ModalTemplate from "../../../commons/modal/ModalTemplate"
+import { TOPOLOGIES } from "@/store/modules/topologies/types"
+import { mapActions, mapGetters } from "vuex"
+import { REQUESTS_STATE } from "@/store/modules/api/types"
+import { API } from "@/api"
+import TopologyMoveTreeView from "../treeview/TopologyMoveTreeView"
+import AppButton from "@/components/commons/button/AppButton"
 
 export default {
-  name: 'ModalMoveTopology',
+  name: "ModalMoveTopology",
   components: { AppButton, ModalTemplate, TopologyMoveTreeView },
   data: () => ({
     isOpen: false,
@@ -50,7 +54,10 @@ export default {
     },
   },
   methods: {
-    ...mapActions(TOPOLOGIES.NAMESPACE, [TOPOLOGIES.ACTIONS.TOPOLOGY.MOVE, TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES]),
+    ...mapActions(TOPOLOGIES.NAMESPACE, [
+      TOPOLOGIES.ACTIONS.TOPOLOGY.MOVE,
+      TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES,
+    ]),
     submit() {
       this[TOPOLOGIES.ACTIONS.TOPOLOGY.MOVE]({
         categoryId: this.selectedCategoryId,

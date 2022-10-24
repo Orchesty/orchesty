@@ -9,9 +9,7 @@
   "types": [
     {
       "name": "PipesParameters",
-      "extends": [
-        "bpmn:BaseElement"
-      ],
+      "extends": ["bpmn:BaseElement"],
       "properties": [
         {
           "name": "pipesType",

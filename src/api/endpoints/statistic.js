@@ -1,10 +1,12 @@
 export default {
   grid: {
-    id: 'STATISTIC_GRID',
+    id: "STATISTIC_GRID",
     request: (data) => {
       return {
-        url: `metrics/topology/${data.params.id}/requests?filter=${JSON.stringify(data)}`,
-        method: 'GET',
+        url: `metrics/topology/${
+          data.params.id
+        }/requests?filter=${JSON.stringify(data)}`,
+        method: "GET",
       }
     },
     reduce: (data) => {
@@ -19,11 +21,13 @@ export default {
     },
   },
   getList: {
-    id: 'STATISTIC_GET_LIST',
+    id: "STATISTIC_GET_LIST",
     request: ({ payload }) => {
       return {
-        url: `metrics/topology/${payload.id}/requests?filter=${JSON.stringify(payload.settings || [])}`,
-        method: 'GET',
+        url: `metrics/topology/${payload.id}/requests?filter=${JSON.stringify(
+          payload.settings || []
+        )}`,
+        method: "GET",
       }
     },
   },

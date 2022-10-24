@@ -1,9 +1,9 @@
-import { APP_STORE } from './types'
-import { callApi, dispatchRoot, withNamespace } from '../../utils'
-import { API } from '../../../api'
-import { addSuccessMessage } from '@/services/utils/flashMessages'
-import { DATA_GRIDS } from '@/services/enums/dataGridEnums'
-import { GRID } from '@/store/modules/grid/types'
+import { APP_STORE } from "./types"
+import { callApi, dispatchRoot, withNamespace } from "../../utils"
+import { API } from "../../../api"
+import { addSuccessMessage } from "@/services/utils/flashMessages"
+import { DATA_GRIDS } from "@/services/enums/dataGridEnums"
+import { GRID } from "@/store/modules/grid/types"
 
 export default {
   [APP_STORE.ACTIONS.GET_AVAILABLE_APPS]: async ({ dispatch, commit }) => {
@@ -19,7 +19,10 @@ export default {
       return false
     }
   },
-  [APP_STORE.ACTIONS.GET_INSTALLED_APPS]: async ({ dispatch, commit }, payload) => {
+  [APP_STORE.ACTIONS.GET_INSTALLED_APPS]: async (
+    { dispatch, commit },
+    payload
+  ) => {
     try {
       const response = await callApi(dispatch, {
         requestData: { ...API.appStore.getInstalledApps },
@@ -34,7 +37,10 @@ export default {
     }
   },
 
-  [APP_STORE.ACTIONS.GET_INSTALLED_APP]: async ({ commit, dispatch }, payload) => {
+  [APP_STORE.ACTIONS.GET_INSTALLED_APP]: async (
+    { commit, dispatch },
+    payload
+  ) => {
     try {
       const response = await callApi(dispatch, {
         requestData: { ...API.appStore.getInstalledApp },
@@ -55,12 +61,20 @@ export default {
         params: payload,
       })
 
-      dispatchRoot(dispatch, withNamespace(DATA_GRIDS.INSTALLED_APPS, GRID.ACTIONS.GRID_FETCH), {
-        namespace: DATA_GRIDS.INSTALLED_APPS,
-        params: { id: payload.userId },
-      })
+      dispatchRoot(
+        dispatch,
+        withNamespace(DATA_GRIDS.INSTALLED_APPS, GRID.ACTIONS.GRID_FETCH),
+        {
+          namespace: DATA_GRIDS.INSTALLED_APPS,
+          params: { id: payload.userId },
+        }
+      )
 
-      addSuccessMessage(dispatch, API.admin.delete.id, 'flashMessages.appUninstalled')
+      addSuccessMessage(
+        dispatch,
+        API.admin.delete.id,
+        "flashMessages.appUninstalled"
+      )
 
       return true
     } catch (e) {
@@ -73,7 +87,11 @@ export default {
         requestData: { ...API.appStore.installApp },
         params: payload,
       })
-      addSuccessMessage(dispatch, API.admin.delete.id, 'flashMessages.appInstalled')
+      addSuccessMessage(
+        dispatch,
+        API.admin.delete.id,
+        "flashMessages.appInstalled"
+      )
 
       return true
     } catch (e) {
@@ -86,14 +104,17 @@ export default {
         requestData: { ...API.appStore.saveSettings },
         params: payload,
       })
-      addSuccessMessage(dispatch, API.admin.delete.id, 'flashMessages.appSaved')
+      addSuccessMessage(dispatch, API.admin.delete.id, "flashMessages.appSaved")
 
       return true
     } catch (e) {
       return false
     }
   },
-  [APP_STORE.ACTIONS.GET_AVAILABLE_APP]: async ({ dispatch, commit }, payload) => {
+  [APP_STORE.ACTIONS.GET_AVAILABLE_APP]: async (
+    { dispatch, commit },
+    payload
+  ) => {
     try {
       const response = await callApi(dispatch, {
         requestData: { ...API.appStore.getAvailableApp },
@@ -114,7 +135,11 @@ export default {
         params: payload,
       })
 
-      addSuccessMessage(dispatch, API.admin.delete.id, 'flashMessages.passwordChanged')
+      addSuccessMessage(
+        dispatch,
+        API.admin.delete.id,
+        "flashMessages.passwordChanged"
+      )
 
       return true
     } catch {
@@ -127,7 +152,11 @@ export default {
         requestData: { ...API.appStore.subscribeToWebhook },
         params: payload,
       })
-      addSuccessMessage(dispatch, API.admin.delete.id, 'flashMessages.subscribed')
+      addSuccessMessage(
+        dispatch,
+        API.admin.delete.id,
+        "flashMessages.subscribed"
+      )
 
       return true
     } catch (e) {
@@ -143,7 +172,9 @@ export default {
       addSuccessMessage(
         dispatch,
         API.appStore.activateApp.id,
-        payload.data.enabled ? 'flashMessages.activated' : 'flashMessages.deactivated'
+        payload.data.enabled
+          ? "flashMessages.activated"
+          : "flashMessages.deactivated"
       )
 
       return true

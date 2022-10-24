@@ -9,7 +9,7 @@
       <v-container fluid>
         <v-row>
           <v-col class="px-0">
-            <span>{{ $t('page.status.noAppsAvailable') }}</span>
+            <span>{{ $t("page.status.noAppsAvailable") }}</span>
           </v-col>
         </v-row>
       </v-container>
@@ -26,7 +26,7 @@
     <template #default="{ items }">
       <v-row>
         <v-col class="d-flex">
-          <h5>{{ $t('page.status.unauthorized') }}</h5>
+          <h5>{{ $t("page.status.unauthorized") }}</h5>
         </v-col>
       </v-row>
       <v-row>
@@ -41,7 +41,11 @@
             installed
           >
             <template #buttons>
-              <app-item-button color="primary" disabled :text="$t('button.installed')" />
+              <app-item-button
+                color="primary"
+                disabled
+                :text="$t('button.installed')"
+              />
               <app-item-button
                 outlined
                 color="secondary"
@@ -58,7 +62,7 @@
       </v-row>
       <v-row class="mt-5">
         <v-col class="d-flex">
-          <h5>{{ $t('page.status.authorized') }}</h5>
+          <h5>{{ $t("page.status.authorized") }}</h5>
         </v-col>
       </v-row>
       <v-row>
@@ -73,7 +77,11 @@
             installed
           >
             <template #buttons>
-              <app-item-button disabled color="primary" :text="$t('button.installed')" />
+              <app-item-button
+                disabled
+                color="primary"
+                :text="$t('button.installed')"
+              />
               <app-item-button
                 outlined
                 color="secondary"
@@ -93,18 +101,18 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
-import { REQUESTS_STATE } from '@/store/modules/api/types'
-import { API } from '@/api'
-import AppItem from '../item/AppItem'
-import { AUTH } from '@/store/modules/auth/types'
-import { ROUTES } from '@/services/enums/routerEnums'
-import AppItemButton from '@/components/app/appStore/button/AppItemButton'
-import { APP_STORE } from '@/store/modules/appStore/types'
-import ProgressBarLinear from '@/components/commons/progressIndicators/ProgressBarLinear'
+import { mapActions, mapGetters } from "vuex"
+import { REQUESTS_STATE } from "@/store/modules/api/types"
+import { API } from "@/api"
+import AppItem from "../item/AppItem"
+import { AUTH } from "@/store/modules/auth/types"
+import { ROUTES } from "@/services/enums/routerEnums"
+import AppItemButton from "@/components/app/appStore/button/AppItemButton"
+import { APP_STORE } from "@/store/modules/appStore/types"
+import ProgressBarLinear from "@/components/commons/progressIndicators/ProgressBarLinear"
 
 export default {
-  name: 'InstalledAppsGridHandler',
+  name: "InstalledAppsGridHandler",
   components: { ProgressBarLinear, AppItemButton, AppItem },
   data() {
     return {
@@ -121,7 +129,9 @@ export default {
       appsInstalled: APP_STORE.GETTERS.GET_INSTALLED_APPS,
     }),
     isRequestSending() {
-      return this[REQUESTS_STATE.GETTERS.GET_STATE]([API.appStore.getInstalledApps.id]).isSending
+      return this[REQUESTS_STATE.GETTERS.GET_STATE]([
+        API.appStore.getInstalledApps.id,
+      ]).isSending
     },
   },
   methods: {
@@ -132,10 +142,12 @@ export default {
     ]),
     mergeWithInstalledApps() {
       this.appsMerged = this.appsInstalled.map((availableAppData) => {
-        const installedAppData = this.appsAvailable.find((installedApp) => installedApp.key === availableAppData.key)
+        const installedAppData = this.appsAvailable.find(
+          (installedApp) => installedApp.key === availableAppData.key
+        )
         if (installedAppData) {
           const app = { ...availableAppData, ...installedAppData }
-          app.logo = app.logo ?? ''
+          app.logo = app.logo ?? ""
           return app
         }
       })

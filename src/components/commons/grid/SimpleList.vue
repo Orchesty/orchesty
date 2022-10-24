@@ -19,12 +19,12 @@
 
 <script>
 export default {
-  name: 'SimpleList',
+  name: "SimpleList",
   props: {
     noDataText: {
       type: String,
       required: false,
-      default: 'pages.noDataAvailable',
+      default: "pages.noDataAvailable",
     },
     headers: {
       type: Array,

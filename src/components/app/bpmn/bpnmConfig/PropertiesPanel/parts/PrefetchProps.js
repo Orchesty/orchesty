@@ -1,28 +1,29 @@
-import entryFactory from 'bpmn-js-properties-panel/lib/factory/EntryFactory'
-import cmdHelper from 'bpmn-js-properties-panel/lib/helper/CmdHelper'
-import { getBusinessObject } from 'bpmn-js/lib/util/ModelUtil'
+import entryFactory from "bpmn-js-properties-panel/lib/factory/EntryFactory"
+import cmdHelper from "bpmn-js-properties-panel/lib/helper/CmdHelper"
+import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil"
 
 export default function (group, element, translate) {
-  const allowedTypes = ['connector', 'batch', 'custom']
+  const allowedTypes = ["connector", "batch", "custom"]
   if (
     !allowedTypes.includes(element.pipesType) &&
-    (!element.businessObject || !allowedTypes.includes(element.businessObject.pipesType))
+    (!element.businessObject ||
+      !allowedTypes.includes(element.businessObject.pipesType))
   ) {
     return
   }
 
   group.entries.push(
     entryFactory.validationAwareTextField(translate, {
-      id: 'rabbitPrefetch',
-      label: 'Prefetch',
-      modelProperty: 'rabbitPrefetch',
+      id: "rabbitPrefetch",
+      label: "Prefetch",
+      modelProperty: "rabbitPrefetch",
       validate: (element, values) => {
-        if (element.type === 'bpmn:Process') {
+        if (element.type === "bpmn:Process") {
           return {}
         }
 
         if (values.rabbitPrefetch && !/\d+/.test(values.rabbitPrefetch)) {
-          return { rabbitPrefetch: 'Prefetch must be an integer.' }
+          return { rabbitPrefetch: "Prefetch must be an integer." }
         }
 
         return {}
@@ -38,16 +39,16 @@ export default function (group, element, translate) {
 
   group.entries.push(
     entryFactory.validationAwareTextField(translate, {
-      id: 'timeout',
-      label: 'Timeout',
-      modelProperty: 'timeout',
+      id: "timeout",
+      label: "Timeout",
+      modelProperty: "timeout",
       validate: (element, values) => {
-        if (element.type === 'bpmn:Process') {
+        if (element.type === "bpmn:Process") {
           return {}
         }
 
         if (values.timeout && !/\d+/.test(values.timeout)) {
-          return { timeout: 'Timeout must be an integer.' }
+          return { timeout: "Timeout must be an integer." }
         }
 
         return {}

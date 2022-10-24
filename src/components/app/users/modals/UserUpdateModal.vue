@@ -11,7 +11,12 @@
   >
     <template #default>
       <v-col cols="12">
-        <user-form ref="form" :user="user" :groups="groups" :on-submit="onSubmit" />
+        <user-form
+          ref="form"
+          :user="user"
+          :groups="groups"
+          :on-submit="onSubmit"
+        />
       </v-col>
     </template>
     <template #sendingButton>
@@ -32,17 +37,17 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapState } from 'vuex'
-import { ADMIN_USERS } from '../../../../store/modules/adminUsers/types'
-import { REQUESTS_STATE } from '../../../../store/modules/api/types'
-import { API } from '../../../../api'
-import UserForm from '../form/UserForm'
-import SendingButton from '@/components/commons/button/AppButton'
-import ModalTemplate from '@/components/commons/modal/ModalTemplate'
+import { mapActions, mapGetters, mapState } from "vuex"
+import { ADMIN_USERS } from "../../../../store/modules/adminUsers/types"
+import { REQUESTS_STATE } from "../../../../store/modules/api/types"
+import { API } from "../../../../api"
+import UserForm from "../form/UserForm"
+import SendingButton from "@/components/commons/button/AppButton"
+import ModalTemplate from "@/components/commons/modal/ModalTemplate"
 
 export default {
   components: { ModalTemplate, SendingButton, UserForm },
-  name: 'UserUpdateModal',
+  name: "UserUpdateModal",
   data() {
     return {
       isOpen: false,
@@ -56,7 +61,7 @@ export default {
     },
   },
   computed: {
-    ...mapState(ADMIN_USERS.NAMESPACE, ['user']),
+    ...mapState(ADMIN_USERS.NAMESPACE, ["user"]),
     ...mapGetters(REQUESTS_STATE.NAMESPACE, [REQUESTS_STATE.GETTERS.GET_STATE]),
     state() {
       return this[REQUESTS_STATE.GETTERS.GET_STATE]([API.admin.getById.id])

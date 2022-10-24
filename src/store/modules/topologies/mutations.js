@@ -1,8 +1,8 @@
-import { TOPOLOGIES } from './types'
-import createState from './state'
-import { resetState } from '../../utils'
-import { createTree } from './utils'
-import { LOCAL_STORAGE } from '@/services/enums/localStorageEnums'
+import { TOPOLOGIES } from "./types"
+import createState from "./state"
+import { resetState } from "../../utils"
+import { createTree } from "./utils"
+import { LOCAL_STORAGE } from "@/services/enums/localStorageEnums"
 
 export default {
   [TOPOLOGIES.MUTATIONS.DATA.MUTATE_TOPOLOGIES]: (state, data) => {

@@ -1,5 +1,8 @@
 <template>
-  <content-basic v-if="topologyActive" :title="`${topologyActive.name} v.${topologyActive.version}`">
+  <content-basic
+    v-if="topologyActive"
+    :title="`${topologyActive.name} v.${topologyActive.version}`"
+  >
     <bpmn-editor ref="editor" />
     <unsaved-editor-modal
       ref="dialog"
@@ -20,21 +23,21 @@
 </template>
 
 <script>
-import { ROUTES } from '@/services/enums/routerEnums'
-import ContentBasic from '../../components/layout/content/ContentBasic'
-import BpmnEditor from '@/components/app/bpmn/BpmnEditor'
-import { mapActions, mapGetters } from 'vuex'
-import { TOPOLOGIES } from '@/store/modules/topologies/types'
-import { REQUESTS_STATE } from '@/store/modules/api/types'
-import { API } from '@/api'
-import UnsavedEditorModal from '@/components/app/bpmn/modals/UnsavedEditorModal'
-import ActionButtons from '@/components/app/bpmn/components/ActionButtons'
-import { redirectTo } from '@/services/utils/utils'
-import ImportTopologyMixin from '@/services/mixins/ImportTopologyMixin'
-import { EVENTS, events } from '@/services/utils/events'
+import { ROUTES } from "@/services/enums/routerEnums"
+import ContentBasic from "../../components/layout/content/ContentBasic"
+import BpmnEditor from "@/components/app/bpmn/BpmnEditor"
+import { mapActions, mapGetters } from "vuex"
+import { TOPOLOGIES } from "@/store/modules/topologies/types"
+import { REQUESTS_STATE } from "@/store/modules/api/types"
+import { API } from "@/api"
+import UnsavedEditorModal from "@/components/app/bpmn/modals/UnsavedEditorModal"
+import ActionButtons from "@/components/app/bpmn/components/ActionButtons"
+import { redirectTo } from "@/services/utils/utils"
+import ImportTopologyMixin from "@/services/mixins/ImportTopologyMixin"
+import { EVENTS, events } from "@/services/utils/events"
 
 export default {
-  name: 'EditorPage',
+  name: "EditorPage",
   mixins: [ImportTopologyMixin],
   components: { ActionButtons, UnsavedEditorModal, BpmnEditor, ContentBasic },
   data() {
@@ -85,7 +88,9 @@ export default {
           params: { id: newId, forceRoute: true },
         })
       } else {
-        await this[TOPOLOGIES.ACTIONS.TOPOLOGY.GET_DIAGRAM](this.topologyActive._id)
+        await this[TOPOLOGIES.ACTIONS.TOPOLOGY.GET_DIAGRAM](
+          this.topologyActive._id
+        )
       }
     },
     routeBack() {
@@ -95,9 +100,13 @@ export default {
   mounted() {
     events.listen(EVENTS.EDITOR.COMPARE_XML, async (redirectFunction) => {
       this.redirectFunction = redirectFunction
-      const xml = new XMLSerializer().serializeToString(await this.$refs.editor.getCurrentXMLDiagram())
+      const xml = new XMLSerializer().serializeToString(
+        await this.$refs.editor.getCurrentXMLDiagram()
+      )
 
-      const diagramChanged = await this[TOPOLOGIES.ACTIONS.TOPOLOGY.CHECK_DIAGRAM_CHANGED]({
+      const diagramChanged = await this[
+        TOPOLOGIES.ACTIONS.TOPOLOGY.CHECK_DIAGRAM_CHANGED
+      ]({
         xml,
         id: this.$refs.editor.topologyActive._id,
       })
