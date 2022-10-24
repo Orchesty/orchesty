@@ -36,29 +36,29 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch } from "vue-property-decorator";
-import Modal from "../../commons/layouts/Modal.vue";
-import { ValidationObserver } from "vee-validate";
-import Button from "../../commons/inputsAndControls/Button.vue";
-import TextField from "../../commons/inputsAndControls/TextField.vue";
-import { EventBus, Routes } from "@/enums";
-import { eventBus } from "@/utils/eventBus";
-import { api } from "@/api";
+import { Component, Vue, Watch } from "vue-property-decorator"
+import Modal from "../../commons/layouts/Modal.vue"
+import { ValidationObserver } from "vee-validate"
+import Button from "../../commons/inputsAndControls/Button.vue"
+import TextField from "../../commons/inputsAndControls/TextField.vue"
+import { EventBus, Routes } from "@/enums"
+import { eventBus } from "@/utils/eventBus"
+import { api } from "@/api"
 import {
   CreateUser,
   UpdateUser,
   UsersCreateOperationRequest,
   UsersGetRequest,
   UsersUpdateOperationRequest,
-} from "@/api/generated";
-import { alerts, callApi } from "@/utils";
-import { Route } from "vue-router";
+} from "@/api/generated"
+import { alerts, callApi } from "@/utils"
+import { Route } from "vue-router"
 
 const emptyFormData: CreateUser | UpdateUser = {
   email: "",
   disabled: false,
   displayName: "",
-};
+}
 
 @Component({
   components: {
@@ -69,121 +69,121 @@ const emptyFormData: CreateUser | UpdateUser = {
   },
 })
 export default class UserFormModal extends Vue {
-  isOpen = false;
-  isSending = false;
-  isEdit = false;
-  email = "";
+  isOpen = false
+  isSending = false
+  isEdit = false
+  email = ""
 
   formData: CreateUser | UpdateUser = {
     ...emptyFormData,
-  };
+  }
 
   created(): void {
     eventBus.$on(EventBus.UserCreateModal, () => {
-      this.initForm();
-      this.isOpen = true;
-    });
+      this.initForm()
+      this.isOpen = true
+    })
 
     if (this.$route.name === Routes.UserUpdate) {
-      this.initForm();
-      this.isOpen = this.isEdit = true;
-      this.fetchUserDetail();
+      this.initForm()
+      this.isOpen = this.isEdit = true
+      this.fetchUserDetail()
     }
   }
 
   async fetchUserDetail() {
-    this.isSending = true;
+    this.isSending = true
     if (this.$route.params.id) {
       const userResponse = await callApi<UsersGetRequest>(api.users.get, {
         uid: this.$route.params.id,
-      });
+      })
 
       if (userResponse?.user) {
-        this.email = userResponse.user.email;
+        this.email = userResponse.user.email
         this.formData = {
           displayName: userResponse.user.displayName,
-        };
+        }
       }
     } else {
-      this.closeModal();
+      this.closeModal()
     }
 
-    this.isSending = false;
+    this.isSending = false
   }
 
   async onSubmit(): Promise<void> {
-    const valid = await (this.$refs.form as any).validate();
+    const valid = await (this.$refs.form as any).validate()
     if (valid) {
-      this.sendForm(this.formData);
+      this.sendForm(this.formData)
     }
   }
 
   async sendForm(formData: CreateUser | UpdateUser): Promise<void> {
-    this.isSending = true;
+    this.isSending = true
 
-    let response;
+    let response
 
     if (this.isEdit) {
       response = await callApi<UsersUpdateOperationRequest>(api.users.update, {
         uid: this.$route.params.id,
         usersUpdateRequest: formData,
-      });
+      })
     } else {
       response = await callApi<UsersCreateOperationRequest>(api.users.create, {
         usersCreateRequest: formData as CreateUser,
-      });
+      })
     }
 
     if (response?.user) {
       alerts.addSuccessAlert(
         this.isEdit ? "UPDATE_ADMIN" : "CREATE_ADMIN",
         this.isEdit ? "message.saved" : "message.userCreated"
-      );
+      )
 
-      eventBus.$emit(EventBus.UsersRefreshList);
+      eventBus.$emit(EventBus.UsersRefreshList)
 
-      this.closeModal();
+      this.closeModal()
     }
 
-    this.isSending = false;
+    this.isSending = false
   }
 
   get title() {
     return this.isEdit
       ? `${this.$t("usersPage.updateUser")} ${this.email}`
-      : this.$t("usersPage.newUser");
+      : this.$t("usersPage.newUser")
   }
 
   initForm(): void {
     this.formData = {
       ...emptyFormData,
-    };
-    this.isSending = false;
+    }
+    this.isSending = false
     this.$nextTick(() => {
       if (this.$refs.form) {
-        (this.$refs.form as any).reset();
+        ;(this.$refs.form as any).reset()
       }
-    });
+    })
   }
 
   closeModal() {
-    this.initForm();
+    this.initForm()
 
     if (this.isEdit) {
       this.$router.push({
         name: Routes.Users,
-      });
+      })
     }
 
-    this.isOpen = this.isEdit = false;
+    this.isOpen = this.isEdit = false
   }
 
   @Watch("$route")
   onChangeRoute(route: Route) {
     if (route.name === Routes.UserUpdate) {
-      this.initForm();
-      this.isOpen = this.isEdit = true;
-      this.fetchUserDetail();
+      this.initForm()
+      this.isOpen = this.isEdit = true
+      this.fetchUserDetail()
     }
   }
 }

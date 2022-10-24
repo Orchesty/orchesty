@@ -6,4 +6,4 @@ export default {
     apiKey: "AIzaSyANIRePUXX1f8fr-IS2ljSU8FgLkC53a0o",
     authDomain: "orchesty-cloud-stage.firebaseapp.com",
   },
-};
+}

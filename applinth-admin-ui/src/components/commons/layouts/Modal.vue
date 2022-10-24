@@ -66,8 +66,8 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from "vue-property-decorator";
-import Button from "../inputsAndControls/Button.vue";
+import { Component, Prop, Vue, Watch } from "vue-property-decorator"
+import Button from "../inputsAndControls/Button.vue"
 
 @Component({
   components: {
@@ -76,72 +76,72 @@ import Button from "../inputsAndControls/Button.vue";
 })
 export default class Modal extends Vue {
   @Prop({ required: false, type: Boolean, default: false })
-  private value!: boolean;
+  private value!: boolean
 
   @Prop({ required: false, type: [String, Number], default: 550 })
-  private maxWidth!: number | string;
+  private maxWidth!: number | string
 
   @Prop({ required: false, type: Boolean, default: true })
-  private closeable!: boolean;
+  private closeable!: boolean
 
   @Prop({ required: false, type: Boolean, default: false })
-  private isLoading!: boolean;
+  private isLoading!: boolean
 
   @Prop({ required: false, type: Boolean, default: false })
-  private isSending!: boolean;
+  private isSending!: boolean
 
   @Prop({ required: false, type: String })
-  private title?: string;
+  private title?: string
 
   @Prop({ required: false, type: String })
-  private body?: string;
+  private body?: string
 
   @Prop({ required: false, type: String })
-  private cancelBtnText?: string;
+  private cancelBtnText?: string
 
   @Prop({ required: false, type: String })
-  private confirmBtnText?: string;
+  private confirmBtnText?: string
 
   @Prop({ required: false, type: Function })
-  private onCancel?: () => void;
+  private onCancel?: () => void
 
   @Prop({ required: false, type: Function })
-  private onConfirm?: () => void;
+  private onConfirm?: () => void
 
   @Prop({ required: false, type: Boolean, default: false })
-  private noGutter!: boolean;
+  private noGutter!: boolean
 
   @Prop({ required: false, type: Boolean, default: false })
-  private fullscreen!: boolean;
+  private fullscreen!: boolean
 
   @Prop({ required: false, type: Boolean, default: true })
-  private retainFocus!: boolean;
+  private retainFocus!: boolean
 
-  private isOpen = false;
+  private isOpen = false
 
   created() {
-    this.isOpen = this.value;
+    this.isOpen = this.value
   }
 
   private handleCancel(): void {
-    if (this.isSending) return;
-    this.isOpen = false;
-    if (this.onCancel) this.onCancel();
+    if (this.isSending) return
+    this.isOpen = false
+    if (this.onCancel) this.onCancel()
   }
 
   private handleConfirm(): void {
-    this.isOpen = false;
-    if (this.onConfirm) this.onConfirm();
+    this.isOpen = false
+    if (this.onConfirm) this.onConfirm()
   }
 
   @Watch("value")
   private onValueChange(newVal: boolean): void {
-    this.isOpen = newVal;
+    this.isOpen = newVal
   }
 
   @Watch("isOpen")
   private onIsOpenChange(newVal: boolean): void {
-    this.$emit("input", newVal);
+    this.$emit("input", newVal)
   }
 }
 </script>

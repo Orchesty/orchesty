@@ -1,5 +1,5 @@
-import { FLASH_MESSAGES } from './types'
-import createState from './state'
+import { FLASH_MESSAGES } from "./types"
+import createState from "./state"
 
 export default {
   [FLASH_MESSAGES.MUTATIONS.ADD]: (state, payload) => {

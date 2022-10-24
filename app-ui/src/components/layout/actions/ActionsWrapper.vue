@@ -6,7 +6,7 @@
 
 <script>
 export default {
-  name: 'ActionsWrapper',
+  name: "ActionsWrapper",
 }
 </script>
 

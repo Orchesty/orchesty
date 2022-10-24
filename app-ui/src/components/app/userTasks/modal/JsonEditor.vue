@@ -3,7 +3,7 @@
     <textarea v-model="parsedJsonData" class="textarea"></textarea>
     <div class="parsing-error-message">
       <span v-if="isNotJson" class="font-weight-bold error--text">
-        {{ $t('userTask.jsonEditor.parsingError') }}
+        {{ $t("userTask.jsonEditor.parsingError") }}
       </span>
     </div>
   </div>
@@ -11,7 +11,7 @@
 
 <script>
 export default {
-  name: 'JsonEditor',
+  name: "JsonEditor",
   props: {
     value: {
       type: Object,
@@ -46,7 +46,7 @@ export default {
     JsonData: {
       deep: true,
       handler(JsonData) {
-        this.$emit('input', JsonData)
+        this.$emit("input", JsonData)
       },
     },
   },

@@ -1,9 +1,9 @@
-@import '~vuetify/src/styles/main';
+@import "~vuetify/src/styles/main";
 
-@import '~bpmn-js/dist/assets/diagram-js.css';
-@import '~bpmn-js/dist/assets/bpmn-font/css/bpmn.css';
+@import "~bpmn-js/dist/assets/diagram-js.css";
+@import "~bpmn-js/dist/assets/bpmn-font/css/bpmn.css";
 //@import '~bpmn-js-properties-panel/dist/assets/bpmn-js-properties-panel.css';
-@import '~@dzangolab/vue-country-flag-icon/src/assets/scss/country-flag.scss';
+@import "~@dzangolab/vue-country-flag-icon/src/assets/scss/country-flag.scss";
 
 @import "bpmn/bpmn-properties-panel";
 @import "vuetify/v-data-table";

@@ -1,7 +1,12 @@
 <template>
   <v-row dense>
     <v-col cols="2">
-      <app-input v-model="userTaskFilter[0][0].value" hide-details clearable label="Node" />
+      <app-input
+        v-model="userTaskFilter[0][0].value"
+        hide-details
+        clearable
+        label="Node"
+      />
     </v-col>
 
     <v-col class="my-auto">
@@ -16,20 +21,20 @@
 </template>
 
 <script>
-import AppInput from '@/components/commons/input/AppInput'
-import AppButton from '@/components/commons/button/AppButton'
-import { OPERATOR } from '@/services/enums/gridEnums'
+import AppInput from "@/components/commons/input/AppInput"
+import AppButton from "@/components/commons/button/AppButton"
+import { OPERATOR } from "@/services/enums/gridEnums"
 export default {
-  name: 'UserTaskGridFilter',
+  name: "UserTaskGridFilter",
   components: { AppButton, AppInput },
   data() {
     return {
       userTaskFilter: [
         [
           {
-            column: 'nodeName',
+            column: "nodeName",
             operator: OPERATOR.LIKE,
-            value: '',
+            value: "",
           },
         ],
       ],
@@ -37,12 +42,12 @@ export default {
   },
   methods: {
     fetchGrid() {
-      this.$emit('fetchGrid', { filter: this.userTaskFilter })
+      this.$emit("fetchGrid", { filter: this.userTaskFilter })
     },
     resetFilter() {
-      this.userTaskFilter[0][0].value = ''
+      this.userTaskFilter[0][0].value = ""
 
-      this.$emit('fetchGrid')
+      this.$emit("fetchGrid")
     },
   },
 }

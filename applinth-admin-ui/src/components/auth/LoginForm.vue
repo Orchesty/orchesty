@@ -50,13 +50,13 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Ref, Vue } from "vue-property-decorator";
-import { TLoginForm, TLoginRules } from "./types";
-import { ValidationObserver } from "vee-validate";
-import TextField from "../commons/inputsAndControls/TextField.vue";
-import Logo from "../commons/layouts/Logo.vue";
-import Button from "../commons/inputsAndControls/Button.vue";
-import { Routes } from "../../enums/Routes";
+import { Component, Prop, Ref, Vue } from "vue-property-decorator"
+import { TLoginForm, TLoginRules } from "./types"
+import { ValidationObserver } from "vee-validate"
+import TextField from "../commons/inputsAndControls/TextField.vue"
+import Logo from "../commons/layouts/Logo.vue"
+import Button from "../commons/inputsAndControls/Button.vue"
+import { Routes } from "../../enums/Routes"
 
 @Component({
   components: {
@@ -67,21 +67,21 @@ import { Routes } from "../../enums/Routes";
   },
 })
 export default class LoginForm extends Vue {
-  Routes = Routes;
+  Routes = Routes
 
   @Prop({ required: true, type: Function })
-  private onSubmit!: (payload: TLoginForm) => Promise<boolean>;
+  private onSubmit!: (payload: TLoginForm) => Promise<boolean>
 
   @Ref()
-  readonly formRef!: InstanceType<typeof ValidationObserver>;
+  readonly formRef!: InstanceType<typeof ValidationObserver>
 
-  loading = false;
+  loading = false
 
   form: TLoginForm = {
     email: "",
     password: "",
     tenant: "",
-  };
+  }
 
   rules: TLoginRules = {
     email: {
@@ -91,29 +91,29 @@ export default class LoginForm extends Vue {
     password: {
       required: true,
     },
-  };
+  }
 
   async submit(): Promise<void> {
-    this.loading = true;
-    const isValid = await this.formRef.validate();
+    this.loading = true
+    const isValid = await this.formRef.validate()
 
     if (isValid) {
-      const result = await this.onSubmit(this.form);
+      const result = await this.onSubmit(this.form)
       if (result) {
         if (this.$route.query?.redirect) {
-          this.$router.push(this.$route.query.redirect as string);
+          this.$router.push(this.$route.query.redirect as string)
         } else {
-          this.$router.push("/");
+          this.$router.push("/")
         }
       }
     }
 
-    this.loading = false;
+    this.loading = false
   }
 
   created(): void {
-    this.form.tenant = this.$route.query.tenantId;
-    this.form.email = this.$route.query.email;
+    this.form.tenant = this.$route.query.tenantId
+    this.form.email = this.$route.query.email
   }
 }
 </script>

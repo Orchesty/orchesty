@@ -29,8 +29,8 @@
             <v-col class="d-flex">
               <span class="my-auto">{{
                 app.authorized
-                  ? $t('appInstalledItem.authorized')
-                  : $t('appInstalledItem.unauthorized')
+                  ? $t("appInstalledItem.authorized")
+                  : $t("appInstalledItem.unauthorized")
               }}</span>
             </v-col>
             <v-col class="d-flex flex-column justify-center align-end">
@@ -56,22 +56,22 @@
       </v-card>
     </div>
     <div v-else>
-      {{ $t('appInstalledItem.noData') }}
+      {{ $t("appInstalledItem.noData") }}
     </div>
   </div>
 </template>
 
 <script>
-import { callApi } from '@/utils/apiFetch'
-import { API } from '@/api'
-import SubHeading from '@/components/commons/SubHeading'
-import { ROUTES } from '@/router/routes'
-import BaseButton from '@/components/commons/BaseButton'
-import BaseProgressBarLinear from '@/components/commons/BaseProgressBarLinear'
-import UninstallAppModal from '@/components/applications/UninstallAppModal'
+import { callApi } from "@/utils/apiFetch"
+import { API } from "@/api"
+import SubHeading from "@/components/commons/SubHeading"
+import { ROUTES } from "@/router/routes"
+import BaseButton from "@/components/commons/BaseButton"
+import BaseProgressBarLinear from "@/components/commons/BaseProgressBarLinear"
+import UninstallAppModal from "@/components/applications/UninstallAppModal"
 
 export default {
-  name: 'AppInstalledItems',
+  name: "AppInstalledItems",
   components: {
     BaseProgressBarLinear,
     BaseButton,
@@ -89,7 +89,7 @@ export default {
   },
   methods: {
     appLogo(logo) {
-      return logo ?? require('@/assets/svg/app-store-item-logo-placeholder.svg')
+      return logo ?? require("@/assets/svg/app-store-item-logo-placeholder.svg")
     },
     mergeApps(installedApps, availableApps) {
       return installedApps.items.map((item) => {

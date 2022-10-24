@@ -1,12 +1,16 @@
 <template>
   <div class="text-center">
-    <img class="full-logo" src="@/assets/svg/logo-text.svg" alt="HANABOSO, s.r.o." />
+    <img
+      class="full-logo"
+      src="@/assets/svg/logo-text.svg"
+      alt="HANABOSO, s.r.o."
+    />
   </div>
 </template>
 
 <script>
 export default {
-  name: 'FullLogo',
+  name: "FullLogo",
 }
 </script>
 <style scoped>

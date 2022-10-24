@@ -18,20 +18,20 @@
 </template>
 
 <script lang="ts">
-import { Prop, Component, Vue } from "vue-property-decorator";
+import { Prop, Component, Vue } from "vue-property-decorator"
 
 export type TabItem = {
-  title: string;
-  to: string;
-};
+  title: string
+  to: string
+}
 
 @Component
 export default class TabRouter extends Vue {
   @Prop({ type: Array, required: true })
-  private items!: Array<TabItem>;
+  private items!: Array<TabItem>
 
   @Prop({ type: Object, default: () => ({}) })
-  private data!: object;
+  private data!: object
 }
 </script>
 

@@ -2,7 +2,7 @@
   <div>
     <v-row>
       <v-col>
-        <heading>{{ $t('applicationsPage.heading') }}</heading>
+        <heading>{{ $t("applicationsPage.heading") }}</heading>
       </v-col>
     </v-row>
     <v-row v-if="isLoading">
@@ -50,25 +50,25 @@
     </v-row>
     <v-row v-else>
       <v-col>
-        {{ $t('applicationsPage.noData') }}
+        {{ $t("applicationsPage.noData") }}
       </v-col>
     </v-row>
   </div>
 </template>
 
 <script>
-import AppStoreItem from '@/components/commons/AppStoreItem'
-import { callApi } from '@/utils/apiFetch'
-import { API } from '@/api'
-import AppStoreItemButton from '@/components/commons/AppStoreItemButton'
-import { ROUTES } from '@/router/routes'
-import Heading from '@/components/commons/Heading'
-import BaseProgressBarLinear from '@/components/commons/BaseProgressBarLinear'
-import showFlashMessage from '@/utils/flashMessage'
-import { FLASH_MESSAGES_TYPES } from '@/store/flashMessages/types'
+import AppStoreItem from "@/components/commons/AppStoreItem"
+import { callApi } from "@/utils/apiFetch"
+import { API } from "@/api"
+import AppStoreItemButton from "@/components/commons/AppStoreItemButton"
+import { ROUTES } from "@/router/routes"
+import Heading from "@/components/commons/Heading"
+import BaseProgressBarLinear from "@/components/commons/BaseProgressBarLinear"
+import showFlashMessage from "@/utils/flashMessage"
+import { FLASH_MESSAGES_TYPES } from "@/store/flashMessages/types"
 
 export default {
-  name: 'ApplicationsPage',
+  name: "ApplicationsPage",
   components: {
     BaseProgressBarLinear,
     Heading,
@@ -101,7 +101,7 @@ export default {
         params: { id: key },
       })
       showFlashMessage(
-        this.$t('flashMessage.installed', { item: name }),
+        this.$t("flashMessage.installed", { item: name }),
         FLASH_MESSAGES_TYPES.SUCCESS
       )
     },
@@ -124,7 +124,7 @@ export default {
               ...installedAppData,
               installed: true,
             }
-            app.logo = app.logo ?? ''
+            app.logo = app.logo ?? ""
             return app
           } else {
             const app = {
@@ -132,7 +132,7 @@ export default {
               installed: false,
               authorized: false,
             }
-            app.logo = app.logo ?? ''
+            app.logo = app.logo ?? ""
             return app
           }
         })

@@ -26,7 +26,7 @@
       <template #top>
         <div class="bg-primary">
           <h3 class="pl-3 py-3">
-            {{ $t('page.heading.alertLogs') }}
+            {{ $t("page.heading.alertLogs") }}
           </h3>
         </div>
       </template>
@@ -36,7 +36,7 @@
 
 <script>
 export default {
-  name: 'AlertLogs',
+  name: "AlertLogs",
   props: {
     items: {
       type: Array,
@@ -53,16 +53,16 @@ export default {
   },
   methods: {
     setColor(item) {
-      if (item.toLowerCase() === 'error') {
-        return 'error'
+      if (item.toLowerCase() === "error") {
+        return "error"
       }
-      if (item.toLowerCase() === 'warning') {
-        return 'warning'
+      if (item.toLowerCase() === "warning") {
+        return "warning"
       }
-      if (item.toLowerCase() === 'info') {
-        return 'info'
+      if (item.toLowerCase() === "info") {
+        return "info"
       }
-      return 'black'
+      return "black"
     },
   },
 }

@@ -15,11 +15,11 @@
 </template>
 
 <script>
-import BaseButton from '@/components/commons/BaseButton'
-import { OPERATOR } from '@/enums/filterEnums'
-import moment from 'moment'
+import BaseButton from "@/components/commons/BaseButton"
+import { OPERATOR } from "@/enums/filterEnums"
+import moment from "moment"
 export default {
-  name: 'DataGridQuickFilter',
+  name: "DataGridQuickFilter",
   components: { BaseButton },
   props: {
     column: {
@@ -33,18 +33,18 @@ export default {
       selectedFilterIndex: null,
       filters: null,
       filterDurations: [
-        { amount: 5, unit: 'minutes' },
-        { amount: 30, unit: 'minutes' },
-        { amount: 1, unit: 'hour' },
-        { amount: 6, unit: 'hour' },
-        { amount: 1, unit: 'day' },
+        { amount: 5, unit: "minutes" },
+        { amount: 30, unit: "minutes" },
+        { amount: 1, unit: "hour" },
+        { amount: 6, unit: "hour" },
+        { amount: 1, unit: "day" },
       ],
       filterNames: [
-        this.$t('quickFilter.fiveMinutes'),
-        this.$t('quickFilter.thirtyMinutes'),
-        this.$t('quickFilter.hour'),
-        this.$t('quickFilter.sixHours'),
-        this.$t('quickFilter.day'),
+        this.$t("quickFilter.fiveMinutes"),
+        this.$t("quickFilter.thirtyMinutes"),
+        this.$t("quickFilter.hour"),
+        this.$t("quickFilter.sixHours"),
+        this.$t("quickFilter.day"),
       ],
     }
   },
@@ -89,7 +89,7 @@ export default {
     selectedFilter: {
       deep: true,
       handler(filter) {
-        this.$emit('filterChanged', filter)
+        this.$emit("filterChanged", filter)
       },
     },
   },

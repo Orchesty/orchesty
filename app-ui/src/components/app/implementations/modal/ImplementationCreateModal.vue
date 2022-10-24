@@ -28,23 +28,26 @@
         </v-row>
       </template>
       <template #button>
-        <app-button :on-click="() => (isOpen = !isOpen)" :button-title="$t('button.create')" />
+        <app-button
+          :on-click="() => (isOpen = !isOpen)"
+          :button-title="$t('button.create')"
+        />
       </template>
     </modal-template>
   </div>
 </template>
 
 <script>
-import ImplementationsForm from '../form/ImplementationsForm'
-import { IMPLEMENTATIONS } from '@/store/modules/implementations/types'
-import { mapActions, mapGetters } from 'vuex'
-import { REQUESTS_STATE } from '@/store/modules/api/types'
-import { API } from '@/api'
-import ModalTemplate from '@/components/commons/modal/ModalTemplate'
-import AppButton from '@/components/commons/button/AppButton'
+import ImplementationsForm from "../form/ImplementationsForm"
+import { IMPLEMENTATIONS } from "@/store/modules/implementations/types"
+import { mapActions, mapGetters } from "vuex"
+import { REQUESTS_STATE } from "@/store/modules/api/types"
+import { API } from "@/api"
+import ModalTemplate from "@/components/commons/modal/ModalTemplate"
+import AppButton from "@/components/commons/button/AppButton"
 
 export default {
-  name: 'ImplementationCreateModal',
+  name: "ImplementationCreateModal",
   data() {
     return {
       isOpen: false,
@@ -54,13 +57,20 @@ export default {
   computed: {
     ...mapGetters(REQUESTS_STATE.NAMESPACE, [REQUESTS_STATE.GETTERS.GET_STATE]),
     state() {
-      return this[REQUESTS_STATE.GETTERS.GET_STATE]([API.implementation.create.id, API.implementation.getList.id])
+      return this[REQUESTS_STATE.GETTERS.GET_STATE]([
+        API.implementation.create.id,
+        API.implementation.getList.id,
+      ])
     },
   },
   methods: {
-    ...mapActions(IMPLEMENTATIONS.NAMESPACE, [IMPLEMENTATIONS.ACTIONS.CREATE_IMPLEMENTATIONS_REQUEST]),
+    ...mapActions(IMPLEMENTATIONS.NAMESPACE, [
+      IMPLEMENTATIONS.ACTIONS.CREATE_IMPLEMENTATIONS_REQUEST,
+    ]),
     async submit(values) {
-      await this[IMPLEMENTATIONS.ACTIONS.CREATE_IMPLEMENTATIONS_REQUEST](values).then((res) => {
+      await this[IMPLEMENTATIONS.ACTIONS.CREATE_IMPLEMENTATIONS_REQUEST](
+        values
+      ).then((res) => {
         if (res) {
           this.isOpen = false
         }

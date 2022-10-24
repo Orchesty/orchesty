@@ -53,15 +53,15 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-import { REQUESTS_STATE } from '@/store/modules/api/types'
-import { API } from '@/api'
-import ModalTemplate from '@/components/commons/modal/ModalTemplate'
-import AppButton from '@/components/commons/button/AppButton'
-import JsonEditor from '@/components/app/userTasks/modal/JsonEditor'
+import { mapGetters } from "vuex"
+import { REQUESTS_STATE } from "@/store/modules/api/types"
+import { API } from "@/api"
+import ModalTemplate from "@/components/commons/modal/ModalTemplate"
+import AppButton from "@/components/commons/button/AppButton"
+import JsonEditor from "@/components/app/userTasks/modal/JsonEditor"
 
 export default {
-  name: 'UserTaskActionsModal',
+  name: "UserTaskActionsModal",
   components: { JsonEditor, AppButton, ModalTemplate },
   data() {
     return {
@@ -111,10 +111,10 @@ export default {
       return this[REQUESTS_STATE.GETTERS.GET_STATE](API.userTask[this.type].id)
     },
     isActionUpdate() {
-      return this.type === 'update'
+      return this.type === "update"
     },
     buttonClass() {
-      return `${this.text ? '' : 'white--text '} ${this.ml ? 'ml-2' : 'mr-2'}`
+      return `${this.text ? "" : "white--text "} ${this.ml ? "ml-2" : "mr-2"}`
     },
     bodyMessage() {
       return this.localizeItemCount(this.$i18n.locale, this.selected.length)
@@ -134,17 +134,20 @@ export default {
   },
   methods: {
     confirm() {
-      if (this.type === 'update') {
-        this.onSubmit({ headers: this.headers, body: JSON.stringify(this.body) }).then((res) => {
+      if (this.type === "update") {
+        this.onSubmit({
+          headers: this.headers,
+          body: JSON.stringify(this.body),
+        }).then((res) => {
           if (res) {
-            this.$emit('reset')
+            this.$emit("reset")
             this.isOpen = false
           }
         })
       } else {
         this.onSubmit().then((res) => {
           if (res) {
-            this.$emit('reset')
+            this.$emit("reset")
             this.isOpen = false
           }
         })
@@ -152,13 +155,13 @@ export default {
     },
     localizeItemCount(locale, count = 1) {
       const format = new Intl.PluralRules(locale, {
-        type: 'cardinal',
+        type: "cardinal",
       })
 
       const messages = {
         en: {
-          one: 'item',
-          other: 'items',
+          one: "item",
+          other: "items",
         },
       }
 
@@ -173,7 +176,7 @@ export default {
       }
     },
     onError() {
-      console.log('error')
+      console.log("error")
     },
   },
 }

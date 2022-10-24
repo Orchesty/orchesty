@@ -13,7 +13,7 @@
     <template #content>
       <div class="d-flex flex-column">
         <p>
-          {{ $tc('trashModal.rejectAll.body', numberOfItems) }}
+          {{ $tc("trashModal.rejectAll.body", numberOfItems) }}
         </p>
       </div>
     </template>
@@ -29,11 +29,11 @@
 </template>
 
 <script>
-import BaseModal from '@/components/commons/BaseModal'
-import BaseButton from '@/components/commons/BaseButton'
+import BaseModal from "@/components/commons/BaseModal"
+import BaseButton from "@/components/commons/BaseButton"
 
 export default {
-  name: 'TrashRejectAllModal',
+  name: "TrashRejectAllModal",
   components: { BaseButton, BaseModal },
   props: {
     numberOfItems: {
@@ -48,7 +48,7 @@ export default {
   },
   methods: {
     onConfirm() {
-      this.$emit('confirm')
+      this.$emit("confirm")
       this.isOpen = false
     },
     onCancel() {

@@ -1,10 +1,10 @@
-import { createState } from "./state";
-import { actions } from "./actions";
-import { mutations } from "./mutations";
-import { getters } from "./getters";
+import { createState } from "./state"
+import { actions } from "./actions"
+import { mutations } from "./mutations"
+import { getters } from "./getters"
 
-export * from "./state";
-export * from "./types";
+export * from "./state"
+export * from "./types"
 
 export const authModule = {
   namespaced: true,
@@ -12,4 +12,4 @@ export const authModule = {
   actions,
   mutations,
   getters,
-};
+}

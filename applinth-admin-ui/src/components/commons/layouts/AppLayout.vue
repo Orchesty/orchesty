@@ -60,51 +60,51 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import NavigationItem from "@/components/app/NavigationItem.vue";
-import { Routes } from "@/enums";
-import { Action, Getter } from "vuex-class";
+import { Component, Prop, Vue } from "vue-property-decorator"
+import NavigationItem from "@/components/app/NavigationItem.vue"
+import { Routes } from "@/enums"
+import { Action, Getter } from "vuex-class"
 import {
   AuthActions,
   AuthGetters,
   authNamespace,
   User,
-} from "@/store/modules/auth";
-import Button from "@/components/commons/inputsAndControls/Button.vue";
+} from "@/store/modules/auth"
+import Button from "@/components/commons/inputsAndControls/Button.vue"
 
 type NavigationItemType = {
-  to: string;
-  icon: string;
-  text: string;
-};
+  to: string
+  icon: string
+  text: string
+}
 @Component({
   components: { Button, NavigationItem },
 })
 export default class AppLayout extends Vue {
   @Prop({ type: String, required: false })
-  detailPageTitle: string | undefined = undefined;
+  detailPageTitle: string | undefined = undefined
 
   @Getter(`${authNamespace}/${AuthGetters.GetUser}`)
-  currentUser!: User;
+  currentUser!: User
 
   @Action(`${authNamespace}/${AuthActions.Logout}`)
-  private logout!: () => Promise<void>;
+  private logout!: () => Promise<void>
 
-  navigationItems: NavigationItemType[] = [];
+  navigationItems: NavigationItemType[] = []
 
   get breadCrumbs() {
     if (this.$route.meta) {
       if (typeof this.$route.meta.breadcrumbs === "function") {
-        return this.$route.meta.breadcrumbs(this.detailPageTitle);
+        return this.$route.meta.breadcrumbs(this.detailPageTitle)
       }
-      return this.$route.meta.breadcrumbs;
+      return this.$route.meta.breadcrumbs
     } else {
-      return null;
+      return null
     }
   }
 
   async onLogout() {
-    await this.logout();
+    await this.logout()
   }
 
   created() {
@@ -129,7 +129,7 @@ export default class AppLayout extends Vue {
         icon: "mdi-account",
         text: (this.currentUser.name || this.currentUser.email) as string,
       },
-    ];
+    ]
   }
 }
 </script>

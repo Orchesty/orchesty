@@ -1,6 +1,6 @@
-import { FLASH_MESSAGES } from './types'
-import createState from './state'
-import { resetState } from '../../utils'
+import { FLASH_MESSAGES } from "./types"
+import createState from "./state"
+import { resetState } from "../../utils"
 
 export default {
   [FLASH_MESSAGES.MUTATIONS.ADD]: (state, payload) => {
@@ -15,7 +15,9 @@ export default {
     state.flashMessages.push({ id, ...payload })
   },
   [FLASH_MESSAGES.MUTATIONS.REMOVE]: (state, payload) => {
-    state.flashMessages = state.flashMessages.filter((item) => item.id === payload)
+    state.flashMessages = state.flashMessages.filter(
+      (item) => item.id === payload
+    )
   },
   [FLASH_MESSAGES.MUTATIONS.RESET]: (state) => {
     resetState(state, createState())

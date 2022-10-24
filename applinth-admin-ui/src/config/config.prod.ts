@@ -8,4 +8,4 @@ export default {
     apiKey: "%firebase-api-key-placeholder%",
     authDomain: "%firebase-auth-domain-placeholder%",
   },
-};
+}

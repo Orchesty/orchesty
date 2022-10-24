@@ -1,10 +1,10 @@
 export interface RequestDetails {
-  id: string;
-  isSending: boolean;
-  isError: boolean;
-  error: string;
+  id: string
+  isSending: boolean
+  isError: boolean
+  error: string
 }
 
-export type ApiState = RequestDetails[];
+export type ApiState = RequestDetails[]
 
-export const createState = (): ApiState => [];
+export const createState = (): ApiState => []

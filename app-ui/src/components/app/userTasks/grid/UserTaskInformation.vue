@@ -1,27 +1,33 @@
 <template>
   <v-row class="px-5">
-    <v-col v-if="item && (userTask || trash)" cols="12" class="d-flex flex-column">
+    <v-col
+      v-if="item && (userTask || trash)"
+      cols="12"
+      class="d-flex flex-column"
+    >
       <v-row class="flex-grow-0 flex-shrink-1" dense>
         <v-col v-if="isTrash" cols="6">
           <div>
-            <span class="font-weight-bold">{{ $t('page.status.topology') }}: </span>
-            <span>{{ trashTaskSwitcher('topologyName') }}</span>
+            <span class="font-weight-bold"
+              >{{ $t("page.status.topology") }}:
+            </span>
+            <span>{{ trashTaskSwitcher("topologyName") }}</span>
           </div>
           <div>
             <div class="my-3">
-              <span class="font-weight-bold">{{ $t('page.status.id') }}: </span>
-              <span>{{ trashTaskSwitcher('topologyId') }}</span>
+              <span class="font-weight-bold">{{ $t("page.status.id") }}: </span>
+              <span>{{ trashTaskSwitcher("topologyId") }}</span>
             </div>
           </div>
         </v-col>
         <v-col :cols="isTrash ? 6 : 12">
           <div>
-            <span class="font-weight-bold">{{ $t('page.status.node') }}: </span>
-            <span> {{ trashTaskSwitcher('nodeName') }}</span>
+            <span class="font-weight-bold">{{ $t("page.status.node") }}: </span>
+            <span> {{ trashTaskSwitcher("nodeName") }}</span>
           </div>
           <div class="my-3">
-            <span class="font-weight-bold">{{ $t('page.status.id') }}: </span>
-            <span>{{ trashTaskSwitcher('nodeId') }}</span>
+            <span class="font-weight-bold">{{ $t("page.status.id") }}: </span>
+            <span>{{ trashTaskSwitcher("nodeId") }}</span>
           </div>
         </v-col>
         <v-col cols="auto">
@@ -29,23 +35,33 @@
             <v-col cols="auto">
               <div>
                 <span class="font-weight-bold">
-                  {{ $t('page.status.created') }}
+                  {{ $t("page.status.created") }}
                 </span>
               </div>
               <div>
                 <span>{{
-                  userTask || isTrash ? $options.filters.internationalFormat(trashTaskSwitcher('created')) : ''
+                  userTask || isTrash
+                    ? $options.filters.internationalFormat(
+                        trashTaskSwitcher("created")
+                      )
+                    : ""
                 }}</span>
               </div>
             </v-col>
             <v-divider vertical class="mx-2" />
             <v-col cols="auto">
               <div>
-                <span class="font-weight-bold">{{ $t('page.status.updated') }}</span>
+                <span class="font-weight-bold">{{
+                  $t("page.status.updated")
+                }}</span>
               </div>
               <div>
                 <span>{{
-                  userTask || isTrash ? $options.filters.internationalFormat(trashTaskSwitcher('updated')) : ''
+                  userTask || isTrash
+                    ? $options.filters.internationalFormat(
+                        trashTaskSwitcher("updated")
+                      )
+                    : ""
                 }}</span>
               </div>
             </v-col>
@@ -53,11 +69,11 @@
             <v-col cols="auto">
               <div>
                 <span class="font-weight-bold">
-                  {{ $t('page.status.correlationId') }}
+                  {{ $t("page.status.correlationId") }}
                 </span>
               </div>
               <div>
-                <span>{{ trashTaskSwitcher('correlationId') }}</span>
+                <span>{{ trashTaskSwitcher("correlationId") }}</span>
               </div>
             </v-col>
           </v-row>
@@ -97,11 +113,14 @@
               <v-card outlined>
                 <v-expansion-panel-header>
                   <span>
-                    {{ $t('page.status.headers') }}
+                    {{ $t("page.status.headers") }}
                   </span>
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
-                  <vue-json-pretty :path="'res'" :data="trashTaskSwitcherMessage('headers')" />
+                  <vue-json-pretty
+                    :path="'res'"
+                    :data="trashTaskSwitcherMessage('headers')"
+                  />
                 </v-expansion-panel-content>
               </v-card>
             </v-expansion-panel>
@@ -109,11 +128,14 @@
               <v-card outlined>
                 <v-expansion-panel-header>
                   <span>
-                    {{ $t('page.status.body') }}
+                    {{ $t("page.status.body") }}
                   </span>
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
-                  <vue-json-pretty :path="'res'" :data="trashTaskSwitcherMessage('body')" />
+                  <vue-json-pretty
+                    :path="'res'"
+                    :data="trashTaskSwitcherMessage('body')"
+                  />
                 </v-expansion-panel-content>
               </v-card>
             </v-expansion-panel>
@@ -125,16 +147,16 @@
 </template>
 
 <script>
-import { internationalFormat } from '@/services/utils/dateFilters'
-import { mapActions, mapState } from 'vuex'
-import UserTaskActionsModal from '@/components/app/userTasks/modal/UserTaskActionsModal'
-import { USER_TASKS } from '@/store/modules/userTasks/types'
-import 'vue-json-pretty/lib/styles.css'
-import VueJsonPretty from 'vue-json-pretty'
-import { TRASH } from '@/store/modules/trash/types'
+import { internationalFormat } from "@/services/utils/dateFilters"
+import { mapActions, mapState } from "vuex"
+import UserTaskActionsModal from "@/components/app/userTasks/modal/UserTaskActionsModal"
+import { USER_TASKS } from "@/store/modules/userTasks/types"
+import "vue-json-pretty/lib/styles.css"
+import VueJsonPretty from "vue-json-pretty"
+import { TRASH } from "@/store/modules/trash/types"
 
 export default {
-  name: 'UserTaskInformation',
+  name: "UserTaskInformation",
   components: { UserTaskActionsModal, VueJsonPretty },
   data() {
     return {
@@ -157,8 +179,10 @@ export default {
       TRASH.ACTIONS.TRASH_TASK_GET,
     ]),
     trashTaskSwitcherMessage(param) {
-      if (param === 'body') {
-        return this[this.toggler] ? this.parseBody(this[this.toggler].message[param]) : {}
+      if (param === "body") {
+        return this[this.toggler]
+          ? this.parseBody(this[this.toggler].message[param])
+          : {}
       } else {
         return this[this.toggler] ? this[this.toggler].message[param] : {}
       }
@@ -185,7 +209,11 @@ export default {
       return response
     },
     async accept() {
-      const response = await this[this.isTrash ? TRASH.ACTIONS.TRASH_ACCEPT : USER_TASKS.ACTIONS.USER_TASK_ACCEPT]({
+      const response = await this[
+        this.isTrash
+          ? TRASH.ACTIONS.TRASH_ACCEPT
+          : USER_TASKS.ACTIONS.USER_TASK_ACCEPT
+      ]({
         id: this[this.toggler].id,
         topologyID: this[this.toggler].topologyId,
       })
@@ -195,7 +223,11 @@ export default {
       return response
     },
     async update(val) {
-      const response = await this[this.isTrash ? TRASH.ACTIONS.TRASH_UPDATE : USER_TASKS.ACTIONS.USER_TASK_UPDATE]({
+      const response = await this[
+        this.isTrash
+          ? TRASH.ACTIONS.TRASH_UPDATE
+          : USER_TASKS.ACTIONS.USER_TASK_UPDATE
+      ]({
         id: this[this.toggler].id,
         ...val,
         topologyID: this[this.toggler].topologyId,
@@ -206,7 +238,11 @@ export default {
       return response
     },
     async reject() {
-      const response = await this[this.isTrash ? TRASH.ACTIONS.TRASH_REJECT : USER_TASKS.ACTIONS.USER_TASK_REJECT]({
+      const response = await this[
+        this.isTrash
+          ? TRASH.ACTIONS.TRASH_REJECT
+          : USER_TASKS.ACTIONS.USER_TASK_REJECT
+      ]({
         id: this[this.toggler].id,
         topologyID: this[this.toggler].topologyId,
       })
@@ -216,10 +252,10 @@ export default {
       return response
     },
     reset() {
-      this.$emit('reset')
+      this.$emit("reset")
     },
     async fetchGrid() {
-      await this.$emit('fetchGrid')
+      await this.$emit("fetchGrid")
     },
     parseBody(body) {
       try {
@@ -234,13 +270,15 @@ export default {
     },
   },
   computed: {
-    ...mapState(USER_TASKS.NAMESPACE, ['userTask']),
-    ...mapState(TRASH.NAMESPACE, ['trash']),
+    ...mapState(USER_TASKS.NAMESPACE, ["userTask"]),
+    ...mapState(TRASH.NAMESPACE, ["trash"]),
     toggler() {
-      return this.isTrash ? 'trash' : 'userTask'
+      return this.isTrash ? "trash" : "userTask"
     },
     body() {
-      return this[this.toggler] ? this.parseBody(this[this.toggler].message.body) : {}
+      return this[this.toggler]
+        ? this.parseBody(this[this.toggler].message.body)
+        : {}
     },
     message() {
       return this[this.toggler] ? this[this.toggler].message : {}
@@ -268,7 +306,11 @@ export default {
       immediate: true,
       async handler() {
         if (this.item) {
-          await this[this.isTrash ? TRASH.ACTIONS.TRASH_TASK_GET : USER_TASKS.ACTIONS.USER_TASK_GET](this.item.id)
+          await this[
+            this.isTrash
+              ? TRASH.ACTIONS.TRASH_TASK_GET
+              : USER_TASKS.ACTIONS.USER_TASK_GET
+          ](this.item.id)
         }
       },
     },
@@ -276,9 +318,11 @@ export default {
       immediate: true,
       async handler() {
         if (this.selected[0]) {
-          await this[this.isTrash ? TRASH.ACTIONS.TRASH_TASK_GET : USER_TASKS.ACTIONS.USER_TASK_GET](
-            this.selected[0].id
-          )
+          await this[
+            this.isTrash
+              ? TRASH.ACTIONS.TRASH_TASK_GET
+              : USER_TASKS.ACTIONS.USER_TASK_GET
+          ](this.selected[0].id)
         }
       },
     },

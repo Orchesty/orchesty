@@ -29,9 +29,9 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import { ValidationProvider } from "vee-validate";
-import { Rules } from "../../../utils/veeValidate";
+import { Component, Prop, Vue } from "vue-property-decorator"
+import { ValidationProvider } from "vee-validate"
+import { Rules } from "../../../utils/veeValidate"
 
 @Component({
   components: {
@@ -40,64 +40,64 @@ import { Rules } from "../../../utils/veeValidate";
 })
 export default class TextField extends Vue {
   @Prop({ required: false, type: String })
-  private id?: string;
+  private id?: string
 
   @Prop({ required: false, type: [Number, String], default: "" })
-  private value!: number | string;
+  private value!: number | string
 
   @Prop({ required: false, type: String })
-  private label?: string;
+  private label?: string
 
   @Prop({ required: true, type: String })
-  private name!: string;
+  private name!: string
 
   @Prop({ required: false, type: String, default: "" })
-  private hint!: string;
+  private hint!: string
 
   @Prop({ required: false, type: [Object, String] })
-  private rules?: Rules;
+  private rules?: Rules
 
   @Prop({ required: false, type: String, default: () => null })
-  private placeholder!: string | null;
+  private placeholder!: string | null
 
   @Prop({ type: Boolean, default: false })
-  private persistentPlaceholder!: boolean;
+  private persistentPlaceholder!: boolean
 
   @Prop({ required: false, type: String, default: "text" })
-  private type!: "number" | "password" | "text";
+  private type!: "number" | "password" | "text"
 
   @Prop({ required: false, type: Boolean, default: false })
-  private autofocus!: boolean;
+  private autofocus!: boolean
 
   @Prop({ required: false, type: Boolean, default: false })
-  private readonly!: boolean;
+  private readonly!: boolean
 
   @Prop({ required: false, type: Boolean, default: false })
-  private disabled!: boolean;
+  private disabled!: boolean
 
   @Prop({ required: false, type: Boolean, default: false })
-  private hideDetails!: boolean;
+  private hideDetails!: boolean
 
   @Prop({ required: false, type: String })
-  private prependInnerIcon?: string;
+  private prependInnerIcon?: string
 
   @Prop({ required: false, type: [Number, Boolean], default: false })
-  private counter!: number | boolean;
+  private counter!: number | boolean
 
   @Prop({ required: false, type: Number })
-  private maxlength?: number;
+  private maxlength?: number
 
   @Prop({ type: Boolean, default: false })
-  private bigLabel?: boolean;
+  private bigLabel?: boolean
 
   @Prop({ type: String, default: () => null })
-  private autocomplete?: string | null;
+  private autocomplete?: string | null
 
   @Prop({ required: false, type: Function, default: () => null })
-  private blur!: any;
+  private blur!: any
 
   @Prop({ required: false, type: Function, default: () => null })
-  private onEnterPress!: any;
+  private onEnterPress!: any
 }
 </script>
 

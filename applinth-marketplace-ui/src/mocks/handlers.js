@@ -1,16 +1,16 @@
-import { rest } from 'msw'
+import { rest } from "msw"
 
-import auth from '@/api/endpoints/auth'
-import overview from '@/api/endpoints/overview'
-import appStore from '@/api/endpoints/appStore'
-import trash from '@/api/endpoints/trash'
-import settings from '@/api/endpoints/settings'
+import auth from "@/api/endpoints/auth"
+import overview from "@/api/endpoints/overview"
+import appStore from "@/api/endpoints/appStore"
+import trash from "@/api/endpoints/trash"
+import settings from "@/api/endpoints/settings"
 
-const base = '/api/applinth'
+const base = "/api/applinth"
 
 const routeDomains = [auth, overview, appStore, trash, settings]
 
-console.groupCollapsed('MSW routes')
+console.groupCollapsed("MSW routes")
 const generatedRoutes = routeDomains
   .flatMap((domain) => Object.values(domain))
   .filter((route) => route.urlPattern)
@@ -25,7 +25,7 @@ const generatedRoutes = routeDomains
   .map((route) => {
     const url = `${base}${route.url}`
     console.debug(
-      'MSW route handler created for:',
+      "MSW route handler created for:",
       route.method,
       url,
       `${route.filename}.json`
@@ -37,35 +37,35 @@ const generatedRoutes = routeDomains
   })
 
 const customRoutes = [
-  getDetail('application/shopify'),
-  getDetail('application/shoptet'),
-  getDetail('application/woocommerce'),
-  getDetail('application/s3'),
-  getDetail('application/s3/preview'),
+  getDetail("application/shopify"),
+  getDetail("application/shoptet"),
+  getDetail("application/woocommerce"),
+  getDetail("application/s3"),
+  getDetail("application/s3/preview"),
 ]
-console.groupEnd('MSW routes')
+console.groupEnd("MSW routes")
 
 export const handlers = [...customRoutes, ...generatedRoutes]
 
 function urlPatternToFileName(pattern, method) {
   const cleanedPatten = pattern
-    .replace(/^\//, '')
-    .replace(/\/$/, '')
-    .replace(/\//g, '-')
-    .replace(':', '')
+    .replace(/^\//, "")
+    .replace(/\/$/, "")
+    .replace(/\//g, "-")
+    .replace(":", "")
   return `${cleanedPatten}+${method}`
 }
 
 function getDetail(path) {
   const url = `${base}/${path}`
   console.log(
-    'MSW route handler created for:',
-    'GET',
+    "MSW route handler created for:",
+    "GET",
     url,
-    `${path.replace('/', '-')}.json`
+    `${path.replace("/", "-")}.json`
   )
   return rest.get(url, async (req, res, ctx) => {
-    const data = await import(`./api/${path.replace(/\//g, '-')}.json`)
+    const data = await import(`./api/${path.replace(/\//g, "-")}.json`)
     return res(ctx.status(200), ctx.json(data))
   })
 }

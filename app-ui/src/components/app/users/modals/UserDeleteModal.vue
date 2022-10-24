@@ -10,7 +10,7 @@
   >
     <template #default>
       <v-col cols="12">
-        {{ $t('modal.text.deleteUser') }}
+        {{ $t("modal.text.deleteUser") }}
       </v-col>
     </template>
     <template #button>
@@ -31,15 +31,15 @@
 </template>
 
 <script>
-import { ADMIN_USERS } from '../../../../store/modules/adminUsers/types'
-import { mapActions, mapGetters } from 'vuex'
-import { REQUESTS_STATE } from '../../../../store/modules/api/types'
-import { API } from '../../../../api'
-import SendingButton from '@/components/commons/button/AppButton'
-import ModalTemplate from '@/components/commons/modal/ModalTemplate'
+import { ADMIN_USERS } from "../../../../store/modules/adminUsers/types"
+import { mapActions, mapGetters } from "vuex"
+import { REQUESTS_STATE } from "../../../../store/modules/api/types"
+import { API } from "../../../../api"
+import SendingButton from "@/components/commons/button/AppButton"
+import ModalTemplate from "@/components/commons/modal/ModalTemplate"
 
 export default {
-  name: 'DeleteUserHandler',
+  name: "DeleteUserHandler",
   components: { ModalTemplate, SendingButton },
   data() {
     return {
@@ -59,7 +59,9 @@ export default {
     },
   },
   methods: {
-    ...mapActions(ADMIN_USERS.NAMESPACE, [ADMIN_USERS.ACTIONS.DELETE_USER_REQUEST]),
+    ...mapActions(ADMIN_USERS.NAMESPACE, [
+      ADMIN_USERS.ACTIONS.DELETE_USER_REQUEST,
+    ]),
     async deleteAccount() {
       return await this[ADMIN_USERS.ACTIONS.DELETE_USER_REQUEST]({
         id: this.userId,

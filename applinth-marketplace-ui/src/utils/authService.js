@@ -1,13 +1,13 @@
-import { API } from '@/api'
-import { callApi } from '@/utils/apiFetch'
-import router from '../router/index.js'
-import { ROUTES } from '@/router/routes'
+import { API } from "@/api"
+import { callApi } from "@/utils/apiFetch"
+import router from "../router/index.js"
+import { ROUTES } from "@/router/routes"
 
 export class AuthService {
   /** @type {NodeJS.Timeout} */
   expireTimeout = null
 
-  accessToken = ''
+  accessToken = ""
 
   /**
    * @typedef {Object} AuthenticationData
@@ -31,7 +31,7 @@ export class AuthService {
   invalidateAuthentication(redirect = false) {
     if (this.expireTimeout) clearTimeout(this.expireTimeout)
     this.expireTimeout = null
-    this.accessToken = ''
+    this.accessToken = ""
     if (redirect) {
       router.push({ name: ROUTES.Login })
     }

@@ -20,7 +20,14 @@
         </v-list-item-title>
       </v-list-item>
       <v-list-item link @click="$refs.import.click()">
-        <input id="import" ref="import" type="file" hidden @change="fetchDiagram" @click="$event.target.value = null" />
+        <input
+          id="import"
+          ref="import"
+          type="file"
+          hidden
+          @change="fetchDiagram"
+          @click="$event.target.value = null"
+        />
         <v-list-item-title class="d-flex justify-space-between align-center">
           <span class="mr-2">{{ $t(`contextMenu.topology.import`) }}</span>
           <app-icon dense> mdi-import </app-icon>
@@ -31,13 +38,13 @@
 </template>
 
 <script>
-import { events, EVENTS } from '@/services/utils/events'
-import ImportTopologyMixin from '@/services/mixins/ImportTopologyMixin'
-import AppSpecialButton from '@/components/commons/button/AppSpecialButton'
-import AppIcon from '@/components/commons/icon/AppIcon'
+import { events, EVENTS } from "@/services/utils/events"
+import ImportTopologyMixin from "@/services/mixins/ImportTopologyMixin"
+import AppSpecialButton from "@/components/commons/button/AppSpecialButton"
+import AppIcon from "@/components/commons/icon/AppIcon"
 
 export default {
-  name: 'TopologyAddHandler',
+  name: "TopologyAddHandler",
   mixins: [ImportTopologyMixin],
   components: { AppIcon, AppSpecialButton },
   data() {

@@ -1,4 +1,4 @@
 export type EnumValues = {
-  value: any;
-  name: string;
-};
+  value: any
+  name: string
+}

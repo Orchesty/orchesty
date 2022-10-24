@@ -1,8 +1,8 @@
-import { DIRECTION } from '@/services/enums/gridEnums'
+import { DIRECTION } from "@/services/enums/gridEnums"
 
 const initialSorter = [
   {
-    column: 'id',
+    column: "id",
     direction: DIRECTION.DESCENDING,
   },
 ]
@@ -23,7 +23,7 @@ export const createDefaultGridState = (namespace, defaultState = {}) => {
     filterMeta: {},
     sorter: defaultState.sorter || initialSorter,
     paging: defaultState.paging || initialPaging,
-    search: '',
+    search: "",
     items: [],
     backup: defaultState,
   }

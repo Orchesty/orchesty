@@ -18,9 +18,9 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import { ValidationProvider } from "vee-validate";
-import { Rules } from "../../../utils/veeValidate";
+import { Component, Prop, Vue } from "vue-property-decorator"
+import { ValidationProvider } from "vee-validate"
+import { Rules } from "../../../utils/veeValidate"
 
 @Component({
   components: {
@@ -29,28 +29,28 @@ import { Rules } from "../../../utils/veeValidate";
 })
 export default class TextFieldMultiple extends Vue {
   @Prop({ required: false, type: Array, default: [] })
-  private value!: number | string;
+  private value!: number | string
 
   @Prop({ required: false, type: String })
-  private label?: string;
+  private label?: string
 
   @Prop({ required: true, type: String })
-  private name!: string;
+  private name!: string
 
   @Prop({ required: false, type: Object })
-  private rules?: Rules;
+  private rules?: Rules
 
   @Prop({ required: false, type: Boolean, default: false })
-  private autofocus!: boolean;
+  private autofocus!: boolean
 
   @Prop({ required: false, type: Boolean, default: false })
-  private disabled!: boolean;
+  private disabled!: boolean
 
   @Prop({ required: false, type: Boolean, default: false })
-  private hideDetails!: boolean;
+  private hideDetails!: boolean
 
   @Prop({ required: false, type: String })
-  private prependInnerIcon?: string;
+  private prependInnerIcon?: string
 }
 </script>
 

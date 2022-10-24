@@ -29,15 +29,15 @@
 </template>
 
 <script>
-import QuickGridFilter from './QuickGridFilter'
-import SimpleGridFilter from './SimpleGridFilter'
-import { FILTER } from '@/services/enums/gridEnums'
-import { GRID } from '@/store/modules/grid/types'
-import { mapActions } from 'vuex'
-import { DATA_GRIDS } from '@/services/enums/dataGridEnums'
+import QuickGridFilter from "./QuickGridFilter"
+import SimpleGridFilter from "./SimpleGridFilter"
+import { FILTER } from "@/services/enums/gridEnums"
+import { GRID } from "@/store/modules/grid/types"
+import { mapActions } from "vuex"
+import { DATA_GRIDS } from "@/services/enums/dataGridEnums"
 
 export default {
-  name: 'DataGridFilter',
+  name: "DataGridFilter",
   components: { QuickGridFilter, SimpleGridFilter },
   props: {
     quickFilters: {
@@ -89,7 +89,7 @@ export default {
       this.currentMeta = meta
 
       if (meta.type === FILTER.QUICK_FILTER)
-        this.$emit('fetchGrid', {
+        this.$emit("fetchGrid", {
           search: this.currentSearch,
           filter: [].concat(this.currentQuickFilter, this.currentFilter),
           paging: null,
@@ -102,7 +102,7 @@ export default {
 
       params.filter = [].concat(this.currentFilter, this.currentQuickFilter)
 
-      this.$emit('fetchGrid', params)
+      this.$emit("fetchGrid", params)
     },
   },
 }

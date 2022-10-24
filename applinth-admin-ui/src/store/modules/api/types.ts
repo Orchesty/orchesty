@@ -1,4 +1,4 @@
-export const apiNamespace = "api";
+export const apiNamespace = "api"
 
 export enum ApiActions {}
 

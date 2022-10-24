@@ -53,26 +53,26 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch } from "vue-property-decorator";
-import SimpleTable from "@/components/commons/tables/SimpleTable.vue";
-import AppLayout from "../components/commons/layouts/AppLayout.vue";
-import Button from "../components/commons/inputsAndControls/Button.vue";
-import SelectBox from "@/components/commons/inputsAndControls/SelectBox.vue";
-import TextField from "@/components/commons/inputsAndControls/TextField.vue";
-import { callApi } from "@/utils/apiClient";
-import { api } from "@/api";
+import { Component, Vue, Watch } from "vue-property-decorator"
+import SimpleTable from "@/components/commons/tables/SimpleTable.vue"
+import AppLayout from "../components/commons/layouts/AppLayout.vue"
+import Button from "../components/commons/inputsAndControls/Button.vue"
+import SelectBox from "@/components/commons/inputsAndControls/SelectBox.vue"
+import TextField from "@/components/commons/inputsAndControls/TextField.vue"
+import { callApi } from "@/utils/apiClient"
+import { api } from "@/api"
 import {
   UsageStatsAppsRequest,
   UsageStatsAppsRowsInner,
   UsageStatsUsersRequest,
   UsageStatsUsersRowsInner,
-} from "@/api/generated";
-import Heading from "@/components/commons/typography/Heading.vue";
-import { Routes } from "@/enums/Routes";
+} from "@/api/generated"
+import Heading from "@/components/commons/typography/Heading.vue"
+import { Routes } from "@/enums/Routes"
 
 interface UsersTable {
-  [key: string]: any;
-  value: keyof UsageStatsUsersRowsInner | "actions";
+  [key: string]: any
+  value: keyof UsageStatsUsersRowsInner | "actions"
 }
 
 @Component({
@@ -86,16 +86,16 @@ interface UsersTable {
   },
 })
 export default class CustomersPage extends Vue {
-  Routes = Routes;
+  Routes = Routes
 
-  isLoading = false;
-  textSearch = "";
-  lastSearchedText = "";
-  appSearch = "";
-  timerId: any = null;
+  isLoading = false
+  textSearch = ""
+  lastSearchedText = ""
+  appSearch = ""
+  timerId: any = null
 
-  customers = [] as UsageStatsUsersRowsInner[];
-  applications = [] as UsageStatsAppsRowsInner[];
+  customers = [] as UsageStatsUsersRowsInner[]
+  applications = [] as UsageStatsAppsRowsInner[]
 
   headers: Array<UsersTable> = [
     {
@@ -114,43 +114,42 @@ export default class CustomersPage extends Vue {
       text: "",
       value: "actions",
     },
-  ];
+  ]
 
   async created() {
-    this.isLoading = true;
-
-    [this.customers, this.applications] = await Promise.all([
+    this.isLoading = true
+    ;[this.customers, this.applications] = await Promise.all([
       this.fetchCustomers(),
       callApi<UsageStatsAppsRequest>(api.overview.apps, {
         timeRangeStart: new Date(0).toISOString(),
         timeRangeEnd: new Date().toISOString(),
       }),
-    ]);
+    ])
 
-    this.isLoading = false;
+    this.isLoading = false
   }
 
   filterDebounced() {
-    clearTimeout(this.timerId);
+    clearTimeout(this.timerId)
 
     this.timerId = setTimeout(() => {
-      this.filterByName();
-    }, 700);
+      this.filterByName()
+    }, 700)
   }
 
   async resetFilters(): Promise<void> {
-    let sendRequest = false;
+    let sendRequest = false
 
-    if (this.appSearch || this.lastSearchedText) sendRequest = true;
+    if (this.appSearch || this.lastSearchedText) sendRequest = true
 
-    this.textSearch = "";
-    this.lastSearchedText = "";
-    this.appSearch = "";
+    this.textSearch = ""
+    this.lastSearchedText = ""
+    this.appSearch = ""
 
     if (sendRequest) {
-      this.isLoading = true;
-      this.customers = await this.fetchCustomers();
-      this.isLoading = false;
+      this.isLoading = true
+      this.customers = await this.fetchCustomers()
+      this.isLoading = false
     }
   }
 
@@ -161,30 +160,30 @@ export default class CustomersPage extends Vue {
       appId: this.appSearch,
       endUserDisplayId: this.textSearch,
       granularity: "monthly",
-    });
+    })
   }
 
   private async filterByName(): Promise<void> {
     if (this.textSearch !== this.lastSearchedText) {
-      this.isLoading = true;
-      this.lastSearchedText = this.textSearch;
-      this.customers = await this.fetchCustomers();
-      this.isLoading = false;
+      this.isLoading = true
+      this.lastSearchedText = this.textSearch
+      this.customers = await this.fetchCustomers()
+      this.isLoading = false
     }
   }
 
   stringifyArray(array: Array<string> | undefined) {
-    if (Array.isArray(array)) return array.join(", ");
-    return "";
+    if (Array.isArray(array)) return array.join(", ")
+    return ""
   }
 
   @Watch("appSearch")
   async searchByApp(val: string): Promise<void> {
-    if (!val) return;
+    if (!val) return
 
-    this.isLoading = true;
-    this.customers = await this.fetchCustomers();
-    this.isLoading = false;
+    this.isLoading = true
+    this.customers = await this.fetchCustomers()
+    this.isLoading = false
   }
 }
 </script>

@@ -15,24 +15,24 @@
 
 <script>
 export default {
-  name: 'AppSpecialButton',
+  name: "AppSpecialButton",
   props: {
     text: {
       type: String,
-      default: '',
+      default: "",
     },
     to: {
       type: [String, Object],
-      default: '',
+      default: "",
     },
     icon: {
       type: String,
-      default: 'mdi-menu-right',
+      default: "mdi-menu-right",
     },
   },
   methods: {
     handleClick() {
-      this.$emit('click')
+      this.$emit("click")
     },
   },
 }

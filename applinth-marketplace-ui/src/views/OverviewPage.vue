@@ -3,7 +3,7 @@
     <v-row>
       <v-col>
         <heading class="mb-4">
-          {{ $t('overviewPage.installedApps.heading') }}
+          {{ $t("overviewPage.installedApps.heading") }}
         </heading>
         <app-installed-items />
       </v-col>
@@ -15,14 +15,14 @@
             name: ROUTES.APPLICATIONS,
           }"
         >
-          {{ $t('button.addApplication') }}
+          {{ $t("button.addApplication") }}
         </router-link>
       </v-col>
     </v-row>
     <v-row>
       <v-col>
         <heading class="mb-4">
-          {{ $t('overviewPage.overview.heading') }}
+          {{ $t("overviewPage.overview.heading") }}
         </heading>
         <data-grid
           ref="gridOverview"
@@ -46,7 +46,7 @@
               {{ getProcessDurationTime(items.item) }}
             </td>
             <td>
-              {{ items.item.nodesProcessed + '/' + items.item.nodesTotal }}
+              {{ items.item.nodesProcessed + "/" + items.item.nodesTotal }}
             </td>
             <td>
               {{ items.item.status }}
@@ -59,22 +59,22 @@
 </template>
 
 <script>
-import DataGrid from '@/components/commons/DataGrid'
-import { GRIDS } from '@/utils/gridsConfig'
+import DataGrid from "@/components/commons/DataGrid"
+import { GRIDS } from "@/utils/gridsConfig"
 import {
   toLocalDateTime,
   toLocalTime,
-} from '@/localization/filters/dateFilters'
-import AppInstalledItems from '@/components/commons/AppInstalledItems'
-import { ROUTES } from '@/router/routes'
-import Heading from '@/components/commons/Heading'
-import moment from 'moment'
-import prettifyMills from 'pretty-ms'
-import { callApi } from '@/utils/apiFetch'
-import { API } from '@/api'
+} from "@/localization/filters/dateFilters"
+import AppInstalledItems from "@/components/commons/AppInstalledItems"
+import { ROUTES } from "@/router/routes"
+import Heading from "@/components/commons/Heading"
+import moment from "moment"
+import prettifyMills from "pretty-ms"
+import { callApi } from "@/utils/apiFetch"
+import { API } from "@/api"
 
 export default {
-  name: 'OverviewPage',
+  name: "OverviewPage",
   components: {
     Heading,
     AppInstalledItems,
@@ -99,39 +99,39 @@ export default {
     return {
       headers: [
         {
-          text: this.$t('grid.overview.header.process'),
-          value: 'process',
-          align: 'start',
+          text: this.$t("grid.overview.header.process"),
+          value: "process",
+          align: "start",
           sortable: true,
         },
         {
-          text: this.$t('grid.overview.header.started'),
-          value: 'started',
-          align: 'start',
+          text: this.$t("grid.overview.header.started"),
+          value: "started",
+          align: "start",
           sortable: true,
         },
         {
-          text: this.$t('grid.overview.header.finished'),
-          value: 'finished',
-          align: 'start',
+          text: this.$t("grid.overview.header.finished"),
+          value: "finished",
+          align: "start",
           sortable: true,
         },
         {
-          text: this.$t('grid.overview.header.duration'),
-          value: 'duration',
-          align: 'start',
+          text: this.$t("grid.overview.header.duration"),
+          value: "duration",
+          align: "start",
           sortable: true,
         },
         {
-          text: this.$t('grid.overview.header.progress'),
-          value: 'progress',
-          align: 'start',
+          text: this.$t("grid.overview.header.progress"),
+          value: "progress",
+          align: "start",
           sortable: true,
         },
         {
-          text: this.$t('grid.overview.header.status'),
-          value: 'status',
-          align: 'start',
+          text: this.$t("grid.overview.header.status"),
+          value: "status",
+          align: "start",
           sortable: true,
         },
       ],
@@ -148,16 +148,16 @@ export default {
     },
     getProcessFinishTime(process) {
       return this.isInProgress(process.status)
-        ? '-'
+        ? "-"
         : toLocalDateTime(process.finished)
     },
     isInProgress(value) {
-      return value.toLowerCase() === 'in progress'
+      return value.toLowerCase() === "in progress"
     },
     getProcessDurationTime(process) {
       if (this.isInProgress(process.status)) {
-        const processStartedMilliseconds = moment(process.started).format('x')
-        const currentTimeMilliseconds = moment().format('x')
+        const processStartedMilliseconds = moment(process.started).format("x")
+        const currentTimeMilliseconds = moment().format("x")
 
         return this.prettifyMillsWithDecimals(
           currentTimeMilliseconds - processStartedMilliseconds

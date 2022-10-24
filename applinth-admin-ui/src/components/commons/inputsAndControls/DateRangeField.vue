@@ -3,9 +3,9 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import { ValidationProvider } from "vee-validate";
-import { toLocalDate } from "../../../filters/datetime";
+import { Component, Prop, Vue } from "vue-property-decorator"
+import { ValidationProvider } from "vee-validate"
+import { toLocalDate } from "../../../filters/datetime"
 
 @Component({
   components: {
@@ -21,7 +21,7 @@ export default class DateField extends Vue {
     type: [String, String],
     default: ["2019-09-10", "2019-09-20"],
   })
-  dates!: [string, string];
+  dates!: [string, string]
 }
 </script>
 <style lang="scss" scoped></style>

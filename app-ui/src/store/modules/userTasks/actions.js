@@ -1,8 +1,8 @@
-import { USER_TASKS } from './types'
-import { callApi } from '../../utils'
-import { API } from '../../../api'
+import { USER_TASKS } from "./types"
+import { callApi } from "../../utils"
+import { API } from "../../../api"
 
-import { addSuccessMessage } from '../../../services/utils/flashMessages'
+import { addSuccessMessage } from "../../../services/utils/flashMessages"
 
 export default {
   [USER_TASKS.ACTIONS.USER_TASK_ACCEPT]: async ({ dispatch }, payload) => {
@@ -14,7 +14,11 @@ export default {
         },
       })
 
-      addSuccessMessage(dispatch, API.userTask.accept.id, 'flashMessages.userTaskAccept')
+      addSuccessMessage(
+        dispatch,
+        API.userTask.accept.id,
+        "flashMessages.userTaskAccept"
+      )
 
       return true
     } catch {
@@ -30,7 +34,11 @@ export default {
         },
       })
 
-      addSuccessMessage(dispatch, API.userTask.acceptAll.id, 'flashMessages.userTaskAcceptList')
+      addSuccessMessage(
+        dispatch,
+        API.userTask.acceptAll.id,
+        "flashMessages.userTaskAcceptList"
+      )
 
       return true
     } catch {
@@ -51,7 +59,10 @@ export default {
       return false
     }
   },
-  [USER_TASKS.ACTIONS.USER_TASK_FETCH_TASKS]: async ({ dispatch, commit }, payload) => {
+  [USER_TASKS.ACTIONS.USER_TASK_FETCH_TASKS]: async (
+    { dispatch, commit },
+    payload
+  ) => {
     try {
       const data = await callApi(dispatch, {
         requestData: { ...API.userTask.grid },
@@ -74,7 +85,11 @@ export default {
         },
       })
 
-      addSuccessMessage(dispatch, API.userTask.reject.id, 'flashMessages.userTaskReject')
+      addSuccessMessage(
+        dispatch,
+        API.userTask.reject.id,
+        "flashMessages.userTaskReject"
+      )
 
       return true
     } catch {
@@ -90,7 +105,11 @@ export default {
         },
       })
 
-      addSuccessMessage(dispatch, API.userTask.rejectAll.id, 'flashMessages.userTaskRejectList')
+      addSuccessMessage(
+        dispatch,
+        API.userTask.rejectAll.id,
+        "flashMessages.userTaskRejectList"
+      )
 
       return true
     } catch {
@@ -108,7 +127,11 @@ export default {
 
       await dispatch(USER_TASKS.ACTIONS.USER_TASK_GET, payload.id)
 
-      addSuccessMessage(dispatch, API.userTask.update.id, 'flashMessages.userTaskUpdate')
+      addSuccessMessage(
+        dispatch,
+        API.userTask.update.id,
+        "flashMessages.userTaskUpdate"
+      )
 
       return true
     } catch {

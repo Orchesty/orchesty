@@ -8,8 +8,8 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import Tooltip from "../Tooltip.vue";
+import { Component, Prop, Vue } from "vue-property-decorator"
+import Tooltip from "../Tooltip.vue"
 
 @Component({
   components: {
@@ -18,7 +18,7 @@ import Tooltip from "../Tooltip.vue";
 })
 export default class InputTitle extends Vue {
   @Prop({ required: false, type: String })
-  private tooltip?: string;
+  private tooltip?: string
 }
 </script>
 

@@ -1,60 +1,60 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-import { ROUTES } from '@/router/routes'
-import OverviewPage from '@/views/OverviewPage'
-import ApplicationsPage from '@/views/ApplicationsPage'
-import TrashPage from '@/views/TrashPage'
-import TrashDetail from '@/components/commons/TrashDetail'
-import TrashNoData from '@/components/commons/TrashNoData'
-import AppInstalledDetailPage from '@/views/AppInstalledDetailPage'
-import AppAvailableDetailPage from '@/views/AppAvailableDetailPage'
-import NotFoundPage from '@/views/NotFoundPage'
-import NotLoggedInPage from '@/views/NotLoggedInPage'
-import SettingsPage from '@/views/SettingsPage'
-import { authService } from '@/utils/authService.js'
-import { config } from '@/config'
+import Vue from "vue"
+import VueRouter from "vue-router"
+import { ROUTES } from "@/router/routes"
+import OverviewPage from "@/views/OverviewPage"
+import ApplicationsPage from "@/views/ApplicationsPage"
+import TrashPage from "@/views/TrashPage"
+import TrashDetail from "@/components/commons/TrashDetail"
+import TrashNoData from "@/components/commons/TrashNoData"
+import AppInstalledDetailPage from "@/views/AppInstalledDetailPage"
+import AppAvailableDetailPage from "@/views/AppAvailableDetailPage"
+import NotFoundPage from "@/views/NotFoundPage"
+import NotLoggedInPage from "@/views/NotLoggedInPage"
+import SettingsPage from "@/views/SettingsPage"
+import { authService } from "@/utils/authService.js"
+import { config } from "@/config"
 
 Vue.use(VueRouter)
 
 const routes = [
   {
-    path: '',
-    redirect: '/integrations',
+    path: "",
+    redirect: "/integrations",
   },
   {
-    path: '/integrations',
+    path: "/integrations",
     name: ROUTES.OVERVIEW,
     component: OverviewPage,
     meta: {
       auth: true,
       breadcrumbs: [
         {
-          text: 'navigation.item.integrations',
+          text: "navigation.item.integrations",
           to: { name: ROUTES.OVERVIEW },
         },
       ],
     },
   },
   {
-    path: '/applications',
+    path: "/applications",
     name: ROUTES.APPLICATIONS,
     component: ApplicationsPage,
     meta: {
       auth: true,
       breadcrumbs: [
         {
-          text: 'navigation.item.integrations',
+          text: "navigation.item.integrations",
           to: { name: ROUTES.OVERVIEW },
         },
         {
-          text: 'navigation.item.applications',
+          text: "navigation.item.applications",
           to: { name: ROUTES.APPLICATIONS },
         },
       ],
     },
   },
   {
-    path: '/application-detail-installed/:id',
+    path: "/application-detail-installed/:id",
     name: ROUTES.APPLICATION_INSTALLED,
     component: AppInstalledDetailPage,
     meta: {
@@ -62,11 +62,11 @@ const routes = [
       breadcrumbs: (appActiveName) => {
         return [
           {
-            text: 'navigation.item.integrations',
+            text: "navigation.item.integrations",
             to: { name: ROUTES.OVERVIEW },
           },
           {
-            text: 'navigation.item.applications',
+            text: "navigation.item.applications",
             to: { name: ROUTES.APPLICATIONS },
           },
           {
@@ -78,7 +78,7 @@ const routes = [
     },
   },
   {
-    path: '/application-detail-available/:id',
+    path: "/application-detail-available/:id",
     name: ROUTES.APPLICATION_AVAILABLE,
     component: AppAvailableDetailPage,
     meta: {
@@ -86,11 +86,11 @@ const routes = [
       breadcrumbs: (appActiveName) => {
         return [
           {
-            text: 'navigation.item.integrations',
+            text: "navigation.item.integrations",
             to: { name: ROUTES.OVERVIEW },
           },
           {
-            text: 'navigation.item.applications',
+            text: "navigation.item.applications",
             to: { name: ROUTES.APPLICATIONS },
           },
           {
@@ -102,44 +102,44 @@ const routes = [
     },
   },
   {
-    path: '/trash',
+    path: "/trash",
     component: TrashPage,
     children: [
       {
-        path: '',
+        path: "",
         component: TrashNoData,
         name: ROUTES.TRASH,
         meta: {
           auth: true,
           breadcrumbs: [
             {
-              text: 'navigation.item.integrations',
+              text: "navigation.item.integrations",
               to: { name: ROUTES.OVERVIEW },
             },
             {
-              text: 'navigation.item.trash',
+              text: "navigation.item.trash",
               to: { name: ROUTES.TRASH },
             },
           ],
         },
       },
       {
-        path: ':id',
+        path: ":id",
         component: TrashDetail,
         name: ROUTES.TRASH_DETAIL,
         meta: {
           auth: true,
           breadcrumbs: [
             {
-              text: 'navigation.item.integrations',
+              text: "navigation.item.integrations",
               to: { name: ROUTES.OVERVIEW },
             },
             {
-              text: 'navigation.item.trash',
+              text: "navigation.item.trash",
               to: { name: ROUTES.TRASH },
             },
             {
-              text: 'navigation.item.trashDetail',
+              text: "navigation.item.trashDetail",
               to: { name: ROUTES.TRASH_DETAIL },
             },
           ],
@@ -148,37 +148,37 @@ const routes = [
     ],
   },
   {
-    path: '/settings',
+    path: "/settings",
     name: ROUTES.SETTINGS,
     component: SettingsPage,
     meta: {
       auth: true,
       breadcrumbs: [
         {
-          text: 'navigation.item.integrations',
+          text: "navigation.item.integrations",
           to: { name: ROUTES.OVERVIEW },
         },
         {
-          text: 'navigation.item.settings',
+          text: "navigation.item.settings",
           to: { name: ROUTES.SETTINGS },
         },
       ],
     },
   },
   {
-    path: '/not-logged-in',
+    path: "/not-logged-in",
     name: ROUTES.NOT_LOGGED_IN,
     component: NotLoggedInPage,
   },
   {
-    path: '*',
+    path: "*",
     name: ROUTES.NOT_FOUND,
     component: NotFoundPage,
   },
 ]
 
 const router = new VueRouter({
-  mode: 'history',
+  mode: "history",
   routes,
 })
 
@@ -207,7 +207,7 @@ router.beforeEach(async (to, _from, next) => {
         hasValidAuthBacklink = true
       } catch {
         console.warn(
-          'The AUTH_BACKLINK configuration parameter is not properly set.'
+          "The AUTH_BACKLINK configuration parameter is not properly set."
         )
       }
       if (hasValidAuthBacklink) {

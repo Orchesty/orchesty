@@ -39,16 +39,16 @@
 </template>
 
 <script lang="ts">
-import Button from "../components/commons/inputsAndControls/Button.vue";
-import TextField from "../components/commons/inputsAndControls/TextField.vue";
-import { Component, Vue } from "vue-property-decorator";
-import { ValidationObserver } from "vee-validate";
-import AuthSplitLayout from "@/components/commons/layouts/AuthSplitLayout.vue";
-import CenteredLayout from "@/components/commons/layouts/CenteredLayout.vue";
-import { Action } from "vuex-class";
-import { AuthActions, authNamespace } from "@/store/modules/auth";
-import { TResetPasswordForm } from "@/components/auth/types";
-import { Routes } from "@/enums";
+import Button from "../components/commons/inputsAndControls/Button.vue"
+import TextField from "../components/commons/inputsAndControls/TextField.vue"
+import { Component, Vue } from "vue-property-decorator"
+import { ValidationObserver } from "vee-validate"
+import AuthSplitLayout from "@/components/commons/layouts/AuthSplitLayout.vue"
+import CenteredLayout from "@/components/commons/layouts/CenteredLayout.vue"
+import { Action } from "vuex-class"
+import { AuthActions, authNamespace } from "@/store/modules/auth"
+import { TResetPasswordForm } from "@/components/auth/types"
+import { Routes } from "@/enums"
 
 @Component({
   components: {
@@ -63,23 +63,23 @@ export default class ForgotPasswordPage extends Vue {
   @Action(`${authNamespace}/${AuthActions.SendResetPasswordLink}`)
   private sendResetPasswordLink!: (
     payload: TResetPasswordForm
-  ) => Promise<boolean>;
-  isSending = false;
+  ) => Promise<boolean>
+  isSending = false
 
   formData: TResetPasswordForm = {
     email: "",
     tenantId: "",
-  };
+  }
 
   async submit(): Promise<void> {
-    this.isSending = true;
+    this.isSending = true
     if (await this.sendResetPasswordLink(this.formData)) {
       this.$router.push({
         name: Routes.Login,
         query: { tenantId: this.formData.tenantId },
-      });
+      })
     }
-    this.isSending = false;
+    this.isSending = false
   }
 }
 </script>

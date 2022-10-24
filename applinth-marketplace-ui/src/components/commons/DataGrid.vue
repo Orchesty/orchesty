@@ -28,10 +28,10 @@
 </template>
 
 <script>
-import { callApi } from '@/utils/apiFetch'
+import { callApi } from "@/utils/apiFetch"
 
 export default {
-  name: 'DataGrid',
+  name: "DataGrid",
   props: {
     headers: {
       type: Array,
@@ -69,7 +69,7 @@ export default {
         const paging = { page, itemsPerPage }
         const sorter =
           sortBy?.map((column, index) => {
-            return { column, direction: sortDesc[index] ? 'DESC' : 'ASC' }
+            return { column, direction: sortDesc[index] ? "DESC" : "ASC" }
           }) ?? []
         return {
           paging,

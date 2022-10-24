@@ -1,4 +1,4 @@
-import { APP_STORE } from '@/store/modules/appStore/types'
+import { APP_STORE } from "@/store/modules/appStore/types"
 
 export default {
   [APP_STORE.GETTERS.GET_INSTALLED_APPS]: (state) => {

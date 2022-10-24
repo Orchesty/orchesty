@@ -20,17 +20,21 @@
 </template>
 
 <script>
-import { DATA_GRIDS } from '@/services/enums/dataGridEnums'
-import DataGrid from '../../../commons/grid/DataGrid'
-import { REQUESTS_STATE } from '@/store/modules/api/types'
-import { API } from '@/api'
-import { mapGetters } from 'vuex'
-import ImplementationUpdateModal from '@/components/app/implementations/modal/ImplementationUpdateModal'
-import ImplementationDeleteModal from '@/components/app/implementations/modal/ImplementationDeleteModal'
-import { GRID } from '@/store/modules/grid/types'
+import { DATA_GRIDS } from "@/services/enums/dataGridEnums"
+import DataGrid from "../../../commons/grid/DataGrid"
+import { REQUESTS_STATE } from "@/store/modules/api/types"
+import { API } from "@/api"
+import { mapGetters } from "vuex"
+import ImplementationUpdateModal from "@/components/app/implementations/modal/ImplementationUpdateModal"
+import ImplementationDeleteModal from "@/components/app/implementations/modal/ImplementationDeleteModal"
+import { GRID } from "@/store/modules/grid/types"
 export default {
-  name: 'ImplementationGrid',
-  components: { ImplementationDeleteModal, ImplementationUpdateModal, DataGrid },
+  name: "ImplementationGrid",
+  components: {
+    ImplementationDeleteModal,
+    ImplementationUpdateModal,
+    DataGrid,
+  },
   computed: {
     ...mapGetters(DATA_GRIDS.SCHEDULED_TASK, {
       sorterInitial: GRID.GETTERS.GET_SORTER,
@@ -46,34 +50,40 @@ export default {
       DATA_GRIDS,
       headers: [
         {
-          text: this.$t('grid.header.name'),
-          value: 'name',
-          align: 'left',
+          text: this.$t("grid.header.name"),
+          value: "name",
+          align: "left",
           sortable: true,
           visible: true,
-          width: '300px',
+          width: "300px",
         },
         {
-          text: this.$t('grid.header.url'),
-          value: 'url',
-          align: 'left',
+          text: this.$t("grid.header.url"),
+          value: "url",
+          align: "left",
           sortable: true,
           visible: true,
-          width: '300px',
+          width: "300px",
         },
         {
-          text: this.$t('grid.header.actions'),
-          value: 'actions',
-          align: 'right',
+          text: this.$t("grid.header.actions"),
+          value: "actions",
+          align: "right",
           sortable: true,
           visible: true,
-          width: '160px',
+          width: "160px",
         },
       ],
     }
   },
   async mounted() {
-    await this.$refs.grid.fetchGridWithInitials(null, null, null, this.pagingInitial, this.sorterInitial)
+    await this.$refs.grid.fetchGridWithInitials(
+      null,
+      null,
+      null,
+      this.pagingInitial,
+      this.sorterInitial
+    )
   },
 }
 </script>

@@ -48,21 +48,21 @@
 </template>
 
 <script>
-import BaseButton from '@/components/commons/BaseButton'
-import { callApi } from '@/utils/apiFetch'
-import { API } from '@/api'
-import NavigationItem from '@/components/commons/NavigationItem'
-import { ROUTES } from '@/router/routes'
-import showFlashMessage from '@/utils/flashMessage'
-import { FLASH_MESSAGES_TYPES } from '@/store/flashMessages/types'
+import BaseButton from "@/components/commons/BaseButton"
+import { callApi } from "@/utils/apiFetch"
+import { API } from "@/api"
+import NavigationItem from "@/components/commons/NavigationItem"
+import { ROUTES } from "@/router/routes"
+import showFlashMessage from "@/utils/flashMessage"
+import { FLASH_MESSAGES_TYPES } from "@/store/flashMessages/types"
 export default {
-  name: 'AppAvailableDetailPage',
+  name: "AppAvailableDetailPage",
   components: { NavigationItem, BaseButton },
   computed: {
     appLogo() {
       return this.app.logo
         ? this.app.logo
-        : require('@/assets/svg/app-store-item-logo-placeholder.svg')
+        : require("@/assets/svg/app-store-item-logo-placeholder.svg")
     },
   },
   data() {
@@ -70,9 +70,9 @@ export default {
       app: null,
       navigationItem: {
         to: ROUTES.APPLICATIONS,
-        icon: 'mdi-arrow-left-circle',
-        text: 'navigation.link.backToTheApplications',
-        color: 'primary',
+        icon: "mdi-arrow-left-circle",
+        text: "navigation.link.backToTheApplications",
+        color: "primary",
       },
     }
   },
@@ -87,7 +87,7 @@ export default {
         params: { id: this.$route.params.id },
       })
       showFlashMessage(
-        this.$t('flashMessage.installed', { item: this.app.name }),
+        this.$t("flashMessage.installed", { item: this.app.name }),
         FLASH_MESSAGES_TYPES.SUCCESS
       )
     },
@@ -97,10 +97,10 @@ export default {
       requestData: API.appStore.getAppPreview,
       params: { key: this.$route.params.id },
     })
-    this.$emit('appChanged', this.app.name)
+    this.$emit("appChanged", this.app.name)
   },
   beforeDestroy() {
-    this.$emit('appChanged', null)
+    this.$emit("appChanged", null)
   },
 }
 </script>

@@ -1,9 +1,9 @@
-import { IMPLEMENTATIONS } from './types'
-import { callApi, dispatchRoot, withNamespace } from '../../utils'
-import { API } from '@/api'
-import { GRID } from '../grid/types'
-import { DATA_GRIDS } from '@/services/enums/dataGridEnums'
-import { addSuccessMessage } from '@/services/utils/flashMessages'
+import { IMPLEMENTATIONS } from "./types"
+import { callApi, dispatchRoot, withNamespace } from "../../utils"
+import { API } from "@/api"
+import { GRID } from "../grid/types"
+import { DATA_GRIDS } from "@/services/enums/dataGridEnums"
+import { addSuccessMessage } from "@/services/utils/flashMessages"
 
 export default {
   [IMPLEMENTATIONS.ACTIONS.SET_FILE_IMPLEMENTATIONS]: ({ commit }, payload) => {
@@ -33,7 +33,7 @@ export default {
       addSuccessMessage(
         dispatch,
         API.implementation.update.id,
-        'flashMessages.implementationCreated'
+        "flashMessages.implementationCreated"
       )
 
       return true
@@ -64,7 +64,7 @@ export default {
       addSuccessMessage(
         dispatch,
         API.implementation.update.id,
-        'flashMessages.implementationUpdated'
+        "flashMessages.implementationUpdated"
       )
 
       return true
@@ -128,7 +128,7 @@ export default {
       addSuccessMessage(
         dispatch,
         API.implementation.delete.id,
-        'flashMessages.implementationDeleted'
+        "flashMessages.implementationDeleted"
       )
       return true
     } catch {

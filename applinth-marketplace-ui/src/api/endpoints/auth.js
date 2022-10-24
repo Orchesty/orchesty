@@ -1,21 +1,21 @@
 export default {
   initialAuth: {
-    id: 'INITIAL_AUTH',
+    id: "INITIAL_AUTH",
     request: ({ initialToken }) => ({
       url: `/authorization/login`,
       headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json; charset=utf-8',
+        Accept: "application/json",
+        "Content-Type": "application/json; charset=utf-8",
         Authorization: initialToken,
       },
-      method: 'POST',
+      method: "POST",
     }),
   },
   refreshAuth: {
-    id: 'refreshAuth',
+    id: "refreshAuth",
     request: () => ({
       url: `/authorization/logged`,
-      method: 'GET',
+      method: "GET",
     }),
   },
 }

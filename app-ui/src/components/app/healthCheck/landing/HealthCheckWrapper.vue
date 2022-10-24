@@ -9,9 +9,9 @@
 </template>
 
 <script>
-import HealthCheckErrors from '@/components/app/healthCheck/grid/HealthCheckErrors'
+import HealthCheckErrors from "@/components/app/healthCheck/grid/HealthCheckErrors"
 export default {
-  name: 'HealthCheckWrapper',
+  name: "HealthCheckWrapper",
   components: { HealthCheckErrors },
 }
 </script>

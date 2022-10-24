@@ -1,8 +1,8 @@
-import { apiClient } from "@/utils/apiClient";
-import { ApiConfigs } from "../../types";
-import { UsageStatsUsers } from "../generated";
+import { apiClient } from "@/utils/apiClient"
+import { ApiConfigs } from "../../types"
+import { UsageStatsUsers } from "../generated"
 
-export type CustomersApi = "list";
+export type CustomersApi = "list"
 
 export const customers: ApiConfigs<CustomersApi> = {
   list: {
@@ -10,4 +10,4 @@ export const customers: ApiConfigs<CustomersApi> = {
     request: (params) => apiClient.billingApi.usageStatsUsers(params),
     transform: (data: UsageStatsUsers) => data.rows,
   },
-};
+}

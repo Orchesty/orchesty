@@ -1,12 +1,12 @@
-import { AlertType } from "../../../enums";
+import { AlertType } from "../../../enums"
 
 export type Alert = {
-  id: string;
-  message: string;
-  type: AlertType;
-  timeout: number;
-};
+  id: string
+  message: string
+  type: AlertType
+  timeout: number
+}
 
-export type AlertsState = Alert[];
+export type AlertsState = Alert[]
 
-export const createState = (): AlertsState => [];
+export const createState = (): AlertsState => []

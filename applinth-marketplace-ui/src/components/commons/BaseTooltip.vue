@@ -11,11 +11,11 @@
 
 <script>
 export default {
-  name: 'BaseTooltip',
+  name: "BaseTooltip",
   props: {
     orientation: {
       type: String,
-      default: 'bottom',
+      default: "bottom",
     },
   },
 }

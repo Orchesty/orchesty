@@ -11,14 +11,17 @@
     <template #default>
       <v-row dense>
         <v-col cols="12">
-          {{ $t('modal.text.appUninstall', { app: appName }) }}
+          {{ $t("modal.text.appUninstall", { app: appName }) }}
         </v-col>
       </v-row>
     </template>
     <template #sendingButton>
       <v-row dense>
         <v-col cols="12" class="d-flex justify-end">
-          <app-button :button-title="$t('button.cancel')" :on-click="onReject" />
+          <app-button
+            :button-title="$t('button.cancel')"
+            :on-click="onReject"
+          />
           <app-button
             class="ml-2"
             color="error"
@@ -33,10 +36,10 @@
 </template>
 
 <script>
-import ModalTemplate from '@/components/commons/modal/ModalTemplate'
-import AppButton from '@/components/commons/button/AppButton'
+import ModalTemplate from "@/components/commons/modal/ModalTemplate"
+import AppButton from "@/components/commons/button/AppButton"
 export default {
-  name: 'UninstallAppModal',
+  name: "UninstallAppModal",
   components: { AppButton, ModalTemplate },
   props: {
     appName: {

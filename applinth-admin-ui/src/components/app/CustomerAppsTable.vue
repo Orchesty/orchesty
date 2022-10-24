@@ -13,17 +13,17 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import SelectBox from "@/components/commons/inputsAndControls/SelectBox.vue";
-import TextField from "@/components/commons/inputsAndControls/TextField.vue";
+import { Component, Prop, Vue } from "vue-property-decorator"
+import SelectBox from "@/components/commons/inputsAndControls/SelectBox.vue"
+import TextField from "@/components/commons/inputsAndControls/TextField.vue"
 import {
   UsageStatsInstalledAppsRequest,
   UsageStatsInstalledAppsRowsInner,
-} from "@/api/generated";
-import { callApi } from "@/utils";
-import { api } from "@/api";
-import SimpleTable from "@/components/commons/tables/SimpleTable.vue";
-import { toLocalDate } from "@/filters/datetime";
+} from "@/api/generated"
+import { callApi } from "@/utils"
+import { api } from "@/api"
+import SimpleTable from "@/components/commons/tables/SimpleTable.vue"
+import { toLocalDate } from "@/filters/datetime"
 
 @Component({
   components: {
@@ -37,10 +37,10 @@ import { toLocalDate } from "@/filters/datetime";
 })
 export default class CustomerAppsTable extends Vue {
   @Prop({ type: String, required: true })
-  customerId!: string;
+  customerId!: string
 
-  isLoading = false;
-  installedApps: UsageStatsInstalledAppsRowsInner[] = [];
+  isLoading = false
+  installedApps: UsageStatsInstalledAppsRowsInner[] = []
 
   headers = [
     {
@@ -55,20 +55,20 @@ export default class CustomerAppsTable extends Vue {
       align: "start",
       value: "installed",
     },
-  ];
+  ]
 
   async created() {
-    this.isLoading = true;
+    this.isLoading = true
     this.installedApps = await callApi<UsageStatsInstalledAppsRequest>(
       api.installedApps.apps,
       {
         endUserId: this.customerId,
         tail: true,
       }
-    );
-    this.isLoading = false;
+    )
+    this.isLoading = false
   }
 
-  private toLocalDate = toLocalDate;
+  private toLocalDate = toLocalDate
 }
 </script>

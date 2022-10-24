@@ -37,10 +37,10 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import { ValidationProvider } from "vee-validate";
-import { Rules } from "../../../utils/veeValidate";
-import { toLocalDate } from "../../../filters/datetime";
+import { Component, Prop, Vue } from "vue-property-decorator"
+import { ValidationProvider } from "vee-validate"
+import { Rules } from "../../../utils/veeValidate"
+import { toLocalDate } from "../../../filters/datetime"
 
 @Component({
   components: {
@@ -51,46 +51,46 @@ import { toLocalDate } from "../../../filters/datetime";
   },
 })
 export default class DateField extends Vue {
-  private isOpen: boolean;
-  private innerValue: any;
+  private isOpen: boolean
+  private innerValue: any
 
   @Prop({ required: false, type: [String], default: "" })
-  private value!: string;
+  private value!: string
 
   @Prop({ required: false, type: String })
-  private label?: string;
+  private label?: string
 
   @Prop({ required: true, type: String })
-  private name!: string;
+  private name!: string
 
   @Prop({ required: false, type: String, default: "" })
-  private hint!: string;
+  private hint!: string
 
   @Prop({ required: false, type: [Object, String] })
-  private rules?: Rules;
+  private rules?: Rules
 
   @Prop({ required: false, type: Boolean, default: false })
-  private disabled!: boolean;
+  private disabled!: boolean
 
   @Prop({ required: false, type: Boolean, default: false })
-  private allDay!: boolean;
+  private allDay!: boolean
 
   @Prop({ type: Boolean, default: false })
-  readonly!: boolean;
+  readonly!: boolean
 
   constructor() {
-    super();
-    this.isOpen = false;
-    this.innerValue = null;
+    super()
+    this.isOpen = false
+    this.innerValue = null
   }
 
   formatForFilter(dateTime: string) {
-    const day = new Date(dateTime);
+    const day = new Date(dateTime)
     if (this.allDay) {
-      day.setUTCHours(23, 59, 59);
+      day.setUTCHours(23, 59, 59)
     }
 
-    return day.toISOString();
+    return day.toISOString()
   }
 }
 </script>

@@ -1,10 +1,10 @@
 export default {
   grid: {
-    id: 'OVERVIEW_LIST',
-    urlPattern: '/process/overview',
+    id: "OVERVIEW_LIST",
+    urlPattern: "/process/overview",
     request: ({ paging, sorter }) => ({
       url: `/process/overview?filter=${JSON.stringify({ paging, sorter })}`,
-      method: 'GET',
+      method: "GET",
     }),
   },
 }

@@ -1,15 +1,15 @@
-import { Assign } from "@/types";
-import { RouteConfig } from "vue-router";
-import { Routes, ViewAuth } from "@/enums";
+import { Assign } from "@/types"
+import { RouteConfig } from "vue-router"
+import { Routes, ViewAuth } from "@/enums"
 
 interface RouteConfigExtension {
-  name?: Routes;
+  name?: Routes
   meta?: {
-    auth: ViewAuth;
-  };
+    auth: ViewAuth
+  }
 }
 
-type ExtendedRouteConfig = Assign<RouteConfig, RouteConfigExtension>;
+type ExtendedRouteConfig = Assign<RouteConfig, RouteConfigExtension>
 
 const baseRoutes = [
   {
@@ -34,7 +34,7 @@ const baseRoutes = [
       ],
     },
   },
-];
+]
 
 const authRoutes = [
   {
@@ -53,7 +53,7 @@ const authRoutes = [
       auth: ViewAuth.Public,
     },
   },
-];
+]
 
 const overview = {
   path: "/overview",
@@ -72,7 +72,7 @@ const overview = {
       },
     ],
   },
-};
+}
 
 const applications = [
   {
@@ -95,11 +95,11 @@ const applications = [
             text: appActiveName,
             to: { name: Routes.ApplicationDetail },
           },
-        ];
+        ]
       },
     },
   },
-];
+]
 
 const usersRoutes = [
   {
@@ -138,7 +138,7 @@ const usersRoutes = [
       ],
     },
   },
-];
+]
 
 const customersRoutes = [
   {
@@ -181,13 +181,13 @@ const customersRoutes = [
       ],
     },
   },
-];
+]
 
 const notFound = {
   path: "*",
   name: Routes.NotFound,
   component: () => import("../views/NotFoundPage.vue"),
-};
+}
 
 export const routes: Array<ExtendedRouteConfig> = [
   ...baseRoutes,
@@ -197,4 +197,4 @@ export const routes: Array<ExtendedRouteConfig> = [
   overview,
   ...applications,
   notFound,
-];
+]

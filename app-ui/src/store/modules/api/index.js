@@ -1,6 +1,6 @@
-import createState from './state'
-import getters from './getters'
-import mutations from './mutations'
+import createState from "./state"
+import getters from "./getters"
+import mutations from "./mutations"
 
 export default {
   namespaced: true,

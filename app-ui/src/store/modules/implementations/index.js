@@ -1,6 +1,6 @@
-import actions from './actions'
-import mutations from './mutations'
-import createState from './state'
+import actions from "./actions"
+import mutations from "./mutations"
+import createState from "./state"
 
 export default {
   namespaced: true,

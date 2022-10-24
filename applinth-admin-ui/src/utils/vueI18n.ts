@@ -1,9 +1,9 @@
-import VueI18n from "vue-i18n";
-import Vue from "vue";
-import { Locale } from "../enums";
-import translations from "../translations";
+import VueI18n from "vue-i18n"
+import Vue from "vue"
+import { Locale } from "../enums"
+import translations from "../translations"
 
-Vue.use(VueI18n);
+Vue.use(VueI18n)
 
 export const i18n = new VueI18n({
   locale: Locale.En,
@@ -11,4 +11,4 @@ export const i18n = new VueI18n({
   messages: {
     ...translations,
   },
-});
+})

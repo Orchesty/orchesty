@@ -10,7 +10,7 @@
 
 <script>
 export default {
-  name: 'BaseCheckbox',
+  name: "BaseCheckbox",
   props: {
     label: {
       type: String,
@@ -36,7 +36,7 @@ export default {
   },
   watch: {
     innerValue(value) {
-      this.$emit('input', value)
+      this.$emit("input", value)
     },
     value: {
       immediate: true,

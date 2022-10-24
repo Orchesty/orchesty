@@ -1,6 +1,6 @@
-import { callApi } from '../../utils'
-import { API } from '../../../api'
-import { HEALTHCHECK } from '@/store/modules/healthcheck/types'
+import { callApi } from "../../utils"
+import { API } from "../../../api"
+import { HEALTHCHECK } from "@/store/modules/healthcheck/types"
 
 export default {
   [HEALTHCHECK.ACTIONS.FETCH_ERROR_LIST]: async ({ dispatch }, payload) => {

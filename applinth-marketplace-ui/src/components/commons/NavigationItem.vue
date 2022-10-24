@@ -14,7 +14,7 @@
 
 <script>
 export default {
-  name: 'NavigationItem',
+  name: "NavigationItem",
   props: {
     to: {
       type: String,
@@ -30,7 +30,7 @@ export default {
     },
     color: {
       type: String,
-      default: 'white',
+      default: "white",
     },
   },
 }

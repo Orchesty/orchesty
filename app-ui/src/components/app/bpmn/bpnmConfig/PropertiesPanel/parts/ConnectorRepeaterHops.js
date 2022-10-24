@@ -1,28 +1,29 @@
-import entryFactory from 'bpmn-js-properties-panel/lib/factory/EntryFactory'
-import cmdHelper from 'bpmn-js-properties-panel/lib/helper/CmdHelper'
-import { getBusinessObject } from 'bpmn-js/lib/util/ModelUtil'
+import entryFactory from "bpmn-js-properties-panel/lib/factory/EntryFactory"
+import cmdHelper from "bpmn-js-properties-panel/lib/helper/CmdHelper"
+import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil"
 
 export default function (group, element, translate) {
-  const allowedTypes = ['connector', 'batch']
+  const allowedTypes = ["connector", "batch"]
   if (
     !allowedTypes.includes(element.pipesType) &&
-    (!element.businessObject || !allowedTypes.includes(element.businessObject.pipesType))
+    (!element.businessObject ||
+      !allowedTypes.includes(element.businessObject.pipesType))
   ) {
     return
   }
 
   group.entries.push(
     entryFactory.validationAwareTextField(translate, {
-      id: 'repeaterHops',
-      label: 'Maximum repeats',
-      modelProperty: 'repeaterHops',
+      id: "repeaterHops",
+      label: "Maximum repeats",
+      modelProperty: "repeaterHops",
       validate: (element, values) => {
-        if (element.type === 'bpmn:Process') {
+        if (element.type === "bpmn:Process") {
           return {}
         }
 
         if (values.repeaterHops && !/\d+/.test(values.repeaterHops)) {
-          return { repeaterHops: 'Repeater hops must be an integer.' }
+          return { repeaterHops: "Repeater hops must be an integer." }
         }
 
         return {}

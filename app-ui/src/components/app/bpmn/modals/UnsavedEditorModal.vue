@@ -22,12 +22,12 @@
 </template>
 
 <script>
-import ModalTemplate from '@/components/commons/modal/ModalTemplate'
-import { TOPOLOGIES } from '@/store/modules/topologies/types'
-import { mapActions } from 'vuex'
-import AppButton from '@/components/commons/button/AppButton'
+import ModalTemplate from "@/components/commons/modal/ModalTemplate"
+import { TOPOLOGIES } from "@/store/modules/topologies/types"
+import { mapActions } from "vuex"
+import AppButton from "@/components/commons/button/AppButton"
 export default {
-  name: 'UnsavedEditorModal',
+  name: "UnsavedEditorModal",
   components: { AppButton, ModalTemplate },
   props: {
     isSending: {
@@ -49,7 +49,9 @@ export default {
     }
   },
   methods: {
-    ...mapActions(TOPOLOGIES.NAMESPACE, [TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID]),
+    ...mapActions(TOPOLOGIES.NAMESPACE, [
+      TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID,
+    ]),
     async saveDiagram() {
       const newId = await this.saveHasNewId()
       this.isOpen = false

@@ -38,9 +38,9 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from "vue-property-decorator";
-import { ValidationProvider } from "vee-validate";
-import { Rules } from "../../../utils/veeValidate";
+import { Component, Prop, Vue, Watch } from "vue-property-decorator"
+import { ValidationProvider } from "vee-validate"
+import { Rules } from "../../../utils/veeValidate"
 
 @Component({
   components: {
@@ -49,36 +49,36 @@ import { Rules } from "../../../utils/veeValidate";
 })
 export default class ColorPickerInput extends Vue {
   @Prop({ type: String })
-  private value!: string;
+  private value!: string
 
   @Prop({ required: false, type: String })
-  private label?: string;
+  private label?: string
 
   @Prop({ required: false, type: String, default: "" })
-  private name!: string;
+  private name!: string
 
   @Prop({ required: false, type: String, default: "" })
-  private placeholder!: string;
+  private placeholder!: string
 
   @Prop({ required: false, type: Object })
-  private rules?: Rules;
+  private rules?: Rules
 
-  private innerValue = "";
-  private isOpenMenu = false;
+  private innerValue = ""
+  private isOpenMenu = false
 
   constructor() {
-    super();
-    this.innerValue = this.value;
+    super()
+    this.innerValue = this.value
   }
 
   @Watch("value")
   onChangeValue() {
-    this.innerValue = this.value;
+    this.innerValue = this.value
   }
 
   @Watch("innerValue")
   onChangeInnerValue() {
-    this.$emit("input", this.innerValue);
+    this.$emit("input", this.innerValue)
   }
 }
 </script>

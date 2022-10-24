@@ -12,7 +12,14 @@
       :placeholder="!nodeStatus"
       :permanent-filter="
         [
-          [{ column: 'topology_id', operator: 'EQUAL', value: [''], default: true }],
+          [
+            {
+              column: 'topology_id',
+              operator: 'EQUAL',
+              value: [''],
+              default: true,
+            },
+          ],
           [
             {
               column: 'node_id',
@@ -34,18 +41,22 @@
             <v-col cols="4" lg="4" class="d-flex">
               <div class="my-auto">
                 <span class="font-weight-bold">Node id: </span>
-                <span>{{ node ? node._id : '' }}</span>
+                <span>{{ node ? node._id : "" }}</span>
               </div>
             </v-col>
             <v-col cols="6" lg="6" class="d-flex">
               <div class="my-auto">
                 <span class="font-weight-bold">Node name: </span>
-                <span class="text-uppercase truncate">{{ node ? node.name : '' }}</span>
+                <span class="text-uppercase truncate">{{
+                  node ? node.name : ""
+                }}</span>
               </div>
             </v-col>
             <v-col>
               <div class="text-end">
-                <v-btn text class="ml-auto" @click="$emit('closeLogs')">Close</v-btn>
+                <v-btn text class="ml-auto" @click="$emit('closeLogs')"
+                  >Close</v-btn
+                >
               </div>
             </v-col>
           </v-row>
@@ -62,7 +73,10 @@
         <span>{{ items.item.message }}</span>
       </template>
       <template #default="{ items, isVisible, expanded }">
-        <td v-if="isVisible('timestamp')" :style="expanded ? 'border-bottom: none' : ''">
+        <td
+          v-if="isVisible('timestamp')"
+          :style="expanded ? 'border-bottom: none' : ''"
+        >
           {{ items.item.timestamp | internationalFormat }}
         </td>
         <tooltip>
@@ -73,31 +87,57 @@
               :style="expanded ? 'border-bottom: none' : ''"
               v-on="on"
             >
-              {{ items.item.correlation_id ? items.item.correlation_id : 'system log - no id' }}
-              <v-btn v-if="items.item.correlation_id" icon @click.stop="copyToClipboard(items.item.correlation_id)">
+              {{
+                items.item.correlation_id
+                  ? items.item.correlation_id
+                  : "system log - no id"
+              }}
+              <v-btn
+                v-if="items.item.correlation_id"
+                icon
+                @click.stop="copyToClipboard(items.item.correlation_id)"
+              >
                 <v-icon> mdi-content-copy </v-icon>
               </v-btn>
             </td>
           </template>
           <template #tooltip>
-            {{ items.item.correlation_id ? items.item.correlation_id : 'system log - no id' }}
+            {{
+              items.item.correlation_id
+                ? items.item.correlation_id
+                : "system log - no id"
+            }}
           </template>
         </tooltip>
-        <td v-if="isVisible('message')" :style="expanded ? 'border-bottom: none;' : ''" class="truncate">
+        <td
+          v-if="isVisible('message')"
+          :style="expanded ? 'border-bottom: none;' : ''"
+          class="truncate"
+        >
           <span>
             {{ items.item.message }}
           </span>
         </td>
-        <td v-if="isVisible('severity')" :style="expanded ? 'border-bottom: none' : ''">
-          <span class="font-weight-bold text-uppercase">{{ items.item.severity }}</span>
+        <td
+          v-if="isVisible('severity')"
+          :style="expanded ? 'border-bottom: none' : ''"
+        >
+          <span class="font-weight-bold text-uppercase">{{
+            items.item.severity
+          }}</span>
         </td>
       </template>
       <template #footer>
         <v-container>
           <v-row>
             <v-col cols="12" class="d-flex">
-              <v-btn color="secondary" text class="font-weight-medium ma-auto" @click="redirectToLogs">
-                {{ $t('page.text.viewAllLogs') }}
+              <v-btn
+                color="secondary"
+                text
+                class="font-weight-medium ma-auto"
+                @click="redirectToLogs"
+              >
+                {{ $t("page.text.viewAllLogs") }}
               </v-btn>
             </v-col>
           </v-row>
@@ -108,18 +148,18 @@
 </template>
 
 <script>
-import DataGrid from '@/components/commons/grid/DataGrid'
-import { ROUTES } from '@/services/enums/routerEnums'
-import { mapGetters } from 'vuex'
-import { REQUESTS_STATE } from '@/store/modules/api/types'
-import { API } from '@/api'
-import { DATA_GRIDS } from '@/services/enums/dataGridEnums'
-import { internationalFormat } from '@/services/utils/dateFilters'
-import Tooltip from '@/components/commons/Tooltip'
-import FlashMessageMixin from '@/services/mixins/FlashMessageMixin'
+import DataGrid from "@/components/commons/grid/DataGrid"
+import { ROUTES } from "@/services/enums/routerEnums"
+import { mapGetters } from "vuex"
+import { REQUESTS_STATE } from "@/store/modules/api/types"
+import { API } from "@/api"
+import { DATA_GRIDS } from "@/services/enums/dataGridEnums"
+import { internationalFormat } from "@/services/utils/dateFilters"
+import Tooltip from "@/components/commons/Tooltip"
+import FlashMessageMixin from "@/services/mixins/FlashMessageMixin"
 
 export default {
-  name: 'BpmnNodeGrid',
+  name: "BpmnNodeGrid",
   components: { Tooltip, DataGrid },
   mixins: [FlashMessageMixin],
   props: {
@@ -138,36 +178,36 @@ export default {
       mergedFilter: [],
       headers: [
         {
-          text: this.$t('topologies.logs.headers.timestamp'),
-          value: 'timestamp',
-          align: 'left',
+          text: this.$t("topologies.logs.headers.timestamp"),
+          value: "timestamp",
+          align: "left",
           sortable: true,
           visible: true,
-          width: '15%',
+          width: "15%",
         },
         {
-          text: this.$t('topologies.logs.headers.correlation_id'),
-          value: 'correlation_id',
-          align: 'left',
+          text: this.$t("topologies.logs.headers.correlation_id"),
+          value: "correlation_id",
+          align: "left",
           sortable: true,
           visible: true,
-          width: '20%',
+          width: "20%",
         },
         {
-          text: this.$t('topologies.logs.headers.message'),
-          value: 'message',
-          align: 'left',
+          text: this.$t("topologies.logs.headers.message"),
+          value: "message",
+          align: "left",
           sortable: true,
           visible: true,
-          width: '45%',
+          width: "45%",
         },
         {
-          text: this.$t('topologies.logs.headers.severity'),
-          value: 'severity',
-          align: 'left',
+          text: this.$t("topologies.logs.headers.severity"),
+          value: "severity",
+          align: "left",
           sortable: true,
           visible: true,
-          width: '20%',
+          width: "20%",
         },
       ],
     }
@@ -175,7 +215,9 @@ export default {
   computed: {
     ...mapGetters(REQUESTS_STATE.NAMESPACE, [REQUESTS_STATE.GETTERS.GET_STATE]),
     logState() {
-      return this[REQUESTS_STATE.GETTERS.GET_STATE]([API.topology.getLogsByID.id])
+      return this[REQUESTS_STATE.GETTERS.GET_STATE]([
+        API.topology.getLogsByID.id,
+      ])
     },
     nodeStatus() {
       return Object.keys(this.node).length !== 0
@@ -187,22 +229,25 @@ export default {
   methods: {
     setColor(props) {
       switch (props.toLowerCase()) {
-        case 'error':
-          return 'error'
-        case 'warning':
-          return 'warning'
-        case 'ok':
-          return 'info'
+        case "error":
+          return "error"
+        case "warning":
+          return "warning"
+        case "ok":
+          return "info"
         default:
-          return 'black'
+          return "black"
       }
     },
     copyToClipboard(correlationId) {
       navigator.clipboard.writeText(correlationId)
-      this.showFlashMessage(false, 'ID copied!')
+      this.showFlashMessage(false, "ID copied!")
     },
     async redirectToLogs() {
-      await this.$router.push({ name: ROUTES.TOPOLOGY.LOGS, params: { id: this.$route.params.id } })
+      await this.$router.push({
+        name: ROUTES.TOPOLOGY.LOGS,
+        params: { id: this.$route.params.id },
+      })
     },
   },
   watch: {

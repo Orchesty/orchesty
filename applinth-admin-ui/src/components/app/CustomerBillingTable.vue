@@ -19,16 +19,16 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import { DateTime } from "luxon";
+import { Component, Prop, Vue } from "vue-property-decorator"
+import { DateTime } from "luxon"
 import {
   UsageStatsTimeBucketAppsRequest,
   UsageStatsTimeBucketAppsRowsInner,
-} from "@/api/generated";
-import { callApi } from "@/utils";
-import { api } from "@/api";
-import SimpleTable from "@/components/commons/tables/SimpleTable.vue";
-import { toCZK } from "@/filters/money";
+} from "@/api/generated"
+import { callApi } from "@/utils"
+import { api } from "@/api"
+import SimpleTable from "@/components/commons/tables/SimpleTable.vue"
+import { toCZK } from "@/filters/money"
 
 @Component({
   components: {
@@ -37,10 +37,10 @@ import { toCZK } from "@/filters/money";
 })
 export default class CustomerBillingTable extends Vue {
   @Prop({ type: String, required: true })
-  customerId!: string;
+  customerId!: string
 
-  isLoading = false;
-  monthlyBills: UsageStatsTimeBucketAppsRowsInner[] = [];
+  isLoading = false
+  monthlyBills: UsageStatsTimeBucketAppsRowsInner[] = []
 
   headers = [
     {
@@ -61,10 +61,10 @@ export default class CustomerBillingTable extends Vue {
       align: "start",
       value: "totalCost",
     },
-  ];
+  ]
 
   async created() {
-    this.isLoading = true;
+    this.isLoading = true
     this.monthlyBills = await callApi<UsageStatsTimeBucketAppsRequest>(
       api.timeBucketApps.apps,
       {
@@ -72,9 +72,9 @@ export default class CustomerBillingTable extends Vue {
         timeRangeEnd: new Date().toISOString(),
         endUserId: this.customerId,
       }
-    );
+    )
 
-    this.isLoading = false;
+    this.isLoading = false
   }
 
   private suffixToCurrentMonth(monthString: string): string {
@@ -83,14 +83,14 @@ export default class CustomerBillingTable extends Vue {
       "month"
     )
       ? `(${this.$t("customerDetailPage.mayChange")})`
-      : "";
+      : ""
   }
 
   stringifyArray(array: Array<string> | undefined): string {
-    if (Array.isArray(array)) return array.join(", ");
-    return "";
+    if (Array.isArray(array)) return array.join(", ")
+    return ""
   }
 
-  readonly toCZK = toCZK;
+  readonly toCZK = toCZK
 }
 </script>

@@ -1,7 +1,7 @@
-import { apiClient } from "@/utils/apiClient";
-import { ApiConfigs } from "../../types";
+import { apiClient } from "@/utils/apiClient"
+import { ApiConfigs } from "../../types"
 
-export type DashboardApi = "status";
+export type DashboardApi = "status"
 
 export const dashboard: ApiConfigs<DashboardApi> = {
   status: {
@@ -13,4 +13,4 @@ export const dashboard: ApiConfigs<DashboardApi> = {
       }),
     transform: (data) => data,
   },
-};
+}

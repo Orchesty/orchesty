@@ -4,22 +4,27 @@
 </template>
 
 <script>
-import ContentTabs from '@/components/layout/content/ContentTabs'
-import { ROUTES } from '@/services/enums/routerEnums'
-import { mapGetters } from 'vuex'
-import { TOPOLOGIES } from '@/store/modules/topologies/types'
-import TopologyNoSelection from '@/components/app/topology/landing/TopologyNoSelection'
-import { TOPOLOGY_ENUMS } from '@/services/enums/topologyEnums'
+import ContentTabs from "@/components/layout/content/ContentTabs"
+import { ROUTES } from "@/services/enums/routerEnums"
+import { mapGetters } from "vuex"
+import { TOPOLOGIES } from "@/store/modules/topologies/types"
+import TopologyNoSelection from "@/components/app/topology/landing/TopologyNoSelection"
+import { TOPOLOGY_ENUMS } from "@/services/enums/topologyEnums"
 
 export default {
   components: { TopologyNoSelection, ContentTabs },
-  name: 'TopologyPage',
+  name: "TopologyPage",
   computed: {
-    ...mapGetters(TOPOLOGIES.NAMESPACE, { topologyActive: TOPOLOGIES.GETTERS.GET_ACTIVE_TOPOLOGY }),
+    ...mapGetters(TOPOLOGIES.NAMESPACE, {
+      topologyActive: TOPOLOGIES.GETTERS.GET_ACTIVE_TOPOLOGY,
+    }),
   },
   methods: {
     isTopologyOpened() {
-      return this.topologyActive?._id && this.topologyActive?.type !== TOPOLOGY_ENUMS.CATEGORY
+      return (
+        this.topologyActive?._id &&
+        this.topologyActive?.type !== TOPOLOGY_ENUMS.CATEGORY
+      )
     },
   },
   data() {
@@ -27,23 +32,23 @@ export default {
       TOPOLOGY_ENUMS,
       tabs: [
         {
-          name: 'navigation.overview',
+          name: "navigation.overview",
           route: ROUTES.TOPOLOGY.VIEWER,
         },
         {
-          name: 'navigation.processes',
+          name: "navigation.processes",
           route: ROUTES.TOPOLOGY.OVERVIEW,
         },
         {
-          name: 'navigation.statistic',
+          name: "navigation.statistic",
           route: ROUTES.TOPOLOGY.STATISTIC,
         },
         {
-          name: 'navigation.userTask',
+          name: "navigation.userTask",
           route: ROUTES.TOPOLOGY.USER_TASK,
         },
         {
-          name: 'navigation.logs',
+          name: "navigation.logs",
           route: ROUTES.TOPOLOGY.LOGS,
         },
       ],

@@ -1,16 +1,16 @@
-import { GRID } from './types'
-import { callApi } from '../../utils'
-import { GRID_REQUESTS } from '@/services/utils/gridRequestEndpoints'
-import { createDefaultGridState } from './state'
+import { GRID } from "./types"
+import { callApi } from "../../utils"
+import { GRID_REQUESTS } from "@/services/utils/gridRequestEndpoints"
+import { createDefaultGridState } from "./state"
 
 export default {
   [GRID.ACTIONS.GRID_FETCH]: async ({ dispatch, commit }, payload) => {
     if (!payload.namespace) {
-      throw new Error('Table must have namespace.')
+      throw new Error("Table must have namespace.")
     }
 
     if (!GRID_REQUESTS[payload.namespace]) {
-      throw new Error('Table must have request.')
+      throw new Error("Table must have request.")
     }
 
     const data = await callApi(dispatch, {
@@ -42,7 +42,10 @@ export default {
       sorter: payload.sorter || state.sorter,
     })
   },
-  [GRID.ACTIONS.FETCH_WITH_INITIAL_STATE]: async ({ dispatch, state }, payload) => {
+  [GRID.ACTIONS.FETCH_WITH_INITIAL_STATE]: async (
+    { dispatch, state },
+    payload
+  ) => {
     const defaultState = createDefaultGridState(payload.namespace, state.backup)
     dispatch(GRID.ACTIONS.GRID_FETCH, {
       search: payload.search || defaultState.search,

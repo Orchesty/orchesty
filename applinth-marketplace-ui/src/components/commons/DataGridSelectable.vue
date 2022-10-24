@@ -7,11 +7,11 @@
           :value="isSomethingSelected"
           @input="onSelectAll"
         />
-        <span class="text--secondary">{{ $t('trashPage.selectAll') }}</span>
+        <span class="text--secondary">{{ $t("trashPage.selectAll") }}</span>
       </label>
       <div class="d-flex align-center text--secondary">
         <span v-if="$slots.actions" class="mr-2">
-          {{ $t('trashPage.selectionActions') }}:
+          {{ $t("trashPage.selectionActions") }}:
         </span>
         <slot name="actions" />
       </div>
@@ -77,10 +77,10 @@
 </template>
 
 <script>
-import { callApi } from '@/utils/apiFetch'
+import { callApi } from "@/utils/apiFetch"
 
 export default {
-  name: 'DataGridSelectable',
+  name: "DataGridSelectable",
   props: {
     headers: {
       type: Array,
@@ -121,7 +121,7 @@ export default {
         const paging = { page, itemsPerPage }
         const sorter =
           sortBy?.map((column, index) => {
-            return { column, direction: sortDesc[index] ? 'DESC' : 'ASC' }
+            return { column, direction: sortDesc[index] ? "DESC" : "ASC" }
           }) ?? []
         return {
           paging,
@@ -162,7 +162,7 @@ export default {
   },
   watch: {
     selectedItems(selectedItems) {
-      this.$emit('select', selectedItems)
+      this.$emit("select", selectedItems)
     },
     options: {
       deep: true,

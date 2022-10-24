@@ -6,11 +6,11 @@
 
 <script>
 export default {
-  name: 'AppIcon',
+  name: "AppIcon",
   props: {
     color: {
       type: String,
-      default: 'primary',
+      default: "primary",
     },
     dense: {
       type: Boolean,

@@ -5,11 +5,11 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import { RawLocation } from "vue-router";
-import { router, routerHistory } from "../../../utils";
+import { Component, Vue } from "vue-property-decorator"
+import { RawLocation } from "vue-router"
+import { router, routerHistory } from "../../../utils"
 
-import Button from "./Button.vue";
+import Button from "./Button.vue"
 
 @Component({
   components: {
@@ -17,15 +17,15 @@ import Button from "./Button.vue";
   },
 })
 export default class BackButton extends Vue {
-  private readonly previousRoute: RawLocation;
+  private readonly previousRoute: RawLocation
 
   constructor() {
-    super();
-    this.previousRoute = routerHistory[routerHistory.length - 1];
+    super()
+    this.previousRoute = routerHistory[routerHistory.length - 1]
   }
 
   private handleClick(): void {
-    router.push(this.previousRoute);
+    router.push(this.previousRoute)
   }
 }
 </script>

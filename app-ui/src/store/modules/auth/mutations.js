@@ -1,12 +1,12 @@
-import { AUTH } from './types'
-import { LOCAL_STORAGE } from '../../../services/enums/localStorageEnums'
-import createState from './state'
-import { resetState } from '../../utils'
-import { ability } from '../../../config'
-import { ACL } from '../../../services/enums/aclEnums'
+import { AUTH } from "./types"
+import { LOCAL_STORAGE } from "../../../services/enums/localStorageEnums"
+import createState from "./state"
+import { resetState } from "../../utils"
+import { ability } from "../../../config"
+import { ACL } from "../../../services/enums/aclEnums"
 
 const userSettingsFallback = {
-  language: 'en',
+  language: "en",
   darkMode: false,
   show: false,
 }
@@ -23,8 +23,8 @@ const updateAuth = (state, payload) => {
 
   state.token = payload.token
   ability.update([
-    { action: 'read', subject: ACL.DASHBOARD_PAGE },
-    { action: 'read', subject: ACL.USERS_PAGE },
+    { action: "read", subject: ACL.DASHBOARD_PAGE },
+    { action: "read", subject: ACL.USERS_PAGE },
   ])
 }
 
@@ -33,9 +33,15 @@ export default {
     updateAuth(state, payload)
     state.checked = false
     if (!payload.settings || payload.settings.length === 0) {
-      localStorage.setItem(LOCAL_STORAGE.USER_SETTINGS, JSON.stringify(userSettingsFallback))
+      localStorage.setItem(
+        LOCAL_STORAGE.USER_SETTINGS,
+        JSON.stringify(userSettingsFallback)
+      )
     } else {
-      localStorage.setItem(LOCAL_STORAGE.USER_SETTINGS, JSON.stringify(payload.settings))
+      localStorage.setItem(
+        LOCAL_STORAGE.USER_SETTINGS,
+        JSON.stringify(payload.settings)
+      )
     }
   },
   [AUTH.MUTATIONS.CHECK_LOGGED_RESPONSE]: (state, payload) => {

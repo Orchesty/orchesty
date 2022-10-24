@@ -3,7 +3,7 @@
     <v-row>
       <v-col>
         <span>
-          {{ $t('trashPage.clickOnTheRow') }}
+          {{ $t("trashPage.clickOnTheRow") }}
         </span>
       </v-col>
     </v-row>
@@ -12,7 +12,7 @@
 
 <script>
 export default {
-  name: 'TrashNoData',
+  name: "TrashNoData",
 }
 </script>
 

@@ -3,11 +3,11 @@
 </template>
 
 <script>
-import ContentTabs from '@/components/layout/content/ContentTabs'
-import { ROUTES } from '@/services/enums/routerEnums'
+import ContentTabs from "@/components/layout/content/ContentTabs"
+import { ROUTES } from "@/services/enums/routerEnums"
 
 export default {
-  name: 'AppStorePage',
+  name: "AppStorePage",
   components: {
     ContentTabs,
   },
@@ -15,11 +15,11 @@ export default {
     return {
       tabs: [
         {
-          name: 'page.heading.availableApps',
+          name: "page.heading.availableApps",
           route: ROUTES.APP_STORE.AVAILABLE_APPS,
         },
         {
-          name: 'page.heading.installedApps',
+          name: "page.heading.installedApps",
           route: ROUTES.APP_STORE.INSTALLED_APPS,
         },
       ],

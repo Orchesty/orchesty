@@ -1,4 +1,4 @@
-import { TOPOLOGIES } from '@/store/modules/topologies/types'
+import { TOPOLOGIES } from "@/store/modules/topologies/types"
 
 export default {
   [TOPOLOGIES.GETTERS.GET_ACTIVE_TOPOLOGY]: (state) => {

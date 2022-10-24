@@ -1,18 +1,46 @@
 <template>
   <div>
-    <v-row v-for="(header, index) in headers" :key="index" dense justify="space-between">
+    <v-row
+      v-for="(header, index) in headers"
+      :key="index"
+      dense
+      justify="space-between"
+    >
       <v-col cols="5">
-        <validation-provider v-slot="{ errors }" :name="$t('form.key')" :rules="fields.input.validations" slim>
-          <app-input v-model="header.key" :label="$t('form.key')" :error-messages="errors" />
+        <validation-provider
+          v-slot="{ errors }"
+          :name="$t('form.key')"
+          :rules="fields.input.validations"
+          slim
+        >
+          <app-input
+            v-model="header.key"
+            :label="$t('form.key')"
+            :error-messages="errors"
+          />
         </validation-provider>
       </v-col>
       <v-col cols="5">
-        <validation-provider v-slot="{ errors }" :name="$t('form.value')" :rules="fields.input.validations" slim>
-          <app-input v-model="header.value" :label="$t('form.value')" :error-messages="errors" />
+        <validation-provider
+          v-slot="{ errors }"
+          :name="$t('form.value')"
+          :rules="fields.input.validations"
+          slim
+        >
+          <app-input
+            v-model="header.value"
+            :label="$t('form.value')"
+            :error-messages="errors"
+          />
         </validation-provider>
       </v-col>
       <v-col cols="auto">
-        <app-button class="ma-auto" small icon :on-click="() => removeLine(index)">
+        <app-button
+          class="ma-auto"
+          small
+          icon
+          :on-click="() => removeLine(index)"
+        >
           <template #icon>
             <app-icon>delete</app-icon>
           </template>
@@ -21,27 +49,31 @@
     </v-row>
     <v-row dense>
       <v-col cols="auto">
-        <app-special-button icon="mdi-plus" :disabled="headerAddAbility" @click="addLine" />
+        <app-special-button
+          icon="mdi-plus"
+          :disabled="headerAddAbility"
+          @click="addLine"
+        />
       </v-col>
       <v-col class="d-flex justify-start align-center">
-        <span>{{ $t('modal.text.headers') }}</span>
+        <span>{{ $t("modal.text.headers") }}</span>
       </v-col>
     </v-row>
   </div>
 </template>
 
 <script>
-import AppInput from '@/components/commons/input/AppInput'
-import AppButton from '@/components/commons/button/AppButton'
-import AppIcon from '@/components/commons/icon/AppIcon'
-import AppSpecialButton from '@/components/commons/button/AppSpecialButton'
+import AppInput from "@/components/commons/input/AppInput"
+import AppButton from "@/components/commons/button/AppButton"
+import AppIcon from "@/components/commons/icon/AppIcon"
+import AppSpecialButton from "@/components/commons/button/AppSpecialButton"
 export default {
-  name: 'KeyValueInput',
+  name: "KeyValueInput",
   components: { AppSpecialButton, AppIcon, AppButton, AppInput },
   props: {
     keyLabel: {
       type: String,
-      default: '',
+      default: "",
     },
     headersProp: {
       type: Array,
@@ -49,7 +81,7 @@ export default {
     },
     valueLabel: {
       type: String,
-      default: '',
+      default: "",
     },
   },
   data() {
@@ -67,7 +99,11 @@ export default {
   computed: {
     headerAddAbility() {
       let checkEmptyHeaders = this.headers.filter(
-        (header) => header.key === '' || header.value === '' || header.key === null || header.value === null
+        (header) =>
+          header.key === "" ||
+          header.value === "" ||
+          header.key === null ||
+          header.value === null
       )
       return checkEmptyHeaders.length >= 1 && this.headers.length > 0
     },
@@ -75,7 +111,11 @@ export default {
   methods: {
     addLine() {
       let checkEmptyHeaders = this.headers.filter(
-        (header) => header.key === '' || header.value === '' || header.key === null || header.value === null
+        (header) =>
+          header.key === "" ||
+          header.value === "" ||
+          header.key === null ||
+          header.value === null
       )
       if (checkEmptyHeaders.length >= 1 && this.headers.length > 0) {
         return
@@ -94,7 +134,7 @@ export default {
       immediate: true,
       deep: true,
       handler() {
-        this.$emit('input', this.headers)
+        this.$emit("input", this.headers)
       },
     },
     headersProp: {

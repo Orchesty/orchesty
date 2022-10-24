@@ -1,10 +1,16 @@
 <template>
-  <v-checkbox v-model="innerValue" :label="label" :readonly="readonly" :disabled="disabled" dense />
+  <v-checkbox
+    v-model="innerValue"
+    :label="label"
+    :readonly="readonly"
+    :disabled="disabled"
+    dense
+  />
 </template>
 
 <script>
 export default {
-  name: 'AppCheckbox',
+  name: "AppCheckbox",
   props: {
     label: {
       type: String,
@@ -30,7 +36,7 @@ export default {
   },
   watch: {
     innerValue(value) {
-      this.$emit('input', value)
+      this.$emit("input", value)
     },
     value: {
       immediate: true,

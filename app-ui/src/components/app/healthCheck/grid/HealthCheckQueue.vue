@@ -13,20 +13,20 @@
         {{ items.item.queue }}
       </td>
       <td v-if="isVisible('status')">
-        {{ items.item.consumers ? 'Healthy' : 'Unhealthy' }}
+        {{ items.item.consumers ? "Healthy" : "Unhealthy" }}
       </td>
     </template>
   </data-grid>
 </template>
 
 <script>
-import DataGrid from '@/components/commons/grid/DataGrid'
-import { DATA_GRIDS } from '@/services/enums/dataGridEnums'
-import { mapGetters } from 'vuex'
-import { GRID } from '@/store/modules/grid/types'
+import DataGrid from "@/components/commons/grid/DataGrid"
+import { DATA_GRIDS } from "@/services/enums/dataGridEnums"
+import { mapGetters } from "vuex"
+import { GRID } from "@/store/modules/grid/types"
 
 export default {
-  name: 'HealthCheckQueue',
+  name: "HealthCheckQueue",
   components: { DataGrid },
   computed: {
     ...mapGetters(DATA_GRIDS.SCHEDULED_TASK, {
@@ -39,26 +39,32 @@ export default {
       DATA_GRIDS,
       headers: [
         {
-          text: this.$t('grid.header.name'),
-          value: 'queue',
-          align: 'left',
+          text: this.$t("grid.header.name"),
+          value: "queue",
+          align: "left",
           sortable: false,
           visible: true,
-          width: '50%',
+          width: "50%",
         },
         {
-          text: this.$t('grid.header.status'),
-          value: 'status',
-          align: 'left',
+          text: this.$t("grid.header.status"),
+          value: "status",
+          align: "left",
           sortable: false,
           visible: true,
-          width: '50%',
+          width: "50%",
         },
       ],
     }
   },
   async mounted() {
-    await this.$refs.grid.fetchGridWithInitials(null, null, null, this.pagingInitial, this.sorterInitial)
+    await this.$refs.grid.fetchGridWithInitials(
+      null,
+      null,
+      null,
+      this.pagingInitial,
+      this.sorterInitial
+    )
   },
 }
 </script>

@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-const path = require("path");
+const path = require("path")
 
 module.exports = {
   chainWebpack: (config) => {
-    configSVGIcon(config);
+    configSVGIcon(config)
   },
   transpileDependencies: ["vuetify"],
   pluginOptions: {
@@ -15,12 +15,12 @@ module.exports = {
       patterns: [path.resolve(__dirname, "./src/styles/variables.scss")],
     },
   },
-};
+}
 
 function configSVGIcon(config) {
-  const iconFolder = path.resolve(__dirname, "./src/assets/img/icons");
+  const iconFolder = path.resolve(__dirname, "./src/assets/img/icons")
 
-  config.module.rule("svg").exclude.add(iconFolder).end();
+  config.module.rule("svg").exclude.add(iconFolder).end()
 
   config.module
     .rule("svg-icon")
@@ -32,5 +32,5 @@ function configSVGIcon(config) {
     .options({
       symbolId: "icon-[name]",
     })
-    .end();
+    .end()
 }

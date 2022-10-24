@@ -1,4 +1,4 @@
-import { FLASH_MESSAGES } from './types'
+import { FLASH_MESSAGES } from "./types"
 
 export default {
   [FLASH_MESSAGES.ACTIONS.ADD]: ({ commit }, payload) => {

@@ -1,13 +1,13 @@
 <template>
   <heading class="text-center">
-    {{ $t('notFoundPage.heading') }}
+    {{ $t("notFoundPage.heading") }}
   </heading>
 </template>
 
 <script>
-import Heading from '@/components/commons/Heading'
+import Heading from "@/components/commons/Heading"
 export default {
-  name: 'NotFoundPage',
+  name: "NotFoundPage",
   components: { Heading },
 }
 </script>

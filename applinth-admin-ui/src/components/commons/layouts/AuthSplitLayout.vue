@@ -21,8 +21,8 @@
 </template>
 
 <script>
-import { Component, Vue } from "vue-property-decorator";
-import Heading from "@/components/commons/typography/Heading";
+import { Component, Vue } from "vue-property-decorator"
+import Heading from "@/components/commons/typography/Heading"
 @Component({
   components: { Heading },
 })

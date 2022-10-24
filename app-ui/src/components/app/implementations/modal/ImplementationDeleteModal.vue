@@ -1,9 +1,13 @@
 <template>
-  <modal-template v-model="isOpen" :title="$t('modal.header.implementationDelete')" :on-confirm="submit">
+  <modal-template
+    v-model="isOpen"
+    :title="$t('modal.header.implementationDelete')"
+    :on-confirm="submit"
+  >
     <template #default>
       <v-row dense>
         <v-col cols="12">
-          {{ $t('modal.text.implementationDelete') }}
+          {{ $t("modal.text.implementationDelete") }}
         </v-col>
       </v-row>
     </template>
@@ -29,15 +33,15 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
-import { REQUESTS_STATE } from '@/store/modules/api/types'
-import { API } from '@/api'
-import { IMPLEMENTATIONS } from '@/store/modules/implementations/types'
-import ModalTemplate from '@/components/commons/modal/ModalTemplate'
-import AppButton from '@/components/commons/button/AppButton'
+import { mapActions, mapGetters } from "vuex"
+import { REQUESTS_STATE } from "@/store/modules/api/types"
+import { API } from "@/api"
+import { IMPLEMENTATIONS } from "@/store/modules/implementations/types"
+import ModalTemplate from "@/components/commons/modal/ModalTemplate"
+import AppButton from "@/components/commons/button/AppButton"
 
 export default {
-  name: 'ImplementationDeleteModal',
+  name: "ImplementationDeleteModal",
   components: { AppButton, ModalTemplate },
   data() {
     return {
@@ -47,17 +51,22 @@ export default {
   computed: {
     ...mapGetters(REQUESTS_STATE.NAMESPACE, [REQUESTS_STATE.GETTERS.GET_STATE]),
     state() {
-      return this[REQUESTS_STATE.GETTERS.GET_STATE]([API.implementation.delete.id, API.implementation.getList.id])
+      return this[REQUESTS_STATE.GETTERS.GET_STATE]([
+        API.implementation.delete.id,
+        API.implementation.getList.id,
+      ])
     },
   },
   props: {
     itemId: {
       type: String,
-      default: '',
+      default: "",
     },
   },
   methods: {
-    ...mapActions(IMPLEMENTATIONS.NAMESPACE, [IMPLEMENTATIONS.ACTIONS.DELETE_IMPLEMENTATIONS_REQUEST]),
+    ...mapActions(IMPLEMENTATIONS.NAMESPACE, [
+      IMPLEMENTATIONS.ACTIONS.DELETE_IMPLEMENTATIONS_REQUEST,
+    ]),
     async submit() {
       await this[IMPLEMENTATIONS.ACTIONS.DELETE_IMPLEMENTATIONS_REQUEST]({
         id: this.itemId,

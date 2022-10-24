@@ -8,7 +8,11 @@
     <template #default>
       <v-row dense>
         <v-col cols="12">
-          <folder-form ref="form" :callback-data="callbackData" :on-submit="submit" />
+          <folder-form
+            ref="form"
+            :callback-data="callbackData"
+            :on-submit="submit"
+          />
         </v-col>
       </v-row>
     </template>
@@ -30,17 +34,17 @@
 </template>
 
 <script>
-import { events, EVENTS } from '../../../../services/utils/events'
-import ModalTemplate from '../../../commons/modal/ModalTemplate'
-import { TOPOLOGIES } from '../../../../store/modules/topologies/types'
-import { mapActions, mapGetters } from 'vuex'
-import { REQUESTS_STATE } from '../../../../store/modules/api/types'
-import { API } from '../../../../api'
-import FolderForm from '../form/FolderForm'
-import AppButton from '@/components/commons/button/AppButton'
+import { events, EVENTS } from "../../../../services/utils/events"
+import ModalTemplate from "../../../commons/modal/ModalTemplate"
+import { TOPOLOGIES } from "../../../../store/modules/topologies/types"
+import { mapActions, mapGetters } from "vuex"
+import { REQUESTS_STATE } from "../../../../store/modules/api/types"
+import { API } from "../../../../api"
+import FolderForm from "../form/FolderForm"
+import AppButton from "@/components/commons/button/AppButton"
 
 export default {
-  name: 'ModalCreateFolder',
+  name: "ModalCreateFolder",
   components: { AppButton, FolderForm, ModalTemplate },
   data: () => ({
     isOpen: false,
@@ -54,7 +58,10 @@ export default {
     },
   },
   methods: {
-    ...mapActions(TOPOLOGIES.NAMESPACE, [TOPOLOGIES.ACTIONS.FOLDER.CREATE, TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES]),
+    ...mapActions(TOPOLOGIES.NAMESPACE, [
+      TOPOLOGIES.ACTIONS.FOLDER.CREATE,
+      TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES,
+    ]),
     async submit(form) {
       await this[TOPOLOGIES.ACTIONS.FOLDER.CREATE](form).then(async (res) => {
         if (res) {
