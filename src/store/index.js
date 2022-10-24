@@ -2,7 +2,6 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import requests from './modules/api'
 import auth from './modules/auth'
-import notifications from './modules/notifications'
 import userTasks from './modules/userTasks'
 import flashMessages from './modules/flashMessages'
 import adminUsers from './modules/adminUsers'
@@ -42,7 +41,6 @@ export const createStore = (router) => {
     modules: {
       requests,
       auth,
-      notifications,
       flashMessages,
       adminUsers,
       topologies,
@@ -89,7 +87,6 @@ export const createStore = (router) => {
         ],
         filter: [[{ column: 'type', operator: 'EQ', value: ['trash'] }]],
       }),
-      [DATA_GRIDS.NOTIFICATIONS]: createGrid(DATA_GRIDS.NOTIFICATIONS, {}),
       [DATA_GRIDS.TOPOLOGY_LOGS]: createGrid(DATA_GRIDS.TOPOLOGY_LOGS, {
         sorter: [
           {
@@ -125,12 +122,6 @@ export const createStore = (router) => {
         paging: {
           page: 1,
           itemsPerPage: 10,
-        },
-      }),
-      [DATA_GRIDS.EVENTS]: createGrid(DATA_GRIDS.EVENTS, {
-        paging: {
-          page: 1,
-          itemsPerPage: 50,
         },
       }),
       [DATA_GRIDS.INSTALLED_APPS]: createGrid(DATA_GRIDS.INSTALLED_APPS, {
