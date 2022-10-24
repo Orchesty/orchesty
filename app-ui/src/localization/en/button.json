@@ -16,7 +16,11 @@
       "disabling": "disabling...",
       "importing": "Importing...",
       "acceptAll": "accepting all...",
-      "rejectAll": "rejecting all..."
+      "rejectAll": "rejecting all...",
+      "accept": "approving...",
+      "deny": "denying...",
+      "reject": "rejecting...",
+      "update": "updating..."
     },
     "run": "Run",
     "save": "Save",
@@ -62,6 +66,7 @@
     "last24hours": "Last 24 hours",
     "filter": "Filter",
     "discard": "Discard",
+    "enable": "Enable",
     "publish": "Publish"
   }
 }
