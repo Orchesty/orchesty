@@ -113,7 +113,6 @@ export default {
     }
   },
   methods: {
-    ...mapActions(DATA_GRIDS.EVENTS, [GRID.ACTIONS.GRID_FETCH]),
     prettyMs: prettyMilliseconds,
 
     getProcessFinishTime(process) {
