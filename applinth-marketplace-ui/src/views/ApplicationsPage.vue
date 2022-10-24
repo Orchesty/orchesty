@@ -28,7 +28,7 @@
               app.installed ? $t('button.installed') : $t('button.install')
             "
             :color="app.installed ? 'success' : 'primary'"
-            :disabled="app.installed || isRequestSending"
+            :disabled="app.installed"
             class="mt-2"
             @click="install(app.key, app.name)"
           />
@@ -43,7 +43,7 @@
               params: { id: app.key },
             }"
             class="mt-2"
-            :disabled="isRequestSending"
+            :disabled="appInProgress === app.key"
           />
         </template>
       </app-store-item>
