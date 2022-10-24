@@ -89,7 +89,7 @@ export default {
       this.currentMeta = meta
 
       if (meta.type === FILTER.QUICK_FILTER)
-        this.$emit('onFetchGrid', {
+        this.$emit('fetchGrid', {
           search: this.currentSearch,
           filter: [].concat(this.currentQuickFilter, this.currentFilter),
           paging: null,
@@ -102,7 +102,7 @@ export default {
 
       params.filter = [].concat(this.currentFilter, this.currentQuickFilter)
 
-      this.$emit('onFetchGrid', params)
+      this.$emit('fetchGrid', params)
     },
   },
 }

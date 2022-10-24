@@ -93,8 +93,8 @@
                   >
                     {{
                       props.isExpanded
-                        ? 'keyboard_arrow_up'
-                        : 'keyboard_arrow_down'
+                        ? "keyboard_arrow_up"
+                        : "keyboard_arrow_down"
                     }}
                   </v-icon>
                 </td>
@@ -142,14 +142,14 @@
 </template>
 
 <script>
-import { GRID } from '@/store/modules/grid/types'
-import { withNamespace } from '@/store/utils'
-import DataGridFilter from './filter/DataGridFilter'
-import { SIMPLE_FILTER } from '@/services/enums/dataGridFilterEnums'
-import { DIRECTION } from '@/services/enums/gridEnums'
+import { GRID } from "@/store/modules/grid/types"
+import { withNamespace } from "@/store/utils"
+import DataGridFilter from "./filter/DataGridFilter"
+import { SIMPLE_FILTER } from "@/services/enums/dataGridFilterEnums"
+import { DIRECTION } from "@/services/enums/gridEnums"
 
 export default {
-  name: 'DataGrid',
+  name: "DataGrid",
   components: { DataGridFilter },
   props: {
     fixedItems: {
@@ -162,11 +162,11 @@ export default {
     },
     fixedFilter: {
       type: Array,
-      default: null,
+      default: () => [],
     },
     title: {
       type: String,
-      default: '',
+      default: "",
     },
     contentEnabled: {
       type: Boolean,
@@ -210,7 +210,7 @@ export default {
     },
     itemKey: {
       type: String,
-      default: 'id',
+      default: "id",
       required: false,
     },
     showExpand: {
@@ -263,7 +263,7 @@ export default {
       activeIndex: null,
       activeIndexId: null,
       selected: [],
-      searchText: '',
+      searchText: "",
       options: {},
       rowItemsPerPage: [10, 20, 50, 100, 500],
       visibleHeaders: [],
@@ -320,8 +320,8 @@ export default {
   },
   methods: {
     // This function fetches data form BE without using default values form the store, if the data is not provided in the parameters of this function
-    async onFetchGridWithoutStore({ search, filter, paging, sorter }) {
-      const finalFilter = [...(this.fixedFilter ?? []), ...(filter ?? [])]
+    async onFetchGridWithoutStore({ search, filter = [], paging, sorter }) {
+      const finalFilter = [...this.fixedFilter, ...filter]
 
       await this.$store.dispatch(
         withNamespace(this.namespace, GRID.ACTIONS.FETCH_DATA_WITHOUT_STORE),
@@ -337,7 +337,12 @@ export default {
     },
 
     async fetchGrid(search, params, filter, paging, sorter) {
-      const finalFilter = [...(this.fixedFilter ?? []), ...(filter ?? [])]
+      if (!filter) {
+        filter = []
+      }
+
+      // fix fetching with filter parameter check for null and set to [] if so
+      const finalFilter = [...this.fixedFilter, ...filter]
 
       await this.$store.dispatch(
         withNamespace(this.namespace, GRID.ACTIONS.FETCH_WITH_DATA),
@@ -352,12 +357,17 @@ export default {
       )
     },
     async fetchGridWithInitials(search, params, filter, paging, sorter) {
-      const finalFilter = [...(this.fixedFilter ?? []), ...(filter ?? [])]
+      if (!filter) {
+        filter = []
+      }
+
+      // fix fetching with filter parameter check for null and set to [] if so
+      const finalFilter = [...this.fixedFilter, ...filter]
 
       await this.$store.dispatch(
         withNamespace(this.namespace, GRID.ACTIONS.FETCH_WITH_INITIAL_STATE),
         {
-          search: search || '',
+          search: search || "",
           namespace: this.namespace,
           filter: finalFilter || null,
           paging: paging || null,
@@ -374,7 +384,7 @@ export default {
         this.activeIndexId = props.item.id
       }
       this.expandClick ? props.expand(!props.isExpanded) : null
-      this.returnRowProps ? this.$emit('row-props', props) : null
+      this.returnRowProps ? this.$emit("row-props", props) : null
     },
     getVisibleHeaders(headers) {
       if (!headers) {
@@ -386,7 +396,7 @@ export default {
         if (truncatedHeader.class) {
           truncatedHeader.class = `${header.class} truncate`
         } else {
-          truncatedHeader.class = 'truncate'
+          truncatedHeader.class = "truncate"
         }
         return truncatedHeader
       })
@@ -435,7 +445,7 @@ export default {
       deep: true,
     },
     selected(selected) {
-      this.$emit('input', selected)
+      this.$emit("input", selected)
     },
     headers: {
       immediate: true,
