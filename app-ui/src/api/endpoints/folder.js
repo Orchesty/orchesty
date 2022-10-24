@@ -1,16 +1,16 @@
 export default {
   getList: {
-    id: 'FOLDER_GET_LIST',
+    id: "FOLDER_GET_LIST",
     request: () => ({
-      url: '/categories',
-      method: 'GET',
+      url: "/categories",
+      method: "GET",
     }),
   },
   create: {
-    id: 'FOLDER_CREATE',
+    id: "FOLDER_CREATE",
     request: ({ name, parent }) => ({
-      url: '/categories',
-      method: 'POST',
+      url: "/categories",
+      method: "POST",
       data: {
         name: name,
         parent: parent || null,
@@ -18,10 +18,10 @@ export default {
     }),
   },
   edit: {
-    id: 'FOLDER_EDIT',
+    id: "FOLDER_EDIT",
     request: ({ id, name, parent }) => ({
       url: `/categories/${id}`,
-      method: 'PUT',
+      method: "PUT",
       data: {
         name: name,
         parent: parent || null,
@@ -29,10 +29,10 @@ export default {
     }),
   },
   delete: {
-    id: 'FOLDER_DELETE',
+    id: "FOLDER_DELETE",
     request: (id) => ({
       url: `/categories/${id}`,
-      method: 'DELETE',
+      method: "DELETE",
     }),
   },
 }

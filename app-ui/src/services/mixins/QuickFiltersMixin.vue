@@ -1,14 +1,14 @@
 <script>
-import { OPERATOR } from '@/services/enums/gridEnums'
-import { QUICK_FILTERS } from '@/services/utils/quickFilters'
+import { OPERATOR } from "@/services/enums/gridEnums"
+import { QUICK_FILTERS } from "@/services/utils/quickFilters"
 
 export default {
-  name: 'QuickFiltersMixin',
+  name: "QuickFiltersMixin",
   methods: {
     init(val) {
       this.quickFilters = [
         {
-          name: 'button.last5mins',
+          name: "button.last5mins",
           filter: [
             [
               {
@@ -21,7 +21,7 @@ export default {
           ],
         },
         {
-          name: 'button.last30mins',
+          name: "button.last30mins",
           filter: [
             [
               {
@@ -34,7 +34,7 @@ export default {
           ],
         },
         {
-          name: 'button.lastHour',
+          name: "button.lastHour",
           filter: [
             [
               {
@@ -47,7 +47,7 @@ export default {
           ],
         },
         {
-          name: 'button.last6hours',
+          name: "button.last6hours",
           filter: [
             [
               {
@@ -60,7 +60,7 @@ export default {
           ],
         },
         {
-          name: 'button.last24hours',
+          name: "button.last24hours",
           filter: [
             [
               {
@@ -76,7 +76,7 @@ export default {
     },
   },
   data() {
-    this.column = ''
+    this.column = ""
     return {
       quickFilters: [],
     }

@@ -23,7 +23,10 @@ export const clearFilter = (filter) => {
 
   clearFilter = clearFilter.map((and) => {
     return and.filter((orIndex) => {
-      return orIndex.value.length >= 1 && orIndex.value.every((value) => value || value === false)
+      return (
+        orIndex.value.length >= 1 &&
+        orIndex.value.every((value) => value || value === false)
+      )
     })
   })
 

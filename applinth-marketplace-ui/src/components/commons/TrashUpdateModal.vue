@@ -25,15 +25,15 @@
 </template>
 
 <script>
-import BaseModal from '@/components/commons/BaseModal'
-import BaseButton from '@/components/commons/BaseButton'
-import JsonEditor from '@/components/commons/JsonEditor'
-import { callApi } from '@/utils/apiFetch'
-import { API } from '@/api'
-import { FLASH_MESSAGES_TYPES } from '@/store/flashMessages/types'
-import showFlashMessage from '@/utils/flashMessage'
+import BaseModal from "@/components/commons/BaseModal"
+import BaseButton from "@/components/commons/BaseButton"
+import JsonEditor from "@/components/commons/JsonEditor"
+import { callApi } from "@/utils/apiFetch"
+import { API } from "@/api"
+import { FLASH_MESSAGES_TYPES } from "@/store/flashMessages/types"
+import showFlashMessage from "@/utils/flashMessage"
 export default {
-  name: 'TrashUpdateModal',
+  name: "TrashUpdateModal",
   components: { JsonEditor, BaseButton, BaseModal },
   props: {
     trashItem: {
@@ -63,9 +63,9 @@ export default {
             body: JSON.stringify(this.body),
           },
         })
-        this.$emit('refreshItemData')
+        this.$emit("refreshItemData")
         showFlashMessage(
-          this.$t('flashMessage.updated', { item: this.trashItem.id }),
+          this.$t("flashMessage.updated", { item: this.trashItem.id }),
           FLASH_MESSAGES_TYPES.SUCCESS
         )
         this.isOpen = false

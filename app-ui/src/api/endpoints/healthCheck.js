@@ -1,9 +1,9 @@
 export default {
   grid: {
-    id: 'HEALTH_CHECK_GRID',
+    id: "HEALTH_CHECK_GRID",
     request: () => ({
-      url: '/metrics/consumers',
-      method: 'GET',
+      url: "/metrics/consumers",
+      method: "GET",
     }),
     reduce: (data) => {
       return {
@@ -18,10 +18,10 @@ export default {
     },
   },
   containers: {
-    id: 'HEALTH_CHECK_CONTAINERS',
+    id: "HEALTH_CHECK_CONTAINERS",
     request: () => ({
-      url: '/metrics/containers',
-      method: 'GET',
+      url: "/metrics/containers",
+      method: "GET",
     }),
     reduce: (data) => {
       return {
@@ -36,10 +36,10 @@ export default {
     },
   },
   errorList: {
-    id: 'HEALTH_CHECK_GET_ERROR_LIST',
+    id: "HEALTH_CHECK_GET_ERROR_LIST",
     request: () => ({
-      url: '/metrics/healthcheck',
-      method: 'GET',
+      url: "/metrics/healthcheck",
+      method: "GET",
     }),
     reduce: (data) => {
       return {

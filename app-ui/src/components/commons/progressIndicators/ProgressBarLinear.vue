@@ -1,14 +1,19 @@
 <template>
-  <v-progress-linear :indeterminate="indeterminate" :color="color" :height="height" :class="className" />
+  <v-progress-linear
+    :indeterminate="indeterminate"
+    :color="color"
+    :height="height"
+    :class="className"
+  />
 </template>
 
 <script>
 export default {
-  name: 'ProgressBarLinear',
+  name: "ProgressBarLinear",
   props: {
     color: {
       type: String,
-      default: 'primary',
+      default: "primary",
     },
     indeterminate: {
       type: Boolean,
@@ -20,7 +25,7 @@ export default {
     },
     className: {
       type: String,
-      default: '',
+      default: "",
     },
   },
 }

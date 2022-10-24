@@ -15,7 +15,7 @@
     <template #content>
       <div class="d-flex flex-column">
         <p class="text-body-1">
-          {{ $t('application.appUninstallConfirmation', { app: appName }) }}
+          {{ $t("application.appUninstallConfirmation", { app: appName }) }}
         </p>
       </div>
     </template>
@@ -36,13 +36,13 @@
 </template>
 
 <script>
-import BaseModal from '@/components/commons/BaseModal'
-import BaseButton from '@/components/commons/BaseButton'
-import { FLASH_MESSAGES_TYPES } from '@/store/flashMessages/types'
-import showFlashMessage from '@/utils/flashMessage'
+import BaseModal from "@/components/commons/BaseModal"
+import BaseButton from "@/components/commons/BaseButton"
+import { FLASH_MESSAGES_TYPES } from "@/store/flashMessages/types"
+import showFlashMessage from "@/utils/flashMessage"
 
 export default {
-  name: 'UninstallAppModal',
+  name: "UninstallAppModal",
   components: { BaseButton, BaseModal },
   props: {
     appName: {
@@ -71,7 +71,7 @@ export default {
     async onConfirm() {
       await this.onClick()
       showFlashMessage(
-        this.$t('flashMessage.uninstalled', { item: this.appName }),
+        this.$t("flashMessage.uninstalled", { item: this.appName }),
         FLASH_MESSAGES_TYPES.SUCCESS
       )
       this.isOpen = false

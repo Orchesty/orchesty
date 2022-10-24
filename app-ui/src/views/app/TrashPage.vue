@@ -5,10 +5,10 @@
 </template>
 
 <script>
-import ContentBasic from '@/components/layout/content/ContentBasic'
-import TrashHandler from '@/components/app/trash/grid/TrashHandler'
+import ContentBasic from "@/components/layout/content/ContentBasic"
+import TrashHandler from "@/components/app/trash/grid/TrashHandler"
 export default {
-  name: 'TrashPage',
+  name: "TrashPage",
   components: { TrashHandler, ContentBasic },
 }
 </script>

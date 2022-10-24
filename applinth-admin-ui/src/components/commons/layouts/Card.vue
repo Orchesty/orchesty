@@ -21,28 +21,28 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Prop, Vue } from "vue-property-decorator"
 
 @Component
 export default class Card extends Vue {
   @Prop({ required: false, type: Boolean, default: false })
-  private loading!: boolean;
+  private loading!: boolean
 
   @Prop({ required: false, type: String, default: null })
-  private height?: string;
+  private height?: string
 
   @Prop({ required: false, type: String })
-  private expandableCardId?: string;
+  private expandableCardId?: string
 
-  private expanded = true;
+  private expanded = true
 
   constructor() {
-    super();
+    super()
   }
 
   private handleExpand(): void {
-    if (!this.expandableCardId) return;
-    this.expanded = !this.expanded;
+    if (!this.expandableCardId) return
+    this.expanded = !this.expanded
   }
 }
 </script>

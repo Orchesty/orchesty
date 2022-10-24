@@ -213,27 +213,27 @@
 </template>
 
 <script>
-import { config } from '@/config'
-import BaseInput from '@/components/commons/BaseInput'
-import BaseButton from '@/components/commons/BaseButton'
-import BaseCheckbox from '@/components/commons/BaseCheckbox'
-import { callApi } from '@/utils/apiFetch'
-import { redirectTo } from '@/utils/redirect'
-import { API } from '@/api'
-import NavigationItem from '@/components/commons/NavigationItem'
-import { ROUTES } from '@/router/routes'
-import AppItemPasswordModal from '@/components/commons/AppInstalledPasswordModal'
-import ActionsWrapper from '@/components/commons/ActionsWrapper'
-import BaseProgressBarLinear from '@/components/commons/BaseProgressBarLinear'
-import UninstallAppModal from '@/components/applications/UninstallAppModal'
-import BaseSelect from '@/components/commons/BaseSelect'
-import showFlashMessage from '@/utils/flashMessage'
-import { FLASH_MESSAGES_TYPES } from '@/store/flashMessages/types'
-import AppNotAuthorizedModal from '@/components/applications/AppNotAuthorizedModal'
-import { authService } from '@/utils/authService'
+import { config } from "@/config"
+import BaseInput from "@/components/commons/BaseInput"
+import BaseButton from "@/components/commons/BaseButton"
+import BaseCheckbox from "@/components/commons/BaseCheckbox"
+import { callApi } from "@/utils/apiFetch"
+import { redirectTo } from "@/utils/redirect"
+import { API } from "@/api"
+import NavigationItem from "@/components/commons/NavigationItem"
+import { ROUTES } from "@/router/routes"
+import AppItemPasswordModal from "@/components/commons/AppInstalledPasswordModal"
+import ActionsWrapper from "@/components/commons/ActionsWrapper"
+import BaseProgressBarLinear from "@/components/commons/BaseProgressBarLinear"
+import UninstallAppModal from "@/components/applications/UninstallAppModal"
+import BaseSelect from "@/components/commons/BaseSelect"
+import showFlashMessage from "@/utils/flashMessage"
+import { FLASH_MESSAGES_TYPES } from "@/store/flashMessages/types"
+import AppNotAuthorizedModal from "@/components/applications/AppNotAuthorizedModal"
+import { authService } from "@/utils/authService"
 
 export default {
-  name: 'InstalledAppDetailPage',
+  name: "InstalledAppDetailPage",
   components: {
     AppNotAuthorizedModal,
     BaseSelect,
@@ -264,9 +264,9 @@ export default {
       isActivationLoading: false,
       navigationItem: {
         to: ROUTES.APPLICATIONS,
-        icon: 'mdi-arrow-left-circle',
-        text: 'navigation.link.backToTheApplications',
-        color: 'primary',
+        icon: "mdi-arrow-left-circle",
+        text: "navigation.link.backToTheApplications",
+        color: "primary",
       },
       redirectTo,
     }
@@ -280,8 +280,8 @@ export default {
     },
     onOrOff() {
       return this.isActivated
-        ? this.$t('application.activated')
-        : this.$t('application.notactivated')
+        ? this.$t("application.activated")
+        : this.$t("application.notactivated")
     },
   },
   methods: {
@@ -318,7 +318,7 @@ export default {
       if (result) {
         showFlashMessage(
           this.$t(
-            newState ? 'flashMessage.activated' : 'flashMessage.deactivated',
+            newState ? "flashMessage.activated" : "flashMessage.deactivated",
             {
               item: this.appActive.name,
             }
@@ -382,7 +382,7 @@ export default {
 
       this.isSaving = false
       showFlashMessage(
-        this.$t('flashMessage.saved', { item: formName }),
+        this.$t("flashMessage.saved", { item: formName }),
         FLASH_MESSAGES_TYPES.SUCCESS
       )
     },
@@ -393,9 +393,9 @@ export default {
         API.authorize.getAuthorizationApplicationLink(this.appActive.key),
         config.backend.apiBaseUrl
       )
-      authorizeURL.searchParams.append('redirect_url', window.location.href)
-      authorizeURL.searchParams.append('Authorization', authService.accessToken)
-      window.open(authorizeURL.href, '_blank').focus()
+      authorizeURL.searchParams.append("redirect_url", window.location.href)
+      authorizeURL.searchParams.append("Authorization", authService.accessToken)
+      window.open(authorizeURL.href, "_blank").focus()
       this.isSaving = false
     },
 
@@ -417,8 +417,8 @@ export default {
       if (this.appActive.info) {
         this.settingsConfig.unshift({
           info: this.appActive.info,
-          key: 'info',
-          publicName: 'Info',
+          key: "info",
+          publicName: "Info",
           fields: [],
         })
       }
@@ -442,13 +442,13 @@ export default {
 
     hasOauth() {
       this.hasOauthAuthorization =
-        this.appActive.authorization_type.startsWith('oauth')
+        this.appActive.authorization_type.startsWith("oauth")
     },
 
     hasEmptySettings() {
       for (let form of this.settingsForms) {
         const hasEmptyValue = Object.values(form.fields).some((field) => {
-          return field == null || field === ''
+          return field == null || field === ""
         })
         if (hasEmptyValue) {
           form.hasValidSettings = false
@@ -479,7 +479,7 @@ export default {
       }
     },
     hasLogo(app) {
-      return app?.logo ? app.logo : ''
+      return app?.logo ? app.logo : ""
     },
   },
   watch: {
@@ -508,11 +508,11 @@ export default {
       requestData: API.appStore.getApp,
       params: { key: this.$route.params.id },
     })
-    this.$emit('appChanged', this.appActive.name)
+    this.$emit("appChanged", this.appActive.name)
     this.loading = false
   },
   beforeDestroy() {
-    this.$emit('appChanged', null)
+    this.$emit("appChanged", null)
   },
 }
 </script>

@@ -2,7 +2,7 @@
   <div>
     <v-row>
       <v-col>
-        <heading>{{ $t('trashPage.heading') }}</heading>
+        <heading>{{ $t("trashPage.heading") }}</heading>
       </v-col>
     </v-row>
     <v-row>
@@ -49,26 +49,26 @@
 </template>
 
 <script>
-import { GRIDS } from '@/utils/gridsConfig'
+import { GRIDS } from "@/utils/gridsConfig"
 import {
   toLocalDateTime,
   toLocalTime,
-} from '@/localization/filters/dateFilters'
-import DataGridSelectable from '@/components/commons/DataGridSelectable'
-import { ROUTES } from '@/router/routes'
-import Heading from '@/components/commons/Heading'
-import { redirectTo } from '@/utils/redirect'
-import { callApi } from '@/utils/apiFetch'
-import { API } from '@/api'
-import showFlashMessage from '@/utils/flashMessage'
-import { FLASH_MESSAGES_TYPES } from '@/store/flashMessages/types'
-import ActionsWrapper from '@/components/commons/ActionsWrapper'
-import TrashAcceptAllModal from '@/components/commons/TrashAcceptAllModal'
-import TrashRejectAllModal from '@/components/commons/TrashRejectAllModal'
-import { COLUMN_TOPOLOGY_KEY, COLUMN_DATE_KEY } from '@/store/trash/types'
+} from "@/localization/filters/dateFilters"
+import DataGridSelectable from "@/components/commons/DataGridSelectable"
+import { ROUTES } from "@/router/routes"
+import Heading from "@/components/commons/Heading"
+import { redirectTo } from "@/utils/redirect"
+import { callApi } from "@/utils/apiFetch"
+import { API } from "@/api"
+import showFlashMessage from "@/utils/flashMessage"
+import { FLASH_MESSAGES_TYPES } from "@/store/flashMessages/types"
+import ActionsWrapper from "@/components/commons/ActionsWrapper"
+import TrashAcceptAllModal from "@/components/commons/TrashAcceptAllModal"
+import TrashRejectAllModal from "@/components/commons/TrashRejectAllModal"
+import { COLUMN_TOPOLOGY_KEY, COLUMN_DATE_KEY } from "@/store/trash/types"
 
 export default {
-  name: 'TrashPage',
+  name: "TrashPage",
   components: {
     ActionsWrapper,
     TrashRejectAllModal,
@@ -82,15 +82,15 @@ export default {
       columnDateKey: COLUMN_DATE_KEY,
       headers: [
         {
-          text: this.$t('grid.trash.header.topologyName'),
+          text: this.$t("grid.trash.header.topologyName"),
           value: this.columnTopologyKey,
-          align: 'start',
+          align: "start",
           sortable: true,
         },
         {
-          text: this.$t('grid.trash.header.updated'),
+          text: this.$t("grid.trash.header.updated"),
           value: this.columnDateKey,
-          align: 'start',
+          align: "start",
           sortable: true,
         },
       ],
@@ -126,7 +126,7 @@ export default {
       })
       await this.$refs.gridTrash.gridFetch()
       showFlashMessage(
-        this.$t('flashMessage.acceptedList', {
+        this.$t("flashMessage.acceptedList", {
           number: this.selectedIds.length,
         }),
         FLASH_MESSAGES_TYPES.SUCCESS
@@ -139,7 +139,7 @@ export default {
       })
       await this.$refs.gridTrash.gridFetch()
       showFlashMessage(
-        this.$t('flashMessage.rejectedList', {
+        this.$t("flashMessage.rejectedList", {
           number: this.selectedIds.length,
         }),
         FLASH_MESSAGES_TYPES.SUCCESS

@@ -1,7 +1,7 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
+import Vue from "vue"
+import Vuex from "vuex"
 
-import flashMessages from '@/store/flashMessages'
+import flashMessages from "@/store/flashMessages"
 
 Vue.use(Vuex)
 

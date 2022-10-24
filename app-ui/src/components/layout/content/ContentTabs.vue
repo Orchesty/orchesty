@@ -3,7 +3,11 @@
     <v-container fluid>
       <v-row dense>
         <v-col cols="12">
-          <content-tabs-header :title="title" :is-topology="isTopology" :tabs="tabs" />
+          <content-tabs-header
+            :title="title"
+            :is-topology="isTopology"
+            :tabs="tabs"
+          />
         </v-col>
       </v-row>
 
@@ -17,16 +21,16 @@
 </template>
 
 <script>
-import ContentTabsHeader from '@/components/layout/content/ContentTabsHeader'
+import ContentTabsHeader from "@/components/layout/content/ContentTabsHeader"
 
 export default {
-  name: 'ContentTabs',
+  name: "ContentTabs",
   components: { ContentTabsHeader },
   props: {
     title: {
       type: String,
       required: false,
-      default: '',
+      default: "",
     },
     tabs: {
       type: Array,

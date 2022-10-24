@@ -1,6 +1,6 @@
 <template>
   <auth-split-layout>
-    <template #heading>{{ $t('page.heading.loginToTheWorkspace') }}</template>
+    <template #heading>{{ $t("page.heading.loginToTheWorkspace") }}</template>
     <template #form>
       <ValidationObserver
         ref="loginForm"
@@ -9,7 +9,12 @@
         @submit.prevent="submit"
         @keydown.enter="submit"
       >
-        <validation-provider v-slot="{ errors }" :name="$t('form.email')" :rules="fields.email.validations" slim>
+        <validation-provider
+          v-slot="{ errors }"
+          :name="$t('form.email')"
+          :rules="fields.email.validations"
+          slim
+        >
           <app-input
             v-model="form.email"
             dense
@@ -20,7 +25,12 @@
             :error-messages="errors"
           />
         </validation-provider>
-        <validation-provider v-slot="{ errors }" :name="$t('form.password')" :rules="fields.password.validations" slim>
+        <validation-provider
+          v-slot="{ errors }"
+          :name="$t('form.password')"
+          :rules="fields.password.validations"
+          slim
+        >
           <app-input
             v-model="form.password"
             dense
@@ -31,7 +41,7 @@
           />
         </validation-provider>
         <router-link :to="{ name: ROUTES.FORGOT_PASSWORD }">
-          <span class="caption"> {{ $t('navigation.forgotPassword') }} </span>
+          <span class="caption"> {{ $t("navigation.forgotPassword") }} </span>
         </router-link>
         <div class="mt-5">
           <app-button
@@ -47,17 +57,17 @@
 </template>
 
 <script>
-import { ROUTES } from '@/services/enums/routerEnums'
-import FormMixin from '@/services/mixins/FormMixin'
-import { mapGetters } from 'vuex'
-import { REQUESTS_STATE } from '@/store/modules/api/types'
-import { API } from '@/api'
-import AppButton from '@/components/commons/button/AppButton'
-import AppInput from '@/components/commons/input/AppInput'
-import AuthSplitLayout from '@/components/app/auth/layout/AuthSplitLayout'
+import { ROUTES } from "@/services/enums/routerEnums"
+import FormMixin from "@/services/mixins/FormMixin"
+import { mapGetters } from "vuex"
+import { REQUESTS_STATE } from "@/store/modules/api/types"
+import { API } from "@/api"
+import AppButton from "@/components/commons/button/AppButton"
+import AppInput from "@/components/commons/input/AppInput"
+import AuthSplitLayout from "@/components/app/auth/layout/AuthSplitLayout"
 
 export default {
-  name: 'LoginForm',
+  name: "LoginForm",
   components: { AuthSplitLayout, AppInput, AppButton },
   computed: {
     ...mapGetters(REQUESTS_STATE.NAMESPACE, [REQUESTS_STATE.GETTERS.GET_STATE]),
@@ -75,14 +85,14 @@ export default {
       },
       fields: {
         email: {
-          id: 'email',
+          id: "email",
           validations: {
             required: true,
             email: true,
           },
         },
         password: {
-          id: 'password',
+          id: "password",
           validations: {
             required: true,
           },

@@ -8,7 +8,9 @@
             <div id="properties"></div>
             <div v-if="isStartingPoint" class="mx-3 subtitle-2">
               <hr class="mb-2 mt-3" />
-              <span class="font-weight-bold">{{ $t('page.status.startingPoint') }}: </span>
+              <span class="font-weight-bold"
+                >{{ $t("page.status.startingPoint") }}:
+              </span>
               <div>{{ startingPointMessage }}</div>
             </div>
           </div>
@@ -17,37 +19,40 @@
     </v-col>
   </v-row>
   <v-row v-else key="1">
-    <v-col cols="12" class="canvas-loader d-flex flex-column align-center justify-center">
+    <v-col
+      cols="12"
+      class="canvas-loader d-flex flex-column align-center justify-center"
+    >
       <progress-bar-linear />
-      <h4 class="font-weight-medium mt-5">{{ $t('page.status.loading') }}</h4>
+      <h4 class="font-weight-medium mt-5">{{ $t("page.status.loading") }}</h4>
     </v-col>
   </v-row>
 </template>
 
 <script>
-import Modeler from 'bpmn-js/lib/Modeler'
-import camundaModdleDescriptor from 'camunda-bpmn-moddle/resources/camunda'
-import PropertiesPanelModule from 'bpmn-js-properties-panel'
-import PropertiesProviderModule from './bpnmConfig/PropertiesPanel/PropertiesProvider'
-import PipesModdleDescriptor from './bpnmConfig/descriptors/pipes.json'
-import CustomContextPadProvider from './bpnmConfig/customModules/CustomContextPadProvider'
-import CustomElementFactory from './bpnmConfig/customModules/CustomElementFactory'
-import CustomRenderer from './bpnmConfig/customModules/CustomRenderer'
-import CustomPalette from './bpnmConfig/customModules/CustomPalette'
-import download from '@/services/utils/download'
-import { mapActions, mapGetters } from 'vuex'
-import { TOPOLOGIES } from '@/store/modules/topologies/types'
-import { AUTH } from '@/store/modules/auth/types'
-import { config } from '@/config'
-import { IMPLEMENTATIONS } from '@/store/modules/implementations/types'
-import { REQUESTS_STATE } from '@/store/modules/api/types'
-import { API } from '@/api'
-import ProgressBarLinear from '@/components/commons/progressIndicators/ProgressBarLinear'
-import FlashMessageMixin from '@/services/mixins/FlashMessageMixin'
-import { LOCAL_STORAGE } from '@/services/enums/localStorageEnums'
+import Modeler from "bpmn-js/lib/Modeler"
+import camundaModdleDescriptor from "camunda-bpmn-moddle/resources/camunda"
+import PropertiesPanelModule from "bpmn-js-properties-panel"
+import PropertiesProviderModule from "./bpnmConfig/PropertiesPanel/PropertiesProvider"
+import PipesModdleDescriptor from "./bpnmConfig/descriptors/pipes.json"
+import CustomContextPadProvider from "./bpnmConfig/customModules/CustomContextPadProvider"
+import CustomElementFactory from "./bpnmConfig/customModules/CustomElementFactory"
+import CustomRenderer from "./bpnmConfig/customModules/CustomRenderer"
+import CustomPalette from "./bpnmConfig/customModules/CustomPalette"
+import download from "@/services/utils/download"
+import { mapActions, mapGetters } from "vuex"
+import { TOPOLOGIES } from "@/store/modules/topologies/types"
+import { AUTH } from "@/store/modules/auth/types"
+import { config } from "@/config"
+import { IMPLEMENTATIONS } from "@/store/modules/implementations/types"
+import { REQUESTS_STATE } from "@/store/modules/api/types"
+import { API } from "@/api"
+import ProgressBarLinear from "@/components/commons/progressIndicators/ProgressBarLinear"
+import FlashMessageMixin from "@/services/mixins/FlashMessageMixin"
+import { LOCAL_STORAGE } from "@/services/enums/localStorageEnums"
 
 export default {
-  name: 'BpmnIOEditor',
+  name: "BpmnIOEditor",
   components: { ProgressBarLinear },
   mixins: [FlashMessageMixin],
   data() {
@@ -74,10 +79,10 @@ export default {
       ])
     },
     isStartingPoint() {
-      return this.selectedShape?.businessObject?.pipesType === 'start'
+      return this.selectedShape?.businessObject?.pipesType === "start"
     },
     startingPointMessage() {
-      return this.startingPoint ?? this.$t('page.text.noStartingPointFound')
+      return this.startingPoint ?? this.$t("page.text.noStartingPointFound")
     },
     modelerOptions() {
       return {
@@ -85,22 +90,22 @@ export default {
           PropertiesPanelModule,
           {
             __init__: [
-              'propertiesProvider',
-              'customRenderer',
-              'contextPadProvider',
-              'elementFactory',
-              'paletteProvider',
+              "propertiesProvider",
+              "customRenderer",
+              "contextPadProvider",
+              "elementFactory",
+              "paletteProvider",
             ],
           },
-          { propertiesProvider: ['type', PropertiesProviderModule] },
-          { customRenderer: ['type', CustomRenderer] },
-          { contextPadProvider: ['type', CustomContextPadProvider] },
-          { elementFactory: ['type', CustomElementFactory] },
-          { paletteProvider: ['type', CustomPalette] },
+          { propertiesProvider: ["type", PropertiesProviderModule] },
+          { customRenderer: ["type", CustomRenderer] },
+          { contextPadProvider: ["type", CustomContextPadProvider] },
+          { elementFactory: ["type", CustomElementFactory] },
+          { paletteProvider: ["type", CustomPalette] },
         ],
-        container: '#canvas-edit',
+        container: "#canvas-edit",
         propertiesPanel: {
-          parent: '#properties',
+          parent: "#properties",
         },
         moddleExtensions: {
           pipes: PipesModdleDescriptor,
@@ -116,17 +121,32 @@ export default {
       TOPOLOGIES.ACTIONS.DATA.GET_SDK_NODES,
       TOPOLOGIES.ACTIONS.TOPOLOGY.SAVE_DIAGRAM,
     ]),
-    ...mapActions(IMPLEMENTATIONS.NAMESPACE, [IMPLEMENTATIONS.ACTIONS.LIST_IMPLEMENTATIONS]),
+    ...mapActions(IMPLEMENTATIONS.NAMESPACE, [
+      IMPLEMENTATIONS.ACTIONS.LIST_IMPLEMENTATIONS,
+    ]),
 
     async getCurrentXMLDiagram() {
       const parser = new DOMParser()
       const { xml } = await this.modeler.saveXML({ format: true })
 
-      let xmlNodes = parser.parseFromString(xml, 'text/xml')
-      for (let i = 0; i < xmlNodes.getElementsByTagName('bpmn:task').length; i++) {
-        for (let j = 0; j < xmlNodes.getElementsByTagName('bpmn:task')[i].attributes.length; j++) {
-          if (xmlNodes.getElementsByTagName('bpmn:task')[i].attributes[j].name === 'sdkHostOptions') {
-            xmlNodes.getElementsByTagName('bpmn:task')[i].removeAttribute('sdkHostOptions')
+      let xmlNodes = parser.parseFromString(xml, "text/xml")
+      for (
+        let i = 0;
+        i < xmlNodes.getElementsByTagName("bpmn:task").length;
+        i++
+      ) {
+        for (
+          let j = 0;
+          j < xmlNodes.getElementsByTagName("bpmn:task")[i].attributes.length;
+          j++
+        ) {
+          if (
+            xmlNodes.getElementsByTagName("bpmn:task")[i].attributes[j].name ===
+            "sdkHostOptions"
+          ) {
+            xmlNodes
+              .getElementsByTagName("bpmn:task")
+              [i].removeAttribute("sdkHostOptions")
           }
         }
       }
@@ -157,14 +177,24 @@ export default {
       }
     },
 
-    getNodeRunUrl(baseURL, nodeId, nodeName, nodeType, topologyId, topologyName, data = {}) {
-      return nodeType === 'webhook'
-        ? `${baseURL}/topologies/${topologyName}/nodes/${nodeName}/token/${data.token ? data.token : 'token'}/run`
+    getNodeRunUrl(
+      baseURL,
+      nodeId,
+      nodeName,
+      nodeType,
+      topologyId,
+      topologyName,
+      data = {}
+    ) {
+      return nodeType === "webhook"
+        ? `${baseURL}/topologies/${topologyName}/nodes/${nodeName}/token/${
+            data.token ? data.token : "token"
+          }/run`
         : `${baseURL}/topologies/${topologyId}/nodes/${nodeId}/run`
     },
 
     centerNodeName(label) {
-      let name = ''
+      let name = ""
       const labelChildrenFinal = label.children.length
       for (let i = 0; i < label.children.length - 1; i++) {
         name += label.children.item(i).innerHTML
@@ -176,13 +206,18 @@ export default {
       }
       if (label.children.length > 1) {
         for (let i = 0; i < label.children.length; i++) {
-          label.children.item(i).setAttribute('y', `${i === 0 ? 32 : i === 1 ? 48 : 64}`)
+          label.children
+            .item(i)
+            .setAttribute("y", `${i === 0 ? 32 : i === 1 ? 48 : 64}`)
         }
         label.children.item(label.children.length - 1).innerHTML =
-          label.children.item(label.children.length - 1).innerHTML + '...'
+          label.children.item(label.children.length - 1).innerHTML + "..."
       }
 
-      const title = document.createElementNS('http://www.w3.org/2000/svg', 'title')
+      const title = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "title"
+      )
       title.textContent = name
       label.appendChild(title)
     },
@@ -202,9 +237,11 @@ export default {
     async prepareCanvas() {
       this.modeler = new Modeler(this.modelerOptions)
 
-      this.modeler.on('shape.added', (event) => {
+      this.modeler.on("shape.added", (event) => {
         //get sdk service names
-        let implementations = JSON.parse(localStorage.getItem(LOCAL_STORAGE.IMPLEMENTATIONS)).items
+        let implementations = JSON.parse(
+          localStorage.getItem(LOCAL_STORAGE.IMPLEMENTATIONS)
+        ).items
         if (!implementations) {
           return
         }
@@ -213,98 +250,133 @@ export default {
         const pipesType = event.element.businessObject.pipesType
 
         //get all sdk services available
-        const sdkHostServices = JSON.parse(localStorage.getItem(LOCAL_STORAGE.SDK_OPTIONS))
+        const sdkHostServices = JSON.parse(
+          localStorage.getItem(LOCAL_STORAGE.SDK_OPTIONS)
+        )
 
         //get name of the used SDK
         const sdkServiceName =
-          implementations.filter((implementation) => implementation.url === event.element.businessObject.sdkHost)[0]
-            ?.name || null
+          implementations.filter(
+            (implementation) =>
+              implementation.url === event.element.businessObject.sdkHost
+          )[0]?.name || null
 
         //check if node sdk name has service options for the provided pipes type
-        if (sdkHostServices[sdkServiceName] && sdkHostServices[sdkServiceName][pipesType]) {
-          const options = sdkHostServices[sdkServiceName][pipesType].map((item) => ({
-            name: item.name,
-            value: item.name,
-          }))
-          event.element.businessObject.set('sdkHostOptions', [''].concat(options))
+        if (
+          sdkHostServices[sdkServiceName] &&
+          sdkHostServices[sdkServiceName][pipesType]
+        ) {
+          const options = sdkHostServices[sdkServiceName][pipesType].map(
+            (item) => ({
+              name: item.name,
+              value: item.name,
+            })
+          )
+          event.element.businessObject.set(
+            "sdkHostOptions",
+            [""].concat(options)
+          )
         }
 
-        const select = document.querySelector('#camunda-name-select')
+        const select = document.querySelector("#camunda-name-select")
         if (select) {
-          select.innerHTML = ''
+          select.innerHTML = ""
           if (event.element.businessObject.$attrs?.sdkHostOptions) {
-            event.element.businessObject.$attrs.sdkHostOptions.forEach((item) => {
-              let option = document.createElement('option')
-              option.value = option.text = item.name ?? ''
-              select.add(option)
-            })
+            event.element.businessObject.$attrs.sdkHostOptions.forEach(
+              (item) => {
+                let option = document.createElement("option")
+                option.value = option.text = item.name ?? ""
+                select.add(option)
+              }
+            )
           }
         }
       })
 
-      this.modeler.on('shape.changed', (event) => {
-        if (!event.gfx.querySelector('.djs-label')) {
+      this.modeler.on("shape.changed", (event) => {
+        if (!event.gfx.querySelector(".djs-label")) {
           return
         }
-        const label = event.gfx.querySelector('.djs-label')
+        const label = event.gfx.querySelector(".djs-label")
 
         this.centerNodeName(label)
 
         //get sdk service names
-        let implementations = JSON.parse(localStorage.getItem(LOCAL_STORAGE.IMPLEMENTATIONS)).items
+        let implementations = JSON.parse(
+          localStorage.getItem(LOCAL_STORAGE.IMPLEMENTATIONS)
+        ).items
         if (!implementations) {
           return
         }
 
         //set sdkHost in businessObject to default value if not present to prevent exception
-        if (!event.element.businessObject.get('sdkHost') && implementations[0]) {
-          event.element.businessObject.set('sdkHost', implementations[0].url)
+        if (
+          !event.element.businessObject.get("sdkHost") &&
+          implementations[0]
+        ) {
+          event.element.businessObject.set("sdkHost", implementations[0].url)
         }
 
         //get type of the node
         const pipesType = event.element.businessObject.pipesType
 
         //get all sdk services available
-        const sdkHostServices = JSON.parse(localStorage.getItem(LOCAL_STORAGE.SDK_OPTIONS))
+        const sdkHostServices = JSON.parse(
+          localStorage.getItem(LOCAL_STORAGE.SDK_OPTIONS)
+        )
 
         //get name of the used SDK
         const sdkServiceName = implementations.filter(
-          (implementation) => implementation.url === event.element.businessObject.sdkHost
+          (implementation) =>
+            implementation.url === event.element.businessObject.sdkHost
         )[0].name
 
-        if (event.element.businessObject.get('sdkHost')) {
-          event.element.businessObject.set('pipes:sdkHostName', sdkServiceName)
+        if (event.element.businessObject.get("sdkHost")) {
+          event.element.businessObject.set("pipes:sdkHostName", sdkServiceName)
         }
 
         //check if node sdk name has service options for the provided pipes type
-        if (sdkHostServices[sdkServiceName] && sdkHostServices[sdkServiceName][pipesType]) {
-          const options = sdkHostServices[sdkServiceName][pipesType].map((item) => {
-            if (event.element.businessObject.name === item.name) {
-              event.element.businessObject.set('pipes:appName', item.app || '')
-            }
+        if (
+          sdkHostServices[sdkServiceName] &&
+          sdkHostServices[sdkServiceName][pipesType]
+        ) {
+          const options = sdkHostServices[sdkServiceName][pipesType].map(
+            (item) => {
+              if (event.element.businessObject.name === item.name) {
+                event.element.businessObject.set(
+                  "pipes:appName",
+                  item.app || ""
+                )
+              }
 
-            return {
-              name: item.name,
-              value: item.name,
+              return {
+                name: item.name,
+                value: item.name,
+              }
             }
-          })
-          event.element.businessObject.set('sdkHostOptions', [''].concat(options))
+          )
+          event.element.businessObject.set(
+            "sdkHostOptions",
+            [""].concat(options)
+          )
         }
 
-        const select = document.querySelector('#camunda-name-select')
+        const select = document.querySelector("#camunda-name-select")
         if (select) {
-          select.innerHTML = ''
+          select.innerHTML = ""
           if (event.element.businessObject.$attrs?.sdkHostOptions) {
-            event.element.businessObject.$attrs.sdkHostOptions.forEach((item) => {
-              let option = document.createElement('option')
-              option.value = option.text = item.name ?? ''
-              select.add(option)
-            })
+            event.element.businessObject.$attrs.sdkHostOptions.forEach(
+              (item) => {
+                let option = document.createElement("option")
+                option.value = option.text = item.name ?? ""
+                select.add(option)
+              }
+            )
           }
         }
       })
 
-      this.modeler.on('selection.changed', (event) => {
+      this.modeler.on("selection.changed", (event) => {
         if (event.newSelection[0]) {
           this.selectedShape = event.newSelection[0]
           this.setNewStartingPoint()
@@ -318,7 +390,7 @@ export default {
         console.log(err.message, err.warnings)
         this.showFlashMessage(true, err)
       } finally {
-        let labels = document.querySelectorAll('.djs-label')
+        let labels = document.querySelectorAll(".djs-label")
         labels.forEach((label) => {
           this.centerNodeName(label)
         })
@@ -346,7 +418,9 @@ export default {
 
     async saveDiagram() {
       if (this.modeler) {
-        const xml = new XMLSerializer().serializeToString(await this.getCurrentXMLDiagram())
+        const xml = new XMLSerializer().serializeToString(
+          await this.getCurrentXMLDiagram()
+        )
 
         return await this[TOPOLOGIES.ACTIONS.TOPOLOGY.SAVE_DIAGRAM]({
           id: this.topologyActive._id,
@@ -367,10 +441,14 @@ export default {
 
           download(
             new XMLSerializer().serializeToString(xml),
-            `${this.topologyActive.name}.v${this.topologyActive.version}` + '.tplg',
-            'application/bpmn+xml'
+            `${this.topologyActive.name}.v${this.topologyActive.version}` +
+              ".tplg",
+            "application/bpmn+xml"
           )
-          this.showFlashMessage(false, `Topology ${this.topologyActive.name} exported`)
+          this.showFlashMessage(
+            false,
+            `Topology ${this.topologyActive.name} exported`
+          )
         } catch (err) {
           this.showFlashMessage(true, err.response.data.message)
         }

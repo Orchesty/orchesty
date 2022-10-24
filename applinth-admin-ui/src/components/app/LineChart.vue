@@ -3,19 +3,19 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import { Chart, ChartData, ChartType, registerables } from "chart.js";
+import { Component, Prop, Vue } from "vue-property-decorator"
+import { Chart, ChartData, ChartType, registerables } from "chart.js"
 
 @Component
 export default class LineChart extends Vue {
   @Prop({ type: Array, required: true })
-  chartData!: Array<number>;
+  chartData!: Array<number>
 
   @Prop({ type: Array, required: true })
-  chartLabels!: Array<string>;
+  chartLabels!: Array<string>
 
   createChart(chartData: object) {
-    const canvas = document.getElementById("chart") as HTMLCanvasElement;
+    const canvas = document.getElementById("chart") as HTMLCanvasElement
     const options = {
       type: "line" as ChartType,
       data: chartData as ChartData,
@@ -26,12 +26,12 @@ export default class LineChart extends Vue {
           },
         },
       },
-    };
-    new Chart(canvas, options);
+    }
+    new Chart(canvas, options)
   }
 
   mounted() {
-    Chart.register(...registerables);
+    Chart.register(...registerables)
     this.createChart({
       labels: this.chartLabels,
       datasets: [
@@ -42,7 +42,7 @@ export default class LineChart extends Vue {
           data: this.chartData,
         },
       ],
-    });
+    })
   }
 }
 </script>

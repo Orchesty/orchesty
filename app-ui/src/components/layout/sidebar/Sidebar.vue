@@ -3,7 +3,9 @@
     <v-row class="pt-0">
       <v-col cols="12" class="px-0">
         <div class="d-flex">
-          <h1 class="ml-4 mb-3 headline font-weight-bold">{{ $t('page.heading.topologies') }}</h1>
+          <h1 class="ml-4 mb-3 headline font-weight-bold">
+            {{ $t("page.heading.topologies") }}
+          </h1>
         </div>
         <topology-tree-view />
       </v-col>
@@ -12,10 +14,10 @@
 </template>
 
 <script>
-import TopologyTreeView from '@/components/app/topology/treeview/TopologyTreeView'
+import TopologyTreeView from "@/components/app/topology/treeview/TopologyTreeView"
 
 export default {
-  name: 'Sidebar',
+  name: "Sidebar",
   components: {
     TopologyTreeView,
   },

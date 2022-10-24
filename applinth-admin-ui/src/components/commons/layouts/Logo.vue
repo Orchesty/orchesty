@@ -3,12 +3,12 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import logo from "@/assets/svg/logo.svg";
+import { Component, Vue } from "vue-property-decorator"
+import logo from "@/assets/svg/logo.svg"
 
 @Component
 export default class Logo extends Vue {
-  logo = logo;
+  logo = logo
 }
 </script>
 

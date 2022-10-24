@@ -2,14 +2,22 @@
   <modal-template
     v-if="node"
     v-model="isOpen"
-    :title="$t('page.text.toggleStartingNode', [node.enabled ? $t('page.status.disable') : $t('page.status.enable')])"
+    :title="
+      $t('page.text.toggleStartingNode', [
+        node.enabled ? $t('page.status.disable') : $t('page.status.enable'),
+      ])
+    "
     :on-confirm="() => submit()"
   >
     <template #default>
       <v-row dense>
         <v-col cols="12">
           {{
-            $t('page.text.toggleStartingPoint', [node.enabled ? $t('page.status.disable') : $t('page.status.enable')])
+            $t("page.text.toggleStartingPoint", [
+              node.enabled
+                ? $t("page.status.disable")
+                : $t("page.status.enable"),
+            ])
           }}
         </v-col>
       </v-row>
@@ -18,7 +26,11 @@
       <v-row dense>
         <v-col cols="12" class="d-flex justify-end">
           <app-button
-            :button-title="node.enabled ? $t('page.status.disable') : $t('page.status.enable')"
+            :button-title="
+              node.enabled
+                ? $t('page.status.disable')
+                : $t('page.status.enable')
+            "
             :on-click="submit"
           />
         </v-col>
@@ -28,26 +40,31 @@
 </template>
 
 <script>
-import { events, EVENTS } from '../../../../services/utils/events'
-import ModalTemplate from '../../../commons/modal/ModalTemplate'
-import { mapActions, mapGetters } from 'vuex'
-import { TOPOLOGIES } from '../../../../store/modules/topologies/types'
-import { REQUESTS_STATE } from '../../../../store/modules/api/types'
-import { API } from '../../../../api'
-import AppButton from '@/components/commons/button/AppButton'
+import { events, EVENTS } from "../../../../services/utils/events"
+import ModalTemplate from "../../../commons/modal/ModalTemplate"
+import { mapActions, mapGetters } from "vuex"
+import { TOPOLOGIES } from "../../../../store/modules/topologies/types"
+import { REQUESTS_STATE } from "../../../../store/modules/api/types"
+import { API } from "../../../../api"
+import AppButton from "@/components/commons/button/AppButton"
 
 export default {
-  name: 'ModalUpdateNode',
+  name: "ModalUpdateNode",
   components: { AppButton, ModalTemplate },
   data: () => ({
     isOpen: false,
     node: null,
   }),
   computed: {
-    ...mapGetters(TOPOLOGIES.NAMESPACE, { topologyActive: TOPOLOGIES.GETTERS.GET_ACTIVE_TOPOLOGY }),
+    ...mapGetters(TOPOLOGIES.NAMESPACE, {
+      topologyActive: TOPOLOGIES.GETTERS.GET_ACTIVE_TOPOLOGY,
+    }),
     ...mapGetters(REQUESTS_STATE.NAMESPACE, [REQUESTS_STATE.GETTERS.GET_STATE]),
     state() {
-      return this[REQUESTS_STATE.GETTERS.GET_STATE]([API.topology.delete.id, API.topology.getList.id])
+      return this[REQUESTS_STATE.GETTERS.GET_STATE]([
+        API.topology.delete.id,
+        API.topology.getList.id,
+      ])
     },
   },
   methods: {

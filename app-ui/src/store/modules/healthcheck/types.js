@@ -1,6 +1,6 @@
 export const HEALTHCHECK = {
-  NAMESPACE: 'healthcheck',
+  NAMESPACE: "healthcheck",
   ACTIONS: {
-    FETCH_ERROR_LIST: 'FETCH_ERROR_LIST',
+    FETCH_ERROR_LIST: "FETCH_ERROR_LIST",
   },
 }

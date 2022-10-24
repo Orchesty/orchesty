@@ -30,19 +30,24 @@
       />
     </validation-provider>
     <div class="mt-2 text-right">
-      <app-button :is-sending="isSending" button-title="Set" :sending-title="$t('button.set')" :on-click="submit" />
+      <app-button
+        :is-sending="isSending"
+        button-title="Set"
+        :sending-title="$t('button.set')"
+        :on-click="submit"
+      />
     </div>
   </ValidationObserver>
 </template>
 
 <script>
-import { ROUTES } from '@/services/enums/routerEnums'
-import FormMixin from '../../../../services/mixins/FormMixin'
-import AppButton from '@/components/commons/button/AppButton'
-import AppInput from '@/components/commons/input/AppInput'
+import { ROUTES } from "@/services/enums/routerEnums"
+import FormMixin from "../../../../services/mixins/FormMixin"
+import AppButton from "@/components/commons/button/AppButton"
+import AppInput from "@/components/commons/input/AppInput"
 
 export default {
-  name: 'PasswordForm',
+  name: "PasswordForm",
   components: { AppInput, AppButton },
   mixins: [FormMixin],
   props: {
@@ -60,16 +65,16 @@ export default {
       },
       fields: {
         password: {
-          id: 'password',
+          id: "password",
           validations: {
             required: true,
           },
         },
         confirm: {
-          id: 'confirm',
+          id: "confirm",
           validations: {
             required: true,
-            passwordConfirm: 'password',
+            passwordConfirm: "password",
           },
         },
       },

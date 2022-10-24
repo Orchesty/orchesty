@@ -1,6 +1,6 @@
-import createState from './state'
-import { resetState } from '../../utils'
-import { USER_TASKS } from '@/store/modules/userTasks/types'
+import createState from "./state"
+import { resetState } from "../../utils"
+import { USER_TASKS } from "@/store/modules/userTasks/types"
 
 export default {
   [USER_TASKS.MUTATIONS.USER_TASK_GET]: (state, data) => {

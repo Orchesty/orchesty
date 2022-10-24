@@ -1,13 +1,13 @@
-import axios from 'axios'
-import { config } from '@/config'
-import { authService } from '@/utils/authService.js'
+import axios from "axios"
+import { config } from "@/config"
+import { authService } from "@/utils/authService.js"
 
 const apiClient = axios.create({
   baseURL: `${config.backend.apiBaseUrl}/api/applinth`,
   withCredentials: true,
   headers: {
-    Accept: 'application/json',
-    'Content-Type': 'application/json; charset=utf-8',
+    Accept: "application/json",
+    "Content-Type": "application/json; charset=utf-8",
   },
 })
 
@@ -18,11 +18,11 @@ const send = (config) => {
 
   return new Promise((resolve, reject) => {
     if (!method) {
-      reject(new Error('The request must have method.'))
+      reject(new Error("The request must have method."))
     }
 
     if (!url) {
-      reject(new Error('The request must have url.'))
+      reject(new Error("The request must have url."))
     }
 
     resolve(
@@ -43,7 +43,7 @@ const call = ({ requestData, params = null, throwError = true }, sender) => {
   const { id, request, mock, reduce } = requestData
 
   if (!id) {
-    throw new Error('Request must have id.')
+    throw new Error("Request must have id.")
   }
 
   if (mock) {
@@ -69,7 +69,7 @@ const call = ({ requestData, params = null, throwError = true }, sender) => {
         resolve(res.data)
       })
       .catch((err) => {
-        console.error('Response ERROR!', err)
+        console.error("Response ERROR!", err)
 
         if (throwError) {
           reject(err)

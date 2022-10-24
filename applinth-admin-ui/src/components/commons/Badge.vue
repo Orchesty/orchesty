@@ -17,24 +17,24 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Prop, Vue } from "vue-property-decorator"
 
 @Component
 export default class Badge extends Vue {
   @Prop({ required: true, type: String })
-  private tooltip!: string;
+  private tooltip!: string
 
   @Prop({ required: true, type: String })
-  private icon!: string;
+  private icon!: string
 
   @Prop({ required: true, type: String })
-  private color!: string;
+  private color!: string
 
   @Prop({ required: false, type: Boolean, default: () => true })
-  private disableTooltip!: boolean;
+  private disableTooltip!: boolean
 
   @Prop({ required: false, type: Boolean, default: () => true })
-  private disableIco!: boolean;
+  private disableIco!: boolean
 }
 </script>
 

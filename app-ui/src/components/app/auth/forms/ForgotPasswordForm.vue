@@ -1,12 +1,17 @@
 <template>
   <auth-split-layout>
-    <template #heading> {{ $t('page.heading.forgotPassword') }} </template>
+    <template #heading> {{ $t("page.heading.forgotPassword") }} </template>
     <template #form>
       <p>
-        {{ $t('page.text.forgotPassword') }}
+        {{ $t("page.text.forgotPassword") }}
       </p>
       <ValidationObserver ref="forgotForm" tag="form" @submit.prevent="submit">
-        <validation-provider v-slot="{ errors }" :name="$t('form.email')" :rules="fields.email.validations" slim>
+        <validation-provider
+          v-slot="{ errors }"
+          :name="$t('form.email')"
+          :rules="fields.email.validations"
+          slim
+        >
           <app-input
             v-model="form.email"
             prepend-icon="email"
@@ -30,14 +35,14 @@
 </template>
 
 <script>
-import { ROUTES } from '@/services/enums/routerEnums'
-import FormMixin from '../../../../services/mixins/FormMixin'
-import AppButton from '@/components/commons/button/AppButton'
-import AppInput from '@/components/commons/input/AppInput'
-import AuthSplitLayout from '@/components/app/auth/layout/AuthSplitLayout'
+import { ROUTES } from "@/services/enums/routerEnums"
+import FormMixin from "../../../../services/mixins/FormMixin"
+import AppButton from "@/components/commons/button/AppButton"
+import AppInput from "@/components/commons/input/AppInput"
+import AuthSplitLayout from "@/components/app/auth/layout/AuthSplitLayout"
 
 export default {
-  name: 'ForgotPasswordForm',
+  name: "ForgotPasswordForm",
   components: { AuthSplitLayout, AppInput, AppButton },
   mixins: [FormMixin],
   data() {
@@ -48,7 +53,7 @@ export default {
       },
       fields: {
         email: {
-          id: 'email',
+          id: "email",
           validations: {
             required: true,
             email: true,

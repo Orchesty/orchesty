@@ -1,4 +1,4 @@
-export const authNamespace = "auth";
+export const authNamespace = "auth"
 
 export enum AuthActions {
   Login = "login",
@@ -22,9 +22,9 @@ export enum AuthGetters {
 }
 
 export type User = {
-  id: string;
-  name: string | null;
-  email: string | null;
-  tenantId: string | null;
-  googleTenantId: string | null;
-};
+  id: string
+  name: string | null
+  email: string | null
+  tenantId: string | null
+  googleTenantId: string | null
+}

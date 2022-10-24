@@ -8,12 +8,12 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Prop, Vue } from "vue-property-decorator"
 
 @Component
 export default class Tooltip extends Vue {
   @Prop({ required: true, type: String })
-  private text!: string;
+  private text!: string
 }
 </script>
 

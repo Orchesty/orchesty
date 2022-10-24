@@ -21,15 +21,27 @@
     @reset="reset"
   >
     <template #content>
-      <user-task-information :item="item" @reset="reset" @fetchGrid="fetchGrid" />
+      <user-task-information
+        :item="item"
+        @reset="reset"
+        @fetchGrid="fetchGrid"
+      />
     </template>
     <template #default="{ items, isVisible }">
-      <td v-if="isVisible('nodeName')" class="py-3 px-0 pointer text-start" @click="$refs.grid.onRowClicked(items)">
+      <td
+        v-if="isVisible('nodeName')"
+        class="py-3 px-0 pointer text-start"
+        @click="$refs.grid.onRowClicked(items)"
+      >
         <span>
           {{ items.item.nodeName }}
         </span>
       </td>
-      <td v-if="isVisible('created')" class="pointer" @click="$refs.grid.onRowClicked(items)">
+      <td
+        v-if="isVisible('created')"
+        class="pointer"
+        @click="$refs.grid.onRowClicked(items)"
+      >
         <span>{{ items.item.created | internationalFormat }}</span>
       </td>
     </template>
@@ -61,21 +73,21 @@
 </template>
 
 <script>
-import { DATA_GRIDS } from '@/services/enums/dataGridEnums'
-import DataGrid from '@/components/commons/grid/DataGrid'
-import { mapActions, mapGetters } from 'vuex'
-import { REQUESTS_STATE } from '@/store/modules/api/types'
-import { API } from '@/api'
-import { internationalFormat } from '@/services/utils/dateFilters'
-import UserTaskInformation from '@/components/app/userTasks/grid/UserTaskInformation'
-import { TOPOLOGIES } from '@/store/modules/topologies/types'
-import { USER_TASKS } from '@/store/modules/userTasks/types'
-import UserTaskActionsModal from '@/components/app/userTasks/modal/UserTaskActionsModal'
-import QuickFiltersMixin from '@/services/mixins/QuickFiltersMixin'
-import { GRID } from '@/store/modules/grid/types'
-import { SIMPLE_FILTER } from '@/services/enums/dataGridFilterEnums'
+import { DATA_GRIDS } from "@/services/enums/dataGridEnums"
+import DataGrid from "@/components/commons/grid/DataGrid"
+import { mapActions, mapGetters } from "vuex"
+import { REQUESTS_STATE } from "@/store/modules/api/types"
+import { API } from "@/api"
+import { internationalFormat } from "@/services/utils/dateFilters"
+import UserTaskInformation from "@/components/app/userTasks/grid/UserTaskInformation"
+import { TOPOLOGIES } from "@/store/modules/topologies/types"
+import { USER_TASKS } from "@/store/modules/userTasks/types"
+import UserTaskActionsModal from "@/components/app/userTasks/modal/UserTaskActionsModal"
+import QuickFiltersMixin from "@/services/mixins/QuickFiltersMixin"
+import { GRID } from "@/store/modules/grid/types"
+import { SIMPLE_FILTER } from "@/services/enums/dataGridFilterEnums"
 export default {
-  name: 'UserTaskTab',
+  name: "UserTaskTab",
   components: { UserTaskActionsModal, UserTaskInformation, DataGrid },
   mixins: [QuickFiltersMixin],
   data() {
@@ -87,21 +99,21 @@ export default {
       selected: [],
       headers: [
         {
-          text: this.$t('grid.header.nodeName'),
-          value: 'nodeName',
-          align: 'left',
+          text: this.$t("grid.header.nodeName"),
+          value: "nodeName",
+          align: "left",
           sortable: true,
           visible: true,
-          class: 'pl-0',
-          width: '50%',
+          class: "pl-0",
+          width: "50%",
         },
         {
-          text: this.$t('grid.header.created'),
-          value: 'created',
-          align: 'left',
+          text: this.$t("grid.header.created"),
+          value: "created",
+          align: "left",
           sortable: true,
           visible: true,
-          width: '50%',
+          width: "50%",
         },
       ],
     }
@@ -113,14 +125,30 @@ export default {
       gridFilter: GRID.GETTERS.GET_FILTER,
     }),
     ...mapGetters(REQUESTS_STATE.NAMESPACE, [REQUESTS_STATE.GETTERS.GET_STATE]),
-    ...mapGetters(TOPOLOGIES.NAMESPACE, { topologyActive: TOPOLOGIES.GETTERS.GET_ACTIVE_TOPOLOGY }),
+    ...mapGetters(TOPOLOGIES.NAMESPACE, {
+      topologyActive: TOPOLOGIES.GETTERS.GET_ACTIVE_TOPOLOGY,
+    }),
     state() {
       return this[REQUESTS_STATE.GETTERS.GET_STATE](API.userTask.grid.id)
     },
     permanentFilter() {
       return [
-        [{ column: 'type', operator: 'EQ', value: ['userTask'], default: true }],
-        [{ column: 'topologyId', operator: 'EQ', value: this.topologyActive._id, default: true }],
+        [
+          {
+            column: "type",
+            operator: "EQ",
+            value: ["userTask"],
+            default: true,
+          },
+        ],
+        [
+          {
+            column: "topologyId",
+            operator: "EQ",
+            value: this.topologyActive._id,
+            default: true,
+          },
+        ],
       ]
     },
   },
@@ -160,7 +188,9 @@ export default {
     },
     async updateInfo(item) {
       this.item = item.item
-      await this.$router.push({ path: `/topology/${this.$route.params.id}/userTask/${item.item.id}` })
+      await this.$router.push({
+        path: `/topology/${this.$route.params.id}/userTask/${item.item.id}`,
+      })
     },
     onSelect(items) {
       this.selected = items
@@ -173,8 +203,14 @@ export default {
     },
   },
   async mounted() {
-    this.init('updated')
-    await this.$refs.grid.fetchGridWithInitials(null, null, null, this.pagingInitial, this.sorterInitial)
+    this.init("updated")
+    await this.$refs.grid.fetchGridWithInitials(
+      null,
+      null,
+      null,
+      this.pagingInitial,
+      this.sorterInitial
+    )
   },
 }
 </script>

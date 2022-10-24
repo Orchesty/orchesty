@@ -16,36 +16,36 @@
 </template>
 
 <script lang="ts">
-import { Prop, Vue, Component, Watch } from "vue-property-decorator";
-import { alerts } from "../../../utils/alerts";
-import { Alert as TAlert } from "../../../store/modules/alerts";
-import { AlertType as _AlertType } from "../../../enums";
+import { Prop, Vue, Component, Watch } from "vue-property-decorator"
+import { alerts } from "../../../utils/alerts"
+import { Alert as TAlert } from "../../../store/modules/alerts"
+import { AlertType as _AlertType } from "../../../enums"
 
 @Component
 export default class Alert extends Vue {
   @Prop({ required: true, type: Object })
-  private readonly alert!: TAlert;
+  private readonly alert!: TAlert
 
-  private AlertType = _AlertType;
+  private AlertType = _AlertType
 
-  private alertVisible = true;
+  private alertVisible = true
 
   get color(): string {
     switch (this.alert.type) {
       case this.AlertType.Error:
-        return "error";
+        return "error"
       case this.AlertType.Info:
-        return "info";
+        return "info"
       case this.AlertType.Success:
-        return "success";
+        return "success"
       default:
-        return "info";
+        return "info"
     }
   }
 
   @Watch("alertVisible")
   private handleClose(id: string) {
-    alerts.removeAlert(id);
+    alerts.removeAlert(id)
   }
 }
 </script>

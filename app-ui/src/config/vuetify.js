@@ -1,5 +1,5 @@
-import '@mdi/font/css/materialdesignicons.css'
-import Vue from 'vue'
+import "@mdi/font/css/materialdesignicons.css"
+import Vue from "vue"
 import Vuetify, {
   VApp,
   VCard,
@@ -15,14 +15,14 @@ import Vuetify, {
   VSimpleCheckbox,
   VTreeview,
   VDialog,
-} from 'vuetify/lib'
-import { Ripple } from 'vuetify/lib/directives'
+} from "vuetify/lib"
+import { Ripple } from "vuetify/lib/directives"
 
 Vue.use(Vuetify)
 
 export default new Vuetify({
   icons: {
-    iconfont: 'mdi',
+    iconfont: "mdi",
   },
   components: {
     VApp,
@@ -50,13 +50,13 @@ export default new Vuetify({
     dark: false,
     themes: {
       light: {
-        primary: '#03233A',
-        gray: '#757575',
-        white: '#FFFFFF',
-        success: '#4CAF50',
-        error: '#BB2124',
-        secondary: '#339CB4',
-        black: '#212121',
+        primary: "#03233A",
+        gray: "#757575",
+        white: "#FFFFFF",
+        success: "#4CAF50",
+        error: "#BB2124",
+        secondary: "#339CB4",
+        black: "#212121",
       },
     },
   },

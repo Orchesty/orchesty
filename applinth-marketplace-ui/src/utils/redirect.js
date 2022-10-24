@@ -4,9 +4,9 @@ export const redirectTo = async (router, to) => {
   } catch (error) {
     if (
       !(
-        error.name === 'NavigationDuplicated' ||
+        error.name === "NavigationDuplicated" ||
         error.message.includes(
-          'Avoided redundant navigation to current location'
+          "Avoided redundant navigation to current location"
         )
       )
     ) {

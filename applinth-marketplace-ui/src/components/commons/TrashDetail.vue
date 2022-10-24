@@ -36,7 +36,7 @@
     <v-row>
       <v-col>
         <span>
-          {{ trash.message.headers['result-message'] }}
+          {{ trash.message.headers["result-message"] }}
         </span>
       </v-col>
     </v-row>
@@ -49,19 +49,19 @@
 </template>
 
 <script>
-import SubHeading from '@/components/commons/SubHeading'
-import { callApi } from '@/utils/apiFetch'
-import { API } from '@/api'
-import { toLocalDateTime } from '@/localization/filters/dateFilters'
-import TrashUpdateModal from '@/components/commons/TrashUpdateModal'
-import JsonEditor from '@/components/commons/JsonEditor'
-import TrashApproveModal from '@/components/commons/TrashAcceptModal'
-import TrashRejectModal from '@/components/commons/TrashRejectModal'
-import ActionsWrapper from '@/components/commons/ActionsWrapper'
-import { COLUMN_TOPOLOGY_KEY, COLUMN_DATE_KEY } from '@/store/trash/types'
+import SubHeading from "@/components/commons/SubHeading"
+import { callApi } from "@/utils/apiFetch"
+import { API } from "@/api"
+import { toLocalDateTime } from "@/localization/filters/dateFilters"
+import TrashUpdateModal from "@/components/commons/TrashUpdateModal"
+import JsonEditor from "@/components/commons/JsonEditor"
+import TrashApproveModal from "@/components/commons/TrashAcceptModal"
+import TrashRejectModal from "@/components/commons/TrashRejectModal"
+import ActionsWrapper from "@/components/commons/ActionsWrapper"
+import { COLUMN_TOPOLOGY_KEY, COLUMN_DATE_KEY } from "@/store/trash/types"
 
 export default {
-  name: 'TrashDetail',
+  name: "TrashDetail",
   components: {
     ActionsWrapper,
     TrashRejectModal,
@@ -90,7 +90,7 @@ export default {
   },
   methods: {
     onTrashSubmitted() {
-      this.$emit('taskSubmitted')
+      this.$emit("taskSubmitted")
     },
     async refreshItemData() {
       this.trash = await callApi({

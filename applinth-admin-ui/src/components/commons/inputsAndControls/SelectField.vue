@@ -18,10 +18,10 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import { ValidationProvider } from "vee-validate";
-import { Rules } from "../../../utils/veeValidate";
-import { EnumValues } from "../tables/types";
+import { Component, Prop, Vue } from "vue-property-decorator"
+import { ValidationProvider } from "vee-validate"
+import { Rules } from "../../../utils/veeValidate"
+import { EnumValues } from "../tables/types"
 
 @Component({
   components: {
@@ -29,30 +29,30 @@ import { EnumValues } from "../tables/types";
   },
 })
 export default class SelectField extends Vue {
-  private innerValue: any;
+  private innerValue: any
 
   @Prop({ required: false, type: Array, default: "" })
-  private values!: EnumValues[];
+  private values!: EnumValues[]
 
   @Prop({ required: false, type: String })
-  private label?: string;
+  private label?: string
 
   @Prop({ required: true, type: String })
-  private name!: string;
+  private name!: string
 
   @Prop({ required: false, type: String, default: "" })
-  private hint!: string;
+  private hint!: string
 
   @Prop({ required: false, type: Object })
-  private rules?: Rules;
+  private rules?: Rules
 
   constructor() {
-    super();
-    this.innerValue = null;
+    super()
+    this.innerValue = null
   }
 
   reduceForFilter(selected: EnumValues): any {
-    return selected.value;
+    return selected.value
   }
 }
 </script>

@@ -1,30 +1,30 @@
 export default {
   grid: {
-    id: 'IMPLEMENTATION_GRID',
+    id: "IMPLEMENTATION_GRID",
     request: (data) => ({
       url: `/sdks?filter=${JSON.stringify(data)}`,
-      method: 'GET',
+      method: "GET",
     }),
   },
   getList: {
-    id: 'IMPLEMENTATION_GET_LIST',
+    id: "IMPLEMENTATION_GET_LIST",
     request: () => ({
       url: `/sdks`,
-      method: 'GET',
+      method: "GET",
     }),
   },
   getById: {
-    id: 'IMPLEMENTATION_GET_BY_ID',
+    id: "IMPLEMENTATION_GET_BY_ID",
     request: ({ id }) => ({
       url: `/sdks/${id}`,
-      method: 'GET',
+      method: "GET",
     }),
   },
   create: {
-    id: 'IMPLEMENTATION_CREATE',
+    id: "IMPLEMENTATION_CREATE",
     request: ({ name, site, headers }) => ({
       url: `/sdks`,
-      method: 'POST',
+      method: "POST",
       data: {
         name: name,
         url: site,
@@ -33,10 +33,10 @@ export default {
     }),
   },
   update: {
-    id: 'IMPLEMENTATION_UPDATE',
+    id: "IMPLEMENTATION_UPDATE",
     request: ({ name, site, id, headers }) => ({
       url: `/sdks/${id}`,
-      method: 'PUT',
+      method: "PUT",
       data: {
         name: name,
         headers: headers,
@@ -46,10 +46,10 @@ export default {
     }),
   },
   delete: {
-    id: 'IMPLEMENTATION_DELETE',
+    id: "IMPLEMENTATION_DELETE",
     request: ({ id }) => ({
       url: `/sdks/${id}`,
-      method: 'DELETE',
+      method: "DELETE",
       data: {
         id: id,
       },

@@ -16,11 +16,11 @@
 </template>
 
 <script>
-import AppInput from '@/components/commons/input/AppInput'
-import AppButton from '@/components/commons/button/AppButton'
-import { OPERATOR } from '@/services/enums/gridEnums'
+import AppInput from "@/components/commons/input/AppInput"
+import AppButton from "@/components/commons/button/AppButton"
+import { OPERATOR } from "@/services/enums/gridEnums"
 export default {
-  name: 'UserTaskGridSimpleFilter',
+  name: "UserTaskGridSimpleFilter",
   components: { AppButton, AppInput },
   data() {
     return {
@@ -32,18 +32,18 @@ export default {
       const filter = [
         [
           {
-            column: 'nodeName',
+            column: "nodeName",
             operator: OPERATOR.LIKE,
             value: this.nodeName,
           },
         ],
       ]
-      this.$emit('fetchGrid', { filter })
+      this.$emit("fetchGrid", { filter })
     },
     resetFilter() {
       this.nodeName = null
 
-      this.$emit('fetchGrid')
+      this.$emit("fetchGrid")
     },
   },
 }

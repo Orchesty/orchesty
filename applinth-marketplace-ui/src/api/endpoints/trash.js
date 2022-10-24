@@ -1,26 +1,26 @@
 export default {
   grid: {
-    id: 'GET_TRASH_ITEMS',
-    urlPattern: '/trash',
+    id: "GET_TRASH_ITEMS",
+    urlPattern: "/trash",
     request: ({ paging, sorter }) => ({
       url: `/trash?filter=${JSON.stringify({ paging, sorter })}`,
-      method: 'GET',
+      method: "GET",
     }),
   },
   getById: {
-    id: 'GET_TRASH_ITEM_DETAIL',
-    urlPattern: '/trash/:id',
+    id: "GET_TRASH_ITEM_DETAIL",
+    urlPattern: "/trash/:id",
     request: ({ id }) => ({
       url: `/trash/${id}`,
-      method: 'GET',
+      method: "GET",
     }),
   },
   update: {
-    id: 'UPDATE_TRASH_ITEM',
-    urlPattern: '/trash/:id',
+    id: "UPDATE_TRASH_ITEM",
+    urlPattern: "/trash/:id",
     request: ({ id, body, headers }) => ({
       url: `/trash/${id}`,
-      method: 'PUT',
+      method: "PUT",
       data: {
         body,
         headers,
@@ -28,38 +28,38 @@ export default {
     }),
   },
   accept: {
-    id: 'ACCEPT_TRASH_ITEM',
-    urlPattern: '/trash/:id/accept',
+    id: "ACCEPT_TRASH_ITEM",
+    urlPattern: "/trash/:id/accept",
     request: ({ id }) => ({
       url: `/trash/${id}/accept`,
-      method: 'POST',
+      method: "POST",
     }),
   },
   acceptAll: {
-    id: 'ACCEPT_ALL_TRASH_ITEMS',
-    urlPattern: '/trash/accept',
+    id: "ACCEPT_ALL_TRASH_ITEMS",
+    urlPattern: "/trash/accept",
     request: (ids) => ({
       url: `/trash/accept`,
-      method: 'POST',
+      method: "POST",
       data: {
         ids,
       },
     }),
   },
   reject: {
-    id: 'REJECT_TRASH_ITEM',
-    urlPattern: '/trash/:id/reject',
+    id: "REJECT_TRASH_ITEM",
+    urlPattern: "/trash/:id/reject",
     request: ({ id }) => ({
       url: `/trash/${id}/reject`,
-      method: 'POST',
+      method: "POST",
     }),
   },
   rejectAll: {
-    id: 'REJECT_ALL_TRASH_ITEMS',
-    urlPattern: '/trash/reject',
+    id: "REJECT_ALL_TRASH_ITEMS",
+    urlPattern: "/trash/reject",
     request: (ids) => ({
       url: `/trash/reject`,
-      method: 'POST',
+      method: "POST",
       data: {
         ids,
       },

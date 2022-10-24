@@ -1,13 +1,13 @@
-import { ApiConfigs } from "@/types";
-import { apiClient } from "@/utils/apiClient";
-import { UsersRows } from "../generated";
+import { ApiConfigs } from "@/types"
+import { apiClient } from "@/utils/apiClient"
+import { UsersRows } from "../generated"
 
-export type UsersApi = "list";
-export type UsersGetApi = "get";
-export type UsersCreateApi = "create";
-export type UsersUpdateApi = "update";
-export type UsersDeleteApi = "delete";
-export type UsersGetTenantIdApi = "getTenantId";
+export type UsersApi = "list"
+export type UsersGetApi = "get"
+export type UsersCreateApi = "create"
+export type UsersUpdateApi = "update"
+export type UsersDeleteApi = "delete"
+export type UsersGetTenantIdApi = "getTenantId"
 
 export const users: ApiConfigs<
   | UsersApi
@@ -43,4 +43,4 @@ export const users: ApiConfigs<
     request: (data) => apiClient.usersApi.userGetGTenantId(data),
     transform: (data) => data.gTenantId,
   },
-};
+}

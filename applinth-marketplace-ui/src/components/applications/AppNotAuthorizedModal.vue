@@ -6,7 +6,7 @@
     <template #content>
       <div class="d-flex flex-column">
         <p class="text-body-1">
-          {{ $t('application.applicationNotAuthorizedMessage') }}
+          {{ $t("application.applicationNotAuthorizedMessage") }}
         </p>
       </div>
     </template>
@@ -17,11 +17,11 @@
 </template>
 
 <script>
-import BaseModal from '@/components/commons/BaseModal'
-import BaseButton from '@/components/commons/BaseButton'
+import BaseModal from "@/components/commons/BaseModal"
+import BaseButton from "@/components/commons/BaseButton"
 
 export default {
-  name: 'AppNotAuthorizedModal',
+  name: "AppNotAuthorizedModal",
   components: { BaseButton, BaseModal },
   props: {
     value: {
@@ -47,7 +47,7 @@ export default {
       },
     },
     isOpen(val) {
-      this.$emit('input', val)
+      this.$emit("input", val)
     },
   },
 }

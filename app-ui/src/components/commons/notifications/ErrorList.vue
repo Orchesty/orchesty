@@ -9,7 +9,7 @@
 
 <script>
 export default {
-  name: 'ErrorList',
+  name: "ErrorList",
   props: {
     errors: {
       type: Array,

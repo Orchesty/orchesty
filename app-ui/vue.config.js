@@ -1,7 +1,7 @@
-const CircularDependencyPlugin = require('circular-dependency-plugin')
+const CircularDependencyPlugin = require("circular-dependency-plugin")
 
 module.exports = {
-  transpileDependencies: ['vuetify'],
+  transpileDependencies: ["vuetify"],
   productionSourceMap: false,
   lintOnSave: true,
   devServer: {

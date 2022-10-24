@@ -6,7 +6,11 @@
           <v-col cols="6" sm="5">
             <v-img max-height="70" max-width="70" contain :src="appLogo" />
           </v-col>
-          <v-col cols="6" sm="7" class="d-flex flex-column align-end justify-start">
+          <v-col
+            cols="6"
+            sm="7"
+            class="d-flex flex-column align-end justify-start"
+          >
             <slot name="buttons"></slot>
           </v-col>
         </v-row>
@@ -30,7 +34,9 @@
               </template>
               <template #tooltip>
                 <span class="text-capitalize">{{
-                  authorized ? $t('page.status.authorized') : $t('page.status.unauthorized')
+                  authorized
+                    ? $t("page.status.authorized")
+                    : $t("page.status.unauthorized")
                 }}</span>
               </template>
             </tooltip>
@@ -47,9 +53,9 @@
 </template>
 
 <script>
-import Tooltip from '@/components/commons/Tooltip'
+import Tooltip from "@/components/commons/Tooltip"
 export default {
-  name: 'AppItem',
+  name: "AppItem",
   components: { Tooltip },
   props: {
     title: {
@@ -75,7 +81,9 @@ export default {
   },
   computed: {
     appLogo() {
-      return this.logo ? this.logo : require('@/assets/svg/app-item-placeholder.svg')
+      return this.logo
+        ? this.logo
+        : require("@/assets/svg/app-item-placeholder.svg")
     },
   },
 }

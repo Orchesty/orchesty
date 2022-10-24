@@ -13,20 +13,20 @@
 </template>
 
 <script lang="ts">
-import { Vue, Prop, Component } from "vue-property-decorator";
+import { Vue, Prop, Component } from "vue-property-decorator"
 
 @Component
 export default class NavigationItem extends Vue {
   @Prop({ type: String, required: true })
-  to!: string;
+  to!: string
 
   @Prop({ type: String, required: true })
-  icon!: string;
+  icon!: string
 
   @Prop({ type: String, required: true })
-  text!: string;
+  text!: string
 
   @Prop({ type: String, default: "white" })
-  color!: string;
+  color!: string
 }
 </script>

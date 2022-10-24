@@ -5,11 +5,11 @@
 </template>
 
 <script>
-import ContentBasic from '../../components/layout/content/ContentBasic'
-import ScheduledTaskGrid from '../../components/app/scheduledTask/grid/ScheduledTaskGrid'
+import ContentBasic from "../../components/layout/content/ContentBasic"
+import ScheduledTaskGrid from "../../components/app/scheduledTask/grid/ScheduledTaskGrid"
 
 export default {
-  name: 'ScheduledTaskPage',
+  name: "ScheduledTaskPage",
   components: { ScheduledTaskGrid, ContentBasic },
 }
 </script>

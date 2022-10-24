@@ -1,5 +1,10 @@
 <template>
-  <v-dialog v-model="isOpen" :width="width" content-class="modal-template" @keydown.enter="enterHandler">
+  <v-dialog
+    v-model="isOpen"
+    :width="width"
+    content-class="modal-template"
+    @keydown.enter="enterHandler"
+  >
     <template #activator="{ on }">
       <slot name="button" v-on="on" />
     </template>
@@ -33,10 +38,10 @@
 </template>
 
 <script>
-import AppButton from '@/components/commons/button/AppButton'
+import AppButton from "@/components/commons/button/AppButton"
 
 export default {
-  name: 'ModalTemplate',
+  name: "ModalTemplate",
   components: { AppButton },
   data: () => ({
     isOpen: false,
@@ -56,22 +61,22 @@ export default {
     },
     sendingTitle: {
       type: String,
-      default: '',
+      default: "",
     },
     title: {
       type: String,
       required: false,
-      default: '',
+      default: "",
     },
     body: {
       type: String,
       required: false,
-      default: () => '',
+      default: () => "",
     },
     cancelBtnText: {
       type: String,
       required: false,
-      default: '',
+      default: "",
     },
     isSending: {
       type: Boolean,
@@ -86,7 +91,7 @@ export default {
     confirmBtnText: {
       type: String,
       required: false,
-      default: '',
+      default: "",
     },
     onConfirm: {
       type: Function,
@@ -136,7 +141,7 @@ export default {
       this.isOpen = newVal
     },
     isOpen(newVal) {
-      this.$emit('input', newVal)
+      this.$emit("input", newVal)
     },
   },
   created() {

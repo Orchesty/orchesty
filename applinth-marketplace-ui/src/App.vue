@@ -49,16 +49,16 @@
 </template>
 
 <script>
-import { ROUTES } from '@/router/routes'
-import NavigationItem from '@/components/commons/NavigationItem'
-import FlashMessages from '@/components/commons/FlashMessages'
+import { ROUTES } from "@/router/routes"
+import NavigationItem from "@/components/commons/NavigationItem"
+import FlashMessages from "@/components/commons/FlashMessages"
 
 export default {
-  name: 'App',
+  name: "App",
   components: { FlashMessages, NavigationItem },
   computed: {
     breadCrumbs() {
-      if (typeof this.$route.meta.breadcrumbs === 'function') {
+      if (typeof this.$route.meta.breadcrumbs === "function") {
         return this.$route.meta.breadcrumbs(this.currentAppName)
       }
       return this.$route.meta.breadcrumbs
@@ -69,23 +69,23 @@ export default {
     navigationItems: [
       {
         to: ROUTES.OVERVIEW,
-        icon: 'mdi-toy-brick',
-        text: 'navigation.link.integrations',
+        icon: "mdi-toy-brick",
+        text: "navigation.link.integrations",
       },
       {
         to: ROUTES.APPLICATIONS,
-        icon: 'mdi-apps',
-        text: 'navigation.link.applications',
+        icon: "mdi-apps",
+        text: "navigation.link.applications",
       },
       {
         to: ROUTES.TRASH,
-        icon: 'mdi-delete',
-        text: 'navigation.link.trash',
+        icon: "mdi-delete",
+        text: "navigation.link.trash",
       },
       {
         to: ROUTES.SETTINGS,
-        icon: 'mdi-account-cog',
-        text: 'navigation.link.settings',
+        icon: "mdi-account-cog",
+        text: "navigation.link.settings",
       },
     ],
     currentAppName: null,

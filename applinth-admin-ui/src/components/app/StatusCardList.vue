@@ -29,12 +29,12 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import StatusCard from "../commons/layouts/StatusCard.vue";
-import { callApi } from "@/utils";
-import { UsageStatsAppsRequest, UsageStatsUsersRequest } from "@/api/generated";
-import { api } from "@/api";
-import { toCZK } from "@/filters/money";
+import { Component, Vue } from "vue-property-decorator"
+import StatusCard from "../commons/layouts/StatusCard.vue"
+import { callApi } from "@/utils"
+import { UsageStatsAppsRequest, UsageStatsUsersRequest } from "@/api/generated"
+import { api } from "@/api"
+import { toCZK } from "@/filters/money"
 
 @Component({
   components: {
@@ -42,15 +42,15 @@ import { toCZK } from "@/filters/money";
   },
 })
 export default class StatusCardList extends Vue {
-  applicationsCount = 0;
-  installationsCount = 0;
-  customersCount = 0;
-  amount = 0;
-  estimatedCosts = 0;
-  isLoading = false;
+  applicationsCount = 0
+  installationsCount = 0
+  customersCount = 0
+  amount = 0
+  estimatedCosts = 0
+  isLoading = false
 
   async created() {
-    this.isLoading = true;
+    this.isLoading = true
 
     const [appsTail, apps, customers] = await Promise.all([
       callApi<UsageStatsAppsRequest>(api.overview.apps, {
@@ -64,30 +64,30 @@ export default class StatusCardList extends Vue {
         granularity: "monthly",
         tail: true,
       }),
-    ]);
+    ])
 
-    this.applicationsCount = appsTail.length;
-    this.customersCount = customers.length;
+    this.applicationsCount = appsTail.length
+    this.customersCount = customers.length
 
-    let installationsCountAccumulator = 0;
-    let amountAccumulator = 0;
-    let estimatedCostAccumulator = 0;
+    let installationsCountAccumulator = 0
+    let amountAccumulator = 0
+    let estimatedCostAccumulator = 0
     for (const app of apps) {
-      amountAccumulator += app.totalCost ?? 0;
-      estimatedCostAccumulator += app.estimatedTotalCost ?? 0;
+      amountAccumulator += app.totalCost ?? 0
+      estimatedCostAccumulator += app.estimatedTotalCost ?? 0
     }
     for (const app of appsTail) {
-      installationsCountAccumulator += app.endUsers ?? 0;
+      installationsCountAccumulator += app.endUsers ?? 0
     }
 
-    this.installationsCount = installationsCountAccumulator;
-    this.amount = amountAccumulator;
-    this.estimatedCosts = estimatedCostAccumulator;
+    this.installationsCount = installationsCountAccumulator
+    this.amount = amountAccumulator
+    this.estimatedCosts = estimatedCostAccumulator
 
-    this.isLoading = false;
+    this.isLoading = false
   }
 
-  readonly toCZK = toCZK;
+  readonly toCZK = toCZK
 }
 </script>
 

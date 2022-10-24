@@ -8,7 +8,11 @@
     <template #default>
       <v-row dense>
         <v-col cols="12">
-          <topology-form ref="form" :callback-data="callbackData" :on-submit="submit" />
+          <topology-form
+            ref="form"
+            :callback-data="callbackData"
+            :on-submit="submit"
+          />
         </v-col>
       </v-row>
     </template>
@@ -30,19 +34,19 @@
 </template>
 
 <script>
-import { events, EVENTS } from '../../../../services/utils/events'
-import ModalTemplate from '../../../commons/modal/ModalTemplate'
-import { TOPOLOGIES } from '../../../../store/modules/topologies/types'
-import { mapActions, mapGetters } from 'vuex'
-import { REQUESTS_STATE } from '../../../../store/modules/api/types'
-import { API } from '../../../../api'
-import TopologyForm from '../form/TopologyForm'
-import AppButton from '@/components/commons/button/AppButton'
-import { ROUTES } from '@/services/enums/routerEnums'
-import { redirectTo } from '@/services/utils/utils'
+import { events, EVENTS } from "../../../../services/utils/events"
+import ModalTemplate from "../../../commons/modal/ModalTemplate"
+import { TOPOLOGIES } from "../../../../store/modules/topologies/types"
+import { mapActions, mapGetters } from "vuex"
+import { REQUESTS_STATE } from "../../../../store/modules/api/types"
+import { API } from "../../../../api"
+import TopologyForm from "../form/TopologyForm"
+import AppButton from "@/components/commons/button/AppButton"
+import { ROUTES } from "@/services/enums/routerEnums"
+import { redirectTo } from "@/services/utils/utils"
 
 export default {
-  name: 'ModalCreateTopology',
+  name: "ModalCreateTopology",
   components: { AppButton, ModalTemplate, TopologyForm },
   data: () => ({
     isOpen: false,
@@ -51,7 +55,10 @@ export default {
   computed: {
     ...mapGetters(REQUESTS_STATE.NAMESPACE, [REQUESTS_STATE.GETTERS.GET_STATE]),
     state() {
-      return this[REQUESTS_STATE.GETTERS.GET_STATE]([API.topology.create.id, API.topology.getList.id])
+      return this[REQUESTS_STATE.GETTERS.GET_STATE]([
+        API.topology.create.id,
+        API.topology.getList.id,
+      ])
     },
   },
   methods: {
@@ -61,14 +68,19 @@ export default {
       TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID,
     ]),
     async submit(form) {
-      await this[TOPOLOGIES.ACTIONS.TOPOLOGY.CREATE](form).then(async (response) => {
-        if (response) {
-          await this[TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES]()
-          await this[TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID](response._id)
-          await redirectTo(this.$router, { name: ROUTES.TOPOLOGY.VIEWER, params: { id: response._id } })
-          this.isOpen = false
+      await this[TOPOLOGIES.ACTIONS.TOPOLOGY.CREATE](form).then(
+        async (response) => {
+          if (response) {
+            await this[TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES]()
+            await this[TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID](response._id)
+            await redirectTo(this.$router, {
+              name: ROUTES.TOPOLOGY.VIEWER,
+              params: { id: response._id },
+            })
+            this.isOpen = false
+          }
         }
-      })
+      )
     },
     onClose() {
       this.callbackData = null
@@ -78,7 +90,7 @@ export default {
     events.listen(EVENTS.MODAL.TOPOLOGY.CREATE, ({ topology }) => {
       this.isOpen = true
       if (!topology) topology = {}
-      if (topology.type === 'CATEGORY') topology = { folder: topology.id }
+      if (topology.type === "CATEGORY") topology = { folder: topology.id }
       this.callbackData = topology
     })
   },

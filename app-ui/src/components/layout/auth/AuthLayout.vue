@@ -15,11 +15,11 @@
 </template>
 
 <script>
-import PageFooter from '../content/ContentFooter'
-import GlobalNotifications from '../../commons/notifications/GlobalNotifications'
+import PageFooter from "../content/ContentFooter"
+import GlobalNotifications from "../../commons/notifications/GlobalNotifications"
 
 export default {
-  name: 'AuthLayout',
+  name: "AuthLayout",
   components: { GlobalNotifications, PageFooter },
 }
 </script>

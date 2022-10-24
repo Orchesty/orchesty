@@ -1,43 +1,43 @@
 export default {
   getById: {
-    id: 'USER_GET_BY_ID',
+    id: "USER_GET_BY_ID",
     request: ({ id }) => ({
       url: `/user/${id}`,
-      method: 'GET',
+      method: "GET",
     }),
   },
   create: {
-    id: 'USER_REGISTER',
+    id: "USER_REGISTER",
     request: ({ email }) => ({
       url: `/user/register`,
-      method: 'POST',
+      method: "POST",
       data: {
         email,
       },
     }),
   },
   update: {
-    id: 'USER_UPDATE',
+    id: "USER_UPDATE",
     request: ({ id, data }) => ({
       url: `/user/${id}/saveSettings`,
-      method: 'POST',
+      method: "POST",
       data: {
         ...data,
       },
     }),
   },
   delete: {
-    id: 'USER_DELETE',
+    id: "USER_DELETE",
     request: ({ id }) => ({
       url: `/user/${id}/delete`,
-      method: 'DELETE',
+      method: "DELETE",
     }),
   },
   getList: {
-    id: 'USER_GET_LIST',
+    id: "USER_GET_LIST",
     request: (data) => ({
       url: `/user/list?filter=${JSON.stringify(data)}`,
-      method: 'POST',
+      method: "POST",
     }),
   },
 }

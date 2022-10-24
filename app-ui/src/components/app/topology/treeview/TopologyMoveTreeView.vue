@@ -12,22 +12,26 @@
   >
     <template #prepend="{ open }">
       <v-icon color="secondary">
-        {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
+        {{ open ? "mdi-folder-open" : "mdi-folder" }}
       </v-icon>
     </template>
     <template slot="label" slot-scope="{ item }">
-      <div :class="`body-1 ${item.id === topology.category ? 'error--text' : 'primary--text'}`">
-        {{ item.name }} {{ item.id === topology.category ? '(current)' : '' }}
+      <div
+        :class="`body-1 ${
+          item.id === topology.category ? 'error--text' : 'primary--text'
+        }`"
+      >
+        {{ item.name }} {{ item.id === topology.category ? "(current)" : "" }}
       </div>
     </template>
   </v-treeview>
 </template>
 
 <script>
-import { TOPOLOGY_ENUMS } from '@/services/enums/topologyEnums'
+import { TOPOLOGY_ENUMS } from "@/services/enums/topologyEnums"
 
 export default {
-  name: 'TopologyMoveTreeView',
+  name: "TopologyMoveTreeView",
   data() {
     return {
       parentFolder: [],
@@ -45,7 +49,7 @@ export default {
     value: {
       type: String,
       required: false,
-      default: () => '',
+      default: () => "",
     },
   },
   computed: {
@@ -53,7 +57,9 @@ export default {
       if (!this.topologies.length) return []
 
       const reduce = (items) => {
-        const categories = items.filter((item) => item.type === TOPOLOGY_ENUMS.CATEGORY)
+        const categories = items.filter(
+          (item) => item.type === TOPOLOGY_ENUMS.CATEGORY
+        )
 
         categories.forEach((category) => {
           category.children = reduce(category.children)
@@ -66,16 +72,22 @@ export default {
       }
 
       let categoriesTree = reduce(this.topologies)
-      categoriesTree.push({ children: [], id: null, name: 'root', parent: null, type: TOPOLOGY_ENUMS.CATEGORY })
+      categoriesTree.push({
+        children: [],
+        id: null,
+        name: "root",
+        parent: null,
+        type: TOPOLOGY_ENUMS.CATEGORY,
+      })
       return categoriesTree
     },
   },
   methods: {
     onActive(value) {
       if (value[0]?.id) {
-        this.$emit('input', value[0].id)
+        this.$emit("input", value[0].id)
       } else {
-        this.$emit('input', null)
+        this.$emit("input", null)
       }
     },
   },

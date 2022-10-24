@@ -14,8 +14,8 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import MobileMixin from "../../../mixin/MobileMixin";
+import { Component, Prop, Vue } from "vue-property-decorator"
+import MobileMixin from "../../../mixin/MobileMixin"
 
 @Component({ mixins: [MobileMixin] })
 export default class RoundButton extends Vue {
@@ -36,22 +36,22 @@ export default class RoundButton extends Vue {
         "check-bold",
       ].includes(icon),
   })
-  private icon!: string;
+  private icon!: string
 
   @Prop({ type: Boolean, default: false })
-  private outlined!: boolean;
+  private outlined!: boolean
 
   @Prop({ type: Boolean, default: false })
-  private disabled!: boolean;
+  private disabled!: boolean
 
   @Prop({ type: Boolean, default: false })
-  private large!: boolean;
+  private large!: boolean
 
   @Prop({ type: String, default: "" })
-  private color!: string;
+  private color!: string
 
   @Prop({ type: [String, Object], default: null })
-  private to!: object | string;
+  private to!: object | string
 }
 </script>
 

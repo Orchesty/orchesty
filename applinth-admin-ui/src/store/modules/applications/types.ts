@@ -1,4 +1,4 @@
-export const applicationsNamespace = "applications";
+export const applicationsNamespace = "applications"
 
 export enum ApplicationsMutations {
   FetchingApplicationsMetadata = "fetchingApplicationsMetadata",

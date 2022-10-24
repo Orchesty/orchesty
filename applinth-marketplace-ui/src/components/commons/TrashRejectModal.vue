@@ -13,7 +13,7 @@
       <div class="d-flex flex-column">
         <p>
           {{
-            $t('trashModal.reject.body', [trashItem.id, trashItem.topologyName])
+            $t("trashModal.reject.body", [trashItem.id, trashItem.topologyName])
           }}
         </p>
       </div>
@@ -29,14 +29,14 @@
 </template>
 
 <script>
-import BaseModal from '@/components/commons/BaseModal'
-import BaseButton from '@/components/commons/BaseButton'
-import { callApi } from '@/utils/apiFetch'
-import { API } from '@/api'
-import showFlashMessage from '@/utils/flashMessage'
-import { FLASH_MESSAGES_TYPES } from '@/store/flashMessages/types'
+import BaseModal from "@/components/commons/BaseModal"
+import BaseButton from "@/components/commons/BaseButton"
+import { callApi } from "@/utils/apiFetch"
+import { API } from "@/api"
+import showFlashMessage from "@/utils/flashMessage"
+import { FLASH_MESSAGES_TYPES } from "@/store/flashMessages/types"
 export default {
-  name: 'TrashRejectModal',
+  name: "TrashRejectModal",
   components: { BaseButton, BaseModal },
   props: {
     trashItem: {
@@ -61,9 +61,9 @@ export default {
             id: this.id,
           },
         })
-        this.$emit('taskSubmitted')
+        this.$emit("taskSubmitted")
         showFlashMessage(
-          this.$t('flashMessage.rejected', {
+          this.$t("flashMessage.rejected", {
             item: this.trashItem.id,
           }),
           FLASH_MESSAGES_TYPES.SUCCESS

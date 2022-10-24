@@ -34,72 +34,72 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Prop, Vue } from "vue-property-decorator"
 
 @Component
 export default class Button extends Vue {
   @Prop({ required: false, type: String, default: "primary" })
-  private color!: string;
+  private color!: string
 
   @Prop({ required: false, type: String, default: "" })
-  private type!: string;
+  private type!: string
 
   @Prop({ required: false, type: String, default: "" })
-  private sendingTitle!: string;
+  private sendingTitle!: string
 
   @Prop({ required: false, type: Boolean, default: false })
-  private loading!: boolean;
+  private loading!: boolean
 
   @Prop({ required: false, type: Boolean, default: false })
-  private disabled!: boolean;
+  private disabled!: boolean
 
   @Prop({ required: false, type: Boolean, default: false })
-  private text!: boolean;
+  private text!: boolean
 
   @Prop({ required: false, type: Boolean, default: false })
-  private outlined!: boolean;
+  private outlined!: boolean
 
   @Prop({ required: false, type: Boolean, default: false })
-  private icon!: boolean;
+  private icon!: boolean
 
   @Prop({ required: false, type: Boolean, default: false })
-  private isSending!: boolean;
+  private isSending!: boolean
 
   @Prop({ required: false, type: Boolean, default: false })
-  private plain!: boolean;
+  private plain!: boolean
 
   @Prop({ required: false, type: Boolean, default: false })
-  private flat!: boolean;
+  private flat!: boolean
 
   @Prop({ required: false, type: Boolean, default: false })
-  private fab!: boolean;
+  private fab!: boolean
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   @Prop({ required: false, type: Object, default: () => {} })
-  private on!: boolean;
+  private on!: boolean
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   @Prop({ required: false, type: Object, default: () => {} })
-  private attrs!: boolean;
+  private attrs!: boolean
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   @Prop({ required: false, type: Object, default: () => {} })
-  private customStyle!: boolean;
+  private customStyle!: boolean
 
   @Prop({ required: false, type: Number, default: 110 })
-  private minWidth?: number;
+  private minWidth?: number
 
   @Prop({ required: false, type: Number, default: 40 })
-  private height!: number;
+  private height!: number
 
   @Prop({ required: false, type: String, default: "auto" })
-  private width!: string;
+  private width!: string
 
   @Prop({ required: false, type: String, default: "" })
-  private customClass!: string;
+  private customClass!: string
 
   @Prop({ required: false, type: [String, Object] })
-  private to?: string | object;
+  private to?: string | object
 }
 </script>
 

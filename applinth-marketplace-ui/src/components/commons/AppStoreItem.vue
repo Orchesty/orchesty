@@ -35,8 +35,8 @@
               <template #tooltip>
                 <span class="text-capitalize">{{
                   authorized
-                    ? $t('appInstalledItem.authorized')
-                    : $t('appInstalledItem.unauthorized')
+                    ? $t("appInstalledItem.authorized")
+                    : $t("appInstalledItem.unauthorized")
                 }}</span>
               </template>
             </base-tooltip>
@@ -53,9 +53,9 @@
 </template>
 
 <script>
-import BaseTooltip from '@/components/commons/BaseTooltip'
+import BaseTooltip from "@/components/commons/BaseTooltip"
 export default {
-  name: 'AppStoreItem',
+  name: "AppStoreItem",
   components: { BaseTooltip },
   props: {
     title: {
@@ -83,7 +83,7 @@ export default {
     appLogo() {
       return this.logo
         ? this.logo
-        : require('@/assets/svg/app-store-item-logo-placeholder.svg')
+        : require("@/assets/svg/app-store-item-logo-placeholder.svg")
     },
   },
 }

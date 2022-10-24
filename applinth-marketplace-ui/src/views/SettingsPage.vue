@@ -100,16 +100,16 @@
 </template>
 
 <script>
-import BaseInput from '@/components/commons/BaseInput'
-import { callApi } from '@/utils/apiFetch'
-import { API } from '@/api'
-import { ROUTES } from '@/router/routes'
-import AppItemPasswordModal from '@/components/commons/AppInstalledPasswordModal'
-import { config } from '@/config'
-import BaseButton from '@/components/commons/BaseButton'
+import BaseInput from "@/components/commons/BaseInput"
+import { callApi } from "@/utils/apiFetch"
+import { API } from "@/api"
+import { ROUTES } from "@/router/routes"
+import AppItemPasswordModal from "@/components/commons/AppInstalledPasswordModal"
+import { config } from "@/config"
+import BaseButton from "@/components/commons/BaseButton"
 
 export default {
-  name: 'SettingsPage',
+  name: "SettingsPage",
   components: { BaseButton, AppItemPasswordModal, BaseInput },
   data() {
     return {
@@ -122,9 +122,9 @@ export default {
       rootApp: null,
       navigationItem: {
         to: ROUTES.APPLICATIONS,
-        icon: 'mdi-arrow-left-circle',
-        text: 'navigation.link.backToTheApplications',
-        color: 'primary',
+        icon: "mdi-arrow-left-circle",
+        text: "navigation.link.backToTheApplications",
+        color: "primary",
       },
     }
   },
@@ -166,8 +166,8 @@ export default {
         API.authorize.getAuthorizationSettingsLink(),
         config.backend.apiBaseUrl
       )
-      authorizeURL.searchParams.append('redirect_url', window.location.href)
-      window.open(authorizeURL.href, '_blank').focus()
+      authorizeURL.searchParams.append("redirect_url", window.location.href)
+      window.open(authorizeURL.href, "_blank").focus()
     },
 
     getEntries(choices) {
@@ -201,13 +201,13 @@ export default {
 
     hasOauth() {
       this.hasOauthAuthorization =
-        this.rootApp.authorization_type.startsWith('oauth')
+        this.rootApp.authorization_type.startsWith("oauth")
     },
 
     hasEmptySettings() {
       for (let form of this.settingsForms) {
         const hasEmptyValue = Object.values(form.fields).some((field) => {
-          return field == null || field === ''
+          return field == null || field === ""
         })
         if (hasEmptyValue) {
           form.hasValidSettings = false
@@ -238,7 +238,7 @@ export default {
       }
     },
     hasLogo(app) {
-      return app?.logo ? app.logo : ''
+      return app?.logo ? app.logo : ""
     },
   },
   watch: {

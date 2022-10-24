@@ -9,11 +9,11 @@
 </template>
 
 <script>
-import ChangePasswordForm from '@/components/app/profile/form/ChangePasswordForm'
-import ContentBasic from '@/components/layout/content/ContentBasic'
+import ChangePasswordForm from "@/components/app/profile/form/ChangePasswordForm"
+import ContentBasic from "@/components/layout/content/ContentBasic"
 
 export default {
-  name: 'UserProfilePage',
+  name: "UserProfilePage",
   components: {
     ContentBasic,
     ChangePasswordForm,

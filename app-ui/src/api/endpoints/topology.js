@@ -1,9 +1,9 @@
 export default {
   create: {
-    id: 'TOPOLOGY_CREATE',
+    id: "TOPOLOGY_CREATE",
     request: ({ name, description, folder }) => ({
-      url: '/topologies',
-      method: 'POST',
+      url: "/topologies",
+      method: "POST",
       data: {
         name,
         description,
@@ -12,182 +12,182 @@ export default {
     }),
   },
   getById: {
-    id: 'TOPOLOGY_GET_BY_ID',
+    id: "TOPOLOGY_GET_BY_ID",
     request: (id) => ({
       url: `/topologies/${id}`,
-      method: 'GET',
+      method: "GET",
     }),
   },
   getList: {
-    id: 'TOPOLOGIES_GET_LIST',
+    id: "TOPOLOGIES_GET_LIST",
     request: () => ({
-      url: '/topologies',
-      method: 'GET',
+      url: "/topologies",
+      method: "GET",
     }),
   },
   getTopologyNodes: {
-    id: 'TOPOLOGY_GET_NODES',
+    id: "TOPOLOGY_GET_NODES",
     request: (id) => ({
       url: `/topologies/${id}/nodes`,
-      method: 'GET',
+      method: "GET",
     }),
   },
   updateNode: {
-    id: 'UPDATE_NODE',
+    id: "UPDATE_NODE",
     request: ({ nodeId, enabled }) => ({
       url: `/nodes/${nodeId}`,
-      method: 'PATCH',
+      method: "PATCH",
       data: {
         enabled,
       },
     }),
   },
   getNodes: {
-    id: 'TOPOLOGY_NODE_LIST',
+    id: "TOPOLOGY_NODE_LIST",
     request: () => ({
-      url: '/nodes/list/name',
-      method: 'GET',
+      url: "/nodes/list/name",
+      method: "GET",
     }),
   },
   clone: {
-    id: 'TOPOLOGY_CLONE',
+    id: "TOPOLOGY_CLONE",
     request: (id) => ({
       url: `/topologies/${id}/clone`,
-      method: 'POST',
+      method: "POST",
     }),
   },
   move: {
-    id: 'TOPOLOGY_MOVE',
+    id: "TOPOLOGY_MOVE",
     request: ({ topologyId, categoryId }) => ({
       url: `/topologies/${topologyId}`,
-      method: 'PATCH',
+      method: "PATCH",
       data: {
         category: categoryId,
       },
     }),
   },
   delete: {
-    id: 'TOPOLOGY_DELETE',
+    id: "TOPOLOGY_DELETE",
     request: (id) => ({
       url: `/topologies/${id}`,
-      method: 'DELETE',
+      method: "DELETE",
     }),
   },
   edit: {
-    id: 'TOPOLOGY_EDIT',
+    id: "TOPOLOGY_EDIT",
     request: ({ id, data }) => ({
       url: `/topologies/${id}`,
-      method: 'PUT',
+      method: "PUT",
       data: {
         ...data,
       },
     }),
   },
   getDiagram: {
-    id: 'TOPOLOGY_GET_DIAGRAM',
+    id: "TOPOLOGY_GET_DIAGRAM",
     request: (id) => ({
       url: `/topologies/${id}/schema.bpmn`,
-      method: 'GET',
+      method: "GET",
     }),
   },
   saveDiagram: {
-    id: 'TOPOLOGY_SAVE_DIAGRAM',
+    id: "TOPOLOGY_SAVE_DIAGRAM",
     request: (data) => ({
       url: `/topologies/${data.id}/schema.bpmn`,
-      method: 'PUT',
+      method: "PUT",
       data: data.xml,
     }),
   },
   checkChangesInDiagram: {
-    id: 'TOPOLOGY_CHECK_DIAGRAM',
+    id: "TOPOLOGY_CHECK_DIAGRAM",
     request: (data) => ({
       url: `/topologies/check/${data.id}/schema.bpmn`,
-      method: 'POST',
+      method: "POST",
       data: data.xml,
     }),
   },
   getProgress: {
-    id: 'TOPOLOGY_GET_PROGRESS',
+    id: "TOPOLOGY_GET_PROGRESS",
     request: ({ id }) => ({
       url: `/progress/topology/${id}`,
-      method: 'GET',
+      method: "GET",
     }),
   },
   publish: {
-    id: 'TOPOLOGY_PUBLISH',
+    id: "TOPOLOGY_PUBLISH",
     request: (id) => ({
       url: `/topologies/${id}/publish`,
-      method: 'POST',
+      method: "POST",
     }),
   },
   run: {
-    id: 'TOPOLOGY_RUN',
+    id: "TOPOLOGY_RUN",
     request: ({ topologyId, startingPoints, body }) => ({
       url: `/topologies/${topologyId}/run`,
-      method: 'POST',
+      method: "POST",
       data: { startingPoints, body },
     }),
   },
   enable: {
-    id: 'TOPOLOGY_ENABLE',
+    id: "TOPOLOGY_ENABLE",
     request: (id) => ({
       url: `/topologies/${id}`,
-      method: 'PATCH',
+      method: "PATCH",
       data: {
         enabled: true,
       },
     }),
   },
   disable: {
-    id: 'TOPOLOGY_DISABLE',
+    id: "TOPOLOGY_DISABLE",
     request: (id) => ({
       url: `/topologies/${id}`,
-      method: 'PATCH',
+      method: "PATCH",
       data: {
         enabled: false,
       },
     }),
   },
   test: {
-    id: 'TOPOLOGY_TEST',
+    id: "TOPOLOGY_TEST",
     request: (id) => ({
       url: `/topologies/${id}/test`,
-      method: 'GET',
+      method: "GET",
     }),
   },
   getDashboard: {
-    id: 'TOPOLOGY_GET_DASHBOARD',
+    id: "TOPOLOGY_GET_DASHBOARD",
     request: () => ({
-      url: '/dashboards/default',
-      method: 'GET',
+      url: "/dashboards/default",
+      method: "GET",
     }),
   },
   getLogs: {
-    id: 'GET_LOGS',
+    id: "GET_LOGS",
     request: (data) => ({
       url: `/logs?filter=${JSON.stringify(data)}`,
-      method: 'GET',
+      method: "GET",
     }),
   },
   getLogsByID: {
-    id: 'TOPOLOGY_GET_LOGS_BY_ID',
+    id: "TOPOLOGY_GET_LOGS_BY_ID",
     request: (data) => {
       return {
         url: `/logs?filter=${JSON.stringify(data)}`,
-        method: 'GET',
+        method: "GET",
       }
     },
   },
   getNodeLogsByID: {
-    id: 'NODE_GET_LOGS_BY_ID',
+    id: "NODE_GET_LOGS_BY_ID",
     request: (data) => {
       if (data.params) {
         data.filter.forEach((conditionsArray) => {
           conditionsArray.forEach((condition) => {
-            if (condition.column === 'topology_id') {
+            if (condition.column === "topology_id") {
               condition.value = [data.params.topologyID]
             }
-            if (condition.column === 'node_id') {
+            if (condition.column === "node_id") {
               condition.value = [data.params.nodeID]
             }
           })
@@ -195,7 +195,7 @@ export default {
       }
       return {
         url: `/logs?filter=${JSON.stringify(data)}`,
-        method: 'GET',
+        method: "GET",
       }
     },
   },

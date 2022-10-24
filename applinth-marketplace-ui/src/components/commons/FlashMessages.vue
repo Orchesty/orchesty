@@ -3,23 +3,23 @@
     <div class="d-flex align-center justify-around">
       <span class="font-weight-bold">{{ text }}</span>
       <v-btn dark text small class="ml-auto" @click="snackbar = false">
-        {{ $t('button.close') }}
+        {{ $t("button.close") }}
       </v-btn>
     </div>
   </v-snackbar>
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapActions } from "vuex"
 import {
   FLASH_MESSAGES,
   FLASH_MESSAGES_TYPES,
-} from '@/store/flashMessages/types'
+} from "@/store/flashMessages/types"
 
 export default {
-  name: 'FlashMessages',
+  name: "FlashMessages",
   computed: {
-    ...mapState(FLASH_MESSAGES.NAMESPACE, ['flashMessages']),
+    ...mapState(FLASH_MESSAGES.NAMESPACE, ["flashMessages"]),
   },
   data() {
     return {
@@ -35,13 +35,13 @@ export default {
     getType(type) {
       switch (type) {
         case FLASH_MESSAGES_TYPES.SUCCESS: {
-          return 'success'
+          return "success"
         }
         case FLASH_MESSAGES_TYPES.ERROR: {
-          return 'error'
+          return "error"
         }
         default: {
-          return 'primary'
+          return "primary"
         }
       }
     },

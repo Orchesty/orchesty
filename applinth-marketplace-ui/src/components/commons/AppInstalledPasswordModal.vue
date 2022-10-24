@@ -46,13 +46,13 @@
 </template>
 
 <script>
-import BaseModal from '@/components/commons/BaseModal'
-import BaseButton from '@/components/commons/BaseButton'
-import BaseInput from '@/components/commons/BaseInput'
-import { API } from '@/api'
-import { callApi } from '@/utils/apiFetch'
+import BaseModal from "@/components/commons/BaseModal"
+import BaseButton from "@/components/commons/BaseButton"
+import BaseInput from "@/components/commons/BaseInput"
+import { API } from "@/api"
+import { callApi } from "@/utils/apiFetch"
 export default {
-  name: 'AppItemPasswordModal',
+  name: "AppItemPasswordModal",
   components: {
     BaseInput,
     BaseButton,
@@ -89,14 +89,14 @@ export default {
     },
     buttonClass: {
       type: String,
-      default: () => '',
+      default: () => "",
     },
   },
   data() {
     return {
       isOpen: false,
       isSaving: false,
-      password: '',
+      password: "",
       isPasswordVisible: false,
     }
   },

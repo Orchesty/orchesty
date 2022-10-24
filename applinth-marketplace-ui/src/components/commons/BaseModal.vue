@@ -20,9 +20,9 @@
 </template>
 
 <script>
-import SubHeading from '@/components/commons/SubHeading'
+import SubHeading from "@/components/commons/SubHeading"
 export default {
-  name: 'BaseModal',
+  name: "BaseModal",
   components: { SubHeading },
   props: {
     title: {
@@ -48,7 +48,7 @@ export default {
       this.isOpen = value
     },
     isOpen(isOpen) {
-      this.$emit('input', isOpen)
+      this.$emit("input", isOpen)
     },
   },
 }

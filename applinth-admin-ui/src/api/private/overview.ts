@@ -1,15 +1,15 @@
-import { apiClient } from "@/utils/apiClient";
-import { ApiConfigs } from "../../types";
+import { apiClient } from "@/utils/apiClient"
+import { ApiConfigs } from "../../types"
 import {
   UsageStatsApps,
   UsageStatsInstalledApps,
   UsageStatsTimeBucketApps,
   UsageStatsTimeBucketUsers,
   UsageStatsUsers,
-} from "@/api/generated";
+} from "@/api/generated"
 
-export type OverviewApi = "apps";
-export type OverviewTimeBucketUsersApi = "data";
+export type OverviewApi = "apps"
+export type OverviewTimeBucketUsersApi = "data"
 
 export const overview: ApiConfigs<OverviewApi> = {
   apps: {
@@ -17,7 +17,7 @@ export const overview: ApiConfigs<OverviewApi> = {
     request: (params) => apiClient.billingApi.usageStatsApps(params),
     transform: (data: UsageStatsApps) => data.rows,
   },
-};
+}
 
 export const timeBucketUsers: ApiConfigs<OverviewTimeBucketUsersApi> = {
   data: {
@@ -25,7 +25,7 @@ export const timeBucketUsers: ApiConfigs<OverviewTimeBucketUsersApi> = {
     request: (params) => apiClient.billingApi.usageStatsTimeBucketUsers(params),
     transform: (data: UsageStatsTimeBucketUsers) => data.rows,
   },
-};
+}
 
 export const installedApps: ApiConfigs<OverviewApi> = {
   apps: {
@@ -33,7 +33,7 @@ export const installedApps: ApiConfigs<OverviewApi> = {
     request: (params) => apiClient.billingApi.usageStatsInstalledApps(params),
     transform: (data: UsageStatsInstalledApps) => data.rows,
   },
-};
+}
 
 export const timeBucketApps: ApiConfigs<OverviewApi> = {
   apps: {
@@ -41,7 +41,7 @@ export const timeBucketApps: ApiConfigs<OverviewApi> = {
     request: (params) => apiClient.billingApi.usageStatsTimeBucketApps(params),
     transform: (data: UsageStatsTimeBucketApps) => data.rows,
   },
-};
+}
 
 export const overviewUsers: ApiConfigs<OverviewApi> = {
   apps: {
@@ -49,4 +49,4 @@ export const overviewUsers: ApiConfigs<OverviewApi> = {
     request: (params) => apiClient.billingApi.usageStatsUsers(params),
     transform: (data: UsageStatsUsers) => data.rows,
   },
-};
+}

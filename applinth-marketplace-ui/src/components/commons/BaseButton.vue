@@ -31,7 +31,7 @@
 
 <script>
 export default {
-  name: 'BaseButton',
+  name: "BaseButton",
   props: {
     icon: {
       type: Boolean,
@@ -55,7 +55,7 @@ export default {
     },
     sendingTitle: {
       type: String,
-      default: () => '',
+      default: () => "",
     },
     loading: {
       type: Boolean,
@@ -63,17 +63,17 @@ export default {
     },
     width: {
       type: String,
-      default: 'auto',
+      default: "auto",
     },
     type: {
       type: String,
       required: false,
-      default: () => '',
+      default: () => "",
     },
     outlined: Boolean,
     buttonTitle: {
       type: String,
-      default: '',
+      default: "",
     },
     to: {
       type: Object,
@@ -89,7 +89,7 @@ export default {
     },
     color: {
       type: String,
-      default: 'primary',
+      default: "primary",
     },
     flat: {
       type: Boolean,
@@ -105,7 +105,7 @@ export default {
     },
     customClass: {
       type: String,
-      default: () => '',
+      default: () => "",
     },
     customStyle: {
       type: Object,

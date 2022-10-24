@@ -13,26 +13,26 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import SubHeading from "@/components/commons/typography/SubHeading.vue";
+import { Component, Prop, Vue } from "vue-property-decorator"
+import SubHeading from "@/components/commons/typography/SubHeading.vue"
 @Component({
   components: { SubHeading },
 })
 export default class StatusCard extends Vue {
   @Prop({ type: [Number, String], default: null })
-  readonly score!: number | string;
+  readonly score!: number | string
 
   @Prop({ type: String, default: "" })
-  readonly title!: string;
+  readonly title!: string
 
   @Prop({ type: Boolean, default: false })
-  readonly hasError!: boolean;
+  readonly hasError!: boolean
 
   @Prop({ type: Boolean, default: false })
-  readonly loading!: boolean;
+  readonly loading!: boolean
 
   @Prop({ type: Number, default: null })
-  readonly badge!: number;
+  readonly badge!: number
 }
 </script>
 

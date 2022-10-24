@@ -1,4 +1,4 @@
-import { STORE } from './types'
+import { STORE } from "./types"
 
 export const resetState = (state, initState) => {
   Object.keys(state).forEach((item) => {

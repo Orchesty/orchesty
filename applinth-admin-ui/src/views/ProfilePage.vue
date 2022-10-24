@@ -69,21 +69,21 @@
 </template>
 
 <script lang="ts">
-import AppLayout from "../components/commons/layouts/AppLayout.vue";
-import Button from "../components/commons/inputsAndControls/Button.vue";
-import TextField from "../components/commons/inputsAndControls/TextField.vue";
-import { Component, Vue } from "vue-property-decorator";
-import { ValidationObserver } from "vee-validate";
-import { alerts, i18n } from "../utils";
+import AppLayout from "../components/commons/layouts/AppLayout.vue"
+import Button from "../components/commons/inputsAndControls/Button.vue"
+import TextField from "../components/commons/inputsAndControls/TextField.vue"
+import { Component, Vue } from "vue-property-decorator"
+import { ValidationObserver } from "vee-validate"
+import { alerts, i18n } from "../utils"
 import {
   AuthActions,
   AuthGetters,
   authNamespace,
   User,
-} from "../store/modules/auth";
-import { Action, Getter } from "vuex-class";
-import Heading from "@/components/commons/typography/Heading.vue";
-import { ChangePassword, UpdateUserInfo } from "@/types/CurrentUser";
+} from "../store/modules/auth"
+import { Action, Getter } from "vuex-class"
+import Heading from "@/components/commons/typography/Heading.vue"
+import { ChangePassword, UpdateUserInfo } from "@/types/CurrentUser"
 
 @Component({
   components: {
@@ -96,78 +96,78 @@ import { ChangePassword, UpdateUserInfo } from "@/types/CurrentUser";
 })
 export default class ProfilePage extends Vue {
   @Getter(`${authNamespace}/${AuthGetters.GetUser}`)
-  currentUser!: User;
+  currentUser!: User
 
   @Action(`${authNamespace}/${AuthActions.ChangePassword}`)
-  private firebaseChangePassword!: (payload: string) => Promise<boolean>;
+  private firebaseChangePassword!: (payload: string) => Promise<boolean>
 
   @Action(`${authNamespace}/${AuthActions.Reauthenticate}`)
-  private reauthenticate!: (payload: string) => Promise<boolean>;
+  private reauthenticate!: (payload: string) => Promise<boolean>
 
   @Action(`${authNamespace}/${AuthActions.UpdateSettings}`)
-  private updateUserInfo!: (payload: UpdateUserInfo) => Promise<boolean>;
+  private updateUserInfo!: (payload: UpdateUserInfo) => Promise<boolean>
 
-  isSendingUpdateUser = false;
+  isSendingUpdateUser = false
   formLoggedAdmin: UpdateUserInfo = {
     displayName: "",
-  };
+  }
 
-  isFormNewPasswordValid = true;
-  isSendingNewPassword = false;
+  isFormNewPasswordValid = true
+  isSendingNewPassword = false
   formNewPassword: ChangePassword = {
     oldPassword: "",
     newPasswordOne: "",
     newPasswordTwo: "",
-  };
+  }
 
   mounted() {
     this.formLoggedAdmin = {
       displayName: this.currentUser.name || "",
-    };
+    }
   }
 
   async submitFormName() {
-    this.isSendingUpdateUser = true;
-    const result = await this.updateUserInfo(this.formLoggedAdmin);
+    this.isSendingUpdateUser = true
+    const result = await this.updateUserInfo(this.formLoggedAdmin)
     if (result) {
       alerts.addSuccessAlert(
         "UPDATE_LOGGED_ADMIN",
         i18n.t("message.saved") as string
-      );
+      )
     }
-    this.isSendingUpdateUser = false;
+    this.isSendingUpdateUser = false
   }
 
   async submitFormNewPassword() {
-    this.isFormNewPasswordValid = true;
-    this.isSendingNewPassword = true;
-    const result = await this.updateLoggedAdminPassword(this.formNewPassword);
+    this.isFormNewPasswordValid = true
+    this.isSendingNewPassword = true
+    const result = await this.updateLoggedAdminPassword(this.formNewPassword)
 
     if (result) {
       alerts.addSuccessAlert(
         "UPDATE_LOGGED_ADMIN_PASSWORD",
         i18n.t("message.saved") as string
-      );
-      (this.$refs.formNewPassword as HTMLFormElement).reset();
+      )
+      ;(this.$refs.formNewPassword as HTMLFormElement).reset()
       this.$nextTick(() => {
-        (this.$refs.observerNewPassword as any).reset();
-      });
+        ;(this.$refs.observerNewPassword as any).reset()
+      })
     }
-    this.isSendingNewPassword = false;
+    this.isSendingNewPassword = false
   }
 
   async updateLoggedAdminPassword(input: ChangePassword): Promise<boolean> {
     if (input.newPasswordOne !== input.newPasswordTwo) {
-      this.isFormNewPasswordValid = false;
-      return false;
+      this.isFormNewPasswordValid = false
+      return false
     }
 
-    const currentPasswordIsValid = await this.reauthenticate(input.oldPassword);
+    const currentPasswordIsValid = await this.reauthenticate(input.oldPassword)
     if (currentPasswordIsValid) {
-      return await this.firebaseChangePassword(input.newPasswordOne);
+      return await this.firebaseChangePassword(input.newPasswordOne)
     }
 
-    return false;
+    return false
   }
 }
 </script>

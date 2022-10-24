@@ -31,7 +31,7 @@
 
 <script>
 export default {
-  name: 'AuthSplitLayout',
+  name: "AuthSplitLayout",
   props: {
     disableHeader: {
       type: Boolean,

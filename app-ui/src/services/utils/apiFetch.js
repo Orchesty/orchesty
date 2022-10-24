@@ -1,15 +1,21 @@
-import axios from 'axios'
+import axios from "axios"
 
-import { config } from '@/config'
-import { LOCAL_STORAGE } from '../enums/localStorageEnums'
-import { logout, onError, removeError, startSending, stopSending } from './utils'
+import { config } from "@/config"
+import { LOCAL_STORAGE } from "../enums/localStorageEnums"
+import {
+  logout,
+  onError,
+  removeError,
+  startSending,
+  stopSending,
+} from "./utils"
 
 const apiClient = axios.create({
   baseURL: `${config.backend.apiBaseUrl}/api`,
   withCredentials: true,
   headers: {
-    Accept: 'application/json',
-    'Content-Type': 'application/json; charset=utf-8',
+    Accept: "application/json",
+    "Content-Type": "application/json; charset=utf-8",
   },
 })
 
@@ -20,27 +26,37 @@ const send = (config) => {
 
   return new Promise((resolve, reject) => {
     if (!method) {
-      reject(new Error('The request must have method.'))
+      reject(new Error("The request must have method."))
     }
 
     if (!url) {
-      reject(new Error('The request must have url.'))
+      reject(new Error("The request must have url."))
     }
 
     const token = localStorage.getItem(LOCAL_STORAGE.USER_TOKEN)
     if (token) {
-      headers['Authorization'] = `${token}`
+      headers["Authorization"] = `${token}`
     }
 
-    resolve(apiClient.request({ ...config, url, headers: { ...headers }, body: JSON.stringify(body) }))
+    resolve(
+      apiClient.request({
+        ...config,
+        url,
+        headers: { ...headers },
+        body: JSON.stringify(body),
+      })
+    )
   })
 }
 
-const call = ({ requestData, params = null, throwError = true, store }, sender) => {
+const call = (
+  { requestData, params = null, throwError = true, store },
+  sender
+) => {
   const { id, errorType, loadingType, request, mock, reduce } = requestData
 
   if (!id) {
-    throw new Error('Request must have id.')
+    throw new Error("Request must have id.")
   }
 
   if (mock) {
@@ -70,7 +86,7 @@ const call = ({ requestData, params = null, throwError = true, store }, sender) 
       })
       .catch((err) => {
         // eslint-disable-next-line
-        console.error('Response ERROR!', err)
+        console.error("Response ERROR!", err)
 
         if (err.response) {
           // logout
@@ -85,7 +101,7 @@ const call = ({ requestData, params = null, throwError = true, store }, sender) 
           onError(
             store,
             id,
-            err.response.data.status ? err.response.data.status : 'UNKNOWN',
+            err.response.data.status ? err.response.data.status : "UNKNOWN",
             errorType,
             err.response.data.message
           )
@@ -94,9 +110,10 @@ const call = ({ requestData, params = null, throwError = true, store }, sender) 
           onError(
             store,
             id,
-            'UNKNOWN',
+            "UNKNOWN",
             errorType,
-            err.response?.data?.message ?? 'Network error, please try again later'
+            err.response?.data?.message ??
+              "Network error, please try again later"
           )
         }
 
@@ -109,6 +126,7 @@ const call = ({ requestData, params = null, throwError = true, store }, sender) 
   })
 }
 
-const callApi = (params) => call(params, (config) => send({ ...config, withCredentials: true }))
+const callApi = (params) =>
+  call(params, (config) => send({ ...config, withCredentials: true }))
 
 export { callApi }

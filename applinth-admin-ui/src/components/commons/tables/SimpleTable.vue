@@ -23,8 +23,8 @@
 </template>
 
 <script lang="ts">
-import ActionsWrapper from "@/components/commons/tables/ActionsWrapper.vue";
-import { Vue, Prop, Component } from "vue-property-decorator";
+import ActionsWrapper from "@/components/commons/tables/ActionsWrapper.vue"
+import { Vue, Prop, Component } from "vue-property-decorator"
 
 @Component({
   components: {
@@ -33,23 +33,23 @@ import { Vue, Prop, Component } from "vue-property-decorator";
 })
 export default class SimpleTable extends Vue {
   @Prop({ type: Array, required: true })
-  readonly headers!: any[];
+  readonly headers!: any[]
 
   @Prop({ type: Array, required: true })
-  readonly items!: any[];
+  readonly items!: any[]
 
   @Prop({ type: Boolean, required: false, default: false })
-  readonly loading!: boolean;
+  readonly loading!: boolean
 
   @Prop({ type: Boolean, required: false, default: false })
-  readonly hideFooter!: boolean;
+  readonly hideFooter!: boolean
 
   editItem(item: any) {
-    this.$emit("edit", item);
+    this.$emit("edit", item)
   }
 
   deleteItem(item: any) {
-    this.$emit("delete", item);
+    this.$emit("delete", item)
   }
 }
 </script>

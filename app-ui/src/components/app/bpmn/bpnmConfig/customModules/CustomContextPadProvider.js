@@ -1,7 +1,7 @@
-import inherits from 'inherits'
-import ContextPadProvider from 'bpmn-js/lib/features/context-pad/ContextPadProvider'
-import { bind } from 'lodash'
-import { is } from 'bpmn-js/lib/util/ModelUtil'
+import inherits from "inherits"
+import ContextPadProvider from "bpmn-js/lib/features/context-pad/ContextPadProvider"
+import { bind } from "lodash"
+import { is } from "bpmn-js/lib/util/ModelUtil"
 
 export default function CustomContextPadProvider(
   config,
@@ -39,14 +39,16 @@ export default function CustomContextPadProvider(
     const actions = cached(element)
 
     if (
-      (is(element, 'bpmn:Task') || is(element, 'bpmn:Event') || is(element, 'bpmn:Gateway')) &&
+      (is(element, "bpmn:Task") ||
+        is(element, "bpmn:Event") ||
+        is(element, "bpmn:Gateway")) &&
       element.businessObject.pipesType &&
-      element.businessObject.pipesType !== ''
+      element.businessObject.pipesType !== ""
     ) {
-      delete actions['append.append-task']
-      delete actions['append.end-event']
-      delete actions['append.gateway']
-      delete actions['append.intermediate-event']
+      delete actions["append.append-task"]
+      delete actions["append.end-event"]
+      delete actions["append.gateway"]
+      delete actions["append.intermediate-event"]
       delete actions.replace
     }
 
@@ -57,16 +59,16 @@ export default function CustomContextPadProvider(
 inherits(CustomContextPadProvider, ContextPadProvider)
 
 CustomContextPadProvider.$inject = [
-  'config',
-  'injector',
-  'eventBus',
-  'contextPad',
-  'modeling',
-  'elementFactory',
-  'connect',
-  'create',
-  'popupMenu',
-  'canvas',
-  'rules',
-  'translate',
+  "config",
+  "injector",
+  "eventBus",
+  "contextPad",
+  "modeling",
+  "elementFactory",
+  "connect",
+  "create",
+  "popupMenu",
+  "canvas",
+  "rules",
+  "translate",
 ]

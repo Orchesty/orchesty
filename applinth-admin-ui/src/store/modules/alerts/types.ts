@@ -1,4 +1,4 @@
-export const alertsNamespace = "alerts";
+export const alertsNamespace = "alerts"
 
 export enum AlertsMutations {
   Add = "add",

@@ -1,12 +1,18 @@
 <template>
-  <content-basic v-if="appActive" redirect-in-title :title="$t('navigation.backToTheApplications')">
+  <content-basic
+    v-if="appActive"
+    redirect-in-title
+    :title="$t('navigation.backToTheApplications')"
+  >
     <v-row class="mt-4">
       <v-col cols="2">
         <v-img max-width="150" contain :src="hasLogo(appActive)" />
       </v-col>
     </v-row>
     <v-row>
-      <v-col class="d-flex justify-space-between flex-column application-settings-wrapper">
+      <v-col
+        class="d-flex justify-space-between flex-column application-settings-wrapper"
+      >
         <h1 class="headline font-weight-bold">{{ appActive.name }}</h1>
         <p class="mt-4">{{ appActive.description }}</p>
         <div class="d-flex justify-space-between align-center">
@@ -58,7 +64,11 @@
     </v-row>
 
     <v-tabs-items v-model="tab" class="mt-4">
-      <v-tab-item v-for="(form, index) in settingsConfig" :key="form.key" class="application-settings-wrapper-form">
+      <v-tab-item
+        v-for="(form, index) in settingsConfig"
+        :key="form.key"
+        class="application-settings-wrapper-form"
+      >
         <template v-if="form.key === 'info'">
           <!-- eslint-disable-next-line vue/no-v-html -->
           <div class="mt-2" v-html="form.info" />
@@ -71,7 +81,12 @@
           </v-row>
           <v-row dense class="mt-2">
             <v-col>
-              <validation-observer :ref="form.key" tag="form" slim @submit.prevent="() => saveForm(form.key)">
+              <validation-observer
+                :ref="form.key"
+                tag="form"
+                slim
+                @submit.prevent="() => saveForm(form.key)"
+              >
                 <div v-for="field in form.fields" :key="field.key">
                   <div v-if="field.description" class="mb-2">
                     {{ field.description }}
@@ -94,7 +109,11 @@
                       :error-messages="errors"
                     />
                   </validation-provider>
-                  <validation-provider v-if="field.type === 'selectbox'" :name="field.key" slim>
+                  <validation-provider
+                    v-if="field.type === 'selectbox'"
+                    :name="field.key"
+                    slim
+                  >
                     <app-select
                       v-model="settingsForms[index].fields[field.key]"
                       :clearable="!field.readOnly"
@@ -115,7 +134,11 @@
                     :name="field.name"
                     button-class="mb-3"
                   />
-                  <validation-provider v-if="field.type === 'checkbox'" :name="field.key" slim>
+                  <validation-provider
+                    v-if="field.type === 'checkbox'"
+                    :name="field.key"
+                    slim
+                  >
                     <app-checkbox
                       v-model="settingsForms[index].fields[field.key]"
                       :readonly="field.readOnly"
@@ -174,14 +197,27 @@
     <v-divider v-if="hasWebhookSettings" class="orchesty-divider-margin" />
     <v-row>
       <v-col v-if="hasWebhookSettings" cols="6">
-        <h3 class="title font-weight-bold mb-3">{{ $t('appStore.detail.webhooks') }}</h3>
+        <h3 class="title font-weight-bold mb-3">
+          {{ $t("appStore.detail.webhooks") }}
+        </h3>
 
         <template v-for="item in webhooksSettings">
-          <validation-observer :key="item.name" :ref="item.name" slim @submit.prevent="saveWebhook(item.name)">
+          <validation-observer
+            :key="item.name"
+            :ref="item.name"
+            slim
+            @submit.prevent="saveWebhook(item.name)"
+          >
             <v-row dense>
-              <v-col> <app-input readonly label="Webhook Name" :value="item.name" /></v-col>
               <v-col>
-                <validation-provider v-slot="{ errors }" :name="item.name" rules="required">
+                <app-input readonly label="Webhook Name" :value="item.name"
+              /></v-col>
+              <v-col>
+                <validation-provider
+                  v-slot="{ errors }"
+                  :name="item.name"
+                  rules="required"
+                >
                   <v-autocomplete
                     v-model="webhooksSettings[item.name].topology"
                     dense
@@ -214,27 +250,27 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
-import { APP_STORE } from '@/store/modules/appStore/types'
-import { AUTH } from '@/store/modules/auth/types'
-import { TOPOLOGIES } from '@/store/modules/topologies/types'
-import { ROUTES } from '@/services/enums/routerEnums'
-import { REQUESTS_STATE } from '@/store/modules/api/types'
-import { config } from '@/config'
-import AppItemPasswordModal from '@/components/app/appStore/modal/AppItemPasswordModal'
-import AppInput from '@/components/commons/input/AppInput'
-import AppButton from '@/components/commons/button/AppButton'
-import ActionsWrapper from '@/components/layout/actions/ActionsWrapper'
-import ContentBasic from '@/components/layout/content/ContentBasic'
-import UninstallAppModal from '@/components/app/appStore/modal/UninstallAppModal'
-import { API } from '@/api'
-import AppSelect from '@/components/commons/AppSelect'
-import AppCheckbox from '@/components/commons/AppCheckbox'
-import AppNotAuthorizedModal from '../modal/AppNotAuthorizedModal'
-import { LOCAL_STORAGE } from '@/services/enums/localStorageEnums'
+import { mapActions, mapGetters } from "vuex"
+import { APP_STORE } from "@/store/modules/appStore/types"
+import { AUTH } from "@/store/modules/auth/types"
+import { TOPOLOGIES } from "@/store/modules/topologies/types"
+import { ROUTES } from "@/services/enums/routerEnums"
+import { REQUESTS_STATE } from "@/store/modules/api/types"
+import { config } from "@/config"
+import AppItemPasswordModal from "@/components/app/appStore/modal/AppItemPasswordModal"
+import AppInput from "@/components/commons/input/AppInput"
+import AppButton from "@/components/commons/button/AppButton"
+import ActionsWrapper from "@/components/layout/actions/ActionsWrapper"
+import ContentBasic from "@/components/layout/content/ContentBasic"
+import UninstallAppModal from "@/components/app/appStore/modal/UninstallAppModal"
+import { API } from "@/api"
+import AppSelect from "@/components/commons/AppSelect"
+import AppCheckbox from "@/components/commons/AppCheckbox"
+import AppNotAuthorizedModal from "../modal/AppNotAuthorizedModal"
+import { LOCAL_STORAGE } from "@/services/enums/localStorageEnums"
 
 export default {
-  name: 'InstalledApp',
+  name: "InstalledApp",
   components: {
     AppNotAuthorizedModal,
     AppCheckbox,
@@ -261,19 +297,27 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(APP_STORE.NAMESPACE, { appActive: APP_STORE.GETTERS.GET_ACTIVE_APP }),
-    ...mapGetters(TOPOLOGIES.NAMESPACE, { topologiesAll: TOPOLOGIES.GETTERS.GET_ALL_TOPOLOGIES }),
+    ...mapGetters(APP_STORE.NAMESPACE, {
+      appActive: APP_STORE.GETTERS.GET_ACTIVE_APP,
+    }),
+    ...mapGetters(TOPOLOGIES.NAMESPACE, {
+      topologiesAll: TOPOLOGIES.GETTERS.GET_ALL_TOPOLOGIES,
+    }),
     ...mapGetters(REQUESTS_STATE.NAMESPACE, [REQUESTS_STATE.GETTERS.GET_STATE]),
     ...mapGetters(AUTH.NAMESPACE, { userId: AUTH.GETTERS.GET_LOGGED_USER_ID }),
     hasWebhookSettings() {
       return Object.entries(this.webhooksSettings).length > 0
     },
     isUninstalling() {
-      const state = this[REQUESTS_STATE.GETTERS.GET_STATE]([API.appStore.uninstallApp.id])
+      const state = this[REQUESTS_STATE.GETTERS.GET_STATE]([
+        API.appStore.uninstallApp.id,
+      ])
       return state?.isSending || false
     },
     isSaving() {
-      const state = this[REQUESTS_STATE.GETTERS.GET_STATE]([API.appStore.saveSettings.id])
+      const state = this[REQUESTS_STATE.GETTERS.GET_STATE]([
+        API.appStore.saveSettings.id,
+      ])
       return state?.isSending || false
     },
     isRequestPending() {
@@ -288,11 +332,15 @@ export default {
       return !this.appActive.authorized
     },
     onOrOff() {
-      return this.isActivated ? this.$t('page.status.activated') : this.$t('page.status.notActivated')
+      return this.isActivated
+        ? this.$t("page.status.activated")
+        : this.$t("page.status.notActivated")
     },
   },
   methods: {
-    ...mapActions(TOPOLOGIES.NAMESPACE, [TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES]),
+    ...mapActions(TOPOLOGIES.NAMESPACE, [
+      TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES,
+    ]),
     ...mapActions(APP_STORE.NAMESPACE, [
       APP_STORE.ACTIONS.GET_INSTALLED_APP,
       APP_STORE.ACTIONS.SAVE_APP_SETTINGS,
@@ -304,7 +352,9 @@ export default {
     ]),
 
     async uninstall(key) {
-      const isInstalled = await this[APP_STORE.ACTIONS.UNINSTALL_APP_REQUEST]({ key })
+      const isInstalled = await this[APP_STORE.ACTIONS.UNINSTALL_APP_REQUEST]({
+        key,
+      })
       if (isInstalled) {
         await this.$router.push({ name: ROUTES.APP_STORE.INSTALLED_APPS })
       }
@@ -371,35 +421,46 @@ export default {
       })
 
       if (isSaved) {
-        await this[APP_STORE.ACTIONS.GET_INSTALLED_APP]({ key: this.$route.params.key })
+        await this[APP_STORE.ACTIONS.GET_INSTALLED_APP]({
+          key: this.$route.params.key,
+        })
       }
     },
     async authorizeApp() {
-      const authorizeURL = new URL(`/api/applications/${this.appActive.key}/authorize`, config.backend.apiBaseUrl)
-      authorizeURL.searchParams.append('redirect_url', window.location.href)
-      authorizeURL.searchParams.append('Authorization', localStorage.getItem(LOCAL_STORAGE.USER_TOKEN))
-      window.open(authorizeURL.href, '_blank').focus()
+      const authorizeURL = new URL(
+        `/api/applications/${this.appActive.key}/authorize`,
+        config.backend.apiBaseUrl
+      )
+      authorizeURL.searchParams.append("redirect_url", window.location.href)
+      authorizeURL.searchParams.append(
+        "Authorization",
+        localStorage.getItem(LOCAL_STORAGE.USER_TOKEN)
+      )
+      window.open(authorizeURL.href, "_blank").focus()
 
       let authUrl = authorizeURL.href
-      if (!config.backend.apiBaseUrl.startsWith('http')) {
-        authUrl = 'https://'.concat(authUrl)
+      if (!config.backend.apiBaseUrl.startsWith("http")) {
+        authUrl = "https://".concat(authUrl)
       }
-      window.open(authUrl, '_blank').focus()
+      window.open(authUrl, "_blank").focus()
     },
 
     getWebhookStatusButton(name) {
       return this.webhooksSettings
         ? this.webhooksSettings[name].enabled
-          ? this.$t('button.unsubscribe')
-          : this.$t('button.subscribe')
-        : 'empty'
+          ? this.$t("button.unsubscribe")
+          : this.$t("button.subscribe")
+        : "empty"
     },
     getEntries(item) {
       return item.map((option) => {
         if (Object.keys(option)[0] == 0) {
           return { value: option, key: option }
         } else {
-          return { value: Object.keys(option)[0], key: option[Object.keys(option)[0]] }
+          return {
+            value: Object.keys(option)[0],
+            key: option[Object.keys(option)[0]],
+          }
         }
       })
     },
@@ -411,20 +472,24 @@ export default {
       if (this.appActive.info) {
         this.settingsConfig.unshift({
           info: this.appActive.info,
-          key: 'info',
-          publicName: 'Info',
+          key: "info",
+          publicName: "Info",
           fields: [],
         })
       }
 
       this.settingsSnapshots = this.settingsConfig.map((form) => ({
         key: form.key,
-        fields: Object.fromEntries(form.fields.map((field) => [field.key, field.value])),
+        fields: Object.fromEntries(
+          form.fields.map((field) => [field.key, field.value])
+        ),
       }))
 
       this.settingsForms = this.settingsConfig.map((form) => ({
         key: form.key,
-        fields: Object.fromEntries(form.fields.map((field) => [field.key, field.value])),
+        fields: Object.fromEntries(
+          form.fields.map((field) => [field.key, field.value])
+        ),
         matchesWithSnapshot: true,
         hasValidSettings: true,
       }))
@@ -441,13 +506,14 @@ export default {
     },
 
     hasOauth() {
-      this.hasOauthAuthorization = this.appActive.authorization_type.startsWith('oauth')
+      this.hasOauthAuthorization =
+        this.appActive.authorization_type.startsWith("oauth")
     },
 
     hasEmptySettings() {
       for (let form of this.settingsForms) {
         const hasEmptyValue = Object.values(form.fields).some((field) => {
-          return field == null || field === ''
+          return field == null || field === ""
         })
         if (hasEmptyValue) {
           form.hasValidSettings = false
@@ -456,7 +522,9 @@ export default {
     },
 
     areFormsMatching(keys, modifiedForm, snapshot) {
-      return keys.every((key) => snapshot.fields[key] === modifiedForm.fields[key])
+      return keys.every(
+        (key) => snapshot.fields[key] === modifiedForm.fields[key]
+      )
     },
 
     getFormByKey(key) {
@@ -468,11 +536,17 @@ export default {
         let modifiedForm = this.getFormByKey(snapshot.key)
         const keys = Object.keys(snapshot.fields)
 
-        modifiedForm.matchesWithSnapshot = this.areFormsMatching(keys, modifiedForm, snapshot)
+        modifiedForm.matchesWithSnapshot = this.areFormsMatching(
+          keys,
+          modifiedForm,
+          snapshot
+        )
       }
     },
     hasLogo(app) {
-      return app?.logo ? app.logo : require('@/assets/svg/app-item-placeholder.svg')
+      return app?.logo
+        ? app.logo
+        : require("@/assets/svg/app-item-placeholder.svg")
     },
   },
 
@@ -498,7 +572,9 @@ export default {
   },
   async created() {
     await this[TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES]()
-    await this[APP_STORE.ACTIONS.GET_INSTALLED_APP]({ key: this.$route.params.key })
+    await this[APP_STORE.ACTIONS.GET_INSTALLED_APP]({
+      key: this.$route.params.key,
+    })
   },
   beforeDestroy() {
     this[APP_STORE.ACTIONS.RESET]()

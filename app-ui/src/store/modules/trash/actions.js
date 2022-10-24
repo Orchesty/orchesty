@@ -1,7 +1,7 @@
-import { TRASH } from './types'
-import { callApi } from '../../utils'
-import { API } from '../../../api'
-import { addSuccessMessage } from '../../../services/utils/flashMessages'
+import { TRASH } from "./types"
+import { callApi } from "../../utils"
+import { API } from "../../../api"
+import { addSuccessMessage } from "../../../services/utils/flashMessages"
 
 export default {
   [TRASH.ACTIONS.TRASH_ACCEPT]: async ({ dispatch }, payload) => {
@@ -13,7 +13,11 @@ export default {
         },
       })
 
-      addSuccessMessage(dispatch, API.userTask.accept.id, 'flashMessages.userTaskAccept')
+      addSuccessMessage(
+        dispatch,
+        API.userTask.accept.id,
+        "flashMessages.userTaskAccept"
+      )
 
       return true
     } catch {
@@ -29,7 +33,11 @@ export default {
         },
       })
 
-      addSuccessMessage(dispatch, API.userTask.acceptAll.id, 'flashMessages.userTaskAcceptList')
+      addSuccessMessage(
+        dispatch,
+        API.userTask.acceptAll.id,
+        "flashMessages.userTaskAcceptList"
+      )
 
       return true
     } catch {
@@ -59,7 +67,11 @@ export default {
         },
       })
 
-      addSuccessMessage(dispatch, API.userTask.reject.id, 'flashMessages.userTaskReject')
+      addSuccessMessage(
+        dispatch,
+        API.userTask.reject.id,
+        "flashMessages.userTaskReject"
+      )
 
       return true
     } catch {
@@ -75,7 +87,11 @@ export default {
         },
       })
 
-      addSuccessMessage(dispatch, API.userTask.rejectAll.id, 'flashMessages.userTaskRejectList')
+      addSuccessMessage(
+        dispatch,
+        API.userTask.rejectAll.id,
+        "flashMessages.userTaskRejectList"
+      )
 
       return true
     } catch {
@@ -93,7 +109,11 @@ export default {
 
       dispatch(TRASH.ACTIONS.TRASH_TASK_GET, payload.id)
 
-      addSuccessMessage(dispatch, API.userTask.update.id, 'flashMessages.userTaskUpdate')
+      addSuccessMessage(
+        dispatch,
+        API.userTask.update.id,
+        "flashMessages.userTaskUpdate"
+      )
 
       return true
     } catch {

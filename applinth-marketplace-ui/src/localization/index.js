@@ -1,23 +1,23 @@
-import Vue from 'vue'
-import VueI18n from 'vue-i18n'
-import en from './en'
-import cs from './cs'
-import validationMessagesEN from 'vee-validate/dist/locale/en.json'
-import validationMessagesCS from 'vee-validate/dist/locale/cs.json'
-import { configure, extend } from 'vee-validate'
-import { email, max, numeric, oneOf, required } from 'vee-validate/dist/rules'
-import isURL from 'validator/es/lib/isURL'
+import Vue from "vue"
+import VueI18n from "vue-i18n"
+import en from "./en"
+import cs from "./cs"
+import validationMessagesEN from "vee-validate/dist/locale/en.json"
+import validationMessagesCS from "vee-validate/dist/locale/cs.json"
+import { configure, extend } from "vee-validate"
+import { email, max, numeric, oneOf, required } from "vee-validate/dist/rules"
+import isURL from "validator/es/lib/isURL"
 
-extend('max', max)
-extend('numeric', numeric)
-extend('required', required)
-extend('email', email)
-extend('oneOf', oneOf)
-extend('passwordConfirm', {
+extend("max", max)
+extend("numeric", numeric)
+extend("required", required)
+extend("email", email)
+extend("oneOf", oneOf)
+extend("passwordConfirm", {
   validate: (value, { other }) => value === other,
-  params: [{ name: 'other', isTarget: true }],
+  params: [{ name: "other", isTarget: true }],
 })
-extend('url', {
+extend("url", {
   validate: (value) => isURL(value, { require_protocol: true }),
   // https://vee-validate.logaretm.com/v3/guide/basics.html#messages
   message: (field, values) => {
@@ -28,7 +28,7 @@ extend('url', {
 
 Vue.use(VueI18n)
 
-const browserLang = navigator.language || window.navigator.language || 'cs'
+const browserLang = navigator.language || window.navigator.language || "cs"
 
 export const LOCALE = browserLang.substring(0, 2)
 

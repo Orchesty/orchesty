@@ -21,68 +21,68 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from "vue-property-decorator";
+import { Component, Prop, Vue, Watch } from "vue-property-decorator"
 
 @Component({})
 export default class Combobox extends Vue {
   @Prop({ type: Function, required: true })
-  private onSearch!: { (val: string): Array<any> };
+  private onSearch!: { (val: string): Array<any> }
   @Prop({ type: Boolean })
-  private isLoading = false;
+  private isLoading = false
   @Prop({ type: String, default: "" })
-  private label!: string;
+  private label!: string
   @Prop({ type: String, default: "" })
-  private placeholder!: string;
+  private placeholder!: string
   @Prop({ type: String, required: true })
-  private itemText!: string;
+  private itemText!: string
   @Prop({ type: String, required: true })
-  private itemValue!: string;
+  private itemValue!: string
   @Prop({ type: Boolean, default: false })
-  private multiple!: boolean;
+  private multiple!: boolean
   @Prop({ type: Array, default: () => [], required: false })
-  private errorMessages!: boolean;
+  private errorMessages!: boolean
   @Prop({ type: [Array, String, Object], required: false, default: () => null })
-  private value!: any;
+  private value!: any
   @Prop({ type: String, default: "" })
-  private prependIcon!: string;
+  private prependIcon!: string
 
-  private search = "";
-  private model: any = null;
-  private items: Array<any> = [];
-  private timeout: number | null = null;
+  private search = ""
+  private model: any = null
+  private items: Array<any> = []
+  private timeout: number | null = null
 
   constructor() {
-    super();
-    this.model = this.value;
+    super()
+    this.model = this.value
   }
 
   @Watch("search")
   private async searchItems(val: string) {
-    if (!val) return;
+    if (!val) return
 
     if (this.timeout) {
-      clearTimeout(this.timeout);
+      clearTimeout(this.timeout)
     }
     this.timeout = setTimeout(async () => {
-      this.items = await this.onSearch(val);
-    }, 300);
+      this.items = await this.onSearch(val)
+    }, 300)
   }
 
   private async initSearch() {
-    this.items = await this.onSearch("");
+    this.items = await this.onSearch("")
   }
 
   @Watch("model")
   onSelect(val: any) {
-    if (!val) return;
+    if (!val) return
 
-    this.search = "";
-    this.$emit("input", val);
+    this.search = ""
+    this.$emit("input", val)
   }
 
   @Watch("value")
   onValue(val: any) {
-    this.model = val;
+    this.model = val
   }
 }
 </script>
