@@ -30,7 +30,8 @@
       "errorQueueItemText": "Try to restart docker container {service} with bridge for topology {topology}.",
       "errorServiceItemText": "Try to restart docker container {name}.",
       "itWorks": "Everything works properly.",
-      "emptyHealthCheckTable": "The Table is Empty. Please insert data with the above Button."
+      "emptyHealthCheckTable": "The Table is Empty. Please insert data with the above Button.",
+      "pageNotFound": "Page not found."
     },
     "status": {
       "noTopologySelected": "No topology selected",
