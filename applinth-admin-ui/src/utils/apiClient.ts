@@ -67,9 +67,5 @@ export async function callApi<P>(
     }
   }
 
-  if (!response) {
-    throw new Error("Response is empty")
-  }
-
   return apiConfig.transform ? apiConfig.transform(response) : response
 }

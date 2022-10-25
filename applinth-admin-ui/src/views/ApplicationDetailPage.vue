@@ -27,17 +27,17 @@
         />
         <StatusCard
           :loading="loading"
-          :score="application.endUsers"
+          :score="application.endUsers || 0"
           :title="$t('applicationDetailPage.customers')"
         />
         <StatusCard
           :loading="loading"
-          :score="toCZK(application.totalCost)"
+          :score="toCZK(application.totalCost || 0)"
           :title="$t('applicationDetailPage.cost')"
         />
         <StatusCard
           :loading="loading"
-          :score="toCZK(application.estimatedTotalCost)"
+          :score="toCZK(application.estimatedTotalCost || 0)"
           :title="$t('overviewPage.statusCards.estimatedCostsEom')"
         />
       </div>
@@ -106,7 +106,7 @@ export default class ApplicationDetailPage extends Vue {
   labels: string[] = []
   data: number[] = []
   breadcrumbTitle: string | undefined = ""
-  monthlyPrice = 19900000
+  monthlyPrice = 19900000 // todo odstranit konstantu
 
   async created() {
     this.loading = true
@@ -140,11 +140,9 @@ export default class ApplicationDetailPage extends Vue {
       }
     )
 
-    if (graphData.length > 0) {
-      for (const item of graphData) {
-        this.labels.push(item.timeBucketName)
-        this.data.push(item.endUsers)
-      }
+    for (const item of graphData) {
+      this.labels.push(item.timeBucketName)
+      this.data.push(item.endUsers)
     }
 
     this.loading = false

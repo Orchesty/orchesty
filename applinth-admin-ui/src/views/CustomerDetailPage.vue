@@ -57,8 +57,8 @@ export default class CustomerDetailPage extends Vue {
   customerId!: string
   customerDetail!: UsageStatsUsersRowsInner
   isLoading = false
-  totalCost!: number | undefined
-  estimatedCost!: number | undefined
+  totalCost: number | undefined = 0
+  estimatedCost: number | undefined = 0
   breadcrumbTitle: string | undefined = ""
 
   async created() {
@@ -70,7 +70,7 @@ export default class CustomerDetailPage extends Vue {
       granularity: "monthly",
     })
 
-    if (customer.length > 0) {
+    if (customer?.length > 0) {
       this.customerDetail = customer[0]
       this.breadcrumbTitle = this.customerDetail?.endUserDisplayId
       this.totalCost = this.customerDetail.totalCost

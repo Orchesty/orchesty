@@ -20,7 +20,7 @@ export const users: ApiConfigs<
   list: {
     id: "USERS_LIST",
     request: (params) => apiClient.usersApi.usersList(params),
-    transform: (data: UsersRows) => data.rows,
+    transform: (data: UsersRows | undefined) => data?.rows || [],
   },
   get: {
     id: "USERS_GET",
