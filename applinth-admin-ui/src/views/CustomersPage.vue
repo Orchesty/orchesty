@@ -125,7 +125,6 @@ export default class CustomersPage extends Vue {
         timeRangeEnd: new Date().toISOString(),
       }),
     ])
-
     this.isLoading = false
   }
 

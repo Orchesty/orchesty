@@ -72,10 +72,12 @@ export default class StatusCardList extends Vue {
     let installationsCountAccumulator = 0
     let amountAccumulator = 0
     let estimatedCostAccumulator = 0
+
     for (const app of apps) {
       amountAccumulator += app.totalCost ?? 0
       estimatedCostAccumulator += app.estimatedTotalCost ?? 0
     }
+
     for (const app of appsTail) {
       installationsCountAccumulator += app.endUsers ?? 0
     }

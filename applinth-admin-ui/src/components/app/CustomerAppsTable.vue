@@ -40,7 +40,7 @@ export default class CustomerAppsTable extends Vue {
   customerId!: string
 
   isLoading = false
-  installedApps: UsageStatsInstalledAppsRowsInner[] = []
+  installedApps!: UsageStatsInstalledAppsRowsInner[]
 
   headers = [
     {
@@ -66,6 +66,7 @@ export default class CustomerAppsTable extends Vue {
         tail: true,
       }
     )
+
     this.isLoading = false
   }
 
