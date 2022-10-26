@@ -2,6 +2,7 @@ import { DateTime } from 'luxon';
 import { IAppsAggregationParams } from '../controllers/usageStats';
 import { CollectionEnum, switchGranularity } from '../enums/CollectionEnum';
 import DateParseError from '../errors/DateParseError';
+import GranularityError from '../errors/GranularityError';
 import BillingMongo from '../storage/mongo/Mongo';
 
 interface IMongoQuery {
@@ -38,7 +39,7 @@ export default class UsageStatsService {
                     userIds: { $addToSet: '$endUserId' },
                     totalCost: { $sum: '$cost' },
                     estimatedTotalCost: { $sum: '$estimatedCost' },
-                    installCount: { $push: '$_id' },
+                    installCount: { $addToSet: '$installId' },
                 },
             },
             {
@@ -140,7 +141,7 @@ export default class UsageStatsService {
                     appIds: 1,
                     appNames: 1,
                     instanceIds: 1,
-                    timeBucketName: this.getFormattedDate(),
+                    timeBucketName: '$_id',
                     totalCost: 1,
                 },
             },
@@ -182,7 +183,51 @@ export default class UsageStatsService {
                 $project: {
                     _id: 0,
                     endUsers: { $size: '$userIds' },
-                    timeBucketName: this.getFormattedDate(),
+                    timeBucketName: '$_id',
+                },
+            },
+        ];
+
+        const rows = await this.db.getBillingCollection(collectionName).aggregate(aggregations).toArray();
+        return { rows };
+    }
+
+    public async getDataForTimeBucketHistoryAggregation(
+        query: IAppsAggregationParams,
+        tenantId: string,
+    ): Promise<{ rows: unknown }> {
+        const mongoQuery = this.prepareMongoQuery(query, tenantId);
+        const collectionName = switchGranularity(query.granularity);
+        let format;
+        if (collectionName === CollectionEnum.USAGE_STATS_MONTHLY) {
+            format = '%m/%Y';
+        } else if (collectionName === CollectionEnum.USAGE_STATS_DAILY) {
+            format = '%d/%m/%Y';
+        } else {
+            throw new GranularityError('Unsupported granularity! Use daily or monthly');
+        }
+
+        const aggregations = [
+            {
+                $match: mongoQuery,
+            },
+            {
+                $group: {
+                    _id: { $dateToString: { format, date: '$start' } },
+                    date: { $first: '$start' },
+                    installCount: { $addToSet: '$installId' },
+                    totalCost: { $sum: '$cost' },
+                },
+            },
+            {
+                $sort: { date: 1 },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    installCount: { $size: '$installCount' },
+                    totalCost: 1,
+                    timeBucketName: '$_id',
                 },
             },
         ];
@@ -313,22 +358,6 @@ export default class UsageStatsService {
             /* eslint-enable @typescript-eslint/no-unsafe-call */
         });
         return { rows };
-    }
-
-    private getFormattedDate(): unknown {
-        return {
-            $let: {
-                vars: {
-                    parts: { $split: ['$_id', '/'] },
-                },
-                in: {
-                    $concat: [
-                        { $arrayElemAt: ['$$parts', 0] }, '/',
-                        { $substr: [{ $arrayElemAt: ['$$parts', 1] }, 2, 2] },
-                    ],
-                },
-            },
-        };
     }
 
     private prepareMongoQuery(
