@@ -1,19 +1,23 @@
 <template>
   <AppLayout :detail-page-title="breadcrumbTitle">
     <heading>{{ breadcrumbTitle }}</heading>
-    <div class="wrapper">
+    <div class="wrapper mt-5 mb-2">
       <StatusCard
-        class="customer-info-card my-5"
+        class="customer-info-card"
         :score="toCZK(totalCost)"
         :title="$t('customerDetailPage.currentCost')"
         :loading="isLoading"
       />
       <StatusCard
-        class="customer-info-card my-5"
+        class="customer-info-card"
         :score="toCZK(estimatedCost)"
         :title="$t('customerDetailPage.estimatedCosts')"
         :loading="isLoading"
       />
+    </div>
+    <!--    todo PIP-1448 doplnit datum z BE-->
+    <div class="mb-5">
+      <!--      <StatusCardCostInfo date="12.12.2022" />-->
     </div>
 
     <SubHeading class="mb-2">{{
@@ -30,7 +34,6 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator"
 import AppLayout from "../components/commons/layouts/AppLayout.vue"
-import StatusCard from "@/components/commons/layouts/StatusCard.vue"
 import CustomerAppsTable from "@/components/app/CustomerAppsTable.vue"
 import CustomerBillingTable from "@/components/app/CustomerBillingTable.vue"
 import Heading from "@/components/commons/typography/Heading.vue"
@@ -42,6 +45,7 @@ import {
   UsageStatsUsersRowsInner,
 } from "@/api/generated"
 import { toCZK } from "@/filters/money"
+import StatusCard from "@/components/status-cards/StatusCard.vue"
 
 @Component({
   components: {
@@ -73,8 +77,8 @@ export default class CustomerDetailPage extends Vue {
     if (customer?.length > 0) {
       this.customerDetail = customer[0]
       this.breadcrumbTitle = this.customerDetail?.endUserDisplayId
-      this.totalCost = this.customerDetail.totalCost
-      this.estimatedCost = this.customerDetail.estimatedTotalCost
+      this.totalCost = this.customerDetail.totalCost || 0
+      this.estimatedCost = this.customerDetail.estimatedTotalCost || 0
     } else {
       this.breadcrumbTitle = this.customerId
     }

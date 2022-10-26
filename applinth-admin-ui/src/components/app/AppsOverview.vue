@@ -28,7 +28,7 @@
               }}</SubHeading>
             </v-col>
             <v-col class="d-flex flex-column justify-center align-center">
-              {{ $t("overviewPage.apps.customers") }}
+              {{ $t("overviewPage.apps.activeCustomers") }}
               <div class="users-number">{{ app.endUsers }}</div>
             </v-col>
             <v-col class="d-flex flex-column justify-center align-end">

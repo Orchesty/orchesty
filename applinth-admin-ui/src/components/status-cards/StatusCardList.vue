@@ -1,36 +1,40 @@
 <template>
-  <div class="wrapper">
-    <StatusCard
-      :loading="isLoading"
-      :score="applicationsCount"
-      :title="$t('overviewPage.statusCards.applications')"
-    />
-    <StatusCard
-      :loading="isLoading"
-      :score="installationsCount"
-      :title="$t('overviewPage.statusCards.installations')"
-    />
-    <StatusCard
-      :loading="isLoading"
-      :score="customersCount"
-      :title="$t('overviewPage.statusCards.activeCustomers')"
-    />
-    <StatusCard
-      :loading="isLoading"
-      :score="toCZK(amount)"
-      :title="$t('overviewPage.statusCards.currentCost')"
-    />
-    <StatusCard
-      :loading="isLoading"
-      :score="toCZK(estimatedCosts)"
-      :title="$t('overviewPage.statusCards.estimatedCostsEom')"
-    />
+  <div>
+    <div class="wrapper">
+      <StatusCard
+        :loading="isLoading"
+        :score="applicationsCount"
+        :title="$t('overviewPage.statusCards.applications')"
+      />
+      <StatusCard
+        :loading="isLoading"
+        :score="installationsCount"
+        :title="$t('overviewPage.statusCards.installations')"
+      />
+      <StatusCard
+        :loading="isLoading"
+        :score="customersCount"
+        :title="$t('overviewPage.statusCards.activeCustomers')"
+      />
+      <StatusCard
+        :loading="isLoading"
+        :score="toCZK(amount)"
+        :title="$t('overviewPage.statusCards.currentCost')"
+      />
+      <StatusCard
+        :loading="isLoading"
+        :score="toCZK(estimatedCosts)"
+        :title="$t('overviewPage.statusCards.estimatedCostsEom')"
+      />
+    </div>
+    <!--    todo PIP-1448 doplnit datum z BE-->
+    <!--    <StatusCardCostInfo date="12.12.2022" />-->
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator"
-import StatusCard from "../commons/layouts/StatusCard.vue"
+import StatusCard from "@/components/status-cards/StatusCard.vue"
 import { callApi } from "@/utils"
 import { UsageStatsAppsRequest, UsageStatsUsersRequest } from "@/api/generated"
 import { api } from "@/api"

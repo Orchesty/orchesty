@@ -19,7 +19,7 @@
       <p>
         {{ applicationDetail && applicationDetail.description }}
       </p>
-      <div class="wrapper my-5">
+      <div class="wrapper mt-5 mb-2">
         <StatusCard
           :loading="loading"
           :score="toCZK(monthlyPrice)"
@@ -41,6 +41,8 @@
           :title="$t('overviewPage.statusCards.estimatedCostsEom')"
         />
       </div>
+      <!--    todo PIP-1448 doplnit datum z BE-->
+      <!--      <StatusCardCostInfo date="12.12.2022" />-->
       <!--      <LineChart-->
       <!--        class="chart-js"-->
       <!--        v-if="labels.length > 0"-->
@@ -55,7 +57,7 @@
 import Vue from "vue"
 import { Component, Watch } from "vue-property-decorator"
 import AppLayout from "../components/commons/layouts/AppLayout.vue"
-import StatusCard from "@/components/commons/layouts/StatusCard.vue"
+import StatusCard from "@/components/status-cards/StatusCard.vue"
 import { Routes } from "@/enums"
 import LineChart from "@/components/app/LineChart.vue"
 import BaseProgressBarLinear from "@/components/commons/BaseProgressBarLinear.vue"

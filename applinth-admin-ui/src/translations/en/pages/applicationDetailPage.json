@@ -1,6 +1,7 @@
 {
   "applicationDetailPage": {
     "cost": "Cost",
+    "currentCost": "Current cost",
     "users": "Users",
     "installations": "Installations",
     "monthlyPrice": "Monthly price",
