@@ -49,6 +49,10 @@ final class TopologyManager
 
     private const RUN_ENDPOINT = 'topologies/%s/nodes/%s/run';
 
+    private const MESSAGE        = 'message';
+    private const STARTED        = 'started';
+    private const STARTING_POINT = 'startingPoint';
+
     /**
      * @var DocumentManager
      */
@@ -99,39 +103,36 @@ final class TopologyManager
     }
 
     /**
-     * @param string  $topologyId
-     * @param mixed[] $startingPoints
-     * @param string  $data
+     * @param string $topologyId
+     * @param string $startingPoint
+     * @param string $data
      *
      * @return mixed[]
      * @throws CurlException
      */
-    public function runTopology(string $topologyId, array $startingPoints, string $data): array
+    public function runTopology(string $topologyId, string $startingPoint, string $data): array
     {
-        $successfull = 0;
-        $errors      = [];
+        $request = new RequestDto(
+            new Uri($this->getUrl(self::RUN_ENDPOINT, $topologyId, $startingPoint)),
+            CurlManager::METHOD_POST,
+            new ProcessDto(),
+            '',
+            [
+                'orchesty-api-key' => $this->apiKey,
+            ],
+        );
+        $request->setBody($data);
 
-        foreach ($startingPoints as $startingPointId) {
-            $request = new RequestDto(
-                new Uri($this->getUrl(self::RUN_ENDPOINT, $topologyId, $startingPointId)),
-                CurlManager::METHOD_POST,
-                new ProcessDto(),
-                '',
-                [
-                    'orchesty-api-key' => $this->apiKey,
-                ],
-            );
-            $request->setBody($data);
-
-            try {
-                $this->curl->send($request);
-                $successfull++;
-            } catch (Exception $e) {
-                $errors[] = $e->getMessage();
+        try {
+            $response = $this->curl->send($request);
+            if ($response->getStatusCode() === 200) {
+                return self::formatTopologyRunMessage($startingPoint,TRUE);
             }
-        }
 
-        return [$successfull, $errors];
+            return self::formatTopologyRunMessage($startingPoint, FALSE, $response->getJsonBody()[self::MESSAGE]);
+        } catch (Exception $e) {
+            return self::formatTopologyRunMessage($startingPoint, FALSE, $e->getMessage());
+        }
     }
 
     /**
@@ -764,6 +765,21 @@ final class TopologyManager
         if (isset($data['name'])) {
             $data['name'] = Strings::webalize($data['name']);
         }
+    }
+
+    /**
+     * @param string $startingPointId
+     * @param bool   $started
+     * @param string $message
+     *
+     * @return mixed[]
+     */
+    private function formatTopologyRunMessage(string $startingPointId, bool $started, string $message = ''): array {
+        return [
+                self::STARTING_POINT => $startingPointId,
+                self::STARTED        => $started,
+                self::MESSAGE        => $message,
+            ];
     }
 
 }

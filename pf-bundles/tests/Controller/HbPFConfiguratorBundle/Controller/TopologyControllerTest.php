@@ -61,7 +61,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         $this->assertResponseLogged(
             $this->jwt,
             __DIR__ . '/data/Topology/runTopologiesRequest.json',
-            [],
+            ['message' => "Topology with key '63591c7d47e53c5324074268' not found!"],
             [':id' => $topology->getId()],
         );
     }
