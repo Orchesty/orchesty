@@ -94,17 +94,14 @@ final class TopologyHandler
     public function runTopology(string $topologyId, array $data): array
     {
         Validations::checkParams([self::STARTING_POINTS, self::BODY], $data);
-        [$started, $errors] = $this->topologyManager->runTopology(
-            $topologyId,
-            $data[self::STARTING_POINTS],
-            $data[self::BODY],
-        );
 
-        return [
-            'started' => $started,
-            'state'   => $errors ? 'nok' : 'ok',
-            'errors'  => $errors,
-        ];
+        $topologiesStatus = [];
+
+        foreach ($data[self::STARTING_POINTS] as $startingPointId) {
+            $topologiesStatus[] = $this->topologyManager->runTopology($topologyId, $startingPointId, $data[self::BODY]);
+        }
+
+        return $topologiesStatus;
     }
 
     /**

@@ -1,8 +1,10 @@
 {
     "http": 200,
-    "body": {
-        "started": 1,
-        "state": "ok",
-        "errors": []
-    }
+    "body": [
+        {
+            "startingPoint": "abc",
+            "started": false,
+            "message": "Topology with key '63591c7d47e53c5324074268' not found!"
+        }
+    ]
 }
