@@ -2,6 +2,7 @@ package storage
 
 import (
 	"fmt"
+	"starting-point/pkg/enum"
 
 	"github.com/hanaboso/go-mongodb"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -85,6 +86,7 @@ func (m *MongoDefault) FindNodeByID(nodeID, topologyID string) *Node {
 	err = m.connection.Database.Collection(config.Config.MongoDB.NodeColl).FindOne(innerContext, primitive.D{
 		{"_id", innerNodeID},
 		{"topology", topologyID},
+		{"type", primitive.M{"$in": enum.NodeType_StartEvents}},
 		m.enabledFilter,
 		m.deletedFilter,
 	}).Decode(&node)
@@ -107,6 +109,7 @@ func (m *MongoDefault) FindNodeByName(nodeName, topologyID string) []Node {
 	cursor, err := m.connection.Database.Collection(config.Config.MongoDB.NodeColl).Find(innerContext, primitive.D{
 		{"name", nodeName},
 		{"topology", topologyID},
+		{"type", primitive.M{"$in": enum.NodeType_StartEvents}},
 		m.enabledFilter,
 		m.deletedFilter,
 	})
