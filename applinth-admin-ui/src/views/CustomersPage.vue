@@ -1,6 +1,6 @@
 <template>
   <AppLayout>
-    <div class="table-medium">
+    <div>
       <Heading>{{ $t("customersPage.header") }}</Heading>
       <div class="wrapper my-5">
         <TextField
@@ -26,7 +26,6 @@
         </Button>
       </div>
       <SimpleTable
-        class="table-medium"
         :headers="headers"
         :items="customers"
         :loading="isLoading"
