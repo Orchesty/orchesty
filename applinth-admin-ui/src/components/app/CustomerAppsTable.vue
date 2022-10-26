@@ -1,7 +1,6 @@
 <template>
   <SimpleTable
     :loading="isLoading"
-    class="table-medium"
     :headers="headers"
     :items="installedApps"
     hide-footer

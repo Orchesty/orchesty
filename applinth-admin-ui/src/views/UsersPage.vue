@@ -4,7 +4,6 @@
     <Button class="mb-4" @click="addItem">{{ $t("button.add") }}</Button>
     <SimpleTable
       :loading="isLoading"
-      class="table-medium"
       :headers="headers"
       :items="users"
       hide-footer
