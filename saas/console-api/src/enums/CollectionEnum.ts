@@ -11,7 +11,7 @@ export enum CollectionEnum {
 export function switchGranularity(_shortName?: string): CollectionEnum {
     let shortName = _shortName;
     if (!shortName) {
-        shortName = GranularityEnum.HOURLY;
+        shortName = GranularityEnum.MONTHLY;
     }
 
     switch (shortName) {

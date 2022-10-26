@@ -147,6 +147,36 @@ paths:
                     $ref: "#/components/responses/404NotFound"
                 '500':
                     $ref: "#/components/responses/500BadRequest"
+    /billing/reports/timeBucketHistory:
+        get:
+            description: Get billing report time bucket (monthly/daily) for all apps
+            x-swagger-router-controller: usageStats
+            operationId: usageStatsTimeBucketHistory
+            tags:
+                - Billing
+            parameters:
+                -   $ref: "#/components/parameters/tenantId"
+                -   $ref: "#/components/parameters/instanceId"
+                -   $ref: "#/components/parameters/granularityDailyMonthly"
+                -   $ref: "#/components/parameters/requiredTimeRangeStart"
+                -   $ref: "#/components/parameters/requiredTimeRangeEnd"
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/UsageStatsTimeBucketApps"
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
     /billing/reports/users:
         get:
             description: Get billing report aggregated by an users
@@ -648,7 +678,19 @@ components:
                     - 'hourly'
                     - 'daily'
                     - 'monthly'
-                default: 'hourly'
+                default: 'monthly'
+        granularityDailyMonthly:
+            in: query
+            name: granularity
+            description: Set time granularity
+            required: false
+            schema:
+                type: string
+                example: 'daily'
+                enum:
+                    - 'daily'
+                    - 'monthly'
+                default: 'monthly'
         emails:
             in: query
             name: emails
@@ -765,7 +807,7 @@ components:
                         type: object
                         properties:
                             timeBucketName:
-                                description: Name of time bucket in format (MM/YY)
+                                description: Name of time bucket in format (MM/YYYY)
                                 type: string
                             endUsers:
                                 description: Number of unique end users having the app installed within the given period
@@ -779,7 +821,7 @@ components:
                         type: object
                         properties:
                             timeBucketName:
-                                description: Name of time bucket in format (MM/YY)
+                                description: Name of time bucket in format (MM/YYYY)
                                 type: string
                             appNames:
                                 description: Application names (also ID)
@@ -798,6 +840,23 @@ components:
                                     type: string
                             totalCost:
                                 description: Total installs cost for this app
+                                type: integer
+        UsageStatsTimeBucketHistory:
+            type: object
+            properties:
+                rows:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            timeBucketName:
+                                description: Name of time bucket in format (MM/YYYY) or (DD/MM/YYYY)
+                                type: string
+                            installCount:
+                                description: Number of instalations
+                                type: integer
+                            totalCost:
+                                description: Total installs cost for this aggregations
                                 type: integer
         UsageStatsUsers:
             type: object

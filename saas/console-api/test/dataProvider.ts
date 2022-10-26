@@ -163,6 +163,8 @@ export async function createDbTenants(tenantId = '', drop = true): Promise<void>
 export async function createUsageStats(): Promise<void> {
     await db.getBillingCollection(CollectionEnum.USAGE_STATS_MONTHLY)
         .drop();
+    await db.getBillingCollection(CollectionEnum.USAGE_STATS_DAILY)
+        .drop();
     const startDate1 = DateTime.local(2021, 1, 1);
     const endDate1 = DateTime.local(2021, 1, 1)
         .endOf('month');
@@ -189,6 +191,13 @@ export async function createUsageStats(): Promise<void> {
             generateUsageStatsRow(startDate3, endDate3, true, 'neco1', 'neco1', '1235', 'inst1235', 'i1238'),
             generateUsageStatsRow(startDate3, endDate3, false, 'neco1', 'neco1', '1234', 'inst1235', 'i1239'),
             generateUsageStatsRow(startDate3, endDate3, false, 'neco1', 'neco1', '1234', 'inst1235', 'i1239', 't123'),
+        ]);
+
+    await db.getBillingCollection(CollectionEnum.USAGE_STATS_DAILY)
+        .insertMany([
+            generateUsageStatsRow(DateTime.local(2021, 1, 1), DateTime.local(2021, 1, 1).endOf('day'), false, 'neco', 'neco', '1235', 'inst1234', 'i1234', 't123456789', 500000),
+            generateUsageStatsRow(DateTime.local(2021, 1, 2), DateTime.local(2021, 1, 2).endOf('day'), false, 'neco', 'neco', '1235', 'inst1234', 'i1234', 't123456789', 1000000),
+            generateUsageStatsRow(DateTime.local(2021, 1, 3), DateTime.local(2021, 1, 3).endOf('day'), true, 'neco', 'neco', '1235', 'inst1234', 'i1234', 't123456789', 1000000),
         ]);
 }
 

@@ -61,6 +61,17 @@ export async function usageStatsTimeBucketUsers(req: Request, res: Response): Pr
     }
 }
 
+export async function usageStatsTimeBucketHistory(req: Request, res: Response): Promise<void> {
+    try {
+        const { query, tenantId } = await preprocessRequest<IAppsAggregationParams>(req, ResourceEnum.LIST_USAGE_STATS);
+        const result = await usageStatsService.getDataForTimeBucketHistoryAggregation(query, tenantId);
+
+        res.status(200).send(result);
+    } catch (e) {
+        handleError(e as Error, req, res);
+    }
+}
+
 export async function usageStatsUsers(req: Request, res: Response): Promise<void> {
     try {
         const { query, tenantId } = await preprocessRequest<IAppsAggregationParams>(req, ResourceEnum.LIST_USAGE_STATS);
