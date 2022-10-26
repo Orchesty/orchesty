@@ -191,7 +191,7 @@ export const actions: Actions<AuthActions, AuthState> = {
       const auth = getAuth()
       await signOut(auth)
       commit(AuthMutations.LogoutUser)
-      await router.push({ path: Routes.Login })
+      await router.push({ name: Routes.Login })
     } catch (error: any) {
       alerts.addErrorAlert("logout-failed", error.message as string)
       console.error(error.code, error)

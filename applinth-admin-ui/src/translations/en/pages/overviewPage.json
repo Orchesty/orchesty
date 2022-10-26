@@ -14,7 +14,8 @@
     },
     "apps": {
       "users": "Users",
-      "customers": "Customers"
+      "customers": "Customers",
+      "activeCustomers": "Active customers"
     }
   }
 }

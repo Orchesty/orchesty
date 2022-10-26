@@ -42,11 +42,7 @@
           <v-col>
             <v-breadcrumbs :items="breadCrumbs" class="px-0">
               <template #item="{ item }">
-                <v-breadcrumbs-item
-                  :to="item.to"
-                  :disabled="item.disabled"
-                  exact
-                >
+                <v-breadcrumbs-item :to="item.to" :exact="true">
                   {{ $t(item.text) }}
                 </v-breadcrumbs-item>
               </template>

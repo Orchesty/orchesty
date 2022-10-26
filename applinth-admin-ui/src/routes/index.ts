@@ -64,7 +64,7 @@ const overview = {
     breadcrumbs: [
       {
         text: "navigation.item.applinth",
-        to: { name: Routes.Overview },
+        to: "",
       },
       {
         text: "navigation.item.overview",
