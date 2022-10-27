@@ -1,7 +1,10 @@
 import { TOPOLOGIES } from "./types"
 import { callApi } from "../../utils"
 import { API } from "../../../api"
-import { addSuccessMessage } from "@/services/utils/flashMessages"
+import {
+  addErrorMessage,
+  addSuccessMessage,
+} from "@/services/utils/flashMessages"
 
 export default {
   [TOPOLOGIES.ACTIONS.TOPOLOGY.CREATE]: async ({ dispatch }, payload) => {
@@ -205,7 +208,7 @@ export default {
   },
   [TOPOLOGIES.ACTIONS.TOPOLOGY.RUN]: async ({ dispatch }, payload) => {
     try {
-      await callApi(dispatch, {
+      const resp = await callApi(dispatch, {
         requestData: { ...API.topology.run },
         params: {
           topologyId: payload.topologyID,
@@ -214,11 +217,21 @@ export default {
         },
       })
 
-      addSuccessMessage(
-        dispatch,
-        API.topology.run.id,
-        "flashMessages.topologyRan"
-      )
+      const nonStarted = resp.find((item) => !item.started)
+
+      if (nonStarted) {
+        addErrorMessage(
+          dispatch,
+          API.topology.run.id,
+          "flashMessages.topologyRunFail"
+        )
+      } else {
+        addSuccessMessage(
+          dispatch,
+          API.topology.run.id,
+          "flashMessages.topologyRunSuccess"
+        )
+      }
 
       return true
     } catch {
