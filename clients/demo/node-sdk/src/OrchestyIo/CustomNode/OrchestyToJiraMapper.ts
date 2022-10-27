@@ -60,7 +60,7 @@ export default class OrchestyToJiraMapper extends ACommonNode {
 
         let summary = `${res['first-name']} ${res['last-name']}`;
         if (company) {
-            summary = `[${company}] - ${summary}`;
+            summary = `${company} - ${summary}`;
         }
 
         let description = `Jméno: ${res['first-name']}
@@ -80,7 +80,7 @@ export default class OrchestyToJiraMapper extends ACommonNode {
             description,
             labels: this.labels,
             issueType: IssueTypeEnum.TASK,
-            projectKey: 'NAB',
+            projectKey: 'SAL',
         };
 
         return dto.setNewJsonData(data);

@@ -2,7 +2,6 @@ TAG?=dev
 DC=docker-compose
 DE=docker-compose exec -T app
 IMAGE=dkr.hanaboso.net/pipes/pipes/applinth:$(TAG)
-#PUBLIC_IMAGE=hanaboso/applinth:$(TAG)
 
 ALIAS?=alias
 Darwin:
@@ -25,8 +24,6 @@ build: .env
 	cp .dockerignore ../.dockerignore
 	docker build -f Dockerfile -t $(IMAGE) --pull ../. || rm ../.dockerignore
 	docker push $(IMAGE)
-	#docker tag ${IMAGE} $(PUBLIC_IMAGE)
-	#docker push $(PUBLIC_IMAGE)
 	rm ../.dockerignore || true
 
 docker-compose.ci.yml:
