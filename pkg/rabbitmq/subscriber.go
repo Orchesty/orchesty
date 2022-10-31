@@ -56,7 +56,7 @@ func (s *subscriber) handleReconnect(conn *amqp.Connection, wg *sync.WaitGroup) 
 			continue
 		}
 
-		prefetch := 50
+		prefetch := 1
 		if s.prefetch > 0 {
 			prefetch = s.prefetch
 		}
