@@ -15,7 +15,7 @@ type CacheInterface interface {
 	InitCache()
 	GetCache() *cache.Cache
 	InvalidateCache(topologyName string) int
-	FindTopologyByID(topologyID, nodeID string) *storage.Topology
+	FindTopologyByID(topologyID, nodeID string, uiRun bool, allowedTypes []string) *storage.Topology
 	FindTopologyByName(topologyName, nodeName string) *storage.Topology
 	FindTopologyByApplication(topologyName, nodeName, token string) (*storage.Topology, *storage.Webhook)
 }
@@ -48,12 +48,12 @@ func (c *CacheDefault) GetCache() *cache.Cache {
 }
 
 // FindTopologyByID finds topology by ID
-func (c *CacheDefault) FindTopologyByID(topologyID, nodeID string) *storage.Topology {
+func (c *CacheDefault) FindTopologyByID(topologyID, nodeID string, uiRun bool, allowedTypes []string) *storage.Topology {
 	topologyKey := fmt.Sprintf("%s-%s", topologyID, nodeID)
 	topology, found := c.cache.Get(topologyKey)
 
 	if !found {
-		foundTopology := c.mongo.FindTopologyByID(topologyID, nodeID)
+		foundTopology := c.mongo.FindTopologyByID(topologyID, nodeID, uiRun, allowedTypes)
 
 		if foundTopology != nil && foundTopology.Node != nil {
 			c.cache.Set(topologyKey, foundTopology, 0)

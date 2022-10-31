@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"runtime"
+	"starting-point/pkg/enum"
 
 	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
@@ -83,6 +84,14 @@ func HandleInvalidateCache(w http.ResponseWriter, r *http.Request) {
 
 func handleByID(w http.ResponseWriter, r *http.Request) {
 	err := utils.ValidateBody(r)
+
+	uiRun := false
+	allowedTypes := []string{enum.NodeType_Cron, enum.NodeType_Start}
+	if r != nil && r.URL != nil && r.URL.Query().Has("uiRun") {
+		uiRun = r.URL.Query().Get("uiRun") == "true"
+		allowedTypes = append(allowedTypes, enum.NodeType_Webhook)
+	}
+
 	if err != nil {
 		config.Config.Logger.Errorf("Content is not valid: %s", err.Error())
 		writeErrorResponse(w, http.StatusBadRequest, "Content is not valid!")
@@ -91,7 +100,7 @@ func handleByID(w http.ResponseWriter, r *http.Request) {
 
 	init := utils.InitFields()
 	vars := mux.Vars(r)
-	topology := service.Cache.FindTopologyByID(vars["topology"], vars["node"])
+	topology := service.Cache.FindTopologyByID(vars["topology"], vars["node"], uiRun, allowedTypes)
 
 	if topology == nil {
 		writeErrorResponse(w, http.StatusNotFound, fmt.Sprintf("Topology with key '%s' not found!", vars["topology"]))
