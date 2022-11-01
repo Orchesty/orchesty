@@ -30,20 +30,6 @@ services:
             - {database: "%env(string:MONGODB_DB)%", collection: "Session"}
 
     ##########################
-    #        Crypts          #
-    ##########################
-
-    hbpf.commons.crypt.crypt_manager:
-        class: Hanaboso\CommonsBundle\Crypt\CryptManager
-        arguments:
-            - ['@hbpf.commons.crypt.advanced-windwalker']
-
-    hbpf.commons.crypt.advanced-windwalker:
-        class: Hanaboso\CommonsBundle\Crypt\Impl\AdwancedWindwalkerCrypt
-        arguments:
-            - '%kernel.secret%'
-
-    ##########################
     #        Metrics         #
     ##########################
 
