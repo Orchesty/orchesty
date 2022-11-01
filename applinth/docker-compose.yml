@@ -32,7 +32,6 @@ services:
             RABBITMQ_DSN: amqp://rabbitmq:5672
             WORKER_DEFAULT_PORT: 8008
             JWT_KEY: BWoCz4gxw3YHDMkqE5HD1WT2u6zqIAtiJkYVyf6UucL4ZtbhhatQooP5IgTQRwowYR6z8wE3biqZTl37
-            CRYPT_SECRET: ThisTokenIsNotSoSecretChangeIt
             JWE_PRIVATE_KEY: |
                 -----BEGIN EC PRIVATE KEY-----
                 MIHcAgEBBEIAGmQ//yMnyMlFAN/E2yfZjzFL1ziTrAbDwa08KEPBq+NUWHvrxrs7
