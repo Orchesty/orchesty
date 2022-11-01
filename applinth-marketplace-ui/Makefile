@@ -5,6 +5,7 @@ IMAGE?=dkr.hanaboso.net/pipes/pipes/applinth-marketplace-ui
 
 init: .env
 	docker-compose up -d --force-recreate
+	docker-compose exec app bin/console service:install node-sdk node-sdk:8080
 
 rebuild:
 	docker build -t ${IMAGE}:${TAG} --pull .

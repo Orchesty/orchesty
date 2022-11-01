@@ -52,4 +52,5 @@ application with JWE token passed in a url query parameter:
 
 ```
 ( firefox "http://localhost:8080/?u=$(node JWEGen.js)" &>/dev/null & )
+( google-chrome "http://localhost:8080/?u=$(node JWEGen.js)" &>/dev/null & )
 ```
