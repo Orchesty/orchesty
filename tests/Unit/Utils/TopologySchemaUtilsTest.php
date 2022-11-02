@@ -29,8 +29,6 @@ final class TopologySchemaUtilsTest extends KernelTestCaseAbstract
         $content = $this->load('default.tplg');
         $schema  = TopologySchemaUtils::getSchemaObject($this->getXmlDecoder()->decode($content));
 
-        self::assertNotEmpty($schema);
-
         $nodes = $schema->getNodes();
         self::assertCount(9, $schema->getNodes());
         self::assertCount(6, $schema->getSequences());
