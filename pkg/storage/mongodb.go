@@ -2,6 +2,7 @@ package storage
 
 import (
 	"fmt"
+	"starting-point/pkg/enum"
 
 	"github.com/hanaboso/go-mongodb"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -16,9 +17,9 @@ type MongoInterface interface {
 	Connect()
 	Disconnect()
 	IsConnected() bool
-	FindNodeByID(nodeID, topologyID string) *Node
+	FindNodeByID(nodeID, topologyID string, uiRun bool, allowedTypes []string) *Node
 	FindNodeByName(nodeName, topologyID string) []Node
-	FindTopologyByID(topologyID, nodeID string) *Topology
+	FindTopologyByID(topologyID, nodeID string, uiRun bool, allowedTypes []string) *Topology
 	FindTopologyByName(topologyName, nodeName string) *Topology
 	FindTopologyByApplication(topologyName, nodeName, token string) (*Topology, *Webhook)
 }
@@ -70,7 +71,7 @@ func (m *MongoDefault) IsConnected() bool {
 }
 
 // FindNodeByID finds node by id
-func (m *MongoDefault) FindNodeByID(nodeID, topologyID string) *Node {
+func (m *MongoDefault) FindNodeByID(nodeID, topologyID string, uiRun bool, allowedTypes []string) *Node {
 	var node Node
 	innerContext, cancel := m.connection.Context()
 	defer cancel()
@@ -82,12 +83,18 @@ func (m *MongoDefault) FindNodeByID(nodeID, topologyID string) *Node {
 		return nil
 	}
 
-	err = m.connection.Database.Collection(config.Config.MongoDB.NodeColl).FindOne(innerContext, primitive.D{
+	filter := primitive.D{
 		{"_id", innerNodeID},
 		{"topology", topologyID},
-		m.enabledFilter,
+		{"type", primitive.M{"$in": allowedTypes}},
 		m.deletedFilter,
-	}).Decode(&node)
+	}
+
+	if !uiRun {
+		filter = append(filter, m.enabledFilter)
+	}
+
+	err = m.connection.Database.Collection(config.Config.MongoDB.NodeColl).FindOne(innerContext, filter).Decode(&node)
 	if err != nil {
 		logMongoError(m.log, err, fmt.Sprintf("Node with key '%s' not found.", nodeID))
 
@@ -107,6 +114,7 @@ func (m *MongoDefault) FindNodeByName(nodeName, topologyID string) []Node {
 	cursor, err := m.connection.Database.Collection(config.Config.MongoDB.NodeColl).Find(innerContext, primitive.D{
 		{"name", nodeName},
 		{"topology", topologyID},
+		{"type", primitive.M{"$in": []string{enum.NodeType_Start, enum.NodeType_Cron}}},
 		m.enabledFilter,
 		m.deletedFilter,
 	})
@@ -136,7 +144,7 @@ func (m *MongoDefault) FindNodeByName(nodeName, topologyID string) []Node {
 }
 
 // FindTopologyByID finds topology by ID
-func (m *MongoDefault) FindTopologyByID(topologyID, nodeID string) *Topology {
+func (m *MongoDefault) FindTopologyByID(topologyID, nodeID string, uiRun bool, allowedTypes []string) *Topology {
 	var topology Topology
 	innerContext, cancel := m.connection.Context()
 	defer cancel()
@@ -148,19 +156,23 @@ func (m *MongoDefault) FindTopologyByID(topologyID, nodeID string) *Topology {
 		return nil
 	}
 
-	err = m.connection.Database.Collection(config.Config.MongoDB.TopologyColl).FindOne(innerContext, primitive.D{
+	var filters = primitive.D{
 		{"_id", innerTopologyID},
 		m.visibilityFilter,
-		m.enabledFilter,
 		m.deletedFilter,
-	}).Decode(&topology)
+	}
+	if !uiRun {
+		filters = append(filters, m.enabledFilter)
+	}
+
+	err = m.connection.Database.Collection(config.Config.MongoDB.TopologyColl).FindOne(innerContext, filters).Decode(&topology)
 	if err != nil {
 		logMongoError(m.log, err, fmt.Sprintf("Topology with key '%s' not found.", topologyID))
 
 		return nil
 	}
 
-	topology.Node = m.FindNodeByID(nodeID, topologyID)
+	topology.Node = m.FindNodeByID(nodeID, topologyID, uiRun, allowedTypes)
 
 	return &topology
 }
