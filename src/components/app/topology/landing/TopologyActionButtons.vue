@@ -55,10 +55,7 @@
           :attrs="attrs"
           icon
           :class="buttonClass"
-          :disabled="
-            !topologyActive.enabled ||
-            topologyActive.visibility !== PAGE_TABS_ENUMS.PUBLIC
-          "
+          :disabled="topologyActive.visibility !== PAGE_TABS_ENUMS.PUBLIC"
           :on="on"
           :on-click="
             () => events.emit(EVENTS.MODAL.TOPOLOGY.RUN, topologyActive)
