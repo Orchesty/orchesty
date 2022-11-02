@@ -41,7 +41,7 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
         );
         $this->pfd($applicationInstall);
         //        $app->authorize($applicationInstall);
-        self::assertEmpty([]);
+        self::assertFake();
     }
 
 }

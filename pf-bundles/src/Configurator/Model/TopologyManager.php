@@ -47,7 +47,7 @@ final class TopologyManager
 
     public const DEFAULT_SCHEME = '<?xml version="1.0" encoding="UTF-8"?><bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn"><bpmn:process id="%s" isExecutable="false" /><bpmndi:BPMNDiagram id="BPMNDiagram_1"><bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1" /></bpmndi:BPMNDiagram></bpmn:definitions>';
 
-    private const RUN_ENDPOINT = 'topologies/%s/nodes/%s/run';
+    private const RUN_ENDPOINT = 'topologies/%s/nodes/%s/run?uiRun=true';
 
     private const MESSAGE        = 'message';
     private const STARTED        = 'started';

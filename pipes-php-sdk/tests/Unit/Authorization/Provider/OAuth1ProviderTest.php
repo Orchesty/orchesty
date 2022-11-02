@@ -55,7 +55,7 @@ final class OAuth1ProviderTest extends KernelTestCaseAbstract
             },
             [],
         );
-        self::assertEmpty([]);
+        self::assertFake();
     }
 
     /**

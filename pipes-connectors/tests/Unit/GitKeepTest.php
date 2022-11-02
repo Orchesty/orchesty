@@ -2,6 +2,7 @@
 
 namespace HbPFConnectorsTests\Unit;
 
+use Hanaboso\PhpCheckUtils\PhpUnit\Traits\CustomAssertTrait;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
 
 /**
@@ -12,12 +13,14 @@ use HbPFConnectorsTests\KernelTestCaseAbstract;
 final class GitKeepTest extends KernelTestCaseAbstract
 {
 
+    use CustomAssertTrait;
+
     /**
      *
      */
     public function test(): void
     {
-        self::assertEmpty([]);
+        self::assertFake();
     }
 
 }

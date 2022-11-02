@@ -52,7 +52,7 @@ final class MailchimpTagContactConnectorTest extends DatabaseTestCaseAbstract
         //                    )
         //                );
 
-        self::assertEmpty([]);
+        self::assertFake();
     }
 
 }

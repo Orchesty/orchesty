@@ -17,7 +17,7 @@ type MongoInterface interface {
 	Connect()
 	Disconnect()
 	IsConnected() bool
-	FindNodeByID(nodeID, topologyID string, allowedTypes []string) *Node
+	FindNodeByID(nodeID, topologyID string, uiRun bool, allowedTypes []string) *Node
 	FindNodeByName(nodeName, topologyID string) []Node
 	FindTopologyByID(topologyID, nodeID string, uiRun bool, allowedTypes []string) *Topology
 	FindTopologyByName(topologyName, nodeName string) *Topology
@@ -71,7 +71,7 @@ func (m *MongoDefault) IsConnected() bool {
 }
 
 // FindNodeByID finds node by id
-func (m *MongoDefault) FindNodeByID(nodeID, topologyID string, allowedTypes []string) *Node {
+func (m *MongoDefault) FindNodeByID(nodeID, topologyID string, uiRun bool, allowedTypes []string) *Node {
 	var node Node
 	innerContext, cancel := m.connection.Context()
 	defer cancel()
@@ -83,13 +83,18 @@ func (m *MongoDefault) FindNodeByID(nodeID, topologyID string, allowedTypes []st
 		return nil
 	}
 
-	err = m.connection.Database.Collection(config.Config.MongoDB.NodeColl).FindOne(innerContext, primitive.D{
+	filter := primitive.D{
 		{"_id", innerNodeID},
 		{"topology", topologyID},
 		{"type", primitive.M{"$in": allowedTypes}},
-		m.enabledFilter,
 		m.deletedFilter,
-	}).Decode(&node)
+	}
+
+	if !uiRun {
+		filter = append(filter, m.enabledFilter)
+	}
+
+	err = m.connection.Database.Collection(config.Config.MongoDB.NodeColl).FindOne(innerContext, filter).Decode(&node)
 	if err != nil {
 		logMongoError(m.log, err, fmt.Sprintf("Node with key '%s' not found.", nodeID))
 
@@ -167,7 +172,7 @@ func (m *MongoDefault) FindTopologyByID(topologyID, nodeID string, uiRun bool, a
 		return nil
 	}
 
-	topology.Node = m.FindNodeByID(nodeID, topologyID, allowedTypes)
+	topology.Node = m.FindNodeByID(nodeID, topologyID, uiRun, allowedTypes)
 
 	return &topology
 }

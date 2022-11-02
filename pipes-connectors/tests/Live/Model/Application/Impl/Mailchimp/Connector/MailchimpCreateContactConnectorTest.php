@@ -50,7 +50,7 @@ final class MailchimpCreateContactConnectorTest extends DatabaseTestCaseAbstract
         //                $data
         //            )
         //        );
-        self::assertEmpty([]);
+        self::assertFake();
     }
 
 }

@@ -36,7 +36,7 @@ final class OAuth2ProviderTest extends KernelTestCaseAbstract
         $dto->setCustomAppDependencies(uniqid(), 'magento');
 
         $provider->authorize($dto, []);
-        self::assertEmpty([]);
+        self::assertFake();
     }
 
     /**
@@ -53,7 +53,7 @@ final class OAuth2ProviderTest extends KernelTestCaseAbstract
         $dto      = new OAuth2Dto($install, 'authorize/url', 'token/url');
 
         $provider->authorize($dto, []);
-        self::assertEmpty([]);
+        self::assertFake();
     }
 
     /**

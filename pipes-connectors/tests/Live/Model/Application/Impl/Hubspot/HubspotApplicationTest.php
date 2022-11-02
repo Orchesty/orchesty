@@ -29,7 +29,7 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
         );
         $this->pfd($applicationInstall);
         //        $app->authorize($applicationInstall);
-        self::assertEmpty([]);
+        self::assertFake();
     }
 
 }

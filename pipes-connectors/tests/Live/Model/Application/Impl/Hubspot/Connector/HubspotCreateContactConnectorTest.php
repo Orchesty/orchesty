@@ -45,7 +45,7 @@ final class HubspotCreateContactConnectorTest extends DatabaseTestCaseAbstract
                 File::getContent(__DIR__ . '/Data/contactBody.json'),
             ),
         );
-        self::assertEmpty([]);
+        self::assertFake();
     }
 
 }
