@@ -73,7 +73,6 @@ final class TopologyController extends AbstractController
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::runTopologiesAction',
             ['request' => $request, 'id' => $id],
-            ['uiRun' => TRUE],
         );
     }
 
