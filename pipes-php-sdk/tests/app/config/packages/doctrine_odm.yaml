@@ -42,11 +42,6 @@ doctrine_mongodb:
                     is_bundle: false
                     dir: "%kernel.project_dir%/vendor/hanaboso/commons-bundle/src/FileStorage/Document"
                     prefix: Hanaboso\CommonsBundle\FileStorage\Document
-                DataStorageManager:
-                    type: annotation
-                    is_bundle: false
-                    dir: "%kernel.project_dir%/src/Storage/DataStorage/Document"
-                    prefix: Hanaboso\PipesPhpSdk\Storage\DataStorage\Document
                 FileMongo:
                     type: annotation
                     is_bundle: false

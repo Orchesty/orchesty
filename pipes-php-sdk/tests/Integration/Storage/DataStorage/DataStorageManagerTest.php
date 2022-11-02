@@ -3,9 +3,9 @@
 namespace PipesPhpSdkTests\Integration\Storage\DataStorage;
 
 use Exception;
-use Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocator;
 use Hanaboso\PipesPhpSdk\Storage\DataStorage\DataStorageManager;
 use Hanaboso\PipesPhpSdk\Storage\DataStorage\Document\DataStorageDocument;
+use Hanaboso\PipesPhpSdk\Storage\File\FileSystem;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 
 /**
@@ -22,9 +22,9 @@ final class DataStorageManagerTest extends KernelTestCaseAbstract
     private DataStorageManager $dataStorageManager;
 
     /**
-     * @var DatabaseManagerLocator $dml
+     * @var FileSystem $fileSystem
      */
-    private DatabaseManagerLocator $dml;
+    private FileSystem $fileSystem;
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\Storage\DataStorage\DataStorageManager::store
@@ -35,34 +35,39 @@ final class DataStorageManagerTest extends KernelTestCaseAbstract
      */
     public function testSaveLoadAndRemove(): void
     {
-        $this->dml->getDm()?->getDocumentCollection(DataStorageDocument::class)->drop();
+        $this->fileSystem->delete('1');
+        $this->fileSystem->delete('2');
 
         $this->dataStorageManager->store('1', ['d1', 'd2'], 'a1', 'u1');
         $this->dataStorageManager->store('2', ['d1', 'd2'], 'a2', 'u2');
 
         $data1 = (new DataStorageDocument())
-            ->setProcessId('1')
             ->setData('d1')
             ->setApplication('a1')
             ->setUser('u1');
         $data2 = (new DataStorageDocument())
-            ->setProcessId('1')
             ->setData('d2')
             ->setApplication('a1')
             ->setUser('u1');
 
         /** @var DataStorageDocument[] $entities */
         $entities = $this->dataStorageManager->load('1', 'a1', 'u1');
-        $data1->setId($entities[0]->getId());
-        $data2->setId($entities[1]->getId());
-        self::assertEquals([$data1, $data2], $entities);
+        self::assertEquals($data1->getApplication(), $entities[0]->getApplication());
+        self::assertEquals($data1->getUser(), $entities[0]->getUser());
+        self::assertEquals($data1->getData(), $entities[0]->getData());
+
+        self::assertEquals($data2->getApplication(), $entities[1]->getApplication());
+        self::assertEquals($data2->getUser(), $entities[1]->getUser());
+        self::assertEquals($data2->getData(), $entities[1]->getData());
 
         $entities = $this->dataStorageManager->load('1', 'a1', 'u1', 1, 1);
-        self::assertEquals([$data2], $entities);
+        self::assertEquals($data2->getApplication(), $entities[0]->getApplication());
+        self::assertEquals($data2->getUser(), $entities[0]->getUser());
+        self::assertEquals($data2->getData(), $entities[0]->getData());
 
         $this->dataStorageManager->remove('1', 'a1', 'u1');
         $entities = $this->dataStorageManager->load('2');
-        self::assertEquals(2, sizeof($entities ?? []));
+        self::assertEquals(2, sizeof($entities));
     }
 
     /**
@@ -73,8 +78,8 @@ final class DataStorageManagerTest extends KernelTestCaseAbstract
     {
         parent::setUp();
 
-        $this->dml                = self::getContainer()->get('hbpf.database_manager_locator');
-        $this->dataStorageManager = new DataStorageManager($this->dml);
+        $this->fileSystem         = new FileSystem();
+        $this->dataStorageManager = new DataStorageManager($this->fileSystem);
     }
 
 }

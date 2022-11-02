@@ -3,70 +3,62 @@
 namespace Hanaboso\PipesPhpSdk\Storage\DataStorage\Document;
 
 use DateTime;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
+use Exception;
+use Hanaboso\Utils\Date\DateTimeUtils;
+use Hanaboso\Utils\Exception\DateTimeException;
 
 /**
  * Class DataStorageDocument
  *
  * @package Hanaboso\PipesPhpSdk\Storage\DataStorage\Document
- *
- * @ODM\Document()
  */
 class DataStorageDocument
 {
 
-    use IdTrait;
-
     /**
      * @var string|null
-     *
-     * @ODM\Field(type="string")
-     * @ODM\Index()
      */
     private ?string $user = '';
 
     /**
      * @var string|null
-     *
-     * @ODM\Field(type="string")
-     * @ODM\Index()
      */
     private ?string $application = '';
 
     /**
-     * @var string
-     *
-     * @ODM\Field(type="string")
-     * @ODM\Index()
-     */
-    private string $processId = '';
-
-    /**
      * @var DateTime
-     *
-     * @ODM\Field(type="date")
-     * @ODM\Index(expireAfterSeconds=86400)
      */
     private DateTime $created;
 
     /**
-     * @var string
-     *
-     * @ODM\Field(type="string")
+     * @var mixed
      */
-    private string $data = '';
+    private mixed $data;
 
     /**
-     * @param string $id
+     * DataStorageDocument constructor.
      *
-     * @return $this
+     * @throws DateTimeException
      */
-    public function setId(string $id): DataStorageDocument
+    public function __construct()
     {
-        $this->id = $id;
+        $this->created = DateTimeUtils::getUtcDateTime();
+    }
 
-        return $this;
+    /**
+     * @param mixed $data
+     *
+     * @return DataStorageDocument
+     * @throws Exception
+     */
+    public static function fromJson(mixed $data): DataStorageDocument {
+        $document = new DataStorageDocument();
+        $document->setUser($data['user']);
+        $document->setApplication($data['application']);
+        $document->setCreated(new DateTime($data['created']));
+        $document->setData($data['data']);
+
+        return $document;
     }
 
     /**
@@ -110,26 +102,6 @@ class DataStorageDocument
     }
 
     /**
-     * @return string
-     */
-    public function getProcessId(): string
-    {
-        return $this->processId;
-    }
-
-    /**
-     * @param string $processId
-     *
-     * @return DataStorageDocument
-     */
-    public function setProcessId(string $processId): DataStorageDocument
-    {
-        $this->processId = $processId;
-
-        return $this;
-    }
-
-    /**
      * @return DateTime
      */
     public function getCreated(): DateTime
@@ -138,31 +110,19 @@ class DataStorageDocument
     }
 
     /**
-     * @param DateTime $created
-     *
-     * @return $this
+     * @return mixed
      */
-    public function setCreated(DateTime $created): DataStorageDocument
-    {
-        $this->created = $created;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getData(): string
+    public function getData(): mixed
     {
         return $this->data;
     }
 
     /**
-     * @param string $data
+     * @param mixed $data
      *
      * @return DataStorageDocument
      */
-    public function setData(string $data): DataStorageDocument
+    public function setData(mixed $data): DataStorageDocument
     {
         $this->data = $data;
 
@@ -175,12 +135,23 @@ class DataStorageDocument
     public function toArray(): array
     {
         return [
-            'id' => $this->id,
-            'processId' => $this->processId,
-            'data' => $this->data,
-            'application' => $this->application,
             'user' => $this->user,
+            'application' => $this->application,
+            'created' => $this->created->format(DateTimeUtils::DATE_TIME_GO),
+            'data' => $this->data,
         ];
+    }
+
+    /**
+     * @param DateTime $created
+     *
+     * @return $this
+     */
+    private function setCreated(DateTime $created): DataStorageDocument
+    {
+        $this->created = $created;
+
+        return $this;
     }
 
 }
