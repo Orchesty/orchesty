@@ -2,10 +2,9 @@
 
 namespace Hanaboso\PipesPhpSdk\Storage\DataStorage;
 
-use Doctrine\ODM\MongoDB\MongoDBException;
-use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
-use Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocator;
+use Exception;
 use Hanaboso\PipesPhpSdk\Storage\DataStorage\Document\DataStorageDocument;
+use Hanaboso\PipesPhpSdk\Storage\File\FileSystem;
 
 /**
  * Class DataStorageManager
@@ -18,9 +17,9 @@ final class DataStorageManager
     /**
      * DataStorageManager constructor.
      *
-     * @param DatabaseManagerLocator $dml
+     * @param FileSystem $fileSystem
      */
-    public function __construct(private readonly DatabaseManagerLocator $dml)
+    public function __construct(private readonly FileSystem $fileSystem)
     {
     }
 
@@ -30,9 +29,9 @@ final class DataStorageManager
      * @param string|null $user
      * @param int|null    $skip
      * @param int|null    $limit
-     * @param bool|null   $toArray
      *
-     * @return mixed[]|null
+     * @return DataStorageDocument[]
+     * @throws Exception
      */
     public function load(
         string $id,
@@ -40,25 +39,14 @@ final class DataStorageManager
         ?string $user = NULL,
         ?int $skip = NULL,
         ?int $limit = NULL,
-        ?bool $toArray = FALSE,
-    ): array|null
+    ): array
     {
-        $query = ['processId' => $id];
-        if ($application) {
-            $query['application'] = $application;
-        }
-        if ($user) {
-            $query['user'] = $user;
-        }
+        $findData = $this->fileSystem->read($id);
 
-        if ($toArray) {
-            return array_map(
-                static fn($item) => $item->toArray(),
-                $this->getRepository()?->findBy($query, NULL, $limit, $skip) ?? [],
-            );
-        }
+        $end      = ($skip ?? 0) + ($limit ?? 0);
+        $filtered = $this->filterData($findData, TRUE, $application, $user);
 
-        return $this->getRepository()?->findBy($query, NULL, $limit, $skip);
+        return array_slice($filtered, $skip ?? 0, $end ?: count($filtered));
     }
 
     /**
@@ -68,20 +56,20 @@ final class DataStorageManager
      * @param string|NULL $user
      *
      * @return void
-     * @throws MongoDBException
+     * @throws Exception
      */
     public function store(string $id, array $data, ?string $application = NULL, ?string $user = NULL): void
     {
-        foreach ($data as $item) {
-            $dataStorageDocument = (new DataStorageDocument())
-                ->setUser($user)
-                ->setApplication($application)
-                ->setProcessId($id)
-                ->setData($item);
-            $this->getRepository()?->getDocumentManager()->persist($dataStorageDocument);
-        }
+        $entities = array_map(
+            static fn($item) => (new DataStorageDocument())
+            ->setUser($user)
+            ->setApplication($application)
+            ->setData($item),
+            $data,
+        );
 
-        $this->getRepository()?->getDocumentManager()->flush();
+        $dbData = $this->fileSystem->read($id);
+        $this->fileSystem->write($id, array_merge($dbData, $entities));
     }
 
     /**
@@ -90,25 +78,42 @@ final class DataStorageManager
      * @param string|NULL $user
      *
      * @return void
-     * @throws MongoDBException
+     * @throws Exception
      */
     public function remove(string $id, ?string $application = NULL, ?string $user = NULL): void
     {
-        $queryBuilder = $this->getRepository()?->getDocumentManager()->createQueryBuilder();
-        $queryBuilder?->remove(DataStorageDocument::class)
-            ->field('processId')->equals($id)
-            ->field('application')->equals($application)
-            ->field('user')->equals($user)
-            ->getQuery()
-            ->execute();
+        if (!$application && !$user) {
+            $this->fileSystem->delete($id);
+        } else {
+            $data = $this->fileSystem->read($id);
+
+            $data = $this->filterData($data, FALSE, $application, $user);
+            $this->fileSystem->write($id, $data);
+        }
     }
 
     /**
-     * @return DocumentRepository<DataStorageDocument>|null
+     * @param DataStorageDocument[] $data
+     * @param bool|null             $contains
+     * @param string|null           $application
+     * @param string|null           $user
+     *
+     * @return DataStorageDocument[]
      */
-    private function getRepository(): DocumentRepository|null
-    {
-        return $this->dml->getDm()?->getRepository(DataStorageDocument::class);
+    private function filterData(
+        array $data,
+        ?bool $contains = NULL,
+        ?string $application = NULL,
+        ?string $user = NULL,
+    ): array {
+        if ($application) {
+            $data = array_filter($data, static fn($item) => ($item->getApplication() === $application) === $contains);
+        }
+        if ($user) {
+            $data = array_filter($data, static fn($item) => ($item->getUser() === $user) === $contains);
+        }
+
+        return $data;
     }
 
 }
