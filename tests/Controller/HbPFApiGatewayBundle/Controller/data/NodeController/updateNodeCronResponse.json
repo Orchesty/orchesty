@@ -9,7 +9,7 @@
         "handler": "event",
         "enabled": true,
         "schema_id": "",
-        "cron_time": null,
-        "cron_params": null
+        "cron_time": "* * * * *",
+        "cron_params": "{\"foo\": \"bar\"}"
     }
 }

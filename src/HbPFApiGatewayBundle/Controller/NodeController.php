@@ -71,31 +71,6 @@ final class NodeController extends AbstractController
     }
 
     /**
-     * @Route("/nodes/{type}/list_nodes", requirements={"type"="connector|custom_node|user"}, methods={"GET", "OPTIONS"})
-     *
-     * @param string $type
-     *
-     * @return Response
-     */
-    public function listOfNodesAction(string $type): Response
-    {
-        switch ($type) {
-            case 'connector':
-                return $this->forward(
-                    'Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Controller\ConnectorController::listOfConnectorsAction',
-                );
-            case 'custom_node':
-                return $this->forward(
-                    'Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Controller\CustomNodeController::listOfCustomNodesAction',
-                );
-            case 'user':
-                return new JsonResponse(ServiceLocator::USER_TASK_LIST);
-        }
-
-        return new JsonResponse();
-    }
-
-    /**
      * @Route("/nodes/list/name", methods={"GET", "OPTIONS"})
      *
      * @return Response

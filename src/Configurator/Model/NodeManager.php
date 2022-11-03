@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocator;
 use Hanaboso\CommonsBundle\Enum\HandlerEnum;
+use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\CommonsBundle\Exception\NodeException;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository;
@@ -64,6 +65,17 @@ final class NodeManager
             }
 
             $node->setEnabled($data['enabled']);
+        } else if (isset($data['cron'])) {
+            if ($node->getType() != TypeEnum::CRON) {
+                throw new NodeException(
+                    'Trying to set cron parameters on non cron Node',
+                    NodeException::DISALLOWED_ACTION_ON_NON_EVENT_NODE,
+                );
+            }
+
+            $node
+                ->setCronParams($data['cron']['params'] ?? '')
+                ->setCron($data['cron']['time'] ?? '');
         } else {
             $node
                 ->setName($data['name'])
