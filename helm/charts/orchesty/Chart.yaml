@@ -1,6 +1,6 @@
 apiVersion: v2
-name: pipes
-description: Platform + framework for systems integration and processes orchestration
+name: orchesty
+description: Orchesty si a platform + framework for systems integration and processes orchestration. See https://orchesty.io
 type: application
 version: 1.2.0
 appVersion: 1.1.0
