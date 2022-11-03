@@ -398,6 +398,8 @@ class Node
             'handler'     => $this->getHandler(),
             'enabled'     => $this->isEnabled(),
             'schema_id'   => $this->getSchemaId(),
+            'cron_time'   => $this->getCron(),
+            'cron_params' => $this->getCronParams(),
         ];
     }
 

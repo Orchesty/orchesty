@@ -460,17 +460,6 @@ paths:
                 500:
                     $ref: '#/components/responses/500'
 
-    /api/nodes/{type}/list_nodes:
-        get:
-            tags: [ Nodes ]
-            parameters:
-                -   $ref: '#/components/parameters/Type'
-            responses:
-                200:
-                    $ref: '#/components/responses/NodesNames'
-                500:
-                    $ref: '#/components/responses/500'
-
     /api/nodes/list/name:
         get:
             tags: [ Nodes ]

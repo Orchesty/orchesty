@@ -8,6 +8,8 @@
         "type": "custom",
         "handler": "event",
         "enabled": true,
-        "schema_id": ""
+        "schema_id": "",
+        "cron_time": null,
+        "cron_params": null
     }
 }

@@ -3,6 +3,7 @@
 namespace PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller;
 
 use Exception;
+use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
@@ -52,7 +53,7 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
      *
      * @throws Exception
      */
-    public function testUpdateNodeAction(): void
+    public function testUpdateNodeActionEnable(): void
     {
         $this->assertResponseLogged(
             $this->jwt,
@@ -63,16 +64,18 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NodeController::listOfNodesAction
+     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NodeController::updateNodeAction
+     *
+     * @throws Exception
      */
-    public function testListOfNodesEmpty(): void
+    public function testUpdateNodeActionCron(): void
     {
-        $nodeController = self::getContainer()->get(
-            'Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NodeController',
+        $this->assertResponseLogged(
+            $this->jwt,
+            __DIR__ . '/data/NodeController/updateNodeCronRequest.json',
+            ['_id' => '123456789', 'topology_id' => '123456789'],
+            [':id' => $this->createNode()->getId()],
         );
-
-        $result = $nodeController->listOfNodesAction('something');
-        self::assertEquals(200, $result->getStatusCode());
     }
 
     /**
@@ -107,7 +110,9 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
     private function createNode(): Node
     {
         $node = new Node();
-        $node->setTopology('1');
+        $node
+            ->setType(TypeEnum::CRON)
+            ->setTopology('1');
 
         $this->pfd($node);
 

@@ -5,9 +5,11 @@
         "name": "",
         "topology_id": "123456789",
         "next": [],
-        "type": "custom",
+        "type": "cron",
         "handler": "event",
         "enabled": false,
-        "schema_id": ""
+        "schema_id": "",
+        "cron_time": null,
+        "cron_params": null
     }
 }
