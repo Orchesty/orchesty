@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/ingydotnet/git-subrepo#readme
+;
+[subrepo]
+	remote = git@github.com:Orchesty/helm-charts.git
+	branch = main
+	commit = b72e904e2970b91c4e5f0df0d57c19a4290d5dae
+	parent = 3b00df75493dd7dd198d39bcafe012cbe1f92538
+	method = merge
+	cmdver = 0.4.5
