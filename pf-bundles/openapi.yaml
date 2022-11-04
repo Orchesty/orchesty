@@ -527,6 +527,42 @@ paths:
                 500:
                     $ref: '#/components/responses/500'
 
+    /api/apiTokens:
+        get:
+            tags: [ ApiTokens ]
+            parameters:
+                -   $ref: '#/components/parameters/QueryKey'
+                -   $ref: '#/components/parameters/QueryUser'
+                -   $ref: '#/components/parameters/Created'
+            responses:
+                200:
+                    $ref: '#/components/responses/ApiTokens'
+                500:
+                    $ref: '#/components/responses/500'
+
+        post:
+            tags: [ ApiTokens ]
+            requestBody:
+                $ref: '#/components/requestBodies/ApiToken'
+            responses:
+                200:
+                    $ref: '#/components/responses/ApiToken'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/apiTokens/{id}:
+        delete:
+            tags: [ ApiTokens ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            responses:
+                200:
+                    $ref: '#/components/responses/ApiToken'
+                404:
+                    $ref: '#/components/responses/404'
+                500:
+                    $ref: '#/components/responses/500'
+
     /api/topologies:
         get:
             tags: [ Topologies ]
@@ -1043,6 +1079,22 @@ components:
                             value:
                                 type: string
 
+        ApiToken:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            expireAt:
+                                type: string
+                                required: false
+                            scopes:
+                                type: array
+                                items:
+                                    type: string
+                                required: false
+
         Topology:
             description: ''
             content:
@@ -1370,6 +1422,20 @@ components:
                 application/json:
                     schema:
                         $ref: '#/components/schemas/Sdks'
+
+        ApiToken:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/ApiToken'
+
+        ApiTokens:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/ApiTokens'
 
         Topology:
             description: ''
@@ -2078,6 +2144,29 @@ components:
             items:
                 $ref: '#/components/schemas/Sdk'
 
+        ApiToken:
+            type: object
+            properties:
+                id:
+                    type: string
+                key:
+                    type: string
+                user:
+                    type: string
+                created:
+                    type: string
+                expiredAt:
+                    type: string
+                scopes:
+                    type: array
+                    items:
+                        type: string
+
+        ApiTokens:
+            type: array
+            items:
+                $ref: '#/components/schemas/ApiToken'
+
         Topology:
             type: object
             properties:
@@ -2391,6 +2480,33 @@ components:
             example: state
             schema:
                 type: string
+
+        QueryUser:
+            name: user
+            in: query
+            required: true
+            schema:
+                type: string
+
+        QueryKey:
+            name: key
+            in: query
+            schema:
+                type: string
+
+        Created:
+            name: created
+            in: query
+            schema:
+                type: string
+
+        Scopes:
+            name: scopes
+            in: query
+            schema:
+                type: array
+                items:
+                    type: string
 
         Token:
             name: token

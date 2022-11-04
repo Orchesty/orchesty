@@ -2,8 +2,12 @@
 
 namespace PipesFrameworkTests\Unit\ApiGateway\Authenticator\ApiKey;
 
+use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Exception;
 use Hanaboso\PipesFramework\ApiGateway\Authenticator\ApiKey\ApiKeyAuthenticator;
+use Hanaboso\PipesFramework\Configurator\Document\ApiToken;
+use Hanaboso\PipesFramework\Configurator\Enum\ApiTokenScopesEnum;
+use Hanaboso\PipesFramework\Configurator\Model\ApiTokenManager;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -41,13 +45,25 @@ final class ApiKeyAuthenticatorTest extends KernelTestCaseAbstract
      * @throws Exception
      *
      * @covers \Hanaboso\PipesFramework\ApiGateway\Authenticator\ApiKey\ApiKeyAuthenticator::authenticate
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\ApiTokenManager::create
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\ApiTokenManager::delete
+     * @covers \Hanaboso\PipesFramework\Configurator\Model\ApiTokenManager::getAllBy
      */
     public function testAuthenticate(): void
     {
+        /** @var ApiTokenManager $apiTokenManager */
+        $apiTokenManager = self::getContainer()->get('hbpf.configurator.manager.api_token');
+        $apiToken        = $apiTokenManager->create([ApiToken::SCOPES => ApiTokenScopesEnum::getChoices()], '');
+
         $r = new Request();
-        $r->headers->set(ApiKeyAuthenticator::AUTH_HEADER, self::KEY);
+        $r->headers->set(ApiKeyAuthenticator::AUTH_HEADER, $apiToken->getKey());
         $res = $this->getAuthenticator()->authenticate($r);
         self::assertEquals('apiUser', $res->getUser()->getUserIdentifier());
+
+        $apiTokenManager->delete($apiToken);
+        $this->expectException(DocumentNotFoundException::class);
+        $this->expectExceptionMessage(sprintf("Document ApiToken with key '%s' not found!", $apiToken->getId()));
+        $apiTokenManager->getOne($apiToken->getId());
     }
 
     /**
@@ -102,7 +118,7 @@ final class ApiKeyAuthenticatorTest extends KernelTestCaseAbstract
     {
         return new ApiKeyAuthenticator(
             self::getContainer()->get('Hanaboso\UserBundle\Model\Security\JWTAuthenticator'),
-            self::KEY,
+            self::getContainer()->get('hbpf.database_manager_locator'),
         );
     }
 
