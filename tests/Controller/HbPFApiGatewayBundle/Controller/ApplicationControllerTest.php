@@ -7,7 +7,9 @@ use Hanaboso\CommonsBundle\Redirect\RedirectInterface;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator;
+use Hanaboso\PipesFramework\Configurator\Document\ApiToken;
 use Hanaboso\PipesFramework\Configurator\Document\Sdk;
+use Hanaboso\PipesFramework\Configurator\Enum\ApiTokenScopesEnum;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\Utils\String\Json;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
@@ -275,7 +277,12 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
      */
     public function testGetSynchronousActionsAction(): void
     {
+        $apiToken = (new ApiToken())->setKey('abc-123')->setScopes(ApiTokenScopesEnum::getChoices());
+        $dm       = self::getContainer()->get('hbpf.database_manager_locator')->getDm();
+        $dm?->persist($apiToken);
+        $dm?->flush();
         $this->assertResponse(__DIR__ . '/data/ApplicationController/getSynchronousActionsRequest.json');
+        $dm?->getRepository(ApiToken::class)->clear();
     }
 
     /**
@@ -285,7 +292,12 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
      */
     public function testRunSynchronousActionsAction(): void
     {
+        $apiToken = (new ApiToken())->setKey('abc-123')->setScopes(ApiTokenScopesEnum::getChoices());
+        $dm       = self::getContainer()->get('hbpf.database_manager_locator')->getDm();
+        $dm?->persist($apiToken);
+        $dm?->flush();
         $this->assertResponse(__DIR__ . '/data/ApplicationController/runSynchronousActionsRequest.json');
+        $dm?->getRepository(ApiToken::class)->clear();
     }
 
     /**

@@ -55,3 +55,8 @@ services:
         class: Hanaboso\PipesFramework\Configurator\Model\Filters\ProgressFilter
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.api_token.filter:
+        class: Hanaboso\PipesFramework\Configurator\Model\Filters\ApiTokenFilter
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'

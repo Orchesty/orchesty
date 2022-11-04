@@ -22,6 +22,11 @@ services:
             - '@hbpf.database_manager_locator'
             - '@hbpf.configurator.manager.category'
 
+    hbpf.handler.api_token:
+        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\ApiTokenHandler
+        arguments:
+            - '@hbpf.configurator.manager.api_token'
+
     hbpf.handler.dashboard:
         class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\DashboardHandler
         arguments:

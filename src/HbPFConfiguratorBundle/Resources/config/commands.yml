@@ -24,6 +24,13 @@ services:
         tags:
             - { name: console.command }
 
+    hbpf.command.create_api_token:
+        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\CreateApiTokenCommand
+        arguments:
+            - '@hbpf.configurator.manager.api_token'
+        tags:
+            - { name: console.command }
+
     hbpf.command.create_indexes:
         class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\UpdateMongoIndexesCommand
         arguments:

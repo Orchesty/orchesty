@@ -1,0 +1,12 @@
+{
+    "http": "POST /api/apiTokens",
+    "body": {
+        "scopes": [
+            "topology:run"
+        ],
+        "expireAt": "2022-11-03 05:43:31.000Z"
+    },
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
+}

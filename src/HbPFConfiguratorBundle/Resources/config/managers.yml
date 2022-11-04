@@ -27,6 +27,12 @@ services:
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
 
+    hbpf.configurator.manager.api_token:
+        class: Hanaboso\PipesFramework\Configurator\Model\ApiTokenManager
+        arguments:
+            - '@hbpf.api_token.filter'
+            - '@hbpf.database_manager_locator'
+
     hbpf.configurator.manager.topology_progress:
         class: Hanaboso\PipesFramework\Configurator\Model\ProgressManager
         arguments:

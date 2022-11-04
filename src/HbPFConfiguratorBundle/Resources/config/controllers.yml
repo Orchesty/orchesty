@@ -32,6 +32,13 @@ services:
         calls:
             - [ 'setLogger', [ '@monolog.logger.commons' ] ]
 
+    Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\ApiTokenController:
+        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\ApiTokenController
+        arguments:
+            - '@hbpf.handler.api_token'
+        calls:
+            - [ 'setLogger', [ '@monolog.logger.commons' ] ]
+
     Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyProgressController:
         class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyProgressController
         arguments:

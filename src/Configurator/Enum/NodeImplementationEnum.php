@@ -12,8 +12,6 @@ use Hanaboso\Utils\Enum\EnumAbstract;
 final class NodeImplementationEnum extends EnumAbstract
 {
 
-    public const PHP = 'php';
-
     public const CONNECTOR = 'connector';
     public const CUSTOM    = 'custom';
     public const USER      = 'user';
@@ -23,7 +21,10 @@ final class NodeImplementationEnum extends EnumAbstract
      * @var string[]
      */
     protected static array $choices = [
-        self::PHP => 'Pipes Framework Implementation',
+        self::CONNECTOR => self::CONNECTOR,
+        self::CUSTOM    => self::CUSTOM,
+        self::USER      => self::USER,
+        self::BATCH     => self::BATCH,
     ];
 
 }
