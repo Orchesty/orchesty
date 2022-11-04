@@ -15,7 +15,6 @@ Next, we`ll need an executable binary **make** file. To install this binary, fol
     values={[
         {label: 'Linux', value: 'linux'},
         {label: 'MacOS', value: 'mac'},
-        {label: 'Windows', value: 'win'},
     ]}
 >
 <TabItem value="linux">
@@ -36,47 +35,30 @@ Then create a virtual network interface.
 sudo ifconfig lo0 alias 127.0.0.10 up
 ```
 </TabItem>
-<TabItem value="win">
-
-[Download](http://gnuwin32.sourceforge.net/packages/make.htm) installation files and follow associated manual.
-
-</TabItem>
 </Tabs>
 
 ## Skeleton download & Project initialization
 The basis for the installation is Orchesty-skeleton, which is public on [GitHub](https://github.com/Orchesty/orchesty-skeleton).  
 
 <Tabs
-    defaultValue="git"
+    defaultValue="installer"
     values={[
-        {label: 'GIT', value: 'git'},
+        {label: 'Installer', value: 'installer'},
         {label: 'ZIP', value: 'zip'},
 ]}
 >
-<TabItem value="git">
+<TabItem value="installer">
 
-Clone the repository into the local directory **myOrchesty**:  
+Run our Installer and follow the wizzard:  
 
 ```shell
-git clone https://github.com/Orchesty/orchesty-skeleton.git myOrchesty
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Orchesty/Installer/main/InstallScript.sh)"
 ```
 
 Or if we want our **tutorial codes**:
 
 ```shell
-git clone https://github.com/Orchesty/orchesty-tutorial.git myOrchesty
-```
-
-
-Navigate into project folder and delete the subdirectory **.git**:  
-```shell
-cd myOrchesty
-rm -rf .git
-```
-
-The last step is the initialization of our project by command.
-```shell
-git init
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Orchesty/Installer/main/InstallScript.sh)" -s tutorial
 ```
 </TabItem>
 <TabItem value="zip">
