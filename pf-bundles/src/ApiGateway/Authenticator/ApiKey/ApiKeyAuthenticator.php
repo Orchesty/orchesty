@@ -2,6 +2,10 @@
 
 namespace Hanaboso\PipesFramework\ApiGateway\Authenticator\ApiKey;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocator;
+use Hanaboso\PipesFramework\Configurator\Document\ApiToken;
+use Hanaboso\PipesFramework\Configurator\Enum\ApiTokenScopesEnum;
 use Hanaboso\UserBundle\Document\User;
 use Hanaboso\UserBundle\Model\Security\JWTAuthenticator;
 use Hanaboso\UserBundle\Model\Security\SecurityManagerException;
@@ -28,13 +32,21 @@ final class ApiKeyAuthenticator extends AbstractAuthenticator
     public const AUTHORIZATION = 'Authorization';
 
     /**
+     * @var DocumentManager
+     */
+    private DocumentManager $dm;
+
+    /**
      * ApiKeyAuthenticator constructor.
      *
-     * @param JWTAuthenticator $jwtAuthenticator
-     * @param string           $universalApiKey
+     * @param JWTAuthenticator       $jwtAuthenticator
+     * @param DatabaseManagerLocator $dml
      */
-    public function __construct(private JWTAuthenticator $jwtAuthenticator, private string $universalApiKey)
+    public function __construct(private readonly JWTAuthenticator $jwtAuthenticator, DatabaseManagerLocator $dml)
     {
+        /** @var DocumentManager $dm */
+        $dm       = $dml->getDm();
+        $this->dm = $dm;
     }
 
     /**
@@ -61,7 +73,13 @@ final class ApiKeyAuthenticator extends AbstractAuthenticator
                 return $this->jwtAuthenticator->authenticate($request);
             }
 
-            if ($request->headers->get(self::AUTH_HEADER) !== $this->universalApiKey || empty($this->universalApiKey)) {
+            $token = $this->dm->getRepository(ApiToken::class)->findOneBy(
+                [
+                    'key' => $request->headers->get(self::AUTH_HEADER),
+                    'scopes' => ApiTokenScopesEnum::APPLICATIONS_ALL,
+                ],
+            );
+            if (!$token) {
                 throw new SecurityManagerException(
                     'API key is not valid.',
                     SecurityManagerException::USER_OR_PASSWORD_NOT_VALID,

@@ -15,7 +15,6 @@ services:
             - APP_DEBUG=true
             - DEV_UID=${DEV_UID}
             - DEV_GID=${DEV_GID}
-            - X_AUTH_KEY=abc-123
             - KERNEL_CLASS=Hanaboso\PipesFramework\Kernel
             - COMPOSER_HOME=${HOME}/dev/.composer
             - FRONTEND_DSN=${DEV_IP}

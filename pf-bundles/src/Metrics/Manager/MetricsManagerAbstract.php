@@ -207,8 +207,9 @@ abstract class MetricsManagerAbstract implements LoggerAwareInterface
      */
     public function getTopologyMetrics(Topology $topology, array $params): array
     {
-        $data                                = $this->getTopologyProcessTimeMetrics($topology, $params)['process'];
-        $res                                 = [];
+        $data = $this->getTopologyProcessTimeMetrics($topology, $params)['process'];
+        $res  = [];
+
         $res['topology'][self::PROCESS_TIME] = [
             self::MIN_KEY => $data[self::MIN_KEY],
             self::AVG_KEY => $data[self::AVG_KEY],
