@@ -4,10 +4,6 @@ import TabItem from '@theme/TabItem';
 
 # OAuth2 Application
 
-:::danger
-This is not a final version!
-:::
-
 In this tutorial we'll implement an Application with OAuth 2.0 authorization, which is today
 probably the most used authorization to SaaS. Both OAuth1 and OAuth2 are handled via GUI.
 Within Admin Orchesty creates complete form including redirect to integrated service.
@@ -734,9 +730,29 @@ services:
 
 We're all set. Now we can test inserting a contact into HubSpot with OAuth 2 authentication.
 
+## Test
+First, we need to authorize our HubSpot application. In order to gain access using OAuth, we first need to create a developer account in HubSpot and a new application in that account. In the application settings we then get the **app ID**, **client ID** and **client sercret**. We can find instructions on the [Hubspot documentation](https://developers.hubspot.com/docs/api/working-with-oauth).
+
+We use the credentials to authorize our HubSpot application form in Orchesty Admin.
+
+![HubSpot settings](/img/tutorial/oauth2/hubspot-oauth-settings.svg "HubSpot settings")
+
+Now we can authorize access to our HubSpot account. Orchesty will redirect us to the authorization form.
+
+![Authorize form](/img/tutorial/oauth2/authorize-form.svg "Authorize form")
+
+If we have successfully authorized access to our HubSpot account, we can activate the application and continue to create the topology.
+
 ## Creating a topology
 
-The topology to test our example will be really simple this time. We'll just use the start event and our connector. For this time, we'll enter the data manually.
+The topology to test our example will be really simple this time. We'll just use the start event and our connector.  For this time, we'll enter the data manually. At the end, of course, we add a user task to check the HubSpot response.
 
 ![Create contact HubSpot topology](/img/tutorial/oauth2/create-user-topology.svg)
+
+We save, publish and activate the topology. On run, we specify the email we will send to HubSpot.
+
+![Run topology](/img/tutorial/oauth2/run-create-user.svg "Run topology")
+
+Now we just check the new contact in our HubSpot account.
+
 

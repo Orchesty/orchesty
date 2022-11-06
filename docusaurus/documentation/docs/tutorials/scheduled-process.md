@@ -24,3 +24,5 @@ Now that we have saved and run the topology, we can see the time of the next pro
 ## Overview of planned tasks
 
 An overview of all scheduled tasks across all running topologies can be found in the **Scheduled tasks** tab.
+
+![Scheduled tasks overview](/img/tutorial/scheduled-tasks.svg "Scheduled tasks overview")

@@ -9,4 +9,6 @@ The Limiter controls the frequency of requests to a specific API so that its all
 
 Setting up the Limiter is very simple. We can do it in the details of each application. 
 
+![Limiter settings](/img/tutorial/limiter-form.svg "Limiter settings")
+
 

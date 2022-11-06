@@ -555,5 +555,10 @@ final class GitHubApplication extends BasicApplicationAbstract implements Webhoo
 
 Since we have only extended a previously developed application, we do not need to register it. If you don't already have a HubSpot application registered in the container, see the [Basic application](../tutorials/basic-application) tutorial.
 
-## Test
+## Creating a topology
+
+
+
+
+![Webhooks topology](/img/tutorial/webhooks-topology.svg "Webhooks topology")
 
