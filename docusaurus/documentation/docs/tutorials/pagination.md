@@ -169,7 +169,11 @@ services:
 
 ## Test
 
-The test is simply performed as in the previous tutorials. After the **start event** we include our new connector and have the output sent to the **user task**. The connector expects the organization name in the data. When the process starts, we need to insert it:
+The test is simply performed as in the previous tutorials. After the **start event** we include our new connector and have the output sent to the **user task**. 
+
+![Pagination topology](/img/tutorial/pagination-topology.png "Pagination topology")
+
+The connector expects the organization name in the data. When the process starts, we need to insert it:
 
 ![Pagination topology](/img/tutorial/batch/pagination-topology.svg "Pagination topology")
 

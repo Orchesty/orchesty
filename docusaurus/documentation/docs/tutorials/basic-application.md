@@ -80,6 +80,7 @@ final class GitHubApplication extends BasicApplicationAbstract
 ```
 </TabItem>
 </Tabs>
+
 The methods in this part of the code are required. The `name` attribute serves as a unique identifier for the application. The `publicName` and `description` are displayed in [Orchesty marketplace](../admin/marketplace.md).
 
 ## Form
@@ -595,13 +596,17 @@ Note that connector is calling `getRequestDto` of an application
 
 ## Using a connector with an application in the topology
 
-We will now test our new application. First, we must remember to install our application in the **Applications** tab. For authorization, we need to fill in our GitHub API accesses in the application. You can generate an authorization token in the developer settings of your account at [https://github.com/settings/tokens](https://github.com/settings/tokens).
+We will now test our new application. First, we must remember to install our application in the **Applications** tab. For authorization, we need to fill in our GitHub API accesses in the application. You can generate an authorization token in the developer settings of your account at [https://github.com/settings/tokens](https://github.com/settings/tokens) and insert it into the authorization form of our new application. Then we still must activate the application.
+
+![Authorize application](/img/tutorial/authorize-github.svg "Authorize application")
 
 In **Orchesty Admin** we will create a new topology. Again, we'll include a **user task** at the end to better control the output of the connector.
 
 ![GitHub topology](/img/tutorial/basicApplication/github-topology.svg "GitHub topology")
 
 We publish and activate the topology. This time, the topology will expect data to be inserted for submission, namely the owner and the repository name. However, since we have handled error situations, we can first test how the process behaves if we don't insert the correct data.
+
+
 
 ## Error handling
 
