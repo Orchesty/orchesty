@@ -57,6 +57,7 @@ export default {
 .parsing-error-message {
   height: 1rem;
 }
+
 .textarea {
   width: 100%;
   max-height: 80vh;

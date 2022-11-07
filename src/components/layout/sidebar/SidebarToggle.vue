@@ -135,6 +135,7 @@ export default {
   height: calc(100vh - 24px);
   border-radius: 0.75em;
 }
+
 .sidebar-height-100 {
   border-radius: 0.75em;
   height: 100%;
@@ -148,12 +149,15 @@ export default {
   height: 25px !important;
   min-width: 25px !important;
 }
+
 .sidebar-button-closed {
   left: 43px;
 }
+
 .sidebar-button-opened {
   left: 342px;
 }
+
 .sidebar-button-opened-mobile {
   left: 363px;
 }

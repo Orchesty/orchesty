@@ -97,6 +97,7 @@ export default {
 .v-input input {
   font-size: 0.875rem;
 }
+
 .v-input .v-label {
   font-size: 0.875rem;
 }

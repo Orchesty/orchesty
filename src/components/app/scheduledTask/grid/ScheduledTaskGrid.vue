@@ -164,6 +164,7 @@ export default {
 .task-active {
   color: var(--v-success-base) !important;
 }
+
 .task-disabled {
   color: var(--v-error-base) !important;
 }

@@ -476,7 +476,6 @@ export default {
   border-bottom-left-radius: 0.4em;
   border-top-left-radius: 0.4em;
   border-left: 1px solid #ebebeb;
-  //box-shadow: 0 0 5px 3px #ebebeb;
 }
 
 .canvas-loader {
@@ -488,32 +487,42 @@ export default {
   height: 80vh;
   width: 80%;
 }
+
 #canvas-edit .djs-visual,
 #canvas-edit .djs-outline {
   pointer-events: all;
 }
+
 #canvas-edit .djs-element > .djs-hit-stroke,
 #canvas-edit .djs-element > .djs-hit-click-stroke {
   pointer-events: all;
 }
+
 #canvas-edit svg {
   pointer-events: all;
 }
+
+// stylelint-disable
 #camunda-repeaterEnabled,
 #camunda-userTaskGroup {
   margin-right: 7px;
   margin-bottom: 3px;
 }
+// stylelint-enable
+
 .bpmn-icon-pipes-connector-batch {
   margin: 12px 9px 6px 9px !important;
 }
+
 .djs-palette {
   max-width: 50px;
 }
+
 .djs-palette-entries .group {
   display: flex;
   flex-direction: column;
 }
+
 .djs-palette-entries .group .entry {
   margin: auto;
 }

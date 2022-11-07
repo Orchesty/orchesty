@@ -42,6 +42,7 @@ export default {
 .button-text {
   width: auto;
 }
+
 .navbar-size {
   font-size: 21px !important;
 }

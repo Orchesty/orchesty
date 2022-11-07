@@ -211,6 +211,7 @@ export default {
 .position-relative {
   position: relative;
 }
+
 .position-absolute {
   margin-left: auto;
   margin-right: auto;
@@ -219,10 +220,17 @@ export default {
   text-align: center;
   position: absolute;
 }
+
 .position-absolute-text {
-  @extend .position-absolute;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
+  text-align: center;
+  position: absolute;
   top: 55px;
 }
+
 .dashboardCol {
   flex: 0 1 25%;
   @media #{map-get($display-breakpoints, 'sm-and-down')} {

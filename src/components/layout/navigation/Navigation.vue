@@ -148,8 +148,10 @@ export default {
 .v-list-item {
   height: 64px;
 }
+
 .safari-fix {
   max-height: 100%;
+
   img {
     width: 100%;
   }

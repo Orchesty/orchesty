@@ -337,29 +337,35 @@ export default {
 .json-ready {
   white-space: pre-wrap;
 }
+
 .height-100 {
   height: 100%;
   flex-wrap: wrap;
 }
+
 .flex-item {
   display: flex;
   justify-content: space-around;
   flex: 1;
   min-width: 0;
   flex-direction: column;
+
   @media #{map-get($display-breakpoints, 'sm-and-down')} {
     flex: 1 0 100%;
     align-items: flex-start;
   }
+
   span {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 }
+
 .fixed-width {
   min-width: 110px !important;
 }
+
 .mr-spaced:not(:last-child) {
   margin-right: 10px;
 }
