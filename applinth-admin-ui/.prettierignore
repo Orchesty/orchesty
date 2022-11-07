@@ -1,5 +1,5 @@
-gqlGenerated.ts
-dist/
-storybook-static/
+/dist/
+/public/
+
 **/generated/
 metadata.json
