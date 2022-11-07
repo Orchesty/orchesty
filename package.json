@@ -5,11 +5,16 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint --no-fix",
-    "lint-autofix": "vue-cli-service lint",
-    "format": "prettier --write",
     "start": "vue-cli-service serve",
-    "test:unit": "vue-cli-service test:unit"
+    "test:unit": "vue-cli-service test:unit",
+    "lint": "eslint '**/*.{js,ts,vue}'",
+    "lint:fix": "eslint --fix '**/*.{js,ts,vue}'",
+    "lint:styles": "stylelint '**/*.{css,scss,vue}'",
+    "lint:styles:fix": "stylelint --fix '**/*.{css,scss,vue}'",
+    "format:check": "prettier --check '**/*.{js,ts,vue,json,yml,mjs,css,scss,md}'",
+    "format": "prettier --write '**/*.{js,ts,vue,json,yml,mjs,css,scss,md}'",
+    "test": "",
+    "validate": "run-p -l lint lint:styles format:check test"
   },
   "dependencies": {
     "@casl/ability": "^5.3.1",
@@ -53,9 +58,18 @@
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-vue": "^8.4.1",
     "node-gyp": "^9.0.0",
+    "npm-run-all": "^4.1.5",
+    "postcss": "^8.4.18",
+    "postcss-html": "^1.5.0",
     "prettier": "^2.3.2",
     "sass": "~1.50.0",
     "sass-loader": "^10",
+    "stylelint": "^14.14.0",
+    "stylelint-config-prettier-scss": "^0.0.1",
+    "stylelint-config-recommended-scss": "^8.0.0",
+    "stylelint-config-recommended-vue": "^1.4.0",
+    "stylelint-config-standard-scss": "^6.0.0",
+    "stylelint-config-standard-vue": "^1.0.0",
     "vue-template-compiler": "^2.6.14"
   },
   "postcss": {
