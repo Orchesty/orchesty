@@ -104,10 +104,12 @@ export default {
   },
 }
 </script>
+
 <style scoped lang="scss">
 .available-app-wrapper {
   max-width: 80ch;
 }
+
 .text-transform-none {
   text-align: start;
   text-transform: none;

@@ -36,10 +36,12 @@ export default class AuthSplitLayout extends Vue {}
   flex-direction: column;
   margin-top: 20px;
 }
+
 .content-form {
   margin: 20px;
   width: 300px;
 }
+
 .login-image-wrapper {
   background-color: $primary;
   border-top-right-radius: 8px;
@@ -51,8 +53,10 @@ export default class AuthSplitLayout extends Vue {}
     border-bottom-right-radius: 0;
   }
 }
+
 .login-image {
   padding: 0 !important;
+
   img {
     width: 70%;
     margin: auto;

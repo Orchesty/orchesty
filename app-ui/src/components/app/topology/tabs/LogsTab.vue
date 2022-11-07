@@ -218,13 +218,16 @@ export default {
 .expanded-row {
   border-bottom: 1px solid #e0e0e0 !important;
   cursor: pointer;
+
   &:hover {
     background-color: #eeeeee !important;
   }
 }
+
 tr:hover {
   cursor: pointer;
 }
+
 .transform-center-cell {
   margin-left: 15%;
 }

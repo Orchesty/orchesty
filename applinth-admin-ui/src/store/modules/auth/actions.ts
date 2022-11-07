@@ -24,7 +24,7 @@ import { LocalStorage, Routes } from "@/enums"
 import { api } from "@/api"
 
 export const actions: Actions<AuthActions, AuthState> = {
-  async login({ commit }, payload: TLoginForm): Promise<boolean> {
+  async login(_context, payload: TLoginForm): Promise<boolean> {
     try {
       const googleTenantId = await getGoogleTenantId(payload.tenant)
 
@@ -96,7 +96,7 @@ export const actions: Actions<AuthActions, AuthState> = {
       return false
     }
   },
-  async changePassword({ commit }, payload: string): Promise<boolean> {
+  async changePassword(_context, payload: string): Promise<boolean> {
     const auth = getAuth()
 
     const user = auth.currentUser
@@ -125,7 +125,7 @@ export const actions: Actions<AuthActions, AuthState> = {
       return false
     }
   },
-  async reauthenticate({ commit }, password: string) {
+  async reauthenticate(_context, password: string) {
     try {
       const auth = getAuth()
       const user = auth.currentUser
@@ -149,7 +149,7 @@ export const actions: Actions<AuthActions, AuthState> = {
     }
   },
   async sendResetPasswordLink(
-    { commit },
+    _context,
     payload: TResetPasswordForm
   ): Promise<boolean> {
     try {

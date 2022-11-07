@@ -476,6 +476,7 @@ export default {
 .bpmn-viewer-node-grid-container {
   padding-top: 35px;
   position: relative;
+
   .bpmn-viewer-node-grid {
     position: absolute;
     bottom: 0;
@@ -483,6 +484,7 @@ export default {
     width: 100%;
   }
 }
+
 .canvas--checkboxes {
   position: absolute;
   z-index: 2;
@@ -494,35 +496,45 @@ export default {
 #canvas {
   height: 70vh;
 }
+
 #canvas .djs-palette {
   display: none !important;
 }
+
 #canvas .djs-context-pad {
   display: none !important;
 }
+
 #canvas .djs-visual,
 #canvas .djs-outline {
   pointer-events: none;
 }
+
 .djs-label {
   pointer-events: stroke;
 }
+
 .djs-visual > *:not(text) {
   transition: 0.3s all;
 }
+
 #canvas .djs-element > .djs-hit-stroke,
 #canvas .djs-element > .djs-hit-click-stroke {
   pointer-events: none;
 }
+
 .djs-element > .djs-hit-all {
   pointer-events: none;
 }
+
 #canvas .djs-overlay-bubbles {
   width: 80px;
 }
+
 #canvas svg {
   pointer-events: all;
 }
+
 .badge {
   font-size: 0.7em;
   font-weight: 600;
@@ -534,21 +546,24 @@ export default {
   text-align: center;
   color: white;
 }
+
 .badge-tasks {
   background-color: #1c2849;
 }
+
 .badge-error {
   cursor: pointer;
   background-color: rgba(255, 40, 44, 1);
 }
+
 .badge-queue {
   color: #339cb4;
   width: 40px;
   text-align: start;
 }
+
 .starting-point {
   cursor: pointer;
-  //content: url('../../../../assets/svg/play-circle-outline.svg');
   transform: scale(0.7);
 }
 </style>

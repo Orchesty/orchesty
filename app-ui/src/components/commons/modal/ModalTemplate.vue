@@ -156,6 +156,7 @@ export default {
 .modal-template {
   display: flex;
 }
+
 .h-100 {
   height: 100%;
 }

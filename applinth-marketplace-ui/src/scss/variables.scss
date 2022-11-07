@@ -11,26 +11,26 @@
   font-style: normal;
 }
 
-//ROOT
+// ROOT
 $font-size-root: 0.875rem;
 
-//INPUT
+// INPUT
 $input-font-size: 0.875rem;
 $label-font-size: 0.875rem;
 
-//DATA TABLE
+// DATA TABLE
 $data-table-regular-row-font-size: 0.875rem;
 $data-table-regular-header-font-size: 0.875rem;
 
-//BUTTON
+// BUTTON
 $btn-text-transform: none;
 $btn-font-sizes: (
   "small": 0.875rem,
 );
 
-//FONT FAMILY
+// FONT FAMILY
 $body-font-family: "Montserrat", sans-serif;
 $heading-font-family: "Montserrat", sans-serif;
 
-//TOOLTIP
+// TOOLTIP
 $tooltip-background-color: rgba(28, 40, 73, 1);

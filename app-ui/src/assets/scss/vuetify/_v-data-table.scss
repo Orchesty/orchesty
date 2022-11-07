@@ -3,6 +3,7 @@
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
 }
+
 .v-data-table {
   overflow-x: auto !important;
 }
@@ -22,6 +23,7 @@ tbody {
 
 .td-relative-container {
   position: relative;
+
   .button-absolute {
     position: absolute;
     margin: auto;

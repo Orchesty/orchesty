@@ -143,20 +143,18 @@ export default class AppLayout extends Vue {
     transition: 0.3s;
 
     &:hover {
-      background: rgb(122 122 122 / 30%);
+      background: rgb(122, 122, 122, 0.3);
     }
 
     &.router-link-active {
-      background: rgb(155 155 155 / 30%);
+      background: rgb(155, 155, 155, 0.3);
     }
   }
 
   ::v-deep .v-toolbar__content {
     flex-wrap: wrap;
   }
-}
 
-.app-nav-bar {
   @media (max-width: 800px) {
     height: auto !important;
     min-height: 56px;

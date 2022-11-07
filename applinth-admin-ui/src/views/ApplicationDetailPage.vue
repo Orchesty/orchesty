@@ -170,9 +170,11 @@ export default class ApplicationDetailPage extends Vue {
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 16px;
 }
+
 .chart-js {
   max-height: 50px;
 }
+
 .application-settings-wrapper {
   max-width: 100ch;
 }
