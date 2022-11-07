@@ -11,13 +11,14 @@ The principle of webhooks is simple. We tell the integrated service on its API w
 We handle the registration and unregistration of webhooks in Orchesty directly within the application.
 
 ## Webhooks application
-First, we add the application interface `IWebhookApplication` and create a `RequestDto` object in the new `getWebhookSubscribeRequestDto` method to subscribe the webhook and a `processWebhookSubscribeResponse` method to handle the registration.
+First, we need to change type of Application by override `getApplicationType` method and add the application interface `IWebhookApplication`. Next step is create a `RequestDto` object in the new `getWebhookSubscribeRequestDto` method to subscribe the webhook and a `processWebhookSubscribeResponse` method to handle the registration.
 
 <Tabs>
 <TabItem value="typescript" label="Typescript">
 
 ```typescript
 // ...
+import ApplicationTypeEnum from '@orchesty/nodejs-sdk/dist/lib/Application/Base/ApplicationTypeEnum';
 import { IWebhookApplication } from '@orchesty/nodejs-sdk/dist/lib/Application/Base/IWebhookApplication';
 import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
 import WebhookSubscription from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Webhook/WebhookSubscription';
@@ -26,6 +27,10 @@ import ResponseDto from '@orchesty/nodejs-sdk/dist/lib/Transport/Curl/ResponseDt
 export default class GitHubApplication extends ABasicApplication implements IWebhookApplication {
     
     // ...
+
+    public getApplicationType(): ApplicationTypeEnum {
+        return ApplicationTypeEnum.WEBHOOK;
+    }
 
     public getWebhookSubscribeRequestDto(
         applicationInstall: ApplicationInstall,
@@ -68,6 +73,7 @@ export default class GitHubApplication extends ABasicApplication implements IWeb
 
 ```php
 // ...
+use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookSubscription;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 // ...
@@ -76,6 +82,11 @@ final class GitHubApplication extends BasicApplicationAbstract implements Webhoo
 {
 
     // ...
+    
+    public function getApplicationType(): string
+    {
+        return ApplicationTypeEnum::CRON;
+    }
     
     public function getWebhookSubscribeRequestDto(
         ApplicationInstall  $applicationInstall,
@@ -264,6 +275,7 @@ final class GitHubApplication extends BasicApplicationAbstract implements Webhoo
 <TabItem value="typescript" label="Typescript">
 
 ```typescript
+import ApplicationTypeEnum from '@orchesty/nodejs-sdk/dist/lib/Application/Base/ApplicationTypeEnum';make 
 import CoreFormsEnum from '@orchesty/nodejs-sdk/dist/lib/Application/Base/CoreFormsEnum';
 import { IWebhookApplication } from '@orchesty/nodejs-sdk/dist/lib/Application/Base/IWebhookApplication';
 import { ApplicationInstall } from '@orchesty/nodejs-sdk/dist/lib/Application/Database/ApplicationInstall';
@@ -273,10 +285,7 @@ import FieldType from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/Fiel
 import Form from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/Form';
 import FormStack from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/FormStack';
 import WebhookSubscription from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Webhook/WebhookSubscription';
-import {
-    ABasicApplication,
-    TOKEN,
-} from '@orchesty/nodejs-sdk/dist/lib/Authorization/Type/Basic/ABasicApplication';
+import { ABasicApplication, TOKEN } from '@orchesty/nodejs-sdk/dist/lib/Authorization/Type/Basic/ABasicApplication';
 import RequestDto from '@orchesty/nodejs-sdk/dist/lib/Transport/Curl/RequestDto';
 import ResponseDto from '@orchesty/nodejs-sdk/dist/lib/Transport/Curl/ResponseDto';
 import { HttpMethods } from '@orchesty/nodejs-sdk/dist/lib/Transport/HttpMethods';
@@ -288,6 +297,10 @@ export const NAME = 'git-hub';
 
 export default class GitHubApplication extends ABasicApplication implements IWebhookApplication {
 
+    public getApplicationType(): ApplicationTypeEnum {
+        return ApplicationTypeEnum.WEBHOOK;
+    }
+  
     public getName(): string {
         return NAME;
     }
@@ -404,6 +417,7 @@ export default class GitHubApplication extends ABasicApplication implements IWeb
 namespace Pipes\PhpSdk\Application;
 
 use GuzzleHttp\Psr7\Uri;
+use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Process\ProcessDtoAbstract;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
@@ -424,6 +438,11 @@ final class GitHubApplication extends BasicApplicationAbstract implements Webhoo
 {
 
     public const NAME = 'git-hub';
+    
+    public function getApplicationType(): string
+    {
+        return ApplicationTypeEnum::CRON;
+    }
 
     public function getName(): string
     {
