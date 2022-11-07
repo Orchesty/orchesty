@@ -85,7 +85,7 @@ final class GitHubApplication extends BasicApplicationAbstract implements Webhoo
     
     public function getApplicationType(): string
     {
-        return ApplicationTypeEnum::CRON;
+        return ApplicationTypeEnum::WEBHOOK;
     }
     
     public function getWebhookSubscribeRequestDto(
@@ -441,7 +441,7 @@ final class GitHubApplication extends BasicApplicationAbstract implements Webhoo
     
     public function getApplicationType(): string
     {
-        return ApplicationTypeEnum::CRON;
+        return ApplicationTypeEnum::WEBHOOK;
     }
 
     public function getName(): string
