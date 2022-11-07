@@ -98,6 +98,7 @@ export default class CustomerDetailPage extends Vue {
 .apps-table {
   max-width: clamp(50ch, 50vw, 700px);
 }
+
 .wrapper {
   display: inline-grid;
   grid-template-columns: repeat(2, 1fr);

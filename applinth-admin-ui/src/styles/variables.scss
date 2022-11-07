@@ -32,28 +32,28 @@ $color-white: #ffffff;
 
 // Typography
 
-//Root
+// Root
 $font-size-root: 0.875rem;
 
-//Input
+// Input
 $input-font-size: 0.875rem;
 $label-font-size: 0.875rem;
 
-//Data Table
+// Data Table
 $data-table-regular-row-font-size: 0.875rem;
 $data-table-regular-header-font-size: 0.875rem;
 
-//Button
+// Button
 $btn-text-transform: none;
 $btn-font-sizes: (
   "small": 0.875rem,
 );
 
-//Font Family
+// Font Family
 $body-font-family: "Montserrat", sans-serif;
 $heading-font-family: "Montserrat", sans-serif;
 
-//Tooltip
+// Tooltip
 $tooltip-background-color: rgba(28, 40, 73, 1);
 
 $body-font-family: $font-family;

@@ -52,8 +52,10 @@ export default {
 .v-list-item {
   height: 64px;
 }
+
 .navigation-item-active {
   background-color: var(--v-primary-base);
+
   .v-icon {
     color: var(--v-white-base) !important;
   }

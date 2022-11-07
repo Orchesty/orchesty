@@ -36,9 +36,9 @@ export default class TabRouter extends Vue {
 </script>
 
 <style lang="scss" scoped>
-$tab-font-weight: map-get($headings, "h2", "weight");
-$tab-font-size: map-get($headings, "h2", "size");
-$tab-letter-spacing: map-get($headings, "h2", "letter-spacing");
+$tab-font-weight: map.get($headings, "h2", "weight");
+$tab-font-size: map.get($headings, "h2", "size");
+$tab-letter-spacing: map.get($headings, "h2", "letter-spacing");
 $tabs-item-padding: 0 10px;
 
 .tabs ::v-deep .v-tab {

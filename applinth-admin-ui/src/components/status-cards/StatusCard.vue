@@ -46,6 +46,6 @@ export default class StatusCard extends Vue {
   padding: 15px 20px;
   text-align: center;
   position: relative;
-  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
 }
 </style>

@@ -110,8 +110,10 @@ export default {
 <style lang="scss">
 .v-data-table-header {
   background: var(--v-primary-base) !important;
+
   th {
     color: var(--v-white-base) !important;
+
     .theme--light.v-icon {
       color: var(--v-white-base) !important;
     }
