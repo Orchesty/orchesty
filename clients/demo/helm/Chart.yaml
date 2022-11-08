@@ -5,9 +5,9 @@ type: application
 version: 0.1.0
 appVersion: 0.1.0
 dependencies:
-- name: pipes
-  version: "1.0.0"
-  repository: "file://../../../helm-chart"
+- name: orchesty
+  version: "*"
+  repository: "file://../../../helm/charts/orchesty"
 
 - name: mongodb
   version: "*"
