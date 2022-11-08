@@ -44,11 +44,10 @@ pull:
 	$(DC_DEV) pull --ignore-pull-failures
 
 up: .env pull .lo0-up
-	$(DC_DEV) up -d --force-recreate --remove-orphans
+	$(DC_DEV) up -d --force-recreate --remove-orphans --build
 
 init: up
 	rm -rf pipes-api/var/cache/*
-	$(DC_DEV) up -d --force-recreate --remove-orphans
 	$(DE_DEV) php-sdk composer install --ignore-platform-reqs
 	$(DE_DEV) php-sdk rm -rf var/cache/*
 	$(DE_DEV) backend composer install --ignore-platform-reqs

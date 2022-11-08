@@ -37,23 +37,23 @@ export default class GitHubApplication extends ABasicApplication implements IWeb
         subscription: WebhookSubscription,
         url: string,
     ): RequestDto {
-        const request = new ProcessDto();
-        const { owner, record } = subscription.getParameters();
-        return this.getRequestDto(
-            request,
-            applicationInstall,
-            HttpMethods.POST,
-            `repos/${owner}/${record}/hooks`,
-            JSON.stringify({
-                config: {
-                    url,
-                    // eslint-disable-next-line @typescript-eslint/naming-convention
-                    content_type: 'json',
-                },
-                name: 'web',
-                events: [subscription.getName()],
-            }),
-        );
+      const request = new ProcessDto();
+      const { owner, record } = subscription.getParameters();
+      return this.getRequestDto(
+        request,
+        applicationInstall,
+        HttpMethods.POST,
+        `/repos/${owner}/${record}/hooks`,
+        {
+          config: {
+            url,
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            content_type: 'json',
+          },
+          name: 'web',
+          events: [subscription.getName()],
+        },
+      );
     }
 
     public processWebhookSubscribeResponse(
@@ -61,6 +61,10 @@ export default class GitHubApplication extends ABasicApplication implements IWeb
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         applicationInstall: ApplicationInstall,
     ): string {
+        if (dto.getResponseCode() !== 201) {
+          throw new Error((dto.getJsonBody() as { message: string }).message);
+        }
+      
         return (dto.getJsonBody() as { id: string }).id;
     }
     
@@ -73,6 +77,7 @@ export default class GitHubApplication extends ABasicApplication implements IWeb
 
 ```php
 // ...
+use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookSubscription;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
@@ -101,7 +106,7 @@ final class GitHubApplication extends BasicApplicationAbstract implements Webhoo
             $request,
             $applicationInstall,
             CurlManager::METHOD_POST,
-            sprintf('repos/%s/%s/hooks', $parameters['owner'] ?? '', $parameters['repository'] ?? ''),
+            sprintf('/repos/%s/%s/hooks', $parameters['owner'] ?? '', $parameters['record'] ?? ''),
             Json::encode(
                 [
                     'config' => [
@@ -118,6 +123,10 @@ final class GitHubApplication extends BasicApplicationAbstract implements Webhoo
     public function processWebhookSubscribeResponse(ResponseDto $dto, ApplicationInstall $install): string
     {
         $install;
+        
+        if ($dto->getStatusCode() !== 201) {
+            throw new Exception($dto->getJsonBody()['message']);
+        }
 
         return $dto->getJsonBody()['id'] ?? '';
     }
@@ -148,18 +157,22 @@ export default class GitHubApplication extends ABasicApplication implements IWeb
     // ...
 
     public getWebhookUnsubscribeRequestDto(applicationInstall: ApplicationInstall, webhook: Webhook): RequestDto {
-        const webhookSubscription = this.getWebhookSubscriptions().filter(
-            (item) => item.getName() === webhook.getName(),
-        )[0];
-        const { repository, owner } = webhookSubscription.getParameters();
-        
-        const request = new ProcessDto();
-        return this.getRequestDto(
-            request,
-            applicationInstall,
-            HttpMethods.DELETE,
-            `repos/${owner}/${repository}/hooks/${webhook.getWebhookId()}`,
-        );
+      const webhookSubscription = this.getWebhookSubscriptions().find(
+        (item) => item.getName() === webhook.getName(),
+      );
+      if (!webhookSubscription) {
+        throw new Error(`Webhook with name [${webhook.getName()}] has not been found.`);
+      }
+
+      const { record, owner } = webhookSubscription.getParameters();
+
+      const request = new ProcessDto();
+      return this.getRequestDto(
+        request,
+        applicationInstall,
+        HttpMethods.DELETE,
+        `/repos/${owner}/${record}/hooks/${webhook.getWebhookId()}`,
+      );
     }
     
     public processWebhookUnsubscribeResponse(dto: ResponseDto): boolean {
@@ -199,10 +212,10 @@ final class GitHubApplication extends BasicApplicationAbstract implements Webhoo
             $applicationInstall,
             CurlManager::METHOD_DELETE,
             sprintf(
-                'repos/%s/%s/hooks/%s',
+                '/repos/%s/%s/hooks/%s',
                 $parameters['owner'] ?? '',
-                $parameters['repository'] ?? '',
-                $webhook->getId()
+                $parameters['record'] ?? '',
+                $webhook->getId(),
             ),
         );
     }
@@ -234,8 +247,8 @@ export default class GitHubApplication extends ABasicApplication implements IWeb
 
     public getWebhookSubscriptions(): WebhookSubscription[] {
         return [
-            new WebhookSubscription('issues', '', '', { record: 'record', owner: 'owner' }),
-            new WebhookSubscription('pull-request', '', '', { record: 'record', owner: 'owner' }),
+            new WebhookSubscription('issues', 'Webhook', '', { record: 'record', owner: 'owner' }),
+            new WebhookSubscription('pull-request', 'Webhook', '', { record: 'record', owner: 'owner' }),
         ];
     }
     
@@ -256,8 +269,8 @@ final class GitHubApplication extends BasicApplicationAbstract implements Webhoo
     public function getWebhookSubscriptions(): array
     {
         return [
-            new WebhookSubscription('issues', '', '', ['record' => 'record', 'owner' => 'owner']),
-            new WebhookSubscription('pull-request', '', '', ['record' => 'record', 'owner' => 'owner']),
+            new WebhookSubscription('issues', 'Webhook', '', ['record' => 'record', 'owner' => 'owner']),
+            new WebhookSubscription('pull-request', 'Webhook', '', ['record' => 'record', 'owner' => 'owner']),
         ];
     }
     
@@ -358,42 +371,45 @@ export default class GitHubApplication extends ABasicApplication implements IWeb
         const request = new ProcessDto();
         const { owner, record } = subscription.getParameters();
         return this.getRequestDto(
-            request,
-            applicationInstall,
-            HttpMethods.POST,
-            `repos/${owner}/${record}/hooks`,
-            JSON.stringify({
-                config: {
-                    url,
-                    // eslint-disable-next-line @typescript-eslint/naming-convention
-                    content_type: 'json',
-                },
-                name: 'web',
-                events: [subscription.getName()],
-            }),
+          request,
+          applicationInstall,
+          HttpMethods.POST,
+          `/repos/${owner}/${record}/hooks`,
+          {
+            config: {
+              url,
+              content_type: 'json',
+            },
+            name: 'web',
+            events: [subscription.getName()],
+          },
         );
     }
 
     public getWebhookSubscriptions(): WebhookSubscription[] {
         return [
-            new WebhookSubscription('issues', '', '', { record: 'record', owner: 'owner' }),
-            new WebhookSubscription('pull-request', '', '', { record: 'record', owner: 'owner' }),
+            new WebhookSubscription('issues', 'Webhook', '', { record: 'record', owner: 'owner' }),
+            new WebhookSubscription('pull-request', 'Webhook', '', { record: 'record', owner: 'owner' }),
         ];
     }
 
     public getWebhookUnsubscribeRequestDto(applicationInstall: ApplicationInstall, webhook: Webhook): RequestDto {
-        const webhookSubscription = this.getWebhookSubscriptions().filter(
-            (item) => item.getName() === webhook.getName(),
-        )[0];
-        const { repository, owner } = webhookSubscription.getParameters();
+      const webhookSubscription = this.getWebhookSubscriptions().find(
+        (item) => item.getName() === webhook.getName(),
+      );
+      if (!webhookSubscription) {
+        throw new Error(`Webhook with name [${webhook.getName()}] has not been found.`);
+      }
 
-        const request = new ProcessDto();
-        return this.getRequestDto(
-            request,
-            applicationInstall,
-            HttpMethods.DELETE,
-            `repos/${owner}/${repository}/hooks/${webhook.getWebhookId()}`,
-        );
+      const { record, owner } = webhookSubscription.getParameters();
+
+      const request = new ProcessDto();
+      return this.getRequestDto(
+        request,
+        applicationInstall,
+        HttpMethods.DELETE,
+        `/repos/${owner}/${record}/hooks/${webhook.getWebhookId()}`,
+      );
     }
 
     public processWebhookSubscribeResponse(
@@ -401,6 +417,10 @@ export default class GitHubApplication extends ABasicApplication implements IWeb
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         applicationInstall: ApplicationInstall,
     ): string {
+        if (dto.getResponseCode() !== 201) {
+          throw new Error((dto.getJsonBody() as { message: string }).message);
+        }
+      
         return (dto.getJsonBody() as { id: string }).id;
     }
 
@@ -416,6 +436,7 @@ export default class GitHubApplication extends ABasicApplication implements IWeb
 ```php
 namespace Pipes\PhpSdk\Application;
 
+use Exception;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
@@ -497,8 +518,8 @@ final class GitHubApplication extends BasicApplicationAbstract implements Webhoo
     public function getWebhookSubscriptions(): array
     {
         return [
-            new WebhookSubscription('issues', '', '', ['record' => 'record', 'owner' => 'owner']),
-            new WebhookSubscription('pull-request', '', '', ['record' => 'record', 'owner' => 'owner']),
+            new WebhookSubscription('issues', 'Webhook', '', ['record' => 'record', 'owner' => 'owner']),
+            new WebhookSubscription('pull-request', 'Webhook', '', ['record' => 'record', 'owner' => 'owner']),
         ];
     }
 
@@ -515,7 +536,7 @@ final class GitHubApplication extends BasicApplicationAbstract implements Webhoo
             $request,
             $applicationInstall,
             CurlManager::METHOD_POST,
-            sprintf('repos/%s/%s/hooks', $parameters['owner'] ?? '', $parameters['repository'] ?? ''),
+            sprintf('/repos/%s/%s/hooks', $parameters['owner'] ?? '', $parameters['record'] ?? ''),
             Json::encode(
                 [
                     'config' => [
@@ -544,10 +565,10 @@ final class GitHubApplication extends BasicApplicationAbstract implements Webhoo
             $applicationInstall,
             CurlManager::METHOD_DELETE,
             sprintf(
-                'repos/%s/%s/hooks/%s',
+                '/repos/%s/%s/hooks/%s',
                 $parameters['owner'] ?? '',
-                $parameters['repository'] ?? '',
-                $webhook->getId()
+                $parameters['record'] ?? '',
+                $webhook->getId(),
             ),
         );
     }
@@ -555,6 +576,10 @@ final class GitHubApplication extends BasicApplicationAbstract implements Webhoo
     public function processWebhookSubscribeResponse(ResponseDto $dto, ApplicationInstall $install): string
     {
         $install;
+        
+        if ($dto->getStatusCode() !== 201) {
+            throw new Exception($dto->getJsonBody()['message']);
+        }
 
         return $dto->getJsonBody()['id'] ?? '';
     }

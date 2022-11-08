@@ -12,7 +12,7 @@
 
 
 ## Add Service
-1. Go to: `http://127.0.0.66/services`
+1. Go to: `http://127.0.0.66/workers`
 2. Click on Create
 3. Add new Service:
    1. URL: `node-sdk:8080`

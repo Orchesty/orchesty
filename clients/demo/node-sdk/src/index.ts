@@ -21,6 +21,7 @@ import DropboxApplication from '@orchesty/nodejs-connectors/dist/lib/Dropbox/Dro
 import FacebookAdsApplication from '@orchesty/nodejs-connectors/dist/lib/FacebookAds/FacebookAdsApplication';
 import FakturoidApplication from '@orchesty/nodejs-connectors/dist/lib/Fakturoid/FakturoidApplication';
 import FlexiBeeApplication from '@orchesty/nodejs-connectors/dist/lib/FlexiBee/FexiBeeApplication';
+import GitHubApplication from '@orchesty/nodejs-connectors/dist/lib/GitHub/GitHubApplication';
 import GoogleCalendarApplication
     from '@orchesty/nodejs-connectors/dist/lib/Google/GoogleCalendar/GoogleCalendarApplication';
 import GoogleDriveApplication from '@orchesty/nodejs-connectors/dist/lib/Google/GoogleDrive/GoogleDriveApplication';
@@ -267,6 +268,9 @@ export async function start(): Promise<void> {
 
     const sqlLiteApp = new SqliteApplication();
     container.setApplication(sqlLiteApp);
+
+    const githubApplication = new GitHubApplication();
+    container.setApplication(githubApplication);
 
     const listPosts = new ListPosts();
     listPosts.setSender(sender);
