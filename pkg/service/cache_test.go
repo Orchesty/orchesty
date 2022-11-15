@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"starting-point/pkg/enum"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -41,9 +42,9 @@ func TestCache(t *testing.T) {
 	Cache = &CacheDefault{mongo: &MongoMock{}}
 	Cache.InitCache()
 
-	Cache.FindTopologyByID(customIDOne, customIDOne)
-	Cache.FindTopologyByID(customIDOne, customIDTwo)
-	Cache.FindTopologyByID(customIDOne, customIDTwo)
+	Cache.FindTopologyByID(customIDOne, customIDOne, false, enum.NodeType_StartEvents)
+	Cache.FindTopologyByID(customIDOne, customIDTwo, false, enum.NodeType_StartEvents)
+	Cache.FindTopologyByID(customIDOne, customIDTwo, false, enum.NodeType_StartEvents)
 	cache, _ := Cache.GetCache().Get(topology)
 	cacheCache, _ := Cache.GetCache().Get(cache.([]string)[0])
 
@@ -89,7 +90,7 @@ func TestCache(t *testing.T) {
 	}, cacheCache)
 }
 
-func (m *MongoMock) FindNodeByID(nodeID, topologyID string) *storage.Node {
+func (m *MongoMock) FindNodeByID(nodeID, topologyID string, uiRun bool, allowedTypes []string) *storage.Node {
 	return &storage.Node{
 		ID:   customObjectID,
 		Name: node,
@@ -103,7 +104,7 @@ func (m *MongoMock) FindNodeByName(nodeName, topologyID string) []storage.Node {
 	}}
 }
 
-func (m *MongoMock) FindTopologyByID(topologyID, nodeID string) *storage.Topology {
+func (m *MongoMock) FindTopologyByID(topologyID, nodeID string, uiRun bool, allowedTypes []string) *storage.Topology {
 	return &topologyObject
 }
 

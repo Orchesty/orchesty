@@ -2,14 +2,13 @@ version: '3.5'
 
 services:
     app:
-        image: hanabosocom/go-base:1.18
+        image: hanabosocom/go-base:1.19
         user: ${DEV_UID}:${DEV_GID}
         environment:
             DEV_UID: ${DEV_UID}
             DEV_GID: ${DEV_GID}
             GITLAB_CI: ${GITLAB_CI}
             APP_DEBUG: 'true'
-            ORCHESTY_API_KEY: ${ORCHESTY_API_KEY}
             MONGO_DSN: mongodb://mongodb/starting-point?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
             METRICS_DSN: mongodb://mongodb/metrics?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
             RABBIT_COUNTER_QUEUE_DURABLE: 'true'

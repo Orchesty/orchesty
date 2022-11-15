@@ -17,6 +17,9 @@ type MongoInterface interface {
 	Connect()
 	Disconnect()
 	IsConnected() bool
+	DropApiTokenCollection() error
+	InsertApiToken(user string, scopes []string, key string) error
+	FindApiKeyByUserAndScopes(user string, scopes []string) (string, error)
 	FindNodeByID(nodeID, topologyID string, uiRun bool, allowedTypes []string) *Node
 	FindNodeByName(nodeName, topologyID string) []Node
 	FindTopologyByID(topologyID, nodeID string, uiRun bool, allowedTypes []string) *Topology
@@ -68,6 +71,51 @@ func (m *MongoDefault) Disconnect() {
 // IsConnected checks connection status
 func (m *MongoDefault) IsConnected() bool {
 	return m.connection.IsConnected()
+}
+
+func (m *MongoDefault) DropApiTokenCollection() error {
+	context, cancel := m.connection.Context()
+	defer cancel()
+
+	err := m.connection.Database.Collection(config.Config.MongoDB.ApiTokenColl).Drop(context)
+
+	if err != nil {
+		logMongoError(m.log, err, "Could not Drop ApiToken!")
+	}
+
+	return err
+}
+
+func (m *MongoDefault) InsertApiToken(user string, scopes []string, key string) error {
+	context, cancel := m.connection.Context()
+	defer cancel()
+
+	_, err := m.connection.Database.
+		Collection(config.Config.MongoDB.ApiTokenColl).
+		InsertOne(context, map[string]interface{}{"user": user, "scopes": scopes, "key": key})
+
+	if err != nil {
+		logMongoError(m.log, err, "Could not create ApiToken!")
+	}
+
+	return err
+}
+
+func (m *MongoDefault) FindApiKeyByUserAndScopes(user string, scopes []string) (string, error) {
+	var apiToken ApiToken
+	context, cancel := m.connection.Context()
+	defer cancel()
+
+	err := m.connection.Database.
+		Collection(config.Config.MongoDB.ApiTokenColl).
+		FindOne(context, map[string]interface{}{"user": user, "scopes": scopes}).
+		Decode(&apiToken)
+
+	if err != nil {
+		return "", err
+	}
+
+	return apiToken.Key, err
 }
 
 // FindNodeByID finds node by id
