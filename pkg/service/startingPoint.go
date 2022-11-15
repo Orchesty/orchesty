@@ -1,6 +1,7 @@
 package service
 
 import (
+	"cron/pkg/storage"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -24,8 +25,15 @@ type (
 	}
 )
 
-func NewStartingPointService(connection sender.HttpSender, logger log.Logger, apiKey string) StartingPointService {
-	return startingPointService{connection, logger, apiKey}
+func NewStartingPointService(connection sender.HttpSender, logger log.Logger, mongoStorage storage.MongoStorage) (StartingPointService, error) {
+	var apiToken, err = mongoStorage.FindOneApiToken("orchesty", []string{"topology:run"})
+
+	if err != nil {
+		return nil, err
+	}
+	apiKey := apiToken.Key
+
+	return startingPointService{connection, logger, apiKey}, err
 }
 
 func (service startingPointService) IsConnected() bool {

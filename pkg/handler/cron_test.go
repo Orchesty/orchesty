@@ -1,11 +1,20 @@
 package handler
 
 import (
+	"cron/pkg/config"
+	"cron/pkg/storage"
+	"github.com/hanaboso/go-mongodb"
 	"testing"
 	"time"
 )
 
 func TestCron(t *testing.T) {
+	connection := &mongodb.Connection{}
+	connection.Connect(config.Mongo.Dsn)
+	var mongoStorage = storage.NewStorage(connection, config.Logger, "ApiToken")
+	mongoStorage.DropApiTokenCollection()
+	mongoStorage.InsertApiToken("orchesty", []string{"topology:run"}, "123")
+
 	setUp(t)
 
 	assertResponse(t, "data/cron/selectEmptyRequest.json", nil, nil, nil, nil)

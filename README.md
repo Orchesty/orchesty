@@ -29,11 +29,6 @@ API pro opakované spouštění topologií Pipes Frameworku.
     - Nastavení granularity logování
     - Například: `true` nebo `false`
 
-- ORCHESTY_API_KEY
-    - Povinný: Ne (výchozí ` `)
-    - Nastavení Orchesty-Api-Key hlavičky
-    - Například: `ThisIsNotSoSecret`
-
 - STARTING_POINT_TIMEOUT
     - Povinný: Ne (výchozí `30`)
     - Nastavení timeoutu v sekundách

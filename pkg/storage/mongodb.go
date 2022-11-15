@@ -11,22 +11,14 @@ import (
 	log "github.com/hanaboso/go-log/pkg"
 )
 
-type (
-	CronStorage interface {
-		Select() ([]model.Cron, error)
-		Upsert(crons []model.Cron) error
-		Delete(crons []model.Cron) error
-	}
+type MongoStorage struct {
+	connection *mongodb.Connection
+	collection *mongo.Collection
+	logger     log.Logger
+}
 
-	cronStorage struct {
-		connection *mongodb.Connection
-		collection *mongo.Collection
-		logger     log.Logger
-	}
-)
-
-func NewCronStorage(connection *mongodb.Connection, logger log.Logger, collection string) CronStorage {
-	service := cronStorage{connection, connection.Database.Collection(collection), logger}
+func NewStorage(connection *mongodb.Connection, logger log.Logger, collection string) MongoStorage {
+	service := MongoStorage{connection, connection.Database.Collection(collection), logger}
 
 	if err := service.createIndex(mongo.IndexModel{
 		Keys:    []bson.E{{model.Topology, 1}, {model.Node, 1}},
@@ -40,7 +32,45 @@ func NewCronStorage(connection *mongodb.Connection, logger log.Logger, collectio
 	return service
 }
 
-func (storage cronStorage) Select() ([]model.Cron, error) {
+func (storage MongoStorage) InsertApiToken(user string, scopes []string, key string) {
+	context, cancel := storage.connection.Context()
+	defer cancel()
+
+	_, err := storage.collection.InsertOne(context, map[string]interface{}{"user": user, "scopes": scopes, "key": key})
+
+	if err != nil {
+		storage.logContext().Error(err)
+	}
+}
+
+func (storage MongoStorage) DropApiTokenCollection() {
+	context, cancel := storage.connection.Context()
+	defer cancel()
+
+	err := storage.collection.Drop(context)
+
+	if err != nil {
+		storage.logContext().Error(err)
+	}
+}
+
+func (storage MongoStorage) FindOneApiToken(user string, scopes []string) (*model.ApiToken, error) {
+	context, cancel := storage.connection.Context()
+	defer cancel()
+
+	var apiToken model.ApiToken
+	err := storage.collection.FindOne(context, map[string]interface{}{"user": user, "scopes": scopes}).Decode(&apiToken)
+
+	if err != nil {
+		storage.logContext().Error(err)
+
+		return nil, err
+	}
+
+	return &apiToken, err
+}
+
+func (storage MongoStorage) FindCrons() ([]model.Cron, error) {
 	context, cancel := storage.connection.Context()
 	defer cancel()
 
@@ -76,7 +106,7 @@ func (storage cronStorage) Select() ([]model.Cron, error) {
 	return crons, nil
 }
 
-func (storage cronStorage) Upsert(crons []model.Cron) error {
+func (storage MongoStorage) UpsertCron(crons []model.Cron) error {
 	context, cancel := storage.connection.Context()
 	defer cancel()
 
@@ -97,7 +127,7 @@ func (storage cronStorage) Upsert(crons []model.Cron) error {
 	return nil
 }
 
-func (storage cronStorage) Delete(crons []model.Cron) error {
+func (storage MongoStorage) DeleteCron(crons []model.Cron) error {
 	context, cancel := storage.connection.Context()
 	defer cancel()
 
@@ -110,11 +140,11 @@ func (storage cronStorage) Delete(crons []model.Cron) error {
 	return nil
 }
 
-func (storage cronStorage) createUpsert(data map[string]interface{}) map[string]interface{} {
+func (storage MongoStorage) createUpsert(data map[string]interface{}) map[string]interface{} {
 	return map[string]interface{}{"$set": data}
 }
 
-func (storage cronStorage) createDelete(crons []model.Cron) map[string]interface{} {
+func (storage MongoStorage) createDelete(crons []model.Cron) map[string]interface{} {
 	var ors []interface{}
 
 	for _, cron := range crons {
@@ -127,7 +157,7 @@ func (storage cronStorage) createDelete(crons []model.Cron) map[string]interface
 	return map[string]interface{}{"$or": ors}
 }
 
-func (storage cronStorage) createIndex(indexModel mongo.IndexModel) error {
+func (storage MongoStorage) createIndex(indexModel mongo.IndexModel) error {
 	context, cancel := storage.connection.Context()
 	defer cancel()
 
@@ -136,9 +166,9 @@ func (storage cronStorage) createIndex(indexModel mongo.IndexModel) error {
 	return err
 }
 
-func (storage cronStorage) logContext() log.Logger {
+func (storage MongoStorage) logContext() log.Logger {
 	return storage.logger.WithFields(map[string]interface{}{
-		"service": "CRON",
+		"service": "MONGO",
 		"type":    "Storage",
 	})
 }
