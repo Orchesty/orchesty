@@ -12,6 +12,7 @@ import (
 
 func TestRouter(t *testing.T) {
 	storage.Mongo = &MongoMockConnected{}
+	prepareMongo()
 
 	r, _ := http.NewRequest("GET", "/status", nil)
 	assertResponse(t, r, 200, `{"database":true,"metrics":true}`)
@@ -28,6 +29,8 @@ func TestNotAllowed(t *testing.T) {
 }
 
 func TestErrResponse(t *testing.T) {
+	prepareMongo()
+
 	r, _ := http.NewRequest("POST", "/topologies/bbb/nodes/aaa/run", bytes.NewReader([]byte("aaa")))
 	assertResponse(t, r, 400, "{\"message\":\"Content is not valid!\"}")
 }
@@ -36,7 +39,7 @@ func assertResponse(t *testing.T, r *http.Request, code int, content string) {
 	res := httptest.NewRecorder()
 	Router(nil).ServeHTTP(res, r)
 
-	assert.Equal(t, res.Code, code)
+	assert.Equal(t, code, res.Code)
 	if len(res.Body.String()) > 0 {
 		assert.Equal(t, content, res.Body.String()[:len(res.Body.String())-1])
 	}
@@ -46,7 +49,7 @@ func assertResponseWithHeaders(t *testing.T, r *http.Request, code int, content 
 	res := httptest.NewRecorder()
 	Router(nil).ServeHTTP(res, r)
 
-	assert.Equal(t, res.Code, code)
+	assert.Equal(t, code, res.Code)
 	if len(res.Body.String()) > 0 {
 		assert.Equal(t, content, res.Body.String()[:len(res.Body.String())-1])
 	}

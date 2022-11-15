@@ -9,7 +9,10 @@ use Hanaboso\CommonsBundle\Exception\CronException;
 use Hanaboso\CommonsBundle\Exception\NodeException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
+use Hanaboso\PipesFramework\Configurator\Document\ApiToken;
+use Hanaboso\PipesFramework\Configurator\Enum\ApiTokenScopesEnum;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
+use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
@@ -30,6 +33,25 @@ use Throwable;
  */
 final class TopologyControllerTest extends ControllerTestCaseAbstract
 {
+
+    /**
+     * @return void
+     * @throws MongoDBException
+     * @throws Exception
+     */
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->dm->getRepository(ApiToken::class)->clear();
+        $this->dm->persist(
+            (new ApiToken())
+                ->setUser(ApplicationController::SYSTEM_USER)
+                ->setScopes(ApiTokenScopesEnum::getChoices())
+                ->setKey('1'),
+        );
+        $this->dm->flush();
+    }
 
     /**
      * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::getTopologiesAction
