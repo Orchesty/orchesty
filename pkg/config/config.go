@@ -32,6 +32,7 @@ type (
 		CounterCollection    string `env:"MONGODB_COUNTER_COLLECTION" default:"MultiCounter"`
 		CounterSubCollection string `env:"MONGODB_COUNTER_SUB_COLLECTION" default:"MultiCounterSubProcess"`
 		CounterErrCollection string `env:"MONGODB_COUNTER_ERR_COLLECTION" default:"MultiCounterError"`
+		ApiTokenCollection   string
 	}
 
 	metrics struct {
@@ -44,8 +45,7 @@ type (
 	}
 
 	startingPoint struct {
-		Dsn    string `env:"STARTING_POINT_DSN" required:"true" default:"http://starting-point:8080"`
-		ApiKey string `env:"ORCHESTY_API_KEY" required:"false" default:""`
+		Dsn string `env:"STARTING_POINT_DSN" required:"true" default:"http://starting-point:8080"`
 	}
 )
 
@@ -82,4 +82,6 @@ func init() {
 	if !strings.HasPrefix(StartingPoint.Dsn, "http") {
 		StartingPoint.Dsn = fmt.Sprintf("http://%s", StartingPoint.Dsn)
 	}
+
+	MongoDb.ApiTokenCollection = "ApiToken"
 }

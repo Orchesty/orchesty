@@ -112,7 +112,15 @@ func (c *MultiCounter) commit() {
 
 func (c *MultiCounter) finishProcess(process model.Process) {
 	errs, _ := c.mongo.FetchErrorMessages(process.Id)
-	sendFinishedProcess(process, errs)
+	apiToken, err := c.mongo.GetApiToken("orchesty", []string{"topology:run"})
+
+	if err != nil {
+		return
+	}
+
+	apiKey := apiToken.Key
+
+	sendFinishedProcess(process, errs, apiKey)
 	c.sendMetrics(process)
 }
 
