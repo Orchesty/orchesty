@@ -19,13 +19,13 @@ type (
 	}
 
 	cronService struct {
-		repository storage.CronStorage
+		repository storage.MongoStorage
 		scheduler  SchedulerService
 		logger     log.Logger
 	}
 )
 
-func NewCronService(repository storage.CronStorage, scheduler SchedulerService, logger log.Logger) CronService {
+func NewCronService(repository storage.MongoStorage, scheduler SchedulerService, logger log.Logger) CronService {
 	service := cronService{repository, scheduler, logger}
 
 	if err := service.loadFromDatabaseToScheduler(); err != nil {
@@ -38,7 +38,7 @@ func NewCronService(repository storage.CronStorage, scheduler SchedulerService, 
 }
 
 func (service cronService) Select() ([]model.Cron, error) {
-	return service.repository.Select()
+	return service.repository.FindCrons()
 }
 
 func (service cronService) Upsert(crons []model.Cron) error {
@@ -48,7 +48,7 @@ func (service cronService) Upsert(crons []model.Cron) error {
 		return err
 	}
 
-	if err := service.repository.Upsert(crons); err != nil {
+	if err := service.repository.UpsertCron(crons); err != nil {
 		service.logContext().Error(err)
 
 		return err
@@ -64,7 +64,7 @@ func (service cronService) Upsert(crons []model.Cron) error {
 }
 
 func (service cronService) Delete(crons []model.Cron) error {
-	if err := service.repository.Delete(crons); err != nil {
+	if err := service.repository.DeleteCron(crons); err != nil {
 		service.logContext().Error(err)
 
 		return err
@@ -80,7 +80,7 @@ func (service cronService) Delete(crons []model.Cron) error {
 }
 
 func (service cronService) loadFromDatabaseToScheduler() error {
-	crons, err := service.repository.Select()
+	crons, err := service.repository.FindCrons()
 
 	if err != nil {
 		return err

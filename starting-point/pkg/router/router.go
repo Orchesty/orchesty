@@ -3,7 +3,7 @@ package router
 import (
 	"encoding/json"
 	"net/http"
-	"starting-point/pkg/config"
+	"starting-point/pkg/storage"
 
 	"github.com/gorilla/mux"
 )
@@ -20,7 +20,6 @@ type Route struct {
 // Routes routes
 type Routes []Route
 
-// Router router
 func Router(routes Routes) *mux.Router {
 	router := mux.NewRouter().StrictSlash(true)
 
@@ -52,7 +51,8 @@ func Router(routes Routes) *mux.Router {
 
 func authorizationHandler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if apiKey := r.Header.Get("orchesty-api-key"); config.Config.ApiKey != "" && apiKey != config.Config.ApiKey {
+		apiKey, err := storage.Mongo.FindApiKeyByUserAndScopes("orchesty", []string{"topology:run"})
+		if err == nil && r.Header.Get("orchesty-api-key") != apiKey {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}

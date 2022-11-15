@@ -19,10 +19,14 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
+use Hanaboso\PipesFramework\Configurator\Document\ApiToken;
+use Hanaboso\PipesFramework\Configurator\Enum\ApiTokenScopesEnum;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
+use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController;
 use Hanaboso\PipesFramework\Utils\Dto\NodeSchemaDto;
 use Hanaboso\PipesFramework\Utils\Dto\Schema;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
+use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesPhpSdk\Database\Document\Embed\EmbedNode;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
@@ -75,7 +79,6 @@ final class TopologyManager
      * @param CronManager            $cronManager
      * @param bool                   $checkInfiniteLoop
      * @param CurlManagerInterface   $curl
-     * @param string                 $apiKey
      * @param string                 $startingPointHost
      */
     function __construct(
@@ -83,7 +86,6 @@ final class TopologyManager
         private CronManager $cronManager,
         private bool $checkInfiniteLoop,
         private CurlManagerInterface $curl,
-        private readonly string $apiKey,
         string $startingPointHost,
     )
     {
@@ -108,17 +110,30 @@ final class TopologyManager
      * @param string $data
      *
      * @return mixed[]
+     * @throws AuthorizationException
      * @throws CurlException
      */
     public function runTopology(string $topologyId, string $startingPoint, string $data): array
     {
+        $apiTokenRepository = $this->dm->getRepository(ApiToken::class);
+        $apiToken           = $apiTokenRepository->findOneBy(
+            [
+                'scopes' => ApiTokenScopesEnum::TOPOLOGY_RUN,
+                'user'   => ApplicationController::SYSTEM_USER,
+            ],
+        );
+
+        if (!$apiToken) {
+            throw new AuthorizationException('Api token not found!');
+        }
+
         $request = new RequestDto(
             new Uri($this->getUrl(self::RUN_ENDPOINT, $topologyId, $startingPoint)),
             CurlManager::METHOD_POST,
             new ProcessDto(),
             '',
             [
-                'orchesty-api-key' => $this->apiKey,
+                'orchesty-api-key' => $apiToken->getKey(),
             ],
         );
         $request->setBody($data);
@@ -126,7 +141,7 @@ final class TopologyManager
         try {
             $response = $this->curl->send($request);
             if ($response->getStatusCode() === 200) {
-                return self::formatTopologyRunMessage($startingPoint,TRUE);
+                return self::formatTopologyRunMessage($startingPoint, TRUE);
             }
 
             return self::formatTopologyRunMessage($startingPoint, FALSE, $response->getJsonBody()[self::MESSAGE]);
@@ -774,12 +789,13 @@ final class TopologyManager
      *
      * @return mixed[]
      */
-    private function formatTopologyRunMessage(string $startingPointId, bool $started, string $message = ''): array {
+    private function formatTopologyRunMessage(string $startingPointId, bool $started, string $message = ''): array
+    {
         return [
-                self::STARTING_POINT => $startingPointId,
-                self::STARTED        => $started,
-                self::MESSAGE        => $message,
-            ];
+            self::STARTING_POINT => $startingPointId,
+            self::STARTED        => $started,
+            self::MESSAGE        => $message,
+        ];
     }
 
 }

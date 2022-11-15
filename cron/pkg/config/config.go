@@ -17,14 +17,14 @@ type (
 	}
 
 	mongo struct {
-		Dsn        string `env:"MONGO_DSN" required:"true"`
-		Collection string `env:"MONGO_COLLECTION" required:"true"`
+		Dsn                string `env:"MONGO_DSN" required:"true"`
+		Collection         string `env:"MONGO_COLLECTION" required:"true"`
+		ApiTokenCollection string
 	}
 
 	startingPoint struct {
 		Dsn     string `env:"STARTING_POINT_DSN" required:"true"`
 		Timeout int    `env:"STARTING_POINT_TIMEOUT" default:"30"`
-		ApiKey  string `env:"ORCHESTY_API_KEY" default:""`
 	}
 
 	logger log.Logger
@@ -65,6 +65,8 @@ func load() {
 	if !strings.HasPrefix(StartingPoint.Dsn, "http") {
 		StartingPoint.Dsn = fmt.Sprintf("http://%s", StartingPoint.Dsn)
 	}
+
+	Mongo.ApiTokenCollection = "ApiToken"
 }
 
 func init() {

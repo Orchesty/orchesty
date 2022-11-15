@@ -20,7 +20,7 @@ const (
 
 var client = http.Client{}
 
-func sendFinishedProcess(process model.Process, errors []model.ErrorMessage) {
+func sendFinishedProcess(process model.Process, errors []model.ErrorMessage, apiKey string) {
 	if process.SystemEvent {
 		return
 	}
@@ -72,7 +72,7 @@ func sendFinishedProcess(process model.Process, errors []model.ErrorMessage) {
 		return
 	}
 
-	req.Header.Add("Orchesty-Api-Key", config.StartingPoint.ApiKey)
+	req.Header.Add("Orchesty-Api-Key", apiKey)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()

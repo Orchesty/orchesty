@@ -75,17 +75,20 @@ func mockCache(t int) {
 	switch t {
 	case 1:
 		service.Cache = &CacheMock{}
-		storage.Mongo = &MongoMock{}
 		break
 	case 2:
 		service.Cache = &CacheMockTopology{}
-		storage.Mongo = &MongoMockTopology{}
 		break
 	case 3:
 		service.Cache = &CacheNoMock{}
-		storage.Mongo = &MongoNoMock{}
 		break
 	}
+}
+
+func prepareMongo() {
+	storage.CreateMongo()
+	_ = storage.Mongo.DropApiTokenCollection()
+	_ = storage.Mongo.InsertApiToken("orchesty", []string{"topology:run"}, "")
 }
 
 func (r *RabbitMock) SendMessage(request *http.Request, topology storage.Topology, init map[string]float64) {
@@ -96,7 +99,7 @@ func (c *CacheMock) InvalidateCache(topologyName string) int {
 	return 0
 }
 
-func (c *CacheMock) FindTopologyByID(topologyID, nodeID string) *storage.Topology {
+func (c *CacheMock) FindTopologyByID(topologyID, nodeID string, uiRun bool, allowedTypes []string) *storage.Topology {
 	return &topologyObject
 }
 
@@ -108,7 +111,7 @@ func (c *CacheMock) FindTopologyByApplication(topologyName, nodeName, token stri
 	return &topologyObject, &webhookObject
 }
 
-func (c *MongoMock) FindTopologyByID(topologyID, nodeID string) *storage.Topology {
+func (c *MongoMock) FindTopologyByID(topologyID, nodeID string, uiRun bool, allowedTypes []string) *storage.Topology {
 	return &topologyObject
 }
 
@@ -138,6 +141,7 @@ func TestHandleStatus(t *testing.T) {
 
 func TestHandleRunByID(t *testing.T) {
 	mockCache(1)
+	prepareMongo()
 
 	r, _ := http.NewRequest("POST", "/topologies/a/nodes/b/run", bytes.NewReader([]byte("[]")))
 	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
@@ -145,14 +149,18 @@ func TestHandleRunByID(t *testing.T) {
 
 func TestHandleRunByIDUser(t *testing.T) {
 	mockCache(1)
+	prepareMongo()
+
 	r, _ := http.NewRequest("POST", "/topologies/a/nodes/b/user/c/run", bytes.NewReader([]byte("[]")))
 	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
 
 	mockCache(1)
+
 	r, _ = http.NewRequest("POST", "/topologies/a/nodes/b/run", bytes.NewReader([]byte(`{"user":"c"}`)))
 	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
 
 	mockCache(1)
+
 	r, _ = http.NewRequest("POST", "/topologies/a/nodes/b/run", bytes.NewReader([]byte("[]")))
 	r.Header.Add(utils.UserID, "c")
 	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
@@ -160,6 +168,7 @@ func TestHandleRunByIDUser(t *testing.T) {
 
 func TestHandleRunByName(t *testing.T) {
 	mockCache(1)
+	prepareMongo()
 
 	r, _ := http.NewRequest("POST", "/topologies/a/nodes/b/run-by-name", bytes.NewReader([]byte("[]")))
 	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
@@ -167,6 +176,7 @@ func TestHandleRunByName(t *testing.T) {
 
 func TestHandleRunByNameUser(t *testing.T) {
 	mockCache(1)
+	prepareMongo()
 	r, _ := http.NewRequest("POST", "/topologies/a/nodes/b/user/c/run-by-name", bytes.NewReader([]byte("[]")))
 	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
 
@@ -208,7 +218,7 @@ func TestHandleInvalidateCache(t *testing.T) {
 
 // Test case: Find topology but not found Node
 
-func (c *CacheMockTopology) FindTopologyByID(topologyID, nodeID string) *storage.Topology {
+func (c *CacheMockTopology) FindTopologyByID(topologyID, nodeID string, uiRun bool, allowedTypes []string) *storage.Topology {
 	return &topologyNoNodeObject
 }
 
@@ -220,7 +230,7 @@ func (c *CacheMockTopology) FindTopologyByApplication(topologyName, nodeName, to
 	return nil, nil
 }
 
-func (c *MongoMockTopology) FindTopologyByID(topologyID, nodeID string) *storage.Topology {
+func (c *MongoMockTopology) FindTopologyByID(topologyID, nodeID string, uiRun bool, allowedTypes []string) *storage.Topology {
 	return &topologyNoNodeObject
 }
 
@@ -234,6 +244,7 @@ func (c *MongoMockTopology) FindTopologyByApplication(topologyName, nodeName, to
 
 func TestHandleRunByIDNodeNotFound(t *testing.T) {
 	mockCache(2)
+	prepareMongo()
 
 	r, _ := http.NewRequest("POST", "/topologies/a/nodes/b/run", bytes.NewReader([]byte("[]")))
 	assertResponse(t, r, 404, `{"message":"Node with key 'b' not found!"}`)
@@ -241,6 +252,7 @@ func TestHandleRunByIDNodeNotFound(t *testing.T) {
 
 func TestHandleRunByNameNodeNotFound(t *testing.T) {
 	mockCache(2)
+	prepareMongo()
 
 	r, _ := http.NewRequest("POST", "/topologies/a/nodes/b/run-by-name", bytes.NewReader([]byte("[]")))
 	assertResponse(t, r, 404, `{"message":"Topology with name 'a' and node with name 'b' not found!"}`)
@@ -255,7 +267,7 @@ func TestHandleRunByApplicationNodeNotFound(t *testing.T) {
 
 // Test case: Not find topology and not found Node
 
-func (c *CacheNoMock) FindTopologyByID(topologyID, nodeID string) *storage.Topology {
+func (c *CacheNoMock) FindTopologyByID(topologyID, nodeID string, uiRun bool, allowedTypes []string) *storage.Topology {
 	return nil
 }
 
@@ -263,7 +275,7 @@ func (c *CacheNoMock) FindTopologyByName(topologyName, nodeName string) *storage
 	return nil
 }
 
-func (c *MongoNoMock) FindTopologyByID(topologyID, nodeID string) *storage.Topology {
+func (c *MongoNoMock) FindTopologyByID(topologyID, nodeID string, uiRun bool, allowedTypes []string) *storage.Topology {
 	return nil
 }
 
@@ -273,6 +285,7 @@ func (c *MongoNoMock) FindTopologyByName(topologyName, nodeName string) *storage
 
 func TestHandleRunByIDTopologyNotFound(t *testing.T) {
 	mockCache(3)
+	prepareMongo()
 
 	r, _ := http.NewRequest("POST", "/topologies/a/nodes/b/run", bytes.NewReader([]byte("[]")))
 	assertResponse(t, r, 404, `{"message":"Topology with key 'a' not found!"}`)
@@ -280,6 +293,7 @@ func TestHandleRunByIDTopologyNotFound(t *testing.T) {
 
 func TestHandleRunByNameInvalidInput(t *testing.T) {
 	mockCache(3)
+	prepareMongo()
 
 	r, _ := http.NewRequest("POST", "/topologies/a/nodes/b/run-by-name", bytes.NewReader([]byte("invalid")))
 	assertResponse(t, r, 400, `{"message":"Content is not valid!"}`)
@@ -287,6 +301,7 @@ func TestHandleRunByNameInvalidInput(t *testing.T) {
 
 func TestHandleRunByApplicationInvalidInput(t *testing.T) {
 	mockCache(3)
+	prepareMongo()
 
 	r, _ := http.NewRequest("POST", "/topologies/a/nodes/b/token/c/run", bytes.NewReader([]byte("invalid")))
 	assertResponse(t, r, 400, `{"message":"Content is not valid!"}`)

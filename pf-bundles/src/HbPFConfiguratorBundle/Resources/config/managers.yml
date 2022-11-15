@@ -9,7 +9,6 @@ services:
             - '@hbpf.cron.manager'
             - '%checkInfiniteLoop%'
             - '@hbpf.transport.curl_manager'
-            - '%orchestyApikey%'
             - '%startingPointHost%'
 
     hbpf.configurator.manager.node:

@@ -6,10 +6,13 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\Persistence\ObjectRepository;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
+use Hanaboso\PipesFramework\Configurator\Document\ApiToken;
 use Hanaboso\PipesFramework\Configurator\Document\Sdk;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyConfigException;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
+use Hanaboso\PipesFramework\Configurator\Repository\ApiTokenRepository;
 use Hanaboso\PipesFramework\Configurator\Repository\SdkRepository;
+use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController;
 use Hanaboso\PipesPhpSdk\Database\Document\Dto\SystemConfigDto;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\Utils\String\DsnParser;
@@ -70,6 +73,11 @@ final class TopologyConfigFactory
     private SdkRepository $sdkRepository;
 
     /**
+     * @var ObjectRepository<ApiToken>&ApiTokenRepository
+     */
+    private ApiTokenRepository $apiTokenRepository;
+
+    /**
      * TopologyConfigFactory constructor.
      *
      * @param mixed[]         $configs
@@ -83,6 +91,7 @@ final class TopologyConfigFactory
         $this->configs[self::RABBITMQ_USER]  = $parsed[DsnParser::USER] ?? 'guest';
         $this->configs[self::RABBITMQ_PASS]  = $parsed[DsnParser::PASSWORD] ?? 'guest';
         $this->sdkRepository                 = $documentManager->getRepository(Sdk::class);
+        $this->apiTokenRepository            = $documentManager->getRepository(ApiToken::class);
     }
 
     /**
@@ -136,7 +145,7 @@ final class TopologyConfigFactory
             self::UDP_LOGGER_URL         => $this->configs[self::UDP_LOGGER_URL],
             self::TOPOLOGY_POD_LABELS    => $this->configs[self::TOPOLOGY_POD_LABELS],
             self::STARTING_POINT_DSN     => $this->configs[self::STARTING_POINT_DSN],
-            self::ORCHESTY_API_KEY       => $this->configs[self::ORCHESTY_API_KEY],
+            self::ORCHESTY_API_KEY       => $this->apiTokenRepository->findOneBy(['user' => ApplicationController::SYSTEM_USER])->getKey(),
         ];
     }
 

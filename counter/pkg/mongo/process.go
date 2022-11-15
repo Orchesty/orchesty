@@ -10,6 +10,26 @@ import (
 	"time"
 )
 
+func (m *MongoDb) GetApiToken(user string, scopes []string) (*model.ApiToken, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+
+	var apiToken model.ApiToken
+	err := m.connection.Database.
+		Collection(config.MongoDb.ApiTokenCollection).
+		FindOne(ctx, map[string]interface{}{"user": user, "scopes": scopes}).
+		Decode(&apiToken)
+
+	if err != nil {
+		cancel()
+
+		log.Fatal().Err(err).Msg("ApiToken with current user and scope not found!")
+		return nil, err
+	}
+
+	cancel()
+	return &apiToken, err
+}
+
 func (m *MongoDb) GetProcess(id string) (model.Process, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	result := m.connection.Database.Collection(config.MongoDb.CounterCollection).FindOne(ctx, bson.M{

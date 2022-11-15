@@ -23,6 +23,7 @@ use Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGenerat
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
 use Hanaboso\PipesFramework\HbPFUserTaskBundle\Handler\UserTaskHandler;
 use Hanaboso\PipesFramework\UserTask\Exception\UserTaskException;
+use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use Hanaboso\PipesPhpSdk\Database\Repository\TopologyRepository;
@@ -90,6 +91,7 @@ final class TopologyHandler
      *
      * @return mixed[]
      * @throws CurlException
+     * @throws AuthorizationException
      */
     public function runTopology(string $topologyId, array $data): array
     {
