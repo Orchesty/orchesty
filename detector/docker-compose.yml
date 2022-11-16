@@ -9,6 +9,7 @@ services:
             DEV_GID: ${DEV_GID}
             APP_DEBUG: 'true'
             METRICS_DSN: mongodb://mongodb/starting-point?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
+            MONGO_DSN: mongodb://mongodb/mongo?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
         volumes:
             - ./:/app
             - ${GOPATH}/pkg:/go/pkg

@@ -145,7 +145,8 @@ final class TopologyConfigFactory
             self::UDP_LOGGER_URL         => $this->configs[self::UDP_LOGGER_URL],
             self::TOPOLOGY_POD_LABELS    => $this->configs[self::TOPOLOGY_POD_LABELS],
             self::STARTING_POINT_DSN     => $this->configs[self::STARTING_POINT_DSN],
-            self::ORCHESTY_API_KEY       => $this->apiTokenRepository->findOneBy(['user' => ApplicationController::SYSTEM_USER])->getKey(),
+            self::ORCHESTY_API_KEY       => $this->apiTokenRepository
+                ->findOneBy(['user' => ApplicationController::SYSTEM_USER])?->getKey() ?? '',
         ];
     }
 

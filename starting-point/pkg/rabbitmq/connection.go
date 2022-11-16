@@ -51,6 +51,7 @@ func (c *connection) Connect() {
 
 	if err != nil {
 		c.log.Error(fmt.Sprintf("Rabbit MQ connection error: %+v", err))
+		c.log.Error(fmt.Sprintf("Service [starting-point] has no connection to rabbitmq!"))
 		c.reconnect()
 		return
 	}
