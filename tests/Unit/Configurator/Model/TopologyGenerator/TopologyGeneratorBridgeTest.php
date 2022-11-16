@@ -4,14 +4,17 @@ namespace PipesFrameworkTests\Unit\Configurator\Model\TopologyGenerator;
 
 use Closure;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Exception;
 use Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocator;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
+use Hanaboso\PipesFramework\Configurator\Document\Sdk;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge;
+use Hanaboso\PipesFramework\Configurator\Repository\ApiTokenRepository;
 use Hanaboso\PipesFramework\Configurator\Repository\SdkRepository;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository;
@@ -236,8 +239,13 @@ final class TopologyGeneratorBridgeTest extends KernelTestCaseAbstract
         $sdkRepository = self::createPartialMock(SdkRepository::class, ['findByHost']);
         $sdkRepository->method('findByHost')->willReturn([]);
 
+        $apiTokenRepository = self::createPartialMock(ApiTokenRepository::class, ['findOneBy']);
+        $apiTokenRepository->method('findOneBy')->willReturn(NULL);
+
         $dm = self::createPartialMock(DocumentManager::class, ['getRepository']);
-        $dm->method('getRepository')->willReturn($sdkRepository);
+        $dm->method('getRepository')->willReturnCallback(
+            static fn(string $className): DocumentRepository => $className === Sdk::class ? $sdkRepository : $apiTokenRepository,
+        );
         $configManager = new TopologyConfigFactory(self::getContainer()->getParameter('topology_configs'), $dm);
 
         return new TopologyGeneratorBridge(
