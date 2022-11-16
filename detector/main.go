@@ -2,6 +2,8 @@ package main
 
 import (
 	"detector/pkg/enum"
+	"fmt"
+	"github.com/hanaboso/go-mongodb"
 	"time"
 
 	"detector/pkg/config"
@@ -21,14 +23,21 @@ func main() {
 
 	// Publisher
 	workQueue := make(chan interface{}, 10)
-	svc := services.NewSenderSvc(workQueue)
+	db := &mongodb.Connection{}
+	db.Connect(config.Metrics.Dsn)
+	mongoDb := &mongodb.Connection{}
+	mongoDb.Connect(config.Mongo.Dsn)
+	svc := services.NewSenderSvc(workQueue, db)
+	consumerChecker := services.NewConsumerCheckerSvc(config.Logger, mongoDb)
 	go svc.Start()
 
 	// Consumer
 	for range time.Tick(config.App.Tick) {
 		if queues, err := rb.GatherQueuesInfo(); err == nil {
 			workQueue <- queues
+			consumerChecker.ConsumerCheck(queues)
 		} else {
+			log.Error(fmt.Errorf("Service rabbitmq does not working!"))
 			log.Errorf("failed to load rabbitmq data: %s", err)
 		}
 

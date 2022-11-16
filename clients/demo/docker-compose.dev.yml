@@ -56,14 +56,18 @@ services:
             LOGSTASH_PORT: "5120"
 
     detector:
-        image: orchesty/detector:${VERSION}
+        image: hanabosocom/go-base:1.19
+        user: ${DEV_UID}:${DEV_GID}
         environment:
             APP_DEBUG: 'true'
             METRICS_DSN: ${METRICS_DSN}
+            MONGO_DSN: ${MONGO_DSN}
             PLATFORM: ${PLATFORM}
             DOCKER_NETWORK: ${NETWORK_NAME}
         volumes:
             - ${DOCKER_SOCKET_PATH}:/var/run/docker.sock
+            - ./../../detector/:/app:cached
+        command: go run main.go
 
     frontend:
         image: hanabosocom/nodejs-build:dev

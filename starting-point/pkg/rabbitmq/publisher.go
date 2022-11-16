@@ -25,6 +25,7 @@ func (p *publisher) Publish(msg amqp.Publishing, exchange, routingKey string) {
 	chD := p.getChannel(exchange)
 	err := chD.Ch.Publish(exchange, routingKey, p.mandatory, p.immediate, msg)
 	if err != nil {
+		p.log.Error(fmt.Sprintf("Service [starting-point] has no connection to rabbitmq!"))
 		p.log.Error(fmt.Sprintf("Rabbit MQ publish error: %+v. Try to recconect.", err))
 		p.connection.Connect()
 
@@ -39,6 +40,7 @@ func (p *publisher) Publish(msg amqp.Publishing, exchange, routingKey string) {
 	go func() {
 		// TODO tady se může posrat confirm při předbíhání zpráv
 		if confirmed := <-chD.Confirm; !confirmed.Ack {
+			p.log.Error(fmt.Sprintf("Service [starting-point] has no connection to rabbitmq!"))
 			p.log.Error(fmt.Sprintf("NonConfirm"))
 			p.Publish(msg, exchange, routingKey)
 		}
