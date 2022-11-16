@@ -94,13 +94,10 @@ func (s *Sender) Start() {
 	}
 }
 
-func NewSenderSvc(workQueue <-chan interface{}) Sender {
-	db := &mongodb.Connection{}
-	db.Connect(config.Metrics.Dsn)
-
+func NewSenderSvc(workQueue <-chan interface{}, connection *mongodb.Connection) Sender {
 	return Sender{
 		metrics:    metrics.Connect(config.Metrics.Dsn),
-		connection: db,
+		connection: connection,
 		workQueue:  workQueue,
 		logger:     config.Logger,
 	}

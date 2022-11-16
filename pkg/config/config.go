@@ -23,6 +23,11 @@ type (
 		ContainerMeasurement string `default:"container" env:"CONTAINER_MEASUREMENT"`
 	}
 
+	mongo struct {
+		Dsn  string `default:"" env:"MONGO_DSN"`
+		Node string `default:"Node" env:"NODE_COLLECTION"`
+	}
+
 	app struct {
 		Debug        bool          `default:"false" env:"APP_DEBUG"`
 		Tick         time.Duration `default:"5" env:"TICK"` // in seconds, must be same as METRICS_RABBIT_INTERVAL in pf-bundles for correct avg calculations
@@ -38,6 +43,7 @@ type (
 		App       *app
 		RabbitMq  *rabbitMq
 		Metrics   *metrics
+		Mongo     *mongo
 		Generator *generator
 	}
 )
@@ -46,6 +52,7 @@ var (
 	App       app
 	RabbitMQ  rabbitMq
 	Metrics   metrics
+	Mongo     mongo
 	Generator generator
 	Logger    log.Logger
 
@@ -53,6 +60,7 @@ var (
 		App:       &App,
 		RabbitMq:  &RabbitMQ,
 		Metrics:   &Metrics,
+		Mongo:     &Mongo,
 		Generator: &Generator,
 	}
 )
