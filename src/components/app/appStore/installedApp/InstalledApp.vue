@@ -198,7 +198,7 @@
     <v-row>
       <v-col v-if="hasWebhookSettings" cols="6">
         <h3 class="title font-weight-bold mb-3">
-          {{ $t("appStore.detail.webhooks") }}
+          {{ $t("page.heading.webhooks") }}
         </h3>
 
         <template v-for="item in webhooksSettings">
@@ -345,6 +345,7 @@ export default {
       APP_STORE.ACTIONS.GET_INSTALLED_APP,
       APP_STORE.ACTIONS.SAVE_APP_SETTINGS,
       APP_STORE.ACTIONS.SUBSCRIBE_WEBHOOK,
+      APP_STORE.ACTIONS.UNSUBSCRIBE_WEBHOOK,
       APP_STORE.ACTIONS.UNINSTALL_APP_REQUEST,
       APP_STORE.ACTIONS.AUTHORIZE,
       APP_STORE.ACTIONS.ACTIVATE,
@@ -363,10 +364,31 @@ export default {
     async saveWebhook(name) {
       const isValid = await this.$refs[name][0].validate()
       if (isValid) {
-        await this[APP_STORE.ACTIONS.SUBSCRIBE_WEBHOOK]({
-          key: this.appActive.key,
-          data: { name, topology: this.webhooksSettings[name].topology },
-        })
+        if (this.webhooksSettings[name].enabled) {
+          const result = await this[APP_STORE.ACTIONS.UNSUBSCRIBE_WEBHOOK]({
+            key: this.appActive.key,
+            data: { name, topology: this.webhooksSettings[name].topology },
+          })
+          if (result) {
+            this.webhooksSettings[name].enabled = false
+            // Forcing rerender of this component to trigger the generation of
+            // button titles again. Would be better to implement with computed
+            // properties or watchers, but refactoring is for another time.
+            this.$forceUpdate()
+          }
+        } else {
+          const result = await this[APP_STORE.ACTIONS.SUBSCRIBE_WEBHOOK]({
+            key: this.appActive.key,
+            data: { name, topology: this.webhooksSettings[name].topology },
+          })
+          if (result) {
+            this.webhooksSettings[name].enabled = true
+            // Forcing rerender of this component to trigger the generation of
+            // button titles again. Would be better to implement with computed
+            // properties or watchers, but refactoring is for another time.
+            this.$forceUpdate()
+          }
+        }
       }
     },
 
