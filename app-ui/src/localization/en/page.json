@@ -13,7 +13,8 @@
       "topologies": "Topologies",
       "logs": "Logs",
       "alertLogs": "Alert Logs",
-      "users": "Users"
+      "users": "Users",
+      "webhooks": "Webhooks"
     },
     "text": {
       "notValidToken": "This token is no longer valid",

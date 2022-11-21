@@ -377,7 +377,7 @@ export async function start(): Promise<void> {
     const node = new Node();
     container.setCustomNode(node);
 
-    const xeroApplication = new XeroApplication(provider);
+    const xeroApplication = new XeroApplication(provider, sender);
     container.setApplication(xeroApplication);
 
     const oracleDbApplication = new OracleDbApplication();
