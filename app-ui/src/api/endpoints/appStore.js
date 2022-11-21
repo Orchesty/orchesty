@@ -58,6 +58,14 @@ export default {
       data,
     }),
   },
+  unsubscribeToWebhook: {
+    id: "APP_STORE_WEBHOOK_UNSUBSCRIBE",
+    request: ({ key, data }) => ({
+      url: `/webhook/applications/${key}/unsubscribe`,
+      method: "POST",
+      data,
+    }),
+  },
   setPasswordApp: {
     id: "APP_SET_PASSWORD",
     request: ({ key, data }) => ({

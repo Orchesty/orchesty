@@ -148,17 +148,44 @@ export default {
   },
   [APP_STORE.ACTIONS.SUBSCRIBE_WEBHOOK]: async ({ dispatch }, payload) => {
     try {
-      await callApi(dispatch, {
+      const res = await callApi(dispatch, {
         requestData: { ...API.appStore.subscribeToWebhook },
         params: payload,
       })
-      addSuccessMessage(
-        dispatch,
-        API.admin.delete.id,
-        "flashMessages.subscribed"
-      )
 
-      return true
+      const success = res.length > 0 || res[0]
+
+      if (success) {
+        addSuccessMessage(
+          dispatch,
+          API.appStore.subscribeToWebhook.id,
+          "flashMessages.subscribed"
+        )
+      }
+
+      return success
+    } catch (e) {
+      return false
+    }
+  },
+  [APP_STORE.ACTIONS.UNSUBSCRIBE_WEBHOOK]: async ({ dispatch }, payload) => {
+    try {
+      const res = await callApi(dispatch, {
+        requestData: { ...API.appStore.unsubscribeToWebhook },
+        params: payload,
+      })
+
+      const success = res.length > 0 || res[0]
+
+      if (success) {
+        addSuccessMessage(
+          dispatch,
+          API.appStore.unsubscribeToWebhook.id,
+          "flashMessages.unsubscribed"
+        )
+      }
+
+      return success
     } catch (e) {
       return false
     }
