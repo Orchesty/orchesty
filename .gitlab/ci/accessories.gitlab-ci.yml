@@ -1,0 +1,69 @@
+# kaniko-alpine
+
+.base-kaniko-alpine:
+  stage: prepare
+  variables:
+    DIR: .gitlab/ci/kaniko-alpine
+    IMAGE: ${REGISTRY}/kaniko-alpine
+
+  rules:
+    - if: '$FORCE_PIPELINE =~ /kaniko/'
+
+kaniko-alpine:build:
+  needs: []
+  variables:
+    KANIKO_IMAGE: gcr.io/kaniko-project/executor:debug
+    NO_GIT: 1
+
+  extends:
+    - .base-kaniko-build
+    - .base-kaniko-alpine
+
+  script:
+    - /kaniko/executor --cache=true --single-snapshot --context . --destination ${IMAGE}:${CI_COMMIT_REF_SLUG}
+
+
+kaniko-alpine:release:
+  needs: ["kaniko-alpine:build"]
+  extends:
+    - .base-dind
+    - .base-kaniko-alpine
+
+  script:
+    - docker pull ${IMAGE}:${CI_COMMIT_REF_SLUG}
+    - docker tag ${IMAGE}:${CI_COMMIT_REF_SLUG} ${IMAGE}:latest
+    - docker push ${IMAGE}:latest
+
+
+# ci-tooling
+
+.base-ci-tooling:
+  stage: prepare
+  variables:
+    DIR: .gitlab/ci/ci-tooling
+    IMAGE: ${REGISTRY}/ci-tooling
+
+  rules:
+    - if: '$FORCE_PIPELINE =~ /ci-tooling/'
+
+ci-tooling:build:
+  needs: []
+  extends:
+    - .base-kaniko-build
+    - .base-ci-tooling
+
+  script:
+    - executor --context . --destination ${IMAGE}:${CI_COMMIT_REF_SLUG} --cache=true
+
+
+ci-tooling:release:
+  needs: ["ci-tooling:build"]
+  image: ${IMAGE}:${CI_COMMIT_REF_SLUG}
+
+  extends:
+    - .base-tooling
+    - .base-ci-tooling
+
+  script:
+    - skopeo login --username "${CI_REGISTRY_USER}" --password "${CI_REGISTRY_PASSWORD}" "${REGISTRY}"
+    - skopeo copy docker://${IMAGE}:${CI_COMMIT_REF_SLUG} docker://${IMAGE}:latest

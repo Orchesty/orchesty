@@ -48,6 +48,13 @@ default:
   tags:
     - dind
 
+
+.base-tooling:
+  image: ${REGISTRY}/ci-tooling:latest
+  tags:
+    - docker
+
+
 collect-tags:
   stage: prepare
   image:
