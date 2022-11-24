@@ -33,7 +33,7 @@ go-update:
 init-dev: docker-up-force wait-for-server-start
 
 wait-for-server-start:
-	$(DE) /bin/sh -c 'while [ $$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/status) == 000 ]; do sleep 1; done'
+	$(DE) /bin/sh -c 'while [ $$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/) != 404 ]; do sleep 1; done'
 
 lint:
 	$(DE) go fmt ./...
