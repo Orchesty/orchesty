@@ -2,6 +2,9 @@
   extends:
     - .base-dind
 
+  variables:
+    MAKE_TARGET: ci-test
+
   before_script:
     - !reference [.base-dind, before_script]
     - mkdir -p /apk
@@ -16,4 +19,4 @@
     - 'cd ${DIR} && echo "Working directory: ${DIR}"'
     - export COMPOSE_PROJECT_NAME=$(echo ${CI_JOB_NAME} | tr ":" "-")_${CI_PIPELINE_ID}
     - export COMPOSE_FILE=docker-compose.ci.yml
-    - make ${COMPOSE_FILE} ci-test
+    - make ${COMPOSE_FILE} ${MAKE_TARGET}

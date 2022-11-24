@@ -27,6 +27,9 @@ pipes-connectors:test:
   stage: test
   needs: []
 
+  variables:
+    MAKE_TARGET: test
+
   extends:
     - .base-go-test # todo: don't use go-test
     - .base-pipes-connectors

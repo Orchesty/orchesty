@@ -79,6 +79,8 @@ phpmanual-down:
 
 test: docker-up-force composer-install fasttest
 
+ci-test: test
+
 fasttest: phpcodesniffer clear-cache phpstan phpunit phpintegration phpcontroller phpcoverage-ci
 
 docker-compose.ci.yml:

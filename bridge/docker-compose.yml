@@ -35,7 +35,7 @@ services:
         volumes:
             - mongodb:/data/db
 
-    logstash:
+    fluentd:
         image: mendhak/udp-listener
         environment:
             - UDPPORT=5120

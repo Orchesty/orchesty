@@ -24,4 +24,4 @@ counter:test:
 
   extends:
     - .base-go-test
-    - .base-starting-point
+    - .base-counter
