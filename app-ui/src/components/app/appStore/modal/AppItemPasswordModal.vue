@@ -2,17 +2,13 @@
   <modal-template
     v-model="isOpen"
     :title="
-      input.value
-        ? $t('appItemPasswordModal.changePassword')
-        : $t('appItemPasswordModal.setPassword')
+      input.value ? $t('button.changePassword') : $t('button.setPassword')
     "
   >
     <template #button>
       <app-button
         :button-title="
-          input.value
-            ? $t('appItemPasswordModal.changePassword')
-            : $t('appItemPasswordModal.setPassword')
+          input.value ? $t('button.changePassword') : $t('button.setPassword')
         "
         :class="buttonClass"
         :on-click="
