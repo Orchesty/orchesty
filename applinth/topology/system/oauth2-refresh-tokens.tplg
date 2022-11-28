@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?><bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:pipes="http://www.omg.org/spec/Pipes/20100524/MODEL" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="refresh-oauth2-token" isExecutable="false">
+    <bpmn:event id="Event_03idyfg" pipes:pipesType="cron" pipes:sdkHost="nodejs-sdk:8080" pipes:cronTime="*/5 * * * *" name="cron" pipes:sdkHostName="nodejs-sdk">
+      <bpmn:outgoing>Flow_02ohh38</bpmn:outgoing>
+    </bpmn:event>
+    <bpmn:task id="Activity_0jmxsco" pipes:pipesType="batch" pipes:sdkHost="nodejs-sdk:8080" name="get-application-for-refresh" pipes:sdkHostName="nodejs-sdk" pipes:appName="xero">
+      <bpmn:incoming>Flow_02ohh38</bpmn:incoming>
+      <bpmn:outgoing>Flow_0rjbqwa</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Activity_13kux8k" pipes:pipesType="connector" pipes:sdkHost="nodejs-sdk:8080" name="refresh-oauth2-token" pipes:sdkHostName="nodejs-sdk" pipes:appName="xero">
+      <bpmn:incoming>Flow_0rjbqwa</bpmn:incoming>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="Flow_02ohh38" sourceRef="Event_03idyfg" targetRef="Activity_0jmxsco"/>
+    <bpmn:sequenceFlow id="Flow_0rjbqwa" sourceRef="Activity_0jmxsco" targetRef="Activity_13kux8k"/>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="refresh-oauth2-token">
+      <bpmndi:BPMNEdge id="Flow_0rjbqwa_di" bpmnElement="Flow_0rjbqwa">
+        <di:waypoint x="470" y="280"/>
+        <di:waypoint x="510" y="280"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_02ohh38_di" bpmnElement="Flow_02ohh38">
+        <di:waypoint x="288" y="280"/>
+        <di:waypoint x="370" y="280"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Activity_0jmxsco_di" bpmnElement="Activity_0jmxsco">
+        <dc:Bounds x="370" y="240" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_13kux8k_di" bpmnElement="Activity_13kux8k">
+        <dc:Bounds x="510" y="240" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_03idyfg_di" bpmnElement="Event_03idyfg">
+        <dc:Bounds x="252" y="262" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="259" y="298" width="22" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

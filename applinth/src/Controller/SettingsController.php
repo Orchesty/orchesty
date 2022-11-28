@@ -2,9 +2,12 @@
 
 namespace Hanaboso\Applinth\Controller;
 
+use Exception;
 use Hanaboso\Applinth\Authenticator\EndUserAuthenticator;
+use Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator;
 use Hanaboso\Utils\Traits\ControllerTrait;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -25,23 +28,28 @@ final class SettingsController extends AbstractController
      * SettingsController constructor.
      *
      * @param EndUserAuthenticator $authenticator
+     * @param ServiceLocator       $locator
      */
-    public function __construct(private readonly EndUserAuthenticator $authenticator)
+    public function __construct(
+        private readonly EndUserAuthenticator $authenticator,
+        private readonly ServiceLocator $locator,
+    )
     {
     }
 
     /**
      * @Route("/", methods={"GET"})
      *
-     * @param Request $request
-     *
      * @return Response
      */
-    public function getApplicationDetail(Request $request): Response
+    public function getApplicationDetail(): Response
     {
-        return $this->forward(
-            'Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::getApplicationDetailAction',
-            ['request' => $request, 'key' => $this->authenticator->getRootKey(), 'user' => $this->authenticator->getAuthUser()],
+        //TODO: refactor after ServiceLocatorMS will be done
+        return new JsonResponse(
+            $this->locator->getAppDetail(
+                $this->authenticator->getRootKey(),
+                $this->authenticator->getAuthUser(),
+            ),
         );
     }
 
@@ -54,9 +62,13 @@ final class SettingsController extends AbstractController
      */
     public function updateApplication(Request $request): Response
     {
-        return $this->forward(
-            'Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::updateApplicationSettingsAction',
-            ['request' => $request, 'key' => $this->authenticator->getRootKey(), 'user' => $this->authenticator->getAuthUser()],
+        //TODO: refactor after ServiceLocatorMS will be done
+        return new JsonResponse(
+            $this->locator->updateApp(
+                $this->authenticator->getRootKey(),
+                $this->authenticator->getAuthUser(),
+                $request->request->all(),
+            ),
         );
     }
 
@@ -69,10 +81,18 @@ final class SettingsController extends AbstractController
      */
     public function authorizeApplication(Request $request): Response
     {
-        return $this->forward(
-            'Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::authorizeApplicationAction',
-            ['request' => $request, 'key' => $this->authenticator->getRootKey(), 'user' => $this->authenticator->getAuthUser()],
-        );
+        try {
+            //TODO: refactor after ServiceLocatorMS will be done
+            $this->locator->authorize(
+                $this->authenticator->getRootKey(),
+                $this->authenticator->getAuthUser(),
+                (string) $request->query->get('redirect_url'),
+            );
+        } catch (Exception $e) {
+            return new JsonResponse(['Error' => $e->getMessage()], 500);
+        }
+
+        return new JsonResponse([]);
     }
 
     /**
@@ -84,9 +104,13 @@ final class SettingsController extends AbstractController
      */
     public function setPassword(Request $request): Response
     {
-        return $this->forward(
-            'Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::saveApplicationPasswordAction',
-            ['request' => $request, 'key' => $this->authenticator->getRootKey(), 'user' => $this->authenticator->getAuthUser()],
+        //TODO: refactor after ServiceLocatorMS will be done
+        return new JsonResponse(
+            $this->locator->updateAppPassword(
+                $this->authenticator->getRootKey(),
+                $this->authenticator->getAuthUser(),
+                $request->request->all(),
+            ),
         );
     }
 

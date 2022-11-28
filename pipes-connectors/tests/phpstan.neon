@@ -10,6 +10,7 @@ parameters:
 		- '#Access to an undefined property*#'
 		- '#Unreachable statement \- code above always terminates.#'
 		- '#PHPDoc tag @var for variable \$(application|innerApplication|providerMock) contains unresolvable type#'
+		- '#Parameter \#1 \$haystack of function str_contains expects string#'
 	ergebnis:
 		classesAllowedToBeExtended:
 			- Hanaboso\HbPFConnectors\DependencyInjection\HbPFConnectorsExtension

@@ -14,6 +14,7 @@ services:
         arguments:
             - '@Hanaboso\Applinth\Authenticator\EndUserAuthenticator'
             - '@hbpf.usage_stats.handler.usage_stats'
+            - '@hbpp.service.locator'
         calls:
             - [ 'setLogger', [ '@monolog.logger.commons' ] ]
             - [ 'setContainer', [ '@service_container' ] ]
@@ -48,6 +49,7 @@ services:
         class: Hanaboso\Applinth\Controller\SettingsController
         arguments:
             - '@Hanaboso\Applinth\Authenticator\EndUserAuthenticator'
+            - '@hbpp.service.locator'
         calls:
             - [ 'setLogger', [ '@monolog.logger.commons' ] ]
             - [ 'setContainer', [ '@service_container' ] ]

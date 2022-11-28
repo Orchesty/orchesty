@@ -26,15 +26,24 @@
           <h1 class="headline font-weight-bold">{{ appActive.name }}</h1>
           <p class="mt-4">{{ appActive.description }}</p>
           <div class="d-flex justify-space-between align-center">
-            <uninstall-app-modal
-              v-if="appActive.isInstallable"
-              class="mr-3"
-              color="error"
-              :is-uninstalling="isUninstalling"
-              :disabled="isRequestPending"
-              :app-name="appActive.name"
-              :on-click="() => uninstall(appActive.key)"
-            />
+            <div>
+              <uninstall-app-modal
+                v-if="appActive.isInstallable"
+                class="mr-3"
+                color="error"
+                :is-uninstalling="isUninstalling"
+                :disabled="isRequestPending"
+                :app-name="appActive.name"
+                :on-click="() => uninstall(appActive.key)"
+              />
+              <base-button
+                v-if="hasOauthAuthorization"
+                class="ml-2"
+                :disabled="isRequestPending"
+                :on-click="authorizeApp"
+                :button-title="$t('button.authorize')"
+              />
+            </div>
 
             <template v-if="isActivationEnabled">
               <div v-if="activationDisabled" @click="toggleModal">
@@ -194,13 +203,6 @@
                     :on-click="() => saveForm(form.key, form.publicName)"
                     :disabled="isRequestPending"
                     :loading="isSaving"
-                  />
-
-                  <base-button
-                    v-if="hasOauthAuthorization"
-                    :disabled="!isFormValid(form.key) || isRequestPending"
-                    :on-click="authorizeApp"
-                    :button-title="$t('button.authorize')"
                   />
                 </actions-wrapper>
               </v-col>
