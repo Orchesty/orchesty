@@ -16,7 +16,7 @@ export default {
   saveSettings: {
     id: "SAVE_SETTINGS",
     request: ({ data }) => ({
-      url: `/settings`,
+      url: `/settings/`,
       method: "PUT",
       data,
     }),
