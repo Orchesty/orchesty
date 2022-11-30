@@ -13,10 +13,10 @@ rabbitmq:
   resources:
     requests:
       cpu: 500m
-      memory: 512Mi
+      memory: 1500Mi
     limits:
       cpu: 1001m
-      memory: 1024Mi
+      memory: 1500Mi
 
 global:
   backend:
