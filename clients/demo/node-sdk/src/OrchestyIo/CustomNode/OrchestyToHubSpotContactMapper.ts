@@ -33,10 +33,10 @@ export default class OrchestyToHubSpotContactMapper extends ACommonNode {
 export interface IOutput {
     properties: {
         company?: string;
-        email: string;
         firstname?: string;
         lastname?: string;
         phone?: string;
         website?: string;
+        email: string;
     };
 }

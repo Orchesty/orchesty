@@ -15,8 +15,8 @@
   "dependencies": {
     "@aws-sdk/client-ses": "^3.218.0",
     "@aws-sdk/util-endpoints": "^3.216.0",
-    "@orchesty/nodejs-connectors": "^2.1.12",
-    "@orchesty/nodejs-sdk": "^3.2.8",
+    "@orchesty/nodejs-connectors": "^2.1.15",
+    "@orchesty/nodejs-sdk": "^3.2.11",
     "@types/node": "^18.11.9",
     "@types/node-fetch": "^2.6.2",
     "copyfiles": "^2.4.1",
@@ -27,7 +27,7 @@
     "typescript": "^4.9.3"
   },
   "devDependencies": {
-    "@hanaboso/eslint-plugin": "^1.0.6",
+    "@hanaboso/eslint-plugin": "^1.0.7",
     "@types/jest": "^29.2.3",
     "@types/supertest": "^2.0.12",
     "eslint": "^8.28.0",
