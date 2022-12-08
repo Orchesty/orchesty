@@ -30,17 +30,13 @@ func Load() error {
 	mongoStorage := storage.NewStorage(connection, config.Logger, config.Mongo.Collection)
 	apiTokenMongoStorage := storage.NewStorage(connection, config.Logger, config.Mongo.ApiTokenCollection)
 
-	startingPoint, err := NewStartingPointService(
+	startingPoint := NewStartingPointService(
 		sender.NewHttpSender(&http.Client{
 			Timeout: time.Duration(config.StartingPoint.Timeout) * time.Second,
 		}, config.Logger, config.StartingPoint.Dsn),
 		config.Logger,
 		apiTokenMongoStorage,
 	)
-
-	if err != nil {
-		return nil
-	}
 
 	Container = container{
 		StatusService: NewStatusService(connection, scheduler, startingPoint),

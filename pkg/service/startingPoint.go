@@ -1,13 +1,13 @@
 package service
 
 import (
-	"cron/pkg/storage"
 	"encoding/json"
 	"fmt"
 	"net/http"
 
 	"cron/pkg/config"
 	"cron/pkg/sender"
+	"cron/pkg/storage"
 
 	log "github.com/hanaboso/go-log/pkg"
 )
@@ -19,21 +19,14 @@ type (
 	}
 
 	startingPointService struct {
-		sender sender.HttpSender
-		logger log.Logger
-		apiKey string
+		storage storage.MongoStorage
+		sender  sender.HttpSender
+		logger  log.Logger
 	}
 )
 
-func NewStartingPointService(connection sender.HttpSender, logger log.Logger, mongoStorage storage.MongoStorage) (StartingPointService, error) {
-	var apiToken, err = mongoStorage.FindOneApiToken("orchesty", []string{"topology:run"})
-
-	if err != nil {
-		return nil, err
-	}
-	apiKey := apiToken.Key
-
-	return startingPointService{connection, logger, apiKey}, err
+func NewStartingPointService(connection sender.HttpSender, logger log.Logger, mongoStorage storage.MongoStorage) StartingPointService {
+	return startingPointService{mongoStorage, connection, logger}
 }
 
 func (service startingPointService) IsConnected() bool {
@@ -74,9 +67,9 @@ func (service startingPointService) createContent(parameters string) interface{}
 }
 
 func (service startingPointService) createHeaders() map[string]string {
-	if service.apiKey != "" {
+	if apiToken, err := service.storage.FindApiToken("orchesty", []string{"topology:run"}); err == nil {
 		return map[string]string{
-			config.OrchestyApiKeyHeader: service.apiKey,
+			config.OrchestyApiKeyHeader: apiToken.Key,
 		}
 	}
 

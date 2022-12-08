@@ -54,7 +54,7 @@ func (storage MongoStorage) DropApiTokenCollection() {
 	}
 }
 
-func (storage MongoStorage) FindOneApiToken(user string, scopes []string) (*model.ApiToken, error) {
+func (storage MongoStorage) FindApiToken(user string, scopes []string) (*model.ApiToken, error) {
 	context, cancel := storage.connection.Context()
 	defer cancel()
 
@@ -62,7 +62,9 @@ func (storage MongoStorage) FindOneApiToken(user string, scopes []string) (*mode
 	err := storage.collection.FindOne(context, map[string]interface{}{"user": user, "scopes": scopes}).Decode(&apiToken)
 
 	if err != nil {
-		storage.logContext().Error(err)
+		if err.Error() != "mongo: no documents in result" {
+			storage.logContext().Error(err)
+		}
 
 		return nil, err
 	}
