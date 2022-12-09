@@ -39,6 +39,14 @@ async function createFixtureData(): Promise<void> {
                 start: new Date(item.start),
                 end: new Date(item.end),
             })));
+    const usageStatsMetadata = readFileSync(path.resolve(__dirname, 'fixtureData/usage_stats_metadata.json')).toString();
+    await db.getBillingCollection(CollectionEnum.USAGE_STATS_METADATA)
+        .insertMany(JSON.parse(usageStatsMetadata)
+            .map((item: IUsageStatMetadata) => ({
+                ...item,
+                billingHistoryStart: new Date(item.billingHistoryStart),
+                billingHistoryEnd: new Date(item.billingHistoryEnd),
+            })));
 
     await db.disconnect();
 }
@@ -51,4 +59,9 @@ createFixtureData().then(() => {
 interface IUsageStat {
     start: string;
     end: string;
+}
+
+interface IUsageStatMetadata {
+    billingHistoryStart: string;
+    billingHistoryEnd: string;
 }

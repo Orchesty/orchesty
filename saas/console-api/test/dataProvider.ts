@@ -199,6 +199,28 @@ export async function createUsageStats(): Promise<void> {
             generateUsageStatsRow(DateTime.local(2021, 1, 2), DateTime.local(2021, 1, 2).endOf('day'), false, 'neco', 'neco', '1235', 'inst1234', 'i1234', 't123456789', 1000000),
             generateUsageStatsRow(DateTime.local(2021, 1, 3), DateTime.local(2021, 1, 3).endOf('day'), true, 'neco', 'neco', '1235', 'inst1234', 'i1234', 't123456789', 1000000),
         ]);
+
+    await db.getBillingCollection(CollectionEnum.USAGE_STATS_METADATA)
+        .insertMany([
+            {
+                tenantId: 't123',
+                instances: {
+                    inst1234: {
+                        billingHistoryStart: DateTime.local(2021, 1, 1),
+                        billingHistoryEnd: DateTime.local(2021, 2, 1),
+                    },
+                },
+            },
+            {
+                tenantId: 't123456789',
+                instances: {
+                    inst1234: {
+                        billingHistoryStart: DateTime.local(2021, 1, 1),
+                        billingHistoryEnd: DateTime.local(2021, 2, 1),
+                    },
+                },
+            },
+        ]);
 }
 
 export function getJWTToken(withPermissions = false): { authorization: string } {

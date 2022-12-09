@@ -31,6 +31,7 @@ export default class Mongo {
         await this.client.db(mongo.mongoBillingDbName).dropCollection(CollectionEnum.USAGE_STATS_HOURLY);
         await this.client.db(mongo.mongoBillingDbName).dropCollection(CollectionEnum.USAGE_STATS_DAILY);
         await this.client.db(mongo.mongoBillingDbName).dropCollection(CollectionEnum.USAGE_STATS_MONTHLY);
+        await this.client.db(mongo.mongoBillingDbName).dropCollection(CollectionEnum.USAGE_STATS_METADATA);
     }
 
     public async createBillingIndexes(): Promise<void> {
@@ -42,9 +43,14 @@ export default class Mongo {
             { key: { endUserDisplayId: 1 } },
             { key: { appName: 1 } },
         ];
+        const metadataSpecs: IndexDescription[] = [
+            { key: { tenantId: 1 } },
+            { key: { instances: 1 } },
+        ];
         await this.getBillingCollection(CollectionEnum.USAGE_STATS_HOURLY).createIndexes(specs);
         await this.getBillingCollection(CollectionEnum.USAGE_STATS_DAILY).createIndexes(specs);
         await this.getBillingCollection(CollectionEnum.USAGE_STATS_MONTHLY).createIndexes(specs);
+        await this.getBillingCollection(CollectionEnum.USAGE_STATS_METADATA).createIndexes(metadataSpecs);
     }
 
     public async createCloudIndexes(): Promise<void> {
