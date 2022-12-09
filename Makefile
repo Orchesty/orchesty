@@ -2,7 +2,7 @@ BASE_IMAGE=dkr.hanaboso.net/pipes/pipes/nodejs-build
 PUBLIC_BASE_IMAGE=hanabosocom/nodejs-build
 
 IMAGE?=dkr.hanaboso.net/pipes/pipes/app-ui
-PUBLIC_IMAGE?=hanaboso/pipes-app-ui
+PUBLIC_IMAGE?=orchesty/frontend
 
 init:
 	docker-compose up -d --force-recreate

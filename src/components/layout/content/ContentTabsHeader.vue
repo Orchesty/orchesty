@@ -33,7 +33,7 @@
         lg="3"
         class="d-flex justify-lg-end"
       >
-        <span class="mr-5">{{ $t("pages.nextRun") }}: </span>
+        <span class="mr-5">{{ $t("page.text.nextRun") }}: </span>
         <span :key="now.getMilliseconds()" class="font-weight-bold">
           {{ nextRun(topologyActive.cronSettings) }}
         </span>
