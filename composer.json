@@ -18,9 +18,9 @@
         "hanaboso/rabbit-mq-bundle": "^1.5",
         "hanaboso/rest-bundle": "^1.1",
         "hanaboso/user-bundle": "^1.6",
-        "orchesty/php-sdk": "^2.2",
-        "symfony/security-bundle": "^v6.1",
-        "symfony/serializer": "^v6.1",
+        "orchesty/php-sdk": "^2.3",
+        "symfony/security-bundle": "^v6.2",
+        "symfony/serializer": "^v6.2",
         "web-token/jwt-signature-algorithm-rsa": "^3.1"
     },
     "require-dev": {

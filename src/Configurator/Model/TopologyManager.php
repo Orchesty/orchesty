@@ -123,8 +123,11 @@ final class TopologyManager
             ],
         );
 
-        if (!$apiToken) {
-            throw new AuthorizationException('Api token not found!');
+        $headers = [];
+        if ($apiToken) {
+            $headers = [
+                'orchesty-api-key' => $apiToken->getKey(),
+            ];
         }
 
         $request = new RequestDto(
@@ -132,9 +135,7 @@ final class TopologyManager
             CurlManager::METHOD_POST,
             new ProcessDto(),
             '',
-            [
-                'orchesty-api-key' => $apiToken->getKey(),
-            ],
+            $headers,
         );
         $request->setBody($data);
 
