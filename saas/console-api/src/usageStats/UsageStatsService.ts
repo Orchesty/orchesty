@@ -3,6 +3,7 @@ import { IAppsAggregationParams } from '../controllers/usageStats';
 import { CollectionEnum, switchGranularity } from '../enums/CollectionEnum';
 import DateParseError from '../errors/DateParseError';
 import GranularityError from '../errors/GranularityError';
+import MetadataSearchError from '../errors/MetadataSearchError';
 import BillingMongo from '../storage/mongo/Mongo';
 
 interface IMongoQuery {
@@ -15,6 +16,21 @@ interface IMongoQuery {
     installed?: boolean;
 }
 
+interface IMetadata {
+    billingHistoryStart: Date;
+    billingHistoryEnd: Date;
+}
+
+interface IDbMetadata {
+    tenantId: string;
+    instances: Record<string, IMetadata>;
+}
+
+interface IMetadataResponse {
+    billingHistoryStart: string;
+    billingHistoryEnd: string;
+}
+
 export default class UsageStatsService {
 
     public constructor(private readonly db: BillingMongo) {
@@ -23,7 +39,7 @@ export default class UsageStatsService {
     public async getDataForAppsAggregation(
         query: IAppsAggregationParams,
         tenantId: string,
-    ): Promise<{ rows: unknown }> {
+    ): Promise<IMetadataResponse & { rows: unknown }> {
         const mongoQuery = this.prepareMongoQuery(query, tenantId, false, true);
         const collectionName = switchGranularity(query.granularity);
 
@@ -64,13 +80,18 @@ export default class UsageStatsService {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-call
             row.instanceIds.sort();
         });
-        return { rows };
+        const metadata = await this.findMetadata(tenantId, query.instanceId);
+        return {
+            rows,
+            billingHistoryStart: metadata.billingHistoryStart.toISOString(),
+            billingHistoryEnd: metadata.billingHistoryEnd.toISOString(),
+        };
     }
 
     public async getDataForInstalledAppsAggregation(
         query: IAppsAggregationParams,
         tenantId: string,
-    ): Promise<{ rows: unknown }> {
+    ): Promise<IMetadataResponse & { rows: unknown }> {
         const collectionName = CollectionEnum.USAGE_STATS_MONTHLY;
         const mongoQuery = this.prepareMongoQuery(query, tenantId, !query.tail);
 
@@ -108,13 +129,18 @@ export default class UsageStatsService {
         ];
 
         const rows = await this.db.getBillingCollection(collectionName).aggregate(aggregations).toArray();
-        return { rows };
+        const metadata = await this.findMetadata(tenantId, query.instanceId);
+        return {
+            rows,
+            billingHistoryStart: metadata.billingHistoryStart.toISOString(),
+            billingHistoryEnd: metadata.billingHistoryEnd.toISOString(),
+        };
     }
 
     public async getDataForTimeBucketAppsAggregation(
         query: IAppsAggregationParams,
         tenantId: string,
-    ): Promise<{ rows: unknown }> {
+    ): Promise<IMetadataResponse & { rows: unknown }> {
         const collectionName = CollectionEnum.USAGE_STATS_MONTHLY;
         const mongoQuery = this.prepareMongoQuery(query, tenantId);
 
@@ -155,13 +181,18 @@ export default class UsageStatsService {
             row.instanceIds.sort();
             /* eslint-enable @typescript-eslint/no-unsafe-call */
         });
-        return { rows };
+        const metadata = await this.findMetadata(tenantId, query.instanceId);
+        return {
+            rows,
+            billingHistoryStart: metadata.billingHistoryStart.toISOString(),
+            billingHistoryEnd: metadata.billingHistoryEnd.toISOString(),
+        };
     }
 
     public async getDataForTimeBucketUsersAggregation(
         query: IAppsAggregationParams,
         tenantId: string,
-    ): Promise<{ rows: unknown }> {
+    ): Promise<IMetadataResponse & { rows: unknown }> {
         const collectionName = CollectionEnum.USAGE_STATS_MONTHLY;
         const mongoQuery = this.prepareMongoQuery(query, tenantId);
 
@@ -189,13 +220,18 @@ export default class UsageStatsService {
         ];
 
         const rows = await this.db.getBillingCollection(collectionName).aggregate(aggregations).toArray();
-        return { rows };
+        const metadata = await this.findMetadata(tenantId, query.instanceId);
+        return {
+            rows,
+            billingHistoryStart: metadata.billingHistoryStart.toISOString(),
+            billingHistoryEnd: metadata.billingHistoryEnd.toISOString(),
+        };
     }
 
     public async getDataForTimeBucketHistoryAggregation(
         query: IAppsAggregationParams,
         tenantId: string,
-    ): Promise<{ rows: unknown }> {
+    ): Promise<IMetadataResponse & { rows: unknown }> {
         const mongoQuery = this.prepareMongoQuery(query, tenantId);
         const collectionName = switchGranularity(query.granularity);
         let format;
@@ -233,13 +269,18 @@ export default class UsageStatsService {
         ];
 
         const rows = await this.db.getBillingCollection(collectionName).aggregate(aggregations).toArray();
-        return { rows };
+        const metadata = await this.findMetadata(tenantId, query.instanceId);
+        return {
+            rows,
+            billingHistoryStart: metadata.billingHistoryStart.toISOString(),
+            billingHistoryEnd: metadata.billingHistoryEnd.toISOString(),
+        };
     }
 
     public async getDataForUsersAggregation(
         query: IAppsAggregationParams,
         tenantId: string,
-    ): Promise<{ rows: unknown }> {
+    ): Promise<IMetadataResponse & { rows: unknown }> {
         const mongoQuery = this.prepareMongoQuery(query, tenantId, false, true);
         const collectionName = switchGranularity(query.granularity);
 
@@ -357,7 +398,12 @@ export default class UsageStatsService {
             row.instanceIds.sort();
             /* eslint-enable @typescript-eslint/no-unsafe-call */
         });
-        return { rows };
+        const metadata = await this.findMetadata(tenantId, query.instanceId);
+        return {
+            rows,
+            billingHistoryStart: metadata.billingHistoryStart.toISOString(),
+            billingHistoryEnd: metadata.billingHistoryEnd.toISOString(),
+        };
     }
 
     private prepareMongoQuery(
@@ -440,6 +486,30 @@ export default class UsageStatsService {
         }
 
         return mongoQuery;
+    }
+
+    private async findMetadata(tenantId: string, instanceId: string | undefined = undefined): Promise<IMetadata> {
+        const metadata = await this.db
+            .getBillingCollection(CollectionEnum.USAGE_STATS_METADATA)
+            .findOne({ tenantId }) as unknown as IDbMetadata;
+
+        if (!metadata) {
+            throw new MetadataSearchError();
+        }
+
+        if (instanceId) {
+            if (metadata.instances[instanceId] !== undefined) {
+                return metadata.instances[instanceId];
+            }
+
+            throw new MetadataSearchError();
+        }
+
+        if (Object.keys(metadata.instances).length > 0) {
+            return Object.values(metadata.instances).shift() as IMetadata;
+        }
+
+        throw new MetadataSearchError();
     }
 
 }

@@ -778,6 +778,10 @@ components:
                                 type: array
                                 items:
                                     type: string
+                billingHistoryStart:
+                    type: string
+                billingHistoryEnd:
+                    type: string
         UsageStatsInstalledApps:
             type: object
             properties:
@@ -796,8 +800,12 @@ components:
                                 description: App installation date
                                 type: string
                             instanceId:
-                                description: App installation date
+                                description: App instance id
                                 type: string
+                billingHistoryStart:
+                    type: string
+                billingHistoryEnd:
+                    type: string
         UsageStatsTimeBucketUsers:
             type: object
             properties:
@@ -812,6 +820,10 @@ components:
                             endUsers:
                                 description: Number of unique end users having the app installed within the given period
                                 type: integer
+                billingHistoryStart:
+                    type: string
+                billingHistoryEnd:
+                    type: string
         UsageStatsTimeBucketApps:
             type: object
             properties:
@@ -841,6 +853,10 @@ components:
                             totalCost:
                                 description: Total installs cost for this app
                                 type: integer
+                billingHistoryStart:
+                    type: string
+                billingHistoryEnd:
+                    type: string
         UsageStatsTimeBucketHistory:
             type: object
             properties:

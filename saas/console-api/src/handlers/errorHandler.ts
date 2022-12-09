@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import DateParseError from '../errors/DateParseError';
 import GranularityError from '../errors/GranularityError';
 import JWTError from '../errors/JWTError';
+import MetadataSearchError from '../errors/MetadataSearchError';
 import NotFoundError from '../errors/NotFoundError';
 import PermissionsError from '../errors/PermissionsError';
 import SendLinkError from '../errors/SendLinkError';
@@ -22,6 +23,7 @@ export default function handleError(err: Error, req: Request, res: Response): vo
         || err instanceof TenantSearchError
         || err instanceof UserDeleteError
         || err instanceof SendLinkError
+        || err instanceof MetadataSearchError
     ) {
         res.status(400).send({ msg: err.message });
         return;

@@ -77,6 +77,8 @@ describe('usageStatsController', () => {
                     totalCost: 200000,
                 },
             ]);
+            assert.deepEqual(resp.body.billingHistoryStart, '2021-01-01T00:00:00.000Z');
+            assert.deepEqual(resp.body.billingHistoryEnd, '2021-02-01T00:00:00.000Z');
             assert.deepEqual(resp.statusCode, 200);
         });
         it.skip('shouldReturn403', async () => {
