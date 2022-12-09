@@ -131,7 +131,7 @@ func (c *MultiCounter) sendMetrics(process model.Process) {
 			"topology_id": process.TopologyId,
 		},
 		map[string]interface{}{
-			"result":     process.IsFinished(),
+			"result":     process.IsOk(),
 			"duration":   timex.MsDiff(process.Created, time.Now()),
 			"ok_count":   process.Ok,
 			"fail_count": process.Nok,
