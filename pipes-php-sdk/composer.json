@@ -15,13 +15,13 @@
         "league/oauth2-client": "^2.6",
         "phpoffice/phpspreadsheet": "^1.25",
         "symfony/monolog-bundle": "^v3.8",
-        "symfony/yaml": "^v6.1"
+        "symfony/yaml": "^v6.2"
     },
     "require-dev": {
         "hanaboso/php-check-utils": "^1.4",
-        "symfony/debug-bundle": "^v6.1",
-        "symfony/security-bundle": "^v6.1",
-        "symfony/serializer": "^v6.1"
+        "symfony/debug-bundle": "^v6.2",
+        "symfony/security-bundle": "^v6.2",
+        "symfony/serializer": "^v6.2"
     },
     "autoload": {
         "psr-4": {

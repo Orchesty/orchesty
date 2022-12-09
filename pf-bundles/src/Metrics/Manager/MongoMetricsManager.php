@@ -444,9 +444,9 @@ final class MongoMetricsManager extends MetricsManagerAbstract
             ->field('total_count')->sum(1)
             ->field('request_error_sum')->sum(
                 $qb->expr()->cond(
-                    $qb->expr()->eq('$fields.result', FALSE),
-                    1,
+                    $qb->expr()->eq('$fields.fail_count', 0),
                     0,
+                    1,
                 ),
             )
             ->execute()

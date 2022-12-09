@@ -8,14 +8,14 @@
         "ext-ctype": "*",
         "ext-intl": "*",
         "ext-mbstring": "*",
-        "orchesty/php-sdk": "^2.2"
+        "orchesty/php-sdk": "^2.3"
     },
     "require-dev": {
         "aws/aws-sdk-php-symfony": "^2.5",
         "hanaboso/php-check-utils": "^1.4",
-        "symfony/debug-bundle": "^v6.1",
-        "symfony/security-bundle": "^v6.1",
-        "symfony/serializer": "^v6.1"
+        "symfony/debug-bundle": "^v6.2",
+        "symfony/security-bundle": "^v6.2",
+        "symfony/serializer": "^v6.2"
     },
     "suggest": {
         "aws/aws-sdk-php-symfony": "Install me, if you need to use Model\\Application\\Impl\\AmazonApps."

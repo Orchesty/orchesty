@@ -224,7 +224,7 @@ export async function start(): Promise<void> {
     const pipedriveApp = new PipedriveApplication();
     container.setApplication(pipedriveApp);
 
-    const quickbooksApp = new QuickBooksApplication(provider);
+    const quickbooksApp = new QuickBooksApplication(provider, mongoDb, sender);
     container.setApplication(quickbooksApp);
 
     const salesForceApp = new SalesForceApplication(provider);
@@ -377,7 +377,7 @@ export async function start(): Promise<void> {
     const node = new Node();
     container.setCustomNode(node);
 
-    const xeroApplication = new XeroApplication(provider, sender);
+    const xeroApplication = new XeroApplication(provider, sender, mongoDb);
     container.setApplication(xeroApplication);
 
     const oracleDbApplication = new OracleDbApplication();

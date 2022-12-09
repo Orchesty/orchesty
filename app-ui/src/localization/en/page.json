@@ -32,7 +32,8 @@
       "errorServiceItemText": "Try to restart docker container {name}.",
       "itWorks": "Everything works properly.",
       "emptyHealthCheckTable": "The Table is Empty. Please insert data with the above Button.",
-      "pageNotFound": "Page not found."
+      "pageNotFound": "Page not found.",
+      "nextRun": "Next run"
     },
     "status": {
       "noTopologySelected": "No topology selected",
