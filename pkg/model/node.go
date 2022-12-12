@@ -31,7 +31,6 @@ type Follower struct {
 type NodeSettings struct {
 	Url        string
 	ActionPath string
-	TestPath   string
 	Headers    map[string]interface{}
 	// Side bar settings
 	Bridge NodeSettingsBridge
@@ -44,13 +43,6 @@ type NodeSettingsBridge struct {
 
 func (n NodeSettings) ActionUrl() string {
 	return fmt.Sprintf("%s/%s", n.Url, n.ActionPath)
-}
-
-func (n NodeSettings) TestUrl() string {
-	if n.TestPath != "" {
-		return fmt.Sprintf("%s/%s", n.Url, n.TestPath)
-	}
-	return ""
 }
 
 /** Deprecated v1 .json format **/
@@ -107,7 +99,6 @@ type NodeV2Follower struct {
 type NodeV2Settings struct {
 	Url        string                 `json:"url"`
 	ActionPath string                 `json:"actionPath"`
-	TestPath   string                 `json:"testPath"`
 	Method     string                 `json:"method"`
 	Headers    map[string]interface{} `json:"headers"`
 	// Bridge

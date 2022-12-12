@@ -26,7 +26,6 @@ type jsonParserV2 struct{}
          "settings":{
             "url":"http://:0",
             "actionPath":"",
-            "testPath":"",
             "method":"",
             "timeout":30,
             "userTask": "pending"
@@ -89,7 +88,6 @@ func (jsonParserV2) getTopology(path string) (model.Topology, error) {
 			Settings: model.NodeSettings{
 				Url:        nodeV2.Settings.Url,
 				ActionPath: strings.TrimPrefix(nodeV2.Settings.ActionPath, "/"),
-				TestPath:   strings.TrimPrefix(nodeV2.Settings.TestPath, "/"),
 				Headers:    nodeV2.Settings.Headers,
 				Bridge: model.NodeSettingsBridge{
 					Prefetch: nodeV2.Settings.RabbitPrefetch,

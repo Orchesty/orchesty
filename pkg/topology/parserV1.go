@@ -109,7 +109,6 @@ func (jsonParserV1) getTopology(path string) (model.Topology, error) {
 					intx.IntDefault(nodeV1.Worker.Settings.Port, 80),
 				),
 				ActionPath: strings.TrimPrefix(nodeV1.Worker.Settings.ProcessPath, "/"),
-				TestPath:   strings.TrimPrefix(nodeV1.Worker.Settings.StatusPath, "/"),
 			},
 		}
 
