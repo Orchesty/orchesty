@@ -3,8 +3,6 @@
 namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\LockException;
-use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\Persistence\ObjectRepository;
 use Exception;
@@ -21,6 +19,7 @@ use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Configurator\Model\NodeManager;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
+use Hanaboso\PipesFramework\Configurator\Model\TopologyTester;
 use Hanaboso\PipesFramework\HbPFUserTaskBundle\Handler\UserTaskHandler;
 use Hanaboso\PipesFramework\UserTask\Exception\UserTaskException;
 use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
@@ -70,6 +69,7 @@ final class TopologyHandler
      * @param NodeManager             $nodeManager
      * @param TopologyGeneratorBridge $generatorBridge
      * @param UserTaskHandler         $userTaskHandler
+     * @param TopologyTester          $topologyTester
      */
     public function __construct(
         DatabaseManagerLocator $dml,
@@ -77,6 +77,7 @@ final class TopologyHandler
         protected NodeManager $nodeManager,
         protected TopologyGeneratorBridge $generatorBridge,
         protected UserTaskHandler $userTaskHandler,
+        protected TopologyTester $topologyTester,
     )
     {
         /** @var DocumentManager $dm */
@@ -355,40 +356,12 @@ final class TopologyHandler
     /**
      * @param string $topologyId
      *
-     * @return mixed[]
-     * @throws CurlException
+     * @return array<int, array{id: string, name: string, status: string, reason: string}>
      * @throws TopologyConfigException
-     * @throws TopologyException
-     * @throws LockException
-     * @throws MappingException
-     * @throws JsonException
      */
     public function runTest(string $topologyId): array
     {
-        $startTopology = TRUE;
-        $runningInfo   = $this->generatorBridge->infoTopology($topologyId);
-        if ($runningInfo->getBody()) {
-            $result = Json::decode($runningInfo->getBody());
-            if (array_key_exists('docker_info', $result) && count($result['docker_info'])) {
-                $startTopology = FALSE;
-            }
-        }
-
-        if ($startTopology) {
-            $this->generatorBridge->generateTopology($topologyId);
-            $this->generatorBridge->runTopology($topologyId);
-            sleep(3); // Wait for topology start...
-        }
-
-        $res = $this->generatorBridge->runTest($topologyId);
-
-        $topology = $this->getTopologyById($topologyId);
-        if ($topology->getVisibility() === TopologyStatusEnum::DRAFT) {
-            $this->generatorBridge->stopTopology($topologyId);
-            $this->generatorBridge->deleteTopology($topologyId);
-        }
-
-        return $res;
+        return $this->topologyTester->testTopology($topologyId);
     }
 
     /**

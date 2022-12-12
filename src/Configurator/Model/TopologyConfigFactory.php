@@ -111,6 +111,50 @@ final class TopologyConfigFactory
     }
 
     /**
+     * @param Node $node
+     *
+     * @return mixed[]|string[]
+     * @throws TopologyConfigException
+     * @throws TopologyException
+     */
+    public function getWorkers(Node $node): array
+    {
+        switch ($node->getType()) {
+            case TypeEnum::WEBHOOK:
+            case TypeEnum::CRON:
+            case TypeEnum::START:
+            case TypeEnum::USER:
+                return [
+                    self::TYPE => $this->getWorkerByType($node),
+                ];
+            case TypeEnum::DEBUG:
+                return [
+                    self::TYPE     => $this->getWorkerByType($node),
+                    self::SETTINGS => [],
+                ];
+            default:
+                $host   = $this->getHost($node->getType(), $node->getSystemConfigs());
+                $path   = $this->getPaths($node);
+                $parsed = explode(':', $host);
+
+                return [
+                    self::TYPE     => $this->getWorkerByType($node),
+                    self::SETTINGS => [
+                        self::HOST         => $parsed[0] ?? '',
+                        self::PROCESS_PATH => $path[self::PROCESS_PATH],
+                        self::STATUS_PATH  => $path[self::STATUS_PATH],
+                        self::METHOD       => CurlManager::METHOD_POST,
+                        self::PORT         => (int) ($parsed[1] ?? $this->getPort($node->getType())),
+                        self::HEADERS      => $this->sdkRepository->findByHost($host),
+                        self::APPLICATION  => $node->getApplication(),
+                        self::PREFETCH     => $node->getSystemConfigs()?->getPrefetch(),
+                        self::TIMEOUT      => $node->getSystemConfigs()?->getTimeout(),
+                    ],
+                ];
+        }
+    }
+
+    /**
      * @param mixed[] $nodes
      *
      * @return mixed[]
@@ -168,50 +212,6 @@ final class TopologyConfigFactory
                     $config->getPrefetch(),
             ],
         ];
-    }
-
-    /**
-     * @param Node $node
-     *
-     * @return mixed[]|string[]
-     * @throws TopologyConfigException
-     * @throws TopologyException
-     */
-    private function getWorkers(Node $node): array
-    {
-        switch ($node->getType()) {
-            case TypeEnum::WEBHOOK:
-            case TypeEnum::CRON:
-            case TypeEnum::START:
-            case TypeEnum::USER:
-                return [
-                    self::TYPE => $this->getWorkerByType($node),
-                ];
-            case TypeEnum::DEBUG:
-                return [
-                    self::TYPE     => $this->getWorkerByType($node),
-                    self::SETTINGS => [],
-                ];
-            default:
-                $host   = $this->getHost($node->getType(), $node->getSystemConfigs());
-                $path   = $this->getPaths($node);
-                $parsed = explode(':', $host);
-
-                return [
-                    self::TYPE     => $this->getWorkerByType($node),
-                    self::SETTINGS => [
-                        self::HOST         => $parsed[0] ?? '',
-                        self::PROCESS_PATH => $path[self::PROCESS_PATH],
-                        self::STATUS_PATH  => $path[self::STATUS_PATH],
-                        self::METHOD       => CurlManager::METHOD_POST,
-                        self::PORT         => (int) ($parsed[1] ?? $this->getPort($node->getType())),
-                        self::HEADERS      => $this->sdkRepository->findByHost($host),
-                        self::APPLICATION  => $node->getApplication(),
-                        self::PREFETCH     => $node->getSystemConfigs()?->getPrefetch(),
-                        self::TIMEOUT      => $node->getSystemConfigs()?->getTimeout(),
-                    ],
-                ];
-        }
     }
 
     /**

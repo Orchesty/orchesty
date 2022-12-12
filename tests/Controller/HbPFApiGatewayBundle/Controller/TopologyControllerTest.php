@@ -215,7 +215,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         $this->assertResponseLogged(
             $this->jwt,
             __DIR__ . '/data/TopologyController/testTopologyRequest.json',
-            ['message' => 'CurlManager::send() failed: cURL error 6: Could not resolve host: topology-api (see https://curl.haxx.se/libcurl/c/libcurl-errors.html)'],
+            [],
             [':id' => $topology->getId()],
         );
     }

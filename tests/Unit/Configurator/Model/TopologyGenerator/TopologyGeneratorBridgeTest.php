@@ -108,45 +108,6 @@ final class TopologyGeneratorBridgeTest extends KernelTestCaseAbstract
     /**
      * @throws Exception
      */
-    public function testInfoTopology(): void
-    {
-        $this->getManager(
-            static function (RequestDto $request): ResponseDto {
-                self::assertEquals(CurlManager::METHOD_GET, $request->getMethod());
-                self::assertEquals('http://topology-api/v1/api/topologies/topology', $request->getUri(TRUE));
-                self::assertEquals('', $request->getBody());
-
-                return new ResponseDto(200, 'OK', '', []);
-            },
-        )->infoTopology('topology');
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function testRunTest(): void
-    {
-        $this->getManager(
-            static function (RequestDto $request): ResponseDto {
-                self::assertEquals(CurlManager::METHOD_GET, $request->getMethod());
-                self::assertEquals('http://topology-api/v1/api/topologies/topology/host', $request->getUri(TRUE));
-                self::assertEquals('', $request->getBody());
-
-                return new ResponseDto(200, 'OK', '{"host":"http://bridge"}', []);
-            },
-            static function (RequestDto $request): ResponseDto {
-                self::assertEquals(CurlManager::METHOD_GET, $request->getMethod());
-                self::assertEquals('http://bridge/status', $request->getUri(TRUE));
-                self::assertEquals('', $request->getBody());
-
-                return new ResponseDto(200, 'OK', '{}', []);
-            },
-        )->runTest('topology');
-    }
-
-    /**
-     * @throws Exception
-     */
     public function testInvalidateTopologyCache(): void
     {
         $this->getManager(
@@ -184,26 +145,6 @@ final class TopologyGeneratorBridgeTest extends KernelTestCaseAbstract
                 return new ResponseDto(400, 'NOT OK', '{}', []);
             },
         )->invalidateTopologyCache('topology');
-    }
-
-    /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge::runTest
-     *
-     * @throws Exception
-     */
-    public function testRunTestErr(): void
-    {
-        self::expectException(CurlException::class);
-
-        $this->getManager(
-            static function (RequestDto $request): ResponseDto {
-                self::assertEquals(CurlManager::METHOD_GET, $request->getMethod());
-                self::assertEquals('http://topology-api/v1/api/topologies/topology/host', $request->getUri(TRUE));
-                self::assertEquals('', $request->getBody());
-
-                return new ResponseDto(400, 'NOT OK', '{}', []);
-            },
-        )->runTest('topology');
     }
 
     /**
