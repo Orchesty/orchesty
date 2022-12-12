@@ -111,7 +111,6 @@ func (p *NodeConfig) GetTopologyJson(t *Topology, nodes []Node) (TopologyJson, e
 			Settings: NodeSettingsJson{
 				Url:        fmt.Sprintf("http://%s:%d", worker.Settings.Host, worker.Settings.Port),
 				ActionPath: worker.Settings.ProcessPath,
-				TestPath:   worker.Settings.StatusPath,
 				Headers:    worker.Settings.Headers,
 				Method:     worker.Settings.Method,
 				// Bridge

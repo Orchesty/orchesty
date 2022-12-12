@@ -14,11 +14,6 @@ func routes() []Route {
 	routeList := map[string][]Route{
 		"": {
 			{
-				Method:  GET,
-				Pattern: "/status",
-				Handler: Status,
-			},
-			{
 				Method:  DELETE,
 				Pattern: "/clear",
 				Handler: Clear,

@@ -5,13 +5,17 @@ namespace PipesFrameworkTests\Integration\HbPFTopology\Handler;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Exception;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
+use Hanaboso\PipesFramework\Configurator\Document\Sdk;
 use Hanaboso\PipesFramework\Configurator\Model\NodeManager;
+use Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
+use Hanaboso\PipesFramework\Configurator\Model\TopologyTester;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler;
 use Hanaboso\PipesFramework\HbPFUserTaskBundle\Handler\UserTaskHandler;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
+use Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 use Throwable;
 
@@ -51,9 +55,10 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
         $generator->expects(self::any())->method('generateTopology')->willReturn(new ResponseDto(200, '', '{}', []));
         $generator->expects(self::any())->method('runTopology')->willReturn(new ResponseDto(200, '', '{}', []));
         $userTaskHandler = $this->mockUserTaskHandler();
+        $topologyTester  = $this->mockTopologyTester();
 
         $dml     = self::getContainer()->get('hbpf.database_manager_locator');
-        $handler = new TopologyHandler($dml, $manager, $nodeManager, $generator, $userTaskHandler);
+        $handler = new TopologyHandler($dml, $manager, $nodeManager, $generator, $userTaskHandler, $topologyTester);
         $result  = $handler->publishTopology($topology->getId());
 
         self::assertEquals(200, $result->getStatusCode());
@@ -71,9 +76,10 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
         $nodeManager     = $this->mockNodeManager();
         $generator       = $this->mockGenerator(new ResponseDto(400, '', '{}', []));
         $userTaskHandler = $this->mockUserTaskHandler();
+        $topologyTester  = $this->mockTopologyTester();
 
         $dml     = self::getContainer()->get('hbpf.database_manager_locator');
-        $handler = new TopologyHandler($dml, $manager, $nodeManager, $generator, $userTaskHandler);
+        $handler = new TopologyHandler($dml, $manager, $nodeManager, $generator, $userTaskHandler, $topologyTester);
         $result  = $handler->publishTopology($topology->getId());
 
         self::assertEquals(400, $result->getStatusCode());
@@ -91,9 +97,10 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
         $nodeManager     = $this->mockNodeManager();
         $generator       = $this->mockGenerator(new MappingException());
         $userTaskHandler = $this->mockUserTaskHandler();
+        $topologyTester  = $this->mockTopologyTester();
 
         $dml     = self::getContainer()->get('hbpf.database_manager_locator');
-        $handler = new TopologyHandler($dml, $manager, $nodeManager, $generator, $userTaskHandler);
+        $handler = new TopologyHandler($dml, $manager, $nodeManager, $generator, $userTaskHandler, $topologyTester);
         $result  = $handler->publishTopology($topology->getId());
 
         self::assertEquals(400, $result->getStatusCode());
@@ -127,10 +134,11 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
         $nodeManager     = $this->mockNodeManager();
         $generator       = $this->mockGenerator(new ResponseDto(200, '', '{}', []));
         $userTaskHandler = $this->mockUserTaskHandler();
-        $dml             = self::getContainer()->get('hbpf.database_manager_locator');
-        $handler         = new TopologyHandler($dml, $manager, $nodeManager, $generator, $userTaskHandler);
+        $topologyTester  = $this->mockTopologyTester();
 
-        $result = $handler->deleteTopology($topology->getId());
+        $dml     = self::getContainer()->get('hbpf.database_manager_locator');
+        $handler = new TopologyHandler($dml, $manager, $nodeManager, $generator, $userTaskHandler, $topologyTester);
+        $result  = $handler->deleteTopology($topology->getId());
 
         self::assertEquals(200, $result->getStatusCode());
     }
@@ -143,38 +151,33 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
     public function testRunTest(): void
     {
         $topology = $this->createTopology();
+        self::getContainer()->get('hbpf.configurator.manager.sdk')->create([Sdk::URL => '127.0.0.2', Sdk::NAME => '']);
 
         $manager         = $this->mockManager($topology);
         $nodeManager     = $this->mockNodeManager();
         $generator       = $this->mockGenerator(new ResponseDto(200, '', '{"docker_info": {"info": 1}}', []));
-        $dml             = self::getContainer()->get('hbpf.database_manager_locator');
         $userTaskHandler = $this->mockUserTaskHandler();
-        $handler         = new TopologyHandler($dml, $manager, $nodeManager, $generator, $userTaskHandler);
+        $topologyTester  = self::getContainer()->get('hbpf.topology.tester');
+        $this->setProperty($topologyTester, 'topologyConfigFactory', $this->mockTopologyNodeFactory());
+        $this->setProperty($topologyTester, 'nodeRepository', $this->mockNodeRepository());
 
-        $result = $handler->runTest($topology->getId());
+        $dml     = self::getContainer()->get('hbpf.database_manager_locator');
+        $handler = new TopologyHandler($dml, $manager, $nodeManager, $generator, $userTaskHandler, $topologyTester);
+        $result  = $handler->runTest($topology->getId());
 
-        self::assertEquals([], $result);
-    }
-
-    /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::runTest
-     *
-     * @throws Exception
-     */
-    public function testRunTestStartTopo(): void
-    {
-        $topology = $this->createTopology();
-
-        $manager         = $this->mockManager($topology);
-        $nodeManager     = $this->mockNodeManager();
-        $generator       = $this->mockGenerator(new ResponseDto(200, '', '', []));
-        $dml             = self::getContainer()->get('hbpf.database_manager_locator');
-        $userTaskHandler = $this->mockUserTaskHandler();
-        $handler         = new TopologyHandler($dml, $manager, $nodeManager, $generator, $userTaskHandler);
-
-        $result = $handler->runTest($topology->getId());
-
-        self::assertEquals([], $result);
+        self::assertEquals([
+            [
+                'id'     => 'node-id-exception',
+                'name'   => 'node-name-exception',
+                'status' => 'nok',
+                'reason' => 'cURL error 6: Could not resolve host: unknown (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://unknown',
+            ],
+            [
+                'id'     => 'node-id',
+                'name'   => 'node-name',
+                'status' => 'ok',
+            ],
+        ], $result);
     }
 
     /**
@@ -209,8 +212,6 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
                 'deleteTopology',
                 'stopTopology',
                 'invalidateTopologyCache',
-                'infoTopology',
-                'runTest',
             ],
         );
 
@@ -219,17 +220,14 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
             $generator->expects(self::any())->method('runTopology')->willThrowException($return);
             $generator->expects(self::any())->method('deleteTopology')->willThrowException($return);
             $generator->expects(self::any())->method('stopTopology')->willThrowException($return);
-            $generator->expects(self::any())->method('infoTopology')->willThrowException($return);
 
         } else {
             $generator->expects(self::any())->method('generateTopology')->willReturn($return);
             $generator->expects(self::any())->method('runTopology')->willReturn($return);
             $generator->expects(self::any())->method('deleteTopology')->willReturn($return);
             $generator->expects(self::any())->method('stopTopology')->willReturn($return);
-            $generator->expects(self::any())->method('infoTopology')->willReturn($return);
         }
         $generator->expects(self::any())->method('invalidateTopologyCache')->willReturn([]);
-        $generator->expects(self::any())->method('runTest')->willReturn([]);
 
         return $generator;
     }
@@ -272,6 +270,56 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
             UserTaskHandler::class,
             [],
         );
+    }
+
+    /**
+     * @return TopologyTester
+     */
+    private function mockTopologyTester(): TopologyTester
+    {
+        return self::createPartialMock(
+            TopologyTester::class,
+            [],
+        );
+    }
+
+    /**
+     * @return TopologyConfigFactory
+     */
+    private function mockTopologyNodeFactory(): TopologyConfigFactory
+    {
+        $topologyConfigFactory = self::createMock(TopologyConfigFactory::class);
+        $topologyConfigFactory->method('getWorkers')->willReturn([
+            'settings' => [
+                'host'        => 'example.com',
+                'port'        => 80,
+                'status_path' => '',
+            ],
+        ], [
+            'settings' => [
+                'host'        => 'unknown',
+                'port'        => 80,
+                'status_path' => '',
+            ],
+        ]);
+
+        return $topologyConfigFactory;
+    }
+
+    /**
+     * @return NodeRepository
+     */
+    private function mockNodeRepository(): NodeRepository
+    {
+        $nodeOne = (new Node())->setName('node-name');
+        $nodeTwo = (new Node())->setName('node-name-exception');
+        $this->setProperty($nodeOne, 'id', 'node-id');
+        $this->setProperty($nodeTwo, 'id', 'node-id-exception');
+
+        $nodeRepository = self::createMock(NodeRepository::class);
+        $nodeRepository->method('getNodesByTopology')->willReturn([$nodeOne, $nodeTwo]);
+
+        return $nodeRepository;
     }
 
 }

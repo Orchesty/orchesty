@@ -36,6 +36,18 @@ services:
             - '%installer_dirs%'
             - '%checkInfiniteLoop%'
 
+    hbpf.topology.tester:
+        class: Hanaboso\PipesFramework\Configurator\Model\TopologyTester
+        arguments:
+            - '@hbpf.topology.tester.client'
+            - '@hbpf.topology.configurator'
+            - '@hbpf.database_manager_locator'
+
+    hbpf.topology.tester.client:
+        class: GuzzleHttp\Client
+        arguments:
+            - { timeout: 30 }
+
     hbpf.install.cache.null:
         class: Hanaboso\PipesFramework\TopologyInstaller\Cache\NullCache
 
