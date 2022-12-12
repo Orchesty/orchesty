@@ -139,31 +139,6 @@ final class TopologyGeneratorBridge
     }
 
     /**
-     * @param string $topologyId
-     *
-     * @return ResponseDto
-     * @throws CurlException
-     */
-    public function infoTopology(string $topologyId): ResponseDto
-    {
-        $uri = sprintf(self::BASE_TOPOLOGY_URL, $this->configs[self::TOPOLOGY_API], $topologyId);
-        $dto = new RequestDto(new Uri($uri), CurlManager::METHOD_GET, new ProcessDto());
-
-        return $this->curlManager->send($dto);
-    }
-
-    /**
-     * @param string $topologyId
-     *
-     * @return mixed[]
-     * @throws CurlException
-     */
-    public function runTest(string $topologyId): array
-    {
-        return $this->callTopologyBridge($topologyId, CurlManager::METHOD_GET, 'status');
-    }
-
-    /**
      * @param string $topologyName
      *
      * @return mixed[]

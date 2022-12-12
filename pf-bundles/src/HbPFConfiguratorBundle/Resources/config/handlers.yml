@@ -10,6 +10,7 @@ services:
             - '@hbpf.configurator.manager.node'
             - '@hbpf.topology_generator.bridge'
             - '@hbpf.user_task.handler.user_task'
+            - '@hbpf.topology.tester'
 
     hbpf.configurator.handler.node:
         class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler
