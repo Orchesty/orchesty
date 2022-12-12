@@ -120,7 +120,6 @@ func getNodeConfigs() map[string]model.NodeUserParams {
 				Settings: model.TopologyBridgeWorkerSettingsJSON{
 					Host:         "monolith-api",
 					ProcessPath:  "/connector/Webhook/webhook",
-					StatusPath:   "/connector/Webhook/webhook/test",
 					Method:       "POST",
 					Port:         80,
 					Secure:       false,
@@ -134,7 +133,6 @@ func getNodeConfigs() map[string]model.NodeUserParams {
 				Settings: model.TopologyBridgeWorkerSettingsJSON{
 					Host:         "xml-parser-api",
 					ProcessPath:  "/Xml_parser",
-					StatusPath:   "/Xml_parser/test",
 					Method:       "POST",
 					Port:         80,
 					PublishQueue: model.TopologyBridgeWorkerSettingsQueueJSON{},

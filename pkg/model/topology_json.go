@@ -26,7 +26,6 @@ type TopologyBridgeWorkerSettingsQueueJSON struct {
 type TopologyBridgeWorkerSettingsJSON struct {
 	Host           string                                `json:"host,omitempty"`
 	ProcessPath    string                                `json:"process_path,omitempty"`
-	StatusPath     string                                `json:"status_path,omitempty"`
 	Method         string                                `json:"method,omitempty"`
 	Headers        map[string]interface{}                `json:"headers"`
 	Port           int                                   `json:"port,omitempty"`
@@ -74,7 +73,6 @@ type NodeJsonFollower struct {
 type NodeSettingsJson struct {
 	Url        string                 `json:"url,omitempty"`
 	ActionPath string                 `json:"actionPath,omitempty"`
-	TestPath   string                 `json:"testPath,omitempty"`
 	Method     string                 `json:"method,omitempty"`
 	Headers    map[string]interface{} `json:"headers"`
 	// Bridge
