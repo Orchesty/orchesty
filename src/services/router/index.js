@@ -40,7 +40,15 @@ export const beforeEach = (store) => {
     const notLogged = () => {
       clearInterval(timer)
 
-      next({ name: ROUTES.LOGIN })
+      if (router.currentRoute.name === ROUTES.LOGIN) {
+        // Do not perform any navigation or URL changes if user is already on
+        // the login page.
+        next(false)
+      } else {
+        // Prepare a query parameter that will be used to redirect user back to
+        // route requested before the logout happened.
+        next({ name: ROUTES.LOGIN, query: { redirect: to.path } })
+      }
     }
 
     const checkLogged = () => {

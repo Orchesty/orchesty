@@ -23,7 +23,10 @@ export default {
       })
 
       commit(AUTH.MUTATIONS.LOGIN_RESPONSE, data)
-      await router.push({ name: ROUTES.DASHBOARD })
+
+      const redirect = router.currentRoute.query?.redirect
+      router.push(redirect || { name: ROUTES.DASHBOARD })
+
       addSuccessMessage(
         dispatch,
         API.auth.forgotPassword.id,
