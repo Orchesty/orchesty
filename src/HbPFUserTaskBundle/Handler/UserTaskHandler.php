@@ -121,12 +121,19 @@ final class UserTaskHandler
      */
     public function acceptBatch(array $filterData, ?string $topologyId = NULL, ?string $nodeId = NULL): array
     {
-        $tasks = $this->manager->filter($this->filterBody($filterData));
-        foreach ($tasks as $task) {
-            $this->accept($task['id'], $topologyId, $nodeId);
-        }
+        while (TRUE) {
+            $tasks = $this->manager->filter($this->filterBody($filterData));
 
-        return [];
+            if (!$tasks) {
+                return [];
+            }
+
+            foreach ($tasks as $task) {
+                $this->accept($task['id'], $topologyId, $nodeId);
+            }
+
+            $this->dm->flush();
+        }
     }
 
     /**
@@ -152,12 +159,19 @@ final class UserTaskHandler
      */
     public function rejectBatch(array $filterData): array
     {
-        $tasks = $this->manager->filter($this->filterBody($filterData));
-        foreach ($tasks as $task) {
-            $this->reject($task['id']);
-        }
+        while (TRUE) {
+            $tasks = $this->manager->filter($this->filterBody($filterData));
 
-        return [];
+            if (!$tasks) {
+                return [];
+            }
+
+            foreach ($tasks as $task) {
+                $this->reject($task['id']);
+            }
+
+            $this->dm->flush();
+        }
     }
 
     /**
@@ -184,7 +198,7 @@ final class UserTaskHandler
         $fields = [self::IDS, UserTask::CORRELATION_ID, UserTask::TOPOLOGY_ID, UserTask::NODE_ID, UserTask::TYPE];
         Validations::checkParamsAny($fields, $data);
         $dto = new GridRequestDto([]);
-        $dto->setItemsPerPage(99);
+        $dto->setItemsPerPage(100);
 
         foreach ($fields as $field) {
             if (array_key_exists($field, $data)) {

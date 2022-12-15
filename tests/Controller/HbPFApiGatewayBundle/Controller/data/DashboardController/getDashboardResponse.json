@@ -5,8 +5,8 @@
             "activeTopologies": 0,
             "disabledTopologies": 0,
             "totalRuns": 2,
-            "errorsCount": 1,
-            "successCount": 1,
+            "errorsCount": 2,
+            "successCount": 0,
             "installedApps": 0
         },
         "errorLogs": [],
