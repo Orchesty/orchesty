@@ -20,7 +20,7 @@ final class DataProvider
             'min'    => '2',
             'avg'    => '2.00',
             'total'  => '2',
-            'errors' => '1',
+            'errors' => '2',
         ];
     }
 

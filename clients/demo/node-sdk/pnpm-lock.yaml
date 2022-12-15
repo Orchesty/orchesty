@@ -5,7 +5,7 @@ specifiers:
   '@aws-sdk/util-endpoints': ^3.226.0
   '@hanaboso/eslint-plugin': ^1.0.7
   '@orchesty/nodejs-connectors': ^2.1.18
-  '@orchesty/nodejs-sdk': ^3.2.12
+  '@orchesty/nodejs-sdk': ^3.2.13
   '@types/jest': ^29.2.4
   '@types/node': ^18.11.12
   '@types/node-fetch': ^2.6.2
@@ -25,7 +25,7 @@ dependencies:
   '@aws-sdk/client-ses': 3.226.0
   '@aws-sdk/util-endpoints': 3.226.0
   '@orchesty/nodejs-connectors': 2.1.18
-  '@orchesty/nodejs-sdk': 3.2.12
+  '@orchesty/nodejs-sdk': 3.2.13
   '@types/node': 18.11.12
   '@types/node-fetch': 2.6.2
   copyfiles: 2.4.1
@@ -2287,7 +2287,7 @@ packages:
   /@orchesty/nodejs-connectors/2.1.18:
     resolution: {integrity: sha512-CZSyR+m/g4I9wz2n8+f90hj8O4Z5zD/kusz8G9et9GOYskIb2iSNAox0GRUfHF9v2XVDb3+o80MqOJsfnZXKhw==}
     dependencies:
-      '@orchesty/nodejs-sdk': 3.2.12
+      '@orchesty/nodejs-sdk': 3.2.13
       express: 5.0.0-beta.1
       form-data: 4.0.0
       joi: 17.7.0
@@ -2323,8 +2323,8 @@ packages:
       - supports-color
     dev: false
 
-  /@orchesty/nodejs-sdk/3.2.12:
-    resolution: {integrity: sha512-3ULaPeksneCxG01SqoKZJY4KwQ1LnckOz3xJoxNKVfScWfOXS8e2e2Gj6r2OIkf6+7tSo5Zm+HJkUPz61mh6xQ==}
+  /@orchesty/nodejs-sdk/3.2.13:
+    resolution: {integrity: sha512-QLxu21TdKp6D8SJwNwV+XMVYnOr28Zyr0vMtKs5f1DdUM72Ds3VMk2HfefUTNQmqtU+OfHWclaohRQZKmxLzDQ==}
     dependencies:
       '@types/express': 4.17.14
       '@types/express-prometheus-middleware': 1.2.1
@@ -7379,7 +7379,7 @@ packages:
     dev: false
 
   /utils-merge/1.0.1:
-    resolution: {integrity: sha1-n5VxD1CiZ5R7LMwSR0HBAoQn5xM=}
+    resolution: {integrity: sha512-pMZTvIkT1d+TFGvDOqodOclx0QWkkgi6Tdoa8gC8ffGAAqz9pzPTZWAybbsHHoED/ztMtkv/VoYTYyShUn81hA==}
     engines: {node: '>= 0.4.0'}
     dev: false
 
