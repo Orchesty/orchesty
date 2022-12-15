@@ -22,7 +22,10 @@ func (m *MongoDb) GetApiToken(user string, scopes []string) (*model.ApiToken, er
 	if err != nil {
 		cancel()
 
-		log.Fatal().Err(err).Msg("ApiToken with current user and scope not found!")
+		if err.Error() != "mongo: no documents in result" {
+			log.Fatal().Err(err).Msg("ApiToken with current user and scope not found!")
+		}
+
 		return nil, err
 	}
 

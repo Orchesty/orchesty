@@ -293,7 +293,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
                 ],
                 MongoMetricsManager::PROCESS      => [
                     'total'  => '6',
-                    'errors' => '3',
+                    'errors' => '6',
                 ],
             ],
             $result['topology'],
@@ -350,7 +350,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
                 ],
                 MongoMetricsManager::PROCESS      => [
                     'total'  => '1',
-                    'errors' => '0',
+                    'errors' => '1',
                 ],
             ],
             $result['topology'],
