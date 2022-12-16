@@ -1,0 +1,243 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "instance-proxy.fullname" . }}
+  labels:
+    {{- include "instance-proxy.labels" . | nindent 4 }}
+data:
+  haproxy.cfg: |
+    global
+      user haproxy
+      group haproxy
+      stats      socket /var/run/api.sock mode 660 level admin expose-fd listeners
+      log        stdout format raw local0
+      maxconn    5000
+
+
+    resolvers system
+        parse-resolv-conf
+
+
+    defaults
+        log                     global
+        option                  dontlognull
+        option                  httplog
+
+        option                  redispatch
+        option http-keep-alive
+        retries                 3
+        timeout connect         5s
+        timeout client          60s
+        timeout server          30s
+        timeout http-keep-alive 2s
+
+        default-server resolvers system init-addr none
+
+
+    frontend stats
+        mode http
+        bind *:8081
+        stats enable
+        stats uri /
+        stats refresh 10s
+        stats admin if LOCALHOST
+
+
+    frontend ping
+        mode http
+        bind *:8082
+        http-request set-log-level silent
+        use_backend ping
+
+
+    frontend instance_proxy
+        mode http
+        bind *:8080
+
+        # instance-iqnb4x3vhd
+
+        acl api-instance-iqnb4x3vhd hdr_beg(host) api-iqnb4x3vhd.eu1.cloud.orchesty.io
+        use_backend api-iqnb4x3vhd if api-instance-iqnb4x3vhd
+
+        acl ui-instance-iqnb4x3vhd hdr_beg(host) ui-iqnb4x3vhd.eu1.cloud.orchesty.io
+        use_backend ui-iqnb4x3vhd if ui-instance-iqnb4x3vhd
+
+        acl start-instance-iqnb4x3vhd hdr_beg(host) start-iqnb4x3vhd.eu1.cloud.orchesty.io
+        use_backend start-iqnb4x3vhd if start-instance-iqnb4x3vhd
+
+        acl applinth-instance-iqnb4x3vhd hdr_beg(host) applinth-iqnb4x3vhd.eu1.cloud.orchesty.io
+        use_backend applinth-iqnb4x3vhd if applinth-instance-iqnb4x3vhd
+
+        acl shoptet-cs-instance-iqnb4x3vhd hdr_beg(host) shoptet-cs-iqnb4x3vhd.eu1.cloud.orchesty.io
+        use_backend shoptet-cs-iqnb4x3vhd if shoptet-cs-instance-iqnb4x3vhd
+
+        # legacy
+        acl shoptet-cs-instance-iqnb4x3vhd hdr_beg(host) shoptet-cs-yr2de-g59q8.tenant-eu1.cloud.orchesty.io
+        use_backend shoptet-cs-iqnb4x3vhd if shoptet-cs-instance-iqnb4x3vhd
+
+
+        # instance-nezqa6b4df
+
+        acl api-instance-nezqa6b4df hdr_beg(host) api-nezqa6b4df.eu1.cloud.orchesty.io
+        use_backend api-nezqa6b4df if api-instance-nezqa6b4df
+
+        acl ui-instance-nezqa6b4df hdr_beg(host) ui-nezqa6b4df.eu1.cloud.orchesty.io
+        use_backend ui-nezqa6b4df if ui-instance-nezqa6b4df
+
+        acl start-instance-nezqa6b4df hdr_beg(host) start-nezqa6b4df.eu1.cloud.orchesty.io
+        use_backend start-nezqa6b4df if start-instance-nezqa6b4df
+
+        acl applinth-instance-nezqa6b4df hdr_beg(host) applinth-nezqa6b4df.eu1.cloud.orchesty.io
+        use_backend applinth-nezqa6b4df if applinth-instance-nezqa6b4df
+
+
+        # instance-dzyu18odcx
+
+        acl api-instance-dzyu18odcx hdr_beg(host) api-dzyu18odcx.eu1.cloud.orchesty.io
+        use_backend api-dzyu18odcx if api-instance-dzyu18odcx
+
+        acl ui-instance-dzyu18odcx hdr_beg(host) ui-dzyu18odcx.eu1.cloud.orchesty.io
+        use_backend ui-dzyu18odcx if ui-instance-dzyu18odcx
+
+        acl start-instance-dzyu18odcx hdr_beg(host) start-dzyu18odcx.eu1.cloud.orchesty.io
+        use_backend start-dzyu18odcx if start-instance-dzyu18odcx
+
+        acl applinth-instance-dzyu18odcx hdr_beg(host) applinth-dzyu18odcx.eu1.cloud.orchesty.io
+        use_backend applinth-dzyu18odcx if applinth-instance-dzyu18odcx
+
+
+        # instance-k9vbai2soj
+
+        acl api-instance-k9vbai2soj hdr_beg(host) api-k9vbai2soj.eu1.cloud.orchesty.io
+        use_backend api-k9vbai2soj if api-instance-k9vbai2soj
+
+        acl ui-instance-k9vbai2soj hdr_beg(host) ui-k9vbai2soj.eu1.cloud.orchesty.io
+        use_backend ui-k9vbai2soj if ui-instance-k9vbai2soj
+
+        acl start-instance-k9vbai2soj hdr_beg(host) start-k9vbai2soj.eu1.cloud.orchesty.io
+        use_backend start-k9vbai2soj if start-instance-k9vbai2soj
+
+        acl applinth-instance-k9vbai2soj hdr_beg(host) applinth-k9vbai2soj.eu1.cloud.orchesty.io
+        use_backend applinth-k9vbai2soj if applinth-instance-k9vbai2soj
+
+
+        # instance-acixug9xqs
+
+        acl api-instance-acixug9xqs hdr_beg(host) api-acixug9xqs.eu1.cloud.orchesty.io
+        use_backend api-acixug9xqs if api-instance-acixug9xqs
+
+        acl ui-instance-acixug9xqs hdr_beg(host) ui-acixug9xqs.eu1.cloud.orchesty.io
+        use_backend ui-acixug9xqs if ui-instance-acixug9xqs
+
+        acl start-instance-acixug9xqs hdr_beg(host) start-acixug9xqs.eu1.cloud.orchesty.io
+        use_backend start-acixug9xqs if start-instance-acixug9xqs
+
+        acl applinth-instance-acixug9xqs hdr_beg(host) applinth-acixug9xqs.eu1.cloud.orchesty.io
+        use_backend applinth-acixug9xqs if applinth-instance-acixug9xqs
+
+
+
+    # instance-iqnb4x3vhd
+
+    backend api-iqnb4x3vhd
+        mode http
+        server svc backend.instance-iqnb4x3vhd.svc.cluster.local:80
+
+    backend ui-iqnb4x3vhd
+        mode http
+        server svc frontend.instance-iqnb4x3vhd.svc.cluster.local:80
+
+    backend start-iqnb4x3vhd
+        mode http
+        server svc starting-point.instance-iqnb4x3vhd.svc.cluster.local:8080
+
+    backend applinth-iqnb4x3vhd
+        mode http
+        server svc applinth-marketplace-ui.instance-iqnb4x3vhd.svc.cluster.local:80
+
+    backend shoptet-cs-iqnb4x3vhd
+        mode http
+        server svc shoptet-plugin.instance-iqnb4x3vhd.svc.cluster.local:80
+
+
+    # instance-nezqa6b4df
+
+    backend api-nezqa6b4df
+        mode http
+        server svc backend.instance-nezqa6b4df.svc.cluster.local:80
+
+    backend ui-nezqa6b4df
+        mode http
+        server svc frontend.instance-nezqa6b4df.svc.cluster.local:80
+
+    backend start-nezqa6b4df
+        mode http
+        server svc starting-point.instance-nezqa6b4df.svc.cluster.local:8080
+
+    backend applinth-nezqa6b4df
+        mode http
+        server svc applinth-marketplace-ui.instance-nezqa6b4df.svc.cluster.local:80
+
+
+    # instance-dzyu18odcx
+
+    backend api-dzyu18odcx
+        mode http
+        server svc backend.instance-dzyu18odcx.svc.cluster.local:80
+
+    backend ui-dzyu18odcx
+        mode http
+        server svc frontend.instance-dzyu18odcx.svc.cluster.local:80
+
+    backend start-dzyu18odcx
+        mode http
+        server svc starting-point.instance-dzyu18odcx.svc.cluster.local:8080
+
+    backend applinth-dzyu18odcx
+        mode http
+        server svc applinth-marketplace-ui.instance-dzyu18odcx.svc.cluster.local:80
+
+
+    # instance-k9vbai2soj
+
+    backend api-k9vbai2soj
+        mode http
+        server svc backend.instance-k9vbai2soj.svc.cluster.local:80
+
+    backend ui-k9vbai2soj
+        mode http
+        server svc frontend.instance-k9vbai2soj.svc.cluster.local:80
+
+    backend start-k9vbai2soj
+        mode http
+        server svc starting-point.instance-k9vbai2soj.svc.cluster.local:8080
+
+    backend applinth-k9vbai2soj
+        mode http
+        server svc applinth-marketplace-ui.instance-k9vbai2soj.svc.cluster.local:80
+
+
+    # instance-acixug9xqs
+
+    backend api-acixug9xqs
+        mode http
+        server svc backend.instance-acixug9xqs.svc.cluster.local:80
+
+    backend ui-acixug9xqs
+        mode http
+        server svc frontend.instance-acixug9xqs.svc.cluster.local:80
+
+    backend start-acixug9xqs
+        mode http
+        server svc starting-point.instance-acixug9xqs.svc.cluster.local:8080
+
+    backend applinth-acixug9xqs
+        mode http
+        server svc applinth-marketplace-ui.instance-acixug9xqs.svc.cluster.local:80
+
+
+    # ping backend
+
+    backend ping
+      mode http
+      http-request return status 200 content-type "text/plain" lf-string "pong"
