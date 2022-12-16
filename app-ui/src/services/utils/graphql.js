@@ -9,6 +9,7 @@ import {
   startSending,
   stopSending,
 } from "./utils"
+import router from "../router"
 
 const graphqlClient = axios.create({
   baseURL: config.backend.graphqlBaseUrl,
@@ -47,8 +48,7 @@ const checkError = (errors, store, id, errorType) => {
   errors.forEach((item) => {
     // logout
     if (item.code === "UNAUTHORIZED") {
-      logout(store.commit, store.dispatch)
-
+      logout(store.commit, store.dispatch, router.currentRoute)
       return
     }
 
@@ -111,8 +111,7 @@ const call = (
         if (err.response) {
           // logout
           if (err.response.status && err.response.status === 401) {
-            logout(store.commit, store.dispatch)
-
+            logout(store.commit, store.dispatch, router.currentRoute)
             return
           }
 
