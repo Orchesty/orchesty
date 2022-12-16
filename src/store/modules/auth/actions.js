@@ -46,7 +46,7 @@ export default {
       commit(AUTH.MUTATIONS.CHECK_LOGGED_RESPONSE, data)
       return true
     } catch {
-      await logout(commit, dispatch)
+      await logout(commit, dispatch, router.currentRoute)
 
       return false
     }
@@ -58,7 +58,7 @@ export default {
         throwError: true,
       })
     } finally {
-      await logout(commit, dispatch)
+      await logout(commit, dispatch, router.currentRoute)
     }
   },
   [AUTH.ACTIONS.FORGOT_PASSWORD_REQUEST]: async ({ dispatch }, payload) => {

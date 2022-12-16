@@ -5,7 +5,6 @@ import { i18n } from "../../localization"
 import { addErrorMessage } from "./flashMessages"
 import { STORE } from "../../store/types"
 import { ROUTES } from "../enums/routerEnums"
-import router from "../router"
 
 export const startSending = (commit, id, errorType, loadingType) => {
   commit(
@@ -59,17 +58,16 @@ export const onError = (store, id, errorCode, errorType, message) => {
   addError(store.commit, id, i18n.t(message))
 }
 
-export const logout = async (commit, dispatch) => {
+export const logout = async (commit, dispatch, currentRoute) => {
   commit(withNamespace(AUTH.NAMESPACE, AUTH.MUTATIONS.LOGOUT_RESPONSE), null, {
     root: true,
   })
   const loginRoute = { name: ROUTES.LOGIN }
-  const currentPath = router.currentRoute.path
-  if (currentPath) {
-    loginRoute.query = { redirect: currentPath }
+  if (currentRoute.path) {
+    loginRoute.query = { redirect: currentRoute.path }
   }
   // Do not perform any navigation if user is already on the login page.
-  if (router.currentRoute.name !== ROUTES.LOGIN) {
+  if (currentRoute.name !== ROUTES.LOGIN) {
     await dispatch(STORE.ACTIONS.ROUTER_PUSH, loginRoute, { root: true })
   }
   dispatch(STORE.ACTIONS.RESET, null, { root: true })
