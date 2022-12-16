@@ -15,9 +15,6 @@ resource "google_cloud_scheduler_job" "certbot" {
     http_method = "POST"
     uri         = "https://${var.region}-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${var.project_id}/jobs/certbot:run"
     body        = ""
-    headers = {
-      "User-Agent" = "Google-Cloud-Scheduler"
-    }
     oauth_token {
       service_account_email = data.google_compute_default_service_account.default.email
     }
