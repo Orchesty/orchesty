@@ -49,7 +49,7 @@ export default {
       DATA_GRIDS,
       headers: [
         {
-          text: this.$t("grid.headers.id"),
+          text: this.$t("grid.header.id"),
           value: "name",
           align: "left",
           sortable: true,
@@ -57,7 +57,7 @@ export default {
           width: "300px",
         },
         {
-          text: this.$t("grid.headers.email"),
+          text: this.$t("grid.header.email"),
           value: "email",
           align: "left",
           sortable: true,
@@ -65,7 +65,7 @@ export default {
           width: "300px",
         },
         {
-          text: this.$t("grid.headers.actions"),
+          text: this.$t("grid.header.actions"),
           value: "action",
           align: "right",
           sortable: false,

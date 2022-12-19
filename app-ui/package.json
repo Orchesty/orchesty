@@ -14,7 +14,8 @@
     "format:check": "prettier --check '**/*.{js,ts,vue,json,yml,mjs,css,scss,md}'",
     "format": "prettier --write '**/*.{js,ts,vue,json,yml,mjs,css,scss,md}'",
     "test": "",
-    "validate": "run-p -l lint lint:styles format:check test"
+    "validate": "run-p -l lint lint:styles format:check test",
+    "vue-i18n-extract": "node ./src/localization/transform.mjs && vue-i18n-extract report --vueFiles './src/**/*.?(js|vue)' --languageFiles './src/localization/generated/*.json' && rm -rf './src/localization/generated/'"
   },
   "dependencies": {
     "@casl/ability": "^5.3.1",
@@ -70,6 +71,7 @@
     "stylelint-config-recommended-vue": "^1.4.0",
     "stylelint-config-standard-scss": "^6.0.0",
     "stylelint-config-standard-vue": "^1.0.0",
+    "vue-i18n-extract": "^2.0.7",
     "vue-template-compiler": "^2.6.14"
   },
   "postcss": {
