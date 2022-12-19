@@ -54,3 +54,4 @@ rebuild-all:
 	cd clients/demo/node-sdk && make build TAG=$(TAG)
 	cd applinth && make build TAG=$(TAG)
 	cd status-service && make build TAG=$(TAG)
+	cd worker-api && make build TAG=$(TAG)
