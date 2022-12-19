@@ -1,7 +1,7 @@
 <template>
   <auth-layout>
     <v-alert v-if="!email" type="error">
-      {{ $t("auth.links.notValidToken") }}
+      {{ $t("page.text.notValidToken") }}
     </v-alert>
     <auth-split-layout v-else>
       <template #heading> {{ $t("page.heading.setNewPassword") }} </template>

@@ -28,13 +28,6 @@
           </td>
         </tr>
       </template>
-      <!--      <template #top>-->
-      <!--        <div class="bg-primary">-->
-      <!--          <h5 class="pl-3 py-3">-->
-      <!--            {{ $t('topologies.dashboard.tables.errorLogs') }}-->
-      <!--          </h5>-->
-      <!--        </div>-->
-      <!--      </template>-->
     </v-data-table>
   </v-col>
 </template>
