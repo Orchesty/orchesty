@@ -178,7 +178,7 @@ export default {
       mergedFilter: [],
       headers: [
         {
-          text: this.$t("topologies.logs.headers.timestamp"),
+          text: this.$t("grid.header.timestamp"),
           value: "timestamp",
           align: "left",
           sortable: true,
@@ -186,7 +186,7 @@ export default {
           width: "15%",
         },
         {
-          text: this.$t("topologies.logs.headers.correlation_id"),
+          text: this.$t("grid.header.correlation_id"),
           value: "correlation_id",
           align: "left",
           sortable: true,
@@ -194,7 +194,7 @@ export default {
           width: "20%",
         },
         {
-          text: this.$t("topologies.logs.headers.message"),
+          text: this.$t("grid.header.message"),
           value: "message",
           align: "left",
           sortable: true,
@@ -202,7 +202,7 @@ export default {
           width: "45%",
         },
         {
-          text: this.$t("topologies.logs.headers.severity"),
+          text: this.$t("grid.header.severity"),
           value: "severity",
           align: "left",
           sortable: true,

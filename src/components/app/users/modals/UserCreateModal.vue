@@ -11,7 +11,7 @@
     </template>
     <template #sendingButton>
       <sending-button
-        :sending-title="$t('button.sending.create')"
+        :sending-title="$t('button.sending.creating')"
         :is-sending="state.isSending"
         :button-title="$t('button.create')"
         :on-click="() => $refs.form.submit()"

@@ -18,3 +18,6 @@ dist
 !.yarn/sdks
 !.yarn/versions
 .pnp.*
+
+# Exclude anything generated
+generated/

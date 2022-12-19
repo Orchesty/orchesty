@@ -1,16 +1,16 @@
 <template>
   <auth-layout>
     <auth-split-layout>
-      <template #heading> {{ $t("auth.page.passwordChanged.title") }}</template>
+      <template #heading> {{ $t("page.text.passwordChangedTitle") }}</template>
       <template #form>
         <p>
           <i18n
-            path="auth.page.passwordChanged.body"
+            path="page.text.passwordChangedBody"
             tag="span"
-            for="auth.page.passwordChanged.login"
+            for="page.text.passwordChangedLogin"
           >
             <router-link :to="{ name: ROUTES.LOGIN }">
-              {{ $t("auth.page.passwordChanged.login") }}</router-link
+              {{ $t("page.text.passwordChangedLogin") }}</router-link
             >
           </i18n>
         </p>

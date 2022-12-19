@@ -1,5 +1,5 @@
 <template>
-  <basic-card :title="$t('profile.setting.title')">
+  <basic-card :title="$t('grid.header.settings')">
     <v-list>
       <v-list-item>
         <v-list-item-content>

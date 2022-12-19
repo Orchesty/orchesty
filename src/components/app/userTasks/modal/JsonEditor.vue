@@ -3,7 +3,7 @@
     <textarea v-model="parsedJsonData" class="textarea"></textarea>
     <div class="parsing-error-message">
       <span v-if="isNotJson" class="font-weight-bold error--text">
-        {{ $t("userTask.jsonEditor.parsingError") }}
+        {{ $t("page.text.errorJsonParsing") }}
       </span>
     </div>
   </div>

@@ -109,7 +109,7 @@ export default {
 
     copyToClipboard(correlationId) {
       navigator.clipboard.writeText(correlationId)
-      this.showFlashMessage(false, this.$t("flashMessages.topologies.idCopied"))
+      this.showFlashMessage(false, this.$t("flashMessages.topologyIdCopied"))
     },
 
     isInProgress(value) {

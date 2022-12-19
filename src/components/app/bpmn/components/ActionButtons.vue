@@ -49,9 +49,7 @@
       <v-list dense>
         <v-list-item link @click="$refs.import.click()">
           <v-list-item-title class="d-flex justify-space-between align-center">
-            <span class="mr-2">{{
-              $t("topologies.editor.actions.import")
-            }}</span>
+            <span class="mr-2">{{ $t("button.import") }}</span>
             <app-icon dense>mdi-import</app-icon>
           </v-list-item-title>
           <input
@@ -69,9 +67,7 @@
 
         <v-list-item link @click="exportDiagram()">
           <v-list-item-title class="d-flex justify-space-between align-center">
-            <span class="mr-2">{{
-              $t("topologies.editor.actions.export")
-            }}</span>
+            <span class="mr-2">{{ $t("button.export") }}</span>
             <app-icon dense>mdi-export</app-icon>
           </v-list-item-title>
         </v-list-item>

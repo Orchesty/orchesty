@@ -2,12 +2,12 @@
   <auth-layout>
     <auth-split-layout>
       <template #heading>
-        {{ $t("auth.page.forgotPasswordSent.title") }}
+        {{ $t("page.text.forgotPasswordSentTitle") }}
       </template>
       <template #form>
         <p>
           <i18n
-            path="auth.page.forgotPasswordSent.body"
+            path="page.text.forgotPasswordSentBody"
             tag="span"
             :for="$route.params.email"
           >

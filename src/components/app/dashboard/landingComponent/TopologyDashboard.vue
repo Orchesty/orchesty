@@ -47,39 +47,6 @@
         :items="processes || []"
       />
     </v-row>
-    <!--    <v-row v-if="false">-->
-    <!--      <v-col cols="12">-->
-    <!--        <h4>{{ $t('topologies.dashboard.metrics') }}</h4>-->
-    <!--      </v-col>-->
-    <!--    </v-row>-->
-    <!--    <v-row v-if="false">-->
-    <!--      <v-col v-for="(value, name, index) of systemMetrics" :key="index" cols="12" sm="4" md="3">-->
-    <!--        <v-card>-->
-    <!--          <v-card-title class="d-flex">-->
-    <!--            <span class="mx-auto">{{ name }}</span>-->
-    <!--          </v-card-title>-->
-    <!--          <div class="d-flex position-relative pb-4">-->
-    <!--            <doughnut-->
-    <!--              :width="150"-->
-    <!--              :height="100"-->
-    <!--              class="mx-auto position-absolute"-->
-    <!--              :chart-data="datasets({ value, name }, true)"-->
-    <!--              :options="options(true)"-->
-    <!--            />-->
-    <!--            <div class="position-absolute-text">-->
-    <!--              <span>{{ `${Math.round(value)}%` }}</span>-->
-    <!--            </div>-->
-    <!--            <doughnut-->
-    <!--              :width="150"-->
-    <!--              :height="100"-->
-    <!--              class="mx-auto"-->
-    <!--              :chart-data="datasets({ value, name }, false)"-->
-    <!--              :options="options(false)"-->
-    <!--            />-->
-    <!--          </div>-->
-    <!--        </v-card>-->
-    <!--      </v-col>-->
-    <!--    </v-row>-->
   </div>
 </template>
 
