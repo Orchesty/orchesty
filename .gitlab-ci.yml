@@ -1,0 +1,27 @@
+.base-worker-api:
+  variables:
+    DIR: worker-api
+    IMAGE: ${REGISTRY}/${IMAGE_PREFIX}worker-api
+
+  rules:
+    - if: '$FORCE_PIPELINE =~ /ALL/ || $FORCE_PIPELINE =~ /worker-api/'
+    - if: '$CI_COMMIT_BEFORE_SHA == $_BANNED_RUN_ALL_SHA'
+      when: never
+    - changes:
+        - ${DIR}/**/*
+
+
+worker-api:build:
+  stage: build
+  needs: []
+  extends:
+    - .base-kaniko-build
+    - .base-worker-api
+
+worker-api:test:
+  stage: test
+  needs: []
+
+  extends:
+    - .base-go-test
+    - .base-worker-api
