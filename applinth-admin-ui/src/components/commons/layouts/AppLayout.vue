@@ -116,6 +116,11 @@ export default class AppLayout extends Vue {
         text: "navigation.link.customers",
       },
       {
+        to: Routes.History,
+        icon: "mdi-history",
+        text: "navigation.link.history",
+      },
+      {
         to: Routes.Users,
         icon: "mdi-account-multiple",
         text: "navigation.link.users",

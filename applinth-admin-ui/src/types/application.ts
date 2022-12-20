@@ -1,3 +1,5 @@
+import { UsageStatsAppsRowsInner } from "@/api/generated"
+
 export type ApplicationDetailRaw = {
   name: string
   publicName: string
@@ -21,4 +23,8 @@ export type ApplicationDetail = {
 
 export type IndexedApplicationDetail = {
   [key: string]: ApplicationDetail
+}
+
+export type HistoryTableApplicationItemType = UsageStatsAppsRowsInner & {
+  pricePerInstance: number
 }

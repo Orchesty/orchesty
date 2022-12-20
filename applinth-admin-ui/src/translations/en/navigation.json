@@ -5,7 +5,8 @@
       "users": "Users",
       "overview": "Overview",
       "profile": "Profile",
-      "logout": "Log out"
+      "logout": "Log out",
+      "history": "Billing reports"
     },
     "item": {
       "integrations": "Integrations",
@@ -25,7 +26,8 @@
       "user_update": "User Update",
       "application_detail": "Application Item",
       "applinth": "Applinth",
-      "applicationDetail": "Application Detail"
+      "applicationDetail": "Application Detail",
+      "history": "Billing reports"
     }
   }
 }
