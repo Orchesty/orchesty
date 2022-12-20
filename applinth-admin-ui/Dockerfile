@@ -1,5 +1,5 @@
 ### Build step
-FROM node:lts-slim as builder
+FROM node:16-slim as builder
 
 # Pre-cache packages
 WORKDIR /precache
@@ -8,7 +8,7 @@ COPY yarn.lock ./
 RUN yarn install
 
 ### Build step
-FROM node:lts-slim as pre-cache
+FROM node:16-slim as pre-cache
 
 # Build
 WORKDIR /build

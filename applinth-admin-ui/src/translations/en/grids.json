@@ -12,7 +12,9 @@
       "disabled": "Disabled",
       "customer": "Customer",
       "activeApplications": "Active applications",
-      "cost": "Cost"
+      "cost": "Cost",
+      "installations": "Installations",
+      "pricePerInstallation": "Monthly price per installation"
     }
   }
 }

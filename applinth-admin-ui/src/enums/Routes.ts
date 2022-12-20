@@ -20,4 +20,6 @@ export enum Routes {
   // Users
   Customers = "CUSTOMERS",
   CustomerDetail = "CUSTOMER_DETAIL",
+
+  History = "HISTORY",
 }

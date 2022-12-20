@@ -183,6 +183,27 @@ const customersRoutes = [
   },
 ]
 
+const history = [
+  {
+    path: "/history",
+    name: Routes.History,
+    component: () => import("../views/BillingReportsPage.vue"),
+    meta: {
+      auth: ViewAuth.Private,
+      breadcrumbs: [
+        {
+          text: "navigation.item.applinth",
+          to: { name: Routes.Overview },
+        },
+        {
+          text: "navigation.item.history",
+          to: { name: Routes.History },
+        },
+      ],
+    },
+  },
+]
+
 const notFound = {
   path: "*",
   name: Routes.NotFound,
@@ -197,4 +218,5 @@ export const routes: Array<ExtendedRouteConfig> = [
   overview,
   ...applications,
   notFound,
+  ...history,
 ]

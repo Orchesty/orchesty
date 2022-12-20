@@ -18,6 +18,7 @@ import error from "./error.json"
 import message from "./message.json"
 import applicationDetailPage from "./pages/applicationDetailPage.json"
 import general from "./general.json"
+import billingReportsPage from "./pages/billingReportsPage.json"
 
 export default {
   ...button,
@@ -40,4 +41,5 @@ export default {
   ...message,
   ...applicationDetailPage,
   ...general,
+  billingReportsPage,
 }
