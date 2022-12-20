@@ -3,7 +3,7 @@ data "google_compute_default_service_account" "default" {}
 resource "google_cloud_scheduler_job" "certbot" {
   name             = "certbot"
   description      = "Periodic certificate renewal"
-  schedule         = "00 9 * * FRI"
+  schedule         = "00 9 * * TUE"
   time_zone        = "Europe/Prague"
   attempt_deadline = "30s"
 
