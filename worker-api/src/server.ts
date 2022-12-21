@@ -1,4 +1,3 @@
+import { init, listen } from './index';
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
-import { listen } from './index';
-
-listen();
+init().then(listen);
