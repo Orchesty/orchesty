@@ -1,5 +1,5 @@
-import { expressApp as e, listen as l } from '../src';
-export const expressApp = e;
-export function listen(): void {
-    l();
+import { init, listen as l } from '../src';
+
+export async function listen(): Promise<void> {
+    return init().then(l);
 }

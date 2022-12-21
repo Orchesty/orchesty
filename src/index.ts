@@ -1,16 +1,40 @@
-import express from 'express';
-import { appOptions } from './Config/Config';
-import { logger } from './logger/logger';
+import cors from 'cors';
+import express, { Application } from 'express';
+import AuthorizationMiddleware from './authorization/AuthorizationMiddleware';
+import { appOptions } from './config/Config';
+import Mongo from './database/Mongo';
+import { logger } from './logger/Logger';
+import DefaultRouter from './router/DefaultRouter';
 
-const expressApp: express.Application = express();
+export async function init(): Promise<Application> {
+    const mongoClient = new Mongo();
+    await mongoClient.connect();
 
-expressApp.use(express.json);
+    const authorizator = new AuthorizationMiddleware(mongoClient);
 
-export function listen(): void {
+    const expressApp: Application = express();
+    expressApp.use(express.json());
+
+    expressApp.use(
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+        cors({
+            origin: appOptions.corsOrigin,
+            optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+            credentials: true,
+        }),
+    );
+
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    expressApp.use(authorizator.isAuthorized());
+
+    new DefaultRouter(expressApp, mongoClient).initRoutes();
+
+    return expressApp;
+}
+
+export function listen(expressApp: Application): void {
     expressApp.disable('x-powered-by');
     expressApp.listen(appOptions.port, () => {
         logger.info(`⚡️[server]: Server is running at http://localhost:${appOptions.port}`);
     });
 }
-
-export { expressApp };
