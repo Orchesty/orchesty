@@ -1,5 +1,7 @@
 {
   "flashMessage": {
+    "apiError": "Něco se pokazilo, prosím, zkuste to později",
+    "authenticationExpired": "Přihlášení vypršelo, prosím, znovu se přihlašte",
     "uninstalled": "{item} odintalován",
     "installed": "{item} nainstalován",
     "saved": "{item} - formulář uložen",
