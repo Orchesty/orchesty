@@ -1,6 +1,10 @@
 import axios from "axios"
 import { config } from "@/config"
 import { authService } from "@/utils/authService.js"
+import showFlashMessage from "@/utils/flashMessage"
+import { FLASH_MESSAGES_TYPES } from "@/store/flashMessages/types"
+import { i18n } from "@/localization"
+import { API } from "@/api"
 
 const apiClient = axios.create({
   baseURL: `${config.backend.apiBaseUrl}/api/applinth`,
@@ -70,6 +74,32 @@ const call = ({ requestData, params = null, throwError = true }, sender) => {
       })
       .catch((err) => {
         console.error("Response ERROR!", err)
+
+        const isRefreshUrl =
+          err.config?.url === API.auth.refreshAuth.request().url
+        const isFailedAuthRequest = err.response?.status === 401
+
+        if (isRefreshUrl && isFailedAuthRequest) {
+          // Without access token this first request to refresh auth fails, but
+          // the subsequent login attempt will pass if an initialization token
+          // is provided and valid.
+          if (throwError) {
+            reject(err)
+          }
+          return
+        }
+
+        if (isFailedAuthRequest) {
+          showFlashMessage(
+            i18n.t("flashMessage.authenticationExpired"),
+            FLASH_MESSAGES_TYPES.ERROR
+          )
+        } else {
+          showFlashMessage(
+            i18n.t("flashMessage.apiError"),
+            FLASH_MESSAGES_TYPES.ERROR
+          )
+        }
 
         if (throwError) {
           reject(err)

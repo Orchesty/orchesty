@@ -33,6 +33,7 @@ export class AuthService {
     this.expireTimeout = null
     this.accessToken = ""
     if (redirect) {
+      // TODO ROUTES.Login does not exist
       router.push({ name: ROUTES.Login })
     }
   }

@@ -1,5 +1,7 @@
 {
   "flashMessage": {
+    "apiError": "Something went wrong, please try again later",
+    "authenticationExpired": "Authentication expired, please log-in again",
     "uninstalled": "{item} uninstalled",
     "installed": "{item} installed",
     "saved": "{item} - form saved",
