@@ -46,6 +46,10 @@ export default class Mongo {
         return this.client.db().collection(mongoOptions.collections.apiToken);
     }
 
+    public getMeasurementCollection(measurement: string): Collection {
+        return this.client.db().collection(measurement);
+    }
+
     public async dropCollections(): Promise<void> {
         for (const collection of Object.values(mongoOptions.collections)) {
             try {
