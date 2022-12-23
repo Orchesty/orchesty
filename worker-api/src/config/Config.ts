@@ -19,3 +19,7 @@ export const mongoOptions = {
         apiToken: 'ApiToken',
     },
 };
+
+export const fluentdOptions = {
+    fluentdDsn: getEnv('FLUENTD_DSN'),
+};

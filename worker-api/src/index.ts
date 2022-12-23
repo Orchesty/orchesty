@@ -5,8 +5,9 @@ import { appOptions } from './config/Config';
 import Mongo from './database/Mongo';
 import { logger } from './logger/Logger';
 import DefaultRouter from './router/DefaultRouter';
+import LoggerRouter from './router/LoggerRouter';
 
-export async function init(): Promise<Application> {
+export async function init(): Promise<IServices> {
     const mongoClient = new Mongo();
     await mongoClient.connect();
 
@@ -28,8 +29,9 @@ export async function init(): Promise<Application> {
     expressApp.use(authorizator.isAuthorized());
 
     new DefaultRouter(expressApp, mongoClient).initRoutes();
+    new LoggerRouter(expressApp).initRoutes();
 
-    return expressApp;
+    return { app: expressApp, mongo: mongoClient };
 }
 
 export function listen(expressApp: Application): void {
@@ -37,4 +39,9 @@ export function listen(expressApp: Application): void {
     expressApp.listen(appOptions.port, () => {
         logger.info(`⚡️[server]: Server is running at http://localhost:${appOptions.port}`);
     });
+}
+
+export interface IServices {
+    app: Application;
+    mongo: Mongo;
 }

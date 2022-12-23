@@ -1,55 +1,25 @@
 import assert from 'assert';
-import { Application } from 'express';
 import supertest from 'supertest';
-import { init } from '../../src';
-import { ORCHESTY_API_KEY } from '../../src/authorization/AuthorizationMiddleware';
-import Mongo from '../../src/database/Mongo';
+import { init, IServices } from '../../src';
 
-let mongo: Mongo;
-let expressApp: Application;
+let services: IServices;
 describe('Tests for TestBatch', () => {
     beforeAll(async () => {
-        expressApp = await init();
+        services = await init();
     });
 
-    beforeEach(async () => {
-        mongo = new Mongo();
-        await mongo.connect();
-        await mongo.dropCollections();
+    afterAll(async () => {
+        await services.mongo.disconnect();
     });
 
-    afterEach(async () => {
-        await mongo.disconnect();
-    });
-
-    it('isAuthorized - empty headers', async () => {
-        const resp = await supertest(expressApp).get('/status');
+    it('status - /', async () => {
+        const resp = await supertest(services.app).get('/');
         assert.equal(resp.statusCode, 200);
         assert.deepEqual(resp.body, { mongo: { connected: true } });
     });
 
-    it('isAuthorized - no mongo apiKey', async () => {
-        const resp = await supertest(expressApp).get('/status').set(ORCHESTY_API_KEY, 'test');
-        assert.equal(resp.statusCode, 200);
-        assert.deepEqual(resp.body, { mongo: { connected: true } });
-    });
-
-    it('isAuthorized - bad credentials', async () => {
-        const apiKeyCollection = mongo.getApiKeyCollection();
-        await apiKeyCollection.insertOne({ apiKey: 'otherTest' });
-
-        const resp = await supertest(expressApp).get('/status').set(ORCHESTY_API_KEY, 'test');
-        assert.equal(resp.statusCode, 200);
-        assert.deepEqual(resp.body, { mongo: { connected: true } });
-    });
-
-    it('isAuthorized - ok', async () => {
-        const apiKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJzY29wZXMiOlsibWV0cmljOndyaXRlIl19.Er9Nioiq77-sahV5XOoZuFBfIbBEgXV45BfdRsbXWdQ';
-
-        const apiKeyCollection = mongo.getApiKeyCollection();
-        await apiKeyCollection.insertOne({ apiKey });
-
-        const resp = await supertest(expressApp).get('/status').set(ORCHESTY_API_KEY, apiKey);
+    it('status - /status', async () => {
+        const resp = await supertest(services.app).get('/status');
         assert.equal(resp.statusCode, 200);
         assert.deepEqual(resp.body, { mongo: { connected: true } });
     });
