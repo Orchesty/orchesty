@@ -4,12 +4,16 @@ import AuthorizationMiddleware from './authorization/AuthorizationMiddleware';
 import { appOptions } from './config/Config';
 import Mongo from './database/Mongo';
 import { logger } from './logger/Logger';
+import MetricsManager from './manager/MetricsManager';
 import DefaultRouter from './router/DefaultRouter';
 import LoggerRouter from './router/LoggerRouter';
+import MetricsRouter from './router/MetricsRouter';
 
 export async function init(): Promise<IServices> {
     const mongoClient = new Mongo();
     await mongoClient.connect();
+
+    const metricsManager = new MetricsManager(mongoClient);
 
     const authorizator = new AuthorizationMiddleware(mongoClient);
 
@@ -30,6 +34,7 @@ export async function init(): Promise<IServices> {
 
     new DefaultRouter(expressApp, mongoClient).initRoutes();
     new LoggerRouter(expressApp).initRoutes();
+    new MetricsRouter(expressApp, metricsManager).initRoutes();
 
     return { app: expressApp, mongo: mongoClient };
 }
