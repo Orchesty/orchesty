@@ -15,7 +15,9 @@ export default class AuthorizationMiddleware {
         return async function(req: Request, res: Response, next: NextFunction) {
             let scopes: string[] = [];
 
-            switch (req.path) {
+            const separatedPath = req.path.split('/');
+
+            switch (`/${separatedPath[1]}`) {
                 case '/':
                 case '/status':
                     next();
