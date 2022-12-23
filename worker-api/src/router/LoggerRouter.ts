@@ -2,7 +2,7 @@ import axios from 'axios';
 import { Application } from 'express';
 import Joi from 'joi';
 import { fluentdOptions } from '../config/Config';
-import ResultCode from '../enums/ResultCode';
+import ResultCode from '../enum/ResultCode';
 
 const inputSchema = Joi.object<ILogInput>({
     node_id: Joi.string(),
