@@ -13,7 +13,8 @@ services:
             APP_ENV: 'debug'
             MONGODB_DSN: 'mongodb://mongo:27017/worker-api'
             FLUENTD_DSN: 'fluentd:9880'
-        command: sh -c 'pnpm install && pnpm run start'
+            TZ: 'UTC'
+        command: sleep infinity
         ports:
             - ${DEV_IP}:80:8080
     mongo:

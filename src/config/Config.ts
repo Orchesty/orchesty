@@ -15,9 +15,6 @@ export const appOptions = {
 
 export const mongoOptions = {
     mongoDsn: getEnv('MONGODB_DSN'),
-    collections: {
-        apiToken: 'ApiToken',
-    },
 };
 
 export const fluentdOptions = {

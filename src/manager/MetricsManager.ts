@@ -8,7 +8,7 @@ export default class MetricsManager {
     public async saveMetrics(metrics: IMetricsInput, measurement: string): Promise<void> {
         const { fields, tags } = metrics;
 
-        const measurementCollection = this.mongo.getMeasurementCollection(measurement);
+        const measurementCollection = this.mongo.getCollection(measurement);
         await measurementCollection.insertOne({
             tags,
             fields: {
