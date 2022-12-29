@@ -1,5 +1,6 @@
 import { Collection, MongoClient } from 'mongodb';
 import { mongoOptions } from '../config/Config';
+import DocumentEnum from '../enum/DocumentEnum';
 import { logger } from '../logger/Logger';
 
 export default class Mongo {
@@ -43,15 +44,15 @@ export default class Mongo {
     }
 
     public getApiKeyCollection(): Collection {
-        return this.client.db().collection(mongoOptions.collections.apiToken);
+        return this.client.db().collection(DocumentEnum.API_TOKEN);
     }
 
-    public getMeasurementCollection(measurement: string): Collection {
-        return this.client.db().collection(measurement);
+    public getCollection(collectionName: string): Collection {
+        return this.client.db().collection(collectionName);
     }
 
     public async dropCollections(): Promise<void> {
-        for (const collection of Object.values(mongoOptions.collections)) {
+        for (const collection of Object.values(DocumentEnum)) {
             try {
                 // eslint-disable-next-line no-await-in-loop
                 await this.client.db().dropCollection(collection);

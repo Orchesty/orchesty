@@ -19,7 +19,7 @@ const inputSchema = Joi.object<ILogInput>({
     }),
     data: Joi.string(),
     isForUi: Joi.boolean(),
-    timestamp: Joi.number().required(),
+    timestamp: Joi.number().strict(true).required(),
     hostname: Joi.string().required(),
     type: Joi.string().required(),
     severity: Joi.string().required(),

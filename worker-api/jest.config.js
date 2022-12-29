@@ -4,4 +4,5 @@ module.exports = {
   testMatch: ['**/*.test.ts'],
   roots: ["<rootDir>/tests/"],
   setupFiles: ["<rootDir>/.jest/testEnvs.js"],
+  globalSetup: '<rootDir>/.jest/globalSetup.ts',
 };

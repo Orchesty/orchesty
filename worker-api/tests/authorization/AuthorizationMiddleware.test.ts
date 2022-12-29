@@ -19,7 +19,7 @@ describe('Tests for TestBatch', () => {
     });
 
     it('status - /status', async () => {
-        const resp = await supertest(services.app).get('/status');
+        const resp = await supertest(services.app).get('/status?filter={"ids":["test"]}');
         assert.equal(resp.statusCode, 200);
         assert.deepEqual(resp.body, { mongo: { connected: true } });
     });

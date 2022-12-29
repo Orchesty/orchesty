@@ -40,15 +40,6 @@ services:
         GcXwowJ2vWSQ6pyW17FLVqmUy2ZW5VSowkPp29CvYQ==
         -----END EC PRIVATE KEY-----
 
-  frontend:
-    image: orchesty/frontend:1.0.6
-    environment:
-      BACKEND_URL: http://${DEV_IP}
-      FRONTEND_URL: "/"
-      STARTINGPOINT_URL: http://${DEV_IP}:82
-    ports:
-      - ${DEV_IP}:81:80
-
   node-sdk:
     image: node-sdk:tag
     build: ../clients/demo/node-sdk/docker
