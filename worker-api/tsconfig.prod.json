@@ -4,6 +4,7 @@
         "src"
     ],
     "exclude": [
+        "tests",
         "node_modules"
     ]
 }
