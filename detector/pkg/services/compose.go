@@ -8,7 +8,14 @@ import (
 	"strings"
 )
 
-func DockerContainerCheck() ([]Container, error) {
+type ContainerSystem interface {
+	Check() ([]Container, error)
+}
+
+type Compose struct {
+}
+
+func (c Compose) Check() ([]Container, error) {
 	//cmdAll := []string{"network", "inspect" ,"-f", "{{ range $key, $value := .Containers }}{{printf \"%s\\n\" .Name}}{{ end }}", network}
 	cmdRunning := []string{"ps", "-a", "-f", fmt.Sprintf("network=%s", config.Generator.Network), "--format", "{{.Names}} {{.Status}}"}
 
@@ -32,4 +39,8 @@ func DockerContainerCheck() ([]Container, error) {
 	}
 
 	return downs, nil
+}
+
+func NewComposeSvc() Compose {
+	return Compose{}
 }

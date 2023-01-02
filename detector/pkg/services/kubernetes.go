@@ -95,7 +95,7 @@ func (k KubernetesSvc) getPods(containers map[string]*Container) ([]Container, e
 	return list, err
 }
 
-func (k KubernetesSvc) KubeContainerCheck() ([]Container, error) {
+func (k KubernetesSvc) Check() ([]Container, error) {
 	containers, err := k.getReplicaSets()
 	if err != nil {
 		return nil, err
