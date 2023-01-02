@@ -2,20 +2,22 @@ version: '3.5'
 
 services:
     app:
-        image: hanabosocom/go-base:1.18
+        image: hanabosocom/go-base:1.19
         user: ${DEV_UID}:${DEV_GID}
         environment:
             DEV_UID: ${DEV_UID}
             DEV_GID: ${DEV_GID}
             APP_DEBUG: 'true'
-            METRICS_DSN: mongodb://mongodb/starting-point?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
-            MONGO_DSN: mongodb://mongodb/mongo?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
+            METRICS_DSN: mongodb://mongodb/starting-point
+            MONGO_DSN: mongodb://mongodb/mongo
         volumes:
             - ./:/app
             - ${GOPATH}/pkg:/go/pkg
         ports:
             - ${DEV_IP}:80:8080
-        command: go run main.go
+            - ${DEV_IP}:2345:2345
+        command: /run.sh -p main.go -l 2345
+        security_opt: ['seccomp:unconfined']
 
     rabbitmq:
         image: rabbitmq:management-alpine
