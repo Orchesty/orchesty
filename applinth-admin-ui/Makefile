@@ -1,8 +1,4 @@
-BASE_IMAGE=dkr.hanaboso.net/pipes/pipes/nodejs-build
-PUBLIC_BASE_IMAGE=hanabosocom/nodejs-build
-
 IMAGE?=dkr.hanaboso.net/pipes/pipes/applinth-admin-ui
-PUBLIC_IMAGE?=hanaboso/pipes-applinth-admin-ui
 
 ALIAS?=alias
 Darwin:
@@ -31,14 +27,6 @@ down: .lo0-down
 rebuild:
 	docker build -t ${IMAGE}:${TAG} --pull .
 	docker push ${IMAGE}:${TAG}
-	docker tag ${IMAGE}:${TAG} $(PUBLIC_IMAGE):$(TAG)
-	docker push $(PUBLIC_IMAGE):$(TAG)
-
-build-dev:
-	cd docker && docker build -t ${BASE_IMAGE}:${TAG} --pull .
-	docker push ${BASE_IMAGE}:${TAG}
-	docker tag ${BASE_IMAGE}:${TAG} $(PUBLIC_BASE_IMAGE):$(TAG)
-	docker push $(PUBLIC_BASE_IMAGE):$(TAG)
 
 generate-fixture-data: init
 	docker-compose exec console-api pnpm run create-fixture-data

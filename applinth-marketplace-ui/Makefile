@@ -1,6 +1,3 @@
-BASE_IMAGE=dkr.hanaboso.net/pipes/pipes/nodejs-build
-PUBLIC_BASE_IMAGE=hanabosocom/nodejs-build
-
 IMAGE?=dkr.hanaboso.net/pipes/pipes/applinth-marketplace-ui
 
 init: .env
@@ -10,10 +7,6 @@ init: .env
 rebuild:
 	docker build -t ${IMAGE}:${TAG} --pull .
 	docker push ${IMAGE}:${TAG}
-
-build-dev:
-	cd docker && docker build -t ${BASE_IMAGE}:${TAG} --pull .
-	docker push ${BASE_IMAGE}:${TAG}
 
 .env:
 	sed -e "s/{DEV_UID}/$(shell if [ "$(shell uname)" = "Linux" ]; then echo $(shell id -u); else echo '1001'; fi)/g" \

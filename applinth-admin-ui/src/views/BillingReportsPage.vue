@@ -111,7 +111,7 @@ export default class BillingReportsPage extends Vue {
       await callApi<UsageStatsAppsRequest>(api.overview.apps, {
         granularity: "monthly",
         timeRangeStart: filterDateFrom.toISO(),
-        timeRangeEnd: filterDateTo.toISO(),
+        timeRangeEnd: filterDateTo.plus({ second: 1 }).toISO(),
       })
 
     this.recalculateValues(applications)

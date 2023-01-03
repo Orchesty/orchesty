@@ -437,7 +437,7 @@ export default class UsageStatsService {
                 if (query.timeRangeEnd) {
                     const endDate = DateTime.fromISO(query.timeRangeEnd);
                     mongoQuery.end = {
-                        $lt: endDate,
+                        $lte: endDate,
                     };
                 }
 
@@ -449,7 +449,7 @@ export default class UsageStatsService {
                     }
                     if (!mongoQuery.end) {
                         mongoQuery.end = {
-                            $lt: DateTime.local().endOf('month'),
+                            $lte: DateTime.local().endOf('month').plus({ second: 1 }),
                         };
                     }
                 }
