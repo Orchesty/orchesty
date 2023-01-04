@@ -31,6 +31,11 @@ spec:
                 secretKeyRef:
                   key: metrics_dsn
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: MONGO_DSN
+              valueFrom:
+                secretKeyRef:
+                  key: mongodb_dsn
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
             - name: __RABBITMQ_HOST
               valueFrom:
                 secretKeyRef:
