@@ -11,7 +11,7 @@ import (
 func TestCron(t *testing.T) {
 	connection := &mongodb.Connection{}
 	connection.Connect(config.Mongo.Dsn)
-	var mongoStorage = storage.NewStorage(connection, config.Logger, "ApiToken")
+	var mongoStorage = storage.NewStorage(connection, config.Logger, "Cron", "ApiToken")
 	mongoStorage.DropApiTokenCollection()
 	mongoStorage.InsertApiToken("orchesty", []string{"topology:run"}, "123")
 
