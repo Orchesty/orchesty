@@ -11,13 +11,7 @@ node_modules
 # Exclude build
 dist
 
-.yarn/*
-!.yarn/patches
-!.yarn/releases
-!.yarn/plugins
-!.yarn/sdks
-!.yarn/versions
-.pnp.*
+.pnpm-store
 
 # Exclude anything generated
 generated/
