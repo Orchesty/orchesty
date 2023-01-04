@@ -6,8 +6,6 @@ import linkProps from "bpmn-js-properties-panel/lib/provider/bpmn/parts/LinkProp
 import CustomIdProps from "./parts/CustomIdProps"
 import CustomNameProps from "./parts/CustomNameProps"
 import ElementPipesTypeProps from "./parts/PipesTypeProps"
-import CronTimeProps from "./parts/CronTimeProps.js"
-import CronParamsProps from "./parts/CronParamsProps.js"
 import ConnectorRepeaterEnabled from "./parts/ConnectorRepeaterEnabled"
 import ConnectorRepeaterHops from "./parts/ConnectorRepeaterHops"
 import ConnectorRepeaterInterval from "./parts/ConnectorRepeaterInterval"
@@ -34,15 +32,6 @@ function createGeneralTabGroups(
   processProps(generalGroup, element, translate)
   ElementPipesTypeProps(generalGroup, element, translate)
 
-  const cronGroup = {
-    id: "cron",
-    label: translate("Cron"),
-    entries: [],
-  }
-
-  CronTimeProps(cronGroup, element, translate)
-  CronParamsProps(cronGroup, element, translate)
-
   const detailsGroup = {
     id: "details",
     label: translate("Details"),
@@ -58,7 +47,7 @@ function createGeneralTabGroups(
     entries: [],
   }
 
-  return [generalGroup, detailsGroup, cronGroup, userTaskGroup]
+  return [generalGroup, detailsGroup, userTaskGroup]
 }
 
 function createRepeaterTabGroups(

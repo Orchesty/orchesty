@@ -23,6 +23,7 @@
       "update": "updating..."
     },
     "run": "Run",
+    "runProcess": "Run process",
     "save": "Save",
     "allow": "Accept",
     "change": "Change",
@@ -69,6 +70,7 @@
     "filter": "Filter",
     "discard": "Discard",
     "enable": "Enable",
-    "publish": "Publish"
+    "publish": "Publish",
+    "copyUrl": "Copy URL"
   }
 }
