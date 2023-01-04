@@ -11,7 +11,7 @@ import (
 
 type (
 	mongoConfig struct {
-		Dsn      string `default:"" env:"MONGO_DSN"`
+		Dsn      string `env:"MONGO_DSN" required:"true"`
 		Topology string `default:"Topology" env:"MONGO_TOPOLOGY"`
 		Node     string `default:"Node" env:"MONGO_NODE"`
 	}

@@ -11,21 +11,21 @@ import (
 
 type (
 	rabbitMq struct {
-		Host     string `default:"http://rabbitmq:15672/" env:"RABBIT_HOST"`
+		Host     string `env:"RABBIT_HOST" required:"true"`
 		VHost    string `default:"/" env:"RABBIT_VHOST"`
 		Username string `default:"guest" env:"RABBIT_USERNAME"`
 		Password string `default:"guest" env:"RABBIT_PASSWORD"`
 	}
 
 	metrics struct {
-		Dsn                  string `default:"" env:"METRICS_DSN"`
+		Dsn                  string `env:"METRICS_DSN" required:"true"`
 		Measurement          string `default:"rabbitmq" env:"METRICS_MEASUREMENT"`
 		ConsumerMeasurement  string `default:"rabbitmq_consumer" env:"CONSUMER_MEASUREMENT"`
 		ContainerMeasurement string `default:"container" env:"CONTAINER_MEASUREMENT"`
 	}
 
 	mongo struct {
-		Dsn          string `default:"" env:"MONGO_DSN"`
+		Dsn          string `env:"MONGO_DSN" required:"true"`
 		Node         string `default:"Node" env:"NODE_COLLECTION"`
 		MultiCounter string `default:"MultiCounter" env:"MULTI_COUNTER"`
 		Limiter      string `default:"limiter" env:"LIMITER"`
