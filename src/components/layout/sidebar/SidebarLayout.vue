@@ -25,7 +25,6 @@
     <modal-create-folder />
     <modal-create-topology />
     <modal-import-topology />
-    <modal-update-node />
     <!--    end-->
   </v-app>
 </template>
@@ -44,12 +43,10 @@ import ModalEditTopology from "@/components/app/topology/modal/ModalEditTopology
 import ModalCreateFolder from "@/components/app/folder/modal/ModalCreateFolder"
 import ModalCreateTopology from "@/components/app/topology/modal/ModalCreateTopology"
 import ModalImportTopology from "@/components/app/topology/modal/ModalImportTopology"
-import ModalUpdateNode from "@/components/app/topology/modal/ModalUpdateNode"
 
 export default {
   name: "SidebarLayout",
   components: {
-    ModalUpdateNode,
     ModalImportTopology,
     ModalCreateTopology,
     ModalCreateFolder,

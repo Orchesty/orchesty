@@ -13,6 +13,7 @@
     :prepend-icon="prependIcon"
     :error-messages="errorMessages[0]"
     :append-icon="appendIcon"
+    :hint="hint"
     @click:append="$emit('appendIconClicked')"
   />
 </template>
@@ -72,6 +73,10 @@ export default {
     appendIcon: {
       type: String,
       default: "",
+    },
+    hint: {
+      type: String,
+      default: null,
     },
   },
   data() {

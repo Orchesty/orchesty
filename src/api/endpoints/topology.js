@@ -34,11 +34,12 @@ export default {
   },
   updateNode: {
     id: "UPDATE_NODE",
-    request: ({ nodeId, enabled }) => ({
+    request: ({ nodeId, enabled, cron }) => ({
       url: `/nodes/${nodeId}`,
       method: "PATCH",
       data: {
         enabled,
+        cron,
       },
     }),
   },
