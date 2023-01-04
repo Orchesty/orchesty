@@ -18,7 +18,7 @@ services:
             MONGODB_DSN: 'mongodb://mongo:27017/node-sdk'
             AWS_SES_KEY: ${AWS_SES_KEY}
             AWS_SES_SECRET: ${AWS_SES_SECRET}
-        command: sh -c 'pnpm install && pnpm run start'
+        command: pnpm run start
 
     mongo:
         image: mongo:latest

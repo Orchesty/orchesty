@@ -1,5 +1,3 @@
-FROM node:slim
-
-RUN apt-get update && apt-get update && apt-get install -y git
+FROM node:alpine
 
 RUN npm i -g pnpm

@@ -1,4 +1,3 @@
-FROM node:16-slim
+FROM node:16-alpine
 
-RUN apt-get update && apt-get upgrade -y
-RUN apt-get autoclean -y && apt-get autoremove -y
+RUN npm i -g pnpm
