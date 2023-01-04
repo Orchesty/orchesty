@@ -6,16 +6,20 @@
     name: alpine/helm
     entrypoint: [""]
 
+  variables:
+    HELM_DIR: ./helm
+
   script:
     - echo "${KUBECONFIG}" > /tmp/kubeconfig
     - chmod 0600 /tmp/kubeconfig
 
     - . ./export_tags
-    - cp -a ./helm-chart ${PROJECT_DIR}/helm/charts/pipes
     - cd ${PROJECT_DIR}
+    - helm repo add orchesty https://orchesty.github.io/helm-charts/
+    - helm dependencies build ${HELM_DIR}
     - >-
-      helm --kubeconfig /tmp/kubeconfig upgrade -i --wait --reset-values -f helm/resources.yaml ${HELM_ARGS} ${HELM_ARGS_EXT}
-      pipes ./helm
+      helm --kubeconfig /tmp/kubeconfig upgrade -i --wait --reset-values -f ${HELM_DIR}/resources.yaml ${HELM_ARGS} ${HELM_ARGS_EXT}
+      pipes ${HELM_DIR}
 
   tags:
     - docker
@@ -30,15 +34,18 @@
     name: alpine/helm
     entrypoint: [""]
 
+  variables:
+    HELM_DIR: ./helm
+
   script:
     - echo "${KUBECONFIG}" > /tmp/kubeconfig
     - chmod 0600 /tmp/kubeconfig
 
     - . ./export_tags
-    - cp -a ./helm-chart ${PROJECT_DIR}/helm/charts/pipes
+    - cp -a helm/charts/orchesty ${PROJECT_DIR}/${HELM_DIR}/charts/orchesty
     - cd ${PROJECT_DIR}
     - >-
-      helm --kubeconfig /tmp/kubeconfig upgrade -i --wait --reset-values -f helm/resources.yaml ${HELM_ARGS}
+      helm --kubeconfig /tmp/kubeconfig upgrade -i --wait --reset-values -f ${HELM_DIR}/resources.yaml ${HELM_ARGS}
       --set global.imageOverrides.applinth-marketplace-ui=${REGISTRY}/${IMAGE_PREFIX}applinth-marketplace-ui:${TAG_APPLINTH_MARKETPLACE_UI}
       --set global.imageOverrides.php-sdk=${REGISTRY}/${IMAGE_PREFIX}backend:${TAG_BACKEND}
       --set global.imageOverrides.backend=${REGISTRY}/${IMAGE_PREFIX}backend:${TAG_BACKEND}
@@ -54,7 +61,7 @@
       --set global.imageOverrides.kapacitor=${REGISTRY}/${IMAGE_PREFIX}kapacitor:${TAG_KAPACITOR}
       --set global.imageOverrides.detector=${REGISTRY}/${IMAGE_PREFIX}detector:${TAG_DETECTOR}
       ${HELM_ARGS_EXT}
-      pipes ./helm
+      pipes ${HELM_DIR}
 
   tags:
     - docker
@@ -102,3 +109,19 @@ demo2:deploy:
   before_script:
     - echo "${DEMO2_VALUES}" > clients/demo/helm/values.demo2.yaml
     - sed -E "s/VERSION_TAG/${DEPLOY_DEMO2_VERSION}/g" -i clients/demo/helm/values.demo2.yaml
+
+demo3c:deploy:
+  extends: .base-deploy-current
+  environment: demo3c
+  variables:
+    PROJECT_DIR: clients/demo
+    HELM_DIR: ./helm-hanaboso
+    HELM_ARGS: -f ./helm-hanaboso/values.cloud.yaml
+
+  rules:
+    - if: $DEPLOY_DEMO3C_VERSION != ""
+      when: always
+    - when: manual
+
+  before_script:
+    - sed -E "s/VERSION_TAG/${DEPLOY_DEMO3C_VERSION}/g" -i clients/demo/helm-hanaboso/values.demo3c.yaml

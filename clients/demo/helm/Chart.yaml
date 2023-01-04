@@ -6,8 +6,8 @@ version: 0.1.0
 appVersion: 0.1.0
 dependencies:
 - name: orchesty
-  version: "*"
-  repository: "file://../../../helm/charts/orchesty"
+  version: "~1.2.2"
+  repository: "https://orchesty.github.io/helm-charts/"
 
 - name: mongodb
   version: "*"

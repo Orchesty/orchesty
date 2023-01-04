@@ -24,6 +24,10 @@ variables:
     description: Enter version [x.y.z] to deploy it to the demo2 environment.
     value: ""
 
+  DEPLOY_DEMO3_VERSION:
+    description: Enter version [x.y.z] to deploy it to the demo3c environment.
+    value: ""
+
   _BANNED_RUN_ALL_SHA: "0000000000000000000000000000000000000000"
 
 default:

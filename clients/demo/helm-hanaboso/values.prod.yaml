@@ -1,0 +1,30 @@
+---
+
+orchesty:
+  # force legacy resource names
+  nameOverride: pipes
+
+global:
+  backend_url: https://api-hm8rohmtf6.eu1.cloud.orchesty.io
+  frontend_url: https://ui-hm8rohmtf6.eu1.cloud.orchesty.io
+  starting_point_url: https://start-hm8rohmtf6.eu1.cloud.orchesty.io
+
+  imageOverrides:
+    nodejssdk: hanaboso/demo-nodejs:dev
+
+  nodejsSdk:
+    extraEnv: {}
+
+  monitoring:
+    useInfluxDB: false
+    logStorage: mongodb
+
+  multiCounter:
+    progressSave: true
+
+  applinth:
+    licenseKeyProvided: true
+    
+  backend:
+    instanceId: hm8rohmtf6
+
