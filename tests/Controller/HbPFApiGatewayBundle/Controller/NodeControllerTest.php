@@ -4,6 +4,8 @@ namespace PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller;
 
 use Exception;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
+use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
@@ -70,6 +72,11 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
      */
     public function testUpdateNodeActionCron(): void
     {
+
+        $cron = self::createPartialMock(CronManager::class, ['upsert']);
+        $cron->method('upsert')->willReturn(new ResponseDto(200, '', '', []));
+        self::getContainer()->set('hbpf.cron.manager', $cron);
+
         $this->assertResponseLogged(
             $this->jwt,
             __DIR__ . '/data/NodeController/updateNodeCronRequest.json',

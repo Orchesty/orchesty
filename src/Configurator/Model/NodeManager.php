@@ -10,6 +10,7 @@ use Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocator;
 use Hanaboso\CommonsBundle\Enum\HandlerEnum;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\CommonsBundle\Exception\NodeException;
+use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository;
 
@@ -35,8 +36,9 @@ final class NodeManager
      * NodeManager constructor.
      *
      * @param DatabaseManagerLocator $dml
+     * @param CronManager            $cronManager
      */
-    function __construct(DatabaseManagerLocator $dml)
+    function __construct(DatabaseManagerLocator $dml, private readonly CronManager $cronManager)
     {
         /** @var DocumentManager $dm */
         $dm       = $dml->getDm();
@@ -76,6 +78,8 @@ final class NodeManager
             $node
                 ->setCronParams($data['cron']['params'] ?? '')
                 ->setCron($data['cron']['time'] ?? '');
+
+            $this->cronManager->upsert($node);
         } else {
             $node
                 ->setName($data['name'])

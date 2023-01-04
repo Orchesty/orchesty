@@ -15,6 +15,7 @@ services:
         class: Hanaboso\PipesFramework\Configurator\Model\NodeManager
         arguments:
             - '@hbpf.database_manager_locator'
+            - '@hbpf.cron.manager'
 
     hbpf.configurator.manager.category:
         class: Hanaboso\PipesFramework\Configurator\Model\CategoryManager

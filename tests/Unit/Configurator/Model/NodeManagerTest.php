@@ -8,6 +8,8 @@ use Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocator;
 use Hanaboso\CommonsBundle\Enum\HandlerEnum;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\CommonsBundle\Exception\NodeException;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
+use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
 use Hanaboso\PipesFramework\Configurator\Model\NodeManager;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository;
@@ -42,7 +44,7 @@ final class NodeManagerTest extends KernelTestCaseAbstract
             'handler'  => HandlerEnum::ACTION,
         ];
 
-        $nodeManager = new NodeManager($this->getDmlMock());
+        $nodeManager = new NodeManager($this->getDmlMock(),$this->getCronMock());
         $result      = $nodeManager->updateNode($node, $data);
 
         self::assertEquals('test-name', $result->getName());
@@ -65,7 +67,7 @@ final class NodeManagerTest extends KernelTestCaseAbstract
 
         $data = ['enabled' => TRUE];
 
-        $nodeManager = new NodeManager($this->getDmlMock());
+        $nodeManager = new NodeManager($this->getDmlMock(),$this->getCronMock());
         $result      = $nodeManager->updateNode($node, $data);
 
         self::assertEquals($data['enabled'], $result->isEnabled());
@@ -89,7 +91,7 @@ final class NodeManagerTest extends KernelTestCaseAbstract
         self::expectException(NodeException::class);
         self::expectExceptionCode(NodeException::DISALLOWED_ACTION_ON_NON_EVENT_NODE);
 
-        $nodeManager = new NodeManager($this->getDmlMock());
+        $nodeManager = new NodeManager($this->getDmlMock(), $this->getCronMock());
         $nodeManager->updateNode($node, $data);
     }
 
@@ -108,6 +110,18 @@ final class NodeManagerTest extends KernelTestCaseAbstract
         $dml->method('getDm')->willReturn($dm);
 
         return $dml;
+    }
+
+    /**
+     * @return CronManager
+     * @throws Exception
+     */
+    private function getCronMock(): CronManager
+    {
+        $cron = self::createPartialMock(CronManager::class, ['upsert']);
+        $cron->method('upsert')->willReturn(new ResponseDto(200, '', '', []));
+
+        return $cron;
     }
 
 }
