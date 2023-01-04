@@ -7,6 +7,6 @@
 	remote = git@github.com:Orchesty/helm-charts.git
 	branch = main
 	commit = 110e7d59844eb7af0ef31bf113b2b9a7dfc989ce
-	parent = 8cafb8614d1de816a38dafd8334693f96193ec9a
+	parent = 4ec77a37eac87a6dc8c8b2328429762cc22874bc
 	method = merge
 	cmdver = 0.4.5
