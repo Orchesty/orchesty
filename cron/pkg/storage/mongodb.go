@@ -12,13 +12,14 @@ import (
 )
 
 type MongoStorage struct {
-	connection *mongodb.Connection
-	collection *mongo.Collection
-	logger     log.Logger
+	connection         *mongodb.Connection
+	collection         *mongo.Collection
+	apiTokenCollection *mongo.Collection
+	logger             log.Logger
 }
 
-func NewStorage(connection *mongodb.Connection, logger log.Logger, collection string) MongoStorage {
-	service := MongoStorage{connection, connection.Database.Collection(collection), logger}
+func NewStorage(connection *mongodb.Connection, logger log.Logger, collection string, apiTokenCollection string) MongoStorage {
+	service := MongoStorage{connection, connection.Database.Collection(collection), connection.Database.Collection(apiTokenCollection), logger}
 
 	if err := service.createIndex(mongo.IndexModel{
 		Keys:    []bson.E{{model.Topology, 1}, {model.Node, 1}},
@@ -36,7 +37,7 @@ func (storage MongoStorage) InsertApiToken(user string, scopes []string, key str
 	context, cancel := storage.connection.Context()
 	defer cancel()
 
-	_, err := storage.collection.InsertOne(context, map[string]interface{}{"user": user, "scopes": scopes, "key": key})
+	_, err := storage.apiTokenCollection.InsertOne(context, map[string]interface{}{"user": user, "scopes": scopes, "key": key})
 
 	if err != nil {
 		storage.logContext().Error(err)
@@ -47,7 +48,7 @@ func (storage MongoStorage) DropApiTokenCollection() {
 	context, cancel := storage.connection.Context()
 	defer cancel()
 
-	err := storage.collection.Drop(context)
+	err := storage.apiTokenCollection.Drop(context)
 
 	if err != nil {
 		storage.logContext().Error(err)
@@ -59,7 +60,7 @@ func (storage MongoStorage) FindApiToken(user string, scopes []string) (*model.A
 	defer cancel()
 
 	var apiToken model.ApiToken
-	err := storage.collection.FindOne(context, map[string]interface{}{"user": user, "scopes": scopes}).Decode(&apiToken)
+	err := storage.apiTokenCollection.FindOne(context, map[string]interface{}{"user": user, "scopes": scopes}).Decode(&apiToken)
 
 	if err != nil {
 		if err.Error() != "mongo: no documents in result" {

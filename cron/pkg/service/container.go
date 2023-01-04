@@ -27,15 +27,14 @@ func Load() error {
 	scheduler.TagsUnique()
 	scheduler.StartAsync()
 
-	mongoStorage := storage.NewStorage(connection, config.Logger, config.Mongo.Collection)
-	apiTokenMongoStorage := storage.NewStorage(connection, config.Logger, config.Mongo.ApiTokenCollection)
+	mongoStorage := storage.NewStorage(connection, config.Logger, config.Mongo.Collection, config.Mongo.ApiTokenCollection)
 
 	startingPoint := NewStartingPointService(
 		sender.NewHttpSender(&http.Client{
 			Timeout: time.Duration(config.StartingPoint.Timeout) * time.Second,
 		}, config.Logger, config.StartingPoint.Dsn),
 		config.Logger,
-		apiTokenMongoStorage,
+		mongoStorage,
 	)
 
 	Container = container{
