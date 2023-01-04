@@ -55,6 +55,11 @@ export default class LoggerRouter {
 }
 
 interface ILogInput {
+    timestamp: number;
+    hostname: string;
+    type: string;
+    severity: string;
+    message: string;
     node_id?: string;
     user_id?: string;
     node_name?: string;
@@ -64,14 +69,9 @@ interface ILogInput {
     result_code?: ResultCode;
     result_message?: string;
     stacktrace?: {
-        trace?: string;
         message: string;
+        trace?: string;
     };
     data?: string;
     isForUi?: boolean;
-    timestamp: number;
-    hostname: string;
-    type: string;
-    severity: string;
-    message: string;
 }

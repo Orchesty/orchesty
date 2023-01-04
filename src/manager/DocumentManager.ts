@@ -178,11 +178,11 @@ interface IQueryParams {
 }
 
 interface IApplicationFilter extends IBaseFilter {
+    enabled: boolean | null;
     names?: string[];
     users?: string[];
     expires?: number;
     nonEncrypt?: Record<string, unknown>;
-    enabled: boolean | null;
 }
 
 type INodeFilter = IBaseFilter;
