@@ -1,12 +1,14 @@
 ---
 
+orchesty:
+  # force legacy resource names
+  nameOverride: pipes
+
 global:
   backend_url: https://api-pipes-demo.stage.hanaboso.net
   frontend_url: https://pipes-demo.stage.hanaboso.net
   starting_point_url: https://sp-pipes-demo-sp.stage.hanaboso.net
 
-  alpha_go_bridge: true
-  
   imageOverrides:
     bridge: hanaboso/bridge:dev
     counter: hanaboso/counter:dev
@@ -21,7 +23,7 @@ global:
   phpSdk:
     extraEnv: {}
 
-  alpha_nodejsSdk:
+  nodejsSdk:
     extraEnv: {}
     
   monitoring:
