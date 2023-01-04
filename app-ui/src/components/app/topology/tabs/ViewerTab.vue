@@ -50,6 +50,10 @@
         </v-card>
       </v-col>
     </v-row>
+    <node-dropdown-handler
+      :data="nodeDropdownData"
+      @closeDropdown="nodeDropdownData = {}"
+    />
   </div>
 </template>
 
@@ -73,12 +77,17 @@ import BpmnNodeGrid from "@/components/app/bpmn/components/BpmnNodeGrid"
 import QuickGridFilter from "@/components/commons/grid/filter/QuickGridFilter"
 import ProgressBarLinear from "@/components/commons/progressIndicators/ProgressBarLinear"
 import QuickFiltersMixin from "@/services/mixins/QuickFiltersMixin"
-import { EVENTS, events } from "@/services/utils/events"
 import { QUICK_FILTERS } from "@/services/utils/quickFilters"
+import NodeDropdownHandler from "@/components/app/topology/dropdown/NodeDropdownHandler"
 
 export default {
   name: "ViewerTab",
-  components: { ProgressBarLinear, QuickGridFilter, BpmnNodeGrid },
+  components: {
+    NodeDropdownHandler,
+    ProgressBarLinear,
+    QuickGridFilter,
+    BpmnNodeGrid,
+  },
   mixins: [QuickFiltersMixin],
   data() {
     return {
@@ -94,6 +103,7 @@ export default {
       overlays: [],
       filterMeta: {},
       filter: [],
+      nodeDropdownData: {},
     }
   },
   computed: {
@@ -211,6 +221,15 @@ export default {
 
         //if Starting Point - add enable/disable functionality
         if (this.isStartingPoint(element)) {
+          const businessObjectName = element?.businessObject?.name
+          let pointType = ""
+          if (businessObjectName === "start") {
+            pointType = "start"
+          } else if (businessObjectName === "cron") {
+            pointType = "cron"
+          } else if (businessObjectName === "webhook") {
+            pointType = "webhook"
+          }
           window.orchestyIndex = node._id
           this.overlays.add(element, {
             position: {
@@ -218,8 +237,8 @@ export default {
               left: 0,
             },
             html: `<div title="${
-              node.enabled ? "enabled" : "disabled"
-            }" class="starting-point" data-index="${
+              node.enabled ? "Enabled" : "Disabled"
+            }" class="starting-point ${pointType}" data-index="${
               window.orchestyIndex
             }" style="height: ${element.height}px;
               width: ${element.width}px"></div>`,
@@ -277,15 +296,28 @@ export default {
       this.visibilitySwitcher(this.showUserTasks, ".badge-tasks")
       this.visibilitySwitcher(this.showQueue, ".badge-queue")
     },
-    enableStartingPointHandler(e) {
-      let selectedNode = this.topologyActiveNodes.filter((nodeName) => {
+    showNodeContextActions(e) {
+      const selectedNode = this.topologyActiveNodes.filter((nodeName) => {
         if (e?.detail?.dataset?.index) {
           return nodeName._id === e.detail.dataset.index
         } else {
           return false
         }
       })[0]
-      events.emit(EVENTS.MODAL.NODE.UPDATE, selectedNode)
+
+      const correction = 3
+      this.nodeDropdownData = {
+        ...selectedNode,
+        x: this.getOffset(e.detail).x,
+        y: this.getOffset(e.detail).y + e.detail.offsetHeight - correction,
+      }
+    },
+    getOffset(el) {
+      const rect = el.getBoundingClientRect()
+      return {
+        x: rect.x,
+        y: rect.y,
+      }
     },
     nodeSelectionHandler(e) {
       this.selectedNode = this.topologyActiveNodes.filter((nodeName) => {
@@ -321,7 +353,7 @@ export default {
       document.querySelectorAll(".starting-point").forEach((startingPoint) => {
         startingPoint.addEventListener("click", function () {
           window.dispatchEvent(
-            new CustomEvent("enableStartingPoint", { detail: startingPoint })
+            new CustomEvent("showNodeContextActions", { detail: startingPoint })
           )
         })
       })
@@ -443,7 +475,9 @@ export default {
       deep: true,
       immediate: true,
       async handler(topologyActive) {
-        await this.initData(topologyActive)
+        if (topologyActive) {
+          await this.initData(topologyActive)
+        }
       },
     },
   },
@@ -453,8 +487,8 @@ export default {
     window.addEventListener("userTasksCheckbox", this.toggleOverlaysHandler)
     window.addEventListener("queueDepthCheckbox", this.toggleOverlaysHandler)
     window.addEventListener(
-      "enableStartingPoint",
-      this.enableStartingPointHandler
+      "showNodeContextActions",
+      this.showNodeContextActions
     )
   },
   mounted() {
@@ -466,8 +500,8 @@ export default {
     window.removeEventListener("userTasksCheckbox", this.toggleOverlaysHandler)
     window.removeEventListener("queueDepthCheckbox", this.toggleOverlaysHandler)
     window.removeEventListener(
-      "enableStartingPoint",
-      this.enableStartingPointHandler
+      "showNodeContextActions",
+      this.showNodeContextActions
     )
   },
 }
@@ -565,5 +599,9 @@ export default {
 .starting-point {
   cursor: pointer;
   transform: scale(0.7);
+
+  &.webhook {
+    cursor: default;
+  }
 }
 </style>

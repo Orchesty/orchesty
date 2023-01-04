@@ -29,6 +29,8 @@
     "text": {
       "importTopologyMessage": "alter the topology name | left blank if not desired to",
       "deleteFolder": "Are you sure you want to delete folder {0}?",
+      "startingPointEnabled": "Enabled",
+      "startingPointDisabled": "Disabled",
       "deleteTopology": "Are you sure you want to delete topology {0}?",
       "disableMessageTopology": "Topology is enabled, consider disabling it instead",
       "rejectAllTasks": "Are you sure you want to reject all {0} tasks?",

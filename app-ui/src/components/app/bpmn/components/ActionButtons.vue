@@ -49,7 +49,7 @@
       <v-list dense>
         <v-list-item link @click="$refs.import.click()">
           <v-list-item-title class="d-flex justify-space-between align-center">
-            <span class="mr-2">{{ $t("button.import") }}</span>
+            <span class="mr-2">{{ $t("contextMenu.topology.import") }}</span>
             <app-icon dense>mdi-import</app-icon>
           </v-list-item-title>
           <input
