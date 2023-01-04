@@ -37,6 +37,15 @@ PaletteProvider.$inject = [
   "translate",
 ]
 
+export const PIPES_TYPE_USER = "user"
+export const PIPES_TYPE_CUSTOM = "custom"
+export const PIPES_TYPE_GATEWAY = "gateway"
+export const PIPES_TYPE_BATCH = "batch"
+export const PIPES_TYPE_CONNECTOR = "connector"
+export const PIPES_TYPE_START = "start"
+export const PIPES_TYPE_WEBHOOK = "webhook"
+export const PIPES_TYPE_CRON = "cron"
+
 PaletteProvider.prototype.getPaletteEntries = function () {
   var actions = {},
     create = this._create,
@@ -100,7 +109,7 @@ PaletteProvider.prototype.getPaletteEntries = function () {
       "bpmn-icon-start-event-timer",
       "Cron",
       {
-        pipesType: "cron",
+        pipesType: PIPES_TYPE_CRON,
       }
     ),
     "create.webhook-event": createAction(
@@ -109,7 +118,7 @@ PaletteProvider.prototype.getPaletteEntries = function () {
       "bpmn-icon-start-event-signal",
       "Webhook",
       {
-        pipesType: "webhook",
+        pipesType: PIPES_TYPE_WEBHOOK,
       }
     ),
     "create.start-event": createAction(
@@ -118,7 +127,7 @@ PaletteProvider.prototype.getPaletteEntries = function () {
       "bpmn-icon-start-event-none",
       "Start",
       {
-        pipesType: "start",
+        pipesType: PIPES_TYPE_START,
       }
     ),
     "event-separator": {
@@ -131,7 +140,7 @@ PaletteProvider.prototype.getPaletteEntries = function () {
       "bpmn-icon-service-task",
       "Connector",
       {
-        pipesType: "connector",
+        pipesType: PIPES_TYPE_CONNECTOR,
       }
     ),
     "create.batch": createAction(
@@ -140,7 +149,7 @@ PaletteProvider.prototype.getPaletteEntries = function () {
       "bpmn-icon-pipes-connector-batch",
       "Batch",
       {
-        pipesType: "batch",
+        pipesType: PIPES_TYPE_BATCH,
       }
     ),
     "create.custom": createAction(
@@ -148,14 +157,14 @@ PaletteProvider.prototype.getPaletteEntries = function () {
       "activity",
       "bpmn-icon-task-none",
       "Custom",
-      { pipesType: "custom" }
+      { pipesType: PIPES_TYPE_CUSTOM }
     ),
     "create.user": createAction(
       "bpmn:Task",
       "activity",
       "bpmn-icon-user",
       "User task",
-      { pipesType: "user" }
+      { pipesType: PIPES_TYPE_USER }
     ),
     "activity-separator": {
       group: "activity",
@@ -167,7 +176,7 @@ PaletteProvider.prototype.getPaletteEntries = function () {
       "bpmn-icon-gateway-none",
       "Gateway",
       {
-        pipesType: "gateway",
+        pipesType: PIPES_TYPE_GATEWAY,
       }
     ),
   })
