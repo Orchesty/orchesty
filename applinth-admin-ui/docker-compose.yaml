@@ -35,7 +35,7 @@ services:
       - ${DEV_IP}:4010:4010
     volumes:
       - ./../:/var/www:cached
-    command: sh -c 'yarn install && yarn start'
+    command: sh -c 'pnpm install && pnpm start'
 
 volumes:
   mongo: {}

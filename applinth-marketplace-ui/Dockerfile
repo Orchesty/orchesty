@@ -1,20 +1,22 @@
 ### Build step
-FROM node:16-slim as builder
+FROM node:18-slim as builder
+
+RUN npm i -g pnpm
 
 # Pre-cache packages
 WORKDIR /precache
 COPY package.json ./
-COPY yarn.lock ./
-RUN yarn install
+COPY pnpm-lock.yaml ./
+RUN pnpm install
 
 ### Build step
-FROM node:16-slim as pre-cache
+FROM node:18-slim as pre-cache
 
 # Build
 WORKDIR /build
 COPY ./ ./
 COPY --from=builder /precache ./
-RUN yarn build
+RUN npm run build
 
 
 ### Packaging step

@@ -29,7 +29,7 @@ export function transformUser(user: FirebaseUser | null): User | null {
 export function initializeFirebaseAuth(initVue: () => void) {
   initializeApp(firebaseConfig)
   const auth = getAuth()
-  onAuthStateChanged(auth, async (user) => {
+  onAuthStateChanged(auth, async (user: FirebaseUser | null) => {
     try {
       if (user) {
         await saveUserWithTokenToStore(user)

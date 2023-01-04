@@ -17,5 +17,5 @@ docker-compose exec monolith-api php bin/console doctrine:mongodb:schema:create
 
 (Only for projects: app-ui, applinth-admin-ui, applinth-marketplace-ui)
 
-In the root run `npm install` and `npm run prepare-husky`
+In the root run `pnpm install` and `pnpm run prepare-husky`
 This will install husky pre-commit hook for FE projects

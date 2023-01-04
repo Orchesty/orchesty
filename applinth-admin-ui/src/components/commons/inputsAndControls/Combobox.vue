@@ -49,7 +49,7 @@ export default class Combobox extends Vue {
   private search = ""
   private model: any = null
   private items: Array<any> = []
-  private timeout: number | null = null
+  private timeout: NodeJS.Timeout | null = null
 
   constructor() {
     super()

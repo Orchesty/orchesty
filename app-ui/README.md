@@ -12,17 +12,15 @@ chrome://flags/
 
 ```bash
 # Install dependecies
-npm install
+pnpm install
 # Compiles and hot-reloads for development
-npm run serve || npm start
+pnpm run serve || pnpm start
 # Compiles and minifies for production
-npm run build
+pnpm run build
 # Run tests
-npm run test
+pnpm run test
 # Lint
-npm run lint
-# Lint with autofix
-npm run lint-autofix
+pnpm run lint
 ```
 
 #### Directory structure (src)
