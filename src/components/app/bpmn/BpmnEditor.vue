@@ -50,6 +50,7 @@ import { API } from "@/api"
 import ProgressBarLinear from "@/components/commons/progressIndicators/ProgressBarLinear"
 import FlashMessageMixin from "@/services/mixins/FlashMessageMixin"
 import { LOCAL_STORAGE } from "@/services/enums/localStorageEnums"
+import DefaultNameBehavior from "@/components/app/bpmn/bpnmConfig/customModules/DefaultNameBehavior"
 
 export default {
   name: "BpmnIOEditor",
@@ -95,6 +96,7 @@ export default {
               "contextPadProvider",
               "elementFactory",
               "paletteProvider",
+              "defaultNameBehavior",
             ],
           },
           { propertiesProvider: ["type", PropertiesProviderModule] },
@@ -102,6 +104,7 @@ export default {
           { contextPadProvider: ["type", CustomContextPadProvider] },
           { elementFactory: ["type", CustomElementFactory] },
           { paletteProvider: ["type", CustomPalette] },
+          { defaultNameBehavior: ["type", DefaultNameBehavior] },
         ],
         container: "#canvas-edit",
         propertiesPanel: {
@@ -384,6 +387,7 @@ export default {
           this.selectedShape = null
         }
       })
+
       try {
         await this.modeler.importXML(this.topologyActiveDiagram)
       } catch (err) {
