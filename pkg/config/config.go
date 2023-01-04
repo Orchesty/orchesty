@@ -32,7 +32,7 @@ type (
 		CounterCollection    string `env:"MONGODB_COUNTER_COLLECTION" default:"MultiCounter"`
 		CounterSubCollection string `env:"MONGODB_COUNTER_SUB_COLLECTION" default:"MultiCounterSubProcess"`
 		CounterErrCollection string `env:"MONGODB_COUNTER_ERR_COLLECTION" default:"MultiCounterError"`
-		ApiTokenCollection   string
+		ApiTokenCollection   string `env:"MONGODB_API_TOKEN_COLLECTION" default:"ApiToken"`
 	}
 
 	metrics struct {
@@ -41,11 +41,11 @@ type (
 	}
 
 	logs struct {
-		Url string `env:"UDP_LOGGER_URL" default:"fluentd:5120"`
+		Url string `env:"UDP_LOGGER_URL" required:"true"`
 	}
 
 	startingPoint struct {
-		Dsn string `env:"STARTING_POINT_DSN" required:"true" default:"http://starting-point:8080"`
+		Dsn string `env:"STARTING_POINT_DSN" required:"true"`
 	}
 )
 
@@ -82,6 +82,4 @@ func init() {
 	if !strings.HasPrefix(StartingPoint.Dsn, "http") {
 		StartingPoint.Dsn = fmt.Sprintf("http://%s", StartingPoint.Dsn)
 	}
-
-	MongoDb.ApiTokenCollection = "ApiToken"
 }
