@@ -41,6 +41,9 @@
       "nextRun": "Next run"
     },
     "status": {
+      "nextRun": "Next run",
+      "cronTime": "Cron time",
+      "cronParams": "Cron parameters",
       "noTopologySelected": "No topology selected",
       "noTopologyFound": "No topology found",
       "activeTopologies": "Active topologies",
