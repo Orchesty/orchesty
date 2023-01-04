@@ -32,18 +32,29 @@ export default class DocumentManager {
 
     public async deleteDocuments(document: DocumentEnum, requestQuery: IRequestQueryParams): Promise<number> {
         const query = this.makeQueryObject(requestQuery);
-        const filter = this.getDocumentFilter(document, query);
-        if (Object.keys(filter).length !== 0) {
-            return (await this.mongo.getCollection(document).deleteMany(filter)).deletedCount;
-        }
-        throw Error('Empty filter is not supported.');
+        const filter = this.getDocumentFilter(document, query, true);
+        return (await this.mongo.getCollection(document).updateMany(
+            filter,
+            { $set: { deleted: new Date() } },
+        )).matchedCount;
     }
 
-    private getDocumentFilter(document: DocumentEnum, query: IQueryParams): Filter<Document> {
+    private getDocumentFilter(
+        document: DocumentEnum,
+        query: IQueryParams,
+        emptyFilterThrowError?: boolean,
+    ): Filter<Document> {
+        const filter: Filter<Document> = {};
         if (query.filter) {
-            const filter: Filter<Document> = {};
             if (query.filter.ids) {
                 filter.ids = { $in: query.filter.ids };
+            }
+            if (query.filter.deleted !== undefined && query.filter.deleted !== null) {
+                if (!query.filter.deleted) {
+                    filter.deleted = { $eq: null };
+                }
+            } else {
+                filter.deleted = { $eq: null };
             }
             switch (document) {
                 case DocumentEnum.APPLICATION_INSTALL:
@@ -69,10 +80,16 @@ export default class DocumentManager {
                 default:
                     throw Error('Unsupported document.');
             }
-            return filter;
         }
 
-        return {};
+        if (Object.keys(filter).length === 0) {
+            if (emptyFilterThrowError) {
+                throw Error('Empty filter is not supported.');
+            }
+            return { deleted: { $eq: null } };
+        }
+
+        return filter;
     }
 
     private isNodeQuery(filter: IApplicationFilter | INodeFilter | IWebhookFilter): filter is INodeFilter {
@@ -177,4 +194,5 @@ interface IWebhookFilter extends IBaseFilter {
 
 interface IBaseFilter {
     ids?: string[];
+    deleted?: boolean;
 }
