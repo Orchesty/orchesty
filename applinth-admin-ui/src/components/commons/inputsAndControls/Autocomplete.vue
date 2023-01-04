@@ -108,7 +108,7 @@ export default class Autocomplete extends Vue {
   @Prop({ required: false, type: String, default: "" })
   private prependIcon!: string
 
-  private timeout: number | null = null
+  private timeout: NodeJS.Timeout | null = null
 
   private search = ""
 

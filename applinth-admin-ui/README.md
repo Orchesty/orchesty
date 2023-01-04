@@ -5,7 +5,7 @@
 Start frontend dev server (vue cli server) and local fake backend
 
 ```
-npm run dev
+pnpm run dev
 ```
 
 Local server will be running on:
@@ -19,7 +19,7 @@ Local server will be running on:
 Download with npm command
 
 ```
-npm run download:apps-metadata
+pnpm run download:apps-metadata
 ```
 
 ### Run with docker

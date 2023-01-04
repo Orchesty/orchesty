@@ -79,7 +79,7 @@ services:
             - ${DEV_IP}:80:8080
         volumes:
             - ../../app-ui:/var/www/app-ui:cached
-        command: sh -c 'yarn install && yarn serve'
+        command: sh -c 'pnpm install && pnpm run serve'
 
     applinth-marketplace-ui:
         image: hanabosocom/nodejs-build:dev
@@ -92,7 +92,7 @@ services:
             - ${DEV_IP}:81:8080
         volumes:
             - ../../applinth-marketplace-ui:/var/www/applinth-marketplace-ui:cached
-        command: sh -c 'yarn install && yarn start'
+        command: sh -c 'pnpm install && pnpm start'
 
     applinth-admin-ui:
         image: hanabosocom/nodejs-build:dev
@@ -105,7 +105,7 @@ services:
             - ${DEV_IP}:83:8080
         volumes:
             - ../../applinth-admin-ui:/var/www/applinth-admin-ui:cached
-        command: sh -c 'yarn install && yarn start'
+        command: sh -c 'pnpm install && pnpm start'
 
     adminer:
         image: adminer:latest

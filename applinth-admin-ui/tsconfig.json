@@ -12,7 +12,7 @@
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "sourceMap": true,
-    "types": ["webpack-env", "vuetify", "diacritics"],
+    "types": ["webpack-env", "vuetify", "diacritics", "node"],
     "lib": ["esnext", "dom", "dom.iterable", "scripthost"],
     "baseUrl": ".",
     "paths": {

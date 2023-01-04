@@ -19,7 +19,7 @@ init: .env .lo0-up
 	docker-compose up -d --force-recreate --remove-orphans
 
 start-mock: init
-	docker-compose exec applinth-admin-ui yarn run api:mock
+	docker-compose exec applinth-admin-ui pnpm run api:mock
 
 down: .lo0-down
 	docker-compose down -v
