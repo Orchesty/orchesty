@@ -19,7 +19,7 @@ type (
 	mongo struct {
 		Dsn                string `env:"MONGO_DSN" required:"true"`
 		Collection         string `env:"MONGO_COLLECTION" required:"true"`
-		ApiTokenCollection string
+		ApiTokenCollection string `env:"MONGO_API_TOKEN_COLLECTION" default:"ApiToken"`
 	}
 
 	startingPoint struct {
@@ -65,8 +65,6 @@ func load() {
 	if !strings.HasPrefix(StartingPoint.Dsn, "http") {
 		StartingPoint.Dsn = fmt.Sprintf("http://%s", StartingPoint.Dsn)
 	}
-
-	Mongo.ApiTokenCollection = "ApiToken"
 }
 
 func init() {

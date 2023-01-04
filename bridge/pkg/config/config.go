@@ -29,7 +29,7 @@ type (
 	}
 
 	metrics struct {
-		Dsn         string `env:"METRICS_DSN"`
+		Dsn         string `env:"METRICS_DSN" required:"true"`
 		Measurement string `env:"NODE_MEASUREMENT" default:"pipes_node"`
 	}
 
@@ -43,7 +43,7 @@ type (
 	}
 
 	startingPoint struct {
-		Dsn    string `env:"STARTING_POINT_DSN" default:"http://starting-point:8080"`
+		Dsn    string `env:"STARTING_POINT_DSN" required:"true"`
 		ApiKey string `env:"ORCHESTY_API_KEY" required:"false" default:""`
 	}
 )
