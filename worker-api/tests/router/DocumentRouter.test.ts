@@ -71,13 +71,27 @@ describe('Tests for logs router', () => {
                 enabled: true,
                 expires: new Date(2022, 1, 2),
                 nonEncrypt: { test: 'testValue' },
+                deleted: null,
             },
         );
 
         const resp = await supertest(services.app).get('/document/AppInstall').set(ORCHESTY_API_KEY, key).send();
         assert.equal(resp.statusCode, 200);
         const { body } = resp;
-        assert.deepEqual(resp.body, [{ _id: body[0]._id, enabled: true, expires: '2022-02-02T00:00:00.000Z', key: 'testKey', nonEncrypt: { test: 'testValue' }, user: 'testUser' }]);
+        assert.deepEqual(
+            resp.body,
+            [
+                {
+                    _id: body[0]._id,
+                    enabled: true,
+                    expires: '2022-02-02T00:00:00.000Z',
+                    key: 'testKey',
+                    nonEncrypt: { test: 'testValue' },
+                    user: 'testUser',
+                    deleted: null,
+                },
+            ],
+        );
 
         const resp1 = await supertest(services.app).get('/document/AppInstall?filter={"ids":["1"]}').set(ORCHESTY_API_KEY, key).send();
         assert.equal(resp1.statusCode, 200);
@@ -85,7 +99,20 @@ describe('Tests for logs router', () => {
 
         const resp2 = await supertest(services.app).get('/document/AppInstall?filter={"users":["testUser"]}').set(ORCHESTY_API_KEY, key).send();
         assert.equal(resp2.statusCode, 200);
-        assert.deepEqual(resp2.body, [{ _id: resp2.body[0]._id, enabled: true, expires: '2022-02-02T00:00:00.000Z', key: 'testKey', nonEncrypt: { test: 'testValue' }, user: 'testUser' }]);
+        assert.deepEqual(
+            resp2.body,
+            [
+                {
+                    _id: resp2.body[0]._id,
+                    enabled: true,
+                    expires: '2022-02-02T00:00:00.000Z',
+                    key: 'testKey',
+                    nonEncrypt: { test: 'testValue' },
+                    user: 'testUser',
+                    deleted: null,
+                },
+            ],
+        );
 
         const resp3 = await supertest(services.app).get('/document/AppInstall?filter={"users":["1"]}').set(ORCHESTY_API_KEY, key).send();
         assert.equal(resp3.statusCode, 200);
@@ -93,7 +120,20 @@ describe('Tests for logs router', () => {
 
         const resp4 = await supertest(services.app).get('/document/AppInstall?filter={"names":["testKey"]}').set(ORCHESTY_API_KEY, key).send();
         assert.equal(resp4.statusCode, 200);
-        assert.deepEqual(resp4.body, [{ _id: resp2.body[0]._id, enabled: true, expires: '2022-02-02T00:00:00.000Z', key: 'testKey', nonEncrypt: { test: 'testValue' }, user: 'testUser' }]);
+        assert.deepEqual(
+            resp4.body,
+            [
+                {
+                    _id: resp2.body[0]._id,
+                    enabled: true,
+                    expires: '2022-02-02T00:00:00.000Z',
+                    key: 'testKey',
+                    nonEncrypt: { test: 'testValue' },
+                    user: 'testUser',
+                    deleted: null,
+                },
+            ],
+        );
     });
 
     it('document - insert/get/delete', async () => {
@@ -108,13 +148,26 @@ describe('Tests for logs router', () => {
             enabled: true,
             expires: new Date(2022, 1, 2),
             nonEncrypt: { test: 'testValue' },
+            deleted: null,
         });
         assert.equal(resp.statusCode, 200);
         assert.deepEqual(resp.body, { message: { status: 'OK', data: '' } });
 
         const resp1 = await supertest(services.app).get('/document/AppInstall').set(ORCHESTY_API_KEY, key).send();
         assert.equal(resp1.statusCode, 200);
-        assert.deepEqual(resp1.body, [{ _id: resp1.body[0]._id, enabled: true, expires: '2022-02-02T00:00:00.000Z', key: 'testKey', nonEncrypt: { test: 'testValue' }, user: 'testUser' }]);
+        assert.deepEqual(
+            resp1.body,
+            [
+                { _id: resp1.body[0]._id,
+                    enabled: true,
+                    expires: '2022-02-02T00:00:00.000Z',
+                    key: 'testKey',
+                    nonEncrypt: { test: 'testValue' },
+                    user: 'testUser',
+                    deleted: null,
+                },
+            ],
+        );
 
         const resp2 = await supertest(services.app).delete('/document/AppInstall').set(ORCHESTY_API_KEY, key).send();
         assert.equal(resp2.statusCode, 200);
