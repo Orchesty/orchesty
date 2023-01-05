@@ -83,8 +83,8 @@ export default class UsageStatsService {
         const metadata = await this.findMetadata(tenantId, query.instanceId);
         return {
             rows,
-            billingHistoryStart: metadata.billingHistoryStart.toISOString(),
-            billingHistoryEnd: metadata.billingHistoryEnd.toISOString(),
+            billingHistoryStart: new Date(metadata.billingHistoryStart).toISOString(),
+            billingHistoryEnd: new Date(metadata.billingHistoryEnd).toISOString(),
         };
     }
 
@@ -132,8 +132,8 @@ export default class UsageStatsService {
         const metadata = await this.findMetadata(tenantId, query.instanceId);
         return {
             rows,
-            billingHistoryStart: metadata.billingHistoryStart.toISOString(),
-            billingHistoryEnd: metadata.billingHistoryEnd.toISOString(),
+            billingHistoryStart: new Date(metadata.billingHistoryStart).toISOString(),
+            billingHistoryEnd: new Date(metadata.billingHistoryEnd).toISOString(),
         };
     }
 
@@ -184,8 +184,8 @@ export default class UsageStatsService {
         const metadata = await this.findMetadata(tenantId, query.instanceId);
         return {
             rows,
-            billingHistoryStart: metadata.billingHistoryStart.toISOString(),
-            billingHistoryEnd: metadata.billingHistoryEnd.toISOString(),
+            billingHistoryStart: new Date(metadata.billingHistoryStart).toISOString(),
+            billingHistoryEnd: new Date(metadata.billingHistoryEnd).toISOString(),
         };
     }
 
@@ -223,8 +223,8 @@ export default class UsageStatsService {
         const metadata = await this.findMetadata(tenantId, query.instanceId);
         return {
             rows,
-            billingHistoryStart: metadata.billingHistoryStart.toISOString(),
-            billingHistoryEnd: metadata.billingHistoryEnd.toISOString(),
+            billingHistoryStart: new Date(metadata.billingHistoryStart).toISOString(),
+            billingHistoryEnd: new Date(metadata.billingHistoryEnd).toISOString(),
         };
     }
 
@@ -272,8 +272,8 @@ export default class UsageStatsService {
         const metadata = await this.findMetadata(tenantId, query.instanceId);
         return {
             rows,
-            billingHistoryStart: metadata.billingHistoryStart.toISOString(),
-            billingHistoryEnd: metadata.billingHistoryEnd.toISOString(),
+            billingHistoryStart: new Date(metadata.billingHistoryStart).toISOString(),
+            billingHistoryEnd: new Date(metadata.billingHistoryEnd).toISOString(),
         };
     }
 
@@ -401,8 +401,8 @@ export default class UsageStatsService {
         const metadata = await this.findMetadata(tenantId, query.instanceId);
         return {
             rows,
-            billingHistoryStart: metadata.billingHistoryStart.toISOString(),
-            billingHistoryEnd: metadata.billingHistoryEnd.toISOString(),
+            billingHistoryStart: new Date(metadata.billingHistoryStart).toISOString(),
+            billingHistoryEnd: new Date(metadata.billingHistoryEnd).toISOString(),
         };
     }
 

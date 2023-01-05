@@ -32,6 +32,18 @@ export interface UsageStatsInstalledApps {
      * @memberof UsageStatsInstalledApps
      */
     rows?: Array<UsageStatsInstalledAppsRowsInner>;
+    /**
+     * 
+     * @type {string}
+     * @memberof UsageStatsInstalledApps
+     */
+    billingHistoryStart?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UsageStatsInstalledApps
+     */
+    billingHistoryEnd?: string;
 }
 
 export function UsageStatsInstalledAppsFromJSON(json: any): UsageStatsInstalledApps {
@@ -45,6 +57,8 @@ export function UsageStatsInstalledAppsFromJSONTyped(json: any, ignoreDiscrimina
     return {
         
         'rows': !exists(json, 'rows') ? undefined : ((json['rows'] as Array<any>).map(UsageStatsInstalledAppsRowsInnerFromJSON)),
+        'billingHistoryStart': !exists(json, 'billingHistoryStart') ? undefined : json['billingHistoryStart'],
+        'billingHistoryEnd': !exists(json, 'billingHistoryEnd') ? undefined : json['billingHistoryEnd'],
     };
 }
 
@@ -58,6 +72,8 @@ export function UsageStatsInstalledAppsToJSON(value?: UsageStatsInstalledApps | 
     return {
         
         'rows': value.rows === undefined ? undefined : ((value.rows as Array<any>).map(UsageStatsInstalledAppsRowsInnerToJSON)),
+        'billingHistoryStart': value.billingHistoryStart,
+        'billingHistoryEnd': value.billingHistoryEnd,
     };
 }
 

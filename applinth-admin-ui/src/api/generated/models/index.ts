@@ -22,6 +22,8 @@ export * from './UsageStatsInstalledApps';
 export * from './UsageStatsInstalledAppsRowsInner';
 export * from './UsageStatsTimeBucketApps';
 export * from './UsageStatsTimeBucketAppsRowsInner';
+export * from './UsageStatsTimeBucketHistory';
+export * from './UsageStatsTimeBucketHistoryRowsInner';
 export * from './UsageStatsTimeBucketUsers';
 export * from './UsageStatsTimeBucketUsersRowsInner';
 export * from './UsageStatsUsers';

@@ -68,6 +68,10 @@ import {
 } from "@/api/generated"
 import Heading from "@/components/commons/typography/Heading.vue"
 import { Routes } from "@/enums/Routes"
+import {
+  getTimeRangeEndForApiCall,
+  getTimeRangeStartForApiCall,
+} from "@/service/billingService"
 
 interface UsersTable {
   [key: string]: any
@@ -93,8 +97,8 @@ export default class CustomersPage extends Vue {
   appSearch = ""
   timerId: any = null
 
-  customers = [] as UsageStatsUsersRowsInner[]
-  applications = [] as UsageStatsAppsRowsInner[]
+  customers: UsageStatsUsersRowsInner[] = []
+  applications: UsageStatsAppsRowsInner[] = []
 
   headers: Array<UsersTable> = [
     {
@@ -120,8 +124,8 @@ export default class CustomersPage extends Vue {
     ;[this.customers, this.applications] = await Promise.all([
       this.fetchCustomers(),
       callApi<UsageStatsAppsRequest>(api.overview.apps, {
-        timeRangeStart: new Date(0).toISOString(),
-        timeRangeEnd: new Date().toISOString(),
+        timeRangeStart: getTimeRangeStartForApiCall().toISO(),
+        timeRangeEnd: getTimeRangeEndForApiCall().toISO(),
       }),
     ])
     this.isLoading = false
@@ -153,8 +157,8 @@ export default class CustomersPage extends Vue {
 
   private fetchCustomers(): Promise<UsageStatsUsersRowsInner[]> {
     return callApi<UsageStatsUsersRequest>(api.customers.list, {
-      timeRangeStart: new Date(0).toISOString(),
-      timeRangeEnd: new Date().toISOString(),
+      timeRangeStart: getTimeRangeStartForApiCall().toISO(),
+      timeRangeEnd: getTimeRangeEndForApiCall().toISO(),
       appId: this.appSearch,
       endUserDisplayId: this.textSearch,
       granularity: "monthly",

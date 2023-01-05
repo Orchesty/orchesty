@@ -41,8 +41,10 @@
           :title="$t('overviewPage.statusCards.estimatedCostsEom')"
         />
       </div>
-      <!--    todo PIP-1448 doplnit datum z BE-->
-      <!--      <StatusCardCostInfo date="12.12.2022" />-->
+
+      <StatusCardCostInfo />
+
+      <!--    todo PIP-1365 doplnit graf -->
       <!--      <LineChart-->
       <!--        class="chart-js"-->
       <!--        v-if="labels.length > 0"-->
@@ -58,6 +60,7 @@ import Vue from "vue"
 import { Component, Watch } from "vue-property-decorator"
 import AppLayout from "../components/commons/layouts/AppLayout.vue"
 import StatusCard from "@/components/status-cards/StatusCard.vue"
+import StatusCardCostInfo from "@/components/status-cards/StatusCardCostInfo.vue"
 import { Routes } from "@/enums"
 import LineChart from "@/components/app/LineChart.vue"
 import BaseProgressBarLinear from "@/components/commons/BaseProgressBarLinear.vue"
@@ -77,6 +80,10 @@ import {
   ApplicationsGetters,
   applicationsNamespace,
 } from "@/store/modules/applications"
+import {
+  getTimeRangeEndForApiCall,
+  getTimeRangeStartForApiCall,
+} from "@/service/billingService"
 
 @Component({
   components: {
@@ -85,6 +92,7 @@ import {
     LineChart,
     StatusCard,
     AppLayout,
+    StatusCardCostInfo,
   },
 })
 export default class ApplicationDetailPage extends Vue {
@@ -136,8 +144,8 @@ export default class ApplicationDetailPage extends Vue {
     const graphData = await callApi<UsageStatsTimeBucketUsersRequest>(
       api.timeBucketUsers.data,
       {
-        timeRangeStart: new Date(0).toISOString(),
-        timeRangeEnd: new Date().toISOString(),
+        timeRangeStart: getTimeRangeStartForApiCall().toISO(),
+        timeRangeEnd: getTimeRangeEndForApiCall().toISO(),
         appId: this.$route.params.id,
       }
     )

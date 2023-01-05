@@ -27,6 +27,8 @@ models/UsageStatsInstalledApps.ts
 models/UsageStatsInstalledAppsRowsInner.ts
 models/UsageStatsTimeBucketApps.ts
 models/UsageStatsTimeBucketAppsRowsInner.ts
+models/UsageStatsTimeBucketHistory.ts
+models/UsageStatsTimeBucketHistoryRowsInner.ts
 models/UsageStatsTimeBucketUsers.ts
 models/UsageStatsTimeBucketUsersRowsInner.ts
 models/UsageStatsUsers.ts

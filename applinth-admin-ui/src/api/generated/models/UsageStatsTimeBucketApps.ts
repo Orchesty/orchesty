@@ -32,6 +32,18 @@ export interface UsageStatsTimeBucketApps {
      * @memberof UsageStatsTimeBucketApps
      */
     rows?: Array<UsageStatsTimeBucketAppsRowsInner>;
+    /**
+     * 
+     * @type {string}
+     * @memberof UsageStatsTimeBucketApps
+     */
+    billingHistoryStart?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UsageStatsTimeBucketApps
+     */
+    billingHistoryEnd?: string;
 }
 
 export function UsageStatsTimeBucketAppsFromJSON(json: any): UsageStatsTimeBucketApps {
@@ -45,6 +57,8 @@ export function UsageStatsTimeBucketAppsFromJSONTyped(json: any, ignoreDiscrimin
     return {
         
         'rows': !exists(json, 'rows') ? undefined : ((json['rows'] as Array<any>).map(UsageStatsTimeBucketAppsRowsInnerFromJSON)),
+        'billingHistoryStart': !exists(json, 'billingHistoryStart') ? undefined : json['billingHistoryStart'],
+        'billingHistoryEnd': !exists(json, 'billingHistoryEnd') ? undefined : json['billingHistoryEnd'],
     };
 }
 
@@ -58,6 +72,8 @@ export function UsageStatsTimeBucketAppsToJSON(value?: UsageStatsTimeBucketApps 
     return {
         
         'rows': value.rows === undefined ? undefined : ((value.rows as Array<any>).map(UsageStatsTimeBucketAppsRowsInnerToJSON)),
+        'billingHistoryStart': value.billingHistoryStart,
+        'billingHistoryEnd': value.billingHistoryEnd,
     };
 }
 

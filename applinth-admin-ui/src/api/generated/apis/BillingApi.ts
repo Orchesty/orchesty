@@ -61,6 +61,14 @@ export interface UsageStatsTimeBucketAppsRequest {
     instanceId?: string;
 }
 
+export interface UsageStatsTimeBucketHistoryRequest {
+    timeRangeStart: string;
+    timeRangeEnd: string;
+    tenantId?: string;
+    instanceId?: string;
+    granularity?: UsageStatsTimeBucketHistoryGranularityEnum;
+}
+
 export interface UsageStatsTimeBucketUsersRequest {
     timeRangeStart: string;
     timeRangeEnd: string;
@@ -249,6 +257,60 @@ export class BillingApi extends runtime.BaseAPI {
     }
 
     /**
+     * Get billing report time bucket (monthly/daily) for all apps
+     */
+    async usageStatsTimeBucketHistoryRaw(requestParameters: UsageStatsTimeBucketHistoryRequest, initOverrides?: RequestInit | runtime.InitOverideFunction): Promise<runtime.ApiResponse<UsageStatsTimeBucketApps>> {
+        if (requestParameters.timeRangeStart === null || requestParameters.timeRangeStart === undefined) {
+            throw new runtime.RequiredError('timeRangeStart','Required parameter requestParameters.timeRangeStart was null or undefined when calling usageStatsTimeBucketHistory.');
+        }
+
+        if (requestParameters.timeRangeEnd === null || requestParameters.timeRangeEnd === undefined) {
+            throw new runtime.RequiredError('timeRangeEnd','Required parameter requestParameters.timeRangeEnd was null or undefined when calling usageStatsTimeBucketHistory.');
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters.tenantId !== undefined) {
+            queryParameters['tenantId'] = requestParameters.tenantId;
+        }
+
+        if (requestParameters.instanceId !== undefined) {
+            queryParameters['instanceId'] = requestParameters.instanceId;
+        }
+
+        if (requestParameters.granularity !== undefined) {
+            queryParameters['granularity'] = requestParameters.granularity;
+        }
+
+        if (requestParameters.timeRangeStart !== undefined) {
+            queryParameters['timeRangeStart'] = requestParameters.timeRangeStart;
+        }
+
+        if (requestParameters.timeRangeEnd !== undefined) {
+            queryParameters['timeRangeEnd'] = requestParameters.timeRangeEnd;
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/billing/reports/timeBucketHistory`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => UsageStatsTimeBucketAppsFromJSON(jsonValue));
+    }
+
+    /**
+     * Get billing report time bucket (monthly/daily) for all apps
+     */
+    async usageStatsTimeBucketHistory(requestParameters: UsageStatsTimeBucketHistoryRequest, initOverrides?: RequestInit | runtime.InitOverideFunction): Promise<UsageStatsTimeBucketApps> {
+        const response = await this.usageStatsTimeBucketHistoryRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
      * Get billing report time bucket (monthly) for one app
      */
     async usageStatsTimeBucketUsersRaw(requestParameters: UsageStatsTimeBucketUsersRequest, initOverrides?: RequestInit | runtime.InitOverideFunction): Promise<runtime.ApiResponse<UsageStatsTimeBucketUsers>> {
@@ -379,6 +441,14 @@ export const UsageStatsAppsGranularityEnum = {
     Monthly: 'monthly'
 } as const;
 export type UsageStatsAppsGranularityEnum = typeof UsageStatsAppsGranularityEnum[keyof typeof UsageStatsAppsGranularityEnum];
+/**
+ * @export
+ */
+export const UsageStatsTimeBucketHistoryGranularityEnum = {
+    Daily: 'daily',
+    Monthly: 'monthly'
+} as const;
+export type UsageStatsTimeBucketHistoryGranularityEnum = typeof UsageStatsTimeBucketHistoryGranularityEnum[keyof typeof UsageStatsTimeBucketHistoryGranularityEnum];
 /**
  * @export
  */

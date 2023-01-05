@@ -20,7 +20,7 @@ import { exists, mapValues } from '../runtime';
  */
 export interface UsageStatsTimeBucketUsersRowsInner {
     /**
-     * Name of time bucket in format (MM/YY)
+     * Name of time bucket in format (MM/YYYY)
      * @type {string}
      * @memberof UsageStatsTimeBucketUsersRowsInner
      */

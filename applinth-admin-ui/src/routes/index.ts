@@ -185,7 +185,7 @@ const customersRoutes = [
 
 const history = [
   {
-    path: "/history",
+    path: "/billing-reports",
     name: Routes.History,
     component: () => import("../views/BillingReportsPage.vue"),
     meta: {

@@ -28,6 +28,10 @@ import { callApi } from "@/utils"
 import { api } from "@/api"
 import SimpleTable from "@/components/commons/tables/SimpleTable.vue"
 import { toCZK } from "@/filters/money"
+import {
+  getTimeRangeEndForApiCall,
+  getTimeRangeStartForApiCall,
+} from "@/service/billingService"
 
 @Component({
   components: {
@@ -67,8 +71,8 @@ export default class CustomerBillingTable extends Vue {
     this.monthlyBills = await callApi<UsageStatsTimeBucketAppsRequest>(
       api.timeBucketApps.apps,
       {
-        timeRangeStart: new Date(0).toISOString(),
-        timeRangeEnd: new Date().toISOString(),
+        timeRangeStart: getTimeRangeStartForApiCall().toISO(),
+        timeRangeEnd: getTimeRangeEndForApiCall().toISO(),
         endUserId: this.customerId,
       }
     )

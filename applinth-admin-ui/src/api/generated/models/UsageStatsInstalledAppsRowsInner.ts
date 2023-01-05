@@ -38,7 +38,7 @@ export interface UsageStatsInstalledAppsRowsInner {
      */
     installed?: string;
     /**
-     * App installation date
+     * App instance id
      * @type {string}
      * @memberof UsageStatsInstalledAppsRowsInner
      */
