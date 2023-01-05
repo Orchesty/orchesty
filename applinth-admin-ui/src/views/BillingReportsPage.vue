@@ -3,9 +3,14 @@
     <div class="">
       <Heading class="mb-2">{{ $t("billingReportsPage.title") }}</Heading>
 
-      <BillingReportsFilter @change="onChange" :filter="filter" />
+      <BillingReportsFilter
+        @change="onChange"
+        :filter="filter"
+        :months="availableFilterMonths"
+        :years="availableFilterYears"
+      />
 
-      <div class="wrapper my-5">
+      <div class="wrapper my-2">
         <StatusCard
           :loading="loading"
           :score="applicationsCount"
@@ -23,6 +28,10 @@
         />
       </div>
 
+      <div class="mb-5">
+        <StatusCardCostInfo />
+      </div>
+
       <BillingReportsTable :items="tableItems" />
     </div>
   </AppLayout>
@@ -38,7 +47,11 @@ import Heading from "@/components/commons/typography/Heading.vue"
 import { Getter } from "vuex-class"
 import { AuthGetters, authNamespace, User } from "@/store/modules/auth"
 import { callApi } from "@/utils"
-import { UsageStatsAppsRequest, UsageStatsAppsRowsInner } from "@/api/generated"
+import {
+  UsageStatsAppsRequest,
+  UsageStatsAppsRowsInner,
+  UsageStatsTimeBucketHistoryRequest,
+} from "@/api/generated"
 import { api } from "@/api"
 import { toCZK } from "@/filters/money"
 import BillingReportsTable from "@/components/app/BillingReportsTable.vue"
@@ -49,6 +62,11 @@ import BillingReportsFilter, {
 import { DateTime } from "luxon"
 import { HistoryTableApplicationItemType } from "@/types"
 import StatusCard from "@/components/status-cards/StatusCard.vue"
+import StatusCardCostInfo from "@/components/status-cards/StatusCardCostInfo.vue"
+import {
+  getTimeRangeEndForApiCall,
+  getTimeRangeStartForApiCall,
+} from "@/service/billingService"
 
 const PRICE = 19900000
 
@@ -62,6 +80,7 @@ const PRICE = 19900000
     LineChart,
     StatusCard,
     AppLayout,
+    StatusCardCostInfo,
   },
 })
 export default class BillingReportsPage extends Vue {
@@ -72,12 +91,15 @@ export default class BillingReportsPage extends Vue {
   applicationsCount = PRICE
   installationCount = 10
   totalCost = PRICE
-  tableItems!: HistoryTableApplicationItemType[]
+  tableItems: HistoryTableApplicationItemType[] = []
   granularity: "monthly" | "daily" = "monthly"
-  filter: HistoryFilterType = { year: 2022, month: VALUE_ALL }
+  filter: HistoryFilterType = { year: DateTime.now().year, month: VALUE_ALL }
+  availableFilterMonths: number[] = []
+  availableFilterYears: number[] = []
 
   created() {
     this.fetchData()
+    this.fetchFilterDateRange()
   }
 
   private onChange(filter: HistoryFilterType): void {
@@ -89,23 +111,45 @@ export default class BillingReportsPage extends Vue {
     this.fetchData()
   }
 
+  private async fetchFilterDateRange(): Promise<void> {
+    const { billingHistoryStart, billingHistoryEnd } =
+      await callApi<UsageStatsTimeBucketHistoryRequest>(
+        api.timeBucketHistory.data,
+        {
+          granularity: "monthly",
+          timeRangeStart: DateTime.utc(1970, 1).startOf("month").toISO(),
+          timeRangeEnd: DateTime.utc(DateTime.now().year, 12)
+            .endOf("month")
+            .plus({ second: 1 })
+            .toISO(),
+        }
+      )
+
+    if (billingHistoryEnd && billingHistoryStart) {
+      const d1 = DateTime.fromISO(billingHistoryStart)
+      const d2 = DateTime.fromISO(billingHistoryEnd)
+
+      this.prepareFilterValues(d1, d2)
+    }
+  }
+
   private async fetchData(): Promise<void> {
     this.loading = true
     const filterDateFrom =
       this.filter.year === VALUE_ALL
-        ? DateTime.utc(1970, 1).startOf("month")
-        : DateTime.utc(
+        ? getTimeRangeStartForApiCall()
+        : getTimeRangeStartForApiCall(
             this.filter.year,
             this.filter.month === VALUE_ALL ? 1 : this.filter.month
-          ).startOf("month")
+          )
 
     const filterDateTo =
       this.filter.year === VALUE_ALL
-        ? DateTime.utc(DateTime.now().year, 12).endOf("month")
-        : DateTime.utc(
+        ? getTimeRangeEndForApiCall()
+        : getTimeRangeEndForApiCall(
             this.filter.year,
             this.filter.month === VALUE_ALL ? 12 : this.filter.month
-          ).endOf("month")
+          )
 
     const applications: UsageStatsAppsRowsInner[] =
       await callApi<UsageStatsAppsRequest>(api.overview.apps, {
@@ -133,6 +177,36 @@ export default class BillingReportsPage extends Vue {
     this.totalCost = totalCostAccumulator
 
     this.loading = false
+  }
+
+  private prepareFilterValues(d1: DateTime, d2: DateTime): void {
+    const diff = d2.diff(d1, ["years", "months"]).toObject()
+    let months: number[] = []
+    let years: number[] = []
+    const beginYear: number = d1.year
+    const beginMonth: number = d1.month
+
+    if ((diff.years as number) >= 1) {
+      months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+
+      const diffYears = d2.year - d1.year
+      for (let i = 0; i <= diffYears; i++) {
+        years.push(beginYear + i)
+      }
+    } else {
+      years.push(beginYear)
+      if (beginYear !== d2.year) {
+        years.push(d2.year)
+      }
+
+      for (let i = 0; i <= (diff.months as number); i++) {
+        const month = beginMonth + i
+        months.push(month > 12 ? month - 12 : month) // get only values between 1-12
+      }
+    }
+
+    this.availableFilterMonths = months.sort((a, b) => a - b)
+    this.availableFilterYears = years
   }
 
   readonly toCZK = toCZK

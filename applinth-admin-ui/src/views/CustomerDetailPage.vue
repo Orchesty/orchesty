@@ -15,9 +15,9 @@
         :loading="isLoading"
       />
     </div>
-    <!--    todo PIP-1448 doplnit datum z BE-->
+
     <div class="mb-5">
-      <!--      <StatusCardCostInfo date="12.12.2022" />-->
+      <StatusCardCostInfo />
     </div>
 
     <SubHeading class="mb-2">{{
@@ -46,6 +46,7 @@ import {
 } from "@/api/generated"
 import { toCZK } from "@/filters/money"
 import StatusCard from "@/components/status-cards/StatusCard.vue"
+import StatusCardCostInfo from "@/components/status-cards/StatusCardCostInfo.vue"
 
 @Component({
   components: {
@@ -55,6 +56,7 @@ import StatusCard from "@/components/status-cards/StatusCard.vue"
     CustomerAppsTable,
     AppLayout,
     StatusCard,
+    StatusCardCostInfo,
   },
 })
 export default class CustomerDetailPage extends Vue {

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="wrapper">
+    <div class="wrapper mb-2">
       <StatusCard
         :loading="isLoading"
         :score="applicationsCount"
@@ -27,14 +27,14 @@
         :title="$t('overviewPage.statusCards.estimatedCostsEom')"
       />
     </div>
-    <!--    todo PIP-1448 doplnit datum z BE-->
-    <!--    <StatusCardCostInfo date="12.12.2022" />-->
+    <StatusCardCostInfo />
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator"
 import StatusCard from "@/components/status-cards/StatusCard.vue"
+import StatusCardCostInfo from "@/components/status-cards/StatusCardCostInfo.vue"
 import { callApi } from "@/utils"
 import { UsageStatsAppsRequest, UsageStatsUsersRequest } from "@/api/generated"
 import { api } from "@/api"
@@ -43,6 +43,7 @@ import { toCZK } from "@/filters/money"
 @Component({
   components: {
     StatusCard,
+    StatusCardCostInfo,
   },
 })
 export default class StatusCardList extends Vue {

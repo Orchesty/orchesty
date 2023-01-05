@@ -3,7 +3,7 @@
     <div class="mr-2">
       <SelectBox
         :label="$t('formLabels.year')"
-        :items="years"
+        :items="optionsYears"
         name="year"
         @change="onYearChange"
         :value="filter.year"
@@ -11,7 +11,7 @@
     </div>
     <SelectBox
       :label="$t('formLabels.month')"
-      :items="months"
+      :items="optionsMonths"
       name="month"
       @change="onMonthChange"
       :value="filter.month"
@@ -38,18 +38,25 @@ export default class BillingReportsFilter extends Vue {
   @Prop({ type: Object, required: true })
   filter!: HistoryFilterType
 
-  //todo PIP-1365 hardcoded
-  months = [
-    { text: this.$t("all"), value: VALUE_ALL },
-    { text: "9", value: 9 },
-    { text: "10", value: 10 },
-    { text: "11", value: 11 },
-    { text: "12", value: 12 },
-  ]
-  years = [
-    { text: this.$t("all"), value: VALUE_ALL },
-    { text: "2022", value: 2022 },
-  ]
+  @Prop({ type: Array, required: true })
+  months!: number[]
+
+  @Prop({ type: Array, required: true })
+  years!: number[]
+
+  get optionsMonths() {
+    return [
+      { text: this.$t("all"), value: VALUE_ALL },
+      ...this.months.map((month) => ({ text: `${month}`, value: month })),
+    ]
+  }
+
+  get optionsYears() {
+    return [
+      { text: this.$t("all"), value: VALUE_ALL },
+      ...this.years.map((year) => ({ text: `${year}`, value: year })),
+    ]
+  }
 
   private onMonthChange(value: number | "all") {
     if (value && this.filter.year === VALUE_ALL) {

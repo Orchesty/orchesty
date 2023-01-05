@@ -51,3 +51,11 @@ export const overviewUsers: ApiConfigs<OverviewApi> = {
     transform: (data: UsageStatsUsers | undefined) => data?.rows || [],
   },
 }
+
+export const timeBucketHistory: ApiConfigs<"data"> = {
+  data: {
+    id: "TIME_BUCKET_HISTORY",
+    request: (params) =>
+      apiClient.billingApi.usageStatsTimeBucketHistory(params),
+  },
+}

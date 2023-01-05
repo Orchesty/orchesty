@@ -4,6 +4,7 @@ import {
   timeBucketApps,
   installedApps,
   overviewUsers,
+  timeBucketHistory,
 } from "./private/overview"
 import { customers } from "./private/customers"
 import { users } from "./private/users"
@@ -18,4 +19,5 @@ export const api = {
   timeBucketApps,
   overviewUsers,
   tenants,
+  timeBucketHistory,
 }

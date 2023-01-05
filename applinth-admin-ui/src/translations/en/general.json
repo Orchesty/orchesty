@@ -1,4 +1,5 @@
 {
   "appName": "Applinth Console",
-  "all": "All"
+  "all": "All",
+  "valuesValidAsOfDate": "Values valid as of %{date}"
 }

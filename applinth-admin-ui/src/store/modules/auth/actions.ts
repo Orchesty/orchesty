@@ -22,6 +22,7 @@ import { AuthActions, AuthMutations } from "./types"
 import { UpdateUserInfo } from "@/types/CurrentUser"
 import { LocalStorage, Routes } from "@/enums"
 import { api } from "@/api"
+import { fetchLastBillingHistoryDateGenerated } from "@/service/billingService"
 
 export const actions: Actions<AuthActions, AuthState> = {
   async login(_context, payload: TLoginForm): Promise<boolean> {
@@ -44,6 +45,13 @@ export const actions: Actions<AuthActions, AuthState> = {
       if (user) {
         localStorage.setItem(LocalStorage.tenantId, payload.tenant)
         await saveUserWithTokenToStore(user)
+
+        try {
+          const date = await fetchLastBillingHistoryDateGenerated()
+          localStorage.setItem(LocalStorage.priceCalculatedAt, date)
+        } catch (e) {
+          //
+        }
 
         return true
       } else {

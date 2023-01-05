@@ -1,16 +1,17 @@
 <template>
-  <i class="card-cost-info mt-2">Cena platna k {{ toLocalDateTime(date) }}</i>
+  <i v-if="dateString" class="card-cost-info">{{
+    $t("valuesValidAsOfDate", { date: toLocalDateTime(dateString) })
+  }}</i>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator"
+import { Component, Vue } from "vue-property-decorator"
 import { toLocalDateTime } from "@/filters/datetime"
+import { LocalStorage } from "@/enums"
 
-//todo PIP-1448 add translation
 @Component
 export default class StatusCardCostInfo extends Vue {
-  @Prop({ required: true, type: String })
-  private date!: string
+  dateString = localStorage.getItem(LocalStorage.priceCalculatedAt)
 
   readonly toLocalDateTime = toLocalDateTime
 }
