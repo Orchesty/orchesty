@@ -74,7 +74,7 @@ services:
         security_opt: ['seccomp:unconfined']
 
     backend:
-        image: hanabosocom/php-dev:php-8.1-alpine
+        image: hanabosocom/php-dev:php-8.2-alpine
         user: ${DEV_UID}:${DEV_GID}
         ports:
             - ${DEV_IP}:8080:80

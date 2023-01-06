@@ -32,5 +32,11 @@
         "psr-4": {
             "PipesPhpSdkTests\\": "tests/"
         }
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "ergebnis/composer-normalize": true
+        }
     }
 }

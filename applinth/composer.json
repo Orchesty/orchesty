@@ -42,5 +42,11 @@
             "ApplinthTests\\": "tests",
             "UserBundleTests\\": "vendor/hanaboso/user-bundle/tests"
         }
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "ergebnis/composer-normalize": true
+        }
     }
 }

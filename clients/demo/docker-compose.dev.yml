@@ -3,7 +3,7 @@ version: '3.5'
 
 services:
     php-sdk:
-        image: hanabosocom/php-dev:php-8.1-alpine
+        image: hanabosocom/php-dev:php-8.2-alpine
         user: ${DEV_UID}:${DEV_GID}
         environment:
             PHP_WEBROOT: /var/www/pipes/clients/demo/pipes-api/public

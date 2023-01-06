@@ -38,5 +38,11 @@
         "psr-4": {
             "HbPFConnectorsTests\\": "tests"
         }
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "ergebnis/composer-normalize": true
+        }
     }
 }
