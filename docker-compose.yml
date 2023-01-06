@@ -1,7 +1,7 @@
 version: '3.5'
 services:
     app:
-        image: hanabosocom/php-dev:php-8.1-alpine
+        image: hanabosocom/php-dev:php-8.2-alpine
         user: ${DEV_UID}:${DEV_GID}
         ports:
             - ${DEV_IP}:80:80
@@ -31,19 +31,20 @@ services:
             - JWT_KEY=test1234test1234test1234test1234test1234test1234test1234test1234test1234
 
     starting-point:
-        image: dkr.hanaboso.net/pipes/pipes/starting-point:master
+        image: orchesty/starting-point:1.0.6
         environment:
-            MONGO_DSN: mongodb://mongo/demo?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
-            METRICS_DSN: mongodb://mongo/metrics?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
+            MONGO_DSN: mongodb://mongo/demo
+            METRICS_DSN: mongodb://mongo/metrics
             RABBIT_COUNTER_QUEUE_DURABLE: 'true'
             RABBIT_QUEUE_DURABLE: 'true'
             RABBIT_DELIVERY_MODE: 2
 
     cron-api:
         user: ${DEV_UID}:${DEV_GID}
-        image: dkr.hanaboso.net/pipes/pipes/cron:master
+        image: orchesty/cron:1.0.6
         environment:
-            MONGO_DSN: mongodb://mongo/cron?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
+            STARTING_POINT_DSN: starting-point:8080
+            MONGO_DSN: mongodb://mongo/cron
             MONGO_COLLECTION: cron
 
     mongo:
