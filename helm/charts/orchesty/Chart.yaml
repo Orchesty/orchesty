@@ -1,6 +1,6 @@
 apiVersion: v2
 name: orchesty
-description: Orchesty si a platform + framework for systems integration and processes orchestration. See https://orchesty.io
+description: Orchesty is a platform + framework for systems integration and process orchestration. See https://orchesty.io
 type: application
-version: 1.2.2
-appVersion: 1.1.0
+version: 1.2.3
+appVersion: 1.0.6

@@ -16,20 +16,20 @@ global:
   images:
     applinth-marketplace-ui: ""
     php-sdk: OVERRIDE
-    backend: backend:1.0.5
-    frontend: frontend:1.0.5
-    cron-api: cron:1.0.5
+    backend: backend:1.0.6
+    frontend: frontend:1.0.6
+    cron-api: cron:1.0.6
 
-    bridge: bridge:1.0.5
-    counter: counter:1.0.5
-    repeater: pf-bridge:1.0.5
+    bridge: bridge:1.0.6
+    counter: counter:1.0.6
+    repeater: pf-bridge:1.0.6
 
-    limiter: limiter:1.0.5
-    starting-point: starting-point:1.0.5
-    topology-api: topology-api:1.0.5
-    fluentd: fluentd:1.0.5
-    kapacitor: kapacitor:1.0.5
-    detector: detector:1.0.5
+    limiter: limiter:1.0.6
+    starting-point: starting-point:1.0.6
+    topology-api: topology-api:1.0.6
+    fluentd: fluentd:1.0.6
+    kapacitor: kapacitor:1.0.6
+    detector: detector:1.0.6
 
   # Default global node selector
   nodeSelector: {}
