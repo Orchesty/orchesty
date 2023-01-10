@@ -1,0 +1,64 @@
+---
+openapi: 3.0.0
+info:
+  title: "USCCP API"
+  version: 0.1.0
+  description: "Usage Statistics Central Collection Point"
+
+paths:
+  /status:
+    get:
+      description: Service status for health checking
+      x-router-controller: statusController
+      operationId: getStatus
+      responses:
+        '200':
+          description: Healthy
+        '500':
+          description: Not healthy
+
+  /:
+    put:
+      description: Push events from Orchesty instance's event buffer, duplicate events are ignored
+      x-router-controller: eventController
+      operationId: putEvent
+      requestBody:
+        description: USEvent
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - iid
+                - type
+                - version
+                - data
+                - created
+              properties:
+                iid:
+                  type: string
+                  minLength: 8
+                  maxLength: 32
+                type:
+                  type: string
+                  minLength: 3
+                  maxLength: 64
+                vesrsion:
+                  type: integer
+                data:
+                  type: object
+                  properties:
+                    aid:
+                      type: string
+                      maxLength: 100
+                    euid:
+                      type: string
+                      maxLength: 100
+                created:
+                  type: string
+                  format: int64
+      responses:
+        '200':
+          description: Success
+        '500':
+          description: Failed
