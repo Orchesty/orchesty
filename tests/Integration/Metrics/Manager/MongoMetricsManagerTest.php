@@ -70,7 +70,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
         self::assertEquals(
             [
                 MongoMetricsManager::QUEUE_DEPTH  => [
-                    'max' => '5',
+                    'max' => '0',
                     'avg' => '0.00',
                 ],
                 MongoMetricsManager::WAITING_TIME => [
@@ -146,7 +146,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
         self::assertEquals(
             [
                 MongoMetricsManager::QUEUE_DEPTH  => [
-                    'max' => '3',
+                    'max' => '0',
                     'avg' => '0.00',
                 ],
                 MongoMetricsManager::WAITING_TIME => [

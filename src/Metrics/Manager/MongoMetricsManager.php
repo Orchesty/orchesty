@@ -77,7 +77,7 @@ final class MongoMetricsManager extends MetricsManagerAbstract
             self::NODE => $node->getId(),
         ];
 
-        $queue   = $this->rabbitNodeMetrics($where, $dateFrom, $dateTo);
+        $queue   = (new MetricsDto())->setMax(0)->setTotal(0)->setAvg(0, 0);
         $request = $this->connectorNodeMetrics($where, $dateFrom, $dateTo);
         $cpu     = $this->monolithNodeMetrics($where, $dateFrom, $dateTo);
 

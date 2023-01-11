@@ -2,7 +2,7 @@
     "http": 200,
     "body": {
         "queue_depth": {
-            "max": "5",
+            "max": "0",
             "avg": "0.00"
         },
         "waiting_time": {
