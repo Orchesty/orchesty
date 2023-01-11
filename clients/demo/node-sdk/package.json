@@ -13,8 +13,8 @@
   "author": "info@hanaboso.com",
   "license": "Apache-2.0",
   "dependencies": {
-    "@aws-sdk/client-ses": "^3.241.0",
-    "@aws-sdk/util-endpoints": "^3.241.0",
+    "@aws-sdk/client-ses": "^3.245.0",
+    "@aws-sdk/util-endpoints": "^3.245.0",
     "@orchesty/nodejs-connectors": "^2.1.18",
     "@orchesty/nodejs-sdk": "^3.2.13",
     "@types/node": "^18.11.18",
@@ -27,7 +27,7 @@
     "typescript": "^4.9.4"
   },
   "devDependencies": {
-    "@hanaboso/eslint-plugin": "^1.0.7",
+    "@hanaboso/eslint-plugin": "^1.0.8",
     "@types/jest": "^29.2.5",
     "@types/supertest": "^2.0.12",
     "eslint": "^8.31.0",

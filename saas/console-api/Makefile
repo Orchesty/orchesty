@@ -1,5 +1,5 @@
 DCS=docker-compose exec -T console-api
-IMAGE=dkr.hanaboso.net/pipes/pipes/saas/console-api:$(TAG)
+IMAGE=dkr.hanaboso.net/pipes/pipes/cloud-applinth-api:$(TAG)
 
 ALIAS?=alias
 Darwin:

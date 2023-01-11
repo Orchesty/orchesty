@@ -15,7 +15,7 @@ COPY pnpm-lock.yaml ./
 RUN pnpm install --production
 
 
-FROM node:slim as build
+FROM node:18-alpine as build
 
 WORKDIR /srv/app
 COPY --from=precache /tmp/_node /srv/app

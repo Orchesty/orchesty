@@ -1,3 +1,4 @@
+// Package stringx comment
 package stringx
 
 import "strings"
