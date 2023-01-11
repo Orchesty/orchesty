@@ -22,6 +22,19 @@ global:
   backend:
     alpha_instance_id: hb-stage
 
+  nodejsSdk:
+    extraEnv:
+      AWS_SES_KEY:
+        valueFrom:
+          secretKeyRef:
+            name: pipes-secrets
+            key: aws_ses_key
+      AWS_SES_SECRET:
+        valueFrom:
+          secretKeyRef:
+            name: pipes-secrets
+            key: aws_ses_secret
+
 customPersistence:
   node: node1
   pvDir: /srv/pipes3

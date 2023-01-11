@@ -13,7 +13,17 @@ global:
     nodejssdk: hanaboso/demo-nodejs:dev
 
   nodejsSdk:
-    extraEnv: {}
+    extraEnv:
+      AWS_SES_KEY:
+        valueFrom:
+          secretKeyRef:
+            name: pipes-secrets
+            key: aws_ses_key
+      AWS_SES_SECRET:
+        valueFrom:
+          secretKeyRef:
+            name: pipes-secrets
+            key: aws_ses_secret
 
   monitoring:
     useInfluxDB: false
