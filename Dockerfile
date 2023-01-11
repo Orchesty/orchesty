@@ -1,5 +1,5 @@
 ### Build step
-FROM node:16-slim as builder
+FROM node:16-alpine as builder
 
 RUN npm i -g pnpm
 
@@ -10,7 +10,7 @@ COPY pnpm-lock.yaml ./
 RUN pnpm install
 
 ### Build step
-FROM node:16-slim as pre-cache
+FROM node:16-alpine as pre-cache
 
 # Build
 WORKDIR /build
