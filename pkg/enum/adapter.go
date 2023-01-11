@@ -1,3 +1,4 @@
+// Package enum comment
 package enum
 
 type Adapter string

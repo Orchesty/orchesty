@@ -26,7 +26,7 @@ func (d *Detector) Run() {
 			d.workQueue <- queues
 			d.consumerChecker.ConsumerCheck(queues)
 		} else {
-			log.Error(fmt.Errorf("Service rabbitmq does not working!"))
+			log.Error(fmt.Errorf("service rabbitmq does not working"))
 			log.Errorf("failed to load rabbitmq data: %s", err)
 		}
 

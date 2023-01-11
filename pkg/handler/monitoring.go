@@ -1,3 +1,4 @@
+// Package handler comment
 package handler
 
 import (

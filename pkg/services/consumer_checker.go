@@ -59,7 +59,7 @@ func (c ConsumerChecker) ConsumerCheck(queues []Queue) {
 					var node Node
 
 					if err != nil {
-						c.logger.Error(fmt.Errorf("Id '%s' not in valid format!", nodeId))
+						c.logger.Error(fmt.Errorf("id '%s' not in valid format", nodeId))
 					}
 
 					err = c.connection.
@@ -71,7 +71,7 @@ func (c ConsumerChecker) ConsumerCheck(queues []Queue) {
 						Decode(&node)
 
 					if err != nil {
-						c.logger.Error(fmt.Errorf("Node with id '%s' not found!", nodeId))
+						c.logger.Error(fmt.Errorf("node with id '%s' not found", nodeId))
 						c.logger.Error(fmt.Errorf("%s", err))
 						continue
 					}
@@ -87,7 +87,7 @@ func (c ConsumerChecker) ConsumerCheck(queues []Queue) {
 	}
 
 	for name := range names {
-		c.logger.Error(fmt.Errorf("Service [%s] has no connection to rabbitmq!", name))
+		c.logger.Error(fmt.Errorf("service [%s] has no connection to rabbitmq", name))
 	}
 }
 
