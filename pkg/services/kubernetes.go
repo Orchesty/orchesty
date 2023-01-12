@@ -83,11 +83,16 @@ func (k KubernetesSvc) getPods(containers map[string]*Container) ([]Container, e
 			restartCount = int(sts.RestartCount)
 		}
 
+		var created time.Time
+		if it.Status.StartTime != nil {
+			created = it.Status.StartTime.Time
+		}
+
 		containers[name].Pods = append(containers[name].Pods, ContainerPod{
 			Up:       it.Status.Phase == "Running",
 			Message:  msg,
 			Restarts: restartCount,
-			Created:  it.Status.StartTime.Time,
+			Created:  created,
 		})
 	}
 
