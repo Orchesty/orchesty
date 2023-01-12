@@ -29,6 +29,7 @@
         :headers="headers"
         :items="customers"
         :loading="isLoading"
+        :items-per-page="PAGINATION_NO_LIMIT"
         hide-footer
       >
         <template #activeAppNames="{ item }">
@@ -72,6 +73,7 @@ import {
   getTimeRangeEndForApiCall,
   getTimeRangeStartForApiCall,
 } from "@/service/billingService"
+import { PAGINATION_NO_LIMIT } from "@/enums"
 
 interface UsersTable {
   [key: string]: any
@@ -90,6 +92,7 @@ interface UsersTable {
 })
 export default class CustomersPage extends Vue {
   Routes = Routes
+  PAGINATION_NO_LIMIT = PAGINATION_NO_LIMIT
 
   isLoading = false
   textSearch = ""

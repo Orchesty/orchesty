@@ -93,7 +93,7 @@ export default class BillingReportsPage extends Vue {
   totalCost = PRICE
   tableItems: HistoryTableApplicationItemType[] = []
   granularity: "monthly" | "daily" = "monthly"
-  filter: HistoryFilterType = { year: DateTime.now().year, month: VALUE_ALL }
+  filter: HistoryFilterType = { year: VALUE_ALL, month: VALUE_ALL }
   availableFilterMonths: number[] = []
   availableFilterYears: number[] = []
 

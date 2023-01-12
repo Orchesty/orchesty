@@ -6,6 +6,7 @@
       :loading="isLoading"
       :headers="headers"
       :items="users"
+      :items-per-page="PAGINATION_NO_LIMIT"
       hide-footer
     >
       <template #actions="{ item }">
@@ -40,6 +41,7 @@ import { OutputUser, UsersListRequest } from "@/api/generated"
 import Heading from "@/components/commons/typography/Heading.vue"
 import UserDeleteModal from "@/components/app/admins/UserDeleteModal.vue"
 import UserFormModal from "@/components/app/admins/UserFormModal.vue"
+import { PAGINATION_NO_LIMIT } from "@/enums"
 
 @Component({
   components: {
@@ -79,6 +81,8 @@ export default class UsersPage extends Vue {
       value: "actions",
     },
   ]
+
+  PAGINATION_NO_LIMIT = PAGINATION_NO_LIMIT
 
   deleteItem(user: OutputUser): void {
     eventBus.$emit(EventBus.UserDeleteModal, user)

@@ -12,3 +12,5 @@ docusaurus/documentation/build
 docusaurus/documentation/node_modules
 
 _old_ci/*
+
+.pnpm-store

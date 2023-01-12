@@ -3,6 +3,7 @@
     :loading="isLoading"
     :headers="headers"
     :items="installedApps"
+    :items-per-page="PAGINATION_NO_LIMIT"
     hide-footer
   >
     <template #installed="{ item }">
@@ -23,6 +24,7 @@ import { callApi } from "@/utils"
 import { api } from "@/api"
 import SimpleTable from "@/components/commons/tables/SimpleTable.vue"
 import { toLocalDate } from "@/filters/datetime"
+import { PAGINATION_NO_LIMIT } from "@/enums"
 
 @Component({
   components: {
@@ -55,6 +57,8 @@ export default class CustomerAppsTable extends Vue {
       value: "installed",
     },
   ]
+
+  PAGINATION_NO_LIMIT = PAGINATION_NO_LIMIT
 
   async created() {
     this.isLoading = true
