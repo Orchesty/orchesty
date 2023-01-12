@@ -1,4 +1,4 @@
-FROM hanabosocom/go-base:1.18
+FROM hanabosocom/go-base:1.19
 COPY . .
 RUN go build -ldflags='-s -w' -o /detector main.go && upx -9 /detector
 

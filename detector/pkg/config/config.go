@@ -83,5 +83,4 @@ func init() {
 	}
 
 	App.Tick *= time.Second
-	App.MonitoringTick *= time.Second
 }
