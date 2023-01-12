@@ -1,4 +1,4 @@
-FROM hanabosocom/php-base:php-8.1-alpine
+FROM hanabosocom/php-base:php-8.2-alpine
 
 COPY . .
 RUN cd applinth && \
@@ -14,7 +14,7 @@ RUN cd applinth && \
     ALPHA_INSTANCE_ID=applinth USCCP_URI=localhost JWE_PRIVATE_KEY=1 \
     bin/console cache:warmup
 
-FROM hanabosocom/php-base:php-8.1-alpine
+FROM hanabosocom/php-base:php-8.2-alpine
 
 ENV APP_DEBUG=0 APP_ENV=prod PHP_FPM_MAX_CHILDREN=10 PHP_FPM_MAX_REQUESTS=500
 COPY applinth/php-local.ini /usr/local/etc/php/conf.d/zz_local.ini
