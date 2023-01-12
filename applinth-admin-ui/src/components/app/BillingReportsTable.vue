@@ -5,6 +5,7 @@
     :headers="headers"
     :items="items"
     hide-footer
+    :items-per-page="PAGINATION_NO_LIMIT"
   >
     <template #pricePerInstance="{ item }">
       <slot>{{ toCZK(item.pricePerInstance) }}</slot>
@@ -22,6 +23,7 @@ import TextField from "@/components/commons/inputsAndControls/TextField.vue"
 import SimpleTable from "@/components/commons/tables/SimpleTable.vue"
 import { toCZK } from "@/filters/money"
 import { HistoryTableApplicationItemType } from "@/types"
+import { PAGINATION_NO_LIMIT } from "@/enums"
 
 @Component({
   components: {
@@ -62,6 +64,8 @@ export default class BillingReportsTable extends Vue {
       value: "totalCost",
     },
   ]
+
+  PAGINATION_NO_LIMIT = PAGINATION_NO_LIMIT
 
   readonly toCZK = toCZK
 }

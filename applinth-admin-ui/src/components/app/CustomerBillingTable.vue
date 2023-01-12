@@ -3,6 +3,7 @@
     :loading="isLoading"
     :headers="headers"
     :items="monthlyBills"
+    :items-per-page="PAGINATION_NO_LIMIT"
     hide-footer
   >
     <template #appNames="{ item }">
@@ -32,6 +33,7 @@ import {
   getTimeRangeEndForApiCall,
   getTimeRangeStartForApiCall,
 } from "@/service/billingService"
+import { PAGINATION_NO_LIMIT } from "@/enums"
 
 @Component({
   components: {
@@ -65,6 +67,8 @@ export default class CustomerBillingTable extends Vue {
       value: "totalCost",
     },
   ]
+
+  PAGINATION_NO_LIMIT = PAGINATION_NO_LIMIT
 
   async created() {
     this.isLoading = true

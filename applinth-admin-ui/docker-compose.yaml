@@ -25,8 +25,7 @@ services:
       - mongo:/data/db
 
   applinth-admin-ui:
-    image: applinth-admin-ui:tag
-    build: docker
+    image: hanabosocom/nodejs-build:dev
     working_dir: /var/www/applinth-admin-ui
     environment:
       VUE_APP_BACKEND_URL: http://${DEV_IP}:3000
