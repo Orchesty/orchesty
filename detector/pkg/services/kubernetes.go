@@ -74,15 +74,19 @@ func (k KubernetesSvc) getPods(containers map[string]*Container) ([]Container, e
 		}
 
 		msg := ""
-		sts := it.Status.ContainerStatuses[0]
-		if sts.LastTerminationState.Terminated != nil {
-			msg = sts.LastTerminationState.Terminated.Reason
+		restartCount := 0
+		if len(it.Status.ContainerStatuses) > 0 {
+			sts := it.Status.ContainerStatuses[0]
+			if sts.LastTerminationState.Terminated != nil {
+				msg = sts.LastTerminationState.Terminated.Reason
+			}
+			restartCount = int(sts.RestartCount)
 		}
 
 		containers[name].Pods = append(containers[name].Pods, ContainerPod{
 			Up:       it.Status.Phase == "Running",
 			Message:  msg,
-			Restarts: int(sts.RestartCount),
+			Restarts: restartCount,
 			Created:  it.Status.StartTime.Time,
 		})
 	}
