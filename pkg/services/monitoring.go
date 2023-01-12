@@ -14,8 +14,8 @@ type Monitoring struct {
 	ProcsInProgress        int
 	LimiterCount           int
 	RepeaterCount          int
-	ProcsFailed            int
-	ProcsSucceeded         int
+	ProcsFailed            int32
+	ProcsSucceeded         int32
 	LastT                  time.Time
 	multiCounterCollection *mongo.Collection
 	limiterCollection      *mongo.Collection
@@ -116,8 +116,8 @@ func (m *Monitoring) Run() {
 		m.ProcsInProgress = int(inProgress)
 		m.LimiterCount = int(limiterCount)
 		m.RepeaterCount = int(repeaterCount)
-		m.ProcsFailed = m.ProcsFailed + results[0]["failed"].(int)
-		m.ProcsSucceeded = m.ProcsSucceeded + results[0]["succeeded"].(int)
+		m.ProcsFailed = m.ProcsFailed + results[0]["failed"].(int32)
+		m.ProcsSucceeded = m.ProcsSucceeded + results[0]["succeeded"].(int32)
 
 		m.LastT = now
 	}
