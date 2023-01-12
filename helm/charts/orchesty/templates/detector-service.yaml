@@ -1,5 +1,4 @@
 {{- $componentName := "detector" -}}
-{{- if .Values.global.monitoring.useInfluxDB -}}
 ---
 apiVersion: v1
 kind: Service
@@ -14,4 +13,3 @@ spec:
     - name: http
       port: 80
       targetPort: http
-{{- end -}}
