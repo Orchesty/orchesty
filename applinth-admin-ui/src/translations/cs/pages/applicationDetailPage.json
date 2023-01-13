@@ -1,6 +1,7 @@
 {
   "applicationDetailPage": {
     "cost": "Cena",
+    "currentCost": "Aktuální cena",
     "users": "Uživatelé",
     "installations": "Instalace",
     "monthlyPrice": "Měsíční cena",
