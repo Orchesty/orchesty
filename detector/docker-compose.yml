@@ -10,6 +10,7 @@ services:
             APP_DEBUG: 'true'
             METRICS_DSN: mongodb://mongodb/starting-point
             MONGO_DSN: mongodb://mongodb/mongo
+            RABBIT_HOST: rabbitmq
         volumes:
             - ./:/app
             - ${GOPATH}/pkg:/go/pkg
