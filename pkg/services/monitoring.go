@@ -14,6 +14,7 @@ type Monitoring struct {
 	ProcsInProgress        int
 	LimiterCount           int
 	RepeaterCount          int
+	OperationSum           int32
 	ProcsFailed            int32
 	ProcsSucceeded         int32
 	LastT                  time.Time
@@ -92,6 +93,13 @@ func (m *Monitoring) Run() {
 							},
 						},
 					},
+					{
+						"totalAmount", bson.D{
+							{
+								"$sum", "$total",
+							},
+						},
+					},
 				},
 				},
 			},
@@ -116,6 +124,7 @@ func (m *Monitoring) Run() {
 		m.ProcsInProgress = int(inProgress)
 		m.LimiterCount = int(limiterCount)
 		m.RepeaterCount = int(repeaterCount)
+		m.OperationSum = m.OperationSum + results[0]["totalAmount"].(int32)
 		m.ProcsFailed = m.ProcsFailed + results[0]["failed"].(int32)
 		m.ProcsSucceeded = m.ProcsSucceeded + results[0]["succeeded"].(int32)
 
@@ -129,6 +138,7 @@ func (m *Monitoring) FormatResult() string {
 	response = fmt.Sprintf("procs_in_progress{version=\"1\"} %d\n", m.ProcsInProgress)
 	response += fmt.Sprintf("limiter_count{version=\"1\"} %d\n", m.LimiterCount)
 	response += fmt.Sprintf("repeater_count{version=\"1\"} %d\n", m.RepeaterCount)
+	response += fmt.Sprintf("operation_sum{version=\"1\"} %d\n", m.OperationSum)
 	response += fmt.Sprintf("procs_failed{version=\"1\"} %d\n", m.ProcsFailed)
 	response += fmt.Sprintf("procs_succeeded{version=\"1\"} %d\n", m.ProcsSucceeded)
 
