@@ -6,6 +6,7 @@ import (
 	log "github.com/hanaboso/go-log/pkg"
 	"github.com/hanaboso/go-mongodb"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"regexp"
 )
 
@@ -43,6 +44,12 @@ func (c ConsumerChecker) ConsumerCheck(queues []Queue) {
 	defer cancel()
 	reg := regexp.MustCompile("node\\.(\\d\\w+)\\.\\d+")
 
+	findOptions := &options.FindOneOptions{
+		Projection: map[string]interface{}{
+			"topology": 1,
+		},
+	}
+
 	for _, queue := range queues {
 		serviceName, isService := services[queue.Name]
 
@@ -67,7 +74,7 @@ func (c ConsumerChecker) ConsumerCheck(queues []Queue) {
 						Collection(config.Mongo.Node).
 						FindOne(ctx, primitive.D{
 							{"_id", primNodeId},
-						}).
+						}, findOptions).
 						Decode(&node)
 
 					if err != nil {
