@@ -33,7 +33,7 @@
         <StatusCard
           :loading="loading"
           :score="toCZK(application.totalCost || 0)"
-          :title="$t('applicationDetailPage.cost')"
+          :title="$t('applicationDetailPage.currentCost')"
         />
         <StatusCard
           :loading="loading"
