@@ -61,6 +61,7 @@ init: up
 	$(DE_DEV) backend bin/console service:install node-sdk node-sdk:8080
 	$(DE_DEV) backend bin/console service:install php-sdk php-sdk:80
 	$(DE_DEV) backend bin/console topology:install -c -u --force node-sdk:8080
+	$(DE_DEV) backend bin/console api-token:create
 
 destroy: .env .lo0-down
 	$(DC_DEV) down -v

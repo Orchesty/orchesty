@@ -1,22 +1,20 @@
-import {db, initServices, createServer} from '../src';
-import {generateAuth} from '../test/dataProvider';
-import {FetchMockStatic} from "fetch-mock";
-import mf from 'node-fetch';
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
+import { createServer, db, initServices } from '../src';
+import { generateAuth } from '../test/dataProvider';
 
 beforeAll(async () => {
     await initServices();
     createServer();
-})
+});
 
 afterAll(async () => {
     await db.disconnect();
-})
-
-jest.mock('node-fetch', () => require('fetch-mock-jest').sandbox());
+});
 
 jest.mock('firebase/auth', () => ({
     getAuth: jest.fn().mockReturnValue(() => generateAuth()),
     sendPasswordResetEmail: jest.fn().mockReturnValue(Promise.resolve()),
 }));
 
-export const fetchMock: FetchMockStatic = mf as unknown as FetchMockStatic;
+export const mockAdapter = new MockAdapter(axios);

@@ -1,4 +1,4 @@
-import CoreFormsEnum from '@orchesty/nodejs-sdk/dist/lib/Application/Base/CoreFormsEnum';
+import CoreFormsEnum, { getFormName } from '@orchesty/nodejs-sdk/dist/lib/Application/Base/CoreFormsEnum';
 import { ApplicationInstall } from '@orchesty/nodejs-sdk/dist/lib/Application/Database/ApplicationInstall';
 import Field from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/Field';
 import FieldType from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/FieldType';
@@ -8,7 +8,6 @@ import { ABasicApplication } from '@orchesty/nodejs-sdk/dist/lib/Authorization/T
 import RequestDto from '@orchesty/nodejs-sdk/dist/lib/Transport/Curl/RequestDto';
 import { HttpMethods } from '@orchesty/nodejs-sdk/dist/lib/Transport/HttpMethods';
 import AProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/AProcessDto';
-import { BodyInit } from 'node-fetch';
 
 export const PIN = 'pin';
 
@@ -38,13 +37,16 @@ export default class TenantApplication extends ABasicApplication {
         applicationInstall: ApplicationInstall,
         method: HttpMethods,
         url?: string,
-        data?: BodyInit,
+        data?: unknown,
     ): RequestDto {
         return new RequestDto(url ?? '', method, dto, data ?? '');
     }
 
     public getFormStack(): FormStack {
-        const settingsForm = new Form(CoreFormsEnum.AUTHORIZATION_FORM, 'Auth token').setReadOnly(true);
+        const settingsForm = new Form(
+            CoreFormsEnum.AUTHORIZATION_FORM,
+            getFormName(CoreFormsEnum.AUTHORIZATION_FORM),
+        ).setReadOnly(true);
         const tokenField = new Field(FieldType.TEXT, PIN, 'PIN').setReadOnly(true);
 
         settingsForm.addField(tokenField);
