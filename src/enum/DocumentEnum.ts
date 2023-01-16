@@ -1,5 +1,5 @@
 enum DocumentEnum {
-    APPLICATION_INSTALL = 'AppInstall',
+    APPLICATION_INSTALL = 'ApplicationInstall',
     WEBHOOK = 'Webhook',
     NODE = 'Node',
     API_TOKEN = 'ApiToken',

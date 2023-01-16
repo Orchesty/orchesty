@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import { Document, Filter } from 'mongodb';
+import { Collection, Document, Filter, ObjectId } from 'mongodb';
 import Mongo from '../database/Mongo';
 import DocumentEnum from '../enum/DocumentEnum';
 
@@ -9,10 +9,22 @@ export default class DocumentManager {
     }
 
     public async saveDocuments(document: DocumentEnum, entity: Document | Document[]): Promise<void> {
+        const col = this.mongo.getCollection(document);
         if (entity instanceof Array) {
-            await this.mongo.getCollection(document).insertMany(entity);
+            await Promise.all(entity.map(async (e) => this.upsertDocument(col, e)));
         } else {
-            await this.mongo.getCollection(document).insertOne(entity);
+            await this.upsertDocument(col, entity);
+        }
+    }
+
+    private async upsertDocument(collection: Collection, _entity: Document): Promise<void> {
+        const entity = _entity;
+        const id = entity._id;
+        delete entity._id;
+        if (id) {
+            await collection.updateOne({ _id: new ObjectId(id) }, { $set: entity });
+        } else {
+            await collection.insertOne(entity);
         }
     }
 
@@ -47,7 +59,7 @@ export default class DocumentManager {
         const filter: Filter<Document> = {};
         if (query.filter) {
             if (query.filter.ids) {
-                filter.ids = { $in: query.filter.ids };
+                filter._id = { $in: query.filter.ids.map((id) => new ObjectId(id)) };
             }
             if (query.filter.deleted !== undefined && query.filter.deleted !== null) {
                 if (!query.filter.deleted) {

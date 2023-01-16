@@ -75,7 +75,7 @@ describe('Tests for logs router', () => {
             },
         );
 
-        const resp = await supertest(services.app).get('/document/AppInstall').set(ORCHESTY_API_KEY, key).send();
+        const resp = await supertest(services.app).get('/document/ApplicationInstall').set(ORCHESTY_API_KEY, key).send();
         assert.equal(resp.statusCode, 200);
         const { body } = resp;
         assert.deepEqual(
@@ -93,11 +93,11 @@ describe('Tests for logs router', () => {
             ],
         );
 
-        const resp1 = await supertest(services.app).get('/document/AppInstall?filter={"ids":["1"]}').set(ORCHESTY_API_KEY, key).send();
+        const resp1 = await supertest(services.app).get('/document/ApplicationInstall?filter={"ids":["507f1f77bcf86cd799439011"]}').set(ORCHESTY_API_KEY, key).send();
         assert.equal(resp1.statusCode, 200);
         assert.deepEqual(resp1.body, []);
 
-        const resp2 = await supertest(services.app).get('/document/AppInstall?filter={"users":["testUser"]}').set(ORCHESTY_API_KEY, key).send();
+        const resp2 = await supertest(services.app).get('/document/ApplicationInstall?filter={"users":["testUser"]}').set(ORCHESTY_API_KEY, key).send();
         assert.equal(resp2.statusCode, 200);
         assert.deepEqual(
             resp2.body,
@@ -114,11 +114,11 @@ describe('Tests for logs router', () => {
             ],
         );
 
-        const resp3 = await supertest(services.app).get('/document/AppInstall?filter={"users":["1"]}').set(ORCHESTY_API_KEY, key).send();
+        const resp3 = await supertest(services.app).get('/document/ApplicationInstall?filter={"users":["1"]}').set(ORCHESTY_API_KEY, key).send();
         assert.equal(resp3.statusCode, 200);
         assert.deepEqual(resp3.body, []);
 
-        const resp4 = await supertest(services.app).get('/document/AppInstall?filter={"names":["testKey"]}').set(ORCHESTY_API_KEY, key).send();
+        const resp4 = await supertest(services.app).get('/document/ApplicationInstall?filter={"names":["testKey"]}').set(ORCHESTY_API_KEY, key).send();
         assert.equal(resp4.statusCode, 200);
         assert.deepEqual(
             resp4.body,
@@ -142,7 +142,7 @@ describe('Tests for logs router', () => {
         const apiKeyCollection = services.mongo.getApiKeyCollection();
         await apiKeyCollection.insertOne({ key, scopes: [ScopeEnum.WORKER_ALL] });
 
-        const resp = await supertest(services.app).post('/document/AppInstall').set(ORCHESTY_API_KEY, key).send({
+        const resp = await supertest(services.app).post('/document/ApplicationInstall').set(ORCHESTY_API_KEY, key).send({
             key: 'testKey',
             user: 'testUser',
             enabled: true,
@@ -153,7 +153,7 @@ describe('Tests for logs router', () => {
         assert.equal(resp.statusCode, 200);
         assert.deepEqual(resp.body, { message: { status: 'OK', data: '' } });
 
-        const resp1 = await supertest(services.app).get('/document/AppInstall').set(ORCHESTY_API_KEY, key).send();
+        const resp1 = await supertest(services.app).get('/document/ApplicationInstall').set(ORCHESTY_API_KEY, key).send();
         assert.equal(resp1.statusCode, 200);
         assert.deepEqual(
             resp1.body,
@@ -169,11 +169,11 @@ describe('Tests for logs router', () => {
             ],
         );
 
-        const resp2 = await supertest(services.app).delete('/document/AppInstall').set(ORCHESTY_API_KEY, key).send();
+        const resp2 = await supertest(services.app).delete('/document/ApplicationInstall').set(ORCHESTY_API_KEY, key).send();
         assert.equal(resp2.statusCode, 200);
         assert.deepEqual(resp2.body, { message: { error: 'Empty filter is not supported.' } });
 
-        const resp3 = await supertest(services.app).delete('/document/AppInstall?filter={"enabled":true}').set(ORCHESTY_API_KEY, key).send();
+        const resp3 = await supertest(services.app).delete('/document/ApplicationInstall?filter={"enabled":true}').set(ORCHESTY_API_KEY, key).send();
         assert.equal(resp3.statusCode, 200);
         assert.deepEqual(resp3.body, { message: { status: 'OK', data: { deleted: 1 } } });
     });
