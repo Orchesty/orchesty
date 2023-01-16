@@ -5,7 +5,7 @@ import ResultCode from '@orchesty/nodejs-sdk/dist/lib/Utils/ResultCode';
 import { getHubspotListName, HubspotListIdsEnums } from '../Enum/HubspotListIdsEnums';
 import { IOutput as IInput } from './OrchestyToHubSpotContactMapper';
 
-export default class HubsoptAddContactToListMapper extends ACommonNode {
+export default class HubspotAddContactToListMapper extends ACommonNode {
 
     public constructor(private readonly hubSpotList: HubspotListIdsEnums) {
         super();

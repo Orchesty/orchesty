@@ -84,7 +84,7 @@ import SampleApplication from './JsonPlaceholder/SampleApplication';
 import TenantApplication from './JsonPlaceholder/TenantApplication';
 import HubSpotAddEmailToListConnector from './OrchestyIo/Connector/HubSpotAddEmailToListConnector';
 import HubSpotCreateContactConnector from './OrchestyIo/Connector/HubSpotCreateContactConnector';
-import HubsoptAddContactToListMapper from './OrchestyIo/CustomNode/HubsoptAddContactToListMapper';
+import HubspotAddContactToListMapper from './OrchestyIo/CustomNode/HubspotAddContactToListMapper';
 import HubspotToSesTransactionEmailMapper from './OrchestyIo/CustomNode/HubspotToSesEmailMapper';
 import OrchestyToHubSpotContactMapper from './OrchestyIo/CustomNode/OrchestyToHubSpotContactMapper';
 import OrchestyToJiraMapper from './OrchestyIo/CustomNode/OrchestyToJiraMapper';
@@ -92,8 +92,8 @@ import { HubspotListIdsEnums } from './OrchestyIo/Enum/HubspotListIdsEnums';
 import { OrchestyPageEnum } from './OrchestyIo/Enum/OrchestyPageEnum';
 import SESApplication from './OrchestyIo/SESApplication';
 
-export async function start(): Promise<void> {
-    await initiateContainer();
+export function start(): void {
+    initiateContainer();
     const sender = container.get<CurlSender>(CoreServices.CURL);
     const mongoDb = container.get<MongoDbClient>(CoreServices.MONGO);
     const provider = container.get<OAuth2Provider>(CoreServices.OAUTH2_PROVIDER);
@@ -306,16 +306,16 @@ export async function start(): Promise<void> {
         .setDb(mongoDb);
     container.setConnector(hubSpotAddEmailToListConnector);
 
-    const addContactToHubspotSalesListMapper = new HubsoptAddContactToListMapper(HubspotListIdsEnums.SALES);
+    const addContactToHubspotSalesListMapper = new HubspotAddContactToListMapper(HubspotListIdsEnums.SALES);
     container.setCustomNode(addContactToHubspotSalesListMapper);
 
-    const addContactToHubspotContactListMapper = new HubsoptAddContactToListMapper(HubspotListIdsEnums.CONTACT_FROM);
+    const addContactToHubspotContactListMapper = new HubspotAddContactToListMapper(HubspotListIdsEnums.CONTACT_FROM);
     container.setCustomNode(addContactToHubspotContactListMapper);
 
-    const addContactToHubspotCommunityListMapper = new HubsoptAddContactToListMapper(HubspotListIdsEnums.COMMUNITY);
+    const addContactToHubspotCommunityListMapper = new HubspotAddContactToListMapper(HubspotListIdsEnums.COMMUNITY);
     container.setCustomNode(addContactToHubspotCommunityListMapper);
 
-    const addContactToHubspotNewsletterListMapper = new HubsoptAddContactToListMapper(HubspotListIdsEnums.NEWSLETTER);
+    const addContactToHubspotNewsletterListMapper = new HubspotAddContactToListMapper(HubspotListIdsEnums.NEWSLETTER);
     container.setCustomNode(addContactToHubspotNewsletterListMapper);
 
     const hubspotToJiraSalesMapper = new OrchestyToJiraMapper(OrchestyPageEnum.SALES, ['sales']);
@@ -377,7 +377,7 @@ export async function start(): Promise<void> {
     const node = new Node();
     container.setCustomNode(node);
 
-    const xeroApplication = new XeroApplication(provider, sender, mongoDb);
+    const xeroApplication = new XeroApplication(provider, mongoDb, sender);
     container.setApplication(xeroApplication);
 
     const oracleDbApplication = new OracleDbApplication();

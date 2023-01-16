@@ -11,26 +11,11 @@ services:
             # Envs for tests are load from .jest/testEnvs.js
             JEST_DOCKER: 1
             APP_ENV: 'debug'
-            CRYPT_SECRET: 'ThisIsNotSoSecret'
+            CRYPT_SECRET: ThisIsNotSoSecret
             BACKEND_URL: ${DEV_IP}:8080
-            UDP_LOGGER_DSN: 'logstash:5005'
-            METRICS_DSN: 'mongodb://mongo:27017/metrics'
-            MONGODB_DSN: 'mongodb://mongo:27017/node-sdk'
+            STARTING_POINT_DSN: ${DEV_IP}:8080
             AWS_SES_KEY: ${AWS_SES_KEY}
             AWS_SES_SECRET: ${AWS_SES_SECRET}
+            WORKER_API_HOST: ${DEV_IP}:8080
+            ORCHESTY_API_KEY: ThisIsNotSoSecret
         command: pnpm run start
-
-    mongo:
-        image: mongo:latest
-        ports:
-            - ${DEV_IP}:27017:27017
-        volumes:
-            - mongo:/data/db
-
-    logstash:
-        image: mendhak/udp-listener
-        ports:
-            - ${DEV_IP}:4444:5005
-
-volumes:
-    mongo: {}

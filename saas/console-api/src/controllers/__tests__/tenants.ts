@@ -2,7 +2,7 @@ import assert from 'assert';
 import * as admin from 'firebase-admin';
 import { GoogleOAuthAccessToken } from 'firebase-admin';
 import supertest from 'supertest';
-import { fetchMock } from '../../../.jest/testLifecycle';
+import { mockAdapter } from '../../../.jest/testLifecycle';
 import {
     createDbTenants,
     generateDeleteUsersResultMockedData,
@@ -21,7 +21,7 @@ const { credential } = authApp.options;
 
 describe('tenantsController', () => {
     beforeAll(() => {
-        fetchMock.patch('https://identitytoolkit.googleapis.com/v2/projects/undefined/tenants/t-123456789', 200);
+        mockAdapter.onPatch('https://identitytoolkit.googleapis.com/v2/projects/undefined/tenants/t-123456789').reply(200);
     });
     beforeEach(async () => {
         await createDbTenants();

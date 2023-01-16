@@ -7,7 +7,7 @@ import {
     REGIONS,
 } from '@orchesty/nodejs-connectors/dist/lib/AmazonApps/AAwsApplication';
 import Base from '@orchesty/nodejs-connectors/dist/lib/AmazonApps/SimpleEmailService/SESApplication';
-import CoreFormsEnum from '@orchesty/nodejs-sdk/dist/lib/Application/Base/CoreFormsEnum';
+import CoreFormsEnum, { getFormName } from '@orchesty/nodejs-sdk/dist/lib/Application/Base/CoreFormsEnum';
 import { ApplicationInstall } from '@orchesty/nodejs-sdk/dist/lib/Application/Database/ApplicationInstall';
 import Field from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/Field';
 import FieldType from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/FieldType';
@@ -18,7 +18,7 @@ import { ses } from '../Config/Config';
 export default class SESApplication extends Base {
 
     public getFormStack(): FormStack {
-        const form = new Form(CoreFormsEnum.AUTHORIZATION_FORM, 'Authorization settings')
+        const form = new Form(CoreFormsEnum.AUTHORIZATION_FORM, getFormName(CoreFormsEnum.AUTHORIZATION_FORM))
             .addField(new Field(FieldType.SELECT_BOX, REGION, 'Region', undefined, true).setChoices(REGIONS))
             .addField(new Field(FieldType.TEXT, ENDPOINT, 'Custom Endpoint'));
 

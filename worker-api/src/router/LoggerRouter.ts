@@ -46,6 +46,7 @@ export default class LoggerRouter {
             } catch (e) {
                 if (e instanceof Error) {
                     res.json({ message: { error: e.message } });
+                    return;
                 }
                 res.json({ message: 'Worker-api: Fluentd unknown error' });
             }

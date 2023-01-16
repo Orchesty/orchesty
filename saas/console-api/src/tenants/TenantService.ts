@@ -1,6 +1,6 @@
+import axios from 'axios';
 import { auth } from 'firebase-admin';
 import { Collection } from 'mongodb';
-import fetch from 'node-fetch';
 import * as randomstring from 'randomstring';
 import { ITenantCreateRequest } from '../controllers/tenants';
 import TenantSearchError from '../errors/TenantSearchError';
@@ -193,10 +193,9 @@ export default class TenantService {
         const { projectId } = authApp.options;
         const oauthToken = (await authApp.options.credential?.getAccessToken())?.access_token;
 
-        const resp = await fetch(
+        const resp = await axios.patch(
             `https://identitytoolkit.googleapis.com/v2/projects/${projectId}/tenants/${gTenant.tenantId}`,
             {
-                method: 'PATCH',
                 body: JSON.stringify({
                     displayName: gTenant.displayName,
                     allowPasswordSignup: true,
@@ -210,7 +209,9 @@ export default class TenantService {
             },
         );
         if (resp.status !== 200) {
-            throw new UserCreationError(`Cannot enable emailSendingConfig for tenant with ID ${tenantId}.${await resp.text()}`);
+            throw new UserCreationError(
+                `Cannot enable emailSendingConfig for tenant with ID ${tenantId}.${await resp.data.text()}`,
+            );
         }
 
         return tenant;
