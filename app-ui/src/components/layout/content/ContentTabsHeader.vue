@@ -13,9 +13,9 @@
       </v-col>
     </v-row>
 
-    <v-row dense>
+    <v-row dense class="mb-3">
       <v-col cols="12" lg="9">
-        <v-tabs height="24">
+        <v-tabs height="40">
           <v-tabs-slider color="primary" />
           <v-tab
             v-for="(tab, index) in tabs"
