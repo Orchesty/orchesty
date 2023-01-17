@@ -61,7 +61,7 @@
 
     <v-row>
       <v-col>
-        <v-tabs v-model="tab" height="24">
+        <v-tabs v-model="tab" height="40">
           <v-tab
             v-for="form in settingsConfig"
             :key="form.key"
