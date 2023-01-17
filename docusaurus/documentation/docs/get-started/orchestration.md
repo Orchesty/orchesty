@@ -8,7 +8,7 @@ The orchestration of integrated services is handled by the orchestration layer. 
 
 ## Messaging in Orchesty
 
-The orchestration layer in Orchesty creates message queues between nodes of process topologies using **RabbitMq**. It adds a number of high level functions and byznis diagnostics. This allows you to flexibly build [process topologies](../documentation/process-topology) that reflect your business needs.
+The orchestration layer in Orchesty creates message queues between nodes of process topologies using **RabbitMq**. It adds a number of high level functions and business diagnostics. This allows you to flexibly build [process topologies](../documentation/process-topology) that reflect your business needs.
 
 ## Process modelling
 

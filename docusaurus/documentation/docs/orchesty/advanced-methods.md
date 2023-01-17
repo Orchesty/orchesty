@@ -14,7 +14,7 @@ for which the Repeater should be used, which frequency try to call continuously 
 :::
 
 ## Messages order & parallel processing
-Orchesty is able to process messages in parallel. However, it doesn't guarantee the right order of the messages.
+Orchesty is able to process messages in parallel. It doesn't guarantee the right order of the messages.
 Parallel processing depends on **prefetch** setting of every process action. This value shows the amount of messages
 from the queue which are fetched by **Bridge** at the moment.
 

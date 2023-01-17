@@ -3,7 +3,7 @@ import TabItem from '@theme/TabItem';
 
 # Orchesty Store
 
-Orchesty Store is one of the freely available Orchesty extensions. It is a collection of ready-made applications and connectors that can be easily modified and extended. Orchesty Store is simply a library, created using the SDK. In the same way, we can create our own collections and use them across our projects. We'll learn how to build new apps and connectors in our [tutorials](../tutorials/getting-started-with-tutorials.md).
+Orchesty Store is one of the freely available Orchesty extensions. It is a collection of ready-made applications and connectors that can be easily modified and extended. Orchesty Store is a library, created using the SDK. In the same way, we can create our own collections and use them across our projects. We'll learn how to build new apps and connectors in our [tutorials](../tutorials/getting-started-with-tutorials.md).
 
 ## Available connectors
 
@@ -13,7 +13,7 @@ There is currently a store for PHP and Node.js in Orchesty. We can check availab
 - [PHP repository](https://github.com/Orchesty/orchesty-php-connectors)
 
 :::tip
-The libraries for each language do not contain the same range of connectors and applications. However, you can use the Store libraries in the project simultaneously.
+The libraries for each language do not contain the same range of connectors and applications. You can use the Store libraries in the project simultaneously.
 :::
 
 ## Installation
@@ -24,7 +24,7 @@ The libraries for each language do not contain the same range of connectors and 
 The Orchesty Store is available as a [public package](https://www.npmjs.com/package/@orchesty/nodejs-connectors). Running `pnpm install @orchesty/nodejs-connectors` in the `nodejs-sdk` directory will download the package and store it among our **node_modules**.
 
 :::info
-The `nodejs-sdk` directory is valid when using [Orchesty-skeleton](../get-started/installation.md), which uses package manager **pnpm**. The package can of course be installed into any application you want to integrate with Orchesty.
+The `nodejs-sdk` directory is valid when using [Orchesty-skeleton](../get-started/installation.md), which uses package manager **pnpm**. The package can be installed into any application you want to integrate with Orchesty.
 :::
 
 </TabItem>

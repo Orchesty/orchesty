@@ -23,7 +23,7 @@ The orchestration layer is used to model and manage asynchronous processes that 
 
 To work with the orchestration layer, we use the Orchesty Admin user interface, where we find tools for modelling, controlling and diagnosing processes.
  
-:::note Usefull links
+:::note Useful links
 - [Integrations](../get-started/integration.md)
 - [Orchestration](../get-started/orchestration.md)
 - [Orchesty Admin](../get-started/admin.md)
@@ -33,7 +33,7 @@ To work with the orchestration layer, we use the Orchesty Admin user interface, 
 
 To help you get started with Orchesty faster, we've prepared [Orchesty-skeleton](https://github.com/Orchesty/orchesty-skeleton) with the project base. The skeleton contains default directories with [SDK packages](../get-started/SDK.md), where we can start building our orchestration layer services. It's up to us which SDK we want to use.
 
-Within the skeleton mono-repository, we can build any number of services for [Direct Integration](../get-started/integration.md) by simply copying the contents of the folder with the chosen SDK to a folder at the same level.
+Within the skeleton mono-repository, we can build any number of services for [Direct Integration](../get-started/integration.md) by copying the contents of the folder with the chosen SDK to a folder at the same level.
 
 ```- title="mono-repository folder structure"
 my-app/
@@ -64,7 +64,7 @@ services:
            - ./my-new-service:/var/www:cached
 ```
 :::tip
-If you don’t have any experience with **docker compose**, we recommend reading the [original documentation](https://docs.docker.com/compose/).
+If you don't have any experience with **docker compose**, we recommend reading the [original documentation](https://docs.docker.com/compose/).
 :::
 
 ## Integration of services outside the skeleton repository

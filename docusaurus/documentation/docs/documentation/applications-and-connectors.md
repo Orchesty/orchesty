@@ -9,7 +9,7 @@ A connector is a [worker](../documentation/workers) action that communicates wit
 
 ## Application
 
-In order to communicate, a connector must typically authorize its calls. Basic authorization can be included directly by the connector. However, since we often call multiple endpoints of the same API, we must also use multiple connectors with the same authorization. Therefore, it is preferable to use an application that bundles everything we need to use across multiple connectors. This will greatly simplify the writing of the connectors themselves. Some applications also give us additional features, such as OAuth authorization or the ability to register webhooks.
+In order to communicate, a connector must typically authorize its calls. Basic authorization can be included directly by the connector. Since we often call multiple endpoints of the same API, we must also use multiple connectors with the same authorization. Therefore, it is preferable to use an application that bundles everything we need to use across multiple connectors. This will greatly simplify the writing of the connectors themselves. Some applications also give us additional features, such as OAuth authorization or the ability to register webhooks.
 
 ### Basic application
 Enables basic authentication. The application will provide a user-defined form to set the required settings via the user interface.

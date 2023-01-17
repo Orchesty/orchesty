@@ -58,7 +58,7 @@ Repeater can also be configured in the topology editor. This is less common, but
 
 ## Termination of processing by error
 
-If there is no point in repeating the call and we want to terminate the message processing, we have basically two options. Terminate only the message run and without affecting the evaluation of the process, or mark the process as failed.
+If there is no point in repeating the call and we want to terminate the message processing, we have two options. Terminate only the message run and without affecting the evaluation of the process, or mark the process as failed.
 
 ### End message processing
 

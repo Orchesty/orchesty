@@ -5,7 +5,7 @@ Their usage depends on the purpose of the service within the infrastructure and 
 
 ## Direct integration
 
-Direct Integration is the basic integration principle for development. Despite it's many advantages it can’t be applied in all cases.
+Direct Integration is the basic integration principle for development. Despite it's many advantages it can't be applied in all cases.
 Direct Integration principle requires the implementation of Orchesty SDK package into the integrated service.
 This package delivers Orchesty framework and the communication with Core into the service.
 Direct Integration therefore can not be used when we are not able to implement SDK in service.

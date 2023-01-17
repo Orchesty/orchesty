@@ -15,7 +15,7 @@ In the Orchesty-skeleton we have a repository with a service that has the Orches
 ## Worker registration
 In the root folder of our new project we will find folders with ready applications that implement the necessary SDK. As a first step, we'll choose an application in Node.js and teach it to communicate with the orchestration layer. This application will be used to build connectors and transformation scripts that we will use within our processes.
 
-To integrate directly with Orchesty, you can now just register the service inside [Orchesty Admin](../admin/admin.md). This is available in the **Workers** tab on the left sidebar or at [http://127.0.0.10/workers](http://127.0.0.10/workers).
+To integrate directly with Orchesty, you can now register the service inside [Orchesty Admin](../admin/admin.md). This is available in the **Workers** tab on the left sidebar or at [http://127.0.0.10/workers](http://127.0.0.10/workers).
 
 ![Services](/img/tutorial/sdk-implementation.svg "Services")
 

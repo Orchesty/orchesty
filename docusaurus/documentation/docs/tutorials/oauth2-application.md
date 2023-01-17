@@ -562,7 +562,7 @@ If we already have HubSpot credentials, we can authorize the installed applicati
 We recommend to first check out [Connector tutorial](basic-connector) to see how create connector to remove API. 
 :::
 
-Now we create a connector that inserts a new contact into the HubSpot. The whole connector is very simple, if we have already created connectors in the previous tutorials, this should be a piece of cake for us. So let's just show the whole code right away:
+Now we create a connector that inserts a new contact into the HubSpot. The whole connector is very simple, if we have already created connectors in the previous tutorials, this should be a piece of cake for us. So let's show the whole code right away:
 
 <Tabs>
 <TabItem value="typescript" label="Typescript">
@@ -745,7 +745,7 @@ If we have successfully authorized access to our HubSpot account, we can activat
 
 ## Creating a topology
 
-The topology to test our example will be really simple this time. We'll just use the start event and our connector.  For this time, we'll enter the data manually. At the end, of course, we add a user task to check the HubSpot response.
+The topology to test our example will be really simple this time. We will use the start event and our connector.  For this time, we'll enter the data manually. Finally, we add a user task to check the HubSpot response.
 
 ![Create contact HubSpot topology](/img/tutorial/oauth2/create-user-topology.svg)
 
@@ -753,6 +753,6 @@ We save, publish and activate the topology. On run, we specify the email we will
 
 ![Run topology](/img/tutorial/oauth2/run-create-user.svg "Run topology")
 
-Now we just check the new contact in our HubSpot account.
+Now we can check the new contact in our HubSpot account.
 
 

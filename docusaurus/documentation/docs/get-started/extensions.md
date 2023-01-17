@@ -11,7 +11,7 @@ importantly a tool for developers. It allows building custom extensions of more 
 The Orchesty basis allows building custom tools.
 Extensions are reusable and can be built in every programming language for which is prepared
 [SDK](../sdk/keep). The principle is very simple.
-You just need to build a service with custom extensions with [SDK](../sdk/keep) and register it into [Admin](../admin/admin.md) as [Service for direct integration](integration).
+You need to build a service with custom extensions with [SDK](../sdk/keep) and register it into [Admin](../admin/admin.md) as [Service for direct integration](integration).
 
 :::info More about
 - [Custom SDK service for direct integration](../tutorials/SDK-settings)

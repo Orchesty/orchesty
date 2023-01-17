@@ -81,7 +81,8 @@ final class GitHubApplication extends BasicApplicationAbstract
 </TabItem>
 </Tabs>
 
-The methods in this part of the code are required. The `name` attribute serves as a unique identifier for the application. The `publicName` and `description` are displayed in [Orchesty marketplace](../admin/marketplace.md).
+The methods in this part of the code are required. The `name` attribute serves as a unique identifier for the application. The `publicName` and `description` are displayed in Orchesty marketplace.
+<!-- TODO Add link [Orchesty marketplace](../admin/marketplace.md), once that page will be written -->
 
 ## Form
 For each application, we can create any number of [forms](../documentation/form.md) for user communication settings. In our example, we will create one form for entering GitHub account credentials. In the form, we need to enter a token that we can generate in our GitHub account.
@@ -604,7 +605,7 @@ In **Orchesty Admin** we will create a new topology. Again, we'll include a **us
 
 ![GitHub topology](/img/tutorial/basicApplication/github-topology.svg "GitHub topology")
 
-We publish and activate the topology. This time, the topology will expect data to be inserted for submission, namely the owner and the repository name. However, since we have handled error situations, we can first test how the process behaves if we don't insert the correct data.
+We publish and activate the topology. This time, the topology will expect data to be inserted for submission, namely the owner and the repository name. Since we have handled error situations, we can first test how the process behaves if we don't insert the correct data.
 
 
 
@@ -628,7 +629,7 @@ Among the headers we can also see the **result message** that we have set in the
 
 We save the message and use the **Approve** button to send it again to the connector. If we have entered the correct name and owner of the repository, we can now see that the message has successfully reached the **user task** node behind the connector.
 
-Of course, we can also try running the process directly with the correct data. We have defined the keys to insert the data in the connector interface.
+We can also try running the process directly with the correct data. We have defined the keys to insert the data in the connector interface.
 
 ![Run topology](/img/tutorial/basicApplication/hubspot-run.svg "Run topology")
 

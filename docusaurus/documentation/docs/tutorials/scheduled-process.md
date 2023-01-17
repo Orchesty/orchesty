@@ -17,7 +17,7 @@ Cron event is set using the **cron tab** format. Optionally, we can also specify
 
 ## Starting
 
-Now that we have saved and run the topology, we can see the time of the next process execution in the upper right corner. To abort the process, just deactivate it with the **disable** button.
+Now that we have saved and run the topology, we can see the time of the next process execution in the upper right corner. To abort the process, deactivate it with the **disable** button.
 
 ![Next run](/img/tutorial/cron/next-run.svg "Next run")
 
