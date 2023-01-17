@@ -5,13 +5,13 @@ import TabItem from '@theme/TabItem';
 
 # Integration
 
-While the orchestration layer deals with where the data goes and under what conditions, the integration layer deals with the communication between the services and the orchestration layer. It allows the building of integration process components such as connectors, data transformations or filters.
+The orchestration layer deals with where data goes and under what conditions, while the integration layer deals with communication between services and the orchestration layer. It enables the building of integration process components, such as connectors, data transformations, or filters.
 
 ## Direct integration
 
 Direct Integration is the basic integration principle for development. It requires the implementation of [Orchesty SDK](../get-started/SDK.md) package into the integrated service. This package delivers Orchesty framework and the communication with [orchestration layer](../get-started/orchestration.md) into the service.
 
-In such a service, we can create custom actions that are then available in the process editor. Using the installed SDK, we can orchestrate basically any services or microservices.
+In such a service, we can create custom actions that are then available in the process editor. Using the installed SDK, we can orchestrate any services or microservices.
 
 <Image path="/img/architecture/direct-integration.svg" lightOnly />
 

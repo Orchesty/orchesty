@@ -9,15 +9,15 @@ Orchesty SDK packages belong to the integration layer. They have 2 key functions
 - They provide communication between the integrated service and the orchestration layer.
 
 :::note Useful links
-- [Doporučujeme přečíst naše návody](../tutorials/getting-started-with-tutorials.md). 
+- [We recommend reading our tutorials](../tutorials/getting-started-with-tutorials.md)
 :::
 
 ## SDK in Orchesty-skeleton
 
-The SDK can be used within the Orchesty-skeleton, where the SDK packages are already installed and whose download and installation is described in a separate chapter [Installation](../get-started/installation.md). However, we can also use the SDK in any standalone application we want to integrate with Orchesty. Communication with the orchestration layer is completely independent. The Orchestration layer itself can also be used [as a service](https://orchesty.io/services).
+The SDK can be used within the Orchesty-skeleton, where the SDK packages are already installed and whose download and installation is described in a separate chapter [Installation](../get-started/installation.md). We can also use the SDK in any standalone application we want to integrate with Orchesty. Communication with the orchestration layer is completely independent. The Orchestration layer itself can also be used [as a service](https://orchesty.io/services).
 
 :::tip
-There are basically two ways to integrate the service using Orchesty:
+There are two ways to integrate the service using Orchesty:
 - Install the SDK into the service and register the service to the orchestration layer in **Orchesty Admin**, see [SDK settings](../tutorials/SDK-settings.md).
 - Use the SDK to create connectors for the service and integrate it using its API.
 :::

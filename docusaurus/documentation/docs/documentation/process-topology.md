@@ -35,11 +35,11 @@ The created topology must be published to run. Publishing creates a container wi
 
 ## Enable/Disable
 
-Each published topology can be easily activated and deactivated. The disable action tells the start event not to receive any signals. Also, [Cron](../documentation/starting-events) does not start new processes. However, all already started processes continue their processing.
+Each published topology can be easily activated and deactivated. The disable action tells the start event not to receive any signals. Also, [Cron](../documentation/starting-events) does not start new processes. Already started processes continue their processing.
 
 ## Versioning
 
-Any modification of an already published topology automatically creates a new version of it. Thus, the modification will never affect currently running processes. If a new version of the topology is published and activated, new processes are already routed to the new version. However, the original version is still running and the active process instances continue to be processed.
+Any modification of an already published topology automatically creates a new version of it. Thus, the modification will never affect currently running processes. If a new version of the topology is published and activated, new processes are already routed to the new version. The original version is still running and the active process instances continue to be processed.
 
 ## Export/Import
 

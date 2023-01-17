@@ -9,7 +9,7 @@ As a first step, we'll demonstrate basic orchestration layer work and set up a f
 - [Installed and running Orchesty](../get-started/installation)
 
 ## Creating a process topology
-The definition of a process is called a topology. To create a new topology, use the **plus** button in the left Admin bar. Topologies can be organized in folders and in addition to creating a new topology, we also have the option to import a ready-made topology. All of this will come in handy in the future, but for now we'll make do with simply creating a topology in the project root.
+The definition of a process is called a topology. To create a new topology, use the **plus** button in the left Admin bar. Topologies can be organized in folders and in addition to creating a new topology, we also have the option to import a ready-made topology. All of this will come in handy in the future, but for now, we'll just create a topology in the project root.
 
 <Image path="/img/firstProcess/plus-menu.svg" lightOnly />
 
@@ -40,7 +40,7 @@ The **User task** action is useful for manually editing data using the user inte
 
 ## Publishing a topology
 
-Now save the prepared topology using the **Save** button in the action menu and close the editor using the **Back** button. This saves the changes. However, the topology is still in the **Draft** state. To run the prepared topology, we still need to publish it using the **Publish** button.
+Now save the prepared topology using the **Save** button in the action menu and close the editor using the **Back** button. This saves the changes. The topology is still in the **Draft** state. To run the prepared topology, we still need to publish it using the **Publish** button.
 
 <Image path="/img/firstProcess/action-menu.svg" lightOnly />
 
@@ -55,7 +55,7 @@ The newly published process is in the inactive state. That is, it does not recei
 <Image path="/img/firstProcess/enable.svg" lightOnly />
 
 :::info
-**Disable** of a topology closes its entry points. The topology receives no signals and timers do not start scheduled processes. However, all running process instances continue processing.
+**Disable** of a topology closes its entry points. The topology receives no signals and timers do not start scheduled processes. All running process instances continue processing.
 :::
 
 ## Manually starting a process

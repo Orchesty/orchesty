@@ -52,7 +52,7 @@ Setting prefetch also affects the order of messages in the topology. **If we wan
 :::
 
 ### Connector
-A connector is a node that allows communication with a remote service through its API. The connector code is again executed by the worker, so the default settings are the same as for the custom node. However, the connector also contains a [repeater](../documentation/results-evaluation) setting, which ensures repeated calls when the called service is unavailable.
+A connector is a node that allows communication with a remote service through its API. The connector code is again executed by the worker, so the default settings are the same as for the custom node. The connector also contains a [repeater](../documentation/results-evaluation) setting, which ensures repeated calls when the called service is unavailable.
 
 ![Repeater settings](/img/documentation/repeater-settings.svg "Repeater settings")
 
@@ -72,7 +72,7 @@ The batch settings in the editor are the same as for the connector.
 :::
 
 :::info
-The collection of data can theoretically be processed by a custom node. However, Batch allows you to split the collection or call a remote service with each item in the collection using the [repeater](../documentation/results-evaluation) and [limiter](../documentation/limiter) options.
+The collection of data can theoretically be processed by a custom node. By using batch processing you can split the collection or call a remote service with each item in the collection using the [repeater](../documentation/results-evaluation) and [limiter](../documentation/limiter) options.
 :::
 
 ### User task
@@ -81,4 +81,4 @@ A user task is a node that creates a list of messages and allows us to preview, 
 ![User task](/img/documentation/user-task.svg)
 
 ### Gateway
-The Gateway is basically very similar to a user task. Its purpose is routing in topology branching. You can read about routing in [separate chapter](../documentation/routing).
+The Gateway is very similar to a user task. Its purpose is routing in topology branching. You can read about routing in [separate chapter](../documentation/routing).

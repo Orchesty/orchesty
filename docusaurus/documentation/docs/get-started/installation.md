@@ -6,9 +6,9 @@ import TabItem from '@theme/TabItem';
 Thank you for choosing Orchesty for your project. The installation is simple, we can handle it in few steps.
  
 ## What do we need?
-To start and run Orchesty, we must have the [Docker](https://www.docker.com/) installed to ensure a virtualized environment. If you don’t have any experience with Docker, we recommend going through its [documentation](https://docs.docker.com/).
+To start and run Orchesty, we must have the [Docker](https://www.docker.com/) installed to ensure a virtualized environment. If you don't have any experience with Docker, we recommend going through its [documentation](https://docs.docker.com/).
 
-Next, we`ll need an executable binary **make** file. To install this binary, follow the instructions below:
+Next, we'll need an executable binary **make** file. To install this binary, follow the instructions below:
 
 <Tabs
     defaultValue="linux"
@@ -88,5 +88,5 @@ docker-compose exec backend bin/orchesty u:c
 ```
 
 Now we can log into the UI.
-If you’re starting with Orchesty, we recommend going through our [tutorials](../tutorials/getting-started-with-tutorials.md).
+If you're starting with Orchesty, we recommend going through our [tutorials](../tutorials/getting-started-with-tutorials.md).
 

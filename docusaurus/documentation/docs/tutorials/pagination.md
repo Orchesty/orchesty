@@ -169,7 +169,7 @@ services:
 
 ## Test
 
-The test is simply performed as in the previous tutorials. After the **start event** we include our new connector and have the output sent to the **user task**. 
+The test is performed as in the previous tutorials. After the **start event** we include our new connector and have the output sent to the **user task**. 
 
 ![Pagination topology](/img/tutorial/pagination-topology.png "Pagination topology")
 

@@ -3,7 +3,7 @@ import TabItem from '@theme/TabItem';
 
 # Introduction to Batch
 
-In this tutorial, we will get an introduction to processing arrays of data. Of course, we can process data arrays in the same way as individual data objects. However, it is often necessary to split the data from an array into individual elements and control their processing individually. A common case is pagination of the source data, which we will demonstrate in the next tutorial. For now, let's focus on data splitting.
+In this tutorial, we will get an introduction to processing arrays of data. We can process data arrays in the same way as individual data objects, though it is often necessary to split the data from an array into individual elements and control their processing individually. A common case is pagination of the source data, which we will demonstrate in the next tutorial. For now, let's focus on data splitting.
 
 ### Prerequisites
 
@@ -13,7 +13,7 @@ In this tutorial, we will get an introduction to processing arrays of data. Of c
 
 ## Creating Batch
 
-We split the data in a node of the `BatchNode` type. This is basically based on a connector. The difference is that it returns an array, and the orchestration layer then splits the array from this connector into individual messages. So we prepare a `SplitBatch` class, into which we directly insert an array of data. As we said, this class is essentially a connector, so it can get the data by calling some source. For our demonstration, however, we'll make do with putting the data array directly in the code.
+We split the data in a node of the `BatchNode` type. This is based on a connector. The difference is that it returns an array, and the orchestration layer then splits the array from this connector into individual messages. So we prepare a `SplitBatch` class, into which we directly insert an array of data. As we said, this class is essentially a connector, so it can get the data by calling some source. For our demonstration we will put the data array directly in the code.
 
 <Tabs>
 <TabItem value="typescript" label="Typescript">

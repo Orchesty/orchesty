@@ -3,7 +3,7 @@ import TabItem from '@theme/TabItem';
 
 # Stored data
 
-Especially with larger data collections, it is advisable to use data storage and not send data through topology queues. We will demonstrate the procedure for working with a data collection in data storage by simply modifying the connector to download the organization's repositories from **GitHub**. We prepared the connector as part of the previous [data pagination tutorial](../tutorials/pagination). So we recommend going through that tutorial first.
+Especially with larger data collections, it is advisable to use data storage and not send data through topology queues. We will demonstrate the procedure for working with a data collection in data storage by modifying the connector to download the organization's repositories from **GitHub**. We prepared the connector as part of the previous [data pagination tutorial](../tutorials/pagination). So we recommend going through that tutorial first.
 
 ## Connector modification for data storage usage
 

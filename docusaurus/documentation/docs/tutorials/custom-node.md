@@ -17,7 +17,7 @@ which do not send requests. Let's create a simple custom node for data transform
 <Tabs>
 <TabItem value="typescript" label="Typescript">
 
-First, we create a new class in the worker in the **src** folder that will inherit from **ACommonNode**. The class doesn't do anything yet, we just set the name of the action that it will perform.
+First, we create a new class in the worker in the **src** folder that will inherit from **ACommonNode**. The class doesn't do anything yet, we only set the name of the action that it will perform.
 
 ```typescript
 import ACommonNode from '@orchesty/nodejs-sdk/dist/lib/Commons/ACommonNode';
@@ -41,7 +41,7 @@ export default class HelloWorld extends ACommonNode {
 <TabItem value="php" label="PHP">
 
 
-First, we create a new class in the worker in the **src** folder that will inherit from **CommonNodeAbstract**. The class doesn't do anything yet, we just set the name of the action that it will perform.
+First, we create a new class in the worker in the **src** folder that will inherit from **CommonNodeAbstract**. The class doesn't do anything yet, we only set the name of the action that it will perform.
 
 ```php
 namespace Pipes\PhpSdk\Mapper;
@@ -154,7 +154,7 @@ At the end of the topology, we add a user task to check the transformation.
 Now we save the topology. Since we have edited the published topology, we can see that a new version of it was automatically created, which will need to be published and enabled again in order to run it.
 
 :::info
-Orchesty always creates a new version when editing a published topology. When it is run, we then just inactivate the previous active version. This stops receiving new messages, but all running process instances continue processing.
+Orchesty always creates a new version when editing a published topology. When it is run, we then inactivate the previous active version. This stops receiving new messages, but all running process instances continue processing.
 :::
 
 So we start the topology, but this time we don't put any data into it. Switching to the **User Tasks** tab, we can see that there is a message with an empty body in the **user** node.
