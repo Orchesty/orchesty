@@ -189,6 +189,8 @@ final class ServiceLocator implements LoggerAwareInterface
     public function uninstallApp(string $key, string $user): array
     {
         try {
+            $this->changeState($key, $user, ['enabled' => FALSE]);
+
             $resp = $this->doRequest(
                 sprintf('applications/%s/users/%s/uninstall', $key, $user),
                 CurlManager::METHOD_DELETE,
@@ -228,7 +230,7 @@ final class ServiceLocator implements LoggerAwareInterface
             $data,
         );
 
-        $action = ($data['enabled'] ?? FALSE) === FALSE? 'afterDisableCallback' : 'afterEnableCallback';
+        $action = ($data['enabled'] ?? FALSE) === FALSE ? 'afterDisableCallback' : 'afterEnableCallback';
 
         $this->doRequest(
             sprintf('applications/%s/sync/%s', $key, $action),
