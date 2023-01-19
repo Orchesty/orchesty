@@ -45,7 +45,6 @@ final class ProgressManager
                 DateTimeUtils::getUtcDateTime($doc['finished'])->format(DateTimeUtils::DATE_TIME_UTC) :
                 NULL;
             $end      = $doc['finished'] ?? DateTimeUtils::getUtcDateTime()->format(DateTimeUtils::DATE_TIME_UTC);
-            $count    = $doc['ok'] + $doc['nok'];
             $created  = DateTimeUtils::getUtcDateTime($doc['created']);
 
             $topo = $this->dm->getRepository(Topology::class)->findOneBy(['id' => $doc['topologyId']]);
@@ -56,9 +55,9 @@ final class ProgressManager
                 'duration'       => TopologyProgress::durationInMs($created, DateTimeUtils::getUtcDateTime($end)),
                 'started'        => $created->format(DateTimeUtils::DATE_TIME_UTC),
                 'finished'       => $finished,
-                'nodesProcessed' => $count,
+                'nodesProcessed' => $doc['processedCount'],
                 'nodesTotal'     => $doc['total'],
-                'status'         => $count < $doc['total'] ? 'IN PROGRESS' : ($doc['nok'] > 0 ? 'FAILED' : 'SUCCESS'),
+                'status'         => $doc['processedCount'] < $doc['total'] ? 'IN PROGRESS' : ($doc['nok'] > 0 ? 'FAILED' : 'SUCCESS'),
                 'failed'         => $doc['nok'],
                 'user'           => $doc['user'] ?? '',
                 'process'        => $topo?->getDescr() ?? '',

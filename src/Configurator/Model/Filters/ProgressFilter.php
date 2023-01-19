@@ -3,6 +3,8 @@
 namespace Hanaboso\PipesFramework\Configurator\Model\Filters;
 
 use Doctrine\ODM\MongoDB\Query\Builder;
+use Doctrine\ODM\MongoDB\Query\Expr;
+use Exception;
 use Hanaboso\MongoDataGrid\GridFilterAbstract;
 use Hanaboso\PipesFramework\Configurator\Document\TopologyProgress;
 use Hanaboso\Utils\Date\DateTimeUtils;
@@ -26,6 +28,7 @@ final class ProgressFilter extends GridFilterAbstract
             'topologyId' => 'topologyId',
             'started'    => 'startedAt',
             'user'       => 'user',
+            'status'     => 'status',
         ];
     }
 
@@ -74,6 +77,35 @@ final class ProgressFilter extends GridFilterAbstract
     protected function setDocument(): void
     {
         $this->document = TopologyProgress::class;
+    }
+
+    /**
+     * @return mixed[]
+     */
+    protected function configFilterColsCallbacks(): array
+    {
+        return [
+            'status' => static function (
+                Builder $builder,
+                        $value,
+                string $name,
+                Expr $expr,
+                ?string $operator,
+            ): void {
+                $builder;
+                $operator;
+                $name;
+
+                $statusExpr = match (strtolower($value[0])) {
+                    'ip' => 'this.processedCount < this.total',
+                    'success' => 'this.processedCount === this.total && this.nok === 0',
+                    'failed' => 'this.processedCount === this.total && this.nok > 0',
+                    default => throw new Exception(sprintf('value [%s] is not supported', $value[0]), 500),
+                };
+
+                $expr->where($statusExpr);
+            },
+        ];
     }
 
 }

@@ -51,6 +51,23 @@ final class TopologyProgressControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
+     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyProgressController::getProgressesAction
+     *
+     * @throws Exception
+     */
+    public function testGetAllActionWithFilter(): void
+    {
+        $this->createProgress();
+        $this->assertResponseLogged(
+            $this->jwt,
+            __DIR__ . '/data/TopologyProgressController/getProgressesFilterRequest.json',
+            [
+                'correlationId' => 'corr-id-1234',
+            ],
+        );
+    }
+
+    /**
      * ---------------------------------------- HELPERS ------------------------------------
      */
 

@@ -49,6 +49,13 @@ class TopologyProgress
     private int $total = 0;
 
     /**
+     * @var int
+     *
+     * @ODM\Field(type="int")
+     */
+    private int $processedCount = 0;
+
+    /**
      * @var DateTime
      *
      * @ODM\Field(name="created", type="date")
@@ -193,6 +200,26 @@ class TopologyProgress
     public function setTotal(int $total): TopologyProgress
     {
         $this->total = $total;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getProcessedCount(): int
+    {
+        return $this->processedCount;
+    }
+
+    /**
+     * @param int $processedCount
+     *
+     * @return TopologyProgress
+     */
+    public function setProcessedCount(int $processedCount): TopologyProgress
+    {
+        $this->processedCount = $processedCount;
 
         return $this;
     }
