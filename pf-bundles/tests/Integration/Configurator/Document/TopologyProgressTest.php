@@ -31,7 +31,8 @@ final class TopologyProgressTest extends DatabaseTestCaseAbstract
             ->setNok(1)
             ->setTotal(2)
             ->setStartedAt($t)
-            ->setFinishedAt($t);
+            ->setFinishedAt($t)
+            ->setProcessedCount(2);
         $this->setProperty($progress, 'id', '123');
 
         self::assertEquals('123', $progress->getId());
@@ -39,6 +40,7 @@ final class TopologyProgressTest extends DatabaseTestCaseAbstract
         self::assertEquals(1, $progress->getOk());
         self::assertEquals(1, $progress->getNok());
         self::assertEquals(2, $progress->getTotal());
+        self::assertEquals(2, $progress->getProcessedCount());
         self::assertEquals($t, $progress->getFinishedAt());
         self::assertEquals($t, $progress->getStartedAt());
         self::assertEquals(
