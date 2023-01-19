@@ -11,15 +11,16 @@ type UpdateProcess struct {
 }
 
 type Process struct {
-	Id          string     `bson:"_id"`
-	Ok          int        `bson:"ok"`
-	Nok         int        `bson:"nok"`
-	Total       int        `bson:"total"`
-	TopologyId  string     `bson:"topologyId"`
-	User        string     `bson:"user"`
-	Created     time.Time  `bson:"created"`
-	Finished    *time.Time `bson:"finished"`
-	SystemEvent bool       `bson:"systemEvent"`
+	Id             string     `bson:"_id"`
+	Ok             int        `bson:"ok"`
+	Nok            int        `bson:"nok"`
+	ProcessedCount int        `bson:"processedCount"`
+	Total          int        `bson:"total"`
+	TopologyId     string     `bson:"topologyId"`
+	User           string     `bson:"user"`
+	Created        time.Time  `bson:"created"`
+	Finished       *time.Time `bson:"finished"`
+	SystemEvent    bool       `bson:"systemEvent"`
 }
 
 type ErrorMessage struct {
@@ -34,5 +35,5 @@ func (p Process) IsOk() bool {
 }
 
 func (p Process) IsFinished() bool {
-	return p.Total <= p.Ok+p.Nok
+	return p.Total <= p.ProcessedCount
 }

@@ -105,14 +105,15 @@ func (pm ParsedMessage) ProcessInitQuery() mongo.WriteModel {
 	}
 	doc.Update = bson.M{
 		"$setOnInsert": bson.M{
-			"ok":          0,
-			"nok":         0,
-			"total":       1,
-			"created":     pm.ProcessMessage.GetTimeHeaderOrDefault(enum.Header_ProcessStarted),
-			"topologyId":  pm.ProcessMessage.GetHeaderOrDefault(enum.Header_TopologyId, ""),
-			"user":        user,
-			"finished":    nil,
-			"systemEvent": pm.ProcessMessage.GetBoolHeaderOrDefault(enum.Header_SystemEvent, false),
+			"ok":             0,
+			"nok":            0,
+			"processedCount": 0,
+			"total":          1,
+			"created":        pm.ProcessMessage.GetTimeHeaderOrDefault(enum.Header_ProcessStarted),
+			"topologyId":     pm.ProcessMessage.GetHeaderOrDefault(enum.Header_TopologyId, ""),
+			"user":           user,
+			"finished":       nil,
+			"systemEvent":    pm.ProcessMessage.GetBoolHeaderOrDefault(enum.Header_SystemEvent, false),
 		},
 	}
 	t := true
@@ -128,9 +129,10 @@ func (pm ParsedMessage) ProcessQuery() mongo.WriteModel {
 	}
 	doc.Update = bson.M{
 		"$inc": bson.M{
-			"ok":    pm.ProcessMessage.ProcessBody.successes(),
-			"nok":   pm.ProcessMessage.ProcessBody.fails(),
-			"total": pm.ProcessMessage.ProcessBody.Following,
+			"ok":             pm.ProcessMessage.ProcessBody.successes(),
+			"nok":            pm.ProcessMessage.ProcessBody.fails(),
+			"processedCount": pm.ProcessMessage.ProcessBody.successes() + pm.ProcessMessage.ProcessBody.fails(),
+			"total":          pm.ProcessMessage.ProcessBody.Following,
 		},
 	}
 
@@ -146,15 +148,16 @@ func (pm ParsedMessage) SubProcessInitQuery() mongo.WriteModel {
 	}
 	doc.Update = bson.M{
 		"$setOnInsert": bson.M{
-			"ok":            0,
-			"nok":           0,
-			"total":         1,
-			"created":       pm.GetPublishedTimestamp(),
-			"topologyId":    pm.ProcessMessage.GetHeaderOrDefault(enum.Header_TopologyId, ""),
-			"finished":      nil,
-			"correlationId": corrId,
-			"parentId":      pm.ProcessMessage.GetHeaderOrDefault(enum.Header_ParentProcessId, corrId),
-			"systemEvent":   pm.ProcessMessage.GetBoolHeaderOrDefault(enum.Header_SystemEvent, false),
+			"ok":             0,
+			"nok":            0,
+			"processedCount": 0,
+			"total":          1,
+			"created":        pm.GetPublishedTimestamp(),
+			"topologyId":     pm.ProcessMessage.GetHeaderOrDefault(enum.Header_TopologyId, ""),
+			"finished":       nil,
+			"correlationId":  corrId,
+			"parentId":       pm.ProcessMessage.GetHeaderOrDefault(enum.Header_ParentProcessId, corrId),
+			"systemEvent":    pm.ProcessMessage.GetBoolHeaderOrDefault(enum.Header_SystemEvent, false),
 		},
 	}
 	t := true
@@ -170,9 +173,10 @@ func (pm ParsedMessage) SubProcessQuery() mongo.WriteModel {
 	}
 	doc.Update = bson.M{
 		"$inc": bson.M{
-			"ok":    pm.ProcessMessage.ProcessBody.successes(),
-			"nok":   pm.ProcessMessage.ProcessBody.fails(),
-			"total": pm.ProcessMessage.ProcessBody.Following,
+			"ok":             pm.ProcessMessage.ProcessBody.successes(),
+			"nok":            pm.ProcessMessage.ProcessBody.fails(),
+			"processedCount": pm.ProcessMessage.ProcessBody.successes() + pm.ProcessMessage.ProcessBody.fails(),
+			"total":          pm.ProcessMessage.ProcessBody.Following,
 		},
 	}
 
@@ -191,9 +195,7 @@ func (pm ParsedMessage) FinishProcessQuery() mongo.WriteModel {
 					"$cond": bson.A{
 						bson.M{
 							"$gte": bson.A{
-								bson.M{
-									"$sum": bson.A{"$ok", "$nok"},
-								},
+								"$processedCount",
 								"$total",
 							},
 						},
@@ -222,9 +224,7 @@ func (pm ParsedMessage) FinishSubProcessQuery() mongo.WriteModel {
 					"$cond": bson.A{
 						bson.M{
 							"$eq": bson.A{
-								bson.M{
-									"$sum": bson.A{"$ok", "$nok"},
-								},
+								"$processedCount",
 								"$total",
 							},
 						},

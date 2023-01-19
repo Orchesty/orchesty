@@ -66,9 +66,7 @@ func (m *MongoDb) GetUnmarkedFinishedProcesses() ([]model.Process, error) {
 					"$cond": bson.A{
 						bson.M{
 							"$eq": bson.A{
-								bson.M{
-									"$add": bson.A{"$ok", "$nok"},
-								},
+								"$processedCount",
 								"$total",
 							},
 						},
