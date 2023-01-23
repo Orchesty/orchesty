@@ -95,6 +95,7 @@ final class UserHandler
      * @return mixed[]
      * @throws PipesFrameworkException
      * @throws SecurityManagerException
+     * @throws \Hanaboso\Utils\Exception\DateTimeException
      */
     public function login(array $data): array
     {
