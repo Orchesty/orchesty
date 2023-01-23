@@ -7,6 +7,7 @@ use Hanaboso\PipesFramework\UserTask\Document\UserTask;
 use Hanaboso\PipesFramework\UserTask\Document\UserTaskMessage;
 use Hanaboso\PipesFramework\UserTask\Enum\UserTaskEnum;
 use Hanaboso\PipesFramework\UserTask\Model\UserTaskManager;
+use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\System\PipesHeaders;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
@@ -36,8 +37,10 @@ final class UserTaskControllerTest extends ControllerTestCaseAbstract
             $this->jwt,
             __DIR__ . '/data/UserTaskController/getRequest.json',
             [
-                'created' => '2020-02-02 10:10:10',
-                'updated' => '2020-02-02 10:10:10',
+                'created'         => '2020-02-02 10:10:10',
+                'updated'         => '2020-02-02 10:10:10',
+                'topologyId'      => 'topo',
+                'topologyVersion' => '0',
             ],
         );
     }
@@ -54,8 +57,10 @@ final class UserTaskControllerTest extends ControllerTestCaseAbstract
             $this->jwt,
             __DIR__ . '/data/UserTaskController/filterRequest.json',
             [
-                'created' => '2020-02-02 10:10:10',
-                'updated' => '2020-02-02 10:10:10',
+                'created'         => '2020-02-02 10:10:10',
+                'updated'         => '2020-02-02 10:10:10',
+                'topologyId'      => 'topo',
+                'topologyVersion' => '0',
             ],
         );
     }
@@ -72,8 +77,10 @@ final class UserTaskControllerTest extends ControllerTestCaseAbstract
             $this->jwt,
             __DIR__ . '/data/UserTaskController/updateRequest.json',
             [
-                'created' => '2020-02-02 10:10:10',
-                'updated' => '2020-02-02 10:10:10',
+                'created'         => '2020-02-02 10:10:10',
+                'updated'         => '2020-02-02 10:10:10',
+                'topologyId'      => 'topo',
+                'topologyVersion' => '0',
             ],
         );
     }
@@ -141,10 +148,13 @@ final class UserTaskControllerTest extends ControllerTestCaseAbstract
      */
     private function prepData(string $state = 'accept'): void
     {
+        $topology = new Topology();
+        $this->pfd($topology, TRUE);
+
         $userTask = new UserTask();
         $this->setProperty($userTask, 'id', self::ID);
         $userTask->setNodeId('node')
-            ->setTopologyId('topo')
+            ->setTopologyId($topology->getId())
             ->setReturnExchange('')
             ->setNodeName('')
             ->setTopologyName('')

@@ -15,6 +15,7 @@ use Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository;
 use Hanaboso\PipesPhpSdk\Database\Repository\TopologyRepository;
 use Hanaboso\Utils\Date\DateTimeUtils;
 use Hanaboso\Utils\String\Json;
+use LogicException;
 use RabbitMqBundle\Publisher\Publisher;
 
 /**
@@ -135,18 +136,28 @@ final class UserTaskManager
      */
     public function accept(UserTask $userTask): void
     {
+        /** @var Topology|null $topology */
+        $topology = $this->dm->getRepository(Topology::class)->find($userTask->getTopologyId());
+        $deleted  = $topology == NULL || $topology->isDeleted();
+        if ($deleted) {
+            throw new LogicException('Cannot accept userTask of deleted topology');
+        }
+
         $this->publish($userTask, TRUE);
         $this->delete($userTask);
     }
 
     /**
      * @param UserTask $userTask
+     * @param bool     $deletedTopology
      *
      * @throws MongoDBException
      */
-    public function reject(UserTask $userTask): void
+    public function reject(UserTask $userTask, bool $deletedTopology): void
     {
-        $this->publish($userTask, FALSE);
+        if (!$deletedTopology) {
+            $this->publish($userTask, FALSE);
+        }
         $this->delete($userTask);
     }
 
@@ -165,7 +176,7 @@ final class UserTaskManager
 
             return [
                 ...$doc,
-                UserTask::TOPOLOGY_DESCR => $topo?->getDescr() ?? '',
+                UserTask::TOPOLOGY_DESCR   => $topo?->getDescr() ?? '',
                 UserTask::TOPOLOGY_VERSION => $topo?->getVersion() ?? 0,
             ];
         }, $res);
@@ -185,6 +196,7 @@ final class UserTaskManager
             $newNode     = $this->nodeRepository->getNodeById($newNodeId);
             if ($userTask->getTopologyName() === $newTopology->getName() &&
                 $userTask->getNodeName() === $newNode->getName()) {
+                $userTask->setTopologyId($newTopologyId); // Used for deleted check
                 $userTask->setReturnExchange(
                     str_replace($userTask->getNodeId(), $newNodeId, $userTask->getReturnExchange()),
                 );
