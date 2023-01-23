@@ -52,7 +52,7 @@ final class UserTaskHandler
 
         return [
             ...$doc->toArray(),
-            UserTask::TOPOLOGY_DESCR => $topo?->getDescr() ?? '',
+            UserTask::TOPOLOGY_DESCR   => $topo?->getDescr() ?? '',
             UserTask::TOPOLOGY_VERSION => $topo?->getVersion() ?? 0,
         ];
     }
@@ -62,7 +62,8 @@ final class UserTaskHandler
      *
      * @return UserTask[]
      */
-    public function getAllUserTasks(string $topologyId): array {
+    public function getAllUserTasks(string $topologyId): array
+    {
         return $this->manager->getAllUserTasks($topologyId);
     }
 
@@ -72,7 +73,8 @@ final class UserTaskHandler
      * @return void
      * @throws MongoDBException
      */
-    public function removeAllUserTasks(string $topologyId): void {
+    public function removeAllUserTasks(string $topologyId): void
+    {
         $this->manager->removeAllUserTasks($topologyId);
     }
 
@@ -145,7 +147,13 @@ final class UserTaskHandler
      */
     public function reject(string $id): array
     {
-        $this->manager->reject($this->manager->get($id));
+        $userTask = $this->manager->get($id);
+
+        /** @var Topology|null $topology */
+        $topology = $this->dm->getRepository(Topology::class)->find($userTask->getTopologyId());
+        $deleted  = $topology == NULL || $topology->isDeleted();
+
+        $this->manager->reject($userTask, $deleted);
 
         return [];
     }
