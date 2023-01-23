@@ -23,12 +23,13 @@ use Hanaboso\Utils\Exception\DateTimeException;
 final class AuthorizationHandler
 {
 
+    public const EXP = 'exp';
+
     public const EU_ALIAS = 'eu_alias';
     public const EU_SUB   = 'eu_sub';
     public const SUB      = 'sub';
 
     private const IAT = 'iat';
-    private const EXP = 'exp';
     private const PIN = 'pin';
 
     /**
@@ -104,34 +105,6 @@ final class AuthorizationHandler
     /**
      * @param string $jweToken
      *
-     * @return mixed[]
-     */
-    public function payloadFromJwe(string $jweToken): array
-    {
-        return $this->authorizationManager->payloadFromJwe($jweToken);
-    }
-
-    /**
-     * @param mixed[] $payload
-     *
-     * @return mixed[]
-     */
-    public function jwsFromJwe(array $payload): array
-    {
-        unset($payload[self::EU_ALIAS]);
-
-        $payload[self::IAT] = time();
-        $payload[self::EXP] = time() + 3_600;
-
-        return [
-            $this->jwsFromPayload($payload),
-            $payload[self::EXP],
-        ];
-    }
-
-    /**
-     * @param string $jweToken
-     *
      * @return bool
      */
     public function isTokenExits(string $jweToken): bool
@@ -187,6 +160,35 @@ final class AuthorizationHandler
         }
 
         return $link;
+    }
+
+    /**
+     * @param string $jweToken
+     *
+     * @return mixed[]
+     */
+    public function payloadFromJwe(string $jweToken): array
+    {
+        return $this->authorizationManager->payloadFromJwe($jweToken);
+    }
+
+    /**
+     * @param mixed[] $payload
+     * @param int     $expirationTime
+     *
+     * @return mixed[]
+     */
+    public function jwsFromJwe(array $payload, int $expirationTime = 3_600): array
+    {
+        unset($payload[self::EU_ALIAS]);
+
+        $payload[self::IAT] = time();
+        $payload[self::EXP] = time() + $expirationTime;
+
+        return [
+            $this->jwsFromPayload($payload),
+            $payload[self::EXP],
+        ];
     }
 
 }

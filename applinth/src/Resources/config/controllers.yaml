@@ -41,6 +41,7 @@ services:
         class: Hanaboso\Applinth\Controller\AuthorizationController
         arguments:
             - '@Hanaboso\Applinth\Handler\AuthorizationHandler'
+            - '%cookieSameSite%'
         calls:
             - [ 'setLogger', [ '@monolog.logger.commons' ] ]
             - [ 'setContainer', [ '@service_container' ] ]

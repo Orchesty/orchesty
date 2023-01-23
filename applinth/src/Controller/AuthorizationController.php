@@ -5,7 +5,9 @@ namespace Hanaboso\Applinth\Controller;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\Applinth\Authenticator\EndUserAuthenticator;
 use Hanaboso\Applinth\Handler\AuthorizationHandler;
+use Hanaboso\UserBundle\Model\Security\SecurityManagerException;
 use Hanaboso\Utils\Exception\DateTimeException;
+use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\System\ControllerUtils;
 use Hanaboso\Utils\Traits\ControllerTrait;
 use LogicException;
@@ -28,15 +30,22 @@ final class AuthorizationController extends AbstractController
     use ControllerTrait;
 
     private const ACCESS_TOKEN  = 'access_token';
+    private const REFRESH_TOKEN = 'refresh_token';
     private const EXPIRES_IN    = 'expires_in';
     private const REDIRECT_LINK = 'oauth_redirect_link';
 
     /**
      * AuthorizationController constructor.
      *
+     * @phpstan-param 'None'|'Lax'|'Strict' $sameSite
+     *
      * @param AuthorizationHandler $authorizationHandler
+     * @param string               $sameSite
      */
-    public function __construct(private readonly AuthorizationHandler $authorizationHandler)
+    public function __construct(
+        private readonly AuthorizationHandler $authorizationHandler,
+        private readonly string $sameSite,
+    )
     {
     }
 
@@ -46,27 +55,41 @@ final class AuthorizationController extends AbstractController
      * @param Request $request
      *
      * @return Response
-     * @throws MongoDBException
      * @throws DateTimeException
+     * @throws MongoDBException
+     * @throws SecurityManagerException
+     * @throws PipesFrameworkException
      */
     public function login(Request $request): Response
     {
         try {
-            $jweToken                = $this->checkAndGetTokenFromRequest($request);
-            $jwePayload              = $this->authorizationHandler->payloadFromJwe($jweToken);
-            [$jwsToken, $expiration] = $this->authorizationHandler->jwsFromJwe($jwePayload);
+            $jweToken                           = $this->checkAndGetTokenFromRequest($request);
+            $jwePayload                         = $this->authorizationHandler->payloadFromJwe($jweToken);
+            [$refreshToken, $refreshExpiration] = $this->authorizationHandler->jwsFromJwe($jwePayload, 7_200);
+            [$accessToken, $expiration]         = $this->authorizationHandler->jwsFromJwe($jwePayload);
         } catch (AuthenticationException $e) {
             return $this->getErrorResponse($e, Response::HTTP_FORBIDDEN, ControllerUtils::NOT_ALLOWED);
         } catch (LogicException $e) {
             return $this->getErrorResponse($e, Response::HTTP_BAD_REQUEST, ControllerUtils::INVALID_REQUEST);
         }
 
+        setcookie(
+            self::REFRESH_TOKEN,
+            $refreshToken,
+            [
+                'secure'   => $request->isSecure(),
+                'expires'  => intval($refreshExpiration),
+                'samesite' => $this->sameSite,
+                'httponly' => TRUE,
+            ],
+        );
+
         $this->authorizationHandler->saveRestrictToken($jweToken);
         $link = $this->authorizationHandler->initRootApp($jwePayload);
 
         return $this->getResponse(
             [
-                self::ACCESS_TOKEN  => $jwsToken,
+                self::ACCESS_TOKEN  => $accessToken,
                 self::EXPIRES_IN    => $expiration,
                 self::REDIRECT_LINK => $link,
             ],
@@ -98,8 +121,8 @@ final class AuthorizationController extends AbstractController
      */
     private function renewToken(Request $request): array
     {
-        if ($request->headers->has(EndUserAuthenticator::AUTHORIZATION)) {
-            $jwsToken = $request->headers->get(EndUserAuthenticator::AUTHORIZATION) ?? '';
+        if ($request->cookies->has(self::REFRESH_TOKEN)) {
+            $jwsToken = $request->cookies->get(self::REFRESH_TOKEN);
 
             return $this->authorizationHandler->jwsFromJws($jwsToken);
         }
