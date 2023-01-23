@@ -7,6 +7,7 @@ use Exception;
 use Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator;
 use Hanaboso\PipesFramework\Configurator\Document\Sdk;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Symfony\Component\BrowserKit\Cookie;
 
 /**
  * Class AuthorizationControllerTest
@@ -37,6 +38,8 @@ final class AuthorizationControllerTest extends ControllerTestCaseAbstract
      */
     public function testGetNewToken(): void
     {
+        $cookie = new Cookie('refresh_token', $this->getJwsToken());
+        $this->client->getCookieJar()->set($cookie);
         $this->assertResponseLogged(
             $this->getJwsToken(),
             __DIR__ . '/data/AuthorizationController/loggedRequest.json',

@@ -40,16 +40,15 @@ final class UserController extends AbstractController
      * @Route("/user/login", methods={"POST", "OPTIONS"})
      *
      * @param Request $request
-     * @param string  $jwt
      *
      * @return Response
      * @throws PipesFrameworkException
      * @throws SecurityManagerException
      */
-    public function loginUserAction(Request $request, string $jwt): Response
+    public function loginUserAction(Request $request): Response
     {
         return $this->getResponse(
-            $this->userHandler->login(array_merge($request->request->all(), ['license' => $jwt])),
+            $this->userHandler->login($request->request->all()),
         );
     }
 

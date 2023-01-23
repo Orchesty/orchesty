@@ -36,10 +36,7 @@ final class UserController extends AbstractController
      */
     public function loginAction(): Response
     {
-        return $this->forward(
-            'Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::loginUserAction',
-            ['jwt' => JWTParser::getJwtLicense()],
-        );
+        return $this->forward('Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::loginUserAction');
     }
 
     /**
