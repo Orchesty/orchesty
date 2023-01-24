@@ -330,7 +330,7 @@ final class UserControllerTest extends ControllerTestCaseAbstract
         $controller->setLogger(new Logger('logger'));
 
         self::expectException(SecurityManagerException::class);
-        $controller->loginUserAction(new Request(), '');
+        $controller->loginUserAction(new Request());
     }
 
     /**
@@ -347,7 +347,7 @@ final class UserControllerTest extends ControllerTestCaseAbstract
         $controller->setLogger(new Logger('logger'));
 
         self::expectException(PipesFrameworkException::class);
-        $controller->loginUserAction(new Request(), '');
+        $controller->loginUserAction(new Request());
     }
 
     /**

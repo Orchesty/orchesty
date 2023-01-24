@@ -9,6 +9,7 @@ use Hanaboso\PipesFramework\UserTask\Document\UserTask;
 use Hanaboso\PipesFramework\UserTask\Document\UserTaskMessage;
 use Hanaboso\PipesFramework\UserTask\Enum\UserTaskEnum;
 use Hanaboso\PipesFramework\UserTask\Model\UserTaskManager;
+use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use Hanaboso\Utils\Exception\EnumException;
 use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\System\PipesHeaders;
@@ -37,8 +38,9 @@ final class TrashControllerTest extends ControllerTestCaseAbstract
             $this->getJwsToken(),
             __DIR__ . '/data/TrashController/getTrashItemsRequest.json',
             [
-                'created' => '2020-02-02 10:10:10',
-                'updated' => '2020-02-02 10:10:10',
+                'created'    => '2020-02-02 10:10:10',
+                'updated'    => '2020-02-02 10:10:10',
+                'topologyId' => 'topo',
             ],
         );
     }
@@ -56,8 +58,9 @@ final class TrashControllerTest extends ControllerTestCaseAbstract
             $this->getJwsToken(),
             __DIR__ . '/data/TrashController/getTrashItemDetailRequest.json',
             [
-                'created' => '2020-02-02 10:10:10',
-                'updated' => '2020-02-02 10:10:10',
+                'created'    => '2020-02-02 10:10:10',
+                'updated'    => '2020-02-02 10:10:10',
+                'topologyId' => 'topo',
             ],
         );
     }
@@ -75,8 +78,9 @@ final class TrashControllerTest extends ControllerTestCaseAbstract
             $this->getJwsToken(),
             __DIR__ . '/data/TrashController/updateTrashItemRequest.json',
             [
-                'created' => '2020-02-02 10:10:10',
-                'updated' => '2020-02-02 10:10:10',
+                'created'    => '2020-02-02 10:10:10',
+                'updated'    => '2020-02-02 10:10:10',
+                'topologyId' => 'topo',
             ],
         );
     }
@@ -157,10 +161,16 @@ final class TrashControllerTest extends ControllerTestCaseAbstract
      */
     private function prepData(string $state = 'accept', int $amount = 1): void
     {
+        $topo = new Topology();
+        $topo
+            ->setVersion(1);
+        $this->dm->persist($topo);
+        $this->dm->flush();
+
         $userTask = new UserTask();
         $this->setProperty($userTask, 'id', '107f191e810c19729de860ac');
         $userTask->setNodeId('node')
-            ->setTopologyId('topo')
+            ->setTopologyId($topo->getId())
             ->setReturnExchange('')
             ->setNodeName('')
             ->setTopologyName('')
@@ -178,7 +188,7 @@ final class TrashControllerTest extends ControllerTestCaseAbstract
                 $this->setProperty($trashUserTask, 'id', self::IDS[$i]);
             }
             $trashUserTask->setNodeId('node')
-                ->setTopologyId('topo')
+                ->setTopologyId($topo->getId())
                 ->setReturnExchange('')
                 ->setNodeName('')
                 ->setTopologyName('')

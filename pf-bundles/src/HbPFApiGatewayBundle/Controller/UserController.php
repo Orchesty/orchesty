@@ -3,7 +3,6 @@
 namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller;
 
 use Error;
-use Hanaboso\PipesFramework\Utils\JWTParser;
 use Hanaboso\Utils\Traits\ControllerTrait;
 use Psr\Log\NullLogger;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

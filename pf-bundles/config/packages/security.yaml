@@ -9,10 +9,6 @@ security:
             mongodb:
                 class: Hanaboso\UserBundle\Document\User
                 property: email
-        api_provider:
-            mongodb:
-                class: Hanaboso\UserBundle\Document\User
-                property: email
     firewalls:
         unsecured_app_api:
             pattern: ^/api/applications/authorize/token
@@ -27,13 +23,13 @@ security:
         secured_usage_stats_events:
             pattern: ^/api/usage-stats/.*
             stateless: true
-            provider: api_provider
+            provider: user_provider
             custom_authenticator:
                 - Hanaboso\PipesFramework\ApiGateway\Authenticator\ApiKey\ApiKeyAuthenticator
         secured_applications:
             pattern: ^/api/applications
             stateless: true
-            provider: api_provider
+            provider: user_provider
             custom_authenticator:
                 - Hanaboso\PipesFramework\ApiGateway\Authenticator\ApiKey\ApiKeyAuthenticator
         secured_area:
