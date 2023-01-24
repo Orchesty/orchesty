@@ -41,11 +41,7 @@
       </v-col>
     </v-row>
     <v-row dense>
-      <topology-processes
-        :headers="headers"
-        :state="state"
-        :items="processes || []"
-      />
+      <topology-processes />
     </v-row>
   </div>
 </template>
@@ -64,7 +60,6 @@ export default {
   methods: {
     ...mapActions(TOPOLOGIES.NAMESPACE, [
       TOPOLOGIES.ACTIONS.DATA.GET_DASHBOARD,
-      TOPOLOGIES.ACTIONS.DATA.GET_DASHBOARD_PROCESSES,
     ]),
     color(value) {
       return value >= 60 ? (value >= 80 ? "#cc0000" : "#f7b500") : "#0e7d00"
@@ -115,27 +110,6 @@ export default {
   data() {
     return {
       ROUTES,
-      headers: [
-        { text: this.$t("grid.header.topologyName"), value: "topologyId" },
-        { text: this.$t("grid.header.created"), value: "started" },
-        {
-          text: this.$t("grid.header.duration"),
-          value: "duration",
-          align: "left",
-        },
-        {
-          text: this.$t("grid.header.progress"),
-          value: "progress",
-          align: "left",
-        },
-        { text: this.$t("grid.header.status"), value: "status", align: "left" },
-        {
-          text: this.$t("grid.header.correlation_id"),
-          value: "correlation_id",
-          align: "right",
-          width: "150px",
-        },
-      ],
       stats: {
         activeTopologies: this.$t("page.status.activeTopologies"),
         disabledTopologies: this.$t("page.status.disabledTopologies"),
@@ -150,7 +124,6 @@ export default {
     ...mapGetters(REQUESTS_STATE.NAMESPACE, [REQUESTS_STATE.GETTERS.GET_STATE]),
     ...mapGetters(TOPOLOGIES.NAMESPACE, {
       topologiesOverview: TOPOLOGIES.GETTERS.GET_TOPOLOGIES_OVERVIEW,
-      processes: TOPOLOGIES.GETTERS.GET_DASHBOARD_PROCESSES,
     }),
     state() {
       return this[REQUESTS_STATE.GETTERS.GET_STATE]([
@@ -169,7 +142,6 @@ export default {
   },
   async created() {
     await this[TOPOLOGIES.ACTIONS.DATA.GET_DASHBOARD]()
-    await this[TOPOLOGIES.ACTIONS.DATA.GET_DASHBOARD_PROCESSES]()
   },
 }
 </script>

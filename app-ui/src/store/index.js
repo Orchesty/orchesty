@@ -35,7 +35,9 @@ export const createStore = (router) => {
         return callApi({ ...payload, store })
       },
       [STORE.ACTIONS.ROUTER_PUSH]: async (store, payload) => {
-        await router.push(payload).catch(() => {})
+        await router.push(payload).catch(() => {
+          /* */
+        })
       },
     },
     modules: {
@@ -52,6 +54,21 @@ export const createStore = (router) => {
       [DATA_GRIDS.ADMIN_USERS_LIST]: createGrid(
         DATA_GRIDS.ADMIN_USERS_LIST,
         {}
+      ),
+      [DATA_GRIDS.DASHBOARD_PROCESSES]: createGrid(
+        DATA_GRIDS.DASHBOARD_PROCESSES,
+        {
+          sorter: [
+            {
+              column: "started",
+              direction: DIRECTION.DESCENDING,
+            },
+          ],
+          paging: {
+            page: 1,
+            itemsPerPage: 10,
+          },
+        }
       ),
       [DATA_GRIDS.OVERVIEW]: createGrid(DATA_GRIDS.OVERVIEW, {
         sorter: [
