@@ -1082,16 +1082,16 @@
         },
         {
             "name": "doctrine/orm",
-            "version": "2.14.0",
+            "version": "2.14.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/orm.git",
-                "reference": "f82485e651763fbd1b34879726f4d3b91c358bd9"
+                "reference": "de7eee5ed7b1b35c99b118f26f210a8281e6db8e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/orm/zipball/f82485e651763fbd1b34879726f4d3b91c358bd9",
-                "reference": "f82485e651763fbd1b34879726f4d3b91c358bd9",
+                "url": "https://api.github.com/repos/doctrine/orm/zipball/de7eee5ed7b1b35c99b118f26f210a8281e6db8e",
+                "reference": "de7eee5ed7b1b35c99b118f26f210a8281e6db8e",
                 "shasum": ""
             },
             "require": {
@@ -1120,14 +1120,14 @@
                 "doctrine/annotations": "^1.13 || ^2",
                 "doctrine/coding-standard": "^9.0.2 || ^11.0",
                 "phpbench/phpbench": "^0.16.10 || ^1.0",
-                "phpstan/phpstan": "~1.4.10 || 1.9.4",
+                "phpstan/phpstan": "~1.4.10 || 1.9.8",
                 "phpunit/phpunit": "^7.5 || ^8.5 || ^9.5",
                 "psr/log": "^1 || ^2 || ^3",
                 "squizlabs/php_codesniffer": "3.7.1",
                 "symfony/cache": "^4.4 || ^5.4 || ^6.0",
                 "symfony/var-exporter": "^4.4 || ^5.4 || ^6.2",
                 "symfony/yaml": "^3.4 || ^4.0 || ^5.0 || ^6.0",
-                "vimeo/psalm": "4.30.0 || 5.3.0"
+                "vimeo/psalm": "4.30.0 || 5.4.0"
             },
             "suggest": {
                 "ext-dom": "Provides support for XSD validation for XML mapping files",
@@ -1177,22 +1177,22 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/orm/issues",
-                "source": "https://github.com/doctrine/orm/tree/2.14.0"
+                "source": "https://github.com/doctrine/orm/tree/2.14.1"
             },
-            "time": "2022-12-19T21:51:58+00:00"
+            "time": "2023-01-16T18:36:59+00:00"
         },
         {
             "name": "doctrine/persistence",
-            "version": "3.1.2",
+            "version": "3.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/persistence.git",
-                "reference": "b44d128311af55275dbed6a4558ca59a2b9f9387"
+                "reference": "920da294b4bb0bb527f2a91ed60c18213435880f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/persistence/zipball/b44d128311af55275dbed6a4558ca59a2b9f9387",
-                "reference": "b44d128311af55275dbed6a4558ca59a2b9f9387",
+                "url": "https://api.github.com/repos/doctrine/persistence/zipball/920da294b4bb0bb527f2a91ed60c18213435880f",
+                "reference": "920da294b4bb0bb527f2a91ed60c18213435880f",
                 "shasum": ""
             },
             "require": {
@@ -1261,7 +1261,7 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/persistence/issues",
-                "source": "https://github.com/doctrine/persistence/tree/3.1.2"
+                "source": "https://github.com/doctrine/persistence/tree/3.1.3"
             },
             "funding": [
                 {
@@ -1277,7 +1277,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-12-19T13:58:18+00:00"
+            "time": "2023-01-19T13:39:42+00:00"
         },
         {
             "name": "egulias/email-validator",
@@ -1822,16 +1822,16 @@
         },
         {
             "name": "hanaboso/acl-bundle",
-            "version": "1.6.0",
+            "version": "1.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/acl-bundle.git",
-                "reference": "c2a5244924059eae87bde99fdb80679a91bd92d4"
+                "reference": "ef3235331853b5f39b3da2018c10d1e676c4a561"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/acl-bundle/zipball/c2a5244924059eae87bde99fdb80679a91bd92d4",
-                "reference": "c2a5244924059eae87bde99fdb80679a91bd92d4",
+                "url": "https://api.github.com/repos/hanaboso/acl-bundle/zipball/ef3235331853b5f39b3da2018c10d1e676c4a561",
+                "reference": "ef3235331853b5f39b3da2018c10d1e676c4a561",
                 "shasum": ""
             },
             "require": {
@@ -1839,12 +1839,12 @@
                 "php": "^8.1"
             },
             "require-dev": {
-                "doctrine/doctrine-bundle": "^2.6",
+                "doctrine/doctrine-bundle": "^2.8",
                 "doctrine/doctrine-fixtures-bundle": "^3.4",
-                "doctrine/mongodb-odm-bundle": "^4.4",
+                "doctrine/mongodb-odm-bundle": "^4.5",
                 "hanaboso/php-check-utils": "^1.4",
                 "predis/predis": "^v1.1",
-                "symfony/security-bundle": "^v6.1"
+                "symfony/security-bundle": "^v6.2"
             },
             "suggest": {
                 "doctrine/doctrine-bundle": "Install me, if you using MySQL.",
@@ -1864,22 +1864,22 @@
             ],
             "description": "Hanaboso - acl-bundle",
             "support": {
-                "source": "https://github.com/hanaboso/acl-bundle/tree/1.6.0"
+                "source": "https://github.com/hanaboso/acl-bundle/tree/1.6.1"
             },
-            "time": "2022-10-11T09:22:37+00:00"
+            "time": "2023-01-24T10:51:34+00:00"
         },
         {
             "name": "hanaboso/commons-bundle",
-            "version": "2.7.0",
+            "version": "2.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/commons-bundle.git",
-                "reference": "f2c4e486c7b93e16ef3148c4e0e986e4ee52328a"
+                "reference": "3d59f3349eed47347e4c6ccb7b310c4161df748f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/commons-bundle/zipball/f2c4e486c7b93e16ef3148c4e0e986e4ee52328a",
-                "reference": "f2c4e486c7b93e16ef3148c4e0e986e4ee52328a",
+                "url": "https://api.github.com/repos/hanaboso/commons-bundle/zipball/3d59f3349eed47347e4c6ccb7b310c4161df748f",
+                "reference": "3d59f3349eed47347e4c6ccb7b310c4161df748f",
                 "shasum": ""
             },
             "require": {
@@ -1895,14 +1895,14 @@
             },
             "require-dev": {
                 "aws/aws-sdk-php-symfony": "^2.5",
-                "doctrine/doctrine-bundle": "^2.7",
+                "doctrine/doctrine-bundle": "^2.8",
                 "doctrine/mongodb-odm-bundle": "^4.5",
-                "doctrine/orm": "^2.13",
+                "doctrine/orm": "^2.14",
                 "hanaboso/php-check-utils": "^1.4",
                 "php-imap/php-imap": "^4.5",
-                "symfony/mailer": "^v6.1",
+                "symfony/mailer": "^v6.2",
                 "symfony/monolog-bundle": "^v3.8",
-                "symfony/yaml": "^v6.1"
+                "symfony/yaml": "^v6.2"
             },
             "suggest": {
                 "aws/aws-sdk-php-symfony": "Install me, if you need to use FileStorage\\Driver\\Impl\\S3\\S3Driver.",
@@ -1922,32 +1922,32 @@
             ],
             "description": "Hanaboso - commons-bundle",
             "support": {
-                "source": "https://github.com/hanaboso/commons-bundle/tree/2.7.0"
+                "source": "https://github.com/hanaboso/commons-bundle/tree/2.7.1"
             },
-            "time": "2022-10-07T12:11:46+00:00"
+            "time": "2023-01-23T15:06:20+00:00"
         },
         {
             "name": "hanaboso/email-service-bundle",
-            "version": "1.2.8",
+            "version": "1.2.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/email-service-bundle.git",
-                "reference": "404dd613b87717bc7db066fb63eac73bb9da53d6"
+                "reference": "b337a6bdeb8a3ebfe87bd3e19a6ad2c155fcadb2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/email-service-bundle/zipball/404dd613b87717bc7db066fb63eac73bb9da53d6",
-                "reference": "404dd613b87717bc7db066fb63eac73bb9da53d6",
+                "url": "https://api.github.com/repos/hanaboso/email-service-bundle/zipball/b337a6bdeb8a3ebfe87bd3e19a6ad2c155fcadb2",
+                "reference": "b337a6bdeb8a3ebfe87bd3e19a6ad2c155fcadb2",
                 "shasum": ""
             },
             "require": {
                 "ext-iconv": "*",
-                "hanaboso/commons-bundle": "^2.5",
+                "hanaboso/commons-bundle": "^2.7",
                 "php": "^8.1",
-                "symfony/google-mailer": "^v6.1",
-                "symfony/mailer": "^v6.1",
+                "symfony/google-mailer": "^v6.2",
+                "symfony/mailer": "^v6.2",
                 "symfony/monolog-bundle": "^v3.8",
-                "twig/twig": "^v3.4"
+                "twig/twig": "^v3.5"
             },
             "require-dev": {
                 "hanaboso/php-check-utils": "^1.4"
@@ -1964,22 +1964,22 @@
             ],
             "description": "Hanaboso - email-service-bundle",
             "support": {
-                "source": "https://github.com/hanaboso/email-service-bundle/tree/1.2.8"
+                "source": "https://github.com/hanaboso/email-service-bundle/tree/1.2.9"
             },
-            "time": "2022-06-02T14:34:16+00:00"
+            "time": "2023-01-24T08:44:19+00:00"
         },
         {
             "name": "hanaboso/mongo-data-grid",
-            "version": "1.6.4",
+            "version": "1.6.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/mongo-data-grid.git",
-                "reference": "d566d2ef0ad6a245693fb2cc9cc433334dc29a7f"
+                "reference": "ab06eea07227b03117002019520f5cdebd47f71f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/mongo-data-grid/zipball/d566d2ef0ad6a245693fb2cc9cc433334dc29a7f",
-                "reference": "d566d2ef0ad6a245693fb2cc9cc433334dc29a7f",
+                "url": "https://api.github.com/repos/hanaboso/mongo-data-grid/zipball/ab06eea07227b03117002019520f5cdebd47f71f",
+                "reference": "ab06eea07227b03117002019520f5cdebd47f71f",
                 "shasum": ""
             },
             "require": {
@@ -1988,7 +1988,7 @@
                 "ext-intl": "*",
                 "ext-mbstring": "*",
                 "ext-mongodb": "*",
-                "hanaboso/utils": "^1.1",
+                "hanaboso/utils": "^1.2",
                 "php": "^8.1"
             },
             "require-dev": {
@@ -2006,22 +2006,22 @@
             ],
             "description": "MongoDataGrid",
             "support": {
-                "source": "https://github.com/hanaboso/mongo-data-grid/tree/1.6.4"
+                "source": "https://github.com/hanaboso/mongo-data-grid/tree/1.6.5"
             },
-            "time": "2022-06-02T14:24:49+00:00"
+            "time": "2023-01-23T14:16:58+00:00"
         },
         {
             "name": "hanaboso/rabbit-mq-bundle",
-            "version": "1.5.5",
+            "version": "1.5.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/rabbit-mq-bundle.git",
-                "reference": "c30915d75a92858f1126357eaf0b1a8e1e4d7d1c"
+                "reference": "8147ef62bac313c8f3ee7cba25fb2198e5956536"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/rabbit-mq-bundle/zipball/c30915d75a92858f1126357eaf0b1a8e1e4d7d1c",
-                "reference": "c30915d75a92858f1126357eaf0b1a8e1e4d7d1c",
+                "url": "https://api.github.com/repos/hanaboso/rabbit-mq-bundle/zipball/8147ef62bac313c8f3ee7cba25fb2198e5956536",
+                "reference": "8147ef62bac313c8f3ee7cba25fb2198e5956536",
                 "shasum": ""
             },
             "require": {
@@ -2029,11 +2029,11 @@
                 "ext-intl": "*",
                 "ext-mbstring": "*",
                 "guzzlehttp/promises": "^1.5",
-                "hanaboso/utils": "^1.1",
+                "hanaboso/utils": "^1.2",
                 "php": "^8.1",
-                "php-amqplib/php-amqplib": "^v3.2",
+                "php-amqplib/php-amqplib": "^v3.5",
                 "symfony/monolog-bundle": "^3.8",
-                "symfony/yaml": "^v6.1"
+                "symfony/yaml": "^v6.2"
             },
             "require-dev": {
                 "hanaboso/php-check-utils": "^1.4"
@@ -2050,32 +2050,32 @@
             ],
             "description": "Hanaboso - rabbit-mq-bundle",
             "support": {
-                "source": "https://github.com/hanaboso/rabbit-mq-bundle/tree/1.5.5"
+                "source": "https://github.com/hanaboso/rabbit-mq-bundle/tree/1.5.6"
             },
-            "time": "2022-06-02T14:09:20+00:00"
+            "time": "2023-01-23T14:03:45+00:00"
         },
         {
             "name": "hanaboso/rest-bundle",
-            "version": "1.1.5",
+            "version": "1.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/rest-bundle.git",
-                "reference": "e8e83bd54abb6bb8b5538ab0d2578706ab161174"
+                "reference": "f47fa4abccd17beb8a7422c29f329449b12037a1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/rest-bundle/zipball/e8e83bd54abb6bb8b5538ab0d2578706ab161174",
-                "reference": "e8e83bd54abb6bb8b5538ab0d2578706ab161174",
+                "url": "https://api.github.com/repos/hanaboso/rest-bundle/zipball/f47fa4abccd17beb8a7422c29f329449b12037a1",
+                "reference": "f47fa4abccd17beb8a7422c29f329449b12037a1",
                 "shasum": ""
             },
             "require": {
                 "ext-ctype": "*",
                 "ext-intl": "*",
                 "ext-mbstring": "*",
-                "hanaboso/utils": "^1.1",
-                "php": "^8.0",
-                "symfony/dependency-injection": "^v6.1",
-                "symfony/serializer": "^v6.1"
+                "hanaboso/utils": "^1.2",
+                "php": "^8.1",
+                "symfony/dependency-injection": "^v6.2",
+                "symfony/serializer": "^v6.2"
             },
             "conflict": {
                 "friendsofsymfony/rest-bundle": "*",
@@ -2083,7 +2083,7 @@
             },
             "require-dev": {
                 "hanaboso/php-check-utils": "^1.4",
-                "symfony/yaml": "^v6.1"
+                "symfony/yaml": "^v6.2"
             },
             "type": "library",
             "autoload": {
@@ -2097,22 +2097,22 @@
             ],
             "description": "Hanaboso - rest-bundle",
             "support": {
-                "source": "https://github.com/hanaboso/rest-bundle/tree/1.1.5"
+                "source": "https://github.com/hanaboso/rest-bundle/tree/1.1.6"
             },
-            "time": "2022-06-01T08:41:35+00:00"
+            "time": "2023-01-23T12:10:20+00:00"
         },
         {
             "name": "hanaboso/user-bundle",
-            "version": "1.6.2",
+            "version": "1.6.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/user-bundle.git",
-                "reference": "47630710286078b59f752c5e5069d8dd476d9ed2"
+                "reference": "8b70e2d073affa897febd7a4b595b5eeecf6fb25"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/user-bundle/zipball/47630710286078b59f752c5e5069d8dd476d9ed2",
-                "reference": "47630710286078b59f752c5e5069d8dd476d9ed2",
+                "url": "https://api.github.com/repos/hanaboso/user-bundle/zipball/8b70e2d073affa897febd7a4b595b5eeecf6fb25",
+                "reference": "8b70e2d073affa897febd7a4b595b5eeecf6fb25",
                 "shasum": ""
             },
             "require": {
@@ -2120,7 +2120,7 @@
                 "hanaboso/email-service-bundle": "^1.2",
                 "hanaboso/rest-bundle": "^1.1",
                 "php": "^8.1",
-                "symfony/yaml": "^v6.1",
+                "symfony/yaml": "^v6.2",
                 "web-token/jwt-checker": "^3.1",
                 "web-token/jwt-core": "^3.1",
                 "web-token/jwt-key-mgmt": "^3.1",
@@ -2128,13 +2128,13 @@
                 "web-token/jwt-signature-algorithm-hmac": "^3.1"
             },
             "require-dev": {
-                "doctrine/doctrine-bundle": "^2.7",
+                "doctrine/doctrine-bundle": "^2.8",
                 "doctrine/mongodb-odm-bundle": "^4.5",
-                "doctrine/orm": "^2.13",
+                "doctrine/orm": "^2.14",
                 "ext-apcu": "*",
                 "hanaboso/php-check-utils": "^1.4",
                 "symfony/monolog-bundle": "^v3.8",
-                "symfony/security-bundle": "^v6.1"
+                "symfony/security-bundle": "^v6.2"
             },
             "suggest": {
                 "doctrine/doctrine-bundle": "Install me, if you using MySQL.",
@@ -2152,35 +2152,35 @@
             ],
             "description": "Hanaboso - user-bundle",
             "support": {
-                "source": "https://github.com/hanaboso/user-bundle/tree/1.6.2"
+                "source": "https://github.com/hanaboso/user-bundle/tree/1.6.3"
             },
-            "time": "2022-11-30T14:22:58+00:00"
+            "time": "2023-01-24T10:28:53+00:00"
         },
         {
             "name": "hanaboso/utils",
-            "version": "1.2.1",
+            "version": "1.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/utils.git",
-                "reference": "820a7e25c180d3f0de81bee91c1ae49f298ad0b3"
+                "reference": "5cbe1d545ecf1fdc4483e4433fc0121ce69b6820"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/utils/zipball/820a7e25c180d3f0de81bee91c1ae49f298ad0b3",
-                "reference": "820a7e25c180d3f0de81bee91c1ae49f298ad0b3",
+                "url": "https://api.github.com/repos/hanaboso/utils/zipball/5cbe1d545ecf1fdc4483e4433fc0121ce69b6820",
+                "reference": "5cbe1d545ecf1fdc4483e4433fc0121ce69b6820",
                 "shasum": ""
             },
             "require": {
                 "ext-iconv": "*",
                 "ext-intl": "*",
                 "ext-json": "*",
-                "php": "^8.0",
+                "php": "^8.1",
                 "psr/log": "^3",
-                "symfony/http-foundation": "^v6.1"
+                "symfony/http-foundation": "^v6.2"
             },
             "require-dev": {
                 "hanaboso/php-check-utils": "^1.4",
-                "symfony/yaml": "^v6.1"
+                "symfony/yaml": "^v6.2"
             },
             "type": "library",
             "autoload": {
@@ -2212,9 +2212,9 @@
             "description": "Hanaboso - utils",
             "support": {
                 "issues": "https://github.com/hanaboso/utils/issues",
-                "source": "https://github.com/hanaboso/utils/tree/1.2.1"
+                "source": "https://github.com/hanaboso/utils/tree/1.2.2"
             },
-            "time": "2022-09-20T14:43:40+00:00"
+            "time": "2023-01-23T11:59:48+00:00"
         },
         {
             "name": "jean85/pretty-package-versions",
@@ -2994,16 +2994,16 @@
         },
         {
             "name": "php-amqplib/php-amqplib",
-            "version": "v3.4.0",
+            "version": "v3.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-amqplib/php-amqplib.git",
-                "reference": "5c537cb724f2e181183c202e63f4303935344c5f"
+                "reference": "2c565476269889544e020d76da0cdf3471675b52"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-amqplib/php-amqplib/zipball/5c537cb724f2e181183c202e63f4303935344c5f",
-                "reference": "5c537cb724f2e181183c202e63f4303935344c5f",
+                "url": "https://api.github.com/repos/php-amqplib/php-amqplib/zipball/2c565476269889544e020d76da0cdf3471675b52",
+                "reference": "2c565476269889544e020d76da0cdf3471675b52",
                 "shasum": ""
             },
             "require": {
@@ -3069,9 +3069,9 @@
             ],
             "support": {
                 "issues": "https://github.com/php-amqplib/php-amqplib/issues",
-                "source": "https://github.com/php-amqplib/php-amqplib/tree/v3.4.0"
+                "source": "https://github.com/php-amqplib/php-amqplib/tree/v3.5.1"
             },
-            "time": "2022-10-18T20:52:02+00:00"
+            "time": "2023-01-20T01:02:33+00:00"
         },
         {
             "name": "phpoffice/phpspreadsheet",
@@ -7340,16 +7340,16 @@
     "packages-dev": [
         {
             "name": "brianium/paratest",
-            "version": "v6.8.0",
+            "version": "v6.8.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paratestphp/paratest.git",
-                "reference": "4b70abf4c2ffa08c64e2e89c7b5b7e43cdf26d52"
+                "reference": "168c1cfdf79e5b19b57cb03060fc9a6a79c5f582"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paratestphp/paratest/zipball/4b70abf4c2ffa08c64e2e89c7b5b7e43cdf26d52",
-                "reference": "4b70abf4c2ffa08c64e2e89c7b5b7e43cdf26d52",
+                "url": "https://api.github.com/repos/paratestphp/paratest/zipball/168c1cfdf79e5b19b57cb03060fc9a6a79c5f582",
+                "reference": "168c1cfdf79e5b19b57cb03060fc9a6a79c5f582",
                 "shasum": ""
             },
             "require": {
@@ -7363,7 +7363,7 @@
                 "phpunit/php-code-coverage": "^9.2.23",
                 "phpunit/php-file-iterator": "^3.0.6",
                 "phpunit/php-timer": "^5.0.3",
-                "phpunit/phpunit": "^9.5.27",
+                "phpunit/phpunit": "^9.5.28",
                 "sebastian/environment": "^5.1.4",
                 "symfony/console": "^5.4.16 || ^6.2.3",
                 "symfony/process": "^5.4.11 || ^6.2"
@@ -7416,7 +7416,7 @@
             ],
             "support": {
                 "issues": "https://github.com/paratestphp/paratest/issues",
-                "source": "https://github.com/paratestphp/paratest/tree/v6.8.0"
+                "source": "https://github.com/paratestphp/paratest/tree/v6.8.1"
             },
             "funding": [
                 {
@@ -7428,7 +7428,7 @@
                     "type": "paypal"
                 }
             ],
-            "time": "2022-12-29T09:42:35+00:00"
+            "time": "2023-01-17T10:08:49+00:00"
         },
         {
             "name": "dealerdirect/phpcodesniffer-composer-installer",
@@ -7964,16 +7964,16 @@
         },
         {
             "name": "hanaboso/php-check-utils",
-            "version": "1.4.8",
+            "version": "1.4.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/php-check-utils.git",
-                "reference": "39f4a7059d01fd234cd9082b63773101ba68709b"
+                "reference": "5455670bb3ae6fe4166608aa1d3c0d194b333713"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/php-check-utils/zipball/39f4a7059d01fd234cd9082b63773101ba68709b",
-                "reference": "39f4a7059d01fd234cd9082b63773101ba68709b",
+                "url": "https://api.github.com/repos/hanaboso/php-check-utils/zipball/5455670bb3ae6fe4166608aa1d3c0d194b333713",
+                "reference": "5455670bb3ae6fe4166608aa1d3c0d194b333713",
                 "shasum": ""
             },
             "require": {
@@ -8002,7 +8002,7 @@
             "require-dev": {
                 "doctrine/mongodb-odm": "^2.4",
                 "doctrine/orm": "^2.14",
-                "friendsoftwig/twigcs": "^v6.1",
+                "friendsoftwig/twigcs": "^v6.2",
                 "phpstan/phpstan-nette": "^1.2"
             },
             "suggest": {
@@ -8044,9 +8044,9 @@
             "description": "Utils for php development - CodeSniffer, PhpStan, PhpUnit, PhpStorm",
             "support": {
                 "issues": "https://github.com/hanaboso/php-check-utils/issues",
-                "source": "https://github.com/hanaboso/php-check-utils/tree/1.4.8"
+                "source": "https://github.com/hanaboso/php-check-utils/tree/1.4.9"
             },
-            "time": "2023-01-10T12:31:39+00:00"
+            "time": "2023-01-23T15:02:49+00:00"
         },
         {
             "name": "justinrainbow/json-schema",
@@ -8308,16 +8308,16 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v4.15.2",
+            "version": "v4.15.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "f59bbe44bf7d96f24f3e2b4ddc21cd52c1d2adbc"
+                "reference": "570e980a201d8ed0236b0a62ddf2c9cbb2034039"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/f59bbe44bf7d96f24f3e2b4ddc21cd52c1d2adbc",
-                "reference": "f59bbe44bf7d96f24f3e2b4ddc21cd52c1d2adbc",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/570e980a201d8ed0236b0a62ddf2c9cbb2034039",
+                "reference": "570e980a201d8ed0236b0a62ddf2c9cbb2034039",
                 "shasum": ""
             },
             "require": {
@@ -8358,9 +8358,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nikic/PHP-Parser/issues",
-                "source": "https://github.com/nikic/PHP-Parser/tree/v4.15.2"
+                "source": "https://github.com/nikic/PHP-Parser/tree/v4.15.3"
             },
-            "time": "2022-11-12T15:38:23+00:00"
+            "time": "2023-01-16T22:05:37+00:00"
         },
         {
             "name": "phar-io/manifest",
@@ -8719,16 +8719,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.9.11",
+            "version": "1.9.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "60f3d68481eef216199eae7a2603cd5fe124d464"
+                "reference": "e5fcc96289cf737304286a9b505fbed091f02e58"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/60f3d68481eef216199eae7a2603cd5fe124d464",
-                "reference": "60f3d68481eef216199eae7a2603cd5fe124d464",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/e5fcc96289cf737304286a9b505fbed091f02e58",
+                "reference": "e5fcc96289cf737304286a9b505fbed091f02e58",
                 "shasum": ""
             },
             "require": {
@@ -8758,7 +8758,7 @@
             ],
             "support": {
                 "issues": "https://github.com/phpstan/phpstan/issues",
-                "source": "https://github.com/phpstan/phpstan/tree/1.9.11"
+                "source": "https://github.com/phpstan/phpstan/tree/1.9.14"
             },
             "funding": [
                 {
@@ -8774,7 +8774,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-01-12T14:04:13+00:00"
+            "time": "2023-01-19T10:47:09+00:00"
         },
         {
             "name": "phpstan/phpstan-doctrine",
@@ -10534,16 +10534,16 @@
         },
         {
             "name": "spaze/phpstan-disallowed-calls",
-            "version": "v2.11.4",
+            "version": "v2.11.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spaze/phpstan-disallowed-calls.git",
-                "reference": "d8b634b73664d183c35eab2a9a5d4f50acd62f53"
+                "reference": "cc97bfb42eaf100cc474674c5170695b439cd474"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spaze/phpstan-disallowed-calls/zipball/d8b634b73664d183c35eab2a9a5d4f50acd62f53",
-                "reference": "d8b634b73664d183c35eab2a9a5d4f50acd62f53",
+                "url": "https://api.github.com/repos/spaze/phpstan-disallowed-calls/zipball/cc97bfb42eaf100cc474674c5170695b439cd474",
+                "reference": "cc97bfb42eaf100cc474674c5170695b439cd474",
                 "shasum": ""
             },
             "require": {
@@ -10588,9 +10588,9 @@
             ],
             "support": {
                 "issues": "https://github.com/spaze/phpstan-disallowed-calls/issues",
-                "source": "https://github.com/spaze/phpstan-disallowed-calls/tree/v2.11.4"
+                "source": "https://github.com/spaze/phpstan-disallowed-calls/tree/v2.11.5"
             },
-            "time": "2023-01-11T04:01:38+00:00"
+            "time": "2023-01-23T18:26:35+00:00"
         },
         {
             "name": "squizlabs/php_codesniffer",

@@ -12,6 +12,7 @@ use Hanaboso\UserBundle\Entity\UserInterface;
 use Hanaboso\UserBundle\Model\Security\SecurityManagerException;
 use Hanaboso\UserBundle\Model\User\UserManager;
 use Hanaboso\UserBundle\Model\User\UserManagerException;
+use Hanaboso\Utils\Exception\DateTimeException;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\System\ControllerUtils;
 
@@ -95,7 +96,7 @@ final class UserHandler
      * @return mixed[]
      * @throws PipesFrameworkException
      * @throws SecurityManagerException
-     * @throws \Hanaboso\Utils\Exception\DateTimeException
+     * @throws DateTimeException
      */
     public function login(array $data): array
     {
