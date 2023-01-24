@@ -6,6 +6,7 @@ export const GRID_REQUESTS = {
   [DATA_GRIDS.USER_TASK]: API.userTask.grid,
   [DATA_GRIDS.ADMIN_USERS_LIST]: API.admin.getList,
   [DATA_GRIDS.OVERVIEW]: API.overview.grid,
+  [DATA_GRIDS.DASHBOARD_PROCESSES]: API.dashboard.getProcesses,
   [DATA_GRIDS.STATISTICS]: API.statistic.grid,
   [DATA_GRIDS.SCHEDULED_TASK]: API.scheduledTask.grid,
   [DATA_GRIDS.IMPLEMENTATIONS_LIST]: API.implementation.grid,
