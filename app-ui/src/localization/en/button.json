@@ -71,6 +71,12 @@
     "discard": "Discard",
     "enable": "Enable",
     "publish": "Publish",
-    "copyUrl": "Copy URL"
+    "copyUrl": "Copy URL",
+    "all": "All",
+    "failed": "Failed",
+    "inprogress": "In progress",
+    "success": "Success",
+    "resetFilter": "Reset filter",
+    "reloadData": "Reload data"
   }
 }

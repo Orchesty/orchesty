@@ -10,6 +10,7 @@
         filter: filter,
       }"
       :quick-filters="quickFilters"
+      :allow-quick-filter-reset="allowQuickFilterReset"
       :headers="headers"
       :filter="filter"
       :filter-meta="filterMeta"
@@ -228,6 +229,10 @@ export default {
     quickFilters: {
       type: Array,
       default: () => [],
+    },
+    allowQuickFilterReset: {
+      type: Boolean,
+      default: false,
     },
     extendedIterator: {
       type: Boolean,

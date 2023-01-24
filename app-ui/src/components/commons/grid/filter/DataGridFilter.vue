@@ -12,7 +12,21 @@
         :class="{ 'mb-3': simpleFilter }"
       >
         <template v-if="!simpleFilter">
-          <v-btn color="primary" icon @click="onChangeFilter">
+          <v-btn
+            v-if="allowQuickFilterReset"
+            color="primary"
+            icon
+            :title="$t('button.resetFilter')"
+            @click="onReset"
+          >
+            <v-icon> mdi-close </v-icon>
+          </v-btn>
+          <v-btn
+            :title="$t('button.reloadData')"
+            color="primary"
+            icon
+            @click="onReload"
+          >
             <v-icon> mdi-reload </v-icon>
           </v-btn>
         </template>
@@ -43,6 +57,10 @@ export default {
     quickFilters: {
       type: Array,
       required: true,
+    },
+    allowQuickFilterReset: {
+      type: Boolean,
+      default: false,
     },
     filter: {
       type: Array,
@@ -95,6 +113,24 @@ export default {
           paging: null,
           sorter: null,
         })
+    },
+    onReset() {
+      this.$refs.quickGridFilter.onClear()
+      this.currentQuickFilter = []
+      this.$emit("fetchGrid", {
+        search: this.currentSearch,
+        filter: [].concat(this.currentFilter),
+        paging: null,
+        sorter: null,
+      })
+    },
+    onReload() {
+      this.$emit("fetchGrid", {
+        search: this.currentSearch,
+        filter: [].concat(this.currentQuickFilter, this.currentFilter),
+        paging: null,
+        sorter: null,
+      })
     },
     async sendFilter(params) {
       this.currentFilter = params.filter
