@@ -103,21 +103,13 @@ services:
             ALPHA_INSTANCE_ID: 'demo'
             INSTALLER_DIRS: '["/var/www/pipes/applinth/topology"]'
             JWE_PRIVATE_KEY: |
-                -----BEGIN RSA PRIVATE KEY-----
-                MIICWgIBAAKBgH3O2axPpFRQpeq1uqDUrpCpOTNcbYLusMZWBDE6G3CFRKfH7L8v
-                flGEpc1cJP1mvdJwR7cV1lg5ayIasDEHRnM8qkKWIrAhRWsMApJ2ZZiIKWU1wAZ5
-                qkGNYEDYXpA+gZzMDxKJFMc4fKnYOIIC3iZoBwGyGG2Ecads/LpJk2U7AgMBAAEC
-                gYAuhFUnySrRoiA28IrY/Mqu4mMsAnjbeLYUH6ndKccLi7se7mUzK7RhH9LOY8up
-                hluZe7qIj6J5bIGYUpXjCvWZDW/VUtZpujk3y802mHT2Ze5KbYGztvaeMi3Dv+Q5
-                4rgX5/2oStonPgdBt5souhXOtvweav5bHhifPOoK2KqKQQJBAOZRfIdipLXuWGMf
-                RHgjxp8A3qw3kACENSHuHJBWHHBxdAizG+LG/zLdr12Mo19zoxQPAixvmGA/oFhT
-                7CNfZdcCQQCL1hUNW8KPOnwq59fdLHMNiQoWzP4dbHsLDi5HcRCYCUkhyit3iluA
-                RSPnehYGkbhah/T3iX85ysbf0rpYAsc9AkB0CTXOF7qYFj7doZEjXhLhZNTKuyuH
-                txP1xjsJ1Ph7Bg3JnEM+W7eS7vE9Fm/w1ReiMXWM4aRJSYUFOzLLF3L9AkBd83gx
-                gXU2xhSmvx5Je5PRhEFDEHerTTdeNijh1xVPEO4RxcNujYbsp4d3/o7N2xoBuVbc
-                +YSBT7xOpUaN21ABAkAi8Q2nlieTaxzmZrRXFydVkEgLiLqy8JRPTlA0Mi0POZhS
-                jkqMqGxTP/igqnSjI4TQH6nBTUvK8lNCPAIafi4+
-                -----END RSA PRIVATE KEY-----
+                -----BEGIN EC PRIVATE KEY-----
+                MIHcAgEBBEIAGmQ//yMnyMlFAN/E2yfZjzFL1ziTrAbDwa08KEPBq+NUWHvrxrs7
+                f8tvm0y+PwcNgdKhSiMN/osY4/iK+vyr9WqgBwYFK4EEACOhgYkDgYYABABnJEkK
+                knFnpxumSFk5MFIEYTm2ReaalO4UrCc4QROIchTIZYRb9GeSounARtxnJcfYa+CB
+                pXzObmLNvN3u75L2pADOg4p+GkgwtFdfSa5HhMoQD2jEEmL3otvyjf8jF5t8u2YP
+                GcXwowJ2vWSQ6pyW17FLVqmUy2ZW5VSowkPp29CvYQ==
+                -----END EC PRIVATE KEY-----
         working_dir: /var/www/pipes/applinth
         volumes:
             - ../../:/var/www/pipes:cached
