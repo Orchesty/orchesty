@@ -20,6 +20,12 @@ const send = (config) => {
 
   const headers = config.headers || {}
 
+  let authorization = { Authorization: authService.accessToken }
+  // Do not send authorization header if the route relies on cookies
+  if (config.authorization === false) {
+    authorization = {}
+  }
+
   return new Promise((resolve, reject) => {
     if (!method) {
       reject(new Error("The request must have method."))
@@ -34,7 +40,7 @@ const send = (config) => {
         ...config,
         url,
         headers: {
-          Authorization: authService.accessToken,
+          ...authorization,
           ...headers,
         },
         body: JSON.stringify(body),

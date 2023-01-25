@@ -16,6 +16,7 @@ export default {
     request: () => ({
       url: `/authorization/logged`,
       method: "GET",
+      authorization: false,
     }),
   },
 }
