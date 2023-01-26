@@ -1,8 +1,8 @@
-import {container, createServer, initServices} from '../src';
-import {EVENTS_COLLECTION_NAME} from '../src/events/EventService';
-import {dropCollection} from "../test/TestAbstract";
-import Storage from "../src/storage/Storage";
-import Services from "../src/DIContainer/Services";
+import { container, createServer, initServices } from '../src';
+import { EVENTS_COLLECTION_NAME } from '../src/events/EventService';
+import { dropCollection } from '../test/TestAbstract';
+import Storage from '../src/storage/Storage';
+import Services from '../src/DIContainer/Services';
 
 beforeAll(async () => {
     await initServices();

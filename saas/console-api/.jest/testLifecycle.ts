@@ -1,9 +1,9 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import {container, createServer, initServices} from '../src';
-import {generateAuth} from '../test/dataProvider';
-import Mongo from "../src/storage/mongo/Mongo";
-import Services from "../src/DIContainer/Services";
+import { container, createServer, initServices } from '../src';
+import { generateAuth } from '../test/dataProvider';
+import Mongo from '../src/storage/mongo/Mongo';
+import Services from '../src/DIContainer/Services';
 
 beforeAll(async () => {
     await initServices();
