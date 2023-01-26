@@ -1,7 +1,7 @@
 #!/bin/bash
 
 NAME=$1
-INSTANCE_ID="k9vbai2soj" #$(pwgen -1s 10 | tr A-Z a-z)
+INSTANCE_ID=$(pwgen -1s 10 | tr A-Z a-z)
 INSTANCE="instance-${INSTANCE_ID}"
 MONGODB_PWD=$(pwgen -1s 16)
 RABBITMQ_PWD=$(pwgen -1s 16)
@@ -38,7 +38,7 @@ $RABBITMQCTL set_permissions --vhost $INSTANCE $INSTANCE "'.*'" "'.*'" "'.*'"
 echo "Creating Kubernetes namespace..."
 kubectl create ns $INSTANCE
 kubectl label ns $INSTANCE os-instance-displayname="$NAME"
-kubectl -n cloud-control get secret hanaboso -ojson | jq 'del(.metadata.namespace)' | kubectl apply -f
+kubectl -n cloud-control get secret hanaboso -ojson | jq 'del(.metadata.namespace)' | kubectl apply -f -
 
 echo
 echo Secrets:
