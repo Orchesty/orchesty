@@ -136,6 +136,17 @@ data:
         use_backend applinth-acixug9xqs if applinth-instance-acixug9xqs
 
 
+        # instance-hm8rohmtf6
+
+        acl api-instance-hm8rohmtf6 hdr_beg(host) api-hm8rohmtf6.eu1.cloud.orchesty.io
+        use_backend api-hm8rohmtf6 if api-instance-hm8rohmtf6
+
+        acl ui-instance-hm8rohmtf6 hdr_beg(host) ui-hm8rohmtf6.eu1.cloud.orchesty.io
+        use_backend ui-hm8rohmtf6 if ui-instance-hm8rohmtf6
+
+        acl start-instance-hm8rohmtf6 hdr_beg(host) start-hm8rohmtf6.eu1.cloud.orchesty.io
+        use_backend start-hm8rohmtf6 if start-instance-hm8rohmtf6
+
 
     # instance-iqnb4x3vhd
 
@@ -234,6 +245,21 @@ data:
     backend applinth-acixug9xqs
         mode http
         server svc applinth-marketplace-ui.instance-acixug9xqs.svc.cluster.local:80
+
+
+    # instance-hm8rohmtf6
+
+    backend api-hm8rohmtf6
+        mode http
+        server svc backend.instance-hm8rohmtf6.svc.cluster.local:80
+
+    backend ui-hm8rohmtf6
+        mode http
+        server svc frontend.instance-hm8rohmtf6.svc.cluster.local:80
+
+    backend start-hm8rohmtf6
+        mode http
+        server svc starting-point.instance-hm8rohmtf6.svc.cluster.local:8080
 
 
     # ping backend
