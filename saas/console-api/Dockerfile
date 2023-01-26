@@ -1,4 +1,4 @@
-FROM node:18-alpine as precache
+FROM node:19-alpine as precache
 
 RUN npm i -g pnpm
 
@@ -15,7 +15,7 @@ COPY pnpm-lock.yaml ./
 RUN pnpm install --production
 
 
-FROM node:18-alpine as build
+FROM node:19-alpine as build
 
 WORKDIR /srv/app
 COPY --from=precache /tmp/_node /srv/app
@@ -23,7 +23,7 @@ COPY ./ /srv/app
 
 RUN npm run build
 
-FROM node:18-alpine as prod
+FROM node:19-alpine as prod
 
 ENV APP_PORT=8000
 ENV NODE_ENV=prod

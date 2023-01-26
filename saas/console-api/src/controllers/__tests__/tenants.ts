@@ -1,4 +1,5 @@
 import assert from 'assert';
+import { Express } from 'express';
 import * as admin from 'firebase-admin';
 import { GoogleOAuthAccessToken } from 'firebase-admin';
 import supertest from 'supertest';
@@ -12,12 +13,17 @@ import {
     generateUserMockedData,
     getJWTToken,
 } from '../../../test/dataProvider';
-import { authApp, server } from '../../index';
+import Services from '../../DIContainer/Services';
+import { authApp, container } from '../../index';
 
 const tenantManager = admin.auth().tenantManager();
 const adminAuth = admin.auth().tenantManager().authForTenant('t123');
 const userAdminAuth = admin.auth().tenantManager().authForTenant('t-123456789');
 const { credential } = authApp.options;
+
+function getServer(): Express {
+    return container.get<Express>(Services.SERVER);
+}
 
 describe('tenantsController', () => {
     beforeAll(() => {
@@ -54,7 +60,7 @@ describe('tenantsController', () => {
     const authorization = getJWTToken(true);
     describe('list', () => {
         it('shouldReturnData', async () => {
-            const resp = await supertest(server).get('/tenants').set(authorization);
+            const resp = await supertest(getServer()).get('/tenants').set(authorization);
             assert.deepEqual(resp.statusCode, 200);
             assert.deepEqual(resp.body.rows.length, 1);
             assert.deepEqual(resp.body, {
@@ -62,7 +68,7 @@ describe('tenantsController', () => {
             });
         });
         it.skip('shouldReturn403', async () => {
-            const resp = await supertest(server).get('/tenants')
+            const resp = await supertest(getServer()).get('/tenants')
                 .set(getJWTToken());
             assert.deepEqual(resp.statusCode, 403);
         });
@@ -70,7 +76,7 @@ describe('tenantsController', () => {
 
     describe('get', () => {
         it('shouldReturnData', async () => {
-            const resp = await supertest(server).get('/tenants/t123456789').set(authorization);
+            const resp = await supertest(getServer()).get('/tenants/t123456789').set(authorization);
             assert.deepEqual(resp.statusCode, 200);
             assert.deepEqual(resp.body, {
                 tenant: generateTenantsExport(),
@@ -81,14 +87,14 @@ describe('tenantsController', () => {
                 .mockImplementationOnce(() => {
                     throw new Error();
                 });
-            const resp = await supertest(server).get('/tenants/t123').set(authorization);
+            const resp = await supertest(getServer()).get('/tenants/t123').set(authorization);
             assert.deepEqual(resp.statusCode, 400);
         });
     });
 
     describe('create', () => {
         it('shouldReturnData', async () => {
-            const resp = await supertest(server).post('/tenants').set(authorization).send({
+            const resp = await supertest(getServer()).post('/tenants').set(authorization).send({
                 displayName: 'neco',
             });
             assert.deepEqual(resp.statusCode, 200);
@@ -99,14 +105,14 @@ describe('tenantsController', () => {
             });
         });
         it('shouldReturn 400', async () => {
-            const resp = await supertest(server).post('/tenants').set(authorization).send({
+            const resp = await supertest(getServer()).post('/tenants').set(authorization).send({
                 displayName: 'neco',
                 email: 'neco@neco.cz',
             });
             assert.deepEqual(resp.statusCode, 400);
         });
         it('shouldCreateUser', async () => {
-            const resp = await supertest(server).post('/tenants').set(authorization).send({
+            const resp = await supertest(getServer()).post('/tenants').set(authorization).send({
                 displayName: 'neco',
                 email: 'neco@neco.cz',
                 userDisplayName: 'neco',
@@ -124,7 +130,7 @@ describe('tenantsController', () => {
         it('shouldReturnData', async () => {
             jest.spyOn(tenantManager, 'updateTenant')
                 .mockResolvedValue(generateTenantMockedData('neco1'));
-            const resp = await supertest(server).put('/tenants/t123456789').set(authorization)
+            const resp = await supertest(getServer()).put('/tenants/t123456789').set(authorization)
                 .send({
                     displayName: 'neco1',
                 });
@@ -142,12 +148,12 @@ describe('tenantsController', () => {
         it('shouldReturnData', async () => {
             jest.spyOn(admin.auth().tenantManager().authForTenant('t123'), 'listUsers')
                 .mockResolvedValue({ users: [generateUserMockedData()] });
-            const resp = await supertest(server).delete('/tenants/t123').set(authorization);
+            const resp = await supertest(getServer()).delete('/tenants/t123').set(authorization);
             assert.deepEqual(resp.statusCode, 200);
             assert.deepEqual(resp.body, { msg: 'Tenant successfully deleted!' });
         });
         it('shouldReturn403', async () => {
-            const resp = await supertest(server).delete('/tenants/t123456789').set(authorization);
+            const resp = await supertest(getServer()).delete('/tenants/t123456789').set(authorization);
             assert.deepEqual(resp.statusCode, 403);
         });
     });

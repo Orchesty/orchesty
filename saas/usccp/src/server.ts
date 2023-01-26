@@ -6,7 +6,7 @@ initServices()
     .then(() => {
         const server = createServer();
         server.listen(app.port);
-        logger.info('Servers started');
+        logger.info('USCCP up and running!');
     }).catch((e) => {
         logger.error(e);
     });

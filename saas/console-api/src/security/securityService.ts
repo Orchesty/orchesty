@@ -1,12 +1,14 @@
 import { Request } from 'express';
 import { decode } from 'jsonwebtoken';
 import { app } from '../config/config';
+import Services from '../DIContainer/Services';
 import { CollectionEnum } from '../enums/CollectionEnum';
 import { ResourceEnum } from '../enums/ResourceEnum';
 import JWTError, { BAD_JWT_PAYLOAD, ERROR_PARSING_AUTHORIZATION_HEADER, MISSING_JWT_TOKEN } from '../errors/JWTError';
 import PermissionsError from '../errors/PermissionsError';
 import TenantSearchError from '../errors/TenantSearchError';
-import { db } from '../index';
+import { container } from '../index';
+import Mongo from '../storage/mongo/Mongo';
 import { ITenant } from '../tenants/TenantService';
 
 export const AUTHORIZATION = 'authorization';
@@ -59,6 +61,7 @@ export function getJWTPayload(req: Request): IJWTPayload {
 export async function getLoggedUser(req: Request): Promise<ITenant> {
     const jwtPayload = getJWTPayload(req);
     if (jwtPayload.firebase?.tenant) {
+        const db = container.get<Mongo>(Services.STORAGE);
         return await db.getCloudCollection(CollectionEnum.TENANT).findOne({
             gTenantId: jwtPayload.firebase.tenant,
         }) as unknown as ITenant;
@@ -105,6 +108,7 @@ export async function preprocessRequest<IQuery extends { tenantId?: string; gTen
     }
 
     if (query.tenantId) {
+        const db = container.get<Mongo>(Services.STORAGE);
         const queriedTenant = await db.getCloudCollection(CollectionEnum.TENANT).findOne<ITenant>({
             tenantId: query.tenantId,
         });
