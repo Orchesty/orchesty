@@ -240,6 +240,14 @@ export default {
     async prepareCanvas() {
       this.modeler = new Modeler(this.modelerOptions)
 
+      this.modeler.on(
+        "commandStack.shape.create.postExecute",
+        ({ context }) => {
+          const modeling = this.modeler.get("modeling")
+          modeling.updateLabel(context.shape, context.shape.pipesType)
+        }
+      )
+
       this.modeler.on("shape.added", (event) => {
         //get sdk service names
         let implementations = JSON.parse(
