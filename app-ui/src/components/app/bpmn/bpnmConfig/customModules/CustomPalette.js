@@ -47,7 +47,7 @@ export const PIPES_TYPE_WEBHOOK = "webhook"
 export const PIPES_TYPE_CRON = "cron"
 
 PaletteProvider.prototype.getPaletteEntries = function () {
-  var actions = {},
+  const actions = {},
     create = this._create,
     elementFactory = this._elementFactory,
     lassoTool = this._lassoTool,
@@ -56,17 +56,17 @@ PaletteProvider.prototype.getPaletteEntries = function () {
 
   function createAction(type, group, className, title, options) {
     function createListener(event) {
-      var shape = elementFactory.createShape(assign({ type: type }, options))
+      const shape = elementFactory.createShape(assign({ type: type }, options))
 
       if (options) {
-        var di = getDi(shape)
+        const di = getDi(shape)
         di.isExpanded = options.isExpanded
       }
 
       create.start(event, shape)
     }
 
-    var shortType = type.replace(/^bpmn:/, "")
+    const shortType = type.replace(/^bpmn:/, "")
 
     return {
       group: group,

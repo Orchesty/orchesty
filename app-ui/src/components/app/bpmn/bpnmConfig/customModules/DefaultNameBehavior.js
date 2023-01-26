@@ -5,6 +5,7 @@ import { PIPES_TYPE_USER } from "@/components/app/bpmn/bpnmConfig/customModules/
 
 export default function DefaultNameBehavior(injector) {
   injector.invoke(CommandInterceptor, this)
+
   this.postExecuted(
     "elements.create",
     function (context) {
