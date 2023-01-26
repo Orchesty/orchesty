@@ -4,11 +4,13 @@ import { Collection } from 'mongodb';
 import * as randomstring from 'randomstring';
 import { ITenantCreateRequest } from '../controllers/tenants';
 import TenantSearchError from '../errors/TenantSearchError';
-import { authApp, usersService } from '../index';
+import { authApp, container } from '../index';
 import Tenant = auth.Tenant;
+import Services from '../DIContainer/Services';
 import { CollectionEnum } from '../enums/CollectionEnum';
 import UserCreationError from '../errors/UserCreationError';
 import Mongo from '../storage/mongo/Mongo';
+import UsersService from '../users/UsersService';
 
 export default class TenantService {
 
@@ -173,7 +175,7 @@ export default class TenantService {
             .updateTenant(generatedTenant.tenantId, { displayName: createTenantRequest.displayName });
 
         if (createUser) {
-            await usersService.createUser(
+            await container.get<UsersService>(Services.USERS_SERVICE).createUser(
                 {
                     tenantId: generatedTenant.tenantId,
                 },

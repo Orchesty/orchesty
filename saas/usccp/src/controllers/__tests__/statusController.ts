@@ -6,7 +6,8 @@ import { container } from '../../index';
 
 describe('statusController', () => {
     it('shouldReturn200', async () => {
-        const resp = await supertest(container.get<Express>(Services.SERVER)).get('/status');
+        const server = container.get<Express>(Services.SERVER);
+        const resp = await supertest(server).get('/status');
         assert.deepEqual(resp.statusCode, 200);
     });
 });

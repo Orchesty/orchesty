@@ -9,10 +9,12 @@ import {
 import { sign } from 'jsonwebtoken';
 import { DateTime } from 'luxon';
 import { Document } from 'mongodb';
-import { db } from '../src';
 import { CollectionEnum } from '../src/enums/CollectionEnum';
 import { getAllResources } from '../src/enums/ResourceEnum';
 import GetUsersResult = auth.GetUsersResult;
+import { container } from '../src';
+import Services from '../src/DIContainer/Services';
+import Mongo from '../src/storage/mongo/Mongo';
 import { ITenant } from '../src/tenants/TenantService';
 
 function generateUsageStatsRow(
@@ -44,6 +46,10 @@ function generateUsageStatsRow(
         estimatedCost,
         installed,
     };
+}
+
+function getDb(): Mongo {
+    return container.get<Mongo>(Services.STORAGE);
 }
 
 export function generateAuth(): Auth {
@@ -155,15 +161,15 @@ export function generateTenantsExport(name = 'neco'): unknown {
 
 export async function createDbTenants(tenantId = '', drop = true): Promise<void> {
     if (drop) {
-        await db.getCloudCollection(CollectionEnum.TENANT).drop();
+        await getDb().getCloudCollection(CollectionEnum.TENANT).drop();
     }
-    await db.getCloudCollection(CollectionEnum.TENANT).insertOne(generateDbTenantMockedData(tenantId));
+    await getDb().getCloudCollection(CollectionEnum.TENANT).insertOne(generateDbTenantMockedData(tenantId));
 }
 
 export async function createUsageStats(): Promise<void> {
-    await db.getBillingCollection(CollectionEnum.USAGE_STATS_MONTHLY)
+    await getDb().getBillingCollection(CollectionEnum.USAGE_STATS_MONTHLY)
         .drop();
-    await db.getBillingCollection(CollectionEnum.USAGE_STATS_DAILY)
+    await getDb().getBillingCollection(CollectionEnum.USAGE_STATS_DAILY)
         .drop();
     const startDate1 = DateTime.local(2021, 1, 1);
     const endDate1 = DateTime.local(2021, 1, 1)
@@ -175,7 +181,7 @@ export async function createUsageStats(): Promise<void> {
     const endDate3 = DateTime.local(2021, 3, 1)
         .endOf('month');
 
-    await db.getBillingCollection(CollectionEnum.USAGE_STATS_MONTHLY)
+    await getDb().getBillingCollection(CollectionEnum.USAGE_STATS_MONTHLY)
         .insertMany([
             generateUsageStatsRow(startDate1, endDate1, false, 'neco', 'neco', '1235', 'inst1234', 'i1234', 't123456789', 500000),
             generateUsageStatsRow(startDate2, endDate2, false, 'neco', 'neco', '1235', 'inst1234', 'i1234', 't123456789', 1000000),
@@ -193,14 +199,14 @@ export async function createUsageStats(): Promise<void> {
             generateUsageStatsRow(startDate3, endDate3, false, 'neco1', 'neco1', '1234', 'inst1235', 'i1239', 't123'),
         ]);
 
-    await db.getBillingCollection(CollectionEnum.USAGE_STATS_DAILY)
+    await getDb().getBillingCollection(CollectionEnum.USAGE_STATS_DAILY)
         .insertMany([
             generateUsageStatsRow(DateTime.local(2021, 1, 1), DateTime.local(2021, 1, 1).endOf('day'), false, 'neco', 'neco', '1235', 'inst1234', 'i1234', 't123456789', 500000),
             generateUsageStatsRow(DateTime.local(2021, 1, 2), DateTime.local(2021, 1, 2).endOf('day'), false, 'neco', 'neco', '1235', 'inst1234', 'i1234', 't123456789', 1000000),
             generateUsageStatsRow(DateTime.local(2021, 1, 3), DateTime.local(2021, 1, 3).endOf('day'), true, 'neco', 'neco', '1235', 'inst1234', 'i1234', 't123456789', 1000000),
         ]);
 
-    await db.getBillingCollection(CollectionEnum.USAGE_STATS_METADATA)
+    await getDb().getBillingCollection(CollectionEnum.USAGE_STATS_METADATA)
         .insertMany([
             {
                 tenantId: 't123',

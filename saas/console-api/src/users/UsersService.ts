@@ -4,12 +4,14 @@ import { TenantAwareAuth } from 'firebase-admin/lib/auth';
 import { IUserCreateParams, IUserSearchQuery, IUserUpdateParams } from '../controllers/users';
 import UserCreationError from '../errors/UserCreationError';
 import UserSearchError from '../errors/UserSearchError';
-import { authApp, db, fbApp } from '../index';
+import { authApp, container, fbApp } from '../index';
 import UserRecord = auth.UserRecord;
+import Services from '../DIContainer/Services';
 import { CollectionEnum } from '../enums/CollectionEnum';
 import NotFoundError from '../errors/NotFoundError';
 import SendLinkError from '../errors/SendLinkError';
 import UserDeleteError from '../errors/UserDeleteError';
+import Mongo from '../storage/mongo/Mongo';
 import { ITenant } from '../tenants/TenantService';
 
 export default class UsersService {
@@ -140,7 +142,7 @@ export default class UsersService {
     public async getGTenantId(
         tenantId: string,
     ): Promise<{ gTenantId: string }> {
-        const tenant = await db.getCloudCollection(CollectionEnum.TENANT).findOne({
+        const tenant = await container.get<Mongo>(Services.STORAGE).getCloudCollection(CollectionEnum.TENANT).findOne({
             tenantId,
         }) as unknown as ITenant;
 

@@ -8,20 +8,15 @@ import jsyaml from 'js-yaml';
 // @ts-expect-error
 import { configure, initializeMiddleware } from 'oas-tools';
 import { app, firebase, mongo } from './config/config';
-import initializeLogger from './logger/logger';
+import DIContainer from './DIContainer/Container';
+import Services from './DIContainer/Services';
+import { logger } from './logger/logger';
 import Mongo from './storage/mongo/Mongo';
 import TenantService from './tenants/TenantService';
 import UsageStatsService from './usageStats/UsageStatsService';
 import UsersService from './users/UsersService';
 
-/* eslint-disable import/no-mutable-exports */
-let db: Mongo;
-let usageStatsService: UsageStatsService;
-let usersService: UsersService;
-let tenantService: TenantService;
-let server: Express;
-const logger = initializeLogger(app.debug);
-/* eslint-enable import/no-mutable-exports */
+const container = new DIContainer();
 
 let fbAdminConfig = {};
 const fbAdminPrivKey = `${__dirname}/../privateKey.json`;
@@ -39,18 +34,22 @@ const fbApp = initializeApp({
 });
 
 async function initServices(): Promise<void> {
-    db = new Mongo(mongo.dsn);
+    const db = new Mongo(mongo.dsn);
     await db.connect();
     await db.createBillingIndexes();
     await db.createCloudIndexes();
     logger.info('Database connected');
-    usageStatsService = new UsageStatsService(db);
-    usersService = new UsersService();
-    tenantService = new TenantService(db);
+    const usageStatsService = new UsageStatsService(db);
+    const usersService = new UsersService();
+    const tenantService = new TenantService(db);
+    container.set(Services.STORAGE, db);
+    container.set(Services.USAGE_STATS_SERVICE, usageStatsService);
+    container.set(Services.USERS_SERVICE, usersService);
+    container.set(Services.TENANT_SERVICE, tenantService);
 }
 
 function createServer(): Express {
-    server = express();
+    const server = express();
     server.use(
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         cors({
@@ -74,10 +73,8 @@ function createServer(): Express {
         server.use(middleware.swaggerRouter);
     });
 
+    container.set(Services.SERVER, server);
     return server;
 }
 
-export {
-    authApp, createServer, db, fbApp,
-    initServices, logger, server, tenantService, usageStatsService, usersService,
-};
+export { authApp, container, createServer, fbApp, initServices };

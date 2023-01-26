@@ -1,0 +1,7 @@
+{
+    "extends": [
+        "plugin:@hanaboso/orchesty"
+    ],
+    "rules": {
+    }
+}

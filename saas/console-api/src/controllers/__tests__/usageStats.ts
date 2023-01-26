@@ -1,8 +1,12 @@
 import assert from 'assert';
+import { Express } from 'express';
 import supertest, { Response } from 'supertest';
 import { createDbTenants, createUsageStats, getJWTToken } from '../../../test/dataProvider';
+import { app } from '../../config/config';
+import Services from '../../DIContainer/Services';
 import GranularityError from '../../errors/GranularityError';
-import { db, server } from '../../index';
+import { container } from '../../index';
+import Mongo from '../../storage/mongo/Mongo';
 
 function assertUserData(resp: Response): void {
     assert.deepEqual(resp.body.rows.length, 4);
@@ -22,6 +26,10 @@ function assertUserData(resp: Response): void {
     ]);
 }
 
+function getServer(): Express {
+    return container.get<Express>(Services.SERVER);
+}
+
 describe('usageStatsController', () => {
     beforeEach(async () => {
         await createDbTenants();
@@ -30,13 +38,16 @@ describe('usageStatsController', () => {
     });
     const authorization = getJWTToken();
     describe('apps', () => {
-        it('shouldReturn400', async () => {
-            const resp = await supertest(server).get('/billing/reports/apps');
+        it('shouldReturn401', async () => {
+            app.debug = false;
+            const resp = await supertest(getServer()).get('/billing/reports/apps');
             assert.deepEqual(resp.statusCode, 401);
+            app.debug = true;
         });
         it('shouldReturn500', async () => {
+            const db = container.get<Mongo>(Services.STORAGE);
             await db.disconnect();
-            const resp = await supertest(server).get('/billing/reports/apps').query({
+            const resp = await supertest(getServer()).get('/billing/reports/apps').query({
                 timeRangeStart: '2018-07-20T05:17:36Z',
                 timeRangeEnd: '2018-07-20T05:17:36Z',
             }).set(authorization);
@@ -44,7 +55,7 @@ describe('usageStatsController', () => {
             await db.connect();
         });
         it('shouldReturnTailError', async () => {
-            const resp = await supertest(server).get('/billing/reports/apps').query({
+            const resp = await supertest(getServer()).get('/billing/reports/apps').query({
                 timeRangeStart: '2018-07-20T05:17:36Z',
                 timeRangeEnd: '2018-07-20T05:17:36Z',
                 tail: true,
@@ -52,7 +63,7 @@ describe('usageStatsController', () => {
             assert.deepEqual(resp.statusCode, 400);
         });
         it('shouldReturnTailData', async () => {
-            const resp = await supertest(server).get('/billing/reports/apps').query({
+            const resp = await supertest(getServer()).get('/billing/reports/apps').query({
                 granularity: 'monthly',
                 tail: true,
             }).set(getJWTToken(true));
@@ -82,7 +93,7 @@ describe('usageStatsController', () => {
             assert.deepEqual(resp.statusCode, 200);
         });
         it.skip('shouldReturn403', async () => {
-            const resp = await supertest(server).get('/billing/reports/apps').query({
+            const resp = await supertest(getServer()).get('/billing/reports/apps').query({
                 timeRangeStart: '2018-07-20T05:17:36Z',
                 timeRangeEnd: '2024-07-20T05:17:36Z',
                 granularity: 'monthly',
@@ -91,7 +102,7 @@ describe('usageStatsController', () => {
             assert.deepEqual(resp.statusCode, 403);
         });
         it('shouldReturn200', async () => {
-            const resp = await supertest(server).get('/billing/reports/apps').query({
+            const resp = await supertest(getServer()).get('/billing/reports/apps').query({
                 timeRangeStart: '2018-07-20T05:17:36Z',
                 timeRangeEnd: '2024-07-20T05:17:36Z',
                 granularity: 'monthly',
@@ -113,7 +124,7 @@ describe('usageStatsController', () => {
             ]);
         });
         it('shouldReturn200WithAnotherInstalIds', async () => {
-            const resp = await supertest(server).get('/billing/reports/apps').query({
+            const resp = await supertest(getServer()).get('/billing/reports/apps').query({
                 timeRangeStart: '2018-07-20T05:17:36Z',
                 timeRangeEnd: '2024-07-20T05:17:36Z',
                 granularity: 'monthly',
@@ -134,7 +145,7 @@ describe('usageStatsController', () => {
             ]);
         });
         it('shouldReturn400BadDateTimeFormat', async () => {
-            const resp = await supertest(server).get('/billing/reports/apps').query({
+            const resp = await supertest(getServer()).get('/billing/reports/apps').query({
                 timeRangeStart: '2018-07-20T05:17:36Z',
                 timeRangeEnd: 'asfbabwe',
                 granularity: 'monthly',
@@ -144,7 +155,7 @@ describe('usageStatsController', () => {
                 + ' invalid format!","code":1001}');
         });
         it('shouldReturn400BadDateGranularity', async () => {
-            const resp = await supertest(server).get('/billing/reports/apps').query({
+            const resp = await supertest(getServer()).get('/billing/reports/apps').query({
                 timeRangeStart: '2018-07-20T05:17:36Z',
                 timeRangeEnd: '2018-07-20T05:17:36Z',
                 granularity: 'afbrbre',
@@ -153,16 +164,18 @@ describe('usageStatsController', () => {
             assert.deepEqual(resp.text, '[{"message":"Wrong parameter granularity in query. ","error":'
                 + '[{"code":"ENUM_MISMATCH","params":["afbrbre"],"message":"No enum match for: afbrbre","path":"#/"}]}]');
         });
-        it('shouldReturn401', async () => {
-            const resp = await supertest(server).get('/billing/reports/apps').query({
+        it('shouldReturn400', async () => {
+            app.debug = false;
+            const resp = await supertest(getServer()).get('/billing/reports/apps').query({
                 timeRangeStart: '2018-07-20T05:17:36Z',
                 timeRangeEnd: '2024-07-20T05:17:36Z',
                 granularity: 'monthly',
             });
             assert.deepEqual(resp.statusCode, 401);
+            app.debug = true;
         });
         it('shouldReturnData', async () => {
-            const resp = await supertest(server).get('/billing/reports/apps').query({
+            const resp = await supertest(getServer()).get('/billing/reports/apps').query({
                 timeRangeStart: '2018-07-20T05:17:36Z',
                 timeRangeEnd: '2024-07-20T05:17:36Z',
                 granularity: 'monthly',
@@ -190,7 +203,7 @@ describe('usageStatsController', () => {
             assert.deepEqual(resp.statusCode, 200);
         });
         it('shouldReturnSingleRow', async () => {
-            const resp = await supertest(server).get('/billing/reports/apps').query({
+            const resp = await supertest(getServer()).get('/billing/reports/apps').query({
                 timeRangeStart: '2018-07-20T05:17:36Z',
                 timeRangeEnd: '2024-07-20T05:17:36Z',
                 granularity: 'monthly',
@@ -213,7 +226,7 @@ describe('usageStatsController', () => {
 
     describe('users', () => {
         it('shouldReturnData', async () => {
-            const resp = await supertest(server).get('/billing/reports/users').query({
+            const resp = await supertest(getServer()).get('/billing/reports/users').query({
                 timeRangeStart: '2018-07-20T05:17:36Z',
                 timeRangeEnd: '2024-07-20T05:17:36Z',
                 granularity: 'monthly',
@@ -238,7 +251,7 @@ describe('usageStatsController', () => {
         });
 
         it('shouldReturnData with tail', async () => {
-            const resp = await supertest(server).get('/billing/reports/users').query({
+            const resp = await supertest(getServer()).get('/billing/reports/users').query({
                 tail: true,
                 granularity: 'monthly',
                 endUserId: '1235',
@@ -263,7 +276,7 @@ describe('usageStatsController', () => {
 
     describe('usageStatsInstalledApps', () => {
         it('shouldReturn400BadDateTimeFormat', async () => {
-            const resp = await supertest(server).get('/billing/reports/installedApps').query({
+            const resp = await supertest(getServer()).get('/billing/reports/installedApps').query({
                 installedDate: 'abwbewbwe',
                 endUserId: '1235',
             }).set(authorization);
@@ -271,7 +284,7 @@ describe('usageStatsController', () => {
             assert.deepEqual(resp.text, '{"msg":"Parameter installedDated is in invalid format!","code":1002}');
         });
         it('shouldReturnData', async () => {
-            const resp = await supertest(server).get('/billing/reports/installedApps').query({
+            const resp = await supertest(getServer()).get('/billing/reports/installedApps').query({
                 tenantId: 't123456789',
                 installedDate: '2021-02-18T23:59:59Z',
                 endUserId: '1235',
@@ -280,7 +293,7 @@ describe('usageStatsController', () => {
             assert.deepEqual(resp.statusCode, 200);
         });
         it('shouldReturnDataWithTail', async () => {
-            const resp = await supertest(server).get('/billing/reports/installedApps').query({
+            const resp = await supertest(getServer()).get('/billing/reports/installedApps').query({
                 tenantId: 't123456789',
                 endUserId: '1235',
                 tail: true,
@@ -292,7 +305,7 @@ describe('usageStatsController', () => {
 
     describe('usageStatsTimeBucketApps', () => {
         it('shouldReturnData', async () => {
-            const resp = await supertest(server).get('/billing/reports/timeBucketApps').query({
+            const resp = await supertest(getServer()).get('/billing/reports/timeBucketApps').query({
                 tenantId: 't123456789',
                 timeRangeStart: '2018-07-20T05:17:36Z',
                 timeRangeEnd: '2024-07-20T05:17:36Z',
@@ -326,7 +339,7 @@ describe('usageStatsController', () => {
 
     describe('usageStatsTimeBucketUsers', () => {
         it('shouldReturnData', async () => {
-            const resp = await supertest(server).get('/billing/reports/timeBucketUsers').query({
+            const resp = await supertest(getServer()).get('/billing/reports/timeBucketUsers').query({
                 tenantId: 't123456789',
                 timeRangeStart: '2018-07-20T05:17:36Z',
                 timeRangeEnd: '2024-07-20T05:17:36Z',
@@ -347,7 +360,7 @@ describe('usageStatsController', () => {
 
     describe('usageStatsTimeBucketHistory', () => {
         it('shouldReturnData', async () => {
-            const resp = await supertest(server).get('/billing/reports/timeBucketHistory').query({
+            const resp = await supertest(getServer()).get('/billing/reports/timeBucketHistory').query({
                 tenantId: 't123456789',
                 timeRangeStart: '2018-07-20T05:17:36Z',
                 timeRangeEnd: '2024-07-20T05:17:36Z',
@@ -373,7 +386,7 @@ describe('usageStatsController', () => {
             assert.deepEqual(resp.statusCode, 200);
         });
         it('shouldReturnData daily', async () => {
-            const resp = await supertest(server).get('/billing/reports/timeBucketHistory').query({
+            const resp = await supertest(getServer()).get('/billing/reports/timeBucketHistory').query({
                 tenantId: 't123456789',
                 timeRangeStart: '2018-07-20T05:17:36Z',
                 timeRangeEnd: '2024-07-20T05:17:36Z',
@@ -399,7 +412,7 @@ describe('usageStatsController', () => {
             assert.deepEqual(resp.statusCode, 200);
         });
         it('shouldReturnData error', async () => {
-            await supertest(server).get('/billing/reports/timeBucketHistory').query({
+            await supertest(getServer()).get('/billing/reports/timeBucketHistory').query({
                 tenantId: 't123456789',
                 timeRangeStart: '2018-07-20T05:17:36Z',
                 timeRangeEnd: '2024-07-20T05:17:36Z',
