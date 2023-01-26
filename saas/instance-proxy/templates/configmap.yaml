@@ -135,6 +135,20 @@ data:
         acl applinth-instance-acixug9xqs hdr_beg(host) applinth-acixug9xqs.eu1.cloud.orchesty.io
         use_backend applinth-acixug9xqs if applinth-instance-acixug9xqs
 
+        # instance-umo5mkl8z6
+
+        acl api-instance-umo5mkl8z6 hdr_beg(host) api-umo5mkl8z6.eu1.cloud.orchesty.io
+        use_backend api-umo5mkl8z6 if api-instance-umo5mkl8z6
+
+        acl ui-instance-umo5mkl8z6 hdr_beg(host) ui-umo5mkl8z6.eu1.cloud.orchesty.io
+        use_backend ui-umo5mkl8z6 if ui-instance-umo5mkl8z6
+
+        acl start-instance-umo5mkl8z6 hdr_beg(host) start-umo5mkl8z6.eu1.cloud.orchesty.io
+        use_backend start-umo5mkl8z6 if start-instance-umo5mkl8z6
+
+        acl applinth-instance-umo5mkl8z6 hdr_beg(host) applinth-umo5mkl8z6.eu1.cloud.orchesty.io
+        use_backend applinth-umo5mkl8z6 if applinth-instance-umo5mkl8z6
+
 
         # instance-hm8rohmtf6
 
@@ -245,6 +259,24 @@ data:
     backend applinth-acixug9xqs
         mode http
         server svc applinth-marketplace-ui.instance-acixug9xqs.svc.cluster.local:80
+
+    # instance-umo5mkl8z6
+
+    backend api-umo5mkl8z6
+        mode http
+        server svc backend.instance-umo5mkl8z6.svc.cluster.local:80
+
+    backend ui-umo5mkl8z6
+        mode http
+        server svc frontend.instance-umo5mkl8z6.svc.cluster.local:80
+
+    backend start-umo5mkl8z6
+        mode http
+        server svc starting-point.instance-umo5mkl8z6.svc.cluster.local:8080
+
+    backend applinth-umo5mkl8z6
+        mode http
+        server svc applinth-marketplace-ui.instance-umo5mkl8z6.svc.cluster.local:80
 
 
     # instance-hm8rohmtf6

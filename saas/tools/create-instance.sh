@@ -7,6 +7,16 @@ MONGODB_PWD=$(pwgen -1s 16)
 RABBITMQ_PWD=$(pwgen -1s 16)
 ORCHESTY_PWD=$(pwgen -1s 16)
 
+if ! [ -x "$(command -v jq)" ]; then
+  echo 'Error: jq is not installed.' >&2
+  exit 1
+fi
+
+if ! [ -x "$(command -v pwgen)" ]; then
+  echo 'Error: pwgen is not installed.' >&2
+  exit 1
+fi
+
 if [[ -z "$NAME" || -z "$MONGODB_ADMIN_DSN" || -z "$RABBITMQ_ADMIN_DSN" ]]; then
     echo "Usage:"
     echo
