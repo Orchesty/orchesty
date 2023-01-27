@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/docker/docker v20.10.17+incompatible
 	github.com/gin-gonic/gin v1.8.1
-	github.com/hanaboso/go-log v1.0.3
+	github.com/hanaboso/go-log v1.0.4
 	github.com/hanaboso/go-mongodb v1.0.5
 	github.com/jinzhu/configor v1.2.1
 	github.com/pkg/errors v0.9.1
