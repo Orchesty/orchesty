@@ -3,7 +3,7 @@ module github.com/hanaboso/pipes/counter
 go 1.18
 
 require (
-	github.com/hanaboso/go-log v1.0.3
+	github.com/hanaboso/go-log v1.0.4
 	github.com/hanaboso/go-metrics v1.0.4
 	github.com/hanaboso/go-mongodb v1.0.6
 	github.com/jinzhu/configor v1.2.1
