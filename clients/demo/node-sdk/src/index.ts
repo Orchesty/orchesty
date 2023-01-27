@@ -74,6 +74,7 @@ import MongoDbClient from '@orchesty/nodejs-sdk/dist/lib/Storage/Mongodb/Client'
 import Redis from '@orchesty/nodejs-sdk/dist/lib/Storage/Redis/Redis';
 import TopologyRunner from '@orchesty/nodejs-sdk/dist/lib/Topology/TopologyRunner';
 import CurlSender from '@orchesty/nodejs-sdk/dist/lib/Transport/Curl/CurlSender';
+import HanabosoContactFormMapper from './Hanabosocom/CustomNode/ContactFormMapper';
 import ListPosts from './JsonPlaceholder/Batch/ListPosts';
 import ListUsers from './JsonPlaceholder/Batch/ListUsers';
 import BinSender from './JsonPlaceholder/Connector/BinSender';
@@ -410,6 +411,9 @@ export function start(): void {
         OrchestyPageEnum.NEWSLETTER,
     );
     container.setCustomNode(hubspotToHubspotNewsletterTransactionEmail);
+
+    const hanabosoContactFormEmail = new HanabosoContactFormMapper();
+    container.setCustomNode(hanabosoContactFormEmail);
 
     const hubSpotSendTransactionEmailConnector = new HubSpotSendTransactionEmailConnector()
         .setSender(sender)
