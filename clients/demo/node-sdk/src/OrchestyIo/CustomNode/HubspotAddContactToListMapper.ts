@@ -19,7 +19,7 @@ export default class HubspotAddContactToListMapper extends ACommonNode {
         const { properties } = dto.getJsonData();
 
         if (!properties?.email) {
-            dto.setStopProcess(ResultCode.DO_NOT_CONTINUE, 'Email is not defined');
+            dto.setStopProcess(ResultCode.STOP_AND_FAILED, 'Email is not defined');
             return dto;
         }
 

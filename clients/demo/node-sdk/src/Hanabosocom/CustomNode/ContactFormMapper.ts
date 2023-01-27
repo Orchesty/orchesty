@@ -2,44 +2,41 @@ import { IInput as IOutput } from '@orchesty/nodejs-connectors/dist/lib/AmazonAp
 import ACommonNode from '@orchesty/nodejs-sdk/dist/lib/Commons/ACommonNode';
 import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
 import ResultCode from '@orchesty/nodejs-sdk/dist/lib/Utils/ResultCode';
-import { readFileSync } from 'fs';
-import { getOrchestyPageName, OrchestyPageEnum } from '../Enum/OrchestyPageEnum';
+import * as os from 'os';
 
-export default class HubspotToSesTransactionEmailMapper extends ACommonNode {
+export const NAME = 'hanaboso-contact-form-mapper';
 
-    public constructor(private readonly orchestyPage: OrchestyPageEnum) {
-        super();
-    }
+export default class ContactFormMapper extends ACommonNode {
 
     public getName(): string {
-        return `hubspot-to-ses-${getOrchestyPageName(this.orchestyPage)}-email-mapper`;
+        return NAME;
     }
 
     public processAction(dto: ProcessDto<IInput>): ProcessDto<IInput | IOutput> {
-        const { emails } = dto.getJsonData();
-        if (!emails.length) {
+        const { email, message, name } = dto.getJsonData();
+
+        if (!email || !message || !name) {
             dto.setStopProcess(
                 ResultCode.STOP_AND_FAILED,
-                `Required data not received: [emails:${emails}]`,
+                'Not all required informations were send.',
             );
             return dto;
         }
 
-        const content = readFileSync(`${__dirname}/Templates/${getOrchestyPageName(this.orchestyPage)}.html`).toString();
-
         return dto.setNewJsonData<IOutput>({
             /* eslint-disable @typescript-eslint/naming-convention */
             Destination: {
-                ToAddresses: emails,
+                ToAddresses: ['sales@hanaboso.com'],
             },
-            Source: 'info@orchesty.io',
+            Source: 'info@hanaboso.com',
+            ReplyToAddresses: [email],
             Message: {
                 Subject: {
-                    Data: 'Confirmation email',
+                    Data: `Zpráva z kontaktní fomuláře: ${name}`,
                 },
                 Body: {
-                    Html: {
-                        Data: content,
+                    Text: {
+                        Data: `Od: ${name}${os.EOL}Zpráva: ${message}`,
                     },
                 },
             },
@@ -50,6 +47,7 @@ export default class HubspotToSesTransactionEmailMapper extends ACommonNode {
 }
 
 export interface IInput {
-    updated: number[];
-    emails: string[];
+    name: string;
+    email: string;
+    message: string;
 }
