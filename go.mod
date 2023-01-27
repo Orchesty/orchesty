@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/go-co-op/gocron v1.17.0
-	github.com/hanaboso/go-log v1.0.3
+	github.com/hanaboso/go-log v1.0.4
 	github.com/hanaboso/go-mongodb v1.0.6
 	github.com/jinzhu/configor v1.2.1
 	github.com/julienschmidt/httprouter v1.3.0
