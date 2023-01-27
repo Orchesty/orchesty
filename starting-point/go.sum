@@ -15,8 +15,8 @@ github.com/gorilla/context v1.1.1 h1:AWwleXJkX/nhcU9bZSnZoi3h/qGYqQAGhq6zZe/aQW8
 github.com/gorilla/context v1.1.1/go.mod h1:kBGZzfjB9CEq2AlWe17Uuf7NDRt0dE0s8S51q0aT7Yg=
 github.com/gorilla/mux v1.8.0 h1:i40aqfkR1h2SlN9hojwV5ZA91wcXFOvkdNIeFDP5koI=
 github.com/gorilla/mux v1.8.0/go.mod h1:DVbg23sWSpFRCP0SfiEN6jmj59UnW/n46BH5rLB71So=
-github.com/hanaboso/go-log v1.0.3 h1:CKqFGuMcDL8T/MyA46X/dBhosXiEYvk35Zqp7lIZjCU=
-github.com/hanaboso/go-log v1.0.3/go.mod h1:Hzb9U0jPbkTj+aRjxN5g7JHshuGL8e8oAWqIggwHd5A=
+github.com/hanaboso/go-log v1.0.4 h1:dXUAc4zU7rP8fW5bVJhBCHNZd9clCO/cVImGrPR/whk=
+github.com/hanaboso/go-log v1.0.4/go.mod h1:IMl5CXI42C5boEKbOTaFrQ/mqFi1IQD3BSZWlYnb5/c=
 github.com/hanaboso/go-metrics v1.0.4 h1:et21G+TPcXwRxzmH/3ICpiK+NGA+iO34Ylrc9CrcBu0=
 github.com/hanaboso/go-metrics v1.0.4/go.mod h1:r2iqkBSbprVFfYdxRoaqHOPB+jhUtZRNQTCjs4JPldI=
 github.com/hanaboso/go-mongodb v1.0.6 h1:mTInNb0la6QT3OzgKklvC2kRzchMDuD/d3JoJMarhrY=
