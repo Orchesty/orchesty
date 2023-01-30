@@ -4,20 +4,20 @@ import {
 } from '@orchesty/nodejs-connectors/dist/lib/Jira/Connector/JiraCreateIssueConnector';
 import ACommonNode from '@orchesty/nodejs-sdk/dist/lib/Commons/ACommonNode';
 import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
-import { getOrchestyPageName, OrchestyPageEnum } from '../Enum/OrchestyPageEnum';
-import { IOrchestySales as IInput } from '../Interface/IOrchestySales';
+import { getPageName, PageEnum } from '../Enum/PageEnum';
+import { ISales as IInput } from '../Interface/ISales';
 
-export default class OrchestyToJiraMapper extends ACommonNode {
+export default class HanabosoToJiraMapper extends ACommonNode {
 
     public constructor(
-        private readonly orchestyPage: OrchestyPageEnum,
+        private readonly page: PageEnum,
         private readonly labels: string[],
     ) {
         super();
     }
 
     public getName(): string {
-        return `orchesty-to-${getOrchestyPageName(this.orchestyPage)}-jira-mapper`;
+        return `hanaboso-to-${getPageName(this.page)}-jira-mapper`;
     }
 
     public processAction(dto: ProcessDto<IInput>): ProcessDto<IOutput> {
@@ -32,6 +32,7 @@ export default class OrchestyToJiraMapper extends ACommonNode {
             aaas,
             team,
             support,
+            subscribed,
             ...res
         } = dto.getJsonData();
 
@@ -81,6 +82,7 @@ export default class OrchestyToJiraMapper extends ACommonNode {
             labels: this.labels,
             issueType: IssueTypeEnum.TASK,
             projectKey: 'SAL',
+            subscribed,
         };
 
         return dto.setNewJsonData(data);

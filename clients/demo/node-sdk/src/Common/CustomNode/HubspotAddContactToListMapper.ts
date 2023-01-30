@@ -1,13 +1,13 @@
-import { IInput as IOuput } from '@orchesty/nodejs-connectors/dist/lib/Hubspot/Connector/HubSpotAddEmailToListConnector';
 import ACommonNode from '@orchesty/nodejs-sdk/dist/lib/Commons/ACommonNode';
 import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
 import ResultCode from '@orchesty/nodejs-sdk/dist/lib/Utils/ResultCode';
+import { IInput as IOuput } from '../Connector/HubSpotAddEmailToListConnector';
 import { getHubspotListName, HubspotListIdsEnums } from '../Enum/HubspotListIdsEnums';
-import { IOutput as IInput } from './OrchestyToHubSpotContactMapper';
+import { IOutput as IInput } from './HanabosoHubSpotContactMapper';
 
 export default class HubspotAddContactToListMapper extends ACommonNode {
 
-    public constructor(private readonly hubSpotList: HubspotListIdsEnums) {
+    public constructor(protected readonly hubSpotList: HubspotListIdsEnums) {
         super();
     }
 
@@ -23,10 +23,16 @@ export default class HubspotAddContactToListMapper extends ACommonNode {
             return dto;
         }
 
-        return dto.setNewJsonData({
+        return dto.setNewJsonData<IOuput>({
             emails: [properties.email],
-            listId: this.hubSpotList,
+            language: properties.language,
+            listId: this.getListId(dto.getJsonData()),
         });
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    protected getListId(data: IInput): number {
+        return this.hubSpotList;
     }
 
 }

@@ -1,6 +1,6 @@
-import { IOrchestyContact } from './IOrchestyContact';
+import { IExtendedContact } from './IExtendedContact';
 
-export interface IOrchestySales extends IOrchestyContact {
+export interface ISales extends IExtendedContact {
     /* eslint-disable @typescript-eslint/naming-convention */
     'hosted-orchesty'?: boolean;
     applinth?: boolean;
