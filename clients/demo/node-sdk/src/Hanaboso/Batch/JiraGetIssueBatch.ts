@@ -1,0 +1,86 @@
+import JiraApplication from '@orchesty/nodejs-connectors/dist/lib/Jira/JiraApplication';
+import ABatchNode from '@orchesty/nodejs-sdk/dist/lib/Batch/ABatchNode';
+import DataStorageManager from '@orchesty/nodejs-sdk/dist/lib/Storage/DataStore/DataStorageManager';
+import { HttpMethods } from '@orchesty/nodejs-sdk/dist/lib/Transport/HttpMethods';
+import BatchProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/BatchProcessDto';
+import { CORRELATION_ID } from '@orchesty/nodejs-sdk/dist/lib/Utils/Headers';
+import ResultCode from '@orchesty/nodejs-sdk/dist/lib/Utils/ResultCode';
+import { IEtl } from './JiraGetWorklogsBatch';
+
+export const JIRA_GET_ISSUE_ENDPOINT = 'rest/api/3/issue';
+
+export const NAME = 'jira-get-issue-batch';
+
+export default class JiraGetIssueBatch extends ABatchNode {
+
+    public constructor(private readonly dataStorageManager: DataStorageManager) {
+        super();
+    }
+
+    public getName(): string {
+        return NAME;
+    }
+
+    public async processAction(dto: BatchProcessDto): Promise<BatchProcessDto> {
+        const app = this.getApplication<JiraApplication>();
+        const appInstall = await this.getApplicationInstallFromProcess(dto);
+
+        const pointer = Number(dto.getBatchCursor('0'));
+
+        const worklogEtl = await this.dataStorageManager.load<IEtl<IWorklogDataMinimal>>(
+            dto.getHeader(CORRELATION_ID) ?? '',
+            app.getName(),
+            appInstall.getUser(),
+        );
+
+        const worklogData = worklogEtl?.[0].getData()?.data;
+        const id = worklogData?.[pointer]?.issueId;
+
+        if (!id) {
+            dto.setStopProcess(ResultCode.STOP_AND_FAILED, 'Connector is missing required data: "id".');
+            return dto;
+        }
+
+        const request = await this.getApplication().getRequestDto(
+            dto,
+            appInstall,
+            HttpMethods.GET,
+            `${JIRA_GET_ISSUE_ENDPOINT}/${id}`,
+        );
+        const response = await this.getSender().send<IResponse>(request);
+
+        await this.dataStorageManager.remove(
+            dto.getHeader(CORRELATION_ID) ?? '',
+            app.getName(),
+            appInstall.getUser(),
+        );
+
+        Object.assign(worklogData[pointer], { key: response.getJsonBody().key });
+
+        await this.dataStorageManager.store(
+            dto.getHeader(CORRELATION_ID) ?? '',
+            [{ data: worklogData, date: worklogEtl?.[0].getData()?.date }],
+            app.getName(),
+            appInstall.getUser(),
+        );
+
+        if (worklogData?.length && worklogData.length - 1 > pointer) {
+            dto.setBatchCursor((pointer + 1).toString(), true);
+        } else {
+            dto.addItem({ success: 'ok' });
+        }
+
+        return dto;
+    }
+
+}
+export interface IWorklogDataMinimal {
+    worklogId: number;
+    issueId: number;
+    timeSpent: string;
+    author: string;
+}
+
+export interface IResponse {
+    key: string;
+}

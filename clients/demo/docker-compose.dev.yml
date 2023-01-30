@@ -22,6 +22,7 @@ services:
 
     multi-counter:
         image: hanabosocom/go-base:1.19
+        user: ${DEV_UID}:${DEV_GID}
         environment:
             RABBITMQ_DSN: ${RABBITMQ_DSN}
             MONGODB_DSN: ${MONGO_DSN}
