@@ -1,6 +1,6 @@
 TAG?=dev
 IMAGE=dkr.hanaboso.net/pipes/pipes/counter
-PUBLIC_IMAGE=hanaboso/counter
+PUBLIC_IMAGE=orchesty/counter
 
 DC=docker-compose
 DE=docker-compose exec -T app
