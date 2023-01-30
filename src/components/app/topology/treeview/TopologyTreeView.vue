@@ -67,6 +67,7 @@ import Tooltip from "@/components/commons/Tooltip"
 import AppIcon from "@/components/commons/icon/AppIcon"
 import ProgressBarLinear from "@/components/commons/progressIndicators/ProgressBarLinear"
 import { redirectTo } from "@/services/utils/utils"
+import { getTopologyVersionString } from "@/services/utils/topology"
 
 export default {
   name: "TopologyTreeView",
@@ -127,7 +128,7 @@ export default {
         : "error"
     },
     topologyTitleVersion(item) {
-      return TOPOLOGY_ENUMS.TOPOLOGY === item.type ? `v.${item.version}` : ""
+      return getTopologyVersionString(item)
     },
     async onActive(activeItems) {
       if (!activeItems[0]) {

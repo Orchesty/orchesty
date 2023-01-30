@@ -81,7 +81,12 @@
       </v-row>
       <v-row class="flex-grow-0 flex-shrink-1" dense>
         <v-col>
+          <TrashItemChangeTopologyModal
+            v-if="trash && trash.topologyDeleted === true"
+            :on-submit="changeTopologyAndAccept"
+          />
           <user-task-actions-modal
+            v-else
             color="primary"
             :selected="selected"
             type="accept"
@@ -154,10 +159,15 @@ import { USER_TASKS } from "@/store/modules/userTasks/types"
 import "vue-json-pretty/lib/styles.css"
 import VueJsonPretty from "vue-json-pretty"
 import { TRASH } from "@/store/modules/trash/types"
+import TrashItemChangeTopologyModal from "@/components/app/trash/modal/TrashItemChangeTopologyModal.vue"
 
 export default {
   name: "UserTaskInformation",
-  components: { UserTaskActionsModal, VueJsonPretty },
+  components: {
+    TrashItemChangeTopologyModal,
+    UserTaskActionsModal,
+    VueJsonPretty,
+  },
   data() {
     return {
       panel: [0, 1, 2],
@@ -216,6 +226,19 @@ export default {
       ]({
         id: this[this.toggler].id,
         topologyID: this[this.toggler].topologyId,
+      })
+      if (response) {
+        await this.fetchGrid()
+      }
+      return response
+    },
+    async changeTopologyAndAccept(data) {
+      const response = await this[TRASH.ACTIONS.TRASH_ACCEPT]({
+        id: this[this.toggler].id,
+        data: {
+          topologyId: data.topologyId,
+          nodeId: data.nodeId,
+        },
       })
       if (response) {
         await this.fetchGrid()
