@@ -2,7 +2,9 @@
 
 namespace PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller;
 
+use DateTime;
 use Exception;
+use Hanaboso\PipesFramework\Configurator\Document\TopologyProgress;
 use Hanaboso\PipesFramework\Configurator\Model\DashboardManager;
 use Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetrics;
 use Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetricsFields;
@@ -43,7 +45,7 @@ final class DashboardControllerTest extends ControllerTestCaseAbstract
         $topology = $this->createTopology();
         $node     = $this->createNode($topology);
 
-        $dashManager = new DashboardManager($this->getManager(), $this->dm);
+        $dashManager = new DashboardManager($this->dm);
         self::getContainer()->set('hbpf.configurator.manager.dashboard', $dashManager);
 
         $this->setFakeData($topology, $node);
@@ -60,7 +62,8 @@ final class DashboardControllerTest extends ControllerTestCaseAbstract
      */
     private function setFakeData(Topology $topology, Node $node): void
     {
-        $database = self::getContainer()->get('doctrine_mongodb.odm.metrics_document_manager');
+        $database      = self::getContainer()->get('doctrine_mongodb.odm.metrics_document_manager');
+        $pipesDatabase = self::getContainer()->get('doctrine_mongodb.odm.document_manager');
 
         $conMetrics1 = new ConnectorsMetrics(
             new ConnectorsMetricsFields(2),
@@ -77,7 +80,19 @@ final class DashboardControllerTest extends ControllerTestCaseAbstract
         $database->persist($conMetrics1);
         $database->persist($conMetrics2);
 
+        $multiCounterData  = (new TopologyProgress())
+            ->setTopologyId($topology->getId())
+            ->setStartedAt(new DateTime())
+            ->setNok(1);
+        $multiCounterData2 = (new TopologyProgress())
+            ->setTopologyId($topology->getId())
+            ->setStartedAt(new DateTime())
+            ->setNok(1);
+        $pipesDatabase->persist($multiCounterData);
+        $pipesDatabase->persist($multiCounterData2);
+
         $database->flush();
+        $pipesDatabase->flush();
     }
 
 }
