@@ -2,7 +2,7 @@ DC=docker-compose
 DE=docker-compose exec -T app
 REGISTRY=dkr.hanaboso.net/pipes/pipes
 IMAGE=dkr.hanaboso.net/pipes/pipes/starting-point
-PUBLIC_IMAGE=hanaboso/pipes-starting-point
+PUBLIC_IMAGE=orchesty/starting-point
 
 .env:
 	sed -e 's/{DEV_UID}/$(shell id -u)/g' \
