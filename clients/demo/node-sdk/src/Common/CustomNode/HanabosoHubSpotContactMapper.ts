@@ -1,18 +1,18 @@
 import ACommonNode from '@orchesty/nodejs-sdk/dist/lib/Commons/ACommonNode';
 import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
 import ResultCode from '@orchesty/nodejs-sdk/dist/lib/Utils/ResultCode';
-import { IOrchestySales as IInput } from '../Interface/IOrchestySales';
+import { ISales as IInput } from '../Interface/ISales';
 
-export const NAME = 'orchesty-to-hubspot-mapper';
+export const NAME = 'hanaboso-to-hubspot-mapper';
 
-export default class OrchestyToHubSpotContactMapper extends ACommonNode {
+export default class HanabosoHubSpotContactMapper extends ACommonNode {
 
     public getName(): string {
         return NAME;
     }
 
     public processAction(dto: ProcessDto<IInput>): ProcessDto<IInput | IOutput> {
-        const { email, company, phone, ...res } = dto.getJsonData();
+        const { email, company, phone, language, ...res } = dto.getJsonData();
 
         if (!email) {
             dto.setStopProcess(ResultCode.STOP_AND_FAILED, 'Email is not defined');
@@ -25,6 +25,8 @@ export default class OrchestyToHubSpotContactMapper extends ACommonNode {
             firstname: res['first-name'] ?? '',
             lastname: res['last-name'] ?? '',
             phone: phone ?? '',
+            subscribed: res.subscribed ?? false,
+            language,
         } });
     }
 
@@ -38,5 +40,7 @@ export interface IOutput {
         lastname?: string;
         phone?: string;
         website?: string;
+        subscribed?: boolean;
+        language?: string;
     };
 }

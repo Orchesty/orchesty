@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?><bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:pipes="http://www.omg.org/spec/Pipes/20100524/MODEL" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="applinthcontact" isExecutable="false">
+    <bpmn:event id="Event_01r2zd6" pipes:pipesType="start" pipes:sdkHost="node-sdk:8080" name="start" pipes:sdkHostName="node-sdk">
+      <bpmn:outgoing>Flow_01lz8i9</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1keu31h</bpmn:outgoing>
+    </bpmn:event>
+    <bpmn:task id="Activity_1d986wt" pipes:pipesType="custom" pipes:sdkHost="node-sdk:8080" name="hanaboso-to-contact-jira-mapper" pipes:sdkHostName="node-sdk" pipes:appName="">
+      <bpmn:incoming>Flow_01lz8i9</bpmn:incoming>
+      <bpmn:outgoing>Flow_0whli9y</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Activity_1crg9in" pipes:pipesType="connector" pipes:sdkHost="node-sdk:8080" name="jira-create-issue" pipes:sdkHostName="node-sdk" pipes:appName="jira">
+      <bpmn:incoming>Flow_0whli9y</bpmn:incoming>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="Flow_0whli9y" sourceRef="Activity_1d986wt" targetRef="Activity_1crg9in"/>
+    <bpmn:sequenceFlow id="Flow_01lz8i9" sourceRef="Event_01r2zd6" targetRef="Activity_1d986wt"/>
+    <bpmn:task id="Activity_0d24k0z" pipes:pipesType="custom" pipes:sdkHost="node-sdk:8080" name="hanaboso-to-hubspot-mapper" pipes:sdkHostName="node-sdk" pipes:appName="">
+      <bpmn:incoming>Flow_1keu31h</bpmn:incoming>
+      <bpmn:outgoing>Flow_1pqi08q</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="Flow_1keu31h" sourceRef="Event_01r2zd6" targetRef="Activity_0d24k0z"/>
+    <bpmn:task id="Activity_1gb02as" pipes:pipesType="custom" pipes:sdkHost="node-sdk:8080" name="hubspot-add-contact-to-list-contact-applinth-mapper" pipes:sdkHostName="node-sdk" pipes:appName="">
+      <bpmn:incoming>Flow_1d6ntyi</bpmn:incoming>
+      <bpmn:outgoing>Flow_0lj0qaj</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="Flow_1pqi08q" sourceRef="Activity_0d24k0z" targetRef="Activity_0ji7pp5"/>
+    <bpmn:task id="Activity_0ji7pp5" pipes:pipesType="connector" pipes:sdkHost="node-sdk:8080" name="hub-spot-create-contact" pipes:sdkHostName="node-sdk" pipes:appName="hub-spot-basic">
+      <bpmn:incoming>Flow_1pqi08q</bpmn:incoming>
+      <bpmn:outgoing>Flow_1d6ntyi</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="Flow_1d6ntyi" sourceRef="Activity_0ji7pp5" targetRef="Activity_1gb02as"/>
+    <bpmn:task id="Activity_00et2i1" pipes:pipesType="connector" pipes:sdkHost="node-sdk:8080" name="hub-spot-add-email-to-list" pipes:sdkHostName="node-sdk" pipes:appName="hub-spot-basic">
+      <bpmn:incoming>Flow_0lj0qaj</bpmn:incoming>
+      <bpmn:outgoing>Flow_03x3x87</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="Flow_0lj0qaj" sourceRef="Activity_1gb02as" targetRef="Activity_00et2i1"/>
+    <bpmn:task id="Activity_1rkutly" pipes:pipesType="custom" pipes:sdkHost="node-sdk:8080" name="hubspot-to-ses-contact-email-mapper" pipes:sdkHostName="node-sdk" pipes:appName="">
+      <bpmn:incoming>Flow_03x3x87</bpmn:incoming>
+      <bpmn:outgoing>Flow_0oryt4v</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="Flow_03x3x87" sourceRef="Activity_00et2i1" targetRef="Activity_1rkutly"/>
+    <bpmn:task id="Activity_1blgjok" pipes:pipesType="connector" pipes:sdkHost="node-sdk:8080" name="ses-send-email" pipes:sdkHostName="node-sdk" pipes:appName="amazon-ses">
+      <bpmn:incoming>Flow_0oryt4v</bpmn:incoming>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="Flow_0oryt4v" sourceRef="Activity_1rkutly" targetRef="Activity_1blgjok"/>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="applinthcontact">
+      <bpmndi:BPMNEdge id="Flow_0oryt4v_di" bpmnElement="Flow_0oryt4v">
+        <di:waypoint x="990" y="330"/>
+        <di:waypoint x="1030" y="330"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_03x3x87_di" bpmnElement="Flow_03x3x87">
+        <di:waypoint x="850" y="330"/>
+        <di:waypoint x="890" y="330"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0lj0qaj_di" bpmnElement="Flow_0lj0qaj">
+        <di:waypoint x="710" y="330"/>
+        <di:waypoint x="750" y="330"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1d6ntyi_di" bpmnElement="Flow_1d6ntyi">
+        <di:waypoint x="570" y="330"/>
+        <di:waypoint x="610" y="330"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1pqi08q_di" bpmnElement="Flow_1pqi08q">
+        <di:waypoint x="430" y="330"/>
+        <di:waypoint x="470" y="330"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1keu31h_di" bpmnElement="Flow_1keu31h">
+        <di:waypoint x="288" y="330"/>
+        <di:waypoint x="330" y="330"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_01lz8i9_di" bpmnElement="Flow_01lz8i9">
+        <di:waypoint x="270" y="312"/>
+        <di:waypoint x="270" y="220"/>
+        <di:waypoint x="330" y="220"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0whli9y_di" bpmnElement="Flow_0whli9y">
+        <di:waypoint x="430" y="220"/>
+        <di:waypoint x="470" y="220"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_01r2zd6_di" bpmnElement="Event_01r2zd6">
+        <dc:Bounds x="252" y="312" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="259" y="355" width="22" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1d986wt_di" bpmnElement="Activity_1d986wt">
+        <dc:Bounds x="330" y="180" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1crg9in_di" bpmnElement="Activity_1crg9in">
+        <dc:Bounds x="470" y="180" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0d24k0z_di" bpmnElement="Activity_0d24k0z">
+        <dc:Bounds x="330" y="290" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1gb02as_di" bpmnElement="Activity_1gb02as">
+        <dc:Bounds x="610" y="290" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0ji7pp5_di" bpmnElement="Activity_0ji7pp5">
+        <dc:Bounds x="470" y="290" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_00et2i1_di" bpmnElement="Activity_00et2i1">
+        <dc:Bounds x="750" y="290" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1rkutly_di" bpmnElement="Activity_1rkutly">
+        <dc:Bounds x="890" y="290" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1blgjok_di" bpmnElement="Activity_1blgjok">
+        <dc:Bounds x="1030" y="290" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

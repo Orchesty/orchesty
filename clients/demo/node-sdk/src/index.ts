@@ -74,6 +74,20 @@ import MongoDbClient from '@orchesty/nodejs-sdk/dist/lib/Storage/Mongodb/Client'
 import Redis from '@orchesty/nodejs-sdk/dist/lib/Storage/Redis/Redis';
 import TopologyRunner from '@orchesty/nodejs-sdk/dist/lib/Topology/TopologyRunner';
 import CurlSender from '@orchesty/nodejs-sdk/dist/lib/Transport/Curl/CurlSender';
+import HubspotApplinthContactAddContactToListMapper
+    from './ApplinthIo/CustomNode/HubspotApplinthContactAddContactToListMapper';
+import HubspotApplinthWhitePaperAddContactToListMapper
+    from './ApplinthIo/CustomNode/HubspotApplinthWhitePaperAddContactToListMapper';
+import HubspotWhiterPaperToSesEmailMapper from './ApplinthIo/CustomNode/HubspotWhiterPaperToSesEmailMapper';
+import HubSpotAddEmailToListConnector from './Common/Connector/HubSpotAddEmailToListConnector';
+import HubSpotCreateContactConnector from './Common/Connector/HubSpotCreateContactConnector';
+import HanabosoHubSpotContactMapper from './Common/CustomNode/HanabosoHubSpotContactMapper';
+import HanabosoToJiraMapper from './Common/CustomNode/HanabosoToJiraMapper';
+import HubspotAddContactToListMapper from './Common/CustomNode/HubspotAddContactToListMapper';
+import HubspotToSesEmailMapper from './Common/CustomNode/HubspotToSesEmailMapper';
+import { HubspotListIdsEnums } from './Common/Enum/HubspotListIdsEnums';
+import { PageEnum } from './Common/Enum/PageEnum';
+import SESApplication from './Common/SESApplication';
 import HanabosoContactFormMapper from './Hanabosocom/CustomNode/ContactFormMapper';
 import ListPosts from './JsonPlaceholder/Batch/ListPosts';
 import ListUsers from './JsonPlaceholder/Batch/ListUsers';
@@ -83,15 +97,6 @@ import HubSpotCreateContactMapper from './JsonPlaceholder/HubSpotCreateContactMa
 import NonInstallableApplication from './JsonPlaceholder/NonInstallableApplication';
 import SampleApplication from './JsonPlaceholder/SampleApplication';
 import TenantApplication from './JsonPlaceholder/TenantApplication';
-import HubSpotAddEmailToListConnector from './OrchestyIo/Connector/HubSpotAddEmailToListConnector';
-import HubSpotCreateContactConnector from './OrchestyIo/Connector/HubSpotCreateContactConnector';
-import HubspotAddContactToListMapper from './OrchestyIo/CustomNode/HubspotAddContactToListMapper';
-import HubspotToSesTransactionEmailMapper from './OrchestyIo/CustomNode/HubspotToSesEmailMapper';
-import OrchestyToHubSpotContactMapper from './OrchestyIo/CustomNode/OrchestyToHubSpotContactMapper';
-import OrchestyToJiraMapper from './OrchestyIo/CustomNode/OrchestyToJiraMapper';
-import { HubspotListIdsEnums } from './OrchestyIo/Enum/HubspotListIdsEnums';
-import { OrchestyPageEnum } from './OrchestyIo/Enum/OrchestyPageEnum';
-import SESApplication from './OrchestyIo/SESApplication';
 
 export function start(): void {
     initiateContainer();
@@ -298,8 +303,8 @@ export function start(): void {
         .setApplication(hubspotAppBasic);
     container.setCustomNode(hubspotContactMapper);
 
-    const orchestyToHubSpotContactMapper = new OrchestyToHubSpotContactMapper();
-    container.setCustomNode(orchestyToHubSpotContactMapper);
+    const hubSpotContactMapper = new HanabosoHubSpotContactMapper();
+    container.setCustomNode(hubSpotContactMapper);
 
     const hubSpotAddEmailToListConnector = new HubSpotAddEmailToListConnector()
         .setSender(sender)
@@ -319,13 +324,19 @@ export function start(): void {
     const addContactToHubspotNewsletterListMapper = new HubspotAddContactToListMapper(HubspotListIdsEnums.NEWSLETTER);
     container.setCustomNode(addContactToHubspotNewsletterListMapper);
 
-    const hubspotToJiraSalesMapper = new OrchestyToJiraMapper(OrchestyPageEnum.SALES, ['sales']);
+    const hubspotApplinthAddContactToListMapper = new HubspotApplinthContactAddContactToListMapper();
+    container.setCustomNode(hubspotApplinthAddContactToListMapper);
+
+    const hubspotApplinthWhitePaperAddContactToListMapper = new HubspotApplinthWhitePaperAddContactToListMapper();
+    container.setCustomNode(hubspotApplinthWhitePaperAddContactToListMapper);
+
+    const hubspotToJiraSalesMapper = new HanabosoToJiraMapper(PageEnum.SALES, ['sales']);
     container.setCustomNode(hubspotToJiraSalesMapper);
 
-    const hubspotToJiraContactMapper = new OrchestyToJiraMapper(OrchestyPageEnum.CONTACT, ['contact']);
+    const hubspotToJiraContactMapper = new HanabosoToJiraMapper(PageEnum.CONTACT, ['contact']);
     container.setCustomNode(hubspotToJiraContactMapper);
 
-    const hubspotToJiraCommunityMapper = new OrchestyToJiraMapper(OrchestyPageEnum.COMMUNITY, ['community']);
+    const hubspotToJiraCommunityMapper = new HanabosoToJiraMapper(PageEnum.COMMUNITY, ['community']);
     container.setCustomNode(hubspotToJiraCommunityMapper);
 
     const discordSendMessage = new DiscordSendMessageConnector()
@@ -392,25 +403,28 @@ export function start(): void {
         .setDb(mongoDb);
     container.setBatch(listUsersCommon);
 
-    const hubspotToHubspotSalesTransactionEmail = new HubspotToSesTransactionEmailMapper(
-        OrchestyPageEnum.SALES,
+    const hubspotToHubspotSalesTransactionEmail = new HubspotToSesEmailMapper(
+        PageEnum.SALES,
     );
     container.setCustomNode(hubspotToHubspotSalesTransactionEmail);
 
-    const hubspotToHubspotContactTransactionEmail = new HubspotToSesTransactionEmailMapper(
-        OrchestyPageEnum.CONTACT,
+    const hubspotToHubspotContactTransactionEmail = new HubspotToSesEmailMapper(
+        PageEnum.CONTACT,
     );
     container.setCustomNode(hubspotToHubspotContactTransactionEmail);
 
-    const hubspotToHubspotCommunityTransactionEmail = new HubspotToSesTransactionEmailMapper(
-        OrchestyPageEnum.COMMUNITY,
+    const hubspotToHubspotCommunityTransactionEmail = new HubspotToSesEmailMapper(
+        PageEnum.COMMUNITY,
     );
     container.setCustomNode(hubspotToHubspotCommunityTransactionEmail);
 
-    const hubspotToHubspotNewsletterTransactionEmail = new HubspotToSesTransactionEmailMapper(
-        OrchestyPageEnum.NEWSLETTER,
+    const hubspotToHubspotNewsletterTransactionEmail = new HubspotToSesEmailMapper(
+        PageEnum.NEWSLETTER,
     );
     container.setCustomNode(hubspotToHubspotNewsletterTransactionEmail);
+
+    const hubspotWhiterPaperToSesEmailMapper = new HubspotWhiterPaperToSesEmailMapper(PageEnum.WHITE_PAPER);
+    container.setCustomNode(hubspotWhiterPaperToSesEmailMapper);
 
     const hanabosoContactFormEmail = new HanabosoContactFormMapper();
     container.setCustomNode(hanabosoContactFormEmail);

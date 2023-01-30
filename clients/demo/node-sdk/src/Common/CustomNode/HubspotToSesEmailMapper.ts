@@ -3,16 +3,16 @@ import ACommonNode from '@orchesty/nodejs-sdk/dist/lib/Commons/ACommonNode';
 import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
 import ResultCode from '@orchesty/nodejs-sdk/dist/lib/Utils/ResultCode';
 import { readFileSync } from 'fs';
-import { getOrchestyPageName, OrchestyPageEnum } from '../Enum/OrchestyPageEnum';
+import { getPageName, PageEnum } from '../Enum/PageEnum';
 
 export default class HubspotToSesTransactionEmailMapper extends ACommonNode {
 
-    public constructor(private readonly orchestyPage: OrchestyPageEnum) {
+    public constructor(protected readonly page: PageEnum) {
         super();
     }
 
     public getName(): string {
-        return `hubspot-to-ses-${getOrchestyPageName(this.orchestyPage)}-email-mapper`;
+        return `hubspot-to-ses-${getPageName(this.page)}-email-mapper`;
     }
 
     public processAction(dto: ProcessDto<IInput>): ProcessDto<IInput | IOutput> {
@@ -25,21 +25,19 @@ export default class HubspotToSesTransactionEmailMapper extends ACommonNode {
             return dto;
         }
 
-        const content = readFileSync(`${__dirname}/Templates/${getOrchestyPageName(this.orchestyPage)}.html`).toString();
-
         return dto.setNewJsonData<IOutput>({
             /* eslint-disable @typescript-eslint/naming-convention */
             Destination: {
                 ToAddresses: emails,
             },
-            Source: 'info@orchesty.io',
+            Source: this.getSourceEmail(),
             Message: {
                 Subject: {
                     Data: 'Confirmation email',
                 },
                 Body: {
                     Html: {
-                        Data: content,
+                        Data: this.getContent(dto.getJsonData()),
                     },
                 },
             },
@@ -47,9 +45,19 @@ export default class HubspotToSesTransactionEmailMapper extends ACommonNode {
         });
     }
 
+    protected getSourceEmail(): string {
+        return 'info@orchesty.io';
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    protected getContent(data: IInput): string {
+        return readFileSync(`${__dirname}/Templates/${getPageName(this.page)}.html`).toString();
+    }
+
 }
 
 export interface IInput {
     updated: number[];
     emails: string[];
+    language?: string;
 }

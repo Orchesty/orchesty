@@ -1,6 +1,6 @@
-import { IOrchestyCommunity } from './IOrchestyCommunity';
+import { IBaseContact } from './IBaseContact';
 
-export interface IOrchestyContact extends IOrchestyCommunity {
+export interface IExtendedContact extends IBaseContact {
     /* eslint-disable @typescript-eslint/naming-convention */
     company: string;
     phone: string;
