@@ -54,6 +54,7 @@ final class UserTaskHandler
             ...$doc->toArray(),
             UserTask::TOPOLOGY_DESCR   => $topo?->getDescr() ?? '',
             UserTask::TOPOLOGY_VERSION => $topo?->getVersion() ?? 0,
+            UserTask::TOPOLOGY_DELETED => $topo?->isDeleted() ?? false,
         ];
     }
 
@@ -106,7 +107,7 @@ final class UserTaskHandler
     {
         $userTask = $this->manager->get($id);
         $this->manager->retargetUserTask($userTask, $topologyId, $nodeId);
-        $this->manager->accept($this->manager->get($id));
+        $this->manager->accept($userTask);
 
         return [];
     }
