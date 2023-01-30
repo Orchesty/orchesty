@@ -3,7 +3,7 @@
 namespace Hanaboso\PipesFramework\Configurator\Model;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager;
+use Hanaboso\PipesFramework\Configurator\Document\TopologyProgress;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use Hanaboso\Utils\Exception\DateTimeException;
@@ -19,13 +19,9 @@ final class DashboardManager
     /**
      * DashboardManager constructor.
      *
-     * @param MongoMetricsManager $metricsManager
-     * @param DocumentManager     $documentManager
+     * @param DocumentManager $documentManager
      */
-    public function __construct(
-        private readonly MongoMetricsManager $metricsManager,
-        private readonly DocumentManager $documentManager,
-    )
+    public function __construct(private readonly DocumentManager $documentManager)
     {
     }
 
@@ -40,15 +36,11 @@ final class DashboardManager
         $data = new DashboardDto();
         $data->setRange($range);
 
-        $topologiesMetrics = $this->metricsManager->getTopologiesProcessTimeMetrics(
-            $this->rangeToWord($range),
-        );
-        if (array_key_exists('process', $topologiesMetrics)) {
-            $process = $topologiesMetrics['process'];
-            $data->setTotalRuns(intval($process['total']));
-            $data->setErrorsCount(intval($process['errors']));
-            $data->setSuccessCount(intval($process['total']) - intval($process['errors']));
-        }
+        $repository        = $this->documentManager->getRepository(TopologyProgress::class);
+        $topologiesMetrics = $repository->getDataForDashboard($this->rangeToWord($range));
+        $data->setTotalRuns(intval($topologiesMetrics['total']));
+        $data->setErrorsCount(intval($topologiesMetrics['failed']));
+        $data->setSuccessCount(intval($topologiesMetrics['total']) - intval($topologiesMetrics['failed']));
 
         $repository = $this->documentManager->getRepository(Topology::class);
 

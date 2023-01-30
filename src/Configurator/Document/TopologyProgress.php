@@ -13,7 +13,7 @@ use Hanaboso\Utils\Exception\DateTimeException;
  *
  * @package Hanaboso\PipesFramework\Configurator\Document
  *
- * @ODM\Document(collection="MultiCounter")
+ * @ODM\Document(collection="MultiCounter", repositoryClass="Hanaboso\PipesFramework\Configurator\Repository\TopologyProgressRepository")
  */
 class TopologyProgress
 {
@@ -250,7 +250,7 @@ class TopologyProgress
      */
     public function toArray(): array
     {
-        $finished = $this->finishedAt ? $this->finishedAt->format(DateTimeUtils::DATE_TIME_UTC) : NULL;
+        $finished = $this->finishedAt?->format(DateTimeUtils::DATE_TIME_UTC);
         $end      = $this->finishedAt ?? DateTimeUtils::getUtcDateTime();
         $count    = $this->ok + $this->nok;
 
