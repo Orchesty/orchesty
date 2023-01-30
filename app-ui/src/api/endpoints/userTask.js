@@ -32,10 +32,11 @@ export default {
   },
   accept: {
     id: "USER_TASK_ACCEPT",
-    request: ({ id }) => {
+    request: ({ id, data }) => {
       return {
         url: `/user-task/${id}/accept`,
         method: "POST",
+        data,
       }
     },
   },
