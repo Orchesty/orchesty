@@ -167,15 +167,15 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
 
         self::assertEquals([
             [
+                'id'     => 'node-id',
+                'name'   => 'node-name',
+                'status' => 'ok',
+            ],
+            [
                 'id'     => 'node-id-exception',
                 'name'   => 'node-name-exception',
                 'status' => 'nok',
                 'reason' => 'cURL error 6: Could not resolve host: unknown (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://unknown',
-            ],
-            [
-                'id'     => 'node-id',
-                'name'   => 'node-name',
-                'status' => 'ok',
             ],
         ], $result);
     }
