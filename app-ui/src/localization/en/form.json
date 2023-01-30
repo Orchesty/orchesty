@@ -27,6 +27,8 @@
     "confirm": "repeat password",
     "register": "register",
     "changeSdkValue": "change diagram sdk value with",
-    "description": "description"
+    "description": "description",
+    "topology": "Topology",
+    "topologyNode": "Topology node"
   }
 }

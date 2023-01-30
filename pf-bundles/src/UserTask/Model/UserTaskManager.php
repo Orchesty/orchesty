@@ -178,6 +178,7 @@ final class UserTaskManager
                 ...$doc,
                 UserTask::TOPOLOGY_DESCR   => $topo?->getDescr() ?? '',
                 UserTask::TOPOLOGY_VERSION => $topo?->getVersion() ?? 0,
+                UserTask::TOPOLOGY_DELETED => $topo?->isDeleted() ?? false,
             ];
         }, $res);
     }

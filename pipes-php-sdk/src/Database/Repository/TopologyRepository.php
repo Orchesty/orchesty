@@ -174,7 +174,7 @@ final  class TopologyRepository extends DocumentRepository
     public function getTopologyById(string $id): Topology
     {
         /** @var Topology|null $topology */
-        $topology = $this->findBy(['id' => $id, 'deleted' => FALSE]);
+        $topology = $this->findOneBy(['id' => $id, 'deleted' => FALSE]);
 
         if (!$topology) {
             throw new LogicException(
