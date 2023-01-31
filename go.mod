@@ -6,8 +6,10 @@ require (
 	github.com/hanaboso/go-log v1.0.4
 	github.com/hanaboso/go-metrics v1.0.4
 	github.com/hanaboso/go-mongodb v1.0.6
+	github.com/hanaboso/go-rabbitmq v1.1.0
+	github.com/hanaboso/go-utils v0.0.0-20230120123608-0ef579cff29a
 	github.com/jinzhu/configor v1.2.1
-	github.com/rabbitmq/amqp091-go v1.4.0
+	github.com/rabbitmq/amqp091-go v1.5.0
 	github.com/rs/zerolog v1.28.0
 	github.com/spf13/cobra v1.5.0
 	go.mongodb.org/mongo-driver v1.10.0
