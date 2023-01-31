@@ -10,7 +10,7 @@ import (
 
 // StartCleaner starts memory cleaner
 func StartCleaner() {
-	timer := time.NewTicker(time.Second * time.Duration(config.Config.Cleaner.CleanUp))
+	timer := time.NewTicker(time.Second * time.Duration(config.Cleaner.CleanUp))
 
 	go func() {
 		t := 0.0
@@ -20,11 +20,10 @@ func StartCleaner() {
 		}
 
 		for range timer.C {
-			percentCPU, newT := utils.GetCPUUsage(t, int(config.Config.Cleaner.CleanUp))
+			percentCPU, newT := utils.GetCPUUsage(t, int(config.Cleaner.CleanUp))
 			t = newT
 
-			if percentCPU <= float64(config.Config.Cleaner.CPUPercentLimit) {
-				RabbitMq.ClearChannels()
+			if percentCPU <= float64(config.Cleaner.CPUPercentLimit) {
 				debug.FreeOSMemory()
 			}
 		}

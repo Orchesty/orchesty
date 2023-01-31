@@ -20,6 +20,5 @@ func TestRabbit(t *testing.T) {
 	topology := storage.Topology{Name: "Topology", ID: primitive.NewObjectID(), Node: &storage.Node{ID: primitive.NewObjectID(), Name: "Node"}}
 
 	RabbitMq.SendMessage(r, topology, utils.InitFields())
-	RabbitMq.ClearChannels()
-	RabbitMq.DisconnectRabbit()
+	RabbitMq.Disconnect()
 }

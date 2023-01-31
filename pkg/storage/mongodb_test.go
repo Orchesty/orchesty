@@ -100,12 +100,12 @@ func TestMongo(t *testing.T) {
 }
 
 func prepareData(mongo *mongo.Database) map[string][]string {
-	_ = mongo.Collection(config.Config.MongoDB.NodeColl).Drop(nil)
-	_ = mongo.Collection(config.Config.MongoDB.TopologyColl).Drop(nil)
-	_ = mongo.Collection(config.Config.MongoDB.WebhookColl).Drop(nil)
+	_ = mongo.Collection(config.MongoDB.NodeColl).Drop(nil)
+	_ = mongo.Collection(config.MongoDB.TopologyColl).Drop(nil)
+	_ = mongo.Collection(config.MongoDB.WebhookColl).Drop(nil)
 	result := make(map[string][]string)
 
-	innerResult, _ := mongo.Collection(config.Config.MongoDB.TopologyColl).InsertOne(nil, bson.M{
+	innerResult, _ := mongo.Collection(config.MongoDB.TopologyColl).InsertOne(nil, bson.M{
 		"name":       topologyCollection,
 		"visibility": "public",
 		"enabled":    true,
@@ -113,7 +113,7 @@ func prepareData(mongo *mongo.Database) map[string][]string {
 		"version":    1,
 	})
 	topologyID := innerResult.InsertedID.(primitive.ObjectID).Hex()
-	innerResult, _ = mongo.Collection(config.Config.MongoDB.NodeColl).InsertOne(nil, bson.M{
+	innerResult, _ = mongo.Collection(config.MongoDB.NodeColl).InsertOne(nil, bson.M{
 		"name":     nodeCollection,
 		"topology": topologyID,
 		"enabled":  true,
@@ -122,7 +122,7 @@ func prepareData(mongo *mongo.Database) map[string][]string {
 	})
 	result[topologySuccessNodeSuccess] = []string{topologyID, innerResult.InsertedID.(primitive.ObjectID).Hex()}
 
-	innerResult, _ = mongo.Collection(config.Config.MongoDB.TopologyColl).InsertOne(nil, bson.M{
+	innerResult, _ = mongo.Collection(config.MongoDB.TopologyColl).InsertOne(nil, bson.M{
 		"name":       topologyCollection,
 		"visibility": "public",
 		"enabled":    true,
@@ -130,7 +130,7 @@ func prepareData(mongo *mongo.Database) map[string][]string {
 		"version":    1,
 	})
 	topologyID = innerResult.InsertedID.(primitive.ObjectID).Hex()
-	innerResult, _ = mongo.Collection(config.Config.MongoDB.NodeColl).InsertOne(nil, bson.M{
+	innerResult, _ = mongo.Collection(config.MongoDB.NodeColl).InsertOne(nil, bson.M{
 		"name":     nodeCollection,
 		"topology": topologyID,
 		"enabled":  true,
@@ -139,7 +139,7 @@ func prepareData(mongo *mongo.Database) map[string][]string {
 	})
 	result[topologyWebhook] = []string{topologyID, innerResult.InsertedID.(primitive.ObjectID).Hex()}
 
-	innerResult, _ = mongo.Collection(config.Config.MongoDB.TopologyColl).InsertOne(nil, bson.M{
+	innerResult, _ = mongo.Collection(config.MongoDB.TopologyColl).InsertOne(nil, bson.M{
 		"name":       topologyCollection,
 		"visibility": "public",
 		"enabled":    true,
@@ -147,7 +147,7 @@ func prepareData(mongo *mongo.Database) map[string][]string {
 		"version":    2,
 	})
 	topologyID = innerResult.InsertedID.(primitive.ObjectID).Hex()
-	innerResult, _ = mongo.Collection(config.Config.MongoDB.NodeColl).InsertOne(nil, bson.M{
+	innerResult, _ = mongo.Collection(config.MongoDB.NodeColl).InsertOne(nil, bson.M{
 		"name":     nodeCollection,
 		"topology": topologyID,
 		"enabled":  true,
@@ -156,7 +156,7 @@ func prepareData(mongo *mongo.Database) map[string][]string {
 	})
 	result[topologySuccessNodeSuccess] = []string{topologyID, innerResult.InsertedID.(primitive.ObjectID).Hex()}
 
-	innerResult, _ = mongo.Collection(config.Config.MongoDB.TopologyColl).InsertOne(nil, bson.M{
+	innerResult, _ = mongo.Collection(config.MongoDB.TopologyColl).InsertOne(nil, bson.M{
 		"name":       topologyCollection,
 		"visibility": "private",
 		"enabled":    true,
@@ -164,7 +164,7 @@ func prepareData(mongo *mongo.Database) map[string][]string {
 		"version":    3,
 	})
 	topologyID = innerResult.InsertedID.(primitive.ObjectID).Hex()
-	innerResult, _ = mongo.Collection(config.Config.MongoDB.NodeColl).InsertOne(nil, bson.M{
+	innerResult, _ = mongo.Collection(config.MongoDB.NodeColl).InsertOne(nil, bson.M{
 		"name":     nodeCollection,
 		"topology": topologyID,
 		"enabled":  true,
@@ -173,7 +173,7 @@ func prepareData(mongo *mongo.Database) map[string][]string {
 	})
 	result[topologyVisibilityNodeSuccess] = []string{topologyID, innerResult.InsertedID.(primitive.ObjectID).Hex()}
 
-	innerResult, _ = mongo.Collection(config.Config.MongoDB.TopologyColl).InsertOne(nil, bson.M{
+	innerResult, _ = mongo.Collection(config.MongoDB.TopologyColl).InsertOne(nil, bson.M{
 		"name":       topologyCollection,
 		"visibility": "public",
 		"enabled":    false,
@@ -181,7 +181,7 @@ func prepareData(mongo *mongo.Database) map[string][]string {
 		"version":    4,
 	})
 	topologyID = innerResult.InsertedID.(primitive.ObjectID).Hex()
-	innerResult, _ = mongo.Collection(config.Config.MongoDB.NodeColl).InsertOne(nil, bson.M{
+	innerResult, _ = mongo.Collection(config.MongoDB.NodeColl).InsertOne(nil, bson.M{
 		"name":     nodeCollection,
 		"topology": topologyID,
 		"enabled":  true,
@@ -190,7 +190,7 @@ func prepareData(mongo *mongo.Database) map[string][]string {
 	})
 	result[topologyEnabledNodeSuccess] = []string{topologyID, innerResult.InsertedID.(primitive.ObjectID).Hex()}
 
-	innerResult, _ = mongo.Collection(config.Config.MongoDB.TopologyColl).InsertOne(nil, bson.M{
+	innerResult, _ = mongo.Collection(config.MongoDB.TopologyColl).InsertOne(nil, bson.M{
 		"name":       topologyCollection,
 		"visibility": "public",
 		"enabled":    true,
@@ -198,7 +198,7 @@ func prepareData(mongo *mongo.Database) map[string][]string {
 		"version":    5,
 	})
 	topologyID = innerResult.InsertedID.(primitive.ObjectID).Hex()
-	innerResult, _ = mongo.Collection(config.Config.MongoDB.NodeColl).InsertOne(nil, bson.M{
+	innerResult, _ = mongo.Collection(config.MongoDB.NodeColl).InsertOne(nil, bson.M{
 		"name":     nodeCollection,
 		"topology": topologyID,
 		"enabled":  true,
@@ -207,7 +207,7 @@ func prepareData(mongo *mongo.Database) map[string][]string {
 	})
 	result[topologyDeletedNodeSuccess] = []string{topologyID, innerResult.InsertedID.(primitive.ObjectID).Hex()}
 
-	innerResult, _ = mongo.Collection(config.Config.MongoDB.TopologyColl).InsertOne(nil, bson.M{
+	innerResult, _ = mongo.Collection(config.MongoDB.TopologyColl).InsertOne(nil, bson.M{
 		"name":       topologyCollection,
 		"visibility": "public",
 		"enabled":    false,
@@ -215,7 +215,7 @@ func prepareData(mongo *mongo.Database) map[string][]string {
 		"version":    6,
 	})
 	topologyID = innerResult.InsertedID.(primitive.ObjectID).Hex()
-	innerResult, _ = mongo.Collection(config.Config.MongoDB.NodeColl).InsertOne(nil, bson.M{
+	innerResult, _ = mongo.Collection(config.MongoDB.NodeColl).InsertOne(nil, bson.M{
 		"name":     nodeCollection,
 		"topology": topologyID,
 		"enabled":  false,
@@ -224,7 +224,7 @@ func prepareData(mongo *mongo.Database) map[string][]string {
 	})
 	result[topologySuccessNodeEnabled] = []string{topologyID, innerResult.InsertedID.(primitive.ObjectID).Hex()}
 
-	innerResult, _ = mongo.Collection(config.Config.MongoDB.TopologyColl).InsertOne(nil, bson.M{
+	innerResult, _ = mongo.Collection(config.MongoDB.TopologyColl).InsertOne(nil, bson.M{
 		"name":       topologyCollection,
 		"visibility": "public",
 		"enabled":    false,
@@ -232,7 +232,7 @@ func prepareData(mongo *mongo.Database) map[string][]string {
 		"version":    7,
 	})
 	topologyID = innerResult.InsertedID.(primitive.ObjectID).Hex()
-	innerResult, _ = mongo.Collection(config.Config.MongoDB.NodeColl).InsertOne(nil, bson.M{
+	innerResult, _ = mongo.Collection(config.MongoDB.NodeColl).InsertOne(nil, bson.M{
 		"name":     nodeCollection,
 		"topology": topologyID,
 		"enabled":  true,
@@ -241,7 +241,7 @@ func prepareData(mongo *mongo.Database) map[string][]string {
 	})
 	result[topologySuccessNodeDeleted] = []string{topologyID, innerResult.InsertedID.(primitive.ObjectID).Hex()}
 
-	innerResult, _ = mongo.Collection(config.Config.MongoDB.TopologyColl).InsertOne(nil, bson.M{
+	innerResult, _ = mongo.Collection(config.MongoDB.TopologyColl).InsertOne(nil, bson.M{
 		"name":       topologyCollection,
 		"visibility": "public",
 		"enabled":    true,
@@ -249,7 +249,7 @@ func prepareData(mongo *mongo.Database) map[string][]string {
 		"version":    8,
 	})
 	topologyID = innerResult.InsertedID.(primitive.ObjectID).Hex()
-	innerResult, _ = mongo.Collection(config.Config.MongoDB.NodeColl).InsertOne(nil, bson.M{
+	innerResult, _ = mongo.Collection(config.MongoDB.NodeColl).InsertOne(nil, bson.M{
 		"name":     nodeCollection,
 		"topology": topologyID,
 		"enabled":  true,
@@ -258,7 +258,7 @@ func prepareData(mongo *mongo.Database) map[string][]string {
 	})
 	nodeID := innerResult.InsertedID.(primitive.ObjectID).Hex()
 
-	innerResult, _ = mongo.Collection(config.Config.MongoDB.WebhookColl).InsertOne(nil, bson.M{
+	innerResult, _ = mongo.Collection(config.MongoDB.WebhookColl).InsertOne(nil, bson.M{
 		"user":        "User",
 		"token":       "Token",
 		"node":        "Node",
