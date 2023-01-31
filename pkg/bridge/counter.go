@@ -6,6 +6,7 @@ import (
 	"github.com/hanaboso/pipes/bridge/pkg/bridge/types"
 	"github.com/hanaboso/pipes/bridge/pkg/enum"
 	"github.com/hanaboso/pipes/bridge/pkg/model"
+	"github.com/hanaboso/pipes/bridge/pkg/rabbit"
 	"github.com/hanaboso/pipes/bridge/pkg/utils/timex"
 	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/rs/zerolog/log"
@@ -68,8 +69,8 @@ func (c counter) send(result model.ProcessResult, followers int) {
 	})
 }
 
-func newCounter(publisher types.Publisher) counter {
+func newCounter(rabbitContainer rabbit.Container) counter {
 	return counter{
-		publisher: publisher,
+		publisher: rabbitContainer.Counter,
 	}
 }

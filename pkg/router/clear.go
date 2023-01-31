@@ -10,6 +10,6 @@ func Clear(writer http.ResponseWriter, _ *http.Request, _ httprouter.Params, con
 	response(writer, "{}")
 
 	container.AppCancel()
-	container.RabbitMq.DeleteQueues()
+	container.RabbitMq.Close()
 	container.CloseApp <- struct{}{}
 }

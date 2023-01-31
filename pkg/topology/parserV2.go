@@ -95,7 +95,6 @@ func (jsonParserV2) getTopology(path string) (model.Topology, error) {
 				},
 			},
 			Followers: make([]model.Follower, len(nodeV2.Followers)),
-			Messages:  make(chan *model.ProcessMessage, 0),
 		}
 
 		for j, f := range nodeV2.Followers {

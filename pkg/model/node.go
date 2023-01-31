@@ -14,7 +14,6 @@ type Node struct {
 	Worker      enum.WorkerType
 	Settings    NodeSettings
 	Followers   []Follower
-	Messages    chan *ProcessMessage
 }
 
 type NodeShard struct {

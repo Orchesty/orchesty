@@ -4,12 +4,13 @@ import (
 	"encoding/json"
 	"errors"
 	metrics "github.com/hanaboso/go-metrics/pkg"
+	"github.com/hanaboso/go-rabbitmq/pkg/rabbitmq"
 	"github.com/hanaboso/pipes/bridge/pkg/bridge/types"
 	"github.com/hanaboso/pipes/bridge/pkg/config"
 	"github.com/hanaboso/pipes/bridge/pkg/enum"
 	"github.com/hanaboso/pipes/bridge/pkg/model"
 	"github.com/hanaboso/pipes/bridge/pkg/mongo"
-	"github.com/hanaboso/pipes/bridge/pkg/rabbitmq"
+	"github.com/hanaboso/pipes/bridge/pkg/rabbit"
 	"github.com/hanaboso/pipes/bridge/pkg/topology"
 	"github.com/hanaboso/pipes/bridge/pkg/utils/timex"
 	"github.com/hanaboso/pipes/bridge/pkg/worker"
@@ -22,14 +23,15 @@ import (
 type node struct {
 	model.Node
 	worker        types.Worker
+	consumer      *rabbitmq.Consumer
 	topologyId    string
 	topologyName  string
 	followers     types.Publishers
 	followersList string
 	wg            *sync.WaitGroup
 	cursorer      types.Publisher
-	limiter       *limiter
-	repeater      *repeater
+	limiter       limiter
+	repeater      repeater
 	mongodb       *mongo.MongoDb
 	metrics       metrics.Interface
 	counter       counter
@@ -72,16 +74,20 @@ func (n *node) CursorPublisher() types.Publisher {
 }
 
 func (n *node) start() {
-	log.Debug().EmbedObject(n).Msg("starting node")
+	log.Debug().EmbedObject(n).Msgf("starting node: %s", n.NodeName())
 	if n.Worker.ServiceType() == enum.ServiceType_Memory {
 		n.wg.Done()
 	} else {
 		defer n.wg.Done()
 	}
 
-	for msg := range n.Messages {
-		go n.process(msg)
+	wg := &sync.WaitGroup{}
+	for msg := range n.consumer.Consume(false) {
+		wg.Add(1)
+		go n.process(rabbit.ParseMessage(msg, wg))
 	}
+
+	wg.Wait() // Await for (n)acking of messages that have been sent to process before closing n.wg.Done() above
 }
 
 func (n *node) process(dto *model.ProcessMessage) {
@@ -243,16 +249,16 @@ func (n *node) sendMetrics(dto model.ProcessResult) {
 	}
 }
 
-func newNode(n model.Node, topologyId, topologyName string, rabbitSvc rabbitmq.RabbitMQ, wg *sync.WaitGroup, limiter *limiter, repeater *repeater, mongodb *mongo.MongoDb, metrics metrics.Interface, counter counter) *node {
+func newNode(n model.Node, topologyId, topologyName string, rabbitContainer rabbit.Container, wg *sync.WaitGroup, limiter limiter, repeater repeater, mongodb *mongo.MongoDb, metrics metrics.Interface, counter counter) *node {
 	w, err := worker.Get(n.Worker)
 	if err != nil {
 		log.Fatal().Err(err).Send()
 	}
 
-	followers := make(map[string]types.Publisher)
+	followers := make(types.Publishers)
 	for _, follower := range n.Followers {
 		// TODO this is TMP -> as it does not account for inMemory publishers
-		followers[follower.Id] = rabbitSvc.GetPublisher(follower.Id)
+		followers[follower.Id] = rabbitContainer.Publishers[follower.Id]
 	}
 
 	followersString, _ := json.Marshal(n.Followers)
@@ -262,6 +268,7 @@ func newNode(n model.Node, topologyId, topologyName string, rabbitSvc rabbitmq.R
 		topologyId:    topologyId,
 		topologyName:  topologyName,
 		worker:        w,
+		consumer:      rabbitContainer.Consumers[n.ID],
 		followers:     followers,
 		followersList: string(followersString),
 		wg:            wg,
@@ -273,7 +280,7 @@ func newNode(n model.Node, topologyId, topologyName string, rabbitSvc rabbitmq.R
 	}
 
 	if n.Worker == enum.WorkerType_Batch {
-		node.cursorer = rabbitSvc.GetPublisher(n.ID)
+		node.cursorer = rabbitContainer.Publishers[n.ID]
 	}
 
 	return node
