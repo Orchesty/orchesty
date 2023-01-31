@@ -2,10 +2,10 @@ package cmd
 
 import (
 	"context"
+	"github.com/hanaboso/go-rabbitmq/pkg/rabbitmq"
 	"github.com/hanaboso/pipes/bridge/pkg/bridge"
 	"github.com/hanaboso/pipes/bridge/pkg/config"
 	"github.com/hanaboso/pipes/bridge/pkg/mongo"
-	"github.com/hanaboso/pipes/bridge/pkg/rabbitmq"
 	"github.com/hanaboso/pipes/bridge/pkg/router"
 	"github.com/hanaboso/pipes/bridge/pkg/topology"
 	"github.com/hanaboso/pipes/bridge/pkg/worker"
@@ -38,22 +38,25 @@ func startBridge(_ *cobra.Command, _ []string) {
 	mongodb := mongo.NewMongoDb()
 	worker.InitializeWorkers(mongodb)
 
-	rabbit := rabbitmq.NewRabbitMQ()
-	topoSvc := topology.NewTopologySvc(rabbit)
+	topoSvc := topology.NewTopologySvc()
 	topo, err := topoSvc.Parse(config.App.TopologyJSON)
 	if err != nil {
 		log.Fatal().Err(err).Send()
 	}
 
+	rabbitDsn := topo.Shards[0].RabbitMQDSN
+	// TODO for now does not support multiple rabbitMq shards
+	rabbitClient := rabbitmq.NewClient(rabbitDsn, config.Logger, false)
+
 	ctx, cancel := context.WithCancel(context.Background())
 	marker := make(chan struct{}, 1)
 	marker <- struct{}{}
 
-	br := bridge.NewBridge(rabbit, mongodb, topo)
+	bridge := bridge.NewBridge(rabbitClient, mongodb, topo)
 	server := &http.Server{Addr: ":8000", Handler: router.Router(router.Container{
 		Topology:  topo,
 		AppCancel: cancel,
-		RabbitMq:  rabbit,
+		RabbitMq:  rabbitClient,
 		CloseApp:  marker,
 	})}
 
@@ -69,7 +72,7 @@ func startBridge(_ *cobra.Command, _ []string) {
 
 	go server.ListenAndServe()
 	log.Info().Msg("Listening on port [:8000]")
-	br.Run(ctx)
+	bridge.Run(ctx)
 
 	<-marker
 }

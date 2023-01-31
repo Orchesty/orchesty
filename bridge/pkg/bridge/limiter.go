@@ -5,12 +5,12 @@ import (
 	"github.com/hanaboso/pipes/bridge/pkg/bridge/types"
 	"github.com/hanaboso/pipes/bridge/pkg/enum"
 	"github.com/hanaboso/pipes/bridge/pkg/model"
+	"github.com/hanaboso/pipes/bridge/pkg/rabbit"
 	"strings"
 )
 
 type limiter struct {
 	publisher types.Publisher
-	// TODO socket connection, prediction cache
 }
 
 func (l *limiter) process(node types.Node, dto *model.ProcessMessage) model.ProcessResult {
@@ -68,8 +68,8 @@ func (l *limiter) publish(dto *model.ProcessMessage) model.ProcessResult {
 	return dto.Pending()
 }
 
-func newLimiter(publisher types.Publisher) *limiter {
-	return &limiter{
-		publisher: publisher,
+func newLimiter(rabbitContainer rabbit.Container) limiter {
+	return limiter{
+		publisher: rabbitContainer.Limiter,
 	}
 }

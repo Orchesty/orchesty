@@ -14,3 +14,7 @@ type Node struct {
 func (n Node) Exchange() string {
 	return fmt.Sprintf("node.%s.hx", n.ID.Hex())
 }
+
+func (n Node) Queue() string {
+	return fmt.Sprintf("node.%s.1", n.ID.Hex())
+}

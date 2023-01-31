@@ -4,14 +4,14 @@ import (
 	"context"
 	metrics "github.com/hanaboso/go-metrics/pkg"
 	"github.com/hanaboso/pipes/bridge/pkg/mongo"
+	"github.com/hanaboso/pipes/bridge/pkg/rabbit"
 	"sync"
 	"time"
 
-	"github.com/hanaboso/pipes/bridge/pkg/enum"
-
+	"github.com/hanaboso/go-rabbitmq/pkg/rabbitmq"
 	"github.com/hanaboso/pipes/bridge/pkg/config"
+	"github.com/hanaboso/pipes/bridge/pkg/enum"
 	"github.com/hanaboso/pipes/bridge/pkg/model"
-	"github.com/hanaboso/pipes/bridge/pkg/rabbitmq"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
@@ -23,16 +23,15 @@ type Bridge struct {
 	timeout  time.Duration
 	topology model.Topology
 	// External services
-	rabbitMQ *rabbitmq.RabbitMQ
-	limiter  *limiter
-	repeater *repeater
-	mongodb  *mongo.MongoDb
-	metrics  metrics.Interface
-	counter  counter
+	rabbitContainer rabbit.Container
+	limiter         limiter
+	repeater        repeater
+	mongodb         *mongo.MongoDb
+	metrics         metrics.Interface
+	counter         counter
 }
 
 func (b *Bridge) Run(ctx context.Context) {
-	b.rabbitMQ.AwaitStartup()
 	b.timeout = b.topology.Timeout
 	if b.timeout <= 0 {
 		b.timeout = defaultTimeout
@@ -41,15 +40,16 @@ func (b *Bridge) Run(ctx context.Context) {
 	b.start(ctx)
 }
 
-func NewBridge(rabbit *rabbitmq.RabbitMQ, mongodb *mongo.MongoDb, topology model.Topology) Bridge {
+func NewBridge(rabbitClient *rabbitmq.Client, mongodb *mongo.MongoDb, topology model.Topology) Bridge {
+	rabbitContainer := rabbit.NewContainer(rabbitClient, topology)
 	return Bridge{
-		topology: topology,
-		rabbitMQ: rabbit,
-		limiter:  newLimiter(rabbit.Limiter),
-		repeater: newRepeater(rabbit.Repeater),
-		mongodb:  mongodb,
-		metrics:  metrics.Connect(config.Metrics.Dsn),
-		counter:  newCounter(rabbit.Counter),
+		topology:        topology,
+		rabbitContainer: rabbitContainer,
+		limiter:         newLimiter(rabbitContainer),
+		repeater:        newRepeater(rabbitContainer),
+		mongodb:         mongodb,
+		metrics:         metrics.Connect(config.Metrics.Dsn),
+		counter:         newCounter(rabbitContainer),
 	}
 }
 
@@ -63,7 +63,7 @@ func (b *Bridge) start(ctx context.Context) {
 
 		workerWg.Add(1)
 		go func(shard model.NodeShard, wg *sync.WaitGroup) {
-			worker := newNode(*shard.Node, b.topology.ID, b.topology.Name, *b.rabbitMQ, wg, b.limiter, b.repeater, b.mongodb, b.metrics, b.counter)
+			worker := newNode(*shard.Node, b.topology.ID, b.topology.Name, b.rabbitContainer, wg, b.limiter, b.repeater, b.mongodb, b.metrics, b.counter)
 			worker.start()
 		}(node, workerWg)
 	}
@@ -87,13 +87,15 @@ func (b *Bridge) shutdown(ctx context.Context, wg *sync.WaitGroup) {
 	go func() {
 		defer close(done)
 
-		b.rabbitMQ.CloseSubscribers()
+		for _, consumer := range b.rabbitContainer.Consumers {
+			consumer.Close()
+		}
 
 		// Awaits rabbitMq nodes to process remaining messages
 		log.Debug().Msg("awaiting rabbitMq workers to finish processes...")
 		wg.Wait()
 
-		b.rabbitMQ.ClosePublishers()
+		// b.rabbitContainer.ClosePublishers()
 		b.mongodb.Close()
 	}()
 
