@@ -11,8 +11,6 @@ services:
             APP_DEBUG: 'true'
             MONGO_DSN: mongodb://mongodb/starting-point?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
             METRICS_DSN: mongodb://mongodb/metrics?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
-            RABBIT_COUNTER_QUEUE_DURABLE: 'true'
-            RABBIT_QUEUE_DURABLE: 'true'
             RABBIT_DELIVERY_MODE: 2
             APP_CLEANUP_TIME: 300
             GOROUTINE_LIMIT: 1000

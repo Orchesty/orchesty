@@ -1,4 +1,4 @@
-FROM hanabosocom/go-base:1.18
+FROM hanabosocom/go-base:1.19
 COPY . .
 RUN go build -ldflags='-s -w' -o /starting-point cmd/starting-point.go && upx -9 /starting-point
 

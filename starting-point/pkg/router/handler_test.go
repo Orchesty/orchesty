@@ -38,7 +38,7 @@ var webhookObject = storage.Webhook{
 }
 
 type RabbitMock struct {
-	*service.RabbitDefault
+	service.RabbitSvc
 }
 
 type CacheMock struct {
@@ -70,7 +70,7 @@ type MongoNoMock struct {
 }
 
 func mockCache(t int) {
-	service.RabbitMq = &RabbitMock{}
+	service.RabbitMq = RabbitMock{}
 
 	switch t {
 	case 1:
@@ -91,7 +91,7 @@ func prepareMongo() {
 	_ = storage.Mongo.InsertApiToken("orchesty", []string{"topology:run"}, "")
 }
 
-func (r *RabbitMock) SendMessage(request *http.Request, topology storage.Topology, init map[string]float64) {
+func (r RabbitMock) SendMessage(request *http.Request, topology storage.Topology, init map[string]float64) {
 	return
 }
 
@@ -127,13 +127,13 @@ func (c *MongoMockConnected) IsConnected() bool {
 	return true
 }
 
-func (r *RabbitMock) IsMetricsConnected() bool {
+func (r RabbitMock) IsMetricsConnected() bool {
 	return true
 }
 
 func TestHandleStatus(t *testing.T) {
 	storage.Mongo = &MongoMockConnected{}
-	service.RabbitMq = &RabbitMock{}
+	service.RabbitMq = RabbitMock{}
 
 	r, _ := http.NewRequest("GET", "/status", nil)
 	assertResponse(t, r, 200, `{"database":true,"metrics":true}`)

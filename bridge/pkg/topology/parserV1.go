@@ -101,12 +101,11 @@ func (jsonParserV1) getTopology(path string) (model.Topology, error) {
 			ID:        nodeV1.Label.NodeID,
 			Name:      nodeV1.Label.NodeName,
 			Worker:    workerType,
-			Messages:  make(chan *model.ProcessMessage, 5), // TODO 5?
 			Followers: followers,
 			Settings: model.NodeSettings{
 				Url: fmt.Sprintf("http://%s:%d",
 					nodeV1.Worker.Settings.Host,
-					intx.IntDefault(nodeV1.Worker.Settings.Port, 80),
+					intx.Default(nodeV1.Worker.Settings.Port, 80),
 				),
 				ActionPath: strings.TrimPrefix(nodeV1.Worker.Settings.ProcessPath, "/"),
 			},

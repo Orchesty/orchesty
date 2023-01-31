@@ -3,12 +3,14 @@ package counter
 import (
 	"context"
 	metrics "github.com/hanaboso/go-metrics/pkg"
+	"github.com/hanaboso/go-rabbitmq/pkg/rabbitmq"
+	"github.com/hanaboso/go-utils/pkg/intx"
+	"github.com/hanaboso/go-utils/pkg/timex"
 	"github.com/hanaboso/pipes/counter/pkg/config"
 	"github.com/hanaboso/pipes/counter/pkg/model"
 	"github.com/hanaboso/pipes/counter/pkg/mongo"
 	"github.com/hanaboso/pipes/counter/pkg/rabbit"
-	"github.com/hanaboso/pipes/counter/pkg/utils/intx"
-	"github.com/hanaboso/pipes/counter/pkg/utils/timex"
+	amqp "github.com/rabbitmq/amqp091-go"
 	"go.mongodb.org/mongo-driver/bson"
 	md "go.mongodb.org/mongo-driver/mongo"
 	"sync"
@@ -16,12 +18,10 @@ import (
 )
 
 type MultiCounter struct {
-	rabbit       *rabbit.RabbitMq
+	rabbitmq     *rabbitmq.Client
 	mongo        mongo.MongoDb
-	consumer     *rabbit.Consumer
 	metrics      metrics.Interface
 	toCommit     bool
-	lastTag      uint64
 	wg           *sync.WaitGroup
 	processes    []md.WriteModel
 	subProcesses []md.WriteModel
@@ -31,9 +31,9 @@ type MultiCounter struct {
 
 var relieve = 10
 
-func NewMultiCounter(rabbit *rabbit.RabbitMq, mongo mongo.MongoDb) MultiCounter {
+func NewMultiCounter(rabbitmq *rabbitmq.Client, mongo mongo.MongoDb) MultiCounter {
 	return MultiCounter{
-		rabbit:       rabbit,
+		rabbitmq:     rabbitmq,
 		mongo:        mongo,
 		metrics:      metrics.Connect(config.Metrics.Dsn),
 		toCommit:     false,
@@ -46,29 +46,30 @@ func NewMultiCounter(rabbit *rabbit.RabbitMq, mongo mongo.MongoDb) MultiCounter 
 }
 
 func (c *MultiCounter) Start(ctx context.Context) {
-	consumer := c.rabbit.NewConsumer("pipes.multi-counter")
-	c.consumer = consumer
-	msgs := consumer.Consume(ctx)
+	consumer := c.rabbitmq.NewConsumer("pipes.multi-counter", config.RabbitMq.Prefetch)
+	msgs := consumer.Consume(false)
 	config.Log.Info("Consumer started")
+	var lastMessage amqp.Delivery
 
 	for {
 		select {
 		case <-ctx.Done():
-			c.commit()
+			c.commit(lastMessage)
 			return
 		case msg, ok := <-msgs:
 			if ok {
-				c.lastTag = msg.Tag
-				if msg.Ok {
+				lastMessage = msg
+				parsed := rabbit.ParseMessage(msg)
+				if parsed.Ok {
 					c.wg.Add(1)
-					c.processMessage(msg) // Just DO NOT make it as a new goroutine! Would create data race.
+					c.processMessage(parsed) // Just DO NOT make it as a new goroutine! Would create data race.
 				}
 			} else {
-				c.commit()
+				c.commit(lastMessage)
 				return
 			}
 		default:
-			c.commit()
+			c.commit(lastMessage)
 		}
 	}
 }
@@ -94,15 +95,15 @@ func (c *MultiCounter) processMessage(message *model.ParsedMessage) {
 	}
 }
 
-func (c *MultiCounter) commit() {
-	if c.toCommit {
+func (c *MultiCounter) commit(msg amqp.Delivery) {
+	if msg.DeliveryTag > 0 && c.toCommit {
 		c.wg.Wait()
 		finished := c.mongo.UpdateProcesses(c.processes, c.subProcesses, c.finishes, c.errors)
 		for _, process := range finished {
 			go c.finishProcess(process)
 		}
 		c.clear()
-		c.consumer.MutliAck(c.lastTag)
+		_ = msg.Ack(true)
 		relieve = 10
 	} else {
 		time.Sleep(time.Duration(relieve) * time.Millisecond)

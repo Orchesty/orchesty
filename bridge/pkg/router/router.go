@@ -3,9 +3,9 @@ package router
 import (
 	"context"
 	"encoding/json"
+	"github.com/hanaboso/go-rabbitmq/pkg/rabbitmq"
 	"github.com/hanaboso/pipes/bridge/pkg/config"
 	"github.com/hanaboso/pipes/bridge/pkg/model"
-	"github.com/hanaboso/pipes/bridge/pkg/rabbitmq"
 	"github.com/julienschmidt/httprouter"
 	"github.com/rs/zerolog/log"
 	"net/http"
@@ -29,7 +29,7 @@ const (
 
 type Container struct {
 	Topology  model.Topology
-	RabbitMq  *rabbitmq.RabbitMQ
+	RabbitMq  *rabbitmq.Client
 	AppCancel context.CancelFunc
 	CloseApp  chan struct{}
 }

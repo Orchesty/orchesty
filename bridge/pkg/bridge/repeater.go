@@ -5,6 +5,7 @@ import (
 	"github.com/hanaboso/pipes/bridge/pkg/bridge/types"
 	"github.com/hanaboso/pipes/bridge/pkg/enum"
 	"github.com/hanaboso/pipes/bridge/pkg/model"
+	"github.com/hanaboso/pipes/bridge/pkg/rabbit"
 	"strconv"
 )
 
@@ -42,8 +43,8 @@ func (r *repeater) publish(node types.Node, dto *model.ProcessMessage) model.Pro
 	return dto.Pending()
 }
 
-func newRepeater(publisher types.Publisher) *repeater {
-	return &repeater{
-		publisher: publisher,
+func newRepeater(rabbitContainer rabbit.Container) repeater {
+	return repeater{
+		publisher: rabbitContainer.Repeater,
 	}
 }

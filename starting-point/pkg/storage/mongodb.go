@@ -4,12 +4,11 @@ import (
 	"fmt"
 	"starting-point/pkg/enum"
 
+	log "github.com/hanaboso/go-log/pkg"
 	"github.com/hanaboso/go-mongodb"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"starting-point/pkg/config"
-
-	log "github.com/sirupsen/logrus"
 )
 
 // MongoInterface represents MongoDB database interface
@@ -30,7 +29,7 @@ type MongoInterface interface {
 // MongoDefault represents default MongoDB implementation
 type MongoDefault struct {
 	connection       *mongodb.Connection
-	log              *log.Logger
+	log              log.Logger
 	visibilityFilter primitive.E
 	enabledFilter    primitive.E
 	deletedFilter    primitive.E
@@ -47,7 +46,7 @@ func CreateMongo() {
 		enabledFilter:    primitive.E{Key: "enabled", Value: true},
 		deletedFilter:    primitive.E{Key: "deleted", Value: false},
 		versionSort:      primitive.D{{"version", -1}},
-		log:              config.Config.Logger,
+		log:              config.Logger,
 	}
 
 	Mongo.Connect()
@@ -55,12 +54,12 @@ func CreateMongo() {
 
 // Connect connects to database
 func (m *MongoDefault) Connect() {
-	log.Infof("Connecting to MongoDB: %s", config.Config.MongoDB.Dsn)
+	m.log.Info("Connecting to MongoDB: %s", config.MongoDB.Dsn)
 
 	m.connection = &mongodb.Connection{}
-	m.connection.Connect(config.Config.MongoDB.Dsn)
+	m.connection.Connect(config.MongoDB.Dsn)
 
-	log.Info("MongoDB successfully connected!")
+	m.log.Info("MongoDB successfully connected!")
 }
 
 // Disconnect disconnects from database
@@ -77,7 +76,7 @@ func (m *MongoDefault) DropApiTokenCollection() error {
 	context, cancel := m.connection.Context()
 	defer cancel()
 
-	err := m.connection.Database.Collection(config.Config.MongoDB.ApiTokenColl).Drop(context)
+	err := m.connection.Database.Collection(config.MongoDB.ApiTokenColl).Drop(context)
 
 	if err != nil {
 		logMongoError(m.log, err, "Could not Drop ApiToken!")
@@ -91,7 +90,7 @@ func (m *MongoDefault) InsertApiToken(user string, scopes []string, key string) 
 	defer cancel()
 
 	_, err := m.connection.Database.
-		Collection(config.Config.MongoDB.ApiTokenColl).
+		Collection(config.MongoDB.ApiTokenColl).
 		InsertOne(context, map[string]interface{}{"user": user, "scopes": scopes, "key": key})
 
 	if err != nil {
@@ -107,7 +106,7 @@ func (m *MongoDefault) FindApiKeyByUserAndScopes(user string, scopes []string) (
 	defer cancel()
 
 	err := m.connection.Database.
-		Collection(config.Config.MongoDB.ApiTokenColl).
+		Collection(config.MongoDB.ApiTokenColl).
 		FindOne(context, map[string]interface{}{"user": user, "scopes": scopes}).
 		Decode(&apiToken)
 
@@ -126,7 +125,7 @@ func (m *MongoDefault) FindNodeByID(nodeID, topologyID string, uiRun bool, allow
 
 	innerNodeID, err := primitive.ObjectIDFromHex(nodeID)
 	if err != nil {
-		m.log.Warnf("Node ID '%s' is not valid MongoDB ID.", nodeID)
+		m.log.Warn("Node ID '%s' is not valid MongoDB ID.", nodeID)
 
 		return nil
 	}
@@ -142,7 +141,7 @@ func (m *MongoDefault) FindNodeByID(nodeID, topologyID string, uiRun bool, allow
 		filter = append(filter, m.enabledFilter)
 	}
 
-	err = m.connection.Database.Collection(config.Config.MongoDB.NodeColl).FindOne(innerContext, filter).Decode(&node)
+	err = m.connection.Database.Collection(config.MongoDB.NodeColl).FindOne(innerContext, filter).Decode(&node)
 	if err != nil {
 		logMongoError(m.log, err, fmt.Sprintf("Node with key '%s' not found.", nodeID))
 
@@ -159,7 +158,7 @@ func (m *MongoDefault) FindNodeByName(nodeName, topologyID string) []Node {
 	innerContext, cancel := m.connection.Context()
 	defer cancel()
 
-	cursor, err := m.connection.Database.Collection(config.Config.MongoDB.NodeColl).Find(innerContext, primitive.D{
+	cursor, err := m.connection.Database.Collection(config.MongoDB.NodeColl).Find(innerContext, primitive.D{
 		{"name", nodeName},
 		{"topology", topologyID},
 		{"type", primitive.M{"$in": []string{enum.NodeType_Start, enum.NodeType_Cron}}},
@@ -180,7 +179,7 @@ func (m *MongoDefault) FindNodeByName(nodeName, topologyID string) []Node {
 		err = cursor.Decode(&node)
 
 		if err != nil {
-			m.log.Errorf("Node with name '%s' decode error: %s", nodeName, err.Error())
+			m.log.Error(fmt.Errorf("node with name '%s' decode error: %s", nodeName, err.Error()))
 
 			return nil
 		}
@@ -199,7 +198,7 @@ func (m *MongoDefault) FindTopologyByID(topologyID, nodeID string, uiRun bool, a
 
 	innerTopologyID, err := primitive.ObjectIDFromHex(topologyID)
 	if err != nil {
-		m.log.Warnf("Topology ID '%s' is not valid MongoDB ID.", topologyID)
+		m.log.Warn("Topology ID '%s' is not valid MongoDB ID.", topologyID)
 
 		return nil
 	}
@@ -213,7 +212,7 @@ func (m *MongoDefault) FindTopologyByID(topologyID, nodeID string, uiRun bool, a
 		filters = append(filters, m.enabledFilter)
 	}
 
-	err = m.connection.Database.Collection(config.Config.MongoDB.TopologyColl).FindOne(innerContext, filters).Decode(&topology)
+	err = m.connection.Database.Collection(config.MongoDB.TopologyColl).FindOne(innerContext, filters).Decode(&topology)
 	if err != nil {
 		logMongoError(m.log, err, fmt.Sprintf("Topology with key '%s' not found.", topologyID))
 
@@ -231,7 +230,7 @@ func (m *MongoDefault) FindTopologyByName(topologyName, nodeName string) *Topolo
 	innerContext, cancel := m.connection.Context()
 	defer cancel()
 
-	cursor, err := m.connection.Database.Collection(config.Config.MongoDB.TopologyColl).Find(innerContext, primitive.D{
+	cursor, err := m.connection.Database.Collection(config.MongoDB.TopologyColl).Find(innerContext, primitive.D{
 		{"name", topologyName},
 		m.visibilityFilter,
 		m.enabledFilter,
@@ -248,7 +247,7 @@ func (m *MongoDefault) FindTopologyByName(topologyName, nodeName string) *Topolo
 	if cursor.Next(nil) {
 		err = cursor.Decode(&topology)
 		if err != nil {
-			m.log.Errorf("Topology with name '%s' decode error: %s", topologyName, err.Error())
+			m.log.Error(fmt.Errorf("topology with name '%s' decode error: %s", topologyName, err.Error()))
 
 			return nil
 		}
@@ -269,7 +268,7 @@ func (m *MongoDefault) FindTopologyByApplication(topologyName, nodeName, token s
 	innerContext, cancel := m.connection.Context()
 	defer cancel()
 
-	err := m.connection.Database.Collection(config.Config.MongoDB.WebhookColl).FindOne(innerContext, primitive.D{
+	err := m.connection.Database.Collection(config.MongoDB.WebhookColl).FindOne(innerContext, primitive.D{
 		{"topology", topologyName},
 		{"node", nodeName},
 		{"token", token},
@@ -286,10 +285,10 @@ func (m *MongoDefault) FindTopologyByApplication(topologyName, nodeName, token s
 	return topology, &webhook
 }
 
-func logMongoError(log *log.Logger, err error, content string) {
+func logMongoError(log log.Logger, err error, content string) {
 	if err.Error() == "mongo: no documents in result" {
 		log.Warn(content)
 	} else {
-		log.Errorf("Unexpected MongoDB error: %s", err.Error())
+		log.Error(fmt.Errorf("unexpected MongoDB error: %s", err.Error()))
 	}
 }

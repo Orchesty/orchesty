@@ -23,7 +23,7 @@ import (
 func HandleClear(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer context.Clear(r)
-		config.Config.Logger.Infof("Request: %s %s", r.Method, r.URL.String())
+		config.Logger.Info("Request: %s %s", r.Method, r.URL.String())
 
 		w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
@@ -42,7 +42,7 @@ func HandleClear(h http.HandlerFunc) http.HandlerFunc {
 
 // HandleLimit checks if there is not too many requests
 func HandleLimit(h http.HandlerFunc, w http.ResponseWriter, r *http.Request) {
-	if int16(runtime.NumGoroutine()) > config.Config.Limiter.GoroutineLimit {
+	if int16(runtime.NumGoroutine()) > config.Limiter.GoroutineLimit {
 		w.WriteHeader(http.StatusTooManyRequests)
 
 		return
@@ -93,7 +93,7 @@ func handleByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		config.Config.Logger.Errorf("Content is not valid: %s", err.Error())
+		config.Logger.Error(fmt.Errorf("content is not valid: %s", err.Error()))
 		writeErrorResponse(w, http.StatusBadRequest, "Content is not valid!")
 		return
 	}
@@ -122,7 +122,7 @@ func handleByID(w http.ResponseWriter, r *http.Request) {
 func handleByName(w http.ResponseWriter, r *http.Request) {
 	err := utils.ValidateBody(r)
 	if err != nil {
-		config.Config.Logger.Errorf("Content is not valid: %s", err.Error())
+		config.Logger.Error(fmt.Errorf("content is not valid: %s", err.Error()))
 		writeErrorResponse(w, http.StatusBadRequest, "Content is not valid!")
 		return
 	}
@@ -147,7 +147,7 @@ func handleByName(w http.ResponseWriter, r *http.Request) {
 func handleByApplication(w http.ResponseWriter, r *http.Request) {
 	err := utils.ValidateBody(r)
 	if err != nil {
-		config.Config.Logger.Errorf("Content is not valid: %s", err.Error())
+		config.Logger.Error(fmt.Errorf("content is not valid: %s", err.Error()))
 		writeErrorResponse(w, http.StatusBadRequest, "Content is not valid!")
 		return
 	}

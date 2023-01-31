@@ -40,11 +40,6 @@ wait-for-server-start:
 
 lint:
 	$(DE) go fmt ./...
-	excludes='';\
-	for file in $$(ls -R $$(find . -type f ) | grep test.go); do\
-		excludes="$${excludes} -exclude $$(echo $${file} | cut -c 3-)";\
-	done;\
-	$(DE) revive -config config.toml $${excludes} -formatter friendly ./...
 
 fast-test: lint
 	$(DE) mkdir var || true
