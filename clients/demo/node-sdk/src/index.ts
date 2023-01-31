@@ -25,6 +25,8 @@ import GitHubApplication from '@orchesty/nodejs-connectors/dist/lib/GitHub/GitHu
 import GoogleCalendarApplication
     from '@orchesty/nodejs-connectors/dist/lib/Google/GoogleCalendar/GoogleCalendarApplication';
 import GoogleDriveApplication from '@orchesty/nodejs-connectors/dist/lib/Google/GoogleDrive/GoogleDriveApplication';
+import GoogleDriveUploadFileConnector
+    from '@orchesty/nodejs-connectors/dist/lib/Google/GoogleSheet/Connector/GoogleSheetCreateSpreadsheetConnector';
 import GoogleSheetApplication from '@orchesty/nodejs-connectors/dist/lib/Google/GoogleSheet/GoogleSheetApplication';
 import YoutubeApplication from '@orchesty/nodejs-connectors/dist/lib/Google/Youtube/YoutubeApplication';
 import HubSpotSendTransactionEmailConnector
@@ -70,6 +72,8 @@ import { container, initiateContainer } from '@orchesty/nodejs-sdk';
 import { OAuth2Provider } from '@orchesty/nodejs-sdk/dist/lib/Authorization/Provider/OAuth2/OAuth2Provider';
 import CacheService from '@orchesty/nodejs-sdk/dist/lib/Cache/CacheService';
 import CoreServices from '@orchesty/nodejs-sdk/dist/lib/DIContainer/CoreServices';
+import DataStorageManager from '@orchesty/nodejs-sdk/dist/lib/Storage/DataStore/DataStorageManager';
+import FileSystem from '@orchesty/nodejs-sdk/dist/lib/Storage/File/FileSystem';
 import MongoDbClient from '@orchesty/nodejs-sdk/dist/lib/Storage/Mongodb/Client';
 import Redis from '@orchesty/nodejs-sdk/dist/lib/Storage/Redis/Redis';
 import TopologyRunner from '@orchesty/nodejs-sdk/dist/lib/Topology/TopologyRunner';
@@ -88,6 +92,11 @@ import HubspotToSesEmailMapper from './Common/CustomNode/HubspotToSesEmailMapper
 import { HubspotListIdsEnums } from './Common/Enum/HubspotListIdsEnums';
 import { PageEnum } from './Common/Enum/PageEnum';
 import SESApplication from './Common/SESApplication';
+import JiraGetIssueBatch from './Hanaboso/Batch/JiraGetIssueBatch';
+import JiraGetUpdatedWorklogIdsBatch from './Hanaboso/Batch/JiraGetUpdatedWorklogIdsBatch';
+import JiraGetWorklogsBatch from './Hanaboso/Batch/JiraGetWorklogsBatch';
+import JiraSortWorklogsByProjectsBatch from './Hanaboso/Batch/JiraSortWorklogsByProjectsBatch';
+import JiraWorklogGoogleDriveMapper from './Hanaboso/CustomNode/JiraWorklogGoogleDriveMapper';
 import HanabosoContactFormMapper from './Hanabosocom/CustomNode/ContactFormMapper';
 import ListPosts from './JsonPlaceholder/Batch/ListPosts';
 import ListUsers from './JsonPlaceholder/Batch/ListUsers';
@@ -104,6 +113,7 @@ export function start(): void {
     const mongoDb = container.get<MongoDbClient>(CoreServices.MONGO);
     const provider = container.get<OAuth2Provider>(CoreServices.OAUTH2_PROVIDER);
     const runner = container.get<TopologyRunner>(CoreServices.TOPOLOGY_RUNNER);
+    const etl = new DataStorageManager(new FileSystem());
     const redis = new Redis('');
     const cache = new CacheService(redis, sender);
 
@@ -368,6 +378,39 @@ export function start(): void {
         .setDb(mongoDb);
     container.setConnector(jiraCreateIssue);
 
+    const jiraGetWorklogsBatch = new JiraGetWorklogsBatch(etl)
+        .setSender(sender)
+        .setApplication(jiraApp)
+        .setDb(mongoDb);
+    container.setBatch(jiraGetWorklogsBatch);
+
+    const jiraGetIssueBatch = new JiraGetIssueBatch(etl)
+        .setSender(sender)
+        .setApplication(jiraApp)
+        .setDb(mongoDb);
+    container.setBatch(jiraGetIssueBatch);
+
+    const jiraGetUpdatedWorklogsIds = new JiraGetUpdatedWorklogIdsBatch(etl)
+        .setSender(sender)
+        .setApplication(jiraApp)
+        .setDb(mongoDb);
+    container.setBatch(jiraGetUpdatedWorklogsIds);
+
+    const jiraSortWorklogsByProjectsBatch = new JiraSortWorklogsByProjectsBatch(etl)
+        .setSender(sender)
+        .setApplication(jiraApp)
+        .setDb(mongoDb);
+    container.setBatch(jiraSortWorklogsByProjectsBatch);
+
+    const jiraWorklogGoogleDriveMapper = new JiraWorklogGoogleDriveMapper();
+    container.setCustomNode(jiraWorklogGoogleDriveMapper);
+
+    const googleSheetCreateSpreadsheet = new GoogleDriveUploadFileConnector()
+        .setSender(sender)
+        .setApplication(googleSheetApp)
+        .setDb(mongoDb);
+    container.setConnector(googleSheetCreateSpreadsheet);
+
     const awsRdsRoleConnector = new RDSAddRoleToDBCluster()
         .setSender(sender)
         .setApplication(awsRds)
@@ -405,6 +448,14 @@ export function start(): void {
 
     const hubspotToHubspotSalesTransactionEmail = new HubspotToSesEmailMapper(
         PageEnum.SALES,
+
+    const jiraListUsers = new ListUsersCommon()
+        .setApplication(jiraApp)
+        .setDb(mongoDb);
+    container.setBatch(jiraListUsers);
+
+    const hubspotToHubspotSalesTransactionEmail = new HubspotToSesTransactionEmailMapper(
+        OrchestyPageEnum.SALES,
     );
     container.setCustomNode(hubspotToHubspotSalesTransactionEmail);
 
