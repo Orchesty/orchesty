@@ -1,5 +1,6 @@
 # Pipes Limiter
 
+
 ## Popis služby
 Limiter je mikroservica, která počítá zda může být požadovaný request na cílový systém proveden, ještě předtím, než se skutečně provede tak, aby jsme zbytečně neatakovali limity, které jsou na daném vzdáleném systému nastaveny.
 Díky tomu můžeme předejít různým banům cizích systémů při překračování limitů.
