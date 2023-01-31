@@ -19,4 +19,8 @@
     - 'cd ${DIR} && echo "Working directory: ${DIR}"'
     - export COMPOSE_PROJECT_NAME=$(echo ${CI_JOB_NAME} | tr ":" "-")_${CI_PIPELINE_ID}
     - export COMPOSE_FILE=docker-compose.ci.yml
+
+    # some Make toolings require a dummy
+    - export SSH_AUTH_SOCK=$(mktemp)
+    
     - make ${COMPOSE_FILE} ${MAKE_TARGET}
