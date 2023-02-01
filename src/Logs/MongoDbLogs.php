@@ -106,7 +106,7 @@ final class MongoDbLogs extends LogsAbstract
             self::ID             => $id,
             self::SEVERITY       => $pipes[self::LEVEL] ?? '',
             self::MESSAGE        => $item[self::MESSAGE] ?? '',
-            self::TYPE           => $pipes[self::TYPE] ?? '',
+            self::SERVICE        => $pipes[self::SERVICE] ?? '',
             self::CORRELATION_ID => $pipes[self::CORRELATIONID] ?? '',
             self::TOPOLOGY_ID    => $pipes[self::TOPOLOGYID] ?? '',
             self::TOPOLOGY_NAME  => $pipes[self::TOPOLOGYNAME] ?? '',
