@@ -24,13 +24,10 @@ export default class JiraGetWorklogsBatch extends ABatchNode {
     }
 
     public async processAction(dto: BatchProcessDto): Promise<BatchProcessDto> {
-        const app = this.getApplication<JiraApplication>();
         const appInstall = await this.getApplicationInstallFromProcess(dto);
 
         const worklogData = await this.dataStorageManager.load<IEtlWithIds>(
             dto.getHeader(CORRELATION_ID) ?? '',
-            app.getName(),
-            appInstall.getUser(),
         );
 
         const etlData = worklogData[0].getData();
@@ -57,8 +54,6 @@ export default class JiraGetWorklogsBatch extends ABatchNode {
 
         await this.dataStorageManager.remove(
             dto.getHeader(CORRELATION_ID) ?? '',
-            app.getName(),
-            appInstall.getUser(),
         );
 
         const stripResponse = response.getJsonBody().map((item) => ({
@@ -77,8 +72,6 @@ export default class JiraGetWorklogsBatch extends ABatchNode {
         await this.dataStorageManager.store(
             dto.getHeader(CORRELATION_ID) ?? '',
             [newWorklogCache],
-            app.getName(),
-            appInstall.getUser(),
         );
 
         if (worklogIds.slice(nextStep).length) {

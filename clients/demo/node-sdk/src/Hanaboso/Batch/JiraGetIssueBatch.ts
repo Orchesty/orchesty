@@ -22,15 +22,12 @@ export default class JiraGetIssueBatch extends ABatchNode {
     }
 
     public async processAction(dto: BatchProcessDto): Promise<BatchProcessDto> {
-        const app = this.getApplication<JiraApplication>();
         const appInstall = await this.getApplicationInstallFromProcess(dto);
 
         const pointer = Number(dto.getBatchCursor('0'));
 
         const worklogEtl = await this.dataStorageManager.load<IEtl<IWorklogDataMinimal>>(
             dto.getHeader(CORRELATION_ID) ?? '',
-            app.getName(),
-            appInstall.getUser(),
         );
 
         const worklogData = worklogEtl?.[0].getData()?.data;
@@ -51,8 +48,6 @@ export default class JiraGetIssueBatch extends ABatchNode {
 
         await this.dataStorageManager.remove(
             dto.getHeader(CORRELATION_ID) ?? '',
-            app.getName(),
-            appInstall.getUser(),
         );
 
         Object.assign(worklogData[pointer], { key: response.getJsonBody().key });
@@ -60,8 +55,6 @@ export default class JiraGetIssueBatch extends ABatchNode {
         await this.dataStorageManager.store(
             dto.getHeader(CORRELATION_ID) ?? '',
             [{ data: worklogData, date: worklogEtl?.[0].getData()?.date }],
-            app.getName(),
-            appInstall.getUser(),
         );
 
         if (worklogData?.length && worklogData.length - 1 > pointer) {
