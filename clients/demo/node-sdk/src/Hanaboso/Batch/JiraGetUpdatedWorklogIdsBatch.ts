@@ -23,7 +23,6 @@ export default class JiraGetUpdatedWorklogIdsBatch extends ABatchNode {
     }
 
     public async processAction(dto: BatchProcessDto<IInput>): Promise<BatchProcessDto<IInput>> {
-        const app = this.getApplication<JiraApplication>();
         const appInstall = await this.getApplicationInstallFromProcess(dto);
 
         const { from, to } = dto.getJsonData();
@@ -49,8 +48,6 @@ export default class JiraGetUpdatedWorklogIdsBatch extends ABatchNode {
                 worklogIds,
                 date: { from, to },
             } as IEtlWorklogIds],
-            app.getName(),
-            appInstall.getUser(),
         );
 
         if (!responseData.lastPage || responseData.until < dateTo.getTime()) {

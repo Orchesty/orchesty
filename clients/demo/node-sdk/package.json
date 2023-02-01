@@ -15,7 +15,7 @@
   "dependencies": {
     "@aws-sdk/client-ses": "^3.256.0",
     "@aws-sdk/util-endpoints": "^3.254.0",
-    "@orchesty/nodejs-connectors": "^3.0.0",
+    "@orchesty/nodejs-connectors": "^3.0.1",
     "@orchesty/nodejs-sdk": "^4.0.7",
     "@types/node": "^18.11.18",
     "copyfiles": "^2.4.1",

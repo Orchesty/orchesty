@@ -1,0 +1,114 @@
+import GoogleSheetApplication from '@orchesty/nodejs-connectors/dist/lib/Google/GoogleSheet/GoogleSheetApplication';
+import AConnector from '@orchesty/nodejs-sdk/dist/lib/Connector/AConnector';
+import DataStorageManager from '@orchesty/nodejs-sdk/dist/lib/Storage/DataStore/DataStorageManager';
+import { HttpMethods } from '@orchesty/nodejs-sdk/dist/lib/Transport/HttpMethods';
+import { CORRELATION_ID } from '@orchesty/nodejs-sdk/dist/lib/Utils/Headers';
+import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
+import ResultCode from '@orchesty/nodejs-sdk/dist/lib/Utils/ResultCode';
+
+export const NAME = 'google-sheet-get-spredsheet';
+
+export const SPREADSHEET_ID = 'spreadsheet_id';
+
+const GOOGLE_SHEET_GET_SPREADSHEET = '/v4/spreadsheets';
+
+export default class GoogleSheetGetSpreadsheet extends AConnector {
+
+    public constructor(private readonly dataStorageManager: DataStorageManager) {
+        super();
+    }
+
+    public getName(): string {
+        return NAME;
+    }
+
+    public async processAction(dto: ProcessDto<IInput>): Promise<ProcessDto> {
+        const app = this.getApplication<GoogleSheetApplication>();
+        const spredsheetId = dto.getHeader(SPREADSHEET_ID);
+        const spredsheetCacheKey = `${spredsheetId}-${dto.getHeader(CORRELATION_ID)}`;
+
+        if (!spredsheetId) {
+            dto.setStopProcess(ResultCode.STOP_AND_FAILED, 'Connector is missing required Header: "spredsheetId".');
+            return dto;
+        }
+
+        const req = await app.getRequestDto(
+            dto,
+            await this.getApplicationInstallFromProcess(dto),
+            HttpMethods.GET,
+            `${GOOGLE_SHEET_GET_SPREADSHEET}/${spredsheetId}?includeGridData=true`,
+        );
+
+        const response = await this.getSender().send<IResponse>(req, [200]);
+
+        const data = response.getJsonBody();
+        const minimalSpreadsheet: IResponse = {
+            sheets: data.sheets?.map((item) => ({
+                data: item.data?.map((allData) => ({
+                    rowData: allData.rowData?.map((rowData) => ({
+                        values: rowData.values?.map((value) => ({
+                            userEnteredValue: {
+                                stringValue: value.userEnteredValue?.stringValue ?? '',
+                            },
+                        })),
+                    })),
+                })),
+                properties: {
+                    sheetId: item.properties.sheetId,
+                    title: item.properties.title,
+                },
+            })),
+            spreadsheetUrl: data.spreadsheetUrl,
+            properties: data.properties,
+            spreadsheetId: data.spreadsheetId,
+        };
+
+        await this.dataStorageManager.store(
+            spredsheetCacheKey,
+            [minimalSpreadsheet],
+        );
+
+        return dto.setJsonData({ success: 'ok' });
+    }
+
+}
+
+export interface IResponse {
+    spreadsheetId: string;
+    properties: IProperties;
+    spreadsheetUrl: string;
+    sheets: ISheets[];
+}
+
+interface IProperties {
+    title: string;
+}
+
+interface IPropertiesSheet extends IProperties {
+    sheetId: number;
+}
+
+interface ISheets {
+    properties: IPropertiesSheet;
+    data: IData[];
+}
+
+interface IData {
+    rowData: IRowData[];
+}
+
+interface IRowData {
+    values: IValue[];
+}
+
+export interface IValue {
+    userEnteredValue: IStringValue;
+}
+
+interface IStringValue {
+    stringValue: string;
+}
+
+interface IInput {
+    spreadsheetId: string;
+}

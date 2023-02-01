@@ -88,7 +88,7 @@ import HubSpotCreateContactConnector from './Common/Connector/HubSpotCreateConta
 import HanabosoHubSpotContactMapper from './Common/CustomNode/HanabosoHubSpotContactMapper';
 import HanabosoToJiraMapper from './Common/CustomNode/HanabosoToJiraMapper';
 import HubspotAddContactToListMapper from './Common/CustomNode/HubspotAddContactToListMapper';
-import HubspotToSesEmailMapper from './Common/CustomNode/HubspotToSesEmailMapper';
+import HubspotToSesTransactionEmailMapper from './Common/CustomNode/HubspotToSesEmailMapper';
 import { HubspotListIdsEnums } from './Common/Enum/HubspotListIdsEnums';
 import { PageEnum } from './Common/Enum/PageEnum';
 import SESApplication from './Common/SESApplication';
@@ -96,7 +96,11 @@ import JiraGetIssueBatch from './Hanaboso/Batch/JiraGetIssueBatch';
 import JiraGetUpdatedWorklogIdsBatch from './Hanaboso/Batch/JiraGetUpdatedWorklogIdsBatch';
 import JiraGetWorklogsBatch from './Hanaboso/Batch/JiraGetWorklogsBatch';
 import JiraSortWorklogsByProjectsBatch from './Hanaboso/Batch/JiraSortWorklogsByProjectsBatch';
+import GoogleSheetGetSpreadsheet from './Hanaboso/Connector/GoogleSheetGetSpreadsheet';
+import GoogleSheetUpdateBatchSpreadsheet from './Hanaboso/Connector/GoogleSheetUpdateBatchSpreadsheet';
 import JiraWorklogGoogleDriveMapper from './Hanaboso/CustomNode/JiraWorklogGoogleDriveMapper';
+import JiraWorklogsToGoogleDriveMapper from './Hanaboso/CustomNode/JiraWorklogsToGoogleDriveMapper';
+import SetupGoogleSheetSetting from './Hanaboso/CustomNode/SetupGoogleSheetSetting';
 import HanabosoContactFormMapper from './Hanabosocom/CustomNode/ContactFormMapper';
 import ListPosts from './JsonPlaceholder/Batch/ListPosts';
 import ListUsers from './JsonPlaceholder/Batch/ListUsers';
@@ -405,11 +409,31 @@ export function start(): void {
     const jiraWorklogGoogleDriveMapper = new JiraWorklogGoogleDriveMapper();
     container.setCustomNode(jiraWorklogGoogleDriveMapper);
 
+    const jiraWorklogsToGoogleDriveMapper = new JiraWorklogsToGoogleDriveMapper(etl)
+        .setApplication(jiraApp)
+        .setDb(mongoDb);
+    container.setCustomNode(jiraWorklogsToGoogleDriveMapper);
+
+    const setupGoogleSheetSetting = new SetupGoogleSheetSetting();
+    container.setCustomNode(setupGoogleSheetSetting);
+
     const googleSheetCreateSpreadsheet = new GoogleDriveUploadFileConnector()
         .setSender(sender)
         .setApplication(googleSheetApp)
         .setDb(mongoDb);
     container.setConnector(googleSheetCreateSpreadsheet);
+
+    const googleSheetGetSpreadsheet = new GoogleSheetGetSpreadsheet(etl)
+        .setSender(sender)
+        .setApplication(googleSheetApp)
+        .setDb(mongoDb);
+    container.setConnector(googleSheetGetSpreadsheet);
+
+    const googleSheetUpdateBatchSpreadsheet = new GoogleSheetUpdateBatchSpreadsheet(etl)
+        .setSender(sender)
+        .setApplication(googleSheetApp)
+        .setDb(mongoDb);
+    container.setConnector(googleSheetUpdateBatchSpreadsheet);
 
     const awsRdsRoleConnector = new RDSAddRoleToDBCluster()
         .setSender(sender)
@@ -446,30 +470,27 @@ export function start(): void {
         .setDb(mongoDb);
     container.setBatch(listUsersCommon);
 
-    const hubspotToHubspotSalesTransactionEmail = new HubspotToSesEmailMapper(
-        PageEnum.SALES,
-
     const jiraListUsers = new ListUsersCommon()
         .setApplication(jiraApp)
         .setDb(mongoDb);
     container.setBatch(jiraListUsers);
 
     const hubspotToHubspotSalesTransactionEmail = new HubspotToSesTransactionEmailMapper(
-        OrchestyPageEnum.SALES,
+        PageEnum.SALES,
     );
     container.setCustomNode(hubspotToHubspotSalesTransactionEmail);
 
-    const hubspotToHubspotContactTransactionEmail = new HubspotToSesEmailMapper(
+    const hubspotToHubspotContactTransactionEmail = new HubspotToSesTransactionEmailMapper(
         PageEnum.CONTACT,
     );
     container.setCustomNode(hubspotToHubspotContactTransactionEmail);
 
-    const hubspotToHubspotCommunityTransactionEmail = new HubspotToSesEmailMapper(
+    const hubspotToHubspotCommunityTransactionEmail = new HubspotToSesTransactionEmailMapper(
         PageEnum.COMMUNITY,
     );
     container.setCustomNode(hubspotToHubspotCommunityTransactionEmail);
 
-    const hubspotToHubspotNewsletterTransactionEmail = new HubspotToSesEmailMapper(
+    const hubspotToHubspotNewsletterTransactionEmail = new HubspotToSesTransactionEmailMapper(
         PageEnum.NEWSLETTER,
     );
     container.setCustomNode(hubspotToHubspotNewsletterTransactionEmail);

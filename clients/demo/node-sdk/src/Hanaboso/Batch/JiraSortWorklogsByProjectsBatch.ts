@@ -19,13 +19,8 @@ export default class JiraSortWorklogsByProjectsBatch extends ABatchNode {
     }
 
     public async processAction(dto: BatchProcessDto): Promise<BatchProcessDto> {
-        const app = this.getApplication<JiraApplication>();
-        const appInstall = await this.getApplicationInstallFromProcess(dto);
-
         const worklogData = await this.dataStorageManager.load<IEtl<IWorklogDataMinimalWithIssue>>(
             dto.getHeader(CORRELATION_ID) ?? '',
-            app.getName(),
-            appInstall.getUser(),
         );
 
         const result: IWorklogDataMinimalWithIssue[][] = [];
