@@ -89,6 +89,9 @@ const expectedTopo: ITopologyConfig = {
                             name: "pipes.repeater",
                             options: {
                                 durable: persistentQueues,
+                                arguments: {
+                                    "x-queue-type": "quorum"
+                                }
                             },
                         },
                     },
@@ -181,6 +184,9 @@ const expectedTopo: ITopologyConfig = {
                             name: "pipes.repeater",
                             options: {
                                 durable: persistentQueues,
+                                arguments: {
+                                    "x-queue-type": "quorum"
+                                }
                             },
                         },
                     },
