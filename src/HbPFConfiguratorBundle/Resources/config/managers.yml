@@ -42,5 +42,4 @@ services:
     hbpf.configurator.manager.dashboard:
         class: Hanaboso\PipesFramework\Configurator\Model\DashboardManager
         arguments:
-            - "@hbpf.metrics.manager.mongo_metrics"
             - '@doctrine_mongodb.odm.default_document_manager'

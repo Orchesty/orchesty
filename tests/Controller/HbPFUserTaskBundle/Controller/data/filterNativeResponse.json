@@ -10,10 +10,11 @@
                 "topologyId": "topo",
                 "topologyName": "",
                 "topologyDescr": "",
-                "topologyVersion": 0,
+                "topologyVersion": "0",
                 "type": "userTask",
                 "updated": "2020-02-02T10:10:10Z",
-                "id": "507f191e810c19729de860ea"
+                "id": "507f191e810c19729de860ea",
+                "topologyDeleted": false
             },
             {
                 "correlationId": "corr",
@@ -23,10 +24,11 @@
                 "topologyId": "topo",
                 "topologyName": "",
                 "topologyDescr": "",
-                "topologyVersion": 0,
+                "topologyVersion": "0",
                 "type": "userTask",
                 "updated": "2020-02-02T10:10:10Z",
-                "id": "507f191e810c19729de860eb"
+                "id": "507f191e810c19729de860eb",
+                "topologyDeleted": false
             }
         ],
         "filter": [
