@@ -23,6 +23,7 @@
 <script lang="ts">
 import { Vue, Component, Prop } from "vue-property-decorator"
 import SelectBox from "@/components/commons/inputsAndControls/SelectBox.vue"
+import { IFilterYearMonthOptions } from "@/views/BillingReportsPage.vue"
 
 export type HistoryFilterType = {
   year: number | "all"
@@ -38,23 +39,31 @@ export default class BillingReportsFilter extends Vue {
   @Prop({ type: Object, required: true })
   filter!: HistoryFilterType
 
-  @Prop({ type: Array, required: true })
-  months!: number[]
+  @Prop({ type: Object, required: true })
+  options!: IFilterYearMonthOptions
 
-  @Prop({ type: Array, required: true })
-  years!: number[]
+  OPTION_ALL = { text: this.$t("all"), value: VALUE_ALL }
 
   get optionsMonths() {
+    if (this.filter.year === this.VALUE_ALL) {
+      return [this.OPTION_ALL]
+    }
     return [
-      { text: this.$t("all"), value: VALUE_ALL },
-      ...this.months.map((month) => ({ text: `${month}`, value: month })),
+      this.OPTION_ALL,
+      ...(this.options[this.filter.year]?.map((month) => ({
+        text: `${month}`,
+        value: month,
+      })) || []),
     ]
   }
 
   get optionsYears() {
     return [
-      { text: this.$t("all"), value: VALUE_ALL },
-      ...this.years.map((year) => ({ text: `${year}`, value: year })),
+      this.OPTION_ALL,
+      ...(Object.keys(this.options)?.map((year) => ({
+        text: `${year}`,
+        value: Number(year),
+      })) || []),
     ]
   }
 
@@ -67,11 +76,7 @@ export default class BillingReportsFilter extends Vue {
   }
 
   private onYearChange(value: number | "all"): void {
-    let updatedFilter = { ...this.filter, year: value }
-
-    if (value === VALUE_ALL) {
-      updatedFilter.month = VALUE_ALL
-    }
+    let updatedFilter = { ...this.filter, year: value, month: VALUE_ALL }
 
     this.$emit("change", updatedFilter)
   }
