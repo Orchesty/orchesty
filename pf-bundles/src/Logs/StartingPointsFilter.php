@@ -67,7 +67,7 @@ final class StartingPointsFilter extends GridFilterAbstract
                     Logs::PIPES_TOPOLOGY_ID,
                 ],
             )
-            ->field(Logs::PIPES_TYPE)->equals('starting_point')
+            ->field(Logs::PIPES_SERVICE)->equals('starting_point')
             ->sort(Logs::MONGO_ID, 'DESC');
     }
 

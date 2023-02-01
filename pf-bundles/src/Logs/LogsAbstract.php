@@ -37,7 +37,7 @@ abstract class LogsAbstract implements LogsInterface
     protected const SEVERITY         = 'severity';
     protected const LEVEL            = 'severity';
     protected const MESSAGE          = 'message';
-    protected const TYPE             = 'type';
+    protected const SERVICE          = 'service';
     protected const LIMIT            = 1_000;
 
     /**

@@ -17,6 +17,7 @@
             "headers": []
         },
         "auditLogs": [],
-        "user": "endUser"
+        "user": "endUser",
+        "topologyDeleted": false
     }
 }

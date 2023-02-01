@@ -26,7 +26,7 @@ class Pipes
      *
      * @ODM\Field(type="string")
      */
-    private string $type;
+    private string $service;
 
     /**
      * @var string
@@ -87,6 +87,13 @@ class Pipes
     /**
      * @var string
      *
+     * @ODM\Field(type="string", name="user_id")
+     */
+    private string $userId;
+
+    /**
+     * @var string
+     *
      * @ODM\Field(type="string", name="nodeName")
      */
     private string $nodeName;
@@ -109,9 +116,9 @@ class Pipes
     /**
      * @return string
      */
-    public function getType(): string
+    public function getService(): string
     {
-        return $this->type;
+        return $this->service;
     }
 
     /**
