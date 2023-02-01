@@ -5,14 +5,14 @@ import { fluentdOptions } from '../config/Config';
 import ResultCode from '../enum/ResultCode';
 
 const inputSchema = Joi.object<ILogInput>({
-    node_id: Joi.string(),
-    user_id: Joi.string(),
-    node_name: Joi.string(),
-    topology_id: Joi.string(),
-    topology_name: Joi.string(),
-    correlation_id: Joi.string(),
-    result_code: Joi.number().valid(...Object.values(ResultCode)),
-    result_message: Joi.string(),
+    nodeId: Joi.string(),
+    userId: Joi.string(),
+    nodeName: Joi.string(),
+    topologyId: Joi.string(),
+    topologyName: Joi.string(),
+    correlationId: Joi.string(),
+    resultCode: Joi.number().valid(...Object.values(ResultCode)),
+    resultMessage: Joi.string(),
     stacktrace: Joi.object({
         trace: Joi.string(),
         message: Joi.string().required(),
@@ -21,8 +21,8 @@ const inputSchema = Joi.object<ILogInput>({
     isForUi: Joi.boolean(),
     timestamp: Joi.number().strict(true).required(),
     hostname: Joi.string().required(),
-    type: Joi.string().required(),
-    severity: Joi.string().required(),
+    service: Joi.string().required(),
+    level: Joi.string().required(),
     message: Joi.string().required(),
 }).required();
 
@@ -58,17 +58,17 @@ export default class LoggerRouter {
 interface ILogInput {
     timestamp: number;
     hostname: string;
-    type: string;
-    severity: string;
+    service: string;
+    level: string;
     message: string;
-    node_id?: string;
-    user_id?: string;
-    node_name?: string;
-    topology_id?: string;
-    topology_name?: string;
-    correlation_id?: string;
-    result_code?: ResultCode;
-    result_message?: string;
+    nodeId?: string;
+    userId?: string;
+    nodeName?: string;
+    topologyId?: string;
+    topologyName?: string;
+    correlationId?: string;
+    resultCode?: ResultCode;
+    resultMessage?: string;
     stacktrace?: {
         message: string;
         trace?: string;
