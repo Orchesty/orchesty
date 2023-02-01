@@ -4,10 +4,9 @@
       <Heading class="mb-2">{{ $t("billingReportsPage.title") }}</Heading>
 
       <BillingReportsFilter
-        @change="onChange"
+        @change="onChangeFilterValue"
         :filter="filter"
-        :months="availableFilterMonths"
-        :years="availableFilterYears"
+        :options="filterOptions"
       />
 
       <div class="wrapper my-2">
@@ -70,6 +69,10 @@ import {
 
 const PRICE = 19900000
 
+export interface IFilterYearMonthOptions {
+  [key: number]: number[]
+}
+
 // todo PIP-1365 add graph
 @Component({
   components: {
@@ -93,16 +96,15 @@ export default class BillingReportsPage extends Vue {
   totalCost = PRICE
   tableItems: HistoryTableApplicationItemType[] = []
   granularity: "monthly" | "daily" = "monthly"
-  filter: HistoryFilterType = { year: VALUE_ALL, month: VALUE_ALL }
-  availableFilterMonths: number[] = []
-  availableFilterYears: number[] = []
+  filter: HistoryFilterType = { year: DateTime.now().year, month: VALUE_ALL }
+  filterOptions: IFilterYearMonthOptions = {}
 
   created() {
     this.fetchData()
     this.fetchFilterDateRange()
   }
 
-  private onChange(filter: HistoryFilterType): void {
+  private onChangeFilterValue(filter: HistoryFilterType): void {
     if (filter.month !== VALUE_ALL) this.granularity = "daily"
     else this.granularity = "monthly"
 
@@ -180,33 +182,42 @@ export default class BillingReportsPage extends Vue {
   }
 
   private prepareFilterValues(d1: DateTime, d2: DateTime): void {
-    const diff = d2.diff(d1, ["years", "months"]).toObject()
-    let months: number[] = []
-    let years: number[] = []
+    const filterOptions: Record<number, number[]> = {}
+
     const beginYear: number = d1.year
-    const beginMonth: number = d1.month
+    const endYear: number = d2.year
 
-    if ((diff.years as number) >= 1) {
-      months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-
-      const diffYears = d2.year - d1.year
-      for (let i = 0; i <= diffYears; i++) {
-        years.push(beginYear + i)
-      }
-    } else {
-      years.push(beginYear)
-      if (beginYear !== d2.year) {
-        years.push(d2.year)
-      }
-
-      for (let i = 0; i <= (diff.months as number); i++) {
-        const month = beginMonth + i
-        months.push(month > 12 ? month - 12 : month) // get only values between 1-12
-      }
+    for (let year = beginYear; year <= endYear; year++) {
+      filterOptions[year] = this.getMonthsForYearsRange(year, d1, d2)
     }
 
-    this.availableFilterMonths = months.sort((a, b) => a - b)
-    this.availableFilterYears = years
+    this.filterOptions = filterOptions
+  }
+
+  private getMonthsForYearsRange(
+    selectedYear: number,
+    d1: DateTime,
+    d2: DateTime
+  ): number[] {
+    const [beginYear, endYear] = [d1.year, d2.year]
+    const [beginMonth, endMonth] = [d1.month, d2.month]
+
+    if (selectedYear === beginYear) {
+      if (beginYear === endYear) {
+        const months: number[] = []
+        for (let month = beginMonth; month <= endMonth; month++) {
+          months.push(month)
+        }
+
+        return months
+      }
+
+      return [...Array(12 - beginMonth + 1).keys()].map((i) => i + beginMonth)
+    } else if (selectedYear === endYear) {
+      return [...Array(endMonth).keys()].map((i) => i + 1)
+    } else {
+      return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    }
   }
 
   readonly toCZK = toCZK
