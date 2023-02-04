@@ -66,7 +66,7 @@ final class MongoDbLogsTest extends DatabaseTestCaseAbstract
                             'id'             => $result['items'][0]['id'],
                             'severity'       => 'ERROR',
                             'message'        => 'Message 5',
-                            'type'           => 'starting_point',
+                            'service'        => 'starting_point',
                             'correlation_id' => 'Correlation ID 5',
                             'topology_id'    => 'Topology ID 5',
                             'topology_name'  => '',
@@ -145,7 +145,7 @@ final class MongoDbLogsTest extends DatabaseTestCaseAbstract
                             'id'             => $result['items'][0]['id'],
                             'severity'       => 'ERROR',
                             'message'        => 'Message 5',
-                            'type'           => 'starting_point',
+                            'service'        => 'starting_point',
                             'correlation_id' => 'Correlation ID 5',
                             'topology_id'    => 'Topology ID 5',
                             'topology_name'  => '',
@@ -160,7 +160,7 @@ final class MongoDbLogsTest extends DatabaseTestCaseAbstract
                                                 'id'             => $result['items'][0]['related_logs']['prev'][0]['id'],
                                                 'severity'       => 'ERROR',
                                                 'message'        => 'Message 2',
-                                                'type'           => 'starting_point',
+                                                'service'        => 'starting_point',
                                                 'correlation_id' => 'Correlation ID 2',
                                                 'topology_id'    => 'Topology ID 2',
                                                 'topology_name'  => 'Topology Name 2',
@@ -172,7 +172,7 @@ final class MongoDbLogsTest extends DatabaseTestCaseAbstract
                                                 'id'             => $result['items'][0]['related_logs']['prev'][1]['id'],
                                                 'severity'       => 'ERROR',
                                                 'message'        => 'Message 3',
-                                                'type'           => 'starting_point',
+                                                'service'        => 'starting_point',
                                                 'correlation_id' => 'Correlation ID 3',
                                                 'topology_id'    => 'Topology ID 3',
                                                 'topology_name'  => 'Topology Name 3',
@@ -184,7 +184,7 @@ final class MongoDbLogsTest extends DatabaseTestCaseAbstract
                                                 'id'             => $result['items'][0]['related_logs']['prev'][2]['id'],
                                                 'severity'       => 'ERROR',
                                                 'message'        => 'Message 4',
-                                                'type'           => 'starting_point',
+                                                'service'        => 'starting_point',
                                                 'correlation_id' => 'Correlation ID 4',
                                                 'topology_id'    => 'Topology ID 4',
                                                 'topology_name'  => 'Topology Name 4',
@@ -199,7 +199,7 @@ final class MongoDbLogsTest extends DatabaseTestCaseAbstract
                                                 'id'             => $result['items'][0]['related_logs']['next'][0]['id'],
                                                 'severity'       => 'ERROR',
                                                 'message'        => 'Message 6',
-                                                'type'           => 'starting_point',
+                                                'service'        => 'starting_point',
                                                 'correlation_id' => 'Correlation ID 6',
                                                 'topology_id'    => 'Topology ID 6',
                                                 'topology_name'  => 'Topology Name 6',
@@ -211,7 +211,7 @@ final class MongoDbLogsTest extends DatabaseTestCaseAbstract
                                                 'id'             => $result['items'][0]['related_logs']['next'][1]['id'],
                                                 'severity'       => 'ERROR',
                                                 'message'        => 'Message 7',
-                                                'type'           => 'starting_point',
+                                                'service'        => 'starting_point',
                                                 'correlation_id' => 'Correlation ID 7',
                                                 'topology_id'    => 'Topology ID 7',
                                                 'topology_name'  => 'Topology Name 7',
@@ -223,7 +223,7 @@ final class MongoDbLogsTest extends DatabaseTestCaseAbstract
                                                 'id'             => $result['items'][0]['related_logs']['next'][2]['id'],
                                                 'severity'       => 'ERROR',
                                                 'message'        => 'Message 8',
-                                                'type'           => 'starting_point',
+                                                'service'        => 'starting_point',
                                                 'correlation_id' => 'Correlation ID 8',
                                                 'topology_id'    => 'Topology ID 8',
                                                 'topology_name'  => 'Topology Name 8',
@@ -280,7 +280,7 @@ final class MongoDbLogsTest extends DatabaseTestCaseAbstract
 
             $pipes = new Pipes();
             $this->setProperty($pipes, 'timestamp', (new DateTime())->getTimestamp());
-            $this->setProperty($pipes, 'type', 'starting_point');
+            $this->setProperty($pipes, 'service', 'starting_point');
             $this->setProperty($pipes, 'hostname', 'Hostname ');
             $this->setProperty($pipes, 'channel', sprintf('Channel %s', $i));
             $this->setProperty($pipes, 'severity', 'ERROR');

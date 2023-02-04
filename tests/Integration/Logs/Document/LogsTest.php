@@ -22,7 +22,7 @@ final class LogsTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\Logs\Document\Logs::getHost
      * @covers \Hanaboso\PipesFramework\Logs\Document\Logs::getVersion
      * @covers \Hanaboso\PipesFramework\Logs\Document\Pipes::getTimestamp
-     * @covers \Hanaboso\PipesFramework\Logs\Document\Pipes::getType
+     * @covers \Hanaboso\PipesFramework\Logs\Document\Pipes::getService
      * @covers \Hanaboso\PipesFramework\Logs\Document\Pipes::getHostname
      * @covers \Hanaboso\PipesFramework\Logs\Document\Pipes::getChannel
      * @covers \Hanaboso\PipesFramework\Logs\Document\Pipes::getSeverity
@@ -52,7 +52,7 @@ final class LogsTest extends DatabaseTestCaseAbstract
                     'host'      => 'host',
                     'pipes'     => [
                         'timestamp'      => 2_222,
-                        'type'           => 'type',
+                        'service'        => 'type',
                         'hostname'       => 'host',
                         'channel'        => 'chn',
                         'severity'       => 'ERROR',
@@ -69,6 +69,7 @@ final class LogsTest extends DatabaseTestCaseAbstract
                             'code'    => 'code',
                         ],
                     ],
+
                 ],
             )
             ->getQuery()
@@ -83,7 +84,7 @@ final class LogsTest extends DatabaseTestCaseAbstract
         self::assertEquals('msg', $result->getMessage());
         self::assertEquals('host', $result->getHost());
         self::assertEquals(2_222, $result->getPipes()->getTimestamp());
-        self::assertEquals('type', $result->getPipes()->getType());
+        self::assertEquals('type', $result->getPipes()->getService());
         self::assertEquals('host', $result->getPipes()->getHostname());
         self::assertEquals('chn', $result->getPipes()->getChannel());
         self::assertEquals('ERROR', $result->getPipes()->getSeverity());

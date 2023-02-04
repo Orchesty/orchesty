@@ -52,13 +52,6 @@ class Pipes
     /**
      * @var string
      *
-     * @ODM\Field(type="string")
-     */
-    private string $level;
-
-    /**
-     * @var string
-     *
      * @ODM\Field(type="string", name="correlation_id")
      */
     private string $correlationId;
@@ -148,14 +141,6 @@ class Pipes
     /**
      * @return string
      */
-    public function getLevel(): string
-    {
-        return $this->level;
-    }
-
-    /**
-     * @return string
-     */
     public function getCorrelationId(): string
     {
         return $this->correlationId;
@@ -191,6 +176,14 @@ class Pipes
     public function getNodeName(): string
     {
         return $this->nodeName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUserId(): string
+    {
+        return $this->userId;
     }
 
     /**
