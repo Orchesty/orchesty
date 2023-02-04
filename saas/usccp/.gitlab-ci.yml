@@ -1,17 +1,17 @@
-.base-cloud-console-api:
+.base-cloud-usccp:
   variables:
     DIR: saas/console-api
-    IMAGE: ${REGISTRY}/${IMAGE_PREFIX}cloud-console-api
+    IMAGE: ${REGISTRY}/${IMAGE_PREFIX}cloud-usccp
 
   rules:
-    - if: '$FORCE_PIPELINE =~ /ALL/ || $FORCE_PIPELINE =~ /cloud-console-api/'
+    - if: '$FORCE_PIPELINE =~ /ALL/ || $FORCE_PIPELINE =~ /cloud-usccp/'
     - if: '$CI_COMMIT_BEFORE_SHA == $_BANNED_RUN_ALL_SHA'
       when: never
     - changes:
-      - ${DIR}/**/*
+        - ${DIR}/**/*
 
 
-cloud-console-api:test:
+cloud-usccp:test:
   stage: test
   needs: []
 
@@ -19,9 +19,9 @@ cloud-console-api:test:
     - .base-go-test
     - .base-worker-api
 
-cloud-console-api:build:
+cloud-usccp:build:
   stage: build
   needs: []
   extends:
     - .base-kaniko-build
-    - .base-cloud-console-api
+    - .base-cloud-usccp

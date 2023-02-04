@@ -59,5 +59,7 @@ fasttest: lint unit
 
 test: docker-up-force install fasttest docker-down-clean
 
+ci-test: test
+
 create-fixture-data: init
 	$(DCS) pnpm run create-fixture-data

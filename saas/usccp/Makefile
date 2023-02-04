@@ -63,3 +63,5 @@ localtest:
 fasttest: lint unit
 
 test: docker-up-force install fasttest docker-down-clean
+
+ci-test: test

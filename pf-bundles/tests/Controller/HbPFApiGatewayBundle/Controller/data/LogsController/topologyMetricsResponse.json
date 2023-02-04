@@ -6,7 +6,7 @@
                 "id": "123456789",
                 "severity": "error",
                 "message": "",
-                "type": "",
+                "service": "",
                 "correlation_id": "someId",
                 "topology_id": "",
                 "topology_name": "",

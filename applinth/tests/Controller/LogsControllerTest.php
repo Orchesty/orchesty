@@ -28,7 +28,7 @@ final class LogsControllerTest extends ControllerTestCaseAbstract
                 'created'    => '2020-02-02 10:10:10',
                 'updated'    => '2020-02-02 10:10:10',
                 'topologyId' => 'topo',
-                'id'         => 'id'
+                'id'         => 'id',
             ],
         );
     }
@@ -47,7 +47,7 @@ final class LogsControllerTest extends ControllerTestCaseAbstract
                 'created'    => '2020-02-02 10:10:10',
                 'updated'    => '2020-02-02 10:10:10',
                 'topologyId' => 'topo',
-                'id'         => 'id'
+                'id'         => 'id',
             ],
         );
     }
@@ -105,7 +105,6 @@ final class LogsControllerTest extends ControllerTestCaseAbstract
             )
             ->getQuery()
             ->execute();
-
     }
 
 }
