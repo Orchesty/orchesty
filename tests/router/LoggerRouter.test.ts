@@ -44,10 +44,10 @@ describe('Tests for logs router', () => {
         const resp = await supertest(services.app).post('/logger/logs').set(ORCHESTY_API_KEY, key).send({
             timestamp: 123,
             hostname: 'testHostName',
-            type: 'testType',
-            severity: 'testSeverity',
+            service: 'testType',
+            level: 'testSeverity',
             message: 'testMessage',
-            result_code: ResultCode.SUCCESS,
+            resultCode: ResultCode.SUCCESS,
             isForUi: true,
         });
         assert.equal(resp.statusCode, 200);
