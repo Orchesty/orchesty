@@ -54,3 +54,12 @@ services:
         calls:
             - [ 'setLogger', [ '@monolog.logger.commons' ] ]
             - [ 'setContainer', [ '@service_container' ] ]
+
+    Hanaboso\Applinth\Controller\LogsController:
+        class: Hanaboso\Applinth\Controller\LogsController
+        arguments:
+            - '@Hanaboso\Applinth\Authenticator\EndUserAuthenticator'
+            - '@hbpf.handler.logs'
+        calls:
+            - [ 'setLogger', [ '@monolog.logger.commons' ] ]
+            - [ 'setContainer', [ '@service_container' ] ]

@@ -1,0 +1,55 @@
+
+{
+    "http": 200,
+    "body": {
+        "items": [
+            {
+                "id": "id",
+                "severity": "info",
+                "message": "msg",
+                "service": "sdk",
+                "correlation_id": "1",
+                "topology_id": "2",
+                "topology_name": "",
+                "node_id": "0",
+                "node_name": "",
+                "timestamp": "1970-01-01T00:37:02Z"
+            },
+            {
+                "id": "id",
+                "severity": "info",
+                "message": "msg",
+                "service": "sdk",
+                "correlation_id": "1",
+                "topology_id": "2",
+                "topology_name": "",
+                "node_id": "1",
+                "node_name": "",
+                "timestamp": "1970-01-01T00:37:02Z"
+            },
+            {
+                "id": "id",
+                "severity": "info",
+                "message": "msg",
+                "service": "sdk",
+                "correlation_id": "1",
+                "topology_id": "2",
+                "topology_name": "",
+                "node_id": "2",
+                "node_name": "",
+                "timestamp": "1970-01-01T00:37:02Z"
+            }
+        ],
+        "filter": [],
+        "sorter": [],
+        "search": null,
+        "paging": {
+            "page": 1,
+            "itemsPerPage": 10,
+            "total": 3,
+            "nextPage": 1,
+            "lastPage": 1,
+            "previousPage": 1
+        }
+    }
+}

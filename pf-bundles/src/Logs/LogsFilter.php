@@ -23,11 +23,12 @@ final class LogsFilter extends GridFilterAbstract
             Logs::ID         => Logs::MONGO_ID,
             'timestamp'      => Logs::TIMESTAMP,
             Logs::MESSAGE    => Logs::MESSAGE,
-            'type'           => Logs::PIPES_TYPE,
+            'service'        => Logs::PIPES_SERVICE,
             'severity'       => Logs::PIPES_SEVERITY,
             'correlation_id' => Logs::PIPES_CORRELATION_ID,
             'topology_id'    => Logs::PIPES_TOPOLOGY_ID,
             'node_id'        => Logs::PIPES_NODE_ID,
+            'user_id'        => Logs::PIPES_USER_ID,
         ];
     }
 
@@ -40,7 +41,7 @@ final class LogsFilter extends GridFilterAbstract
             Logs::ID         => Logs::MONGO_ID,
             'timestamp'      => Logs::TIMESTAMP,
             Logs::MESSAGE    => Logs::MESSAGE,
-            'type'           => Logs::PIPES_TYPE,
+            'service'        => Logs::PIPES_SERVICE,
             'severity'       => Logs::PIPES_SEVERITY,
             'correlation_id' => Logs::PIPES_CORRELATION_ID,
             'topology_id'    => Logs::PIPES_TOPOLOGY_ID,
@@ -82,7 +83,7 @@ final class LogsFilter extends GridFilterAbstract
                     Logs::MONGO_ID,
                     Logs::TIMESTAMP,
                     Logs::MESSAGE,
-                    Logs::PIPES_TYPE,
+                    Logs::PIPES_SERVICE,
                     Logs::PIPES_SEVERITY,
                     Logs::PIPES_CORRELATION_ID,
                     Logs::PIPES_TOPOLOGY_ID,

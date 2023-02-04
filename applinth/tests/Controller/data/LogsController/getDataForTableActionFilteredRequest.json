@@ -1,0 +1,7 @@
+{
+  "http": "GET /api/applinth/logs?filter={\"filter\":[[{\"column\":\"node_id\",\"operator\":\"EQ\",\"value\":[\"2\"]}]]}",
+  "body": {},
+  "headers": {
+    "HTTP_Authorization": "jwt"
+  }
+}
