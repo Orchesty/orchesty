@@ -1,0 +1,40 @@
+{
+  "items": [
+    {
+      "name": "test1",
+      "timestamp": "2022-09-20T11:58:44Z",
+      "node_id": "1234",
+      "node_name": "node_name",
+      "severity": "error",
+      "correlation_id": "123",
+      "message": "message",
+      "topology_name": "Test topology"
+    },
+    {
+      "name": "test2",
+      "timestamp": "2022-08-20T11:58:44Z",
+      "node_id": "1234",
+      "node_name": "node_name",
+      "severity": "warning",
+      "correlation_id": "",
+      "message": "message",
+      "topology_name": "Test topology"
+    }
+  ],
+  "filter": [],
+  "sorter": [
+    {
+      "column": "timestamp",
+      "direction": "DESC"
+    }
+  ],
+  "search": "",
+  "paging": {
+    "page": 1,
+    "itemsPerPage": 10,
+    "total": 2,
+    "nextPage": 1,
+    "lastPage": 1,
+    "previousPage": 1
+  }
+}

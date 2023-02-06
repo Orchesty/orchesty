@@ -5,10 +5,11 @@ import overview from "@/api/endpoints/overview"
 import appStore from "@/api/endpoints/appStore"
 import trash from "@/api/endpoints/trash"
 import settings from "@/api/endpoints/settings"
+import logs from "@/api/endpoints/logs"
 
 const base = "/api/applinth"
 
-const routeDomains = [auth, overview, appStore, trash, settings]
+const routeDomains = [auth, overview, appStore, trash, settings, logs]
 
 console.groupCollapsed("MSW routes")
 const generatedRoutes = routeDomains

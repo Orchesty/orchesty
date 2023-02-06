@@ -78,6 +78,11 @@ export default {
         text: "navigation.link.applications",
       },
       {
+        to: ROUTES.LOGS,
+        icon: "mdi-list-box-outline",
+        text: "navigation.link.logs",
+      },
+      {
         to: ROUTES.TRASH,
         icon: "mdi-delete",
         text: "navigation.link.trash",

@@ -5,7 +5,8 @@
       "applications": "Aplikace",
       "trash": "Koš",
       "settings": "Nastavení",
-      "backToTheApplications": "Zpět na aplikace"
+      "backToTheApplications": "Zpět na aplikace",
+      "logs": "Logy"
     },
     "item": {
       "integrations": "Integrace",
@@ -14,7 +15,8 @@
       "installedApplicationDetail": "Detail nainstalované aplikace",
       "trash": "Koš",
       "settings": "Nastavení",
-      "trashDetail": "Koš Detail"
+      "trashDetail": "Koš Detail",
+      "logs": "Logy"
     }
   }
 }

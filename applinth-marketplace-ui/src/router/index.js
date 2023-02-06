@@ -13,6 +13,7 @@ import NotLoggedInPage from "@/views/NotLoggedInPage"
 import SettingsPage from "@/views/SettingsPage"
 import { authService } from "@/utils/authService.js"
 import { config } from "@/config"
+import LogsPage from "@/views/LogsPage.vue"
 
 Vue.use(VueRouter)
 
@@ -161,6 +162,24 @@ const routes = [
         {
           text: "navigation.item.settings",
           to: { name: ROUTES.SETTINGS },
+        },
+      ],
+    },
+  },
+  {
+    path: "/logs",
+    name: ROUTES.LOGS,
+    component: LogsPage,
+    meta: {
+      auth: true,
+      breadcrumbs: [
+        {
+          text: "navigation.item.integrations",
+          to: { name: ROUTES.OVERVIEW },
+        },
+        {
+          text: "navigation.item.logs",
+          to: { name: ROUTES.LOGS },
         },
       ],
     },
