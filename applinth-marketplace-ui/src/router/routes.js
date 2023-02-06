@@ -9,4 +9,5 @@ export const ROUTES = {
   NOT_FOUND: "NOT_FOUND",
   NOT_LOGGED_IN: "NOT_LOGGED_IN",
   SETTINGS: "SETTINGS",
+  LOGS: "LOGS",
 }

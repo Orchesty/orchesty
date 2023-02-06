@@ -8,6 +8,28 @@ Start the dev server with mocked backend and bypassed authorization:
 npm run dev
 ```
 
+App will run here: http://localhost:8080/ (url should be in the console)
+
+### Start via make file
+
+```
+make init
+```
+
+and
+
+```
+npm run start
+```
+
+Or run demo, go to clients/demo folder and run:
+
+```
+make init
+```
+
+App will run here: http://127.0.0.66:81
+
 ## Project setup
 
 ```

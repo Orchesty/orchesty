@@ -12,6 +12,8 @@
       :server-items-length="total"
       :sort-by="sortBy"
       :sort-desc="sortDesc"
+      :show-expand="showExpand"
+      :item-key="itemKey"
     >
       <template v-for="item in headers" #[`header.${item.value}`]="{ header }">
         <span :key="item.value" class="text-capitalize font-weight-bold">
@@ -20,8 +22,28 @@
       </template>
       <template #item="props">
         <tr :key="props.index">
+          <td
+            v-if="showExpand"
+            :style="props.isExpanded ? 'border-bottom: none' : ''"
+          >
+            <v-icon
+              @click.stop=""
+              @click="() => props.expand(!props.isExpanded)"
+            >
+              {{ props.isExpanded ? "mdi-chevron-up" : "mdi-chevron-down" }}
+            </v-icon>
+          </td>
           <slot :items="props" :expanded="props.isExpanded" />
         </tr>
+      </template>
+      <template #expanded-item="expandedProps">
+        <td
+          v-if="showExpand"
+          :colspan="expandedColspan"
+          class="py-2 px-5 expanded-background expanded-row border-bottom"
+        >
+          <slot name="expand" :items="expandedProps" />
+        </td>
       </template>
     </v-data-table>
   </v-card>
@@ -53,6 +75,14 @@ export default {
       type: Array,
       default: null,
     },
+    showExpand: {
+      type: Boolean,
+      default: false,
+    },
+    itemKey: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     return {
@@ -61,6 +91,17 @@ export default {
       isLoading: true,
       total: 0,
     }
+  },
+  computed: {
+    expandedColspan() {
+      let colspan = this.headers.length
+
+      if (this.showExpand) {
+        colspan++
+      }
+
+      return colspan
+    },
   },
   methods: {
     async gridFetch() {
@@ -118,5 +159,9 @@ export default {
       color: var(--v-white-base) !important;
     }
   }
+}
+
+.border-bottom {
+  border-bottom: thin solid rgba(0, 0, 0, 0.12);
 }
 </style>

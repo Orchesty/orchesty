@@ -11,6 +11,7 @@
     "acceptedList": "{number} items accepted",
     "rejectedList": "{number} items rejected",
     "rejected": "{item} rejected",
-    "accepted": "{item} accepted"
+    "accepted": "{item} accepted",
+    "idCopied": "Id copied"
   }
 }

@@ -19,6 +19,16 @@
         "topologyName": "Process",
         "updated": "Updated"
       }
+    },
+    "logs": {
+      "header": {
+        "timestamp": "Created",
+        "correlationId": "Correlation ID",
+        "nodeId": "Node ID",
+        "topologyName": "Topology Name",
+        "severity": "Severity",
+        "nodeName": "Node name"
+      }
     }
   }
 }

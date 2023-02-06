@@ -5,7 +5,8 @@
       "applications": "Applications",
       "trash": "Trash",
       "settings": "Settings",
-      "backToTheApplications": "Back to the applications"
+      "backToTheApplications": "Back to the applications",
+      "logs": "Logs"
     },
     "item": {
       "integrations": "Integrations",
@@ -14,7 +15,8 @@
       "installedApplicationDetail": "Installed Application Detail",
       "trash": "Trash",
       "settings": "Settings",
-      "trashDetail": "Trash Detail"
+      "trashDetail": "Trash Detail",
+      "logs": "Logs"
     }
   }
 }

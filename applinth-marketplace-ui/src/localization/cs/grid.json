@@ -19,6 +19,16 @@
         "topologyName": "Proces",
         "updated": "Změněno"
       }
+    },
+    "logs": {
+      "header": {
+        "timestamp": "Vytvořeno",
+        "correlationId": "Korelační ID",
+        "nodeId": "Node ID",
+        "topologyName": "Název topologie",
+        "severity": "Vážnost",
+        "nodeName": "Node název"
+      }
     }
   }
 }
