@@ -15,13 +15,15 @@
         <v-container fluid>
           <v-row>
             <v-col cols="auto" class="d-flex">
-              <v-img
-                class="ma-auto"
-                max-height="70"
-                max-width="70"
-                contain
-                :src="appLogo(app.logo)"
-              />
+              <div class="img-wrapper">
+                <v-img
+                  class="ma-auto"
+                  max-height="70"
+                  max-width="70"
+                  contain
+                  :src="appLogo(app.logo)"
+                />
+              </div>
             </v-col>
             <v-col class="d-flex">
               <sub-heading class="my-auto">{{ app.name }}</sub-heading>
@@ -140,4 +142,9 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.img-wrapper {
+  width: 70px;
+  text-align: center;
+}
+</style>
