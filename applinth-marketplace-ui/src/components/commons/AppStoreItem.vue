@@ -16,9 +16,7 @@
         </v-row>
         <v-row dense>
           <v-col class="d-flex justify-start">
-            <h3 class="title font-weight-bold text-truncate">
-              {{ title }}
-            </h3>
+            <h3 class="title font-weight-bold text-truncate">{{ title }}</h3>
             <base-tooltip>
               <template #activator="{ on, attrs }">
                 <v-icon
