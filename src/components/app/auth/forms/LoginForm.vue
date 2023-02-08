@@ -16,13 +16,16 @@
           slim
         >
           <app-input
+            id="loginEmail"
             v-model="form.email"
             dense
             prepend-icon="mdi-account-circle"
             :label="$t('form.email')"
             type="text"
             :name="fields.email.id"
+            autocomplete="username"
             :error-messages="errors"
+            input-type="email"
           />
         </validation-provider>
         <validation-provider
@@ -32,11 +35,14 @@
           slim
         >
           <app-input
+            id="loginPassword"
             v-model="form.password"
             dense
             prepend-icon="key"
             :label="$t('form.password')"
             input-type="password"
+            :name="fields.password.id"
+            autocomplete="current-password"
             :error-messages="errors"
           />
         </validation-provider>
