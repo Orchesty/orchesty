@@ -12,6 +12,7 @@
     "rejectedList": "{number} items rejected",
     "rejected": "{item} rejected",
     "accepted": "{item} accepted",
-    "idCopied": "Id copied"
+    "idCopied": "Id copied",
+    "actionCallSuccess": "Action call has been successful"
   }
 }

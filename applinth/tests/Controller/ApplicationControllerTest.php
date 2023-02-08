@@ -93,6 +93,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
             $this->dm,
             $curl,
             self::createMock(RedirectInterface::class),
+            self::getContainer()->getParameter('backendHost'),
         );
 
         self::getContainer()->set('hbpp.service.locator', $loader);
@@ -175,7 +176,12 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
 
         $redirect = $this->createMock(RedirectInterface::class);
 
-        $locator = new ServiceLocator($this->dm, $curl, $redirect);
+        $locator = new ServiceLocator(
+            $this->dm,
+            $curl,
+            $redirect,
+            self::getContainer()->getParameter('backendHost'),
+        );
         $locator->setLogger(new NullLogger());
 
         $container = $this->client->getContainer();

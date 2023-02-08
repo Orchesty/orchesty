@@ -11,6 +11,7 @@ use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager;
 use Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookManager;
+use Hanaboso\PipesPhpSdk\Application\Model\CustomAction\CustomAction;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use InvalidArgumentException;
@@ -30,6 +31,7 @@ final class ApplicationHandler
     private const ENABLED              = 'enabled';
     private const WEBHOOK_SETTINGS     = 'webhookSettings';
     private const APPLICATION_SETTINGS = 'applicationSettings';
+    private const CUSTOM_ACTIONS       = 'customActions';
 
     /**
      * ApplicationHandler constructor.
@@ -55,10 +57,10 @@ final class ApplicationHandler
         ];
     }
 
-
     /**
      * @param string   $user
      * @param string[] $applications
+     *
      * @return string[]
      */
     public function getApplicationsLimits(string $user, array $applications): array
@@ -156,6 +158,7 @@ final class ApplicationHandler
                 self::WEBHOOK_SETTINGS     => $application->getApplicationType() === ApplicationTypeEnum::WEBHOOK ?
                     $this->webhookManager->getWebhooks($application, $user) :
                     [],
+                self::CUSTOM_ACTIONS       => $this->customActionsToArray($application->getCustomActions()),
             ],
         );
     }
@@ -288,6 +291,21 @@ final class ApplicationHandler
     public function changeStateOfApplication(string $key, string $user, bool $enabled): ApplicationInstall
     {
         return $this->applicationManager->changeStateOfApplication($key, $user, $enabled);
+    }
+
+    /**
+     * @param CustomAction[] $customActions
+     *
+     * @return mixed[]
+     */
+    private function customActionsToArray(array $customActions): array
+    {
+        $arr = [];
+        foreach ($customActions as $action) {
+            $arr[] = $action->toArray();
+        }
+
+        return $arr;
     }
 
 }

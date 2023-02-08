@@ -7,6 +7,7 @@ use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
+use Hanaboso\PipesPhpSdk\Application\Model\CustomAction\CustomAction;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Form;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\FormStack;
@@ -218,6 +219,14 @@ abstract class ApplicationAbstract implements ApplicationInterface
     {
         $req;
         // You can find AppInstall by user & name. E.g.: If you want to call topology
+    }
+
+    /**
+     * @return array|CustomAction[]
+     */
+    public function getCustomActions(): array
+    {
+        return [];
     }
 
     /**

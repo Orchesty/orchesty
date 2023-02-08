@@ -8,6 +8,7 @@ services:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.transport.curl_manager'
             - '@hbpf.redirect'
+            - '%backendHost%'
         calls:
             - ['setLogger',['@monolog.logger.commons']]
 
