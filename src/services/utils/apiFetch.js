@@ -20,6 +20,14 @@ const apiClient = axios.create({
   },
 })
 
+const customApiClient = axios.create({
+  withCredentials: true,
+  headers: {
+    Accept: "application/json",
+    "Content-Type": "application/json; charset=utf-8",
+  },
+})
+
 const send = (config) => {
   const { method, body, url } = config
 
@@ -44,7 +52,37 @@ const send = (config) => {
         ...config,
         url,
         headers: { ...headers },
-        body: JSON.stringify(body),
+        data: JSON.stringify(body),
+      })
+    )
+  })
+}
+
+const sendCustom = (config) => {
+  const { method, body, url } = config
+
+  const headers = config.headers || {}
+
+  return new Promise((resolve, reject) => {
+    if (!method) {
+      reject(new Error("The request must have method."))
+    }
+
+    if (!url) {
+      reject(new Error("The request must have url."))
+    }
+
+    const token = localStorage.getItem(LOCAL_STORAGE.USER_TOKEN)
+    if (token) {
+      headers["Authorization"] = `${token}`
+    }
+
+    return resolve(
+      customApiClient.request({
+        ...config,
+        url,
+        headers,
+        data: JSON.stringify(body),
       })
     )
   })
@@ -129,7 +167,8 @@ const call = (
   })
 }
 
-const callApi = (params) =>
+export const callApi = (params) =>
   call(params, (config) => send({ ...config, withCredentials: true }))
 
-export { callApi }
+export const callCustomApi = (params) =>
+  call(params, (config) => sendCustom(config))
