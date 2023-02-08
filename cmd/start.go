@@ -52,12 +52,13 @@ func startBridge(_ *cobra.Command, _ []string) {
 	marker := make(chan struct{}, 1)
 	marker <- struct{}{}
 
-	bridge := bridge.NewBridge(rabbitClient, mongodb, topo)
+	bridgeSvc := bridge.NewBridge(rabbitClient, mongodb, topo)
 	server := &http.Server{Addr: ":8000", Handler: router.Router(router.Container{
 		Topology:  topo,
-		AppCancel: cancel,
 		RabbitMq:  rabbitClient,
+		AppCancel: cancel,
 		CloseApp:  marker,
+		BridgeSvc: bridgeSvc,
 	})}
 
 	go func() {
@@ -72,7 +73,7 @@ func startBridge(_ *cobra.Command, _ []string) {
 
 	go server.ListenAndServe()
 	log.Info().Msg("Listening on port [:8000]")
-	bridge.Run(ctx)
+	bridgeSvc.Run(ctx)
 
 	<-marker
 }

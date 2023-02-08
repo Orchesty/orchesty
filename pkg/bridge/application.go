@@ -2,6 +2,7 @@ package bridge
 
 import (
 	"context"
+	"fmt"
 	metrics "github.com/hanaboso/go-metrics/pkg"
 	"github.com/hanaboso/pipes/bridge/pkg/mongo"
 	"github.com/hanaboso/pipes/bridge/pkg/rabbit"
@@ -29,6 +30,7 @@ type Bridge struct {
 	mongodb         *mongo.MongoDb
 	metrics         metrics.Interface
 	counter         counter
+	nodes           map[string]*node
 }
 
 func (b *Bridge) Run(ctx context.Context) {
@@ -38,6 +40,17 @@ func (b *Bridge) Run(ctx context.Context) {
 	}
 
 	b.start(ctx)
+}
+
+func (b *Bridge) Process(dto *model.ProcessMessage) bool {
+	nodeId := dto.GetHeaderOrDefault(enum.Header_NodeId, "")
+	worker, ok := b.nodes[nodeId]
+	if !ok {
+		log.Error().Err(fmt.Errorf("missing worker for node [%s]", nodeId))
+		return false
+	}
+
+	return worker.process(dto)
 }
 
 func NewBridge(rabbitClient *rabbitmq.Client, mongodb *mongo.MongoDb, topology model.Topology) Bridge {
@@ -50,6 +63,7 @@ func NewBridge(rabbitClient *rabbitmq.Client, mongodb *mongo.MongoDb, topology m
 		mongodb:         mongodb,
 		metrics:         metrics.Connect(config.Metrics.Dsn),
 		counter:         newCounter(rabbitContainer),
+		nodes:           map[string]*node{},
 	}
 }
 
@@ -64,6 +78,7 @@ func (b *Bridge) start(ctx context.Context) {
 		workerWg.Add(1)
 		go func(shard model.NodeShard, wg *sync.WaitGroup) {
 			worker := newNode(*shard.Node, b.topology.ID, b.topology.Name, b.rabbitContainer, wg, b.limiter, b.repeater, b.mongodb, b.metrics, b.counter)
+			b.nodes[shard.Node.ID] = worker
 			worker.start()
 		}(node, workerWg)
 	}

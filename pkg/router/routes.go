@@ -19,6 +19,14 @@ func routes() []Route {
 				Handler: Clear,
 			},
 		},
+		"/api": {
+			{
+				Method:    POST,
+				Pattern:   "/process",
+				Handler:   Process,
+				Protected: true,
+			},
+		},
 	}
 
 	return prefixRoutes(routeList)

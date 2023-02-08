@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/hanaboso/go-rabbitmq/pkg/rabbitmq"
+	"github.com/hanaboso/pipes/bridge/pkg/bridge"
 	"github.com/hanaboso/pipes/bridge/pkg/config"
 	"github.com/hanaboso/pipes/bridge/pkg/model"
 	"github.com/julienschmidt/httprouter"
@@ -17,9 +18,10 @@ import (
 )
 
 type Route struct {
-	Method  string
-	Pattern string
-	Handler route
+	Method    string
+	Pattern   string
+	Handler   route
+	Protected bool
 }
 
 const (
@@ -32,6 +34,7 @@ type Container struct {
 	RabbitMq  *rabbitmq.Client
 	AppCancel context.CancelFunc
 	CloseApp  chan struct{}
+	BridgeSvc bridge.Bridge
 }
 
 type route func(http.ResponseWriter, *http.Request, httprouter.Params, Container)
@@ -42,19 +45,19 @@ func Router(container Container) *httprouter.Router {
 
 	for _, route := range routes() {
 		r := route // Just keep it there...
+		handle := corsHandler(
+			func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+				r.Handler(writer, request, params, container)
+			},
+		)
+
 		if config.App.Debug {
-			router.Handle(route.Method, route.Pattern, logHandler(corsHandler(
-				func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-					r.Handler(writer, request, params, container)
-				},
-			)))
-		} else {
-			router.Handle(route.Method, route.Pattern,
-				func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-					r.Handler(writer, request, params, container)
-				},
-			)
+			handle = logHandler(handle)
 		}
+		if route.Protected {
+			handle = authorizationHandler(handle)
+		}
+		router.Handle(route.Method, route.Pattern, handle)
 
 		if !options[route.Pattern] {
 			options[route.Pattern] = true
@@ -138,6 +141,17 @@ func response(writer http.ResponseWriter, content interface{}) {
 
 	if err := json.NewEncoder(writer).Encode(content); err != nil {
 		log.Error().Err(err)
+	}
+}
+
+func authorizationHandler(next httprouter.Handle) httprouter.Handle {
+	return func(writer http.ResponseWriter, request *http.Request, parameters httprouter.Params) {
+		if request.Header.Get("orchesty-api-key") != config.StartingPoint.ApiKey {
+			writer.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+
+		next(writer, request, parameters)
 	}
 }
 
