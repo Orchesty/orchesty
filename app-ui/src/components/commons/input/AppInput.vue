@@ -1,5 +1,6 @@
 <template>
   <v-text-field
+    :id="id"
     v-model="innerValue"
     :autofocus="autofocus"
     :dense="dense"
@@ -14,6 +15,8 @@
     :error-messages="errorMessages[0]"
     :append-icon="appendIcon"
     :hint="hint"
+    :name="name"
+    :autocomplete="autocomplete"
     @click:append="$emit('appendIconClicked')"
   />
 </template>
@@ -75,6 +78,18 @@ export default {
       default: "",
     },
     hint: {
+      type: String,
+      default: null,
+    },
+    autocomplete: {
+      type: String,
+      default: null,
+    },
+    id: {
+      type: String,
+      default: null,
+    },
+    name: {
       type: String,
       default: null,
     },
