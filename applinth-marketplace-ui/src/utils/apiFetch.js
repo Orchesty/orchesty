@@ -23,7 +23,7 @@ const customApiClient = axios.create({
 })
 
 const send = (config) => {
-  const { method, body, url } = config
+  const { method, data, url } = config
 
   const headers = config.headers || {}
 
@@ -50,14 +50,14 @@ const send = (config) => {
           ...authorization,
           ...headers,
         },
-        body: JSON.stringify(body), // todo review body (should be data?)
+        body: JSON.stringify(data),
       })
     )
   })
 }
 
 const callCustomApi = (config) => {
-  const { method, body, url } = config
+  const { method, data, url } = config
 
   const headers = config.headers || {}
   headers["Authorization"] = authService.accessToken
@@ -76,7 +76,7 @@ const callCustomApi = (config) => {
         ...config,
         url,
         headers,
-        data: JSON.stringify(body),
+        data: JSON.stringify(data),
       })
       .then((res) => {
         resolve(res.data)

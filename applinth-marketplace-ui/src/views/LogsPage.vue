@@ -30,8 +30,9 @@
             :class="`font-weight-bold ${setColor(
               items.item.severity
             )}--text text-uppercase`"
-            >{{ items.item.severity }}</span
           >
+            {{ items.item.severity }}
+          </span>
         </td>
         <Tooltip>
           <template #activator="{ on, attrs }">

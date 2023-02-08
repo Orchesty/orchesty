@@ -22,7 +22,8 @@ export default class RoundButton extends Vue {
   @Prop({
     required: false,
     type: String,
-    validator: (icon) =>
+    default: "",
+    validator: (icon: string) =>
       [
         "close",
         "pencil",
