@@ -39,7 +39,7 @@ final class ApiTokenController extends AbstractController
     }
 
     /**
-     * @Route("/apiTokens}", methods={"GET", "OPTIONS"})
+     * @Route("/apiTokens", methods={"GET", "OPTIONS"})
      *
      * @param Request $request
      *

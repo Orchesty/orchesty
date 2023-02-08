@@ -17,4 +17,5 @@ export const GRID_REQUESTS = {
   [DATA_GRIDS.HEALTH_CHECK_QUEUES]: API.healthCheck.grid,
   [DATA_GRIDS.HEALTH_CHECK_CONTAINERS]: API.healthCheck.containers,
   [DATA_GRIDS.TRASH]: API.trash.grid,
+  [DATA_GRIDS.JWT_TOKENS]: API.jwtTokens.grid,
 }

@@ -3,7 +3,7 @@
     :to="to"
     fab
     x-small
-    color="primary"
+    :color="color"
     elevation="0"
     :class="text ? 'button-text' : '' + 'sidebar-button'"
     @click="handleClick"
@@ -28,6 +28,10 @@ export default {
     icon: {
       type: String,
       default: "mdi-menu-right",
+    },
+    color: {
+      type: String,
+      default: "primary",
     },
   },
   methods: {

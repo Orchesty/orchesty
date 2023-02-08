@@ -19,6 +19,7 @@ import { DIRECTION, OPERATOR } from "@/services/enums/gridEnums"
 import moment from "moment"
 import { QUICK_FILTERS } from "@/services/utils/quickFilters"
 import healthcheck from "@/store/modules/healthcheck"
+import jwtTokens from "@/store/modules/jwtTokens"
 
 Vue.use(Vuex)
 
@@ -54,6 +55,7 @@ export const createStore = (router) => {
       userTasks,
       trash,
       healthcheck,
+      jwtTokens,
       [DATA_GRIDS.ADMIN_USERS_LIST]: createGrid(
         DATA_GRIDS.ADMIN_USERS_LIST,
         {}
@@ -104,6 +106,14 @@ export const createStore = (router) => {
         {}
       ),
       [DATA_GRIDS.SCHEDULED_TASK]: createGrid(DATA_GRIDS.SCHEDULED_TASK, {}),
+      [DATA_GRIDS.JWT_TOKENS]: createGrid(DATA_GRIDS.JWT_TOKENS, {
+        sorter: [
+          {
+            column: "created",
+            direction: DIRECTION.DESCENDING,
+          },
+        ],
+      }),
       [DATA_GRIDS.TRASH]: createGrid(DATA_GRIDS.TRASH, {
         sorter: [
           {

@@ -2,9 +2,12 @@
 
 namespace Hanaboso\PipesFramework\Configurator\Document;
 
+use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Hanaboso\CommonsBundle\Database\Traits\Document\CreatedTrait;
 use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
-use Hanaboso\CommonsBundle\Database\Traits\Entity\CreatedTrait;
+use Hanaboso\Utils\Date\DateTimeUtils;
+use Hanaboso\Utils\Exception\DateTimeException;
 
 /**
  * Class ApiToken
@@ -43,11 +46,11 @@ class ApiToken
     private string $key;
 
     /**
-     * @var string|null
+     * @var DateTime|null
      *
-     * @ODM\Field(type="string")
+     * @ODM\Field(type="date")
      */
-    private ?string $expireAt = NULL;
+    private ?DateTime $expireAt = NULL;
 
     /**
      * @var string[]
@@ -55,6 +58,16 @@ class ApiToken
      * @ODM\Field(type="collection")
      */
     private array $scopes;
+
+    /**
+     * ApiToken constructor.
+     *
+     * @throws DateTimeException
+     */
+    public function __construct()
+    {
+        $this->created = DateTimeUtils::getUtcDateTime();
+    }
 
     /**
      * @return string
@@ -97,19 +110,19 @@ class ApiToken
     }
 
     /**
-     * @return string|null
+     * @return DateTime|null
      */
-    public function getExpireAt(): ?string
+    public function getExpireAt(): ?DateTime
     {
         return $this->expireAt;
     }
 
     /**
-     * @param string|null $expireAt
+     * @param DateTime|null $expireAt
      *
      * @return ApiToken
      */
-    public function setExpireAt(?string $expireAt): ApiToken
+    public function setExpireAt(?DateTime $expireAt): ApiToken
     {
         $this->expireAt = $expireAt;
 
@@ -143,10 +156,10 @@ class ApiToken
     {
         return [
             self::ID        => $this->id,
-            self::CREATED   => $this->created ?? NULL,
+            self::CREATED   => $this->created->format(DateTimeUtils::DATE_TIME_UTC),
             self::USER      => $this->user,
             self::KEY       => $this->key,
-            self::EXPIRE_AT => $this->expireAt,
+            self::EXPIRE_AT => $this->expireAt ? $this->expireAt->format(DateTimeUtils::DATE_TIME_UTC) : NULL,
             self::SCOPES    => implode(',', $this->scopes),
         ];
     }

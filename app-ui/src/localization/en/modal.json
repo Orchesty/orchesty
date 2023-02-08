@@ -25,7 +25,8 @@
       "deleteUser": "Delete user",
       "userDetail": "User detail",
       "updateUser": "Update User",
-      "changeTopology": "Change topology and approve"
+      "changeTopology": "Change topology and approve",
+      "createToken": "Create token"
     },
     "text": {
       "importTopologyMessage": "alter the topology name | left blank if not desired to",
