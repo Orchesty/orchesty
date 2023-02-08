@@ -14,7 +14,8 @@
       "logs": "Logs",
       "alertLogs": "Alert Logs",
       "users": "Users",
-      "webhooks": "Webhooks"
+      "webhooks": "Webhooks",
+      "jwtTokens": "JWT Tokens"
     },
     "text": {
       "notValidToken": "This token is no longer valid",
@@ -38,7 +39,8 @@
       "itWorks": "Everything works properly.",
       "emptyHealthCheckTable": "The Table is Empty. Please insert data with the above Button.",
       "pageNotFound": "Page not found.",
-      "nextRun": "Next run"
+      "nextRun": "Next run",
+      "never": "Never"
     },
     "status": {
       "nextRun": "Next run",

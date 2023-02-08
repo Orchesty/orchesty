@@ -2,6 +2,7 @@
 
 namespace Hanaboso\PipesFramework\Configurator\Model;
 
+use DateTime;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Doctrine\ODM\MongoDB\MongoDBException;
@@ -88,7 +89,7 @@ final class ApiTokenManager
 
         $apiToken
             ->setUser($user)
-            ->setExpireAt($data[ApiToken::EXPIRE_AT] ?? NULL)
+            ->setExpireAt(!empty($data[ApiToken::EXPIRE_AT]) ? new DateTime($data[ApiToken::EXPIRE_AT]) : NULL)
             ->setScopes($data[ApiToken::SCOPES]);
 
         $this->dm->persist($apiToken);

@@ -24,7 +24,7 @@ export default {
     noDataText: {
       type: String,
       required: false,
-      default: "pages.noDataAvailable",
+      default: "grid.noData",
     },
     headers: {
       type: Array,

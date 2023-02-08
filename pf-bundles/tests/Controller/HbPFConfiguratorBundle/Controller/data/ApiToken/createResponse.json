@@ -2,7 +2,7 @@
     "http": 200,
     "body": {
         "id": "5e32aab74c2bd32924205303",
-        "created": null,
+        "created": "2010-10-10 10:10:10",
         "user": "orchesty",
         "key": "0a21a5c5253aa04eff802f4454810f5357d5f70c68af87233b9a45506cf84273",
         "expireAt": "2022-11-03 05:43:31.000Z",

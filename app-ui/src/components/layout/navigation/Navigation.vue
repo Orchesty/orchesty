@@ -26,7 +26,7 @@
           :to="item.to"
           :on-click="item.onClick"
         />
-        <v-divider v-if="index === 7" :key="index" />
+        <v-divider v-if="index === 8" :key="index" />
       </template>
     </v-list>
   </v-navigation-drawer>
@@ -99,6 +99,11 @@ export default {
           to: ROUTES.USER_PROFILE,
           icon: "mdi-account-circle",
           tooltip: this.$t("navigation.profile"),
+        },
+        {
+          to: ROUTES.JWT_TOKENS,
+          icon: "mdi-shield-lock-open",
+          tooltip: this.$t("navigation.jwtTokens"),
         },
         {
           to: ROUTES.LOGIN,
