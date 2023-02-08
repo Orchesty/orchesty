@@ -33,25 +33,32 @@
           </div>
 
           <template v-if="isActivationEnabled">
-            <div v-if="activationDisabled" @click="toggleModal">
-              <v-switch v-model="isActivated" color="secondary" disabled>
+            <div class="ml-auto">
+              <div v-if="activationDisabled" @click="toggleModal">
+                <v-switch v-model="isActivated" color="secondary" disabled>
+                  <template #label>
+                    <span class="activation-label">{{ onOrOff }}</span>
+                  </template>
+                </v-switch>
+              </div>
+
+              <v-switch
+                v-else
+                v-model="isActivated"
+                color="secondary"
+                :loading="isActivationLoading"
+                @change="onActivationChange($event)"
+              >
                 <template #label>
                   <span class="activation-label">{{ onOrOff }}</span>
                 </template>
               </v-switch>
             </div>
 
-            <v-switch
-              v-else
-              v-model="isActivated"
-              color="secondary"
-              :loading="isActivationLoading"
-              @change="onActivationChange($event)"
-            >
-              <template #label>
-                <span class="activation-label">{{ onOrOff }}</span>
-              </template>
-            </v-switch>
+            <CustomActionsMenu
+              :disabled="customActionsDisabled"
+              :custom-actions="customActions"
+            />
           </template>
 
           <app-not-authorized-modal v-model="showModal" />
@@ -272,6 +279,7 @@ import AppSelect from "@/components/commons/AppSelect"
 import AppCheckbox from "@/components/commons/AppCheckbox"
 import AppNotAuthorizedModal from "../modal/AppNotAuthorizedModal"
 import { LOCAL_STORAGE } from "@/services/enums/localStorageEnums"
+import CustomActionsMenu from "@/components/app/appStore/installedApp/CustomActionsMenu"
 
 export default {
   name: "InstalledApp",
@@ -285,6 +293,7 @@ export default {
     AppButton,
     AppInput,
     AppItemPasswordModal,
+    CustomActionsMenu,
   },
   data() {
     return {
@@ -339,6 +348,12 @@ export default {
       return this.isActivated
         ? this.$t("page.status.activated")
         : this.$t("page.status.notActivated")
+    },
+    customActionsDisabled() {
+      return !(this.customActions.length > 0 && !this.activationDisabled)
+    },
+    customActions() {
+      return this.appActive.customActions || []
     },
   },
   methods: {

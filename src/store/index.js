@@ -12,7 +12,7 @@ import { resetModules } from "./utils"
 import { DATA_GRIDS } from "@/services/enums/dataGridEnums"
 import createGrid from "./modules/grid"
 import { callGraphQL } from "../services/utils/graphql"
-import { callApi } from "../services/utils/apiFetch"
+import { callApi, callCustomApi } from "../services/utils/apiFetch"
 import implementations from "./modules/implementations"
 import appStore from "./modules/appStore"
 import { DIRECTION, OPERATOR } from "@/services/enums/gridEnums"
@@ -33,6 +33,9 @@ export const createStore = (router) => {
       },
       [STORE.ACTIONS.CALL_API]: (store, payload) => {
         return callApi({ ...payload, store })
+      },
+      [STORE.ACTIONS.CALL_CUSTOM_API]: (store, payload) => {
+        return callCustomApi({ ...payload, store })
       },
       [STORE.ACTIONS.ROUTER_PUSH]: async (store, payload) => {
         await router.push(payload).catch(() => {

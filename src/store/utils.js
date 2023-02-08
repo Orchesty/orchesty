@@ -23,3 +23,7 @@ export const dispatchRoot = (dispatch, action, payload) => {
 export const callApi = (dispatch, payload) => {
   return dispatchRoot(dispatch, STORE.ACTIONS.CALL_API, payload)
 }
+
+export const callCustomApi = (dispatch, payload) => {
+  return dispatchRoot(dispatch, STORE.ACTIONS.CALL_CUSTOM_API, payload)
+}

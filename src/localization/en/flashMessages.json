@@ -40,6 +40,7 @@
     "activated": "App has been activated",
     "deactivated": "App has been deactivated",
     "welcomeBack": "Welcome Back",
-    "copyStartingPoint": "Starting point copied!"
+    "copyStartingPoint": "Starting point copied!",
+    "actionCallSuccess": "Action call has been successful"
   }
 }
