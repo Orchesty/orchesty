@@ -163,6 +163,12 @@ export default [
         component: () => import("../../views/app/UserProfilePage"),
         meta: { title: "Profile" },
       },
+      {
+        path: "jwt-tokens",
+        name: ROUTES.JWT_TOKENS,
+        component: () => import("../../views/app/JwtTokensPage"),
+        meta: { title: "JWT Tokens" },
+      },
     ],
   },
   {

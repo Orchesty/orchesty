@@ -11,6 +11,7 @@ import overview from "./endpoints/overview"
 import trash from "./endpoints/trash"
 import healthCheck from "./endpoints/healthCheck"
 import dashboard from "./endpoints/dashboard"
+import jwtTokens from "./endpoints/jwtTokens"
 
 export const API = {
   auth,
@@ -26,4 +27,5 @@ export const API = {
   trash,
   healthCheck,
   dashboard,
+  jwtTokens,
 }

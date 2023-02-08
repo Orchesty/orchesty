@@ -29,6 +29,8 @@
     "changeSdkValue": "change diagram sdk value with",
     "description": "description",
     "topology": "Topology",
-    "topologyNode": "Topology node"
+    "topologyNode": "Topology node",
+    "expireAt": "Expire at",
+    "scopes": "Scopes"
   }
 }

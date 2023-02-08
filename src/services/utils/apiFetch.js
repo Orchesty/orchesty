@@ -144,7 +144,7 @@ const call = (
             id,
             err.response.data.status ? err.response.data.status : "UNKNOWN",
             errorType,
-            err.response.data.message
+            err.response.data.message || err.response.data.detail
           )
         } else {
           // unknown error

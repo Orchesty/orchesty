@@ -41,6 +41,9 @@
     "deactivated": "App has been deactivated",
     "welcomeBack": "Welcome Back",
     "copyStartingPoint": "Starting point copied!",
-    "actionCallSuccess": "Action call has been successful"
+    "jwtTokenCreated": "Token created",
+    "jwtTokenDeleted": "Token deleted",
+    "actionCallSuccess": "Action call has been successful",
+    "copied": "Copied"
   }
 }

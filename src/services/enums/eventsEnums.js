@@ -13,6 +13,9 @@ export const EVENT_TYPES = {
       EDIT: "MODAL_FOLDER_EDIT",
       DELETE: "MODAL_FOLDER_DELETE",
     },
+    JWT_TOKEN: {
+      CREATE: "MODAL_JWT_TOKEN_CREATE",
+    },
   },
   SIDEBAR: {
     TOGGLE: "SIDEBAR_TOGGLE",

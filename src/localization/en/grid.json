@@ -37,7 +37,11 @@
       "updated": "Updated",
       "data": "Data",
       "logs": "Logs",
-      "actions": "Actions"
-    }
+      "actions": "Actions",
+      "key": "Key",
+      "scopes": "Scopes",
+      "expireAt": "Expire at"
+    },
+    "noData": "No data"
   }
 }
