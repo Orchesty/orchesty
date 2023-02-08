@@ -7,6 +7,8 @@ TAG := dev
 DOCKER_REGISTRY := dkr.hanaboso.net/pipes/pipes/limiter
 PUBLIC_REGISTRY := hanaboso/limiter
 
+init: .env docker-up-force
+
 .env:
 	sed -e 's/{DEV_UID}/$(shell id -u)/g' \
 		-e 's/{DEV_GID}/$(shell id -g)/g' \
@@ -38,11 +40,11 @@ docker-up-force: .env
 docker-down-clean: .env
 	$(DC) down -v
 
-test: docker-up-force fast-test docker-down-clean
+test: docker-up-force fasttest docker-down-clean
 
 ci-test: test
 
-fast-test: lint
+fasttest:
 	$(DE) mkdir var || true
 	$(DE) go test -cover -coverprofile var/coverage.out ./... -count=1
 	$(DE) go tool cover -html=var/coverage.out -o var/coverage.html

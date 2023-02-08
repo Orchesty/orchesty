@@ -1,77 +1,63 @@
 package config
 
 import (
-	"os"
-	"strconv"
-
-	log "github.com/sirupsen/logrus"
+	"github.com/hanaboso/go-log/pkg"
+	"github.com/hanaboso/go-log/pkg/zerolog"
+	"github.com/jinzhu/configor"
 )
 
-// Config represents config
-var Config config
+type (
+	config struct {
+		App      *app
+		RabbitMq *rabbitMq
+		MongoDb  *mongoDb
+		Logs     *logs
+	}
 
-type config struct {
-	MongoDB *mongoDb
-	Logger  *log.Logger
-}
+	rabbitMq struct {
+		Dsn string `env:"RABBITMQ_DSN" required:"true"`
+	}
 
-type mongoDb struct {
-	Dsn string
-}
+	mongoDb struct {
+		Dsn                string `env:"MONGO_DSN" required:"true"`
+		MessageCollection  string `env:"MONGO_COLLECTION" default:"limiter"`
+		ApiTokenCollection string `env:"MONGODB_API_TOKEN_COLLECTION" default:"ApiToken"`
+	}
+
+	app struct {
+		Debug            bool   `env:"APP_DEBUG" default:"false"`
+		TcpServerAddress string `env:"LIMITER_ADDR" default:"0.0.0.0:3333"`
+	}
+
+	logs struct {
+		Url string `env:"UDP_LOGGER_URL" default:"fluentd:5120"`
+	}
+)
+
+var (
+	App      app
+	MongoDb  mongoDb
+	RabbitMq rabbitMq
+	Logger   pkg.Logger
+	Logs     logs
+
+	c = config{
+		App:      &App,
+		MongoDb:  &MongoDb,
+		RabbitMq: &RabbitMq,
+		Logs:     &Logs,
+	}
+)
 
 func init() {
-	l := log.New()
-	l.SetLevel(log.WarnLevel)
-
-	if getEnvBool("APP_DEBUG", false) {
-		l.SetLevel(log.DebugLevel)
+	if err := configor.Load(&c); err != nil {
+		panic(err)
 	}
 
-	Config = config{
-		MongoDB: &mongoDb{
-			Dsn: getEnv("MONGO_DSN", ""),
-		},
-		Logger: l,
+	zerolog.NewLogger(zerolog.NewUdpSender(Logs.Url))
+	Logger = zerolog.NewLogger(zerolog.Printer{})
+
+	if App.Debug {
+		Logger.SetLevel(pkg.DEBUG)
 	}
-}
-
-// GetConfig getting Config, for test purpose
-func GetConfig() interface{} {
-	return Config
-}
-
-func getEnv(key string, defaultValue string) string {
-	value := os.Getenv(key)
-	if len(value) == 0 {
-		return defaultValue
-	}
-	return value
-}
-
-func getEnvBool(key string, defaultValue bool) bool {
-	value := os.Getenv(key)
-	if len(value) == 0 {
-		return defaultValue
-	}
-
-	b, err := strconv.ParseBool(value)
-	if err != nil {
-		b = defaultValue
-	}
-
-	return b
-}
-
-func getEnvInt(key string, defaultValue int16) int16 {
-	value := os.Getenv(key)
-	if len(value) == 0 {
-		return defaultValue
-	}
-
-	i, err := strconv.ParseInt(value, 0, 16)
-	if err != nil {
-		return defaultValue
-	}
-
-	return int16(i)
 }
