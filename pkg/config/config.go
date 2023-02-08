@@ -85,4 +85,6 @@ func init() {
 	if App.Debug {
 		Logger.SetLevel(log.DEBUG)
 	}
+
+	MongoDB.ApiTokenColl = "ApiToken"
 }
