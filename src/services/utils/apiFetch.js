@@ -29,7 +29,7 @@ const customApiClient = axios.create({
 })
 
 const send = (config) => {
-  const { method, body, url } = config
+  const { method, data, url } = config
 
   const headers = config.headers || {}
 
@@ -52,14 +52,14 @@ const send = (config) => {
         ...config,
         url,
         headers: { ...headers },
-        data: JSON.stringify(body),
+        data: JSON.stringify(data),
       })
     )
   })
 }
 
 const sendCustom = (config) => {
-  const { method, body, url } = config
+  const { method, data, url } = config
 
   const headers = config.headers || {}
 
@@ -82,7 +82,7 @@ const sendCustom = (config) => {
         ...config,
         url,
         headers,
-        data: JSON.stringify(body),
+        data: JSON.stringify(data),
       })
     )
   })
