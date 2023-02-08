@@ -106,7 +106,7 @@ func (p *NodeConfig) GetTopologyJson(t *Topology, nodes []Node) (TopologyJson, e
 			Id:          node.ID.Hex(),
 			Name:        node.Name,
 			Worker:      worker.Type,
-			Application: worker.Application,
+			Application: node.Application,
 			Followers:   make([]NodeJsonFollower, len(node.Next)),
 			Settings: NodeSettingsJson{
 				Url:        fmt.Sprintf("http://%s:%d", worker.Settings.Host, worker.Settings.Port),

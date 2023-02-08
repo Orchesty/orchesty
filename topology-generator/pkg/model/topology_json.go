@@ -107,14 +107,15 @@ type NodeNext struct {
 
 // Node Node
 type Node struct {
-	ID       primitive.ObjectID `bson:"_id"`
-	Name     string             `bson:"name"`
-	Topology string             `bson:"topology"`
-	Next     []NodeNext         `bson:"next"`
-	Type     string             `bson:"type"`
-	Handler  string             `bson:"handler"`
-	Enabled  bool               `bson:"enabled"`
-	Deleted  bool               `bson:"deleted"`
+	ID          primitive.ObjectID `bson:"_id"`
+	Name        string             `bson:"name"`
+	Topology    string             `bson:"topology"`
+	Application string             `bson:"application"`
+	Next        []NodeNext         `bson:"next"`
+	Type        string             `bson:"type"`
+	Handler     string             `bson:"handler"`
+	Enabled     bool               `bson:"enabled"`
+	Deleted     bool               `bson:"deleted"`
 }
 
 // GetServiceName GetServiceName

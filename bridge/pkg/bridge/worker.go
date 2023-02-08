@@ -90,7 +90,7 @@ func (n *node) start() {
 	wg.Wait() // Await for (n)acking of messages that have been sent to process before closing n.wg.Done() above
 }
 
-func (n *node) process(dto *model.ProcessMessage) {
+func (n *node) process(dto *model.ProcessMessage) bool {
 	dto.Status = enum.MessageStatus_Consumed
 	dto.SetHeader(enum.Header_NodeId, n.Node.ID)
 	dto.SetHeader(enum.Header_TopologyId, n.topologyId)
@@ -157,7 +157,7 @@ func (n *node) process(dto *model.ProcessMessage) {
 		}
 		result.Message().Status = enum.MessageStatus_Done
 
-		return
+		return ack
 	}
 }
 
