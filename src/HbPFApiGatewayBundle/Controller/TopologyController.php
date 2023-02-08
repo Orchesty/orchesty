@@ -77,6 +77,23 @@ final class TopologyController extends AbstractController
     }
 
     /**
+     * @Route("/topologies/{topologyName}/nodes/{nodeName}/run-by-name", defaults={}, methods={"POST", "OPTIONS"})
+     *
+     * @param Request $request
+     * @param string  $topologyName
+     * @param string  $nodeName
+     *
+     * @return Response
+     */
+    public function runTopologyByNameAction(Request $request, string $topologyName, string $nodeName): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::runTopologyByNameAction',
+            ['request' => $request, 'topologyName' => $topologyName, 'nodeName' => $nodeName],
+        );
+    }
+
+    /**
      * @Route("/topologies", methods={"POST", "OPTIONS"})
      *
      * @return Response

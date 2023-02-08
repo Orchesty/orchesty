@@ -20,6 +20,7 @@ use Hanaboso\PipesFramework\Configurator\Model\NodeManager;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyTester;
+use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController;
 use Hanaboso\PipesFramework\HbPFUserTaskBundle\Handler\UserTaskHandler;
 use Hanaboso\PipesFramework\UserTask\Exception\UserTaskException;
 use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
@@ -105,6 +106,25 @@ final class TopologyHandler
         }
 
         return $topologiesStatus;
+    }
+
+    /**
+     * @param string  $topologyName
+     * @param string  $nodeName
+     * @param mixed[] $data
+     * @param string  $user
+     *
+     * @return mixed[]
+     * @throws CurlException
+     */
+    public function runTopologyByName(
+        string $topologyName,
+        string $nodeName,
+        array $data,
+        string $user = ApplicationController::SYSTEM_USER,
+    ): array
+    {
+        return $this->topologyManager->runTopology($topologyName, $nodeName, $data[self::BODY], TRUE, $user);
     }
 
     /**
@@ -346,7 +366,7 @@ final class TopologyHandler
         $this->topologyManager->deleteTopology($topology);
         $this->generatorBridge->invalidateTopologyCache($topology->getName());
         $this->topologyManager->deleteTopology($topology);
-        if ($removeWithTasks){
+        if ($removeWithTasks) {
             $this->userTaskHandler->removeAllUserTasks($topology->getId());
         }
 

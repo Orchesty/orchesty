@@ -140,10 +140,10 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
      */
     public function testGetAppDetail(): void
     {
-        $dto = new ResponseDto(200, '', Json::encode(['key' => 'null']), []);
+        $dto = new ResponseDto(200, '', Json::encode(['key' => 'null', 'customActions' => []]), []);
 
         $res = $this->createLocator($dto)->getAppDetail('null', 'user');
-        self::assertEquals(['key' => 'null', 'host' => 'host'], $res);
+        self::assertEquals(['key' => 'null', 'host' => 'host', 'customActions' => []], $res);
     }
 
     /**
@@ -416,7 +416,12 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
 
         $redirect = $this->createMock(RedirectInterface::class);
 
-        $locator = new ServiceLocator($this->dm, $curl, $redirect);
+        $locator = new ServiceLocator(
+            $this->dm,
+            $curl,
+            $redirect,
+            self::getContainer()->getParameter('backendHost'),
+        );
         $locator->setLogger(new NullLogger());
 
         return $locator;

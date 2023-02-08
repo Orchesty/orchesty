@@ -26,7 +26,6 @@ use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationControlle
 use Hanaboso\PipesFramework\Utils\Dto\NodeSchemaDto;
 use Hanaboso\PipesFramework\Utils\Dto\Schema;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
-use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesPhpSdk\Database\Document\Embed\EmbedNode;
 use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use Hanaboso\PipesPhpSdk\Database\Document\Topology;
@@ -51,7 +50,8 @@ final class TopologyManager
 
     public const DEFAULT_SCHEME = '<?xml version="1.0" encoding="UTF-8"?><bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn"><bpmn:process id="%s" isExecutable="false" /><bpmndi:BPMNDiagram id="BPMNDiagram_1"><bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1" /></bpmndi:BPMNDiagram></bpmn:definitions>';
 
-    private const RUN_ENDPOINT = 'topologies/%s/nodes/%s/run?uiRun=true';
+    private const RUN_ENDPOINT                   = 'topologies/%s/nodes/%s/run?uiRun=true';
+    private const RUN_ENDPOINT_BY_NAME_WITH_USER = 'topologies/%s/nodes/%s/user/%s/run-by-name';
 
     private const MESSAGE        = 'message';
     private const STARTED        = 'started';
@@ -108,36 +108,35 @@ final class TopologyManager
      * @param string $topologyId
      * @param string $startingPoint
      * @param string $data
+     * @param bool   $runTopologyByName
+     * @param string $user
      *
      * @return mixed[]
-     * @throws AuthorizationException
      * @throws CurlException
      */
-    public function runTopology(string $topologyId, string $startingPoint, string $data): array
+    public function runTopology(
+        string $topologyId,
+        string $startingPoint,
+        string $data,
+        bool $runTopologyByName = FALSE,
+        string $user = ApplicationController::SYSTEM_USER,
+    ): array
     {
-        $apiTokenRepository = $this->dm->getRepository(ApiToken::class);
-        $apiToken           = $apiTokenRepository->findOneBy(
-            [
-                'scopes' => ApiTokenScopesEnum::TOPOLOGY_RUN,
-                'user'   => ApplicationController::SYSTEM_USER,
-            ],
-        );
-
-        $headers = [];
-        if ($apiToken) {
-            $headers = [
-                'orchesty-api-key' => $apiToken->getKey(),
-            ];
+        if ($runTopologyByName) {
+            $url = new Uri($this->getUrl(self::RUN_ENDPOINT_BY_NAME_WITH_USER, $topologyId, $startingPoint, $user));
+        } else {
+            $url = new Uri($this->getUrl(self::RUN_ENDPOINT, $topologyId, $startingPoint));
         }
 
+        $headers = $this->getHeadersForTopologyRunRequest();
+
         $request = new RequestDto(
-            new Uri($this->getUrl(self::RUN_ENDPOINT, $topologyId, $startingPoint)),
+            $url,
             CurlManager::METHOD_POST,
             new ProcessDto(),
-            '',
+            $data,
             $headers,
         );
-        $request->setBody($data);
 
         try {
             $response = $this->curl->send($request);
@@ -797,6 +796,28 @@ final class TopologyManager
             self::STARTED        => $started,
             self::MESSAGE        => $message,
         ];
+    }
+
+    /**
+     * @return mixed[]
+     */
+    private function getHeadersForTopologyRunRequest(): array
+    {
+        $apiTokenRepository = $this->dm->getRepository(ApiToken::class);
+        $apiToken           = $apiTokenRepository->findOneBy(
+            [
+                'scopes' => ApiTokenScopesEnum::TOPOLOGY_RUN,
+                'user'   => ApplicationController::SYSTEM_USER,
+            ],
+        );
+
+        if ($apiToken) {
+            return [
+                'orchesty-api-key' => $apiToken->getKey(),
+            ];
+        }
+
+        return [];
     }
 
 }

@@ -1,4 +1,6 @@
 {
     "http": 200,
-    "body": {}
+    "body": {
+        "customActions": []
+    }
 }

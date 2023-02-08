@@ -74,6 +74,26 @@ final class TopologyController
     }
 
     /**
+     * @Route("/topologies/{topologyName}/nodes/{nodeName}/run-by-name", methods={"POST", "OPTIONS"})
+     *
+     * @param Request $request
+     * @param string  $topologyName
+     * @param string  $nodeName
+     *
+     * @return Response
+     */
+    public function runTopologyByNameAction(Request $request, string $topologyName, string $nodeName): Response
+    {
+        try {
+            return $this->getResponse(
+                $this->topologyHandler->runTopologyByName($topologyName, $nodeName, $request->request->all()),
+            );
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
+        }
+    }
+
+    /**
      * @Route("/topologies/cron", methods={"GET", "OPTIONS"})
      *
      * @return Response
