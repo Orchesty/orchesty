@@ -25,7 +25,6 @@ export default class GoogleSheetUpdateBatchSpreadsheet extends AConnector {
 
     public async processAction(dto: ProcessDto<IInput>): Promise<ProcessDto> {
         const app = this.getApplication<GoogleSheetApplication>();
-        const appInstall = await this.getApplicationInstallFromProcess(dto);
         const spredsheetId = dto.getHeader(SPREADSHEET_ID);
         const spredsheetCacheKey = `${spredsheetId}-${dto.getHeader(CORRELATION_ID)}`;
 

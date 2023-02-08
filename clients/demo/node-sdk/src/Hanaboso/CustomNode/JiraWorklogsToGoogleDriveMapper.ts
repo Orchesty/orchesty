@@ -1,4 +1,3 @@
-import JiraApplication from '@orchesty/nodejs-connectors/dist/lib/Jira/JiraApplication';
 import ACommonNode from '@orchesty/nodejs-sdk/dist/lib/Commons/ACommonNode';
 import DataStorageManager from '@orchesty/nodejs-sdk/dist/lib/Storage/DataStore/DataStorageManager';
 import { CORRELATION_ID } from '@orchesty/nodejs-sdk/dist/lib/Utils/Headers';

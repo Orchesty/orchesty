@@ -34,16 +34,19 @@ export default class SESApplication extends Base {
         const settings = applicationInstall.getSettings()[CoreFormsEnum.AUTHORIZATION_FORM];
 
         return new SESClient(
-            {
-                /* eslint-disable @typescript-eslint/naming-convention */
-                [CREDENTIALS]: {
-                    accessKeyId: ses.key,
-                    secretAccessKey: ses.secret,
+            [
+                {
+                    /* eslint-disable @typescript-eslint/naming-convention */
+                    [CREDENTIALS]: {
+                        accessKeyId: ses.key,
+                        secretAccessKey: ses.secret,
+                    },
+                    [REGION]: settings[REGION],
+                    apiVersion: LATEST,
+                    [ENDPOINT]: settings?.[ENDPOINT] ?? [],
                 },
-                [REGION]: settings[REGION],
-                apiVersion: LATEST,
-            },
-            /* eslint-enable @typescript-eslint/naming-convention */
+                /* eslint-enable @typescript-eslint/naming-convention */
+            ],
         );
     }
 

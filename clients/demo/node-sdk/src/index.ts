@@ -71,12 +71,10 @@ import ZoomApplication from '@orchesty/nodejs-connectors/dist/lib/Zoom/ZoomAppli
 import { container, initiateContainer } from '@orchesty/nodejs-sdk';
 import { OAuth2Provider } from '@orchesty/nodejs-sdk/dist/lib/Authorization/Provider/OAuth2/OAuth2Provider';
 import CacheService from '@orchesty/nodejs-sdk/dist/lib/Cache/CacheService';
-import CoreServices from '@orchesty/nodejs-sdk/dist/lib/DIContainer/CoreServices';
+import DatabaseClient from '@orchesty/nodejs-sdk/dist/lib/Storage/Database/Client';
 import DataStorageManager from '@orchesty/nodejs-sdk/dist/lib/Storage/DataStore/DataStorageManager';
 import FileSystem from '@orchesty/nodejs-sdk/dist/lib/Storage/File/FileSystem';
-import MongoDbClient from '@orchesty/nodejs-sdk/dist/lib/Storage/Mongodb/Client';
 import Redis from '@orchesty/nodejs-sdk/dist/lib/Storage/Redis/Redis';
-import TopologyRunner from '@orchesty/nodejs-sdk/dist/lib/Topology/TopologyRunner';
 import CurlSender from '@orchesty/nodejs-sdk/dist/lib/Transport/Curl/CurlSender';
 import HubspotApplinthContactAddContactToListMapper
     from './ApplinthIo/CustomNode/HubspotApplinthContactAddContactToListMapper';
@@ -113,10 +111,9 @@ import TenantApplication from './JsonPlaceholder/TenantApplication';
 
 export function start(): void {
     initiateContainer();
-    const sender = container.get<CurlSender>(CoreServices.CURL);
-    const mongoDb = container.get<MongoDbClient>(CoreServices.MONGO);
-    const provider = container.get<OAuth2Provider>(CoreServices.OAUTH2_PROVIDER);
-    const runner = container.get<TopologyRunner>(CoreServices.TOPOLOGY_RUNNER);
+    const sender = container.get(CurlSender);
+    const mongoDb = container.get(DatabaseClient);
+    const provider = container.get(OAuth2Provider);
     const etl = new DataStorageManager(new FileSystem());
     const redis = new Redis('');
     const cache = new CacheService(redis, sender);
@@ -232,7 +229,7 @@ export function start(): void {
     const moneyS5App = new MoneyS5Application(cache);
     container.setApplication(moneyS5App);
 
-    const shoptetPremApp = new ShoptetPremiumApplication(runner);
+    const shoptetPremApp = new ShoptetPremiumApplication();
     container.setApplication(shoptetPremApp);
 
     const shopifyApp = new ShopifyApplication(sender);
