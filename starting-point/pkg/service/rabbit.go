@@ -75,7 +75,7 @@ func (this RabbitSvc) SendMessage(
 
 	limitHeader, err := GetApplicationLimits(user, topology)
 	if err != nil {
-		config.Logger.Error(fmt.Errorf("cannot fetch sdk's limits: %+v", err))
+		config.Logger.Error(fmt.Errorf("cannot fetch sdk's limits: %+v, %v", err, limitHeader))
 		return
 	}
 	h[utils.LimitKey] = limitHeader

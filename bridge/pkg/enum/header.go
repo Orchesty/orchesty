@@ -35,6 +35,7 @@ const (
 	Header_LimitReturnRoutingKey = "limit-return-routing-key"
 	// Message came from limiter (bool)
 	Header_LimitMessageFromLimiter = "limit-message-from-limiter"
+	Header_Application             = "application"
 
 	// enum.UserTask (pending, failed) marker for counter & if message came from db
 	Header_UserTaskState = "user-task-state"
