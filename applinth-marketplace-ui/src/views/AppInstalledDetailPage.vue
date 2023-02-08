@@ -46,25 +46,32 @@
             </div>
 
             <template v-if="isActivationEnabled">
-              <div v-if="activationDisabled" @click="toggleModal">
-                <v-switch v-model="isActivated" color="secondary" disabled>
+              <div class="ml-auto">
+                <div v-if="activationDisabled" @click="toggleModal">
+                  <v-switch v-model="isActivated" color="secondary" disabled>
+                    <template #label>
+                      <span class="activation-label">{{ onOrOff }}</span>
+                    </template>
+                  </v-switch>
+                </div>
+
+                <v-switch
+                  v-else
+                  v-model="isActivated"
+                  color="secondary"
+                  :loading="false"
+                  @change="onActivationChange($event)"
+                >
                   <template #label>
                     <span class="activation-label">{{ onOrOff }}</span>
                   </template>
                 </v-switch>
               </div>
 
-              <v-switch
-                v-else
-                v-model="isActivated"
-                color="secondary"
-                :loading="false"
-                @change="onActivationChange($event)"
-              >
-                <template #label>
-                  <span class="activation-label">{{ onOrOff }}</span>
-                </template>
-              </v-switch>
+              <CustomActionsMenu
+                :disabled="customActionsDisabled"
+                :custom-actions="customActions"
+              />
             </template>
 
             <app-not-authorized-modal v-model="showModal" />
@@ -233,10 +240,12 @@ import showFlashMessage from "@/utils/flashMessage"
 import { FLASH_MESSAGES_TYPES } from "@/store/flashMessages/types"
 import AppNotAuthorizedModal from "@/components/applications/AppNotAuthorizedModal"
 import { authService } from "@/utils/authService"
+import CustomActionsMenu from "@/components/applications/CustomActionsMenu.vue"
 
 export default {
   name: "InstalledAppDetailPage",
   components: {
+    CustomActionsMenu,
     AppNotAuthorizedModal,
     BaseSelect,
     ActionsWrapper,
@@ -284,6 +293,12 @@ export default {
       return this.isActivated
         ? this.$t("application.activated")
         : this.$t("application.notactivated")
+    },
+    customActionsDisabled() {
+      return !(this.customActions.length > 0 && !this.activationDisabled)
+    },
+    customActions() {
+      return this.appActive.customActions || []
     },
   },
   methods: {

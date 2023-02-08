@@ -15,6 +15,7 @@ services:
             - '@Hanaboso\Applinth\Authenticator\EndUserAuthenticator'
             - '@hbpf.usage_stats.handler.usage_stats'
             - '@hbpp.service.locator'
+            - '@hbpf.configurator.handler.topology'
         calls:
             - [ 'setLogger', [ '@monolog.logger.commons' ] ]
             - [ 'setContainer', [ '@service_container' ] ]

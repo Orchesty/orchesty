@@ -5,6 +5,7 @@ namespace Hanaboso\Applinth\Controller;
 use Exception;
 use Hanaboso\Applinth\Authenticator\EndUserAuthenticator;
 use Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator;
+use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler;
 use Hanaboso\PipesFramework\HbPFUsageStatsBundle\Handler\UsageStatsHandler;
 use Hanaboso\PipesFramework\UsageStats\Enum\EventTypeEnum;
 use Hanaboso\Utils\Traits\ControllerTrait;
@@ -13,6 +14,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Throwable;
 
 /**
  * Class ApplicationController
@@ -32,11 +34,13 @@ final class ApplicationController extends AbstractController
      * @param EndUserAuthenticator $authenticator
      * @param UsageStatsHandler    $usageStatsHandler
      * @param ServiceLocator       $locator
+     * @param TopologyHandler      $topologyHandler
      */
     public function __construct(
         private readonly EndUserAuthenticator $authenticator,
         private readonly UsageStatsHandler $usageStatsHandler,
         private readonly ServiceLocator $locator,
+        private readonly TopologyHandler $topologyHandler,
     )
     {
     }
@@ -97,7 +101,35 @@ final class ApplicationController extends AbstractController
     public function getInstalledApplicationDetail(string $key): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done
-        return new JsonResponse($this->locator->getAppDetail($key, $this->authenticator->getAuthUser()));
+        return new JsonResponse(
+            $this->locator->getAppDetail(
+                $key,
+                $this->authenticator->getAuthUser(),
+                '%sapi/applinth/application/topologies/%s/nodes/%s/run-by-name',
+            ),
+        );
+    }
+
+    /**
+     * @Route("/topologies/{topologyName}/nodes/{nodeName}/run-by-name", methods={"POST"})
+     *
+     * @param Request $request
+     * @param string  $topologyName
+     * @param string  $nodeName
+     *
+     * @return Response
+     */
+    public function runTopology(Request $request, string $topologyName, string $nodeName): Response
+    {
+        try {
+            $user = $this->authenticator->getAuthUser();
+
+            return $this->getResponse(
+                $this->topologyHandler->runTopologyByName($topologyName, $nodeName, $request->request->all(), $user),
+            );
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
+        }
     }
 
     /**

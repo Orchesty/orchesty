@@ -5,6 +5,7 @@ namespace Hanaboso\PipesPhpSdk\Application\Base;
 use Hanaboso\CommonsBundle\Process\ProcessDtoAbstract;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Application\Model\CustomAction\CustomAction;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\FormStack;
 
 /**
@@ -95,6 +96,11 @@ interface ApplicationInterface
      * @return mixed[]
      */
     public function getApplicationForms(ApplicationInstall $applicationInstall): array;
+
+    /**
+     * @return CustomAction[]
+     */
+    public function getCustomActions(): array;
 
     /**
      * @param ApplicationInstall $applicationInstall

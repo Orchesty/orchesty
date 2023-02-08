@@ -15,6 +15,13 @@ const apiClient = axios.create({
   },
 })
 
+const customApiClient = axios.create({
+  headers: {
+    Accept: "application/json",
+    "Content-Type": "application/json; charset=utf-8",
+  },
+})
+
 const send = (config) => {
   const { method, body, url } = config
 
@@ -43,9 +50,47 @@ const send = (config) => {
           ...authorization,
           ...headers,
         },
-        body: JSON.stringify(body),
+        body: JSON.stringify(body), // todo review body (should be data?)
       })
     )
+  })
+}
+
+const callCustomApi = (config) => {
+  const { method, body, url } = config
+
+  const headers = config.headers || {}
+  headers["Authorization"] = authService.accessToken
+
+  return new Promise((resolve, reject) => {
+    if (!method) {
+      reject(new Error("The request must have method."))
+    }
+
+    if (!url) {
+      reject(new Error("The request must have url."))
+    }
+
+    return customApiClient
+      .request({
+        ...config,
+        url,
+        headers,
+        data: JSON.stringify(body),
+      })
+      .then((res) => {
+        resolve(res.data)
+      })
+      .catch((err) => {
+        console.error("Response ERROR!", err)
+
+        showFlashMessage(
+          i18n.t("flashMessage.apiError"),
+          FLASH_MESSAGES_TYPES.ERROR
+        )
+
+        reject(err)
+      })
   })
 }
 
@@ -117,4 +162,4 @@ const call = ({ requestData, params = null, throwError = true }, sender) => {
 const callApi = (params) =>
   call(params, (config) => send({ ...config, withCredentials: true }))
 
-export { callApi }
+export { callApi, callCustomApi }

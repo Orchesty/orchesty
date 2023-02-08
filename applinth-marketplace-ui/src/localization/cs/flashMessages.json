@@ -12,6 +12,7 @@
     "rejectedList": "{number} položek zamítnuto",
     "rejected": "{item} zamítnut",
     "accepted": "{item} akceptován",
-    "idCopied": "Id zkopírováno"
+    "idCopied": "Id zkopírováno",
+    "actionCallSuccess": "Akce byla úspěšně provedena"
   }
 }

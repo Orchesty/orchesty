@@ -3,6 +3,7 @@ export const STORE = {
     RESET: "RESET",
     CALL_GRAPHQL: "CALL_GRAPHQL",
     CALL_API: "CALL_API",
+    CALL_CUSTOM_API: "CALL_CUSTOM_API",
     ROUTER_PUSH: "ROUTER_PUSH",
   },
 }

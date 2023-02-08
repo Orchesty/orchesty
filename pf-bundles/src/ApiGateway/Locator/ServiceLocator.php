@@ -30,7 +30,8 @@ final class ServiceLocator implements LoggerAwareInterface
 
     use LoggerTrait;
 
-    public const USER_TASK_LIST = ['user-task'];
+    public const USER_TASK_LIST     = ['user-task'];
+    public const CUSTOM_ACTION_PATH = '%sapi/topologies/%s/nodes/%s/run-by-name';
 
     /**
      * @var ObjectRepository<Sdk>&SdkRepository
@@ -43,11 +44,13 @@ final class ServiceLocator implements LoggerAwareInterface
      * @param DocumentManager   $dm
      * @param CurlManager       $curlManager
      * @param RedirectInterface $redirect
+     * @param string            $backendHost
      */
     public function __construct(
         DocumentManager $dm,
         private readonly CurlManager $curlManager,
         private readonly RedirectInterface $redirect,
+        private readonly string $backendHost,
     )
     {
         $this->sdkRepository = $dm->getRepository(Sdk::class);
@@ -126,12 +129,22 @@ final class ServiceLocator implements LoggerAwareInterface
     /**
      * @param string $key
      * @param string $user
+     * @param string $customActionPath
      *
      * @return mixed[]
+     * @throws Throwable
      */
-    public function getAppDetail(string $key, string $user): array
+    public function getAppDetail(string $key, string $user, string $customActionPath = self::CUSTOM_ACTION_PATH): array
     {
-        return $this->doRequest(sprintf('applications/%s/users/%s', $key, $user));
+        $res = $this->doRequest(sprintf('applications/%s/users/%s', $key, $user));
+
+        if (isset($res['customActions'])) {
+            $res['customActions'] = $this->prepareCustomActionsUrls($res['customActions'], $customActionPath);
+        } else {
+            $res['customActions'] = [];
+        }
+
+        return $res;
     }
 
     /**
@@ -533,6 +546,28 @@ final class ServiceLocator implements LoggerAwareInterface
         });
 
         $res['items'] = array_values($res['items']);
+    }
+
+    /**
+     * @param mixed[] $customActions
+     * @param string  $path
+     *
+     * @return mixed[]
+     */
+    private function prepareCustomActionsUrls(array $customActions, string $path): array
+    {
+        $actions = [];
+        foreach ($customActions as $action) {
+            if (empty($action['url'])) {
+                $action['url'] = sprintf($path, $this->backendHost, $action['topologyName'], $action['nodeName']);
+
+            }
+            unset($action['topologyName'], $action['nodeName']);
+
+            $actions[] = $action;
+        }
+
+        return $actions;
     }
 
 }

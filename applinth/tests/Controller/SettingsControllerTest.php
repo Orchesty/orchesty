@@ -51,6 +51,7 @@ final class SettingsControllerTest extends ControllerTestCaseAbstract
             $this->dm,
             $curl,
             self::createMock(RedirectInterface::class),
+            self::getContainer()->getParameter('backendHost'),
         );
 
         self::getContainer()->set('hbpp.service.locator', $loader);
