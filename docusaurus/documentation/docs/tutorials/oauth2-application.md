@@ -24,7 +24,7 @@ First, we create the AOAuth2Application extension application and complete all t
 <TabItem value="typescript" label="Typescript">
 
 ```typescript
-import CoreFormsEnum from '@orchesty/nodejs-sdk/dist/lib/Application/Base/CoreFormsEnum';
+import CoreFormsEnum, { getFormName } from '@orchesty/nodejs-sdk/dist/lib/Application/Base/CoreFormsEnum';
 import { ApplicationInstall } from '@orchesty/nodejs-sdk/dist/lib/Application/Database/ApplicationInstall';
 import Field from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/Field';
 import FieldType from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/FieldType';
@@ -35,7 +35,6 @@ import { CLIENT_ID, CLIENT_SECRET } from '@orchesty/nodejs-sdk/dist/lib/Authoriz
 import RequestDto from '@orchesty/nodejs-sdk/dist/lib/Transport/Curl/RequestDto';
 import { HttpMethods } from '@orchesty/nodejs-sdk/dist/lib/Transport/HttpMethods';
 import AProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/AProcessDto';
-import { BodyInit } from 'node-fetch';
 
 const APP_ID = 'app_id';
 export const BASE_URL = 'https://api.hubapi.com';
@@ -60,13 +59,13 @@ export default class HubSpotApplication extends AOAuth2Application {
         applicationInstall: ApplicationInstall,
         method: HttpMethods,
         url?: string,
-        data?: BodyInit,
+        data?: unknown,
     ): RequestDto {
         // Implementated in next stepts
     }
 
     public getFormStack(): FormStack {
-        const form = new Form(CoreFormsEnum.AUTHORIZATION_FORM, 'Authorization settings')
+        const form = new Form(CoreFormsEnum.AUTHORIZATION_FORM, getFormName(CoreFormsEnum.AUTHORIZATION_FORM))
             .addField(new Field(FieldType.TEXT, CLIENT_ID, 'Client Id', null, true))
             .addField(new Field(FieldType.TEXT, CLIENT_SECRET, 'Client Secret', null, true))
             .addField(new Field(FieldType.TEXT, APP_ID, 'Application Id', null, true));
@@ -163,6 +162,8 @@ an application for token fetching.
 
 ```typescript
 // ...
+import { ApplicationInstall } from '@orchesty/nodejs-sdk/dist/lib/Application/Database/ApplicationInstall';
+import AOAuth2Application from '@orchesty/nodejs-sdk/dist/lib/Authorization/Type/OAuth2/AOAuth2Application';
 import ScopeSeparatorEnum from '@orchesty/nodejs-sdk/dist/lib/Authorization/ScopeSeparatorEnum';
 // ...
 
@@ -240,7 +241,6 @@ Now we'll correctly implement Authorization for `requestDto`.
 ```typescript
 // ...
 import { CommonHeaders, JSON_TYPE } from '@orchesty/nodejs-sdk/dist/lib/Utils/Headers';
-import { BodyInit, Headers } from 'node-fetch';
 // ...
 
 export default class HubSpotApplication extends AOAuth2Application {
@@ -251,13 +251,13 @@ export default class HubSpotApplication extends AOAuth2Application {
   applicationInstall: ApplicationInstall,
   method: HttpMethods,
   url?: string,
-  data?: BodyInit,
+  data?: unknown,
  ): RequestDto {
-  const headers = new Headers({
+  const headers = {
    [CommonHeaders.CONTENT_TYPE]: JSON_TYPE,
    [CommonHeaders.ACCEPT]: JSON_TYPE,
    [CommonHeaders.AUTHORIZATION]: `Bearer ${this.getAccessToken(applicationInstall)}`,
-  });
+  };
 
   return new RequestDto(url ?? BASE_URL, method, dto, data, headers);
  }
@@ -319,7 +319,7 @@ That's the HubSpot application ready to go. You can copy the full application co
 <TabItem value="typescript" label="Typescript">
 
 ```typescript
-import CoreFormsEnum from '@orchesty/nodejs-sdk/dist/lib/Application/Base/CoreFormsEnum';
+import CoreFormsEnum, { getFormName } from '@orchesty/nodejs-sdk/dist/lib/Application/Base/CoreFormsEnum';
 import { ApplicationInstall } from '@orchesty/nodejs-sdk/dist/lib/Application/Database/ApplicationInstall';
 import Field from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/Field';
 import FieldType from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/FieldType';
@@ -331,7 +331,6 @@ import { CLIENT_ID, CLIENT_SECRET } from '@orchesty/nodejs-sdk/dist/lib/Authoriz
 import RequestDto from '@orchesty/nodejs-sdk/dist/lib/Transport/Curl/RequestDto';
 import { HttpMethods } from '@orchesty/nodejs-sdk/dist/lib/Transport/HttpMethods';
 import AProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/AProcessDto';
-import { BodyInit, Headers } from 'node-fetch';
 import { CommonHeaders, JSON_TYPE } from '@orchesty/nodejs-sdk/dist/lib/Utils/Headers';
 
 const APP_ID = 'app_id';
@@ -365,19 +364,19 @@ export default class HubSpotApplication extends AOAuth2Application {
         applicationInstall: ApplicationInstall,
         method: HttpMethods,
         url?: string,
-        data?: BodyInit,
+        data?: unknown,
     ): RequestDto {
-        const headers = new Headers({
-            [CommonHeaders.CONTENT_TYPE]: JSON_TYPE,
-            [CommonHeaders.ACCEPT]: JSON_TYPE,
-            [CommonHeaders.AUTHORIZATION]: `Bearer ${this.getAccessToken(applicationInstall)}`,
-        });
-
+        const headers = {
+          [CommonHeaders.CONTENT_TYPE]: JSON_TYPE,
+          [CommonHeaders.ACCEPT]: JSON_TYPE,
+          [CommonHeaders.AUTHORIZATION]: `Bearer ${this.getAccessToken(applicationInstall)}`,
+        };
+    
         return new RequestDto(url ?? BASE_URL, method, dto, data, headers);
     }
 
     public getFormStack(): FormStack {
-        const form = new Form(CoreFormsEnum.AUTHORIZATION_FORM, 'Authorization settings')
+        const form = new Form(CoreFormsEnum.AUTHORIZATION_FORM, getFormName(CoreFormsEnum.AUTHORIZATION_FORM))
             .addField(new Field(FieldType.TEXT, CLIENT_ID, 'Client Id', null, true))
             .addField(new Field(FieldType.TEXT, CLIENT_SECRET, 'Client Secret', null, true))
             .addField(new Field(FieldType.TEXT, APP_ID, 'Application Id', null, true));
@@ -385,7 +384,6 @@ export default class HubSpotApplication extends AOAuth2Application {
         return new FormStack().addForm(form);
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public getScopes(applicationInstall: ApplicationInstall): string[] {
         return ['contacts'];
     }
@@ -518,10 +516,10 @@ import { OAuth2Provider } from '@orchesty/nodejs-sdk/dist/lib/Authorization/Prov
 import { container, initiateContainer } from '@orchesty/nodejs-sdk';
 import HubSpotApplication from './HubSpotApplication';
 
-export default async function prepare(): Promise<void> {
-    await initiateContainer();
+export default function prepare(): void {
+    initiateContainer();
 
-    const oAuth2Provider = container.get<OAuth2Provider>(CoreServices.OAUTH2_PROVIDER);
+    const oAuth2Provider = container.get(OAuth2Provider);
 
     // ...
     const hubSpotApplication = new HubSpotApplication(oAuth2Provider);
@@ -572,7 +570,7 @@ import AConnector from '@orchesty/nodejs-sdk/dist/lib/Connector/AConnector';
 import logger from '@orchesty/nodejs-sdk/dist/lib/Logger/Logger';
 import { HttpMethods } from '@orchesty/nodejs-sdk/dist/lib/Transport/HttpMethods';
 import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
-import HubSpotApplication, { BASE_URL } from './HubSpotApplication';
+import { BASE_URL } from './HubSpotApplication';
 
 export const NAME = 'hub-spot-create-contact';
 
@@ -585,7 +583,7 @@ export default class HubSpotCreateContactConnector extends AConnector {
     public async processAction(dto: ProcessDto): Promise<ProcessDto> {
         const applicationInstall = await this.getApplicationInstallFromProcess(dto);
 
-        const request = await this.getApplication<HubSpotApplication>().getRequestDto(
+        const request = await this.getApplication().getRequestDto(
             dto,
             applicationInstall,
             HttpMethods.POST,
@@ -683,20 +681,17 @@ Finally, we register the connector in `index.ts` to the container.
 
 ```typescript
 //...
-
 import HubSpotCreateContactConnector from './HubSpotCreateContactConnector';
 
-export default async function prepare(): Promise<void> {
+export default function prepare(): void {
     //...
 
-    const hubSpotCreateContactConn = new HubSpotCreateContactConnector();
-
-    hubSpotCreateContactConn
+    const hubSpotCreateContactConnector = new HubSpotCreateContactConnector()
         .setSender(curlSender)
-        .setDb(mongoDbClient)
+        .setDb(databaseClient)
         .setApplication(hubSpotApplication);
-
-    container.setConnector(hubSpotCreateContactConn);
+  
+    container.setConnector(hubSpotCreateContactConnector);
 
     //...
 }

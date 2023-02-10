@@ -20,10 +20,9 @@ To ensure that the queries and downloads of each page are repeated, we use the c
 import ABatchNode from '@orchesty/nodejs-sdk/dist/lib/Batch/ABatchNode';
 import { HttpMethods } from '@orchesty/nodejs-sdk/dist/lib/Transport/HttpMethods';
 import BatchProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/BatchProcessDto';
-import GitHubApplication from "./GitHubApplication";
 
 export const NAME = 'git-hub-repositories-batch';
-const PAGE_ITEMS = 100;
+const PAGE_ITEMS = 5;
 
 export default class GitHubRepositoriesBatch extends ABatchNode {
     public getName(): string {
@@ -34,7 +33,7 @@ export default class GitHubRepositoriesBatch extends ABatchNode {
         const page = dto.getBatchCursor('1');
         const { org } = dto.getJsonData();
         const appInstall = await this.getApplicationInstallFromProcess(dto);
-        const request = await this.getApplication<GitHubApplication>().getRequestDto(
+        const request = await this.getApplication().getRequestDto(
             dto,
             appInstall,
             HttpMethods.GET,
@@ -122,25 +121,29 @@ Register the connector into the container in `index.ts`.
 
 ```typescript
 // ...
-import { initiateContainer, listen, container } from '@orchesty/nodejs-sdk';
+import { container } from '@orchesty/nodejs-sdk';
+import CurlSender from '@orchesty/nodejs-sdk/dist/lib/Transport/Curl/CurlSender';
+import DbClient from '@orchesty/nodejs-sdk/dist/lib/Storage/Database/Client';
+import GitHubApplication from './GitHubApplication';
 import GitHubRepositoriesBatch from './GitHubRepositoriesBatch';
 // ...
 
-export default async function prepare(): Promise<void> {
+export default function prepare(): void {
 
-  // ...
-    const mongoDbClient = container.get(CoreServices.MONGO);
-    const curlSender = container.get(CoreServices.CURL);
+    // ...
+    const curlSender = container.get(CurlSender);
+    const databaseClient = container.get(DbClient);
+    
     const gitHubApplication = new GitHubApplication();
     const gitHubRepositoriesBatch = new GitHubRepositoriesBatch();
 
     gitHubRepositoriesBatch
         .setSender(curlSender)
-        .setDb(mongoDbClient)
+        .setDb(databaseClient)
         .setApplication(gitHubApplication);
 
     container.setBatch(gitHubRepositoriesBatch);
-  // ...
+    // ...
 }
 ```
 </TabItem>

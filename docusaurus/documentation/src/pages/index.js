@@ -7,20 +7,21 @@ import styles from './index.module.css';
 import HomepageFeatures from '../components/HomepageFeatures';
 import useBaseUrl from "@docusaurus/core/lib/client/exports/useBaseUrl";
 
-function HomepageHeader() {
-  const {siteConfig} = useDocusaurusContext();
+function HomepageHeader({siteConfig}) {
+  const {customFields, title} = siteConfig
+
   return (
     <header className={clsx(styles.heroBanner)}>
       <div className="container">
           <div className="main-logo">
             <MainLogo />
           </div>
-        <h1 className="hero__title">{siteConfig.title}</h1>
+        <h1 className="hero__title">{title}</h1>
 
         <div className={styles.buttons}>
           <Link
             className="button button--primary button--lg"
-            to="/docs/get-started/installation">
+            to={`/docs/${customFields.version}/get-started/installation`}>
             Download
           </Link>
         </div>
@@ -36,13 +37,14 @@ const MainLogo = () => {
 
 export default function Home() {
   const {siteConfig} = useDocusaurusContext();
+
   return (
     <Layout
       title={`${siteConfig.title} docs`}
       description="Orchesty Documentation">
-      <HomepageHeader />
+      <HomepageHeader siteConfig={siteConfig} />
       <main>
-        <HomepageFeatures />
+        <HomepageFeatures siteConfig={siteConfig} />
       </main>
     </Layout>
   );

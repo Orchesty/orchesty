@@ -26,12 +26,12 @@ module.exports = {
         srcDark: 'img/Orch_logo_big.svg',
       },
       items: [
-        // {
-        //  type: 'docsVersionDropdown',
-        //  docId: 'intro',
-        //  position: 'left',
-        //  label: 'Tutorial',
-        // },
+        {
+         type: 'docsVersionDropdown',
+         docId: 'intro',
+         position: 'right',
+         label: 'Version',
+        },
         {
           href: 'https://github.com/Orchesty',
           label: 'GitHub',
@@ -57,6 +57,17 @@ module.exports = {
           includeCurrentVersion: true,
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
+          lastVersion: 'current',
+          versions: {
+            current: {
+              label: 'current',
+              path: '1.1.0',
+            },
+            '1.0.6': {
+              label: '1.0.6',
+              path: '1.0.6',
+            }
+          },
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
@@ -64,4 +75,7 @@ module.exports = {
       },
     ],
   ],
+  customFields: {
+    version: '1.1.0'
+  }
 };

@@ -24,6 +24,8 @@ import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
 import WebhookSubscription from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Webhook/WebhookSubscription';
 import ResponseDto from '@orchesty/nodejs-sdk/dist/lib/Transport/Curl/ResponseDto';
 
+// ...
+
 export default class GitHubApplication extends ABasicApplication implements IWebhookApplication {
     
     // ...
@@ -47,7 +49,6 @@ export default class GitHubApplication extends ABasicApplication implements IWeb
         {
           config: {
             url,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
             content_type: 'json',
           },
           name: 'web',
@@ -58,7 +59,6 @@ export default class GitHubApplication extends ABasicApplication implements IWeb
 
     public processWebhookSubscribeResponse(
         dto: ResponseDto,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         applicationInstall: ApplicationInstall,
     ): string {
         if (dto.getResponseCode() !== 201) {
@@ -179,7 +179,6 @@ export default class GitHubApplication extends ABasicApplication implements IWeb
         return dto.getResponseCode() === 204;
     }
     
-    
     // ...
     
 }
@@ -288,8 +287,8 @@ final class GitHubApplication extends BasicApplicationAbstract implements Webhoo
 <TabItem value="typescript" label="Typescript">
 
 ```typescript
-import ApplicationTypeEnum from '@orchesty/nodejs-sdk/dist/lib/Application/Base/ApplicationTypeEnum';make 
-import CoreFormsEnum from '@orchesty/nodejs-sdk/dist/lib/Application/Base/CoreFormsEnum';
+import ApplicationTypeEnum from '@orchesty/nodejs-sdk/dist/lib/Application/Base/ApplicationTypeEnum';
+import CoreFormsEnum, { getFormName } from '@orchesty/nodejs-sdk/dist/lib/Application/Base/CoreFormsEnum';
 import { IWebhookApplication } from '@orchesty/nodejs-sdk/dist/lib/Application/Base/IWebhookApplication';
 import { ApplicationInstall } from '@orchesty/nodejs-sdk/dist/lib/Application/Database/ApplicationInstall';
 import Webhook from '@orchesty/nodejs-sdk/dist/lib/Application/Database/Webhook';
@@ -311,86 +310,86 @@ export const NAME = 'git-hub';
 export default class GitHubApplication extends ABasicApplication implements IWebhookApplication {
 
     public getApplicationType(): ApplicationTypeEnum {
-        return ApplicationTypeEnum.WEBHOOK;
+      return ApplicationTypeEnum.WEBHOOK;
     }
-  
+
     public getName(): string {
-        return NAME;
+      return NAME;
     }
 
     public getPublicName(): string {
-        return 'GitHub';
+      return 'GitHub';
     }
 
     public getDescription(): string {
-        return 'Service that helps developers store and manage their code, as well as track and control changes to their code';
+      return 'Service that helps developers store and manage their code, as well as track and control changes to their code';
     }
 
     public getFormStack(): FormStack {
-        const form = new Form(CoreFormsEnum.AUTHORIZATION_FORM, 'Authorization settings')
-            .addField(new Field(FieldType.TEXT, TOKEN, ' Token', undefined, true));
+      const form = new Form(CoreFormsEnum.AUTHORIZATION_FORM, getFormName(CoreFormsEnum.AUTHORIZATION_FORM))
+        .addField(new Field(FieldType.TEXT, TOKEN, ' Token', undefined, true));
 
-        return new FormStack().addForm(form);
+      return new FormStack().addForm(form);
     }
 
     public isAuthorized(applicationInstall: ApplicationInstall): boolean {
-        const authorizationForm = applicationInstall.getSettings()[CoreFormsEnum.AUTHORIZATION_FORM];
-        return authorizationForm?.[TOKEN];
+      const authorizationForm = applicationInstall.getSettings()[CoreFormsEnum.AUTHORIZATION_FORM];
+      return authorizationForm?.[TOKEN];
     }
 
     public getRequestDto(
-        dto: AProcessDto,
-        applicationInstall: ApplicationInstall,
-        method: HttpMethods,
-        uri?: string,
-        data?: unknown,
+      dto: AProcessDto,
+      applicationInstall: ApplicationInstall,
+      method: HttpMethods,
+      uri?: string,
+      data?: unknown,
     ): RequestDto {
-        const request = new RequestDto(`https://api.github.com${uri}`, method, dto);
-        if (!this.isAuthorized(applicationInstall)) {
-            throw new Error(`Application [${this.getPublicName()}] is not authorized!`);
-        }
-        const form = applicationInstall.getSettings()[CoreFormsEnum.AUTHORIZATION_FORM] ?? {};
-        request.setHeaders({
-            [CommonHeaders.CONTENT_TYPE]: JSON_TYPE,
-            [CommonHeaders.ACCEPT]: 'application/vnd.github+json',
-            [CommonHeaders.AUTHORIZATION]: `Bearer ${form[TOKEN]}`,
-        });
+      const request = new RequestDto(`https://api.github.com${uri}`, method, dto);
+      if (!this.isAuthorized(applicationInstall)) {
+        throw new Error(`Application [${this.getPublicName()}] is not authorized!`);
+      }
+      const form = applicationInstall.getSettings()[CoreFormsEnum.AUTHORIZATION_FORM] ?? {};
+      request.setHeaders({
+        [CommonHeaders.CONTENT_TYPE]: JSON_TYPE,
+        [CommonHeaders.ACCEPT]: 'application/vnd.github+json',
+        [CommonHeaders.AUTHORIZATION]: `Bearer ${form[TOKEN]}`,
+      });
 
-        if (data) {
-            request.setJsonBody(data);
-        }
+      if (data) {
+        request.setJsonBody(data);
+      }
 
-        return request;
+      return request;
     }
 
     public getWebhookSubscribeRequestDto(
-        applicationInstall: ApplicationInstall,
-        subscription: WebhookSubscription,
-        url: string,
+      applicationInstall: ApplicationInstall,
+      subscription: WebhookSubscription,
+      url: string,
     ): RequestDto {
-        const request = new ProcessDto();
-        const { owner, record } = subscription.getParameters();
-        return this.getRequestDto(
-          request,
-          applicationInstall,
-          HttpMethods.POST,
-          `/repos/${owner}/${record}/hooks`,
-          {
-            config: {
-              url,
-              content_type: 'json',
-            },
-            name: 'web',
-            events: [subscription.getName()],
+      const request = new ProcessDto();
+      const { owner, record } = subscription.getParameters();
+      return this.getRequestDto(
+        request,
+        applicationInstall,
+        HttpMethods.POST,
+        `/repos/${owner}/${record}/hooks`,
+        {
+          config: {
+            url,
+            content_type: 'json',
           },
-        );
+          name: 'web',
+          events: [subscription.getName()],
+        },
+      );
     }
 
     public getWebhookSubscriptions(): WebhookSubscription[] {
-        return [
-            new WebhookSubscription('issues', 'Webhook', '', { record: 'record', owner: 'owner' }),
-            new WebhookSubscription('pull-request', 'Webhook', '', { record: 'record', owner: 'owner' }),
-        ];
+      return [
+        new WebhookSubscription('issues', 'Webhook', '', { record: 'record', owner: 'owner' }),
+        new WebhookSubscription('pull-request', 'Webhook', '', { record: 'record', owner: 'owner' }),
+      ];
     }
 
     public getWebhookUnsubscribeRequestDto(applicationInstall: ApplicationInstall, webhook: Webhook): RequestDto {
@@ -413,22 +412,22 @@ export default class GitHubApplication extends ABasicApplication implements IWeb
     }
 
     public processWebhookSubscribeResponse(
-        dto: ResponseDto,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        applicationInstall: ApplicationInstall,
+      dto: ResponseDto,
+      applicationInstall: ApplicationInstall,
     ): string {
-        if (dto.getResponseCode() !== 201) {
-          throw new Error((dto.getJsonBody() as { message: string }).message);
-        }
-      
-        return (dto.getJsonBody() as { id: string }).id;
+      if (dto.getResponseCode() !== 201) {
+        throw new Error((dto.getJsonBody() as { message: string }).message);
+      }
+
+      return (dto.getJsonBody() as { id: string }).id;
     }
 
     public processWebhookUnsubscribeResponse(dto: ResponseDto): boolean {
-        return dto.getResponseCode() === 204;
+      return dto.getResponseCode() === 204;
     }
 
 }
+
 ```
 </TabItem>
 <TabItem value="php" label="PHP">

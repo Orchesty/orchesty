@@ -93,7 +93,7 @@ For each application, we can create any number of [forms](../documentation/form.
 <TabItem value="typescript" label="Typescript">
 
 ```typescript
-import CoreFormsEnum from '@orchesty/nodejs-sdk/dist/lib/Application/Base/CoreFormsEnum';
+import CoreFormsEnum, { getFormName } from '@orchesty/nodejs-sdk/dist/lib/Application/Base/CoreFormsEnum';
 import Field from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/Field';
 import FieldType from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/FieldType';
 import Form from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/Form';
@@ -108,7 +108,7 @@ export default class GitHubApplication extends ABasicApplication {
 
     // ...
     public getFormStack(): FormStack {
-        const form = new Form(AUTHORIZATION_FORM, 'Authorization settings')
+        const form = new Form(CoreFormsEnum.AUTHORIZATION_FORM, getFormName(CoreFormsEnum.AUTHORIZATION_FORM))
             .addField(new Field(FieldType.TEXT, TOKEN, ' Token', undefined, true));
 
         return new FormStack().addForm(form);
@@ -244,7 +244,7 @@ That's all.  Below you can see the full application code.
 <TabItem value="typescript" label="Typescript">
 
 ```typescript
-import CoreFormsEnum from '@orchesty/nodejs-sdk/dist/lib/Application/Base/CoreFormsEnum';
+import CoreFormsEnum, { getFormName } from '@orchesty/nodejs-sdk/dist/lib/Application/Base/CoreFormsEnum';
 import { ApplicationInstall } from '@orchesty/nodejs-sdk/dist/lib/Application/Database/ApplicationInstall';
 import Field from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/Field';
 import FieldType from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/FieldType';
@@ -276,7 +276,7 @@ export default class GitHubApplication extends ABasicApplication {
     }
 
     public getFormStack(): FormStack {
-        const form = new Form(CoreFormsEnum.AUTHORIZATION_FORM, 'Authorization settings')
+        const form = new Form(CoreFormsEnum.AUTHORIZATION_FORM, getFormName(CoreFormsEnum.AUTHORIZATION_FORM))
             .addField(new Field(FieldType.TEXT, TOKEN, ' Token', undefined, true));
 
         return new FormStack().addForm(form);
@@ -401,7 +401,7 @@ import { container } from '@orchesty/nodejs-sdk';
 import GitHubApplication from './GitHubApplication';
 // ...
 
-export default async function prepare(): Promise<void> {
+export default function prepare(): void {
     // ...
     const gitHubApplication = new GitHubApplication();
     container.setApplication(gitHubApplication);
@@ -446,11 +446,9 @@ Now we will create a connector that will be used by the application. The connect
 
 ```typescript
 import AConnector from '@orchesty/nodejs-sdk/dist/lib/Connector/AConnector';
-import OnRepeatException from '@orchesty/nodejs-sdk/dist/lib/Exception/OnRepeatException';
 import { HttpMethods } from '@orchesty/nodejs-sdk/dist/lib/Transport/HttpMethods';
 import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
 import ResultCode from '@orchesty/nodejs-sdk/dist/lib/Utils/ResultCode';
-import GitHubApplication from "./GitHubApplication";
 
 export const NAME = 'github-get-repository';
 
@@ -467,14 +465,12 @@ export default class GitHubGetRepositoryConnector extends AConnector {
         if (!data.org || !data.repo) {
             dto.setStopProcess(ResultCode.STOP_AND_FAILED, 'Connector has no required data.');
         } else {
-            const request = await this.getApplication<GitHubApplication>().getRequestDto(dto, appInstall, HttpMethods.GET, `/repos/${data.org}/${data.repo}`);
-            const response = await this.getSender().send(request);
-
-            if (response.getResponseCode() >= 300 && response.getResponseCode() < 400) {
-                throw new OnRepeatException(30, 5, response.getBody());
-            } else if (response.getResponseCode() >= 400) {
-                dto.setStopProcess(ResultCode.STOP_AND_FAILED, `Failed with code ${response.getResponseCode()}`);
-            }
+            const request = await this.getApplication().getRequestDto(dto, appInstall, HttpMethods.GET, `/repos/${data.org}/${data.repo}`);
+            const response = await this.getSender().send(request, {
+              success: '<400',
+              stopAndFail: ['400-500'],
+              repeat: '>=500',
+            });
 
             dto.setData(response.getBody());
         }
@@ -488,6 +484,8 @@ export interface IInput {
     repo: string;
 }
 ```
+In the connector you can see the handling of error responses in the second argument of the send method. In the configuration are ranges of response status codes. For example when the status code will be 404 the process will stop and fail. For all the connector error handling options, we recommend to study the [Results evaluation](../documentation/results-evaluation.md) page.
+
 </TabItem>
 <TabItem value="php" label="PHP">
 
@@ -537,10 +535,11 @@ final class GitHubRepositoryConnector extends ConnectorAbstract
 
 }
 ```
+In the connector you can see the handling of error responses by the `setStopProcess` method or by the `OnRepeatException` exception. For all the connector error handling options, we recommend to study the [Results evaluation](../documentation/results-evaluation.md) page.
+
 </TabItem>
 </Tabs>
 
-In the connector you can see the handling of error responses by the `setStopProcess` method or by the `OnRepeatException` exception. For all the connector error handling options, we recommend to study the [Results evaluation](../documentation/results-evaluation.md) page.
 
 ## Application connector registration
 Now we need to register a new connector in the container. Application connectors require access to the database and to the application they use, so we must not forget to set them up.
@@ -550,24 +549,27 @@ Now we need to register a new connector in the container. Application connectors
 
 ```typescript
 // ...
-import { initiateContainer, listen, container } from '@orchesty/nodejs-sdk';
+import { initiateContainer, container } from '@orchesty/nodejs-sdk';
+import DbClient from '@orchesty/nodejs-sdk/dist/lib/Storage/Database/Client';
+import CurlSender from '@orchesty/nodejs-sdk/dist/lib/Transport/Curl/CurlSender';
+import GitHubApplication from './GitHubApplication';
 import GitHubGetRepositoryConnector from './GitHubGetRepositoryConnector';
-import MongoDbClient from '@orchesty/nodejs-sdk/dist/lib/Storage/Mongodb/Client';
 // ...
 
-export default async function prepare(): Promise<void> {
+export default function prepare(): void {
 
     // ...
-    const curlSender = container.get<CurlSender>(CoreServices.CURL);
-    const mongoDbClient = container.get<MongoDbClient>(CoreServices.MONGO);
+    const curlSender = container.get(CurlSender);
+    const databaseClient = container.get(DbClient);
+    
     const gitHubApplication = new GitHubApplication();
-    const gitHubGetRepositoryConnector = new GitHubGetRepositoryConnector();
+    container.setApplication(gitHubApplication);
 
-    gitHubGetRepositoryConnector
-        .setSender(curlSender)
-        .setDb(mongoDbClient)
-        .setApplication(gitHubApplication);
-
+    const gitHubGetRepositoryConnector = new GitHubGetRepositoryConnector()
+      .setSender(curlSender)
+      .setDb(databaseClient)
+      .setApplication(gitHubApplication);
+  
     container.setConnector(gitHubGetRepositoryConnector);
     // ...
 }

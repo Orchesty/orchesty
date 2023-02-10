@@ -168,7 +168,6 @@ import DataStorageManager from '@orchesty/nodejs-sdk/dist/lib/Storage/DataStore/
 import { HttpMethods } from '@orchesty/nodejs-sdk/dist/lib/Transport/HttpMethods';
 import BatchProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/BatchProcessDto';
 import { PROCESS_ID } from '@orchesty/nodejs-sdk/dist/lib/Utils/Headers';
-import GitHubApplication from './GitHubApplication';
 
 export const NAME = 'git-hub-store-repositories-batch';
 const PAGE_ITEMS = 5;
@@ -188,27 +187,24 @@ export default class GitHubStoreRepositoriesBatch extends ABatchNode {
         const { org } = dto.getJsonData();
         const appInstall = await this.getApplicationInstallFromProcess(dto);
         const req = await this.getApplication().getRequestDto(
-            dto,
-            appInstall,
-            HttpMethods.GET,
-            `/orgs/${org}/repos?per_page=${PAGE_ITEMS}&page=${page}`,
+          dto,
+          appInstall,
+          HttpMethods.GET,
+          `/orgs/${org}/repos?per_page=${PAGE_ITEMS}&page=${page}`,
         );
         const resp = await this.getSender().send<IResponse>(req, [200]);
         const response = resp.getJsonBody();
-        
+    
         const processId = dto.getHeader(PROCESS_ID) ?? '';
-        await this.dataStorageManager.store(
-            processId,
-            response
-        );
+        await this.dataStorageManager.store(processId, response);
 
-        if (response.length >= PAGE_ITEMS) {
-            dto.setBatchCursor((Number(page) + 1).toString(), true);
-        } else {
-            dto.addItem({ processId });
-        }
+      if (response.length >= PAGE_ITEMS) {
+          dto.setBatchCursor((Number(page) + 1).toString(), true);
+      } else {
+          dto.addItem({ processId });
+      }
 
-        return dto;
+      return dto;
     }
 
 }
@@ -299,27 +295,33 @@ Register the connector into the container in `index.ts`.
 
 ```typescript
 // ...
-import { initiateContainer, listen, container } from '@orchesty/nodejs-sdk';
+import { container } from '@orchesty/nodejs-sdk';
+import CurlSender from '@orchesty/nodejs-sdk/dist/lib/Transport/Curl/CurlSender';
+import DbClient from '@orchesty/nodejs-sdk/dist/lib/Storage/Database/Client';
 import DataStorageManager from '@orchesty/nodejs-sdk/dist/lib/Storage/DataStore/DataStorageManager';
+import FileSystemClient from '@orchesty/nodejs-sdk/dist/lib/Storage/File/FileSystem';
 import GitHubStoreRepositoriesBatch from './GitHubStoreRepositoriesBatch';
+import GitHubApplication from './GitHubApplication';
 // ...
 
-export default async function prepare(): Promise<void> {
+export default function prepare(): void {
 
-  // ...
-    const mongoDbClient = container.get(CoreServices.MONGO);
-    const curlSender = container.get(CoreServices.CURL);
+    // ...
+    const fileSystemClient = new FileSystemClient();
+    const curlSender = container.get(CurlSender);
+    const databaseClient = container.get(DbClient);
+    
     const gitHubApplication = new GitHubApplication();
     
-    const dataStorageManager = new DataStorageManager(mongoDbClient);
-    container.set(CoreServices.DATA_STORAGE_MANAGER, dataStorageManager);
-
+    const dataStorageManager = new DataStorageManager(fileSystemClient);
+    container.set(dataStorageManager);
+    
     const gitHubStoreRepositoriesBatch = new GitHubStoreRepositoriesBatch(dataStorageManager)
         .setSender(curlSender)
-        .setDb(mongoDbClient)
+        .setDb(databaseClient)
         .setApplication(gitHubApplication);
     container.setBatch(gitHubStoreRepositoriesBatch);
-  // ...
+    // ...
 }
 ```
 </TabItem>
@@ -444,20 +446,19 @@ Register the node into the container in `index.ts`.
 
 ```typescript
 // ...
-import { initiateContainer, listen, container } from '@orchesty/nodejs-sdk';
+import { container } from '@orchesty/nodejs-sdk';
 import DataStorageManager from '@orchesty/nodejs-sdk/dist/lib/Storage/DataStore/DataStorageManager';
+import FileSystemClient from '@orchesty/nodejs-sdk/dist/lib/Storage/File/FileSystem';
 import LoadRepositories from "./LoadRepositories";
 // ...
 
-export default async function prepare(): Promise<void> {
+export default function prepare(): void {
 
-  // ...
-    const mongoDbClient = container.get(CoreServices.MONGO);
-    const curlSender = container.get(CoreServices.CURL);
-    const gitHubApplication = new GitHubApplication();
+    // ...
+    const fileSystemClient = new FileSystemClient();
 
-    const dataStorageManager = new DataStorageManager(mongoDbClient);
-    container.set(CoreServices.DATA_STORAGE_MANAGER, dataStorageManager);
+    const dataStorageManager = new DataStorageManager(fileSystemClient);
+    container.set(dataStorageManager);
 
     container.setCustomNode(new LoadRepositories(dataStorageManager));
   // ...
