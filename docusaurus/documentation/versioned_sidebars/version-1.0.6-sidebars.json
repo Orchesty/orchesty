@@ -1,0 +1,201 @@
+{
+  "sidebar": [
+    {
+      "label": "Get started",
+      "type": "category",
+      "link": {
+        "type": "generated-index"
+      },
+      "items": [
+        {
+          "id": "get-started/installation",
+          "type": "doc",
+          "label": "Installation"
+        },
+        {
+          "id": "get-started/architecture",
+          "type": "doc",
+          "label": "Architecture"
+        },
+        {
+          "id": "get-started/integration",
+          "type": "doc",
+          "label": "Integration"
+        },
+        {
+          "id": "get-started/orchestration",
+          "type": "doc",
+          "label": "Orchestration"
+        },
+        {
+          "id": "get-started/admin",
+          "type": "doc",
+          "label": "Admin"
+        },
+        {
+          "id": "get-started/SDK",
+          "type": "doc",
+          "label": "SDK"
+        },
+        {
+          "id": "get-started/Orchesty-Store",
+          "type": "doc",
+          "label": "Orchesty Store"
+        }
+      ]
+    },
+    {
+      "label": "Tutorials",
+      "type": "category",
+      "link": {
+        "type": "generated-index"
+      },
+      "items": [
+        {
+          "id": "tutorials/getting-started-with-tutorials",
+          "type": "doc",
+          "label": "Getting started with tutorials"
+        },
+        {
+          "id": "tutorials/first-process",
+          "type": "doc",
+          "label": "First process"
+        },
+        {
+          "id": "tutorials/SDK-settings",
+          "type": "doc",
+          "label": "SDK settings"
+        },
+        {
+          "id": "tutorials/custom-node",
+          "type": "doc",
+          "label": "Custom node"
+        },
+        {
+          "id": "tutorials/basic-connector",
+          "type": "doc",
+          "label": "Basic connector"
+        },
+        {
+          "id": "tutorials/basic-application",
+          "type": "doc",
+          "label": "Basic application"
+        },
+        {
+          "id": "tutorials/oauth2-application",
+          "type": "doc",
+          "label": "Oauth2 application"
+        },
+        {
+          "id": "tutorials/introduction-to-batch",
+          "type": "doc",
+          "label": "Introduction to batch"
+        },
+        {
+          "id": "tutorials/pagination",
+          "type": "doc",
+          "label": "Pagination"
+        },
+        {
+          "id": "tutorials/stored-data",
+          "type": "doc",
+          "label": "Stored data"
+        },
+        {
+          "id": "tutorials/scheduled-process",
+          "type": "doc",
+          "label": "Scheduled process"
+        },
+        {
+          "id": "tutorials/webhooks",
+          "type": "doc",
+          "label": "Webhooks"
+        }
+      ]
+    },
+    {
+      "label": "Documentation",
+      "type": "category",
+      "link": {
+        "type": "generated-index"
+      },
+      "items": [
+        {
+          "id": "documentation/process-topology",
+          "type": "doc",
+          "label": "Process topology"
+        },
+        {
+          "id": "documentation/workers",
+          "type": "doc",
+          "label": "Workers"
+        },
+        {
+          "id": "documentation/processDto",
+          "type": "doc",
+          "label": "ProcessDto"
+        },
+        {
+          "id": "documentation/starting-events",
+          "type": "doc",
+          "label": "Starting events"
+        },
+        {
+          "id": "documentation/editor",
+          "type": "doc",
+          "label": "Editor"
+        },
+        {
+          "id": "documentation/applications-and-connectors",
+          "type": "doc",
+          "label": "Applications and connectors"
+        },
+        {
+          "id": "documentation/form",
+          "type": "doc",
+          "label": "Form"
+        },
+        {
+          "id": "documentation/results-evaluation",
+          "type": "doc",
+          "label": "Results evaluation"
+        },
+        {
+          "id": "documentation/routing",
+          "type": "doc",
+          "label": "Routing"
+        },
+        {
+          "id": "documentation/batch",
+          "type": "doc",
+          "label": "Batch"
+        },
+        {
+          "id": "documentation/data-storage",
+          "type": "doc",
+          "label": "Data storage"
+        },
+        {
+          "id": "documentation/limiter",
+          "type": "doc",
+          "label": "Limiter"
+        },
+        {
+          "id": "documentation/trash",
+          "type": "doc",
+          "label": "Trash"
+        },
+        {
+          "id": "documentation/performance-optimization-and-ordering",
+          "type": "doc",
+          "label": "Performance optimization and ordering"
+        },
+        {
+          "id": "documentation/logs",
+          "type": "doc",
+          "label": "Logs"
+        }
+      ]
+    }
+  ]
+}

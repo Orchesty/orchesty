@@ -143,16 +143,17 @@ final class GetUsersConnector extends ConnectorAbstract
 
 
 ## Error handling
-Last step is error case handling. In this example we'll check result code and if it's 300 or above,
-we'll re-try request after 30 seconds up to 5 times.
+Last step is error case handling. In this example we are using **repeatOnErrorRanges** status result config which will handle different status codes. This config will re-try sending request for all status codes which are above 300.
+You can use predefined config or you can create your own. The example of custom config is displayed in next tutorial.
 
-**OnRepeatException** is the simplest way to set a **repeater**. Another way is via setting headers which will be discussed in later tutorials. 
+Another way is via setting headers which will be discussed in later tutorials. 
 
 <Tabs>
 <TabItem value="typescript" label="Typescript">
 
 ```typescript
-import OnRepeatException from '@orchesty/nodejs-sdk/dist/lib/Exception/OnRepeatException';
+// ...
+import { repeatOnErrorRanges } from '@orchesty/nodejs-sdk/dist/lib/Transport/Curl/ResultCodeRange';
 
 export default class GetUsersConnector extends AConnector {
 
@@ -161,10 +162,7 @@ export default class GetUsersConnector extends AConnector {
     public async processAction(dto: ProcessDto): Promise<ProcessDto> {
         // ...
 
-        const response = await this.getSender().send(request);
-        if (response.getResponseCode() >= 300) {
-            throw new OnRepeatException(30, 5, response.getBody());
-        }
+        const response = await this.getSender().send(request, repeatOnErrorRanges);
 
         dto.setData(response.getBody());
 
@@ -213,6 +211,7 @@ import OnRepeatException from '@orchesty/nodejs-sdk/dist/lib/Exception/OnRepeatE
 import RequestDto from '@orchesty/nodejs-sdk/dist/lib/Transport/Curl/RequestDto';
 import { HttpMethods } from '@orchesty/nodejs-sdk/dist/lib/Transport/HttpMethods';
 import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
+import { repeatOnErrorRanges } from '@orchesty/nodejs-sdk/dist/lib/Transport/Curl/ResultCodeRange';
 
 export const NAME = 'jsonplaceholder-get-users';
 
@@ -229,10 +228,7 @@ export default class GetUsersConnector extends AConnector {
             dto,
         );
 
-        const response = await this.getSender().send(request);
-        if (response.getResponseCode() >= 300) {
-            throw new OnRepeatException(30, 5, response.getBody());
-        }
+        const response = await this.getSender().send(request. repeatOnErrorRanges);
 
         dto.setData(response.getBody());
 
@@ -300,14 +296,13 @@ Last step is to register connector into container. This is done in index.ts file
 ```typescript    
 // ...
 import { container } from '@orchesty/nodejs-sdk';
-import CoreServices from '@orchesty/nodejs-sdk/dist/lib/DIContainer/CoreServices';
 import CurlSender from '@orchesty/nodejs-sdk/dist/lib/Transport/Curl/CurlSender';
 import GetUsersConnector from './GetUsersConnector';
 // ...
 
-export default async function prepare(): Promise<void> {
+export default function prepare(): void {
     // ...
-    const curlSender = container.get<CurlSender>(CoreServices.CURL);
+    const curlSender = container.get(CurlSender);
 
     const getUsers = new GetUsersConnector()
         .setSender(curlSender);

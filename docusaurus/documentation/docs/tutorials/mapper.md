@@ -200,8 +200,8 @@ Specify and export output types so any following node can import and use it as a
 import { container, initiateContainer } from '@orchesty/nodejs-sdk';
 import CustomNode from './CustomNode';
 
-export default async function prepare(): Promise<void> {
-  await initiateContainer();
+export default function prepare(): void {
+  initiateContainer();
 
   container.setCustomNode(new CustomNode());
 }
