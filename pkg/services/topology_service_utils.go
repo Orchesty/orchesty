@@ -35,14 +35,6 @@ func getDockerConfigs(m model.Adapter, prefix string, t *model.Topology) map[str
 	return configs
 }
 
-func getDockerImage(registry string, image string) string {
-	if registry == "" {
-		return image
-	}
-
-	return fmt.Sprintf("%s/%s", registry, image)
-}
-
 func getDockerServiceNetworks(network string) map[string]*model.ServiceNetworkConfig {
 	var networks = make(map[string]*model.ServiceNetworkConfig)
 

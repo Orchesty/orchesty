@@ -76,8 +76,6 @@ components:
                             environment:
                                 type: object
                                 properties:
-                                    docker_registry:
-                                        type: string
                                     docker_pf_bridge_image:
                                         type: string
                                     rabbitmq_dsn:

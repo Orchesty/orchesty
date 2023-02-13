@@ -144,7 +144,6 @@ func getNodeConfigs() map[string]model.NodeUserParams {
 
 func getEnvironment(mode model.Adapter) model.Environment {
 	return model.Environment{
-		DockerRegistry:      "dkr.hanaboso.net/pipes/pipes",
 		DockerPfBridgeImage: "hanaboso/bridge:dev",
 		RabbitMqHost:        "rabbitmq:5672",
 		MetricsDsn:          "influxdb://kapacitor:9100",
@@ -161,7 +160,6 @@ func TestTopologyService_CreateTopologyJsonFails(t *testing.T) {
 	nodeConfig := model.NodeConfig{
 		NodeConfig: getNodeConfigs(),
 		Environment: model.Environment{
-			DockerRegistry:      "testregistry",
 			DockerPfBridgeImage: "testimages",
 			RabbitMqHost:        "",
 			MetricsDsn:          "",
@@ -247,7 +245,6 @@ func TestGetDockerServicesFails(t *testing.T) {
 	ts, err := NewTopologyService(model.NodeConfig{
 		NodeConfig: nil,
 		Environment: model.Environment{
-			DockerRegistry:      "",
 			DockerPfBridgeImage: "",
 			RabbitMqHost:        "[x:",
 			MetricsDsn:          "",
@@ -276,7 +273,6 @@ func TestTopologyService_CreateDockerComposeFails(t *testing.T) {
 	ts, err := NewTopologyService(model.NodeConfig{
 		NodeConfig: nil,
 		Environment: model.Environment{
-			DockerRegistry:      "",
 			DockerPfBridgeImage: "",
 			RabbitMqHost:        "[x:",
 			MetricsDsn:          "",

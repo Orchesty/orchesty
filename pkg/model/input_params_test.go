@@ -145,7 +145,6 @@ func getFullEnvironment(t *testing.T) {
 
 func getEnvironment(mode Adapter) Environment {
 	return Environment{
-		DockerRegistry:      "dkr.hanaboso.net/pipes/pipes",
 		DockerPfBridgeImage: "hanaboso/bridge:dev",
 		RabbitMqHost:        "rabbitmq:20",
 		MetricsDsn:          "influxdb://kapacitor:9100",

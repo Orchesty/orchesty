@@ -174,7 +174,6 @@ func (ts *TopologyService) CreateKubernetesDeployment() ([]byte, error) {
 }
 
 func (ts *TopologyService) getKubernetesContainers(mountName string) ([]model.Container, error) {
-	registry := ts.nodeConfig.Environment.DockerRegistry
 	image := ts.nodeConfig.Environment.DockerPfBridgeImage
 	topologyPath := ts.generatorConfig.TopologyPath
 	multiNode := ts.generatorConfig.MultiNode
@@ -204,7 +203,7 @@ func (ts *TopologyService) getKubernetesContainers(mountName string) ([]model.Co
 				Name:            ts.Topology.GetMultiNodeName(),
 				Command:         []string{command[0]},
 				Args:            command[1:],
-				Image:           getDockerImage(registry, image),
+				Image:           image,
 				ImagePullPolicy: string(v1.PullAlways),
 				Resources: model.Resources{
 					Limits:   limits,
@@ -234,7 +233,7 @@ func (ts *TopologyService) getKubernetesContainers(mountName string) ([]model.Co
 			Name:            strings.ToLower(node.GetServiceName()),
 			Command:         []string{command[0]},
 			Args:            command[1:],
-			Image:           getDockerImage(registry, image),
+			Image:           image,
 			ImagePullPolicy: string(v1.PullAlways),
 			Resources: model.Resources{
 				Limits:   limits,
@@ -261,7 +260,6 @@ func (ts *TopologyService) getDockerServices(mode model.Adapter) (map[string]*mo
 	var services = make(map[string]*model.Service)
 
 	prefix := ts.generatorConfig.Prefix
-	registry := ts.nodeConfig.Environment.DockerRegistry
 	image := ts.nodeConfig.Environment.DockerPfBridgeImage
 	configName := ts.Topology.GetConfigName(prefix)
 
@@ -292,7 +290,7 @@ func (ts *TopologyService) getDockerServices(mode model.Adapter) (map[string]*mo
 	// Add bridges
 	if multiNode {
 		services[ts.Topology.GetMultiNodeName()] = &model.Service{
-			Image:       getDockerImage(registry, image),
+			Image:       image,
 			Environment: environment,
 			Networks:    getDockerServiceNetworks(network),
 			Volumes:     ts.Topology.GetVolumes(mode, projectPath, topologyPath),
@@ -306,7 +304,7 @@ func (ts *TopologyService) getDockerServices(mode model.Adapter) (map[string]*mo
 		var node model.Node
 		for _, node = range ts.Nodes {
 			services[node.GetServiceName()] = &model.Service{
-				Image:       getDockerImage(registry, image),
+				Image:       image,
 				Environment: environment,
 				Networks:    getDockerServiceNetworks(network),
 				Volumes:     ts.Topology.GetVolumes(mode, projectPath, topologyPath),

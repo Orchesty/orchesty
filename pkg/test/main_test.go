@@ -1,4 +1,5 @@
-//+build integration_test
+//go:build integration_test
+// +build integration_test
 
 package test
 
@@ -142,7 +143,6 @@ func getTestNodeConfig() *model.NodeConfig {
 			},
 		},
 		Environment: model.Environment{
-			DockerRegistry:      "dkr.hanaboso.net/pipes/pipes",
 			DockerPfBridgeImage: "hanaboso/bridge:dev",
 			RabbitMqDsn:         "rabbitmq:1000",
 			MetricsDsn:          "influxdb://kapacitor:9100",
