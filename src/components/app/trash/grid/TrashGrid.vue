@@ -31,7 +31,9 @@
         class="py-3 px-0 pointer text-start truncate"
         @click="$refs.grid.onRowClicked(items)"
       >
-        <span>{{ items.item.topologyName }}</span>
+        <span>
+          {{ items.item.topologyName }} v.{{ items.item.topologyVersion }}
+        </span>
         <br />
         <span>{{ items.item.nodeName }}</span>
       </td>

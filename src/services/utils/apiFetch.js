@@ -29,7 +29,7 @@ const customApiClient = axios.create({
 })
 
 const send = (config) => {
-  const { method, data, url } = config
+  const { method, url } = config
 
   const headers = config.headers || {}
 
@@ -51,15 +51,14 @@ const send = (config) => {
       apiClient.request({
         ...config,
         url,
-        headers: { ...headers },
-        data: JSON.stringify(data),
+        headers,
       })
     )
   })
 }
 
 const sendCustom = (config) => {
-  const { method, data, url } = config
+  const { method, url } = config
 
   const headers = config.headers || {}
 
@@ -82,7 +81,6 @@ const sendCustom = (config) => {
         ...config,
         url,
         headers,
-        data: JSON.stringify(data),
       })
     )
   })
@@ -144,7 +142,7 @@ const call = (
             id,
             err.response.data.status ? err.response.data.status : "UNKNOWN",
             errorType,
-            err.response.data.message || err.response.data.detail
+            err.response.data.message
           )
         } else {
           // unknown error

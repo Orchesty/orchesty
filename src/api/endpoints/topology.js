@@ -97,6 +97,10 @@ export default {
       url: `/topologies/${data.id}/schema.bpmn`,
       method: "PUT",
       data: data.xml,
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/xml; charset=utf-8",
+      },
     }),
   },
   checkChangesInDiagram: {
