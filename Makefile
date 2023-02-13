@@ -1,6 +1,6 @@
 DCS=docker-compose exec -T worker-api
 IMAGE=dkr.hanaboso.net/pipes/pipes/worker-api
-PUBLIC_IMAGE=hanaboso/pipes-worekr-api
+PUBLIC_IMAGE=hanaboso/pipes-worker-api
 
 ALIAS?=alias
 Darwin:

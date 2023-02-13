@@ -71,7 +71,7 @@ describe('Tests for logs router', () => {
                 enabled: true,
                 expires: new Date(2022, 1, 2),
                 nonEncrypt: { test: 'testValue' },
-                deleted: null,
+                deleted: false,
             },
         );
 
@@ -88,7 +88,7 @@ describe('Tests for logs router', () => {
                     key: 'testKey',
                     nonEncrypt: { test: 'testValue' },
                     user: 'testUser',
-                    deleted: null,
+                    deleted: false,
                 },
             ],
         );
@@ -109,7 +109,7 @@ describe('Tests for logs router', () => {
                     key: 'testKey',
                     nonEncrypt: { test: 'testValue' },
                     user: 'testUser',
-                    deleted: null,
+                    deleted: false,
                 },
             ],
         );
@@ -130,7 +130,7 @@ describe('Tests for logs router', () => {
                     key: 'testKey',
                     nonEncrypt: { test: 'testValue' },
                     user: 'testUser',
-                    deleted: null,
+                    deleted: false,
                 },
             ],
         );
@@ -148,7 +148,7 @@ describe('Tests for logs router', () => {
             enabled: true,
             expires: new Date(2022, 1, 2),
             nonEncrypt: { test: 'testValue' },
-            deleted: null,
+            deleted: false,
         });
         assert.equal(resp.statusCode, 200);
         assert.deepEqual(resp.body, { message: { status: 'OK', data: '' } });
@@ -164,7 +164,7 @@ describe('Tests for logs router', () => {
                     key: 'testKey',
                     nonEncrypt: { test: 'testValue' },
                     user: 'testUser',
-                    deleted: null,
+                    deleted: false,
                 },
             ],
         );

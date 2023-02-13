@@ -17,17 +17,6 @@ export default class DocumentManager {
         }
     }
 
-    private async upsertDocument(collection: Collection, _entity: Document): Promise<void> {
-        const entity = _entity;
-        const id = entity._id;
-        delete entity._id;
-        if (id) {
-            await collection.updateOne({ _id: new ObjectId(id) }, { $set: entity });
-        } else {
-            await collection.insertOne(entity);
-        }
-    }
-
     public async getDocuments(document: DocumentEnum, requestQuery: IRequestQueryParams): Promise<Document[]> {
         const query = this.makeQueryObject(requestQuery);
         const filter = this.getDocumentFilter(document, query);
@@ -51,6 +40,17 @@ export default class DocumentManager {
         )).matchedCount;
     }
 
+    private async upsertDocument(collection: Collection, _entity: Document): Promise<void> {
+        const entity = _entity;
+        const id = entity._id;
+        delete entity._id;
+        if (id) {
+            await collection.updateOne({ _id: new ObjectId(id) }, { $set: entity });
+        } else {
+            await collection.insertOne(entity);
+        }
+    }
+
     private getDocumentFilter(
         document: DocumentEnum,
         query: IQueryParams,
@@ -63,11 +63,12 @@ export default class DocumentManager {
             }
             if (query.filter.deleted !== undefined && query.filter.deleted !== null) {
                 if (!query.filter.deleted) {
-                    filter.deleted = { $eq: null };
+                    filter.deleted = { $eq: false };
                 }
             } else {
-                filter.deleted = { $eq: null };
+                filter.deleted = { $eq: false };
             }
+
             switch (document) {
                 case DocumentEnum.APPLICATION_INSTALL:
                     if (this.isApplicationQuery(query.filter)) {
@@ -98,7 +99,7 @@ export default class DocumentManager {
             if (emptyFilterThrowError) {
                 throw Error('Empty filter is not supported.');
             }
-            return { deleted: { $eq: null } };
+            return { deleted: { $eq: false } };
         }
 
         return filter;
@@ -174,8 +175,8 @@ export default class DocumentManager {
 
 interface IRequestQueryParams {
     filter?: string;
-    sorter?: string;paging?:
-    string;
+    sorter?: string;
+    paging?: string;
 }
 
 interface IQueryParams {
