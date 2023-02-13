@@ -2,6 +2,7 @@
 package config
 
 import (
+	"github.com/rabbitmq/amqp091-go"
 	"time"
 
 	"github.com/hanaboso/go-log/pkg/zap"
@@ -12,10 +13,11 @@ import (
 
 type (
 	rabbitMq struct {
-		Host     string `env:"RABBIT_HOST" required:"true"`
-		VHost    string `default:"/" env:"RABBIT_VHOST"`
-		Username string `default:"guest" env:"RABBIT_USERNAME"`
-		Password string `default:"guest" env:"RABBIT_PASSWORD"`
+		Dsn      string `env:"RABBITMQ_DSN" default:"amqp://rabbitmq"`
+		Host     string
+		VHost    string
+		Username string
+		Password string
 	}
 
 	metrics struct {
@@ -83,4 +85,13 @@ func init() {
 	}
 
 	App.Tick *= time.Second
+	parseRabbitDsn()
+}
+
+func parseRabbitDsn() {
+	uri, _ := amqp091.ParseURI(RabbitMQ.Dsn)
+	RabbitMQ.Username = uri.Username
+	RabbitMQ.Password = uri.Password
+	RabbitMQ.Host = uri.Host
+	RabbitMQ.VHost = uri.Vhost
 }

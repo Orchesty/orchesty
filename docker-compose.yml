@@ -8,9 +8,9 @@ services:
             DEV_UID: ${DEV_UID}
             DEV_GID: ${DEV_GID}
             APP_DEBUG: 'true'
-            METRICS_DSN: mongodb://mongodb/starting-point
-            MONGO_DSN: mongodb://mongodb/mongo
-            RABBIT_HOST: rabbitmq
+            METRICS_DSN: ${METRICS_DSN}
+            MONGO_DSN: ${MONGO_DSN}
+            RABBITMQ_DSN: amqp://rabbitmq
         volumes:
             - ./:/app
             - ${GOPATH}/pkg:/go/pkg
