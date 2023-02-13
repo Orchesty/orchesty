@@ -1,0 +1,77 @@
+{
+  "name": "Tenant Application",
+  "authorization_type": "basic",
+  "application_type": "cron",
+  "key": "tenant",
+  "description": "Tenenant application description",
+  "info": "",
+  "logo": null,
+  "isInstallable": false,
+  "authorized": true,
+  "enabled": false,
+  "applicationSettings": {
+    "authorization_form": {
+      "key": "authorization_form",
+      "publicName": "Authorization",
+      "description": "",
+      "readOnly": true,
+      "fields": [
+        {
+          "type": "text",
+          "key": "pin",
+          "value": "123456789",
+          "label": "PIN",
+          "description": "",
+          "required": false,
+          "readOnly": true,
+          "disabled": false,
+          "choices": []
+        }
+      ]
+    },
+    "limiter_form": {
+      "key": "limiter_form",
+      "publicName": "Limiter",
+      "description": "",
+      "readOnly": false,
+      "fields": [
+        {
+          "type": "checkbox",
+          "key": "useLimit",
+          "value": false,
+          "label": "Use limit",
+          "description": "",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "choices": []
+        },
+        {
+          "type": "number",
+          "key": "value",
+          "value": null,
+          "label": "Limit per time",
+          "description": "",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "choices": []
+        },
+        {
+          "type": "number",
+          "key": "time",
+          "value": null,
+          "label": "Time in seconds",
+          "description": "",
+          "required": false,
+          "readOnly": false,
+          "disabled": false,
+          "choices": []
+        }
+      ]
+    }
+  },
+  "webhookSettings": [],
+  "customActions": [],
+  "host": "worker"
+}
