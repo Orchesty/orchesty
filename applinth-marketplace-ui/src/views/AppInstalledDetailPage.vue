@@ -429,7 +429,9 @@ export default {
       this.isActivated = this.appActive.enabled
       this.isActivationEnabled = Boolean(this.appActive.applicationSettings)
 
-      this.settingsConfig = Object.values(this.appActive.applicationSettings)
+      this.settingsConfig = Object.values(
+        this.appActive.applicationSettings
+      ).filter((setting) => setting.key !== "limiter_form") // limiter form is hidden
 
       if (this.appActive.info) {
         this.settingsConfig.unshift({

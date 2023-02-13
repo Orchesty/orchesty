@@ -33,7 +33,7 @@
             >
               <div v-for="field in form.fields" :key="field.key">
                 <validation-provider
-                  v-if="field.type === 'text'"
+                  v-if="field.type === 'text' || field.type === 'number'"
                   v-slot="{ errors }"
                   slim
                   :name="field.key"
@@ -47,6 +47,7 @@
                     :disabled="field.disabled"
                     :label="field.label"
                     :error-messages="errors"
+                    :input-type="field.type"
                   />
                 </validation-provider>
                 <validation-provider
@@ -64,6 +65,24 @@
                     :items="getEntries(field.choices)"
                     item-value="value"
                     item-text="key"
+                  />
+                </validation-provider>
+                <validation-provider
+                  v-if="field.type === 'checkbox'"
+                  v-slot="{ errors }"
+                  slim
+                  :name="field.key"
+                  :rules="field.required ? 'required' : ''"
+                >
+                  <v-switch
+                    v-model="settingsForms[index].fields[field.key]"
+                    dense
+                    outlined
+                    :readonly="field.readOnly"
+                    :disabled="field.disabled"
+                    :label="field.label"
+                    :error-messages="errors"
+                    color="primary"
                   />
                 </validation-provider>
                 <app-item-password-modal
@@ -180,7 +199,9 @@ export default {
       })
     },
     initSettings() {
-      this.settingsConfig = Object.values(this.rootApp.applicationSettings)
+      this.settingsConfig = Object.values(
+        this.rootApp.applicationSettings
+      ).filter((setting) => setting.key !== "limiter_form") // limiter form is hidden
 
       this.settingsSnapshots = this.settingsConfig.map((form) => ({
         key: form.key,

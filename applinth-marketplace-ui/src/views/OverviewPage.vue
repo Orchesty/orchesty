@@ -31,6 +31,7 @@
           :grid-settings="GRIDS.OVERVIEW"
           :sort-by="['started']"
           :sort-desc="[true]"
+          item-key="id"
         >
           <template #default="{ items }">
             <td>
