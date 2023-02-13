@@ -40,17 +40,7 @@ type MessageDto struct {
 var RabbitMq Rabbit
 
 func ConnectToRabbit() {
-	r := config.RabbitMQ
-	dsn := fmt.Sprintf(
-		"amqp://%s:%s@%s:%d/%s",
-		r.Username,
-		r.Password,
-		r.Hostname,
-		r.Port,
-		strings.Replace(r.Vhost, "/", "%2f", -1),
-	)
-
-	rabbitClient := rabbitmq.NewClient(dsn, zap.NewLogger(), true)
+	rabbitClient := rabbitmq.NewClient(config.RabbitMQ.Dsn, zap.NewLogger(), true)
 
 	RabbitMq = RabbitSvc{
 		client:    rabbitClient,

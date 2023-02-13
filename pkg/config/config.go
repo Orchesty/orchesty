@@ -29,11 +29,7 @@ type (
 		WebhookColl  string `env:"MONGO_WEBHOOK_COLL" default:"Webhook"`
 	}
 	rabbitMq struct {
-		Hostname     string `env:"RABBIT_HOSTNAME" default:"rabbitmq"`
-		Username     string `env:"RABBIT_USERNAME" default:"guest"`
-		Password     string `env:"RABBIT_PASSWORD" default:"guest"`
-		Port         int16  `env:"RABBIT_PORT" default:"5672"`
-		Vhost        string `env:"RABBIT_VHOST" default:""`
+		Dsn          string `env:"RABBITMQ_DSN" default:"amqp://rabbitmq"`
 		DeliveryMode int16  `env:"RABBIT_DELIVERY_MODE" default:"2"`
 	}
 	cache struct {
