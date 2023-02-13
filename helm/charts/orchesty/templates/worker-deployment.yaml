@@ -28,7 +28,6 @@ spec:
             - name: http
               containerPort: 80
           env:
-{{ include "pipes.monolithEnv" . | indent 12 }}
 {{- range $name, $def := .Values.global.phpSdk.extraEnv }}
             - name: {{ $name }}
               {{- $def | toYaml | nindent 14}}
@@ -37,6 +36,26 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: crypt_secret
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: MONGODB_DSN
+              valueFrom:
+                secretKeyRef:
+                  key: mongodb_dsn
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: MONGODB_DB
+              valueFrom:
+                secretKeyRef:
+                  key: mongodb_db
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: METRICS_DB
+              valueFrom:
+                secretKeyRef:
+                  key: metrics_db
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: METRICS_DSN
+              valueFrom:
+                secretKeyRef:
+                  key: metrics_dsn
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
           resources:
 {{ toYaml .Values.global.worker.resources | indent 12 }}

@@ -8,24 +8,27 @@ global:
   backend_url: https://api-pipes-demo.stage.hanaboso.net
   frontend_url: https://pipes-demo.stage.hanaboso.net
   starting_point_url: https://sp-pipes-demo-sp.stage.hanaboso.net
+  worker_api_url: https://worker-api-pipes-demo.stage.hanaboso.net
 
   imageOverrides:
+    alpha_nodejssdk: hanaboso/demo-nodejs:dev
     bridge: hanaboso/bridge:dev
     counter: hanaboso/counter:dev
-    repeater: hanaboso/pipes-pf-bridge:dev
-    alpha_nodejssdk: hanaboso/demo-nodejs:dev
     frontend: hanaboso/pipes-app-ui:dev
     backend: hanaboso/pipes-pf-bundle:dev
     topology-api: hanaboso/pipes-topology-api-v2:dev
     starting-point: hanaboso/pipes-starting-point:dev
-    logstash: hanaboso/pipes-logstash-mongo:dev
+    fluentd: hanaboso/fluentd:dev
+    cron-api: hanaboso/cron:dev
+    limiter: hanaboso/limiter:dev
+    detector: hanaboso/detector:dev
 
   phpSdk:
     extraEnv: {}
 
   nodejsSdk:
     extraEnv: {}
-    
+
   monitoring:
     useInfluxDB: false
     logStorage: mongodb

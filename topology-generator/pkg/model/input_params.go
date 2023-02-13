@@ -49,7 +49,6 @@ type NodeUserParams struct {
 
 // Environment Environment
 type Environment struct {
-	DockerRegistry      string   `json:"docker_registry"`
 	DockerPfBridgeImage string   `json:"docker_pf_bridge_image"`
 	RabbitMqHost        string   `json:"rabbitmq_host"`
 	RabbitMqUser        string   `json:"rabbitmq_user"`

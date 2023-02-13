@@ -16,20 +16,18 @@ services:
       PHP_WEBROOT: /var/www/pipes/applinth/public
       DEV_UID: ${DEV_UID}
       DEV_GID: ${DEV_GID}
-      X_AUTH_KEY: abc-123
       KERNEL_CLASS: Hanaboso\Applinth\Kernel
       COMPOSER_HOME: ${HOME}/dev/.composer
-      FRONTEND_DSN: ${DEV_IP}
-      BACKEND_DSN: ${DEV_IP}
+      FRONTEND_URL: ${DEV_IP}
+      BACKEND_URL: ${DEV_IP}
       MONGODB_DSN: mongodb://mongo
       MONGODB_DB: pipes
       METRICS_DSN: mongodb://mongo
       METRICS_DB: metrics
       CHECK_INFINITY_LOOP: "true"
       TOPOLOGY_API_DSN: topology-api:80
-      STARTING_POINT_DSN: starting-point:8080
+      STARTING_POINT_URL: starting-point:8080
       CRON_DSN: http://cron-api:8080
-      RABBITMQ_DSN: amqp://rabbitmq:5672
       JWT_KEY: BWoCz4gxw3YHDMkqE5HD1WT2u6zqIAtiJkYVyf6UucL4ZtbhhatQooP5IgTQRwowYR6z8wE3biqZTl37
       JWE_PRIVATE_KEY: |
         -----BEGIN EC PRIVATE KEY-----
@@ -53,11 +51,24 @@ services:
       APP_ENV: debug
       CRYPT_SECRET: ThisIsNotSoSecret
       BACKEND_URL: ${DEV_IP}
-      STARTING_POINT_URL: starting-point:8080
-      UDP_LOGGER_DSN: fluentd:5120
-      METRICS_DSN: mongodb://mongo/pipes
-      MONGODB_DSN: mongodb://mongo/metrics
+      STARTING_POINT_DSN: starting-point:8080
+      WORKER_API_HOST: http://worker-api:8080
+      ORCHESTY_API_KEY: ${ORCHESTY_API_KEY}
     command: sh -c 'pnpm install && pnpm run start'
+
+  worker-api:
+      image: worker-api:tag
+      build: ./../worker-api/docker
+      user: ${DEV_UID}:${DEV_GID}
+      working_dir: /var/www
+      volumes:
+        - ./../worker-api:/var/www
+      environment:
+        APP_ENV: 'debug'
+        MONGODB_DSN: mongodb://mongo/pipes
+        FLUENTD_DSN: 'fluentd:9880'
+        TZ: 'UTC'
+      command: sh -c 'pnpm install && pnpm run start'
 
   mongo:
     image: mongo:latest

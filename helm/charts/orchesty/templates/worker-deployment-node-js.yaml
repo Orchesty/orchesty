@@ -28,16 +28,26 @@ spec:
             - name: http
               containerPort: 8000
           env:
-{{ include "pipes.monolithEnv" . | indent 12 }}
 {{- range $name, $def := .Values.global.nodejsSdk.extraEnv }}
             - name: {{ $name }}
               {{- $def | toYaml | nindent 14}}
 {{- end }}
+            - name: BACKEND_URL
+              value: "{{ .Values.global.backend_url }}"
+            - name: STARTING_POINT_URL
+              value: "{{ .Values.global.starting_point_url }}"
+            - name: WORKER_API_HOST
+              value: "{{ .Values.global.worker_api_url }}"
             - name: CRYPT_SECRET
               valueFrom:
                 secretKeyRef:
                   key: crypt_secret
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: ORCHESTY_API_KEY
+              valueFrom:
+                secretKeyRef:
+                    key: orchesty_api_key
+                    name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
           resources:
 {{ toYaml .Values.global.worker.resources | indent 12 }}
 

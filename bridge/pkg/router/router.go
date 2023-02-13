@@ -146,7 +146,7 @@ func response(writer http.ResponseWriter, content interface{}) {
 
 func authorizationHandler(next httprouter.Handle) httprouter.Handle {
 	return func(writer http.ResponseWriter, request *http.Request, parameters httprouter.Params) {
-		if request.Header.Get("orchesty-api-key") != config.StartingPoint.ApiKey {
+		if config.StartingPoint.ApiKey != "" && request.Header.Get("orchesty-api-key") != config.StartingPoint.ApiKey {
 			writer.WriteHeader(http.StatusUnauthorized)
 			return
 		}

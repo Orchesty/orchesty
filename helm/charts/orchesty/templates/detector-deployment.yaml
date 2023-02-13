@@ -39,30 +39,13 @@ spec:
                 secretKeyRef:
                   key: mongodb_dsn
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: __RABBITMQ_HOST
+            - name: RABBITMQ_DSN
               valueFrom:
                 secretKeyRef:
-                  key: rabbitmq_host
+                  key: rabbitmq_dsn
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: RABBIT_HOST
-              value: "http://$(__RABBITMQ_HOST):15672/"
             - name: PLATFORM
               value: k8s
-            - name: RABBIT_VHOST  # probably not supported yet
-              valueFrom:
-                secretKeyRef:
-                  key: rabbitmq_vhost
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: RABBIT_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  key: rabbitmq_user
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: RABBIT_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  key: rabbitmq_password
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
           resources:
 {{ toYaml .Values.global.detector.resources | indent 12 }}
 

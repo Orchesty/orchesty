@@ -5,9 +5,9 @@ parameters:
   # A secret key that's used to generate certain security-related tokens
   secret: ThisTokenIsNotSoSecretChangeIt
 
-  frontendHost: "%env(string:FRONTEND_DSN)%"
-  backendHost: "%env(string:BACKEND_DSN)%"
+  frontendHost: "%env(string:FRONTEND_URL)%"
+  backendHost: "%env(string:BACKEND_URL)%"
   cronHost: "%env(string:CRON_DSN)%"
-  startingPointHost: "%env(string:STARTING_POINT_DSN)%"
+  startingPointHost: "%env(string:STARTING_POINT_URL)%"
   activateLink: '%backendHost%/user/%s/activate'
   passwordLink: 'restore-password/%s'

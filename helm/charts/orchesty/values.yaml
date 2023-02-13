@@ -2,6 +2,7 @@ global:
   frontend_url: https://pipes.example.com
   backend_url: https://backend.pipes.example.com
   starting_point_url: http://starting-point.pipes.example.com
+  worker_api_url: http://worker-api.pipes.example.com
 
   imageRegistry:
     enablePullSecret: false
@@ -9,34 +10,32 @@ global:
     path: orchesty
     username: ""
     password: ""
-  
+
   imageOverrides: {}
     # note: you can currently override image used in topologies only by changing images.bridge
 
   images:
     applinth-marketplace-ui: ""
     php-sdk: OVERRIDE
-    backend: backend:1.0.6
-    frontend: frontend:1.0.6
-    cron-api: cron:1.0.6
+    backend: backend:1.1.0
+    frontend: frontend:1.1.0
+    cron-api: cron:1.1.0
 
-    bridge: bridge:1.0.6
-    counter: counter:1.0.6
-    repeater: pf-bridge:1.0.6
+    bridge: bridge:1.1.0
+    counter: counter:1.1.0
 
-    limiter: limiter:1.0.6
-    starting-point: starting-point:1.0.6
-    topology-api: topology-api:1.0.6
-    fluentd: fluentd:1.0.6
-    kapacitor: kapacitor:1.0.6
-    detector: detector:1.0.6
+    limiter: limiter:1.1.0
+    starting-point: starting-point:1.1.0
+    topology-api: topology-api:1.1.0
+    fluentd: fluentd:1.1.0
+    detector: detector:1.1.0
+    worker-api: worker-api:1.1.0
 
   # Default global node selector
   nodeSelector: {}
   tolerations: []
 
   monitoring:
-    useInfluxDB: false
     logStorage: mongodb
 
     # Used unly when logStorage is "google"
@@ -90,16 +89,6 @@ global:
         memory: 128Mi
         cpu: "2"
 
-  kapacitor:
-    # values for backward compat, will be reset
-    resources:
-      requests:
-        memory: 128Mi
-        cpu: 50m
-      limits:
-        memory: 256Mi
-        cpu: "2"
-
   limiter:
     # values for backward compat, will be reset
     resources:
@@ -140,16 +129,6 @@ global:
     extraEnv: {}
     # FOO:
     # value: bar
-
-  repeater:
-    # values for backward compat, will be reset
-    resources:
-      requests:
-        memory: 128Mi
-        cpu: 25m
-      limits:
-        memory: 128Mi
-        cpu: "2"
 
   startingPoint:
     serviceAnnotations: {}
@@ -207,6 +186,17 @@ global:
         memory: 4Gi
         cpu: "4"
 
+
+  workerApi:
+    serviceAnnotations: {}
+    # values for backward compat, will be reset
+    resources:
+      requests:
+        memory: 16Mi
+        cpu: "0.1"
+      limits:
+        memory: 512Mi
+        cpu: "2"
 
 nameOverride: ""
 fullnameOverride: ""

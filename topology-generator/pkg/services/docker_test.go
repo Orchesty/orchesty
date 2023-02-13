@@ -46,7 +46,6 @@ func TestDockerClient_MultiNodeDockerCompose(t *testing.T) {
 	ts, err := NewTopologyService(model.NodeConfig{
 		NodeConfig: getNodeConfigs(),
 		Environment: model.Environment{
-			DockerRegistry:      "dkr.hanaboso.net/pipes/pipes",
 			DockerPfBridgeImage: "hanaboso/bridge:dev",
 			RabbitMqHost:        "localhost:56",
 			MetricsDsn:          "metrics:963",
@@ -128,7 +127,6 @@ func TestDockerClient_DockerCompose(t *testing.T) {
 	ts, err := NewTopologyService(model.NodeConfig{
 		NodeConfig: getNodeConfigs(),
 		Environment: model.Environment{
-			DockerRegistry:      "dkr.hanaboso.net/pipes/pipes",
 			DockerPfBridgeImage: "hanaboso/bridge:dev",
 			RabbitMqHost:        "test:99",
 			MetricsDsn:          "",
@@ -212,7 +210,6 @@ func TestDockerClient_Swarm(t *testing.T) {
 	ts, err := NewTopologyService(model.NodeConfig{
 		NodeConfig: getNodeConfigs(),
 		Environment: model.Environment{
-			DockerRegistry:      "dkr.hanaboso.net/pipes/pipes",
 			DockerPfBridgeImage: "hanaboso/bridge:dev",
 			RabbitMqHost:        "test:99",
 			MetricsDsn:          "",
@@ -415,7 +412,6 @@ func TestDockerClient_GenerateFails(t *testing.T) {
 	nodeConfig := model.NodeConfig{
 		NodeConfig: getNodeConfigs(),
 		Environment: model.Environment{
-			DockerRegistry:      "dkr.hanaboso.net/pipes/pipes",
 			DockerPfBridgeImage: "hanaboso/bridge:dev",
 			RabbitMqHost:        "test:99",
 			MetricsDsn:          "",

@@ -105,7 +105,7 @@ final class ApplicationController extends AbstractController
             $this->locator->getAppDetail(
                 $key,
                 $this->authenticator->getAuthUser(),
-                '%sapi/applinth/application/topologies/%s/nodes/%s/run-by-name',
+                '%s/api/applinth/application/topologies/%s/nodes/%s/run-by-name',
             ),
         );
     }

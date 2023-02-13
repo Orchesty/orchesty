@@ -68,16 +68,16 @@ collect-tags:
   script:
     - export TAG_APPLINTH_MARKETPLACE_UI=$(git log -1 --pretty=%h --abbrev=8 ./applinth-marketplace-ui)
     - export TAG_BACKEND=$(git log -1 --pretty=%h --abbrev=8 ./pf-bundles)
+    - export TAG_FRONTEND=$(git log -1 --pretty=%h --abbrev=8 ./app-ui)
+    - export TAG_CRON=$(git log -1 --pretty=%h --abbrev=8 ./cron)
     - export TAG_BRIDGE=$(git log -1 --pretty=%h --abbrev=8 ./bridge)
     - export TAG_COUNTER=$(git log -1 --pretty=%h --abbrev=8 ./counter)
-    - export TAG_CRON=$(git log -1 --pretty=%h --abbrev=8 ./cron)
-    - export TAG_DETECTOR=$(git log -1 --pretty=%h --abbrev=8 ./detector)
-    - export TAG_FRONTEND=$(git log -1 --pretty=%h --abbrev=8 ./app-ui)
     - export TAG_LIMITER=$(git log -1 --pretty=%h --abbrev=8 ./limiter)
-    - export TAG_FLUENTD=$(git log -1 --pretty=%h --abbrev=8 ./fluentd)
-    - export TAG_PF_BRIDGE=$(git log -1 --pretty=%h --abbrev=8 ./pf-bridge)
     - export TAG_STARTING_POINT=$(git log -1 --pretty=%h --abbrev=8 ./starting-point)
     - export TAG_TOPOLOGY_API=$(git log -1 --pretty=%h --abbrev=8 ./topology-generator)
+    - export TAG_FLUENTD=$(git log -1 --pretty=%h --abbrev=8 ./fluentd)
+    - export TAG_DETECTOR=$(git log -1 --pretty=%h --abbrev=8 ./detector)
+    - export TAG_WORKER_API=$(git log -1 --pretty=%h --abbrev=8 ./worker-api)
 
     - env | grep ^TAG_ | sed 's/.*/export &/' > export_tags
     - cat export_tags

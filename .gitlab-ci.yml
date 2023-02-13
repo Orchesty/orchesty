@@ -20,7 +20,6 @@ include:
   - local: "/docusaurus/documentation/.gitlab-ci.yml"
   - local: "/fluentd/.gitlab-ci.yml"
   - local: "/limiter/.gitlab-ci.yml"
-  - local: "/pf-bridge/.gitlab-ci.yml" # legacy, used as repeater
   - local: "/pf-bundles/.gitlab-ci.yml" # aka backend
   - local: "/pipes-connectors/.gitlab-ci.yml"
   - local: "/pipes-php-sdk/.gitlab-ci.yml"

@@ -13,7 +13,7 @@ export default {
           request: () => ({
             url: payload.url,
             method: payload.method,
-            body: payload.body,
+            data: payload.body,
           }),
         },
       })

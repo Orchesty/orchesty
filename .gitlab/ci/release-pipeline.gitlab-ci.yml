@@ -124,6 +124,12 @@ topology-api:rel-x.y.z:
     - export RELEASE_IMAGE=${IMAGE_PREFIX}topology-api
     - export SRC_TAG=${TAG_TOPOLOGY_API}
 
+worker-api:rel-x.y.z:
+  extends: .base-rel-x.y.z
+  before_script:
+    - . ./export_tags
+    - export RELEASE_IMAGE=${IMAGE_PREFIX}worker-api
+    - export SRC_TAG=${TAG_WORKER_API}
 
 ## rel-x.y
 
@@ -203,3 +209,10 @@ topology-api:rel-x.y:
     - . ./export_tags
     - export RELEASE_IMAGE=${IMAGE_PREFIX}topology-api
     - export SRC_TAG=${TAG_TOPOLOGY_API}
+
+worker-api:rel-x.y:
+  extends: .base-rel-x.y
+  before_script:
+    - . ./export_tags
+    - export RELEASE_IMAGE=${IMAGE_PREFIX}worker-api
+    - export SRC_TAG=${TAG_WORKER_API}

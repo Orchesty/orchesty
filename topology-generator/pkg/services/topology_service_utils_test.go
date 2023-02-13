@@ -63,15 +63,6 @@ func TestGetDockerConfigs(t *testing.T) {
 	})
 }
 
-func TestGetDockerImage(t *testing.T) {
-	t.Run("Get docker image name", func(t *testing.T) {
-		expected := "registry_name/image_name"
-
-		result := getDockerImage("registry_name", "image_name")
-		assert.Equal(t, expected, result)
-	})
-}
-
 func TestGetDockerServiceNetworks(t *testing.T) {
 	t.Run("Get docker service networks", func(t *testing.T) {
 		expected := map[string]*model.ServiceNetworkConfig{

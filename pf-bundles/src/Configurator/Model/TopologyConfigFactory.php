@@ -27,7 +27,6 @@ final class TopologyConfigFactory
 {
 
     public const ENVIRONMENT            = 'environment';
-    public const DOCKER_REGISTRY        = 'docker_registry';
     public const DOCKER_PF_BRIDGE_IMAGE = 'docker_pf_bridge_image';
     public const RABBITMQ_HOST          = 'rabbitmq_host';
     public const RABBITMQ_DSN           = 'rabbitmq_dsn';
@@ -177,7 +176,6 @@ final class TopologyConfigFactory
     private function getEnvParameters(): array
     {
         return [
-            self::DOCKER_REGISTRY        => $this->configs[self::DOCKER_REGISTRY],
             self::DOCKER_PF_BRIDGE_IMAGE => $this->configs[self::DOCKER_PF_BRIDGE_IMAGE],
             self::RABBITMQ_HOST          => $this->configs[self::RABBITMQ_HOST],
             self::RABBITMQ_USER          => $this->configs[self::RABBITMQ_USER],

@@ -29,7 +29,7 @@ spec:
               containerPort: 3333
           env:
             - name: UDP_LOGGER_URL
-              value: {{ include "pipes.fullname" (dict "suffix" "logstash" "root" .) }}:5120
+              value: {{ include "pipes.fullname" (dict "suffix" "fluentd" "root" .) }}:5120
             - name: LIMITER_ADDR
               value: "0.0.0.0:3333"
             - name: RABBITMQ_DSN
@@ -37,19 +37,11 @@ spec:
                 secretKeyRef:
                   key: rabbitmq_dsn
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: RABBITMQ_INPUT_QUEUE_PREFETCH_COUNT
-              value: "500"
             - name: MONGO_DSN
               valueFrom:
                 secretKeyRef:
                   key: mongodb_dsn
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: LOGSTASH_HOST
-              value: {{ include "pipes.fullname" (dict "suffix" "logstash" "root" .) }}
-            - name: LOGSTASH_PORT
-              value: "5120"
-            - name: LOG_LEVEL
-              value: "info"
           resources:
 {{ toYaml .Values.global.limiter.resources | indent 12 }}
 
