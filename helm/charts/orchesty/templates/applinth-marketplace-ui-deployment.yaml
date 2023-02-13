@@ -30,8 +30,6 @@ spec:
               value: "{{ .Values.global.backend_url }}"
             - name: FRONTEND_URL
               value: "{{ .Values.global.frontend_url }}"
-            - name: STARTINGPOINT_URL
-              value: "{{ .Values.global.starting_point_url }}"
             - name: AUTH_BACKLINK
               value: "{{ .Values.global.applinthMarketplaceUI.auth_backlink }}"
           resources:

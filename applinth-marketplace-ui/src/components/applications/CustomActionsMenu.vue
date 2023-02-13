@@ -56,7 +56,7 @@ export default {
       } else if (action.action === "call") {
         const res = await callCustomApi({
           method: "post",
-          body: { body: action.body || "[]" },
+          data: { body: action.body },
           url: action.url,
         })
 

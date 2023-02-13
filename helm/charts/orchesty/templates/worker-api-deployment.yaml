@@ -1,6 +1,5 @@
-{{- $componentName := "kapacitor" -}}
-{{- if .Values.global.monitoring.useInfluxDB -}}
 ---
+{{- $componentName := "worker-api" -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -10,8 +9,6 @@ metadata:
 {{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 4 }}
 spec:
   replicas: 1
-  strategy:
-    type: Recreate
   selector:
     matchLabels:
 {{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 6 }}
@@ -22,15 +19,23 @@ spec:
     spec:
 {{ include "pipes.imagePullSecrets" . | indent 6 }}
       containers:
-        - name: kapacitor
-          image: {{ include "pipes.imageFullname" (dict "image" $componentName "root" .) }}
+        - name: worker-api
+          image: {{ include "pipes.imageFullname" (dict "image" "worker-api" "root" .) }}
           imagePullPolicy: Always
           ports:
-            - name: ingest-udp
-              containerPort: 9100
-              protocol: UDP
+            - name: http
+              containerPort: 8000
+          env:
+            - name: FLUENTD_DSN
+              value: {{ include "pipes.fullname" (dict "suffix" "fluentd" "root" .) }}:9880
+            - name: MONGODB_DSN
+              valueFrom:
+                secretKeyRef:
+                  key: mongodb_dsn
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+
           resources:
-{{ toYaml .Values.global.kapacitor.resources | indent 12 }}
+{{ toYaml .Values.global.workerApi.resources | indent 12 }}
 
 {{- with .Values.global.nodeSelector }}
       nodeSelector:
@@ -40,4 +45,3 @@ spec:
       tolerations:
 {{ toYaml . | indent 8 }}
 {{- end }}
-{{- end -}}

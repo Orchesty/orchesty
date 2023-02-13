@@ -36,41 +36,12 @@ spec:
                 secretKeyRef:
                   key: metrics_dsn
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: RABBIT_COUNTER_QUEUE_DURABLE
-              value: "true"
-            - name: RABBIT_QUEUE_DURABLE
-              value: "true"
             - name: RABBIT_DELIVERY_MODE
               value: "2"
-            - name: RABBIT_HOSTNAME
+            - name: RABBITMQ_DSN
               valueFrom:
                 secretKeyRef:
-                  key: rabbitmq_host
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: RABBIT_PORT
-              valueFrom:
-                secretKeyRef:
-                  key: rabbitmq_port
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: RABBIT_VHOST # probably not supported yet
-              valueFrom:
-                secretKeyRef:
-                  key: rabbitmq_vhost
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: RABBIT_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  key: rabbitmq_user
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: RABBIT_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  key: rabbitmq_password
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: ORCHESTY_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  key: orchesty_api_key
+                  key: rabbitmq_dsn
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
           resources:
 {{ toYaml .Values.global.startingPoint.resources | indent 12 }}

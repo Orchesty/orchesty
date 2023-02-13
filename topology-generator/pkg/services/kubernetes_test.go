@@ -144,7 +144,6 @@ func setup() {
 
 func TestClient_Create(t *testing.T) {
 	setup()
-	registry := "testregistry"
 	image := "testimage"
 	topologyPath := "/testtopologypath"
 	const mountName = "testtopologyjson"
@@ -165,7 +164,7 @@ func TestClient_Create(t *testing.T) {
 				},
 			},
 			Args:            command[1:],
-			Image:           getDockerImage(registry, image),
+			Image:           image,
 			ImagePullPolicy: string(v12.PullAlways),
 			Ports: []model.Port{
 				{
@@ -486,7 +485,6 @@ func TestClient_Generate(t *testing.T) {
 	ts, err := NewTopologyService(model.NodeConfig{
 		NodeConfig: getNodeConfigs(),
 		Environment: model.Environment{
-			DockerRegistry:      "testregistry",
 			DockerPfBridgeImage: "testimages",
 			RabbitMqHost:        "",
 			MetricsDsn:          "",
@@ -552,7 +550,6 @@ func TestClient_GenerateMulti(t *testing.T) {
 	ts, err := NewTopologyService(model.NodeConfig{
 		NodeConfig: getNodeConfigs(),
 		Environment: model.Environment{
-			DockerRegistry:      "testregistry",
 			DockerPfBridgeImage: "testimages",
 			RabbitMqHost:        "",
 			MetricsDsn:          "",
@@ -623,7 +620,6 @@ func TestClient_DeleteAllFails(t *testing.T) {
 	ts, err := NewTopologyService(model.NodeConfig{
 		NodeConfig: getNodeConfigs(),
 		Environment: model.Environment{
-			DockerRegistry:      "testregistry",
 			DockerPfBridgeImage: "testimages",
 			RabbitMqHost:        "",
 			MetricsDsn:          "",
@@ -801,7 +797,6 @@ func TestClient_GenerateFails(t *testing.T) {
 	nodeConfig := model.NodeConfig{
 		NodeConfig: getNodeConfigs(),
 		Environment: model.Environment{
-			DockerRegistry:      "dkr.hanaboso.net/pipes/pipes",
 			DockerPfBridgeImage: "hanaboso/bridge:dev",
 			RabbitMqHost:        "test:99",
 			MetricsDsn:          "",

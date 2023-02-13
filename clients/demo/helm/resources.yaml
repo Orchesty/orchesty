@@ -55,41 +55,7 @@ global:
         cpu: 1001m
         memory: 128Mi
 
-  logstash:
-    resources:
-      requests:
-        cpu: 200m
-        memory: 768Mi
-      limits:
-        cpu: 1001m
-        memory: 1152Mi
-
   multiCounter:
-    resources:
-      requests:
-        cpu: 20m
-        memory: 64Mi
-      limits:
-        cpu: 1001m
-        memory: 96Mi
-
-  notificationSender:
-    apiResources:
-      requests:
-        cpu: 20m
-        memory: 64Mi
-      limits:
-        cpu: 1001m
-        memory: 96Mi
-    consumerResources:
-      requests:
-        cpu: 20m
-        memory: 32Mi
-      limits:
-        cpu: 1001m
-        memory: 64Mi
-
-  repeater:
     resources:
       requests:
         cpu: 20m
@@ -108,24 +74,6 @@ global:
       limits:
         cpu: 1000m
         memory: 128Mi
-
-  status:
-    resources:
-      requests:
-        cpu: 20m
-        memory: 32Mi
-      limits:
-        cpu: 1001m
-        memory: 64Gi
-
-  telegraf:
-    resources:
-      requests:
-        cpu: 50m
-        memory: 32Mi
-      limits:
-        cpu: 1001m
-        memory: 64Mi
 
   topologyApi:
     resources:

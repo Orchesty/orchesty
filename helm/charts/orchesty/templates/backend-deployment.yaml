@@ -26,45 +26,74 @@ spec:
             - name: http
               containerPort: 80
           env:
-{{ include "pipes.monolithEnv" . | indent 12 }}
+            - name: BACKEND_URL
+              value: "{{ .Values.global.backend_url }}"
+            - name: STARTING_POINT_URL
+              value: "{{ .Values.global.starting_point_url }}"
             - name: USCCP_URI
               value: https://usccp.cloud.orchesty.io
             - name: ALPHA_INSTANCE_ID
               value: {{ .Values.global.backend.alpha_instance_id }}
+            - name: CRON_DSN
+              value: cron-api:8080
+            - name: PHP_FPM_MAX_REQUESTS
+              value: "5000"
+            - name: PHP_FPM_MAX_CHILDREN
+              value: "20"
+            - name: WORKER_DEFAULT_PORT
+              value: "8000"
+                ##### jen pokud je to applinth
             - name: JWE_PRIVATE_KEY
               valueFrom:
                 secretKeyRef:
                   key: applinth_jwe_private_key
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
             - name: UDP_LOGGER_URL
-              value: "{{ include "pipes.fullname" (dict "suffix" "logstash" "root" .) }}:5120"
+              value: "{{ include "pipes.fullname" (dict "suffix" "fluentd" "root" .) }}:5120"
             - name: CHECK_INFINITY_LOOP
               value: "{{ .Values.global.backend.checkInfinityLoop }}"
+            - name: RABBITMQ_DSN
+              valueFrom:
+                secretKeyRef:
+                  key: rabbitmq_dsn
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
             - name: JWT_KEY
               valueFrom:
                 secretKeyRef:
                   key: backend_jwt_key
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: X_AUTH_KEY
+            - name: MONGODB_DSN
               valueFrom:
                 secretKeyRef:
-                  key: backend_x_auth_key
+                  key: mongodb_dsn
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: ORCHESTY_LICENSE
+            - name: MONGODB_DB
               valueFrom:
                 secretKeyRef:
-                  key: license
+                  key: mongodb_db
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: CRYPT_SECRET
+            - name: METRICS_DB
               valueFrom:
                 secretKeyRef:
-                  key: crypt_secret
+                  key: metrics_db
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: ORCHESTY_API_KEY
+            - name: METRICS_DSN
               valueFrom:
                 secretKeyRef:
-                  key: orchesty_api_key
+                  key: metrics_dsn
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: TOPOLOGY_API_DSN
+              value: topology-api:8080
+            - name: FRONTEND_URL
+              value: "{{ .Values.global.frontend_url }}/"
+
+{{- if not .Values.global.imageOverrides.bridge }}
+            - name: DOCKER_PF_BRIDGE_IMAGE
+              value: {{ .Values.global.imageRegistry.server }}/{{ .Values.global.imageRegistry.path }}/{{ .Values.global.images.bridge }}
+{{- else }}
+            - name: DOCKER_PF_BRIDGE_IMAGE
+              value: {{ .Values.global.imageOverrides.bridge }}
+{{- end }}
           resources:
 {{ toYaml .Values.global.backend.resources | indent 12 }}
 

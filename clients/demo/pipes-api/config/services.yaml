@@ -32,13 +32,6 @@ services:
         calls:
             - [ 'setContainer', [ '@service_container' ] ]
 
-    Demo\Command\DownloaderCommand:
-        arguments:
-            - 'downloader:run'
-            - '@hbpf.transport.curl_manager'
-        tags:
-            - { name: 'console.command', command: 'downloader:run' }
-
     mailer:
         class: EmailServiceBundle\Mailer\Mailer
         arguments:

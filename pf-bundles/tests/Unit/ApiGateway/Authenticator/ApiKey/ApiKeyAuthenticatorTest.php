@@ -53,7 +53,8 @@ final class ApiKeyAuthenticatorTest extends KernelTestCaseAbstract
     {
         /** @var ApiTokenManager $apiTokenManager */
         $apiTokenManager = self::getContainer()->get('hbpf.configurator.manager.api_token');
-        $apiToken        = $apiTokenManager->create([ApiToken::SCOPES => ApiTokenScopesEnum::getChoices()], '');
+        $tokenResult     = $apiTokenManager->create([ApiToken::SCOPES => ApiTokenScopesEnum::getChoices()], '');
+        $apiToken        = $tokenResult[ApiTokenManager::CREATED_TOKEN];
 
         $r = new Request();
         $r->headers->set(ApiKeyAuthenticator::AUTH_HEADER, $apiToken->getKey());

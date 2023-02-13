@@ -27,7 +27,7 @@ Linux:
 		-e "s|{DOCKER_SOCKET_PATH}|$(shell test -S /var/run/docker-$${USER}.sock && echo /var/run/docker-$${USER}.sock || echo /var/run/docker.sock)|g" \
 		-e "s|{PROJECT_SOURCE_PATH}|$(shell pwd)|g" \
 		-e "s/{SSH_AUTH}/$(shell if [ "$(shell uname)" = "Linux" ]; then echo '${SSH_AUTH_SOCK}' | sed 's/\//\\\//g'; else echo '\/run\/host-services\/ssh-auth.sock'; fi)/g" \
-		-e 's/{ORCHESTY_API_KEY}/$(shell tr -dc A-Za-z0-9 </dev/urandom | head -c 20)/g' \
+		-e 's/{ORCHESTY_API_KEY}/$(shell tr -dc A-Za-z0-9 </dev/urandom | head -c 65)/g' \
 		.env.dist > .env
 
 build: .env
@@ -61,7 +61,7 @@ init: up
 	$(DE_DEV) backend bin/console service:install node-sdk node-sdk:8080
 	$(DE_DEV) backend bin/console service:install php-sdk php-sdk:80
 	$(DE_DEV) backend bin/console topology:install -c -u --force node-sdk:8080
-	$(DE_DEV) backend bin/console api-token:create
+	$(DE_DEV) backend bin/console api-token:create --key "$(shell grep 'ORCHESTY_API_KEY' .env | cut -d "=" -f2)"
 
 destroy: .env .lo0-down
 	$(DC_DEV) down -v

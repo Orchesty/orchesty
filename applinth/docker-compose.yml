@@ -16,18 +16,17 @@ services:
             PHP_WEBROOT: /var/www/pipes/applinth/public
             DEV_UID: ${DEV_UID}
             DEV_GID: ${DEV_GID}
-            X_AUTH_KEY: abc-123
             KERNEL_CLASS: Hanaboso\Applinth\Kernel
             COMPOSER_HOME: ${HOME}/dev/.composer
-            FRONTEND_DSN: ${DEV_IP}
-            BACKEND_DSN: ${DEV_IP}
+            FRONTEND_URL: ${DEV_IP}
+            BACKEND_URL: ${DEV_IP}
             MONGODB_DSN: mongodb://mongo
             MONGODB_DB: pipes
             METRICS_DSN: mongodb://mongo
             METRICS_DB: metrics
             CHECK_INFINITY_LOOP: 'true'
             TOPOLOGY_API_DSN: topology-api:80
-            STARTING_POINT_DSN: starting-point:8080
+            STARTING_POINT_URL: starting-point:8080
             CRON_DSN: http://cron-api:8080
             RABBITMQ_DSN: amqp://rabbitmq:5672
             WORKER_DEFAULT_PORT: 8008

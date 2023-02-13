@@ -28,22 +28,15 @@ spec:
             - name: http
               containerPort: 8080
           env:
-            - name: __MONGODB_DSN
+            - name: MONGO_DSN
               valueFrom:
                 secretKeyRef:
                   key: mongodb_dsn
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: MONGO_DSN
-              value: "$(__MONGODB_DSN)&connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500"
             - name: MONGO_COLLECTION
               value: cron
             - name: STARTING_POINT_DSN
               value: "{{ .Values.global.starting_point_url }}"
-            - name: ORCHESTY_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  key: orchesty_api_key
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
           resources:
 {{ toYaml .Values.global.cronApi.resources | indent 12 }}
 

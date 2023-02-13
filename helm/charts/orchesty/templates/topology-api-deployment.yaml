@@ -40,11 +40,6 @@ spec:
                 secretKeyRef:
                   key: mongodb_dsn
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-            - name: METRICS_DSN
-              valueFrom:
-                secretKeyRef:
-                  key: metrics_dsn
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
             - name: WORKER_DEFAULT_LIMIT_MEMORY
               value: "{{ .Values.global.topologyApi.topologiesResources.defaultLimitMemory }}"
             - name: WORKER_DEFAULT_LIMIT_CPU
@@ -55,11 +50,6 @@ spec:
               value: "{{ .Values.global.topologyApi.topologiesResources.defaultRequestCpu }}"
             - name: STARTING_POINT_DSN
               value: "{{ .Values.global.starting_point_url }}"
-            - name: ORCHESTY_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  key: orchesty_api_key
-                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
 {{- range $name, $def := .Values.global.topologyApi.topologiesExtraEnv }}
             - name: APP_PASS_{{ $name }}
               {{- $def | toYaml | nindent 14}}

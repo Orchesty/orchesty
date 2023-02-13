@@ -34,6 +34,7 @@ services:
             APP_DEBUG: 'true'
             MONGO_DSN: ${MONGO_DSN}
             METRICS_DSN: ${METRICS_DSN}
+            RABBITMQ_DSN: ${RABBITMQ_DSN}
             RABBIT_DELIVERY_MODE: 2
         volumes:
             - ./../../starting-point/:/app:cached
@@ -80,23 +81,19 @@ services:
             APP_DEBUG: 'true'
             PHP_WEBROOT: /var/www/pipes/applinth/public
             COMPOSER_HOME: ${HOME}/dev/.composer
-            BACKEND_DSN: ${BACKEND_URL}/
-            FRONTEND_DSN: ${FRONTEND_URL}/
-            UDP_LOGGER_URL: fluentd:5120
+            BACKEND_URL: ${BACKEND_URL}/
+            FRONTEND_URL: ${FRONTEND_URL}/
             RABBITMQ_DSN: ${RABBITMQ_DSN}
             MONGODB_DSN: ${MONGO_DSN}
             MONGODB_DB: ${MAIN_DB}
             METRICS_DSN: ${METRICS_DSN}
             METRICS_DB: metrics
             CRON_DSN: cron-api:8080
-            STARTING_POINT_DSN: ${STARTING_POINT_DSN}
+            STARTING_POINT_URL: ${STARTING_POINT_DSN}
             TOPOLOGY_API_DSN: topology-api:8080
-            DOCKER_REGISTRY: orchesty
-            DOCKER_PF_BRIDGE_IMAGE: bridge:${VERSION}
+            DOCKER_PF_BRIDGE_IMAGE: orchesty/bridge:${VERSION}
             JWT_KEY: BWoCz4gxw3YHDMkqE5HD1WT2u6zqIAtiJkYVyf6UucL4ZtbhhatQooP5IgTQRwowYR6z8wE3biqZTl37
-            X_AUTH_KEY: demo_key
             EMAIL_DSN: smtp://mailhog:1025
-            CRYPT_SECRET: 'ThisIsNotSoSecret'
             USCCP_URI: ${BACKEND_URL}
             ALPHA_INSTANCE_ID: 'demo'
             INSTALLER_DIRS: '["/var/www/pipes/applinth/topology"]'

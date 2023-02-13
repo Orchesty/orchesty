@@ -1,7 +1,6 @@
 {
     "environment": {
-        "docker_registry": "dkr.hanaboso.net\/pipes\/pipes",
-        "docker_pf_bridge_image": "pf-bridge:dev",
+        "docker_pf_bridge_image": "orchesty/bridge:1.0",
         "rabbitmq_host": "rabbitmq:5672",
         "rabbitmq_user": "guest",
         "rabbitmq_pass": "guest",

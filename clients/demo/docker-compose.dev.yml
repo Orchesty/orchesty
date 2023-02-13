@@ -8,13 +8,10 @@ services:
         environment:
             PHP_WEBROOT: /var/www/pipes/clients/demo/pipes-api/public
             COMPOSER_HOME: ${HOME}/dev/.composer
-            BACKEND_DSN: ${BACKEND_URL}
             MONGODB_DSN: ${MONGO_DSN}
             MONGODB_DB: ${MAIN_DB}
             METRICS_DSN: ${METRICS_DSN}
             METRICS_DB: metrics
-            STARTING_POINT_DSN: ${STARTING_POINT_DSN}
-            RABBITMQ_DSN: ${RABBITMQ_DSN}
         working_dir: /var/www/pipes/clients/demo/pipes-api
         volumes:
             - ../../:/var/www/pipes:cached
@@ -52,7 +49,7 @@ services:
             MONGO_DSN: ${MONGO_DSN}
             PLATFORM: ${PLATFORM}
             DOCKER_NETWORK: ${NETWORK_NAME}
-            RABBIT_HOST: http://rabbitmq:15672/
+            RABBITMQ_DSN: ${RABBITMQ_DSN}
         volumes:
             - ${DOCKER_SOCKET_PATH}:/var/run/docker.sock
             - ./../../detector/:/app:cached

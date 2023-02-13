@@ -3,6 +3,8 @@ import CoreFormsEnum, { getFormName } from '@orchesty/nodejs-sdk/dist/lib/Applic
 import { IWebhookApplication } from '@orchesty/nodejs-sdk/dist/lib/Application/Base/IWebhookApplication';
 import { ApplicationInstall } from '@orchesty/nodejs-sdk/dist/lib/Application/Database/ApplicationInstall';
 import Webhook from '@orchesty/nodejs-sdk/dist/lib/Application/Database/Webhook';
+import CustomAction from '@orchesty/nodejs-sdk/dist/lib/Application/Model/CustomAction/CustomAction';
+import CustomActionType from '@orchesty/nodejs-sdk/dist/lib/Application/Model/CustomAction/CustomActionType';
 import Field from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/Field';
 import FieldType from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/FieldType';
 import Form from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/Form';
@@ -48,6 +50,14 @@ export default class SampleApplication extends ABasicApplication implements IWeb
         data?: unknown,
     ): RequestDto {
         return new RequestDto(url ?? '', method, dto, data ?? '');
+    }
+
+    public getCustomActions(): CustomAction[] {
+        return [
+            new CustomAction('Go to Google', CustomActionType.OPEN, { url: 'https://google.com' }),
+            new CustomAction('Run Sync', CustomActionType.CALL, { topologyName: 'system-events', nodeName: 'start' }),
+            new CustomAction('Run Sync With body', CustomActionType.CALL, { topologyName: 'system-events', nodeName: 'start', body: '{}' }),
+        ];
     }
 
     public getFormStack(): FormStack {

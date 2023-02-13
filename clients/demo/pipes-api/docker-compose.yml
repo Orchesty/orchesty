@@ -13,7 +13,6 @@ services:
             PHP_WEBROOT: /var/www/pipes/clients/demo/pipes-api
             DEV_UID: ${DEV_UID}
             DEV_GID: ${DEV_GID}
-            BACKEND_DSN: ${DEV_IP}/
             MONGODB_DSN: mongodb://mongo
             MONGODB_DB: pipes
             METRICS_DSN: mongodb://mongo

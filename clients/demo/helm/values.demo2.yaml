@@ -8,6 +8,7 @@ global:
   backend_url: https://api-umo5mkl8z6.eu1.cloud.orchesty.io
   frontend_url: https://ui-umo5mkl8z6.eu1.cloud.orchesty.io
   starting_point_url: https://start-umo5mkl8z6.eu1.cloud.orchesty.io
+  worker_api_url: https://worker-api-umo5mkl8z6.eu1.cloud.orchesty.io
 
   imageOverrides:
     nodejssdk: hanaboso/demo-nodejs:dev

@@ -5,10 +5,8 @@ parameters:
     checkInfiniteLoop: "%env(bool:CHECK_INFINITY_LOOP)%"
     env(CHECK_INFINITY_LOOP): true
 
-    docker_registry: "%env(string:DOCKER_REGISTRY)%"
-    env(DOCKER_REGISTRY): dkr.hanaboso.net/pipes/pipes
     docker_pf_bridge_image: "%env(string:DOCKER_PF_BRIDGE_IMAGE)%"
-    env(DOCKER_PF_BRIDGE_IMAGE): pf-bridge:dev
+    env(DOCKER_PF_BRIDGE_IMAGE): orchesty/bridge:1.0
 
     env(XML_PARSER_API_DSN): "xml-parser-api"
     xml_parser_api_host: "%env(string:XML_PARSER_API_DSN)%"
@@ -17,8 +15,8 @@ parameters:
     env(WORKER_DEFAULT_PORT): 8000
 
     topology_api: "%env(string:TOPOLOGY_API_DSN)%"
-    starting_point: "%env(string:STARTING_POINT_DSN)%"
-    monolith_api_host: "%env(string:BACKEND_DSN)%"
+    starting_point: "%startingPointHost%"
+    monolith_api_host: "%backendHost%"
     metrics_dsn: "%env(string:METRICS_DSN)%"
 
     env(UDP_LOGGER_URL): "fluentd:5120"
@@ -29,7 +27,6 @@ parameters:
 
     topology_configs:
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::RABBITMQ_DSN: "%env(string:RABBITMQ_DSN)%"
-        !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::DOCKER_REGISTRY: "%docker_registry%"
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::DOCKER_PF_BRIDGE_IMAGE: "%docker_pf_bridge_image%"
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::METRICS_DSN: "%metrics_dsn%"
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::WORKER_DEFAULT_PORT: "%worker_default_port%"

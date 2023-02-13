@@ -11,7 +11,7 @@
             <span class="font-weight-bold"
               >{{ $t("page.status.topology") }}:
             </span>
-            <span>{{ trashTaskSwitcher("topologyName") }}</span>
+            <span>{{ topologyNameWithVersion }}</span>
           </div>
           <div>
             <div class="my-3">
@@ -82,7 +82,7 @@
       <v-row class="flex-grow-0 flex-shrink-1" dense>
         <v-col>
           <TrashItemChangeTopologyModal
-            v-if="trash && trash.topologyDeleted === true"
+            v-if="isTrash && trash && trash.topologyDeleted === true"
             :on-submit="changeTopologyAndAccept"
           />
           <user-task-actions-modal
@@ -198,7 +198,7 @@ export default {
       }
     },
     trashTaskSwitcher(param) {
-      return this[this.toggler][param]
+      return this[this.toggler]?.[param]
     },
     async acceptAll() {
       const response = await this[USER_TASKS.ACTIONS.USER_TASK_ACCEPT_LIST]({
@@ -305,6 +305,9 @@ export default {
     },
     message() {
       return this[this.toggler] ? this[this.toggler].message : {}
+    },
+    topologyNameWithVersion() {
+      return `${this.trash?.topologyName} v.${this.trash?.topologyVersion}`
     },
   },
   props: {
