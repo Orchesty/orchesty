@@ -26,6 +26,11 @@ final class CreateApiTokenCommandTest extends DatabaseTestCaseAbstract
         $command     = $application->get('api-token:create');
 
         $commandTester = new CommandTester($command);
+
+        $repository = self::getContainer()->get('hbpf.database_manager_locator')->getDm()?->getRepository(
+            ApiToken::class,
+        );
+
         $commandTester->execute(
             [
                 'command' => $command->getName(),
@@ -34,12 +39,41 @@ final class CreateApiTokenCommandTest extends DatabaseTestCaseAbstract
             ],
         );
 
-        $repository = self::getContainer()->get('hbpf.database_manager_locator')->getDm()?->getRepository(
-            ApiToken::class,
-        );
         /** @var ApiToken $apiToken */
         $apiToken = $repository?->findOneBy(['user' => '1']);
-        self::assertStringContainsString($apiToken->getKey(), $commandTester->getDisplay());
+        self::assertStringContainsString(
+            sprintf('New api token generated: %s', $apiToken->getKey()),
+            $commandTester->getDisplay(),
+        );
+
+        $token = '1234-1234-1234-1234';
+        $commandTester->execute(
+            [
+                'command' => $command->getName(),
+                '--key'  => $token,
+            ],
+        );
+
+        /** @var ApiToken $apiToken2 */
+        $apiToken2 = $repository?->findOneBy(['key' => $token]);
+        self::assertStringContainsString(
+            sprintf('New api token generated: %s', $apiToken2->getKey()),
+            $commandTester->getDisplay(),
+        );
+
+        $commandTester->execute(
+            [
+                'command' => $command->getName(),
+                '--key'  => $token,
+            ],
+        );
+
+        /** @var ApiToken $apiToken2 */
+        $apiToken2 = $repository?->findOneBy(['key' => $token]);
+        self::assertStringContainsString(
+            sprintf('Api token already exists: %s', $apiToken2->getKey()),
+            $commandTester->getDisplay(),
+        );
     }
 
 }

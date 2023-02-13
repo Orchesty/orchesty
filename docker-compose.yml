@@ -17,15 +17,15 @@ services:
             - DEV_GID=${DEV_GID}
             - KERNEL_CLASS=Hanaboso\PipesFramework\Kernel
             - COMPOSER_HOME=${HOME}/dev/.composer
-            - FRONTEND_DSN=${DEV_IP}
-            - BACKEND_DSN=${DEV_IP}
+            - FRONTEND_URL=${DEV_IP}
+            - BACKEND_URL=${DEV_IP}
             - MONGODB_DSN=mongodb://mongo
             - MONGODB_DB=pipes
             - METRICS_DSN=mongodb://mongo
             - METRICS_DB=metrics
             - CHECK_INFINITY_LOOP=true
             - TOPOLOGY_API_DSN=topology-api:80
-            - STARTING_POINT_DSN=starting-point:8080
+            - STARTING_POINT_URL=starting-point:8080
             - CRON_DSN=http://cron-api:8080
             - RABBITMQ_DSN=amqp://rabbitmq:5672
             - JWT_KEY=test1234test1234test1234test1234test1234test1234test1234test1234test1234
@@ -35,9 +35,6 @@ services:
         environment:
             MONGO_DSN: mongodb://mongo/demo
             METRICS_DSN: mongodb://mongo/metrics
-            RABBIT_COUNTER_QUEUE_DURABLE: 'true'
-            RABBIT_QUEUE_DURABLE: 'true'
-            RABBIT_DELIVERY_MODE: 2
 
     cron-api:
         user: ${DEV_UID}:${DEV_GID}

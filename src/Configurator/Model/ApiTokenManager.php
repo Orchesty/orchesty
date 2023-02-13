@@ -22,6 +22,9 @@ use Hanaboso\PipesFramework\Configurator\Repository\ApiTokenRepository;
 final class ApiTokenManager
 {
 
+    public const CREATED_TOKEN        = 'token';
+    public const CREATED_TOKEN_IS_NEW = 'isNew';
+
     /**
      * @var ObjectRepository<ApiToken>&ApiTokenRepository
      */
@@ -80,14 +83,20 @@ final class ApiTokenManager
      * @param mixed[] $data
      * @param string  $user
      *
-     * @return ApiToken
+     * @return mixed[]
      * @throws Exception
      */
-    public function create(array $data, string $user): ApiToken
+    public function create(array $data, string $user): array
     {
-        $apiToken = (new ApiToken())->setKey(hash('sha256', random_bytes(60)));
+        $key           = $data[ApiToken::KEY] ?? hash('sha256', random_bytes(60));
+        $existingToken = $this->repository->findOneBy(['key' => $key]);
+        if ($existingToken) {
+            return [self::CREATED_TOKEN => $existingToken, self::CREATED_TOKEN_IS_NEW => FALSE];
+        }
 
+        $apiToken = new ApiToken();
         $apiToken
+            ->setKey($key)
             ->setUser($user)
             ->setExpireAt(!empty($data[ApiToken::EXPIRE_AT]) ? new DateTime($data[ApiToken::EXPIRE_AT]) : NULL)
             ->setScopes($data[ApiToken::SCOPES]);
@@ -99,7 +108,7 @@ final class ApiTokenManager
             $this->create($data, $user);
         }
 
-        return $apiToken;
+        return [self::CREATED_TOKEN => $apiToken, self::CREATED_TOKEN_IS_NEW => TRUE];
     }
 
     /**

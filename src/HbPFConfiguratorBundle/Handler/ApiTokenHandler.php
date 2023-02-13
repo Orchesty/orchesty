@@ -58,7 +58,7 @@ final class ApiTokenHandler
             ApiTokenScopesEnum::isValid($scopes);
         }
 
-        return $this->manager->create($data, $user)->toArray();
+        return $this->manager->create($data, $user)[ApiTokenManager::CREATED_TOKEN]->toArray();
     }
 
     /**

@@ -124,7 +124,7 @@ final class TopologyHandler
         string $user = ApplicationController::SYSTEM_USER,
     ): array
     {
-        return $this->topologyManager->runTopology($topologyName, $nodeName, $data[self::BODY], TRUE, $user);
+        return $this->topologyManager->runTopology($topologyName, $nodeName, $data[self::BODY] ?? '[]', TRUE, $user);
     }
 
     /**

@@ -44,6 +44,7 @@ final class CreateApiTokenCommand extends Command
             ->addOption(self::EXPIRE_AT, 'ea', InputOption::VALUE_OPTIONAL, 'Expiration date')
             ->addOption(self::USER, 'u', InputOption::VALUE_OPTIONAL, 'User')
             ->addOption(self::SCOPES, 's', InputOption::VALUE_OPTIONAL, 'Scopes')
+            ->addOption(ApiToken::KEY, 'k', InputOption::VALUE_OPTIONAL, 'Token')
             ->setDescription('Create new ApiToken');
     }
 
@@ -59,14 +60,24 @@ final class CreateApiTokenCommand extends Command
         $user     = $input->getOption(self::USER) ?? ApplicationController::SYSTEM_USER;
         $expireAt = $input->getOption(self::EXPIRE_AT);
         $scopes   = $input->getOption(self::SCOPES) ?? ApiTokenScopesEnum::getChoices();
+        $token    = $input->getOption(ApiToken::KEY);
 
         $data = [ApiToken::SCOPES => $scopes];
         if ($expireAt) {
             $data[ApiToken::EXPIRE_AT] = $expireAt;
         }
 
-        $apiToken = $this->manager->create($data, $user);
-        $output->writeln($apiToken->getKey());
+        if ($token) {
+            $data[ApiToken::KEY] = $token;
+        }
+
+        $result = $this->manager->create($data, $user);
+        if ($result[ApiTokenManager::CREATED_TOKEN_IS_NEW]) {
+            $msg = 'New api token generated: %s';
+        } else {
+            $msg = 'Api token already exists: %s';
+        }
+        $output->writeln(sprintf($msg, $result[ApiTokenManager::CREATED_TOKEN]->getKey()));
 
         return 0;
     }
