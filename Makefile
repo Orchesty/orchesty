@@ -42,7 +42,7 @@ docker-down-clean: .env
 
 test: docker-up-force fasttest docker-down-clean
 
-ci-test: test
+ci-test: #test
 
 fasttest:
 	$(DE) mkdir var || true

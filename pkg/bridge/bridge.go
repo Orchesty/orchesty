@@ -36,7 +36,10 @@ func (this BridgeSvc) Send(message RequestMessage) error {
 		lastKey = this.mongo.GetApiToken()
 		keyUntil = now + int64(time.Second)
 	}
-	request.Header.Add("orchesty-api-key", lastKey)
+
+	if lastKey != "" {
+		request.Header.Add("orchesty-api-key", lastKey)
+	}
 	request.Header.Add("Content-Type", "application/json")
 
 	limitKey := message.GetHeader(enum.Header_LimitKey)

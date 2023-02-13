@@ -140,7 +140,7 @@ func response(writer http.ResponseWriter, content interface{}) {
 func authorizationHandler(next httprouter.Handle, container Container) httprouter.Handle {
 	apiToken := container.Mongo.GetApiToken()
 	return func(writer http.ResponseWriter, request *http.Request, parameters httprouter.Params) {
-		if request.Header.Get("orchesty-api-key") != apiToken {
+		if apiToken != "" && request.Header.Get("orchesty-api-key") != apiToken {
 			writer.WriteHeader(http.StatusUnauthorized)
 			return
 		}
