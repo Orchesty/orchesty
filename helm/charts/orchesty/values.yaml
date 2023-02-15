@@ -2,7 +2,6 @@ global:
   frontend_url: https://pipes.example.com
   backend_url: https://backend.pipes.example.com
   starting_point_url: http://starting-point.pipes.example.com
-  worker_api_url: http://worker-api.pipes.example.com
 
   imageRegistry:
     enablePullSecret: false
@@ -122,11 +121,13 @@ global:
 
   phpSdk:
     extraEnv: {}
+    worker_api_url: ""
     # FOO:
     # value: bar
 
   nodejsSdk:
     extraEnv: {}
+    worker_api_url: ""
     # FOO:
     # value: bar
 
