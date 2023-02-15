@@ -11,7 +11,7 @@ RUN cd applinth && \
     CRON_DSN=cron-api:8080 \
     TOPOLOGY_API_DSN=topology-api:8080 STARTING_POINT_URL=starting-point:8080 \
     FRONTEND_URL=frontend BACKEND_URL=backend JWT_KEY=key \
-    ALPHA_INSTANCE_ID=applinth USCCP_URI=localhost JWE_PRIVATE_KEY=1 \
+    ALPHA_INSTANCE_ID=applinth JWE_PRIVATE_KEY=1 \
     bin/console cache:warmup
 
 FROM hanabosocom/php-base:php-8.2-alpine

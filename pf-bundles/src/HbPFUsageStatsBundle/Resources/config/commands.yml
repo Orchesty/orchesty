@@ -6,7 +6,6 @@ services:
         class: Hanaboso\PipesFramework\HbPFUsageStatsBundle\Command\SendUsageStatsEventsToUSCCPCommand
         arguments:
             - '@hbpf.database_manager_locator'
-            - '%usccp_uri%'
             - '%alpha_instance_id%'
             - '@hbpf.transport.curl_manager'
         tags:

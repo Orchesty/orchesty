@@ -94,7 +94,6 @@ services:
             DOCKER_PF_BRIDGE_IMAGE: orchesty/bridge:${VERSION}
             JWT_KEY: BWoCz4gxw3YHDMkqE5HD1WT2u6zqIAtiJkYVyf6UucL4ZtbhhatQooP5IgTQRwowYR6z8wE3biqZTl37
             EMAIL_DSN: smtp://mailhog:1025
-            USCCP_URI: ${BACKEND_URL}
             ALPHA_INSTANCE_ID: 'demo'
             INSTALLER_DIRS: '["/var/www/pipes/applinth/topology"]'
             JWE_PRIVATE_KEY: |
