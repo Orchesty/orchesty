@@ -92,13 +92,13 @@ final class SendBillingEventsToUSCCPCommandTest extends DatabaseTestCaseAbstract
     {
         $resEx = static function (RequestDto $request): ResponseDto {
             self::assertEquals(CurlManager::METHOD_PUT, $request->getMethod());
-            self::assertEquals('', $request->getUri(TRUE));
+            self::assertEquals('https://usccp.cloud.orchesty.io', $request->getUri(TRUE));
 
             throw new CurlException();
         };
         $res   = static function (RequestDto $request): ResponseDto {
             self::assertEquals(CurlManager::METHOD_PUT, $request->getMethod());
-            self::assertEquals('', $request->getUri(TRUE));
+            self::assertEquals('https://usccp.cloud.orchesty.io', $request->getUri(TRUE));
 
             return new ResponseDto(200, 'OK', '[{}]', []);
         };

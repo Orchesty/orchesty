@@ -31,7 +31,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 final class SendUsageStatsEventsToUSCCPCommand extends Command
 {
 
-    private const CMD_NAME = 'usage_stats:send-events';
+    private const USCCP_URI = 'https://usccp.cloud.orchesty.io';
+    private const CMD_NAME  = 'usage_stats:send-events';
 
     private const BATCH_SIZE            = 100;
     private const BATCH_TIME_LIMIT      = 45;
@@ -51,13 +52,11 @@ final class SendUsageStatsEventsToUSCCPCommand extends Command
      * SendUsageStatsEventsToUSCCPCommand constructor.
      *
      * @param DatabaseManagerLocator $dml
-     * @param string                 $usccpUri
      * @param string                 $alphaInstanceId
      * @param CurlManagerInterface   $curlManager
      */
     public function __construct(
         DatabaseManagerLocator $dml,
-        private string $usccpUri,
         private string $alphaInstanceId,
         private CurlManagerInterface $curlManager,
     )
@@ -149,7 +148,7 @@ final class SendUsageStatsEventsToUSCCPCommand extends Command
      */
     private function sendRequest(UsageStatsEvent $billingEvent, int $startTime, OutputInterface $output): bool
     {
-        $dto = new RequestDto(new Uri($this->usccpUri), CurlManager::METHOD_PUT, new ProcessDto(), '', [
+        $dto = new RequestDto(new Uri(self::USCCP_URI), CurlManager::METHOD_PUT, new ProcessDto(), '', [
             'Content-Type' => 'application/json',
         ]);
         $dto->setBody(Json::encode($billingEvent->toArray()));

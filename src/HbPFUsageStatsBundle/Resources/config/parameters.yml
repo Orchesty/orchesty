@@ -1,5 +1,3 @@
 parameters:
     env(ALPHA_INSTANCE_ID): 'orchesty'
     alpha_instance_id: '%env(string:ALPHA_INSTANCE_ID)%'
-    env(USCCP_URI): ''
-    usccp_uri: '%env(string:USCCP_URI)%'
