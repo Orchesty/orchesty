@@ -42,15 +42,25 @@ export default class JiraWorklogsToGoogleDriveMapper extends ACommonNode {
         let isEqual = false;
 
         worklogCache?.forEach((worklog) => {
-            spreadsheet?.sheets?.[0].data.forEach((sheetData, i) => {
-                sheetData.rowData.forEach((row, x) => {
+            spreadsheet?.sheets?.[0].data?.forEach((sheetData, i) => {
+                sheetData.rowData?.forEach((row, x) => {
                     if (row.values[0].userEnteredValue.stringValue === worklog.worklogId.toString()) {
                         spreadsheet.sheets[0].data[i].rowData[x].values = this.createRowValues(worklog);
                         isEqual = true;
                     }
                 });
                 if (!isEqual) {
-                    spreadsheet.sheets[0].data[i].rowData.push({ values: this.createRowValues(worklog) });
+                    const data = spreadsheet.sheets[0].data[i];
+                    if (data?.rowData !== undefined) {
+                        data.rowData.push({ values: this.createRowValues(worklog) });
+                    } else {
+                        spreadsheet.sheets[0].data[i] = {
+                            rowData: [
+                                { values: this.prepareHeader() },
+                                { values: this.createRowValues(worklog) },
+                            ],
+                        };
+                    }
                 }
                 isEqual = false;
             });
@@ -66,6 +76,20 @@ export default class JiraWorklogsToGoogleDriveMapper extends ACommonNode {
         );
 
         return dto.setNewJsonData({ status: 'success' });
+    }
+
+    private prepareHeader(): IValue[] {
+        const items = ['worklog id', 'issue id', 'time spent', 'author', 'key'];
+        const result: IValue[] = [];
+        items.forEach((item) => {
+            result.push({
+                userEnteredValue: {
+                    stringValue: item,
+                },
+            });
+        });
+
+        return result;
     }
 
     private createRowValues(row: IWorklogDataMinimalWithIssue): IValue[] {

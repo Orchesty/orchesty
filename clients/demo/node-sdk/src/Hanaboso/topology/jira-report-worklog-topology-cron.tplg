@@ -1,17 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?><bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:pipes="http://www.omg.org/spec/Pipes/20100524/MODEL" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
   <bpmn:process id="ab" isExecutable="false">
-    <bpmn:event id="Event_0lyr106" pipes:pipesType="start" pipes:sdkHost="node-sdk:8080" name="start" pipes:sdkHostName="node-sdk">
-      <bpmn:outgoing>Flow_1mwc0zh</bpmn:outgoing>
-    </bpmn:event>
     <bpmn:task id="Activity_1rx7kpf" pipes:pipesType="custom" pipes:sdkHost="node-sdk:8080" name="setup-google-sheet-setting" pipes:sdkHostName="node-sdk" pipes:appName="">
-      <bpmn:incoming>Flow_1mwc0zh</bpmn:incoming>
+      <bpmn:incoming>Flow_1avat91</bpmn:incoming>
       <bpmn:outgoing>Flow_16f85o8</bpmn:outgoing>
     </bpmn:task>
     <bpmn:task id="Activity_0i6zhw5" pipes:pipesType="batch" pipes:sdkHost="node-sdk:8080" name="jira-get-updated-worklog-ids-batch" pipes:sdkHostName="node-sdk" pipes:appName="jira">
       <bpmn:incoming>Flow_16f85o8</bpmn:incoming>
       <bpmn:outgoing>Flow_1mpntst</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:sequenceFlow id="Flow_1mwc0zh" sourceRef="Event_0lyr106" targetRef="Activity_1rx7kpf"/>
     <bpmn:task id="Activity_1lioqfb" pipes:pipesType="batch" pipes:sdkHost="node-sdk:8080" name="jira-get-worklogs-batch" pipes:sdkHostName="node-sdk" pipes:appName="jira">
       <bpmn:incoming>Flow_1mpntst</bpmn:incoming>
       <bpmn:outgoing>Flow_0nbl3s5</bpmn:outgoing>
@@ -37,43 +33,21 @@
     </bpmn:task>
     <bpmn:sequenceFlow id="Flow_0fmwy06" sourceRef="Activity_1i0sjuh" targetRef="Activity_0r0mpfz"/>
     <bpmn:sequenceFlow id="Flow_0g4c7xs" sourceRef="Activity_0r0mpfz" targetRef="Activity_1bzm60o"/>
+    <bpmn:event id="Event_1bkac9l" pipes:pipesType="cron" pipes:sdkHost="node-sdk:8080" name="cron" pipes:sdkHostName="node-sdk">
+      <bpmn:outgoing>Flow_1avat91</bpmn:outgoing>
+    </bpmn:event>
+    <bpmn:sequenceFlow id="Flow_1avat91" sourceRef="Event_1bkac9l" targetRef="Activity_1rx7kpf"/>
+    <bpmn:textAnnotation id="TextAnnotation_06zjq0z" pipes:sdkHost="node-sdk:8080" pipes:sdkHostName="node-sdk">
+      <bpmn:text>{
+"from": "2023-02-13",
+"to": "2023-02-15",
+"spredsheetId": "12myKRQU0fcPAbWHMoG5IbahBtHSYh3CTafIyD0y9iaQ"
+}</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_1pfr03m" sourceRef="Event_1bkac9l" targetRef="TextAnnotation_06zjq0z"/>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="ab">
-      <bpmndi:BPMNEdge id="Flow_0g4c7xs_di" bpmnElement="Flow_0g4c7xs">
-        <di:waypoint x="1080" y="430"/>
-        <di:waypoint x="1120" y="430"/>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0fmwy06_di" bpmnElement="Flow_0fmwy06">
-        <di:waypoint x="940" y="430"/>
-        <di:waypoint x="980" y="430"/>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_16f85o8_di" bpmnElement="Flow_16f85o8">
-        <di:waypoint x="400" y="430"/>
-        <di:waypoint x="450" y="430"/>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1psqhfu_di" bpmnElement="Flow_1psqhfu">
-        <di:waypoint x="820" y="430"/>
-        <di:waypoint x="840" y="430"/>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0nbl3s5_di" bpmnElement="Flow_0nbl3s5">
-        <di:waypoint x="690" y="430"/>
-        <di:waypoint x="720" y="430"/>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1mpntst_di" bpmnElement="Flow_1mpntst">
-        <di:waypoint x="550" y="430"/>
-        <di:waypoint x="590" y="430"/>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1mwc0zh_di" bpmnElement="Flow_1mwc0zh">
-        <di:waypoint x="258" y="430"/>
-        <di:waypoint x="300" y="430"/>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="Event_0lyr106_di" bpmnElement="Event_0lyr106">
-        <dc:Bounds x="222" y="412" width="36" height="36"/>
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="229" y="455" width="22" height="14"/>
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1rx7kpf_di" bpmnElement="Activity_1rx7kpf">
         <dc:Bounds x="300" y="390" width="100" height="80"/>
         <bpmndi:BPMNLabel/>
@@ -102,6 +76,48 @@
         <dc:Bounds x="980" y="390" width="100" height="80"/>
         <bpmndi:BPMNLabel/>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1bkac9l_di" bpmnElement="Event_1bkac9l">
+        <dc:Bounds x="192" y="412" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="199" y="455" width="22" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_06zjq0z_di" bpmnElement="TextAnnotation_06zjq0z">
+        <dc:Bounds x="240" y="260" width="150" height="110"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1mpntst_di" bpmnElement="Flow_1mpntst">
+        <di:waypoint x="550" y="430"/>
+        <di:waypoint x="590" y="430"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0nbl3s5_di" bpmnElement="Flow_0nbl3s5">
+        <di:waypoint x="690" y="430"/>
+        <di:waypoint x="720" y="430"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1psqhfu_di" bpmnElement="Flow_1psqhfu">
+        <di:waypoint x="820" y="430"/>
+        <di:waypoint x="840" y="430"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_16f85o8_di" bpmnElement="Flow_16f85o8">
+        <di:waypoint x="400" y="430"/>
+        <di:waypoint x="450" y="430"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0fmwy06_di" bpmnElement="Flow_0fmwy06">
+        <di:waypoint x="940" y="430"/>
+        <di:waypoint x="980" y="430"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0g4c7xs_di" bpmnElement="Flow_0g4c7xs">
+        <di:waypoint x="1080" y="430"/>
+        <di:waypoint x="1120" y="430"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1avat91_di" bpmnElement="Flow_1avat91">
+        <di:waypoint x="228" y="430"/>
+        <di:waypoint x="300" y="430"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_1pfr03m_di" bpmnElement="Association_1pfr03m">
+        <di:waypoint x="215" y="413"/>
+        <di:waypoint x="240" y="330"/>
+      </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>
