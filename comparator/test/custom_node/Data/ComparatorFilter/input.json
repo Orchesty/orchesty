@@ -1,0 +1,12 @@
+{
+    "headers": {},
+    "data": {
+        "items": [{
+            "id": 1
+        }],
+        "configuration": {
+            "idField": "id",
+            "masterKey": "losos"
+        }
+    }
+}
