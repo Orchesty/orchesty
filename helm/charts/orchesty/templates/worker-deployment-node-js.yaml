@@ -36,8 +36,6 @@ spec:
               value: "{{ .Values.global.backend_url }}"
             - name: STARTING_POINT_URL
               value: "{{ .Values.global.starting_point_url }}"
-            - name: WORKER_API_HOST
-              value: "{{ .Values.global.worker_api_url }}"
             - name: CRYPT_SECRET
               valueFrom:
                 secretKeyRef:
@@ -48,6 +46,13 @@ spec:
                 secretKeyRef:
                     key: orchesty_api_key
                     name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+{{- if .Values.global.nodejsSdk.worker_api_url }}
+            - name: WORKER_API_HOST
+              value: {{ .Values.global.nodejsSdk.worker_api_url }}
+{{- else }}
+            - name: WORKER_API_HOST
+              value: http://{{ include "pipes.selectorLabels" (dict "suffix" "worker-api" "root" .) }}
+{{- end }}
           resources:
 {{ toYaml .Values.global.worker.resources | indent 12 }}
 

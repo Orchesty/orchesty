@@ -13,5 +13,5 @@ spec:
 {{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 4 }}
   ports:
     - protocol: TCP
-      port: 8080
+      port: 80
       targetPort: http

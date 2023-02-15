@@ -99,7 +99,7 @@ import GoogleSheetUpdateBatchSpreadsheet from './Hanaboso/Connector/GoogleSheetU
 import JiraWorklogGoogleDriveMapper from './Hanaboso/CustomNode/JiraWorklogGoogleDriveMapper';
 import JiraWorklogsToGoogleDriveMapper from './Hanaboso/CustomNode/JiraWorklogsToGoogleDriveMapper';
 import SetupGoogleSheetSetting from './Hanaboso/CustomNode/SetupGoogleSheetSetting';
-import HanabosoContactFormMapper from './Hanabosocom/CustomNode/ContactFormMapper';
+import HanabosoContactFormMapper from './HanabosoCom/CustomNode/ContactFormMapper';
 import ListPosts from './JsonPlaceholder/Batch/ListPosts';
 import ListUsers from './JsonPlaceholder/Batch/ListUsers';
 import BinSender from './JsonPlaceholder/Connector/BinSender';

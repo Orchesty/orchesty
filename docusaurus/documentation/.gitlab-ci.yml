@@ -44,4 +44,3 @@ documentation deploy prod:
     refs:
       - master
       - dev
-      - jk-docs
