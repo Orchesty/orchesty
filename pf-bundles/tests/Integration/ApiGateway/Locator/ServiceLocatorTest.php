@@ -8,6 +8,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator;
 use Hanaboso\PipesFramework\Configurator\Document\Sdk;
+use Hanaboso\PipesFramework\Configurator\Enum\NodeImplementationEnum;
 use Hanaboso\Utils\String\Json;
 use LogicException;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
@@ -323,6 +324,11 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
             [
                 'backend' => [
                     'user' => ['user-task'],
+                ],
+                'name' => [
+                    NodeImplementationEnum::CONNECTOR => [],
+                    NodeImplementationEnum::CUSTOM => [],
+                    NodeImplementationEnum::BATCH => [],
                 ],
             ],
             $res,
