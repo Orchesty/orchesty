@@ -49,7 +49,7 @@ export default class JiraGetUpdatedWorklogIdsBatch extends ABatchNode {
             } as IEtlWorklogIds],
         );
 
-        if (!responseData.lastPage || responseData.until < dateTo.getTime()) {
+        if (!responseData.lastPage && responseData.until < dateTo.getTime()) {
             const baseUrl = appInstall.getSettings()?.[CoreFormsEnum.AUTHORIZATION_FORM]?.[HOST_URL];
             const nextPageUrl = responseData.nextPage.replace(baseUrl, '');
             dto.setBatchCursor(nextPageUrl, true);

@@ -35,8 +35,8 @@
     <bpmn:textAnnotation id="TextAnnotation_1cy66rj" pipes:sdkHost="node-sdk:8080" pipes:sdkHostName="node-sdk"/>
     <bpmn:textAnnotation id="TextAnnotation_1jwcy49" pipes:sdkHost="node-sdk:8080" pipes:sdkHostName="node-sdk">
       <bpmn:text>body: {
- form: '01.01.2023',
- to: '01.20.2023'
+ from: '2023-12-23',
+ to: '2023-12-23'
 }</bpmn:text>
     </bpmn:textAnnotation>
     <bpmn:association id="Association_0kxy3dn" sourceRef="Event_14j142d" targetRef="TextAnnotation_1jwcy49"/>
