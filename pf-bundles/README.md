@@ -11,7 +11,7 @@ Obsahuje moduly pro práci s BPMN schématem, generování topologií, konfigura
 - `make fasttest`   - spustí testy
 
 ## Konfigurační volby
-- DEV_UID 
+- DEV_UID
     - Povinný: `ANO`
     - ID Uživatele pod kterým se spouští PHP-FPM
     - Například: `${DEV_UID}` - UID se bere ze souboru `.env`
