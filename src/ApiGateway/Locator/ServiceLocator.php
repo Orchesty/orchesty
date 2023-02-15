@@ -380,9 +380,23 @@ final class ServiceLocator implements LoggerAwareInterface
                     new ProcessDto(),
                 );
 
-                $n[$name][NodeImplementationEnum::CONNECTOR] = $this->curlManager->send($con)->getJsonBody();
-                $n[$name][NodeImplementationEnum::CUSTOM]    = $this->curlManager->send($cst)->getJsonBody();
-                $n[$name][NodeImplementationEnum::BATCH]     = $this->curlManager->send($btch)->getJsonBody();
+                try {
+                    $n[$name][NodeImplementationEnum::CONNECTOR] = $this->curlManager->send($con)->getJsonBody();
+                } catch (Throwable) {
+                    $n[$name][NodeImplementationEnum::CONNECTOR] = [];
+                }
+
+                try {
+                    $n[$name][NodeImplementationEnum::CUSTOM] = $this->curlManager->send($cst)->getJsonBody();
+                } catch (Throwable) {
+                    $n[$name][NodeImplementationEnum::CUSTOM] = [];
+                }
+
+                try {
+                    $n[$name][NodeImplementationEnum::BATCH] = $this->curlManager->send($btch)->getJsonBody();
+                } catch (Throwable) {
+                    $n[$name][NodeImplementationEnum::BATCH] = [];
+                }
             } catch (Throwable $t) {
                 $this->logger->error($t->getMessage(), ['Exception' => $t, 'Sdk' => $sdk]);
             }
