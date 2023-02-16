@@ -46,12 +46,13 @@ spec:
                 secretKeyRef:
                     key: orchesty_api_key
                     name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
-{{- if .Values.global.nodejsSdk.worker_api_url }}
+
+{{- if not .Values.global.nodejsSdk.worker_api_url }}
             - name: WORKER_API_HOST
-              value: {{ .Values.global.nodejsSdk.worker_api_url }}
+              value: "http://worker-api"
 {{- else }}
             - name: WORKER_API_HOST
-              value: http://{{ include "pipes.selectorLabels" (dict "suffix" "worker-api" "root" .) }}
+              value: {{ .Values.global.nodejsSdk.worker_api_url }}
 {{- end }}
           resources:
 {{ toYaml .Values.global.worker.resources | indent 12 }}
