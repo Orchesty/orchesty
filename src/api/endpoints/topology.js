@@ -109,6 +109,9 @@ export default {
       url: `/topologies/check/${data.id}/schema.bpmn`,
       method: "POST",
       data: data.xml,
+      headers: {
+        "Content-Type": "text/xml; charset=UTF-8",
+      },
     }),
   },
   getProgress: {
