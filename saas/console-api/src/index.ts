@@ -70,6 +70,9 @@ function createServer(): Express {
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     initializeMiddleware(oasDoc, server, (middleware: { swaggerRouter: RequestHandler }) => {
+        server.use((req, res, next) => {
+            next(res.status(404).send({ msg: 'Page not found!' }));
+        });
         server.use(middleware.swaggerRouter);
     });
 
