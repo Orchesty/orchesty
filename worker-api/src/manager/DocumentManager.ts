@@ -78,7 +78,9 @@ export default class DocumentManager {
                             this.addFilterField(filter, 'enabled', 'eq', query.filter.enabled ?? true);
                         }
                         this.addFilterField(filter, 'expires', 'lte', query.filter.expires);
-                        this.addFilterField(filter, 'nonEncrypted', 'in', query.filter.nonEncrypt);
+                        Object.entries(query.filter.nonEncrypted ?? {}).forEach(([key, value]) => {
+                            this.addFilterField(filter, `nonEncrypted.${key}`, 'in', Object.values(value)[0]);
+                        });
                     }
                     break;
                 case DocumentEnum.NODE:
@@ -133,7 +135,7 @@ export default class DocumentManager {
             names: Joi.array().items(Joi.string()),
             users: Joi.array().items(Joi.string()),
             expires: Joi.number(),
-            nonEncrypt: Joi.object<Record<string, number>>({}).pattern(Joi.string(), Joi.any()),
+            nonEncrypted: Joi.object<Record<string, number>>({}).pattern(Joi.string(), Joi.any()),
             enabled: Joi.boolean().allow(null),
 
         });
@@ -195,7 +197,7 @@ interface IApplicationFilter extends IBaseFilter {
     names?: string[];
     users?: string[];
     expires?: number;
-    nonEncrypt?: Record<string, unknown>;
+    nonEncrypted?: Record<string, Record<string, unknown>>;
 }
 
 type INodeFilter = IBaseFilter;
