@@ -16,6 +16,11 @@ class DataStorageDocument
 {
 
     /**
+     * @var string
+     */
+    private string $id = '';
+
+    /**
      * @var string|null
      */
     private ?string $user = '';
@@ -51,14 +56,37 @@ class DataStorageDocument
      * @return DataStorageDocument
      * @throws Exception
      */
-    public static function fromJson(mixed $data): DataStorageDocument {
+    public static function fromJson(mixed $data): DataStorageDocument
+    {
         $document = new DataStorageDocument();
-        $document->setUser($data['user']);
-        $document->setApplication($data['application']);
-        $document->setCreated(new DateTime($data['created']));
-        $document->setData($data['data']);
+        $document
+            ->setId($data['id'])
+            ->setUser($data['user'])
+            ->setApplication($data['application'])
+            ->setCreated(new DateTime($data['created']))
+            ->setData($data['data']);
 
         return $document;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getId(): ?string
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return DataStorageDocument
+     */
+    public function setId(string $id): DataStorageDocument
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     /**
@@ -135,10 +163,11 @@ class DataStorageDocument
     public function toArray(): array
     {
         return [
-            'user' => $this->user,
+            'id'          => $this->id,
+            'user'        => $this->user,
             'application' => $this->application,
-            'created' => $this->created->format(DateTimeUtils::DATE_TIME_GO),
-            'data' => $this->data,
+            'created'     => $this->created->format(DateTimeUtils::DATE_TIME_GO),
+            'data'        => $this->data,
         ];
     }
 

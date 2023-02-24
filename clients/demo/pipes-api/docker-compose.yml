@@ -20,10 +20,9 @@ services:
             COMPOSER_HOME: ${HOME}/dev/.composer
             KERNEL_CLASS: Demo\Kernel
             WORKER_API: https://test.com
-            ORCHESTY_API_KEY: ${ORCHESTY_API_KEY}
+            ORCHESTY_API_KEY: someKey
         volumes:
             - ../../../:/var/www/pipes:cached
-            - ${SSH_AUTH}:/tmp/.ssh-auth-sock
             - ${HOME}/dev/.composer:${HOME}/dev/.composer:cached
 
     mongo:

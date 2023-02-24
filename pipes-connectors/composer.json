@@ -13,9 +13,9 @@
     "require-dev": {
         "aws/aws-sdk-php-symfony": "^2.5",
         "hanaboso/php-check-utils": "^1.4",
+        "mockery/mockery": "^1.5.1",
         "symfony/debug-bundle": "^v6.2",
         "symfony/security-bundle": "^v6.2",
-        "mockery/mockery": "^1.5.1",
         "symfony/serializer": "^v6.2"
     },
     "suggest": {

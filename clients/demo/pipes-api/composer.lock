@@ -2219,7 +2219,7 @@
             "dist": {
                 "type": "path",
                 "url": "../../../pipes-connectors",
-                "reference": "0deec3f947ece86c0fd3c6439a69212bee7d1837"
+                "reference": "29eed2306b4c9f237b9be24e33320bd1490abcc9"
             },
             "require": {
                 "ext-ctype": "*",

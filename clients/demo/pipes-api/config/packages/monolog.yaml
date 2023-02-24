@@ -31,4 +31,4 @@ services:
         calls:
             - ['setFormatter', ['@logstash_formatter']]
         arguments:
-          [ '@hbpf.worker-api' ]
+          - '@hbpf.worker-api'

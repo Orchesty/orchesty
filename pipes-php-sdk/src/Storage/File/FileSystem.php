@@ -80,7 +80,10 @@ final class FileSystem implements LoggerAwareInterface
                 return $this->write($file, $data,$actualTry +1);
             }
 
-            fwrite($openFile, utf8_encode(Json::encode(array_map(static fn($item) => $item->toArray(), $data))));
+            fwrite(
+                $openFile,
+                mb_convert_encoding(Json::encode(array_map(static fn($item) => $item->toArray(), $data)), 'UTF-8'),
+            );
             fclose($openFile);
 
             rename($tmpFile, $this->getFilePath($file));
