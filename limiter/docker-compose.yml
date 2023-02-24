@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+    app:
+        image: hanabosocom/go-base:1.19
+        working_dir: /app
+        environment:
+            RABBITMQ_DSN: ${RABBITMQ_DSN}
+            UDP_LOGGER_URL: ${UDP_LOGGER_URL}
+            MONGO_DSN: ${MONGO_DSN}
+        ports:
+            - ${DEV_IP}:3333:3333
+        volumes:
+            - ./:/app
+            - ${GOPATH}/pkg:/go/pkg
+        command: bash -c 'sleep infinity'
+
+    rabbitmq:
+        image: rabbitmq:management-alpine
+        ports:
+            - ${DEV_IP}:15672:15672
+
+    mongodb:
+        image: mongo:latest
+        ports:
+            - ${DEV_IP}:27017:27017
+        volumes:
+            - mongodb:/data/db
+
+    logstash:
+        image: mendhak/udp-listener
+        environment:
+            UDPPORT: 5120
+
+volumes:
+    mongodb:
+    rabbitmq:
+
