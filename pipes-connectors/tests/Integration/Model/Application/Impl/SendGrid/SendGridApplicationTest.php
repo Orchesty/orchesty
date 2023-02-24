@@ -9,15 +9,15 @@ use Hanaboso\HbPFConnectors\Model\Application\Impl\SendGrid\SendGridApplication;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\Utils\String\Json;
-use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
+use HbPFConnectorsTests\KernelTestCaseAbstract;
 
 /**
  * Class SendGridApplicationTest
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\SendGrid
  */
-final class SendGridApplicationTest extends DatabaseTestCaseAbstract
+final class SendGridApplicationTest extends KernelTestCaseAbstract
 {
 
     /**

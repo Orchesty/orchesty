@@ -37,7 +37,7 @@ final class ShipstationApplication extends BasicApplicationAbstract implements W
      */
     public function getApplicationType(): string
     {
-        return ApplicationTypeEnum::WEBHOOK;
+        return ApplicationTypeEnum::WEBHOOK->value;
     }
 
     /**

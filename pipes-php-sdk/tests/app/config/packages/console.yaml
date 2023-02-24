@@ -4,4 +4,3 @@ services:
         tags: [console.command]
         arguments:
             - '@hbpf.application.manager'
-            - '@doctrine_mongodb.odm.default_document_manager'

@@ -9,14 +9,14 @@ use Hanaboso\HbPFConnectors\Model\Application\Impl\Fakturoid\FakturoidApplicatio
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
-use HbPFConnectorsTests\DatabaseTestCaseAbstract;
+use HbPFConnectorsTests\KernelTestCaseAbstract;
 
 /**
  * Class FakturoidApplicationTest
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Fakturoid
  */
-final class FakturoidApplicationTest extends DatabaseTestCaseAbstract
+final class FakturoidApplicationTest extends KernelTestCaseAbstract
 {
 
     /**
@@ -105,7 +105,7 @@ final class FakturoidApplicationTest extends DatabaseTestCaseAbstract
                 ],
             ],
         );
-        $app->getRequestDto(
+        $res = $app->getRequestDto(
             new ProcessDto(),
             $applicationInstall,
             CurlManager::METHOD_POST,
@@ -114,7 +114,8 @@ final class FakturoidApplicationTest extends DatabaseTestCaseAbstract
                                 "subdomain": "fakturacnitest"
                                 }',
         );
-        self::assertFake();
+
+        self::assertEquals('https://app.fakturoid.cz/api/v2', $res->getUri(TRUE));
     }
 
     /**

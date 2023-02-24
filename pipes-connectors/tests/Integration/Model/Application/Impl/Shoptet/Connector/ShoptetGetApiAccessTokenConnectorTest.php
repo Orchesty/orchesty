@@ -3,7 +3,9 @@
 namespace HbPFConnectorsTests\Integration\Model\Application\Impl\Shoptet\Connector;
 
 use Exception;
+use GuzzleHttp\Psr7\Response;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetGetApiAccessTokenConnector;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication;
@@ -11,15 +13,18 @@ use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
-use HbPFConnectorsTests\DatabaseTestCaseAbstract;
+use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DataProvider;
+use HbPFConnectorsTests\KernelTestCaseAbstract;
+use HbPFConnectorsTests\MockServer\Mock;
+use HbPFConnectorsTests\MockServer\MockServer;
 
 /**
  * Class ShoptetGetApiAccessTokenConnectorTest
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Shoptet\Connector
  */
-final class ShoptetGetApiAccessTokenConnectorTest extends DatabaseTestCaseAbstract
+final class ShoptetGetApiAccessTokenConnectorTest extends KernelTestCaseAbstract
 {
 
     use PrivateTrait;
@@ -37,7 +42,13 @@ final class ShoptetGetApiAccessTokenConnectorTest extends DatabaseTestCaseAbstra
     private ShoptetGetApiAccessTokenConnector $connector;
 
     /**
+     * @var MockServer $mockServer
+     */
+    private MockServer $mockServer;
+
+    /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetGetApiAccessTokenConnector::getName
+     * @throws Exception
      */
     public function testGetName(): void
     {
@@ -53,7 +64,16 @@ final class ShoptetGetApiAccessTokenConnectorTest extends DatabaseTestCaseAbstra
     public function testProcessAction(): void
     {
         $this->mockSender();
-        $this->insertApplicationInstall();
+
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["shoptet"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(200, [], Json::encode([$this->insertApplicationInstall()->toArray()])),
+            ),
+        );
+
         $data = $this->connector->processAction((new ProcessDto())->setHeaders(self::HEADERS));
 
         self::assertEquals('{"data":"data"}', $data->getData());
@@ -80,6 +100,9 @@ final class ShoptetGetApiAccessTokenConnectorTest extends DatabaseTestCaseAbstra
     {
         parent::setUp();
 
+        $this->mockServer = new MockServer();
+        self::getContainer()->set('hbpf.worker-api', $this->mockServer);
+
         $this->connector = self::getContainer()->get('hbpf.connector.shoptet-get-api-access-token');
     }
 
@@ -90,7 +113,7 @@ final class ShoptetGetApiAccessTokenConnectorTest extends DatabaseTestCaseAbstra
      */
     private function insertApplicationInstall(): ApplicationInstall
     {
-        $applicationInstall = DataProvider::createApplicationInstall(
+        return DataProvider::createApplicationInstall(
             ShoptetApplication::SHOPTET_KEY,
             'user',
             [
@@ -100,9 +123,6 @@ final class ShoptetGetApiAccessTokenConnectorTest extends DatabaseTestCaseAbstra
                 ],
             ],
         );
-        $this->pfd($applicationInstall);
-
-        return $applicationInstall;
     }
 
     /**

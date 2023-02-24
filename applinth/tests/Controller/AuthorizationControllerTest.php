@@ -5,8 +5,8 @@ namespace ApplinthTests\Controller;
 use ApplinthTests\ControllerTestCaseAbstract;
 use Exception;
 use Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator;
+use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 use Hanaboso\PipesFramework\Configurator\Document\Sdk;
-use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Symfony\Component\BrowserKit\Cookie;
 
 /**

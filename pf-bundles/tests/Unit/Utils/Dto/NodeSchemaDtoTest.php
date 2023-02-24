@@ -2,8 +2,8 @@
 
 namespace PipesFrameworkTests\Unit\Utils\Dto;
 
+use Hanaboso\PipesFramework\Database\Document\Dto\SystemConfigDto;
 use Hanaboso\PipesFramework\Utils\Dto\NodeSchemaDto;
-use Hanaboso\PipesPhpSdk\Database\Document\Dto\SystemConfigDto;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 
 /**

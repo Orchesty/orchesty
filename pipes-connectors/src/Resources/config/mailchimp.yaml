@@ -12,15 +12,19 @@ services:
         class: Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\Connector\MailchimpCreateContactConnector
         calls:
             -   setApplication: [ '@hbpf.application.mailchimp' ]
-            -   setDb: [ '@doctrine_mongodb.odm.default_document_manager' ]
             -   setSender: [ '@hbpf.transport.curl_manager' ]
+        arguments:
+          [ '@hbpf.application_install.repository' ]
 
     hbpf.connector.mailchimp_tag_contact:
         class: Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\Connector\MailchimpTagContactConnector
         calls:
             -   setApplication: [ '@hbpf.application.mailchimp' ]
-            -   setDb: [ '@doctrine_mongodb.odm.default_document_manager' ]
             -   setSender: [ '@hbpf.transport.curl_manager' ]
+        arguments:
+          [ '@hbpf.application_install.repository' ]
 
     hbpf.custom_node.mailchimp_create_contact:
         class: Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\Mapper\MailchimpCreateContactMapper
+        arguments:
+          [ '@hbpf.application_install.repository' ]

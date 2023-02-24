@@ -2,17 +2,28 @@
 
 namespace Hanaboso\PipesPhpSdk\Application\Repository;
 
-use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
+use Hanaboso\CommonsBundle\WorkerApi\ClientInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\Webhook;
+use Hanaboso\PipesPhpSdk\Storage\Mongodb\Repository;
 
 /**
  * Class WebhookRepository
  *
- * @package         Hanaboso\PipesPhpSdk\Application\Repository
+ * @extends Repository<Webhook>
  *
- * @phpstan-extends DocumentRepository<Webhook>
+ * @package Hanaboso\PipesPhpSdk\Application\Repository
  */
-final class WebhookRepository extends DocumentRepository
+final class WebhookRepository extends Repository
 {
+
+    /**
+     * WebhookRepository constructor.
+     *
+     * @param ClientInterface $client
+     */
+    public function __construct(ClientInterface $client)
+    {
+        parent::__construct($client, Webhook::class);
+    }
 
 }

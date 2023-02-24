@@ -2,11 +2,8 @@
 
 namespace Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler;
 
-use Hanaboso\CommonsBundle\Exception\FileStorageException;
-use Hanaboso\CommonsBundle\FileStorage\FileStorage;
 use Hanaboso\PipesPhpSdk\Parser\Exception\TableParserException;
 use Hanaboso\PipesPhpSdk\Parser\TableParser;
-use JsonException;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Symfony\Component\Filesystem\Filesystem;
@@ -23,9 +20,8 @@ final class TableParserHandler
      * TableParserHandler constructor.
      *
      * @param TableParser $tableParser
-     * @param FileStorage $fileStorage
      */
-    public function __construct(private TableParser $tableParser, private FileStorage $fileStorage)
+    public function __construct(private readonly TableParser $tableParser)
     {
     }
 
@@ -34,21 +30,14 @@ final class TableParserHandler
      *
      * @return string
      * @throws Exception
-     * @throws FileStorageException
      * @throws TableParserHandlerException
      */
     public function parseToJson(array $data): string
     {
-        $fs    = new Filesystem();
-        $isTmp = FALSE;
-        $path  = $this->getFile($data, $isTmp, $fs);
-        $res   = $this->tableParser->parseToJson($path, $data['has_headers'] ?? FALSE);
+        $fs   = new Filesystem();
+        $path = $this->getFile($data, $fs);
 
-        if ($isTmp) {
-            $fs->remove($path);
-        }
-
-        return $res;
+        return $this->tableParser->parseToJson($path, $data['has_headers'] ?? FALSE);
     }
 
     /**
@@ -64,23 +53,15 @@ final class TableParserHandler
      *
      * @return string
      * @throws Exception
-     * @throws FileStorageException
      * @throws TableParserException
      * @throws TableParserHandlerException
-     * @throws JsonException
      */
     public function parseFromJson(string $type, array $data): string
     {
-        $fs    = new Filesystem();
-        $isTmp = FALSE;
-        $path  = $this->getFile($data, $isTmp, $fs);
-        $res   = $this->tableParser->parseFromJson($path, $type, $data['has_headers'] ?? FALSE);
+        $fs   = new Filesystem();
+        $path = $this->getFile($data, $fs);
 
-        if ($isTmp) {
-            $fs->remove($path);
-        }
-
-        return $res;
+        return $this->tableParser->parseFromJson($path, $type, $data['has_headers'] ?? FALSE);
     }
 
     /**
@@ -97,34 +78,18 @@ final class TableParserHandler
     }
 
     /**
-     * @param mixed[]         $data
-     * @param bool            $isTmp
-     * @param Filesystem|null $fs
+     * @param mixed[]    $data
+     * @param Filesystem $fs
      *
      * @return string
-     * @throws FileStorageException
      * @throws TableParserHandlerException
      */
-    private function getFile(array $data, bool &$isTmp, ?Filesystem $fs = NULL): string
+    private function getFile(array $data, Filesystem $fs): string
     {
         if (isset($data['file_id'])) {
-            if (!$fs) {
-                $fs = new Filesystem();
-            }
-
             if ($fs->exists($data['file_id'])) {
-                $isTmp = FALSE;
-
                 return $data['file_id'];
             }
-
-            $isTmp = TRUE;
-            $file  = $this->fileStorage->getFileDocument($data['file_id']);
-            $file  = $this->fileStorage->getFileStorage($file)->getContent();
-            $path  = sprintf('%s/%s', __DIR__, uniqid());
-            $fs->dumpFile($path, $file);
-
-            return $path;
         }
 
         throw new TableParserHandlerException(

@@ -8,15 +8,15 @@ use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Zoho\ZohoApplication;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract;
-use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
+use HbPFConnectorsTests\KernelTestCaseAbstract;
 
 /**
  * Class ZohoApplicationTest
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Zoho
  */
-final class ZohoApplicationTest extends DatabaseTestCaseAbstract
+final class ZohoApplicationTest extends KernelTestCaseAbstract
 {
 
     private const CLIENT_ID = '123';
@@ -33,7 +33,7 @@ final class ZohoApplicationTest extends DatabaseTestCaseAbstract
     {
         $this->setApplication();
         self::assertEquals(
-            ApplicationTypeEnum::CRON,
+            ApplicationTypeEnum::CRON->value,
             $this->application->getApplicationType(),
         );
     }
@@ -102,7 +102,6 @@ final class ZohoApplicationTest extends DatabaseTestCaseAbstract
     {
         $this->setApplication();
         $applicationInstall = DataProvider::getOauth2AppInstall($this->application->getName());
-        $this->pfd($applicationInstall);
 
         $dto = $this->application->getRequestDto(
             new ProcessDto(),
@@ -160,7 +159,6 @@ final class ZohoApplicationTest extends DatabaseTestCaseAbstract
             'token123',
             self::CLIENT_ID,
         );
-        $this->pfd($applicationInstall);
         self::assertTrue($this->application->isAuthorized($applicationInstall));
         $this->application->authorize($applicationInstall);
     }

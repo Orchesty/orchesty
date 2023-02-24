@@ -2,10 +2,7 @@
 
 namespace Hanaboso\PipesPhpSdk\Application\Manager;
 
-use Doctrine\Common\Annotations\PsrCachedReader;
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\MongoDBException;
-use Doctrine\Persistence\ObjectRepository;
+use GuzzleHttp\Exception\GuzzleException;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
@@ -17,11 +14,12 @@ use Hanaboso\PipesPhpSdk\Application\Loader\ApplicationLoader;
 use Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookManager;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Form;
+use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallFilter;
 use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
-use Hanaboso\PipesPhpSdk\Application\Utils\SynchronousAction;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1\OAuth1ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
+use Hanaboso\Utils\Exception\DateTimeException;
 use Hanaboso\Utils\System\PipesHeaders;
 use ReflectionClass;
 use ReflectionMethod;
@@ -38,26 +36,18 @@ final class ApplicationManager
     public const APPLICATION_SETTINGS = 'applicationSettings';
 
     /**
-     * @var ObjectRepository<ApplicationInstall>&ApplicationInstallRepository
-     */
-    private ApplicationInstallRepository $repository;
-
-    /**
      * ApplicationManager constructor.
      *
-     * @param DocumentManager   $dm
-     * @param ApplicationLoader $loader
-     * @param PsrCachedReader   $reader
-     * @param WebhookManager    $webhook
+     * @param ApplicationInstallRepository $applicationInstallRepository
+     * @param ApplicationLoader            $loader
+     * @param WebhookManager               $webhook
      */
     public function __construct(
-        protected DocumentManager $dm,
+        protected readonly ApplicationInstallRepository $applicationInstallRepository,
         protected ApplicationLoader $loader,
-        private PsrCachedReader $reader,
-        private WebhookManager $webhook,
+        private readonly WebhookManager $webhook,
     )
     {
-        $this->repository = $this->dm->getRepository(ApplicationInstall::class);
     }
 
     /**
@@ -91,7 +81,7 @@ final class ApplicationManager
         $reflection = new ReflectionClass($this->getApplication($key));
         $methods    = $reflection->getMethods(ReflectionMethod::IS_PUBLIC);
         foreach ($methods as $method) {
-            if ($this->reader->getMethodAnnotation($method, SynchronousAction::class)) {
+            if ($this->isSynchronous($method)) {
                 $actions = array_merge($actions, [$method->getName()]);
             }
         }
@@ -132,16 +122,15 @@ final class ApplicationManager
      *
      * @return mixed[]
      * @throws ApplicationInstallException
-     * @throws MongoDBException
+     * @throws GuzzleException
      */
     public function saveApplicationSettings(string $key, string $user, array $data): array
     {
         /** @var BasicApplicationInterface $application */
         $application        = $this->loader->getApplication($key);
-        $applicationInstall = $this->repository->findUserApp($key, $user);
+        $applicationInstall = $this->applicationInstallRepository->findUserApp($key, $user);
         $res                = $application->saveApplicationForms($applicationInstall, $data)->toArray();
-        $this->dm->flush();
-        $this->dm->refresh($applicationInstall);
+        $this->applicationInstallRepository->update($applicationInstall);
 
         return [
             ...$res,
@@ -158,7 +147,7 @@ final class ApplicationManager
      *
      * @return ApplicationInstall
      * @throws ApplicationInstallException
-     * @throws MongoDBException
+     * @throws GuzzleException
      */
     public function saveApplicationPassword(
         string $key,
@@ -168,13 +157,12 @@ final class ApplicationManager
         string $password,
     ): ApplicationInstall
     {
-        $applicationInstall = $this->repository->findUserApp($key, $user);
+        $applicationInstall = $this->applicationInstallRepository->findUserApp($key, $user);
 
         /** @var BasicApplicationInterface $application */
         $application = $this->loader->getApplication($key);
         $application = $application->savePassword($applicationInstall, $formKey, $fieldKey, $password);
-        $this->dm->flush();
-        $this->dm->refresh($applicationInstall);
+        $this->applicationInstallRepository->update($applicationInstall);
 
         return $application;
     }
@@ -186,17 +174,16 @@ final class ApplicationManager
      *
      * @return string
      * @throws ApplicationInstallException
-     * @throws MongoDBException
+     * @throws GuzzleException
      */
     public function authorizeApplication(string $key, string $user, string $redirectUrl): string
     {
-        $applicationInstall = $this->repository->findUserApp($key, $user);
+        $applicationInstall = $this->applicationInstallRepository->findUserApp($key, $user);
 
         /** @var OAuth1ApplicationInterface|OAuth2ApplicationInterface $application */
         $application = $this->loader->getApplication($key);
         $application->setFrontendRedirectUrl($applicationInstall, $redirectUrl);
-        $this->dm->flush();
-        $this->dm->refresh($applicationInstall);
+        $this->applicationInstallRepository->update($applicationInstall);
 
         return $application->authorize($applicationInstall);
     }
@@ -208,17 +195,16 @@ final class ApplicationManager
      *
      * @return string
      * @throws ApplicationInstallException
-     * @throws MongoDBException
+     * @throws GuzzleException
      */
     public function saveAuthorizationToken(string $key, string $user, array $token): string
     {
-        $applicationInstall = $this->repository->findUserApp($key, $user);
+        $applicationInstall = $this->applicationInstallRepository->findUserApp($key, $user);
 
         /** @var OAuth1ApplicationInterface|OAuth2ApplicationInterface $application */
         $application = $this->loader->getApplication($key);
         $application->setAuthorizationToken($applicationInstall, $token);
-        $this->dm->flush();
-        $this->dm->refresh($applicationInstall);
+        $this->applicationInstallRepository->update($applicationInstall);
 
         return $application->getFrontendRedirectUrl($applicationInstall);
     }
@@ -227,10 +213,11 @@ final class ApplicationManager
      * @param string $user
      *
      * @return mixed[]
+     * @throws GuzzleException
      */
     public function getInstalledApplications(string $user): array
     {
-        return $this->repository->findBy([ApplicationInstall::USER => $user]);
+        return $this->applicationInstallRepository->findMany(new ApplicationInstallFilter(users: [$user]));
     }
 
     /**
@@ -239,10 +226,11 @@ final class ApplicationManager
      *
      * @return ApplicationInstall
      * @throws ApplicationInstallException
+     * @throws GuzzleException
      */
     public function getInstalledApplicationDetail(string $key, string $user): ApplicationInstall
     {
-        return $this->repository->findUserApp($key, $user);
+        return $this->applicationInstallRepository->findUserApp($key, $user);
     }
 
     /**
@@ -251,11 +239,11 @@ final class ApplicationManager
      *
      * @return ApplicationInstall
      * @throws ApplicationInstallException
-     * @throws MongoDBException
+     * @throws GuzzleException
      */
     public function installApplication(string $key, string $user): ApplicationInstall
     {
-        if ($this->repository->findOneBy([ApplicationInstall::USER => $user, ApplicationInstall::KEY => $key])) {
+        if ($this->applicationInstallRepository->findOne(new ApplicationInstallFilter(names: [$key], users: [$user]))) {
             throw new ApplicationInstallException(
                 sprintf('Application [%s] was already installed.', $key),
                 ApplicationInstallException::APP_ALREADY_INSTALLED,
@@ -266,8 +254,7 @@ final class ApplicationManager
         $applicationInstall
             ->setUser($user)
             ->setKey($key);
-        $this->dm->persist($applicationInstall);
-        $this->dm->flush();
+        $this->applicationInstallRepository->insert($applicationInstall);
 
         return $applicationInstall;
     }
@@ -278,16 +265,15 @@ final class ApplicationManager
      *
      * @return ApplicationInstall
      * @throws ApplicationInstallException
-     * @throws MongoDBException
      * @throws CurlException
+     * @throws GuzzleException
      */
     public function uninstallApplication(string $key, string $user): ApplicationInstall
     {
-        $applicationInstall = $this->repository->findUserApp($key, $user);
+        $applicationInstall = $this->applicationInstallRepository->findUserApp($key, $user);
         $this->unsubscribeWebhooks($applicationInstall);
 
-        $this->dm->remove($applicationInstall);
-        $this->dm->flush();
+        $this->applicationInstallRepository->remove($applicationInstall);
 
         return $applicationInstall;
     }
@@ -296,19 +282,21 @@ final class ApplicationManager
      * @param ApplicationInstall $applicationInstall
      * @param mixed[]            $data
      *
+     * @return void
      * @throws ApplicationInstallException
-     * @throws MongoDBException
      * @throws CurlException
+     * @throws GuzzleException
+     * @throws DateTimeException
      */
     public function subscribeWebhooks(ApplicationInstall $applicationInstall, array $data = []): void
     {
         /** @var WebhookApplicationInterface $application */
-        $application = $this->loader->getApplication($applicationInstall->getKey());
+        $application = $this->loader->getApplication($applicationInstall->getKey() ?? '');
 
         if (ApplicationTypeEnum::isWebhook($application->getApplicationType()) &&
             $application->isAuthorized($applicationInstall)
         ) {
-            $this->webhook->subscribeWebhooks($application, $applicationInstall->getUser(), $data);
+            $this->webhook->subscribeWebhooks($application, $applicationInstall->getUser() ?? '', $data);
         }
     }
 
@@ -316,19 +304,20 @@ final class ApplicationManager
      * @param ApplicationInstall $applicationInstall
      * @param mixed[]            $data
      *
+     * @return void
      * @throws ApplicationInstallException
      * @throws CurlException
-     * @throws MongoDBException
+     * @throws GuzzleException
      */
     public function unsubscribeWebhooks(ApplicationInstall $applicationInstall, array $data = []): void
     {
         /** @var WebhookApplicationInterface $application */
-        $application = $this->loader->getApplication($applicationInstall->getKey());
+        $application = $this->loader->getApplication($applicationInstall->getKey() ?? '');
 
         if (ApplicationTypeEnum::isWebhook($application->getApplicationType()) &&
             $application->isAuthorized($applicationInstall)
         ) {
-            $this->webhook->unsubscribeWebhooks($application, $applicationInstall->getUser(), $data);
+            $this->webhook->unsubscribeWebhooks($application, $applicationInstall->getUser() ?? '', $data);
         }
     }
 
@@ -338,10 +327,11 @@ final class ApplicationManager
      *
      * @return mixed[]
      * @throws ApplicationInstallException
+     * @throws GuzzleException
      */
     public function getApplicationSettings(string $key, string $user): array
     {
-        $applicationInstall = $this->repository->findUserApp($key, $user);
+        $applicationInstall = $this->applicationInstallRepository->findUserApp($key, $user);
         /** @var ApplicationAbstract $application */
         $application = $this->loader->getApplication($key);
 
@@ -349,14 +339,15 @@ final class ApplicationManager
     }
 
     /**
-     * @param string   $user
-     * @param string[] $applications
+     * @param string  $user
+     * @param mixed[] $applications
      *
-     * @return string[]
+     * @return mixed[]
+     * @throws GuzzleException
      */
     public function getApplicationsLimits(string $user, array $applications): array
     {
-        $applicationInstalls = $this->repository->findUserApps($user, $applications);
+        $applicationInstalls = $this->applicationInstallRepository->findUserApps($user, $applications);
 
         $appLimits = array_map(static function(ApplicationInstall $appInstall) {
             /** @var Form|null $limiterForm */
@@ -406,16 +397,28 @@ final class ApplicationManager
      *
      * @return ApplicationInstall
      * @throws ApplicationInstallException
-     * @throws MongoDBException
+     * @throws GuzzleException
      */
     public function changeStateOfApplication(string $key, string $user, bool $enabled): ApplicationInstall
     {
-        $applicationInstall = $this->repository->findUserApp($key, $user);
+        $applicationInstall = $this->applicationInstallRepository->findUserApp($key, $user);
         $applicationInstall->setEnabled($enabled);
 
-        $this->dm->flush();
+        $this->applicationInstallRepository->update($applicationInstall);
 
         return $applicationInstall;
+    }
+
+    /**
+     * @param ReflectionMethod $method
+     *
+     * @return bool
+     */
+    private function isSynchronous(ReflectionMethod $method): bool {
+        $doc = $method->getDocComment();
+        preg_match_all('#@SynchronousAction#s', $doc ?: '', $annotations);
+
+        return !empty($annotations[0]);
     }
 
 }

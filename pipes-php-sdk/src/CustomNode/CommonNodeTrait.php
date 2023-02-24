@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesPhpSdk\CustomNode;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
+use GuzzleHttp\Exception\GuzzleException;
 use Hanaboso\CommonsBundle\Process\ProcessDtoAbstract;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
@@ -24,14 +24,18 @@ trait CommonNodeTrait
     protected ?ApplicationInterface $application = NULL;
 
     /**
-     * @var DocumentManager|null
-     */
-    protected ?DocumentManager $db = NULL;
-
-    /**
      * @return string
      */
     abstract function getName(): string;
+
+    /**
+     * CommonNodeTrait contructor.
+     *
+     * @param ApplicationInstallRepository $applicationInstallRepository
+     */
+    public function __construct(private readonly ApplicationInstallRepository $applicationInstallRepository)
+    {
+    }
 
     /**
      * @param ApplicationInterface $application
@@ -72,45 +76,19 @@ trait CommonNodeTrait
     }
 
     /**
-     * @return DocumentManager
-     * @throws CustomNodeException
-     */
-    public function getDb(): DocumentManager
-    {
-        if ($this->db) {
-            return $this->db;
-        }
-
-        throw new CustomNodeException('MongoDbClient is not set.');
-    }
-
-    /**
-     * @param DocumentManager|null $db
-     *
-     * @return self
-     */
-    public function setDb(?DocumentManager $db): self
-    {
-        $this->db = $db;
-
-        return $this;
-    }
-
-    /**
      * @param string|null $user
      *
      * @return ApplicationInstall
      * @throws ApplicationInstallException
      * @throws CustomNodeException
+     * @throws GuzzleException
      */
     protected function getApplicationInstall(?string $user): ApplicationInstall {
-        /** @var ApplicationInstallRepository $repo */
-        $repo = $this->getDb()->getRepository(ApplicationInstall::class);
         if ($user) {
-            return $repo->findUserApp($this->getApplicationKey(), $user);
+            return $this->applicationInstallRepository->findUserApp($this->getApplicationKey(), $user);
         }
 
-        return $repo->findOneByName($this->getApplicationKey());
+        return $this->applicationInstallRepository->findOneByName($this->getApplicationKey());
     }
 
     /**
@@ -119,6 +97,7 @@ trait CommonNodeTrait
      * @return ApplicationInstall
      * @throws ApplicationInstallException
      * @throws CustomNodeException
+     * @throws GuzzleException
      */
     protected function getApplicationInstallFromProcess(ProcessDtoAbstract $dto): ApplicationInstall {
         $user = $dto->getUser();

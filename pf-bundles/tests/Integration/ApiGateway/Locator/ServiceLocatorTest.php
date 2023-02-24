@@ -326,9 +326,9 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
                     'user' => ['user-task'],
                 ],
                 'name' => [
-                    NodeImplementationEnum::CONNECTOR => [],
-                    NodeImplementationEnum::CUSTOM => [],
-                    NodeImplementationEnum::BATCH => [],
+                    NodeImplementationEnum::CONNECTOR->value => [],
+                    NodeImplementationEnum::CUSTOM->value => [],
+                    NodeImplementationEnum::BATCH->value => [],
                 ],
             ],
             $res,

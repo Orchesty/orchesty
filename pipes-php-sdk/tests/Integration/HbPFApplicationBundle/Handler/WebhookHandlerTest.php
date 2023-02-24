@@ -3,23 +3,24 @@
 namespace PipesPhpSdkTests\Integration\HbPFApplicationBundle\Handler;
 
 use Exception;
-use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use GuzzleHttp\Exception\GuzzleException;
 use Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager;
 use Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\WebhookHandler;
-use PipesPhpSdkTests\DatabaseTestCaseAbstract;
+use PipesPhpSdkTests\KernelTestCaseAbstract;
 
 /**
  * Class WebhookHandlerTest
  *
  * @package PipesPhpSdkTests\Integration\HbPFApplicationBundle\Handler
  */
-final class WebhookHandlerTest extends DatabaseTestCaseAbstract
+final class WebhookHandlerTest extends KernelTestCaseAbstract
 {
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\WebhookHandler::subscribeWebhooks
      *
      * @throws Exception
+     * @throws GuzzleException
      */
     public function testSubscribeWebhooks(): void
     {
@@ -27,7 +28,6 @@ final class WebhookHandlerTest extends DatabaseTestCaseAbstract
         $mock->expects(self::any())->method('subscribeWebhooks');
         $handler = new WebhookHandler($mock);
 
-        $this->createApplicationInstall('webhook');
         $handler->subscribeWebhooks('webhook', 'user', ['name' => 'name', 'topology' => 'topo']);
 
         self::assertFake();
@@ -37,6 +37,7 @@ final class WebhookHandlerTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\WebhookHandler::unsubscribeWebhooks
      *
      * @throws Exception
+     * @throws GuzzleException
      */
     public function testUnsubscribeWebhooks(): void
     {
@@ -44,24 +45,9 @@ final class WebhookHandlerTest extends DatabaseTestCaseAbstract
         $mock->expects(self::any())->method('unsubscribeWebhooks');
         $handler = new WebhookHandler($mock);
 
-        $this->createApplicationInstall('webhook');
         $handler->unsubscribeWebhooks('webhook', 'user', ['name' => 'name', 'topology' => 'topo']);
 
         self::assertFake();
-    }
-
-    /**
-     * @param string $key
-     *
-     * @throws Exception
-     */
-    private function createApplicationInstall(string $key = 'key'): void
-    {
-        $applicationInstall = (new ApplicationInstall())
-            ->setUser('user')
-            ->setKey($key)
-            ->setSettings([]);
-        $this->pfd($applicationInstall);
     }
 
 }

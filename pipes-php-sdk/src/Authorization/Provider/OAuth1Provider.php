@@ -2,8 +2,8 @@
 
 namespace Hanaboso\PipesPhpSdk\Authorization\Provider;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
+use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth1DtoInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Utils\ScopeFormatter;
@@ -27,10 +27,13 @@ final class OAuth1Provider extends OAuthProviderAbstract implements OAuth1Provid
     /**
      * OAuth1Provider constructor.
      *
-     * @param DocumentManager $dm
-     * @param string          $backend
+     * @param string                       $backend
+     * @param ApplicationInstallRepository $applicationInstallRepository
      */
-    public function __construct(private DocumentManager $dm, string $backend)
+    public function __construct(
+        string $backend,
+        private readonly ApplicationInstallRepository $applicationInstallRepository,
+    )
     {
         parent::__construct($backend);
     }
@@ -40,7 +43,7 @@ final class OAuth1Provider extends OAuthProviderAbstract implements OAuth1Provid
      * @param string             $tokenUrl
      * @param string             $authorizeUrl
      * @param callable           $saveOauthStuffs
-     * @param string[]           $scopes
+     * @param mixed[]            $scopes
      *
      * @return string
      * @throws AuthorizationException
@@ -69,7 +72,7 @@ final class OAuth1Provider extends OAuthProviderAbstract implements OAuth1Provid
 
         $this->tokenAndSecretChecker($requestToken);
 
-        $saveOauthStuffs($this->dm, $dto, $requestToken);
+        $saveOauthStuffs($this->applicationInstallRepository, $dto, $requestToken);
 
         return $this->getAuthorizeUrl(
             $authorizeUrl,

@@ -8,17 +8,16 @@ use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Quickbooks\QuickbooksApplication;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
-use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
-use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
+use HbPFConnectorsTests\KernelTestCaseAbstract;
 
 /**
  * Class QuickbooksApplicationTest
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Quickbooks
  */
-final class QuickbooksApplicationTest extends DatabaseTestCaseAbstract
+final class QuickbooksApplicationTest extends KernelTestCaseAbstract
 {
 
     private const CLIENT_ID     = 'ABnInj8B7FNcPOCg5AMBjMLM2XFSU4Al127Yb4qe9AuVO*****';
@@ -35,7 +34,7 @@ final class QuickbooksApplicationTest extends DatabaseTestCaseAbstract
      */
     public function testGetApplicationType(): void
     {
-        self::assertEquals(ApplicationTypeEnum::CRON, $this->application->getApplicationType());
+        self::assertEquals(ApplicationTypeEnum::CRON->value, $this->application->getApplicationType());
     }
 
     /**
@@ -126,7 +125,6 @@ final class QuickbooksApplicationTest extends DatabaseTestCaseAbstract
                 ],
             ],
         );
-        $this->pfd($applicationInstall);
 
         $dto = $this->application->getRequestDto(
             new ProcessDto(),
@@ -147,18 +145,6 @@ final class QuickbooksApplicationTest extends DatabaseTestCaseAbstract
         self::assertEquals('https://quickbooks.api.intuit.com/v3/company/13456789/account', $dto->getUri());
         self::assertEquals('{"data":"oooo"}', $dto->getBody());
         self::assertEquals('POST', $dto->getMethod());
-    }
-
-    /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Quickbooks\QuickbooksApplication::getScopes
-     *
-     * @throws Exception
-     */
-    public function testGetScopes(): void
-    {
-        $scopes = $this->invokeMethod($this->application, 'getScopes', [new ApplicationInstall()]);
-
-        self::assertEquals(['com.intuit.quickbooks.accounting'], $scopes);
     }
 
     /**

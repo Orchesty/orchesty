@@ -28,7 +28,7 @@ final class NullOauthApplication extends OAuth1ApplicationAbstract
      */
     public function getApplicationType(): string
     {
-        return ApplicationTypeEnum::CRON;
+        return ApplicationTypeEnum::CRON->value;
     }
 
     /**

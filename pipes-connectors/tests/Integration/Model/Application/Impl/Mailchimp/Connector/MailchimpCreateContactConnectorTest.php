@@ -3,20 +3,25 @@
 namespace HbPFConnectorsTests\Integration\Model\Application\Impl\Mailchimp\Connector;
 
 use Exception;
+use GuzzleHttp\Psr7\Response;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\Connector\MailchimpCreateContactConnector;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\MailchimpApplication;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\Utils\File\File;
-use HbPFConnectorsTests\DatabaseTestCaseAbstract;
+use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DataProvider;
+use HbPFConnectorsTests\KernelTestCaseAbstract;
 use HbPFConnectorsTests\MockCurlMethod;
+use HbPFConnectorsTests\MockServer\Mock;
+use HbPFConnectorsTests\MockServer\MockServer;
 
 /**
  * Class MailchimpCreateContactConnectorTest
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Mailchimp\Connector
  */
-final class MailchimpCreateContactConnectorTest extends DatabaseTestCaseAbstract
+final class MailchimpCreateContactConnectorTest extends KernelTestCaseAbstract
 {
 
     /**
@@ -29,6 +34,9 @@ final class MailchimpCreateContactConnectorTest extends DatabaseTestCaseAbstract
      */
     public function testProcessAction(int $code, bool $isValid): void
     {
+        $mockServer = new MockServer();
+        self::getContainer()->set('hbpf.worker-api', $mockServer);
+
         $this->mockCurl(
             [
                 new MockCurlMethod(
@@ -45,10 +53,11 @@ final class MailchimpCreateContactConnectorTest extends DatabaseTestCaseAbstract
         );
 
         $app                             = self::getContainer()->get('hbpf.application.mailchimp');
-        $mailchimpCreateContactConnector = new MailchimpCreateContactConnector();
+        $mailchimpCreateContactConnector = new MailchimpCreateContactConnector(
+            self::getContainer()->get('hbpf.application_install.repository'),
+        );
         $mailchimpCreateContactConnector
             ->setSender(self::getContainer()->get('hbpf.transport.curl_manager'))
-            ->setDb($this->dm)
             ->setApplication($app);
 
         $applicationInstall = DataProvider::getOauth2AppInstall(
@@ -67,7 +76,14 @@ final class MailchimpCreateContactConnectorTest extends DatabaseTestCaseAbstract
             ],
         );
 
-        $this->pfd($applicationInstall);
+        $mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["mailchimp"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(200, [], Json::encode([$applicationInstall->toArray()])),
+            ),
+        );
 
         $dto      = DataProvider::getProcessDto(
             $app->getName(),
@@ -105,7 +121,9 @@ final class MailchimpCreateContactConnectorTest extends DatabaseTestCaseAbstract
      */
     public function testGetName(): void
     {
-        $mailchimpCreateContactConnector = new MailchimpCreateContactConnector();
+        $mailchimpCreateContactConnector = new MailchimpCreateContactConnector(
+            self::getContainer()->get('hbpf.application_install.repository'),
+        );
 
         self::assertEquals(
             'mailchimp_create_contact',

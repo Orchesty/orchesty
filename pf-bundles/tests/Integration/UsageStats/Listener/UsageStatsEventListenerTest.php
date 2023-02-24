@@ -28,7 +28,7 @@ final class UsageStatsEventListenerTest extends DatabaseTestCaseAbstract
      */
     public function testListener(): void
     {
-        $eventMock = new BillingEvent(EventTypeEnum::INSTALL, ['aid' => '1', 'euid' => '1']);
+        $eventMock = new BillingEvent(EventTypeEnum::INSTALL->value, ['aid' => '1', 'euid' => '1']);
         $dml       = self::getContainer()->get('hbpf.database_manager_locator');
 
         $listener = new UsageStatsEventListener($dml, '1234');

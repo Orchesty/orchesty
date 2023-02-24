@@ -7,15 +7,15 @@ use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Bigcommerce\BigcommerceApplication;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
-use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
+use HbPFConnectorsTests\KernelTestCaseAbstract;
 
 /**
  * Class BigcommerceApplicationTest
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Bigcommerce
  */
-final class BigcommerceApplicationTest extends DatabaseTestCaseAbstract
+final class BigcommerceApplicationTest extends KernelTestCaseAbstract
 {
 
     private const CLIENT_ID     = '1t22ea9p6iyih**********rq9o3xf';
@@ -43,7 +43,6 @@ final class BigcommerceApplicationTest extends DatabaseTestCaseAbstract
             'http://127.0.0.11:8000/applications/authorize/token',
         );
 
-        $this->pfd($applicationInstall);
         self::assertTrue($this->application->isAuthorized($applicationInstall));
         $this->application->authorize($applicationInstall);
     }
@@ -55,7 +54,6 @@ final class BigcommerceApplicationTest extends DatabaseTestCaseAbstract
     {
         $bigcommerceApplication = $this->application;
         $applicationInstall     = new ApplicationInstall();
-        $this->pfd($applicationInstall);
         self::assertEquals(FALSE, $bigcommerceApplication->isAuthorized($applicationInstall));
     }
 
@@ -71,8 +69,7 @@ final class BigcommerceApplicationTest extends DatabaseTestCaseAbstract
             self::CLIENT_ID,
             self::CLIENT_SECRET,
         );
-        $this->pfd($applicationInstall);
-        $dto = $this->application->getRequestDto(
+        $dto                = $this->application->getRequestDto(
             new ProcessDto(),
             $applicationInstall,
             'POST',
@@ -88,7 +85,7 @@ final class BigcommerceApplicationTest extends DatabaseTestCaseAbstract
     public function testGetApplicationType(): void
     {
         self::assertEquals(
-            ApplicationTypeEnum::CRON,
+            ApplicationTypeEnum::CRON->value,
             $this->application->getApplicationType(),
         );
     }

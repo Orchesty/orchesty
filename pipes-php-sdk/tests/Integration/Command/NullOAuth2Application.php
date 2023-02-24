@@ -38,7 +38,7 @@ final class NullOAuth2Application extends OAuth2ApplicationAbstract
      */
     public function getAuthorizationType(): string
     {
-        return AuthorizationTypeEnum::BASIC;
+        return AuthorizationTypeEnum::BASIC->value;
     }
 
     /**
@@ -46,7 +46,7 @@ final class NullOAuth2Application extends OAuth2ApplicationAbstract
      */
     public function getApplicationType(): string
     {
-        return ApplicationTypeEnum::WEBHOOK;
+        return ApplicationTypeEnum::WEBHOOK->value;
     }
 
     /**

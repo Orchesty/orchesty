@@ -14,7 +14,7 @@ use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
-use HbPFConnectorsTests\DatabaseTestCaseAbstract;
+use HbPFConnectorsTests\KernelTestCaseAbstract;
 use LogicException;
 use PgSql\Connection;
 use phpmock\phpunit\PHPMock;
@@ -24,7 +24,7 @@ use phpmock\phpunit\PHPMock;
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\AmazonApps\Redshift
  */
-final class RedshiftApplicationTest extends DatabaseTestCaseAbstract
+final class RedshiftApplicationTest extends KernelTestCaseAbstract
 {
 
     use PrivateTrait;
@@ -48,7 +48,7 @@ final class RedshiftApplicationTest extends DatabaseTestCaseAbstract
      */
     public function testGetApplicationType(): void
     {
-        self::assertEquals(ApplicationTypeEnum::CRON, $this->application->getApplicationType());
+        self::assertEquals(ApplicationTypeEnum::CRON->value, $this->application->getApplicationType());
     }
 
     /**
@@ -129,7 +129,6 @@ final class RedshiftApplicationTest extends DatabaseTestCaseAbstract
             ],
         );
 
-        $this->pfd($application);
         self::assertTrue($this->application->isAuthorized($application));
     }
 
@@ -141,7 +140,6 @@ final class RedshiftApplicationTest extends DatabaseTestCaseAbstract
     public function testIsNotAuthorized(): void
     {
         $application = new ApplicationInstall();
-        $this->pfd($application);
 
         self::assertFalse($this->application->isAuthorized($application));
     }

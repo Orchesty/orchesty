@@ -3,25 +3,34 @@
 namespace HbPFConnectorsTests\Integration\Model\Application\Impl\Shoptet\Connector;
 
 use Exception;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Psr7\Response;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetGetEshopInfo;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
+use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
+use Hanaboso\PipesPhpSdk\CustomNode\Exception\CustomNodeException;
 use Hanaboso\Utils\Date\DateTimeUtils;
 use Hanaboso\Utils\File\File;
-use HbPFConnectorsTests\DatabaseTestCaseAbstract;
+use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DataProvider;
+use HbPFConnectorsTests\KernelTestCaseAbstract;
+use HbPFConnectorsTests\MockServer\Mock;
+use HbPFConnectorsTests\MockServer\MockServer;
 
 /**
  * Class ShoptetGetEshopInfoTest
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Shoptet\Connector
  */
-final class ShoptetGetEshopInfoTest extends DatabaseTestCaseAbstract
+final class ShoptetGetEshopInfoTest extends KernelTestCaseAbstract
 {
 
     use PrivateTrait;
@@ -37,7 +46,12 @@ final class ShoptetGetEshopInfoTest extends DatabaseTestCaseAbstract
     private ShoptetGetEshopInfo $connector;
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetGetEshopInfo::getName()
+     * @var MockServer $mockServer
+     */
+    private MockServer $mockServer;
+
+    /**
+     * @return void
      */
     public function testGetName(): void
     {
@@ -45,15 +59,27 @@ final class ShoptetGetEshopInfoTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetGetEshopInfo::processAction()
-     *
+     * @return void
+     * @throws GuzzleException
+     * @throws OnRepeatException
+     * @throws ApplicationInstallException
+     * @throws ConnectorException
+     * @throws CustomNodeException
      * @throws Exception
      */
     public function testProcessAction(): void
     {
         $jsonContent = File::getContent(__DIR__ . '/data/ShoptetGetEshopInfo.json');
         $this->mockSender($jsonContent);
-        $this->insertApplicationInstall();
+
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["shoptet"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(200, [], Json::encode([$this->insertApplicationInstall()->toArray()])),
+            ),
+        );
 
         $dto  = (new ProcessDto())->setHeaders(self::HEADERS);
         $data = $this->connector->processAction($dto);
@@ -62,8 +88,6 @@ final class ShoptetGetEshopInfoTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetGetEshopInfo::processActionArray()
-     *
      * @throws Exception
      */
     public function testProcessActionArray(): void
@@ -77,13 +101,20 @@ final class ShoptetGetEshopInfoTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetGetEshopInfo::processAction()
-     *
      * @throws Exception
+     * @throws GuzzleException
      */
     public function testProcessActionErr(): void
     {
-        $this->insertApplicationInstall();
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["shoptet"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(200, [], Json::encode([$this->insertApplicationInstall()->toArray()])),
+            ),
+        );
+
         self::assertException(
             OnRepeatException::class,
             CurlException::REQUEST_FAILED,
@@ -106,6 +137,9 @@ final class ShoptetGetEshopInfoTest extends DatabaseTestCaseAbstract
     {
         parent::setUp();
 
+        $this->mockServer = new MockServer();
+        self::getContainer()->set('hbpf.worker-api', $this->mockServer);
+
         $this->connector = self::getContainer()->get('hbpf.connector.shoptet-get-eshop-info');
     }
 
@@ -115,7 +149,7 @@ final class ShoptetGetEshopInfoTest extends DatabaseTestCaseAbstract
      */
     private function insertApplicationInstall(): ApplicationInstall
     {
-        $applicationInstall = DataProvider::createApplicationInstall(
+        return DataProvider::createApplicationInstall(
             ShoptetApplication::SHOPTET_KEY,
             'user',
             [
@@ -130,9 +164,6 @@ final class ShoptetGetEshopInfoTest extends DatabaseTestCaseAbstract
                 'getApiKey' => ['receivingStatus' => 'unlock'],
             ],
         );
-        $this->pfd($applicationInstall);
-
-        return $applicationInstall;
     }
 
     /**

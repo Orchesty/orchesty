@@ -1,0 +1,19 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    hbpf.application_install.repository:
+        class: Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository
+        arguments:
+            - '@hbpf.worker-api'
+            - '@hbpf.commons.crypt.crypt_manager'
+
+    hbpf.node.repository:
+        class: Hanaboso\PipesPhpSdk\Storage\Mongodb\Repository\NodeRepository
+        arguments:
+            - '@hbpf.worker-api'
+
+    hbpf.webhook.repository:
+        class: Hanaboso\PipesPhpSdk\Application\Repository\WebhookRepository
+        arguments:
+            - '@hbpf.worker-api'

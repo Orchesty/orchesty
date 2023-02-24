@@ -4,8 +4,8 @@ namespace Hanaboso\Applinth\Manager;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\Persistence\ObjectRepository;
-use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
+use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
+use Hanaboso\PipesFramework\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\Utils\Exception\DateTimeException;
 
 /**

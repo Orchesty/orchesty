@@ -12,10 +12,10 @@ use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Configurator\Document\ApiToken;
 use Hanaboso\PipesFramework\Configurator\Enum\ApiTokenScopesEnum;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
+use Hanaboso\PipesFramework\Database\Document\Node;
+use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler;
-use Hanaboso\PipesPhpSdk\Database\Document\Node;
-use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Json;
 use LogicException;
@@ -47,19 +47,13 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         $this->dm->persist(
             (new ApiToken())
                 ->setUser(ApplicationController::SYSTEM_USER)
-                ->setScopes(ApiTokenScopesEnum::getChoices())
+                ->setScopes(ApiTokenScopesEnum::cases())
                 ->setKey('1'),
         );
         $this->dm->flush();
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::getTopologiesAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologies
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologyData
-     *
      * @throws Exception
      */
     public function testGetTopologies(): void

@@ -3,29 +3,39 @@
 namespace HbPFConnectorsTests\Integration\Model\Application\Impl\IDoklad\Connector;
 
 use Exception;
+use GuzzleHttp\Psr7\Response;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\IDoklad\Connector\IDokladNewInvoiceRecievedConnector;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\IDoklad\IDokladApplication;
-use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
+use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
+use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\File\File;
-use HbPFConnectorsTests\DatabaseTestCaseAbstract;
+use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DataProvider;
+use HbPFConnectorsTests\KernelTestCaseAbstract;
+use HbPFConnectorsTests\MockServer\Mock;
+use HbPFConnectorsTests\MockServer\MockServer;
 
 /**
  * Class IDokladNewInvoiceRecievedConnectorTest
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\IDoklad\Connector
  */
-final class IDokladNewInvoiceRecievedConnectorTest extends DatabaseTestCaseAbstract
+final class IDokladNewInvoiceRecievedConnectorTest extends KernelTestCaseAbstract
 {
 
     /**
      * @var IDokladApplication
      */
     private IDokladApplication $app;
+
+    /**
+     * @var MockServer $mockServer
+     */
+    private MockServer $mockServer;
 
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\IDoklad\Connector\IDokladNewInvoiceRecievedConnector::getName
@@ -41,13 +51,25 @@ final class IDokladNewInvoiceRecievedConnectorTest extends DatabaseTestCaseAbstr
     }
 
     /**
-     * @throws ConnectorException
-     * @throws Exception
+     * @return void
+     * @throws ApplicationInstallException
+     * @throws OnRepeatException
+     * @throws PipesFrameworkException
      */
     public function testProcessAction(): void
     {
-        $this->pfd(DataProvider::getOauth2AppInstall($this->app->getName()));
-        $this->dm->clear();
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["i-doklad"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(
+                    200,
+                    [],
+                    Json::encode(DataProvider::getOauth2AppInstall($this->app->getName())->toArray()),
+                ),
+            ),
+        );
 
         $dataFromFile = File::getContent(__DIR__ . '/newInvoice.json');
 
@@ -66,13 +88,25 @@ final class IDokladNewInvoiceRecievedConnectorTest extends DatabaseTestCaseAbstr
     }
 
     /**
-     * @throws ConnectorException
-     * @throws Exception
+     * @return void
+     * @throws OnRepeatException
+     * @throws ApplicationInstallException
+     * @throws PipesFrameworkException
      */
     public function testProcessActionRequestException(): void
     {
-        $this->pfd(DataProvider::getOauth2AppInstall($this->app->getName()));
-        $this->dm->clear();
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["i-doklad"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(
+                    200,
+                    [],
+                    Json::encode(DataProvider::getOauth2AppInstall($this->app->getName())->toArray()),
+                ),
+            ),
+        );
 
         $dataFromFile = File::getContent(__DIR__ . '/newInvoice.json');
 
@@ -90,14 +124,13 @@ final class IDokladNewInvoiceRecievedConnectorTest extends DatabaseTestCaseAbstr
     }
 
     /**
-     * @throws ConnectorException
-     * @throws Exception
+     * @return void
+     * @throws ApplicationInstallException
+     * @throws OnRepeatException
+     * @throws PipesFrameworkException
      */
     public function testProcessActionRequestLogicException(): void
     {
-        $this->pfd(DataProvider::getOauth2AppInstall($this->app->getName()));
-        $this->dm->clear();
-
         $dto = DataProvider::getProcessDto(
             $this->app->getName(),
             'user',
@@ -129,6 +162,9 @@ final class IDokladNewInvoiceRecievedConnectorTest extends DatabaseTestCaseAbstr
     {
         parent::setUp();
 
+        $this->mockServer = new MockServer();
+        self::getContainer()->set('hbpf.worker-api', $this->mockServer);
+
         $this->app = new IDokladApplication(self::getContainer()->get('hbpf.providers.oauth2_provider'));
     }
 
@@ -148,10 +184,11 @@ final class IDokladNewInvoiceRecievedConnectorTest extends DatabaseTestCaseAbstr
             $sender->method('send')->willReturn($dto);
         }
 
-        $iDokladNewInvoiceRecievedConnector = new IDokladNewInvoiceRecievedConnector();
+        $iDokladNewInvoiceRecievedConnector = new IDokladNewInvoiceRecievedConnector(
+            self::getContainer()->get('hbpf.application_install.repository'),
+        );
         $iDokladNewInvoiceRecievedConnector
-            ->setSender($sender)
-            ->setDb($this->dm);
+            ->setSender($sender);
 
         return $iDokladNewInvoiceRecievedConnector;
     }

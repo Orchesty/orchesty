@@ -164,7 +164,7 @@ final class ZendeskApplication extends OAuth2ApplicationAbstract
             $this->getAuthUrlWithSubdomain($applicationInstall),
             $this->getTokenUrlWithSubdomain($applicationInstall),
         );
-        $dto->setCustomAppDependencies($applicationInstall->getUser(), $applicationInstall->getKey());
+        $dto->setCustomAppDependencies($applicationInstall->getUser() ?? '', $applicationInstall->getKey() ?? '');
 
         if ($redirectUrl) {
             $dto->setRedirectUrl($redirectUrl);

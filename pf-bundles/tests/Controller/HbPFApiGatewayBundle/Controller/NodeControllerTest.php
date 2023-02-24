@@ -6,8 +6,8 @@ use Exception;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
-use Hanaboso\PipesPhpSdk\Database\Document\Node;
-use Hanaboso\PipesPhpSdk\Database\Document\Topology;
+use Hanaboso\PipesFramework\Database\Document\Node;
+use Hanaboso\PipesFramework\Database\Document\Topology;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 
 /**
@@ -118,7 +118,7 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
     {
         $node = new Node();
         $node
-            ->setType(TypeEnum::CRON)
+            ->setType(TypeEnum::CRON->value)
             ->setTopology('1');
 
         $this->pfd($node);

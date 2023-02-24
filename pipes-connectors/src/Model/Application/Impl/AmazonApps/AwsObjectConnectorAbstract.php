@@ -2,8 +2,6 @@
 
 namespace Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps;
 
-use Doctrine\Persistence\ObjectRepository;
-use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
@@ -28,7 +26,7 @@ abstract class AwsObjectConnectorAbstract extends ConnectorAbstract
     protected const CONTENT = 'content';
 
     /**
-     * @var ObjectRepository<ApplicationInstall>&ApplicationInstallRepository
+     * @var ApplicationInstallRepository $repository
      */
     protected ApplicationInstallRepository $repository;
 

@@ -2,10 +2,9 @@
 
 namespace PipesPhpSdkTests\Controller\HbPFTableParserBundle\Controller;
 
-use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Exception;
-use Hanaboso\CommonsBundle\Exception\FileStorageException;
 use Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler;
+use Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandlerException;
 use Hanaboso\PipesPhpSdk\Parser\Exception\TableParserException;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\File\File;
@@ -49,7 +48,7 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
      */
     public function testToJsonActionErr(): void
     {
-        $this->prepareTableParserErr('parseToJson', new MappingException());
+        $this->prepareTableParserErr('parseToJson', new Exception());
 
         $this->client->request('POST', '/parser/csv/to/json');
 
@@ -82,8 +81,8 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
 
         self::assertEquals(500, $response->status);
         $content = $response->content;
-        self::assertEquals(FileStorageException::class, $content->type);
-        self::assertEquals(1_501, $content->errorCode);
+        self::assertEquals(TableParserHandlerException::class, $content->type);
+        self::assertEquals(401, $content->errorCode);
     }
 
     /**
@@ -139,8 +138,8 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
         $content  = $response->content;
 
         self::assertEquals(500, $response->status);
-        self::assertEquals(FileStorageException::class, $content->type);
-        self::assertEquals(1_501, $content->errorCode);
+        self::assertEquals(TableParserHandlerException::class, $content->type);
+        self::assertEquals(401, $content->errorCode);
     }
 
     /**

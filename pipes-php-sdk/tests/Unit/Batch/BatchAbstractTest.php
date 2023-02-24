@@ -5,6 +5,7 @@ namespace PipesPhpSdkTests\Unit\Batch;
 use Exception;
 use Hanaboso\CommonsBundle\Process\BatchProcessDto;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
+use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\PipesPhpSdk\CustomNode\Exception\CustomNodeException;
 use PipesPhpSdkTests\Integration\Application\TestNullApplication;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
@@ -77,7 +78,11 @@ final class BatchAbstractTest extends KernelTestCaseAbstract
     {
         parent::setUp();
 
-        $this->nullBatchConnector = new TestNullBatch();
+        /**
+         * @var ApplicationInstallRepository $applicationInstallRepository
+         */
+        $applicationInstallRepository = self::getContainer()->get('hbpf.application_install.repository');
+        $this->nullBatchConnector     = new TestNullBatch($applicationInstallRepository);
     }
 
 }

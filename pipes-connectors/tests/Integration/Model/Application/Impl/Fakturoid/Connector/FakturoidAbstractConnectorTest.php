@@ -9,14 +9,14 @@ use Hanaboso\HbPFConnectors\Model\Application\Impl\Fakturoid\FakturoidApplicatio
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
-use HbPFConnectorsTests\DatabaseTestCaseAbstract;
+use HbPFConnectorsTests\KernelTestCaseAbstract;
 
 /**
  * Class FakturoidAbstractConnectorTest
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Fakturoid\Connector
  */
-abstract class FakturoidAbstractConnectorTest extends DatabaseTestCaseAbstract
+abstract class FakturoidAbstractConnectorTest extends KernelTestCaseAbstract
 {
 
     /**
@@ -46,33 +46,6 @@ abstract class FakturoidAbstractConnectorTest extends DatabaseTestCaseAbstract
      * @return FakturoidAbstractConnector
      * @throws Exception
      */
-    public function setApplicationAndMock(?string $account = NULL): FakturoidAbstractConnector
-    {
-        $applicationInstall = new ApplicationInstall();
-        $applicationInstall->setSettings(
-            [
-                ApplicationInterface::AUTHORIZATION_FORM => [
-                    BasicApplicationInterface::USER     => 'hana******.com',
-                    BasicApplicationInterface::PASSWORD => 'cf4*****191bbef40dcd86*****625ec4c4*****',
-                    FakturoidApplication::ACCOUNT       => $account,
-                ],
-            ],
-        );
-
-        $applicationInstall->setUser('user');
-        $applicationInstall->setKey('fakturoid');
-        $this->pfd($applicationInstall);
-        $this->dm->clear();
-
-        return $this->setApplication();
-    }
-
-    /**
-     * @param string|null $account
-     *
-     * @return FakturoidAbstractConnector
-     * @throws Exception
-     */
     public function setApplicationAndMockWithoutHeader(?string $account = NULL): FakturoidAbstractConnector
     {
         $applicationInstall = new ApplicationInstall();
@@ -87,10 +60,32 @@ abstract class FakturoidAbstractConnectorTest extends DatabaseTestCaseAbstract
 
         $applicationInstall->setUser('user');
         $applicationInstall->setKey('fakturoid');
-        $this->pfd($applicationInstall);
-        $this->dm->clear();
 
         return $this->setApplication();
+    }
+
+    /**
+     * @param string|null $account
+     *
+     * @return ApplicationInstall
+     */
+    public function getApplication(?string $account = NULL): ApplicationInstall
+    {
+        $applicationInstall = new ApplicationInstall();
+        $applicationInstall->setSettings(
+            [
+                ApplicationInterface::AUTHORIZATION_FORM => [
+                    BasicApplicationInterface::USER => 'hana******.com',
+                    BasicApplicationInterface::PASSWORD => '123456',
+                    FakturoidApplication::ACCOUNT   => $account,
+                ],
+            ],
+        );
+
+        $applicationInstall->setUser('user');
+        $applicationInstall->setKey('fakturoid');
+
+        return $applicationInstall;
     }
 
 }

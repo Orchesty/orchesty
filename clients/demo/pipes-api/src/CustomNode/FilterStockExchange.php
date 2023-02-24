@@ -3,8 +3,8 @@
 namespace Demo\CustomNode;
 
 use Exception;
-use Hanaboso\CommonsBundle\Monolog\LoggerContext;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\PipesPhpSdk\CustomNode\CommonNodeAbstract;
 use Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Exception\CustomNodeException;
 use Hanaboso\Utils\String\Json;
@@ -31,10 +31,13 @@ final class FilterStockExchange extends CommonNodeAbstract implements LoggerAwar
     /**
      * FilterStockExchange constructor.
      *
-     * @param string $key
+     * @param ApplicationInstallRepository $repository
+     * @param string                       $key
      */
-    public function __construct(private string $key)
+    public function __construct(ApplicationInstallRepository $repository, private string $key)
     {
+        parent::__construct($repository);
+
         $this->logger = new NullLogger();
     }
 
@@ -65,12 +68,7 @@ final class FilterStockExchange extends CommonNodeAbstract implements LoggerAwar
                 throw new CustomNodeException('My test error exception');
             }
         } catch (Throwable $t) {
-            $context = new LoggerContext();
-            $context
-                ->setException($t)
-                ->setHeaders($dto);
-
-            $this->logger->error($t->getMessage(), $context->toArray());
+            $this->logger->error($t->getMessage(), []);
         }
 
         $dto->setData('');

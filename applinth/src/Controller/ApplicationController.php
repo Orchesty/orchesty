@@ -145,7 +145,7 @@ final class ApplicationController extends AbstractController
         //TODO: refactor after ServiceLocatorMS will be done
         $resp = new JsonResponse($this->locator->installApp($key, $user));
 
-        $this->usageStatsHandler->emitEvent(['event' => EventTypeEnum::INSTALL, 'aid' => $key, 'euid' => $user]);
+        $this->usageStatsHandler->emitEvent(['event' => EventTypeEnum::INSTALL->value, 'aid' => $key, 'euid' => $user]);
 
         return $resp;
     }
@@ -183,7 +183,9 @@ final class ApplicationController extends AbstractController
         //TODO: refactor after ServiceLocatorMS will be done
         $resp = new JsonResponse($this->locator->uninstallApp($key, $this->authenticator->getAuthUser()));
 
-        $this->usageStatsHandler->emitEvent(['event' => EventTypeEnum::UNINSTALL, 'aid' => $key, 'euid' => $user]);
+        $this->usageStatsHandler->emitEvent(
+            ['event' => EventTypeEnum::UNINSTALL->value, 'aid' => $key, 'euid' => $user],
+        );
 
         return $resp;
     }

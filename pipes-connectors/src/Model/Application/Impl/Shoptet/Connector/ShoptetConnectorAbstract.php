@@ -5,6 +5,7 @@ namespace Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication;
+use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\Utils\Traits\UrlBuilderTrait;
@@ -19,17 +20,20 @@ abstract class ShoptetConnectorAbstract extends ConnectorAbstract
 
     use UrlBuilderTrait;
 
-    protected const ID                = 'id';
-    protected const TYPE              = 'type';
-    protected const DATA              = 'data';
-    protected const REPEATER_INTERVAL = 5_000;
+    protected const ID   = 'id';
+    protected const TYPE = 'type';
+    protected const DATA = 'data';
 
     /**
      * ShoptetConnectorAbstract constructor.
+     *
+     * @param ApplicationInstallRepository $applicationInstallRepository
      */
-    public function __construct()
+    public function __construct(private readonly ApplicationInstallRepository $applicationInstallRepository)
     {
         $this->host = ShoptetApplication::SHOPTET_URL;
+
+        parent::__construct($this->applicationInstallRepository);
     }
 
     /**

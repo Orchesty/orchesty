@@ -3,21 +3,29 @@
 namespace HbPFConnectorsTests\Live\Model\Application\Impl\Fakturoid\Connector;
 
 use Exception;
+use GuzzleHttp\Psr7\Response;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Fakturoid\FakturoidApplication;
+use Hanaboso\PhpCheckUtils\PhpUnit\Traits\CustomAssertTrait;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\Utils\File\File;
-use HbPFConnectorsTests\DatabaseTestCaseAbstract;
+use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DataProvider;
+use HbPFConnectorsTests\KernelTestCaseAbstract;
+use HbPFConnectorsTests\MockServer\Mock;
+use HbPFConnectorsTests\MockServer\MockServer;
 
 /**
  * Class FakturoidCreateNewInvoiceConnectorTest
  *
  * @package HbPFConnectorsTests\Live\Model\Application\Impl\Fakturoid\Connector
  */
-final class FakturoidCreateNewInvoiceConnectorTest extends DatabaseTestCaseAbstract
+final class FakturoidCreateNewInvoiceConnectorTest extends KernelTestCaseAbstract
 {
+
+    use CustomAssertTrait;
 
     /**
      * @group live
@@ -25,6 +33,9 @@ final class FakturoidCreateNewInvoiceConnectorTest extends DatabaseTestCaseAbstr
      */
     public function testSend(): void
     {
+        $mockServer = new MockServer();
+        self::getContainer()->set('hbpf.worker-api', $mockServer);
+
         $user               = 'ha****@mailinator.com';
         $app                = self::getContainer()->get('hbpf.application.fakturoid');
         $applicationInstall = new ApplicationInstall();
@@ -39,11 +50,21 @@ final class FakturoidCreateNewInvoiceConnectorTest extends DatabaseTestCaseAbstr
         );
         $applicationInstall->setKey($app->getName());
         $applicationInstall->setUser($user);
-        $this->pfd($applicationInstall);
+
+        $mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["fakturoid"],"users":["ha****@mailinator.com"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(200, [], Json::encode($applicationInstall->toArray())),
+            ),
+        );
+
         $conn         = self::getContainer()->get('hbpf.connector.fakturoid.create-new-invoice');
         $dataFromFile = File::getContent(__DIR__ . '/NewInvoiceRequest.json');
         $dto          = DataProvider::getProcessDto($app->getName(), $user, $dataFromFile);
         $conn->processAction($dto);
+
         self::assertFake();
     }
 

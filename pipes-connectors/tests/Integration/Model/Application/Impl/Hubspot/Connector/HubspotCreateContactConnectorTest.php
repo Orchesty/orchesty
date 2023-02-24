@@ -3,6 +3,7 @@
 namespace HbPFConnectorsTests\Integration\Model\Application\Impl\Hubspot\Connector;
 
 use Exception;
+use GuzzleHttp\Psr7\Response;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
@@ -13,8 +14,10 @@ use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Json;
-use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
+use HbPFConnectorsTests\KernelTestCaseAbstract;
+use HbPFConnectorsTests\MockServer\Mock;
+use HbPFConnectorsTests\MockServer\MockServer;
 use Psr\Log\NullLogger;
 
 /**
@@ -22,13 +25,18 @@ use Psr\Log\NullLogger;
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Hubspot\Connector
  */
-final class HubspotCreateContactConnectorTest extends DatabaseTestCaseAbstract
+final class HubspotCreateContactConnectorTest extends KernelTestCaseAbstract
 {
 
     /**
      * @var HubSpotApplication
      */
     private HubSpotApplication $app;
+
+    /**
+     * @var MockServer $mockServer
+     */
+    private MockServer $mockServer;
 
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Connector\HubSpotCreateContactConnector::getName
@@ -44,25 +52,20 @@ final class HubspotCreateContactConnectorTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Connector\HubSpotCreateContactConnector::setLogger
-     *
-     * @throws Exception
-     */
-    public function testSetLogger(): void
-    {
-        $this->createConnector(DataProvider::createResponseDto())->setLogger(new NullLogger());
-        self::assertFake();
-    }
-
-    /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Connector\HubSpotCreateContactConnector::processAction
      *
      * @throws Exception
      */
     public function testProcessAction(): void
     {
-        $this->pfd($this->createApplicationInstall());
-        $this->dm->clear();
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["hub-spot"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(200, [], Json::encode([$this->createApplicationInstall()->toArray()])),
+            ),
+        );
 
         $dto = DataProvider::getProcessDto(
             $this->app->getName(),
@@ -83,8 +86,14 @@ final class HubspotCreateContactConnectorTest extends DatabaseTestCaseAbstract
      */
     public function testProcessActionDuplicitData(): void
     {
-        $this->pfd($this->createApplicationInstall());
-        $this->dm->clear();
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["hub-spot"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(200, [], Json::encode([$this->createApplicationInstall()->toArray()])),
+            ),
+        );
 
         $dto = DataProvider::getProcessDto(
             $this->app->getName(),
@@ -109,8 +118,14 @@ final class HubspotCreateContactConnectorTest extends DatabaseTestCaseAbstract
      */
     public function testProcessActionRequestException(): void
     {
-        $this->pfd($this->createApplicationInstall());
-        $this->dm->clear();
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["hub-spot"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(200, [], Json::encode([$this->createApplicationInstall()->toArray()])),
+            ),
+        );
 
         $dto = DataProvider::getProcessDto(
             $this->app->getName(),
@@ -136,6 +151,9 @@ final class HubspotCreateContactConnectorTest extends DatabaseTestCaseAbstract
     {
         parent::setUp();
 
+        $this->mockServer = new MockServer();
+        self::getContainer()->set('hbpf.worker-api', $this->mockServer);
+
         $this->app = new HubSpotApplication(self::getContainer()->get('hbpf.providers.oauth2_provider'));
     }
 
@@ -155,10 +173,11 @@ final class HubspotCreateContactConnectorTest extends DatabaseTestCaseAbstract
             $sender->method('send')->willReturn($dto);
         }
 
-        $hubSpotCreateContactConnector = new HubSpotCreateContactConnector();
+        $hubSpotCreateContactConnector = new HubSpotCreateContactConnector(
+            self::getContainer()->get('hbpf.application_install.repository'),
+        );
         $hubSpotCreateContactConnector
-            ->setSender($sender)
-            ->setDb($this->dm);
+            ->setSender($sender);
 
         return $hubSpotCreateContactConnector;
     }

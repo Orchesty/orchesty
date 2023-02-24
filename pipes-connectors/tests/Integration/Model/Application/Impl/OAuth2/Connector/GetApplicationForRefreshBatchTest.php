@@ -2,31 +2,55 @@
 
 namespace HbPFConnectorsTests\Integration\Model\Application\Impl\OAuth2\Connector;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Exception;
+use DateTime;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Psr7\Response;
 use Hanaboso\CommonsBundle\Process\BatchProcessDto;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\OAuth2\Connector\GetApplicationForRefreshBatchConnector;
-use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\Utils\Date\DateTimeUtils;
+use Hanaboso\Utils\Exception\DateTimeException;
 use Hanaboso\Utils\String\Json;
-use HbPFConnectorsTests\DatabaseTestCaseAbstract;
+use HbPFConnectorsTests\KernelTestCaseAbstract;
+use HbPFConnectorsTests\MockServer\Mock;
+use HbPFConnectorsTests\MockServer\MockServer;
+use Mockery;
 
 /**
  * Class GetApplicationForRefreshBatchTest
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\OAuth2\Connector
  */
-final class GetApplicationForRefreshBatchTest extends DatabaseTestCaseAbstract
+final class GetApplicationForRefreshBatchTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\OAuth2\Connector\GetApplicationForRefreshBatchConnector::__construct
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\OAuth2\Connector\GetApplicationForRefreshBatchConnector::processAction
-     * @throws Exception
+     * @return void
+     * @throws GuzzleException
+     * @throws DateTimeException
      */
     public function testProcessAction(): void
     {
-        $this->pfd((new ApplicationInstall())->setExpires(DateTimeUtils::getUtcDateTime())->setUser('testUser'));
+        $mockServer = new MockServer();
+        self::getContainer()->set('hbpf.worker-api', $mockServer);
+
+        $mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"expires":1677137981}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(
+                    200,
+                    [],
+                    '[{}]',
+                ),
+            ),
+        );
+
+        $dateTimeUtilsMock = Mockery::mock(sprintf('alias:%s', DateTimeUtils::class));
+        /** @phpstan-ignore-next-line */
+        $dateTimeUtilsMock->shouldReceive('getUtcDateTime')->andReturn((new DateTime())->setTimestamp(1_677_137_981));
+
         /** @var GetApplicationForRefreshBatchConnector $conn */
         $conn = self::getContainer()->get('hbpf.batch.batch-get_application_for_refresh');
 
@@ -39,10 +63,9 @@ final class GetApplicationForRefreshBatchTest extends DatabaseTestCaseAbstract
      */
     public function testGetName(): void
     {
-        /** @var DocumentManager $documentManager */
-        $documentManager = self::getContainer()->get('doctrine_mongodb.odm.default_document_manager');
-
-        $application = new GetApplicationForRefreshBatchConnector($documentManager);
+        $application = new GetApplicationForRefreshBatchConnector(
+            self::getContainer()->get('hbpf.application_install.repository'),
+        );
 
         self::assertEquals('get_application_for_refresh', $application->getName());
     }

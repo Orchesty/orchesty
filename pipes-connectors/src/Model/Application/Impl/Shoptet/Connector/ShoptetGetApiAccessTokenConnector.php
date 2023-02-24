@@ -2,11 +2,14 @@
 
 namespace Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector;
 
+use GuzzleHttp\Exception\GuzzleException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
+use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
+use Hanaboso\PipesPhpSdk\CustomNode\Exception\CustomNodeException;
 
 /**
  * Class ShoptetGetApiAccessTokenConnector
@@ -32,6 +35,8 @@ final class ShoptetGetApiAccessTokenConnector extends ShoptetConnectorAbstract
      * @return ProcessDto
      * @throws ApplicationInstallException
      * @throws CurlException
+     * @throws GuzzleException
+     * @throws CustomNodeException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
@@ -48,6 +53,7 @@ final class ShoptetGetApiAccessTokenConnector extends ShoptetConnectorAbstract
      * @return mixed[]
      * @throws ApplicationInstallException
      * @throws CurlException
+     * @throws ConnectorException
      */
     public function processActionArray(ApplicationInstall $applicationInstall, ProcessDto $processDto): array
     {

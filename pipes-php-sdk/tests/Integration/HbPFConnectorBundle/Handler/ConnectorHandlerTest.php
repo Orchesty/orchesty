@@ -6,7 +6,7 @@ use Exception;
 use Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Handler\ConnectorHandler;
 use Hanaboso\PipesPhpSdk\Utils\ProcessDtoFactory;
 use Hanaboso\Utils\String\Json;
-use PipesPhpSdkTests\DatabaseTestCaseAbstract;
+use PipesPhpSdkTests\KernelTestCaseAbstract;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @package PipesPhpSdkTests\Integration\HbPFConnectorBundle\Handler
  */
-final class ConnectorHandlerTest extends DatabaseTestCaseAbstract
+final class ConnectorHandlerTest extends KernelTestCaseAbstract
 {
 
     /**

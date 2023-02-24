@@ -22,7 +22,7 @@ Obsahuje moduly pro práci s BPMN schématem, generování topologií, konfigura
 - KERNEL_CLASS 
     - Povinný: `ANO`
     - Namespace of Symfony Kernel File. 
-    - Například: `Hanaboso\PipesPhpSdk\Kernel`
+    - Například: `Hanaboso\PipesFramework\Kernel`
 - COMPOSER_HOME 
     - Povinný: `ANO`
     - Cesta k ComposerCache souborům
@@ -68,7 +68,6 @@ Obsahuje moduly pro práci s BPMN schématem, generování topologií, konfigura
 - PHP 7.4+
 
 ## Závislosti
-- Pipes-PHP-SDK
 - MongoDB
 - RabbitMQ
 

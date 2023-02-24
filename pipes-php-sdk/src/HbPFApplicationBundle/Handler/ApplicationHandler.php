@@ -2,8 +2,7 @@
 
 namespace Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler;
 
-use Doctrine\ODM\MongoDB\MongoDBException;
-use Exception;
+use GuzzleHttp\Exception\GuzzleException;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
@@ -15,7 +14,6 @@ use Hanaboso\PipesPhpSdk\Application\Model\CustomAction\CustomAction;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use InvalidArgumentException;
-use ReflectionException;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -39,7 +37,10 @@ final class ApplicationHandler
      * @param ApplicationManager $applicationManager
      * @param WebhookManager     $webhookManager
      */
-    public function __construct(private ApplicationManager $applicationManager, private WebhookManager $webhookManager)
+    public function __construct(
+        private readonly ApplicationManager $applicationManager,
+        private readonly WebhookManager $webhookManager,
+    )
     {
     }
 
@@ -58,10 +59,11 @@ final class ApplicationHandler
     }
 
     /**
-     * @param string   $user
-     * @param string[] $applications
+     * @param string  $user
+     * @param mixed[] $applications
      *
-     * @return string[]
+     * @return mixed[]
+     * @throws GuzzleException
      */
     public function getApplicationsLimits(string $user, array $applications): array
     {
@@ -73,7 +75,6 @@ final class ApplicationHandler
      *
      * @return mixed[]
      * @throws ApplicationInstallException
-     * @throws ReflectionException
      */
     public function getApplicationByKey(string $key): array
     {
@@ -88,9 +89,8 @@ final class ApplicationHandler
     /**
      * @param string $key
      *
-     * @return string[]
+     * @return mixed[]
      * @throws ApplicationInstallException
-     * @throws ReflectionException
      */
     public function getSynchronousActions(string $key): array
     {
@@ -115,6 +115,7 @@ final class ApplicationHandler
      *
      * @return mixed[]
      * @throws ApplicationInstallException
+     * @throws GuzzleException
      */
     public function getApplicationsByUser(string $user): array
     {
@@ -122,7 +123,7 @@ final class ApplicationHandler
             'items' => array_map(
                 function (ApplicationInstall $applicationInstall): array {
                     $key         = $applicationInstall->getKey();
-                    $application = $this->applicationManager->getApplication($key);
+                    $application = $this->applicationManager->getApplication($key ?? '');
 
                     return array_merge(
                         $applicationInstall->toArray(),
@@ -142,6 +143,7 @@ final class ApplicationHandler
      *
      * @return mixed[]
      * @throws ApplicationInstallException
+     * @throws GuzzleException
      */
     public function getApplicationByKeyAndUser(string $key, string $user): array
     {
@@ -155,7 +157,7 @@ final class ApplicationHandler
                 self::AUTHORIZED           => $application->isAuthorized($applicationInstall),
                 self::ENABLED              => $applicationInstall->isEnabled(),
                 self::APPLICATION_SETTINGS => $application->getApplicationForms($applicationInstall),
-                self::WEBHOOK_SETTINGS     => $application->getApplicationType() === ApplicationTypeEnum::WEBHOOK ?
+                self::WEBHOOK_SETTINGS     => $application->getApplicationType() === ApplicationTypeEnum::WEBHOOK->value ?
                     $this->webhookManager->getWebhooks($application, $user) :
                     [],
                 self::CUSTOM_ACTIONS       => $this->customActionsToArray($application->getCustomActions()),
@@ -169,7 +171,7 @@ final class ApplicationHandler
      *
      * @return mixed[]
      * @throws ApplicationInstallException
-     * @throws MongoDBException
+     * @throws GuzzleException
      */
     public function installApplication(string $key, string $user): array
     {
@@ -192,8 +194,8 @@ final class ApplicationHandler
      *
      * @return mixed[]
      * @throws ApplicationInstallException
-     * @throws MongoDBException
      * @throws CurlException
+     * @throws GuzzleException
      */
     public function uninstallApplication(string $key, string $user): array
     {
@@ -212,7 +214,8 @@ final class ApplicationHandler
      * @param mixed[] $data
      *
      * @return mixed[]
-     * @throws Exception
+     * @throws ApplicationInstallException
+     * @throws GuzzleException
      */
     public function updateApplicationSettings(string $key, string $user, array $data): array
     {
@@ -226,7 +229,7 @@ final class ApplicationHandler
      *
      * @return mixed[]
      * @throws ApplicationInstallException
-     * @throws MongoDBException
+     * @throws GuzzleException
      */
     public function updateApplicationPassword(string $key, string $user, array $data): array
     {
@@ -258,7 +261,7 @@ final class ApplicationHandler
      *
      * @return string
      * @throws ApplicationInstallException
-     * @throws MongoDBException
+     * @throws GuzzleException
      */
     public function authorizeApplication(string $key, string $user, string $redirectUrl): string
     {
@@ -272,7 +275,7 @@ final class ApplicationHandler
      *
      * @return string
      * @throws ApplicationInstallException
-     * @throws MongoDBException
+     * @throws GuzzleException
      */
     public function saveAuthToken(string $key, string $user, array $token): string
     {
@@ -286,7 +289,7 @@ final class ApplicationHandler
      *
      * @return ApplicationInstall
      * @throws ApplicationInstallException
-     * @throws MongoDBException
+     * @throws GuzzleException
      */
     public function changeStateOfApplication(string $key, string $user, bool $enabled): ApplicationInstall
     {

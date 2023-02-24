@@ -9,5 +9,6 @@ services:
         class: Hanaboso\HbPFConnectors\Model\Application\Impl\SendGrid\Connector\SendGridSendEmailConnector
         calls:
             -   setApplication: [ '@hbpf.application.send-grid' ]
-            -   setDb: [ '@doctrine_mongodb.odm.default_document_manager' ]
             -   setSender: [ '@hbpf.transport.curl_manager' ]
+        arguments:
+          [ '@hbpf.application_install.repository' ]

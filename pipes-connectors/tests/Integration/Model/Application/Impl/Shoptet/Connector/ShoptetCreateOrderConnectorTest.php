@@ -3,8 +3,11 @@
 namespace HbPFConnectorsTests\Integration\Model\Application\Impl\Shoptet\Connector;
 
 use Exception;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Psr7\Response;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetCreateOrderConnector;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
@@ -12,15 +15,17 @@ use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Json;
-use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
+use HbPFConnectorsTests\KernelTestCaseAbstract;
+use HbPFConnectorsTests\MockServer\Mock;
+use HbPFConnectorsTests\MockServer\MockServer;
 
 /**
  * Class ShoptetCreateOrderConnectorTest
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Shoptet\Connector
  */
-final class ShoptetCreateOrderConnectorTest extends DatabaseTestCaseAbstract
+final class ShoptetCreateOrderConnectorTest extends KernelTestCaseAbstract
 {
 
     use PrivateTrait;
@@ -61,6 +66,11 @@ final class ShoptetCreateOrderConnectorTest extends DatabaseTestCaseAbstract
     private ShoptetCreateOrderConnector $connector;
 
     /**
+     * @var MockServer $mockServer
+     */
+    private MockServer $mockServer;
+
+    /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetCreateOrderConnector::getName
      */
     public function testGetName(): void
@@ -75,6 +85,7 @@ final class ShoptetCreateOrderConnectorTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetConnectorAbstract::processResponse
      *
      * @throws Exception
+     * @throws GuzzleException
      */
     public function testProcessAction(): void
     {
@@ -95,7 +106,15 @@ final class ShoptetCreateOrderConnectorTest extends DatabaseTestCaseAbstract
             self::SETTINGS,
             self::NON_ENCRYPTED_SETTINGS,
         );
-        $this->pfd($applicationInstall);
+
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["shoptet"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(200, [], Json::encode([$applicationInstall->toArray()])),
+            ),
+        );
 
         $dto = $this->connector->processAction(
             $this->prepareProcessDto(
@@ -106,8 +125,6 @@ final class ShoptetCreateOrderConnectorTest extends DatabaseTestCaseAbstract
             ),
         );
 
-        $this->dm->clear();
-
         self::assertEquals('', Json::decode($dto->getData())['errors']);
     }
 
@@ -115,6 +132,7 @@ final class ShoptetCreateOrderConnectorTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetCreateOrderConnector::processAction
      *
      * @throws Exception
+     * @throws GuzzleException
      */
     public function testProcessActionMissingHeader(): void
     {
@@ -124,7 +142,15 @@ final class ShoptetCreateOrderConnectorTest extends DatabaseTestCaseAbstract
             self::SETTINGS,
             self::NON_ENCRYPTED_SETTINGS,
         );
-        $this->pfd($applicationInstall);
+
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["shoptet"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(200, [], Json::encode([$applicationInstall->toArray()])),
+            ),
+        );
 
         self::assertException(
             ConnectorException::class,
@@ -140,9 +166,19 @@ final class ShoptetCreateOrderConnectorTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetConnectorAbstract::getApplicationInstall
      *
      * @throws Exception
+     * @throws GuzzleException
      */
     public function testProcessActionMissingApplicationInstall(): void
     {
+
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["shoptet"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(200, [], '[]'),
+            ),
+        );
         self::assertException(
             ApplicationInstallException::class,
             ApplicationInstallException::APP_WAS_NOT_FOUND,
@@ -165,6 +201,7 @@ final class ShoptetCreateOrderConnectorTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetCreateOrderConnector::processAction
      *
      * @throws Exception
+     * @throws GuzzleException
      */
     public function testProcessActionMissingRequest(): void
     {
@@ -186,7 +223,15 @@ final class ShoptetCreateOrderConnectorTest extends DatabaseTestCaseAbstract
             self::SETTINGS,
             self::NON_ENCRYPTED_SETTINGS,
         );
-        $this->pfd($applicationInstall);
+
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["shoptet"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(200, [], Json::encode([$applicationInstall->toArray()])),
+            ),
+        );
 
         $this->connector->processAction(
             $this->prepareProcessDto(
@@ -203,6 +248,7 @@ final class ShoptetCreateOrderConnectorTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetCreateOrderConnector::processAction
      *
      * @throws Exception
+     * @throws GuzzleException
      */
     public function testProcessActionMissingResponse(): void
     {
@@ -228,7 +274,15 @@ final class ShoptetCreateOrderConnectorTest extends DatabaseTestCaseAbstract
             self::SETTINGS,
             self::NON_ENCRYPTED_SETTINGS,
         );
-        $this->pfd($applicationInstall);
+
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["shoptet"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(200, [], Json::encode([$applicationInstall->toArray()])),
+            ),
+        );
 
         $this->connector->processAction(
             $this->prepareProcessDto(
@@ -246,6 +300,7 @@ final class ShoptetCreateOrderConnectorTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetCreateOrderConnector::processAction
      *
      * @throws Exception
+     * @throws GuzzleException
      */
     public function testProcessActionMissingRepeatResponse(): void
     {
@@ -274,7 +329,15 @@ final class ShoptetCreateOrderConnectorTest extends DatabaseTestCaseAbstract
             self::SETTINGS,
             self::NON_ENCRYPTED_SETTINGS,
         );
-        $this->pfd($applicationInstall);
+
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["shoptet"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(200, [], Json::encode([$applicationInstall->toArray()])),
+            ),
+        );
 
         $this->connector->processAction(
             $this->prepareProcessDto(
@@ -293,6 +356,12 @@ final class ShoptetCreateOrderConnectorTest extends DatabaseTestCaseAbstract
     protected function setUp(): void
     {
         parent::setUp();
+
+        {
+
+        }
+        $this->mockServer = new MockServer();
+        self::getContainer()->set('hbpf.worker-api', $this->mockServer);
 
         $this->connector = self::getContainer()->get('hbpf.connector.shoptet-create-order');
     }

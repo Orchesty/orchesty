@@ -1,7 +1,9 @@
 <?xml version="1.0"?>
 <ruleset name="HANABOSO_PIPES_PHP_SDK">
     <!-- Slevomat coding standards -->
-    <rule ref="./vendor/hanaboso/php-check-utils/ruleset.xml"/>
+    <rule ref="./vendor/hanaboso/php-check-utils/ruleset.xml">
+        <exclude name="HanabosoCodingStandard.Functions.ToArray"/>
+    </rule>
     <rule ref="SlevomatCodingStandard.Files.TypeNameMatchesFileName">
         <properties>
             <property name="rootNamespaces" type="array" value="

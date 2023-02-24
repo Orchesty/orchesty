@@ -15,18 +15,9 @@ services:
             - DEV_GID=${DEV_GID}
             - KERNEL_CLASS=HbPFConnectorsTests\app\Kernel
             - PHP_WEBROOT=/var/www/pipes/pipes-connectors/public
-            - PHP_IDE_CONFIG=${PHP_IDE_CONFIG}
             - COMPOSER_HOME=${HOME}/dev/.composer
-
-    mongo:
-        image: mongo:latest
-        ports:
-            - ${DEV_IP}:27017:27017
-        volumes:
-            - mongo:/data/db
+            - WORKER_API=https://test.com
+            - ORCHESTY_API_KEY=ThisIsNotRealKEy
 
     fakes3:
         image: olalond3/fakes3
-
-volumes:
-    mongo: {}

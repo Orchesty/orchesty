@@ -5,7 +5,6 @@ namespace PipesPhpSdkTests;
 use Exception;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\ControllerTestTrait;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\CustomAssertTrait;
-use Hanaboso\PhpCheckUtils\PhpUnit\Traits\DatabaseTestTrait;
 use Hanaboso\Utils\String\Json;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,7 +21,6 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
 {
 
     use ControllerTestTrait;
-    use DatabaseTestTrait;
     use CustomAssertTrait;
 
     /**
@@ -62,8 +60,6 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
         parent::setUp();
 
         $this->startClient();
-        $this->dm = self::getContainer()->get('doctrine_mongodb.odm.default_document_manager');
-        $this->clearMongo();
     }
 
     /**

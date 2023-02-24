@@ -2,7 +2,6 @@
 
 namespace PipesPhpSdkTests\Unit\Authorization\Provider;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
@@ -128,7 +127,7 @@ final class OAuth1ProviderTest extends KernelTestCaseAbstract
         $install = new ApplicationInstall();
         $install->setSettings(
             [
-                ApplicationInterface::AUTHORIZATION_FORM=> [
+                ApplicationInterface::AUTHORIZATION_FORM => [
                     ApplicationInterface::TOKEN => [
                         'oauth_token' => 'token', 'oauth_token_secret' => 'secret',
                     ],
@@ -242,10 +241,6 @@ final class OAuth1ProviderTest extends KernelTestCaseAbstract
      */
     private function getMockedProvider(array $data): OAuth1Provider
     {
-        $dm = self::createMock(DocumentManager::class);
-        $dm->method('persist')->willReturn(TRUE);
-        $dm->method('flush')->willReturn(TRUE);
-
         $oauth = self::createPartialMock(
             OAuth::class,
             ['getAccessToken', 'getRequestToken', 'setToken', 'getRequestHeader'],
@@ -256,7 +251,12 @@ final class OAuth1ProviderTest extends KernelTestCaseAbstract
         $oauth->method('getRequestHeader')->with('GET', 'someEndpoint/Url')->willReturn('generatedUrl');
 
         $client = self::getMockBuilder(OAuth1Provider::class)
-            ->setConstructorArgs([$dm, 'https://example.com'])
+            ->setConstructorArgs(
+                [
+                    'https://example.com',
+                    self::getContainer()->get('hbpf.application_install.repository'),
+                ],
+            )
             ->onlyMethods(['createClient'])
             ->getMock();
 

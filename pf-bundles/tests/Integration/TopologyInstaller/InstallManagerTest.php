@@ -6,11 +6,11 @@ use Exception;
 use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge;
+use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\PipesFramework\TopologyInstaller\Cache\RedisCache;
 use Hanaboso\PipesFramework\TopologyInstaller\CategoryParser;
 use Hanaboso\PipesFramework\TopologyInstaller\InstallManager;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
-use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use Hanaboso\Utils\File\File;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 use Predis\Client;
@@ -180,7 +180,7 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
                 ),
             )
             ->setEnabled(TRUE)
-            ->setVisibility(TopologyStatusEnum::PUBLIC);
+            ->setVisibility(TopologyStatusEnum::PUBLIC->value);
         $this->dm->persist($topology);
 
         $topology3 = new Topology();
@@ -200,14 +200,14 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
                 ),
             )
             ->setEnabled(TRUE)
-            ->setVisibility(TopologyStatusEnum::PUBLIC);
+            ->setVisibility(TopologyStatusEnum::PUBLIC->value);
         $this->dm->persist($topology3);
 
         $topology2 = new Topology();
         $topology2
             ->setName('old-file')
             ->setEnabled(TRUE)
-            ->setVisibility(TopologyStatusEnum::PUBLIC);
+            ->setVisibility(TopologyStatusEnum::PUBLIC->value);
         $this->dm->persist($topology2);
         $this->dm->flush();
     }

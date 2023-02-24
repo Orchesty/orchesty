@@ -9,15 +9,15 @@ use Hanaboso\HbPFConnectors\Model\Application\Impl\Shipstation\ShipstationApplic
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Document\Webhook;
 use Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookSubscription;
-use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
+use HbPFConnectorsTests\KernelTestCaseAbstract;
 
 /**
  * Class ShipstationApplicationTest
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Shipstation
  */
-final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
+final class ShipstationApplicationTest extends KernelTestCaseAbstract
 {
 
     public const API_KEY    = '79620d3760d**********18f8a35dec8';
@@ -77,7 +77,7 @@ final class ShipstationApplicationTest extends DatabaseTestCaseAbstract
      */
     public function testGetApplicationType(): void
     {
-        self::assertEquals(ApplicationTypeEnum::WEBHOOK, $this->application->getApplicationType());
+        self::assertEquals(ApplicationTypeEnum::WEBHOOK->value, $this->application->getApplicationType());
     }
 
     /**

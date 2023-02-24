@@ -6,10 +6,8 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocator;
 use Hanaboso\CommonsBundle\Exception\CategoryException;
-use Hanaboso\PipesPhpSdk\Database\Document\Category;
-use Hanaboso\PipesPhpSdk\Database\Document\Topology;
-use Hanaboso\PipesPhpSdk\Database\Repository\CategoryRepository;
-use Hanaboso\PipesPhpSdk\Database\Repository\TopologyRepository;
+use Hanaboso\PipesFramework\Database\Document\Category;
+use Hanaboso\PipesFramework\Database\Document\Topology;
 
 /**
  * Class CategoryManager
@@ -76,11 +74,9 @@ final class CategoryManager
      */
     public function deleteCategory(Category $category): void
     {
-        /** @var TopologyRepository $topologyRepository */
         $topologyRepository = $this->dm->getRepository(Topology::class);
         $topologies         = $topologyRepository->getTopologiesByCategory($category);
         if (count($topologies) == 0) {
-            /** @var CategoryRepository $categoryRepository */
             $categoryRepository = $this->dm->getRepository(Category::class);
             $categoryRepository->childrenLevelUp($category);
             $this->dm->remove($category);

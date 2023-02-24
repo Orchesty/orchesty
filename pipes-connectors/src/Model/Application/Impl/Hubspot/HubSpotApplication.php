@@ -46,7 +46,7 @@ final class HubSpotApplication extends OAuth2ApplicationAbstract implements Webh
      */
     public function getApplicationType(): string
     {
-        return ApplicationTypeEnum::WEBHOOK;
+        return ApplicationTypeEnum::WEBHOOK->value;
     }
 
     /**

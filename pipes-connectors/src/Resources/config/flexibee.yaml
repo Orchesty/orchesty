@@ -6,18 +6,20 @@ services:
         class: Hanaboso\HbPFConnectors\Model\Application\Impl\FlexiBee\FlexiBeeApplication
         arguments:
             - '@hbpf.transport.curl_manager'
-            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.application_install.repository'
 
     hbpf.connector.flexibee.get-contacts-array:
         class: Hanaboso\HbPFConnectors\Model\Application\Impl\FlexiBee\Connector\FlexiBeeGetContactsArrayConnector
         calls:
             - setApplication : ['@hbpf.application.flexibee']
-            - setDb : ['@doctrine_mongodb.odm.default_document_manager']
             - setSender : ['@hbpf.transport.curl_manager']
+        arguments:
+          [ '@hbpf.application_install.repository' ]
 
     hbpf.connector.flexibee.create-new-contact:
         class: Hanaboso\HbPFConnectors\Model\Application\Impl\FlexiBee\Connector\FlexiBeeCreateNewContactConnector
         calls:
             - setApplication : ['@hbpf.application.flexibee']
-            - setDb : ['@doctrine_mongodb.odm.default_document_manager']
             - setSender : ['@hbpf.transport.curl_manager']
+        arguments:
+          [ '@hbpf.application_install.repository' ]

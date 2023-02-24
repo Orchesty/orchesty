@@ -78,15 +78,6 @@ phpcoverage:
 phpcoverage-ci:
 	$(DE) ./vendor/hanaboso/php-check-utils/bin/coverage.sh -c 85 -p $$(nproc)
 
-phpmanual-up:
-	cd tests/Manual; $(MAKE) docker-up-force;
-
-phpmanual-tests:
-	$(DE) ./vendor/bin/phpunit -c phpunit.xml.dist --colors=always tests/Manual/
-
-phpmanual-down:
-	cd tests/Manual; $(MAKE) docker-down-clean;
-
 ci-test: test
 
 test: docker-up-force composer-install fasttest docker-down-clean

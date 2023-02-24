@@ -3,25 +3,32 @@
 namespace HbPFConnectorsTests\Integration\Model\Application\Impl\Shoptet\Connector;
 
 use Exception;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Psr7\Response;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetUpdateOrderConnector;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
+use Hanaboso\PipesPhpSdk\CustomNode\Exception\CustomNodeException;
+use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Json;
-use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
+use HbPFConnectorsTests\KernelTestCaseAbstract;
+use HbPFConnectorsTests\MockServer\Mock;
+use HbPFConnectorsTests\MockServer\MockServer;
 
 /**
  * Class ShoptetUpdateOrderConnectorTest
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Shoptet\Connector
  */
-final class ShoptetUpdateOrderConnectorTest extends DatabaseTestCaseAbstract
+final class ShoptetUpdateOrderConnectorTest extends KernelTestCaseAbstract
 {
 
     use PrivateTrait;
@@ -58,6 +65,11 @@ final class ShoptetUpdateOrderConnectorTest extends DatabaseTestCaseAbstract
             'receivingStatus' => 'unlock',
         ],
     ];
+
+    /**
+     * @var MockServer $mockServer
+     */
+    private MockServer $mockServer;
 
     /**
      * @var ShoptetUpdateOrderConnector
@@ -97,7 +109,15 @@ final class ShoptetUpdateOrderConnectorTest extends DatabaseTestCaseAbstract
             self::SETTINGS,
             self::NON_ENCRYPTED_SETTINGS,
         );
-        $this->pfd($applicationInstall);
+
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["shoptet"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(200, [], Json::encode([$applicationInstall->toArray()])),
+            ),
+        );
 
         $dto = $this->connector->processAction(
             $this->prepareProcessDto(
@@ -107,7 +127,6 @@ final class ShoptetUpdateOrderConnectorTest extends DatabaseTestCaseAbstract
                 ],
             ),
         );
-        $this->dm->clear();
 
         self::assertEquals('', Json::decode($dto->getData())['errors']);
         self::assertArrayHasKey('user', $dto->getHeaders());
@@ -117,17 +136,25 @@ final class ShoptetUpdateOrderConnectorTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetUpdateOrderConnector::processAction
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetConnectorAbstract::processResponse
      * @throws Exception
+     * @throws GuzzleException
      */
     public function testProcessActionMissingHeader(): void
     {
-
         $applicationInstall = DataProvider::createApplicationInstall(
             ShoptetApplication::SHOPTET_KEY,
             self::USER,
             self::SETTINGS,
             self::NON_ENCRYPTED_SETTINGS,
         );
-        $this->pfd($applicationInstall);
+
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["shoptet"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(200, [], Json::encode([$applicationInstall->toArray()])),
+            ),
+        );
 
         self::assertException(
             ConnectorException::class,
@@ -155,6 +182,14 @@ final class ShoptetUpdateOrderConnectorTest extends DatabaseTestCaseAbstract
      */
     public function testProcessActionMissingApplicationInstall(): void
     {
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["shoptet"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(200, [], '[]'),
+            ),
+        );
 
         self::assertException(
             ApplicationInstallException::class,
@@ -199,7 +234,15 @@ final class ShoptetUpdateOrderConnectorTest extends DatabaseTestCaseAbstract
             self::SETTINGS,
             self::NON_ENCRYPTED_SETTINGS,
         );
-        $this->pfd($applicationInstall);
+
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["shoptet"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(200, [], Json::encode([$applicationInstall->toArray()])),
+            ),
+        );
 
         $this->connector->processAction(
             $this->prepareProcessDto(
@@ -216,6 +259,14 @@ final class ShoptetUpdateOrderConnectorTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetUpdateOrderConnector::processAction
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetConnectorAbstract::processResponse
+     *
+     * @return void
+     * @throws ApplicationInstallException
+     * @throws ConnectorException
+     * @throws GuzzleException
+     * @throws OnRepeatException
+     * @throws CustomNodeException
+     * @throws PipesFrameworkException
      * @throws Exception
      */
     public function testProcessActionMissingResponse(): void
@@ -242,7 +293,15 @@ final class ShoptetUpdateOrderConnectorTest extends DatabaseTestCaseAbstract
             self::SETTINGS,
             self::NON_ENCRYPTED_SETTINGS,
         );
-        $this->pfd($applicationInstall);
+
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["shoptet"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(200, [], Json::encode([$applicationInstall->toArray()])),
+            ),
+        );
 
         $this->connector->processAction(
             $this->prepareProcessDto(
@@ -262,6 +321,7 @@ final class ShoptetUpdateOrderConnectorTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetConnectorAbstract::processResponse
      *
      * @throws Exception
+     * @throws GuzzleException
      */
     public function testProcessActionMissingRepeatResponse(): void
     {
@@ -290,7 +350,15 @@ final class ShoptetUpdateOrderConnectorTest extends DatabaseTestCaseAbstract
             self::SETTINGS,
             self::NON_ENCRYPTED_SETTINGS,
         );
-        $this->pfd($applicationInstall);
+
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["shoptet"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(200, [], Json::encode([$applicationInstall->toArray()])),
+            ),
+        );
 
         $this->connector->processAction(
             $this->prepareProcessDto(
@@ -310,6 +378,9 @@ final class ShoptetUpdateOrderConnectorTest extends DatabaseTestCaseAbstract
     protected function setUp(): void
     {
         parent::setUp();
+
+        $this->mockServer = new MockServer();
+        self::getContainer()->set('hbpf.worker-api', $this->mockServer);
 
         $this->connector = self::getContainer()->get('hbpf.connector.shoptet-update-order');
     }

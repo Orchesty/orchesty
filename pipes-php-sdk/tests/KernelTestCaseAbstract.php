@@ -2,7 +2,6 @@
 
 namespace PipesPhpSdkTests;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\CustomAssertTrait;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -19,11 +18,6 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
     use CustomAssertTrait;
 
     /**
-     * @var DocumentManager
-     */
-    protected DocumentManager $dm;
-
-    /**
      *
      */
     protected function setUp(): void
@@ -31,7 +25,6 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
         parent::setUp();
 
         self::bootKernel();
-        $this->dm = self::getContainer()->get('doctrine_mongodb.odm.default_document_manager');
     }
 
 }

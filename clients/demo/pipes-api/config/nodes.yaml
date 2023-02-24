@@ -7,66 +7,95 @@ services:
         class: Demo\Connector\PagerDutyConnector
         calls:
             -   setSender: [ '@hbpf.transport.curl_manager' ]
+        arguments:
+            - '@hbpf.application_install.repository'
 
     hbpf.connector.get-users:
         class: Demo\Connector\GetUsersConnector
         calls:
             -   setSender: [ '@hbpf.transport.curl_manager' ]
+        arguments:
+            - '@hbpf.application_install.repository'
 
     hbpf.connector.hub-spot.create-multiple-contact:
         class: Demo\Connector\HubSpotCreateMultipleContactsConnector
         calls:
-            -   setDb: [ '@doctrine_mongodb.odm.default_document_manager' ]
             -   setSender: [ '@hbpf.transport.curl_manager' ]
             -   setApplication: [ '@hbpf.application.hub-spot' ]
             -   setLogger: [ '@monolog.logger.commons' ]
+        arguments:
+            - '@hbpf.application_install.repository'
 
     hbpf.connector.idnes-connector:
         class: Demo\Connector\IdnesConnector
         calls:
             -   setSender: [ '@hbpf.transport.curl_manager' ]
+        arguments:
+            - '@hbpf.application_install.repository'
 
     # CustomNode
     hbpf.custom_node.data-generator:
         class: Demo\CustomNode\DataGeneratorConnector
+        arguments:
+            - '@hbpf.application_install.repository'
 
     hbpf.custom_node.package:
         class: Demo\CustomNode\DummyConnector
+        arguments:
+            - '@hbpf.application_install.repository'
 
     hbpf.custom_node.pick-area:
         class: Demo\CustomNode\DummyConnector
+        arguments:
+            - '@hbpf.application_install.repository'
 
     hbpf.custom_node.customer-notify:
         class: Demo\CustomNode\DummyConnector
+        arguments:
+            - '@hbpf.application_install.repository'
 
     hbpf.custom_node.extra-insurance:
         class: Demo\CustomNode\DummyConnector
+        arguments:
+            - '@hbpf.application_install.repository'
 
     hbpf.custom_node.print-label:
         class: Demo\CustomNode\DummyConnector
+        arguments:
+            - '@hbpf.application_install.repository'
 
     hbpf.custom_node.request-carrier:
         class: Demo\CustomNode\DummyConnector
+        arguments:
+            - '@hbpf.application_install.repository'
 
     hbpf.custom_node.fill-in-form:
         class: Demo\CustomNode\DummyConnectorSplit
+        arguments:
+            - '@hbpf.application_install.repository'
 
     hbpf.custom_node.check-insurance:
         class: Demo\CustomNode\DummyConnectorSplit
+        arguments:
+          - '@hbpf.application_install.repository'
 
     hbpf.custom_node.dummy-exception:
         class: Demo\CustomNode\DummyExceptionConnector
+        arguments:
+            - '@hbpf.application_install.repository'
         calls:
             - [ 'setLogger', [ '@monolog.logger.commons' ] ]
 
     hbpf.custom_node.filter-bids:
         class: Demo\CustomNode\FilterStockExchange
         arguments:
+            - '@hbpf.application_install.repository'
             - 'bids'
 
     hbpf.custom_node.filter-asks:
         class: Demo\CustomNode\FilterStockExchange
         arguments:
+            - '@hbpf.application_install.repository'
             - 'asks'
         calls:
             - [ 'setLogger', [ '@monolog.logger.commons' ] ]
@@ -75,9 +104,11 @@ services:
     hbpf.custom_node.send-duty-email:
         class: Demo\CustomNode\SendDutyEmail
         arguments:
+            - '@hbpf.application_install.repository'
             - '@mailer'
             - '@hbpf.connector.pager-duty'
 
     hbpf.custom_node.hub-spot.create-multiple-contact-mapper:
         class: Demo\CustomNode\HubSpotCreateMultipleContactsMapper
-
+        arguments:
+            - '@hbpf.application_install.repository'

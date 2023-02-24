@@ -20,7 +20,7 @@ abstract class BasicApplicationAbstract extends ApplicationAbstract implements B
      */
     public function getAuthorizationType(): string
     {
-        return AuthorizationTypeEnum::BASIC;
+        return AuthorizationTypeEnum::BASIC->value;
     }
 
     /**

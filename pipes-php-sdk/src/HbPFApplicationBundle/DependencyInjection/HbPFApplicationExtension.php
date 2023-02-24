@@ -48,6 +48,7 @@ final class HbPFApplicationExtension extends Extension implements PrependExtensi
         $loader->load('controller.yaml');
         $loader->load('handler.yaml');
         $loader->load('listener.yaml');
+        $loader->load('repositories.yaml');
         $loader->load('manager.yaml');
         $loader->load('oauth_providers.yaml');
     }

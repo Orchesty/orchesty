@@ -3,9 +3,13 @@
 namespace PipesPhpSdkTests\Unit\CustomNode;
 
 use Exception;
+use GuzzleHttp\Psr7\Response;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\WorkerApi\Client;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
+use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\PipesPhpSdk\CustomNode\Exception\CustomNodeException;
+use Hanaboso\Utils\String\Json;
 use PipesPhpSdkTests\Integration\Application\TestNullApplication;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 
@@ -26,6 +30,7 @@ final class CustomNodeAbstractTest extends KernelTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\CustomNode\CommonNodeAbstract::setApplication
+     * @throws Exception
      */
     public function testSetApplication(): void
     {
@@ -36,6 +41,7 @@ final class CustomNodeAbstractTest extends KernelTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\CustomNode\CommonNodeAbstract::getApplicationKey
+     * @throws Exception
      */
     public function testGetApplicationKey(): void
     {
@@ -46,6 +52,7 @@ final class CustomNodeAbstractTest extends KernelTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\CustomNode\CommonNodeAbstract::getApplicationKey
+     * @throws Exception
      */
     public function testGetApplicationKeyWithApplication(): void
     {
@@ -76,40 +83,14 @@ final class CustomNodeAbstractTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\CustomNode\CommonNodeAbstract::setDb
-     * @covers \Hanaboso\PipesPhpSdk\CustomNode\CommonNodeAbstract::getDb
-
-     * @throws Exception
-     */
-    public function testSetDb(): void
-    {
-        $this->nullConnector->setDb($this->dm);
-        self::assertEquals($this->dm,$this->nullConnector->getDb());
-    }
-
-    /**
-     * @covers \Hanaboso\PipesPhpSdk\CustomNode\CommonNodeAbstract::setDb
-     * @covers \Hanaboso\PipesPhpSdk\CustomNode\CommonNodeAbstract::getDb
-
-     * @throws Exception
-     */
-    public function testSetNullDb(): void
-    {
-        $this->nullConnector->setDb(NULL);
-        self::expectErrorMessage('MongoDbClient is not set.');
-        $this->nullConnector->getDb();
-    }
-
-    /**
      * @covers \Hanaboso\PipesPhpSdk\CustomNode\CommonNodeAbstract::getApplicationInstall
 
      * @throws Exception
      */
     public function testGetAppInstall(): void
     {
-        $this->nullConnector->setDb($this->dm);
         $this->nullConnector->setApplication(new TestNullApplication());
-        self::expectErrorMessage('Application [null-key] was not found');
+        self::expectExceptionMessage('Application [null-key] was not found');
         $this->invokeMethod($this->nullConnector, 'getApplicationInstall', [NULL]);
     }
 
@@ -123,9 +104,8 @@ final class CustomNodeAbstractTest extends KernelTestCaseAbstract
         $dto = new ProcessDto();
         $dto->setUser('testUser');
 
-        $this->nullConnector->setDb($this->dm);
         $this->nullConnector->setApplication(new TestNullApplication());
-        self::expectErrorMessage('Application [null-key] was not found');
+        self::expectExceptionMessage('Application [null-key] was not found');
         $this->invokeMethod($this->nullConnector, 'getApplicationInstallFromProcess', [$dto]);
     }
 
@@ -138,31 +118,31 @@ final class CustomNodeAbstractTest extends KernelTestCaseAbstract
     {
         $dto = new ProcessDto();
 
-        $this->nullConnector->setDb($this->dm);
         $this->nullConnector->setApplication(new TestNullApplication());
-        self::expectErrorMessage('User not defined');
+        self::expectExceptionMessage('User not defined');
         $this->invokeMethod($this->nullConnector, 'getApplicationInstallFromProcess', [$dto]);
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\CustomNode\CommonNodeAbstract::getDb
-
+     * @return void
      * @throws Exception
-     */
-    public function testGetDb(): void
-    {
-        $this->nullConnector->setApplication(new TestNullApplication());
-        self::assertNotEmpty($this->nullConnector->getApplication());
-    }
-
-    /**
-     *
      */
     protected function setUp(): void
     {
-        parent::setUp();
+        $client = self::createMock(Client::class);
 
-        $this->nullConnector = new TestNullCustomNode();
+        $client->method('send')->willReturn(
+            new Response(404, [], Json::encode(['message' => 'Application [null-key] was not found'])),
+        );
+        self::getContainer()->set('hbpf.worker-api', $client);
+
+        /**
+         * @var ApplicationInstallRepository $applicationInstallRepository
+         */
+        $applicationInstallRepository = self::getContainer()->get('hbpf.application_install.repository');
+        $this->nullConnector          = new TestNullCustomNode($applicationInstallRepository);
+
+        parent::setUp();
     }
 
 }

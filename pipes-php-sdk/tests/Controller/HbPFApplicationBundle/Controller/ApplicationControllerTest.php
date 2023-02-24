@@ -3,6 +3,8 @@
 namespace PipesPhpSdkTests\Controller\HbPFApplicationBundle\Controller;
 
 use Exception;
+use GuzzleHttp\Psr7\Response as GuzzleResponse;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
@@ -15,6 +17,8 @@ use Hanaboso\Utils\String\Json;
 use LogicException;
 use PipesPhpSdkTests\ControllerTestCaseAbstract;
 use PipesPhpSdkTests\Integration\Application\Manager\NullApplication;
+use PipesPhpSdkTests\MockServer\Mock;
+use PipesPhpSdkTests\MockServer\MockServer;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -24,6 +28,11 @@ use Symfony\Component\HttpFoundation\Response;
  */
 final class ApplicationControllerTest extends ControllerTestCaseAbstract
 {
+
+    /**
+     * @var MockServer $mockServer
+     */
+    private MockServer $mockServer;
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::listOfApplicationsAction
@@ -315,7 +324,17 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
      */
     public function testGetApplicationDetail(): void
     {
-        $this->insertApp();
+        $this->mockServer = new MockServer();
+        self::getContainer()->set('hbpf.worker-api', $this->mockServer);
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["someApp"],"users":["bar"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new GuzzleResponse(200, [], '[{"name":"someApp","user":"bar"}]'),
+            ),
+        );
+
         $application = self::createMock(ApplicationAbstract::class);
         $application->method('toArray')->willReturn(['user' => 'bar']);
         $application->method('getApplicationForms')->willReturn([]);
@@ -349,6 +368,35 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
      */
     public function testInstallApplication(): void
     {
+        $this->mockServer = new MockServer();
+        self::getContainer()->set('hbpf.worker-api', $this->mockServer);
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["example"],"users":["bar"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new GuzzleResponse(200, [], '[]'),
+            ),
+        );
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall',
+                Json::decode(
+                    '[{"id":null,"user":"bar","name":"example","nonEncryptedSettings":[],"encryptedSettings":"","settings":[],"created":"2023-02-13 14:46:39","updated":"2023-02-13 14:46:39","expires":null,"enabled":false}]',
+                ),
+                CurlManager::METHOD_POST,
+                new GuzzleResponse(200, [], '[{}]'),
+                ['created' => '2023-02-13 14:46:39', 'updated' => '2023-02-13 14:46:39'],
+            ),
+        );
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["example"],"users":["bar"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new GuzzleResponse(200, [], '[{}]'),
+            ),
+        );
         $application = new NullApplication();
         self::getContainer()->set('hbpf.application.example', $application);
 
@@ -383,8 +431,16 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
      */
     public function testUninstallApplication(): void
     {
-        $this->insertApp('null');
-
+        $this->mockServer = new MockServer();
+        self::getContainer()->set('hbpf.worker-api', $this->mockServer);
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["null"],"users":["bar"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new GuzzleResponse(200, [], '[{"name":"null","user":"bar"}]'),
+            ),
+        );
         $this->client->request('DELETE', '/applications/null/users/bar/uninstall');
         $response = $this->client->getResponse();
 
@@ -393,14 +449,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
             Json::decode((string) $response->getContent())[ApplicationInstall::USER],
         );
         self::assertEquals('200', $response->getStatusCode());
-
-        $this->client->request('GET', '/applications/someApp/users/bar');
-        $response = $this->client->getResponse();
-
-        self::assertEquals('3002', Json::decode((string) $response->getContent())['error_code']);
-
-        $response = (array) $this->sendDelete('/applications/application/users/user/uninstall');
-        self::assertEquals('404', $response['status']);
     }
 
     /**
@@ -471,6 +519,25 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         );
         $response = $this->client->getResponse();
         self::assertEquals('200', $response->getStatusCode());
+    }
+
+    /**
+     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::saveApplicationPasswordAction
+     *
+     * @throws Exception
+     */
+    public function testSaveApplicationPassword404(): void
+    {
+        $this->mockServer = new MockServer();
+        self::getContainer()->set('hbpf.worker-api', $this->mockServer);
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["application"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new GuzzleResponse(200, [], '[]'),
+            ),
+        );
 
         $this->client->request(
             'PUT',
@@ -517,20 +584,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
 
         $container = $this->client->getContainer();
         $container->set('hbpf.application.handler', $handler);
-    }
-
-    /**
-     * @param string $key
-     *
-     * @throws Exception
-     */
-    private function insertApp(string $key = 'someApp'): void
-    {
-        $dto = new ApplicationInstall();
-        $dto->setKey($key)
-            ->setUser('bar');
-
-        $this->pfd($dto);
     }
 
 }

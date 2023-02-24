@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesPhpSdk\Command;
 
-use Doctrine\ODM\MongoDB\MongoDBException;
+use GuzzleHttp\Exception\GuzzleException;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager;
 use Symfony\Component\Console\Command\Command;
@@ -46,7 +46,7 @@ final class AuthorizeUserCommand extends Command
      *
      * @return int
      * @throws ApplicationInstallException
-     * @throws MongoDBException
+     * @throws GuzzleException
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {

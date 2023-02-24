@@ -12,19 +12,11 @@ services:
         environment:
             - DEV_UID=${DEV_UID}
             - DEV_GID=${DEV_GID}
-            - KERNEL_CLASS=PipesPhpSdkTests\app\Kernel
-            - PHP_IDE_CONFIG=${PHP_IDE_CONFIG}
-            - COMPOSER_HOME=${HOME}/dev/.composer
             - PHP_WEBROOT=/var/www/tests/app/public
-            - USER_TASK_LISTENER_ENABLE=false
-            - RABBITMQ_DSN=amqp://rabbitmq:5672
-
-    mongo:
-        image: mongo:latest
-        ports:
-            - ${DEV_IP}:27017:27017
-        volumes:
-            - mongo:/data/db
+            - KERNEL_CLASS=PipesPhpSdkTests\app\Kernel
+            - COMPOSER_HOME=${HOME}/dev/.composer
+            - WORKER_API=https://test.com
+            - ORCHESTY_API_KEY=ThisIsNotRealKEy
 
     swagger-ui:
         image: swaggerapi/swagger-ui

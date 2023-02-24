@@ -2,16 +2,18 @@
 
 namespace PipesPhpSdkTests\Integration\Command;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
+use GuzzleHttp\Psr7\Response;
 use Hanaboso\CommonsBundle\Redirect\RedirectInterface;
-use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1\OAuth1ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth1Dto;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider;
+use Hanaboso\Utils\String\Json;
 use OAuth;
-use PipesPhpSdkTests\DatabaseTestCaseAbstract;
+use PipesPhpSdkTests\KernelTestCaseAbstract;
+use PipesPhpSdkTests\MockServer\Mock;
+use PipesPhpSdkTests\MockServer\MockServer;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use TypeError;
@@ -21,8 +23,13 @@ use TypeError;
  *
  * @package PipesPhpSdkTests\Integration\Command
  */
-final class AuthorizeUserCommandTest extends DatabaseTestCaseAbstract
+final class AuthorizeUserCommandTest extends KernelTestCaseAbstract
 {
+
+    /**
+     * @var MockServer $mockServer
+     */
+    private MockServer $mockServer;
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\Application\Loader\ApplicationLoader
@@ -42,15 +49,30 @@ final class AuthorizeUserCommandTest extends DatabaseTestCaseAbstract
      */
     public function testExecuteOauth2(): void
     {
+        $this->mockServer = new MockServer();
+        self::getContainer()->set('hbpf.worker-api', $this->mockServer);
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["null2"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(200, [], '[{"name":"null","user":"user"}]'),
+            ),
+        );
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall',
+                Json::decode(
+                    '[{"id":null,"user":"user","name":"null","nonEncryptedSettings":[],"encryptedSettings":"001_njvjIYXBFEyG3SN5aorqcpzWmAzDOoa2YD3yJ1E1nqk=:cOQj3xzk1PbgK7Cp5S56fLZGFnBvC3Vr94tvB2DgQO8=:+4+bYTP\/BdXDiJPrOnF4JNL9XFDWQ4eb:m5qmJyCQxXY6d1jHzu91ouU4mzwgKizyTlYG0DxbE\/rxJYf7wO8L9iyw3ka47Ut9KE2oph81Ma4qAbJP4s4K\/J51Rk2rSZMBxmyraqB5YXCbd96+m5pOexGQ","settings":[],"created":"2023-02-08 07:41:54","updated":"2023-02-08 07:41:54","expires":null,"enabled":false}]',
+                ),
+                CurlManager::METHOD_POST,
+                new Response(200, [], '[]'),
+                ['created' => '2023-02-08 07:41:54', 'updated' => '2023-02-08 07:41:54', 'encryptedSettings' => '001_njvjIYXBFEyG3SN5aorqcpzWmAzDOoa2YD3yJ1E1nqk=:cOQj3xzk1PbgK7Cp5S56fLZGFnBvC3Vr94tvB2DgQO8=:+4+bYTP/BdXDiJPrOnF4JNL9XFDWQ4eb:m5qmJyCQxXY6d1jHzu91ouU4mzwgKizyTlYG0DxbE/rxJYf7wO8L9iyw3ka47Ut9KE2oph81Ma4qAbJP4s4K/J51Rk2rSZMBxmyraqB5YXCbd96+m5pOexGQ'],
+            ),
+        );
         $application   = new Application(self::$kernel);
         $command       = $application->get('user:authorize');
         $commandTester = new CommandTester($command);
-
-        $app = (new ApplicationInstall())
-            ->setKey('null2')
-            ->setUser('user');
-        $this->pfd($app);
-        $this->dm->clear();
 
         $commandTester->setInputs(['null2', 'user']);
         ob_start();
@@ -65,20 +87,9 @@ final class AuthorizeUserCommandTest extends DatabaseTestCaseAbstract
      */
     public function testExecuteOauth1(): void
     {
+        $this->mockServer = new MockServer();
+        self::getContainer()->set('hbpf.worker-api', $this->mockServer);
         putenv('APP_ENV=oauthconsole');
-
-        $app = (new ApplicationInstall())
-            ->setKey('null1')
-            ->setUser('user')
-            ->setSettings(
-                [
-                    ApplicationInterface::AUTHORIZATION_FORM => [
-                        OAuth1ApplicationInterface::CONSUMER_KEY => 'consumer.key',
-                        OAuth1ApplicationInterface::TOKEN        => 'secret.key',
-                    ],
-                ],
-            );
-        $this->pfd($app);
 
         $install  = new ApplicationInstall();
         $provider = $this->getMockedProvider();
@@ -138,10 +149,6 @@ final class AuthorizeUserCommandTest extends DatabaseTestCaseAbstract
      */
     private function getMockedProvider(): OAuth1Provider
     {
-        $dm = self::createMock(DocumentManager::class);
-        $dm->method('persist')->willReturn(TRUE);
-        $dm->method('flush')->willReturn(TRUE);
-
         $redirect = self::createMock(RedirectInterface::class);
         $this->expectException(TypeError::class);
 
@@ -149,7 +156,7 @@ final class AuthorizeUserCommandTest extends DatabaseTestCaseAbstract
         $oauth->method('getRequestToken')->willReturn(['oauth_token' => 'aabbcc', 'oauth_token_secret' => '112233']);
 
         $client = self::getMockBuilder(OAuth1Provider::class)
-            ->setConstructorArgs([$dm, $redirect])
+            ->setConstructorArgs([$redirect])
             ->onlyMethods(['createClient'])
             ->getMock();
 

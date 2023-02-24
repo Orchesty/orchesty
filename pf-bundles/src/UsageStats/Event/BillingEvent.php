@@ -52,7 +52,10 @@ final class BillingEvent extends Event
      */
     public function setType(string $type): void
     {
-        EventTypeEnum::isValid($type);
+        if (!EventTypeEnum::tryFrom($type)) {
+            throw new EnumException();
+        }
+
         $this->type = $type;
     }
 

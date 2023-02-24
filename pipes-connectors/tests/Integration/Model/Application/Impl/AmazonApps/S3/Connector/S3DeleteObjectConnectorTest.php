@@ -6,8 +6,11 @@ use Aws\Command;
 use Aws\S3\Exception\S3Exception;
 use Aws\S3\S3Client;
 use Exception;
+use GuzzleHttp\Psr7\Response;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
+use Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\AwsApplicationAbstract;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\Connector\S3DeleteObjectConnector;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\S3Application;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
@@ -15,14 +18,16 @@ use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\Utils\String\Json;
-use HbPFConnectorsTests\DatabaseTestCaseAbstract;
+use HbPFConnectorsTests\KernelTestCaseAbstract;
+use HbPFConnectorsTests\MockServer\Mock;
+use HbPFConnectorsTests\MockServer\MockServer;
 
 /**
  * Class S3DeleteObjectConnectorTest
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\AmazonApps\S3\Connector
  */
-final class S3DeleteObjectConnectorTest extends DatabaseTestCaseAbstract
+final class S3DeleteObjectConnectorTest extends KernelTestCaseAbstract
 {
 
     use PrivateTrait;
@@ -36,11 +41,23 @@ final class S3DeleteObjectConnectorTest extends DatabaseTestCaseAbstract
     private S3DeleteObjectConnector $connector;
 
     /**
+     * @var MockServer $mockServer
+     */
+    private MockServer $mockServer;
+
+    /**
      * @throws Exception
      */
     public function testProcessAction(): void
     {
-        $this->createApplication();
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["s3"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(200, [], Json::encode($this->createApplication()->toArray())),
+            ),
+        );
 
         $dto = (new ProcessDto())
             ->setData(Json::encode(['name' => 'Test']))
@@ -79,7 +96,14 @@ final class S3DeleteObjectConnectorTest extends DatabaseTestCaseAbstract
             "Connector 's3-delete-object': Aws\S3\Exception\S3Exception: Something gone wrong!",
         );
 
-        $this->createApplication();
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["s3"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(200, [], Json::encode($this->createApplication()->toArray())),
+            ),
+        );
 
         $client = self::createPartialMock(S3Client::class, ['__call']);
         $client->method('__call')->willReturnCallback(
@@ -106,6 +130,18 @@ final class S3DeleteObjectConnectorTest extends DatabaseTestCaseAbstract
     {
         parent::setUp();
 
+        $this->mockServer = new MockServer();
+        self::getContainer()->set('hbpf.worker-api', $this->mockServer);
+
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["s3"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(200, [], Json::encode([$this->createApplication()->toArray()])),
+            ),
+        );
+
         $this->createApplication();
 
         $dto = (new ProcessDto())
@@ -122,24 +158,22 @@ final class S3DeleteObjectConnectorTest extends DatabaseTestCaseAbstract
     /**
      * @throws Exception
      */
-    private function createApplication(): void
+    private function createApplication(): ApplicationInstall
     {
-        $application = (new ApplicationInstall())
+        return (new ApplicationInstall())
             ->setKey(self::KEY)
             ->setUser(self::USER)
             ->setSettings(
                 [
                     ApplicationInterface::AUTHORIZATION_FORM => [
-                        S3Application::KEY      => 'Key',
-                        S3Application::SECRET   => 'Secret',
-                        S3Application::REGION   => 'eu-central-1',
-                        S3Application::BUCKET   => 'Bucket',
-                        S3Application::ENDPOINT => 'http://fakes3:4567',
+                        AwsApplicationAbstract::KEY      => 'Key',
+                        AwsApplicationAbstract::SECRET   => 'Secret',
+                        AwsApplicationAbstract::REGION   => 'eu-central-1',
+                        S3Application::BUCKET            => 'Bucket',
+                        AwsApplicationAbstract::ENDPOINT => 'http://fakes3:4567',
                     ],
                 ],
             );
-
-        $this->pfd($application);
     }
 
 }

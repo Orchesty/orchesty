@@ -78,7 +78,7 @@ abstract class ApplicationAbstract implements ApplicationInterface
      */
     public function getApplicationType(): string
     {
-        return ApplicationTypeEnum::CRON;
+        return ApplicationTypeEnum::CRON->value;
     }
 
     /**

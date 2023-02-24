@@ -39,7 +39,7 @@ final class PipedriveApplication extends BasicApplicationAbstract implements Web
      */
     public function getApplicationType(): string
     {
-        return ApplicationTypeEnum::WEBHOOK;
+        return ApplicationTypeEnum::WEBHOOK->value;
     }
 
     /**

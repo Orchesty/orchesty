@@ -2,9 +2,9 @@
 
 namespace Hanaboso\PipesPhpSdk\Application\Document;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Hanaboso\CommonsBundle\Database\Traits\Document\CreatedTrait;
-use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
+use DateTime;
+use Exception;
+use Hanaboso\PipesPhpSdk\Storage\Mongodb\DocumentAbstract;
 use Hanaboso\Utils\Date\DateTimeUtils;
 use Hanaboso\Utils\Exception\DateTimeException;
 
@@ -12,98 +12,106 @@ use Hanaboso\Utils\Exception\DateTimeException;
  * Class Webhook
  *
  * @package Hanaboso\PipesPhpSdk\Application\Document
- *
- * @ODM\Document(repositoryClass="Hanaboso\PipesPhpSdk\Application\Repository\WebhookRepository")
  */
-class Webhook
+class Webhook extends DocumentAbstract
 {
-
-    use IdTrait;
-    use CreatedTrait;
 
     public const USER        = 'user';
     public const APPLICATION = 'application';
 
     /**
-     * @var string
-     *
-     * @ODM\Field(type="string")
+     * @var DateTime|null
      */
-    private string $name;
+    protected ?DateTime $created = NULL;
 
     /**
-     * @var string
-     *
-     * @ODM\Field(type="string")
+     * @var string|null
      */
-    private string $user;
+    private ?string $name = NULL;
 
     /**
-     * @var string
-     *
-     * @ODM\Field(type="string")
+     * @var string|null
      */
-    private string $token;
+    private ?string $user = NULL;
 
     /**
-     * @var string
-     *
-     * @ODM\Field(type="string")
+     * @var string|null
      */
-    private string $node;
+    private ?string $token = NULL;
 
     /**
-     * @var string
-     *
-     * @ODM\Field(type="string")
+     * @var string|null
      */
-    private string $topology;
+    private ?string $node = NULL;
 
     /**
-     * @var string
-     *
-     * @ODM\Field(type="string")
+     * @var string|null
      */
-    private string $application;
+    private ?string $topology = NULL;
 
     /**
-     * @var string
-     *
-     * @ODM\Field(type="string")
+     * @var string|null
      */
-    private string $webhookId;
+    private ?string $application = NULL;
+
+    /**
+     * @var string|null
+     */
+    private ?string $webhookId = NULL;
 
     /**
      * @var bool
-     *
-     * @ODM\Field(type="boolean")
      */
     private bool $unsubscribeFailed = FALSE;
 
     /**
      * Webhook constructor.
      *
+     * @param mixed[]|null $data
+     *
      * @throws DateTimeException
      */
-    public function __construct()
+    public function __construct(?array $data = [])
     {
         $this->created = DateTimeUtils::getUtcDateTime();
+
+        parent::__construct($data);
     }
 
     /**
-     * @return string
+     * @return DateTime|null
      */
-    public function getName(): string
+    public function getCreated(): ?DateTime
+    {
+        return $this->created;
+    }
+
+    /**
+     * @param DateTime|null $created
+     *
+     * @return $this
+     */
+    public function setCreated(?DateTime $created): Webhook
+    {
+        $this->created = $created;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getName(): ?string
     {
         return $this->name;
     }
 
     /**
-     * @param string $name
+     * @param string|null $name
      *
-     * @return Webhook
+     * @return $this
      */
-    public function setName(string $name): Webhook
+    public function setName(?string $name): Webhook
     {
         $this->name = $name;
 
@@ -111,19 +119,19 @@ class Webhook
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getUser(): string
+    public function getUser(): ?string
     {
         return $this->user;
     }
 
     /**
-     * @param string $user
+     * @param string|null $user
      *
-     * @return Webhook
+     * @return $this
      */
-    public function setUser(string $user): Webhook
+    public function setUser(?string $user): Webhook
     {
         $this->user = $user;
 
@@ -131,19 +139,19 @@ class Webhook
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getToken(): string
+    public function getToken(): ?string
     {
         return $this->token;
     }
 
     /**
-     * @param string $token
+     * @param string|null $token
      *
-     * @return Webhook
+     * @return $this
      */
-    public function setToken(string $token): Webhook
+    public function setToken(?string $token): Webhook
     {
         $this->token = $token;
 
@@ -151,19 +159,19 @@ class Webhook
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getNode(): string
+    public function getNode(): ?string
     {
         return $this->node;
     }
 
     /**
-     * @param string $node
+     * @param string|null $node
      *
-     * @return Webhook
+     * @return $this
      */
-    public function setNode(string $node): Webhook
+    public function setNode(?string $node): Webhook
     {
         $this->node = $node;
 
@@ -171,19 +179,19 @@ class Webhook
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getTopology(): string
+    public function getTopology(): ?string
     {
         return $this->topology;
     }
 
     /**
-     * @param string $topology
+     * @param string|null $topology
      *
-     * @return Webhook
+     * @return $this
      */
-    public function setTopology(string $topology): Webhook
+    public function setTopology(?string $topology): Webhook
     {
         $this->topology = $topology;
 
@@ -191,19 +199,19 @@ class Webhook
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getApplication(): string
+    public function getApplication(): ?string
     {
         return $this->application;
     }
 
     /**
-     * @param string $application
+     * @param string|null $application
      *
-     * @return Webhook
+     * @return $this
      */
-    public function setApplication(string $application): Webhook
+    public function setApplication(?string $application): Webhook
     {
         $this->application = $application;
 
@@ -211,19 +219,19 @@ class Webhook
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getWebhookId(): string
+    public function getWebhookId(): ?string
     {
         return $this->webhookId;
     }
 
     /**
-     * @param string $webhookId
+     * @param string|null $webhookId
      *
-     * @return Webhook
+     * @return $this
      */
-    public function setWebhookId(string $webhookId): Webhook
+    public function setWebhookId(?string $webhookId): Webhook
     {
         $this->webhookId = $webhookId;
 
@@ -239,13 +247,63 @@ class Webhook
     }
 
     /**
-     * @param bool $unsubscribeFailed
+     * @param bool|null $unsubscribeFailed
+     *
+     * @return $this
+     */
+    public function setUnsubscribeFailed(?bool $unsubscribeFailed): Webhook
+    {
+        $this->unsubscribeFailed = $unsubscribeFailed ?? FALSE;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public function toArray(): array
+    {
+        return [
+            'id'                 => $this->getId(),
+            Webhook::USER        => $this->getUser(),
+            Webhook::APPLICATION => $this->getApplication(),
+            'created'            => $this->getCreated()?->format(DateTimeUtils::DATE_TIME),
+            'name'               => $this->getName(),
+            'webhookId'          => $this->getWebhookId(),
+            'node'               => $this->getNode(),
+            'token'              => $this->getToken(),
+            'topology'           => $this->getTopology(),
+        ];
+    }
+
+    /**
+     * @param mixed[] $data
      *
      * @return Webhook
+     * @throws Exception
      */
-    public function setUnsubscribeFailed(bool $unsubscribeFailed): Webhook
+    protected function fromArray(array $data): Webhook
     {
-        $this->unsubscribeFailed = $unsubscribeFailed;
+        if (array_key_exists('id', $data))
+            $this->setId($data['id']);
+        if (array_key_exists(Webhook::USER, $data))
+            $this->setUser($data[Webhook::USER]);
+        if (array_key_exists(Webhook::APPLICATION, $data))
+            $this->setApplication($data[Webhook::APPLICATION]);
+        if (array_key_exists('created', $data))
+            $this->setCreated($data['created'] ? new DateTime($data['created']) : NULL);
+        if (array_key_exists('name', $data))
+            $this->setName($data['name']);
+        if (array_key_exists('webhookId', $data))
+            $this->setWebhookId($data['webhookId']);
+        if (array_key_exists('node', $data))
+            $this->setNode($data['node']);
+        if (array_key_exists('token', $data))
+            $this->setToken($data['token']);
+        if (array_key_exists('topology', $data))
+            $this->setTopology($data['topology']);
+        if (array_key_exists('unsubscribeFailed', $data))
+            $this->setUnsubscribeFailed($data['unsubscribeFailed']);
 
         return $this;
     }

@@ -13,14 +13,14 @@ use PhpOffice\PhpSpreadsheet\Writer\Csv;
 use PhpOffice\PhpSpreadsheet\Writer\Html;
 use PhpOffice\PhpSpreadsheet\Writer\Ods;
 use PhpOffice\PhpSpreadsheet\Writer\Xls;
-use PipesPhpSdkTests\DatabaseTestCaseAbstract;
+use PipesPhpSdkTests\KernelTestCaseAbstract;
 
 /**
  * Class TableParserTest
  *
  * @package PipesPhpSdkTests\Integration\Parser
  */
-final class TableParserTest extends DatabaseTestCaseAbstract
+final class TableParserTest extends KernelTestCaseAbstract
 {
 
     /**

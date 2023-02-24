@@ -57,7 +57,7 @@ final class MailchimpApplication extends OAuth2ApplicationAbstract implements We
      */
     public function getApplicationType(): string
     {
-        return ApplicationTypeEnum::WEBHOOK;
+        return ApplicationTypeEnum::WEBHOOK->value;
     }
 
     /**

@@ -9,19 +9,22 @@ services:
         class: Hanaboso\HbPFConnectors\Model\Application\Impl\Fakturoid\Connector\FakturoidGetAccountDetailConnector
         calls:
             -   setApplication: [ '@hbpf.application.fakturoid' ]
-            -   setDb: [ '@doctrine_mongodb.odm.default_document_manager' ]
             -   setSender: [ '@hbpf.transport.curl_manager' ]
+        arguments:
+          [ '@hbpf.application_install.repository' ]
 
     hbpf.connector.fakturoid.create-new-invoice:
         class: Hanaboso\HbPFConnectors\Model\Application\Impl\Fakturoid\Connector\FakturoidCreateNewInvoiceConnector
         calls:
             -   setApplication: [ '@hbpf.application.fakturoid' ]
-            -   setDb: [ '@doctrine_mongodb.odm.default_document_manager' ]
             -   setSender: [ '@hbpf.transport.curl_manager' ]
+        arguments:
+          [ '@hbpf.application_install.repository' ]
 
     hbpf.connector.fakturoid.create-new-subject:
         class: Hanaboso\HbPFConnectors\Model\Application\Impl\Fakturoid\Connector\FakturoidCreateNewSubjectConnector
         calls:
             -   setApplication: [ '@hbpf.application.fakturoid' ]
-            -   setDb: [ '@doctrine_mongodb.odm.default_document_manager' ]
             -   setSender: [ '@hbpf.transport.curl_manager' ]
+        arguments:
+          [ '@hbpf.application_install.repository' ]

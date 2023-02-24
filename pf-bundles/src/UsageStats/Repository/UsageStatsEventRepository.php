@@ -27,7 +27,7 @@ final class UsageStatsEventRepository extends DocumentRepository
     public function findBillingEvents(DateTime $startDateTime, int $batchSize): array
     {
         return $this->createQueryBuilder()
-            ->field('type')->in([EventTypeEnum::INSTALL, EventTypeEnum::UNINSTALL])
+            ->field('type')->in([EventTypeEnum::INSTALL->value, EventTypeEnum::UNINSTALL->value])
             ->field('sent')->equals(NULL)
             ->field('created')->lte($startDateTime)
             ->sort('created')
@@ -46,7 +46,7 @@ final class UsageStatsEventRepository extends DocumentRepository
     {
         return $this->createQueryBuilder()
             ->field('sent')->equals(NULL)
-            ->field('type')->in([EventTypeEnum::INSTALL, EventTypeEnum::UNINSTALL])
+            ->field('type')->in([EventTypeEnum::INSTALL->value, EventTypeEnum::UNINSTALL->value])
             ->field('created')->lte($startDateTime)
             ->count()
             ->getQuery()

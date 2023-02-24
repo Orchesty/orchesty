@@ -3,16 +3,21 @@
 namespace PipesPhpSdkTests\Integration\HbPFApplicationBundle\Handler;
 
 use Exception;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Psr7\Response;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
-use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager;
 use Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager as ApplicationManagerAlias;
 use Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookManager;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler;
+use Hanaboso\Utils\String\Json;
 use InvalidArgumentException;
-use PipesPhpSdkTests\DatabaseTestCaseAbstract;
+use PipesPhpSdkTests\KernelTestCaseAbstract;
+use PipesPhpSdkTests\MockServer\Mock;
+use PipesPhpSdkTests\MockServer\MockServer;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -20,8 +25,13 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @package PipesPhpSdkTests\Integration\HbPFApplicationBundle\Handler
  */
-final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
+final class ApplicationHandlerTest extends KernelTestCaseAbstract
 {
+
+    /**
+     * @var MockServer $mockServer
+     */
+    private MockServer $mockServer;
 
     /**
      * @var ApplicationHandler
@@ -36,6 +46,7 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
      */
     public function testGetApplications(): void
     {
+        $this->privateSetUp();
         $ex = [
             'items' => [
                 [
@@ -82,6 +93,7 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
      */
     public function testGetApplication(): void
     {
+        $this->privateSetUp();
         self::assertEquals(
             [
                 'key'                => 'null-key',
@@ -105,6 +117,7 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
      */
     public function testGetSynchronousActions(): void
     {
+        $this->privateSetUp();
         self::assertEquals(['testSynchronous', 'returnBody'], $this->handler->getSynchronousActions('null'));
     }
 
@@ -115,6 +128,7 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
      */
     public function testRunSynchronousAction(): void
     {
+        $this->privateSetUp();
         $r = new Request([]);
         $r->setMethod(CurlManager::METHOD_GET);
 
@@ -131,7 +145,6 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
      */
     public function testAuthorizeApplication(): void
     {
-        $this->createApplicationInstall();
         $applicationManager = self::createPartialMock(ApplicationManager::class, ['authorizeApplication']);
         $applicationManager->expects(self::any())->method('authorizeApplication');
 
@@ -149,7 +162,6 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
      */
     public function testSaveAuthToken(): void
     {
-        $this->createApplicationInstall();
         $applicationManager = self::createPartialMock(ApplicationManager::class, ['authorizeApplication']);
         $applicationManager->expects(self::any())->method('authorizeApplication');
 
@@ -186,11 +198,21 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager::getInstalledApplications
      *
      * @throws Exception
+     * @throws GuzzleException
      */
     public function testGetApplicationsByUser(): void
     {
-        $this->createApplicationInstall('null');
-        $this->createApplicationInstall('webhook');
+        $this->mockServer = new MockServer();
+        self::getContainer()->set('hbpf.worker-api', $this->mockServer);
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(200, [], '[{"user":"user","name":"null"}, {"user":"user","name":"webhook"}]'),
+            ),
+        );
+        $this->privateSetUp();
         $result = $this->handler->getApplicationsByUser('user');
 
         self::assertEquals(2, count($result['items']));
@@ -203,8 +225,25 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
      */
     public function testGetApplicationByKeyAndUser(): void
     {
-        $this->createApplicationInstall('webhook');
-
+        $this->mockServer = new MockServer();
+        self::getContainer()->set('hbpf.worker-api', $this->mockServer);
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["webhook"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(200, [], '[{"name":"webhook"}]'),
+            ),
+        );
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/Webhook?filter={"applications":["webhook"],"user_uds":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(200, [], '[]'),
+            ),
+        );
+        $this->privateSetUp();
         $result = $this->handler->getApplicationByKeyAndUser('webhook', 'user');
         self::assertEquals('Webhook', $result['name']);
     }
@@ -214,18 +253,36 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager::saveApplicationSettings
      *
      * @throws Exception
+     * @throws GuzzleException
      */
     public function testUpdateApplicationSettings(): void
     {
-        $this->createApplicationInstall(
-            'null',
-            [
-                ApplicationInterface::AUTHORIZATION_FORM => [
-                    BasicApplicationInterface::USER => 'Old user',
-                    BasicApplicationInterface::PASSWORD => 'Old password',
-                ],
-            ],
+        $this->mockServer = new MockServer();
+        self::getContainer()->set('hbpf.worker-api', $this->mockServer);
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["null"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(200, [], '[{"name":"null"}]'),
+            ),
         );
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall',
+                Json::decode(
+                    '[{"id":null,"user":null,"name":"null","nonEncryptedSettings":[],"encryptedSettings":"001_nobgP7JUTYhsadJ56IPtuX03bUDbPwmAtl7MkPifJUs=:wL6pmknQU9qKjTLg2Aao49RswmMyt28\/8r\/KeWGAYWU=:RHlWFtL4HtAmh0420xuugb3Z\/AT+\/e5Y:8uF+I3CNSdsDreN0vHE1pkIA\/2h\/ddLXhg4guLU6h1U+oc6RvPES88E8a9QKRVPrIECgRNOxtgwE3GvpjU6vUZOm7v03iBHatqYWmSFu1sU=","settings":[],"created":"2023-02-13 13:21:23","updated":"2023-02-13 13:21:23","expires":null,"enabled":false}]',
+                ),
+                CurlManager::METHOD_POST,
+                new Response(200, [], '[]'),
+                [
+                    'created'           => '2023-02-13 13:21:23',
+                    'updated'           => '2023-02-13 13:21:23',
+                    'encryptedSettings' => '001_nobgP7JUTYhsadJ56IPtuX03bUDbPwmAtl7MkPifJUs=:wL6pmknQU9qKjTLg2Aao49RswmMyt28/8r/KeWGAYWU=:RHlWFtL4HtAmh0420xuugb3Z/AT+/e5Y:8uF+I3CNSdsDreN0vHE1pkIA/2h/ddLXhg4guLU6h1U+oc6RvPES88E8a9QKRVPrIECgRNOxtgwE3GvpjU6vUZOm7v03iBHatqYWmSFu1sU=',
+                ],
+            ),
+        );
+        $this->privateSetUp();
         $res = $this->handler->updateApplicationSettings(
             'null',
             'user',
@@ -241,17 +298,56 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler::updateApplicationPassword
      *
+     * @return void
+     * @throws GuzzleException
+     * @throws ApplicationInstallException
      * @throws Exception
      */
     public function testUpdateApplicationPassword(): void
     {
-        $this->createApplicationInstall('null');
-
+        $this->mockServer = new MockServer();
+        self::getContainer()->set('hbpf.worker-api', $this->mockServer);
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["null"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(200, [], '[{"name":"null"}]'),
+            ),
+        );
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall',
+                Json::decode(
+                    '[{"id":null,"user":null,"name":"null","nonEncryptedSettings":[],"encryptedSettings":"001_JvxO9FaH6uNM6+wjwsaQEkz+fF6VyF+xS3+lBMzMWvE=:GiwVCx/v8p+P4nCzJeVBQLVgQZD/0BHHUN/LIHNK8WA=:93Vx1D26qlpncGVdKTpQscpUKdQ+P5vj:eM1CUKfoEPs6pP5JMt/USNGXR3yPcJlxYXpbkRadsC/d4lpvhRUDs8qQDzNgDgN3oSoRNMfId2JtdqYki0p+CbV8LVnixZEhIlAzWj2AakU0CrvEofrFjQ==","settings":[],"created":"2023-02-13 13:24:27","updated":"2023-02-13 13:24:27","expires":null,"enabled":false}]',
+                ),
+                CurlManager::METHOD_POST,
+                new Response(200, [], '[]'),
+                [
+                    'created'           => '2023-02-13 13:24:27',
+                    'updated'           => '2023-02-13 13:24:27',
+                    'encryptedSettings' => '001_JvxO9FaH6uNM6+wjwsaQEkz+fF6VyF+xS3+lBMzMWvE=:GiwVCx/v8p+P4nCzJeVBQLVgQZD/0BHHUN/LIHNK8WA=:93Vx1D26qlpncGVdKTpQscpUKdQ+P5vj:eM1CUKfoEPs6pP5JMt/USNGXR3yPcJlxYXpbkRadsC/d4lpvhRUDs8qQDzNgDgN3oSoRNMfId2JtdqYki0p+CbV8LVnixZEhIlAzWj2AakU0CrvEofrFjQ==',
+                ],
+            ),
+        );
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["null"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(
+                    200,
+                    [],
+                    '[{"name":"null","encryptedSettings":"001_JvxO9FaH6uNM6+wjwsaQEkz+fF6VyF+xS3+lBMzMWvE=:GiwVCx/v8p+P4nCzJeVBQLVgQZD/0BHHUN/LIHNK8WA=:93Vx1D26qlpncGVdKTpQscpUKdQ+P5vj:eM1CUKfoEPs6pP5JMt/USNGXR3yPcJlxYXpbkRadsC/d4lpvhRUDs8qQDzNgDgN3oSoRNMfId2JtdqYki0p+CbV8LVnixZEhIlAzWj2AakU0CrvEofrFjQ=="}]',
+                ),
+            ),
+        );
+        $this->privateSetUp();
         $this->handler->updateApplicationPassword(
             'null',
             'user',
             [
-                'formKey' => ApplicationInterface::AUTHORIZATION_FORM,
+                'formKey'  => ApplicationInterface::AUTHORIZATION_FORM,
                 'fieldKey' => BasicApplicationInterface::PASSWORD,
                 'password' => '_newPasswd_',
             ],
@@ -270,14 +366,13 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
      */
     public function testUpdateApplicationPasswordErr(): void
     {
-        $this->createApplicationInstall('null');
-
+        $this->privateSetUp();
         self::expectException(InvalidArgumentException::class);
         $this->handler->updateApplicationPassword(
             'null',
             'user',
             [
-                'formKey' => ApplicationInterface::AUTHORIZATION_FORM,
+                'formKey'  => ApplicationInterface::AUTHORIZATION_FORM,
                 'fieldKey' => BasicApplicationInterface::PASSWORD,
                 'username' => 'newUsername',
             ],
@@ -287,28 +382,9 @@ final class ApplicationHandlerTest extends DatabaseTestCaseAbstract
     /**
      * @throws Exception
      */
-    protected function setUp(): void
+    protected function privateSetUp(): void
     {
-        parent::setUp();
-
         $this->handler = self::getContainer()->get('hbpf.application.handler');
-    }
-
-    /**
-     * @param string  $key
-     * @param mixed[] $settings
-     *
-     * @return void
-     * @throws Exception
-     */
-    private function createApplicationInstall(string $key = 'key', array $settings = []): void
-    {
-        $applicationInstall = (new ApplicationInstall())
-            ->setKey($key)
-            ->setUser('user')
-            ->setSettings($settings);
-
-        $this->pfd($applicationInstall);
     }
 
 }

@@ -3,6 +3,8 @@
 namespace HbPFConnectorsTests\Integration\Model\Application\Impl\FlexiBee\Connector;
 
 use Exception;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Psr7\Response;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
@@ -10,16 +12,23 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\FlexiBee\Connector\FlexiBeeCreateNewContactConnector;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\FlexiBee\FlexiBeeApplication;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
-use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
-use HbPFConnectorsTests\DatabaseTestCaseAbstract;
+use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
+use Hanaboso\PipesPhpSdk\CustomNode\Exception\CustomNodeException;
+use Hanaboso\Utils\Exception\DateTimeException;
+use Hanaboso\Utils\Exception\PipesFrameworkException;
+use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DataProvider;
+use HbPFConnectorsTests\KernelTestCaseAbstract;
+use HbPFConnectorsTests\MockServer\Mock;
+use HbPFConnectorsTests\MockServer\MockServer;
 
 /**
  * Class FlexiBeeCreateNewContactConnectorTest
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\FlexiBee\Connector
  */
-final class FlexiBeeCreateNewContactConnectorTest extends DatabaseTestCaseAbstract
+final class FlexiBeeCreateNewContactConnectorTest extends KernelTestCaseAbstract
 {
 
     /**
@@ -36,14 +45,30 @@ final class FlexiBeeCreateNewContactConnectorTest extends DatabaseTestCaseAbstra
     }
 
     /**
-     * @throws ConnectorException
+     * @return void
+     * @throws ApplicationInstallException
+     * @throws CustomNodeException
+     * @throws DateTimeException
+     * @throws GuzzleException
+     * @throws OnRepeatException
+     * @throws PipesFrameworkException
      * @throws Exception
      */
     public function testProcessAction(): void
     {
+        $mockServer = new MockServer();
+        self::getContainer()->set('hbpf.worker-api', $mockServer);
+
+        $mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["flexibee"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(200, [], Json::encode([$this->getAppInstall()->toArray()])),
+            ),
+        );
+
         $body = '{"name":"HokusPokus", "country":"CZ","org-type":"PODNIKATELE+PU"}';
-        $this->getAppInstall();
-        $this->dm->clear();
 
         $dto = DataProvider::getProcessDto(
             $this->getApp()->getName(),
@@ -60,14 +85,31 @@ final class FlexiBeeCreateNewContactConnectorTest extends DatabaseTestCaseAbstra
     }
 
     /**
-     * @throws ConnectorException
+     * @return void
+     * @throws ApplicationInstallException
+     * @throws CustomNodeException
+     * @throws DateTimeException
+     * @throws GuzzleException
+     * @throws OnRepeatException
+     * @throws PipesFrameworkException
      * @throws Exception
      */
     public function testProcessActionCurlException(): void
     {
+        $mockServer = new MockServer();
+        self::getContainer()->set('hbpf.worker-api', $mockServer);
+
+        $mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["flexibee"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(200, [], Json::encode([$this->getAppInstall()->toArray()])),
+            ),
+        );
+
         $body = '{"name":"HokusPokus", "country":"CZ","org-type":"PODNIKATELE+PU"}';
         $this->getAppInstall();
-        $this->dm->clear();
 
         $dto = DataProvider::getProcessDto(
             $this->getApp()->getName(),
@@ -85,7 +127,13 @@ final class FlexiBeeCreateNewContactConnectorTest extends DatabaseTestCaseAbstra
     }
 
     /**
-     * @throws ConnectorException
+     * @return void
+     * @throws ApplicationInstallException
+     * @throws CustomNodeException
+     * @throws DateTimeException
+     * @throws GuzzleException
+     * @throws OnRepeatException
+     * @throws PipesFrameworkException
      */
     public function testProcessActionLegislationNotSetException(): void
     {
@@ -93,7 +141,13 @@ final class FlexiBeeCreateNewContactConnectorTest extends DatabaseTestCaseAbstra
     }
 
     /**
-     * @throws ConnectorException
+     * @return void
+     * @throws ApplicationInstallException
+     * @throws CustomNodeException
+     * @throws DateTimeException
+     * @throws GuzzleException
+     * @throws OnRepeatException
+     * @throws PipesFrameworkException
      */
     public function testProcessActionNameNotSetException(): void
     {
@@ -101,7 +155,13 @@ final class FlexiBeeCreateNewContactConnectorTest extends DatabaseTestCaseAbstra
     }
 
     /**
-     * @throws ConnectorException
+     * @return void
+     * @throws ApplicationInstallException
+     * @throws CustomNodeException
+     * @throws DateTimeException
+     * @throws GuzzleException
+     * @throws OnRepeatException
+     * @throws PipesFrameworkException
      */
     public function testProcessActionLegislationNotAcceptedException(): void
     {
@@ -111,12 +171,18 @@ final class FlexiBeeCreateNewContactConnectorTest extends DatabaseTestCaseAbstra
     /**
      * @param string $body
      *
-     * @throws ConnectorException
+     * @return void
+     * @throws ApplicationInstallException
+     * @throws CustomNodeException
+     * @throws DateTimeException
+     * @throws GuzzleException
+     * @throws OnRepeatException
+     * @throws PipesFrameworkException
+     * @throws Exception
      */
     private function testProcessActionException(string $body = '{}'): void
     {
         $this->getAppInstall();
-        $this->dm->clear();
 
         $dto = DataProvider::getProcessDto(
             $this->getApp()->getName(),
@@ -133,9 +199,10 @@ final class FlexiBeeCreateNewContactConnectorTest extends DatabaseTestCaseAbstra
     }
 
     /**
+     * @return ApplicationInstall
      * @throws Exception
      */
-    private function getAppInstall(): void
+    private function getAppInstall(): ApplicationInstall
     {
         $appInstall = DataProvider::getBasicAppInstall($this->getApp()->getName());
 
@@ -143,8 +210,8 @@ final class FlexiBeeCreateNewContactConnectorTest extends DatabaseTestCaseAbstra
             [
                 ApplicationInterface::AUTHORIZATION_FORM =>
                     [
-                        'user'     => 'user123',
-                        'password' => 'pass123',
+                        'user'        => 'user123',
+                        'password'    => 'pass123',
                         'auth'        => 'http',
                         'flexibeeUrl' => 'https://demo.flexibee.eu/c/demo',
                     ],
@@ -160,7 +227,7 @@ final class FlexiBeeCreateNewContactConnectorTest extends DatabaseTestCaseAbstra
             ],
         );
 
-        $this->pfd($appInstall);
+        return $appInstall;
     }
 
     /**
@@ -187,10 +254,11 @@ final class FlexiBeeCreateNewContactConnectorTest extends DatabaseTestCaseAbstra
             $sender->method('send')->willReturn($dto);
         }
 
-        $flexibeeCreateNewContact = new FlexiBeeCreateNewContactConnector();
+        $flexibeeCreateNewContact = new FlexiBeeCreateNewContactConnector(
+            self::getContainer()->get('hbpf.application_install.repository'),
+        );
         $flexibeeCreateNewContact
-            ->setSender($sender)
-            ->setDb($this->dm);
+            ->setSender($sender);
 
         return $flexibeeCreateNewContact;
     }

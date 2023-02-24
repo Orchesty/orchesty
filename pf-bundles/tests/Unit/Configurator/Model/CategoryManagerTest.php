@@ -6,8 +6,8 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
 use Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocator;
 use Hanaboso\PipesFramework\Configurator\Model\CategoryManager;
-use Hanaboso\PipesPhpSdk\Database\Document\Category;
-use Hanaboso\PipesPhpSdk\Database\Repository\CategoryRepository;
+use Hanaboso\PipesFramework\Database\Document\Category;
+use Hanaboso\PipesFramework\Database\Repository\CategoryRepository;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 
 /**

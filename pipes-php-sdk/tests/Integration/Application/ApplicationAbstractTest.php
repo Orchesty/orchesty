@@ -7,14 +7,14 @@ use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
-use PipesPhpSdkTests\DatabaseTestCaseAbstract;
+use PipesPhpSdkTests\KernelTestCaseAbstract;
 
 /**
  * Class ApplicationAbstractTest
  *
  * @package PipesPhpSdkTests\Integration\Application
  */
-final class ApplicationAbstractTest extends DatabaseTestCaseAbstract
+final class ApplicationAbstractTest extends KernelTestCaseAbstract
 {
 
     /**
@@ -24,6 +24,7 @@ final class ApplicationAbstractTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract::getLogo
+     * @throws Exception
      */
     public function testGetLogo(): void
     {
@@ -32,14 +33,16 @@ final class ApplicationAbstractTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract::getApplicationType
+     * @throws Exception
      */
     public function testGetApplicationType(): void
     {
-        self::assertEquals(ApplicationTypeEnum::CRON, $this->application->getApplicationType());
+        self::assertEquals(ApplicationTypeEnum::CRON->value, $this->application->getApplicationType());
     }
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract::toArray
+     * @throws Exception
      */
     public function testToArray(): void
     {
@@ -68,7 +71,7 @@ final class ApplicationAbstractTest extends DatabaseTestCaseAbstract
      */
     public function testGetApplicationForm(): void
     {
-        $applicationInstall = $this->createApplicationInstall();
+        $applicationInstall = new ApplicationInstall();
 
         self::assertEquals(3, count($this->application->getApplicationForms(
             $applicationInstall,
@@ -85,7 +88,7 @@ final class ApplicationAbstractTest extends DatabaseTestCaseAbstract
      */
     public function testSetApplicationSettings(): void
     {
-        $applicationInstall = $this->createApplicationInstall();
+        $applicationInstall = new ApplicationInstall();
 
         $applicationInstall = $this->application->saveApplicationForms(
             $applicationInstall,
@@ -114,28 +117,6 @@ final class ApplicationAbstractTest extends DatabaseTestCaseAbstract
         parent::setUp();
 
         $this->application = self::getContainer()->get('hbpf.application.null');
-    }
-
-    /**
-     * @return ApplicationInstall
-     * @throws Exception
-     */
-    private function createApplicationInstall(): ApplicationInstall
-    {
-        $applicationInstall = (new ApplicationInstall())
-            ->setKey('null-key')
-            ->setUser('user')
-            ->setSettings(
-                [
-                    ApplicationInterface::AUTHORIZATION_FORM => [
-                        BasicApplicationInterface::USER     => 'user12',
-                        BasicApplicationInterface::PASSWORD => '!@#$$%%',
-                    ],
-                ],
-            );
-        $this->pfd($applicationInstall);
-
-        return $applicationInstall;
     }
 
 }

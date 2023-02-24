@@ -2,7 +2,7 @@
 
 namespace Hanaboso\HbPFConnectors\Model\Application\Impl\FlexiBee\Connector;
 
-use Doctrine\ODM\MongoDB\MongoDBException;
+use GuzzleHttp\Exception\GuzzleException;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
@@ -11,6 +11,7 @@ use Hanaboso\HbPFConnectors\Model\Application\Impl\FlexiBee\FlexiBeeApplication;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
+use Hanaboso\PipesPhpSdk\CustomNode\Exception\CustomNodeException;
 use Hanaboso\Utils\Exception\DateTimeException;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 
@@ -37,10 +38,11 @@ final class FlexiBeeGetContactsArrayConnector extends ConnectorAbstract
      *
      * @return ProcessDto
      * @throws ApplicationInstallException
+     * @throws DateTimeException
      * @throws OnRepeatException
      * @throws PipesFrameworkException
-     * @throws MongoDBException
-     * @throws DateTimeException
+     * @throws GuzzleException
+     * @throws CustomNodeException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {

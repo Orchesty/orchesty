@@ -2,7 +2,7 @@
 
 namespace Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector;
 
-use Doctrine\ODM\MongoDB\MongoDBException;
+use GuzzleHttp\Exception\GuzzleException;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
@@ -10,9 +10,9 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
+use Hanaboso\PipesPhpSdk\CustomNode\Exception\CustomNodeException;
 use Hanaboso\Utils\Exception\DateTimeException;
 use Hanaboso\Utils\String\Json;
-use JsonException;
 
 /**
  * Class ShoptetRegisterWebhookConnector
@@ -39,12 +39,12 @@ final class ShoptetRegisterWebhookConnector extends ShoptetConnectorAbstract
      *
      * @return ProcessDto
      * @throws ApplicationInstallException
-     * @throws CurlException
-     * @throws DateTimeException
-     * @throws MongoDBException
-     * @throws OnRepeatException
      * @throws ConnectorException
-     * @throws JsonException
+     * @throws CurlException
+     * @throws CustomNodeException
+     * @throws DateTimeException
+     * @throws GuzzleException
+     * @throws OnRepeatException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {

@@ -24,7 +24,8 @@ final class PagerDutyConnectorTest extends KernelTestCase
     public function testProcessAction(): void
     {
         $sender    = self::getContainer()->get('hbpf.transport.curl_manager');
-        $connector = new PagerDutyConnector();
+        $repo      = self::getContainer()->get('hbpf.application_install.repository');
+        $connector = new PagerDutyConnector($repo);
         $connector->setSender($sender);
         $dto = new ProcessDto();
         $dto->setData(Json::encode(['since' => '2020-06-01', 'until' => '2020-06-24']));

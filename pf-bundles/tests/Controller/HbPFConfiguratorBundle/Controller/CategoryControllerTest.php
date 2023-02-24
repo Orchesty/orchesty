@@ -6,8 +6,8 @@ use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
 use Hanaboso\CommonsBundle\Exception\CategoryException;
 use Hanaboso\PipesFramework\Configurator\Model\CategoryManager;
+use Hanaboso\PipesFramework\Database\Document\Category;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler;
-use Hanaboso\PipesPhpSdk\Database\Document\Category;
 use LogicException;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 

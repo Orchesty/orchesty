@@ -16,7 +16,6 @@ use Symfony\Bundle\SecurityBundle\SecurityBundle;
 
 return [
     DebugBundle::class           => ['dev' => TRUE, 'test' => TRUE],
-    DoctrineMongoDBBundle::class => ['all' => TRUE],
     FrameworkBundle::class       => ['all' => TRUE],
     MonologBundle::class         => ['all' => TRUE],
     SecurityBundle::class        => ['all' => TRUE],

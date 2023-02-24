@@ -6,7 +6,7 @@ use ApplinthTests\ControllerTestCaseAbstract;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
 use Hanaboso\Applinth\Handler\StatisticsHandler;
-use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 use Hanaboso\Utils\Date\DateTimeUtils;
 
 /**

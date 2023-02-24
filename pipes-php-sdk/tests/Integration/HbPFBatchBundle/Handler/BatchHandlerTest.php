@@ -6,7 +6,7 @@ use Exception;
 use Hanaboso\PipesPhpSdk\HbPFBatchBundle\Handler\BatchHandler;
 use Hanaboso\PipesPhpSdk\Utils\ProcessDtoFactory;
 use Hanaboso\Utils\String\Json;
-use PipesPhpSdkTests\DatabaseTestCaseAbstract;
+use PipesPhpSdkTests\KernelTestCaseAbstract;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @covers \Hanaboso\PipesPhpSdk\HbPFBatchBundle\Handler\BatchHandler
  */
-final class BatchHandlerTest extends DatabaseTestCaseAbstract
+final class BatchHandlerTest extends KernelTestCaseAbstract
 {
 
     /**

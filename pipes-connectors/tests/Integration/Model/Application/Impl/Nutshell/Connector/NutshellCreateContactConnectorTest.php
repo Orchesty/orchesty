@@ -3,16 +3,21 @@
 namespace HbPFConnectorsTests\Integration\Model\Application\Impl\Nutshell\Connector;
 
 use Exception;
+use GuzzleHttp\Psr7\Response;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Nutshell\Connector\NutshellCreateContactConnector;
+use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\File\File;
-use HbPFConnectorsTests\DatabaseTestCaseAbstract;
+use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DataProvider;
+use HbPFConnectorsTests\KernelTestCaseAbstract;
+use HbPFConnectorsTests\MockServer\Mock;
+use HbPFConnectorsTests\MockServer\MockServer;
 use ReflectionException;
 
 /**
@@ -22,13 +27,20 @@ use ReflectionException;
  *
  * @covers  \Hanaboso\HbPFConnectors\Model\Application\Impl\Nutshell\Connector\NutshellCreateContactConnector
  */
-final class NutshellCreateContactConnectorTest extends DatabaseTestCaseAbstract
+final class NutshellCreateContactConnectorTest extends KernelTestCaseAbstract
 {
+
+    use PrivateTrait;
 
     /**
      * @var NutshellCreateContactConnector
      */
     private NutshellCreateContactConnector $connector;
+
+    /**
+     * @var MockServer $mockServer
+     */
+    private MockServer $mockServer;
 
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Nutshell\Connector\NutshellCreateContactConnector::getName
@@ -51,8 +63,18 @@ final class NutshellCreateContactConnectorTest extends DatabaseTestCaseAbstract
     {
         $data = File::getContent(__DIR__ . '/Data/newContact.json');
         $this->mockSender($data);
-        $applicationInstall = DataProvider::getBasicAppInstall('nutshell');
-        $this->pfd($applicationInstall);
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["nutshell"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(
+                    200,
+                    [],
+                    Json::encode([DataProvider::getBasicAppInstall('nutshell')->toArray()]),
+                ),
+            ),
+        );
 
         $dto    = (new ProcessDto())->setData($data)->setHeaders(
             [
@@ -71,6 +93,9 @@ final class NutshellCreateContactConnectorTest extends DatabaseTestCaseAbstract
     protected function setUp(): void
     {
         parent::setUp();
+
+        $this->mockServer = new MockServer();
+        self::getContainer()->set('hbpf.worker-api', $this->mockServer);
 
         $this->connector = self::getContainer()->get('hbpf.connector.nutshell-create-contact');
     }

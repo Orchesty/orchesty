@@ -2,8 +2,6 @@
 
 namespace Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Process\ProcessDtoAbstract;
@@ -52,14 +50,12 @@ final class ShoptetApplication extends OAuth2ApplicationAbstract implements Webh
     /**
      * ShoptetApplication constructor.
      *
-     * @param OAuth2Provider  $provider
-     * @param DocumentManager $dm
-     * @param CurlManager     $sender
-     * @param string          $startingPointHost
+     * @param OAuth2Provider $provider
+     * @param CurlManager    $sender
+     * @param string         $startingPointHost
      */
     public function __construct(
         OAuth2Provider $provider,
-        private DocumentManager $dm,
         private CurlManager $sender,
         private string $startingPointHost,
     )
@@ -72,7 +68,7 @@ final class ShoptetApplication extends OAuth2ApplicationAbstract implements Webh
      */
     public function getApplicationType(): string
     {
-        return ApplicationTypeEnum::WEBHOOK;
+        return ApplicationTypeEnum::WEBHOOK->value;
     }
 
     /**
@@ -110,7 +106,6 @@ final class ShoptetApplication extends OAuth2ApplicationAbstract implements Webh
      * @throws ApplicationInstallException
      * @throws CurlException
      * @throws DateTimeException
-     * @throws MongoDBException
      */
     public function getRequestDto(
         ProcessDtoAbstract $dto,
@@ -220,7 +215,6 @@ final class ShoptetApplication extends OAuth2ApplicationAbstract implements Webh
      * @throws ApplicationInstallException
      * @throws CurlException
      * @throws DateTimeException
-     * @throws MongoDBException
      */
     public function getWebhookSubscribeRequestDto(
         ApplicationInstall $applicationInstall,
@@ -250,7 +244,6 @@ final class ShoptetApplication extends OAuth2ApplicationAbstract implements Webh
      * @throws ApplicationInstallException
      * @throws CurlException
      * @throws DateTimeException
-     * @throws MongoDBException
      */
     public function getWebhookUnsubscribeRequestDto(
         ApplicationInstall $applicationInstall,
@@ -329,7 +322,7 @@ final class ShoptetApplication extends OAuth2ApplicationAbstract implements Webh
             $this->getAuthUrlWithServerUrl($applicationInstall),
             $this->getTokenUrlWithServerUrl($applicationInstall),
         );
-        $dto->setCustomAppDependencies($applicationInstall->getUser(), $applicationInstall->getKey());
+        $dto->setCustomAppDependencies($applicationInstall->getUser() ?? '', $applicationInstall->getKey() ?? '');
 
         if ($redirectUrl) {
             $dto->setRedirectUrl($redirectUrl);
@@ -346,7 +339,6 @@ final class ShoptetApplication extends OAuth2ApplicationAbstract implements Webh
      * @throws ApplicationInstallException
      * @throws CurlException
      * @throws DateTimeException
-     * @throws MongoDBException
      */
     private function getApiToken(ApplicationInstall $applicationInstall, ProcessDtoAbstract $dto): string
     {
@@ -368,8 +360,6 @@ final class ShoptetApplication extends OAuth2ApplicationAbstract implements Webh
                     ],
                 ],
             );
-
-            $this->dm->flush();
         }
 
         return $token[self::ACCESS_TOKEN];

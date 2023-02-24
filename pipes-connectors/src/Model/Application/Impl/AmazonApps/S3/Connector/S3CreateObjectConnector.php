@@ -4,11 +4,13 @@ namespace Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\Connector
 
 use Aws\Exception\AwsException;
 use Exception;
+use GuzzleHttp\Exception\GuzzleException;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\S3Application;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
+use Hanaboso\PipesPhpSdk\CustomNode\Exception\CustomNodeException;
 use Hanaboso\Utils\File\File;
 
 /**
@@ -23,8 +25,11 @@ final class S3CreateObjectConnector extends S3ObjectConnectorAbstract
      * @param ProcessDto $dto
      *
      * @return ProcessDto
-     * @throws ConnectorException
      * @throws ApplicationInstallException
+     * @throws ConnectorException
+     * @throws CustomNodeException
+     * @throws GuzzleException
+     * @throws OnRepeatException
      * @throws Exception
      */
     public function processAction(ProcessDto $dto): ProcessDto
