@@ -1,16 +1,12 @@
 # Client-specific vars
 CLIENT_DIR="clients/demo"
 
-TAG?=dev
 IMAGE=dkr.hanaboso.net/pipes/demo/php-api:$(TAG)
 
-# Generic vars
-MINIMAL=docker-compose.minimal.yml
-DEV_YML?=$(MINIMAL) -f docker-compose.dev.yml
-
-DC_DEV=docker-compose -f $(DEV_YML)
-DE_DEV=docker-compose -f $(DEV_YML) exec -T
-DE_DEVT=docker-compose -f $(DEV_YML) exec
+D=docker
+DC_DEV=docker-compose
+DE_DEV=docker-compose exec -T
+DE_DEVT=docker-compose exec
 
 ALIAS?=alias
 Darwin:
@@ -65,9 +61,3 @@ init: up
 
 destroy: .env .lo0-down
 	$(DC_DEV) down -v
-
-init-minimal:
-	make init DEV_YML=$(MINIMAL)
-
-destroy-minimal:
-	make destroy DEV_YML=$(MINIMAL)

@@ -2,8 +2,9 @@
 
 namespace HbPFConnectorsTests\Integration\Model\Application\Impl\FlexiBee;
 
-use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Psr7\Response;
 use Hanaboso\CommonsBundle\Enum\AuthorizationTypeEnum;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
@@ -15,8 +16,10 @@ use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\Utils\Exception\DateTimeException;
 use Hanaboso\Utils\String\Json;
-use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
+use HbPFConnectorsTests\KernelTestCaseAbstract;
+use HbPFConnectorsTests\MockServer\Mock;
+use HbPFConnectorsTests\MockServer\MockServer;
 use PHPUnit\Framework\MockObject\MockObject;
 
 /**
@@ -24,7 +27,7 @@ use PHPUnit\Framework\MockObject\MockObject;
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\FlexiBee
  */
-final class FlexiBeeApplicationTest extends DatabaseTestCaseAbstract
+final class FlexiBeeApplicationTest extends KernelTestCaseAbstract
 {
 
     /**
@@ -57,19 +60,40 @@ final class FlexiBeeApplicationTest extends DatabaseTestCaseAbstract
      */
     public function testGetAuthorizationType(): void
     {
-        self::assertEquals(AuthorizationTypeEnum::BASIC, $this->getApp()->getAuthorizationType());
+        self::assertEquals(AuthorizationTypeEnum::BASIC->value, $this->getApp()->getAuthorizationType());
     }
 
     /**
-     * @throws MongoDBException
-     * @throws CurlException
+     * @return void
      * @throws ApplicationInstallException
+     * @throws CurlException
      * @throws DateTimeException
+     * @throws GuzzleException
      * @throws Exception
      */
     public function testGetRequestDto(): void
     {
+        $mockServer = new MockServer();
+        self::getContainer()->set('hbpf.worker-api', $mockServer);
+
         $this->setApp();
+
+        $mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall',
+                Json::decode(
+                    '[{"id":null,"user":"user","name":"flexibee","nonEncryptedSettings":[],"encryptedSettings":"001_FlnM4agF7XW43FfvLS3rCJl8nGu9b7I8Dy63UaP6D2k=:20E8SbaXH\/JUGpp+7C4fxTQkOp9RvZ+ev6uaKfuOWzU=:xNX4LIh6HKFk7e2xKyTj+BM4nNXBWhF6:mxeDUNj08GJOb0nrTFJMTuH+8ZkkHGBj\/puzSvCxkxNSE7G5nA8y8+NXxFcWYORVlVvmY5kMxTk1JXvkBcQTQL0pHj2Bjgs8OExG3IS7kW\/9DJ7J5EsM1hkbZBJLr2voPa7HTec8aFoTL1w0YifVUf5y5cT1cwJBJ2V4tEcbHZSmitnvhSoh4Hba9VcbVlQ7x1G8gvVGYLQrmaCtMVhpAXXEn1k\/5DFrkZ50ZYrKGKD63FvKjL0fXKrgAoeobaCcr+YwEvKeGgUzr3G3QD2ZKHBkC16P901hEtjRP6pSS87gBC7+3IwUs23a0bZftIer5qn6AlPYrguL\/y2WeiLKM3XlZdFbXGgazOGoNsc2\/bXL0USk\/dsdSoGB8jHzsSGTDWiHGeZQQS5Uam+hvwcfDCXS9tY91qo4nUCBFub5nFumWeWPuVAOPgH1ezUBKwNqebUPw8ZC\/wukCzh8","settings":[],"created":"2023-02-23 09:13:56","updated":"2023-02-23 09:13:56","expires":null,"enabled":false}]',
+                ),
+                CurlManager::METHOD_POST,
+                new Response(200, [], Json::encode([$this->getAppInstall()->toArray()])),
+                [
+                    'encryptedSettings' => '001_FlnM4agF7XW43FfvLS3rCJl8nGu9b7I8Dy63UaP6D2k=:20E8SbaXH/JUGpp+7C4fxTQkOp9RvZ+ev6uaKfuOWzU=:xNX4LIh6HKFk7e2xKyTj+BM4nNXBWhF6:mxeDUNj08GJOb0nrTFJMTuH+8ZkkHGBj/puzSvCxkxNSE7G5nA8y8+NXxFcWYORVlVvmY5kMxTk1JXvkBcQTQL0pHj2Bjgs8OExG3IS7kW/9DJ7J5EsM1hkbZBJLr2voPa7HTec8aFoTL1w0YifVUf5y5cT1cwJBJ2V4tEcbHZSmitnvhSoh4Hba9VcbVlQ7x1G8gvVGYLQrmaCtMVhpAXXEn1k/5DFrkZ50ZYrKGKD63FvKjL0fXKrgAoeobaCcr+YwEvKeGgUzr3G3QD2ZKHBkC16P901hEtjRP6pSS87gBC7+3IwUs23a0bZftIer5qn6AlPYrguL/y2WeiLKM3XlZdFbXGgazOGoNsc2/bXL0USk/dsdSoGB8jHzsSGTDWiHGeZQQS5Uam+hvwcfDCXS9tY91qo4nUCBFub5nFumWeWPuVAOPgH1ezUBKwNqebUPw8ZC/wukCzh8',
+                    'created' => '2023-02-23 09:13:56',
+                    'updated' => '2023-02-23 09:13:56',
+                ],
+            ),
+        );
+
         $dto = $this->getApp()->getRequestDto(
             new ProcessDto(),
             $this->getAppInstall(),
@@ -86,6 +110,9 @@ final class FlexiBeeApplicationTest extends DatabaseTestCaseAbstract
      * @return void
      * @throws ApplicationInstallException
      * @throws CurlException
+     * @throws DateTimeException
+     * @throws GuzzleException
+     * @throws Exception
      */
     public function testGetRequestDtoWithHttpAuth(): void
     {
@@ -103,10 +130,11 @@ final class FlexiBeeApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws MongoDBException
-     * @throws CurlException
+     * @return void
      * @throws ApplicationInstallException
+     * @throws CurlException
      * @throws DateTimeException
+     * @throws GuzzleException
      * @throws Exception
      */
     public function testGetRequestDtoWithoutUrl(): void
@@ -126,10 +154,11 @@ final class FlexiBeeApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws MongoDBException
-     * @throws CurlException
+     * @return void
      * @throws ApplicationInstallException
+     * @throws CurlException
      * @throws DateTimeException
+     * @throws GuzzleException
      * @throws Exception
      */
     public function testGetRequestDtoWithoutUser(): void
@@ -149,10 +178,11 @@ final class FlexiBeeApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws MongoDBException
-     * @throws CurlException
+     * @return void
      * @throws ApplicationInstallException
+     * @throws CurlException
      * @throws DateTimeException
+     * @throws GuzzleException
      * @throws Exception
      */
     public function testGetRequestDtoWithoutPassword(): void
@@ -172,10 +202,11 @@ final class FlexiBeeApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws MongoDBException
-     * @throws CurlException
+     * @return void
      * @throws ApplicationInstallException
+     * @throws CurlException
      * @throws DateTimeException
+     * @throws GuzzleException
      * @throws Exception
      */
     public function testGetRequestDtoWithoutTokenParameter(): void
@@ -194,11 +225,11 @@ final class FlexiBeeApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws MongoDBException
-     * @throws CurlException
+     * @return void
      * @throws ApplicationInstallException
+     * @throws CurlException
      * @throws DateTimeException
-     * @throws Exception
+     * @throws GuzzleException
      */
     public function testGetRequestDtoIncorrectResponse(): void
     {
@@ -216,11 +247,11 @@ final class FlexiBeeApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws MongoDBException
-     * @throws CurlException
+     * @return void
      * @throws ApplicationInstallException
+     * @throws CurlException
      * @throws DateTimeException
-     * @throws Exception
+     * @throws GuzzleException
      */
     public function testGetRequestDtoEmptyBody(): void
     {
@@ -238,11 +269,11 @@ final class FlexiBeeApplicationTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @throws MongoDBException
-     * @throws CurlException
+     * @return void
      * @throws ApplicationInstallException
+     * @throws CurlException
      * @throws DateTimeException
-     * @throws Exception
+     * @throws GuzzleException
      */
     public function testGetRequestDtoWithoutSuccess(): void
     {
@@ -420,8 +451,6 @@ final class FlexiBeeApplicationTest extends DatabaseTestCaseAbstract
             ];
             $appInstall->addSettings([FlexiBeeApplication::CLIENT_SETTINGS => $arrayClientSettings]);
         }
-
-        $this->pfd($appInstall);
 
         return $appInstall;
     }

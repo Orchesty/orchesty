@@ -8,6 +8,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\HubSpotApplication;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
+use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
@@ -37,9 +38,13 @@ abstract class HubSpotCreateContactAbstract extends ConnectorAbstract implements
 
     /**
      * HubSpotCreateContactAbstract constructor.
+     *
+     * @param ApplicationInstallRepository $applicationInstallRepository
      */
-    public function __construct()
+    public function __construct(private readonly ApplicationInstallRepository $applicationInstallRepository)
     {
+        parent::__construct($this->applicationInstallRepository);
+
         $this->logger = new NullLogger();
     }
 

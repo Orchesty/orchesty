@@ -2,8 +2,6 @@ includes:
 	- ../vendor/hanaboso/php-check-utils/phpstan.neon
 
 parameters:
-	doctrine:
-		objectManagerLoader: DocumentManagerLoader.php
 	symfony:
 		container_xml_path: %rootDir%/../../../var/cache/test/PipesPhpSdkTests_app_KernelTestDebugContainer.xml
 	ignoreErrors:
@@ -29,7 +27,6 @@ parameters:
 			- Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract
 			- Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract
 			- Hanaboso\PipesPhpSdk\CustomNode\Impl\RabbitCustomNode
-			- Hanaboso\Utils\Enum\EnumAbstract
 			- Hanaboso\Utils\Exception\PipesFrameworkExceptionAbstract
 			- PipesPhpSdkTests\ControllerTestCaseAbstract
 			- PipesPhpSdkTests\DatabaseTestCaseAbstract
@@ -38,14 +35,23 @@ parameters:
 			- RabbitMqBundle\Consumer\Consumer
 			- RabbitMqBundle\Consumer\Consumer
 			- Hanaboso\PipesPhpSdk\CustomNode\CommonNodeAbstract
+			- Hanaboso\PipesPhpSdk\Storage\Mongodb\Repository
+			- Hanaboso\PipesPhpSdk\Storage\Mongodb\Repository\NodeFilter
+			- Hanaboso\PipesPhpSdk\Storage\Mongodb\Filter
+			- Hanaboso\PipesPhpSdk\Storage\Mongodb\Document\Node
+			- Hanaboso\PipesPhpSdk\Storage\Mongodb\DocumentAbstract
 
 		classesNotRequiredToBeAbstractOrFinal:
 			- Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall
 			- Hanaboso\PipesPhpSdk\Application\Document\Webhook
-			- Hanaboso\PipesPhpSdk\Database\Document\Category
-			- Hanaboso\PipesPhpSdk\Database\Document\Embed\EmbedNode
-			- Hanaboso\PipesPhpSdk\Database\Document\Node
-			- Hanaboso\PipesPhpSdk\Database\Document\Topology
-			- Hanaboso\PipesPhpSdk\Database\Document\TopologyApplication
+			- Hanaboso\PipesPhpSdk\Storage\Mongodb\Document\Category
+			- Hanaboso\PipesPhpSdk\Storage\Mongodb\Document\Node
+			- Hanaboso\PipesPhpSdk\Storage\Mongodb\Document\Topology
+			- Hanaboso\PipesPhpSdk\Storage\Mongodb\Document\TopologyApplication
 			- Hanaboso\PipesPhpSdk\Storage\DataStorage\Document\DataStorageDocument
 			- Hanaboso\PipesPhpSdk\Listener\RepeaterListener
+			- Hanaboso\PipesPhpSdk\Storage\Mongodb\Filter
+			- Hanaboso\PipesPhpSdk\Storage\Mongodb\Repository
+			- PipesPhpSdkTests\MockServer\MockServerException
+			- PipesPhpSdkTests\MockServer\MockServer
+			- PipesPhpSdkTests\MockServer\Mock

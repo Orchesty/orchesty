@@ -2,42 +2,52 @@
 
 namespace Hanaboso\PipesPhpSdk\Application\Repository;
 
-use Doctrine\ODM\MongoDB\MongoDBException;
-use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
+use GuzzleHttp\Exception\GuzzleException;
+use Hanaboso\CommonsBundle\Crypt\CryptManager;
+use Hanaboso\CommonsBundle\Crypt\Exceptions\CryptException;
+use Hanaboso\CommonsBundle\WorkerApi\ClientInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
-use Hanaboso\Utils\Date\DateTimeUtils;
-use Hanaboso\Utils\Exception\DateTimeException;
-use MongoDB\BSON\UTCDateTime;
+use Hanaboso\PipesPhpSdk\Storage\Mongodb\DocumentAbstract;
+use Hanaboso\PipesPhpSdk\Storage\Mongodb\Repository;
 
 /**
  * Class ApplicationInstallRepository
  *
- * @package         Hanaboso\PipesPhpSdk\Application\Repository
+ * @extends Repository<ApplicationInstall>
  *
- * @phpstan-extends DocumentRepository<ApplicationInstall>
+ * @package Hanaboso\PipesPhpSdk\Application\Repository
  */
-final class ApplicationInstallRepository extends DocumentRepository
+final class ApplicationInstallRepository extends Repository
 {
 
     /**
-     * @param string $key
+     * ApplicationInstallRepository constructor.
+     *
+     * @param ClientInterface $client
+     * @param CryptManager    $cryptManager
+     */
+    public function __construct(ClientInterface $client, private readonly CryptManager $cryptManager)
+    {
+        parent::__construct($client, ApplicationInstall::class);
+    }
+
+    /**
+     * @param string $name
      * @param string $user
      *
      * @return ApplicationInstall
      * @throws ApplicationInstallException
+     * @throws GuzzleException
      */
-    public function findUserApp(string $key, string $user): ApplicationInstall
+    public function findUserApp(string $name, string $user): ApplicationInstall
     {
-        /** @var ApplicationInstall | null $app */
-        $app = $this->createQueryBuilder()
-            ->field(ApplicationInstall::KEY)->equals($key)
-            ->field(ApplicationInstall::USER)->equals($user)
-            ->getQuery()->getSingleResult();
+        /** @var ApplicationInstall|null $app */
+        $app = $this->findOne(new ApplicationInstallFilter(names: [$name], users: [$user], deleted: FALSE));
 
         if (!$app) {
             throw new ApplicationInstallException(
-                sprintf('Application [%s] was not found .', $key),
+                sprintf('Application [%s] was not found .', $name),
                 ApplicationInstallException::APP_WAS_NOT_FOUND,
             );
         }
@@ -50,38 +60,28 @@ final class ApplicationInstallRepository extends DocumentRepository
      * @param string[] $applications
      *
      * @return ApplicationInstall[]
+     * @throws GuzzleException
      */
     public function findUserApps(string $user, array $applications): array
     {
-        /** @var ApplicationInstall[] | null $appInstalls */
-        $appInstalls = $this->createQueryBuilder()
-            ->field(ApplicationInstall::USER)->equals($user)
-            ->field(ApplicationInstall::KEY)->in($applications)
-            ->getQuery()->toArray();
-
-        if (!$appInstalls) {
-            return [];
-        }
-
-        return $appInstalls;
+        return $this->findMany(new ApplicationInstallFilter(names: $applications, users: [$user]));
     }
 
     /**
-     * @param string $key
+     * @param string $name
      *
      * @return ApplicationInstall
      * @throws ApplicationInstallException
+     * @throws GuzzleException
      */
-    public function findOneByName(string $key): ApplicationInstall
+    public function findOneByName(string $name): ApplicationInstall
     {
-        /** @var ApplicationInstall | null $app */
-        $app = $this->createQueryBuilder()
-            ->field(ApplicationInstall::KEY)->equals($key)
-            ->getQuery()->getSingleResult();
+        /** @var ApplicationInstall|null $app */
+        $app = $this->findOne(new ApplicationInstallFilter(names: [$name]));
 
         if (!$app) {
             throw new ApplicationInstallException(
-                sprintf('Application [%s] was not found .', $key),
+                sprintf('Application [%s] was not found .', $name),
                 ApplicationInstallException::APP_WAS_NOT_FOUND,
             );
         }
@@ -90,115 +90,35 @@ final class ApplicationInstallRepository extends DocumentRepository
     }
 
     /**
-     * @return int
-     * @throws MongoDBException
-     */
-    public function getInstalledApplicationsCount(): int
-    {
-        /** @var int $res */
-        $res = $this->createQueryBuilder()
-            ->field('deleted')->equals(FALSE)
-            ->count()->getQuery()->execute();
-
-        return $res;
-    }
-
-    /**
-     * @return mixed[]
-     * @throws DateTimeException
-     */
-    public function getApplicationsCount(): array
-    {
-        $ab  = $this->createAggregationBuilder();
-        $res = $ab
-            ->match()->field('deleted')->equals(FALSE)
-            ->group()
-            ->field('id')->expression('$key')
-            ->field('total_sum')->sum(1)
-            ->field('non_expire_sum')->sum(
-                $ab->expr()->cond(
-                    $ab->expr()->addOr(
-                        $ab->expr()->gte('$expires', new UTCDateTime(DateTimeUtils::getUtcDateTime())),
-                        $ab->expr()->eq('$expires', NULL),
-                    ),
-                    1,
-                    0,
-                ),
-            )
-            ->sort('id', 'ASC')
-            ->getAggregation()
-            ->getIterator()
-            ->toArray();
-
-        $ret = [];
-        foreach ($res as $item) {
-            $ret[] = [
-                '_id'   => $item['_id'],
-                'value' => ['total_sum' => $item['total_sum'], 'non_expire_sum' => $item['non_expire_sum']],
-            ];
-        }
-
-        return $ret;
-    }
-
-    /**
-     * @return mixed[]
-     */
-    public function getUsersCount(): array
-    {
-        $res = $this->createQueryBuilder()
-            ->field('deleted')->equals(FALSE)
-            ->sort('id', 'ASC')
-            ->getQuery()
-            ->toArray();
-
-        $ret = [];
-        /** @var ApplicationInstall $item */
-        foreach ($res as $item) {
-            $ret[] = [
-                'id'                  => $item->getId(),
-                'name'                 => $item->getKey(),
-                'user'                 => $item->getUser(),
-                'nonEncryptedSettings' => $item->getNonEncryptedSettings(),
-            ];
-        }
-
-        return $ret;
-    }
-
-    /**
-     * @param string $application
+     * @param DocumentAbstract $entity
      *
-     * @return mixed[]
-     * @throws DateTimeException
+     * @return void
+     * @throws CryptException
      */
-    public function getApplicationsCountDetails(string $application): array
+    protected function beforeSend(DocumentAbstract $entity): void
     {
-        $ab  = $this->createAggregationBuilder();
-        $res = $ab
-            ->match()->field('key')->equals($application)
-            ->group()->field('id')
-            ->expression(
-                $ab->expr()
-                    ->field('active')->expression(
-                        $ab->expr()->addOr(
-                            $ab->expr()->gte('$expires', new UTCDateTime(DateTimeUtils::getUtcDateTime())),
-                            $ab->expr()->eq('$expires', NULL),
-                        ),
-                    )
-                    ->field('name')->ifNull('$user', ''),
-            )
-            ->sort('id', 'ASC')
-            ->getAggregation()
-            ->getIterator()
-            ->toArray();
-
-        $ret = ['_id' => $application];
-        foreach ($res as $item) {
-            $ret['value']['users'][] = ['active' => $item['_id']['active'], 'name' => $item['_id']['name']];
+        /** @var ApplicationInstall $childEntity */
+        $childEntity = $entity;
+        if ($childEntity->getSettings()) {
+            $childEntity->setEncryptedSettings($this->cryptManager->encrypt($childEntity->getSettings()));
+            $childEntity->setSettings([]);
         }
+    }
 
-        return [$ret];
+    /**
+     * @param DocumentAbstract $entity
+     *
+     * @return void
+     * @throws CryptException
+     */
+    protected function afterReceive(DocumentAbstract $entity): void
+    {
+        /** @var ApplicationInstall $childEntity */
+        $childEntity = $entity;
+        if ($childEntity->getEncryptedSettings()) {
+            $childEntity->setSettings($this->cryptManager->decrypt($childEntity->getEncryptedSettings()));
+            $childEntity->setEncryptedSettings('');
+        }
     }
 
 }

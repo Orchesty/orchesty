@@ -38,7 +38,7 @@ final class ShopifyApplication extends BasicApplicationAbstract implements Webho
      */
     public function getApplicationType(): string
     {
-        return ApplicationTypeEnum::WEBHOOK;
+        return ApplicationTypeEnum::WEBHOOK->value;
     }
 
     /**

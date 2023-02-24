@@ -2,12 +2,12 @@
 
 namespace Hanaboso\PipesPhpSdk\Listener;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Exception;
+use GuzzleHttp\Exception\GuzzleException;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\CommonsBundle\Process\ProcessDtoAbstract;
-use Hanaboso\PipesPhpSdk\Database\Document\Node;
-use Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository;
+use Hanaboso\PipesPhpSdk\Storage\Mongodb\Document\Node;
+use Hanaboso\PipesPhpSdk\Storage\Mongodb\Repository\NodeFilter;
+use Hanaboso\PipesPhpSdk\Storage\Mongodb\Repository\NodeRepository;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\System\PipesHeaders;
 use Hanaboso\Utils\Traits\ControllerTrait;
@@ -31,28 +31,21 @@ class RepeaterListener implements EventSubscriberInterface, LoggerAwareInterface
     use LoggerTrait;
 
     /**
-     * @var NodeRepository
-     */
-    protected NodeRepository $nodeRepo;
-
-    /**
      * RepeaterListener constructor.
      *
-     * @param DocumentManager $dm
+     * @param NodeRepository $nodeRepository
      */
-    public function __construct(DocumentManager $dm)
+    public function __construct(private readonly NodeRepository $nodeRepository)
     {
         $this->logger = new NullLogger();
-
-        /** @var NodeRepository $repo */
-        $repo           = $dm->getRepository(Node::class);
-        $this->nodeRepo = $repo;
     }
 
     /**
      * @param ExceptionEvent $event
      *
-     * @throws Exception
+     * @return void
+     * @throws GuzzleException
+     * @throws PipesFrameworkException
      */
     public function onRepeatableException(ExceptionEvent $event): void
     {
@@ -84,20 +77,24 @@ class RepeaterListener implements EventSubscriberInterface, LoggerAwareInterface
      *
      * @return ProcessDtoAbstract
      * @throws PipesFrameworkException
+     * @throws GuzzleException
      */
     private function getRepeatedDto(OnRepeatException $e): ProcessDtoAbstract
     {
-        $dto              = $e->getProcessDto();
-        $node             = $this->nodeRepo->findOneBy(['id' => $dto->getHeader(PipesHeaders::NODE_ID, '')]);
-        $repeaterSettings = $node?->getSystemConfigs();
-        if ($repeaterSettings?->isRepeaterEnabled()){
+        $dto = $e->getProcessDto();
+        /** @var Node $node */
+        $node             = $this->nodeRepository->findOne(
+            new NodeFilter(ids: [$dto->getHeader(PipesHeaders::NODE_ID, '')]),
+        );
+        $repeaterSettings = $node->getSystemConfigs();
+        if ($repeaterSettings?->isRepeaterEnabled()) {
             $dto->setRepeater(
                 $repeaterSettings->getRepeaterInterval(),
                 $repeaterSettings->getRepeaterHops(),
                 $e->getMessage(),
             );
         } else {
-            $dto->setRepeater($e->getInterval(),$e->getMaxHops(),$e->getMessage());
+            $dto->setRepeater($e->getInterval(), $e->getMaxHops(), $e->getMessage());
         }
 
         return $dto;

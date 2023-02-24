@@ -3,22 +3,27 @@
 namespace HbPFConnectorsTests\Integration\Model\Application\Impl\OAuth2\Connector;
 
 use Exception;
+use GuzzleHttp\Psr7\Response;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\OAuth2\Connector\GetApplicationForRefreshBatchConnector;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\OAuth2\Connector\RefreshOAuth2TokenNode;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
 use Hanaboso\Utils\Date\DateTimeUtils;
+use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\System\PipesHeaders;
-use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
+use HbPFConnectorsTests\KernelTestCaseAbstract;
+use HbPFConnectorsTests\MockServer\Mock;
+use HbPFConnectorsTests\MockServer\MockServer;
 
 /**
  * Class RefreshOAuth2TokenCustomNodeTest
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\OAuth2\Connector
  */
-final class RefreshOAuth2TokenCustomNodeTest extends DatabaseTestCaseAbstract
+final class RefreshOAuth2TokenCustomNodeTest extends KernelTestCaseAbstract
 {
 
     use PrivateTrait;
@@ -28,6 +33,17 @@ final class RefreshOAuth2TokenCustomNodeTest extends DatabaseTestCaseAbstract
      */
     public function testProcess(): void
     {
+        $mockServer = new MockServer();
+        self::getContainer()->set('hbpf.worker-api', $mockServer);
+
+        $mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"ids":[""],"deleted":null}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(200, [], Json::encode([])),
+            ),
+        );
 
         $providerMock = self::createMock(OAuth2Provider::class);
         $providerMock->method('refreshAccessToken')->willReturn(
@@ -58,8 +74,6 @@ final class RefreshOAuth2TokenCustomNodeTest extends DatabaseTestCaseAbstract
                 ],
             ],
         );
-        $this->pfd($applicationInstall);
-        $this->dm->clear();
         $dto = DataProvider::getProcessDto('mailchimp', 'user', '');
         $dto->setHeaders(
             [

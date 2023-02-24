@@ -2,8 +2,6 @@ includes:
 	- ../vendor/hanaboso/php-check-utils/phpstan.neon
 
 parameters:
-	doctrine:
-		objectManagerLoader: DocumentManagerLoader.php
 	symfony:
 		container_xml_path: %rootDir%/../../../var/cache/test/HbPFConnectorsTests_app_KernelTestDebugContainer.xml
 	ignoreErrors:
@@ -24,11 +22,14 @@ parameters:
 			- Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract
 			- Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract
 			- Hanaboso\PipesPhpSdk\Batch\BatchAbstract
-			- Hanaboso\Utils\Enum\EnumAbstract
 			- Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract
 			- Hanaboso\PipesPhpSdk\CustomNode\CommonNodeAbstract
 			- Hanaboso\PipesPhpSdk\CustomNode\CustomNodeAbstract
 			- HbPFConnectorsTests\ControllerTestCaseAbstract
-			- HbPFConnectorsTests\DatabaseTestCaseAbstract
 			- HbPFConnectorsTests\Integration\Model\Application\Impl\Fakturoid\Connector\FakturoidAbstractConnectorTest
 			- HbPFConnectorsTests\KernelTestCaseAbstract
+
+		classesNotRequiredToBeAbstractOrFinal:
+			- HbPFConnectorsTests\MockServer\MockServerException
+			- HbPFConnectorsTests\MockServer\MockServer
+			- HbPFConnectorsTests\MockServer\Mock

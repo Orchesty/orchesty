@@ -8,8 +8,8 @@ use Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\MailchimpApplicatio
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\Mapper\MailchimpCreateContactMapper;
 use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Json;
-use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
+use HbPFConnectorsTests\KernelTestCaseAbstract;
 use HbPFConnectorsTests\MockCurlMethod;
 
 /**
@@ -17,7 +17,7 @@ use HbPFConnectorsTests\MockCurlMethod;
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Mailchimp\Mapper
  */
-final class MailchimpCreateContactMapperTest extends DatabaseTestCaseAbstract
+final class MailchimpCreateContactMapperTest extends KernelTestCaseAbstract
 {
 
     /**
@@ -45,12 +45,10 @@ final class MailchimpCreateContactMapperTest extends DatabaseTestCaseAbstract
 
         $applicationInstall->setSettings(
             [
-                MailchimpApplication::AUDIENCE_ID  => '2a8******8',
+                MailchimpApplication::AUDIENCE_ID => '2a8******8',
                 MailchimpApplication::API_KEYPOINT => $app->getApiEndpoint($applicationInstall),
             ],
         );
-
-        $this->pfd($applicationInstall);
 
         $dto = DataProvider::getProcessDto(
             $app->getName(),
@@ -58,7 +56,9 @@ final class MailchimpCreateContactMapperTest extends DatabaseTestCaseAbstract
             File::getContent(__DIR__ . '/Data/responseHubspot.json'),
         );
 
-        $mailchimpCreateContactMapper = new MailchimpCreateContactMapper();
+        $mailchimpCreateContactMapper = new MailchimpCreateContactMapper(
+            self::getContainer()->get('hbpf.application_install.repository'),
+        );
         $dto                          = $mailchimpCreateContactMapper->processAction($dto);
         $dtoNoBody                    = $mailchimpCreateContactMapper->processAction($dto);
 

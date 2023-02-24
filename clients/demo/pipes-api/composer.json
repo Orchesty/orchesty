@@ -9,8 +9,8 @@
         "hanaboso/commons-bundle": "^2.6",
         "hanaboso/email-service-bundle": "^1.2",
         "hanaboso/rest-bundle": "^1.1",
-        "orchesty/php-connectors": "^2.1",
-        "orchesty/php-sdk": "^2.2",
+        "orchesty/php-connectors": "^3.0",
+        "orchesty/php-sdk": "^3.0",
         "symfony/security-bundle": "^6.1"
     },
     "require-dev": {

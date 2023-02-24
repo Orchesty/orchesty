@@ -8,7 +8,7 @@ use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\S3Application;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
-use HbPFConnectorsTests\DatabaseTestCaseAbstract;
+use HbPFConnectorsTests\KernelTestCaseAbstract;
 use LogicException;
 
 /**
@@ -16,7 +16,7 @@ use LogicException;
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\AmazonApps\S3
  */
-final class S3ApplicationTest extends DatabaseTestCaseAbstract
+final class S3ApplicationTest extends KernelTestCaseAbstract
 {
 
     /**
@@ -37,7 +37,7 @@ final class S3ApplicationTest extends DatabaseTestCaseAbstract
      */
     public function testGetApplicationType(): void
     {
-        self::assertEquals(ApplicationTypeEnum::CRON, $this->application->getApplicationType());
+        self::assertEquals(ApplicationTypeEnum::CRON->value, $this->application->getApplicationType());
     }
 
     /**
@@ -119,7 +119,6 @@ final class S3ApplicationTest extends DatabaseTestCaseAbstract
             ],
         );
 
-        $this->pfd($application);
         self::assertTrue($this->application->isAuthorized($application));
     }
 
@@ -131,7 +130,6 @@ final class S3ApplicationTest extends DatabaseTestCaseAbstract
     public function testIsNotAuthorized(): void
     {
         $application = new ApplicationInstall();
-        $this->pfd($application);
         self::assertFalse($this->application->isAuthorized($application));
     }
 

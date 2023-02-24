@@ -2,8 +2,8 @@
 
 namespace HbPFConnectorsTests\Live\Model\Application\Impl\FlexiBee;
 
-use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
+use GuzzleHttp\Exception\GuzzleException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\FlexiBee\FlexiBeeApplication;
@@ -23,11 +23,12 @@ final class FlexiBeeApplicationTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @group live
+     * @return void
      * @throws ApplicationInstallException
      * @throws CurlException
      * @throws DateTimeException
-     * @throws MongoDBException
+     * @throws GuzzleException
+     * @throws Exception
      */
     public function testAuthorize(): void
     {
@@ -37,6 +38,7 @@ final class FlexiBeeApplicationTest extends ControllerTestCaseAbstract
 
     /**
      * @return FlexiBeeApplication
+     * @throws Exception
      */
     private function getApp(): FlexiBeeApplication
     {
@@ -62,8 +64,6 @@ final class FlexiBeeApplicationTest extends ControllerTestCaseAbstract
                     ],
             ],
         );
-
-        $this->pfd($appInstall);
 
         return $appInstall;
     }

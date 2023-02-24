@@ -5,11 +5,11 @@ namespace ApplinthTests\Controller;
 use ApplinthTests\ControllerTestCaseAbstract;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
+use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\PipesFramework\UserTask\Document\UserTask;
 use Hanaboso\PipesFramework\UserTask\Document\UserTaskMessage;
 use Hanaboso\PipesFramework\UserTask\Enum\UserTaskEnum;
 use Hanaboso\PipesFramework\UserTask\Model\UserTaskManager;
-use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use Hanaboso\Utils\Exception\EnumException;
 use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\System\PipesHeaders;
@@ -176,7 +176,7 @@ final class TrashControllerTest extends ControllerTestCaseAbstract
             ->setTopologyName('')
             ->setReturnRoutingKey('')
             ->setCorrelationId('corr1')
-            ->setType(UserTaskEnum::USER_TASK)
+            ->setType(UserTaskEnum::USER_TASK->value)
             ->setMessage((new UserTaskMessage())->setBody('body'))
             ->setUser('endUser');
 
@@ -194,7 +194,7 @@ final class TrashControllerTest extends ControllerTestCaseAbstract
                 ->setTopologyName('')
                 ->setReturnRoutingKey('')
                 ->setCorrelationId('corr')
-                ->setType(UserTaskEnum::TRASH)
+                ->setType(UserTaskEnum::TRASH->value)
                 ->setMessage((new UserTaskMessage())->setBody('body'))
                 ->setUser('endUser');
 

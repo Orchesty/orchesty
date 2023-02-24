@@ -7,10 +7,10 @@ use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\Persistence\ObjectRepository;
 use Hanaboso\CommonsBundle\Exception\CategoryException;
 use Hanaboso\PipesFramework\Configurator\Model\CategoryManager;
+use Hanaboso\PipesFramework\Database\Document\Category;
+use Hanaboso\PipesFramework\Database\Document\Topology;
+use Hanaboso\PipesFramework\Database\Repository\CategoryRepository;
 use Hanaboso\PipesFramework\TopologyInstaller\Dto\TopologyFile;
-use Hanaboso\PipesPhpSdk\Database\Document\Category;
-use Hanaboso\PipesPhpSdk\Database\Document\Topology;
-use Hanaboso\PipesPhpSdk\Database\Repository\CategoryRepository;
 use RuntimeException;
 
 /**

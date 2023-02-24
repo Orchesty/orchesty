@@ -11,9 +11,12 @@ services:
         class: Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Connector\HubSpotCreateContactConnector
         calls:
             -   setApplication: [ '@hbpf.application.hub-spot' ]
-            -   setDb: [ '@doctrine_mongodb.odm.default_document_manager' ]
             -   setSender: [ '@hbpf.transport.curl_manager' ]
             -   setLogger: [ '@monolog.logger.commons' ]
+        arguments:
+          [ '@hbpf.application_install.repository' ]
 
     hbpf.custom_node.hub-spot.create-contact:
         class: Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Mapper\HubSpotCreateContactMapper
+        arguments:
+          [ '@hbpf.application_install.repository' ]

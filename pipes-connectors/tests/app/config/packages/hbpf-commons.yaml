@@ -1,18 +1,9 @@
 parameters:
     ##########################
-    #   Database Locator     #
-    ##########################
-    database_type: 'ODM' # 'ORM'
-
-    ##########################
     #        Metrics         #
     ##########################
-    #MongoDb sender
-    mongodb.monolith_table: monolith
-    mongodb.connector_table: connectors
-    mongodb.node_table: pipes_node
-    mongodb.rabbit_table: rabbitmq
-    mongodb.counter_table: pipes_counter
+    worker-api: '%env(string:WORKER_API)%'
+    api-key: '%env(string:ORCHESTY_API_KEY)%'
 
 services:
     _defaults:
@@ -36,6 +27,13 @@ services:
     #        Metrics         #
     ##########################
 
+    hbpf.worker-api:
+        class: Hanaboso\CommonsBundle\WorkerApi\Client
+        arguments:
+            - '@hbpf.transport.curl_client_factory'
+            - '%worker-api%'
+            - '%api-key%'
+
     hbpf.system_metrics_listener:
         class: Hanaboso\CommonsBundle\Listener\SystemMetricsListener
         arguments:
@@ -47,16 +45,16 @@ services:
             - { name: kernel.event_subscriber, event: kernel.controller }
 
     hbpf.metrics.mongodb_connector:
-        class: Hanaboso\CommonsBundle\Metrics\Impl\MongoDbSender
+        class: Hanaboso\CommonsBundle\Metrics\Impl\CurlSender
         arguments:
-            - '@doctrine_mongodb.odm.default_document_manager'
-            - '%mongodb.connector_table%'
+            - '@hbpf.worker-api'
+            - '%worker-api%'
 
     hbpf.metrics.mongodb_monolith:
-        class: Hanaboso\CommonsBundle\Metrics\Impl\MongoDbSender
+        class: Hanaboso\CommonsBundle\Metrics\Impl\CurlSender
         arguments:
-            - '@doctrine_mongodb.odm.default_document_manager'
-            - '%mongodb.monolith_table%'
+            - '@hbpf.worker-api'
+            - '%worker-api%'
 
     hbpf.metrics_connector.loader:
         class: Hanaboso\CommonsBundle\Metrics\MetricsSenderLoader
@@ -67,45 +65,6 @@ services:
         class: Hanaboso\CommonsBundle\Metrics\MetricsSenderLoader
         arguments:
             - '@hbpf.metrics.mongodb_monolith'
-
-    ##########################
-    #      File Storage      #
-    ##########################
-
-    hbpf.file_storage.driver.mongo:
-        class: Hanaboso\CommonsBundle\FileStorage\Driver\Impl\Mongo\MongoFileDriver
-        arguments:
-            - '@doctrine_mongodb.odm.default_document_manager'
-            - '@hbpf.path_generator.hash'
-
-    hbpf.path_generator.hash:
-        class: Hanaboso\CommonsBundle\FileStorage\PathGenerator\HashPathGenerator
-        arguments:
-
-    hbpf.file_storage.locator:
-        class: Hanaboso\CommonsBundle\FileStorage\Driver\FileStorageDriverLocator
-        arguments:
-            - '@hbpf.file_storage.driver.mongo'
-            - '@hbpf.file_storage.driver.mongo'
-            - '@hbpf.file_storage.driver.mongo'
-
-    hbpf.file_storage:
-        class: Hanaboso\CommonsBundle\FileStorage\FileStorage
-        arguments:
-            - '@hbpf.file_storage.locator'
-            - '@hbpf.database_manager_locator'
-            - 'Hanaboso\CommonsBundle\FileStorage\Document\File'
-
-    ##########################
-    #    Database Locator    #
-    ##########################
-
-    hbpf.database_manager_locator:
-        class: Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocator
-        arguments:
-            - '@doctrine_mongodb.odm.default_document_manager'
-            - null
-            - '%database_type%'
 
     ##########################
     #   Transport Services   #

@@ -31,8 +31,8 @@ doctrine_mongodb:
                 ApplicationDocument:
                     type: annotation
                     is_bundle: false
-                    dir: "%kernel.project_dir%/src/../vendor/orchesty/php-sdk/src/Application/Document"
-                    prefix: Hanaboso\PipesPhpSdk\Application\Document
+                    dir: "%kernel.project_dir%/src/Application/Document"
+                    prefix: Hanaboso\PipesFramework\Application\Document
                 FileDocument:
                     type: annotation
                     is_bundle: false
@@ -41,8 +41,8 @@ doctrine_mongodb:
                 CommonsDocument:
                     type: annotation
                     is_bundle: false
-                    dir: "%kernel.project_dir%/src/../vendor/orchesty/php-sdk/src/Database/Document"
-                    prefix: Hanaboso\PipesPhpSdk\Database\Document
+                    dir: "%kernel.project_dir%/src/Database/Document"
+                    prefix: Hanaboso\PipesFramework\Database\Document
                 FileMongo:
                     type: annotation
                     is_bundle: false

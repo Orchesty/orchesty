@@ -1,4 +1,0 @@
-parameters:
-    # Kapacitor
-    kapacitor.host: kapacitor
-    kapacitor.port: 9092

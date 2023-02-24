@@ -13,14 +13,14 @@ use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Document\Webhook;
 use Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookSubscription;
 use Hanaboso\Utils\String\Json;
-use HbPFConnectorsTests\DatabaseTestCaseAbstract;
+use HbPFConnectorsTests\KernelTestCaseAbstract;
 
 /**
  * Class WisepopsApplicationTest
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Wisepop
  */
-final class WisepopsApplicationTest extends DatabaseTestCaseAbstract
+final class WisepopsApplicationTest extends KernelTestCaseAbstract
 {
 
     /**
@@ -33,7 +33,7 @@ final class WisepopsApplicationTest extends DatabaseTestCaseAbstract
      */
     public function testGetApplicationType(): void
     {
-        self::assertEquals(ApplicationTypeEnum::WEBHOOK, $this->application->getApplicationType());
+        self::assertEquals(ApplicationTypeEnum::WEBHOOK->value, $this->application->getApplicationType());
     }
 
     /**
@@ -197,13 +197,10 @@ final class WisepopsApplicationTest extends DatabaseTestCaseAbstract
      */
     private function createApplicationInstall(): ApplicationInstall
     {
-        $applicationInstall = (new ApplicationInstall())
+        return (new ApplicationInstall())
             ->setUser('user')
             ->setKey('wisepops')
             ->setSettings([ApplicationInterface::AUTHORIZATION_FORM => ['api_key' => '123']]);
-        $this->pfd($applicationInstall);
-
-        return $applicationInstall;
     }
 
 }

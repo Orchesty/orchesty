@@ -10,6 +10,7 @@ use Hanaboso\MongoDataGrid\GridRequestDtoInterface;
 use Hanaboso\PipesFramework\Configurator\Document\ApiToken;
 use Hanaboso\PipesFramework\Configurator\Enum\ApiTokenScopesEnum;
 use Hanaboso\PipesFramework\Configurator\Model\ApiTokenManager;
+use Hanaboso\Utils\Exception\EnumException;
 use Hanaboso\Utils\Validations\Validations;
 
 /**
@@ -55,7 +56,9 @@ final class ApiTokenHandler
     {
         Validations::checkParams([ApiToken::SCOPES], $data);
         foreach ($data[ApiToken::SCOPES] as $scopes) {
-            ApiTokenScopesEnum::isValid($scopes);
+            if (!ApiTokenScopesEnum::tryFrom($scopes)) {
+                throw new EnumException();
+            }
         }
 
         return $this->manager->create($data, $user)[ApiTokenManager::CREATED_TOKEN]->toArray();

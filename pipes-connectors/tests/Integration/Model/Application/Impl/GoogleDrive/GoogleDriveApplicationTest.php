@@ -8,15 +8,15 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\GoogleDrive\GoogleDriveApplication;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
 use Hanaboso\Utils\String\Json;
-use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
+use HbPFConnectorsTests\KernelTestCaseAbstract;
 
 /**
  * Class GoogleDriveApplicationTest
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\GoogleDrive
  */
-final class GoogleDriveApplicationTest extends DatabaseTestCaseAbstract
+final class GoogleDriveApplicationTest extends KernelTestCaseAbstract
 {
 
     /**
@@ -115,7 +115,6 @@ final class GoogleDriveApplicationTest extends DatabaseTestCaseAbstract
     public function testAuthorize(): void
     {
         $this->app->authorize(DataProvider::getOauth2AppInstall($this->app->getName()));
-
         self::assertFake();
     }
 

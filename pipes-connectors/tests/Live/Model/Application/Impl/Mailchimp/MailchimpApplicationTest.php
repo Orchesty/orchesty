@@ -3,24 +3,35 @@
 namespace HbPFConnectorsTests\Live\Model\Application\Impl\Mailchimp;
 
 use Exception;
+use GuzzleHttp\Psr7\Response;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Mailchimp\MailchimpApplication;
+use Hanaboso\PhpCheckUtils\PhpUnit\Traits\CustomAssertTrait;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
-use HbPFConnectorsTests\DatabaseTestCaseAbstract;
+use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DataProvider;
+use HbPFConnectorsTests\KernelTestCaseAbstract;
+use HbPFConnectorsTests\MockServer\Mock;
+use HbPFConnectorsTests\MockServer\MockServer;
 
 /**
  * Class MailchimpApplicationTest
  *
  * @package HbPFConnectorsTests\Live\Model\Application\Impl\Mailchimp
  */
-final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
+final class MailchimpApplicationTest extends KernelTestCaseAbstract
 {
+
+    use CustomAssertTrait;
 
     /**
      * @throws Exception
      */
     public function testAutorize(): void
     {
+        $mockServer = new MockServer();
+        self::getContainer()->set('hbpf.worker-api', $mockServer);
+
         $app = self::getContainer()->get('hbpf.application.mailchimp');
 
         $applicationInstall = DataProvider::getOauth2AppInstall(
@@ -39,8 +50,16 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
                 MailchimpApplication::AUDIENCE_ID                 => 'c9e7f***5b',
             ],
         );
-        $this->pfd($applicationInstall);
-        //        $app->authorize($applicationInstall);
+
+        $mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["flexibee"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(200, [], Json::encode($applicationInstall->toArray())),
+            ),
+        );
+        $app->authorize($applicationInstall);
         self::assertFake();
     }
 

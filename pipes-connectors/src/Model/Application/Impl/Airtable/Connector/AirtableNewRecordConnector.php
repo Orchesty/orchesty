@@ -2,15 +2,18 @@
 
 namespace Hanaboso\HbPFConnectors\Model\Application\Impl\Airtable\Connector;
 
+use GuzzleHttp\Exception\GuzzleException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Process\ProcessDtoAbstract;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Airtable\AirtableApplication;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
+use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
+use Hanaboso\PipesPhpSdk\CustomNode\Exception\CustomNodeException;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 
 /**
@@ -22,6 +25,16 @@ final class AirtableNewRecordConnector extends ConnectorAbstract
 {
 
     public const NAME = 'airtable_new_record';
+
+    /**
+     * AirtableNewRecordConnector constructor.
+     *
+     * @param ApplicationInstallRepository $applicationInstallRepository
+     */
+    public function __construct(private readonly ApplicationInstallRepository $applicationInstallRepository)
+    {
+        parent::__construct($this->applicationInstallRepository);
+    }
 
     /**
      * @return string
@@ -36,10 +49,12 @@ final class AirtableNewRecordConnector extends ConnectorAbstract
      *
      * @return ProcessDto
      * @throws ApplicationInstallException
-     * @throws CurlException
-     * @throws PipesFrameworkException
-     * @throws ConnectorException
      * @throws AuthorizationException
+     * @throws ConnectorException
+     * @throws CurlException
+     * @throws CustomNodeException
+     * @throws PipesFrameworkException
+     * @throws GuzzleException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
@@ -55,21 +70,21 @@ final class AirtableNewRecordConnector extends ConnectorAbstract
             return $dto;
         }
 
-        $url    = sprintf(
+        $url        = sprintf(
             '%s/%s/%s',
             AirtableApplication::BASE_URL,
             $app->getValue($applicationInstall, AirtableApplication::BASE_ID),
             $app->getValue($applicationInstall, AirtableApplication::TABLE_NAME),
         );
-        $return = $this->getSender()->send(
-            $app->getRequestDto(
-                $dto,
-                $applicationInstall,
-                CurlManager::METHOD_POST,
-                $url,
-                $dto->getData(),
-            ),
-        );
+            $return = $this->getSender()->send(
+                $app->getRequestDto(
+                    $dto,
+                    $applicationInstall,
+                    CurlManager::METHOD_POST,
+                    $url,
+                    $dto->getData(),
+                ),
+            );
 
         $this->evaluateStatusCode($return->getStatusCode(), $dto);
         $dto->setData($return->getBody());

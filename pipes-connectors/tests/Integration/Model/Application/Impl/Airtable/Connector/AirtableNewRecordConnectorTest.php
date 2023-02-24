@@ -3,6 +3,7 @@
 namespace HbPFConnectorsTests\Integration\Model\Application\Impl\Airtable\Connector;
 
 use Exception;
+use GuzzleHttp\Psr7\Response;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Process\ProcessDtoAbstract;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
@@ -12,16 +13,19 @@ use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
 use Hanaboso\Utils\File\File;
-use HbPFConnectorsTests\DatabaseTestCaseAbstract;
+use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DataProvider;
+use HbPFConnectorsTests\KernelTestCaseAbstract;
 use HbPFConnectorsTests\MockCurlMethod;
+use HbPFConnectorsTests\MockServer\Mock;
+use HbPFConnectorsTests\MockServer\MockServer;
 
 /**
  * Class AirtableNewRecordConnectorTest
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Airtable\Connector
  */
-final class AirtableNewRecordConnectorTest extends DatabaseTestCaseAbstract
+final class AirtableNewRecordConnectorTest extends KernelTestCaseAbstract
 {
 
     public const API_KEY    = 'keyfb******LvKNJI';
@@ -29,13 +33,27 @@ final class AirtableNewRecordConnectorTest extends DatabaseTestCaseAbstract
     public const TABLE_NAME = 'V******.com';
 
     /**
+     * @var MockServer $mockServer
+     */
+    private MockServer $mockServer;
+
+    /**
      * @throws Exception
      */
     public function testProcessAction(): void
     {
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["airtable"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(200, [], Json::encode($this->createApplication(self::API_KEY)->toArray())),
+            ),
+        );
+
         $this->mockCurl([new MockCurlMethod(200, 'response200.json', [])]);
 
-        $airtableNewRecordConnector = $this->setApplicationAndMock(self::API_KEY);
+        $airtableNewRecordConnector = $this->setApplication();
 
         $newRecordFile = File::getContent(sprintf('%s/Data/newRecord.json', __DIR__));
 
@@ -51,9 +69,18 @@ final class AirtableNewRecordConnectorTest extends DatabaseTestCaseAbstract
      */
     public function testProcessActionNoFields(): void
     {
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["airtable"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(200, [], Json::encode($this->createApplication(self::API_KEY)->toArray())),
+            ),
+        );
+
         $this->mockCurl([new MockCurlMethod(500, 'response500.json', [])]);
 
-        $airtableNewRecordConnector = $this->setApplicationAndMock(self::API_KEY);
+        $airtableNewRecordConnector = $this->setApplication();
         $newRecordFileNoFields      = File::getContent(sprintf('%s/Data/newRecordNoFields.json', __DIR__));
         $response                   = $airtableNewRecordConnector->processAction(
             DataProvider::getProcessDto('airtable', 'user', $newRecordFileNoFields),
@@ -69,7 +96,16 @@ final class AirtableNewRecordConnectorTest extends DatabaseTestCaseAbstract
      */
     public function testProcessActionNoBaseId(): void
     {
-        $airtableNewRecordConnector = $this->setApplicationAndMock();
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["airtable"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(200, [], Json::encode([$this->createApplication()->toArray()])),
+            ),
+        );
+
+        $airtableNewRecordConnector = $this->setApplication();
 
         $newRecordFile = File::getContent(sprintf('%s/Data/newRecord.json', __DIR__));
 
@@ -87,7 +123,9 @@ final class AirtableNewRecordConnectorTest extends DatabaseTestCaseAbstract
      */
     public function testGetName(): void
     {
-        $airtableNewRecordConnector = new AirtableNewRecordConnector();
+        $airtableNewRecordConnector = new AirtableNewRecordConnector(
+            self::getContainer()->get('hbpf.application_install.repository'),
+        );
         self::assertEquals(
             'airtable_new_record',
             $airtableNewRecordConnector->getName(),
@@ -106,6 +144,17 @@ final class AirtableNewRecordConnectorTest extends DatabaseTestCaseAbstract
     }
 
     /**
+     * @return void
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->mockServer = new MockServer();
+        self::getContainer()->set('hbpf.worker-api', $this->mockServer);
+    }
+
+    /**
      * @return AirtableNewRecordConnector
      * @throws Exception
      */
@@ -115,10 +164,11 @@ final class AirtableNewRecordConnectorTest extends DatabaseTestCaseAbstract
         $app = self::getContainer()->get('hbpf.application.airtable');
         /** @var CurlManager $curl */
         $curl                       = self::getContainer()->get('hbpf.transport.curl_manager');
-        $airtableNewRecordConnector = new AirtableNewRecordConnector();
+        $airtableNewRecordConnector = new AirtableNewRecordConnector(
+            self::getContainer()->get('hbpf.application_install.repository'),
+        );
         $airtableNewRecordConnector
             ->setSender($curl)
-            ->setDb($this->dm)
             ->setApplication($app);
 
         return $airtableNewRecordConnector;
@@ -127,11 +177,11 @@ final class AirtableNewRecordConnectorTest extends DatabaseTestCaseAbstract
     /**
      * @param string|null $baseId
      *
-     * @return AirtableNewRecordConnector
-     * @throws Exception
+     * @return ApplicationInstall
      */
-    private function setApplicationAndMock(?string $baseId = NULL): AirtableNewRecordConnector
+    private function createApplication(?string $baseId = NULL): ApplicationInstall
     {
+
         $applicationInstall = new ApplicationInstall();
         $applicationInstall->setSettings(
             [
@@ -145,10 +195,8 @@ final class AirtableNewRecordConnectorTest extends DatabaseTestCaseAbstract
 
         $applicationInstall->setUser('user');
         $applicationInstall->setKey('airtable');
-        $this->pfd($applicationInstall);
-        $this->dm->clear();
 
-        return $this->setApplication();
+        return $applicationInstall;
     }
 
 }

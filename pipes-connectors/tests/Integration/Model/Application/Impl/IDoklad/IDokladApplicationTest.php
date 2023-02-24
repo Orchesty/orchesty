@@ -10,15 +10,15 @@ use Hanaboso\HbPFConnectors\Model\Application\Impl\IDoklad\IDokladApplication;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
 use Hanaboso\Utils\String\Json;
-use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
+use HbPFConnectorsTests\KernelTestCaseAbstract;
 
 /**
  * Class IDokladApplicationTest
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\IDoklad
  */
-final class IDokladApplicationTest extends DatabaseTestCaseAbstract
+final class IDokladApplicationTest extends KernelTestCaseAbstract
 {
 
     /**
@@ -113,7 +113,6 @@ final class IDokladApplicationTest extends DatabaseTestCaseAbstract
     public function testAuthorize(): void
     {
         $this->app->authorize(DataProvider::getOauth2AppInstall($this->app->getName()));
-
         self::assertFake();
     }
 

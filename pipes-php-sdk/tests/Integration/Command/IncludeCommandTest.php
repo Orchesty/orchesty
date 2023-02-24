@@ -3,7 +3,7 @@
 namespace PipesPhpSdkTests\Integration\Command;
 
 use Hanaboso\PipesPhpSdk\Command\IncludeCommands;
-use PipesPhpSdkTests\DatabaseTestCaseAbstract;
+use PipesPhpSdkTests\KernelTestCaseAbstract;
 use Symfony\Component\Console\Command\Command;
 
 /**
@@ -11,7 +11,7 @@ use Symfony\Component\Console\Command\Command;
  *
  * @package PipesPhpSdkTests\Integration\Command
  */
-final class IncludeCommandTest extends DatabaseTestCaseAbstract
+final class IncludeCommandTest extends KernelTestCaseAbstract
 {
 
     /**

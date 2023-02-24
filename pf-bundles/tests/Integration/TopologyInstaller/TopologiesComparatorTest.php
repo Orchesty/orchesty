@@ -4,12 +4,11 @@ namespace PipesFrameworkTests\Integration\TopologyInstaller;
 
 use Exception;
 use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
+use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\PipesFramework\TopologyInstaller\Dto\TopologyFile;
 use Hanaboso\PipesFramework\TopologyInstaller\Dto\UpdateObject;
 use Hanaboso\PipesFramework\TopologyInstaller\TopologiesComparator;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
-use Hanaboso\PipesPhpSdk\Database\Document\Topology;
-use Hanaboso\PipesPhpSdk\Database\Repository\TopologyRepository;
 use Hanaboso\Utils\File\File;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
@@ -49,7 +48,7 @@ final class TopologiesComparatorTest extends DatabaseTestCaseAbstract
                 ),
             )
             ->setEnabled(TRUE)
-            ->setVisibility(TopologyStatusEnum::PUBLIC);
+            ->setVisibility(TopologyStatusEnum::PUBLIC->value);
         $this->dm->persist($topology);
 
         $topology3 = new Topology();
@@ -62,19 +61,19 @@ final class TopologiesComparatorTest extends DatabaseTestCaseAbstract
                 ),
             )
             ->setEnabled(TRUE)
-            ->setVisibility(TopologyStatusEnum::PUBLIC);
+            ->setVisibility(TopologyStatusEnum::PUBLIC->value);
         $this->dm->persist($topology3);
 
         $topology2 = new Topology();
         $topology2
             ->setName('old-file')
             ->setEnabled(TRUE)
-            ->setVisibility(TopologyStatusEnum::PUBLIC);
+            ->setVisibility(TopologyStatusEnum::PUBLIC->value);
         $this->dm->persist($topology2);
         $this->dm->flush();
 
         $dir = sprintf('%s/data', __DIR__);
-        /** @var TopologyRepository $repo */
+
         $repo       = $this->dm->getRepository(Topology::class);
         $comparator = new TopologiesComparator($repo, $xmlDecoder, [$dir], TRUE);
 

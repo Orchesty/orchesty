@@ -3,6 +3,7 @@
 namespace Hanaboso\HbPFConnectors\Model\Application\Impl\Common\EventStatusFilter;
 
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\PipesPhpSdk\CustomNode\CommonNodeAbstract;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 
@@ -19,10 +20,15 @@ final class EventStatusFilter extends CommonNodeAbstract
     /**
      * EventStatusFilter constructor.
      *
-     * @param string $type
+     * @param string                       $type
+     * @param ApplicationInstallRepository $applicationInstallRepository
      */
-    public function __construct(private readonly string $type)
+    public function __construct(
+        private readonly string $type,
+        ApplicationInstallRepository $applicationInstallRepository,
+    )
     {
+        parent::__construct($applicationInstallRepository);
     }
 
     /**

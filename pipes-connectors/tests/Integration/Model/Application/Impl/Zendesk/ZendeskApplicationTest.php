@@ -12,8 +12,8 @@ use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract;
-use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
+use HbPFConnectorsTests\KernelTestCaseAbstract;
 use ReflectionException;
 
 /**
@@ -21,7 +21,7 @@ use ReflectionException;
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Zendesk
  */
-final class ZendeskApplicationTest extends DatabaseTestCaseAbstract
+final class ZendeskApplicationTest extends KernelTestCaseAbstract
 {
 
     use PrivateTrait;
@@ -38,7 +38,7 @@ final class ZendeskApplicationTest extends DatabaseTestCaseAbstract
     {
         $this->setApplication();
         self::assertEquals(
-            ApplicationTypeEnum::CRON,
+            ApplicationTypeEnum::CRON->value,
             $this->application->getApplicationType(),
         );
     }
@@ -113,7 +113,6 @@ final class ZendeskApplicationTest extends DatabaseTestCaseAbstract
     {
         $this->setApplication();
         $applicationInstall = DataProvider::getOauth2AppInstall($this->application->getName());
-        $this->pfd($applicationInstall);
 
         $dto = $this->application->getRequestDto(
             new ProcessDto(),

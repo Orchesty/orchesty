@@ -13,8 +13,8 @@ use Hanaboso\PipesPhpSdk\Application\Document\Webhook;
 use Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookSubscription;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
-use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
+use HbPFConnectorsTests\KernelTestCaseAbstract;
 use HbPFConnectorsTests\MockCurlMethod;
 
 /**
@@ -22,7 +22,7 @@ use HbPFConnectorsTests\MockCurlMethod;
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Mailchimp
  */
-final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
+final class MailchimpApplicationTest extends KernelTestCaseAbstract
 {
 
     use PrivateTrait;
@@ -46,7 +46,6 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
             'token123',
             self::CLIENT_ID,
         );
-        $this->pfd($applicationInstall);
         self::assertEquals(TRUE, $this->application->isAuthorized($applicationInstall));
         $this->application->authorize($applicationInstall);
     }
@@ -58,7 +57,6 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
     {
         $this->setApplication();
         $applicationInstall = new ApplicationInstall();
-        $this->pfd($applicationInstall);
         self::assertEquals(FALSE, $this->application->isAuthorized($applicationInstall));
     }
 
@@ -163,7 +161,7 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
     {
         $this->setApplication();
         self::assertEquals(
-            ApplicationTypeEnum::WEBHOOK,
+            ApplicationTypeEnum::WEBHOOK->value,
             $this->application->getApplicationType(),
         );
     }
@@ -258,7 +256,6 @@ final class MailchimpApplicationTest extends DatabaseTestCaseAbstract
             self::CLIENT_ID,
             'secret',
         );
-        $this->pfd($applicationInstall);
         $this->setProperty($this->application, 'provider', $providerMock);
         $return = $this->application->setAuthorizationToken(
             $applicationInstall,

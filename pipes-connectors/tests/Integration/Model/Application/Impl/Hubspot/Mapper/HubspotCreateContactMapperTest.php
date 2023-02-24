@@ -3,21 +3,25 @@
 namespace HbPFConnectorsTests\Integration\Model\Application\Impl\Hubspot\Mapper;
 
 use Exception;
+use GuzzleHttp\Psr7\Response;
 use Hanaboso\CommonsBundle\Process\ProcessDtoAbstract;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Mapper\HubSpotCreateContactMapper;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shipstation\Connector\ShipstationNewOrderConnector;
 use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Json;
-use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
+use HbPFConnectorsTests\KernelTestCaseAbstract;
 use HbPFConnectorsTests\MockCurlMethod;
+use HbPFConnectorsTests\MockServer\Mock;
+use HbPFConnectorsTests\MockServer\MockServer;
 
 /**
  * Class HubspotCreateContactMapperTest
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Hubspot\Mapper
  */
-final class HubspotCreateContactMapperTest extends DatabaseTestCaseAbstract
+final class HubspotCreateContactMapperTest extends KernelTestCaseAbstract
 {
 
     public const API_KEY    = '3cc4771e-deb7-4905-8e6b-d2**********';
@@ -28,6 +32,9 @@ final class HubspotCreateContactMapperTest extends DatabaseTestCaseAbstract
      */
     public function testProcessAction(): void
     {
+        $mockServer = new MockServer();
+        self::getContainer()->set('hbpf.worker-api', $mockServer);
+
         $this->mockCurl(
             [
                 new MockCurlMethod(
@@ -39,10 +46,11 @@ final class HubspotCreateContactMapperTest extends DatabaseTestCaseAbstract
         );
 
         $shipstation                  = self::getContainer()->get('hbpf.application.shipstation');
-        $shipstationNewOrderConnector = new ShipstationNewOrderConnector();
+        $shipstationNewOrderConnector = new ShipstationNewOrderConnector(
+            self::getContainer()->get('hbpf.application_install.repository'),
+        );
         $shipstationNewOrderConnector
             ->setSender(self::getContainer()->get('hbpf.transport.curl_manager'))
-            ->setDb($this->dm)
             ->setApplication($shipstation);
 
         $applicationInstall = DataProvider::getBasicAppInstall(
@@ -51,7 +59,23 @@ final class HubspotCreateContactMapperTest extends DatabaseTestCaseAbstract
             self::API_SECRET,
         );
 
-        $this->pfd($applicationInstall);
+        $mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["shipstation"],"users":["3cc4771e-deb7-4905-8e6b-d2**********"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(200, [], Json::encode([$applicationInstall->toArray()])),
+            ),
+        );
+
+        $mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["shipstation"],"users":["3cc4771e-deb7-4905-8e6b-d2**********"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(200, [], Json::encode([$applicationInstall->toArray()])),
+            ),
+        );
 
         $response = $shipstationNewOrderConnector->processAction(
             DataProvider::getProcessDto(
@@ -70,7 +94,9 @@ final class HubspotCreateContactMapperTest extends DatabaseTestCaseAbstract
 
         $response->setData(File::getContent(sprintf('%s/Data/responseShipstation.json', __DIR__)));
 
-        $hubspotCreateContactMapper = new HubSpotCreateContactMapper();
+        $hubspotCreateContactMapper = new HubSpotCreateContactMapper(
+            self::getContainer()->get('hbpf.application_install.repository'),
+        );
         $dto                        = $hubspotCreateContactMapper->processAction($response);
         $dtoNoBody                  = $hubspotCreateContactMapper->processAction($responseNoBody);
 

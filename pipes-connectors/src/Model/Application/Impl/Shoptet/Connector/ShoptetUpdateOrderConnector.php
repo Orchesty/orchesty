@@ -2,14 +2,17 @@
 
 namespace Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector;
 
+use GuzzleHttp\Exception\GuzzleException;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Process\ProcessDtoAbstract;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
+use Hanaboso\PipesPhpSdk\CustomNode\Exception\CustomNodeException;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 
 /**
@@ -38,8 +41,10 @@ final class ShoptetUpdateOrderConnector extends ShoptetConnectorAbstract
      * @return ProcessDto
      * @throws ApplicationInstallException
      * @throws ConnectorException
-     * @throws PipesFrameworkException
      * @throws OnRepeatException
+     * @throws PipesFrameworkException
+     * @throws GuzzleException
+     * @throws CustomNodeException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
@@ -66,7 +71,7 @@ final class ShoptetUpdateOrderConnector extends ShoptetConnectorAbstract
                 $dto,
             );
 
-            return $dto->setJsonData($response)->setStopProcess(ProcessDto::DO_NOT_CONTINUE, 'Order updated');
+            return $dto->setJsonData($response)->setStopProcess(ProcessDtoAbstract::DO_NOT_CONTINUE, 'Order updated');
         } catch (CurlException $e) {
             throw new OnRepeatException(
                 $dto,

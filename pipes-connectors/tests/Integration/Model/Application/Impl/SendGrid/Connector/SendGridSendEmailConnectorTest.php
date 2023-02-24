@@ -3,6 +3,7 @@
 namespace HbPFConnectorsTests\Integration\Model\Application\Impl\SendGrid\Connector;
 
 use Exception;
+use GuzzleHttp\Psr7\Response;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
@@ -13,21 +14,28 @@ use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\Utils\String\Json;
-use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
+use HbPFConnectorsTests\KernelTestCaseAbstract;
+use HbPFConnectorsTests\MockServer\Mock;
+use HbPFConnectorsTests\MockServer\MockServer;
 
 /**
  * Class SendGridSendEmailConnectorTest
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\SendGrid\Connector
  */
-final class SendGridSendEmailConnectorTest extends DatabaseTestCaseAbstract
+final class SendGridSendEmailConnectorTest extends KernelTestCaseAbstract
 {
 
     /**
      * @var SendGridApplication
      */
     private SendGridApplication $app;
+
+    /**
+     * @var MockServer $mockServer
+     */
+    private MockServer $mockServer;
 
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\SendGrid\Connector\SendGridSendEmailConnector::getName
@@ -49,8 +57,14 @@ final class SendGridSendEmailConnectorTest extends DatabaseTestCaseAbstract
      */
     public function testProcessAction(): void
     {
-        $this->pfd($this->createApplicationInstall());
-        $this->dm->clear();
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["send-grid"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(200, [], Json::encode([$this->createApplicationInstall()->toArray()])),
+            ),
+        );
 
         $dto = DataProvider::getProcessDto(
             $this->app->getName(),
@@ -71,8 +85,14 @@ final class SendGridSendEmailConnectorTest extends DatabaseTestCaseAbstract
      */
     public function testProcessActionDataException(): void
     {
-        $this->pfd($this->createApplicationInstall());
-        $this->dm->clear();
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["send-grid"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(200, [], Json::encode([$this->createApplicationInstall()->toArray()])),
+            ),
+        );
 
         $dto = DataProvider::getProcessDto(
             $this->app->getName(),
@@ -92,8 +112,14 @@ final class SendGridSendEmailConnectorTest extends DatabaseTestCaseAbstract
      */
     public function testProcessActionRequestException(): void
     {
-        $this->pfd($this->createApplicationInstall());
-        $this->dm->clear();
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["send-grid"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(200, [], Json::encode([$this->createApplicationInstall()->toArray()])),
+            ),
+        );
 
         $dto = DataProvider::getProcessDto(
             $this->app->getName(),
@@ -115,6 +141,15 @@ final class SendGridSendEmailConnectorTest extends DatabaseTestCaseAbstract
      */
     public function testProcessActionException(): void
     {
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["send-grid"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(200, [], '[]'),
+            ),
+        );
+
         self::expectException(ApplicationInstallException::class);
         self::expectExceptionCode(ApplicationInstallException::APP_WAS_NOT_FOUND);
         $this
@@ -133,6 +168,9 @@ final class SendGridSendEmailConnectorTest extends DatabaseTestCaseAbstract
     protected function setUp(): void
     {
         parent::setUp();
+
+        $this->mockServer = new MockServer();
+        self::getContainer()->set('hbpf.worker-api', $this->mockServer);
 
         $this->app = new SendGridApplication();
     }
@@ -153,10 +191,11 @@ final class SendGridSendEmailConnectorTest extends DatabaseTestCaseAbstract
             $sender->method('send')->willReturn($dto);
         }
 
-        $sendGridSendEmailConnector = new SendGridSendEmailConnector();
+        $sendGridSendEmailConnector = new SendGridSendEmailConnector(
+            self::getContainer()->get('hbpf.application_install.repository'),
+        );
         $sendGridSendEmailConnector
-            ->setSender($sender)
-            ->setDb($this->dm);
+            ->setSender($sender);
 
         return $sendGridSendEmailConnector;
     }

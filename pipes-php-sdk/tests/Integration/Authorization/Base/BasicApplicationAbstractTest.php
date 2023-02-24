@@ -3,18 +3,19 @@
 namespace PipesPhpSdkTests\Integration\Authorization\Base;
 
 use Exception;
+use Hanaboso\CommonsBundle\Crypt\CryptManager;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
-use PipesPhpSdkTests\DatabaseTestCaseAbstract;
 use PipesPhpSdkTests\Integration\Application\TestNullApplication;
+use PipesPhpSdkTests\KernelTestCaseAbstract;
 
 /**
  * Class BasicApplicationAbstractTest
  *
  * @package PipesPhpSdkTests\Integration\Authorization\Base
  */
-final class BasicApplicationAbstractTest extends DatabaseTestCaseAbstract
+final class BasicApplicationAbstractTest extends KernelTestCaseAbstract
 {
 
     /**
@@ -37,11 +38,17 @@ final class BasicApplicationAbstractTest extends DatabaseTestCaseAbstract
      */
     public function testIsAuthorize(): void
     {
-        $applicationInstall = $this->createApplicationInstall();
+        $applicationInstall = new ApplicationInstall();
         self::assertFalse($this->testApp->isAuthorized($applicationInstall));
 
-        $applicationInstall = $this->createApplicationInstall(
-            [ApplicationInterface::AUTHORIZATION_FORM => [BasicApplicationInterface::PASSWORD => 'just_password']],
+        /** @var CryptManager $cryptManager */
+        $cryptManager       = self::getContainer()->get('hbpf.commons.crypt.crypt_manager');
+        $applicationInstall = new ApplicationInstall(
+            [
+                'encryptedSettings' => $cryptManager->encrypt(
+                    [ApplicationInterface::AUTHORIZATION_FORM => [BasicApplicationInterface::PASSWORD => 'just_password']],
+                ),
+            ],
         );
         self::assertFalse($this->testApp->isAuthorized($applicationInstall));
     }
@@ -53,8 +60,14 @@ final class BasicApplicationAbstractTest extends DatabaseTestCaseAbstract
      */
     public function testSetApplicationToken(): void
     {
-        $applicationInstall = $this->createApplicationInstall(
-            [ApplicationInterface::AUTHORIZATION_FORM => [ApplicationInterface::TOKEN => '__token__']],
+        /** @var CryptManager $cryptManager */
+        $cryptManager       = self::getContainer()->get('hbpf.commons.crypt.crypt_manager');
+        $applicationInstall = new ApplicationInstall(
+            [
+                'encryptedSettings' => $cryptManager->encrypt(
+                    [ApplicationInterface::AUTHORIZATION_FORM => [ApplicationInterface::TOKEN => '__token__']],
+                ),
+            ],
         );
         $applicationInstall = $this->testApp->saveApplicationForms(
             $applicationInstall,
@@ -63,8 +76,7 @@ final class BasicApplicationAbstractTest extends DatabaseTestCaseAbstract
 
         self::assertEquals(
             '__new_token__',
-            $applicationInstall->getSettings(
-            )[ApplicationInterface::AUTHORIZATION_FORM][ApplicationInterface::TOKEN],
+            $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][ApplicationInterface::TOKEN],
         );
     }
 
@@ -75,29 +87,36 @@ final class BasicApplicationAbstractTest extends DatabaseTestCaseAbstract
      */
     public function testSetApplicationSettings(): void
     {
-        $applicationInstall = $this->createApplicationInstall(
+        /** @var CryptManager $cryptManager */
+        $cryptManager       = self::getContainer()->get('hbpf.commons.crypt.crypt_manager');
+        $applicationInstall = new ApplicationInstall(
             [
+                'encryptedSettings' => $cryptManager->encrypt(
+                    [
                         ApplicationInterface::AUTHORIZATION_FORM =>
                             [
                                 BasicApplicationInterface::USER     => 'user',
                                 BasicApplicationInterface::PASSWORD => 'passwd',
                                 BasicApplicationInterface::TOKEN    => '__token__',
                             ],
+                    ],
+                ),
             ],
         );
         $applicationInstall = $this->testApp->saveApplicationForms(
             $applicationInstall,
-            [ApplicationInterface::AUTHORIZATION_FORM => [
-                BasicApplicationInterface::TOKEN    => '__new_token__',
-                BasicApplicationInterface::USER     => 'new_user',
-                BasicApplicationInterface::PASSWORD => 'new_passwd',
-            ]],
+            [
+                ApplicationInterface::AUTHORIZATION_FORM => [
+                    BasicApplicationInterface::TOKEN    => '__new_token__',
+                    BasicApplicationInterface::USER     => 'new_user',
+                    BasicApplicationInterface::PASSWORD => 'new_passwd',
+                ],
+            ],
         );
 
         self::assertEquals(
             '__new_token__',
-            $applicationInstall->getSettings(
-            )[ApplicationInterface::AUTHORIZATION_FORM][ApplicationInterface::TOKEN],
+            $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][ApplicationInterface::TOKEN],
         );
     }
 
@@ -109,24 +128,6 @@ final class BasicApplicationAbstractTest extends DatabaseTestCaseAbstract
         parent::setUp();
 
         $this->testApp = new TestNullApplication();
-    }
-
-    /**
-     * @param mixed[] $settings
-     *
-     * @return ApplicationInstall
-     * @throws Exception
-     */
-    private function createApplicationInstall(array $settings = []): ApplicationInstall
-    {
-        $applicationInstall = (new ApplicationInstall())
-            ->setKey('null-key')
-            ->setUser('user')
-            ->setSettings($settings);
-
-        $this->pfd($applicationInstall);
-
-        return $applicationInstall;
     }
 
 }

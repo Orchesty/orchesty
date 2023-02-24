@@ -3,13 +3,13 @@
 namespace Demo\CustomNode;
 
 use Exception;
-use Hanaboso\CommonsBundle\Monolog\LoggerContext;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\PipesPhpSdk\CustomNode\CommonNodeAbstract;
 use Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Exception\CustomNodeException;
 use Hanaboso\Utils\System\PipesHeaders;
+use Hanaboso\Utils\Traits\LoggerTrait;
 use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
 /**
@@ -20,18 +20,19 @@ use Psr\Log\NullLogger;
 final class DummyExceptionConnector extends CommonNodeAbstract implements LoggerAwareInterface
 {
 
+    use LoggerTrait;
+
     public const NAME = 'dummy-exception-connector';
 
     /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
      * DummyExceptionConnector constructor.
+     *
+     * @param ApplicationInstallRepository $repository
      */
-    public function __construct()
+    public function __construct(ApplicationInstallRepository $repository)
     {
+        parent::__construct($repository);
+
         $this->logger = new NullLogger();
     }
 
@@ -56,27 +57,13 @@ final class DummyExceptionConnector extends CommonNodeAbstract implements Logger
             try {
                 $this->throwDummyException();
             } catch (Exception $e) {
-                $context = new LoggerContext();
-                $context
-                    ->setHeaders($dto)
-                    ->setException($e);
-                $this->logger->error($e->getMessage(), $context->toArray());
+                $this->logger->error($e->getMessage(), []);
 
                 $dto->addHeader(PipesHeaders::RESULT_CODE, '1003');
             }
         }
 
         return $dto;
-    }
-
-    /**
-     * Sets a logger instance on the object.
-     *
-     * @param LoggerInterface $logger
-     */
-    public function setLogger(LoggerInterface $logger): void
-    {
-        $this->logger = $logger;
     }
 
     /**

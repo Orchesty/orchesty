@@ -3,6 +3,7 @@
 namespace HbPFConnectorsTests\Integration\Model\Application\Impl\GoogleDrive\Connector;
 
 use Exception;
+use GuzzleHttp\Psr7\Response;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
@@ -10,21 +11,28 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\GoogleDrive\Connector\GoogleDriveUploadFileConnector;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\GoogleDrive\GoogleDriveApplication;
 use Hanaboso\Utils\String\Json;
-use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
+use HbPFConnectorsTests\KernelTestCaseAbstract;
+use HbPFConnectorsTests\MockServer\Mock;
+use HbPFConnectorsTests\MockServer\MockServer;
 
 /**
  * Class GoogleDriveUploadFileConnectorTest
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\GoogleDrive\Connector
  */
-final class GoogleDriveUploadFileConnectorTest extends DatabaseTestCaseAbstract
+final class GoogleDriveUploadFileConnectorTest extends KernelTestCaseAbstract
 {
 
     /**
      * @var GoogleDriveApplication
      */
     private GoogleDriveApplication $app;
+
+    /**
+     * @var MockServer $mockServer
+     */
+    private MockServer $mockServer;
 
     /**
      * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\GoogleDrive\Connector\GoogleDriveUploadFileConnector::getName
@@ -46,8 +54,18 @@ final class GoogleDriveUploadFileConnectorTest extends DatabaseTestCaseAbstract
      */
     public function testProcessAction(): void
     {
-        $this->pfd(DataProvider::getOauth2AppInstall($this->app->getName()));
-        $this->dm->clear();
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["google-drive"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(
+                    200,
+                    [],
+                    Json::encode([DataProvider::getOauth2AppInstall($this->app->getName())->toArray()]),
+                ),
+            ),
+        );
 
         $dto = DataProvider::getProcessDto(
             $this->app->getName(),
@@ -75,15 +93,27 @@ final class GoogleDriveUploadFileConnectorTest extends DatabaseTestCaseAbstract
      */
     public function testProcessActionRequestException(): void
     {
-        $this->pfd(DataProvider::getOauth2AppInstall($this->app->getName()));
-        $this->dm->clear();
+        $this->mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["google-drive"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(
+                    200,
+                    [],
+                    Json::encode([DataProvider::getOauth2AppInstall($this->app->getName())->toArray()]),
+                ),
+            ),
+        );
 
         $dto = DataProvider::getProcessDto(
             $this->app->getName(),
             'user',
-            Json::encode(['name' => 'John Doe',
-                          'email' => 'noreply@johndoe.com',
-                          'phone' => '555-555']),
+            Json::encode([
+                             'name'  => 'John Doe',
+                             'email' => 'noreply@johndoe.com',
+                             'phone' => '555-555',
+                         ]),
         );
 
         self::expectException(OnRepeatException::class);
@@ -104,6 +134,9 @@ final class GoogleDriveUploadFileConnectorTest extends DatabaseTestCaseAbstract
     {
         parent::setUp();
 
+        $this->mockServer = new MockServer();
+        self::getContainer()->set('hbpf.worker-api', $this->mockServer);
+
         $this->app = new GoogleDriveApplication(self::getContainer()->get('hbpf.providers.oauth2_provider'));
     }
 
@@ -123,10 +156,11 @@ final class GoogleDriveUploadFileConnectorTest extends DatabaseTestCaseAbstract
             $sender->method('send')->willReturn($dto);
         }
 
-        $googleDriveUploadFileConnector = new GoogleDriveUploadFileConnector();
+        $googleDriveUploadFileConnector = new GoogleDriveUploadFileConnector(
+            self::getContainer()->get('hbpf.application_install.repository'),
+        );
         $googleDriveUploadFileConnector
-            ->setSender($sender)
-            ->setDb($this->dm);
+            ->setSender($sender);
 
         return $googleDriveUploadFileConnector;
     }

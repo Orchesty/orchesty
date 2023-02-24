@@ -53,7 +53,7 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
      */
     public function getAuthorizationType(): string
     {
-        return AuthorizationTypeEnum::OAUTH2;
+        return AuthorizationTypeEnum::OAUTH2->value;
     }
 
     /**
@@ -93,7 +93,7 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
     {
         $form = parent::getApplicationForms($applicationInstall);
 
-        if($form[ApplicationInterface::AUTHORIZATION_FORM]){
+        if ($form[ApplicationInterface::AUTHORIZATION_FORM]) {
             $form[ApplicationInterface::AUTHORIZATION_FORM][ApplicationInterface::FIELDS] = array_merge(
                 $form[ApplicationInterface::AUTHORIZATION_FORM][ApplicationInterface::FIELDS],
                 [
@@ -132,8 +132,7 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
             );
         }
 
-        $settings                                                                        = $applicationInstall->getSettings(
-        );
+        $settings                                                                        = $applicationInstall->getSettings();
         $settings[ApplicationInterface::AUTHORIZATION_FORM][ApplicationInterface::TOKEN] = $token;
         $applicationInstall->addSettings($settings);
 
@@ -223,7 +222,7 @@ abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements 
     protected function createDto(ApplicationInstall $applicationInstall, ?string $redirectUrl = NULL): OAuth2Dto
     {
         $dto = new OAuth2Dto($applicationInstall, $this->getAuthUrl(), $this->getTokenUrl());
-        $dto->setCustomAppDependencies($applicationInstall->getUser(), $applicationInstall->getKey());
+        $dto->setCustomAppDependencies($applicationInstall->getUser() ?? '', $applicationInstall->getKey() ?? '');
 
         if ($redirectUrl) {
             $dto->setRedirectUrl($redirectUrl);

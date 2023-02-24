@@ -11,5 +11,6 @@ services:
         class: Hanaboso\HbPFConnectors\Model\Application\Impl\GoogleDrive\Connector\GoogleDriveUploadFileConnector
         calls:
             -   setApplication: [ '@hbpf.application.google-drive' ]
-            -   setDb: [ '@doctrine_mongodb.odm.default_document_manager' ]
             -   setSender: [ '@hbpf.transport.curl_manager' ]
+        arguments:
+          [ '@hbpf.application_install.repository' ]

@@ -8,6 +8,7 @@ use EmailServiceBundle\Mailer\Mailer;
 use EmailServiceBundle\MessageBuilder\Impl\GenericMessageBuilder\GenericTransportMessage;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
+use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\PipesPhpSdk\CustomNode\CommonNodeAbstract;
 use Hanaboso\Utils\Date\DateTimeUtils;
@@ -38,11 +39,17 @@ final class SendDutyEmail extends CommonNodeAbstract
     /**
      * SendDutyEmail constructor.
      *
-     * @param Mailer             $mailer
-     * @param PagerDutyConnector $dutyConnector
+     * @param ApplicationInstallRepository $repository
+     * @param Mailer                       $mailer
+     * @param PagerDutyConnector           $dutyConnector
      */
-    public function __construct(private Mailer $mailer, private PagerDutyConnector $dutyConnector)
+    public function __construct(
+        ApplicationInstallRepository $repository,
+        private Mailer $mailer,
+        private PagerDutyConnector $dutyConnector,
+    )
     {
+        parent::__construct($repository);
     }
 
     /**
@@ -109,7 +116,7 @@ final class SendDutyEmail extends CommonNodeAbstract
             $date['since'] ?? DateTimeUtils::getUtcDateTime('first day of last month')->format(DateTimeUtils::DATE);
         $till  =
             $date['until'] ?? DateTimeUtils::getUtcDateTime('first day of this month')->modify('+ 1 day')
-                ->format(DateTimeUtils::DATE);
+            ->format(DateTimeUtils::DATE);
 
         return sprintf('%s %s — %s', self::SUBJECT, $since, $till);
     }

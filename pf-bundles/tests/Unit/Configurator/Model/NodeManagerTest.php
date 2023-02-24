@@ -11,8 +11,8 @@ use Hanaboso\CommonsBundle\Exception\NodeException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
 use Hanaboso\PipesFramework\Configurator\Model\NodeManager;
-use Hanaboso\PipesPhpSdk\Database\Document\Node;
-use Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository;
+use Hanaboso\PipesFramework\Database\Document\Node;
+use Hanaboso\PipesFramework\Database\Repository\NodeRepository;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 
 /**
@@ -34,14 +34,14 @@ final class NodeManagerTest extends KernelTestCaseAbstract
         $node = new Node();
         $node
             ->setName('name')
-            ->setType(TypeEnum::CONNECTOR)
-            ->setHandler(HandlerEnum::EVENT);
+            ->setType(TypeEnum::CONNECTOR->value)
+            ->setHandler(HandlerEnum::EVENT->value);
 
         $data = [
             'name'     => 'test-name',
-            'type'     => TypeEnum::MAPPER,
+            'type'     => TypeEnum::MAPPER->value,
             'topology' => 'topo',
-            'handler'  => HandlerEnum::ACTION,
+            'handler'  => HandlerEnum::ACTION->value,
         ];
 
         $nodeManager = new NodeManager($this->getDmlMock(),$this->getCronMock());
@@ -61,8 +61,8 @@ final class NodeManagerTest extends KernelTestCaseAbstract
     {
         $node = new Node();
         $node
-            ->setType(TypeEnum::CONNECTOR)
-            ->setHandler(HandlerEnum::EVENT)
+            ->setType(TypeEnum::CONNECTOR->value)
+            ->setHandler(HandlerEnum::EVENT->value)
             ->setEnabled(FALSE);
 
         $data = ['enabled' => TRUE];
@@ -82,8 +82,8 @@ final class NodeManagerTest extends KernelTestCaseAbstract
     {
         $node = new Node();
         $node
-            ->setType(TypeEnum::CONNECTOR)
-            ->setHandler(HandlerEnum::ACTION)
+            ->setType(TypeEnum::CONNECTOR->value)
+            ->setHandler(HandlerEnum::ACTION->value)
             ->setEnabled(FALSE);
 
         $data = ['enabled' => TRUE];

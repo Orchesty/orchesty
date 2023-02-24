@@ -45,6 +45,7 @@ final class FakturoidGetAccountDetailConnectorTest extends ControllerTestCaseAbs
         );
         $curl = self::getContainer()->get('hbpf.transport.curl_manager');
         $res  = $curl->send($dto);
+
         self::assertEquals(200, $res->getStatusCode());
         $dataFromFile = File::getContent(__DIR__ . '/AccountDetailResponse.json');
         self::assertEquals($dataFromFile, $res->getBody());

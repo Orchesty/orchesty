@@ -4,7 +4,6 @@ namespace Hanaboso\PipesPhpSdk\Batch\Model;
 
 use Hanaboso\CommonsBundle\Process\BatchProcessDto;
 use Hanaboso\PipesPhpSdk\Batch\BatchAbstract;
-use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\PipesPhpSdk\Utils\ProcessDtoFactory;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -21,7 +20,6 @@ final class BatchManager
      * @param Request       $request
      *
      * @return BatchProcessDto
-     * @throws ConnectorException
      */
     public function processAction(BatchAbstract $conn, Request $request): BatchProcessDto
     {

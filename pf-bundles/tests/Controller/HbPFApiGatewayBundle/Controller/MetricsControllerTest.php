@@ -3,8 +3,8 @@
 namespace PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller;
 
 use Exception;
-use Hanaboso\PipesPhpSdk\Database\Document\Node;
-use Hanaboso\PipesPhpSdk\Database\Document\Topology;
+use Hanaboso\PipesFramework\Database\Document\Node;
+use Hanaboso\PipesFramework\Database\Document\Topology;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 
 /**

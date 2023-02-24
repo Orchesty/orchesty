@@ -2,9 +2,8 @@
 
 namespace Hanaboso\HbPFConnectors\Model\Application\Impl\FlexiBee;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Enum\AuthorizationTypeEnum;
 use Hanaboso\CommonsBundle\Process\ProcessDtoAbstract;
@@ -17,6 +16,7 @@ use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Form;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\FormStack;
+use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\Utils\Date\DateTimeUtils;
@@ -57,10 +57,13 @@ final class FlexiBeeApplication extends BasicApplicationAbstract
     /**
      * FlexiBeeApplication constructor.
      *
-     * @param CurlManager     $curlManager
-     * @param DocumentManager $dm
+     * @param CurlManager                  $curlManager
+     * @param ApplicationInstallRepository $applicationInstallRepository
      */
-    public function __construct(private CurlManager $curlManager, private DocumentManager $dm)
+    public function __construct(
+        private CurlManager $curlManager,
+        private readonly ApplicationInstallRepository $applicationInstallRepository,
+    )
     {
     }
 
@@ -69,7 +72,7 @@ final class FlexiBeeApplication extends BasicApplicationAbstract
      */
     public function getAuthorizationType(): string
     {
-        return AuthorizationTypeEnum::BASIC;
+        return AuthorizationTypeEnum::BASIC->value;
     }
 
     /**
@@ -106,6 +109,8 @@ final class FlexiBeeApplication extends BasicApplicationAbstract
      * @return RequestDto
      * @throws ApplicationInstallException
      * @throws CurlException
+     * @throws DateTimeException
+     * @throws GuzzleException
      */
     public function getRequestDto(
         ProcessDtoAbstract $dto,
@@ -249,7 +254,6 @@ final class FlexiBeeApplication extends BasicApplicationAbstract
      */
     private function getApiTokenFromSettings(ApplicationInstall $applicationInstall): mixed
     {
-        $this->dm->refresh($applicationInstall);
         $token = $applicationInstall->getSettings()[self::CLIENT_SETTINGS] ?? [];
 
         $valid = DateTimeUtils::getUtcDateTime()->getTimestamp() - self::TOKEN_MAX_LIFE;
@@ -271,7 +275,7 @@ final class FlexiBeeApplication extends BasicApplicationAbstract
      * @throws ApplicationInstallException
      * @throws CurlException
      * @throws DateTimeException
-     * @throws MongoDBException
+     * @throws GuzzleException
      */
     private function getApiToken(ApplicationInstall $applicationInstall, ProcessDtoAbstract $dto): string
     {
@@ -307,8 +311,7 @@ final class FlexiBeeApplication extends BasicApplicationAbstract
                 ],
             );
 
-            $this->dm->persist($applicationInstall);
-            $this->dm->flush();
+            $this->applicationInstallRepository->insert($applicationInstall);
         }
 
         return $token[self::AUTH_SESSION_ID];

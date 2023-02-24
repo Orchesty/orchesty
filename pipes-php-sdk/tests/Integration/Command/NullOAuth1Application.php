@@ -39,7 +39,7 @@ final class NullOAuth1Application extends OAuth1ApplicationAbstract implements O
      */
     public function getApplicationType(): string
     {
-        return ApplicationTypeEnum::WEBHOOK;
+        return ApplicationTypeEnum::WEBHOOK->value;
     }
 
     /**

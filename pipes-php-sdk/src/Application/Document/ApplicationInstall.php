@@ -3,11 +3,8 @@
 namespace Hanaboso\PipesPhpSdk\Application\Document;
 
 use DateTime;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Hanaboso\CommonsBundle\Database\Traits\Document\CreatedTrait;
-use Hanaboso\CommonsBundle\Database\Traits\Document\DeletedTrait;
-use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
-use Hanaboso\CommonsBundle\Database\Traits\Document\UpdatedTrait;
+use Exception;
+use Hanaboso\PipesPhpSdk\Storage\Mongodb\DocumentAbstract;
 use Hanaboso\Utils\Date\DateTimeUtils;
 use Hanaboso\Utils\Exception\DateTimeException;
 
@@ -15,79 +12,146 @@ use Hanaboso\Utils\Exception\DateTimeException;
  * Class ApplicationInstall
  *
  * @package Hanaboso\PipesPhpSdk\Application\Document
- *
- * @ODM\Document(repositoryClass="Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository")
- * @ODM\HasLifecycleCallbacks()
  */
-class ApplicationInstall
+class ApplicationInstall extends DocumentAbstract
 {
 
-    use IdTrait;
-    use CreatedTrait;
-    use UpdatedTrait;
-    use DeletedTrait;
-
     public const USER = 'user';
-    public const KEY  = 'key';
+    public const NAME = 'name';
 
     /**
-     * @var string
-     *
-     * @ODM\Field(type="string")
+     * @var DateTime|null
      */
-    private string $user;
+    protected ?DateTime $created;
 
     /**
-     * @var string
-     *
-     * @ODM\Field(type="string")
+     * @var DateTime|null
      */
-    private string $key;
+    protected ?DateTime $updated;
 
     /**
      * @var bool
-     *
-     * @ODM\Field(type="bool")
+     */
+    protected bool $deleted = FALSE;
+
+    /**
+     * @var string|null
+     */
+    private ?string $user = NULL;
+
+    /**
+     * @var string|null
+     */
+    private ?string $key = NULL;
+
+    /**
+     * @var bool
      */
     private bool $enabled = FALSE;
 
     /**
      * @var DateTime|null
-     *
-     * @ODM\Field(type="date", nullable=true)
      */
     private ?DateTime $expires = NULL;
 
     /**
      * @var mixed[]
-     *
-     * @ODM\Field(type="hash")
      */
     private array $settings = [];
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
     private string $encryptedSettings = '';
 
     /**
      * @var mixed[]
-     *
-     * @ODM\Field(type="hash")
      */
     private array $nonEncryptedSettings = [];
 
     /**
      * ApplicationInstall constructor.
      *
+     * @param mixed[]|null $data
+     *
      * @throws DateTimeException
      */
-    public function __construct()
+    public function __construct(?array $data = [])
     {
-        $this->created = DateTimeUtils::getUtcDateTime();
+        if (empty($data['created'])) {
+            $this->created = DateTimeUtils::getUtcDateTime();
+        }
         $this->updated = DateTimeUtils::getUtcDateTime();
+
+        parent::__construct($data);
+    }
+
+    /**
+     * @return DateTime|null
+     */
+    public function getCreated(): ?DateTime
+    {
+        return $this->created;
+    }
+
+    /**
+     * @param DateTime|null $created
+     *
+     * @return $this
+     */
+    public function setCreated(?DateTime $created): ApplicationInstall
+    {
+        $this->created = $created ?? new DateTime();
+
+        return $this;
+    }
+
+    /**
+     * @return DateTime|null
+     */
+    public function getUpdated(): ?DateTime
+    {
+        return $this->updated;
+    }
+
+    /**
+     * @param DateTime|null $updated
+     *
+     * @return $this
+     */
+    public function setUpdated(?DateTime $updated): ApplicationInstall
+    {
+        $this->updated = $updated ?? new DateTime();
+
+        return $this;
+    }
+
+    /**
+     * @throws DateTimeException
+     */
+    public function preUpdate(): void
+    {
+        $this->updated = DateTimeUtils::getUtcDateTime();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDeleted(): bool
+    {
+        return $this->deleted;
+    }
+
+    /**
+     * @param bool|null $deleted
+     *
+     * @return $this
+     */
+    public function setDeleted(?bool $deleted): ApplicationInstall
+    {
+        $this->deleted = $deleted ?? FALSE;
+
+        return $this;
     }
 
     /**
@@ -99,13 +163,13 @@ class ApplicationInstall
     }
 
     /**
-     * @param mixed[] $settings
+     * @param mixed[]|null $settings
      *
-     * @return ApplicationInstall
+     * @return $this
      */
-    public function setSettings(array $settings): ApplicationInstall
+    public function setSettings(?array $settings): ApplicationInstall
     {
-        $this->settings = $settings;
+        $this->settings = $settings ?? [];
 
         return $this;
     }
@@ -131,23 +195,23 @@ class ApplicationInstall
     }
 
     /**
-     * @param string $encryptedSettings
+     * @param string|null $encryptedSettings
      *
-     * @return ApplicationInstall
+     * @return $this
      */
-    public function setEncryptedSettings(string $encryptedSettings): ApplicationInstall
+    public function setEncryptedSettings(?string $encryptedSettings): ApplicationInstall
     {
-        $this->encryptedSettings = $encryptedSettings;
+        $this->encryptedSettings = $encryptedSettings ?? '';
 
         return $this;
     }
 
     /**
-     * @param string $user
+     * @param string|null $user
      *
-     * @return ApplicationInstall
+     * @return $this
      */
-    public function setUser(string $user): ApplicationInstall
+    public function setUser(?string $user): ApplicationInstall
     {
         $this->user = $user;
 
@@ -155,9 +219,9 @@ class ApplicationInstall
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getUser(): string
+    public function getUser(): ?string
     {
         return $this->user;
     }
@@ -183,19 +247,19 @@ class ApplicationInstall
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getKey(): string
+    public function getKey(): ?string
     {
         return $this->key;
     }
 
     /**
-     * @param string $key
+     * @param string|null $key
      *
-     * @return ApplicationInstall
+     * @return $this
      */
-    public function setKey(string $key): ApplicationInstall
+    public function setKey(?string $key): ApplicationInstall
     {
         $this->key = $key;
 
@@ -203,9 +267,9 @@ class ApplicationInstall
     }
 
     /**
-     * @return mixed[]
+     * @return mixed[]|null
      */
-    public function getNonEncryptedSettings(): array
+    public function getNonEncryptedSettings(): ?array
     {
         return $this->nonEncryptedSettings;
     }
@@ -243,13 +307,13 @@ class ApplicationInstall
     }
 
     /**
-     * @param bool $enabled
+     * @param bool|null $enabled
      *
-     * @return ApplicationInstall
+     * @return $this
      */
-    public function setEnabled(bool $enabled): ApplicationInstall
+    public function setEnabled(?bool $enabled): ApplicationInstall
     {
-        $this->enabled = $enabled;
+        $this->enabled = $enabled ?? FALSE;
 
         return $this;
     }
@@ -264,13 +328,55 @@ class ApplicationInstall
         return [
             'id'                     => $this->getId(),
             ApplicationInstall::USER => $this->getUser(),
-            ApplicationInstall::KEY  => $this->getKey(),
+            ApplicationInstall::NAME => $this->getKey(),
             'nonEncryptedSettings'   => $this->getNonEncryptedSettings(),
-            'created'                => $this->getCreated()->format(DateTimeUtils::DATE_TIME),
-            'updated'                => $this->getUpdated()->format(DateTimeUtils::DATE_TIME),
-            'expires'                => $expires ? $expires->format(DateTimeUtils::DATE_TIME) : NULL,
+            'encryptedSettings'      => $this->getEncryptedSettings(),
+            'settings'               => $this->getSettings(),
+            'created'                => $this->getCreated()?->format(DateTimeUtils::DATE_TIME),
+            'updated'                => $this->getUpdated()?->format(DateTimeUtils::DATE_TIME),
+            'expires'                => $expires?->format(DateTimeUtils::DATE_TIME),
             'enabled'                => $this->isEnabled(),
         ];
+    }
+
+    /**
+     * @return string
+     */
+    public static function getName(): string
+    {
+        return 'ApplicationInstall';
+    }
+
+    /**
+     * @param mixed[] $data
+     *
+     * @return ApplicationInstall
+     * @throws Exception
+     */
+    protected function fromArray(array $data): ApplicationInstall
+    {
+        if (array_key_exists('id', $data))
+            $this->setId($data['id']);
+        if (array_key_exists(ApplicationInstall::USER, $data))
+            $this->setUser($data[ApplicationInstall::USER]);
+        if (array_key_exists(ApplicationInstall::NAME, $data))
+            $this->setKey($data[ApplicationInstall::NAME]);
+        if (array_key_exists('nonEncryptedSettings', $data))
+            $this->setNonEncryptedSettings($data['nonEncryptedSettings']);
+        if (array_key_exists('encryptedSettings', $data))
+            $this->setEncryptedSettings($data['encryptedSettings']);
+        if (array_key_exists('settings', $data))
+            $this->setSettings($data['settings']);
+        if (array_key_exists('created', $data))
+            $this->setCreated($data['created'] ? new DateTime($data['created']) : NULL);
+        if (array_key_exists('updated', $data))
+            $this->setUpdated($data['updated'] ? new DateTime($data['updated']) : NULL);
+        if (array_key_exists('expires', $data))
+            $this->setExpires($data['expires'] ? new DateTime($data['expires']) : NULL);
+        if (array_key_exists('enabled', $data))
+            $this->setEnabled($data['enabled']);
+
+        return $this;
     }
 
 }

@@ -3,7 +3,7 @@
 namespace PipesPhpSdkTests\Unit\Database\Document\Dto;
 
 use Exception;
-use Hanaboso\PipesPhpSdk\Database\Document\Dto\SystemConfigDto;
+use Hanaboso\PipesPhpSdk\Storage\Mongodb\Document\Dto\SystemConfigDto;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 
 /**

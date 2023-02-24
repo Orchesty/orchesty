@@ -3,12 +3,16 @@
 namespace HbPFConnectorsTests\Integration\Model\Application\Impl\Fakturoid\Connector;
 
 use Exception;
+use GuzzleHttp\Psr7\Response;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Fakturoid\Connector\FakturoidGetAccountDetailConnector;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
+use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DataProvider;
 use HbPFConnectorsTests\MockCurlMethod;
+use HbPFConnectorsTests\MockServer\Mock;
+use HbPFConnectorsTests\MockServer\MockServer;
 
 /**
  * Class FakturoidGetAccountDetailConnectorTest
@@ -37,9 +41,21 @@ final class FakturoidGetAccountDetailConnectorTest extends FakturoidAbstractConn
      */
     public function testProcessAction(): void
     {
+        $mockServer = new MockServer();
+        self::getContainer()->set('hbpf.worker-api', $mockServer);
+
         $this->mockCurl([new MockCurlMethod(200, 'response200.json', [])]);
 
-        $fakturoidGetAccountDetailConnector = $this->setApplicationAndMock('fakturacnitest');
+        $fakturoidGetAccountDetailConnector = $this->setApplication();
+
+        $mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["fakturoid"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(200, [], Json::encode([$this->getApplication('fakturacnitest')->toArray()])),
+            ),
+        );
 
         $response = $fakturoidGetAccountDetailConnector->processAction(
             DataProvider::getProcessDto('fakturoid'),
@@ -54,6 +70,18 @@ final class FakturoidGetAccountDetailConnectorTest extends FakturoidAbstractConn
      */
     public function testProcessActionMissingHeaderValue(): void
     {
+        $mockServer = new MockServer();
+        self::getContainer()->set('hbpf.worker-api', $mockServer);
+
+        $mockServer->addMock(
+            new Mock(
+                '/document/ApplicationInstall?filter={"names":["fakturoid"],"users":["user"]}',
+                NULL,
+                CurlManager::METHOD_GET,
+                new Response(200, [], Json::encode([$this->getApplication()->toArray()])),
+            ),
+        );
+
         $fakturoidGetAccountDetailConnector = $this->setApplicationAndMockWithoutHeader('fakturacnitest');
 
         $response = $fakturoidGetAccountDetailConnector->processAction(
@@ -82,10 +110,11 @@ final class FakturoidGetAccountDetailConnectorTest extends FakturoidAbstractConn
             $sender->method('send')->willReturn($dto);
         }
 
-        $fakturoidGetAccountDetailConnector = new FakturoidGetAccountDetailConnector();
+        $fakturoidGetAccountDetailConnector = new FakturoidGetAccountDetailConnector(
+            self::getContainer()->get('hbpf.application_install.repository'),
+        );
         $fakturoidGetAccountDetailConnector
-            ->setSender($sender)
-            ->setDb($this->dm);
+            ->setSender($sender);
 
         return $fakturoidGetAccountDetailConnector;
     }
@@ -96,10 +125,11 @@ final class FakturoidGetAccountDetailConnectorTest extends FakturoidAbstractConn
     public function setApplication(): FakturoidGetAccountDetailConnector
     {
         $app                = self::getContainer()->get('hbpf.application.fakturoid');
-        $fakturoidConnector = new FakturoidGetAccountDetailConnector();
+        $fakturoidConnector = new FakturoidGetAccountDetailConnector(
+            self::getContainer()->get('hbpf.application_install.repository'),
+        );
         $fakturoidConnector
             ->setSender(self::getContainer()->get('hbpf.transport.curl_manager'))
-            ->setDb($this->dm)
             ->setApplication($app);
 
         return $fakturoidConnector;

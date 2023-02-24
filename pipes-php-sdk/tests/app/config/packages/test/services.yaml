@@ -15,15 +15,20 @@ services:
         class: PipesPhpSdkTests\Unit\HbPFConnectorBundle\Loader\NullConnector
         calls:
             - [setApplication, ['@hbpf.application.null']]
+        arguments:
+          [ '@hbpf.application_install.repository' ]
 
     hbpf.batch.null:
         class: PipesPhpSdkTests\Unit\HbPFBatchBundle\Loader\NullBatch
         calls:
             - [ setApplication, [ '@hbpf.application.null' ] ]
+        arguments:
+          [ '@hbpf.application_install.repository' ]
 
     hbpf.custom_node.null:
         class: PipesPhpSdkTests\Integration\HbPFCustomNodeBundle\TestNullCustomNode
+        arguments:
+          [ '@hbpf.application_install.repository' ]
 
     hbpf.application.webhook:
         class: PipesPhpSdkTests\Integration\Application\Manager\Webhook\WebhookApplication
-        arguments:

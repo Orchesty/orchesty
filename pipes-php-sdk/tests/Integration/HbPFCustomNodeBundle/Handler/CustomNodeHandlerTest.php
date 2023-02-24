@@ -6,7 +6,7 @@ use Exception;
 use Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Handler\CustomNodeHandler;
 use Hanaboso\PipesPhpSdk\Utils\ProcessDtoFactory;
 use Hanaboso\Utils\String\Json;
-use PipesPhpSdkTests\DatabaseTestCaseAbstract;
+use PipesPhpSdkTests\KernelTestCaseAbstract;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @package PipesPhpSdkTests\Integration\HbPFCustomNodeBundle\Handler
  */
-final class CustomNodeHandlerTest extends DatabaseTestCaseAbstract
+final class CustomNodeHandlerTest extends KernelTestCaseAbstract
 {
 
     /**

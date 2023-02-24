@@ -4,9 +4,9 @@ namespace Hanaboso\PipesFramework\Utils;
 
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
+use Hanaboso\PipesFramework\Database\Document\Dto\SystemConfigDto;
 use Hanaboso\PipesFramework\Utils\Dto\NodeSchemaDto;
 use Hanaboso\PipesFramework\Utils\Dto\Schema;
-use Hanaboso\PipesPhpSdk\Database\Document\Dto\SystemConfigDto;
 use Hanaboso\Utils\Arrays\Arrays;
 use Hanaboso\Utils\String\Json;
 
@@ -179,9 +179,9 @@ final class TopologySchemaUtils
     private static function getPipesType(string $type): string
     {
         return match ($type) {
-            self::BPMN_GATEWAY, self::BPMN_EXCLUSIVE_GATEWAY => TypeEnum::GATEWAY,
-            self::BPMN_EVENT, self::BPMN_START_EVENT => TypeEnum::START,
-            self::BPMN_TASK => TypeEnum::CUSTOM,
+            self::BPMN_GATEWAY, self::BPMN_EXCLUSIVE_GATEWAY => TypeEnum::GATEWAY->value,
+            self::BPMN_EVENT, self::BPMN_START_EVENT => TypeEnum::START->value,
+            self::BPMN_TASK => TypeEnum::CUSTOM->value,
             default => '',
         };
     }

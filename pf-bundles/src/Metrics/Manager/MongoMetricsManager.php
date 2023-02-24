@@ -5,6 +5,8 @@ namespace Hanaboso\PipesFramework\Metrics\Manager;
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
+use Hanaboso\PipesFramework\Database\Document\Node;
+use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\PipesFramework\Metrics\Document\BridgesMetrics;
 use Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetrics;
 use Hanaboso\PipesFramework\Metrics\Document\ContainerMetrics;
@@ -17,8 +19,6 @@ use Hanaboso\PipesFramework\Metrics\Dto\MetricsDto;
 use Hanaboso\PipesFramework\Metrics\Enum\HealthcheckTypeEnum;
 use Hanaboso\PipesFramework\Metrics\Enum\ServiceNameByQueueEnum;
 use Hanaboso\PipesFramework\Metrics\Retention\RetentionFactory;
-use Hanaboso\PipesPhpSdk\Database\Document\Node;
-use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use Hanaboso\Utils\Date\DateTimeUtils;
 use Hanaboso\Utils\Exception\DateTimeException;
 use LogicException;
@@ -42,7 +42,6 @@ final class MongoMetricsManager extends MetricsManagerAbstract
      * @param string          $counterTable
      * @param string          $connectorTable
      * @param DocumentManager $metricsDm
-     * @param int             $rabbitInterval
      * @param string          $consumerTable
      */
     public function __construct(
@@ -53,7 +52,6 @@ final class MongoMetricsManager extends MetricsManagerAbstract
         string $counterTable,
         string $connectorTable,
         private DocumentManager $metricsDm,
-        private int $rabbitInterval,
         string $consumerTable,
     )
     {
@@ -194,7 +192,7 @@ final class MongoMetricsManager extends MetricsManagerAbstract
         $healthcheckArray = array_map(
             function (RabbitConsumerMetrics $item): array {
                 $service = ServiceNameByQueueEnum::getNameAndNodeId($item->getTags()->getQueue());
-                if ($service['name'] === ServiceNameByQueueEnum::BRIDGE) {
+                if ($service['name'] === ServiceNameByQueueEnum::BRIDGE->value) {
                     $node = $this->dm->find(Node::class, $service['nodeId']);
                     if (!$node) {
                         throw new DocumentNotFoundException(sprintf('Node with id %s not found', $service['nodeId']));
@@ -216,7 +214,7 @@ final class MongoMetricsManager extends MetricsManagerAbstract
                 }
 
                 return [
-                    'type'     => HealthcheckTypeEnum::QUEUE,
+                    'type'     => HealthcheckTypeEnum::QUEUE->value,
                     'name'     => $item->getTags()->getQueue(),
                     'service'  => $service['name'],
                     'topology' => $topology ?? NULL,
@@ -240,7 +238,7 @@ final class MongoMetricsManager extends MetricsManagerAbstract
             $healthcheckArray,
             array_map(
                 static fn(ContainerMetrics $item): array => [
-                    'type'    => HealthcheckTypeEnum::SERVICE,
+                    'type'    => HealthcheckTypeEnum::SERVICE->value,
                     'name'    => $item->getFields()->getName(),
                     'message' => $item->getFields()->getMessage(),
                 ],
@@ -342,46 +340,6 @@ final class MongoMetricsManager extends MetricsManagerAbstract
             ->setMax($res[self::REQUEST_MAX])
             ->setTotal($res[self::REQUEST_COUNT])
             ->setAvg($res[self::REQUEST_COUNT], $res[self::REQUEST_SUM]);
-    }
-
-    /**
-     * @param mixed[] $where
-     * @param string  $dateFrom
-     * @param string  $dateTo
-     *
-     * @return MetricsDto
-     * @throws DateTimeException
-     */
-    private function rabbitNodeMetrics(array $where, string $dateFrom, string $dateTo): MetricsDto
-    {
-        $qb = $this->metricsDm->createAggregationBuilder(RabbitMetrics::class);
-        $this->addConditions($qb, $dateFrom, $dateTo, $where, RabbitMetrics::class);
-        $res = $qb->group()->field('id')->ifNull(NULL, '')
-            ->field('queue_max')->max('$fields.messages')
-            ->field('queue_sum')->sum('$fields.messages')
-            ->execute()
-            ->toArray();
-
-        if (!$res) {
-            $res = [
-                'queue_max' => 0,
-                'queue_sum' => 0,
-            ];
-        } else {
-            $res = reset($res);
-        }
-
-        $from = DateTimeUtils::getUtcDateTime($dateFrom);
-        $to   = DateTimeUtils::getUtcDateTime($dateTo);
-        $diff = $to->diff($from);
-        $secs = (((int) $diff->days * 24 + $diff->h) * 60 + $diff->i) * 60 + $diff->s;
-
-        $res[self::QUEUE_COUNT] = $secs / $this->rabbitInterval;
-
-        return (new MetricsDto())
-            ->setMax($res[self::QUEUE_MAX])
-            ->setTotal($res[self::QUEUE_COUNT])
-            ->setAvg($res[self::QUEUE_COUNT], $res[self::QUEUE_SUM]);
     }
 
     /**

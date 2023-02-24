@@ -38,7 +38,7 @@ final class WisepopsApplication extends BasicApplicationAbstract implements Webh
      */
     public function getApplicationType(): string
     {
-        return ApplicationTypeEnum::WEBHOOK;
+        return ApplicationTypeEnum::WEBHOOK->value;
     }
 
     /**

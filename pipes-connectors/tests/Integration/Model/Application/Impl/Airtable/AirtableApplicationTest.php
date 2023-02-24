@@ -7,17 +7,16 @@ use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Airtable\AirtableApplication;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
-use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
-use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
+use HbPFConnectorsTests\KernelTestCaseAbstract;
 
 /**
  * Class AirtableApplicationTest
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Airtable
  */
-final class AirtableApplicationTest extends DatabaseTestCaseAbstract
+final class AirtableApplicationTest extends KernelTestCaseAbstract
 {
 
     public const API_KEY    = 'keyfb******LvKNJI';
@@ -34,7 +33,7 @@ final class AirtableApplicationTest extends DatabaseTestCaseAbstract
      */
     public function testGetApplicationType(): void
     {
-        self::assertEquals(ApplicationTypeEnum::CRON, $this->app->getApplicationType());
+        self::assertEquals(ApplicationTypeEnum::CRON->value, $this->app->getApplicationType());
     }
 
     /**
@@ -85,13 +84,12 @@ final class AirtableApplicationTest extends DatabaseTestCaseAbstract
         $applicationInstall->setSettings(
             [
                 ApplicationInterface::AUTHORIZATION_FORM => [
-                    BasicApplicationAbstract::TOKEN => self::API_KEY,
+                    ApplicationInterface::TOKEN     => self::API_KEY,
                     AirtableApplication::BASE_ID    => self::BASE_ID,
                     AirtableApplication::TABLE_NAME => self::TABLE_NAME,
                 ],
             ],
         );
-        $this->pfd($applicationInstall);
         self::assertEquals(TRUE, $this->app->isAuthorized($applicationInstall));
     }
 
@@ -111,7 +109,6 @@ final class AirtableApplicationTest extends DatabaseTestCaseAbstract
                 ],
             ],
         );
-        $this->pfd($applicationInstall);
         $this->expectException(AuthorizationException::class);
         $this->app->getRequestDto(new ProcessDto(), $applicationInstall, 'POST');
     }

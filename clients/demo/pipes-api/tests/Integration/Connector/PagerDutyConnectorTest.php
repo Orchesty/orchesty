@@ -127,13 +127,16 @@ final class PagerDutyConnectorTest extends KernelTestCaseAbstract
      * @param Closure $closure
      *
      * @return PagerDutyConnector
+     * @throws Exception
      */
     private function prepareService(Closure $closure): PagerDutyConnector
     {
         $curl = self::createMock(CurlManagerInterface::class);
         $curl->method('send')->willReturnCallback($closure);
 
-        $pagerDutyConnector =  new PagerDutyConnector();
+        $repo = self::getContainer()->get('hbpf.application_install.repository');
+
+        $pagerDutyConnector = new PagerDutyConnector($repo);
         $pagerDutyConnector->setSender($curl);
 
         return $pagerDutyConnector;

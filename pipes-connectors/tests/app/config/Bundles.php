@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle;
 use Hanaboso\CommonsBundle\HbPFCommonsBundle;
 use Hanaboso\HbPFConnectors\HbPFConnectorsBundle;
 use Hanaboso\PipesPhpSdk\HbPFApplicationBundle\HbPFApplicationBundle;
@@ -13,7 +12,6 @@ use Symfony\Bundle\SecurityBundle\SecurityBundle;
 
 return [
     DebugBundle::class           => ['dev' => TRUE, 'test' => TRUE],
-    DoctrineMongoDBBundle::class => ['all' => TRUE],
     FrameworkBundle::class       => ['all' => TRUE],
     MonologBundle::class         => ['all' => TRUE],
     SecurityBundle::class        => ['all' => TRUE],

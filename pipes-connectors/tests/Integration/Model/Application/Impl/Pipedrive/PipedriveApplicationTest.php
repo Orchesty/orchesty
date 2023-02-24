@@ -9,15 +9,15 @@ use Hanaboso\HbPFConnectors\Model\Application\Impl\Pipedrive\PipedriveApplicatio
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Document\Webhook;
 use Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookSubscription;
-use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
+use HbPFConnectorsTests\KernelTestCaseAbstract;
 
 /**
  * Class PipedriveApplicationTest
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Pipedrive
  */
-final class PipedriveApplicationTest extends DatabaseTestCaseAbstract
+final class PipedriveApplicationTest extends KernelTestCaseAbstract
 {
 
     public const TOKEN = 'ebcebe5e73aa8ba62**********80c05377fcd63';
@@ -84,7 +84,7 @@ final class PipedriveApplicationTest extends DatabaseTestCaseAbstract
      */
     public function testGetApplicationType(): void
     {
-        self::assertEquals(ApplicationTypeEnum::WEBHOOK, $this->application->getApplicationType());
+        self::assertEquals(ApplicationTypeEnum::WEBHOOK->value, $this->application->getApplicationType());
     }
 
     /**
@@ -149,7 +149,6 @@ final class PipedriveApplicationTest extends DatabaseTestCaseAbstract
             $this->application->getName(),
             self::TOKEN,
         );
-        $this->pfd($applicationInstall);
 
         self::assertEquals(TRUE, $this->application->isAuthorized($applicationInstall));
     }

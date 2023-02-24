@@ -11,6 +11,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
+use Hanaboso\PhpCheckUtils\PhpUnit\Traits\CustomAssertTrait;
 use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Json;
 use PHPUnit\Framework\MockObject\Stub\ReturnCallback;
@@ -24,6 +25,8 @@ use Throwable;
  */
 abstract class KernelTestCaseAbstract extends KernelTestCase
 {
+
+    use CustomAssertTrait;
 
     /**
      *

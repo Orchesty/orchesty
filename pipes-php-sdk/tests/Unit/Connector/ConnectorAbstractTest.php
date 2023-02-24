@@ -7,6 +7,7 @@ use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlClientFactory;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
+use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\PipesPhpSdk\CustomNode\Exception\CustomNodeException;
 use PipesPhpSdkTests\Integration\Application\TestNullApplication;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
@@ -42,6 +43,7 @@ final class ConnectorAbstractTest extends KernelTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract::setApplication
+     * @throws CustomNodeException
      */
     public function testSetApplication(): void
     {
@@ -100,7 +102,11 @@ final class ConnectorAbstractTest extends KernelTestCaseAbstract
     {
         parent::setUp();
 
-        $this->nullConnector = new TestNullConnector();
+        /**
+         * @var ApplicationInstallRepository $applicationInstallRepository
+         */
+        $applicationInstallRepository = self::getContainer()->get('hbpf.application_install.repository');
+        $this->nullConnector          = new TestNullConnector($applicationInstallRepository);
     }
 
 }

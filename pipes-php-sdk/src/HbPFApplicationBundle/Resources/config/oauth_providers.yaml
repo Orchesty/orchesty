@@ -5,8 +5,8 @@ services:
     hbpf.providers.oauth1_provider:
         class: Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider
         arguments:
-            - '@doctrine_mongodb.odm.default_document_manager'
             - '%backendHost%'
+            - '@hbpf.application_install.repository'
         calls:
             - ['setLogger', ['@monolog.logger.commons']]
 

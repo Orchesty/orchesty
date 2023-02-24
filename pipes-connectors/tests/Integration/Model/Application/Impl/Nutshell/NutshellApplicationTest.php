@@ -7,15 +7,15 @@ use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Nutshell\NutshellApplication;
-use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
+use HbPFConnectorsTests\KernelTestCaseAbstract;
 
 /**
  * Class NutshellApplicationTest
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Nutshell
  */
-final class NutshellApplicationTest extends DatabaseTestCaseAbstract
+final class NutshellApplicationTest extends KernelTestCaseAbstract
 {
 
     public const USER    = 'user@user.com';
@@ -40,7 +40,6 @@ final class NutshellApplicationTest extends DatabaseTestCaseAbstract
             self::USER,
             self::API_KEY,
         );
-        $this->pfd($applicationInstall);
 
         $dto = $this->application->getRequestDto(
             new ProcessDto(),
@@ -63,7 +62,7 @@ final class NutshellApplicationTest extends DatabaseTestCaseAbstract
      */
     public function testGetApplicationType(): void
     {
-        self::assertEquals(ApplicationTypeEnum::CRON, $this->application->getApplicationType());
+        self::assertEquals(ApplicationTypeEnum::CRON->value, $this->application->getApplicationType());
     }
 
     /**

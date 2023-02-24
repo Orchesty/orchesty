@@ -5,15 +5,15 @@ services:
     hbpf.application.manager:
         class: Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager
         arguments:
-            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.application_install.repository'
             - '@hbpf.application.loader'
-            - '@annotations.cached_reader'
             - '@hbpf.application.manager.webhook'
 
     hbpf.application.manager.webhook:
         class: Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookManager
         arguments:
-            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.application_install.repository'
+            - '@hbpf.webhook.repository'
             - '@hbpf.transport.curl_manager'
             - '%backendHost%'
 

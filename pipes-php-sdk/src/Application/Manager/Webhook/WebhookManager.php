@@ -2,17 +2,15 @@
 
 namespace Hanaboso\PipesPhpSdk\Application\Manager\Webhook;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\MongoDBException;
-use Doctrine\Persistence\ObjectRepository;
-use Exception;
+use GuzzleHttp\Exception\GuzzleException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
-use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Document\Webhook;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
+use Hanaboso\PipesPhpSdk\Application\Repository\WebhookFilter;
 use Hanaboso\PipesPhpSdk\Application\Repository\WebhookRepository;
+use Hanaboso\Utils\Exception\DateTimeException;
 
 /**
  * Class WebhookManager
@@ -31,27 +29,21 @@ final class WebhookManager
     private string $hostname;
 
     /**
-     * @var ObjectRepository<ApplicationInstall>&ApplicationInstallRepository
-     */
-    private $repository;
-
-    /**
-     * @var ObjectRepository<Webhook>&WebhookRepository
-     */
-    private $webhookRepository;
-
-    /**
      * WebhookManager constructor.
      *
-     * @param DocumentManager      $dm
-     * @param CurlManagerInterface $manager
-     * @param string               $hostname
+     * @param ApplicationInstallRepository $applicationInstallRepository
+     * @param WebhookRepository            $webhookRepository
+     * @param CurlManagerInterface         $manager
+     * @param string                       $hostname
      */
-    public function __construct(private DocumentManager $dm, private CurlManagerInterface $manager, string $hostname)
+    public function __construct(
+        private readonly ApplicationInstallRepository $applicationInstallRepository,
+        private readonly WebhookRepository $webhookRepository,
+        private readonly CurlManagerInterface $manager,
+        string $hostname,
+    )
     {
-        $this->hostname          = rtrim($hostname, '/');
-        $this->repository        = $dm->getRepository(ApplicationInstall::class);
-        $this->webhookRepository = $dm->getRepository(Webhook::class);
+        $this->hostname = rtrim($hostname, '/');
     }
 
     /**
@@ -59,15 +51,13 @@ final class WebhookManager
      * @param string                      $userId
      *
      * @return mixed[]
+     * @throws GuzzleException
      */
     public function getWebhooks(WebhookApplicationInterface $application, string $userId): array
     {
         /** @var Webhook[] $webhooks */
-        $webhooks = $this->webhookRepository->findBy(
-            [
-                'application' => $application->getName(),
-                'user'        => $userId,
-            ],
+        $webhooks = $this->webhookRepository->findMany(
+            new WebhookFilter(applications: [$application->getName()], userIds: [$userId]),
         );
 
         return array_map(
@@ -101,10 +91,11 @@ final class WebhookManager
      * @param string                      $userId
      * @param mixed[]                     $data
      *
-     * @throws MongoDBException
-     * @throws CurlException
+     * @return void
      * @throws ApplicationInstallException
-     * @throws Exception
+     * @throws CurlException
+     * @throws GuzzleException
+     * @throws DateTimeException
      */
     public function subscribeWebhooks(WebhookApplicationInterface $application, string $userId, array $data = []): void
     {
@@ -117,7 +108,7 @@ final class WebhookManager
 
             $name               = $data[WebhookSubscription::TOPOLOGY] ?? $subscription->getTopology();
             $token              = bin2hex(random_bytes(self::LENGTH));
-            $applicationInstall = $this->repository->findUserApp($application->getName(), $userId);
+            $applicationInstall = $this->applicationInstallRepository->findUserApp($application->getName(), $userId);
             $request            = $application->getWebhookSubscribeRequestDto(
                 $applicationInstall,
                 $subscription,
@@ -129,18 +120,20 @@ final class WebhookManager
                 $applicationInstall,
             );
 
-            $webhook = (new Webhook())
-                ->setName($subscription->getName())
-                ->setUser($userId)
-                ->setNode($subscription->getNode())
-                ->setTopology($name)
-                ->setApplication($application->getName())
-                ->setWebhookId($webhookId)
-                ->setToken($token);
-            $this->dm->persist($webhook);
+            $this->webhookRepository->insert(
+                new Webhook(
+                    [
+                        'name'        => $subscription->getName(),
+                        'user'        => $userId,
+                        'node'        => $subscription->getName(),
+                        'topology'    => $name,
+                        'application' => $application->getName(),
+                        'webhookId'   => $webhookId,
+                        'token'       => $token,
+                    ],
+                ),
+            );
         }
-
-        $this->dm->flush();
     }
 
     /**
@@ -148,9 +141,10 @@ final class WebhookManager
      * @param string                      $userId
      * @param mixed[]                     $data
      *
+     * @return void
      * @throws ApplicationInstallException
      * @throws CurlException
-     * @throws MongoDBException
+     * @throws GuzzleException
      */
     public function unsubscribeWebhooks(
         WebhookApplicationInterface $application,
@@ -159,11 +153,8 @@ final class WebhookManager
     ): void
     {
         /** @var Webhook[] $webhooks */
-        $webhooks = $this->webhookRepository->findBy(
-            [
-                Webhook::APPLICATION => $application->getName(),
-                Webhook::USER        => $userId,
-            ],
+        $webhooks = $this->webhookRepository->findMany(
+            new WebhookFilter(applications: [$application->getName()], userIds: [$userId]),
         );
 
         foreach ($webhooks as $webhook) {
@@ -172,17 +163,15 @@ final class WebhookManager
             }
 
             $request = $application->getWebhookUnsubscribeRequestDto(
-                $this->repository->findUserApp($application->getName(), $userId),
+                $this->applicationInstallRepository->findUserApp($application->getName(), $userId),
                 $webhook,
             );
             if ($application->processWebhookUnsubscribeResponse($this->manager->send($request))) {
-                $this->dm->remove($webhook);
+                $this->webhookRepository->remove($webhook);
             } else {
                 $webhook->setUnsubscribeFailed(TRUE);
             }
         }
-
-        $this->dm->flush();
     }
 
 }

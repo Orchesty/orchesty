@@ -7,7 +7,7 @@ monolog:
     handlers:
         main:
             type: service
-            id: udp_handler
+            id: http_handler
             level: warning
 
         # Handler for docker container
@@ -26,10 +26,9 @@ services:
     logstash_formatter:
         class: Hanaboso\CommonsBundle\Monolog\LogstashFormatter
 
-    udp_handler:
-        class: Hanaboso\CommonsBundle\Monolog\UdpHandler
-        arguments:
-            - '@hbpf.transport.udp_sender'
-            - '%udp_logger_url%'
+    http_handler:
+        class: Hanaboso\CommonsBundle\Monolog\HttpHandler
         calls:
             - ['setFormatter', ['@logstash_formatter']]
+        arguments:
+          [ '@hbpf.worker-api' ]

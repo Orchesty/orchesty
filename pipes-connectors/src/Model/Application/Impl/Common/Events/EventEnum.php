@@ -2,19 +2,17 @@
 
 namespace Hanaboso\HbPFConnectors\Model\Application\Impl\Common\Events;
 
-use Hanaboso\Utils\Enum\EnumAbstract;
-
 /**
  * Class EventEnum
  *
  * @package Hanaboso\HbPFConnectors\Model\Application\Impl\Common\Events
  */
-final class EventEnum extends EnumAbstract
+enum EventEnum: string
 {
 
-    public const PROCESS_SUCCESS  = 'processSuccess';
-    public const PROCESS_FAILED   = 'processFailed';
-    public const LIMIT_OVERFLOW   = 'limitOverflow';
-    public const MESSAGE_IN_TRASH = 'messageInTrash';
+    case PROCESS_SUCCESS  = 'processSuccess';
+    case PROCESS_FAILED   = 'processFailed';
+    case LIMIT_OVERFLOW   = 'limitOverflow';
+    case MESSAGE_IN_TRASH = 'messageInTrash';
 
 }

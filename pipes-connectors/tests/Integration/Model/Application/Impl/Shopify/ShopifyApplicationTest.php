@@ -14,15 +14,15 @@ use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Document\Webhook;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\Utils\File\File;
-use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
+use HbPFConnectorsTests\KernelTestCaseAbstract;
 
 /**
  * Class ShopifyApplicationTest
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Shopify
  */
-final class ShopifyApplicationTest extends DatabaseTestCaseAbstract
+final class ShopifyApplicationTest extends KernelTestCaseAbstract
 {
 
     private const ESHOP_NAME = 'hana1';
@@ -39,7 +39,7 @@ final class ShopifyApplicationTest extends DatabaseTestCaseAbstract
      */
     public function testGetApplicationType(): void
     {
-        self::assertEquals(ApplicationTypeEnum::WEBHOOK, $this->application->getApplicationType());
+        self::assertEquals(ApplicationTypeEnum::WEBHOOK->value, $this->application->getApplicationType());
     }
 
     /**
@@ -206,7 +206,6 @@ final class ShopifyApplicationTest extends DatabaseTestCaseAbstract
                     ],
             ],
         );
-        $this->pfd($applicationInstall);
 
         return $applicationInstall;
     }

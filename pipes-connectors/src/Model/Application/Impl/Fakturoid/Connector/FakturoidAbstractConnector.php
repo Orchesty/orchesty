@@ -2,6 +2,7 @@
 
 namespace Hanaboso\HbPFConnectors\Model\Application\Impl\Fakturoid\Connector;
 
+use GuzzleHttp\Exception\GuzzleException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Process\ProcessDtoAbstract;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
@@ -11,6 +12,7 @@ use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
+use Hanaboso\PipesPhpSdk\CustomNode\Exception\CustomNodeException;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 
 /**
@@ -37,10 +39,12 @@ abstract class FakturoidAbstractConnector extends ConnectorAbstract
      * @param ProcessDto $dto
      *
      * @return ProcessDto
-     * @throws CurlException
      * @throws ApplicationInstallException
      * @throws ConnectorException
+     * @throws CurlException
+     * @throws CustomNodeException
      * @throws PipesFrameworkException
+     * @throws GuzzleException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {

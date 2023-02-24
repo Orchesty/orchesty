@@ -11,7 +11,7 @@ use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\Utils\String\Json;
-use HbPFConnectorsTests\DatabaseTestCaseAbstract;
+use HbPFConnectorsTests\KernelTestCaseAbstract;
 use LogicException;
 use PgSql\Connection;
 use phpmock\phpunit\PHPMock;
@@ -21,7 +21,7 @@ use phpmock\phpunit\PHPMock;
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\AmazonApps\Redshift\Connector
  */
-final class RedshiftExecuteQueryConnectorTest extends DatabaseTestCaseAbstract
+final class RedshiftExecuteQueryConnectorTest extends KernelTestCaseAbstract
 {
 
     use PHPMock;
@@ -52,7 +52,6 @@ final class RedshiftExecuteQueryConnectorTest extends DatabaseTestCaseAbstract
     public function testProcessActionInsert(): void
     {
         self::markTestSkipped('PGMock fails');
-        $this->createApplication();
         $this->prepareConnection(fn(): Connection => new Connection(), fn(): bool => TRUE, fn(): array => [1, 'Some Title']);
 
         $dto = $this->connector->processAction((new ProcessDto())->setData('{"query":""}')->setHeaders(self::HEADERS));
@@ -66,7 +65,6 @@ final class RedshiftExecuteQueryConnectorTest extends DatabaseTestCaseAbstract
     public function testProcessActionUpdate(): void
     {
         self::markTestSkipped('PGMock fails');
-        $this->createApplication();
         $this->prepareConnection(fn(): Connection => new Connection(), fn(): bool => TRUE, fn(): bool => FALSE, fn(): int => 1);
 
         $dto = $this->connector->processAction((new ProcessDto())->setData('{"query":""}')->setHeaders(self::HEADERS));
@@ -86,7 +84,6 @@ final class RedshiftExecuteQueryConnectorTest extends DatabaseTestCaseAbstract
             "Connector 'redshift-query': Something gone wrong!"
         );
 
-        $this->createApplication();
         $this->prepareConnection(
             fn(): Connection => new Connection(),
             function (): void {
@@ -113,34 +110,6 @@ final class RedshiftExecuteQueryConnectorTest extends DatabaseTestCaseAbstract
         self::expectExceptionMessage("Connector 'redshift-query': Required parameter 'query' is not provided!");
 
         $this->connector->processAction($dto);
-    }
-
-    /**
-     * @throws Exception
-     */
-    protected function createApplication(): void
-    {
-        $application = (new ApplicationInstall())
-            ->setKey(self::KEY)
-            ->setUser(self::USER)
-            ->setSettings(
-                [
-                    ApplicationInterface::AUTHORIZATION_FORM => [
-                        RedshiftApplication::KEY         => 'Key',
-                        RedshiftApplication::SECRET      => 'Secret',
-                        RedshiftApplication::REGION      => 'eu-central-1',
-                        RedshiftApplication::DB_PASSWORD => 'dbPasswd',
-                    ],
-                    'host'                    => '',
-                    'Port'                    => '',
-                    'DBName'                  => '',
-                    'MasterUsername'          => '',
-                    'Address'                 => '',
-                    'DbPassword'              => '',
-                ]
-            );
-
-        $this->pfd($application);
     }
 
     /**

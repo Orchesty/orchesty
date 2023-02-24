@@ -3,7 +3,6 @@
 namespace Demo\Connector;
 
 use DateTimeImmutable;
-use DateTimeInterface;
 use GuzzleHttp\Psr7\Uri;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
@@ -26,7 +25,7 @@ use Yasumi\Yasumi;
 final class PagerDutyConnector extends ConnectorAbstract
 {
 
-    public const NAME =  'pager_duty.schedule';
+    public const NAME = 'pager_duty.schedule';
 
     /**
      * @return string
@@ -133,8 +132,11 @@ final class PagerDutyConnector extends ConnectorAbstract
      */
     private function isWeekendOrHoliday(string $date): bool
     {
-        /** @var DateTimeInterface $day */
-        $day      = DateTimeImmutable::createFromFormat('Y-m-d', substr($date, 0, 10));
+        $day = DateTimeImmutable::createFromFormat('Y-m-d', substr($date, 0, 10));
+        if (!$day) {
+            return FALSE;
+        }
+
         $holidays = Yasumi::create('CzechRepublic', (int) $day->format('Y'), 'cs');
 
         return date('N', (int) strtotime($date)) >= 6 || $holidays->isHoliday($day);

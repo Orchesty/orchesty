@@ -114,10 +114,10 @@ final class SendBillingEventsToUSCCPCommandTest extends DatabaseTestCaseAbstract
      */
     private function mockTestData(DocumentManager $dm): void
     {
-        $usageStatEvent1 = (new UsageStatsEvent('1234', EventTypeEnum::INSTALL))->setBillingData(
+        $usageStatEvent1 = (new UsageStatsEvent('1234', EventTypeEnum::INSTALL->value))->setBillingData(
             new BillingData('1', '1'),
         );
-        $usageStatEvent2 = (new UsageStatsEvent('1235', EventTypeEnum::UNINSTALL))->setBillingData(
+        $usageStatEvent2 = (new UsageStatsEvent('1235', EventTypeEnum::UNINSTALL->value))->setBillingData(
             new BillingData('2', '2'),
         );
         $dm->persist($usageStatEvent1);

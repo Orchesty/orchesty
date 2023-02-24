@@ -6,11 +6,11 @@ use DateTime;
 use Exception;
 use Hanaboso\PipesFramework\Configurator\Document\TopologyProgress;
 use Hanaboso\PipesFramework\Configurator\Model\DashboardManager;
+use Hanaboso\PipesFramework\Database\Document\Node;
+use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetrics;
 use Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetricsFields;
 use Hanaboso\PipesFramework\Metrics\Document\Tags;
-use Hanaboso\PipesPhpSdk\Database\Document\Node;
-use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 use PipesFrameworkTests\MongoTestTrait;
 

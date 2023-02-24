@@ -2,13 +2,13 @@
 
 namespace Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Hanaboso\CommonsBundle\Enum\AuthorizationTypeEnum;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
+use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth1Dto;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider;
@@ -51,7 +51,7 @@ abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements 
      */
     public function getAuthorizationType(): string
     {
-        return AuthorizationTypeEnum::OAUTH;
+        return AuthorizationTypeEnum::OAUTH->value;
     }
 
     /**
@@ -62,8 +62,7 @@ abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements 
     public function isAuthorized(ApplicationInstall $applicationInstall): bool
     {
         return isset(
-            $applicationInstall->getSettings(
-            )[ApplicationInterface::AUTHORIZATION_FORM][OAuth1ApplicationInterface::TOKEN],
+            $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][ApplicationInterface::TOKEN],
         );
     }
 
@@ -129,8 +128,8 @@ abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements 
             $this->getAccessTokenUrl(),
         );
 
-        $settings                                                                        = $applicationInstall->getSettings(
-        );
+        $settings = $applicationInstall->getSettings();
+
         $settings[ApplicationInterface::AUTHORIZATION_FORM][ApplicationInterface::TOKEN] = $token;
         $applicationInstall->addSettings($settings);
 
@@ -159,7 +158,8 @@ abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements 
         string $redirectUrl,
     ): OAuth1ApplicationInterface
     {
-        $settings                                                                                        = $applicationInstall->getSettings();
+        $settings = $applicationInstall->getSettings();
+
         $settings[ApplicationInterface::AUTHORIZATION_FORM][ApplicationInterface::FRONTEND_REDIRECT_URL] = $redirectUrl;
         $applicationInstall->addSettings($settings);
 
@@ -181,14 +181,12 @@ abstract class OAuth1ApplicationAbstract extends ApplicationAbstract implements 
      */
     protected function saveOauthStuff(): callable
     {
-        return static function (DocumentManager $dm, OAuth1Dto $dto, array $data): void {
+        return static function (ApplicationInstallRepository $applicationInstallRepository, OAuth1Dto $dto, array $data): void {
             $dto->getApplicationInstall()->addSettings(
                 [ApplicationInterface::AUTHORIZATION_FORM => [OAuth1ApplicationInterface::OAUTH => $data]],
             );
 
-            $dm->persist($dto->getApplicationInstall());
-            $dm->flush();
-            $dm->refresh($dto->getApplicationInstall());
+            $applicationInstallRepository->update($dto->getApplicationInstall());
         };
     }
 

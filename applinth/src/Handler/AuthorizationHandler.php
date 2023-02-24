@@ -4,15 +4,13 @@ namespace Hanaboso\Applinth\Handler;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
-use Doctrine\Persistence\ObjectRepository;
+use Exception;
 use Hanaboso\Applinth\Authenticator\Document\MarketPlaceRestrictedToken;
 use Hanaboso\Applinth\Authenticator\Repository\MarketPlaceRestrictedTokenRepository;
 use Hanaboso\Applinth\Manager\AuthorizationManager;
 use Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator;
-use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
-use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
-use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
-use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
+use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
+use Hanaboso\PipesFramework\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\Utils\Exception\DateTimeException;
 
 /**
@@ -23,7 +21,8 @@ use Hanaboso\Utils\Exception\DateTimeException;
 final class AuthorizationHandler
 {
 
-    public const EXP = 'exp';
+    public const  AUTHORIZATION_FORM = 'authorization_form';
+    public const  EXP                = 'exp';
 
     public const EU_ALIAS = 'eu_alias';
     public const EU_SUB   = 'eu_sub';
@@ -33,12 +32,12 @@ final class AuthorizationHandler
     private const PIN = 'pin';
 
     /**
-     * @var ObjectRepository<MarketPlaceRestrictedToken>&MarketPlaceRestrictedTokenRepository
+     * @var MarketPlaceRestrictedTokenRepository
      */
     private MarketPlaceRestrictedTokenRepository $jweRepository;
 
     /**
-     * @var ObjectRepository<ApplicationInstall>&ApplicationInstallRepository
+     * @var ApplicationInstallRepository
      */
     private ApplicationInstallRepository $appInstallRepository;
 
@@ -55,11 +54,9 @@ final class AuthorizationHandler
         private readonly ServiceLocator $locator,
     )
     {
-        /** @var MarketPlaceRestrictedTokenRepository $repo */
         $repo                = $this->dm->getRepository(MarketPlaceRestrictedToken::class);
         $this->jweRepository = $repo;
 
-        /** @var ApplicationInstallRepository $appRepo */
         $appRepo                    = $this->dm->getRepository(ApplicationInstall::class);
         $this->appInstallRepository = $appRepo;
     }
@@ -140,13 +137,13 @@ final class AuthorizationHandler
 
         try {
             $this->appInstallRepository->findUserApp($key, $user);
-        } catch (ApplicationInstallException) {
+        } catch (Exception) {
             $this->locator->installApp($key, $user);
             $pin  = hash('sha256', sprintf('%s-%s-%s', time(), $key, $user));
             $resp = $this->locator->updateApp(
                 $key,
                 $user,
-                [ApplicationInterface::AUTHORIZATION_FORM => ['pin' => $pin]],
+                [self::AUTHORIZATION_FORM => ['pin' => $pin]],
             );
 
             try {
@@ -155,8 +152,9 @@ final class AuthorizationHandler
                 $app->setNonEncryptedSettings([self::PIN => $pin, self::EU_ALIAS => $jwePayload[self::EU_ALIAS]]);
                 $this->dm->flush();
 
-                $link = $resp['applicationSettings'][ApplicationInterface::AUTHORIZATION_FORM]['redirect_url'] ?? NULL;
-            } catch (ApplicationInstallException){}
+                $link = $resp['applicationSettings'][self::AUTHORIZATION_FORM]['redirect_url'] ?? NULL;
+            } catch (Exception) {
+            }
         }
 
         return $link;

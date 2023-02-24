@@ -1,4 +1,3 @@
-TAG?=dev
 DC=docker-compose
 DE=docker-compose exec -T app
 IMAGE=dkr.hanaboso.net/pipes/pipes/applinth:$(TAG)

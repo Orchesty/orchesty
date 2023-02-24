@@ -11,12 +11,14 @@ services:
     class: Hanaboso\HbPFConnectors\Model\Application\Impl\IDoklad\Connector\IDokladNewInvoiceRecievedConnector
     calls:
       -   setApplication: [ '@hbpf.application.i-doklad' ]
-      -   setDb: [ '@doctrine_mongodb.odm.default_document_manager' ]
       -   setSender: [ '@hbpf.transport.curl_manager' ]
+    arguments:
+      [ '@hbpf.application_install.repository' ]
 
   hbpf.connector.i-doklad.create-new-contact:
     class: Hanaboso\HbPFConnectors\Model\Application\Impl\IDoklad\Connector\IDokladCreateNewContactConnector
     calls:
       -   setApplication: [ '@hbpf.application.i-doklad' ]
-      -   setDb: [ '@doctrine_mongodb.odm.default_document_manager' ]
       -   setSender: [ '@hbpf.transport.curl_manager' ]
+    arguments:
+      [ '@hbpf.application_install.repository' ]

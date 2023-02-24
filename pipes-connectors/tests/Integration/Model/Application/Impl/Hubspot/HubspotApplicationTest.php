@@ -13,15 +13,15 @@ use Hanaboso\PipesPhpSdk\Application\Document\Webhook;
 use Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookSubscription;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
-use HbPFConnectorsTests\DatabaseTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
+use HbPFConnectorsTests\KernelTestCaseAbstract;
 
 /**
  * Class HubspotApplicationTest
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Hubspot
  */
-final class HubspotApplicationTest extends DatabaseTestCaseAbstract
+final class HubspotApplicationTest extends KernelTestCaseAbstract
 {
 
     private const CLIENT_ID = '3cc4771e-deb7-4905-8e6b-d2**********';
@@ -37,7 +37,7 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
     public function testGetApplicationType(): void
     {
         $this->setApplication();
-        self::assertEquals(ApplicationTypeEnum::WEBHOOK, $this->application->getApplicationType());
+        self::assertEquals(ApplicationTypeEnum::WEBHOOK->value, $this->application->getApplicationType());
     }
 
     /**
@@ -68,7 +68,7 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
     {
         $this->setApplication();
         $forms = $this->application->getFormStack()->getForms();
-        foreach ($forms as $form){
+        foreach ($forms as $form) {
             foreach ($form->getFields() as $field) {
                 self::assertContainsEquals(
                     $field->getKey(),
@@ -94,7 +94,6 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
             'token',
             self::CLIENT_ID,
         );
-        $this->pfd($applicationInstall);
         self::assertEquals(TRUE, $this->application->isAuthorized($applicationInstall));
         $this->application->authorize($applicationInstall);
     }
@@ -106,7 +105,6 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
     {
         $this->setApplication();
         $applicationInstall = new ApplicationInstall();
-        $this->pfd($applicationInstall);
         self::assertEquals(FALSE, $this->application->isAuthorized($applicationInstall));
     }
 
@@ -152,22 +150,22 @@ final class HubspotApplicationTest extends DatabaseTestCaseAbstract
     public function testGetWebhookSubscribeRequestDto(): void
     {
         $this->setApplication();
-        $hubspotCreateContactConnector = new HubSpotCreateContactConnector();
+        $hubspotCreateContactConnector = new HubSpotCreateContactConnector(
+            self::getContainer()->get('hbpf.application_install.repository'),
+        );
         $hubspotCreateContactConnector
             ->setSender(self::getContainer()->get('hbpf.transport.curl_manager'))
-            ->setDb($this->dm)
             ->setApplication($this->application);
 
         $applicationInstall = new ApplicationInstall();
         $applicationInstall->setSettings(
             [
                 ApplicationInterface::AUTHORIZATION_FORM => [
-                    HubSpotApplication::APP_ID => '123xx',
+                    HubSpotApplication::APP_ID  => '123xx',
                     ApplicationInterface::TOKEN => [OAuth2Provider::ACCESS_TOKEN => 'token123'],
                 ],
             ],
         );
-        $this->pfd(DataProvider::getOauth2AppInstall($this->application->getName()));
         $webhookSubscription = new WebhookSubscription(
             'name',
             'node',
