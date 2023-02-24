@@ -11,7 +11,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
-use Hanaboso\PipesPhpSdk\Database\Document\Node;
+use Hanaboso\PipesFramework\Database\Document\Node;
 use Hanaboso\Utils\String\Json;
 use Throwable;
 

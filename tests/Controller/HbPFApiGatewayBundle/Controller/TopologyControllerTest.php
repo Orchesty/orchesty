@@ -4,7 +4,7 @@ namespace PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller;
 
 use Exception;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
-use Hanaboso\PipesPhpSdk\Database\Document\Topology;
+use Hanaboso\PipesFramework\Database\Document\Topology;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 use Symfony\Component\HttpFoundation\Response;
 

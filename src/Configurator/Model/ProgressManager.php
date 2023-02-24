@@ -8,7 +8,7 @@ use Exception;
 use Hanaboso\MongoDataGrid\GridRequestDtoInterface;
 use Hanaboso\PipesFramework\Configurator\Document\TopologyProgress;
 use Hanaboso\PipesFramework\Configurator\Model\Filters\ProgressFilter;
-use Hanaboso\PipesPhpSdk\Database\Document\Topology;
+use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\Utils\Date\DateTimeUtils;
 
 /**

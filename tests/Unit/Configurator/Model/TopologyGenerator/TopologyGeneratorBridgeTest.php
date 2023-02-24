@@ -16,8 +16,8 @@ use Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge;
 use Hanaboso\PipesFramework\Configurator\Repository\ApiTokenRepository;
 use Hanaboso\PipesFramework\Configurator\Repository\SdkRepository;
-use Hanaboso\PipesPhpSdk\Database\Document\Node;
-use Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository;
+use Hanaboso\PipesFramework\Database\Document\Node;
+use Hanaboso\PipesFramework\Database\Repository\NodeRepository;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 
 /**

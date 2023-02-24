@@ -4,9 +4,9 @@ namespace PipesFrameworkTests;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
+use Hanaboso\PipesFramework\Database\Document\Node;
+use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager;
-use Hanaboso\PipesPhpSdk\Database\Document\Node;
-use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 
 /**
  * Trait MongoTestTrait
@@ -82,7 +82,6 @@ trait MongoTestTrait
             $counterTable,
             $connTable,
             $metricsDm,
-            5,
             $consumerTable,
         );
     }

@@ -3,7 +3,7 @@
 namespace Hanaboso\PipesFramework\Utils\Dto;
 
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
-use Hanaboso\PipesPhpSdk\Database\Document\TopologyApplication;
+use Hanaboso\PipesFramework\Database\Document\TopologyApplication;
 
 /**
  * Class Schema

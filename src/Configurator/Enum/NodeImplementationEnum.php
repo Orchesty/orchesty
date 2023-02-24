@@ -2,29 +2,17 @@
 
 namespace Hanaboso\PipesFramework\Configurator\Enum;
 
-use Hanaboso\Utils\Enum\EnumAbstract;
-
 /**
  * Class NodeImplementationEnum
  *
  * @package Hanaboso\PipesFramework\Configurator\Enum
  */
-final class NodeImplementationEnum extends EnumAbstract
+enum NodeImplementationEnum: string
 {
 
-    public const CONNECTOR = 'connector';
-    public const CUSTOM    = 'custom';
-    public const USER      = 'user';
-    public const BATCH     = 'batch';
-
-    /**
-     * @var string[]
-     */
-    protected static array $choices = [
-        self::CONNECTOR => self::CONNECTOR,
-        self::CUSTOM    => self::CUSTOM,
-        self::USER      => self::USER,
-        self::BATCH     => self::BATCH,
-    ];
+    case CONNECTOR = 'connector';
+    case CUSTOM    = 'custom';
+    case USER      = 'user';
+    case BATCH     = 'batch';
 
 }

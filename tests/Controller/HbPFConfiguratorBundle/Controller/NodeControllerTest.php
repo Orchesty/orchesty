@@ -4,9 +4,9 @@ namespace PipesFrameworkTests\Controller\HbPFConfiguratorBundle\Controller;
 
 use Doctrine\ODM\MongoDB\LockException;
 use Exception;
+use Hanaboso\PipesFramework\Database\Document\Node;
+use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler;
-use Hanaboso\PipesPhpSdk\Database\Document\Node;
-use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 
 /**

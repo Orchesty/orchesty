@@ -3,17 +3,12 @@
 namespace Hanaboso\PipesFramework\ApiGateway\Listener;
 
 use Doctrine\ODM\MongoDB\MongoDBException;
+use Exception;
 use Hanaboso\CommonsBundle\Crypt\Exceptions\CryptException;
 use Hanaboso\CommonsBundle\Exception\FileStorageException;
 use Hanaboso\CommonsBundle\Transport\Ftp\Exception\FtpException;
 use Hanaboso\CommonsBundle\Transport\Soap\SoapException;
 use Hanaboso\PipesFramework\ApiGateway\Exception\LicenseException;
-use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
-use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
-use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
-use Hanaboso\PipesPhpSdk\CustomNode\Exception\CustomNodeException;
-use Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandlerException;
-use Hanaboso\PipesPhpSdk\Parser\Exception\TableParserException;
 use Hanaboso\UserBundle\Model\Security\SecurityManagerException;
 use Hanaboso\UserBundle\Model\User\UserManagerException;
 use Hanaboso\Utils\Exception\EnumException;
@@ -44,11 +39,7 @@ final class ControllerExceptionListener implements EventSubscriberInterface, Log
      * @var mixed[]
      */
     protected array $exceptionClasses = [
-        ApplicationInstallException::class,
-        AuthorizationException::class,
-        ConnectorException::class,
         CryptException::class,
-        CustomNodeException::class,
         EnumException::class,
         FileStorageException::class,
         FtpException::class,
@@ -58,9 +49,8 @@ final class ControllerExceptionListener implements EventSubscriberInterface, Log
         PipesFrameworkException::class,
         SecurityManagerException::class,
         SoapException::class,
-        TableParserException::class,
-        TableParserHandlerException::class,
         UserManagerException::class,
+        Exception::class,
     ];
 
     /**

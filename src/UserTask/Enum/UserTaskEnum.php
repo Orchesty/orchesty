@@ -2,25 +2,15 @@
 
 namespace Hanaboso\PipesFramework\UserTask\Enum;
 
-use Hanaboso\Utils\Enum\EnumAbstract;
-
 /**
  * Class UserTaskEnum
  *
  * @package Hanaboso\PipesFramework\UserTask\Enum
  */
-final class UserTaskEnum extends EnumAbstract
+enum UserTaskEnum: string
 {
 
-    public const TRASH     = 'trash';
-    public const USER_TASK = 'userTask';
-
-    /**
-     * @var string[]
-     */
-    protected static array $choices = [
-        self::TRASH     => self::TRASH,
-        self::USER_TASK => self::USER_TASK,
-    ];
+    case TRASH     = 'trash';
+    case USER_TASK = 'userTask';
 
 }

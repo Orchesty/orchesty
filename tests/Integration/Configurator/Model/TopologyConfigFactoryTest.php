@@ -10,11 +10,10 @@ use Hanaboso\PipesFramework\Configurator\Document\Sdk;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyConfigException;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory;
-use Hanaboso\PipesPhpSdk\Database\Document\Dto\SystemConfigDto;
-use Hanaboso\PipesPhpSdk\Database\Document\Embed\EmbedNode;
-use Hanaboso\PipesPhpSdk\Database\Document\Node;
-use Hanaboso\PipesPhpSdk\Database\Document\Topology;
-use Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository;
+use Hanaboso\PipesFramework\Database\Document\Dto\SystemConfigDto;
+use Hanaboso\PipesFramework\Database\Document\Embed\EmbedNode;
+use Hanaboso\PipesFramework\Database\Document\Node;
+use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\Utils\String\Json;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
@@ -41,12 +40,12 @@ final class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
     {
         $settings = new SystemConfigDto('someSdkHost', '', 10);
 
-        $node1 = (new Node())->setTopology('123')->setType(TypeEnum::WEBHOOK)->setName('example1');
+        $node1 = (new Node())->setTopology('123')->setType(TypeEnum::WEBHOOK->value)->setName('example1');
         $node2 = (new Node())->setTopology('123')->setName('example2')->setSystemConfigs($settings)
-            ->setType(TypeEnum::CONNECTOR);
-        $node3 = (new Node())->setTopology('123')->setName('example3')->setType(TypeEnum::BATCH);
-        $node4 = (new Node())->setTopology('123')->setName('example4')->setType(TypeEnum::CONNECTOR);
-        $node5 = (new Node())->setTopology('123')->setName('example5')->setType(TypeEnum::USER);
+            ->setType(TypeEnum::CONNECTOR->value);
+        $node3 = (new Node())->setTopology('123')->setName('example3')->setType(TypeEnum::BATCH->value);
+        $node4 = (new Node())->setTopology('123')->setName('example4')->setType(TypeEnum::CONNECTOR->value);
+        $node5 = (new Node())->setTopology('123')->setName('example5')->setType(TypeEnum::USER->value);
 
         $this->pfd($node1);
         $this->pfd($node2);
@@ -67,7 +66,6 @@ final class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
         $this->pfd($node4);
         $this->pfd($node5);
 
-        /** @var NodeRepository $nodeRepository */
         $nodeRepository = $this->dm->getRepository(Node::class);
         $nodes          = $nodeRepository->getNodesByTopology('123');
 
@@ -90,16 +88,16 @@ final class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
     public function testGetWorkers(): void
     {
         $configFactory = self::getContainer()->get('hbpf.topology.configurator');
-        $node          = (new Node())->setTopology('123')->setType(TypeEnum::CONNECTOR)->setName('example1');
+        $node          = (new Node())->setTopology('123')->setType(TypeEnum::CONNECTOR->value)->setName('example1');
 
         $result = $this->invokeMethod($configFactory, 'getWorkerByType', [$node]);
         self::assertEquals('worker.http', $result);
 
-        $node->setType(TypeEnum::BATCH);
+        $node->setType(TypeEnum::BATCH->value);
         $result = $this->invokeMethod($configFactory, 'getWorkerByType', [$node]);
         self::assertEquals('worker.batch', $result);
 
-        $node->setType(TypeEnum::USER);
+        $node->setType(TypeEnum::USER->value);
         $result = $this->invokeMethod($configFactory, 'getWorkerByType', [$node]);
         self::assertEquals('worker.user', $result);
     }
@@ -112,7 +110,7 @@ final class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
     public function testGetPaths(): void
     {
         $configFactory = self::getContainer()->get('hbpf.topology.configurator');
-        $node          = (new Node())->setTopology('123')->setType(TypeEnum::XML_PARSER)->setName('example1');
+        $node          = (new Node())->setTopology('123')->setType(TypeEnum::XML_PARSER->value)->setName('example1');
 
         $result = $this->invokeMethod($configFactory, 'getPaths', [$node]);
         self::assertEquals(
@@ -123,7 +121,7 @@ final class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
             $result,
         );
 
-        $node->setType(TypeEnum::CONNECTOR);
+        $node->setType(TypeEnum::CONNECTOR->value);
         $result = $this->invokeMethod($configFactory, 'getPaths', [$node]);
         self::assertEquals(
             [
@@ -133,7 +131,7 @@ final class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
             $result,
         );
 
-        $node->setType(TypeEnum::GATEWAY);
+        $node->setType(TypeEnum::GATEWAY->value);
         self::expectException(TopologyConfigException::class);
         $this->invokeMethod($configFactory, 'getPaths', [$node]);
     }
@@ -147,13 +145,13 @@ final class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
     {
         $configFactory = self::getContainer()->get('hbpf.topology.configurator');
 
-        $result = $this->invokeMethod($configFactory, 'getHost', [TypeEnum::CONNECTOR, NULL]);
+        $result = $this->invokeMethod($configFactory, 'getHost', [TypeEnum::CONNECTOR->value, NULL]);
         self::assertEquals('127.0.0.2', $result);
 
-        $result = $this->invokeMethod($configFactory, 'getHost', [TypeEnum::BATCH, NULL]);
+        $result = $this->invokeMethod($configFactory, 'getHost', [TypeEnum::BATCH->value, NULL]);
         self::assertEquals('127.0.0.2', $result);
 
-        $result = $this->invokeMethod($configFactory, 'getHost', [TypeEnum::USER, NULL]);
+        $result = $this->invokeMethod($configFactory, 'getHost', [TypeEnum::USER->value, NULL]);
         self::assertEquals('', $result);
 
         self::expectException(TopologyConfigException::class);
@@ -169,7 +167,7 @@ final class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
     {
         $configFactory = self::getContainer()->get('hbpf.topology.configurator');
 
-        $result = $this->invokeMethod($configFactory, 'getPort', [TypeEnum::CONNECTOR]);
+        $result = $this->invokeMethod($configFactory, 'getPort', [TypeEnum::CONNECTOR->value]);
         self::assertEquals(80, $result);
 
         self::expectException(TopologyConfigException::class);

@@ -11,8 +11,8 @@ use Hanaboso\CommonsBundle\Enum\HandlerEnum;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\CommonsBundle\Exception\NodeException;
 use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
-use Hanaboso\PipesPhpSdk\Database\Document\Node;
-use Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository;
+use Hanaboso\PipesFramework\Database\Document\Node;
+use Hanaboso\PipesFramework\Database\Repository\NodeRepository;
 
 /**
  * Class NodeManager
@@ -43,7 +43,7 @@ final class NodeManager
         /** @var DocumentManager $dm */
         $dm       = $dml->getDm();
         $this->dm = $dm;
-        /** @var NodeRepository $nodeRepo */
+
         $nodeRepo             = $dm->getRepository(Node::class);
         $this->nodeRepository = $nodeRepo;
     }
@@ -59,7 +59,7 @@ final class NodeManager
     public function updateNode(Node $node, array $data): Node
     {
         if (isset($data['enabled'])) {
-            if ($node->getHandler() != HandlerEnum::EVENT) {
+            if ($node->getHandler() != HandlerEnum::EVENT->value) {
                 throw new NodeException(
                     'Trying to enable/disable a non event Node',
                     NodeException::DISALLOWED_ACTION_ON_NON_EVENT_NODE,
@@ -68,7 +68,7 @@ final class NodeManager
 
             $node->setEnabled($data['enabled']);
         } else if (isset($data['cron'])) {
-            if ($node->getType() != TypeEnum::CRON) {
+            if ($node->getType() != TypeEnum::CRON->value) {
                 throw new NodeException(
                     'Trying to set cron parameters on non cron Node',
                     NodeException::DISALLOWED_ACTION_ON_NON_EVENT_NODE,

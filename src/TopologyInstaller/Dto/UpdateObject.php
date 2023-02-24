@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesFramework\TopologyInstaller\Dto;
 
-use Hanaboso\PipesPhpSdk\Database\Document\Topology;
+use Hanaboso\PipesFramework\Database\Document\Topology;
 
 /**
  * Class UpdateObject

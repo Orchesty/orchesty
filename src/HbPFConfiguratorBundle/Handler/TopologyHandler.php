@@ -20,13 +20,12 @@ use Hanaboso\PipesFramework\Configurator\Model\NodeManager;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyTester;
+use Hanaboso\PipesFramework\Database\Document\Node;
+use Hanaboso\PipesFramework\Database\Document\Topology;
+use Hanaboso\PipesFramework\Database\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController;
 use Hanaboso\PipesFramework\HbPFUserTaskBundle\Handler\UserTaskHandler;
 use Hanaboso\PipesFramework\UserTask\Exception\UserTaskException;
-use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
-use Hanaboso\PipesPhpSdk\Database\Document\Node;
-use Hanaboso\PipesPhpSdk\Database\Document\Topology;
-use Hanaboso\PipesPhpSdk\Database\Repository\TopologyRepository;
 use Hanaboso\Utils\Exception\EnumException;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\String\Json;
@@ -79,8 +78,7 @@ final class TopologyHandler
         protected TopologyGeneratorBridge $generatorBridge,
         protected UserTaskHandler $userTaskHandler,
         protected TopologyTester $topologyTester,
-    )
-    {
+    ) {
         /** @var DocumentManager $dm */
         $dm                       = $dml->getDm();
         $this->dm                 = $dm;
@@ -93,7 +91,6 @@ final class TopologyHandler
      *
      * @return mixed[]
      * @throws CurlException
-     * @throws AuthorizationException
      */
     public function runTopology(string $topologyId, array $data): array
     {
@@ -358,7 +355,7 @@ final class TopologyHandler
         $topology = $this->getTopologyById($id);
         $res      = new ResponseDto(200, '', '{}', []);
 
-        if ($topology->getVisibility() === TopologyStatusEnum::PUBLIC) {
+        if ($topology->getVisibility() === TopologyStatusEnum::PUBLIC->value) {
             $this->generatorBridge->stopTopology($id);
             $res = $this->generatorBridge->deleteTopology($id);
         }
@@ -378,6 +375,7 @@ final class TopologyHandler
      *
      * @return array<int, array{id: string, name: string, status: string, reason: string}>
      * @throws TopologyConfigException
+     * @throws TopologyException
      */
     public function runTest(string $topologyId): array
     {
@@ -423,7 +421,7 @@ final class TopologyHandler
 
         return [
             '_id'          => $topology->getId(),
-            'type'         => count($cronNodes) >= 1 ? TypeEnum::CRON : TypeEnum::WEBHOOK,
+            'type'         => count($cronNodes) >= 1 ? TypeEnum::CRON->value : TypeEnum::WEBHOOK->value,
             'name'         => $topology->getName(),
             'description'  => $topology->getDescr(),
             'status'       => $topology->getStatus(),

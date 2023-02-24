@@ -4,9 +4,9 @@ namespace PipesFrameworkTests\Integration\Metrics\Manager;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
+use Hanaboso\PipesFramework\Database\Document\Node;
+use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager;
-use Hanaboso\PipesPhpSdk\Database\Document\Node;
-use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use Hanaboso\Utils\Date\DateTimeUtils;
 use Hanaboso\Utils\Exception\DateTimeException;
 use Hanaboso\Utils\System\NodeGeneratorUtils;
@@ -28,7 +28,6 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager
      * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::rabbitNodeMetrics
      * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::connectorNodeMetrics
      * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::bridgesNodeMetrics
      * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::monolithNodeMetrics
@@ -107,7 +106,6 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::rabbitNodeMetrics
      * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::connectorNodeMetrics
      * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::bridgesNodeMetrics
      * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::monolithNodeMetrics
@@ -183,7 +181,6 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
 
     /**
      * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::rabbitNodeMetrics
      * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::connectorNodeMetrics
      * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::bridgesNodeMetrics
      * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::monolithNodeMetrics
@@ -256,7 +253,6 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::parseDateRange
      * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::counterProcessMetrics
      * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::generateOutput
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::rabbitNodeMetrics
      * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::connectorNodeMetrics
      * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::monolithNodeMetrics
      * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::bridgesNodeMetrics
@@ -317,7 +313,6 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::parseDateRange
      * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::counterProcessMetrics
      * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::generateOutput
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::rabbitNodeMetrics
      * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::connectorNodeMetrics
      * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::monolithNodeMetrics
      * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::bridgesNodeMetrics
@@ -365,7 +360,6 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::parseDateRange
      * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::counterProcessMetrics
      * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::generateOutput
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::rabbitNodeMetrics
      * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::connectorNodeMetrics
      * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::monolithNodeMetrics
      * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::bridgesNodeMetrics

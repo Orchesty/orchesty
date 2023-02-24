@@ -7,7 +7,6 @@ services:
             - ${DEV_IP}:80:80
         volumes:
             - ./:/var/www:cached
-            - ../pipes-php-sdk:/var/pipes-php-sdk:cached
             - ${SSH_AUTH}:/tmp/.ssh-auth-sock
             - ${HOME}/dev/.composer:${HOME}/dev/.composer:cached
         environment:

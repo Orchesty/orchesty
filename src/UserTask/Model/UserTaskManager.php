@@ -6,13 +6,13 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\MongoDataGrid\GridRequestDtoInterface;
+use Hanaboso\PipesFramework\Database\Document\Node;
+use Hanaboso\PipesFramework\Database\Document\Topology;
+use Hanaboso\PipesFramework\Database\Repository\NodeRepository;
+use Hanaboso\PipesFramework\Database\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\UserTask\Document\UserTask;
 use Hanaboso\PipesFramework\UserTask\Exception\UserTaskException;
 use Hanaboso\PipesFramework\UserTask\Repository\UserTaskRepository;
-use Hanaboso\PipesPhpSdk\Database\Document\Node;
-use Hanaboso\PipesPhpSdk\Database\Document\Topology;
-use Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository;
-use Hanaboso\PipesPhpSdk\Database\Repository\TopologyRepository;
 use Hanaboso\Utils\Date\DateTimeUtils;
 use Hanaboso\Utils\String\Json;
 use LogicException;
@@ -58,15 +58,12 @@ final class UserTaskManager
         private Publisher $publisher,
     )
     {
-        /** @var UserTaskRepository $userTaskRepository */
         $userTaskRepository       = $dm->getRepository(UserTask::class);
         $this->userTaskRepository = $userTaskRepository;
 
-        /** @var TopologyRepository $topologyRepository */
         $topologyRepository       = $dm->getRepository(Topology::class);
         $this->topologyRepository = $topologyRepository;
 
-        /** @var NodeRepository $nodeRepository */
         $nodeRepository       = $dm->getRepository(Node::class);
         $this->nodeRepository = $nodeRepository;
     }

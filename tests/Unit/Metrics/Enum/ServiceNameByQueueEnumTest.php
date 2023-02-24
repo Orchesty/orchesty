@@ -17,7 +17,6 @@ final class ServiceNameByQueueEnumTest extends DatabaseTestCaseAbstract
     /**
      * @covers \Hanaboso\PipesFramework\Metrics\Enum\ServiceNameByQueueEnum
      * @covers \Hanaboso\PipesFramework\Metrics\Enum\ServiceNameByQueueEnum::getNameAndNodeId
-     * @covers \Hanaboso\PipesFramework\Metrics\Enum\ServiceNameByQueueEnum::getChoices
      *
      * @throws Exception
      */
@@ -34,15 +33,6 @@ final class ServiceNameByQueueEnumTest extends DatabaseTestCaseAbstract
         $bridge = ServiceNameByQueueEnum::getNameAndNodeId('node.123abc.123');
         self::assertEquals('bridge', $bridge['name']);
         self::assertEquals('123abc', $bridge['nodeId']);
-
-        self::assertEquals(
-            [
-                'pipes.repeater' => 'Repeater',
-                'pipes.limiter' => 'Limiter',
-                'pipes.multi-counter' => 'Multi counter',
-            ],
-            ServiceNameByQueueEnum::getChoices(),
-        );
     }
 
 }

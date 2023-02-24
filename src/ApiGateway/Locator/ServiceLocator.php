@@ -381,27 +381,27 @@ final class ServiceLocator implements LoggerAwareInterface
                 );
 
                 try {
-                    $n[$name][NodeImplementationEnum::CONNECTOR] = $this->curlManager->send($con)->getJsonBody();
+                    $n[$name][NodeImplementationEnum::CONNECTOR->value] = $this->curlManager->send($con)->getJsonBody();
                 } catch (Throwable) {
-                    $n[$name][NodeImplementationEnum::CONNECTOR] = [];
+                    $n[$name][NodeImplementationEnum::CONNECTOR->value] = [];
                 }
 
                 try {
-                    $n[$name][NodeImplementationEnum::CUSTOM] = $this->curlManager->send($cst)->getJsonBody();
+                    $n[$name][NodeImplementationEnum::CUSTOM->value] = $this->curlManager->send($cst)->getJsonBody();
                 } catch (Throwable) {
-                    $n[$name][NodeImplementationEnum::CUSTOM] = [];
+                    $n[$name][NodeImplementationEnum::CUSTOM->value] = [];
                 }
 
                 try {
-                    $n[$name][NodeImplementationEnum::BATCH] = $this->curlManager->send($btch)->getJsonBody();
+                    $n[$name][NodeImplementationEnum::BATCH->value] = $this->curlManager->send($btch)->getJsonBody();
                 } catch (Throwable) {
-                    $n[$name][NodeImplementationEnum::BATCH] = [];
+                    $n[$name][NodeImplementationEnum::BATCH->value] = [];
                 }
             } catch (Throwable $t) {
                 $this->logger->error($t->getMessage(), ['Exception' => $t, 'Sdk' => $sdk]);
             }
         }
-        $n['backend'][NodeImplementationEnum::USER] = self::USER_TASK_LIST;
+        $n['backend'][NodeImplementationEnum::USER->value] = self::USER_TASK_LIST;
 
         return $n;
     }

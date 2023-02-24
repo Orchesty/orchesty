@@ -10,7 +10,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
-use Hanaboso\PipesPhpSdk\Database\Document\Node;
+use Hanaboso\PipesFramework\Database\Document\Node;
 use Hanaboso\Utils\String\Json;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 
@@ -200,7 +200,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
             $node = (new Node())
                 ->setName(sprintf('node-%s', $i))
                 ->setTopology(sprintf('topology-%s', $i))
-                ->setType(TypeEnum::CRON)
+                ->setType(TypeEnum::CRON->value)
                 ->setCronParams('"key":"value"')
                 ->setCron(sprintf('%s %s %s %s %s', $i, $i, $i, $i, $i));
             $this->setProperty($node, 'id', sprintf('node-%s', $i));

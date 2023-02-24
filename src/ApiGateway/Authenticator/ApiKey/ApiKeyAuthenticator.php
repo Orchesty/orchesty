@@ -76,7 +76,7 @@ final class ApiKeyAuthenticator extends AbstractAuthenticator
             $token = $this->dm->getRepository(ApiToken::class)->findOneBy(
                 [
                     'key' => $request->headers->get(self::AUTH_HEADER),
-                    'scopes' => ApiTokenScopesEnum::APPLICATIONS_ALL,
+                    'scopes' => ApiTokenScopesEnum::APPLICATIONS_ALL->value,
                 ],
             );
             if (!$token) {

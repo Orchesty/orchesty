@@ -3,7 +3,7 @@
 namespace PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller;
 
 use Exception;
-use Hanaboso\PipesPhpSdk\Database\Document\Category;
+use Hanaboso\PipesFramework\Database\Document\Category;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 
 /**

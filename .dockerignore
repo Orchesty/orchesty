@@ -7,5 +7,3 @@
 !pf-bundles/composer.json
 !pf-bundles/composer.lock
 !pf-bundles/php-local.ini
-!pipes-php-sdk/src
-!pipes-php-sdk/composer.json

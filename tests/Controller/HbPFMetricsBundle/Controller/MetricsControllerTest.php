@@ -4,10 +4,10 @@ namespace PipesFrameworkTests\Controller\HbPFMetricsBundle\Controller;
 
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Exception;
+use Hanaboso\PipesFramework\Database\Document\Node;
+use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\PipesFramework\Metrics\Exception\MetricsException;
 use Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager;
-use Hanaboso\PipesPhpSdk\Database\Document\Node;
-use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 use Throwable;
 

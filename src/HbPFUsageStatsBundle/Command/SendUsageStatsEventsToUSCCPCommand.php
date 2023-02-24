@@ -94,11 +94,11 @@ final class SendUsageStatsEventsToUSCCPCommand extends Command
         $startDateTime = new DateTime();
         $startTime     = $startDateTime->getTimestamp();
 
-        $startHearthBeat = (new UsageStatsEvent($this->alphaInstanceId, EventTypeEnum::HEARTHBEAT))
+        $startHearthBeat = (new UsageStatsEvent($this->alphaInstanceId, EventTypeEnum::HEARTHBEAT->value))
             ->setHeartBeatData(
                 new HearthBeatData(
                     $this->usageStatsRepository->getRemainingEventCount($startDateTime),
-                    HeartBeatTypeEnum::START,
+                    HeartBeatTypeEnum::START->value,
                 ),
             );
 
@@ -124,11 +124,11 @@ final class SendUsageStatsEventsToUSCCPCommand extends Command
             return 0;
         }
 
-        $endHearthBeat = (new UsageStatsEvent($this->alphaInstanceId, EventTypeEnum::HEARTHBEAT))
+        $endHearthBeat = (new UsageStatsEvent($this->alphaInstanceId, EventTypeEnum::HEARTHBEAT->value))
             ->setHeartBeatData(
                 new HearthBeatData(
                     $this->usageStatsRepository->getRemainingEventCount($startDateTime),
-                    HeartBeatTypeEnum::END,
+                    HeartBeatTypeEnum::END->value,
                 ),
             );
         $this->sendRequest($endHearthBeat, $startTime, $output);

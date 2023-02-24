@@ -9,10 +9,10 @@ use Hanaboso\MongoDataGrid\Exception\GridException;
 use Hanaboso\MongoDataGrid\GridHandlerTrait;
 use Hanaboso\MongoDataGrid\GridRequestDto;
 use Hanaboso\MongoDataGrid\GridRequestDtoInterface;
+use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\PipesFramework\UserTask\Document\UserTask;
 use Hanaboso\PipesFramework\UserTask\Document\UserTaskMessage;
 use Hanaboso\PipesFramework\UserTask\Model\UserTaskManager;
-use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use Hanaboso\Utils\Validations\Validations;
 
 /**

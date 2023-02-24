@@ -7,7 +7,7 @@ use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\CommonsBundle\Exception\CronException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
-use Hanaboso\PipesPhpSdk\Database\Document\Node;
+use Hanaboso\PipesFramework\Database\Document\Node;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -53,7 +53,7 @@ final class RefreshCronCommand extends Command
 
         /** @var Node[] $nodes */
         $nodes = array_filter(
-            $this->dm->getRepository(Node::class)->findBy(['type' => TypeEnum::CRON, 'deleted' => FALSE]),
+            $this->dm->getRepository(Node::class)->findBy(['type' => TypeEnum::CRON->value, 'deleted' => FALSE]),
             static fn(Node $node): bool => !empty($node->getCron()),
         );
 

@@ -7,10 +7,10 @@ use Exception;
 use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\MongoDataGrid\GridFilterAbstract;
 use Hanaboso\MongoDataGrid\GridRequestDto;
+use Hanaboso\PipesFramework\Database\Document\Node;
 use Hanaboso\PipesFramework\Logs\Document\Logs;
 use Hanaboso\PipesFramework\Logs\Document\Pipes;
 use Hanaboso\PipesFramework\Logs\Document\Stacktrace;
-use Hanaboso\PipesPhpSdk\Database\Document\Node;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -266,7 +266,7 @@ final class MongoDbLogsTest extends DatabaseTestCaseAbstract
      */
     private function prepareData(): void
     {
-        $node = (new Node())->setType(TypeEnum::START)->setName('Node');
+        $node = (new Node())->setType(TypeEnum::START->value)->setName('Node');
         $this->dm->persist($node);
         $this->dm->flush();
 

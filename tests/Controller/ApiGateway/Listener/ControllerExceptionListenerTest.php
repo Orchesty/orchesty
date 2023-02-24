@@ -6,7 +6,6 @@ use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
 use Hanaboso\PipesFramework\ApiGateway\Exception\LicenseException;
 use Hanaboso\PipesFramework\ApiGateway\Listener\ControllerExceptionListener;
-use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\UserBundle\Model\Security\SecurityManagerException;
 use Hanaboso\UserBundle\Model\User\UserManagerException;
 use Hanaboso\Utils\Exception\EnumException;
@@ -95,16 +94,17 @@ final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
     {
         $controller = new ControllerExceptionListener();
 
-        $eventMock = $this->mockEvent(new ConnectorException('', 0, NULL));
+        $eventMock = $this->mockEvent(new Exception('', 0, NULL));
         $controller->onKernelException($eventMock);
 
         $response = $eventMock->getResponse();
-        if ($response) {
-            self::assertEquals(
-                1_006,
-                $response->headers->get(PipesHeaders::RESULT_CODE),
-            );
+        if (!$response) {
+            self::fail('Response is null!');
         }
+        self::assertEquals(
+            1_006,
+            $response->headers->get(PipesHeaders::RESULT_CODE),
+        );
     }
 
     /**

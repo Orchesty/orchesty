@@ -2,10 +2,12 @@
 
 namespace PipesFrameworkTests\Unit\UserTask\Document;
 
+use Exception;
 use Hanaboso\PipesFramework\UserTask\Document\UserTask;
 use Hanaboso\PipesFramework\UserTask\Document\UserTaskMessage;
 use Hanaboso\PipesFramework\UserTask\Enum\UserTaskEnum;
 use Hanaboso\Utils\Date\DateTimeUtils;
+use Hanaboso\Utils\Exception\EnumException;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 
 /**
@@ -19,7 +21,8 @@ final class UserTaskTest extends KernelTestCaseAbstract
 {
 
     /**
-     *
+     * @throws EnumException
+     * @throws Exception
      */
     public function testDocument(): void
     {
@@ -36,7 +39,7 @@ final class UserTaskTest extends KernelTestCaseAbstract
         $userTask->setReturnRoutingKey('rrk')
             ->setReturnExchange('re')
             ->setCorrelationId('cid')
-            ->setType(UserTaskEnum::USER_TASK)
+            ->setType(UserTaskEnum::USER_TASK->value)
             ->setMessage($msg)
             ->setNodeName('node')
             ->setTopologyName('topo')
@@ -48,7 +51,7 @@ final class UserTaskTest extends KernelTestCaseAbstract
         self::assertEquals('rrk', $userTask->getReturnRoutingKey());
         self::assertEquals('re', $userTask->getReturnExchange());
         self::assertEquals('cid', $userTask->getCorrelationId());
-        self::assertEquals(UserTaskEnum::USER_TASK, $userTask->getType());
+        self::assertEquals(UserTaskEnum::USER_TASK->value, $userTask->getType());
         self::assertEquals($msg, $userTask->getMessage());
         self::assertEquals('tid', $userTask->getTopologyId());
         self::assertEquals('nid', $userTask->getNodeId());

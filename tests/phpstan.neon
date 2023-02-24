@@ -25,9 +25,8 @@ parameters:
 			- Hanaboso\PipesFramework\User\Document\UserSettings
 			- Hanaboso\PipesFramework\User\Document\UserSettings
 			- Hanaboso\PipesFramework\User\Filter\UserDocumentFilter
-			- Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract
-			- Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract
-			- Hanaboso\Utils\Enum\EnumAbstract
+			- Hanaboso\PipesFramework\Authorization\Base\Basic\BasicApplicationAbstract
+			- Hanaboso\PipesFramework\Connector\ConnectorAbstract
 			- Hanaboso\Utils\Exception\PipesFrameworkExceptionAbstract
 			- PipesFrameworkTests\ControllerTestCaseAbstract
 			- PipesFrameworkTests\DatabaseTestCaseAbstract
@@ -35,6 +34,13 @@ parameters:
 			- Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator
 
 		classesNotRequiredToBeAbstractOrFinal:
+			- Hanaboso\PipesFramework\Database\Document\Embed\EmbedNode
+			- Hanaboso\PipesFramework\Application\Document\ApplicationInstall
+			- Hanaboso\PipesFramework\Application\Document\Webhook
+			- Hanaboso\PipesFramework\Database\Document\Category
+			- Hanaboso\PipesFramework\Database\Document\Node
+			- Hanaboso\PipesFramework\Database\Document\TopologyApplication
+			- Hanaboso\PipesFramework\Database\Document\Topology
 			- Hanaboso\PipesFramework\Configurator\Document\NodeProgress
 			- Hanaboso\PipesFramework\Configurator\Document\Sdk
 			- Hanaboso\PipesFramework\Configurator\Document\TopologyProgress

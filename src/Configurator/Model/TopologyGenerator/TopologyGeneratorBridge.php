@@ -16,8 +16,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyConfigException;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory;
-use Hanaboso\PipesPhpSdk\Database\Document\Node;
-use Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository;
+use Hanaboso\PipesFramework\Database\Document\Node;
 use Hanaboso\Utils\String\Json;
 use JsonException;
 
@@ -76,7 +75,6 @@ final class TopologyGeneratorBridge
      */
     public function generateTopology(string $topologyId): ResponseDto
     {
-        /** @var NodeRepository $nodeRepository */
         $nodeRepository = $this->dm->getRepository(Node::class);
         $nodes          = $nodeRepository->getNodesByTopology($topologyId);
 

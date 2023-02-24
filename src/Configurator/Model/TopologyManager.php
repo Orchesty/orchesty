@@ -22,15 +22,15 @@ use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
 use Hanaboso\PipesFramework\Configurator\Document\ApiToken;
 use Hanaboso\PipesFramework\Configurator\Enum\ApiTokenScopesEnum;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
+use Hanaboso\PipesFramework\Database\Document\Embed\EmbedNode;
+use Hanaboso\PipesFramework\Database\Document\Node;
+use Hanaboso\PipesFramework\Database\Document\Topology;
+use Hanaboso\PipesFramework\Database\Repository\NodeRepository;
+use Hanaboso\PipesFramework\Database\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController;
 use Hanaboso\PipesFramework\Utils\Dto\NodeSchemaDto;
 use Hanaboso\PipesFramework\Utils\Dto\Schema;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
-use Hanaboso\PipesPhpSdk\Database\Document\Embed\EmbedNode;
-use Hanaboso\PipesPhpSdk\Database\Document\Node;
-use Hanaboso\PipesPhpSdk\Database\Document\Topology;
-use Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository;
-use Hanaboso\PipesPhpSdk\Database\Repository\TopologyRepository;
 use Hanaboso\Utils\Cron\CronParser;
 use Hanaboso\Utils\Exception\EnumException;
 use Hanaboso\Utils\String\Json;
@@ -93,11 +93,9 @@ final class TopologyManager
         $dm       = $dml->getDm();
         $this->dm = $dm;
 
-        /** @var TopologyRepository $topoRepo */
         $topoRepo                 = $this->dm->getRepository(Topology::class);
         $this->topologyRepository = $topoRepo;
 
-        /** @var NodeRepository $nodeRepo */
         $nodeRepo             = $this->dm->getRepository(Node::class);
         $this->nodeRepository = $nodeRepo;
 
@@ -217,7 +215,7 @@ final class TopologyManager
         $originalContentHash = $topology->getContentHash();
 
         if ($originalContentHash !== $newSchemaSha256) {
-            if (!empty($originalContentHash) && $topology->getVisibility() === TopologyStatusEnum::PUBLIC) {
+            if (!empty($originalContentHash) && $topology->getVisibility() === TopologyStatusEnum::PUBLIC->value) {
                 $topology = $this->cloneTopologyShallow($topology, $newSchemaSha256);
                 $cloned   = TRUE;
             } else {
@@ -283,7 +281,7 @@ final class TopologyManager
             );
         }
 
-        $topology->setVisibility(TopologyStatusEnum::PUBLIC);
+        $topology->setVisibility(TopologyStatusEnum::PUBLIC->value);
         $this->dm->flush();
 
         return $topology;
@@ -298,7 +296,7 @@ final class TopologyManager
      */
     public function unPublishTopology(Topology $topology): Topology
     {
-        $topology->setVisibility(TopologyStatusEnum::DRAFT);
+        $topology->setVisibility(TopologyStatusEnum::DRAFT->value);
         $this->dm->flush();
 
         return $topology;
@@ -368,9 +366,9 @@ final class TopologyManager
     /**
      * @param Topology $topology
      *
+     * @return void
      * @throws CronException
      * @throws CurlException
-     * @throws TopologyException
      * @throws MongoDBException
      */
     public function deleteTopology(Topology $topology): void
@@ -384,7 +382,6 @@ final class TopologyManager
      * @return mixed[]
      * @throws CronException
      * @throws CurlException
-     * @throws JsonException
      */
     public function getCronTopologies(): array
     {
@@ -485,7 +482,7 @@ final class TopologyManager
         /** @var Node $node */
         foreach ($this->nodeRepository->findBy(['topology' => $topology->getId()]) as $node) {
             $node->setDeleted(TRUE);
-            if ($node->getType() === TypeEnum::CRON) {
+            if ($node->getType() === TypeEnum::CRON->value) {
                 $this->cronManager->delete($node);
             }
         }
@@ -618,7 +615,9 @@ final class TopologyManager
             ->setSchemaId($dto->getId())
             ->setSystemConfigs($dto->getSystemConfigs())
             ->setTopology($topology->getId())
-            ->setHandler(Strings::endsWith($dto->getHandler(), 'vent') ? HandlerEnum::EVENT : HandlerEnum::ACTION)
+            ->setHandler(
+                Strings::endsWith($dto->getHandler(), 'vent') ? HandlerEnum::EVENT->value : HandlerEnum::ACTION->value,
+            )
             ->setCronParams(urldecode($dto->getCronParams()))
             ->setCron($dto->getCronTime())
             ->setApplication($dto->getApplication());
@@ -647,11 +646,7 @@ final class TopologyManager
             );
         }
 
-        try {
-            TypeEnum::isValid($dto->getPipesType());
-        } catch (EnumException $e) {
-            $e;
-
+        if (!TypeEnum::tryFrom($dto->getPipesType())) {
             throw new TopologyException(
                 sprintf('Node [%s] type [%s] not exist', $dto->getId(), $dto->getPipesType()),
                 TopologyException::TOPOLOGY_NODE_TYPE_NOT_EXIST,
@@ -703,7 +698,7 @@ final class TopologyManager
      */
     private function makePatchRequestForCron(Node $node, string $type, string $schemaId): void
     {
-        if ($type === TypeEnum::CRON) {
+        if ($type === TypeEnum::CRON->value) {
             try {
                 !empty($node->getCron()) ? $this->cronManager->upsert($node) : $this->cronManager->delete($node);
             } catch (CronException|CurlException $e) {
@@ -753,7 +748,7 @@ final class TopologyManager
      */
     private function checkTopologyName(Topology $topology, array $data): Topology
     {
-        if (isset($data['name']) && $topology->getVisibility() === TopologyStatusEnum::PUBLIC) {
+        if (isset($data['name']) && $topology->getVisibility() === TopologyStatusEnum::PUBLIC->value) {
             throw new TopologyException(
                 'Cannot change name of published topology',
                 TopologyException::TOPOLOGY_CANNOT_CHANGE_NAME,

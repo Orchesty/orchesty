@@ -2,23 +2,23 @@
     "name": "orchesty/backend",
     "description": "Orchesty backend",
     "license": "Elastic-2.0",
-    "version": "2.16.0",
+    "version": "3.0.0",
     "require": {
-        "php": "^8.1",
+        "php": "^8.2",
         "ext-ctype": "*",
         "ext-iconv": "*",
         "ext-intl": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-mongodb": "*",
-        "doctrine/orm": "^2.13",
+        "doctrine/mongodb-odm-bundle": "^4.5",
+        "doctrine/orm": "^2.14",
         "hanaboso/acl-bundle": "^1.6",
         "hanaboso/email-service-bundle": "^1.2",
         "hanaboso/mongo-data-grid": "^1.6",
         "hanaboso/rabbit-mq-bundle": "^1.5",
         "hanaboso/rest-bundle": "^1.1",
         "hanaboso/user-bundle": "^1.6",
-        "orchesty/php-sdk": "^2.3",
         "symfony/security-bundle": "^v6.2",
         "symfony/serializer": "^v6.2",
         "web-token/jwt-signature-algorithm-rsa": "^3.1"
@@ -43,15 +43,6 @@
         "symfony/polyfill-php81": "*",
         "symfony/polyfill-php82": "*"
     },
-    "repositories": [
-        {
-            "type": "path",
-            "url": "../pipes-php-sdk",
-            "options": {
-                "symlink": true
-            }
-        }
-    ],
     "autoload": {
         "psr-4": {
             "Hanaboso\\PipesFramework\\": "src"

@@ -233,7 +233,10 @@ class UserTask
      */
     public function setType(string $type): UserTask
     {
-        $this->type = UserTaskEnum::isValid($type);
+        if (!UserTaskEnum::tryFrom($type)) {
+            throw new EnumException();
+        }
+        $this->type = $type;
 
         return $this;
     }

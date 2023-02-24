@@ -8,6 +8,7 @@ use Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocator;
 use Hanaboso\PipesFramework\UsageStats\Document;
 use Hanaboso\PipesFramework\UsageStats\Enum\EventTypeEnum;
 use Hanaboso\PipesFramework\UsageStats\Event\BillingEvent;
+use Hanaboso\Utils\Exception\DateTimeException;
 use Hanaboso\Utils\Exception\EnumException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -43,10 +44,13 @@ final class UsageStatsEventListener implements EventSubscriberInterface
      * @return void
      * @throws MongoDBException
      * @throws EnumException
+     * @throws DateTimeException
      */
     public function onProcessBillingEvent(BillingEvent $event): void
     {
-        EventTypeEnum::isValid($event->getType());
+        if (!EventTypeEnum::tryFrom($event->getType())) {
+            throw new EnumException();
+        }
         $billingEvent = Document\UsageStatsEvent::createFromBillingEvent($this->alphaInstanceId, $event);
         $this->dm->persist($billingEvent);
         $this->dm->flush();

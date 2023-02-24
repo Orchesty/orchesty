@@ -3,11 +3,11 @@
 namespace PipesFrameworkTests\Controller\HbPFUserTaskBundle\Controller;
 
 use Exception;
+use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\PipesFramework\UserTask\Document\UserTask;
 use Hanaboso\PipesFramework\UserTask\Document\UserTaskMessage;
 use Hanaboso\PipesFramework\UserTask\Enum\UserTaskEnum;
 use Hanaboso\PipesFramework\UserTask\Model\UserTaskManager;
-use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\System\PipesHeaders;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
@@ -276,7 +276,7 @@ final class UserTaskControllerTest extends ControllerTestCaseAbstract
                 ->setTopologyName('')
                 ->setReturnRoutingKey('')
                 ->setCorrelationId('corr')
-                ->setType(UserTaskEnum::USER_TASK)
+                ->setType(UserTaskEnum::USER_TASK->value)
                 ->setMessage((new UserTaskMessage())->setBody('body'));
 
             $this->dm->persist($userTask);

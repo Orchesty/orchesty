@@ -59,7 +59,7 @@ final class CreateApiTokenCommand extends Command
     {
         $user     = $input->getOption(self::USER) ?? ApplicationController::SYSTEM_USER;
         $expireAt = $input->getOption(self::EXPIRE_AT);
-        $scopes   = $input->getOption(self::SCOPES) ?? ApiTokenScopesEnum::getChoices();
+        $scopes   = $input->getOption(self::SCOPES) ?? ApiTokenScopesEnum::cases();
         $token    = $input->getOption(ApiToken::KEY);
 
         $data = [ApiToken::SCOPES => $scopes];

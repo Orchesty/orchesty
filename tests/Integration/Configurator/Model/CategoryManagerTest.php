@@ -4,7 +4,7 @@ namespace PipesFrameworkTests\Integration\Configurator\Model;
 
 use Exception;
 use Hanaboso\CommonsBundle\Exception\CategoryException;
-use Hanaboso\PipesPhpSdk\Database\Document\Category;
+use Hanaboso\PipesFramework\Database\Document\Category;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**

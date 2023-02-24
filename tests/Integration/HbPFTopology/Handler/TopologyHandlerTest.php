@@ -11,11 +11,11 @@ use Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyTester;
+use Hanaboso\PipesFramework\Database\Document\Node;
+use Hanaboso\PipesFramework\Database\Document\Topology;
+use Hanaboso\PipesFramework\Database\Repository\NodeRepository;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler;
 use Hanaboso\PipesFramework\HbPFUserTaskBundle\Handler\UserTaskHandler;
-use Hanaboso\PipesPhpSdk\Database\Document\Node;
-use Hanaboso\PipesPhpSdk\Database\Document\Topology;
-use Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 use Throwable;
 
@@ -165,19 +165,30 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
         $handler = new TopologyHandler($dml, $manager, $nodeManager, $generator, $userTaskHandler, $topologyTester);
         $result  = $handler->runTest($topology->getId());
 
-        self::assertEquals([
+        usort($result, static function (array $a, array $b): int {
+            if ($a['id'] == $b['id']) {
+                return 0;
+            }
+
+            return $a['id'] < $b['id'] ? -1 : 1;
+        });
+
+        self::assertEquals(
             [
-                'id'     => 'node-id-exception',
-                'name'   => 'node-name-exception',
-                'status' => 'nok',
-                'reason' => 'cURL error 6: Could not resolve host: unknown (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://unknown',
+                [
+                    'id'     => 'node-id',
+                    'name'   => 'node-name',
+                    'status' => 'ok',
+                ],
+                [
+                    'id'     => 'node-id-exception',
+                    'name'   => 'node-name-exception',
+                    'status' => 'nok',
+                    'reason' => 'cURL error 6: Could not resolve host: unknown (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://unknown',
+                ],
             ],
-            [
-                'id'     => 'node-id',
-                'name'   => 'node-name',
-                'status' => 'ok',
-            ],
-        ], $result);
+            $result,
+        );
     }
 
     /**
@@ -289,19 +300,22 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
     private function mockTopologyNodeFactory(): TopologyConfigFactory
     {
         $topologyConfigFactory = self::createMock(TopologyConfigFactory::class);
-        $topologyConfigFactory->method('getWorkers')->willReturn([
-            'settings' => [
-                'host'        => 'example.com',
-                'port'        => 80,
-                'status_path' => '',
+        $topologyConfigFactory->method('getWorkers')->willReturn(
+            [
+                'settings' => [
+                    'host'        => 'example.com',
+                    'port'        => 80,
+                    'status_path' => '',
+                ],
             ],
-        ], [
-            'settings' => [
-                'host'        => 'unknown',
-                'port'        => 80,
-                'status_path' => '',
+            [
+                'settings' => [
+                    'host'        => 'unknown',
+                    'port'        => 80,
+                    'status_path' => '',
+                ],
             ],
-        ]);
+        );
 
         return $topologyConfigFactory;
     }
