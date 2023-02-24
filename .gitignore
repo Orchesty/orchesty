@@ -14,3 +14,5 @@ docusaurus/documentation/node_modules
 _old_ci/*
 
 .pnpm-store
+
+public_repo
