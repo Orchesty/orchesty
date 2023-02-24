@@ -1,0 +1,18 @@
+.base-frontend:
+  variables:
+    DIR: app-ui
+    IMAGE: ${REGISTRY}/${IMAGE_PREFIX}frontend
+
+  rules:
+    - if: "$FORCE_PIPELINE =~ /ALL/ || $FORCE_PIPELINE =~ /frontend/"
+    - if: "$CI_COMMIT_BEFORE_SHA == $_BANNED_RUN_ALL_SHA"
+      when: never
+    - changes:
+        - ${DIR}/**/*
+
+frontend:build:
+  stage: build
+  needs: []
+  extends:
+    - .base-kaniko-build
+    - .base-frontend

@@ -1,0 +1,52 @@
+{
+  "modal": {
+    "header": {
+      "moveTopology": "Move topology",
+      "appUninstall": "Uninstall application",
+      "applicationNotAuthorized": "Application is not authorized",
+      "implementationCreate": "Create worker",
+      "implementationUpdate": "Update worker",
+      "implementationDelete": "Delete worker",
+      "rejectAllTasks": "Reject tasks",
+      "acceptAllTasks": "Accept tasks",
+      "acceptTasks": "Accept task",
+      "updateTasks": "Update task",
+      "rejectTasks": "Reject task",
+      "runTopology": "Run topology",
+      "unsavedChanges": "You have unsaved changes",
+      "editFolder": "Edit folder",
+      "deleteFolder": "Delete folder",
+      "createFolder": "Create folder",
+      "editTopology": "Edit topology {msg}",
+      "deleteTopology": "Delete topology",
+      "createTopology": "Create topology",
+      "importTopology": "Import topology",
+      "createUser": "Create user",
+      "deleteUser": "Delete user",
+      "userDetail": "User detail",
+      "updateUser": "Update User",
+      "changeTopology": "Change topology and approve",
+      "createToken": "Create token"
+    },
+    "text": {
+      "importTopologyMessage": "alter the topology name | left blank if not desired to",
+      "deleteFolder": "Are you sure you want to delete folder {0}?",
+      "startingPointEnabled": "Enabled",
+      "startingPointDisabled": "Disabled",
+      "deleteTopology": "Are you sure you want to delete topology {0}?",
+      "disableMessageTopology": "Topology is enabled, consider disabling it instead",
+      "rejectAllTasks": "Are you sure you want to reject all {0} tasks?",
+      "acceptAllTasks": "Are you sure you want to accept all {0} tasks?",
+      "acceptTasks": "Are you sure you want to accept this task?",
+      "updateTasks": "Are you sure you want to update this task?",
+      "rejectTasks": "Are you sure you want to reject this task?",
+      "implementationDelete": "Are you sure you want to delete this worker?",
+      "headers": "Headers",
+      "appUninstall": "Are you sure you want to uninstall {app}?",
+      "applicationNotAuthorized": "The application must first be authorized. Make sure you fill in and save all the necessary settings.",
+      "selectStartingPoint": "Select starting point",
+      "bodyParameters": "Body parameters",
+      "deleteUser": "Are you sure to delete this user?"
+    }
+  }
+}
