@@ -1,0 +1,36 @@
+version: '3.5'
+services:
+    worker-api:
+        image: worker-api:tag
+        build: ./docker
+        user: ${DEV_UID}:${DEV_GID}
+        working_dir: /var/www
+        volumes:
+            - ./:/var/www
+        environment:
+            # Envs for tests are load from .jest/testEnvs.js
+            JEST_DOCKER: 1
+            APP_ENV: 'debug'
+            MONGODB_DSN: 'mongodb://mongo:27017/worker-api'
+            FLUENTD_DSN: 'fluentd:9880'
+            TZ: 'UTC'
+        command: sleep infinity
+        ports:
+            - ${DEV_IP}:80:8080
+    mongo:
+        image: mongo:latest
+        ports:
+            - ${DEV_IP}:27017:27017
+        volumes:
+            - mongo:/data/db
+
+    fluentd:
+        image: dkr.hanaboso.net/pipes/pipes/fluentd:dev
+        environment:
+            MONGO_DSN: 'mongodb://mongo:27017/worker-api'
+            MONGO_COLLECTION: Logs
+        ports:
+            - ${DEV_IP}:9880:9880
+
+volumes:
+    mongo: {}

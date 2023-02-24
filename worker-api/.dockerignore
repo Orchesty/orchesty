@@ -1,0 +1,7 @@
+*
+!src
+!package.json
+!tsconfig.json
+!tsconfig.prod.json
+!pnpm-lock.yaml
+!openapi.yaml
