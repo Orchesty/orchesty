@@ -1,0 +1,80 @@
+version: '3.5'
+services:
+    app:
+        image: hanabosocom/php-dev:php-8.2-alpine
+        user: ${DEV_UID}:${DEV_GID}
+        ports:
+            - ${DEV_IP}:80:80
+        volumes:
+            - ./:/var/www:cached
+            - ../pipes-php-sdk:/var/pipes-php-sdk:cached
+            - ${SSH_AUTH}:/tmp/.ssh-auth-sock
+            - ${HOME}/dev/.composer:${HOME}/dev/.composer:cached
+        environment:
+            - APP_ENV=dev
+            - APP_DEBUG=true
+            - DEV_UID=${DEV_UID}
+            - DEV_GID=${DEV_GID}
+            - KERNEL_CLASS=Hanaboso\PipesFramework\Kernel
+            - COMPOSER_HOME=${HOME}/dev/.composer
+            - FRONTEND_URL=${DEV_IP}
+            - BACKEND_URL=${DEV_IP}
+            - MONGODB_DSN=mongodb://mongo
+            - MONGODB_DB=pipes
+            - METRICS_DSN=mongodb://mongo
+            - METRICS_DB=metrics
+            - CHECK_INFINITY_LOOP=true
+            - TOPOLOGY_API_DSN=topology-api:80
+            - STARTING_POINT_URL=starting-point:8080
+            - CRON_DSN=http://cron-api:8080
+            - RABBITMQ_DSN=amqp://rabbitmq:5672
+            - JWT_KEY=test1234test1234test1234test1234test1234test1234test1234test1234test1234
+
+    starting-point:
+        image: orchesty/starting-point:1.0.6
+        environment:
+            MONGO_DSN: mongodb://mongo/demo
+            METRICS_DSN: mongodb://mongo/metrics
+
+    cron-api:
+        user: ${DEV_UID}:${DEV_GID}
+        image: orchesty/cron:1.0.6
+        environment:
+            STARTING_POINT_DSN: starting-point:8080
+            MONGO_DSN: mongodb://mongo/cron
+            MONGO_COLLECTION: cron
+
+    mongo:
+        image: mongo:latest
+        ports:
+            - ${DEV_IP}:27017:27017
+        volumes:
+            - mongo:/data/db
+
+    rabbitmq:
+        image: rabbitmq:management-alpine
+        volumes:
+            - rabbit-mq:/var/lib/rabbitmq
+        ports:
+            - ${DEV_IP}:15672:15672
+
+    redis:
+        image: redis:alpine
+        ports:
+            - ${DEV_IP}:6379:6379
+        volumes:
+            - redis:/data
+
+    swagger-ui:
+        image: swaggerapi/swagger-ui
+        ports:
+            - ${DEV_IP}:8080:8080
+        volumes:
+            - ./openapi.yaml:/api.yaml
+        environment:
+            SWAGGER_JSON: /api.yaml
+
+volumes:
+    mongo: {}
+    rabbit-mq: {}
+    redis: {}

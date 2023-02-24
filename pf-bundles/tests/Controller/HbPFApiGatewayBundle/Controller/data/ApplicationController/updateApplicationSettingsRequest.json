@@ -1,0 +1,7 @@
+{
+    "http": "PUT /api/applications/null",
+    "body": [],
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
+}
