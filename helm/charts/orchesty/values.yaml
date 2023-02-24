@@ -3,6 +3,9 @@ global:
   backend_url: https://backend.pipes.example.com
   starting_point_url: http://starting-point.pipes.example.com
 
+  # defaults to internal worker-api service URL
+  worker_api_url: ""
+
   imageRegistry:
     enablePullSecret: false
     server: docker.io
@@ -16,19 +19,19 @@ global:
   images:
     applinth-marketplace-ui: ""
     php-sdk: OVERRIDE
-    backend: backend:1.1.0
-    frontend: frontend:1.1.0
-    cron-api: cron:1.1.0
+    backend: backend:2.0.0
+    frontend: frontend:2.0.0
+    cron-api: cron:2.0.0
 
-    bridge: bridge:1.1.0
-    counter: counter:1.1.0
+    bridge: bridge:2.0.0
+    counter: counter:2.0.0
 
-    limiter: limiter:1.1.0
-    starting-point: starting-point:1.1.0
-    topology-api: topology-api:1.1.0
-    fluentd: fluentd:1.1.0
-    detector: detector:1.1.0
-    worker-api: worker-api:1.1.0
+    limiter: limiter:2.0.0
+    starting-point: starting-point:2.0.0
+    topology-api: topology-api:2.0.0
+    fluentd: fluentd:2.0.0
+    detector: detector:2.0.0
+    worker-api: worker-api:2.0.0
 
   # Default global node selector
   nodeSelector: {}
@@ -121,13 +124,11 @@ global:
 
   phpSdk:
     extraEnv: {}
-    worker_api_url: ""
     # FOO:
     # value: bar
 
   nodejsSdk:
     extraEnv: {}
-    worker_api_url: ""
     # FOO:
     # value: bar
 

@@ -57,6 +57,13 @@ spec:
                 secretKeyRef:
                   key: metrics_dsn
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+{{- if not .Values.global.worker_api_url }}
+            - name: WORKER_API_HOST
+              value: "http://{{ include "pipes.fullname" (dict "suffix" "worker-api" "root" .) }}"
+{{- else }}
+            - name: WORKER_API_HOST
+              value: "{{ .Values.global.worker_api_url }}"
+{{- end }}
           resources:
 {{ toYaml .Values.global.worker.resources | indent 12 }}
 

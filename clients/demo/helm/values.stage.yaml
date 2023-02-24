@@ -4,7 +4,6 @@ global:
   backend_url: https://api-orchesty.stage.hanaboso.net
   frontend_url: https://orchesty.stage.hanaboso.net
   starting_point_url: https://sp-orchesty.stage.hanaboso.net
-  worker_api_url: http://worker-api:8080
 
   imageOverrides:
     bridge: hanaboso/bridge:dev

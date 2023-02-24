@@ -6,7 +6,7 @@ version: 0.1.0
 appVersion: 0.1.0
 dependencies:
 - name: orchesty
-  version: "~1.2.2"
+  version: "~2.0.0"
   repository: "https://orchesty.github.io/helm-charts/"
 
 - name: mongodb

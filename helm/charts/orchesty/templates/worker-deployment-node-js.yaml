@@ -47,12 +47,12 @@ spec:
                     key: orchesty_api_key
                     name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
 
-{{- if not .Values.global.nodejsSdk.worker_api_url }}
+{{- if not .Values.global.worker_api_url }}
             - name: WORKER_API_HOST
-              value: "http://worker-api"
+              value: "http://{{ include "pipes.fullname" (dict "suffix" "worker-api" "root" .) }}"
 {{- else }}
             - name: WORKER_API_HOST
-              value: {{ .Values.global.nodejsSdk.worker_api_url }}
+              value: "{{ .Values.global.worker_api_url }}"
 {{- end }}
           resources:
 {{ toYaml .Values.global.worker.resources | indent 12 }}
