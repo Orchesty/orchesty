@@ -2,7 +2,7 @@
 
 PUBLIC_REPO=git@github.com:Orchesty/orchesty.git
 
-SUBTREES="detector bridge pf-bundles app-ui counter fluentd limiter starting-point topology-generator"
+SUBTREES="app-ui bridge counter cron detector fluentd limiter pf-bundles starting-point topology-generator worker-api"
 
 MERGE_CMD=merge
 
