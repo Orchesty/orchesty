@@ -62,9 +62,10 @@ final class DataStorageManager
     {
         $entities = array_map(
             static fn($item) => (new DataStorageDocument())
-            ->setUser($user)
-            ->setApplication($application)
-            ->setData($item),
+                ->setId($id)
+                ->setUser($user)
+                ->setApplication($application)
+                ->setData($item),
             $data,
         );
 
@@ -105,7 +106,8 @@ final class DataStorageManager
         ?bool $contains = NULL,
         ?string $application = NULL,
         ?string $user = NULL,
-    ): array {
+    ): array
+    {
         if ($application) {
             $data = array_filter($data, static fn($item) => ($item->getApplication() === $application) === $contains);
         }
