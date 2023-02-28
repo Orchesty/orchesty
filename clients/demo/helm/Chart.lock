@@ -1,12 +1,12 @@
 dependencies:
 - name: orchesty
   repository: https://orchesty.github.io/helm-charts/
-  version: 2.0.0
+  version: 2.0.1
 - name: mongodb
   repository: ""
   version: '*'
 - name: rabbitmq
   repository: ""
   version: '*'
-digest: sha256:9cba046f88ebf8caf5a0c1eb628d16d6b7cba4b526d598098b9dfa23753de089
-generated: "2023-02-24T15:33:38.628234059+01:00"
+digest: sha256:0c33fa85c1215fa6358f04a5c6d87955dfe1f950886131ed7e4b4fb7ed2a155c
+generated: "2023-02-28T10:51:24.138826593+01:00"
