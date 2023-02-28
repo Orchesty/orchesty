@@ -8,7 +8,7 @@ global:
   imageOverrides:
     bridge: hanaboso/bridge:dev
     counter: hanaboso/counter:dev
-    nodejssdk: hanaboso/demo-nodejs:dev2
+    nodejssdk: dkr.hanaboso.net/pipes/demo/demo-nodejs:dev2
     frontend: hanaboso/pipes-app-ui:dev
     backend: hanaboso/pipes-pf-bundle:dev
     topology-api: hanaboso/pipes-topology-api-v2:dev
