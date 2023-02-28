@@ -3,7 +3,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "pipes.fullname" (dict "suffix" $componentName "noPrefix" true "root" .) }}
+  name: {{ include "pipes.fullname" (dict "suffix" $componentName "root" .) }}
   labels:
 {{ include "pipes.labels" . | indent 4 }}
 {{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 4 }}

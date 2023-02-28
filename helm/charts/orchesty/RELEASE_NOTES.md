@@ -1,6 +1,12 @@
 # Release Notes
 
-## Version 2.0.0
+## 2.0.1
+
+### Changes
+
+- chart bug fixes
+
+## 2.0.0
 
 ### Breaking changes:
 
