@@ -137,6 +137,8 @@ services:
         
     hbpf.custom_node.hello-world:
         class: Pipes\PhpSdk\Mapper\HelloWorld
+        arguments:
+            - '@hbpf.application_install.repository'
 ```
 </TabItem>
 </Tabs>

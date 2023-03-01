@@ -72,8 +72,12 @@ use Hanaboso\PipesPhpSdk\Storage\DataStorage\DataStorageManager;
 final class GitHubStoreRepositoriesBatch extends BatchAbstract
 {
 
-    public function __construct(private readonly DataStorageManager $dataStorageManager)
+    public function __construct(
+        ApplicationInstallRepository $repository,
+        private readonly DataStorageManager $dataStorageManager,
+    )
     {
+        parent::__construct($repository);
     }
 
     function processAction(BatchProcessDto $dto): BatchProcessDto
@@ -245,8 +249,12 @@ final class GitHubStoreRepositoriesBatch extends BatchAbstract
 
     private const PAGE_ITEMS = 5;
 
-    public function __construct(private readonly DataStorageManager $dataStorageManager)
+    public function __construct(
+        ApplicationInstallRepository $repository,
+        private readonly DataStorageManager $dataStorageManager,
+    )
     {
+        parent::__construct($repository);
     }
 
     function getName(): string
@@ -335,11 +343,11 @@ Register the batch connector in the yaml file: `./config/batch/batch.yaml` and i
 services:
     _defaults:
         public: '%public.services%'
+
     hbpf.data_storage_manager:
         class: Hanaboso\PipesPhpSdk\Storage\DataStorage\DataStorageManager
         arguments:
-            - '@hbpf.database_manager_locator'
-        
+            - '@hbpf.data_store.file_system'
 
 # ./config/batch.yaml
 services:
@@ -347,6 +355,7 @@ services:
     hbpf.batch.git-hub-store-repositories-batch:
         class: Pipes\PhpSdk\Batch\GitHubStoreRepositoriesBatch
         arguments:
+            - '@hbpf.application_install.repository'
             - '@hbpf.data_storage_manager'
         calls:
             - [ 'setApplication', [ '@hbpf.application.git-hub' ] ]
@@ -413,8 +422,12 @@ final class LoadRepositories extends CommonNodeAbstract
 
     public const NAME = 'load-repositories';
 
-    public function __construct(private readonly DataStorageManager $dataStorageManager)
+    public function __construct(
+        ApplicationInstallRepository $repository,
+        private readonly DataStorageManager $dataStorageManager,
+    )
     {
+        parent::__construct($repository);
     }
 
     function getName(): string
@@ -425,9 +438,14 @@ final class LoadRepositories extends CommonNodeAbstract
     function processAction(ProcessDto $dto): ProcessDto
     {
         $data  = $dto->getJsonData();
-        $repos = $this->dataStorageManager->load(id: $data['collection'], toArray: TRUE);
+        $repos = $this->dataStorageManager->load(id: $data['collection']);
 
-        return $dto->setJsonData($repos ?? []);
+        $res = [];
+        foreach ($repos as $repo){
+            $res[] = $repo->toArray();
+        }
+
+        return $dto->setJsonData($res);
     }
 
 }

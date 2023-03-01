@@ -160,6 +160,8 @@ services:
 
     hbpf.batch.git-hub-repositories-batch:
         class: Pipes\PhpSdk\Batch\GitHubGetRepositoriesBatch
+        arguments:
+            - '@hbpf.application_install.repository'
         calls:
             - ['setApplication', ['@hbpf.application.git-hub']]
             - ['setSender', ['@hbpf.transport.curl_manager']]

@@ -102,6 +102,8 @@ services:
   // ...    
     hbpf.batch.split-batch:
         class: Pipes\PhpSdk\Batch\SplitBatch
+        arguments:
+            - '@hbpf.application_install.repository'
   // ...
 
 ```

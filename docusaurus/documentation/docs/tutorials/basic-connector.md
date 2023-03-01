@@ -321,6 +321,8 @@ services:
         public: '%public.services%'
     hbpf.connector.jsonplaceholder-get-users:
         class: Pipes\PhpSdk\Connector\GetUsersConnector
+        arguments:
+            - '@hbpf.application_install.repository'
         calls:
             - ['setSender', ['@hbpf.transport.curl_manager']]
 ```
