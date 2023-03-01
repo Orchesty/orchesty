@@ -586,6 +586,8 @@ services:
     // ...
     hbpf.connector.git-hub-get-repository:
         class: Pipes\PhpSdk\Connector\GitHubRepositoryConnector
+        arguments:
+            - '@hbpf.application_install.repository'
         calls:
             - ['setApplication', ['@hbpf.application.git-hub']]
             - ['setSender', ['@hbpf.transport.curl_manager']]

@@ -711,6 +711,8 @@ services:
 
   hbpf.connector.hub-spot-create-contact:
     class: Pipes\PhpSdk\Connector\HubSpotCreateContactConnector
+    arguments:
+      - '@hbpf.application_install.repository'
     calls:
       - ['setApplication', ['@hbpf.application.hub-spot']]
       - ['setSender', ['@hbpf.transport.curl_manager']]
