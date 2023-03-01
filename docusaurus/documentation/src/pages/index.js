@@ -21,7 +21,7 @@ function HomepageHeader({siteConfig}) {
         <div className={styles.buttons}>
           <Link
             className="button button--primary button--lg"
-            to={`/docs/${customFields.version}/get-started/installation`}>
+            to={`${customFields.version}/get-started/installation`}>
             Download
           </Link>
         </div>

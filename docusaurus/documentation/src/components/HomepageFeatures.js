@@ -10,21 +10,21 @@ const FeatureList = [
         title: 'Get started',
         description: 'Download and install Orchesty. Read about Orchesty architecture for understand how to build your own integration service.',
         linkText: 'Get started with Orchesty',
-        linkTo: '/docs/{{version}}/category/get-started'
+        linkTo: '{{version}}/category/get-started'
     },
     {
         Svg: require('@site/static/img/study-svgrepo-com.svg').default,
         title: 'Tutorials',
         description: 'Learn step by step how to integrate services and orchestrate data processes between them.',
         linkText: 'Get started with Tutorials',
-        linkTo: '/docs/{{version}}/category/tutorials'
+        linkTo: '{{version}}/category/tutorials'
     },
     {
         Svg: require('@site/static/img/dvi-connector-svgrepo-com.svg').default,
         title: 'SDKs',
         description: 'Using the SDK in microservices, you can easily orchestrate them through orchestration layer. You can write your own connectors for services.',
         linkText: 'Choose your SDK',
-        linkTo: '/docs/{{version}}/get-started/SDK'
+        linkTo: '{{version}}/get-started/SDK'
     },
     //{Svg: 'svg', title: 'Documentation',description: 'Description'}
 ];

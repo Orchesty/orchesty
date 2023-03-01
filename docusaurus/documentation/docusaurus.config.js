@@ -10,7 +10,7 @@ module.exports = {
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
-  organizationName: 'Orchesty', // Usually your GitHub org/username.
+  organizationName: 'Orchesty/orchesty', // Usually your GitHub org/username.
   projectName: 'Orchesty', // Usually your repo name.
   themeConfig: {
     colorMode: {
@@ -54,14 +54,15 @@ module.exports = {
       '@docusaurus/preset-classic',
       {
         docs: {
+          routeBasePath: '/',
           includeCurrentVersion: true,
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
           lastVersion: 'current',
           versions: {
             current: {
-              label: 'current',
-              path: '1.1.0',
+              label: 'Current',
+              path: '',
             },
             '1.0.6': {
               label: '1.0.6',
@@ -76,6 +77,6 @@ module.exports = {
     ],
   ],
   customFields: {
-    version: '1.1.0'
+    version: ''
   }
 };
