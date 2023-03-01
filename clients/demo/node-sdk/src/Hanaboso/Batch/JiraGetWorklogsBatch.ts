@@ -56,10 +56,12 @@ export default class JiraGetWorklogsBatch extends ABatchNode {
         );
 
         const stripResponse = response.getJsonBody().map((item) => ({
+            started: item.started,
             worklogId: item.id,
             issueId: item.issueId,
-            timeSpent: item.timeSpent,
+            timeSpentSeconds: item.timeSpentSeconds,
             author: item.author.displayName,
+            comment: item.comment?.content[0]?.content[0]?.text,
         }));
 
         const newWorklogCache = {
@@ -104,6 +106,7 @@ export interface IOutput {
     timeSpent: string;
     timeSpentSeconds: number;
     updateAuthor: Author;
+    comment?: Comment;
 }
 
 export interface Author {
@@ -114,4 +117,16 @@ export interface Author {
     displayName: string;
     self: string;
     timeZone: string;
+}
+
+export interface Comment {
+    version: number;
+    type: string;
+    content: {
+        type: string;
+        content: {
+            type: string;
+            text: string;
+        }[];
+    }[];
 }

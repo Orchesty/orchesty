@@ -1,4 +1,3 @@
-import ACommonNode from '@orchesty/nodejs-sdk/dist/lib/Commons/ACommonNode';
 import DataStorageManager from '@orchesty/nodejs-sdk/dist/lib/Storage/DataStore/DataStorageManager';
 import { CORRELATION_ID } from '@orchesty/nodejs-sdk/dist/lib/Utils/Headers';
 import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
@@ -9,10 +8,11 @@ import {
     IWorklogDataMinimalWithIssue,
 } from '../Batch/JiraSortWorklogsByProjectsBatch';
 import { IResponse as ISpreadsheet, IValue, SPREADSHEET_ID } from '../Connector/GoogleSheetGetSpreadsheet';
+import AJiraWorklogGoogleDriveMapper from './AJiraWorklogGoogleDriveMapper';
 
 export const NAME = 'jira-worklogs-to-google-drive-mapper';
 
-export default class JiraWorklogsToGoogleDriveMapper extends ACommonNode {
+export default class JiraWorklogsToGoogleDriveMapper extends AJiraWorklogGoogleDriveMapper {
 
     public constructor(private readonly dataStorageManager: DataStorageManager) {
         super();
@@ -79,7 +79,7 @@ export default class JiraWorklogsToGoogleDriveMapper extends ACommonNode {
     }
 
     private prepareHeader(): IValue[] {
-        const items = ['worklog id', 'issue id', 'time spent', 'author', 'key'];
+        const items = ['started', 'worklog id', 'issue id', 'time spent', 'author', 'key', 'name', 'labels', 'comment'];
         const result: IValue[] = [];
         items.forEach((item) => {
             result.push({
@@ -96,6 +96,11 @@ export default class JiraWorklogsToGoogleDriveMapper extends ACommonNode {
         return [
             {
                 userEnteredValue: {
+                    stringValue: this.convertDateTimeToString(row.started),
+                },
+            },
+            {
+                userEnteredValue: {
                     stringValue: row.worklogId.toString(),
                 },
             },
@@ -106,7 +111,7 @@ export default class JiraWorklogsToGoogleDriveMapper extends ACommonNode {
             },
             {
                 userEnteredValue: {
-                    stringValue: row.timeSpent,
+                    stringValue: this.convertSecondsToString(row.timeSpentSeconds),
                 },
             },
             {
@@ -117,6 +122,21 @@ export default class JiraWorklogsToGoogleDriveMapper extends ACommonNode {
             {
                 userEnteredValue: {
                     stringValue: row.key,
+                },
+            },
+            {
+                userEnteredValue: {
+                    stringValue: row.name ?? '',
+                },
+            },
+            {
+                userEnteredValue: {
+                    stringValue: row.labels.join(';'),
+                },
+            },
+            {
+                userEnteredValue: {
+                    stringValue: row.comment ?? '',
                 },
             },
         ];

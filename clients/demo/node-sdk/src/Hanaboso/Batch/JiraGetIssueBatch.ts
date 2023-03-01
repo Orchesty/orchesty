@@ -44,12 +44,17 @@ export default class JiraGetIssueBatch extends ABatchNode {
             `${JIRA_GET_ISSUE_ENDPOINT}/${id}`,
         );
         const response = await this.getSender().send<IResponse>(request);
+        const responseBody = response.getJsonBody();
 
         await this.dataStorageManager.remove(
             dto.getHeader(CORRELATION_ID) ?? '',
         );
 
-        Object.assign(worklogData[pointer], { key: response.getJsonBody().key });
+        Object.assign(worklogData[pointer], {
+            key: responseBody.key,
+            name: responseBody.fields.customfield_10500?.[0].name,
+            labels: responseBody.fields.labels,
+        });
 
         await this.dataStorageManager.store(
             dto.getHeader(CORRELATION_ID) ?? '',
@@ -66,13 +71,23 @@ export default class JiraGetIssueBatch extends ABatchNode {
     }
 
 }
+
 export interface IWorklogDataMinimal {
+    started: string;
     worklogId: number;
     issueId: number;
-    timeSpent: string;
+    timeSpentSeconds: number;
     author: string;
 }
 
+/* eslint-disable @typescript-eslint/naming-convention */
 export interface IResponse {
     key: string;
+    fields: {
+        labels: string[];
+        customfield_10500?: {
+            name: string;
+        }[];
+    };
 }
+/* eslint-enable @typescript-eslint/naming-convention */

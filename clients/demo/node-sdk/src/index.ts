@@ -14,6 +14,9 @@ import BoxApplication from '@orchesty/nodejs-connectors/dist/lib/Box/BoxApplicat
 import { EventEnum } from '@orchesty/nodejs-connectors/dist/lib/Common/Events/EventEnum';
 import EventStatusFilter from '@orchesty/nodejs-connectors/dist/lib/Common/EventStatusFilter/EventStatusFilter';
 import ListUsersCommon from '@orchesty/nodejs-connectors/dist/lib/Common/ListUsers/ListUsers';
+import GetApplicationForRefreshBatchConnector
+    from '@orchesty/nodejs-connectors/dist/lib/Common/OAuth2/GetApplicationForRefreshBatchConnector';
+import RefreshOAuth2TokenNode from '@orchesty/nodejs-connectors/dist/lib/Common/OAuth2/RefreshOAuth2TokenNode';
 import DiscordSendMessageConnector
     from '@orchesty/nodejs-connectors/dist/lib/Discord/Connector/DiscordSendMessageConnector';
 import DiscordApplication from '@orchesty/nodejs-connectors/dist/lib/Discord/DiscordApplication';
@@ -503,4 +506,12 @@ export function start(): void {
         .setApplication(hubspotAppBasic)
         .setDb(mongoDb);
     container.setConnector(hubSpotSendTransactionEmailConnector);
+
+    const getApplicationForRefreshBatchConnector = new GetApplicationForRefreshBatchConnector()
+        .setDb(mongoDb);
+    container.setBatch(getApplicationForRefreshBatchConnector);
+
+    const refreshOAuth2TokenNode = new RefreshOAuth2TokenNode(container)
+        .setDb(mongoDb);
+    container.setConnector(refreshOAuth2TokenNode);
 }

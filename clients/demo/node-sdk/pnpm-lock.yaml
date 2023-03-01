@@ -7,12 +7,14 @@ specifiers:
   '@orchesty/nodejs-connectors': ^3.0.2
   '@orchesty/nodejs-sdk': ^4.2.5
   '@types/jest': ^29.4.0
+  '@types/luxon': ^3.2.0
   '@types/node': ^18.14.1
   '@types/supertest': ^2.0.12
   copyfiles: ^2.4.1
   eslint: ^8.34.0
   jest: ^29.4.3
   lodash: ^4.17.21
+  luxon: ^3.2.1
   mongodb: ^4.14.0
   nodemon: ^2.0.20
   reflect-metadata: ^0.1.13
@@ -28,6 +30,7 @@ dependencies:
   '@types/node': 18.14.1
   copyfiles: 2.4.1
   lodash: 4.17.21
+  luxon: 3.2.1
   mongodb: 4.14.0
   reflect-metadata: 0.1.13
   ts-node: 10.9.1_uayvamxqnl5yeiojjysxwopmsy
@@ -36,6 +39,7 @@ dependencies:
 devDependencies:
   '@hanaboso/eslint-plugin': 1.0.8_orzzknleilowtsz34rkaotjvzm
   '@types/jest': 29.4.0
+  '@types/luxon': 3.2.0
   '@types/supertest': 2.0.12
   eslint: 8.34.0
   jest: 29.4.3_ujxcenvse5zlxdro6vjdmkgl3a
@@ -2564,6 +2568,10 @@ packages:
 
   /@types/json5/0.0.29:
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
+    dev: true
+
+  /@types/luxon/3.2.0:
+    resolution: {integrity: sha512-lGmaGFoaXHuOLXFvuju2bfvZRqxAqkHPx9Y9IQdQABrinJJshJwfNCKV+u7rR3kJbiqfTF/NhOkcxxAFrObyaA==}
     dev: true
 
   /@types/ms/0.7.31:
