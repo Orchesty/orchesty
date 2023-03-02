@@ -3,6 +3,7 @@ package model
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/hanaboso/go-utils/pkg/timex"
 	"github.com/hanaboso/pipes/bridge/pkg/enum"
 	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/rs/zerolog"
@@ -137,7 +138,9 @@ func (pm *ProcessMessage) IntoAmqp() amqp.Publishing {
 	return amqp.Publishing{
 		ContentType: "application/json",
 		Body:        body,
-		Headers:     map[string]interface{}{},
+		Headers: map[string]interface{}{
+			enum.Header_PublishedTimestamp: timex.UnixMs(),
+		},
 	}
 }
 
@@ -150,7 +153,9 @@ func (pm *ProcessMessage) IntoOriginalAmqp() amqp.Publishing {
 	return amqp.Publishing{
 		ContentType: "application/json",
 		Body:        body,
-		Headers:     map[string]interface{}{},
+		Headers: map[string]interface{}{
+			enum.Header_PublishedTimestamp: pm.Published,
+		},
 	}
 }
 
