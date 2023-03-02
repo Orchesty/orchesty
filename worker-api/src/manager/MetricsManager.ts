@@ -5,44 +5,41 @@ export default class MetricsManager {
     public constructor(private readonly mongo: Mongo) {
     }
 
-    public async saveMetrics(metrics: IMetricsInput, measurement: string): Promise<void> {
+    public async saveMetrics(metrics: IMetricsInput<{ created: Date }>, measurement: string): Promise<void> {
         const { fields, tags } = metrics;
 
         const measurementCollection = this.mongo.getCollection(measurement);
+        fields.created = new Date(fields.created);
         await measurementCollection.insertOne({
             tags,
-            fields: {
-                created: new Date(fields.created),
-            },
-        } as IMetricsOutput);
+            fields,
+        });
     }
 
 }
 
-export interface IMetricsInput {
-    fields: IInputFields;
+export interface IMetricsInput<T extends { created: Date }> {
+    fields: T;
     tags: ITags;
 }
 
-export interface IMetricsOutput {
-    fields: IOutputFields;
-    tags: ITags;
-}
-
-interface IInputFields extends IBaseFields {
-    created: string;
-}
-
-interface IOutputFields extends IBaseFields {
+export interface IMonolithFields {
     created: Date;
-
-}
-
-interface IBaseFields {
     fpm_request_total_duration: number;
     fpm_cpu_user_time: number;
     fpm_cpu_kernel_time: number;
 }
+
+/* eslint-disable @typescript-eslint/naming-convention */
+export interface IConnectorFields {
+    created: Date;
+    user_id: string;
+    application_id: string;
+    send_request_total_duration: number;
+    response_code?: number;
+}
+
+/* eslint-enable @typescript-eslint/naming-convention */
 
 interface ITags {
     topology_id?: string;
