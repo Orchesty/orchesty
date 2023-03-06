@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:pipes="http://www.omg.org/spec/Pipes/20100524/MODEL" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
   <bpmn:process id="ab" isExecutable="false">
-    <bpmn:task id="Activity_1rx7kpf" pipes:pipesType="custom" pipes:sdkHost="node-sdk:8080" name="setup-google-sheet-setting" pipes:sdkHostName="node-sdk" pipes:appName="">
+    <bpmn:task id="Activity_1rx7kpf" pipes:pipesType="custom" pipes:sdkHost="node-sdk:8080" name="setup-google-sheet-setting-spreadsheet" pipes:sdkHostName="node-sdk" pipes:appName="google-sheet">
       <bpmn:incoming>Flow_1avat91</bpmn:incoming>
       <bpmn:outgoing>Flow_16f85o8</bpmn:outgoing>
     </bpmn:task>
@@ -37,14 +37,6 @@
       <bpmn:outgoing>Flow_1avat91</bpmn:outgoing>
     </bpmn:event>
     <bpmn:sequenceFlow id="Flow_1avat91" sourceRef="Event_1bkac9l" targetRef="Activity_1rx7kpf"/>
-    <bpmn:textAnnotation id="TextAnnotation_06zjq0z" pipes:sdkHost="node-sdk:8080" pipes:sdkHostName="node-sdk">
-      <bpmn:text>{
-"from": "2023-02-13",
-"to": "2023-02-15",
-"spredsheetId": "12myKRQU0fcPAbWHMoG5IbahBtHSYh3CTafIyD0y9iaQ"
-}</bpmn:text>
-    </bpmn:textAnnotation>
-    <bpmn:association id="Association_1pfr03m" sourceRef="Event_1bkac9l" targetRef="TextAnnotation_06zjq0z"/>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="ab">
@@ -82,10 +74,6 @@
           <dc:Bounds x="199" y="455" width="22" height="14"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TextAnnotation_06zjq0z_di" bpmnElement="TextAnnotation_06zjq0z">
-        <dc:Bounds x="240" y="260" width="150" height="110"/>
-        <bpmndi:BPMNLabel/>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_1mpntst_di" bpmnElement="Flow_1mpntst">
         <di:waypoint x="550" y="430"/>
         <di:waypoint x="590" y="430"/>
@@ -113,10 +101,6 @@
       <bpmndi:BPMNEdge id="Flow_1avat91_di" bpmnElement="Flow_1avat91">
         <di:waypoint x="228" y="430"/>
         <di:waypoint x="300" y="430"/>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Association_1pfr03m_di" bpmnElement="Association_1pfr03m">
-        <di:waypoint x="215" y="413"/>
-        <di:waypoint x="240" y="330"/>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

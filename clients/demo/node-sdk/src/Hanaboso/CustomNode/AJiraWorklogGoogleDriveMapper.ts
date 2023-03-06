@@ -1,4 +1,5 @@
 import ACommonNode from '@orchesty/nodejs-sdk/dist/lib/Commons/ACommonNode';
+import DateTimeUtils, { DATE_TIME } from '@orchesty/nodejs-sdk/dist/lib/Utils/DateTimeUtils';
 import { DateTime } from 'luxon';
 
 export default abstract class AJiraWorklogGoogleDriveMapper extends ACommonNode {
@@ -24,12 +25,7 @@ export default abstract class AJiraWorklogGoogleDriveMapper extends ACommonNode 
     }
 
     protected convertDateTimeToString(dateTime: string): string {
-        const date = DateTime.fromISO(dateTime);
-
-        return `${date.toISODate()} ${date.toISOTime({
-            includeOffset: false,
-            includePrefix: false,
-        })}`;
+        return DateTimeUtils.getFormattedDate(DateTime.fromISO(dateTime), DATE_TIME);
     }
 
 }

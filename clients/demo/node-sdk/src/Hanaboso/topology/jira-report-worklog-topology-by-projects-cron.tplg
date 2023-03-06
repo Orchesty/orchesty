@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?><bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:pipes="http://www.omg.org/spec/Pipes/20100524/MODEL" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="jira-report-worklog-topology-by-projects" isExecutable="false">
+    <bpmn:task id="Activity_0nw3q2j" pipes:pipesType="custom" pipes:sdkHost="node-sdk:8080" name="setup-google-sheet-setting-directory" pipes:sdkHostName="node-sdk">
+      <bpmn:incoming>Flow_0agwknc</bpmn:incoming>
+      <bpmn:outgoing>Flow_0jyri2a</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:event id="Event_0k354zv" pipes:pipesType="cron" pipes:sdkHost="node-sdk:8080" name="cron" pipes:sdkHostName="node-sdk">
+      <bpmn:outgoing>Flow_0agwknc</bpmn:outgoing>
+    </bpmn:event>
+    <bpmn:task id="Activity_04uttb7" pipes:pipesType="connector" pipes:sdkHost="node-sdk:8080" name="google-drive-create-directory" pipes:sdkHostName="node-sdk">
+      <bpmn:incoming>Flow_0jyri2a</bpmn:incoming>
+      <bpmn:outgoing>Flow_15wl6xn</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="Flow_0jyri2a" sourceRef="Activity_0nw3q2j" targetRef="Activity_04uttb7"/>
+    <bpmn:sequenceFlow id="Flow_0agwknc" sourceRef="Event_0k354zv" targetRef="Activity_0nw3q2j"/>
+    <bpmn:task id="Activity_0lkqn9f" pipes:pipesType="batch" pipes:sdkHost="node-sdk:8080" name="jira-get-updated-worklog-ids-batch" pipes:sdkHostName="node-sdk" pipes:appName="jira">
+      <bpmn:incoming>Flow_15wl6xn</bpmn:incoming>
+      <bpmn:outgoing>Flow_0217rfs</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Activity_0yoxqit" pipes:pipesType="batch" pipes:sdkHost="node-sdk:8080" name="jira-get-worklogs-batch" pipes:sdkHostName="node-sdk" pipes:appName="jira">
+      <bpmn:incoming>Flow_0217rfs</bpmn:incoming>
+      <bpmn:outgoing>Flow_07gpdg0</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Activity_0hllkaq" pipes:pipesType="batch" pipes:sdkHost="node-sdk:8080" name="jira-get-issue-batch" pipes:sdkHostName="node-sdk" pipes:appName="jira">
+      <bpmn:incoming>Flow_07gpdg0</bpmn:incoming>
+      <bpmn:outgoing>Flow_1osqq6r</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Activity_05gfkrw" pipes:pipesType="batch" pipes:sdkHost="node-sdk:8080" name="jira-sort-worklogs-by-projects-batch" pipes:sdkHostName="node-sdk" pipes:appName="jira">
+      <bpmn:incoming>Flow_1osqq6r</bpmn:incoming>
+      <bpmn:outgoing>Flow_1kobcsy</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="Flow_15wl6xn" sourceRef="Activity_04uttb7" targetRef="Activity_0lkqn9f"/>
+    <bpmn:sequenceFlow id="Flow_0217rfs" sourceRef="Activity_0lkqn9f" targetRef="Activity_0yoxqit"/>
+    <bpmn:sequenceFlow id="Flow_07gpdg0" sourceRef="Activity_0yoxqit" targetRef="Activity_0hllkaq"/>
+    <bpmn:sequenceFlow id="Flow_1osqq6r" sourceRef="Activity_0hllkaq" targetRef="Activity_05gfkrw"/>
+    <bpmn:task id="Activity_01oapbw" pipes:pipesType="custom" pipes:sdkHost="node-sdk:8080" name="jira-worklog-google-drive-mapper" pipes:sdkHostName="node-sdk" pipes:appName="">
+      <bpmn:incoming>Flow_1kobcsy</bpmn:incoming>
+      <bpmn:outgoing>Flow_1q4lclc</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Activity_152hl6h" pipes:pipesType="connector" pipes:sdkHost="node-sdk:8080" name="google-sheet-create-spreadsheet" pipes:sdkHostName="node-sdk" pipes:appName="google-sheet">
+      <bpmn:incoming>Flow_1q4lclc</bpmn:incoming>
+      <bpmn:outgoing>Flow_1fkvhdx</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="Flow_1kobcsy" sourceRef="Activity_05gfkrw" targetRef="Activity_01oapbw"/>
+    <bpmn:sequenceFlow id="Flow_1q4lclc" sourceRef="Activity_01oapbw" targetRef="Activity_152hl6h"/>
+    <bpmn:task id="Activity_0y88yky" pipes:pipesType="connector" pipes:sdkHost="node-sdk:8080" name="google-drive-update-file" pipes:sdkHostName="node-sdk">
+      <bpmn:incoming>Flow_1fkvhdx</bpmn:incoming>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="Flow_1fkvhdx" sourceRef="Activity_152hl6h" targetRef="Activity_0y88yky"/>
+    <bpmn:textAnnotation id="TextAnnotation_1cy66rj" pipes:sdkHost="node-sdk:8080" pipes:sdkHostName="node-sdk"/>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="jira-report-worklog-topology-by-projects">
+      <bpmndi:BPMNShape id="Activity_0nw3q2j_di" bpmnElement="Activity_0nw3q2j">
+        <dc:Bounds x="170" y="30" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0k354zv_di" bpmnElement="Event_0k354zv">
+        <dc:Bounds x="102" y="52" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="109" y="95" width="22" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_04uttb7_di" bpmnElement="Activity_04uttb7">
+        <dc:Bounds x="300" y="30" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0lkqn9f_di" bpmnElement="Activity_0lkqn9f">
+        <dc:Bounds x="430" y="30" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0yoxqit_di" bpmnElement="Activity_0yoxqit">
+        <dc:Bounds x="560" y="30" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0hllkaq_di" bpmnElement="Activity_0hllkaq">
+        <dc:Bounds x="690" y="30" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_05gfkrw_di" bpmnElement="Activity_05gfkrw">
+        <dc:Bounds x="820" y="30" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_01oapbw_di" bpmnElement="Activity_01oapbw">
+        <dc:Bounds x="950" y="30" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_152hl6h_di" bpmnElement="Activity_152hl6h">
+        <dc:Bounds x="1080" y="30" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0y88yky_di" bpmnElement="Activity_0y88yky">
+        <dc:Bounds x="1210" y="30" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_1cy66rj_di" bpmnElement="TextAnnotation_1cy66rj">
+        <dc:Bounds x="470" y="210" width="NaN" height="14"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0jyri2a_di" bpmnElement="Flow_0jyri2a">
+        <di:waypoint x="270" y="70"/>
+        <di:waypoint x="300" y="70"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0agwknc_di" bpmnElement="Flow_0agwknc">
+        <di:waypoint x="138" y="70"/>
+        <di:waypoint x="170" y="70"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_15wl6xn_di" bpmnElement="Flow_15wl6xn">
+        <di:waypoint x="400" y="70"/>
+        <di:waypoint x="430" y="70"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0217rfs_di" bpmnElement="Flow_0217rfs">
+        <di:waypoint x="530" y="70"/>
+        <di:waypoint x="560" y="70"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_07gpdg0_di" bpmnElement="Flow_07gpdg0">
+        <di:waypoint x="660" y="70"/>
+        <di:waypoint x="690" y="70"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1osqq6r_di" bpmnElement="Flow_1osqq6r">
+        <di:waypoint x="790" y="70"/>
+        <di:waypoint x="820" y="70"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1kobcsy_di" bpmnElement="Flow_1kobcsy">
+        <di:waypoint x="920" y="70"/>
+        <di:waypoint x="950" y="70"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1q4lclc_di" bpmnElement="Flow_1q4lclc">
+        <di:waypoint x="1050" y="70"/>
+        <di:waypoint x="1080" y="70"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1fkvhdx_di" bpmnElement="Flow_1fkvhdx">
+        <di:waypoint x="1180" y="70"/>
+        <di:waypoint x="1210" y="70"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

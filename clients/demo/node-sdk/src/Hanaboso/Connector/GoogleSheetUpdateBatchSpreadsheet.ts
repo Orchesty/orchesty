@@ -1,10 +1,14 @@
 import GoogleSheetApplication from '@orchesty/nodejs-connectors/dist/lib/Google/GoogleSheet/GoogleSheetApplication';
+import { ApplicationInstall } from '@orchesty/nodejs-sdk/dist/lib/Application/Database/ApplicationInstall';
 import AConnector from '@orchesty/nodejs-sdk/dist/lib/Connector/AConnector';
 import DataStorageManager from '@orchesty/nodejs-sdk/dist/lib/Storage/DataStore/DataStorageManager';
 import { HttpMethods } from '@orchesty/nodejs-sdk/dist/lib/Transport/HttpMethods';
+import DateTimeUtils from '@orchesty/nodejs-sdk/dist/lib/Utils/DateTimeUtils';
 import { CORRELATION_ID } from '@orchesty/nodejs-sdk/dist/lib/Utils/Headers';
 import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
 import ResultCode from '@orchesty/nodejs-sdk/dist/lib/Utils/ResultCode';
+import { DateTime } from 'luxon';
+import { DATE_FORMAT, LAST_TOPOLOGY_RUN } from '../CustomNode/SetupGoogleSheetSettingSpreadsheet';
 import { IResponse as ISpreadsheet } from './GoogleSheetGetSpreadsheet';
 
 export const NAME = 'google-sheet-update-batch-spredsheet';
@@ -60,9 +64,11 @@ export default class GoogleSheetUpdateBatchSpreadsheet extends AConnector {
             ],
         };
 
+        const applicationInstall = await this.getApplicationInstallFromProcess(dto);
+
         const req = await app.getRequestDto(
             dto,
-            await this.getApplicationInstallFromProcess(dto),
+            applicationInstall,
             HttpMethods.POST,
             `${GOOGLE_SHEET_GET_SPREADSHEET}/${spredsheetId}:batchUpdate`,
             body,
@@ -74,7 +80,17 @@ export default class GoogleSheetUpdateBatchSpreadsheet extends AConnector {
             spredsheetCacheKey,
         );
 
+        await this.writeLastTimeRun(applicationInstall);
+
         return dto.setJsonData({ success: 'ok' });
+    }
+
+    private async writeLastTimeRun(applicationInstall: ApplicationInstall): Promise<void> {
+        applicationInstall.addNonEncryptedSettings({
+            [LAST_TOPOLOGY_RUN]: DateTimeUtils.getFormattedDate(DateTime.utc(), DATE_FORMAT),
+        });
+
+        await this.getDbClient().getApplicationRepository().update(applicationInstall);
     }
 
 }
