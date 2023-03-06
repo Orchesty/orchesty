@@ -12,21 +12,38 @@ export default class JiraWorklogGoogleDriveMapper extends AJiraWorklogGoogleDriv
 
     public processAction(dto: ProcessDto<IInput[]>): ProcessDto<IOutput> {
         const data = dto.getJsonData();
+        const result = [['key', 'name', 'time', 'organisation', 'labels']];
 
-        let result = 'started,worklog id,issue id,time spent,author,key,name,labels,comment\n';
         const projectKey = data?.[0].key.split('-')?.[0] ?? '';
         const date = data?.[0].date;
         const name = `${projectKey} | ${date?.from} - ${date?.to}`;
 
+        const newData = new Map<string, IInput[]>();
         data.forEach((item) => {
-            let row = `${this.convertDateTimeToString(item.started)},${item.worklogId},${item.issueId},${this.convertSecondsToString(item.timeSpentSeconds)}`;
-            row = `${row},${item.author},${item.key},${item.name ?? ''},${item.labels.join(';')},${item.comment ?? ''}\n`;
-            result = `${result}${row}`;
+            const innerData = newData.get(item.key);
+
+            if (innerData) {
+                newData.set(item.key, [...innerData, item]);
+            } else {
+                newData.set(item.key, [item]);
+            }
+        });
+
+        newData.forEach((value) => {
+            result.push([
+                value[0].key,
+                value[0].issueName,
+                this.convertSecondsToString(
+                    value.reduce((seconds, { timeSpentSeconds }) => seconds + timeSpentSeconds, 0),
+                ),
+                value[0].name ?? '',
+                value[0].labels.join(';'),
+            ]);
         });
 
         return dto.setNewJsonData<IOutput>({
             name,
-            dataGrid: result,
+            data: result,
         });
     }
 
@@ -34,5 +51,5 @@ export default class JiraWorklogGoogleDriveMapper extends AJiraWorklogGoogleDriv
 
 interface IOutput {
     name: string;
-    dataGrid: string;
+    data: string[][];
 }

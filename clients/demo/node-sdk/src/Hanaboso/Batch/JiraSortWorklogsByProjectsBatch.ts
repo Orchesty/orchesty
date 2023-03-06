@@ -50,7 +50,7 @@ export default class JiraSortWorklogsByProjectsBatch extends ABatchNode {
 export interface IWorklogDataMinimalWithIssue {
     started: string;
     worklogId: number;
-    issueId: number;
+    issueName: string;
     timeSpentSeconds: number;
     author: string;
     key: string;

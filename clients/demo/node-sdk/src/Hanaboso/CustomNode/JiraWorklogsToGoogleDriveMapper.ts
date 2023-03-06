@@ -79,7 +79,7 @@ export default class JiraWorklogsToGoogleDriveMapper extends AJiraWorklogGoogleD
     }
 
     private prepareHeader(): IValue[] {
-        const items = ['started', 'worklog id', 'issue id', 'time spent', 'author', 'key', 'name', 'labels', 'comment'];
+        const items = ['started', 'worklog id', 'issue name', 'time spent', 'author', 'project', 'key', 'organisation', 'labels', 'comment'];
         const result: IValue[] = [];
         items.forEach((item) => {
             result.push({
@@ -106,7 +106,7 @@ export default class JiraWorklogsToGoogleDriveMapper extends AJiraWorklogGoogleD
             },
             {
                 userEnteredValue: {
-                    stringValue: row.issueId.toString(),
+                    stringValue: row.issueName,
                 },
             },
             {
@@ -121,7 +121,12 @@ export default class JiraWorklogsToGoogleDriveMapper extends AJiraWorklogGoogleD
             },
             {
                 userEnteredValue: {
-                    stringValue: row.key,
+                    stringValue: row.key.split('-')[0],
+                },
+            },
+            {
+                userEnteredValue: {
+                    stringValue: row.key.split('-')[1],
                 },
             },
             {

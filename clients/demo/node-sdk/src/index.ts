@@ -30,7 +30,6 @@ import GoogleCalendarApplication
 import GoogleDriveApplication from '@orchesty/nodejs-connectors/dist/lib/Google/GoogleDrive/GoogleDriveApplication';
 import GoogleDriveUploadFileConnector
     from '@orchesty/nodejs-connectors/dist/lib/Google/GoogleSheet/Connector/GoogleSheetCreateSpreadsheetConnector';
-import GoogleSheetApplication from '@orchesty/nodejs-connectors/dist/lib/Google/GoogleSheet/GoogleSheetApplication';
 import YoutubeApplication from '@orchesty/nodejs-connectors/dist/lib/Google/Youtube/YoutubeApplication';
 import HubSpotSendTransactionEmailConnector
     from '@orchesty/nodejs-connectors/dist/lib/Hubspot/Connector/HubSpotSendTransactionEmailConnector';
@@ -93,6 +92,9 @@ import HubspotToSesTransactionEmailMapper from './Common/CustomNode/HubspotToSes
 import { HubspotListIdsEnums } from './Common/Enum/HubspotListIdsEnums';
 import { PageEnum } from './Common/Enum/PageEnum';
 import SESApplication from './Common/SESApplication';
+import GoogleDriveCreateDirectoryConnector from './Google/GoogleDrive/Connector/GoogleDriveCreateDirectoryConnector';
+import GoogleDriveUpdateFileConnector from './Google/GoogleDrive/Connector/GoogleDriveUpdateFileConnector';
+import GoogleSheetApplication from './Google/GoogleSheet/GoogleSheetApplication';
 import JiraGetIssueBatch from './Hanaboso/Batch/JiraGetIssueBatch';
 import JiraGetUpdatedWorklogIdsBatch from './Hanaboso/Batch/JiraGetUpdatedWorklogIdsBatch';
 import JiraGetWorklogsBatch from './Hanaboso/Batch/JiraGetWorklogsBatch';
@@ -101,7 +103,8 @@ import GoogleSheetGetSpreadsheet from './Hanaboso/Connector/GoogleSheetGetSpread
 import GoogleSheetUpdateBatchSpreadsheet from './Hanaboso/Connector/GoogleSheetUpdateBatchSpreadsheet';
 import JiraWorklogGoogleDriveMapper from './Hanaboso/CustomNode/JiraWorklogGoogleDriveMapper';
 import JiraWorklogsToGoogleDriveMapper from './Hanaboso/CustomNode/JiraWorklogsToGoogleDriveMapper';
-import SetupGoogleSheetSetting from './Hanaboso/CustomNode/SetupGoogleSheetSetting';
+import SetupGoogleSheetSettingDirectory from './Hanaboso/CustomNode/SetupGoogleSheetSettingDirectory';
+import SetupGoogleSheetSettingSpreadsheet from './Hanaboso/CustomNode/SetupGoogleSheetSettingSpreadsheet';
 import HanabosoContactFormMapper from './HanabosoCom/CustomNode/ContactFormMapper';
 import ListPosts from './JsonPlaceholder/Batch/ListPosts';
 import ListUsers from './JsonPlaceholder/Batch/ListUsers';
@@ -414,8 +417,27 @@ export function start(): void {
         .setDb(mongoDb);
     container.setCustomNode(jiraWorklogsToGoogleDriveMapper);
 
-    const setupGoogleSheetSetting = new SetupGoogleSheetSetting();
-    container.setCustomNode(setupGoogleSheetSetting);
+    const setupGoogleSheetSettingDirectory = new SetupGoogleSheetSettingDirectory()
+        .setApplication(googleSheetApp)
+        .setDb(mongoDb);
+    container.setCustomNode(setupGoogleSheetSettingDirectory);
+
+    const setupGoogleSheetSettingSpreadsheet = new SetupGoogleSheetSettingSpreadsheet()
+        .setApplication(googleSheetApp)
+        .setDb(mongoDb);
+    container.setCustomNode(setupGoogleSheetSettingSpreadsheet);
+
+    const googleDriveCreateDirectoryConnector = new GoogleDriveCreateDirectoryConnector()
+        .setSender(sender)
+        .setApplication(googleDriveApp)
+        .setDb(mongoDb);
+    container.setConnector(googleDriveCreateDirectoryConnector);
+
+    const googleDriveUpdateFileConnector = new GoogleDriveUpdateFileConnector()
+        .setSender(sender)
+        .setApplication(googleDriveApp)
+        .setDb(mongoDb);
+    container.setConnector(googleDriveUpdateFileConnector);
 
     const googleSheetCreateSpreadsheet = new GoogleDriveUploadFileConnector()
         .setSender(sender)

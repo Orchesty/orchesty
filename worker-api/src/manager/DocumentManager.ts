@@ -134,7 +134,7 @@ export default class DocumentManager {
             ids: Joi.array().items(Joi.string()),
             names: Joi.array().items(Joi.string()),
             users: Joi.array().items(Joi.string()),
-            expires: Joi.number(),
+            expires: Joi.string(),
             nonEncrypted: Joi.object<Record<string, number>>({}).pattern(Joi.string(), Joi.any()),
             enabled: Joi.boolean().allow(null),
 

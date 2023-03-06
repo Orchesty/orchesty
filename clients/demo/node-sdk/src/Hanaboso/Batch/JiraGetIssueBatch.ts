@@ -54,6 +54,7 @@ export default class JiraGetIssueBatch extends ABatchNode {
             key: responseBody.key,
             name: responseBody.fields.customfield_10500?.[0].name,
             labels: responseBody.fields.labels,
+            issueName: responseBody.fields.summary,
         });
 
         await this.dataStorageManager.store(
@@ -84,6 +85,7 @@ export interface IWorklogDataMinimal {
 export interface IResponse {
     key: string;
     fields: {
+        summary: string;
         labels: string[];
         customfield_10500?: {
             name: string;
