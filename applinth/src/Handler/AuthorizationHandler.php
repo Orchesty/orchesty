@@ -28,8 +28,9 @@ final class AuthorizationHandler
     public const EU_SUB   = 'eu_sub';
     public const SUB      = 'sub';
 
-    private const IAT = 'iat';
-    private const PIN = 'pin';
+    private const IAT      = 'iat';
+    private const PIN      = 'pin';
+    private const SETTINGS = 'settings';
 
     /**
      * @var MarketPlaceRestrictedTokenRepository
@@ -125,26 +126,30 @@ final class AuthorizationHandler
     }
 
     /**
-     * @param string[] $jwePayload
+     * @param mixed[] $jwePayload
      *
      * @return string|null
      */
     public function initRootApp(array $jwePayload): ?string
     {
-        $link = NULL;
-        $key  = $jwePayload[self::SUB];
-        $user = $jwePayload[self::EU_SUB];
+        $link     = NULL;
+        $key      = $jwePayload[self::SUB];
+        $user     = $jwePayload[self::EU_SUB];
+        $settings = $jwePayload[self::SETTINGS] ?? [];
 
         try {
             $this->appInstallRepository->findUserApp($key, $user);
         } catch (Exception) {
             $this->locator->installApp($key, $user);
-            $pin  = hash('sha256', sprintf('%s-%s-%s', time(), $key, $user));
-            $resp = $this->locator->updateApp(
-                $key,
-                $user,
-                [self::AUTHORIZATION_FORM => ['pin' => $pin]],
-            );
+            $pin = hash('sha256', sprintf('%s-%s-%s', time(), $key, $user));
+
+            $formSettings            = [];
+            $formSettings[self::PIN] = $pin;
+            foreach ($settings as $k => $v) {
+                $formSettings[$k] = $v;
+            }
+
+            $resp = $this->locator->updateApp($key, $user, [self::AUTHORIZATION_FORM => $formSettings]);
 
             try {
                 $app = $this->appInstallRepository->findUserApp($key, $user);

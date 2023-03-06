@@ -196,6 +196,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
             'eu_alias' => 'end_user_human_readable_alias_name',
             'iat'      => time(),
             'exp'      => time() + 3_600,
+            'settings' => ['user' => 'abc', 'pass' => '1213'],
         ];
 
         $jweSerializer = self::getContainer()->get('jose.jwe_serializer.serializer');
