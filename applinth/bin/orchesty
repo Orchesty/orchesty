@@ -2,7 +2,7 @@
 <?php declare(strict_types=1);
 
 use Hanaboso\Applinth\Kernel;
-use Hanaboso\PipesPhpSdk\Command\IncludeCommands;
+use Hanaboso\PipesFramework\Command\IncludeCommands;
 use Symfony\Component\Console\Input\ArgvInput;
 
 set_time_limit(0);
