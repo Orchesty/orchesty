@@ -17,6 +17,7 @@ RUN cd pf-bundles && \
 FROM hanabosocom/php-base:php-8.2-alpine
 
 ENV APP_DEBUG=0 APP_ENV=prod PHP_FPM_MAX_CHILDREN=10 PHP_FPM_MAX_REQUESTS=500
+ENV INSTALLER_DIRS='["/var/www/topology"]'
 COPY pf-bundles/php-local.ini /usr/local/etc/php/conf.d/zz_local.ini
 COPY --from=0 /var/www/pf-bundles .
 RUN rm -rf html localhost

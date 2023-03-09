@@ -13,14 +13,14 @@
   "author": "info@hanaboso.com",
   "license": "Apache-2.0",
   "dependencies": {
-    "@aws-sdk/client-ses": "^3.278.0",
+    "@aws-sdk/client-ses": "^3.287.0",
     "@aws-sdk/util-endpoints": "^3.272.0",
-    "@orchesty/nodejs-connectors": "^3.0.5",
+    "@orchesty/nodejs-connectors": "^3.0.8",
     "@orchesty/nodejs-sdk": "^4.2.9",
-    "@types/node": "^18.14.1",
+    "@types/node": "^18.14.6",
     "copyfiles": "^2.4.1",
     "lodash": "^4.17.21",
-    "luxon": "^3.2.1",
+    "luxon": "^3.3.0",
     "mongodb": "^4.14.0",
     "reflect-metadata": "^0.1.13",
     "ts-node": "^10.9.1",
@@ -31,9 +31,9 @@
     "@types/jest": "^29.4.0",
     "@types/luxon": "^3.2.0",
     "@types/supertest": "^2.0.12",
-    "eslint": "^8.34.0",
-    "jest": "^29.4.3",
-    "nodemon": "^2.0.20",
+    "eslint": "^8.35.0",
+    "jest": "^29.5.0",
+    "nodemon": "^2.0.21",
     "ts-jest": "^29.0.5"
   }
 }
