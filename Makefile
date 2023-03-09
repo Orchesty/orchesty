@@ -1,6 +1,6 @@
 TAG?=dev
 IMAGE=dkr.hanaboso.net/pipes/pipes/bridge
-PUBLIC_IMAGE=hanaboso/bridge
+PUBLIC_IMAGE=orchesty/bridge
 
 DC=docker-compose
 DE=docker-compose exec -T app
