@@ -345,7 +345,7 @@ final class ServiceLocator implements LoggerAwareInterface
             $request->getMethod(),
             $request->request->all(),
             FALSE,
-            $request->headers->all(),
+            [],
             TRUE,
         );
     }
@@ -496,7 +496,15 @@ final class ServiceLocator implements LoggerAwareInterface
                 } else if ($res->getStatusCode() === 404) {
                     throw new LogicException(sprintf('Route not found. Message: %s', $res->getBody()));
                 } else {
-                    throw new LogicException(sprintf('Unknown error. Message: %s', $res->getBody()));
+                    throw new LogicException(
+                        sprintf(
+                            'Unknown error. Message: %s, Status: %s, URL: %s, Headers: %s',
+                            $res->getBody(),
+                            $res->getStatusCode(),
+                            $dto->getUri(TRUE),
+                            Json::encode($dto->getHeaders()),
+                        ),
+                    );
                 }
             } catch (Throwable $t) {
                 $this->logger->error($t->getMessage(), ['Exception' => $t, 'Sdk' => $sdk]);
@@ -540,6 +548,10 @@ final class ServiceLocator implements LoggerAwareInterface
             }
 
             $s = sprintf('%s%s=%s', $s, $key, $item);
+        }
+
+        if ($s === '?') {
+            $s = '';
         }
 
         return $s;

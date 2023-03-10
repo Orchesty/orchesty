@@ -127,6 +127,7 @@ final class ApplicationController extends AbstractController
 
     /**
      * @Route("/applications/{key}/changeState", methods={"PUT", "OPTIONS"})
+     * @Route("/applications/{key}/change-state", methods={"PUT", "OPTIONS"})
      *
      * @param Request $request
      * @param string  $key
