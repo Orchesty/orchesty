@@ -20,7 +20,7 @@ type Limit struct {
 }
 
 // key;time;amount
-// application|user;1;1;application|user2;1;1
+// user|application;1;1;user2|application;1;1
 
 func (this Limit) LimitKey() string {
 	return fmt.Sprintf("%s;%d;%d", this.FullKey, this.Time, this.Maximum)
@@ -41,8 +41,8 @@ func ParseLimits(limitValue string) []Limit {
 
 			limits = append(limits, Limit{
 				FullKey:       parts[i],
-				SystemKey:     keys[0],
-				UserKey:       stringx.FromArray(keys, 1),
+				SystemKey:     keys[1],
+				UserKey:       stringx.FromArray(keys, 0),
 				Time:          refreshTime,
 				TimeToRefresh: refreshTime,
 				Maximum:       maximum,
