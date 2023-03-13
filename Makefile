@@ -5,7 +5,7 @@ DE=docker-compose exec -T app
 
 TAG := dev
 DOCKER_REGISTRY := dkr.hanaboso.net/pipes/pipes/limiter
-PUBLIC_REGISTRY := hanaboso/limiter
+PUBLIC_REGISTRY := orchesty/limiter
 
 init: .env docker-up-force
 

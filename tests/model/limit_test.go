@@ -31,3 +31,33 @@ func TestAllowedBatch(t *testing.T) {
 		assert.Equal(t, test.result, limit.AllowedBatch())
 	}
 }
+
+func TestParseLimits(t *testing.T) {
+	limits := model.ParseLimits("orchesty|SYS1;1;60;orchesty|SYS2;1;30")
+
+	limit1 := model.Limit{
+		FullKey:       "orchesty|SYS1",
+		SystemKey:     "SYS1",
+		UserKey:       "orchesty",
+		Time:          1,
+		TimeToRefresh: 1,
+		Maximum:       60,
+		Allowed:       60,
+		Running:       0,
+		Empty:         0,
+	}
+	assert.Equal(t, limit1, limits[0])
+
+	limit2 := model.Limit{
+		FullKey:       "orchesty|SYS2",
+		SystemKey:     "SYS2",
+		UserKey:       "orchesty",
+		Time:          1,
+		TimeToRefresh: 1,
+		Maximum:       30,
+		Allowed:       30,
+		Running:       0,
+		Empty:         0,
+	}
+	assert.Equal(t, limit2, limits[1])
+}
