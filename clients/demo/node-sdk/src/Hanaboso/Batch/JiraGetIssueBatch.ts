@@ -52,7 +52,7 @@ export default class JiraGetIssueBatch extends ABatchNode {
 
         Object.assign(worklogData[pointer], {
             key: responseBody.key,
-            name: responseBody.fields.customfield_10500?.[0].name,
+            name: responseBody.fields.customfield_10500?.[0]?.name,
             labels: responseBody.fields.labels,
             issueName: responseBody.fields.summary,
         });
