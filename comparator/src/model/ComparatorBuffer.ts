@@ -1,18 +1,8 @@
-import { ObjectId } from 'mongodb';
-
-export class ComparatorBuffer {
-
-    public _id: ObjectId = new ObjectId();
-
-    public ttl: Date = new Date();
-
-    public pages: string[] = [];
-
-    public constructor(
-        public key: string,
-        public data: Record<string, unknown>[],
-        public closed: boolean,
-    ) {
-    }
-
+export interface ComparatorBuffer {
+    id: string;
+    ttl: Date;
+    pages: string[];
+    key: string;
+    data: Record<string, unknown>[];
+    closed: boolean;
 }

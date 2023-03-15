@@ -1,31 +1,43 @@
 import { container } from '@orchesty/nodejs-sdk';
-import { ComparatorHash } from '../../../src/model';
+import { ObjectId } from 'mongodb';
 import { ComparatorHashRepository } from '../../../src/service/storage/repository';
 
 describe('Repository', () => {
     it('CRUD', async () => {
         const key = 'master_key';
         const repository = container.get(ComparatorHashRepository);
-        let hash = new ComparatorHash(key, '1', 'id', undefined);
+        let hash = {
+            id: '',
+            masterKey: key,
+            hash: '1',
+            externalId: 'id',
+            ttl: undefined,
+        };
 
         const stored = await repository.insert(hash);
-        let fetched = await repository.get(stored._id);
-        expect(stored._id).toEqual(fetched?._id);
+        let fetched = await repository.findById(stored.id);
+        expect(stored.id).toEqual(fetched?.id);
         expect('id').toEqual(fetched?.externalId);
 
-        fetched = await repository.get(stored._id.toHexString());
-        expect(stored._id).toEqual(fetched?._id);
+        fetched = await repository.findById(stored.id);
+        expect(stored.id).toEqual(fetched?.id);
         expect('id').toEqual(fetched?.externalId);
 
-        hash = new ComparatorHash(key, '1', 'id2', undefined);
+        hash = {
+            id: new ObjectId().toHexString(),
+            masterKey: key,
+            hash: '1',
+            externalId: 'id2',
+            ttl: undefined,
+        };
         const upserted = await repository.upsert(hash);
-        fetched = await repository.get(upserted._id.toHexString());
-        expect(hash._id).toEqual(fetched?._id);
+        fetched = await repository.findById(upserted.id);
+        expect(hash.id).toEqual(fetched?.id);
         expect('id2').toEqual(fetched?.externalId);
 
         hash.externalId = 'id3';
         await repository.upsert(hash);
-        fetched = await repository.get(upserted._id.toHexString());
+        fetched = await repository.findById(upserted.id);
         expect('id3').toEqual(fetched?.externalId);
     });
 });

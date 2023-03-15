@@ -7,7 +7,14 @@ describe('ComparatorBufferRepository', () => {
         const repository = container.get(ComparatorBufferRepository);
         const key = 'g6s5h4sg4d5sfd4g5';
 
-        const buffer = new ComparatorBuffer(key, [{ a: 1 }, { b: 2 }], false);
+        const buffer = {
+            id: '',
+            ttl: new Date(),
+            pages: [],
+            key,
+            data: [{ a: 1 }, { b: 2 }],
+            closed: false,
+        } as ComparatorBuffer;
 
         let info = await repository.upsertBuffer(buffer);
         expect(info.closed).toBeFalsy();

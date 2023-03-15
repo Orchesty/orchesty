@@ -22,7 +22,7 @@ export class Comparator {
         input.items.forEach((item) => {
             hashes[item[idField] as string] = { data: item, hash: this.createHash(item, excludedFields) };
         });
-        const dbHashes = await this.comparatorHashRepository.find({ masterKey });
+        const dbHashes = await this.comparatorHashRepository.findMany({ masterKey });
 
         return this.compareDbHashes(dbHashes, hashes, input.configuration);
     }
@@ -84,12 +84,15 @@ export class Comparator {
 
         Object.values(hashes).forEach(
             (item) => {
-                items.push(new ComparatorHash(
-                    settings.masterKey,
-                    item.hash,
-                    item.data[settings.idField] as string,
-                    this.getTtl(settings.ttl),
-                ));
+                items.push(
+                    {
+                        id: '',
+                        masterKey: settings.masterKey,
+                        hash: item.hash,
+                        externalId: item.data[settings.idField] as string,
+                        ttl: this.getTtl(settings.ttl),
+                    },
+                );
 
                 if (items.length >= 100) {
                     promises.push(this.comparatorHashRepository.insertMany(items));

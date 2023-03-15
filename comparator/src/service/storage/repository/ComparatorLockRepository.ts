@@ -1,10 +1,10 @@
-import { Repository } from '@orchesty/nodejs-sdk/dist/lib/Storage/Mongo';
+import { AbstractRepository } from '@orchesty/nodejs-sdk/dist/lib/Storage/Mongo';
 import { IndexDescription } from 'mongodb';
 import { ComparatorLock } from '../../../model';
 
 const TTL_MINUTES = 5;
 
-export class ComparatorLockRepository extends Repository<ComparatorLock> {
+export class ComparatorLockRepository extends AbstractRepository<ComparatorLock> {
 
     protected readonly indices: IndexDescription[] = [
         {

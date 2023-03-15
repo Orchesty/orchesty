@@ -12,7 +12,7 @@ describe('ComparatorLockRepository', () => {
         aquired = await repository.acquireLock(key);
         expect(aquired).toBeFalsy();
 
-        const locks = await repository.find({ masterKey: key });
+        const locks = await repository.findMany({ masterKey: key });
         const { ttl } = locks[0];
 
         const now = new Date().getTime();

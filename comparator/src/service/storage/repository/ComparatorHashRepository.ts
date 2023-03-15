@@ -1,8 +1,8 @@
-import { Repository } from '@orchesty/nodejs-sdk/dist/lib/Storage/Mongo';
+import { AbstractRepository } from '@orchesty/nodejs-sdk/dist/lib/Storage/Mongo';
 import { IndexDescription } from 'mongodb';
 import { ComparatorHash } from '../../../model';
 
-export class ComparatorHashRepository extends Repository<ComparatorHash> {
+export class ComparatorHashRepository extends AbstractRepository<ComparatorHash> {
 
     protected readonly indices: IndexDescription[] = [
         {
