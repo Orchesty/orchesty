@@ -9,22 +9,25 @@ import { MongoDb } from '@orchesty/nodejs-sdk/dist/lib/Storage/Mongo';
 import config from './config';
 import { ComparatorFilter } from './custom_node/ComparatorFilter';
 import { ComparatorInvalidate } from './custom_node/ComparatorInvalidate';
-import { ComparatorBuffer, ComparatorHash, ComparatorLock } from './model';
 import { Comparator } from './service/comparator';
-import { ComparatorBufferRepository, ComparatorHashRepository, ComparatorLockRepository } from './service/storage/repository';
+import {
+    ComparatorBufferRepository,
+    ComparatorHashRepository,
+    ComparatorLockRepository
+} from './service/storage/repository';
 
 export async function initialize(): Promise<void> {
     const mongo = new MongoDb(config.mongo.dsn);
     await mongo.connect();
 
-    const hashRepository = new ComparatorHashRepository(mongo, ComparatorHash.name);
+    const hashRepository = new ComparatorHashRepository(mongo, 'ComparatorHash');
 
     const loader = new CommonLoader(container);
     const databaseClient = new DatabaseClient(container);
     const comparator = new Comparator(hashRepository);
 
-    const lockRepository = new ComparatorLockRepository(mongo, ComparatorLock.name);
-    const bufferRepository = new ComparatorBufferRepository(comparator, mongo, ComparatorBuffer.name);
+    const lockRepository = new ComparatorLockRepository(mongo, 'ComparatorLock');
+    const bufferRepository = new ComparatorBufferRepository(comparator, mongo, 'ComparatorBuffer');
 
     const nodeRepository = new NodeRepository(
         Node,

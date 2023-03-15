@@ -79,7 +79,14 @@ export class ComparatorFilter extends ACommonNode {
         correlationId: string,
     ): Promise<ComparatorBuffer | null> {
         const key = `${configuration.masterKey}_${correlationId}`;
-        const buffer = new ComparatorBuffer(key, items, configuration.isLast === true);
+        const buffer: ComparatorBuffer = {
+            id: '',
+            ttl: new Date(),
+            pages: [],
+            key,
+            data: items,
+            closed: configuration.isLast === true,
+        };
 
         const info = await this.bufferRepository.upsertBuffer(buffer);
         if (info.closed && info.total >= (configuration.totalCount || 0)) {

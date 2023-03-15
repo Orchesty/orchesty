@@ -1,4 +1,4 @@
-import { MongoDb, Repository } from '@orchesty/nodejs-sdk/dist/lib/Storage/Mongo';
+import { AbstractRepository, MongoDb } from '@orchesty/nodejs-sdk/dist/lib/Storage/Mongo';
 import { IndexDescription } from 'mongodb';
 import { ComparatorBuffer } from '../../../model';
 import { Comparator } from '../../comparator';
@@ -8,7 +8,7 @@ export interface IBufferInfo {
     total: number;
 }
 
-export class ComparatorBufferRepository extends Repository<ComparatorBuffer> {
+export class ComparatorBufferRepository extends AbstractRepository<ComparatorBuffer> {
 
     protected readonly indices: IndexDescription[] = [
         {
