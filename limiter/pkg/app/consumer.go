@@ -20,20 +20,26 @@ func ProcessMessage(mongoSvc mongo.MongoSvc, cacheSvc *limiter.Cache, limiterSvc
 		targetApplication := dto.GetHeader(enum.Header_Application)
 
 		if targetApplication != "" {
-			found := false
+			var usedLimits []model.Limit
+
 			for _, limit := range limits {
 				if limit.SystemKey == targetApplication {
-					limits = []model.Limit{limit}
-					found = true
-					break
+					usedLimits = append(usedLimits, limit)
 				}
 			}
 
-			if !found {
+			if usedLimits == nil || len(usedLimits) <= 0 {
 				log.Error().Err(fmt.Errorf("missing application limit for [%s]", targetApplication)).Send()
 				return rabbitmq.Reject
 			}
-			limitKey = limits[0].LimitKey()
+
+			var usedLimitKeys []string
+			for _, limit := range usedLimits {
+				usedLimitKeys = append(usedLimitKeys, limit.LimitKey())
+			}
+
+			limitKey = strings.Join(usedLimitKeys, ";")
+			limits = usedLimits
 		}
 
 		cacheSvc.RegisterKey(limitKey)
