@@ -113,7 +113,11 @@ export default class DocumentManager {
         });
 
         const result = inputSchema.validate(filter);
-        return result.error === undefined;
+        if (result.error) {
+            throw new Error(result.error.message);
+        }
+
+        return true;
     }
 
     private isWebhookQuery(filter: IApplicationFilter | INodeFilter | IWebhookFilter): filter is IWebhookFilter {
@@ -121,10 +125,15 @@ export default class DocumentManager {
             ids: Joi.array().items(Joi.string()),
             apps: Joi.array().items(Joi.string()),
             users: Joi.array().items(Joi.string()),
+            deleted: Joi.boolean().allow(null),
         });
 
         const result = inputSchema.validate(filter);
-        return result.error === undefined;
+        if (result.error) {
+            throw new Error(result.error.message);
+        }
+
+        return true;
     }
 
     private isApplicationQuery(
@@ -137,11 +146,15 @@ export default class DocumentManager {
             expires: Joi.string(),
             nonEncrypted: Joi.object<Record<string, number>>({}).pattern(Joi.string(), Joi.any()),
             enabled: Joi.boolean().allow(null),
-
+            deleted: Joi.boolean().allow(null),
         });
 
         const result = inputSchema.validate(filter);
-        return result.error === undefined;
+        if (result.error) {
+            throw new Error(result.error.message);
+        }
+
+        return true;
     }
 
     private addFilterField(filter: Filter<Document>, field: string, search: 'eq' | 'in' | 'lte', value?: unknown): void {

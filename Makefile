@@ -19,6 +19,8 @@ Linux:
 build:
 	docker build -t $(IMAGE):$(TAG) .
 	docker push $(IMAGE):$(TAG)
+	docker tag $(IMAGE):$(TAG) $(PUBLIC_IMAGE):$(TAG)
+	docker push $(PUBLIC_IMAGE):$(TAG)
 
 docker-compose.ci.yml:
 	# Comment out any port forwarding
