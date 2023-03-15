@@ -54,20 +54,26 @@ func (this MessageProcessor) Start(ctx context.Context, wg *sync.WaitGroup) {
 
 			wg.Add(len(messages))
 			for _, message := range messages {
-				err := this.sender.Send(bridge.RequestMessage{
-					MessageId: message.Id.Hex(),
-					Headers:   message.Message.Headers,
-					Body:      message.Message.Body,
-					Published: message.Published,
-				})
-				wg.Done()
-				if err != nil {
-					log.Error().Err(err).Send()
-					if err := this.mongoSvc.UnmarkInProcessByObjectId(message.Id); err != nil {
-						log.Error().Err(err).Send()
-					}
-				}
+			    // At the moment to not slow down process, messages are async which means, they can change order
+			    // Add setting for disabling?
+				go this.send(message, wg)
 			}
+		}
+	}
+}
+
+func (this MessageProcessor) send(message mongo.Message, wg *sync.WaitGroup) {
+	err := this.sender.Send(bridge.RequestMessage{
+		MessageId: message.Id.Hex(),
+		Headers:   message.Message.Headers,
+		Body:      message.Message.Body,
+		Published: message.Published,
+	})
+	wg.Done()
+	if err != nil {
+		log.Error().Err(err).Send()
+		if err := this.mongoSvc.UnmarkInProcessByObjectId(message.Id); err != nil {
+			log.Error().Err(err).Send()
 		}
 	}
 }
