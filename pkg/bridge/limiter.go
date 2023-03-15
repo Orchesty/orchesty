@@ -48,10 +48,7 @@ func (l *limiter) process(node types.Node, dto *model.ProcessMessage) model.Proc
 	// Check that current Node's Application is limited
 	limitedApplications := parseLimitApplications(limitHeader)
 	application := node.Application()
-	if application == "" {
-		return dto.Ok()
-	}
-	if _, ok := limitedApplications[application]; !ok {
+	if _, ok := limitedApplications[application]; application != "" && !ok {
 		return dto.Ok()
 	}
 
