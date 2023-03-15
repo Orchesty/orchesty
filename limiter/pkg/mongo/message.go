@@ -113,11 +113,11 @@ func (this MongoSvc) FetchMessages(key string, limit int) ([]Message, error) {
 		ctx,
 		bson.D{
 			{"limitKey", key},
-			{"allowedAt", bson.D{{"$lte", time.Now()}}},
+			{"allowedAt", bson.D{{"$lte", primitive.NewDateTimeFromTime(time.Now())}}},
 			{"$or", bson.A{
 				bson.D{{"inProcess", false}},
 				// 5 Minutes lock timeout for cases when unlocking of failed messages also failed to make sure it will be processed again
-				bson.D{{"allowedAt", bson.D{{"$lte", time.Now().Add(-5 * time.Minute)}}}},
+				bson.D{{"allowedAt", bson.D{{"$lte", primitive.NewDateTimeFromTime(time.Now().Add(-5 * time.Minute))}}}},
 			}},
 		},
 		&options.FindOptions{
@@ -158,7 +158,7 @@ func (this MongoSvc) FetchMessages(key string, limit int) ([]Message, error) {
 	return messages, nil
 }
 
-func FromDto(dto *model.MessageDto, headers map[string]interface{}) Message {
+func FromDto(dto *model.MessageDto, headers map[string]interface{}, limitKey string) Message {
 	value, ok := headers[enum.Header_PublishedTimestamp]
 	if !ok {
 		value = timex.UnixMs()
@@ -169,7 +169,7 @@ func FromDto(dto *model.MessageDto, headers map[string]interface{}) Message {
 	return Message{
 		Created:    time.Now(),
 		AllowedAt:  time.Now().Add(time.Duration(repeatDelay) * time.Second),
-		LimitKey:   dto.LimitKey(),
+		LimitKey:   limitKey,
 		Message:    dto,
 		InProcess:  false,
 		Published:  value.(int64),

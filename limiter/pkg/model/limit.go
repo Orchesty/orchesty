@@ -41,7 +41,7 @@ func ParseLimits(limitValue string) []Limit {
 
 			limits = append(limits, Limit{
 				FullKey:       parts[i],
-				SystemKey:     keys[1],
+				SystemKey:     stringx.FromArray(keys, 1),
 				UserKey:       stringx.FromArray(keys, 0),
 				Time:          refreshTime,
 				TimeToRefresh: refreshTime,

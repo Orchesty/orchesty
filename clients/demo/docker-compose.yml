@@ -168,12 +168,16 @@ services:
             - ./../../counter/:/app:cached
 
     limiter:
-        image: orchesty/limiter:${VERSION}
+        image: hanabosocom/go-base:1.19
+        user: ${DEV_UID}:${DEV_GID}
         environment:
             LIMITER_ADDR: 0.0.0.0:3333
             RABBITMQ_DSN: ${RABBITMQ_DSN}
             MONGO_DSN: ${MONGO_DSN}
             UDP_LOGGER_URL: "fluentd:5120"
+        command: go run cmd/limiter_app.go
+        volumes:
+            - ./../../limiter/:/app:cached
 
     detector:
         image: hanabosocom/go-base:1.19
