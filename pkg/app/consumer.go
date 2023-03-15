@@ -46,7 +46,7 @@ func ProcessMessage(mongoSvc mongo.MongoSvc, cacheSvc *limiter.Cache, limiterSvc
 			limiterSvc.FinishProcess(limitKeys)
 		}
 
-		err := mongoSvc.Insert(mongo.FromDto(dto, headers))
+		err := mongoSvc.Insert(mongo.FromDto(dto, headers, limitKey))
 		if err != nil {
 			log.Error().Err(errors.WithMessage(err, "removing unexpected message")).Send()
 			return rabbitmq.Reject
