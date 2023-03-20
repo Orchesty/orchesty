@@ -28,6 +28,7 @@ export default class Mongo {
 
     public async dropCollections(): Promise<void> {
         await this.client.db(mongo.mongoCloudDbName).dropCollection(CollectionEnum.TENANT);
+        await this.client.db(mongo.mongoBillingDbName).dropCollection(CollectionEnum.CLIENT);
         await this.client.db(mongo.mongoBillingDbName).dropCollection(CollectionEnum.USAGE_STATS_HOURLY);
         await this.client.db(mongo.mongoBillingDbName).dropCollection(CollectionEnum.USAGE_STATS_DAILY);
         await this.client.db(mongo.mongoBillingDbName).dropCollection(CollectionEnum.USAGE_STATS_MONTHLY);
@@ -59,6 +60,10 @@ export default class Mongo {
             { key: { tenantId: 1 } },
         ];
         await this.getCloudCollection(CollectionEnum.TENANT).createIndexes(specs);
+        await this.getBillingCollection(CollectionEnum.CLIENT).createIndexes([
+            { key: { _id: 1 } },
+            { key: { iDokladId: 1 } },
+        ]);
     }
 
 }

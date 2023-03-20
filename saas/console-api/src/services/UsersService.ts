@@ -7,12 +7,13 @@ import UserSearchError from '../errors/UserSearchError';
 import { authApp, container, fbApp } from '../index';
 import UserRecord = auth.UserRecord;
 import Services from '../DIContainer/Services';
+import Tenant from '../entities/Tenant';
+import User from '../entities/User';
 import { CollectionEnum } from '../enums/CollectionEnum';
 import NotFoundError from '../errors/NotFoundError';
 import SendLinkError from '../errors/SendLinkError';
 import UserDeleteError from '../errors/UserDeleteError';
 import Mongo from '../storage/mongo/Mongo';
-import { ITenant } from '../tenants/TenantService';
 
 export default class UsersService {
 
@@ -59,7 +60,7 @@ export default class UsersService {
         tenantId: string,
     ): Promise<{ user: unknown }> {
         const tenantAuth = this.prepTenantAuth(query, gTenantId);
-        let createdUser: IUser | undefined;
+        let createdUser: User | undefined;
 
         try {
             await tenantAuth
@@ -87,7 +88,7 @@ export default class UsersService {
         gTenantId: string,
     ): Promise<{ user: unknown }> {
         const tenantAuth = this.prepTenantAuth(query, gTenantId);
-        let updatedUser: IUser | undefined;
+        let updatedUser: User | undefined;
 
         try {
             await tenantAuth
@@ -144,7 +145,7 @@ export default class UsersService {
     ): Promise<{ gTenantId: string }> {
         const tenant = await container.get<Mongo>(Services.STORAGE).getCloudCollection(CollectionEnum.TENANT).findOne({
             tenantId,
-        }) as unknown as ITenant;
+        }) as unknown as Tenant;
 
         if (tenant) {
             return { gTenantId: tenant.gTenantId };
@@ -152,7 +153,7 @@ export default class UsersService {
         throw new NotFoundError(`Tenant with given tenantId ${tenantId} not found!`);
     }
 
-    private mapUserRecordToExport(user: UserRecord): IUser {
+    private mapUserRecordToExport(user: UserRecord): User {
         const customTenantId = user.customClaims?.tenantId ? user.customClaims?.tenantId : undefined;
         return {
             uid: user.uid,
@@ -189,28 +190,4 @@ export default class UsersService {
             .authForTenant(query.gTenantId ?? gTenantId);
     }
 
-}
-
-export interface IUser {
-    metadata: { lastSignTime: string; creationTime: string };
-    providerData: {
-        uid: string;
-        photoUrl: string;
-        phoneNumber: string;
-        displayName: string;
-        providerId: string;
-        email: string;
-    }[];
-    displayName: string | undefined;
-    passwordHash: string | undefined;
-    uid: string;
-    emailVerified: boolean;
-    photoUrl: string | undefined;
-    phoneNumber: string | undefined;
-    tenantId: string | undefined;
-    customTenantId: string | undefined;
-    disabled: boolean;
-    passwordSalt: string | undefined;
-    tokensValidAfterTime: string | undefined;
-    email: string | undefined;
 }

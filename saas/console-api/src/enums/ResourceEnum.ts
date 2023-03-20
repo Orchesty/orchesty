@@ -1,4 +1,6 @@
 export enum ResourceEnum {
+    SUPER_ADMIN = 'super_admin',
+
     LIST_USAGE_STATS = 'list_usage_stats',
 
     USERS_LIST_ALL = 'users_list_all',
@@ -19,6 +21,7 @@ export enum ResourceEnum {
 
 export function getAllResources(): ResourceEnum[] {
     return [
+        ResourceEnum.SUPER_ADMIN,
         ResourceEnum.LIST_USAGE_STATS,
         ResourceEnum.USERS_LIST_ALL,
         ResourceEnum.USERS_SEARCH,

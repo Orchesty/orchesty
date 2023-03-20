@@ -5,12 +5,13 @@ import * as randomstring from 'randomstring';
 import { ITenantCreateRequest } from '../controllers/tenants';
 import TenantSearchError from '../errors/TenantSearchError';
 import { authApp, container } from '../index';
-import Tenant = auth.Tenant;
+import GTenant = auth.Tenant;
 import Services from '../DIContainer/Services';
+import Tenant, { IInstance } from '../entities/Tenant';
 import { CollectionEnum } from '../enums/CollectionEnum';
 import UserCreationError from '../errors/UserCreationError';
 import Mongo from '../storage/mongo/Mongo';
-import UsersService from '../users/UsersService';
+import UsersService from './UsersService';
 
 export default class TenantService {
 
@@ -20,7 +21,7 @@ export default class TenantService {
     public async getTenantList(): Promise<{ rows: unknown }> {
         const dbTenants = this.getTenantCollection().find({});
         const tenants = await authApp.auth().tenantManager().listTenants();
-        const rows = [] as ITenant[];
+        const rows = [] as Tenant[];
 
         await dbTenants.forEach((dbTenant) => {
             const foundedTenant = tenants.tenants.find((tenant) => tenant.tenantId === dbTenant.gTenantId);
@@ -30,7 +31,7 @@ export default class TenantService {
                     tenantId: dbTenant.tenantId,
                     gTenantId: dbTenant.gTenantId,
                     gTenant: foundedTenant,
-                } as ITenant);
+                } as Tenant);
             }
         });
 
@@ -48,7 +49,7 @@ export default class TenantService {
                 tenantId: dbTenant.tenantId,
                 gTenantId: gTenant.tenantId,
                 gTenant,
-            } as ITenant;
+            } as Tenant;
 
             return { tenant: this.mapTenantRecordToExport(tenant) };
         } catch (e) {
@@ -101,7 +102,7 @@ export default class TenantService {
                 tenantId: dbTenant.tenantId,
                 gTenantId: gTenant.tenantId,
                 gTenant,
-            } as ITenant;
+            } as Tenant;
         } catch (e) {
             throw new TenantSearchError((e as Error).message);
         }
@@ -125,7 +126,7 @@ export default class TenantService {
         return { msg: 'Tenant successfully deleted!' };
     }
 
-    private mapTenantRecordToExport(tenant: ITenant): unknown {
+    private mapTenantRecordToExport(tenant: Tenant): unknown {
         return {
             instances: tenant.instances,
             tenantId: tenant.tenantId,
@@ -140,11 +141,11 @@ export default class TenantService {
         return this.db.getCloudCollection(CollectionEnum.TENANT);
     }
 
-    private async findOneTenant(gTenantId: string): Promise<ITenant> {
-        return (await this.getTenantCollection().findOne({ gTenantId })) as unknown as ITenant;
+    private async findOneTenant(gTenantId: string): Promise<Tenant> {
+        return (await this.getTenantCollection().findOne({ gTenantId })) as unknown as Tenant;
     }
 
-    private async createGeneratedTenant(): Promise<Tenant> {
+    private async createGeneratedTenant(): Promise<GTenant> {
         const randomString1 = randomstring.generate({
             length: 1,
             charset: 'alphabetic',
@@ -165,12 +166,12 @@ export default class TenantService {
     }
 
     private async updateCreatedGeneratedTenant(
-        generatedTenant: Tenant,
+        generatedTenant: GTenant,
         createTenantRequest: ITenantCreateRequest,
         createUser: boolean,
         instances: IInstance[],
         tenantId: string,
-    ): Promise<ITenant> {
+    ): Promise<Tenant> {
         const gTenant = await authApp.auth().tenantManager()
             .updateTenant(generatedTenant.tenantId, { displayName: createTenantRequest.displayName });
 
@@ -188,7 +189,7 @@ export default class TenantService {
             );
         }
 
-        const tenant = { instances, tenantId, gTenantId: gTenant.tenantId } as ITenant;
+        const tenant = { instances, tenantId, gTenantId: gTenant.tenantId } as Tenant;
         await this.getTenantCollection().insertOne(tenant);
         tenant.gTenant = gTenant;
 
@@ -219,15 +220,4 @@ export default class TenantService {
         return tenant;
     }
 
-}
-
-export interface ITenant {
-    instances: IInstance[];
-    tenantId: string;
-    gTenantId: string;
-    gTenant?: Tenant;
-}
-
-export interface IInstance {
-    instanceId: string;
 }
