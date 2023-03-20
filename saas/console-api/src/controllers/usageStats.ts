@@ -4,7 +4,7 @@ import { ResourceEnum } from '../enums/ResourceEnum';
 import handleError from '../handlers/errorHandler';
 import { container } from '../index';
 import { preprocessRequest } from '../security/securityService';
-import UsageStatsService from '../usageStats/UsageStatsService';
+import UsageStatsService from '../services/UsageStatsService';
 
 export interface IAppsAggregationParams {
     tenantId?: string;

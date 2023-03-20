@@ -11,10 +11,11 @@ import { app, firebase, mongo } from './config/config';
 import DIContainer from './DIContainer/Container';
 import Services from './DIContainer/Services';
 import { logger } from './logger/logger';
+import ClientService from './services/ClientService';
+import TenantService from './services/TenantService';
+import UsageStatsService from './services/UsageStatsService';
+import UsersService from './services/UsersService';
 import Mongo from './storage/mongo/Mongo';
-import TenantService from './tenants/TenantService';
-import UsageStatsService from './usageStats/UsageStatsService';
-import UsersService from './users/UsersService';
 
 const container = new DIContainer();
 
@@ -41,10 +42,12 @@ async function initServices(): Promise<void> {
     logger.info('Database connected');
     const usageStatsService = new UsageStatsService(db);
     const usersService = new UsersService();
+    const clientService = new ClientService(db);
     const tenantService = new TenantService(db);
     container.set(Services.STORAGE, db);
     container.set(Services.USAGE_STATS_SERVICE, usageStatsService);
     container.set(Services.USERS_SERVICE, usersService);
+    container.set(Services.CLIENTS_SERVICE, clientService);
     container.set(Services.TENANT_SERVICE, tenantService);
 }
 

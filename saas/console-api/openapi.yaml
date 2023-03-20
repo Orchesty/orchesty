@@ -550,6 +550,137 @@ paths:
                 '500':
                     $ref: "#/components/responses/500BadRequest"
 
+    /clients/{clientId}:
+        get:
+            description: Fill
+            x-swagger-router-controller: clients
+            operationId: getClient
+            tags:
+                - Clients
+            parameters:
+                -   $ref: "#/components/parameters/clientIdPath"
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/OutputClient"
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+
+        put:
+            description: Fill
+            x-swagger-router-controller: clients
+            operationId: updateClient
+            tags:
+                - Clients
+            parameters:
+                -   $ref: "#/components/parameters/clientIdPath"
+            requestBody:
+                $ref: '#/components/requestBodies/ClientBody'
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/OutputClient"
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+
+        delete:
+            description: Fill
+            x-swagger-router-controller: clients
+            operationId: deleteClient
+            tags:
+                - Clients
+            parameters:
+                -   $ref: "#/components/parameters/clientIdPath"
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    msg:
+                                        description: Message for client
+                                        type: string
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+
+    /clients:
+        get:
+            description: Fill
+            x-swagger-router-controller: clients
+            operationId: clientsList
+            tags:
+                - Clients
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ClientsRows"
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+        post:
+            description: Fill
+            x-swagger-router-controller: clients
+            operationId: createClient
+            tags:
+                - Clients
+            requestBody:
+                $ref: '#/components/requestBodies/ClientBody'
+            responses:
+                '200':
+                    description: Success
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+
 security:
     -   Bearer: [ ]
 components:
@@ -575,6 +706,13 @@ components:
             in: path
             name: tenantId
             description: Tenant ID to get data for.
+            required: true
+            schema:
+                type: string
+        clientIdPath:
+            in: path
+            name: clientId
+            description: Client ID to get data for.
             required: true
             schema:
                 type: string
@@ -746,6 +884,14 @@ components:
                     schema:
                         oneOf:
                             -   $ref: '#/components/schemas/UpdateTenant'
+        ClientBody:
+            description: A JSON object containing user information
+            required: true
+            content:
+                application/json:
+                    schema:
+                        oneOf:
+                            -   $ref: '#/components/schemas/CreateTenant'
     schemas:
         UsageStatsApps:
             type: object
@@ -967,6 +1113,25 @@ components:
                 displayName:
                     description: Tenant's display name
                     type: string
+        CreateClient:
+            type:
+                object
+            properties:
+                company:
+                    description: Client's display name
+                    type: string
+                iDokladId:
+                    type: string
+                contact:
+                    type: array
+                    items:
+                        $ref: "#/components/schemas/OutputContact"
+                hourlyRate:
+                    type: number
+                    nullable: true
+                note:
+                    type: string
+                    nullable: true
         UsersRows:
             type: object
             properties:
@@ -1080,6 +1245,43 @@ components:
                             type: boolean
                 anonymousSignInEnabled:
                     type: boolean
+                    nullable: true
+        ClientsRows:
+            type: object
+            properties:
+                rows:
+                    type: array
+                    items:
+                        $ref: "#/components/schemas/OutputClient"
+        OutputClient:
+            type: object
+            properties:
+                id:
+                    type: string
+                iDokladId:
+                    type: string
+                    nullable: true
+                contact:
+                    type: array
+                    items:
+                        $ref: "#/components/schemas/OutputContact"
+                hourlyRate:
+                    type: number
+                    nullable: true
+                note:
+                    type: string
+                    nullable: true
+        OutputContact:
+            type: object
+            properties:
+                name:
+                    type: string
+                    nullable: true
+                email:
+                    type: string
+                    nullable: true
+                phone:
+                    type: string
                     nullable: true
 
     responses:

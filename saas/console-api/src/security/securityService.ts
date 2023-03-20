@@ -2,6 +2,7 @@ import { Request } from 'express';
 import { decode } from 'jsonwebtoken';
 import { app } from '../config/config';
 import Services from '../DIContainer/Services';
+import Tenant from '../entities/Tenant';
 import { CollectionEnum } from '../enums/CollectionEnum';
 import { ResourceEnum } from '../enums/ResourceEnum';
 import JWTError, { BAD_JWT_PAYLOAD, ERROR_PARSING_AUTHORIZATION_HEADER, MISSING_JWT_TOKEN } from '../errors/JWTError';
@@ -9,7 +10,6 @@ import PermissionsError from '../errors/PermissionsError';
 import TenantSearchError from '../errors/TenantSearchError';
 import { container } from '../index';
 import Mongo from '../storage/mongo/Mongo';
-import { ITenant } from '../tenants/TenantService';
 
 export const AUTHORIZATION = 'authorization';
 export const X_ENDPOINT_API_USER_INFO = 'x-endpoint-api-userinfo';
@@ -58,13 +58,13 @@ export function getJWTPayload(req: Request): IJWTPayload {
     throw new JWTError(MISSING_JWT_TOKEN);
 }
 
-export async function getLoggedUser(req: Request): Promise<ITenant> {
+export async function getLoggedUser(req: Request): Promise<Tenant> {
     const jwtPayload = getJWTPayload(req);
     if (jwtPayload.firebase?.tenant) {
         const db = container.get<Mongo>(Services.STORAGE);
         return await db.getCloudCollection(CollectionEnum.TENANT).findOne({
             gTenantId: jwtPayload.firebase.tenant,
-        }) as unknown as ITenant;
+        }) as unknown as Tenant;
     }
 
     throw new JWTError(BAD_JWT_PAYLOAD);
@@ -83,12 +83,17 @@ export function hasPermission(permissions: string[], resource: string): boolean 
     return true;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function preprocessRequestForAdmin<IQuery>(req: Request, permission: ResourceEnum): IQuery {
+    return { ...req.query, ...req.params, ...req.body } as IQuery;
+}
+
 export async function preprocessRequest<IQuery extends { tenantId?: string; gTenantId?: string }>(
     req: Request,
     permission: ResourceEnum,
 ): Promise<{ query: IQuery; tenantId: string; gTenantId: string }> {
     const tenant = await getLoggedUser(req);
-    const query: IQuery = { ...req.query, ...req.params } as unknown as IQuery;
+    const query = { ...req.query, ...req.params } as IQuery;
     const permissions = getLoggedUserPermissions(req);
 
     let allowed = true;
@@ -109,7 +114,7 @@ export async function preprocessRequest<IQuery extends { tenantId?: string; gTen
 
     if (query.tenantId) {
         const db = container.get<Mongo>(Services.STORAGE);
-        const queriedTenant = await db.getCloudCollection(CollectionEnum.TENANT).findOne<ITenant>({
+        const queriedTenant = await db.getCloudCollection(CollectionEnum.TENANT).findOne<Tenant>({
             tenantId: query.tenantId,
         });
 

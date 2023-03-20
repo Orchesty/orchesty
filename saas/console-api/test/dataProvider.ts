@@ -3,7 +3,7 @@ import { auth } from 'firebase-admin';
 import {
     DeleteUsersResult,
     ListTenantsResult,
-    Tenant,
+    Tenant as GTenant,
     UserRecord,
 } from 'firebase-admin/lib/auth';
 import { sign } from 'jsonwebtoken';
@@ -14,8 +14,8 @@ import { getAllResources } from '../src/enums/ResourceEnum';
 import GetUsersResult = auth.GetUsersResult;
 import { container } from '../src';
 import Services from '../src/DIContainer/Services';
+import Tenant from '../src/entities/Tenant';
 import Mongo from '../src/storage/mongo/Mongo';
-import { ITenant } from '../src/tenants/TenantService';
 
 function generateUsageStatsRow(
     start: DateTime,
@@ -56,7 +56,7 @@ export function generateAuth(): Auth {
     return {} as Auth;
 }
 
-export function generateTenantMockedData(name = 'neco'): Tenant {
+export function generateTenantMockedData(name = 'neco'): GTenant {
     return {
         tenantId: 't-123456789',
         displayName: name || null,
@@ -65,10 +65,10 @@ export function generateTenantMockedData(name = 'neco'): Tenant {
             passwordRequired: true,
         },
         anonymousSignInEnabled: false,
-    } as Tenant;
+    } as GTenant;
 }
 
-export function generateDbTenantMockedData(tenantId = ''): ITenant {
+export function generateDbTenantMockedData(tenantId = ''): Tenant {
     return {
         instances: [{ instanceId: '1234567890' }],
         tenantId: tenantId || 't123456789',

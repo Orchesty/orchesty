@@ -4,7 +4,7 @@ import { ResourceEnum } from '../enums/ResourceEnum';
 import handleError from '../handlers/errorHandler';
 import { container } from '../index';
 import { preprocessRequest } from '../security/securityService';
-import TenantService from '../tenants/TenantService';
+import TenantService from '../services/TenantService';
 
 export interface ITenantCreateRequest {
     displayName?: string;

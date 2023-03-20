@@ -4,7 +4,7 @@ import { ResourceEnum } from '../enums/ResourceEnum';
 import handleError from '../handlers/errorHandler';
 import { container } from '../index';
 import { preprocessRequest } from '../security/securityService';
-import UsersService from '../users/UsersService';
+import UsersService from '../services/UsersService';
 
 export interface IUserCreateParams extends IUserUpdateParams {
     email?: string;
