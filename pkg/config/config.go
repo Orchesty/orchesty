@@ -24,6 +24,7 @@ type (
 	// GeneratorConfig GeneratorConfig
 	GeneratorConfig struct {
 		Path                       string        `default:"/opt/srv/topology" env:"GENERATOR_PATH"`
+		PodConfigurationPath       string        `default:"" env:"BRIDGE_PODS_ADDITIONAL_SPEC"`
 		TopologyPath               string        `default:"/srv/app/topology/topology.json" env:"TOPOLOGY_PATH"` // for node configuration, path in docker
 		ProjectSourcePath          string        `default:"/" env:"PROJECT_SOURCE_PATH"`                         // path where is stored local files relevant to docker.sock
 		Mode                       string        `default:"compose" env:"PLATFORM"`
