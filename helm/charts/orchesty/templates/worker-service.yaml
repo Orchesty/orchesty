@@ -1,5 +1,6 @@
----
 {{- $componentName := "worker" -}}
+---
+{{- if not .Values.global.workers }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -15,3 +16,5 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: http
+
+{{- end }}

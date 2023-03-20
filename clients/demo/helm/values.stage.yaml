@@ -8,7 +8,10 @@ global:
   imageOverrides:
     bridge: hanaboso/bridge:dev
     counter: hanaboso/counter:dev
+
+    # todo: remove when all other stages are migrated
     nodejssdk: dkr.hanaboso.net/pipes/demo/demo-nodejs:dev2
+    
     frontend: hanaboso/pipes-app-ui:dev
     backend: hanaboso/pipes-pf-bundle:dev
     topology-api: hanaboso/pipes-topology-api-v2:dev
@@ -24,18 +27,21 @@ global:
   backend:
     alpha_instance_id: hb-stage
 
-  nodejsSdk:
-    extraEnv:
-      AWS_SES_KEY:
-        valueFrom:
-          secretKeyRef:
-            name: pipes-secrets
-            key: aws_ses_key
-      AWS_SES_SECRET:
-        valueFrom:
-          secretKeyRef:
-            name: pipes-secrets
-            key: aws_ses_secret
+  workers:
+    default:
+      sdk: nodejs
+      image: dkr.hanaboso.net/pipes/demo/demo-nodejs:dev2
+      extraEnv:
+        AWS_SES_KEY:
+          valueFrom:
+            secretKeyRef:
+              name: pipes-secrets
+              key: aws_ses_key
+        AWS_SES_SECRET:
+          valueFrom:
+            secretKeyRef:
+              name: pipes-secrets
+              key: aws_ses_secret
 
 customPersistence:
   node: node1

@@ -1,0 +1,21 @@
+{{- $root := . -}}
+{{- range $workerName, $worker := .Values.global.workers -}}
+{{- $componentName := printf "worker-%s" $workerName -}}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "pipes.fullname" (dict "suffix" $componentName "noPrefix" true "root" $root) }}
+  labels:
+{{ include "pipes.labels" $root | indent 4 }}
+{{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" $root) | indent 4 }}
+{{ include "pipes.dictSection" (dict "name" "annotations" "items" $root.Values.global.api.serviceAnnotations) | indent 2 }}
+spec:
+  selector:
+{{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" $root) | indent 4 }}
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: http
+
+{{- end -}}

@@ -1,6 +1,6 @@
 {{- $componentName := "worker" -}}
 ---
-{{- if not .Values.global.imageOverrides.nodejssdk }}
+{{- if and (not .Values.global.workers) (not .Values.global.imageOverrides.nodejssdk) }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:

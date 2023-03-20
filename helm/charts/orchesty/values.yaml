@@ -188,6 +188,13 @@ global:
         memory: 4Gi
         cpu: "4"
 
+  workers:
+  # foo:
+  #   sdk: nodejs
+  #   image: NOT-PROVIDED
+  #   extraEnv:
+  #     bar:
+  #       value: baz
 
   workerApi:
     serviceAnnotations: {}
