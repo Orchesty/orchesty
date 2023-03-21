@@ -22,7 +22,7 @@ Linux:
 		-e "s|{DEV_GID}|$(shell id -u)|g" \
 		-e "s|{DOCKER_SOCKET_PATH}|$(shell test -S /var/run/docker-$${USER}.sock && echo /var/run/docker-$${USER}.sock || echo /var/run/docker.sock)|g" \
 		-e "s|{PROJECT_SOURCE_PATH}|$(shell pwd)|g" \
-		-e 's/{ORCHESTY_API_KEY}/$(shell tr -dc A-Za-z0-9 </dev/urandom | head -c 65)/g' \
+		-e 's/{ORCHESTY_API_KEY}/$(shell export LC_CTYPE=C && tr -dc A-Za-z0-9 </dev/urandom | head -c 65)/g' \
 		.env.dist > .env
 
 build: .env

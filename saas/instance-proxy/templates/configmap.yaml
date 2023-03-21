@@ -135,6 +135,7 @@ data:
         acl applinth-instance-acixug9xqs hdr_beg(host) applinth-acixug9xqs.eu1.cloud.orchesty.io
         use_backend applinth-acixug9xqs if applinth-instance-acixug9xqs
 
+
         # instance-umo5mkl8z6
 
         acl api-instance-umo5mkl8z6 hdr_beg(host) api-umo5mkl8z6.eu1.cloud.orchesty.io
@@ -160,6 +161,27 @@ data:
 
         acl start-instance-hm8rohmtf6 hdr_beg(host) start-hm8rohmtf6.eu1.cloud.orchesty.io
         use_backend start-hm8rohmtf6 if start-instance-hm8rohmtf6
+
+
+        # instance-ed8qk85cpa
+
+        acl api-instance-ed8qk85cpa hdr_beg(host) api-ed8qk85cpa.eu1.cloud.orchesty.io
+        use_backend api-ed8qk85cpa if api-instance-ed8qk85cpa
+
+        acl ui-instance-ed8qk85cpa hdr_beg(host) ui-ed8qk85cpa.eu1.cloud.orchesty.io
+        use_backend ui-ed8qk85cpa if ui-instance-ed8qk85cpa
+
+        acl start-instance-ed8qk85cpa hdr_beg(host) start-ed8qk85cpa.eu1.cloud.orchesty.io
+        use_backend start-ed8qk85cpa if start-instance-ed8qk85cpa
+
+        acl applinth-instance-ed8qk85cpa hdr_beg(host) applinth-ed8qk85cpa.eu1.cloud.orchesty.io
+        use_backend applinth-ed8qk85cpa if applinth-instance-ed8qk85cpa
+
+        acl pdf-cs-instance-ed8qk85cpa hdr_beg(host) pdf-cs-ed8qk85cpa.eu1.cloud.orchesty.io
+        use_backend pdf-cs-ed8qk85cpa if pdf-cs-instance-ed8qk85cpa
+
+
+    ### backends ###
 
 
     # instance-iqnb4x3vhd
@@ -260,6 +282,7 @@ data:
         mode http
         server svc applinth-marketplace-ui.instance-acixug9xqs.svc.cluster.local:80
 
+
     # instance-umo5mkl8z6
 
     backend api-umo5mkl8z6
@@ -292,6 +315,29 @@ data:
     backend start-hm8rohmtf6
         mode http
         server svc starting-point.instance-hm8rohmtf6.svc.cluster.local:8080
+
+
+    # instance-ed8qk85cpa
+
+    backend api-ed8qk85cpa
+        mode http
+        server svc backend.instance-ed8qk85cpa.svc.cluster.local:80
+
+    backend ui-ed8qk85cpa
+        mode http
+        server svc frontend.instance-ed8qk85cpa.svc.cluster.local:80
+
+    backend start-ed8qk85cpa
+        mode http
+        server svc starting-point.instance-ed8qk85cpa.svc.cluster.local:8080
+
+    backend applinth-ed8qk85cpa
+        mode http
+        server svc applinth-marketplace-ui.instance-ed8qk85cpa.svc.cluster.local:80
+
+    backend pdf-cs-ed8qk85cpa
+        mode http
+        server svc pdf-service.instance-ed8qk85cpa.svc.cluster.local:80
 
 
     # ping backend
