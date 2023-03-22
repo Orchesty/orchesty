@@ -9,6 +9,7 @@ export enum CollectionEnum {
     CLIENT = 'client',
     SUPPORT = 'support',
     CLOUD = 'cloud',
+    APPLINTH = 'applinth',
     USAGE_STATS_METADATA = 'usage_stats_metadata',
 }
 
