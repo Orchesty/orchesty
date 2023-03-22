@@ -1,8 +1,5 @@
-export default class UserCreationError extends Error {
+import { BaseError } from './BaseError';
 
-    public constructor(message: string) {
-        super(message);
-        this.name = this.constructor.name;
-    }
+export default class UserCreationError extends BaseError {
 
 }

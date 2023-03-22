@@ -1,4 +1,6 @@
-export default class MetadataSearchError extends Error {
+import { BaseError } from './BaseError';
+
+export default class MetadataSearchError extends BaseError {
 
     public constructor(message = '') {
         super(message !== '' ? message : 'Metadata for queried tenant not found!');

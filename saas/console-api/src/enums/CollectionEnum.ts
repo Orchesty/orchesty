@@ -7,6 +7,7 @@ export enum CollectionEnum {
     USAGE_STATS_HOURLY = 'usage_stats_hourly',
     TENANT = 'tenant',
     CLIENT = 'client',
+    SUPPORT = 'support',
     USAGE_STATS_METADATA = 'usage_stats_metadata',
 }
 

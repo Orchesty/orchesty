@@ -1,4 +1,4 @@
-export default class ClientSearchError extends Error {
+export class BaseError extends Error {
 
     public constructor(message: string) {
         super(message);
