@@ -1074,6 +1074,137 @@ paths:
                 '500':
                     $ref: "#/components/responses/500BadRequest"
 
+    /orchestras/{_id}:
+        get:
+            description: Fill
+            x-swagger-router-controller: orchestras
+            operationId: getOrchesty
+            tags:
+                - Orchestras
+            parameters:
+                -   $ref: "#/components/parameters/_idPath"
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/OutputOrchesty"
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+
+        put:
+            description: Fill
+            x-swagger-router-controller: orchestras
+            operationId: updateOrchesty
+            tags:
+                - Orchestras
+            parameters:
+                -   $ref: "#/components/parameters/_idPath"
+            requestBody:
+                $ref: '#/components/requestBodies/OrchestyBody'
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/OutputOrchesty"
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+
+        delete:
+            description: Fill
+            x-swagger-router-controller: orchestras
+            operationId: deleteOrchesty
+            tags:
+                - Orchestras
+            parameters:
+                -   $ref: "#/components/parameters/_idPath"
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    msg:
+                                        description: Message for support
+                                        type: string
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+
+    /orchestras:
+        get:
+            description: Fill
+            x-swagger-router-controller: orchestras
+            operationId: orchestrasList
+            tags:
+                - Orchestras
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/OrchestrasRows"
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+        post:
+            description: Fill
+            x-swagger-router-controller: orchestras
+            operationId: createOrchesty
+            tags:
+                - Orchestras
+            requestBody:
+                $ref: '#/components/requestBodies/OrchestyBody'
+            responses:
+                '200':
+                    description: Success
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+
 security:
     -   Bearer: [ ]
 components:
@@ -1309,6 +1440,14 @@ components:
                     schema:
                         oneOf:
                             -   $ref: '#/components/schemas/CreateApplinth'
+        OrchestyBody:
+            description: A JSON object containing user information
+            required: true
+            content:
+                application/json:
+                    schema:
+                        oneOf:
+                            -   $ref: '#/components/schemas/CreateOrchesty'
     schemas:
         UsageStatsApps:
             type: object
@@ -1602,6 +1741,23 @@ components:
                 minPriceDate:
                     type: string
                     nullable: true
+        CreateOrchesty:
+            type:
+                object
+            properties:
+                clientId:
+                    type: string
+                cloudId:
+                    type: string
+                version:
+                    type: string
+                    nullable: true
+                price:
+                    type: number
+                    nullable: true
+                startDate:
+                    type: string
+                    nullable: true
         UsersRows:
             type: object
             properties:
@@ -1822,6 +1978,29 @@ components:
                     type: number
                     nullable: true
                 minPriceDate:
+                    type: string
+                    nullable: true
+        OrchestrasRows:
+            type: object
+            properties:
+                rows:
+                    type: array
+                    items:
+                        $ref: "#/components/schemas/OutputOrchesty"
+        OutputOrchesty:
+            type: object
+            properties:
+                clientId:
+                    type: string
+                cloudId:
+                    type: string
+                version:
+                    type: string
+                    nullable: true
+                price:
+                    type: number
+                    nullable: true
+                startDate:
                     type: string
                     nullable: true
 

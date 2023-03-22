@@ -38,9 +38,11 @@ start:
 	$(DCS) pnpm run start
 
 init: docker-up-force install
+	$(DCS) sed -i -e "s/JSON.parse(data)/require('js-yaml').load(data)/g" node_modules/.pnpm/json-schema-deref-sync@0.14.0/node_modules/json-schema-deref-sync/lib/loaders/file.js
 
 install:
 	$(DCS) pnpm install
+	$(DCS) sed -i -e "s/JSON.parse(data)/require('js-yaml').load(data)/g" node_modules/.pnpm/json-schema-deref-sync@0.14.0/node_modules/json-schema-deref-sync/lib/loaders/file.js
 
 update:
 	$(DCS) pnpm update
