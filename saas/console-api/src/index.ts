@@ -14,6 +14,7 @@ import { logger } from './logger/logger';
 import ApplinthService from './services/ApplinthService';
 import ClientService from './services/ClientService';
 import CloudService from './services/CloudService';
+import CorrectionsService from './services/CorrectionsService';
 import OrchestyService from './services/OrchestyService';
 import SupportService from './services/SupportService';
 import TenantService from './services/TenantService';
@@ -51,6 +52,7 @@ async function initServices(): Promise<void> {
     const cloudService = new CloudService(db);
     const applinthService = new ApplinthService(db);
     const orchestyService = new OrchestyService(db);
+    const correctionsService = new CorrectionsService(db);
     const tenantService = new TenantService(db);
     container.set(Services.STORAGE, db);
     container.set(Services.USAGE_STATS_SERVICE, usageStatsService);
@@ -60,6 +62,7 @@ async function initServices(): Promise<void> {
     container.set(Services.CLOUD_SERVICE, cloudService);
     container.set(Services.APPLINTH_SERVICE, applinthService);
     container.set(Services.ORCHESTY_SERVICE, orchestyService);
+    container.set(Services.CORRECTIONS_SERVICE, correctionsService);
     container.set(Services.TENANT_SERVICE, tenantService);
 }
 

@@ -11,6 +11,7 @@ export enum CollectionEnum {
     CLOUD = 'cloud',
     ORCHESTY = 'orchesty',
     APPLINTH = 'applinth',
+    CORRECTION = 'correction',
     USAGE_STATS_METADATA = 'usage_stats_metadata',
 }
 
