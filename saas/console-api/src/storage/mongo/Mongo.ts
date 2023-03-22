@@ -73,6 +73,9 @@ export default class Mongo {
         await this.getCloudCollection(CollectionEnum.APPLINTH).createIndexes([
             { key: { _id: 1 } },
         ]);
+        await this.getCloudCollection(CollectionEnum.ORCHESTY).createIndexes([
+            { key: { _id: 1 } },
+        ]);
     }
 
 }
