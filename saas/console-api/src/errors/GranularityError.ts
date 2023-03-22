@@ -1,4 +1,6 @@
-export default class GranularityError extends Error {
+import { BaseError } from './BaseError';
+
+export default class GranularityError extends BaseError {
 
     public code: number;
 

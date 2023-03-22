@@ -1,0 +1,5 @@
+import { BaseError } from './BaseError';
+
+export default class DeleteError extends BaseError {
+
+}

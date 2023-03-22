@@ -1,4 +1,6 @@
-export default class PermissionsError extends Error {
+import { BaseError } from './BaseError';
+
+export default class PermissionsError extends BaseError {
 
     public constructor(message = '') {
         super(message !== '' ? message : 'User doesnt have permissions for this operation!');

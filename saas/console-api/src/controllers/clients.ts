@@ -1,18 +1,11 @@
 import { Request, Response } from 'express';
 import Services from '../DIContainer/Services';
 import { IContact } from '../entities/Client';
-import { ResourceEnum } from '../enums/ResourceEnum';
-import handleError from '../handlers/errorHandler';
 import { container } from '../index';
-import { preprocessRequestForAdmin } from '../security/securityService';
 import ClientService from '../services/ClientService';
+import { create, get, ISearchQuery, list, remove, update } from './baseController';
 
-export interface IClientCreateQuery extends IClientSearchQuery {
-    hourlyRate: number;
-    note: string;
-}
-
-export interface IClientSearchQuery {
+export interface IClientSearchQuery extends ISearchQuery {
     companyName?: string;
     iDokladId?: string;
     contact?: IContact;
@@ -25,46 +18,41 @@ function getClientsService(): ClientService {
 }
 
 export async function clientsList(req: Request, res: Response): Promise<void> {
-    try {
-        const query = preprocessRequestForAdmin<IClientSearchQuery>(req, ResourceEnum.SUPER_ADMIN);
-        res.status(200).send(await getClientsService().getClientsList(query));
-    } catch (e) {
-        handleError(e as Error, req, res);
+    const clients = await list(getClientsService(), req, res);
+    if (!clients) {
+        return;
     }
+    res.status(200).send(clients);
 }
 
 export async function getClient(req: Request, res: Response): Promise<void> {
-    try {
-        const query = preprocessRequestForAdmin<IClientSearchQuery>(req, ResourceEnum.SUPER_ADMIN);
-        res.status(200).send(await getClientsService().getClient(query));
-    } catch (e) {
-        handleError(e as Error, req, res);
+    const client = await get(getClientsService(), req, res);
+    if (!client) {
+        return;
     }
+    res.status(200).send({ client });
 }
 
 export async function createClient(req: Request, res: Response): Promise<void> {
-    try {
-        const query = preprocessRequestForAdmin<IClientCreateQuery>(req, ResourceEnum.SUPER_ADMIN);
-        res.status(200).send(await getClientsService().createClient(query));
-    } catch (e) {
-        handleError(e as Error, req, res);
+    const client = await create(getClientsService(), req, res);
+    if (!client) {
+        return;
     }
+    res.status(200).send({ client });
 }
 
 export async function updateClient(req: Request, res: Response): Promise<void> {
-    try {
-        const query = preprocessRequestForAdmin<IClientCreateQuery>(req, ResourceEnum.SUPER_ADMIN);
-        res.status(200).send(await getClientsService().updateClient(query));
-    } catch (e) {
-        handleError(e as Error, req, res);
+    const client = await update(getClientsService(), req, res);
+    if (!client) {
+        return;
     }
+    res.status(200).send({ client });
 }
 
 export async function deleteClient(req: Request, res: Response): Promise<void> {
-    try {
-        const query = preprocessRequestForAdmin<IClientSearchQuery>(req, ResourceEnum.SUPER_ADMIN);
-        res.status(200).send(await getClientsService().deleteClient(query));
-    } catch (e) {
-        handleError(e as Error, req, res);
+    const msg = await remove(getClientsService(), req, res);
+    if (!msg) {
+        return;
     }
+    res.status(200).send(msg);
 }

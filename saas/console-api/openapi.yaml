@@ -550,7 +550,7 @@ paths:
                 '500':
                     $ref: "#/components/responses/500BadRequest"
 
-    /clients/{clientId}:
+    /clients/{_id}:
         get:
             description: Fill
             x-swagger-router-controller: clients
@@ -558,7 +558,7 @@ paths:
             tags:
                 - Clients
             parameters:
-                -   $ref: "#/components/parameters/clientIdPath"
+                -   $ref: "#/components/parameters/_id"
             responses:
                 '200':
                     description: Success
@@ -584,7 +584,7 @@ paths:
             tags:
                 - Clients
             parameters:
-                -   $ref: "#/components/parameters/clientIdPath"
+                -   $ref: "#/components/parameters/_id"
             requestBody:
                 $ref: '#/components/requestBodies/ClientBody'
             responses:
@@ -612,7 +612,7 @@ paths:
             tags:
                 - Clients
             parameters:
-                -   $ref: "#/components/parameters/clientIdPath"
+                -   $ref: "#/components/parameters/_id"
             responses:
                 '200':
                     description: Success
@@ -681,6 +681,137 @@ paths:
                 '500':
                     $ref: "#/components/responses/500BadRequest"
 
+    /supports/{_id}:
+        get:
+            description: Fill
+            x-swagger-router-controller: supports
+            operationId: getSupport
+            tags:
+                - Supports
+            parameters:
+                -   $ref: "#/components/parameters/_idPath"
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/OutputSupport"
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+
+        put:
+            description: Fill
+            x-swagger-router-controller: supports
+            operationId: updateSupport
+            tags:
+                - Supports
+            parameters:
+                -   $ref: "#/components/parameters/_idPath"
+            requestBody:
+                $ref: '#/components/requestBodies/SupportBody'
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/OutputSupport"
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+
+        delete:
+            description: Fill
+            x-swagger-router-controller: supports
+            operationId: deleteSupport
+            tags:
+                - Supports
+            parameters:
+                -   $ref: "#/components/parameters/_idPath"
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    msg:
+                                        description: Message for support
+                                        type: string
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+
+    /supports:
+        get:
+            description: Fill
+            x-swagger-router-controller: supports
+            operationId: supportsList
+            tags:
+                - Supports
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/SupportsRows"
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+        post:
+            description: Fill
+            x-swagger-router-controller: supports
+            operationId: createSupport
+            tags:
+                - Supports
+            requestBody:
+                $ref: '#/components/requestBodies/SupportBody'
+            responses:
+                '200':
+                    description: Success
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+
 security:
     -   Bearer: [ ]
 components:
@@ -709,10 +840,10 @@ components:
             required: true
             schema:
                 type: string
-        clientIdPath:
+        _idPath:
             in: path
-            name: clientId
-            description: Client ID to get data for.
+            name: _id
+            description: Entity ID to get data for.
             required: true
             schema:
                 type: string
@@ -891,7 +1022,15 @@ components:
                 application/json:
                     schema:
                         oneOf:
-                            -   $ref: '#/components/schemas/CreateTenant'
+                            -   $ref: '#/components/schemas/CreateClient'
+        SupportBody:
+            description: A JSON object containing user information
+            required: true
+            content:
+                application/json:
+                    schema:
+                        oneOf:
+                            -   $ref: '#/components/schemas/CreateSupport'
     schemas:
         UsageStatsApps:
             type: object
@@ -1132,6 +1271,21 @@ components:
                 note:
                     type: string
                     nullable: true
+        CreateSupport:
+            type:
+                object
+            properties:
+                clientId:
+                    type: string
+                hourlyRate:
+                    type: number
+                    nullable: true
+                subscription:
+                    type: number
+                    nullable: true
+                responseTime:
+                    type: number
+                    nullable: true
         UsersRows:
             type: object
             properties:
@@ -1282,6 +1436,27 @@ components:
                     nullable: true
                 phone:
                     type: string
+                    nullable: true
+        SupportsRows:
+            type: object
+            properties:
+                rows:
+                    type: array
+                    items:
+                        $ref: "#/components/schemas/OutputSupport"
+        OutputSupport:
+            type: object
+            properties:
+                clientId:
+                    type: string
+                hourlyRate:
+                    type: number
+                    nullable: true
+                subscription:
+                    type: number
+                    nullable: true
+                responseTime:
+                    type: number
                     nullable: true
 
     responses:

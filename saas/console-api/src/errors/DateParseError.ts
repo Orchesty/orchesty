@@ -1,4 +1,6 @@
-export default class DateParseError extends Error {
+import { BaseError } from './BaseError';
+
+export default class DateParseError extends BaseError {
 
     public code: number;
 
