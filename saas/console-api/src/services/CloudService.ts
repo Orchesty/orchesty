@@ -1,12 +1,12 @@
 import { ICloudSearchQuery } from '../controllers/clouds';
 import Cloud from '../entities/Cloud';
 import { CollectionEnum } from '../enums/CollectionEnum';
-import BillingMongo from '../storage/mongo/Mongo';
+import Mongo from '../storage/mongo/Mongo';
 import BaseService from './BaseService';
 
 export default class CloudService extends BaseService<Cloud, ICloudSearchQuery> {
 
-    public constructor(db: BillingMongo) {
+    public constructor(db: Mongo) {
         super(db.getCloudCollection(CollectionEnum.CLOUD));
     }
 

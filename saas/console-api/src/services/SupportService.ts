@@ -1,12 +1,12 @@
 import { ISupportSearchQuery } from '../controllers/supports';
 import Support from '../entities/Support';
 import { CollectionEnum } from '../enums/CollectionEnum';
-import BillingMongo from '../storage/mongo/Mongo';
+import Mongo from '../storage/mongo/Mongo';
 import BaseService from './BaseService';
 
 export default class SupportService extends BaseService<Support, ISupportSearchQuery> {
 
-    public constructor(db: BillingMongo) {
+    public constructor(db: Mongo) {
         super(db.getCloudCollection(CollectionEnum.SUPPORT));
     }
 

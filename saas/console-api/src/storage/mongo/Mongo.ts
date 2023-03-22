@@ -60,9 +60,18 @@ export default class Mongo {
             { key: { tenantId: 1 } },
         ];
         await this.getCloudCollection(CollectionEnum.TENANT).createIndexes(specs);
-        await this.getBillingCollection(CollectionEnum.CLIENT).createIndexes([
+        await this.getCloudCollection(CollectionEnum.CLIENT).createIndexes([
             { key: { _id: 1 } },
             { key: { iDokladId: 1 } },
+        ]);
+        await this.getCloudCollection(CollectionEnum.SUPPORT).createIndexes([
+            { key: { _id: 1 } },
+        ]);
+        await this.getCloudCollection(CollectionEnum.CLOUD).createIndexes([
+            { key: { _id: 1 } },
+        ]);
+        await this.getCloudCollection(CollectionEnum.APPLINTH).createIndexes([
+            { key: { _id: 1 } },
         ]);
     }
 

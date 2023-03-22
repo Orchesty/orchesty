@@ -3,6 +3,7 @@ enum Services {
     USERS_SERVICE = 'UsersService',
     CLIENTS_SERVICE = 'ClientsService',
     CLOUD_SERVICE = 'CloudService',
+    APPLINTH_SERVICE = 'ApplinthService',
     SUPPORTS_SERVICE = 'SupportsService',
     TENANT_SERVICE = 'TenantService',
     STORAGE = 'Storage',

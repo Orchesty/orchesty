@@ -1,12 +1,12 @@
 import { IClientSearchQuery } from '../controllers/clients';
 import Client, { IContact } from '../entities/Client';
 import { CollectionEnum } from '../enums/CollectionEnum';
-import BillingMongo from '../storage/mongo/Mongo';
+import Mongo from '../storage/mongo/Mongo';
 import BaseService from './BaseService';
 
 export default class ClientService extends BaseService<Client, IClientSearchQuery> {
 
-    public constructor(db: BillingMongo) {
+    public constructor(db: Mongo) {
         super(db.getCloudCollection(CollectionEnum.CLIENT));
     }
 
