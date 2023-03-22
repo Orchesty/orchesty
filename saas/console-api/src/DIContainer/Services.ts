@@ -6,6 +6,7 @@ enum Services {
     APPLINTH_SERVICE = 'ApplinthService',
     ORCHESTY_SERVICE = 'OrchestyService',
     SUPPORTS_SERVICE = 'SupportsService',
+    CORRECTIONS_SERVICE = 'CorrectionsService',
     TENANT_SERVICE = 'TenantService',
     STORAGE = 'Storage',
     SERVER = 'Server',
