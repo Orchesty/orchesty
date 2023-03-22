@@ -812,6 +812,137 @@ paths:
                 '500':
                     $ref: "#/components/responses/500BadRequest"
 
+    /clouds/{_id}:
+        get:
+            description: Fill
+            x-swagger-router-controller: clouds
+            operationId: getCloud
+            tags:
+                - Clouds
+            parameters:
+                -   $ref: "#/components/parameters/_idPath"
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/OutputCloud"
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+
+        put:
+            description: Fill
+            x-swagger-router-controller: clouds
+            operationId: updateCloud
+            tags:
+                - Clouds
+            parameters:
+                -   $ref: "#/components/parameters/_idPath"
+            requestBody:
+                $ref: '#/components/requestBodies/CloudBody'
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/OutputCloud"
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+
+        delete:
+            description: Fill
+            x-swagger-router-controller: clouds
+            operationId: deleteCloud
+            tags:
+                - Clouds
+            parameters:
+                -   $ref: "#/components/parameters/_idPath"
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    msg:
+                                        description: Message for support
+                                        type: string
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+
+    /clouds:
+        get:
+            description: Fill
+            x-swagger-router-controller: clouds
+            operationId: cloudsList
+            tags:
+                - Clouds
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/CloudsRows"
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+        post:
+            description: Fill
+            x-swagger-router-controller: clouds
+            operationId: createCloud
+            tags:
+                - Clouds
+            requestBody:
+                $ref: '#/components/requestBodies/CloudBody'
+            responses:
+                '200':
+                    description: Success
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+
 security:
     -   Bearer: [ ]
 components:
@@ -1031,6 +1162,14 @@ components:
                     schema:
                         oneOf:
                             -   $ref: '#/components/schemas/CreateSupport'
+        CloudBody:
+            description: A JSON object containing user information
+            required: true
+            content:
+                application/json:
+                    schema:
+                        oneOf:
+                            -   $ref: '#/components/schemas/CreateCloud'
     schemas:
         UsageStatsApps:
             type: object
@@ -1286,6 +1425,27 @@ components:
                 responseTime:
                     type: number
                     nullable: true
+        CreateCloud:
+            type:
+                object
+            properties:
+                clientId:
+                    type: string
+                plan:
+                    type: string
+                    nullable: true
+                price:
+                    type: number
+                    nullable: true
+                period:
+                    type: string
+                    nullable: true
+                startDate:
+                    type: string
+                    nullable: true
+                closeDate:
+                    type: string
+                    nullable: true
         UsersRows:
             type: object
             properties:
@@ -1457,6 +1617,33 @@ components:
                     nullable: true
                 responseTime:
                     type: number
+                    nullable: true
+        CloudsRows:
+            type: object
+            properties:
+                rows:
+                    type: array
+                    items:
+                        $ref: "#/components/schemas/OutputCloud"
+        OutputCloud:
+            type: object
+            properties:
+                clientId:
+                    type: string
+                plan:
+                    type: string
+                    nullable: true
+                price:
+                    type: number
+                    nullable: true
+                period:
+                    type: string
+                    nullable: true
+                startDate:
+                    type: string
+                    nullable: true
+                closeDate:
+                    type: string
                     nullable: true
 
     responses:

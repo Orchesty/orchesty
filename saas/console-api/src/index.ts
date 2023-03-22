@@ -12,6 +12,7 @@ import DIContainer from './DIContainer/Container';
 import Services from './DIContainer/Services';
 import { logger } from './logger/logger';
 import ClientService from './services/ClientService';
+import CloudService from './services/CloudService';
 import SupportService from './services/SupportService';
 import TenantService from './services/TenantService';
 import UsageStatsService from './services/UsageStatsService';
@@ -45,12 +46,14 @@ async function initServices(): Promise<void> {
     const usersService = new UsersService();
     const clientService = new ClientService(db);
     const supportService = new SupportService(db);
+    const cloudService = new CloudService(db);
     const tenantService = new TenantService(db);
     container.set(Services.STORAGE, db);
     container.set(Services.USAGE_STATS_SERVICE, usageStatsService);
     container.set(Services.USERS_SERVICE, usersService);
     container.set(Services.CLIENTS_SERVICE, clientService);
     container.set(Services.SUPPORTS_SERVICE, supportService);
+    container.set(Services.CLOUD_SERVICE, cloudService);
     container.set(Services.TENANT_SERVICE, tenantService);
 }
 
