@@ -14,9 +14,9 @@ export default class BaseService<IEntity extends BaseEntity, IQuery extends ISea
         let entities;
 
         const q = {
-            ...query,
+            ...this.replaceDateFields(query),
             deleted: {
-                $exists: false,
+                $eq: null,
             },
         };
 
@@ -36,7 +36,7 @@ export default class BaseService<IEntity extends BaseEntity, IQuery extends ISea
             entity = await this.collection.findOne({
                 _id: new ObjectId(query._id),
                 deleted: {
-                    $exists: false,
+                    $eq: null,
                 },
             }) as IEntity;
         } catch (e) {
@@ -51,10 +51,12 @@ export default class BaseService<IEntity extends BaseEntity, IQuery extends ISea
     }
 
     public async create(query: IQuery): Promise<IEntity> {
+        const q = this.replaceDateFields(query);
+        q.created = new Date();
         let entity;
 
         try {
-            const result = await this.collection.insertOne(query);
+            const result = await this.collection.insertOne(q);
             entity = await this.collection.findOne({ _id: result.insertedId }) as IEntity;
         } catch (e) {
             throw new CreationError((e as Error).message);
@@ -64,22 +66,24 @@ export default class BaseService<IEntity extends BaseEntity, IQuery extends ISea
     }
 
     public async update(query: IQuery): Promise<IEntity> {
+        const q = this.replaceDateFields(query);
         let entity;
 
         try {
-            const objectId = new ObjectId(query._id);
+            const objectId = new ObjectId(q._id);
             // eslint-disable-next-line no-param-reassign
-            delete query._id;
+            delete q._id;
+            q.updated = new Date();
             await this.collection.updateOne({
                 _id: objectId,
                 deleted: {
-                    $exists: false,
+                    $eq: null,
                 },
-            }, { $set: query });
+            }, { $set: q });
             entity = await this.collection.findOne({
                 _id: objectId,
                 deleted: {
-                    $exists: false,
+                    $eq: null,
                 },
             }) as IEntity;
         } catch (e) {
@@ -98,7 +102,7 @@ export default class BaseService<IEntity extends BaseEntity, IQuery extends ISea
             await this.collection.updateOne({
                 _id: new ObjectId(query._id),
                 deleted: {
-                    $exists: false,
+                    $eq: null,
                 },
             }, {
                 $set: {
@@ -115,12 +119,27 @@ export default class BaseService<IEntity extends BaseEntity, IQuery extends ISea
     protected mapRecordToExport(entity: IEntity): IEntity {
         return {
             _id: entity._id,
+            created: entity.created ?? null,
+            updated: entity.updated ?? null,
             deleted: entity.deleted ?? null,
         } as IEntity;
     }
 
     protected mapRecordsToExport(entities: IEntity[]): IEntity[] {
         return entities.map((entity) => this.mapRecordToExport(entity));
+    }
+
+    protected getEntityDateFields(): string[] {
+        return ['created', 'updated', 'deleted'];
+    }
+
+    private replaceDateFields(query: IQuery): IQuery {
+        return Object.fromEntries(Object.entries(query).map(([key, item]) => {
+            if (item && this.getEntityDateFields().includes(key)) {
+                return [key, new Date(item)];
+            }
+            return [key, item];
+        })) as IQuery;
     }
 
 }

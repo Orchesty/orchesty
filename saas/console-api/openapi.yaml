@@ -223,7 +223,7 @@ paths:
                     $ref: "#/components/responses/500BadRequest"
     /users:
         get:
-            description: Fill
+            description: Get list of User entity
             x-swagger-router-controller: users
             operationId: usersList
             tags:
@@ -250,7 +250,7 @@ paths:
                     $ref: "#/components/responses/500BadRequest"
 
         post:
-            description: Fill
+            description: Create new User entity
             x-swagger-router-controller: users
             operationId: usersCreate
             tags:
@@ -279,7 +279,7 @@ paths:
 
     /users/{uid}:
         get:
-            description: Fill
+            description: Get single User
             x-swagger-router-controller: users
             operationId: usersGet
             tags:
@@ -306,7 +306,7 @@ paths:
                     $ref: "#/components/responses/500BadRequest"
 
         put:
-            description: Fill
+            description: Update User entity
             x-swagger-router-controller: users
             operationId: usersUpdate
             tags:
@@ -335,7 +335,7 @@ paths:
                     $ref: "#/components/responses/500BadRequest"
 
         delete:
-            description: Fill
+            description: Delete User entity
             x-swagger-router-controller: users
             operationId: usersDelete
             tags:
@@ -367,7 +367,7 @@ paths:
 
     /users/sendResetPasswordEmail:
         post:
-            description: Fill
+            description: Send reset password email to User
             x-swagger-router-controller: users
             operationId: userSendResetPasswordEmail
             tags:
@@ -416,7 +416,7 @@ paths:
                     description: Not found
     /tenants/{tenantId}:
         get:
-            description: Fill
+            description: Get single Tenant
             x-swagger-router-controller: tenants
             operationId: tenantsGet
             tags:
@@ -442,7 +442,7 @@ paths:
                     $ref: "#/components/responses/500BadRequest"
 
         put:
-            description: Fill
+            description: Update Tenant entity
             x-swagger-router-controller: tenants
             operationId: tenantsUpdate
             tags:
@@ -470,7 +470,7 @@ paths:
                     $ref: "#/components/responses/500BadRequest"
 
         delete:
-            description: Fill
+            description: Delete Tenant entity
             x-swagger-router-controller: tenants
             operationId: tenantsDelete
             tags:
@@ -501,7 +501,7 @@ paths:
 
     /tenants:
         get:
-            description: Fill
+            description: Get list of Tenants
             x-swagger-router-controller: tenants
             operationId: tenantsList
             tags:
@@ -525,7 +525,7 @@ paths:
                     $ref: "#/components/responses/500BadRequest"
 
         post:
-            description: Fill
+            description: Create Tenant entity
             x-swagger-router-controller: tenants
             operationId: tenantsCreate
             tags:
@@ -552,13 +552,13 @@ paths:
 
     /clients/{_id}:
         get:
-            description: Fill
+            description: Get single Client
             x-swagger-router-controller: clients
             operationId: getClient
             tags:
                 - Clients
             parameters:
-                -   $ref: "#/components/parameters/_id"
+                -   $ref: "#/components/parameters/_idPath"
             responses:
                 '200':
                     description: Success
@@ -578,13 +578,13 @@ paths:
                     $ref: "#/components/responses/500BadRequest"
 
         put:
-            description: Fill
+            description: Update Client entity
             x-swagger-router-controller: clients
             operationId: updateClient
             tags:
                 - Clients
             parameters:
-                -   $ref: "#/components/parameters/_id"
+                -   $ref: "#/components/parameters/_idPath"
             requestBody:
                 $ref: '#/components/requestBodies/ClientBody'
             responses:
@@ -606,13 +606,13 @@ paths:
                     $ref: "#/components/responses/500BadRequest"
 
         delete:
-            description: Fill
+            description: Delete Client entity
             x-swagger-router-controller: clients
             operationId: deleteClient
             tags:
                 - Clients
             parameters:
-                -   $ref: "#/components/parameters/_id"
+                -   $ref: "#/components/parameters/_idPath"
             responses:
                 '200':
                     description: Success
@@ -637,7 +637,7 @@ paths:
 
     /clients:
         get:
-            description: Fill
+            description: Get list of Clients
             x-swagger-router-controller: clients
             operationId: clientsList
             tags:
@@ -660,7 +660,7 @@ paths:
                 '500':
                     $ref: "#/components/responses/500BadRequest"
         post:
-            description: Fill
+            description: Create new Client entity
             x-swagger-router-controller: clients
             operationId: createClient
             tags:
@@ -681,13 +681,13 @@ paths:
                 '500':
                     $ref: "#/components/responses/500BadRequest"
 
-    /supports/{_id}:
+    /addresses/{_id}:
         get:
-            description: Fill
-            x-swagger-router-controller: supports
-            operationId: getSupport
+            description: Get single Address
+            x-swagger-router-controller: addresses
+            operationId: getAddress
             tags:
-                - Supports
+                - Addresses
             parameters:
                 -   $ref: "#/components/parameters/_idPath"
             responses:
@@ -696,7 +696,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/OutputSupport"
+                                $ref: "#/components/schemas/OutputAddress"
                 '400':
                     $ref: "#/components/responses/400BadRequest"
                 '401':
@@ -709,22 +709,22 @@ paths:
                     $ref: "#/components/responses/500BadRequest"
 
         put:
-            description: Fill
-            x-swagger-router-controller: supports
-            operationId: updateSupport
+            description: Update Address entity
+            x-swagger-router-controller: addresses
+            operationId: updateAddress
             tags:
-                - Supports
+                - Addresses
             parameters:
                 -   $ref: "#/components/parameters/_idPath"
             requestBody:
-                $ref: '#/components/requestBodies/SupportBody'
+                $ref: '#/components/requestBodies/AddressBody'
             responses:
                 '200':
                     description: Success
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/OutputSupport"
+                                $ref: "#/components/schemas/OutputAddress"
                 '400':
                     $ref: "#/components/responses/400BadRequest"
                 '401':
@@ -737,11 +737,11 @@ paths:
                     $ref: "#/components/responses/500BadRequest"
 
         delete:
-            description: Fill
-            x-swagger-router-controller: supports
-            operationId: deleteSupport
+            description: Delete Address entity
+            x-swagger-router-controller: addresses
+            operationId: deleteAddress
             tags:
-                - Supports
+                - Addresses
             parameters:
                 -   $ref: "#/components/parameters/_idPath"
             responses:
@@ -753,7 +753,7 @@ paths:
                                 type: object
                                 properties:
                                     msg:
-                                        description: Message for support
+                                        description: Message for address
                                         type: string
                 '400':
                     $ref: "#/components/responses/400BadRequest"
@@ -766,20 +766,20 @@ paths:
                 '500':
                     $ref: "#/components/responses/500BadRequest"
 
-    /supports:
+    /addresses:
         get:
-            description: Fill
-            x-swagger-router-controller: supports
-            operationId: supportsList
+            description: Get list of Addresses
+            x-swagger-router-controller: addresses
+            operationId: addressesList
             tags:
-                - Supports
+                - Addresses
             responses:
                 '200':
                     description: Success
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/SupportsRows"
+                                $ref: "#/components/schemas/AddressesRows"
                 '400':
                     $ref: "#/components/responses/400BadRequest"
                 '401':
@@ -791,13 +791,13 @@ paths:
                 '500':
                     $ref: "#/components/responses/500BadRequest"
         post:
-            description: Fill
-            x-swagger-router-controller: supports
-            operationId: createSupport
+            description: Create new Address
+            x-swagger-router-controller: addresses
+            operationId: createAddress
             tags:
-                - Supports
+                - Addresses
             requestBody:
-                $ref: '#/components/requestBodies/SupportBody'
+                $ref: '#/components/requestBodies/AddressBody'
             responses:
                 '200':
                     description: Success
@@ -814,7 +814,7 @@ paths:
 
     /clouds/{_id}:
         get:
-            description: Fill
+            description: Get single Cloud
             x-swagger-router-controller: clouds
             operationId: getCloud
             tags:
@@ -840,7 +840,7 @@ paths:
                     $ref: "#/components/responses/500BadRequest"
 
         put:
-            description: Fill
+            description: Update Cloud entity
             x-swagger-router-controller: clouds
             operationId: updateCloud
             tags:
@@ -868,7 +868,7 @@ paths:
                     $ref: "#/components/responses/500BadRequest"
 
         delete:
-            description: Fill
+            description: Delete Cloud entity
             x-swagger-router-controller: clouds
             operationId: deleteCloud
             tags:
@@ -884,7 +884,7 @@ paths:
                                 type: object
                                 properties:
                                     msg:
-                                        description: Message for support
+                                        description: Message for address
                                         type: string
                 '400':
                     $ref: "#/components/responses/400BadRequest"
@@ -899,7 +899,7 @@ paths:
 
     /clouds:
         get:
-            description: Fill
+            description: Get list of Clouds
             x-swagger-router-controller: clouds
             operationId: cloudsList
             tags:
@@ -922,7 +922,7 @@ paths:
                 '500':
                     $ref: "#/components/responses/500BadRequest"
         post:
-            description: Fill
+            description: Create Cloud entity
             x-swagger-router-controller: clouds
             operationId: createCloud
             tags:
@@ -945,7 +945,7 @@ paths:
 
     /applinths/{_id}:
         get:
-            description: Fill
+            description: Get single Applinth
             x-swagger-router-controller: applinths
             operationId: getApplinth
             tags:
@@ -971,7 +971,7 @@ paths:
                     $ref: "#/components/responses/500BadRequest"
 
         put:
-            description: Fill
+            description: Update Applinth entity
             x-swagger-router-controller: applinths
             operationId: updateApplinth
             tags:
@@ -999,7 +999,7 @@ paths:
                     $ref: "#/components/responses/500BadRequest"
 
         delete:
-            description: Fill
+            description: Delete Applinth entity
             x-swagger-router-controller: applinths
             operationId: deleteApplinth
             tags:
@@ -1015,7 +1015,7 @@ paths:
                                 type: object
                                 properties:
                                     msg:
-                                        description: Message for support
+                                        description: Message for address
                                         type: string
                 '400':
                     $ref: "#/components/responses/400BadRequest"
@@ -1030,7 +1030,7 @@ paths:
 
     /applinths:
         get:
-            description: Fill
+            description: Get list of Applinths
             x-swagger-router-controller: applinths
             operationId: applinthsList
             tags:
@@ -1053,7 +1053,7 @@ paths:
                 '500':
                     $ref: "#/components/responses/500BadRequest"
         post:
-            description: Fill
+            description: Create Applinth entity
             x-swagger-router-controller: applinths
             operationId: createApplinth
             tags:
@@ -1076,7 +1076,7 @@ paths:
 
     /orchestras/{_id}:
         get:
-            description: Fill
+            description: Get single Orchesty
             x-swagger-router-controller: orchestras
             operationId: getOrchesty
             tags:
@@ -1102,7 +1102,7 @@ paths:
                     $ref: "#/components/responses/500BadRequest"
 
         put:
-            description: Fill
+            description: Update Orchesty entity
             x-swagger-router-controller: orchestras
             operationId: updateOrchesty
             tags:
@@ -1130,7 +1130,7 @@ paths:
                     $ref: "#/components/responses/500BadRequest"
 
         delete:
-            description: Fill
+            description: Delete Orchesty entity
             x-swagger-router-controller: orchestras
             operationId: deleteOrchesty
             tags:
@@ -1146,7 +1146,7 @@ paths:
                                 type: object
                                 properties:
                                     msg:
-                                        description: Message for support
+                                        description: Message for address
                                         type: string
                 '400':
                     $ref: "#/components/responses/400BadRequest"
@@ -1161,7 +1161,7 @@ paths:
 
     /orchestras:
         get:
-            description: Fill
+            description: Get list of Orchestras
             x-swagger-router-controller: orchestras
             operationId: orchestrasList
             tags:
@@ -1184,7 +1184,7 @@ paths:
                 '500':
                     $ref: "#/components/responses/500BadRequest"
         post:
-            description: Fill
+            description: Create Orchesty entity
             x-swagger-router-controller: orchestras
             operationId: createOrchesty
             tags:
@@ -1207,7 +1207,7 @@ paths:
 
     /corrections/{_id}:
         get:
-            description: Fill
+            description: Get single Correction
             x-swagger-router-controller: corrections
             operationId: getCorrection
             tags:
@@ -1233,7 +1233,7 @@ paths:
                     $ref: "#/components/responses/500BadRequest"
 
         put:
-            description: Fill
+            description: Update Correction entity
             x-swagger-router-controller: corrections
             operationId: updateCorrection
             tags:
@@ -1261,7 +1261,7 @@ paths:
                     $ref: "#/components/responses/500BadRequest"
 
         delete:
-            description: Fill
+            description: Delete Correction entity
             x-swagger-router-controller: corrections
             operationId: deleteCorrection
             tags:
@@ -1277,7 +1277,7 @@ paths:
                                 type: object
                                 properties:
                                     msg:
-                                        description: Message for support
+                                        description: Message for address
                                         type: string
                 '400':
                     $ref: "#/components/responses/400BadRequest"
@@ -1292,7 +1292,7 @@ paths:
 
     /corrections:
         get:
-            description: Fill
+            description: Get list of Corrections
             x-swagger-router-controller: corrections
             operationId: correctionsList
             tags:
@@ -1315,13 +1315,144 @@ paths:
                 '500':
                     $ref: "#/components/responses/500BadRequest"
         post:
-            description: Fill
+            description: Create new Correction entity
             x-swagger-router-controller: corrections
             operationId: createCorrection
             tags:
                 - Corrections
             requestBody:
                 $ref: '#/components/requestBodies/CorrectionBody'
+            responses:
+                '200':
+                    description: Success
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+
+    /modules/{_id}:
+        get:
+            description: Get single Module
+            x-swagger-router-controller: modules
+            operationId: getModule
+            tags:
+                - Modules
+            parameters:
+                -   $ref: "#/components/parameters/_idPath"
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/OutputModule"
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+
+        put:
+            description: Update Module entity
+            x-swagger-router-controller: modules
+            operationId: updateModule
+            tags:
+                - Modules
+            parameters:
+                -   $ref: "#/components/parameters/_idPath"
+            requestBody:
+                $ref: '#/components/requestBodies/ModuleBody'
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/OutputModule"
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+
+        delete:
+            description: Delete Module entity
+            x-swagger-router-controller: modules
+            operationId: deleteModule
+            tags:
+                - Modules
+            parameters:
+                -   $ref: "#/components/parameters/_idPath"
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    msg:
+                                        description: Message for address
+                                        type: string
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+
+    /modules:
+        get:
+            description: Get list of Modules
+            x-swagger-router-controller: modules
+            operationId: modulesList
+            tags:
+                - Modules
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ModulesRows"
+                '400':
+                    $ref: "#/components/responses/400BadRequest"
+                '401':
+                    $ref: "#/components/responses/401Unauthorized"
+                '403':
+                    $ref: "#/components/responses/403Forbidden"
+                '404':
+                    $ref: "#/components/responses/404NotFound"
+                '500':
+                    $ref: "#/components/responses/500BadRequest"
+        post:
+            description: Create new Module entity
+            x-swagger-router-controller: modules
+            operationId: createModule
+            tags:
+                - Modules
+            requestBody:
+                $ref: '#/components/requestBodies/ModuleBody'
             responses:
                 '200':
                     description: Success
@@ -1547,14 +1678,14 @@ components:
                     schema:
                         oneOf:
                             -   $ref: '#/components/schemas/CreateClient'
-        SupportBody:
+        AddressBody:
             description: A JSON object containing user information
             required: true
             content:
                 application/json:
                     schema:
                         oneOf:
-                            -   $ref: '#/components/schemas/CreateSupport'
+                            -   $ref: '#/components/schemas/CreateAddress'
         CloudBody:
             description: A JSON object containing user information
             required: true
@@ -1587,6 +1718,14 @@ components:
                     schema:
                         oneOf:
                             -   $ref: '#/components/schemas/CreateCorrection'
+        ModuleBody:
+            description: A JSON object containing user information
+            required: true
+            content:
+                application/json:
+                    schema:
+                        oneOf:
+                            -   $ref: '#/components/schemas/CreateModule'
     schemas:
         UsageStatsApps:
             type: object
@@ -1812,54 +1951,126 @@ components:
             type:
                 object
             properties:
-                company:
-                    description: Client's display name
+                created:
                     type: string
-                iDokladId:
+                    nullable: true
+                updated:
+                    type: string
+                    nullable: true
+                deleted:
+                    type: string
+                    nullable: true
+                companyName:
+                    description: Company name
+                    type: string
+                invoicingId:
+                    description: ID from external invoicing app
                     type: string
                 contact:
+                    description: Array of client's contacts
                     type: array
                     items:
                         $ref: "#/components/schemas/OutputContact"
+                supportHourlyRate:
+                    description: Hourly rate for support
+                    type: number
+                supportSubscription:
+                    description: Number of subscribed support hours
+                    type: number
+                supportResponseTime:
+                    description: Response time for support
+                    type: number
                 hourlyRate:
+                    description: Hourly rate for outsourcing
                     type: number
                     nullable: true
                 note:
                     type: string
                     nullable: true
-        CreateSupport:
+        CreateAddress:
             type:
                 object
             properties:
-                clientId:
+                created:
                     type: string
-                hourlyRate:
+                    nullable: true
+                updated:
+                    type: string
+                    nullable: true
+                deleted:
+                    type: string
+                    nullable: true
+                tenantId:
+                    description: ID of Client
+                    type: string
+                email:
+                    description: Client's email
+                    type: string
+                phone:
+                    description: Client's phone number
+                    type: string
+                firstname:
+                    description: Client's first name
+                    type: string
+                surname:
+                    description: Client's surname
+                    type: string
+                street:
+                    type: string
+                city:
+                    type: string
+                postalCode:
+                    type: string
+                companyName:
+                    description: Name of Company
+                    type: string
+                countryId:
+                    description: ID of county
+                    type: string
+                identificationNumber:
+                    type: string
+                defaultInvoiceMaturity:
+                    description: Number of days for paying invoice
                     type: number
                     nullable: true
-                subscription:
-                    type: number
+                vatIdentificationNumber:
+                    type: string
                     nullable: true
-                responseTime:
-                    type: number
+                isRegisteredForVatOnPay:
+                    type: boolean
+                    nullable: true
+                isSendReminder:
+                    type: boolean
+                    nullable: true
+                title:
+                    type: string
+                    nullable: true
+                url:
+                    type: string
                     nullable: true
         CreateCloud:
             type:
                 object
             properties:
-                clientId:
+                created:
+                    type: string
+                    nullable: true
+                updated:
+                    type: string
+                    nullable: true
+                deleted:
+                    type: string
+                    nullable: true
+                tenantId:
                     type: string
                 plan:
                     type: string
-                    nullable: true
                 price:
                     type: number
-                    nullable: true
                 period:
                     type: string
-                    nullable: true
                 startDate:
                     type: string
-                    nullable: true
                 closeDate:
                     type: string
                     nullable: true
@@ -1867,54 +2078,92 @@ components:
             type:
                 object
             properties:
-                clientId:
-                    type: string
-                cloudId:
-                    type: string
-                startDate:
+                created:
                     type: string
                     nullable: true
+                updated:
+                    type: string
+                    nullable: true
+                deleted:
+                    type: string
+                    nullable: true
+                tenantId:
+                    type: string
+                instanceId:
+                    type: string
                 minPrice:
                     type: number
-                    nullable: true
                 minPriceDate:
                     type: string
-                    nullable: true
         CreateOrchesty:
             type:
                 object
             properties:
-                clientId:
+                created:
                     type: string
-                cloudId:
+                    nullable: true
+                updated:
+                    type: string
+                    nullable: true
+                deleted:
+                    type: string
+                    nullable: true
+                tenantId:
+                    type: string
+                instanceId:
                     type: string
                 version:
                     type: string
-                    nullable: true
                 price:
                     type: number
-                    nullable: true
                 startDate:
                     type: string
-                    nullable: true
         CreateCorrection:
             type:
                 object
             properties:
-                clientId:
+                created:
+                    type: string
+                    nullable: true
+                updated:
+                    type: string
+                    nullable: true
+                deleted:
+                    type: string
+                    nullable: true
+                tenantId:
                     type: string
                 date:
                     type: string
-                    nullable: true
                 hours:
                     type: number
-                    nullable: true
                 amount:
                     type: number
-                    nullable: true
                 note:
                     type: string
+        CreateModule:
+            type:
+                object
+            properties:
+                created:
+                    type: string
                     nullable: true
+                updated:
+                    type: string
+                    nullable: true
+                deleted:
+                    type: string
+                    nullable: true
+                appName:
+                    type: string
+                applinthId:
+                    type: string
+                price:
+                    type: number
+                minPrice:
+                    type: number
+                minPriceDate:
+                    type: string
         UsersRows:
             type: object
             properties:
@@ -2037,18 +2286,40 @@ components:
                     items:
                         $ref: "#/components/schemas/OutputClient"
         OutputClient:
-            type: object
+            type:
+                object
             properties:
-                id:
-                    type: string
-                iDokladId:
+                created:
                     type: string
                     nullable: true
+                updated:
+                    type: string
+                    nullable: true
+                deleted:
+                    type: string
+                    nullable: true
+                companyName:
+                    description: Company name
+                    type: string
+                invoicingId:
+                    description: ID from external invoicing app
+                    type: string
                 contact:
+                    description: Array of client's contacts
                     type: array
                     items:
                         $ref: "#/components/schemas/OutputContact"
+                supportHourlyRate:
+                    description: Hourly rate for support
+                    type: number
+                supportSubscription:
+                    description: Number of subscribed support hours
+                    type: number
+                supportResponseTime:
+                    description: Response time for support
+                    type: number
                 hourlyRate:
+                    description: Hourly rate for outsourcing
                     type: number
                     nullable: true
                 note:
@@ -2066,26 +2337,73 @@ components:
                 phone:
                     type: string
                     nullable: true
-        SupportsRows:
+        AddressesRows:
             type: object
             properties:
                 rows:
                     type: array
                     items:
-                        $ref: "#/components/schemas/OutputSupport"
-        OutputSupport:
-            type: object
+                        $ref: "#/components/schemas/OutputAddress"
+        OutputAddress:
+            type:
+                object
             properties:
-                clientId:
+                created:
                     type: string
-                hourlyRate:
+                    nullable: true
+                updated:
+                    type: string
+                    nullable: true
+                deleted:
+                    type: string
+                    nullable: true
+                tenantId:
+                    description: ID of Client
+                    type: string
+                email:
+                    description: Client's email
+                    type: string
+                phone:
+                    description: Client's phone number
+                    type: string
+                firstname:
+                    description: Client's first name
+                    type: string
+                surname:
+                    description: Client's surname
+                    type: string
+                street:
+                    type: string
+                city:
+                    type: string
+                postalCode:
+                    type: string
+                companyName:
+                    description: Name of Company
+                    type: string
+                countryId:
+                    description: ID of county
+                    type: string
+                identificationNumber:
+                    type: string
+                defaultInvoiceMaturity:
+                    description: Number of days for paying invoice
                     type: number
                     nullable: true
-                subscription:
-                    type: number
+                vatIdentificationNumber:
+                    type: string
                     nullable: true
-                responseTime:
-                    type: number
+                isRegisteredForVatOnPay:
+                    type: boolean
+                    nullable: true
+                isSendReminder:
+                    type: boolean
+                    nullable: true
+                title:
+                    type: string
+                    nullable: true
+                url:
+                    type: string
                     nullable: true
         CloudsRows:
             type: object
@@ -2095,22 +2413,28 @@ components:
                     items:
                         $ref: "#/components/schemas/OutputCloud"
         OutputCloud:
-            type: object
+            type:
+                object
             properties:
-                clientId:
+                created:
+                    type: string
+                    nullable: true
+                updated:
+                    type: string
+                    nullable: true
+                deleted:
+                    type: string
+                    nullable: true
+                tenantId:
                     type: string
                 plan:
                     type: string
-                    nullable: true
                 price:
                     type: number
-                    nullable: true
                 period:
                     type: string
-                    nullable: true
                 startDate:
                     type: string
-                    nullable: true
                 closeDate:
                     type: string
                     nullable: true
@@ -2122,21 +2446,26 @@ components:
                     items:
                         $ref: "#/components/schemas/OutputApplinth"
         OutputApplinth:
-            type: object
+            type:
+                object
             properties:
-                clientId:
-                    type: string
-                cloudId:
-                    type: string
-                startDate:
+                created:
                     type: string
                     nullable: true
+                updated:
+                    type: string
+                    nullable: true
+                deleted:
+                    type: string
+                    nullable: true
+                tenantId:
+                    type: string
+                instanceId:
+                    type: string
                 minPrice:
                     type: number
-                    nullable: true
                 minPriceDate:
                     type: string
-                    nullable: true
         OrchestrasRows:
             type: object
             properties:
@@ -2147,19 +2476,25 @@ components:
         OutputOrchesty:
             type: object
             properties:
-                clientId:
+                created:
                     type: string
-                cloudId:
+                    nullable: true
+                updated:
+                    type: string
+                    nullable: true
+                deleted:
+                    type: string
+                    nullable: true
+                tenantId:
+                    type: string
+                instanceId:
                     type: string
                 version:
                     type: string
-                    nullable: true
                 price:
                     type: number
-                    nullable: true
                 startDate:
                     type: string
-                    nullable: true
         CorrectionsRows:
             type: object
             properties:
@@ -2170,20 +2505,54 @@ components:
         OutputCorrection:
             type: object
             properties:
-                clientId:
+                created:
+                    type: string
+                    nullable: true
+                updated:
+                    type: string
+                    nullable: true
+                deleted:
+                    type: string
+                    nullable: true
+                tenantId:
                     type: string
                 date:
                     type: string
-                    nullable: true
                 hours:
                     type: number
-                    nullable: true
                 amount:
                     type: number
-                    nullable: true
                 note:
                     type: string
+        ModulesRows:
+            type: object
+            properties:
+                rows:
+                    type: array
+                    items:
+                        $ref: "#/components/schemas/OutputModule"
+        OutputModule:
+            type: object
+            properties:
+                created:
+                    type: string
                     nullable: true
+                updated:
+                    type: string
+                    nullable: true
+                deleted:
+                    type: string
+                    nullable: true
+                appName:
+                    type: string
+                applinthId:
+                    type: string
+                price:
+                    type: number
+                minPrice:
+                    type: number
+                minPriceDate:
+                    type: string
 
     responses:
         '400BadRequest':

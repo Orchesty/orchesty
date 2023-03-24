@@ -12,9 +12,14 @@ export default class ClientService extends BaseService<Client, IClientSearchQuer
 
     protected mapRecordToExport(client: Client): Client {
         return {
-            _id: client._id,
-            iDokladId: client.iDokladId ?? null,
+            ...super.mapRecordToExport(client),
+            tenantId: client.tenantId,
+            companyName: client.companyName,
+            invoicingId: client.invoicingId,
             contact: this.mapContact(client.contact ?? []),
+            supportHourlyRate: client.supportHourlyRate,
+            supportSubscription: client.supportSubscription,
+            supportResponseTime: client.supportResponseTime,
             hourlyRate: client.hourlyRate ?? null,
             note: client.note ?? null,
         };

@@ -5,11 +5,8 @@ import ApplinthService from '../services/ApplinthService';
 import { create, get, ISearchQuery, list, remove, update } from './baseController';
 
 export interface IApplinthSearchQuery extends ISearchQuery {
-    clientId?: string | null;
-    cloudId?: string | null;
-    startDate?: Date | null;
-    minPrice?: number | null;
-    minPriceDate?: Date | null;
+    tenantId?: string | null;
+    instanceId?: string | null;
 }
 
 function getApplinthsService(): ApplinthService {

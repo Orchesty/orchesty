@@ -3,10 +3,10 @@ import { Period } from '../enums/Period';
 import BaseEntity from './BaseEntity';
 
 export default interface Cloud extends BaseEntity {
-    clientId?: string | null;
-    plan?: CloudPlan | null;
-    price?: number | null;
-    period?: Period | null;
-    startDate?: Date | null;
+    tenantId: string;
+    plan: CloudPlan;
+    price: number;
+    period: Period;
+    startDate: Date;
     closeDate?: Date | null;
 }

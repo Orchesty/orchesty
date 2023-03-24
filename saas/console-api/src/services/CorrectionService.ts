@@ -4,7 +4,7 @@ import { CollectionEnum } from '../enums/CollectionEnum';
 import Mongo from '../storage/mongo/Mongo';
 import BaseService from './BaseService';
 
-export default class CorrectionsService extends BaseService<Correction, ICorrectionSearchQuery> {
+export default class CorrectionService extends BaseService<Correction, ICorrectionSearchQuery> {
 
     public constructor(db: Mongo) {
         super(db.getCloudCollection(CollectionEnum.CORRECTION));
@@ -12,13 +12,17 @@ export default class CorrectionsService extends BaseService<Correction, ICorrect
 
     protected mapRecordToExport(correction: Correction): Correction {
         return {
-            _id: correction._id,
-            clientId: correction.clientId ?? null,
-            date: correction.date ?? null,
-            hours: correction.hours ?? null,
-            amount: correction.amount ?? null,
-            note: correction.note ?? null,
+            ...super.mapRecordToExport(correction),
+            tenantId: correction.tenantId,
+            date: correction.date,
+            hours: correction.hours,
+            amount: correction.amount,
+            note: correction.note,
         };
+    }
+
+    protected getEntityDateFields(): string[] {
+        return [...super.getEntityDateFields(), 'date'];
     }
 
 }

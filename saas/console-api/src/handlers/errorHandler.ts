@@ -5,6 +5,7 @@ import JWTError from '../errors/JWTError';
 import MetadataSearchError from '../errors/MetadataSearchError';
 import NotFoundError from '../errors/NotFoundError';
 import PermissionsError from '../errors/PermissionsError';
+import SearchError from '../errors/SearchError';
 import SendLinkError from '../errors/SendLinkError';
 import TenantSearchError from '../errors/TenantSearchError';
 import UserCreationError from '../errors/UserCreationError';
@@ -24,6 +25,7 @@ export default function handleError(err: Error, req: Request, res: Response): vo
         || err instanceof UserDeleteError
         || err instanceof SendLinkError
         || err instanceof MetadataSearchError
+        || err instanceof SearchError
     ) {
         res.status(400).send({ msg: err.message });
         return;

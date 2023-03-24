@@ -33,6 +33,14 @@ export default class Mongo {
         await this.client.db(mongo.mongoBillingDbName).dropCollection(CollectionEnum.USAGE_STATS_DAILY);
         await this.client.db(mongo.mongoBillingDbName).dropCollection(CollectionEnum.USAGE_STATS_MONTHLY);
         await this.client.db(mongo.mongoBillingDbName).dropCollection(CollectionEnum.USAGE_STATS_METADATA);
+
+        await this.client.db(mongo.mongoBillingDbName).dropCollection(CollectionEnum.ADDRESS);
+        await this.client.db(mongo.mongoBillingDbName).dropCollection(CollectionEnum.APPLINTH);
+        await this.client.db(mongo.mongoBillingDbName).dropCollection(CollectionEnum.CLIENT);
+        await this.client.db(mongo.mongoBillingDbName).dropCollection(CollectionEnum.CLOUD);
+        await this.client.db(mongo.mongoBillingDbName).dropCollection(CollectionEnum.CORRECTION);
+        await this.client.db(mongo.mongoBillingDbName).dropCollection(CollectionEnum.MODULE);
+        await this.client.db(mongo.mongoBillingDbName).dropCollection(CollectionEnum.ORCHESTY);
     }
 
     public async createBillingIndexes(): Promise<void> {
@@ -62,22 +70,42 @@ export default class Mongo {
         await this.getCloudCollection(CollectionEnum.TENANT).createIndexes(specs);
         await this.getCloudCollection(CollectionEnum.CLIENT).createIndexes([
             { key: { _id: 1 } },
-            { key: { iDokladId: 1 } },
-        ]);
-        await this.getCloudCollection(CollectionEnum.SUPPORT).createIndexes([
-            { key: { _id: 1 } },
+            { key: { deleted: 1 } },
+            { key: { invoicingId: 1 } },
+            { key: { companyName: 1 } },
         ]);
         await this.getCloudCollection(CollectionEnum.CLOUD).createIndexes([
             { key: { _id: 1 } },
+            { key: { deleted: 1 } },
+            { key: { tenantId: 1 } },
         ]);
         await this.getCloudCollection(CollectionEnum.APPLINTH).createIndexes([
             { key: { _id: 1 } },
+            { key: { deleted: 1 } },
+            { key: { tenantId: 1 } },
+            { key: { instanceId: 1 } },
         ]);
         await this.getCloudCollection(CollectionEnum.ORCHESTY).createIndexes([
             { key: { _id: 1 } },
+            { key: { deleted: 1 } },
+            { key: { tenantId: 1 } },
+            { key: { instanceId: 1 } },
         ]);
         await this.getCloudCollection(CollectionEnum.CORRECTION).createIndexes([
             { key: { _id: 1 } },
+            { key: { deleted: 1 } },
+            { key: { tenantId: 1 } },
+        ]);
+        await this.getCloudCollection(CollectionEnum.MODULE).createIndexes([
+            { key: { _id: 1 } },
+            { key: { deleted: 1 } },
+            { key: { appName: 1 } },
+            { key: { applinthId: 1 } },
+        ]);
+        await this.getCloudCollection(CollectionEnum.ADDRESS).createIndexes([
+            { key: { _id: 1 } },
+            { key: { deleted: 1 } },
+            { key: { tenantId: 1 } },
         ]);
     }
 
