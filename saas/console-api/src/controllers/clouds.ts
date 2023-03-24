@@ -1,18 +1,11 @@
 import { Request, Response } from 'express';
 import Services from '../DIContainer/Services';
-import { CloudPlan } from '../enums/CloudPlan';
-import { Period } from '../enums/Period';
 import { container } from '../index';
 import CloudService from '../services/CloudService';
 import { create, get, ISearchQuery, list, remove, update } from './baseController';
 
 export interface ICloudSearchQuery extends ISearchQuery {
-    clientId?: string | null;
-    plan?: CloudPlan | null;
-    price?: number | null;
-    period?: Period | null;
-    startDate?: Date | null;
-    closeDate?: Date | null;
+    tenantId?: string | null;
 }
 
 function getCloudsService(): CloudService {

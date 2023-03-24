@@ -10,15 +10,18 @@ export default class ApplinthService extends BaseService<Applinth, IApplinthSear
         super(db.getCloudCollection(CollectionEnum.APPLINTH));
     }
 
-    protected mapRecordToExport(support: Applinth): Applinth {
+    protected mapRecordToExport(applinth: Applinth): Applinth {
         return {
-            _id: support._id,
-            clientId: support.clientId ?? null,
-            cloudId: support.cloudId ?? null,
-            startDate: support.startDate ?? null,
-            minPrice: support.minPrice ?? null,
-            minPriceDate: support.minPriceDate ?? null,
+            ...super.mapRecordToExport(applinth),
+            tenantId: applinth.tenantId,
+            instanceId: applinth.instanceId,
+            minPrice: applinth.minPrice,
+            minPriceDate: applinth.minPriceDate,
         };
+    }
+
+    protected getEntityDateFields(): string[] {
+        return [...super.getEntityDateFields(), 'minPriceDate'];
     }
 
 }

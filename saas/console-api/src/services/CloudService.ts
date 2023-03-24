@@ -10,16 +10,20 @@ export default class CloudService extends BaseService<Cloud, ICloudSearchQuery> 
         super(db.getCloudCollection(CollectionEnum.CLOUD));
     }
 
-    protected mapRecordToExport(support: Cloud): Cloud {
+    protected mapRecordToExport(cloud: Cloud): Cloud {
         return {
-            _id: support._id,
-            clientId: support.clientId ?? null,
-            plan: support.plan ?? null,
-            price: support.price ?? null,
-            period: support.period ?? null,
-            startDate: support.startDate ?? null,
-            closeDate: support.closeDate ?? null,
+            ...super.mapRecordToExport(cloud),
+            tenantId: cloud.tenantId,
+            plan: cloud.plan,
+            price: cloud.price,
+            period: cloud.period,
+            startDate: cloud.startDate,
+            closeDate: cloud.closeDate ?? null,
         };
+    }
+
+    protected getEntityDateFields(): string[] {
+        return [...super.getEntityDateFields(), 'startDate', 'closeDate'];
     }
 
 }

@@ -1,16 +1,12 @@
 import { Request, Response } from 'express';
 import Services from '../DIContainer/Services';
-import { OrchestyVersion } from '../enums/OrchestyVersion';
 import { container } from '../index';
 import OrchestyService from '../services/OrchestyService';
 import { create, get, ISearchQuery, list, remove, update } from './baseController';
 
 export interface IOrchestySearchQuery extends ISearchQuery {
-    clientId?: string | null;
-    cloudId?: string | null;
-    version?: OrchestyVersion | null;
-    price?: number | null;
-    startDate?: Date | null;
+    tenantId?: string | null;
+    instanceId?: string | null;
 }
 
 function getOrchestrasService(): OrchestyService {

@@ -8,7 +8,7 @@ import {
 } from 'firebase-admin/lib/auth';
 import { sign } from 'jsonwebtoken';
 import { DateTime } from 'luxon';
-import { Document } from 'mongodb';
+import { Document, InsertManyResult, ObjectId } from 'mongodb';
 import { CollectionEnum } from '../src/enums/CollectionEnum';
 import { getAllResources } from '../src/enums/ResourceEnum';
 import GetUsersResult = auth.GetUsersResult;
@@ -243,4 +243,17 @@ export function getJWTToken(withPermissions = false): { authorization: string } 
     return {
         authorization: `Bearer ${token}`,
     };
+}
+
+export async function createBillingApiData(collection: string, data: object[]): Promise<InsertManyResult> {
+    return getDb().getCloudCollection(collection).insertMany(data);
+}
+
+export async function getBillingApiData(collection: string, _id: string): Promise<unknown> {
+    return getDb().getCloudCollection(collection).findOne({
+        _id: new ObjectId(_id),
+        deleted: {
+            $exists: false,
+        },
+    });
 }

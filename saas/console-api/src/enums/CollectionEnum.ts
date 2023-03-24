@@ -7,11 +7,12 @@ export enum CollectionEnum {
     USAGE_STATS_HOURLY = 'usage_stats_hourly',
     TENANT = 'tenant',
     CLIENT = 'client',
-    SUPPORT = 'support',
+    ADDRESS = 'address',
     CLOUD = 'cloud',
     ORCHESTY = 'orchesty',
     APPLINTH = 'applinth',
     CORRECTION = 'correction',
+    MODULE = 'module',
     USAGE_STATS_METADATA = 'usage_stats_metadata',
 }
 

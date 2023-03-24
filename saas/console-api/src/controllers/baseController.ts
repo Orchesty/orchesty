@@ -8,6 +8,9 @@ import BaseService from '../services/BaseService';
 
 export interface ISearchQuery {
     _id?: ObjectId;
+    created?: Date;
+    updated?: Date;
+    deleted?: Date;
 }
 
 export async function list<
