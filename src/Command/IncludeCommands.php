@@ -17,7 +17,7 @@ final class IncludeCommands extends BundleApplication
      * @var mixed[]
      */
     protected array $defaultCommands = [
-        'authorization:install',
+        'api-token:create',
         'cron:refresh',
         'rabbit_mq:publisher:pipes-user-task',
         'service:install',
