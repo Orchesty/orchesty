@@ -10,7 +10,7 @@ export default class HubSpotCreateContactConnector extends Base {
 
         const out = {
             ...(superDto.getJsonData() as object),
-            ...{ email: properties.email },
+            ...{ email: properties.email, language: properties.language },
         };
 
         return superDto.setNewJsonData<unknown>({ properties: out });

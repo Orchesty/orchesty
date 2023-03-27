@@ -5,6 +5,7 @@ import {
     LATEST,
     REGION,
     REGIONS,
+    VERSION,
 } from '@orchesty/nodejs-connectors/dist/lib/AmazonApps/AAwsApplication';
 import Base from '@orchesty/nodejs-connectors/dist/lib/AmazonApps/SimpleEmailService/SESApplication';
 import CoreFormsEnum, { getFormName } from '@orchesty/nodejs-sdk/dist/lib/Application/Base/CoreFormsEnum';
@@ -34,19 +35,15 @@ export default class SESApplication extends Base {
         const settings = applicationInstall.getSettings()[CoreFormsEnum.AUTHORIZATION_FORM];
 
         return new SESClient(
-            [
-                {
-                    /* eslint-disable @typescript-eslint/naming-convention */
-                    [CREDENTIALS]: {
-                        accessKeyId: ses.key,
-                        secretAccessKey: ses.secret,
-                    },
-                    [REGION]: settings[REGION],
-                    apiVersion: LATEST,
-                    [ENDPOINT]: settings?.[ENDPOINT] ?? [],
+            {
+                [CREDENTIALS]: {
+                    accessKeyId: ses.key,
+                    secretAccessKey: ses.secret,
                 },
-                /* eslint-enable @typescript-eslint/naming-convention */
-            ],
+                [REGION]: settings[REGION],
+                [VERSION]: LATEST,
+                [ENDPOINT]: settings?.[ENDPOINT] ?? [],
+            },
         );
     }
 

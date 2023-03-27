@@ -6,7 +6,7 @@ import { CORRELATION_ID } from '@orchesty/nodejs-sdk/dist/lib/Utils/Headers';
 import ResultCode from '@orchesty/nodejs-sdk/dist/lib/Utils/ResultCode';
 import { IEtl } from './JiraGetWorklogsBatch';
 
-export const JIRA_GET_ISSUE_ENDPOINT = 'rest/api/3/issue';
+export const JIRA_GET_ISSUE_ENDPOINT = '/rest/api/3/issue';
 
 export const NAME = 'jira-get-issue-batch';
 

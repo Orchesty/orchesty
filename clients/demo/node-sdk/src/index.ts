@@ -238,7 +238,7 @@ export function start(): void {
     const shoptetPremApp = new ShoptetPremiumApplication();
     container.setApplication(shoptetPremApp);
 
-    const shopifyApp = new ShopifyApplication(sender);
+    const shopifyApp = new ShopifyApplication(sender, provider);
     container.setApplication(shopifyApp);
 
     const nutshellApp = new NutshellApplication();

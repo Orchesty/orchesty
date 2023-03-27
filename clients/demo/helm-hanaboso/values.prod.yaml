@@ -10,10 +10,11 @@ global:
   starting_point_url: https://start-hm8rohmtf6.eu1.cloud.orchesty.io
 
   imageOverrides:
-    nodejssdk: hanaboso/demo-nodejs:dev
+    nodejssdk: hanaboso/demo-nodejs:master
 
   nodejsSdk:
     extraEnv:
+      APP_ENV: debug
       AWS_SES_KEY:
         valueFrom:
           secretKeyRef:
@@ -25,16 +26,6 @@ global:
             name: pipes-secrets
             key: aws_ses_secret
 
-  monitoring:
-    useInfluxDB: false
-    logStorage: mongodb
-
-  multiCounter:
-    progressSave: true
-
-  applinth:
-    licenseKeyProvided: true
-    
   backend:
-    instanceId: hm8rohmtf6
+    alpha_instance_id: hm8rohmtf6
 
