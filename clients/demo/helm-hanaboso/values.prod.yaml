@@ -14,7 +14,8 @@ global:
 
   nodejsSdk:
     extraEnv:
-      APP_ENV: debug
+      APP_ENV:
+        value: debug
       AWS_SES_KEY:
         valueFrom:
           secretKeyRef:
