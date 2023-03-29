@@ -204,4 +204,40 @@ describe('Tests for logs router', () => {
         assert.equal(resp.statusCode, 200);
         assert.equal(resp.body.length, 1);
     });
+
+    it('document - names nin test', async () => {
+        const key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJzY29wZXMiOlsid29ya2VyOmFsbCJdfQ.L0I7Yf92rj1uXOikdzl2SN1sXJdfbHpRE8aT_q6I99A';
+
+        const apiKeyCollection = services.mongo.getApiKeyCollection();
+        await apiKeyCollection.insertOne({ key, scopes: [ScopeEnum.WORKER_ALL] });
+
+        const documentCollection = services.mongo.getCollection(DocumentEnum.APPLICATION_INSTALL);
+        await documentCollection.insertOne(
+            {
+                key: 'testKey',
+                user: 'testUser',
+                enabled: true,
+                expires: new Date(2022, 1, 2),
+                nonEncrypted: { eshopId: '1' },
+                deleted: false,
+            },
+        );
+        let resp = await supertest(services.app).get('/document/ApplicationInstall?filter={"enabled":true,"names":{"nin":["testKey"]}}').set(ORCHESTY_API_KEY, key).send();
+        assert.equal(resp.statusCode, 200);
+        assert.equal(resp.body.length, 0);
+
+        await documentCollection.insertOne(
+            {
+                key: 'testKey2',
+                user: 'testUser',
+                enabled: true,
+                expires: new Date(2022, 1, 2),
+                nonEncrypted: { eshopId: '1' },
+                deleted: false,
+            },
+        );
+        resp = await supertest(services.app).get('/document/ApplicationInstall?filter={"enabled":true,"names":{"nin":["testKey"]}}').set(ORCHESTY_API_KEY, key).send();
+        assert.equal(resp.statusCode, 200);
+        assert.equal(resp.body.length, 1);
+    });
 });
