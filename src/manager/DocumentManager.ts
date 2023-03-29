@@ -72,7 +72,11 @@ export default class DocumentManager {
             switch (document) {
                 case DocumentEnum.APPLICATION_INSTALL:
                     if (this.isApplicationQuery(query.filter)) {
-                        this.addFilterField(filter, 'key', 'in', query.filter.names);
+                        if (typeof query.filter.names === 'object' && (query.filter.names as { nin: string[] }).nin) {
+                            this.addFilterField(filter, 'key', 'nin', (query.filter.names as { nin: string[] }).nin);
+                        } else {
+                            this.addFilterField(filter, 'key', 'in', query.filter.names);
+                        }
                         this.addFilterField(filter, 'user', 'in', query.filter.users);
                         if (query.filter.enabled !== null) {
                             this.addFilterField(filter, 'enabled', 'eq', query.filter.enabled ?? true);
@@ -141,7 +145,10 @@ export default class DocumentManager {
     ): filter is IApplicationFilter {
         const inputSchema = Joi.object<IApplicationFilter>({
             ids: Joi.array().items(Joi.string()),
-            names: Joi.array().items(Joi.string()),
+            names: Joi.alternatives().try(
+                Joi.array().items(Joi.string()),
+                Joi.object({ nin: Joi.array().items(Joi.string()) }),
+            ),
             users: Joi.array().items(Joi.string()),
             expires: Joi.string(),
             nonEncrypted: Joi.object<Record<string, number>>({}).pattern(Joi.string(), Joi.any()),
@@ -157,7 +164,7 @@ export default class DocumentManager {
         return true;
     }
 
-    private addFilterField(filter: Filter<Document>, field: string, search: 'eq' | 'in' | 'lte', value?: unknown): void {
+    private addFilterField(filter: Filter<Document>, field: string, search: 'eq' | 'in' | 'lte' | 'nin', value?: unknown): void {
         if (value) {
             let searchValue;
             switch (search) {
@@ -166,6 +173,9 @@ export default class DocumentManager {
                     break;
                 case 'in':
                     searchValue = { $in: value };
+                    break;
+                case 'nin':
+                    searchValue = { $nin: value };
                     break;
                 case 'lte':
                     searchValue = { $lte: value };
@@ -207,7 +217,7 @@ interface IQueryParams {
 
 interface IApplicationFilter extends IBaseFilter {
     enabled: boolean | null;
-    names?: string[];
+    names?: string[] | { nin: string[] };
     users?: string[];
     expires?: number;
     nonEncrypted?: Record<string, Record<string, unknown>>;
