@@ -1,0 +1,65 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "cluster-telegraf.fullname" . }}-ds
+  labels:
+    {{- include "cluster-telegraf.selectorLabels" . | nindent 4 }}
+data:
+  telegraf.conf: |
+    [global_tags]
+      # dc = "us-east-1" # will tag all metrics with dc=us-east-1
+      # rack = "1a"
+
+    # Configuration for telegraf agent
+    [agent]
+      interval = "10s"
+      round_interval = true
+      metric_batch_size = 1000
+      metric_buffer_limit = 10000
+      collection_jitter = "0s"
+      flush_jitter = "0s"
+      precision = "0s"
+      hostname = ""
+      omit_hostname = false
+
+      ###############################################################################
+      #                            OUTPUT PLUGINS                                   #
+      ###############################################################################
+
+
+      # # Configuration for sending metrics to InfluxDB 2.0
+      [[outputs.influxdb_v2]]
+      urls = ["${INFLUXDB_URL}"]
+      token = "${INFLUXDB_TOKEN}"
+      organization = "${INFLUXDB_ORG}"
+      bucket = "default"
+
+      ###############################################################################
+      #                            INPUT PLUGINS                                   #
+      ###############################################################################
+
+      [[inputs.kubernetes]]
+      interval = "60s"
+      url = "https://${HOST_IP}:10250"
+      bearer_token = "/run/secrets/kubernetes.io/serviceaccount/token"
+      insecure_skip_verify = true
+      label_include = []
+      label_exclude = []
+      taginclude = [ "namespace", "host", "pod_name", "container_name", "app.kubernetes.io/name" ]
+
+      [[inputs.diskio]]
+      [[inputs.kernel]]
+      [[inputs.mem]]
+      [[inputs.net]]
+      [[inputs.processes]]
+      [[inputs.swap]]
+      [[inputs.system]]
+
+      [[inputs.cpu]]
+      percpu = false
+      totalcpu = true
+      collect_cpu_time = true
+      report_active = false
+
+      [[inputs.disk]]
+      ignore_fs = ["tmpfs", "devtmpfs", "devfs", "iso9660", "overlay", "aufs", "squashfs"]
