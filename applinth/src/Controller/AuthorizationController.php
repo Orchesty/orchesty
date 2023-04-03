@@ -85,7 +85,7 @@ final class AuthorizationController extends AbstractController
         );
 
         $this->authorizationHandler->saveRestrictToken($jweToken);
-        $link = $this->authorizationHandler->initRootApp($jwePayload);
+        $link = $this->authorizationHandler->initRootApp($this->authorizationHandler->payloadFromJwe($jweToken, TRUE));
 
         return $this->getResponse(
             [

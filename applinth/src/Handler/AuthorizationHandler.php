@@ -167,12 +167,19 @@ final class AuthorizationHandler
 
     /**
      * @param string $jweToken
+     * @param bool   $includeSettings
      *
      * @return mixed[]
      */
-    public function payloadFromJwe(string $jweToken): array
+    public function payloadFromJwe(string $jweToken, bool $includeSettings = FALSE): array
     {
-        return $this->authorizationManager->payloadFromJwe($jweToken);
+        $payload = $this->authorizationManager->payloadFromJwe($jweToken);
+
+        if($includeSettings && isset($payload[self::SETTINGS])){
+            unset($payload[self::SETTINGS]);
+        }
+
+        return $payload;
     }
 
     /**
