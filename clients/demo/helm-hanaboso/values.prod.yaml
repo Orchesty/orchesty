@@ -11,6 +11,8 @@ global:
 
   imageOverrides:
     nodejssdk: hanaboso/demo-nodejs:master
+    applinth-marketplace-ui: dkr.hanaboso.net/pipes/pipes/applinth-marketplace-ui:2.0.0
+    backend: dkr.hanaboso.net/pipes/pipes/applinth:2.0.0
 
   nodejsSdk:
     extraEnv:
@@ -30,3 +32,5 @@ global:
   backend:
     alpha_instance_id: hm8rohmtf6
 
+  applinthMarketplaceUI:
+    auth_backlink: https://example.com/foo

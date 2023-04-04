@@ -162,6 +162,9 @@ data:
         acl start-instance-hm8rohmtf6 hdr_beg(host) start-hm8rohmtf6.eu1.cloud.orchesty.io
         use_backend start-hm8rohmtf6 if start-instance-hm8rohmtf6
 
+        acl applinth-instance-hm8rohmtf6 hdr_beg(host) applinth-hm8rohmtf6.eu1.cloud.orchesty.io
+        use_backend applinth-hm8rohmtf6 if applinth-instance-hm8rohmtf6
+
 
         # instance-ed8qk85cpa
 
@@ -315,6 +318,10 @@ data:
     backend start-hm8rohmtf6
         mode http
         server svc starting-point.instance-hm8rohmtf6.svc.cluster.local:8080
+
+    backend applinth-hm8rohmtf6
+        mode http
+        server svc applinth-marketplace-ui.instance-hm8rohmtf6.svc.cluster.local:80
 
 
     # instance-ed8qk85cpa
