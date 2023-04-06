@@ -34,7 +34,7 @@ export const LOCALE = browserLang.substring(0, 2)
 
 export const i18n = new VueI18n({
   locale: LOCALE,
-  fallbackLocale: LOCALE,
+  fallbackLocale: "en",
   messages: {
     en: {
       validations: validationMessagesEN,
