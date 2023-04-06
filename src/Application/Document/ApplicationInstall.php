@@ -17,7 +17,6 @@ use Hanaboso\Utils\Exception\DateTimeException;
  * @package Hanaboso\PipesFramework\Application\Document
  *
  * @ODM\Document(repositoryClass="Hanaboso\PipesFramework\Application\Repository\ApplicationInstallRepository")
- * @ODM\HasLifecycleCallbacks()
  */
 class ApplicationInstall
 {
@@ -63,20 +62,6 @@ class ApplicationInstall
      *
      * @ODM\Field(type="hash")
      */
-    private array $settings = [];
-
-    /**
-     * @var string
-     *
-     * @ODM\Field(type="string")
-     */
-    private string $encryptedSettings = '';
-
-    /**
-     * @var mixed[]
-     *
-     * @ODM\Field(type="hash")
-     */
     private array $nonEncryptedSettings = [];
 
     /**
@@ -90,57 +75,6 @@ class ApplicationInstall
         $this->updated = DateTimeUtils::getUtcDateTime();
     }
 
-    /**
-     * @return mixed[]
-     */
-    public function getSettings(): array
-    {
-        return $this->settings;
-    }
-
-    /**
-     * @param mixed[] $settings
-     *
-     * @return ApplicationInstall
-     */
-    public function setSettings(array $settings): ApplicationInstall
-    {
-        $this->settings = $settings;
-
-        return $this;
-    }
-
-    /**
-     * @param mixed[] $settings
-     *
-     * @return ApplicationInstall
-     */
-    public function addSettings(array $settings): ApplicationInstall
-    {
-        $this->settings = array_merge($this->settings, $settings);
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getEncryptedSettings(): string
-    {
-        return $this->encryptedSettings;
-    }
-
-    /**
-     * @param string $encryptedSettings
-     *
-     * @return ApplicationInstall
-     */
-    public function setEncryptedSettings(string $encryptedSettings): ApplicationInstall
-    {
-        $this->encryptedSettings = $encryptedSettings;
-
-        return $this;
-    }
 
     /**
      * @param string $user
