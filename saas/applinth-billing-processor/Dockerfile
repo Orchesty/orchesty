@@ -1,18 +1,32 @@
+FROM node:19-alpine as precache
+
+RUN npm i -g pnpm
+
+# Install node packages
+WORKDIR /tmp/_node
+COPY package.json ./
+COPY pnpm-lock.yaml ./
+RUN pnpm install
+
+# Install prod node packages
+WORKDIR /tmp/_node_prod
+COPY package.json ./
+COPY pnpm-lock.yaml ./
+RUN pnpm install --production
+
+
 FROM node:19-alpine as build
 
-WORKDIR /build
-COPY package.json pnpm-lock.yaml ./
-RUN pnpm install
-COPY . .
-RUN pnpm build
+WORKDIR /srv/app
+COPY --from=precache /tmp/_node /srv/app
+COPY ./ /srv/app
 
+RUN npm run build
 
-FROM node:19-alpine as final
+FROM node:19-alpine as prod
 
-WORKDIR /app
-
-COPY --from=build /build/dist ./dist
-COPY --from=build /build/package.json /build/pnpm-lock.yaml ./
-RUN pnpm install --production --frozen-lockfile
+WORKDIR /srv/app
+COPY --from=build /srv/app/dist/src /srv/app/
+COPY --from=precache /tmp/_node_prod /srv/app
 
 ENTRYPOINT ["node", "dist/main.js"]
