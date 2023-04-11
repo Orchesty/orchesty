@@ -1,4 +1,4 @@
-import unset from 'unset-value';
+import unset from 'lodash.unset';
 import { USEventApplinthEndUserAppInstall, USEventApplinthEndUserAppUnInstall } from '../events';
 import { State } from '../processor';
 

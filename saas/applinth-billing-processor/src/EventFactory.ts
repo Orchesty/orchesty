@@ -1,4 +1,4 @@
-import unset from 'unset-value';
+import unset from 'lodash.unset';
 import { USEvent } from './events';
 import { logger } from './main';
 import * as install from './parsers/applinthEndUserAppInstall';
