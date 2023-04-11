@@ -27,20 +27,18 @@ export default class Mongo {
     }
 
     public async dropCollections(): Promise<void> {
-        await this.client.db(mongo.mongoCloudDbName).dropCollection(CollectionEnum.TENANT);
-        await this.client.db(mongo.mongoBillingDbName).dropCollection(CollectionEnum.CLIENT);
-        await this.client.db(mongo.mongoBillingDbName).dropCollection(CollectionEnum.USAGE_STATS_HOURLY);
-        await this.client.db(mongo.mongoBillingDbName).dropCollection(CollectionEnum.USAGE_STATS_DAILY);
-        await this.client.db(mongo.mongoBillingDbName).dropCollection(CollectionEnum.USAGE_STATS_MONTHLY);
-        await this.client.db(mongo.mongoBillingDbName).dropCollection(CollectionEnum.USAGE_STATS_METADATA);
-
-        await this.client.db(mongo.mongoBillingDbName).dropCollection(CollectionEnum.ADDRESS);
-        await this.client.db(mongo.mongoBillingDbName).dropCollection(CollectionEnum.APPLINTH);
-        await this.client.db(mongo.mongoBillingDbName).dropCollection(CollectionEnum.CLIENT);
-        await this.client.db(mongo.mongoBillingDbName).dropCollection(CollectionEnum.CLOUD);
-        await this.client.db(mongo.mongoBillingDbName).dropCollection(CollectionEnum.CORRECTION);
-        await this.client.db(mongo.mongoBillingDbName).dropCollection(CollectionEnum.MODULE);
-        await this.client.db(mongo.mongoBillingDbName).dropCollection(CollectionEnum.ORCHESTY);
+        await this.dropCollection(mongo.mongoBillingDbName, CollectionEnum.USAGE_STATS_HOURLY);
+        await this.dropCollection(mongo.mongoBillingDbName, CollectionEnum.USAGE_STATS_DAILY);
+        await this.dropCollection(mongo.mongoBillingDbName, CollectionEnum.USAGE_STATS_MONTHLY);
+        await this.dropCollection(mongo.mongoBillingDbName, CollectionEnum.USAGE_STATS_METADATA);
+        await this.dropCollection(mongo.mongoCloudDbName, CollectionEnum.TENANT);
+        await this.dropCollection(mongo.mongoCloudDbName, CollectionEnum.ADDRESS);
+        await this.dropCollection(mongo.mongoCloudDbName, CollectionEnum.APPLINTH);
+        await this.dropCollection(mongo.mongoCloudDbName, CollectionEnum.CLIENT);
+        await this.dropCollection(mongo.mongoCloudDbName, CollectionEnum.CLOUD);
+        await this.dropCollection(mongo.mongoCloudDbName, CollectionEnum.CORRECTION);
+        await this.dropCollection(mongo.mongoCloudDbName, CollectionEnum.MODULE);
+        await this.dropCollection(mongo.mongoCloudDbName, CollectionEnum.ORCHESTY);
     }
 
     public async createBillingIndexes(): Promise<void> {
@@ -102,11 +100,21 @@ export default class Mongo {
             { key: { appName: 1 } },
             { key: { applinthId: 1 } },
         ]);
+        await this.getCloudCollection(CollectionEnum.MODULE).createIndex({
+            appName: 1, applinthId: 1,
+        }, { unique: true });
         await this.getCloudCollection(CollectionEnum.ADDRESS).createIndexes([
             { key: { _id: 1 } },
             { key: { deleted: 1 } },
             { key: { tenantId: 1 } },
         ]);
+    }
+
+    private async dropCollection(dbName: string, collection: string): Promise<void> {
+        try {
+            await this.client.db(dbName).dropCollection(collection);
+        } catch (e) {
+        }
     }
 
 }

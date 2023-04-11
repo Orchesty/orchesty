@@ -1,0 +1,9 @@
+{
+    "extends": [
+        "plugin:@hanaboso/orchesty"
+    ],
+    "rules": {
+        "no-param-reassign": "off",
+        "@typescript-eslint/no-unused-vars": "off"
+    }
+}
