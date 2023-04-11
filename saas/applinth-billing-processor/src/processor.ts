@@ -28,17 +28,13 @@ export class Processor {
 
     private state!: State;
 
-    public async process(events: AsyncGenerator<USEvent, void>): Promise<Date> {
+    public async process(events: USEvent[]): Promise<void> {
         this.state = {
             lastEvent: null,
             endUsers: {},
         };
 
-        let highestDate = new Date(1);
         for await (const event of events) {
-            if (highestDate < event.created) {
-                highestDate = event.created;
-            }
             this.assertMonotonic(event);
             this.assertSameInstance(event);
 
@@ -54,8 +50,6 @@ export class Processor {
             }
         }
         logger.debug({ msg: 'Final state:', state: this.state });
-
-        return highestDate;
     }
 
     /**
