@@ -8,7 +8,11 @@ async function createFixtureData(): Promise<void> {
     const db = new Mongo(mongo.dsn);
     await db.connect();
 
-    await db.dropCollections();
+    try {
+        await db.dropCollections();
+    } catch (e) {
+    }
+
     await db.createBillingIndexes();
     await db.createCloudIndexes();
 
@@ -47,6 +51,40 @@ async function createFixtureData(): Promise<void> {
                 billingHistoryStart: new Date(item.billingHistoryStart),
                 billingHistoryEnd: new Date(item.billingHistoryEnd),
             })));
+
+    const client = readFileSync(path.resolve(__dirname, 'fixtureData/client.json')).toString();
+    await db.getCloudCollection(CollectionEnum.CLIENT)
+        .insertOne(JSON.parse(client));
+
+    const address = readFileSync(path.resolve(__dirname, 'fixtureData/address.json')).toString();
+    await db.getCloudCollection(CollectionEnum.ADDRESS)
+        .insertOne(JSON.parse(address));
+
+    const applinth = JSON.parse(readFileSync(path.resolve(__dirname, 'fixtureData/applinth.json')).toString());
+    applinth.minPriceDate = new Date(applinth.minPriceDate);
+    await db.getCloudCollection(CollectionEnum.APPLINTH)
+        .insertOne(applinth);
+
+    const cloud = JSON.parse(readFileSync(path.resolve(__dirname, 'fixtureData/cloud.json')).toString());
+    cloud.startDate = new Date(cloud.startDate);
+    cloud.closeDate = new Date(cloud.closeDate);
+    await db.getCloudCollection(CollectionEnum.CLOUD)
+        .insertOne(cloud);
+
+    const correction = JSON.parse(readFileSync(path.resolve(__dirname, 'fixtureData/correction.json')).toString());
+    correction.date = new Date(correction.date);
+    await db.getCloudCollection(CollectionEnum.CORRECTION)
+        .insertOne(correction);
+
+    const module = JSON.parse(readFileSync(path.resolve(__dirname, 'fixtureData/modul.json')).toString());
+    module.minPriceDate = new Date(module.minPriceDate);
+    await db.getCloudCollection(CollectionEnum.MODULE)
+        .insertOne(module);
+
+    const orchesty = JSON.parse(readFileSync(path.resolve(__dirname, 'fixtureData/orchesty.json')).toString());
+    orchesty.startDate = new Date(orchesty.startDate);
+    await db.getCloudCollection(CollectionEnum.ORCHESTY)
+        .insertOne(orchesty);
 
     await db.disconnect();
 }

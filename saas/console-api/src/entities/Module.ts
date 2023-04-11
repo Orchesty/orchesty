@@ -4,6 +4,6 @@ export default interface Module extends BaseEntity {
     appName: string;
     applinthId: string;
     price: number;
-    minPrice: number;
-    minPriceDate: Date;
+    minPrice?: number;
+    minPriceDate?: Date;
 }
