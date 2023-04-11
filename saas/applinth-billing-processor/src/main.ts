@@ -71,10 +71,11 @@ const eventFactory = new EventFactory();
 
 const processor = new Processor();
 
-async function* getEvents(): AsyncGenerator<USEvent, void> {
+async function* getEvents(instanceId: string, lastHighestDateTimestamp?: string): AsyncGenerator<USEvent, void> {
     const db = await usdb.db();
     const coll = db.collection('Events');
-    const res = coll.find();
+    const filter = lastHighestDateTimestamp ? { created: { $gt: lastHighestDateTimestamp } } : {};
+    const res = coll.find({ ...filter, iid: instanceId });
 
     for await (const doc of res) {
         if (doc.type !== null && doc.type !== 'applinth_enduser_app_hearthbeat') {
@@ -94,8 +95,6 @@ async function* getEvents(): AsyncGenerator<USEvent, void> {
 async function commandAll(): Promise<void> {
     const billingDb = await badb.db();
     const applinths = await billingDb.collection('applinth').find().toArray();
-
-    await processor.process(getEvents());
     const db = await bdb.db();
 
     const colMonthly = db.collection('usage_stats_monthly');
@@ -103,6 +102,18 @@ async function commandAll(): Promise<void> {
     const colModule = billingDb.collection('module');
 
     for (const applinth of applinths) {
+        // eslint-disable-next-line no-await-in-loop
+        const metadata = (await colMetadata.findOne(
+            { tenantId: applinth.tenantId },
+            { projection: { [`instances.${applinth.instanceId}`]: 1 } },
+        ))?.instances[applinth.instanceId];
+
+        const lastHighestDateTimestamp = metadata ? metadata.lastRunHighestEventTimestamp : null;
+
+        const events = getEvents(applinth.instanceId, lastHighestDateTimestamp);
+        // eslint-disable-next-line no-await-in-loop
+        const highestDate = await processor.process(events);
+
         // eslint-disable-next-line no-await-in-loop
         const billingDocs = await processor.monthlyAll(
             applinth as { _id: ObjectId; tenantId: string; instanceId: string },
@@ -122,9 +133,10 @@ async function commandAll(): Promise<void> {
             colMonthly,
             dryRun ? PersisterMode.DRY_RUN : PersisterMode.GENERATE,
             applinth.instanceId,
+            lastHighestDateTimestamp,
         );
         // eslint-disable-next-line no-await-in-loop
-        await upsertMetadata(colMetadata, applinth.tenantId, applinth.instanceId);
+        await upsertMetadata(colMetadata, applinth.tenantId, applinth.instanceId, highestDate);
     }
 
     /*
