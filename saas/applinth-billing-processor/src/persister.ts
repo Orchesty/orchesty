@@ -103,13 +103,13 @@ export async function upsertMetadata(
     collection: Collection,
     tenantId: string,
     instanceId: string,
-    highestDate: Date,
+    highestDate: string,
 ): Promise<void> {
     await collection.updateOne({ tenantId }, {
         $set: {
             [`instances.${instanceId}.billingHistoryStart`]: new Date('2022-10-01T00:00:00.000Z'), // todo: determine
             [`instances.${instanceId}.billingHistoryEnd`]: new Date(now),
-            [`instances.${instanceId}.lastRunHighestEventTimestamp`]: highestDate.valueOf().toString(),
+            [`instances.${instanceId}.lastRunHighestEventTimestamp`]: highestDate,
         },
     }, { upsert: true });
 }

@@ -71,11 +71,13 @@ const eventFactory = new EventFactory();
 
 const processor = new Processor();
 
-async function* getEvents(instanceId: string, lastHighestDateTimestamp?: string): AsyncGenerator<USEvent, void> {
+async function getEvents(instanceId: string, lastHighestDateTimestamp?: string): Promise<USEvent[]> {
     const db = await usdb.db();
     const coll = db.collection('Events');
     const filter = lastHighestDateTimestamp ? { created: { $gt: lastHighestDateTimestamp } } : {};
-    const res = coll.find({ ...filter, iid: instanceId });
+    const res = coll.find({ ...filter, iid: instanceId }).sort({ created: 1 });
+
+    const events = [];
 
     for await (const doc of res) {
         if (doc.type !== null && doc.type !== 'applinth_enduser_app_hearthbeat') {
@@ -87,9 +89,11 @@ async function* getEvents(instanceId: string, lastHighestDateTimestamp?: string)
             };
             delete re._id;
 
-            yield eventFactory.create(re);
+            events.push(eventFactory.create(re));
         }
     }
+
+    return events;
 }
 
 async function commandAll(): Promise<void> {
@@ -110,9 +114,15 @@ async function commandAll(): Promise<void> {
 
         const lastHighestDateTimestamp = metadata ? metadata.lastRunHighestEventTimestamp : null;
 
-        const events = getEvents(applinth.instanceId, lastHighestDateTimestamp);
         // eslint-disable-next-line no-await-in-loop
-        const highestDate = await processor.process(events);
+        const events = await getEvents(applinth.instanceId, lastHighestDateTimestamp);
+        // eslint-disable-next-line no-await-in-loop
+        await processor.process(events);
+        const newestEvent = events[events.length - 1];
+        let highestDate = lastHighestDateTimestamp;
+        if (newestEvent) {
+            highestDate = (newestEvent.created.valueOf() * 1000).toString();
+        }
 
         // eslint-disable-next-line no-await-in-loop
         const billingDocs = await processor.monthlyAll(
