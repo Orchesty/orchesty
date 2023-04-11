@@ -53,11 +53,12 @@ export async function persist(
     collection: Collection,
     mode: PersisterMode,
     instanceId: string,
+    lastHighestDateTimestamp: string,
 ): Promise<void> {
     const dryRunInfo = mode === PersisterMode.DRY_RUN ? '(DRY RUN)' : '';
 
     const persisted = collection
-        .find({ instanceId })
+        .find({ instanceId, created: { $gt: lastHighestDateTimestamp } })
         .sort({ _id: 1 }); // todo: we need some monotonic ordering key for sorting purposes, this will kick our ass one day
 
     // iterate through newly generated and previously persisted documents side by side
@@ -98,11 +99,17 @@ export async function persist(
     }
 }
 
-export async function upsertMetadata(collection: Collection, tenantId: string, instanceId: string): Promise<void> {
+export async function upsertMetadata(
+    collection: Collection,
+    tenantId: string,
+    instanceId: string,
+    highestDate: Date,
+): Promise<void> {
     await collection.updateOne({ tenantId }, {
         $set: {
             [`instances.${instanceId}.billingHistoryStart`]: new Date('2022-10-01T00:00:00.000Z'), // todo: determine
             [`instances.${instanceId}.billingHistoryEnd`]: new Date(now),
+            [`instances.${instanceId}.lastRunHighestEventTimestamp`]: highestDate.valueOf().toString(),
         },
     }, { upsert: true });
 }
