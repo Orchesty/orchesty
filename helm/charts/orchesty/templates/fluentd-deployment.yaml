@@ -24,7 +24,7 @@ spec:
           imagePullPolicy: Always
           ports:
             - name: default
-              containerPort: 9600
+              containerPort: 9880
               protocol: TCP
             - name: ingest-tcp
               containerPort: 5120
