@@ -83,7 +83,7 @@ export default class DocumentRouter {
             };
         }
 
-        logger.info({
+        logger.debug({
             url: '/document',
             params: req.params,
             query: req.query,
