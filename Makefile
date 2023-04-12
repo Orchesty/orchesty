@@ -1,8 +1,7 @@
 .PHONY: docker-build docker-push
 
-DOCKER_TAG = dev
 DOCKER_REGISTRY := dkr.hanaboso.net/pipes/pipes/fluentd
-PUBLIC_DOCKER_REGISTRY := hanaboso/pipes-fluentd
+PUBLIC_DOCKER_REGISTRY := orchesty/fluentd
 
 docker-build:
 	docker build -t $(DOCKER_REGISTRY):$(DOCKER_TAG) . --pull
