@@ -6,10 +6,7 @@ import { EventFactory, RawEvent } from './EventFactory';
 import { USEvent } from './events';
 import { persist, PersisterMode, upsertMetadata } from './persister';
 import { Processor } from './processor';
-import { BillingAdminStorage } from './storage/BillingAdminStorage';
-import { BillingStorage } from './storage/BillingStorage';
-import { MongoDBConn } from './storage/MongoDBConn';
-import { UsageStatsStorage } from './storage/UsageStatsStorage';
+import Mongo, { CollectionEnum } from './storage/mongo/Mongo';
 
 process.env.TZ = 'UTC';
 
@@ -62,18 +59,20 @@ logger.level = program.opts().logLevel;
 
 // setup storage
 
-const mongoConn = new MongoDBConn(config.mongodbDSN);
-const usdb = new UsageStatsStorage(mongoConn, config);
-const bdb = new BillingStorage(mongoConn, config);
-const badb = new BillingAdminStorage(mongoConn, config);
+const mongo = new Mongo(config.mongodbDSN);
+mongo.connect().then(async () => {
+    await mongo.createUsageStatsIndexes();
+    logger.info('MongoDB connected!');
+}).catch((e) => {
+    logger.error(e);
+});
 
 const eventFactory = new EventFactory();
 
 const processor = new Processor();
 
 async function getEvents(instanceId: string, lastHighestDateTimestamp?: string): Promise<USEvent[]> {
-    const db = await usdb.db();
-    const coll = db.collection('Events');
+    const coll = mongo.getUsageStatsCollection(CollectionEnum.EVENTS);
     const filter = lastHighestDateTimestamp ? { created: { $gt: lastHighestDateTimestamp } } : {};
     const res = coll.find({ ...filter, iid: instanceId }).sort({ created: 1 });
 
@@ -97,13 +96,11 @@ async function getEvents(instanceId: string, lastHighestDateTimestamp?: string):
 }
 
 async function commandAll(): Promise<void> {
-    const billingDb = await badb.db();
-    const applinths = await billingDb.collection('applinth').find().toArray();
-    const db = await bdb.db();
+    const applinths = await mongo.getBillingAdminCollection(CollectionEnum.APPLINTH).find().toArray();
 
-    const colMonthly = db.collection('usage_stats_monthly');
-    const colMetadata = db.collection('usage_stats_metadata');
-    const colModule = billingDb.collection('module');
+    const colMonthly = mongo.getBillingCollection(CollectionEnum.USAGE_STATS_MONTHLY);
+    const colMetadata = mongo.getBillingCollection(CollectionEnum.USAGE_STATS_METADATA);
+    const colModule = mongo.getBillingAdminCollection(CollectionEnum.MODULE);
 
     for (const applinth of applinths) {
         // eslint-disable-next-line no-await-in-loop
@@ -186,7 +183,7 @@ async function commandAll(): Promise<void> {
     }
 
     logger.debug({ memoryUsage: process.memoryUsage() });
-    await mongoConn.close();
+    await mongo.disconnect();
 }()).catch((e) => {
     logger.error(e);
 });
