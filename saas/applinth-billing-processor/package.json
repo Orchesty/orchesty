@@ -12,7 +12,7 @@
         "run-command": "ts-node ./src/main.ts all"
     },
     "dependencies": {
-        "ajv": "^8.12.0",
+        "joi": "^17.9.1",
         "commander": "^9.5.0",
         "deep-object-diff": "^1.1.9",
         "mongodb": "^4.15.0",

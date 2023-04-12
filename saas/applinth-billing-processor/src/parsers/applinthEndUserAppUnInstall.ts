@@ -1,13 +1,12 @@
-import { fail } from 'assert';
 import { ParsedResult, RawEvent } from '../EventFactory';
-import { USEventApplinthEndUserAppUnInstall, USEventType } from '../events';
-import { ajv, applinthEndUserAppEventsV1 as validate } from '../validators';
+import { eventSchema, USEventApplinthEndUserAppUnInstall, USEventType } from '../events';
 
 export const TYPE = 'applinth_enduser_app_uninstall';
 
 export function parse(data: RawEvent): ParsedResult {
-    if (!validate(data)) {
-        fail(ajv.errorsText(validate.errors));
+    const { error } = eventSchema.validate(data);
+    if (error) {
+        throw error;
     }
     const event: USEventApplinthEndUserAppUnInstall = {
         created: data.created,

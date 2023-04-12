@@ -1,15 +1,12 @@
-import { fail } from 'assert';
 import { ParsedResult, RawEvent, UpgradedResult } from '../EventFactory';
-import { USEventApplinthEndUserAppInstall, USEventType } from '../events';
-import { logger } from '../main';
-import { ajv, applinthEndUserAppEventsV1 as validate } from '../validators';
+import { eventSchema, USEventApplinthEndUserAppInstall, USEventType } from '../events';
 
 export const TYPE = 'applinth_enduser_app_install';
 
 export function parse(data: RawEvent): ParsedResult {
-    if (!validate(data)) {
-        logger.error(data);
-        fail(ajv.errorsText(validate.errors));
+    const { error } = eventSchema.validate(data);
+    if (error) {
+        throw error;
     }
     const event: USEventApplinthEndUserAppInstall = {
         created: data.created,
