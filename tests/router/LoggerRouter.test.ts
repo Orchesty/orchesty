@@ -3,7 +3,6 @@ import supertest from 'supertest';
 import { init, IServices } from '../../src';
 import { ORCHESTY_API_KEY } from '../../src/authorization/AuthorizationMiddleware';
 import { ScopeEnum } from '../../src/authorization/ScopeEnum';
-import ResultCode from '../../src/enum/ResultCode';
 
 let services: IServices;
 describe('Tests for logs router', () => {
@@ -42,13 +41,23 @@ describe('Tests for logs router', () => {
         await apiKeyCollection.insertOne({ key, scopes: [ScopeEnum.LOG_WRITE] });
 
         const resp = await supertest(services.app).post('/logger/logs').set(ORCHESTY_API_KEY, key).send({
-            timestamp: 123,
-            hostname: 'testHostName',
-            service: 'testType',
-            level: 'testSeverity',
-            message: 'testMessage',
-            resultCode: ResultCode.SUCCESS,
-            isForUi: true,
+            level: 50,
+            time: 1681225378307,
+            pid: 1,
+            hostname: 'pipes-worker-595fc8b6c6-zg882',
+            previousNodeId: '64199a06345bee59440cfc34',
+            nodeId: '64199a06345bee59440cfc35',
+            correlationId: 'b63a69b5-b409-4543-abcb-c2b764c43e5f',
+            topologyId: '64199a06cebdd20846060009',
+            processId: '39009ff7-2b2f-4ac5-afd1-3c3848fb0aa7',
+            parentId: 'a77d8a7f-b78f-4036-a340-9e349223376c',
+            sequenceId: '0',
+            userId: 'abcd',
+            applications: 'test;test2',
+            timestamp: 1681225378307,
+            service: 'sdk',
+            levelName: 'error',
+            message: 'failed',
         });
         assert.equal(resp.statusCode, 200);
         assert.deepEqual(resp.body, { message: { data: '', status: 'OK' } });

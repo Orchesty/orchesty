@@ -3,27 +3,30 @@ import { Application } from 'express';
 import Joi from 'joi';
 import { fluentdOptions } from '../config/Config';
 import ResultCode from '../enum/ResultCode';
+import { logger } from '../logger/Logger';
 
 const inputSchema = Joi.object<ILogInput>({
-    nodeId: Joi.string(),
-    userId: Joi.string(),
-    nodeName: Joi.string(),
-    topologyId: Joi.string(),
-    topologyName: Joi.string(),
+    message: Joi.string().required(),
+    service: Joi.string().required(),
+    timestamp: Joi.number().strict(true).required(),
+    applications: Joi.string(),
     correlationId: Joi.string(),
-    resultCode: Joi.number().valid(...Object.values(ResultCode)),
-    resultMessage: Joi.string(),
-    stacktrace: Joi.object({
-        trace: Joi.string(),
-        message: Joi.string().required(),
-    }),
     data: Joi.string(),
     isForUi: Joi.boolean(),
-    timestamp: Joi.number().strict(true).required(),
-    hostname: Joi.string().required(),
-    service: Joi.string().required(),
-    level: Joi.string().required(),
-    message: Joi.string().required(),
+    levelName: Joi.string(),
+    nodeId: Joi.string(),
+    nodeName: Joi.string(),
+    parentId: Joi.string(),
+    previousCorrelationId: Joi.string(),
+    previousNodeId: Joi.string(),
+    processId: Joi.string(),
+    resultCode: Joi.number().valid(...Object.values(ResultCode)),
+    resultMessage: Joi.string(),
+    sequenceId: Joi.string(),
+    stacktrace: Joi.object({ message: Joi.string().required(), trace: Joi.string() }),
+    topologyId: Joi.string(),
+    topologyName: Joi.string(),
+    userId: Joi.string(),
 }).required();
 
 export default class LoggerRouter {
@@ -34,16 +37,22 @@ export default class LoggerRouter {
     public initRoutes(): void {
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
         this.app.post('/logger/logs', async (req, res) => {
-            const result = inputSchema.validate(req.body);
+            const result = inputSchema.validate(req.body, { allowUnknown: true });
             if (result.error) {
+                logger.error(result.error);
                 res.statusCode = 400;
                 res.json({ message: { error: result.error.message } });
                 return;
             }
             try {
+                req.body.timestamp = Math.floor(new Date(req.body.timestamp).getTime() / 1000) | 0;
+
                 const fluentdResult = await axios.post(`http://${fluentdOptions.fluentdDsn}/orchesty`, req.body);
-                res.json({ message: { status: fluentdResult.statusText, data: fluentdResult.data } });
+                const resp = { message: { status: fluentdResult.statusText, data: fluentdResult.data } };
+                logger.debug(resp);
+                res.json(resp);
             } catch (e) {
+                logger.error(e);
                 if (e instanceof Error) {
                     res.json({ message: { error: e.message } });
                     return;
@@ -56,23 +65,25 @@ export default class LoggerRouter {
 }
 
 interface ILogInput {
-    timestamp: number;
-    hostname: string;
-    service: string;
-    level: string;
     message: string;
-    nodeId?: string;
-    userId?: string;
-    nodeName?: string;
-    topologyId?: string;
-    topologyName?: string;
+    service: string;
+    timestamp: number;
+    applications?: string;
     correlationId?: string;
-    resultCode?: ResultCode;
-    resultMessage?: string;
-    stacktrace?: {
-        message: string;
-        trace?: string;
-    };
     data?: string;
     isForUi?: boolean;
+    levelName?: string;
+    nodeId?: string;
+    nodeName?: string;
+    parentId?: string;
+    previousCorrelationId?: string;
+    previousNodeId?: string;
+    processId?: string;
+    resultCode?: ResultCode;
+    resultMessage?: string;
+    sequenceId?: string;
+    stacktrace?: { message: string; trace?: string };
+    topologyId?: string;
+    topologyName?: string;
+    userId?: string;
 }
