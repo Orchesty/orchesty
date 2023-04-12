@@ -35,8 +35,8 @@ export class Processor {
         };
 
         for await (const event of events) {
-            this.assertMonotonic(event);
-            this.assertSameInstance(event);
+            this.checkMonotonic(event);
+            this.checkSameInstance(event);
 
             // TODO rich mozna se zrusi epochy, zamyslet se
             // todo: search through epochs
@@ -240,7 +240,7 @@ export class Processor {
         return costs;
     }
 
-    private assertMonotonic(event: USEvent): void {
+    private checkMonotonic(event: USEvent): void {
         if (this.state?.lastEvent) {
             if (this.state.lastEvent.created >= event.created) {
                 throw new Error('Event stream [created] field is not strictly monotonic! '
@@ -250,7 +250,7 @@ export class Processor {
         // last event not yet present, pass the test
     }
 
-    private assertSameInstance(event: USEvent): void {
+    private checkSameInstance(event: USEvent): void {
         if (this.state?.lastEvent) {
             if (this.state.lastEvent.instanceId !== event.instanceId) {
                 throw new Error('Event stream [instanceId] field has no constant value! '
