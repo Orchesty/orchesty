@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "applinth-api.fullname" . }}
+  labels:
+    {{- include "applinth-api.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "applinth-api.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "applinth-api.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccount: {{ include "applinth-api.fullname" . }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            # proc je v DC APP_ENV? stejne nefunguje
+            - name: NODE_ENV
+              value: prod
+            - name: MONGODB_DSN
+                  valueFrom:
+                    secretKeyRef:
+                      name: billing
+                      key: consoleApiMongodbDsn
+            - name: MONGODB_BILLINGDB_NAME
+              value: {{ .Values.mongodbBillingDB }}
+            - name: MONGODB_CLOUDDB_NAME
+              value: {{ .Values.mongodbCloudDB }}
+            - name: FIREBASE_API_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: billing
+                      key: firebaseApiKey
+            - name: FIREBASE_AUTH_DOMAIN
+              value: {{ .Values.firebaseAuthDomain }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+
+        - name: esp
+          image: gcr.io/endpoints-release/endpoints-runtime:2
+          args: [
+            "--listener_port=8001",
+            "--backend=127.0.0.1:8000",
+            "--service=applinth-mgmt-api.cloud.orchesty.io",
+            "--rollout_strategy=managed",
+            "--cors_preset=basic",
+            "--healthz=/healthz",
+          ]
+          ports:
+            - name: http
+              containerPort: 8001
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /status
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /status
+              port: http
+
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

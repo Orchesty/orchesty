@@ -1,0 +1,12 @@
+---
+mongodbBillingDB: "billing"
+mongodbCloudDB: "billing"
+
+firebaseAuthDomain: orchesty-cloud-stage.firebaseapp.com
+
+image:
+  repository: dkr.hanaboso.net/pipes/pipes/cloud-applinth-api
+  tag: dev
+
+serviceAccount:
+  gceWorkloadSA: workload-applinth-api@orchesty-cloud-stage.iam.gserviceaccount.com

@@ -1,0 +1,13 @@
+---
+mongodbBillingDB: "usage-stats"
+mongodbCloudDB: "usage-stats"
+
+firebaseAuthDomain: orchesty.io
+# firebaseAuthDomain: orchesty-cloud-prod.firebaseapp.com
+
+image:
+  repository: dkr.hanaboso.net/pipes/pipes/cloud-applinth-api
+  tag: dev
+
+serviceAccount:
+  gceWorkloadSA: workload-cc-applinth-api@orchesty-cloud-prod.iam.gserviceaccount.com

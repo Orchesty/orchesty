@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "applinth-api.fullname" . }}
+  labels:
+    {{- include "applinth-api.labels" . | nindent 4 }}
+  annotations:
+    cloud.google.com/neg: '{"exposed_ports": {"80":{"name": "applinth-api"}}}'
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "applinth-api.selectorLabels" . | nindent 4 }}
