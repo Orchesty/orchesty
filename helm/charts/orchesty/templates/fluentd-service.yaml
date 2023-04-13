@@ -12,7 +12,7 @@ spec:
   ports:
     - name: default
       protocol: TCP
-      port: 9600
+      port: 9880
       targetPort: default
     - name: ingest-tcp
       protocol: TCP

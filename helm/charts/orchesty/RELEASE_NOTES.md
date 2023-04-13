@@ -1,10 +1,17 @@
 # Release Notes
 
+## 2.0.2
+
+### Changes
+
+- FluentD: added correct port number for TCP
+- Updated default resources config
+
 ## 2.0.1
 
 ### Changes
 
-- chart bug fixes
+- Chart bug fixes
 
 ## 2.0.0
 
