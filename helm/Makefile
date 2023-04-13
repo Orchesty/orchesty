@@ -4,7 +4,7 @@ helm-repo:
 orchesty-release:
 	helm package charts/orchesty -d helm-repo
 
-prepare:
+reindex:
 	helm repo index helm-repo --url https://orchesty.github.io/helm-charts
 	git -C helm-repo add .
 
