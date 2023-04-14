@@ -83,7 +83,7 @@ func HandleInvalidateCache(w http.ResponseWriter, r *http.Request) {
 func handleByID(w http.ResponseWriter, r *http.Request) {
 	err := utils.ValidateBody(r)
 	if err != nil {
-		config.Config.Logger.Errorf("Content is not valid: %s", err.Error())
+		config.Config.Logger.Errorf("Content is not valid: %s, Route: %s", err.Error(), r.URL.String())
 		writeErrorResponse(w, http.StatusBadRequest, "Content is not valid!")
 		return
 	}
@@ -114,7 +114,7 @@ func handleByID(w http.ResponseWriter, r *http.Request) {
 func handleByName(w http.ResponseWriter, r *http.Request) {
 	err := utils.ValidateBody(r)
 	if err != nil {
-		config.Config.Logger.Errorf("Content is not valid: %s", err.Error())
+		config.Config.Logger.Errorf("Content is not valid: %s, Route: %s", err.Error(), r.URL.String())
 		writeErrorResponse(w, http.StatusBadRequest, "Content is not valid!")
 		return
 	}
@@ -141,7 +141,7 @@ func handleByName(w http.ResponseWriter, r *http.Request) {
 func handleByApplication(w http.ResponseWriter, r *http.Request) {
 	err := utils.ValidateBody(r)
 	if err != nil {
-		config.Config.Logger.Errorf("Content is not valid: %s", err.Error())
+		config.Config.Logger.Errorf("Content is not valid: %s, Route: %s", err.Error(), r.URL.String())
 		writeErrorResponse(w, http.StatusBadRequest, "Content is not valid!")
 		return
 	}

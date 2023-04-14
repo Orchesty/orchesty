@@ -6,8 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-
-	log "github.com/sirupsen/logrus"
+	"starting-point/pkg/config"
 )
 
 const contentType = "content-type"
@@ -18,11 +17,11 @@ const xmlType = "application/xml"
 func GetBodyFromStream(r *http.Request) (b []byte) {
 	b, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		log.Error(fmt.Sprintf("Convert stream to []byte error: %s", err))
+		config.Config.Logger.Error(fmt.Sprintf("Convert stream to []byte error: %s", err))
 	}
 
 	if r.Body.Close() != nil {
-		log.Error(fmt.Sprintf("Close stream error: %s", err))
+		config.Config.Logger.Error(fmt.Sprintf("Close stream error: %s", err))
 	}
 
 	r.Body = ioutil.NopCloser(bytes.NewBuffer(b))
@@ -63,6 +62,7 @@ func ValidateJSON(body []byte) (err error) {
 		emptyData = emptyData[:0]
 		return
 	}
+	config.Config.Logger.Errorf("Bad input data: '%s'", string(body))
 
 	return err
 }
