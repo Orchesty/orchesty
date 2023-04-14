@@ -15,8 +15,6 @@ import (
 	"starting-point/pkg/service"
 	"starting-point/pkg/storage"
 	"starting-point/pkg/utils"
-
-	log "github.com/sirupsen/logrus"
 )
 
 // HandleClear handles context clear
@@ -93,7 +91,7 @@ func handleByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		config.Logger.Error(fmt.Errorf("content is not valid: %s", err.Error()))
+		config.Logger.Error(fmt.Errorf("content is not valid: %s, Route: %s", err.Error(), r.URL.String()))
 		writeErrorResponse(w, http.StatusBadRequest, "Content is not valid!")
 		return
 	}
@@ -122,7 +120,7 @@ func handleByID(w http.ResponseWriter, r *http.Request) {
 func handleByName(w http.ResponseWriter, r *http.Request) {
 	err := utils.ValidateBody(r)
 	if err != nil {
-		config.Logger.Error(fmt.Errorf("content is not valid: %s", err.Error()))
+		config.Logger.Error(fmt.Errorf("content is not valid: %s, Route: %s", err.Error(), r.URL.String()))
 		writeErrorResponse(w, http.StatusBadRequest, "Content is not valid!")
 		return
 	}
@@ -147,7 +145,7 @@ func handleByName(w http.ResponseWriter, r *http.Request) {
 func handleByApplication(w http.ResponseWriter, r *http.Request) {
 	err := utils.ValidateBody(r)
 	if err != nil {
-		config.Logger.Error(fmt.Errorf("content is not valid: %s", err.Error()))
+		config.Logger.Error(fmt.Errorf("content is not valid: %s, Route: %s", err.Error(), r.URL.String()))
 		writeErrorResponse(w, http.StatusBadRequest, "Content is not valid!")
 		return
 	}
@@ -182,7 +180,7 @@ func getUser(r *http.Request) string {
 		innerData := map[string]interface{}{}
 
 		if r.Body.Close() != nil {
-			log.Error(fmt.Sprintf("Close stream error: %s", err))
+			config.Logger.Error(fmt.Errorf("Close stream error: %s", err))
 		}
 
 		r.Body = ioutil.NopCloser(bytes.NewBuffer(data))
