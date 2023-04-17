@@ -37,6 +37,8 @@ var webhookObject = storage.Webhook{
 	Application: "Application",
 }
 
+var expectedResponse = `{"correlation_id":"1","started":1,"state":"ok"}`
+
 type RabbitMock struct {
 	service.RabbitSvc
 }
@@ -91,8 +93,8 @@ func prepareMongo() {
 	_ = storage.Mongo.InsertApiToken("orchesty", []string{"topology:run"}, "")
 }
 
-func (r RabbitMock) SendMessage(request *http.Request, topology storage.Topology, init map[string]float64) {
-	return
+func (r RabbitMock) SendMessage(request *http.Request, topology storage.Topology, init map[string]float64) (string, error) {
+	return "1", nil
 }
 
 func (c *CacheMock) InvalidateCache(topologyName string) int {
@@ -144,7 +146,7 @@ func TestHandleRunByID(t *testing.T) {
 	prepareMongo()
 
 	r, _ := http.NewRequest("POST", "/topologies/a/nodes/b/run", bytes.NewReader([]byte("[]")))
-	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
+	assertResponse(t, r, 200, expectedResponse)
 }
 
 func TestHandleRunByIDUser(t *testing.T) {
@@ -152,18 +154,18 @@ func TestHandleRunByIDUser(t *testing.T) {
 	prepareMongo()
 
 	r, _ := http.NewRequest("POST", "/topologies/a/nodes/b/user/c/run", bytes.NewReader([]byte("[]")))
-	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
+	assertResponse(t, r, 200, expectedResponse)
 
 	mockCache(1)
 
 	r, _ = http.NewRequest("POST", "/topologies/a/nodes/b/run", bytes.NewReader([]byte(`{"user":"c"}`)))
-	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
+	assertResponse(t, r, 200, expectedResponse)
 
 	mockCache(1)
 
 	r, _ = http.NewRequest("POST", "/topologies/a/nodes/b/run", bytes.NewReader([]byte("[]")))
 	r.Header.Add(utils.UserID, "c")
-	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
+	assertResponse(t, r, 200, expectedResponse)
 }
 
 func TestHandleRunByName(t *testing.T) {
@@ -171,30 +173,30 @@ func TestHandleRunByName(t *testing.T) {
 	prepareMongo()
 
 	r, _ := http.NewRequest("POST", "/topologies/a/nodes/b/run-by-name", bytes.NewReader([]byte("[]")))
-	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
+	assertResponse(t, r, 200, expectedResponse)
 }
 
 func TestHandleRunByNameUser(t *testing.T) {
 	mockCache(1)
 	prepareMongo()
 	r, _ := http.NewRequest("POST", "/topologies/a/nodes/b/user/c/run-by-name", bytes.NewReader([]byte("[]")))
-	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
+	assertResponse(t, r, 200, expectedResponse)
 
 	mockCache(1)
 	r, _ = http.NewRequest("POST", "/topologies/a/nodes/b/run-by-name", bytes.NewReader([]byte(`{"user":"c"}`)))
-	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
+	assertResponse(t, r, 200, expectedResponse)
 
 	mockCache(1)
 	r, _ = http.NewRequest("POST", "/topologies/a/nodes/b/run-by-name", bytes.NewReader([]byte("[]")))
 	r.Header.Add(utils.UserID, "c")
-	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
+	assertResponse(t, r, 200, expectedResponse)
 }
 
 func TestHandleRunByApplication(t *testing.T) {
 	mockCache(1)
 
 	r, _ := http.NewRequest("POST", "/topologies/a/nodes/b/token/c/run", bytes.NewReader([]byte("[]")))
-	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
+	assertResponse(t, r, 200, expectedResponse)
 }
 
 func TestHandleRunByApplicationOptions(t *testing.T) {

@@ -16,7 +16,7 @@ import (
 )
 
 type Rabbit interface {
-	SendMessage(r *http.Request, topology storage.Topology, init map[string]float64)
+	SendMessage(r *http.Request, topology storage.Topology, init map[string]float64) (string, error)
 	Disconnect()
 	IsMetricsConnected() bool
 }
@@ -54,7 +54,7 @@ func ConnectToRabbit() {
 func (this RabbitSvc) SendMessage(
 	request *http.Request,
 	topology storage.Topology,
-	init map[string]float64) {
+	init map[string]float64) (string, error) {
 	// Create ProcessMessage headers
 	h, c, d, t := this.builder.BuildHeaders(topology)
 
@@ -66,7 +66,7 @@ func (this RabbitSvc) SendMessage(
 	limitHeader, err := GetApplicationLimits(user, topology)
 	if err != nil {
 		config.Logger.Error(fmt.Errorf("cannot fetch sdk's limits: %+v, %v", err, limitHeader))
-		return
+		return "", err
 	}
 	h[utils.LimitKey] = limitHeader
 
@@ -100,6 +100,8 @@ func (this RabbitSvc) SendMessage(
 	if err := this.metrics.Send(config.Metrics.Measurement, utils.GetTags(topology, corrID.(string)), utils.GetFields(init)); err != nil {
 		this.logger.Error(fmt.Errorf("metrics error: %+v", err))
 	}
+
+	return corrID.(string), nil
 }
 
 func (this RabbitSvc) Disconnect() {
