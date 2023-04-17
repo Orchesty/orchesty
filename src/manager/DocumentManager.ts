@@ -83,7 +83,14 @@ export default class DocumentManager {
                         }
                         this.addFilterField(filter, 'expires', 'lte', query.filter.expires);
                         Object.entries(query.filter.nonEncrypted ?? {}).forEach(([key, value]) => {
-                            this.addFilterField(filter, `nonEncrypted.${key}`, 'in', Object.values(value)[0]);
+                            let filterValue: number[] | string[];
+                            if (typeof value === 'object') {
+                                filterValue = Object.values(value)[0] as string[];
+                            } else {
+                                filterValue = [value];
+                            }
+
+                            this.addFilterField(filter, `nonEncrypted.${key}`, 'in', filterValue);
                         });
                     }
                     break;
