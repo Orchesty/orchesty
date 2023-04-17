@@ -33,7 +33,7 @@ type (
 		DeliveryMode int16  `env:"RABBIT_DELIVERY_MODE" default:"2"`
 	}
 	cache struct {
-		Expiration string `env:"CACHE_EXPIRATION" default:"24"`
+		Expiration string `env:"CACHE_EXPIRATION" default:"60"`
 		CleanUp    string `env:"CACHE_CLEAN_UP" default:"1"`
 	}
 	metrics struct {

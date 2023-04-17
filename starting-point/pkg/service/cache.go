@@ -39,7 +39,7 @@ func CreateCache() {
 func (c *CacheDefault) InitCache() {
 	expiration, _ := strconv.Atoi(config.Cache.Expiration)
 	cleanUp, _ := strconv.Atoi(config.Cache.CleanUp)
-	c.cache = cache.New(time.Duration(expiration)*time.Hour, time.Duration(cleanUp)*time.Hour)
+	c.cache = cache.New(time.Duration(expiration)*time.Second, time.Duration(cleanUp)*time.Second)
 }
 
 // GetCache returns cache

@@ -195,7 +195,27 @@ describe('Tests for logs router', () => {
                 user: 'testUser',
                 enabled: true,
                 expires: new Date(2022, 1, 2),
+                nonEncrypted: { eshopId: '2' },
+                deleted: false,
+            },
+        );
+        await documentCollection.insertOne(
+            {
+                key: 'testKey',
+                user: 'testUser',
+                enabled: true,
+                expires: new Date(2022, 1, 2),
                 nonEncrypted: { eshopId: '1' },
+                deleted: false,
+            },
+        );
+        await documentCollection.insertOne(
+            {
+                key: 'testKey',
+                user: 'testUser',
+                enabled: true,
+                expires: new Date(2022, 1, 2),
+                nonEncrypted: { eshopId: 3 },
                 deleted: false,
             },
         );
@@ -203,6 +223,17 @@ describe('Tests for logs router', () => {
         resp = await supertest(services.app).get('/document/ApplicationInstall?filter={"enabled":true,"nonEncrypted":{"eshopId":{"$in":["1"]}}}').set(ORCHESTY_API_KEY, key).send();
         assert.equal(resp.statusCode, 200);
         assert.equal(resp.body.length, 1);
+        assert.equal(resp.body[0].nonEncrypted.eshopId, 1);
+
+        resp = await supertest(services.app).get('/document/ApplicationInstall?filter={"enabled":true,"nonEncrypted":{"eshopId":"2"}}').set(ORCHESTY_API_KEY, key).send();
+        assert.equal(resp.statusCode, 200);
+        assert.equal(resp.body.length, 1);
+        assert.equal(resp.body[0].nonEncrypted.eshopId, 2);
+
+        resp = await supertest(services.app).get('/document/ApplicationInstall?filter={"enabled":true,"nonEncrypted":{"eshopId":3}}').set(ORCHESTY_API_KEY, key).send();
+        assert.equal(resp.statusCode, 200);
+        assert.equal(resp.body.length, 1);
+        assert.equal(resp.body[0].nonEncrypted.eshopId, 3);
     });
 
     it('document - names nin test', async () => {
