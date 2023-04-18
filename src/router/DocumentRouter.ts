@@ -1,5 +1,4 @@
 import { Application, Request, Response } from 'express';
-import { appOptions } from '../config/Config';
 import DocumentEnum, { isDocumentSupported } from '../enum/DocumentEnum';
 import { logger } from '../logger/Logger';
 import DocumentManager from '../manager/DocumentManager';
@@ -21,13 +20,13 @@ export default class DocumentRouter {
 
             try {
                 const result = await this.documentManager.getDocuments(document as DocumentEnum, req.query);
-                this.sendResponse(req, res, result);
+                this.sendResponse(req, res, result, 200);
             } catch (e) {
                 if (e instanceof Error) {
-                    this.sendResponse(req, res, { message: { error: e.message } });
+                    this.sendResponse(req, res, { message: { error: e.message } }, 400);
                     return;
                 }
-                this.sendResponse(req, res, { message: 'Worker-api: mongo unknown error' });
+                this.sendResponse(req, res, { message: 'Worker-api: mongo unknown error' }, 400);
             }
         });
 
@@ -42,13 +41,13 @@ export default class DocumentRouter {
 
             try {
                 await this.documentManager.saveDocuments(document as DocumentEnum, req.body);
-                this.sendResponse(req, res, { message: { status: 'OK', data: '' } });
+                this.sendResponse(req, res, { message: { status: 'OK', data: '' } }, 200);
             } catch (e) {
                 if (e instanceof Error) {
-                    this.sendResponse(req, res, { message: { error: e.message } });
+                    this.sendResponse(req, res, { message: { error: e.message } }, 400);
                     return;
                 }
-                this.sendResponse(req, res, { message: 'Worker-api: mongo unknown error' });
+                this.sendResponse(req, res, { message: 'Worker-api: mongo unknown error' }, 400);
             }
         });
 
@@ -63,32 +62,33 @@ export default class DocumentRouter {
 
             try {
                 const deleted = await this.documentManager.deleteDocuments(document as DocumentEnum, req.query);
-                this.sendResponse(req, res, { message: { status: 'OK', data: { deleted } } });
+                this.sendResponse(req, res, { message: { status: 'OK', data: { deleted } } }, 200);
             } catch (e) {
                 if (e instanceof Error) {
-                    this.sendResponse(req, res, { message: { error: e.message } });
+                    this.sendResponse(req, res, { message: { error: e.message } }, 400);
                     return;
                 }
-                this.sendResponse(req, res, { message: 'Worker-api: mongo unknown error' });
+                this.sendResponse(req, res, { message: 'Worker-api: mongo unknown error' }, 400);
             }
         });
     }
 
-    private sendResponse(req: Request, res: Response, body: unknown, status?: number): void {
-        let response;
-        if (appOptions.debug) {
-            response = {
-                status: status ?? 200,
-                body,
-            };
+    private sendResponse(req: Request, res: Response, body: unknown, status: number): void {
+        if (status !== 200) {
+            logger.error({
+                url: '/document',
+                params: req.params,
+                query: req.query,
+                response: { status, body },
+            });
+        } else {
+            logger.debug({
+                url: '/document',
+                params: req.params,
+                query: req.query,
+                response: { status, body },
+            });
         }
-
-        logger.debug({
-            url: '/document',
-            params: req.params,
-            query: req.query,
-            response,
-        });
 
         if (status) {
             res.statusCode = status;
