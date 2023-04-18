@@ -70,7 +70,7 @@ describe('Tests for logs router', () => {
                 user: 'testUser',
                 enabled: true,
                 expires: new Date(2022, 1, 2),
-                nonEncrypted: { test: 'testValue' },
+                nonEncryptedSettings: { test: 'testValue' },
                 deleted: false,
             },
         );
@@ -86,7 +86,7 @@ describe('Tests for logs router', () => {
                     enabled: true,
                     expires: '2022-02-02T00:00:00.000Z',
                     key: 'testKey',
-                    nonEncrypted: { test: 'testValue' },
+                    nonEncryptedSettings: { test: 'testValue' },
                     user: 'testUser',
                     deleted: false,
                 },
@@ -107,7 +107,7 @@ describe('Tests for logs router', () => {
                     enabled: true,
                     expires: '2022-02-02T00:00:00.000Z',
                     key: 'testKey',
-                    nonEncrypted: { test: 'testValue' },
+                    nonEncryptedSettings: { test: 'testValue' },
                     user: 'testUser',
                     deleted: false,
                 },
@@ -128,7 +128,7 @@ describe('Tests for logs router', () => {
                     enabled: true,
                     expires: '2022-02-02T00:00:00.000Z',
                     key: 'testKey',
-                    nonEncrypted: { test: 'testValue' },
+                    nonEncryptedSettings: { test: 'testValue' },
                     user: 'testUser',
                     deleted: false,
                 },
@@ -147,7 +147,7 @@ describe('Tests for logs router', () => {
             user: 'testUser',
             enabled: true,
             expires: new Date(2022, 1, 2),
-            nonEncrypted: { test: 'testValue' },
+            nonEncryptedSettings: { test: 'testValue' },
             deleted: false,
         });
         assert.equal(resp.statusCode, 200);
@@ -162,7 +162,7 @@ describe('Tests for logs router', () => {
                     enabled: true,
                     expires: '2022-02-02T00:00:00.000Z',
                     key: 'testKey',
-                    nonEncrypted: { test: 'testValue' },
+                    nonEncryptedSettings: { test: 'testValue' },
                     user: 'testUser',
                     deleted: false,
                 },
@@ -170,7 +170,7 @@ describe('Tests for logs router', () => {
         );
 
         const resp2 = await supertest(services.app).delete('/document/ApplicationInstall').set(ORCHESTY_API_KEY, key).send();
-        assert.equal(resp2.statusCode, 200);
+        assert.equal(resp2.statusCode, 400);
         assert.deepEqual(resp2.body, { message: { error: 'Empty filter is not supported.' } });
 
         const resp3 = await supertest(services.app).delete('/document/ApplicationInstall?filter={"enabled":true}').set(ORCHESTY_API_KEY, key).send();
@@ -195,7 +195,7 @@ describe('Tests for logs router', () => {
                 user: 'testUser',
                 enabled: true,
                 expires: new Date(2022, 1, 2),
-                nonEncrypted: { eshopId: '2' },
+                nonEncryptedSettings: { eshopId: '2' },
                 deleted: false,
             },
         );
@@ -205,7 +205,7 @@ describe('Tests for logs router', () => {
                 user: 'testUser',
                 enabled: true,
                 expires: new Date(2022, 1, 2),
-                nonEncrypted: { eshopId: '1' },
+                nonEncryptedSettings: { eshopId: '1' },
                 deleted: false,
             },
         );
@@ -215,7 +215,7 @@ describe('Tests for logs router', () => {
                 user: 'testUser',
                 enabled: true,
                 expires: new Date(2022, 1, 2),
-                nonEncrypted: { eshopId: 3 },
+                nonEncryptedSettings: { eshopId: 3 },
                 deleted: false,
             },
         );
@@ -223,17 +223,17 @@ describe('Tests for logs router', () => {
         resp = await supertest(services.app).get('/document/ApplicationInstall?filter={"enabled":true,"nonEncrypted":{"eshopId":{"$in":["1"]}}}').set(ORCHESTY_API_KEY, key).send();
         assert.equal(resp.statusCode, 200);
         assert.equal(resp.body.length, 1);
-        assert.equal(resp.body[0].nonEncrypted.eshopId, 1);
+        assert.equal(resp.body[0].nonEncryptedSettings.eshopId, 1);
 
         resp = await supertest(services.app).get('/document/ApplicationInstall?filter={"enabled":true,"nonEncrypted":{"eshopId":"2"}}').set(ORCHESTY_API_KEY, key).send();
         assert.equal(resp.statusCode, 200);
         assert.equal(resp.body.length, 1);
-        assert.equal(resp.body[0].nonEncrypted.eshopId, 2);
+        assert.equal(resp.body[0].nonEncryptedSettings.eshopId, 2);
 
         resp = await supertest(services.app).get('/document/ApplicationInstall?filter={"enabled":true,"nonEncrypted":{"eshopId":3}}').set(ORCHESTY_API_KEY, key).send();
         assert.equal(resp.statusCode, 200);
         assert.equal(resp.body.length, 1);
-        assert.equal(resp.body[0].nonEncrypted.eshopId, 3);
+        assert.equal(resp.body[0].nonEncryptedSettings.eshopId, 3);
     });
 
     it('document - names nin test', async () => {
@@ -249,7 +249,7 @@ describe('Tests for logs router', () => {
                 user: 'testUser',
                 enabled: true,
                 expires: new Date(2022, 1, 2),
-                nonEncrypted: { eshopId: '1' },
+                nonEncryptedSettings: { eshopId: '1' },
                 deleted: false,
             },
         );
@@ -263,7 +263,7 @@ describe('Tests for logs router', () => {
                 user: 'testUser',
                 enabled: true,
                 expires: new Date(2022, 1, 2),
-                nonEncrypted: { eshopId: '1' },
+                nonEncryptedSettings: { eshopId: '1' },
                 deleted: false,
             },
         );

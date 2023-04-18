@@ -90,7 +90,7 @@ export default class DocumentManager {
                                 filterValue = [value];
                             }
 
-                            this.addFilterField(filter, `nonEncrypted.${key}`, 'in', filterValue);
+                            this.addFilterField(filter, `nonEncryptedSettings.${key}`, 'in', filterValue);
                         });
                     }
                     break;
