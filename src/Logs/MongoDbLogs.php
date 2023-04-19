@@ -103,17 +103,17 @@ final class MongoDbLogs extends LogsAbstract
     {
         $id     = array_key_exists(self::ID, $item) ? (string) $item[self::ID] : '';
         $result = [
-            self::ID             => $id,
-            self::SEVERITY       => $pipes[self::LEVEL] ?? '',
-            self::MESSAGE        => $item[self::MESSAGE] ?? '',
-            self::SERVICE        => $pipes[self::SERVICE] ?? '',
             self::CORRELATION_ID => $pipes[self::CORRELATIONID] ?? '',
-            self::TOPOLOGY_ID    => $pipes[self::TOPOLOGYID] ?? '',
-            self::TOPOLOGY_NAME  => $pipes[self::TOPOLOGYNAME] ?? '',
+            self::ID             => $id,
+            self::MESSAGE        => $item[self::MESSAGE] ?? '',
             self::NODE_ID        => $pipes[self::NODEID] ?? '',
             self::NODE_NAME      => $pipes[self::NODENAME] ?? '',
+            self::SERVICE        => $pipes[self::SERVICE] ?? '',
+            self::SEVERITY       => $pipes[self::LEVEL] ?? '',
             self::TIMESTAMP      => DateTimeUtils::getUtcDateTimeFromTimeStamp($pipes[self::TIMESTAMP] ?? 0)
                 ->format(DateTimeUtils::DATE_TIME_UTC),
+            self::TOPOLOGY_ID    => $pipes[self::TOPOLOGYID] ?? '',
+            self::TOPOLOGY_NAME  => $pipes[self::TOPOLOGYNAME] ?? '',
         ];
         if ($range && $id && $allLogs) {
             return array_merge($result, [self::RELATED_LOGS => $this->getPrevNext($id, $range, $allLogs)]);
@@ -138,8 +138,8 @@ final class MongoDbLogs extends LogsAbstract
         $max = $range > $total ? $total : $range;
 
         return [
-            'prev' => $this->parseLogs(array_slice($allLogs[self::DATA], $min, $index - $min)),
             'next' => $this->parseLogs(array_slice($allLogs[self::DATA], $index + 1, $max)),
+            'prev' => $this->parseLogs(array_slice($allLogs[self::DATA], $min, $index - $min)),
         ];
     }
 

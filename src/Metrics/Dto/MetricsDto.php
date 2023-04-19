@@ -40,7 +40,7 @@ final class MetricsDto
      *
      * @return MetricsDto
      */
-    public function setMin(mixed $min): MetricsDto
+    public function setMin(mixed $min): self
     {
         if (!empty($min) || $min === 0) {
             $this->min = (string) $min;
@@ -54,7 +54,7 @@ final class MetricsDto
      *
      * @return MetricsDto
      */
-    public function setMax(mixed $max): MetricsDto
+    public function setMax(mixed $max): self
     {
         if (!empty($max || $max === 0)) {
             $this->max = (string) $max;
@@ -69,7 +69,7 @@ final class MetricsDto
      *
      * @return MetricsDto
      */
-    public function setAvg(mixed $count, mixed $sum): MetricsDto
+    public function setAvg(mixed $count, mixed $sum): self
     {
         if (!empty($count) && !empty($sum)) {
             $this->avg = number_format((float) ($sum / $count), 2, '.', '');
@@ -83,7 +83,7 @@ final class MetricsDto
      *
      * @return MetricsDto
      */
-    public function setTotal(mixed $count): MetricsDto
+    public function setTotal(mixed $count): self
     {
         $this->total = (string) $count;
 
@@ -95,7 +95,7 @@ final class MetricsDto
      *
      * @return MetricsDto
      */
-    public function setErrors(mixed $errors): MetricsDto
+    public function setErrors(mixed $errors): self
     {
         $this->errors = (string) $errors;
 

@@ -2,7 +2,7 @@
     "name": "orchesty/backend",
     "description": "Orchesty backend",
     "license": "Elastic-2.0",
-    "version": "3.0.0",
+    "version": "3.0.1",
     "require": {
         "php": "^8.2",
         "ext-ctype": "*",
@@ -24,7 +24,7 @@
         "web-token/jwt-signature-algorithm-rsa": "^3.1"
     },
     "require-dev": {
-        "hanaboso/php-check-utils": "^1.4",
+        "hanaboso/php-check-utils": "^1.5",
         "predis/predis": "^v1.1"
     },
     "replace": {

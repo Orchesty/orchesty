@@ -147,8 +147,8 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
         }
 
         return (object) [
-            'status'  => $response->getStatusCode(),
             'content' => (object) $content,
+            'status'  => $response->getStatusCode(),
         ];
     }
 

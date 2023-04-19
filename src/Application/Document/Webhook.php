@@ -103,7 +103,7 @@ class Webhook
      *
      * @return Webhook
      */
-    public function setName(string $name): Webhook
+    public function setName(string $name): self
     {
         $this->name = $name;
 
@@ -123,7 +123,7 @@ class Webhook
      *
      * @return Webhook
      */
-    public function setUser(string $user): Webhook
+    public function setUser(string $user): self
     {
         $this->user = $user;
 
@@ -143,7 +143,7 @@ class Webhook
      *
      * @return Webhook
      */
-    public function setToken(string $token): Webhook
+    public function setToken(string $token): self
     {
         $this->token = $token;
 
@@ -163,7 +163,7 @@ class Webhook
      *
      * @return Webhook
      */
-    public function setNode(string $node): Webhook
+    public function setNode(string $node): self
     {
         $this->node = $node;
 
@@ -183,7 +183,7 @@ class Webhook
      *
      * @return Webhook
      */
-    public function setTopology(string $topology): Webhook
+    public function setTopology(string $topology): self
     {
         $this->topology = $topology;
 
@@ -203,7 +203,7 @@ class Webhook
      *
      * @return Webhook
      */
-    public function setApplication(string $application): Webhook
+    public function setApplication(string $application): self
     {
         $this->application = $application;
 
@@ -223,7 +223,7 @@ class Webhook
      *
      * @return Webhook
      */
-    public function setWebhookId(string $webhookId): Webhook
+    public function setWebhookId(string $webhookId): self
     {
         $this->webhookId = $webhookId;
 
@@ -243,7 +243,7 @@ class Webhook
      *
      * @return Webhook
      */
-    public function setUnsubscribeFailed(bool $unsubscribeFailed): Webhook
+    public function setUnsubscribeFailed(bool $unsubscribeFailed): self
     {
         $this->unsubscribeFailed = $unsubscribeFailed;
 

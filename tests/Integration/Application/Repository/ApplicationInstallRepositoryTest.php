@@ -101,25 +101,25 @@ final class ApplicationInstallRepositoryTest extends DatabaseTestCaseAbstract
     {
         return [
             0 => [
-                '_id'   => 'hubspot',
                 'value' => [
-                    'total_sum'      => 2,
                     'non_expire_sum' => 1,
+                    'total_sum'      => 2,
                 ],
+                '_id'   => 'hubspot',
             ],
             1 => [
-                '_id'   => 'mailchimp',
                 'value' => [
-                    'total_sum'      => 1,
                     'non_expire_sum' => 1,
+                    'total_sum'      => 1,
                 ],
+                '_id'   => 'mailchimp',
             ],
             2 => [
-                '_id'   => 'shipstation',
                 'value' => [
-                    'total_sum'      => 1,
                     'non_expire_sum' => 1,
+                    'total_sum'      => 1,
                 ],
+                '_id'   => 'shipstation',
             ],
         ];
     }
@@ -133,7 +133,6 @@ final class ApplicationInstallRepositoryTest extends DatabaseTestCaseAbstract
     {
         $array = [
             'hubspot'     => [
-                '_id'   => 'hubspot',
                 'value' => [
                     'users' => [
                         0 => [
@@ -146,9 +145,9 @@ final class ApplicationInstallRepositoryTest extends DatabaseTestCaseAbstract
                         ],
                     ],
                 ],
+                '_id'   => 'hubspot',
             ],
             'mailchimp'   => [
-                '_id'   => 'mailchimp',
                 'value' => [
                     'users' => [
                         0 => [
@@ -157,9 +156,9 @@ final class ApplicationInstallRepositoryTest extends DatabaseTestCaseAbstract
                         ],
                     ],
                 ],
+                '_id'   => 'mailchimp',
             ],
             'shipstation' => [
-                '_id'   => 'shipstation',
                 'value' => [
                     'users' => [
                         0 => [
@@ -168,6 +167,7 @@ final class ApplicationInstallRepositoryTest extends DatabaseTestCaseAbstract
                         ],
                     ],
                 ],
+                '_id'   => 'shipstation',
             ],
         ];
 

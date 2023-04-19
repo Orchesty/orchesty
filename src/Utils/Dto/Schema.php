@@ -42,7 +42,7 @@ final class Schema
      *
      * @return Schema
      */
-    public function addNode(string $id, NodeSchemaDto $dto): Schema
+    public function addNode(string $id, NodeSchemaDto $dto): self
     {
         $this->nodes[$id] = $dto;
 
@@ -55,7 +55,7 @@ final class Schema
      *
      * @return Schema
      */
-    public function addSequence(string $source, string $target): Schema
+    public function addSequence(string $source, string $target): self
     {
         $this->sequences[$source][] = $target;
 
@@ -83,7 +83,7 @@ final class Schema
      *
      * @return Schema
      */
-    public function addStartNode(string $startNode): Schema
+    public function addStartNode(string $startNode): self
     {
         $this->startNode[] = $startNode;
 

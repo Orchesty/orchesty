@@ -34,7 +34,7 @@ class EmbedNode
      *
      * @return self
      */
-    public static function from(Node $node): EmbedNode
+    public static function from(Node $node): self
     {
         $e = new self();
         $e->setId($node->getId());
@@ -64,7 +64,7 @@ class EmbedNode
      *
      * @return EmbedNode
      */
-    public function setName(string $name): EmbedNode
+    public function setName(string $name): self
     {
         $this->name = $name;
 

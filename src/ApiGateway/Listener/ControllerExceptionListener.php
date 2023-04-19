@@ -94,7 +94,7 @@ final class ControllerExceptionListener implements EventSubscriberInterface, Log
      *
      * @return ControllerExceptionListener
      */
-    public function setExceptionClasses(array $exceptionClasses): ControllerExceptionListener
+    public function setExceptionClasses(array $exceptionClasses): self
     {
         $this->exceptionClasses = $exceptionClasses;
 

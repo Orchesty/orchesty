@@ -19,14 +19,14 @@ final class ResourceEnum extends AclResourceEnum
      * @var string[]
      */
     protected static array $choices = [
+        self::FILE     => 'File',
         self::GROUP    => 'Group entity',
-        self::USER     => 'User entity',
+        self::NODE     => 'Node',
+        self::RULE     => 'Rule',
         self::TMP_USER => 'TmpUser entity',
         self::TOKEN    => 'Token entity',
-        self::FILE     => 'File',
-        self::RULE     => 'Rule',
-        self::NODE     => 'Node',
         self::TOPOLOGY => 'Topology',
+        self::USER     => 'User entity',
     ];
 
 }

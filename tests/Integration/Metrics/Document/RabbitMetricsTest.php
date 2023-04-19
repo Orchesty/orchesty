@@ -34,13 +34,13 @@ final class RabbitMetricsTest extends DatabaseTestCaseAbstract
             ->setNewObj(
                 [
                     'fields' => [
-                        'messages' => 2,
                         'created'  => DateTimeUtils::getUtcDateTime('1.1.2020')->getTimestamp(),
+                        'messages' => 2,
                     ],
                     'tags'   => [
                         'node_id'     => '1',
-                        'topology_id' => '2',
                         'queue'       => '12',
+                        'topology_id' => '2',
                     ],
                 ],
             )

@@ -34,8 +34,8 @@ final class CategoryControllerTest extends ControllerTestCaseAbstract
             $this->jwt,
             __DIR__ . '/data/Category/getCategoriesRequest.json',
             [
-                '_id' => '5e3293c74f674f452942a9d4',
                 'parent' => '5e32945ec6117b57df219493',
+                '_id' => '5e3293c74f674f452942a9d4',
             ],
         );
     }
@@ -201,7 +201,7 @@ final class CategoryControllerTest extends ControllerTestCaseAbstract
     /**
      * @return mixed[]
      */
-    public function categoryErrorProvider(): array
+    public static function categoryErrorProvider(): array
     {
         return [
             [new CategoryException(code: CategoryException::CATEGORY_USED)],

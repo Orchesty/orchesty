@@ -26,14 +26,14 @@ final class NodeSchemaDtoTest extends KernelTestCaseAbstract
         self::assertEquals(1, $dto->getSystemConfigs()->getPrefetch());
         self::assertEquals(
             [
+                'application'    => '',
+                'cron_params'    => '',
+                'cron_time'      => '',
                 'handler'        => 'handler',
                 'id'             => 'id',
                 'name'           => 'name',
-                'cron_time'      => '',
-                'cron_params'    => '',
                 'pipes_type'     => 'pipes',
                 'system_configs' => new SystemConfigDto(),
-                'application'    => '',
             ],
             $dto->toArray(),
         );

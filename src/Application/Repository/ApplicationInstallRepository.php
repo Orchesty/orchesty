@@ -126,8 +126,8 @@ final class ApplicationInstallRepository extends DocumentRepository
         $ret = [];
         foreach ($res as $item) {
             $ret[] = [
-                '_id'   => $item['_id'],
                 'value' => ['total_sum' => $item['total_sum'], 'non_expire_sum' => $item['non_expire_sum']],
+                '_id'   => $item['_id'],
             ];
         }
 
@@ -151,8 +151,8 @@ final class ApplicationInstallRepository extends DocumentRepository
             $ret[] = [
                 'id'                  => $item->getId(),
                 'name'                 => $item->getKey(),
-                'user'                 => $item->getUser(),
                 'nonEncryptedSettings' => $item->getNonEncryptedSettings(),
+                'user'                 => $item->getUser(),
             ];
         }
 

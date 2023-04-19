@@ -128,16 +128,16 @@ class ContainerMetricsFields
     public function toArray(): array
     {
         return [
-            'name'    => $this->name,
-            'message' => $this->message,
-            'up'      => $this->up,
             'created' => $this->created->format(DateTimeUtils::DATE_TIME_UTC),
             'desired' => $this->desired,
-            'ready'   => $this->ready,
+            'message' => $this->message,
+            'name'    => $this->name,
             'pods'    => array_map(
                 static fn(ContainerMetricsFieldsPods $pod): array => $pod->toArray(),
                 $this->getPods(),
             ),
+            'ready'   => $this->ready,
+            'up'      => $this->up,
         ];
     }
 

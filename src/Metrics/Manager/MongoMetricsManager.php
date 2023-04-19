@@ -214,10 +214,10 @@ final class MongoMetricsManager extends MetricsManagerAbstract
                 }
 
                 return [
-                    'type'     => HealthcheckTypeEnum::QUEUE->value,
                     'name'     => $item->getTags()->getQueue(),
                     'service'  => $service['name'],
                     'topology' => $topology ?? NULL,
+                    'type'     => HealthcheckTypeEnum::QUEUE->value,
                 ];
             },
             $res,
@@ -238,9 +238,9 @@ final class MongoMetricsManager extends MetricsManagerAbstract
             $healthcheckArray,
             array_map(
                 static fn(ContainerMetrics $item): array => [
-                    'type'    => HealthcheckTypeEnum::SERVICE->value,
-                    'name'    => $item->getFields()->getName(),
                     'message' => $item->getFields()->getMessage(),
+                    'name'    => $item->getFields()->getName(),
+                    'type'    => HealthcheckTypeEnum::SERVICE->value,
                 ],
                 $res,
             ),
@@ -365,9 +365,9 @@ final class MongoMetricsManager extends MetricsManagerAbstract
         if (!$res) {
             $res = [
                 'cpu_count' => 0,
-                'cpu_sum'   => 0,
                 'cpu_max'   => 0,
                 'cpu_min'   => 0,
+                'cpu_sum'   => 0,
             ];
         } else {
             $res = reset($res);
@@ -413,11 +413,11 @@ final class MongoMetricsManager extends MetricsManagerAbstract
         if (!$res) {
             $res = [
                 'process_time_count' => 0,
-                'process_time_sum'   => 0,
-                'process_time_min'   => 0,
                 'process_time_max'   => 0,
-                'total_count'        => 0,
+                'process_time_min'   => 0,
+                'process_time_sum'   => 0,
                 'request_error_sum'  => 0,
+                'total_count'        => 0,
             ];
         } else {
             $res = reset($res);
@@ -472,16 +472,16 @@ final class MongoMetricsManager extends MetricsManagerAbstract
 
         if (!$res) {
             $res = [
-                'top_processed_count' => 0,
-                'wait_count'          => 0,
-                'top_processed_sum'   => 0,
-                'wait_sum'            => 0,
                 'request_error_sum'   => 0,
-                'total_count'         => 0,
+                'top_processed_count' => 0,
                 'top_processed_max'   => 0,
+                'top_processed_min'   => 0,
+                'top_processed_sum'   => 0,
+                'total_count'         => 0,
+                'wait_count'          => 0,
                 'wait_max'            => 0,
                 'wait_min'            => 0,
-                'top_processed_min'   => 0,
+                'wait_sum'            => 0,
             ];
         } else {
             $res = reset($res);

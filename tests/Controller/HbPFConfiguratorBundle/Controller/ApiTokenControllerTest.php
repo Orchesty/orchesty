@@ -28,9 +28,9 @@ final class ApiTokenControllerTest extends ControllerTestCaseAbstract
             $this->jwt,
             __DIR__ . '/data/ApiToken/getAllRequest.json',
             [
-                'id'       => '5e32a9b8a1b2a70fef6fa273',
                 'created'  => '2010-10-10 10:10:10',
                 'expireAt' => '2022-11-03 05:43:31.000Z',
+                'id'       => '5e32a9b8a1b2a70fef6fa273',
             ],
         );
     }
@@ -47,9 +47,9 @@ final class ApiTokenControllerTest extends ControllerTestCaseAbstract
             $this->jwt,
             __DIR__ . '/data/ApiToken/getAllFilterRequest.json',
             [
-                'id'       => '5e32a9b8a1b2a70fef6fa273',
                 'created'  => '2010-10-10 10:10:10',
                 'expireAt' => '2022-11-03 05:43:31.000Z',
+                'id'       => '5e32a9b8a1b2a70fef6fa273',
             ],
         );
     }
@@ -71,10 +71,10 @@ final class ApiTokenControllerTest extends ControllerTestCaseAbstract
             $this->jwt,
             __DIR__ . '/data/ApiToken/createRequest.json',
             [
-                'id'       => '5e32aab74c2bd32924205303',
-                'key'      => '0a21a5c5253aa04eff802f4454810f5357d5f70c68af87233b9a45506cf84273',
                 'created'  => '2010-10-10 10:10:10',
                 'expireAt' => '2022-11-03 05:43:31.000Z',
+                'id'       => '5e32aab74c2bd32924205303',
+                'key'      => '0a21a5c5253aa04eff802f4454810f5357d5f70c68af87233b9a45506cf84273',
             ],
         );
     }
@@ -101,9 +101,9 @@ final class ApiTokenControllerTest extends ControllerTestCaseAbstract
             $this->jwt,
             __DIR__ . '/data/ApiToken/deleteRequest.json',
             [
-                'id'       => '5e32ae5cb04e0b3566176113',
                 'created'  => '2010-10-10 10:10:10',
                 'expireAt' => '2022-11-03 05:43:31.000Z',
+                'id'       => '5e32ae5cb04e0b3566176113',
             ],
             [':id' => $this->createApiToken('1')->getId()],
         );

@@ -82,10 +82,10 @@ class ContainerMetricsFieldsPods
     public function toArray(): array
     {
         return [
+            'created'  => $this->created->format(DateTimeUtils::DATE_TIME_UTC),
+            'message'  => $this->message,
             'restarts' => $this->restarts,
             'up'       => $this->up,
-            'message'  => $this->message,
-            'created'  => $this->created->format(DateTimeUtils::DATE_TIME_UTC),
         ];
     }
 

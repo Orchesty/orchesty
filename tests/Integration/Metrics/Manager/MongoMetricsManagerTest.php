@@ -68,36 +68,36 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
 
         self::assertEquals(
             [
-                MongoMetricsManager::QUEUE_DEPTH  => [
-                    'max' => '0',
-                    'avg' => '0.00',
-                ],
-                MongoMetricsManager::WAITING_TIME => [
-                    'max' => '5',
-                    'avg' => '2.50',
-                    'min' => '0',
-                ],
-                MongoMetricsManager::PROCESS_TIME => [
-                    'max' => '10',
-                    'avg' => '7.00',
-                    'min' => '4',
-                ],
                 MongoMetricsManager::CPU_TIME     => [
-                    'max' => '15',
                     'avg' => '10.00',
-                    'min' => '5',
-                ],
-                MongoMetricsManager::REQUEST_TIME => [
                     'max' => '15',
-                    'avg' => '10.00',
                     'min' => '5',
                 ],
                 MongoMetricsManager::PROCESS      => [
-                    'max'    => '0',
                     'avg'    => '0.00',
+                    'errors' => '1',
+                    'max'    => '0',
                     'min'    => '0',
                     'total'  => '2',
-                    'errors' => '1',
+                ],
+                MongoMetricsManager::PROCESS_TIME => [
+                    'avg' => '7.00',
+                    'max' => '10',
+                    'min' => '4',
+                ],
+                MongoMetricsManager::QUEUE_DEPTH  => [
+                    'avg' => '0.00',
+                    'max' => '0',
+                ],
+                MongoMetricsManager::REQUEST_TIME => [
+                    'avg' => '10.00',
+                    'max' => '15',
+                    'min' => '5',
+                ],
+                MongoMetricsManager::WAITING_TIME => [
+                    'avg' => '2.50',
+                    'max' => '5',
+                    'min' => '0',
                 ],
             ],
             $result,
@@ -143,36 +143,36 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
 
         self::assertEquals(
             [
-                MongoMetricsManager::QUEUE_DEPTH  => [
-                    'max' => '0',
-                    'avg' => '0.00',
-                ],
-                MongoMetricsManager::WAITING_TIME => [
-                    'max' => '5',
-                    'avg' => '5.00',
-                    'min' => '5',
-                ],
-                MongoMetricsManager::PROCESS_TIME => [
-                    'max' => '10',
-                    'avg' => '10.00',
-                    'min' => '10',
-                ],
                 MongoMetricsManager::CPU_TIME     => [
-                    'max' => '15',
                     'avg' => '15.00',
+                    'max' => '15',
                     'min' => '15',
                 ],
-                MongoMetricsManager::REQUEST_TIME => [
-                    'max' => '5',
-                    'avg' => '5.00',
-                    'min' => '5',
-                ],
                 MongoMetricsManager::PROCESS      => [
-                    'max'    => '0',
                     'avg'    => '0.00',
+                    'errors' => '0',
+                    'max'    => '0',
                     'min'    => '0',
                     'total'  => '1',
-                    'errors' => '0',
+                ],
+                MongoMetricsManager::PROCESS_TIME => [
+                    'avg' => '10.00',
+                    'max' => '10',
+                    'min' => '10',
+                ],
+                MongoMetricsManager::QUEUE_DEPTH  => [
+                    'avg' => '0.00',
+                    'max' => '0',
+                ],
+                MongoMetricsManager::REQUEST_TIME => [
+                    'avg' => '5.00',
+                    'max' => '5',
+                    'min' => '5',
+                ],
+                MongoMetricsManager::WAITING_TIME => [
+                    'avg' => '5.00',
+                    'max' => '5',
+                    'min' => '5',
                 ],
             ],
             $result,
@@ -215,31 +215,31 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
 
         self::assertEquals(
             [
-                MongoMetricsManager::QUEUE_DEPTH  => [
-                    'max' => '0',
-                    'avg' => '0.00',
-                ],
-                MongoMetricsManager::WAITING_TIME => [
-                    'max' => '0',
-                    'avg' => '0.00',
-                    'min' => '0',
-                ],
-                MongoMetricsManager::PROCESS_TIME => [
-                    'max' => '0',
-                    'avg' => '0.00',
-                    'min' => '0',
-                ],
                 MongoMetricsManager::CPU_TIME     => [
-                    'max' => '0',
                     'avg' => '0.00',
+                    'max' => '0',
                     'min' => '0',
                 ],
                 MongoMetricsManager::PROCESS      => [
-                    'max'    => '0',
                     'avg'    => '0.00',
+                    'errors' => '0',
+                    'max'    => '0',
                     'min'    => '0',
                     'total'  => '0',
-                    'errors' => '0',
+                ],
+                MongoMetricsManager::PROCESS_TIME => [
+                    'avg' => '0.00',
+                    'max' => '0',
+                    'min' => '0',
+                ],
+                MongoMetricsManager::QUEUE_DEPTH  => [
+                    'avg' => '0.00',
+                    'max' => '0',
+                ],
+                MongoMetricsManager::WAITING_TIME => [
+                    'avg' => '0.00',
+                    'max' => '0',
+                    'min' => '0',
                 ],
             ],
             $result,
@@ -282,14 +282,14 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
         self::assertCount(4, $result);
         self::assertEquals(
             [
+                MongoMetricsManager::PROCESS      => [
+                    'errors' => '6',
+                    'total'  => '6',
+                ],
                 MongoMetricsManager::PROCESS_TIME => [
-                    'min' => '2',
                     'avg' => '2.00',
                     'max' => '2',
-                ],
-                MongoMetricsManager::PROCESS      => [
-                    'total'  => '6',
-                    'errors' => '6',
+                    'min' => '2',
                 ],
             ],
             $result['topology'],
@@ -338,14 +338,14 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
         self::assertCount(2, $result);
         self::assertEquals(
             [
+                MongoMetricsManager::PROCESS      => [
+                    'errors' => '1',
+                    'total'  => '1',
+                ],
                 MongoMetricsManager::PROCESS_TIME => [
-                    'min' => '2',
                     'avg' => '2.00',
                     'max' => '2',
-                ],
-                MongoMetricsManager::PROCESS      => [
-                    'total'  => '1',
-                    'errors' => '1',
+                    'min' => '2',
                 ],
             ],
             $result['topology'],
@@ -382,14 +382,14 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
         self::assertCount(1, $result);
         self::assertEquals(
             [
+                MongoMetricsManager::PROCESS      => [
+                    'errors' => '0',
+                    'total'  => '0',
+                ],
                 MongoMetricsManager::PROCESS_TIME => [
-                    'min' => '0',
                     'avg' => '0.00',
                     'max' => '0',
-                ],
-                MongoMetricsManager::PROCESS      => [
-                    'total'  => '0',
-                    'errors' => '0',
+                    'min' => '0',
                 ],
             ],
             $result['topology'],
@@ -650,204 +650,204 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
         $rabbitmqConsumer = $client->selectCollection('metrics', $rabbitConsumerTable);
 
         $doc = [
-            'tags'   => [
-                MongoMetricsManager::TOPOLOGY => $topology->getId(),
-                MongoMetricsManager::NODE     => $node->getId(),
-            ],
             'fields' => [
-                'result_success' => FALSE,
-                'total_duration' => 4,
                 'created'        => new UTCDateTime(DateTimeUtils::getUtcDateTime('-1 days')),
-            ],
-        ];
-        $bridge->insertOne($doc);
-
-        $doc = [
-            'tags'   => [
-                MongoMetricsManager::QUEUE => NodeGeneratorUtils::generateQueueName(
-                    $topology->getId(),
-                    $node->getId(),
-                    $node->getName(),
-                ),
-            ],
-            'fields' => [
-                'messages' => 5,
-                'created'  => new UTCDateTime(DateTimeUtils::getUtcDateTime('-1 days')),
-            ],
-        ];
-        $rabbitmq->insertOne($doc);
-
-        $doc = [
-            'tags'   => [
-                MongoMetricsManager::TOPOLOGY    => $topology->getId(),
-                MongoMetricsManager::NODE        => $node->getId(),
-                MongoMetricsManager::APPLICATION => 'nutshell',
-                MongoMetricsManager::USER        => 'user2',
-                MongoMetricsManager::CORRELATION => '456-789',
-            ],
-            'fields' => [
-                'sent_request_total_duration' => 15,
-                'created'                     => new UTCDateTime(DateTimeUtils::getUtcDateTime('-1 days')),
-            ],
-        ];
-        $connector->insertOne($doc);
-
-        $doc = [
-            'tags'   => [
-                MongoMetricsManager::TOPOLOGY => $topology->getId(),
-                MongoMetricsManager::NODE     => $node->getId(),
-            ],
-            'fields' => [
-                'fpm_cpu_kernel_time' => 5,
-                'created'             => new UTCDateTime(DateTimeUtils::getUtcDateTime('-1 days')),
-            ],
-        ];
-        $monolith->insertOne($doc);
-
-        $doc = [
-            'tags'   => [
-                MongoMetricsManager::TOPOLOGY => $topology->getId(),
-                MongoMetricsManager::NODE     => $node->getId(),
-            ],
-            'fields' => [
-                'result_success'   => TRUE,
-                'waiting_duration' => 5,
-                'total_duration'   => 10,
-                'created'          => new UTCDateTime(DateTimeUtils::getUtcDateTime('+5 days')),
-            ],
-        ];
-        $bridge->insertOne($doc);
-
-        $doc = [
-            'tags'   => [
-                MongoMetricsManager::TOPOLOGY => $topology->getId(),
-                MongoMetricsManager::NODE     => $node->getId(),
-            ],
-            'fields' => [
                 'result_success' => FALSE,
                 'total_duration' => 4,
-                'created'        => new UTCDateTime(DateTimeUtils::getUtcDateTime('-51 days')),
+            ],
+            'tags'   => [
+                MongoMetricsManager::NODE     => $node->getId(),
+                MongoMetricsManager::TOPOLOGY => $topology->getId(),
             ],
         ];
         $bridge->insertOne($doc);
 
         $doc = [
-            'tags'   => [
-                MongoMetricsManager::QUEUE => NodeGeneratorUtils::generateQueueName(
-                    $topology->getId(),
-                    $node->getId(),
-                    $node->getName(),
-                ),
-            ],
             'fields' => [
-                'messages' => 3,
-                'created'  => new UTCDateTime(DateTimeUtils::getUtcDateTime('+5 days')),
-            ],
-        ];
-        $rabbitmq->insertOne($doc);
-
-        $doc = [
-            'tags'   => [
-                MongoMetricsManager::QUEUE => NodeGeneratorUtils::generateQueueName(
-                    $topology->getId(),
-                    $node->getId(),
-                    $node->getName(),
-                ),
-            ],
-            'fields' => [
+                'created'  => new UTCDateTime(DateTimeUtils::getUtcDateTime('-1 days')),
                 'messages' => 5,
-                'created'  => new UTCDateTime(DateTimeUtils::getUtcDateTime('-6 days')),
+            ],
+            'tags'   => [
+                MongoMetricsManager::QUEUE => NodeGeneratorUtils::generateQueueName(
+                    $topology->getId(),
+                    $node->getId(),
+                    $node->getName(),
+                ),
             ],
         ];
         $rabbitmq->insertOne($doc);
 
         $doc = [
-            'tags'   => [
-                MongoMetricsManager::TOPOLOGY    => $topology->getId(),
-                MongoMetricsManager::NODE        => $node->getId(),
-                MongoMetricsManager::APPLICATION => 'nutshell',
-                MongoMetricsManager::USER        => 'user1',
-                MongoMetricsManager::CORRELATION => '456-789',
-            ],
             'fields' => [
-                'sent_request_total_duration' => 5,
-                'created'                     => new UTCDateTime(DateTimeUtils::getUtcDateTime('+5 days')),
-            ],
-        ];
-        $connector->insertOne($doc);
-
-        $doc = [
-            'tags'   => [
-                MongoMetricsManager::TOPOLOGY    => $topology->getId(),
-                MongoMetricsManager::NODE        => $node->getId(),
-                MongoMetricsManager::APPLICATION => 'nutshell',
-                MongoMetricsManager::USER        => 'user1',
-                MongoMetricsManager::CORRELATION => '123-456',
-            ],
-            'fields' => [
+                'created'                     => new UTCDateTime(DateTimeUtils::getUtcDateTime('-1 days')),
                 'sent_request_total_duration' => 15,
-                'created'                     => new UTCDateTime(DateTimeUtils::getUtcDateTime('-5 days')),
+            ],
+            'tags'   => [
+                MongoMetricsManager::APPLICATION => 'nutshell',
+                MongoMetricsManager::CORRELATION => '456-789',
+                MongoMetricsManager::NODE        => $node->getId(),
+                MongoMetricsManager::TOPOLOGY    => $topology->getId(),
+                MongoMetricsManager::USER        => 'user2',
             ],
         ];
         $connector->insertOne($doc);
 
         $doc = [
-            'tags'   => [
-                MongoMetricsManager::TOPOLOGY => $topology->getId(),
-                MongoMetricsManager::NODE     => $node->getId(),
-            ],
             'fields' => [
-                'fpm_cpu_kernel_time' => 15,
-                'created'             => new UTCDateTime(DateTimeUtils::getUtcDateTime('+5 days')),
-            ],
-        ];
-        $monolith->insertOne($doc);
-
-        $doc = [
-            'tags'   => [
-                MongoMetricsManager::TOPOLOGY => $topology->getId(),
-                MongoMetricsManager::NODE     => $node->getId(),
-            ],
-            'fields' => [
+                'created'             => new UTCDateTime(DateTimeUtils::getUtcDateTime('-1 days')),
                 'fpm_cpu_kernel_time' => 5,
-                'created'             => new UTCDateTime(DateTimeUtils::getUtcDateTime('-5 days')),
+            ],
+            'tags'   => [
+                MongoMetricsManager::NODE     => $node->getId(),
+                MongoMetricsManager::TOPOLOGY => $topology->getId(),
             ],
         ];
         $monolith->insertOne($doc);
 
         $doc = [
-            'tags'   => [
-                MongoMetricsManager::TOPOLOGY => $topology->getId(),
-                MongoMetricsManager::NODE     => $node->getId(),
-            ],
             'fields' => [
-                'duration' => 2,
-                'result'   => FALSE,
+                'created'          => new UTCDateTime(DateTimeUtils::getUtcDateTime('+5 days')),
+                'result_success'   => TRUE,
+                'total_duration'   => 10,
+                'waiting_duration' => 5,
+            ],
+            'tags'   => [
+                MongoMetricsManager::NODE     => $node->getId(),
+                MongoMetricsManager::TOPOLOGY => $topology->getId(),
+            ],
+        ];
+        $bridge->insertOne($doc);
+
+        $doc = [
+            'fields' => [
+                'created'        => new UTCDateTime(DateTimeUtils::getUtcDateTime('-51 days')),
+                'result_success' => FALSE,
+                'total_duration' => 4,
+            ],
+            'tags'   => [
+                MongoMetricsManager::NODE     => $node->getId(),
+                MongoMetricsManager::TOPOLOGY => $topology->getId(),
+            ],
+        ];
+        $bridge->insertOne($doc);
+
+        $doc = [
+            'fields' => [
+                'created'  => new UTCDateTime(DateTimeUtils::getUtcDateTime('+5 days')),
+                'messages' => 3,
+            ],
+            'tags'   => [
+                MongoMetricsManager::QUEUE => NodeGeneratorUtils::generateQueueName(
+                    $topology->getId(),
+                    $node->getId(),
+                    $node->getName(),
+                ),
+            ],
+        ];
+        $rabbitmq->insertOne($doc);
+
+        $doc = [
+            'fields' => [
+                'created'  => new UTCDateTime(DateTimeUtils::getUtcDateTime('-6 days')),
+                'messages' => 5,
+            ],
+            'tags'   => [
+                MongoMetricsManager::QUEUE => NodeGeneratorUtils::generateQueueName(
+                    $topology->getId(),
+                    $node->getId(),
+                    $node->getName(),
+                ),
+            ],
+        ];
+        $rabbitmq->insertOne($doc);
+
+        $doc = [
+            'fields' => [
+                'created'                     => new UTCDateTime(DateTimeUtils::getUtcDateTime('+5 days')),
+                'sent_request_total_duration' => 5,
+            ],
+            'tags'   => [
+                MongoMetricsManager::APPLICATION => 'nutshell',
+                MongoMetricsManager::CORRELATION => '456-789',
+                MongoMetricsManager::NODE        => $node->getId(),
+                MongoMetricsManager::TOPOLOGY    => $topology->getId(),
+                MongoMetricsManager::USER        => 'user1',
+            ],
+        ];
+        $connector->insertOne($doc);
+
+        $doc = [
+            'fields' => [
+                'created'                     => new UTCDateTime(DateTimeUtils::getUtcDateTime('-5 days')),
+                'sent_request_total_duration' => 15,
+            ],
+            'tags'   => [
+                MongoMetricsManager::APPLICATION => 'nutshell',
+                MongoMetricsManager::CORRELATION => '123-456',
+                MongoMetricsManager::NODE        => $node->getId(),
+                MongoMetricsManager::TOPOLOGY    => $topology->getId(),
+                MongoMetricsManager::USER        => 'user1',
+            ],
+        ];
+        $connector->insertOne($doc);
+
+        $doc = [
+            'fields' => [
+                'created'             => new UTCDateTime(DateTimeUtils::getUtcDateTime('+5 days')),
+                'fpm_cpu_kernel_time' => 15,
+            ],
+            'tags'   => [
+                MongoMetricsManager::NODE     => $node->getId(),
+                MongoMetricsManager::TOPOLOGY => $topology->getId(),
+            ],
+        ];
+        $monolith->insertOne($doc);
+
+        $doc = [
+            'fields' => [
+                'created'             => new UTCDateTime(DateTimeUtils::getUtcDateTime('-5 days')),
+                'fpm_cpu_kernel_time' => 5,
+            ],
+            'tags'   => [
+                MongoMetricsManager::NODE     => $node->getId(),
+                MongoMetricsManager::TOPOLOGY => $topology->getId(),
+            ],
+        ];
+        $monolith->insertOne($doc);
+
+        $doc = [
+            'fields' => [
                 'created'  => new UTCDateTime(DateTimeUtils::getUtcDateTime($dateOffset)),
-            ],
-        ];
-        $processes->insertOne($doc);
-
-        $doc = [
-            'tags'   => [
-                MongoMetricsManager::TOPOLOGY => $topology->getId(),
-                MongoMetricsManager::NODE     => $node->getId(),
-            ],
-            'fields' => [
                 'duration' => 2,
                 'result'   => FALSE,
-                'created'  => new UTCDateTime(DateTimeUtils::getUtcDateTime('+55 days')),
+            ],
+            'tags'   => [
+                MongoMetricsManager::NODE     => $node->getId(),
+                MongoMetricsManager::TOPOLOGY => $topology->getId(),
             ],
         ];
         $processes->insertOne($doc);
 
         $doc = [
-            'tags'   => [
-                'queue'     => 'pipes.limiter',
-                'consumers' => 0,
+            'fields' => [
+                'created'  => new UTCDateTime(DateTimeUtils::getUtcDateTime('+55 days')),
+                'duration' => 2,
+                'result'   => FALSE,
             ],
+            'tags'   => [
+                MongoMetricsManager::NODE     => $node->getId(),
+                MongoMetricsManager::TOPOLOGY => $topology->getId(),
+            ],
+        ];
+        $processes->insertOne($doc);
+
+        $doc = [
             'fields' => [
                 'created' => new UTCDateTime(DateTimeUtils::getUtcDateTime()),
+            ],
+            'tags'   => [
+                'consumers' => 0,
+                'queue'     => 'pipes.limiter',
             ],
         ];
         $rabbitmqConsumer->insertOne($doc);
@@ -881,32 +881,36 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
         $rabbitmq  = $client->selectCollection('metrics', $rabbitTable);
 
         $doc = [
-            'tags'   => [
-                MongoMetricsManager::TOPOLOGY => $topology->getId(),
-                MongoMetricsManager::NODE     => $node->getId(),
-            ],
             'fields' => [
-                'fpm_cpu_kernel_time' => 15,
                 'created'             => new UTCDateTime(DateTimeUtils::getUtcDateTime()),
+                'fpm_cpu_kernel_time' => 15,
+            ],
+            'tags'   => [
+                MongoMetricsManager::NODE     => $node->getId(),
+                MongoMetricsManager::TOPOLOGY => $topology->getId(),
             ],
         ];
         $monolith->insertOne($doc);
 
         $doc = [
-            'tags'   => [
-                MongoMetricsManager::TOPOLOGY => $topology->getId(),
-                MongoMetricsManager::NODE     => $node->getId(),
-            ],
             'fields' => [
-                'result_success'   => TRUE,
-                'waiting_duration' => 5,
-                'total_duration'   => 10,
                 'created'          => new UTCDateTime(DateTimeUtils::getUtcDateTime()),
+                'result_success'   => TRUE,
+                'total_duration'   => 10,
+                'waiting_duration' => 5,
+            ],
+            'tags'   => [
+                MongoMetricsManager::NODE     => $node->getId(),
+                MongoMetricsManager::TOPOLOGY => $topology->getId(),
             ],
         ];
         $bridge->insertOne($doc);
 
         $doc = [
+            'fields' => [
+                'created'  => new UTCDateTime(DateTimeUtils::getUtcDateTime()),
+                'messages' => 3,
+            ],
             'tags'   => [
                 MongoMetricsManager::QUEUE => NodeGeneratorUtils::generateQueueName(
                     $topology->getId(),
@@ -914,34 +918,30 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
                     $node->getName(),
                 ),
             ],
-            'fields' => [
-                'messages' => 3,
-                'created'  => new UTCDateTime(DateTimeUtils::getUtcDateTime()),
-            ],
         ];
         $rabbitmq->insertOne($doc);
 
         $doc = [
-            'tags'   => [
-                MongoMetricsManager::TOPOLOGY => $topology->getId(),
-                MongoMetricsManager::NODE     => $node->getId(),
-            ],
             'fields' => [
-                'sent_request_total_duration' => 5,
                 'created'                     => new UTCDateTime(DateTimeUtils::getUtcDateTime()),
+                'sent_request_total_duration' => 5,
+            ],
+            'tags'   => [
+                MongoMetricsManager::NODE     => $node->getId(),
+                MongoMetricsManager::TOPOLOGY => $topology->getId(),
             ],
         ];
         $connector->insertOne($doc);
 
         $doc = [
-            'tags'   => [
-                MongoMetricsManager::TOPOLOGY => $topology->getId(),
-                MongoMetricsManager::NODE     => $node->getId(),
-            ],
             'fields' => [
+                'created'  => new UTCDateTime(DateTimeUtils::getUtcDateTime()),
                 'duration' => 2,
                 'result'   => TRUE,
-                'created'  => new UTCDateTime(DateTimeUtils::getUtcDateTime()),
+            ],
+            'tags'   => [
+                MongoMetricsManager::NODE     => $node->getId(),
+                MongoMetricsManager::TOPOLOGY => $topology->getId(),
             ],
         ];
         $processes->insertOne($doc);

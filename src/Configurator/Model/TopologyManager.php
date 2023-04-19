@@ -394,16 +394,16 @@ final class TopologyManager
 
             foreach ($topologies as $topology) {
                 $result[] = [
+                    'node'     => [
+                        'name' => $item['node'],
+                    ],
+                    'time'     => $item['time'],
                     'topology' => [
                         'id'      => $topology->getId(),
                         'name'    => $topology->getName(),
                         'status'  => $topology->isEnabled(),
                         'version' => $topology->getVersion(),
                     ],
-                    'node'     => [
-                        'name' => $item['node'],
-                    ],
-                    'time'     => $item['time'],
                 ];
             }
         }
@@ -673,9 +673,9 @@ final class TopologyManager
         /** @var Node|null $node */
         $node = $this->nodeRepository->findOneBy(
             [
-                'topology' => $topology->getId(),
-                'schemaId' => $schemaId,
                 'deleted'  => FALSE,
+                'schemaId' => $schemaId,
+                'topology' => $topology->getId(),
             ],
         );
 
@@ -787,9 +787,9 @@ final class TopologyManager
     private function formatTopologyRunMessage(string $startingPointId, bool $started, string $message = ''): array
     {
         return [
-            self::STARTING_POINT => $startingPointId,
-            self::STARTED        => $started,
             self::MESSAGE        => $message,
+            self::STARTED        => $started,
+            self::STARTING_POINT => $startingPointId,
         ];
     }
 

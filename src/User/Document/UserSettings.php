@@ -42,7 +42,7 @@ class UserSettings
      *
      * @return UserSettings
      */
-    public function setSettings(array $settings): UserSettings
+    public function setSettings(array $settings): self
     {
         $this->settings = $settings;
 

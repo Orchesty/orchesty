@@ -211,9 +211,9 @@ abstract class MetricsManagerAbstract implements LoggerAwareInterface
         $res  = [];
 
         $res['topology'][self::PROCESS_TIME] = [
-            self::MIN_KEY => $data[self::MIN_KEY],
             self::AVG_KEY => $data[self::AVG_KEY],
             self::MAX_KEY => $data[self::MAX_KEY],
+            self::MIN_KEY => $data[self::MIN_KEY],
         ];
         unset($data[self::MIN_KEY], $data[self::AVG_KEY], $data[self::MAX_KEY]);
         $res['topology']['process'] = $data;
@@ -249,38 +249,38 @@ abstract class MetricsManagerAbstract implements LoggerAwareInterface
     ): array
     {
         $metrics = [
-            self::QUEUE_DEPTH  => [
-                self::MAX_KEY => $queue->getMax(),
-                self::AVG_KEY => $queue->getAvg(),
-            ],
-            self::WAITING_TIME => [
-                self::MAX_KEY => $waiting->getMax(),
-                self::AVG_KEY => $waiting->getAvg(),
-                self::MIN_KEY => $waiting->getMin(),
-            ],
-            self::PROCESS_TIME => [
-                self::MAX_KEY => $process->getMax(),
-                self::AVG_KEY => $process->getAvg(),
-                self::MIN_KEY => $process->getMin(),
-            ],
             self::CPU_TIME     => [
-                self::MAX_KEY => $cpu->getMax(),
                 self::AVG_KEY => $cpu->getAvg(),
+                self::MAX_KEY => $cpu->getMax(),
                 self::MIN_KEY => $cpu->getMin(),
             ],
             self::PROCESS      => [
+                'errors'      => $error->getErrors(),
+                'total'       => $error->getTotal(),
+                self::AVG_KEY => $counter->getAvg(),
                 self::MAX_KEY => $counter->getMax(),
                 self::MIN_KEY => $counter->getMin(),
-                self::AVG_KEY => $counter->getAvg(),
-                'total'       => $error->getTotal(),
-                'errors'      => $error->getErrors(),
+            ],
+            self::PROCESS_TIME => [
+                self::AVG_KEY => $process->getAvg(),
+                self::MAX_KEY => $process->getMax(),
+                self::MIN_KEY => $process->getMin(),
+            ],
+            self::QUEUE_DEPTH  => [
+                self::AVG_KEY => $queue->getAvg(),
+                self::MAX_KEY => $queue->getMax(),
+            ],
+            self::WAITING_TIME => [
+                self::AVG_KEY => $waiting->getAvg(),
+                self::MAX_KEY => $waiting->getMax(),
+                self::MIN_KEY => $waiting->getMin(),
             ],
         ];
 
         if ($request) {
             $metrics[self::REQUEST_TIME] = [
-                self::MAX_KEY => $request->getMax(),
                 self::AVG_KEY => $request->getAvg() == 0 ? 'n/a' : $request->getAvg(),
+                self::MAX_KEY => $request->getMax(),
                 self::MIN_KEY => $request->getMin(),
             ];
         }

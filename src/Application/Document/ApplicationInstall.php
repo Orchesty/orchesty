@@ -81,7 +81,7 @@ class ApplicationInstall
      *
      * @return ApplicationInstall
      */
-    public function setUser(string $user): ApplicationInstall
+    public function setUser(string $user): self
     {
         $this->user = $user;
 
@@ -109,7 +109,7 @@ class ApplicationInstall
      *
      * @return ApplicationInstall
      */
-    public function setExpires(?DateTime $expires): ApplicationInstall
+    public function setExpires(?DateTime $expires): self
     {
         $this->expires = $expires;
 
@@ -129,7 +129,7 @@ class ApplicationInstall
      *
      * @return ApplicationInstall
      */
-    public function setKey(string $key): ApplicationInstall
+    public function setKey(string $key): self
     {
         $this->key = $key;
 
@@ -149,7 +149,7 @@ class ApplicationInstall
      *
      * @return ApplicationInstall
      */
-    public function setNonEncryptedSettings(array $nonEncryptedSettings): ApplicationInstall
+    public function setNonEncryptedSettings(array $nonEncryptedSettings): self
     {
         $this->nonEncryptedSettings = $nonEncryptedSettings;
 
@@ -161,7 +161,7 @@ class ApplicationInstall
      *
      * @return ApplicationInstall
      */
-    public function addNonEncryptedSettings(array $nonEncryptedSettings): ApplicationInstall
+    public function addNonEncryptedSettings(array $nonEncryptedSettings): self
     {
         $this->nonEncryptedSettings = array_merge($this->nonEncryptedSettings, $nonEncryptedSettings);
 
@@ -181,7 +181,7 @@ class ApplicationInstall
      *
      * @return ApplicationInstall
      */
-    public function setEnabled(bool $enabled): ApplicationInstall
+    public function setEnabled(bool $enabled): self
     {
         $this->enabled = $enabled;
 
@@ -196,14 +196,14 @@ class ApplicationInstall
         $expires = $this->getExpires();
 
         return [
-            'id'                     => $this->getId(),
-            ApplicationInstall::USER => $this->getUser(),
-            ApplicationInstall::KEY  => $this->getKey(),
-            'nonEncryptedSettings'   => $this->getNonEncryptedSettings(),
             'created'                => $this->getCreated()->format(DateTimeUtils::DATE_TIME),
-            'updated'                => $this->getUpdated()->format(DateTimeUtils::DATE_TIME),
-            'expires'                => $expires ? $expires->format(DateTimeUtils::DATE_TIME) : NULL,
             'enabled'                => $this->isEnabled(),
+            'expires'                => $expires ? $expires->format(DateTimeUtils::DATE_TIME) : NULL,
+            'id'                     => $this->getId(),
+            'nonEncryptedSettings'   => $this->getNonEncryptedSettings(),
+            'updated'                => $this->getUpdated()->format(DateTimeUtils::DATE_TIME),
+            self::KEY  => $this->getKey(),
+            self::USER => $this->getUser(),
         ];
     }
 

@@ -50,12 +50,14 @@ final class UserTaskHandler
 
         $topo = $this->dm->getRepository(Topology::class)->findOneBy(['id' => $doc->getTopologyId()]);
 
-        return [
-            ...$doc->toArray(),
-            UserTask::TOPOLOGY_DESCR   => $topo?->getDescr() ?? '',
-            UserTask::TOPOLOGY_VERSION => $topo?->getVersion() ?? 0,
-            UserTask::TOPOLOGY_DELETED => $topo?->isDeleted() ?? FALSE,
-        ];
+        return array_merge(
+            $doc->toArray(),
+            [
+                UserTask::TOPOLOGY_DELETED => $topo?->isDeleted() ?? FALSE,
+                UserTask::TOPOLOGY_DESCR   => $topo?->getDescr() ?? '',
+                UserTask::TOPOLOGY_VERSION => $topo?->getVersion() ?? 0,
+            ],
+        );
     }
 
     /**
@@ -215,12 +217,12 @@ final class UserTaskHandler
                     [
                         [
                             $field === self::IDS ? [
-                                'operator' => 'IN',
                                 'column'   => UserTask::ID,
+                                'operator' => 'IN',
                                 'value'    => $data[$field],
                             ] : [
-                                'operator' => 'EQ',
                                 'column'   => $field,
+                                'operator' => 'EQ',
                                 'value'    => [$data[$field]],
                             ],
                         ],

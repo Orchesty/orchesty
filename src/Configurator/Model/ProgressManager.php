@@ -41,27 +41,27 @@ final class ProgressManager
         $res = $this->progressFilter->getData($dto)->toArray();
 
         return array_map(function (array $doc) {
-            $finished = $doc['finished'] ?
-                DateTimeUtils::getUtcDateTime($doc['finished'])->format(DateTimeUtils::DATE_TIME_UTC) :
-                NULL;
+            $finished = $doc['finished']
+                ? DateTimeUtils::getUtcDateTime($doc['finished'])->format(DateTimeUtils::DATE_TIME_UTC)
+                : NULL;
             $end      = $doc['finished'] ?? DateTimeUtils::getUtcDateTime()->format(DateTimeUtils::DATE_TIME_UTC);
             $created  = DateTimeUtils::getUtcDateTime($doc['created']);
 
             $topo = $this->dm->getRepository(Topology::class)->findOneBy(['id' => $doc['topologyId']]);
 
             return [
-                'id'             => $doc['topologyId'],
                 'correlationId'  => $doc['_id'] ?? $doc['id'],
                 'duration'       => TopologyProgress::durationInMs($created, DateTimeUtils::getUtcDateTime($end)),
-                'started'        => $created->format(DateTimeUtils::DATE_TIME_UTC),
+                'failed'         => $doc['nok'],
                 'finished'       => $finished,
+                'id'             => $doc['topologyId'],
+                'name'           => $topo?->getName() ?? '',
                 'nodesProcessed' => $doc['processedCount'],
                 'nodesTotal'     => $doc['total'],
-                'status'         => $doc['processedCount'] < $doc['total'] ? 'IN PROGRESS' : ($doc['nok'] > 0 ? 'FAILED' : 'SUCCESS'),
-                'failed'         => $doc['nok'],
-                'user'           => $doc['user'] ?? '',
                 'process'        => $topo?->getDescr() ?? '',
-                'name'           => $topo?->getName() ?? '',
+                'started'        => $created->format(DateTimeUtils::DATE_TIME_UTC),
+                'status'         => $doc['processedCount'] < $doc['total'] ? 'IN PROGRESS' : ($doc['nok'] > 0 ? 'FAILED' : 'SUCCESS'),
+                'user'           => $doc['user'] ?? '',
             ];
         }, $res);
     }

@@ -20,15 +20,15 @@ final class LogsFilter extends GridFilterAbstract
     protected function filterCols(): array
     {
         return [
-            Logs::ID         => Logs::MONGO_ID,
-            'timestamp'      => Logs::TIMESTAMP,
-            Logs::MESSAGE    => Logs::MESSAGE,
+            'correlation_id' => Logs::PIPES_CORRELATION_ID,
+            'node_id'        => Logs::PIPES_NODE_ID,
             'service'        => Logs::PIPES_SERVICE,
             'severity'       => Logs::PIPES_SEVERITY,
-            'correlation_id' => Logs::PIPES_CORRELATION_ID,
+            'timestamp'      => Logs::TIMESTAMP,
             'topology_id'    => Logs::PIPES_TOPOLOGY_ID,
-            'node_id'        => Logs::PIPES_NODE_ID,
             'user_id'        => Logs::PIPES_USER_ID,
+            Logs::ID         => Logs::MONGO_ID,
+            Logs::MESSAGE    => Logs::MESSAGE,
         ];
     }
 
@@ -38,14 +38,14 @@ final class LogsFilter extends GridFilterAbstract
     protected function orderCols(): array
     {
         return [
-            Logs::ID         => Logs::MONGO_ID,
-            'timestamp'      => Logs::TIMESTAMP,
-            Logs::MESSAGE    => Logs::MESSAGE,
+            'correlation_id' => Logs::PIPES_CORRELATION_ID,
+            'node_id'        => Logs::PIPES_NODE_ID,
             'service'        => Logs::PIPES_SERVICE,
             'severity'       => Logs::PIPES_SEVERITY,
-            'correlation_id' => Logs::PIPES_CORRELATION_ID,
+            'timestamp'      => Logs::TIMESTAMP,
             'topology_id'    => Logs::PIPES_TOPOLOGY_ID,
-            'node_id'        => Logs::PIPES_NODE_ID,
+            Logs::ID         => Logs::MONGO_ID,
+            Logs::MESSAGE    => Logs::MESSAGE,
         ];
     }
 

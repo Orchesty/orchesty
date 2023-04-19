@@ -40,15 +40,15 @@ final class BridgeMetricsTest extends DatabaseTestCaseAbstract
             ->setNewObj(
                 [
                     'fields' => [
-                        'result_success'   => TRUE,
-                        'waiting_duration' => 10,
-                        'total_duration'   => 20,
                         'created'          => new UTCDateTime(DateTimeUtils::getUtcDateTime('1.1.2020')),
+                        'result_success'   => TRUE,
+                        'total_duration'   => 20,
+                        'waiting_duration' => 10,
                     ],
                     'tags'   => [
                         'node_id'     => '1',
-                        'topology_id' => '2',
                         'queue'       => '12',
+                        'topology_id' => '2',
                     ],
                 ],
             )

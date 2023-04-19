@@ -39,18 +39,18 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
         $res = $this->createLocator($dto)->getApps();
         self::assertEquals(
             [
+                'filter' => [],
+                'host'   => 'host',
                 'items'  => [['key' => 'null']],
                 'paging' => [
-                    'page'         => 1,
                     'itemsPerPage' => 50,
-                    'total'        => 1,
-                    'nextPage'     => 1,
                     'lastPage'     => 1,
+                    'nextPage'     => 1,
+                    'page'         => 1,
                     'previousPage' => 1,
+                    'total'        => 1,
                 ],
-                'filter' => [],
                 'sorter' => [],
-                'host'   => 'host',
             ],
             $res,
         );
@@ -85,18 +85,18 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
         $res = $this->createLocator($dto)->getUserApps('user');
         self::assertEquals(
             [
-                'items'  => [['key' => 'null']],
                 'filter' => [],
-                'sorter' => [],
                 'host'   => 'host',
+                'items'  => [['key' => 'null']],
                 'paging' => [
-                    'page'         => 1,
                     'itemsPerPage' => 50,
-                    'total'        => 1,
-                    'nextPage'     => 1,
                     'lastPage'     => 1,
+                    'nextPage'     => 1,
+                    'page'         => 1,
                     'previousPage' => 1,
+                    'total'        => 1,
                 ],
+                'sorter' => [],
             ],
             $res,
         );
@@ -116,17 +116,17 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
         $res = $this->createLocator($dto)->getUserApps('user');
         self::assertEquals(
             [
-                'items'  => [],
-                'sorter' => [],
                 'filter' => [],
+                'items'  => [],
                 'paging' => [
-                    'page'         => 1,
                     'itemsPerPage' => 50,
-                    'total'        => 0,
-                    'nextPage'     => 1,
                     'lastPage'     => 1,
+                    'nextPage'     => 1,
+                    'page'         => 1,
                     'previousPage' => 1,
+                    'total'        => 0,
                 ],
+                'sorter' => [],
             ],
             $res,
         );
@@ -296,13 +296,13 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
         $res = $this->createLocator($dto)->getNodes();
         self::assertEquals(
             [
-                'name'    => [
-                    'connector' => ['key' => 'null'],
-                    'custom'    => ['key' => 'null'],
-                    'batch'     => ['key' => 'null'],
-                ],
                 'backend' => [
                     'user' => ['user-task'],
+                ],
+                'name'    => [
+                    'batch'     => ['key' => 'null'],
+                    'connector' => ['key' => 'null'],
+                    'custom'    => ['key' => 'null'],
                 ],
             ],
             $res,
@@ -326,9 +326,9 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
                     'user' => ['user-task'],
                 ],
                 'name' => [
+                    NodeImplementationEnum::BATCH->value => [],
                     NodeImplementationEnum::CONNECTOR->value => [],
                     NodeImplementationEnum::CUSTOM->value => [],
-                    NodeImplementationEnum::BATCH->value => [],
                 ],
             ],
             $res,

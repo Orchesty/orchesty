@@ -52,7 +52,7 @@ final class DashboardDto
      *
      * @return DashboardDto
      */
-    public function setActiveTopologies(int $activeTopologies): DashboardDto
+    public function setActiveTopologies(int $activeTopologies): self
     {
         $this->activeTopologies = $activeTopologies;
 
@@ -64,7 +64,7 @@ final class DashboardDto
      *
      * @return DashboardDto
      */
-    public function setDisabledTopologies(int $disabledTopologies): DashboardDto
+    public function setDisabledTopologies(int $disabledTopologies): self
     {
         $this->disabledTopologies = $disabledTopologies;
 
@@ -76,7 +76,7 @@ final class DashboardDto
      *
      * @return DashboardDto
      */
-    public function setTotalRuns(int $totalRuns): DashboardDto
+    public function setTotalRuns(int $totalRuns): self
     {
         $this->totalRuns = $totalRuns;
 
@@ -88,7 +88,7 @@ final class DashboardDto
      *
      * @return DashboardDto
      */
-    public function setErrorsCount(int $errorsCount): DashboardDto
+    public function setErrorsCount(int $errorsCount): self
     {
         $this->errorsCount = $errorsCount;
 
@@ -100,7 +100,7 @@ final class DashboardDto
      *
      * @return $this
      */
-    public function setInstalledApps(int $installedApps): DashboardDto
+    public function setInstalledApps(int $installedApps): self
     {
         $this->installedApps = $installedApps;
 
@@ -112,7 +112,7 @@ final class DashboardDto
      *
      * @return DashboardDto
      */
-    public function setSuccessCount(int $successCount): DashboardDto
+    public function setSuccessCount(int $successCount): self
     {
         $this->successCount = $successCount;
 
@@ -124,7 +124,7 @@ final class DashboardDto
      *
      * @return $this
      */
-    public function setCpu(float $cpu): DashboardDto
+    public function setCpu(float $cpu): self
     {
         $this->cpu = $cpu;
 
@@ -136,7 +136,7 @@ final class DashboardDto
      *
      * @return $this
      */
-    public function setMemory(float $memory): DashboardDto
+    public function setMemory(float $memory): self
     {
         $this->memory = $memory;
 
@@ -148,7 +148,7 @@ final class DashboardDto
      *
      * @return $this
      */
-    public function setSpace(float $space): DashboardDto
+    public function setSpace(float $space): self
     {
         $this->space = $space;
 
@@ -160,7 +160,7 @@ final class DashboardDto
      *
      * @return DashboardDto
      */
-    public function setTcpConnections(int $tcpConnections): DashboardDto
+    public function setTcpConnections(int $tcpConnections): self
     {
         $this->tcpConnections = $tcpConnections;
 
@@ -172,7 +172,7 @@ final class DashboardDto
      *
      * @return DashboardDto
      */
-    public function setRange(string $range): DashboardDto
+    public function setRange(string $range): self
     {
         $this->range = $range;
 
@@ -198,16 +198,16 @@ final class DashboardDto
         string $nodeName,
         string $level,
         string $message,
-    ): DashboardDto
+    ): self
     {
         $this->errorLogs[] = [
+            'level'        => $level,
+            'message'      => $message,
+            'nodeId'       => !empty($nodeId) ? $nodeId : self::DEFAULT_SOURCE,
+            'nodeName'     => !empty($nodeName) ? $nodeName : self::DEFAULT_SOURCE,
             'time'         => $time,
             'topologyId'   => !empty($topologyId) ? $topologyId : self::DEFAULT_SOURCE,
             'topologyName' => !empty($topologyName) ? $topologyName : self::DEFAULT_SOURCE,
-            'nodeId'       => !empty($nodeId) ? $nodeId : self::DEFAULT_SOURCE,
-            'nodeName'     => !empty($nodeName) ? $nodeName : self::DEFAULT_SOURCE,
-            'level'        => $level,
-            'message'      => $message,
         ];
 
         return $this;
@@ -232,16 +232,16 @@ final class DashboardDto
         string $nodeName,
         string $level,
         string $message,
-    ): DashboardDto
+    ): self
     {
         $this->alertLogs[] = [
+            'level'        => $level,
+            'message'      => $message,
+            'nodeId'       => !empty($nodeId) ? $nodeId : self::DEFAULT_SOURCE,
+            'nodeName'     => !empty($nodeName) ? $nodeName : self::DEFAULT_SOURCE,
             'time'         => $time,
             'topologyId'   => !empty($topologyId) ? $topologyId : self::DEFAULT_SOURCE,
             'topologyName' => !empty($topologyName) ? $topologyName : self::DEFAULT_SOURCE,
-            'nodeId'       => !empty($nodeId) ? $nodeId : self::DEFAULT_SOURCE,
-            'nodeName'     => !empty($nodeName) ? $nodeName : self::DEFAULT_SOURCE,
-            'level'        => $level,
-            'message'      => $message,
         ];
 
         return $this;
@@ -252,7 +252,7 @@ final class DashboardDto
      *
      * @return DashboardDto
      */
-    public function setErrorLogs(array $errorLogs): DashboardDto
+    public function setErrorLogs(array $errorLogs): self
     {
         foreach ($errorLogs as $errorLog) {
             $this->addErrorLog(
@@ -274,7 +274,7 @@ final class DashboardDto
      *
      * @return DashboardDto
      */
-    public function setAlertLogs(array $alertLogs): DashboardDto
+    public function setAlertLogs(array $alertLogs): self
     {
         foreach ($alertLogs as $alertLog) {
             $this->addAlertLog(
@@ -297,24 +297,24 @@ final class DashboardDto
     public function toArray(): array
     {
         return [
+            'alertLogs'     => $this->alertLogs,
+            'errorLogs'     => $this->errorLogs,
+            'filter'        => [
+                'range' => $this->range,
+            ],
             'process'       => [
                 'activeTopologies'   => $this->activeTopologies,
                 'disabledTopologies' => $this->disabledTopologies,
-                'installedApps'      => $this->installedApps,
-                'totalRuns'          => $this->totalRuns,
-                'successCount'       => $this->successCount,
                 'errorsCount'        => $this->errorsCount,
+                'installedApps'      => $this->installedApps,
+                'successCount'       => $this->successCount,
+                'totalRuns'          => $this->totalRuns,
             ],
-            'errorLogs'     => $this->errorLogs,
-            'alertLogs'     => $this->alertLogs,
             'systemMetrics' => [
                 'cpu'            => $this->cpu,
                 'memory'         => $this->memory,
                 'space'          => $this->space,
                 'tcpConnections' => $this->tcpConnections,
-            ],
-            'filter'        => [
-                'range' => $this->range,
             ],
         ];
     }

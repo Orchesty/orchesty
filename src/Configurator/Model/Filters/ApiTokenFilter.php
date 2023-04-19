@@ -23,9 +23,9 @@ final class ApiTokenFilter extends GridFilterAbstract
     protected function filterCols(): array
     {
         return [
+            ApiToken::CREATED => ApiToken::CREATED,
             ApiToken::KEY => ApiToken::KEY,
             ApiToken::USER => ApiToken::USER,
-            ApiToken::CREATED => ApiToken::CREATED,
         ];
     }
 
@@ -35,9 +35,9 @@ final class ApiTokenFilter extends GridFilterAbstract
     protected function orderCols(): array
     {
         return [
+            ApiToken::CREATED => ApiToken::CREATED,
             ApiToken::KEY => ApiToken::KEY,
             ApiToken::USER => ApiToken::USER,
-            ApiToken::CREATED => ApiToken::CREATED,
         ];
     }
 

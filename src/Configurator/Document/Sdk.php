@@ -57,7 +57,7 @@ class Sdk
      *
      * @return Sdk
      */
-    public function setName(string $name): Sdk
+    public function setName(string $name): self
     {
         $this->name = $name;
 
@@ -77,7 +77,7 @@ class Sdk
      *
      * @return Sdk
      */
-    public function setUrl(string $url): Sdk
+    public function setUrl(string $url): self
     {
         $this->url = $url;
 
@@ -97,7 +97,7 @@ class Sdk
      *
      * @return Sdk
      */
-    public function setHeaders(array $headers): Sdk
+    public function setHeaders(array $headers): self
     {
         $this->headers = Json::encode($headers);
 
@@ -110,10 +110,10 @@ class Sdk
     public function toArray(): array
     {
         return [
+            self::HEADERS => $this->getHeaders(),
             self::ID      => $this->id,
             self::NAME    => $this->name,
             self::URL     => $this->url,
-            self::HEADERS => $this->getHeaders(),
         ];
     }
 

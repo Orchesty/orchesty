@@ -34,10 +34,10 @@ final class SdkTest extends DatabaseTestCaseAbstract
         self::assertEquals('key', $sdk->getName());
         self::assertEquals(
             [
+                'headers' => [],
                 'id'    => $sdk->getId(),
                 'name'   => 'key',
                 'url' => 'value',
-                'headers' => [],
             ],
             $sdk->toArray(),
         );

@@ -166,12 +166,12 @@ final class TopologyHandler
         return [
             'items'  => $cron,
             'paging' => [
-                'page'         => 1,
                 'itemsPerPage' => 50,
-                'total'        => count($cron),
-                'nextPage'     => 2,
                 'lastPage'     => 2,
+                'nextPage'     => 2,
+                'page'         => 1,
                 'previousPage' => 1,
+                'total'        => count($cron),
             ],
         ];
     }
@@ -420,16 +420,16 @@ final class TopologyHandler
         }
 
         return [
-            '_id'          => $topology->getId(),
-            'type'         => count($cronNodes) >= 1 ? TypeEnum::CRON->value : TypeEnum::WEBHOOK->value,
-            'name'         => $topology->getName(),
-            'description'  => $topology->getDescr(),
-            'status'       => $topology->getStatus(),
-            'visibility'   => $topology->getVisibility(),
-            'version'      => $topology->getVersion(),
             'category'     => $topology->getCategory(),
-            'enabled'      => $topology->isEnabled(),
             'cronSettings' => $settings,
+            'description'  => $topology->getDescr(),
+            'enabled'      => $topology->isEnabled(),
+            'name'         => $topology->getName(),
+            'status'       => $topology->getStatus(),
+            'type'         => count($cronNodes) >= 1 ? TypeEnum::CRON->value : TypeEnum::WEBHOOK->value,
+            'version'      => $topology->getVersion(),
+            'visibility'   => $topology->getVisibility(),
+            '_id'          => $topology->getId(),
         ];
     }
 

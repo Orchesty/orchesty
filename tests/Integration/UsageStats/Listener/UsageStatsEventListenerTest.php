@@ -38,14 +38,14 @@ final class UsageStatsEventListenerTest extends DatabaseTestCaseAbstract
         $usageStatEvent = $this->dm->getRepository(UsageStatsEvent::class)->findAll()[0];
         self::assertEquals(
             [
-                'iid'     => '1234',
-                'type'    => 'applinth_enduser_app_install',
-                'version' => 1,
+                'created' => $usageStatEvent->getCreated()->format('Uu'),
                 'data'    => [
                     'aid'  => '1',
                     'euid' => '1',
                 ],
-                'created' => $usageStatEvent->getCreated()->format('Uu'),
+                'iid'     => '1234',
+                'type'    => 'applinth_enduser_app_install',
+                'version' => 1,
             ],
             $usageStatEvent->toArray(),
         );

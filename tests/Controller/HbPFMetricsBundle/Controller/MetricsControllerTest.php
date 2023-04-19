@@ -31,7 +31,8 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
             'getTopologyMetrics',
             [
                 'topology' => [
-                    'process_time' => ['min' => 4, 'avg' => 2, 'max' => 10], 'process' => ['fo' => 'bar'],
+                    'process' => ['fo' => 'bar'],
+                    'process_time' => ['min' => 4, 'avg' => 2, 'max' => 10],
                 ],
             ],
         );
@@ -121,14 +122,14 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
     {
         $this->mockMetricsManager('getHealthcheckMetrics', [
             [
-                'type' => 'queue',
                 'name' => 'node.123abc.123',
                 'service' => 'service',
                 'topology' => 'topology',
+                'type' => 'queue',
             ],
             [
-                'type' => 'service',
                 'name' => 'neco',
+                'type' => 'service',
             ],
         ]);
 

@@ -150,7 +150,7 @@ class UserTask
      *
      * @return UserTask
      */
-    public function setNodeId(string $nodeId): UserTask
+    public function setNodeId(string $nodeId): self
     {
         $this->nodeId = $nodeId;
 
@@ -170,7 +170,7 @@ class UserTask
      *
      * @return UserTask
      */
-    public function setTopologyId(string $topologyId): UserTask
+    public function setTopologyId(string $topologyId): self
     {
         $this->topologyId = $topologyId;
 
@@ -190,7 +190,7 @@ class UserTask
      *
      * @return UserTask
      */
-    public function setNodeName(string $nodeName): UserTask
+    public function setNodeName(string $nodeName): self
     {
         $this->nodeName = $nodeName;
 
@@ -210,7 +210,7 @@ class UserTask
      *
      * @return UserTask
      */
-    public function setTopologyName(string $topologyName): UserTask
+    public function setTopologyName(string $topologyName): self
     {
         $this->topologyName = $topologyName;
 
@@ -231,7 +231,7 @@ class UserTask
      * @return UserTask
      * @throws EnumException
      */
-    public function setType(string $type): UserTask
+    public function setType(string $type): self
     {
         if (!UserTaskEnum::tryFrom($type)) {
             throw new EnumException();
@@ -254,7 +254,7 @@ class UserTask
      *
      * @return UserTask
      */
-    public function setReturnExchange(string $returnExchange): UserTask
+    public function setReturnExchange(string $returnExchange): self
     {
         $this->returnExchange = $returnExchange;
 
@@ -274,7 +274,7 @@ class UserTask
      *
      * @return UserTask
      */
-    public function setReturnRoutingKey(string $returnRoutingKey): UserTask
+    public function setReturnRoutingKey(string $returnRoutingKey): self
     {
         $this->returnRoutingKey = $returnRoutingKey;
 
@@ -294,7 +294,7 @@ class UserTask
      *
      * @return UserTask
      */
-    public function setCorrelationId(string $correlationId): UserTask
+    public function setCorrelationId(string $correlationId): self
     {
         $this->correlationId = $correlationId;
 
@@ -314,7 +314,7 @@ class UserTask
      *
      * @return UserTask
      */
-    public function setMessage(UserTaskMessage $message): UserTask
+    public function setMessage(UserTaskMessage $message): self
     {
         $this->message = $message;
 
@@ -338,7 +338,7 @@ class UserTask
      *
      * @return UserTask
      */
-    public function setAuditLogs(array|string $auditLogs): UserTask
+    public function setAuditLogs(array|string $auditLogs): self
     {
         $this->auditLogs = $auditLogs;
 
@@ -350,7 +350,7 @@ class UserTask
      *
      * @return UserTask
      */
-    public function addAuditLog(array $data): UserTask
+    public function addAuditLog(array $data): self
     {
         /** @var mixed[] $arr */
         $arr             = $this->getAuditLogs(); // Ensure array should someone call flush() before this
@@ -405,17 +405,17 @@ class UserTask
     public function toArray(): array
     {
         return [
+            self::AUDIT_LOGS     => $this->getAuditLogs(),
+            self::CORRELATION_ID => $this->correlationId,
+            self::CREATED        => $this->created->format(DateTimeUtils::DATE_TIME_UTC),
             self::ID             => $this->id,
+            self::MESSAGE        => $this->message->toArray(),
             self::NODE_ID        => $this->nodeId,
             self::NODE_NAME      => $this->nodeName,
             self::TOPOLOGY_ID    => $this->topologyId,
             self::TOPOLOGY_NAME  => $this->topologyName,
             self::TYPE           => $this->type,
-            self::CORRELATION_ID => $this->correlationId,
-            self::CREATED        => $this->created->format(DateTimeUtils::DATE_TIME_UTC),
             self::UPDATED        => $this->updated->format(DateTimeUtils::DATE_TIME_UTC),
-            self::MESSAGE        => $this->message->toArray(),
-            self::AUDIT_LOGS     => $this->getAuditLogs(),
             self::USER           => $this->getUser(),
         ];
     }

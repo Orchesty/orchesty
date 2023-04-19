@@ -131,10 +131,10 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $this->dm->persist($top);
 
         $expt = [
-            'name'        => 'name',
-            'description' => 'desc',
             'bpmn'        => 'fgdgfd',
+            'description' => 'desc',
             'enabled'     => FALSE,
+            'name'        => 'name',
         ];
 
         $this->manager->updateTopology($top, $expt);
@@ -681,8 +681,8 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         self::assertEmpty(
             $this->dm->getRepository(Topology::class)->findBy(
                 [
-                    'id'      => $top->getId(),
                     'deleted' => FALSE,
+                    'id'      => $top->getId(),
                 ],
             ),
         );
@@ -725,27 +725,27 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         self::assertEquals(
             [
                 [
+                    'node'     => [
+                        'name' => 'Node',
+                    ],
+                    'time'     => '*/1 * * * *',
                     'topology' => [
                         'id'      => $topologies[0]['topology']['id'],
                         'name'    => 'Topology',
                         'status'  => TRUE,
                         'version' => 1,
                     ],
+                ], [
                     'node'     => [
                         'name' => 'Node',
                     ],
                     'time'     => '*/1 * * * *',
-                ], [
                     'topology' => [
                         'id'      => $topologies[1]['topology']['id'],
                         'name'    => 'Topology',
                         'status'  => FALSE,
                         'version' => 2,
                     ],
-                    'node'     => [
-                        'name' => 'Node',
-                    ],
-                    'time'     => '*/1 * * * *',
                 ],
             ],
             $topologies,
@@ -785,24 +785,24 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         self::assertEquals(
             [
                 [
+                    'node'     => ['name' => 'Node'],
+                    'time'     => '*/1 * * * *',
                     'topology' => [
                         'id'      => $tp2->getId(),
                         'name'    => 'Topology',
                         'status'  => TRUE,
                         'version' => 2,
                     ],
-                    'node'     => ['name' => 'Node'],
-                    'time'     => '*/1 * * * *',
                 ],
                 [
+                    'node'     => ['name' => 'Node'],
+                    'time'     => '*/1 * * * *',
                     'topology' => [
                         'id'      => $tp->getId(),
                         'name'    => 'Topology',
                         'status'  => TRUE,
                         'version' => 1,
                     ],
-                    'node'     => ['name' => 'Node'],
-                    'time'     => '*/1 * * * *',
                 ],
             ],
             $topologies,
@@ -932,10 +932,10 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
             [
                 $topology,
                 [
-                    'name'     => 'name',
+                    'category' => 'category',
                     'desc'     => 'desc',
                     'enabled'  => TRUE,
-                    'category' => 'category',
+                    'name'     => 'name',
                 ],
             ],
         );

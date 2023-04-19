@@ -33,9 +33,9 @@ final class CreateApiTokenCommandTest extends DatabaseTestCaseAbstract
 
         $commandTester->execute(
             [
-                'command' => $command->getName(),
-                '--user'  => '1',
                 '--expireAt' => '2010-10-10',
+                '--user'  => '1',
+                'command' => $command->getName(),
             ],
         );
 
@@ -49,8 +49,8 @@ final class CreateApiTokenCommandTest extends DatabaseTestCaseAbstract
         $token = '1234-1234-1234-1234';
         $commandTester->execute(
             [
-                'command' => $command->getName(),
                 '--key'  => $token,
+                'command' => $command->getName(),
             ],
         );
 
@@ -63,8 +63,8 @@ final class CreateApiTokenCommandTest extends DatabaseTestCaseAbstract
 
         $commandTester->execute(
             [
-                'command' => $command->getName(),
                 '--key'  => $token,
+                'command' => $command->getName(),
             ],
         );
 

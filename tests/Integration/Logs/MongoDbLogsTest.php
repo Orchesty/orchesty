@@ -60,21 +60,6 @@ final class MongoDbLogsTest extends DatabaseTestCaseAbstract
 
         self::assertEquals(
             [
-                'items'  =>
-                    [
-                        [
-                            'id'             => $result['items'][0]['id'],
-                            'severity'       => 'ERROR',
-                            'message'        => 'Message 5',
-                            'service'        => 'starting_point',
-                            'correlation_id' => 'Correlation ID 5',
-                            'topology_id'    => 'Topology ID 5',
-                            'topology_name'  => '',
-                            'node_id'        => $result['items'][0]['node_id'],
-                            'node_name'      => 'Node',
-                            'timestamp'      => $result['items'][0]['timestamp'],
-                        ],
-                    ],
                 'filter' =>
                     [
                         [
@@ -85,16 +70,31 @@ final class MongoDbLogsTest extends DatabaseTestCaseAbstract
                             ],
                         ],
                     ],
-                'sorter' => [],
-                'search' => NULL,
+                'items'  =>
+                    [
+                        [
+                            'correlation_id' => 'Correlation ID 5',
+                            'id'             => $result['items'][0]['id'],
+                            'message'        => 'Message 5',
+                            'node_id'        => $result['items'][0]['node_id'],
+                            'node_name'      => 'Node',
+                            'service'        => 'starting_point',
+                            'severity'       => 'ERROR',
+                            'timestamp'      => $result['items'][0]['timestamp'],
+                            'topology_id'    => 'Topology ID 5',
+                            'topology_name'  => '',
+                        ],
+                    ],
                 'paging' => [
-                    'page'         => 1,
                     'itemsPerPage' => 10,
-                    'total'        => 1,
-                    'nextPage'     => 1,
                     'lastPage'     => 1,
+                    'nextPage'     => 1,
+                    'page'         => 1,
                     'previousPage' => 1,
+                    'total'        => 1,
                 ],
+                'search' => NULL,
+                'sorter' => [],
             ],
             $result,
         );
@@ -139,102 +139,6 @@ final class MongoDbLogsTest extends DatabaseTestCaseAbstract
 
         self::assertEquals(
             [
-                'items'  =>
-                    [
-                        [
-                            'id'             => $result['items'][0]['id'],
-                            'severity'       => 'ERROR',
-                            'message'        => 'Message 5',
-                            'service'        => 'starting_point',
-                            'correlation_id' => 'Correlation ID 5',
-                            'topology_id'    => 'Topology ID 5',
-                            'topology_name'  => '',
-                            'node_id'        => $result['items'][0]['node_id'],
-                            'node_name'      => 'Node',
-                            'timestamp'      => $result['items'][0]['timestamp'],
-                            'related_logs'   =>
-                                [
-                                    'prev' =>
-                                        [
-                                            [
-                                                'id'             => $result['items'][0]['related_logs']['prev'][0]['id'],
-                                                'severity'       => 'ERROR',
-                                                'message'        => 'Message 2',
-                                                'service'        => 'starting_point',
-                                                'correlation_id' => 'Correlation ID 2',
-                                                'topology_id'    => 'Topology ID 2',
-                                                'topology_name'  => 'Topology Name 2',
-                                                'node_id'        => $result['items'][0]['related_logs']['prev'][2]['node_id'],
-                                                'node_name'      => 'Node Name 2',
-                                                'timestamp'      => $result['items'][0]['related_logs']['prev'][2]['timestamp'],
-                                            ],
-                                            [
-                                                'id'             => $result['items'][0]['related_logs']['prev'][1]['id'],
-                                                'severity'       => 'ERROR',
-                                                'message'        => 'Message 3',
-                                                'service'        => 'starting_point',
-                                                'correlation_id' => 'Correlation ID 3',
-                                                'topology_id'    => 'Topology ID 3',
-                                                'topology_name'  => 'Topology Name 3',
-                                                'node_id'        => $result['items'][0]['related_logs']['prev'][2]['node_id'],
-                                                'node_name'      => 'Node Name 3',
-                                                'timestamp'      => $result['items'][0]['related_logs']['prev'][2]['timestamp'],
-                                            ],
-                                            [
-                                                'id'             => $result['items'][0]['related_logs']['prev'][2]['id'],
-                                                'severity'       => 'ERROR',
-                                                'message'        => 'Message 4',
-                                                'service'        => 'starting_point',
-                                                'correlation_id' => 'Correlation ID 4',
-                                                'topology_id'    => 'Topology ID 4',
-                                                'topology_name'  => 'Topology Name 4',
-                                                'node_id'        => $result['items'][0]['related_logs']['prev'][2]['node_id'],
-                                                'node_name'      => 'Node Name 4',
-                                                'timestamp'      => $result['items'][0]['related_logs']['prev'][2]['timestamp'],
-                                            ],
-                                        ],
-                                    'next' =>
-                                        [
-                                            [
-                                                'id'             => $result['items'][0]['related_logs']['next'][0]['id'],
-                                                'severity'       => 'ERROR',
-                                                'message'        => 'Message 6',
-                                                'service'        => 'starting_point',
-                                                'correlation_id' => 'Correlation ID 6',
-                                                'topology_id'    => 'Topology ID 6',
-                                                'topology_name'  => 'Topology Name 6',
-                                                'node_id'        => $result['items'][0]['related_logs']['next'][2]['node_id'],
-                                                'node_name'      => 'Node Name 6',
-                                                'timestamp'      => $result['items'][0]['related_logs']['prev'][2]['timestamp'],
-                                            ],
-                                            [
-                                                'id'             => $result['items'][0]['related_logs']['next'][1]['id'],
-                                                'severity'       => 'ERROR',
-                                                'message'        => 'Message 7',
-                                                'service'        => 'starting_point',
-                                                'correlation_id' => 'Correlation ID 7',
-                                                'topology_id'    => 'Topology ID 7',
-                                                'topology_name'  => 'Topology Name 7',
-                                                'node_id'        => $result['items'][0]['related_logs']['next'][2]['node_id'],
-                                                'node_name'      => 'Node Name 7',
-                                                'timestamp'      => $result['items'][0]['related_logs']['prev'][2]['timestamp'],
-                                            ],
-                                            [
-                                                'id'             => $result['items'][0]['related_logs']['next'][2]['id'],
-                                                'severity'       => 'ERROR',
-                                                'message'        => 'Message 8',
-                                                'service'        => 'starting_point',
-                                                'correlation_id' => 'Correlation ID 8',
-                                                'topology_id'    => 'Topology ID 8',
-                                                'topology_name'  => 'Topology Name 8',
-                                                'node_id'        => $result['items'][0]['related_logs']['next'][2]['node_id'],
-                                                'node_name'      => 'Node Name 8',
-                                                'timestamp'      => $result['items'][0]['related_logs']['prev'][2]['timestamp'],
-                                            ],
-                                        ],
-                                ],
-                        ],
-                    ],
                 'filter' =>
                     [
                         [
@@ -245,17 +149,113 @@ final class MongoDbLogsTest extends DatabaseTestCaseAbstract
                             ],
                         ],
                     ],
-                'sorter' => [],
-                'search' => NULL,
+                'items'  =>
+                    [
+                        [
+                            'correlation_id' => 'Correlation ID 5',
+                            'id'             => $result['items'][0]['id'],
+                            'message'        => 'Message 5',
+                            'node_id'        => $result['items'][0]['node_id'],
+                            'node_name'      => 'Node',
+                            'related_logs'   =>
+                                [
+                                    'next' =>
+                                        [
+                                            [
+                                                'correlation_id' => 'Correlation ID 6',
+                                                'id'             => $result['items'][0]['related_logs']['next'][0]['id'],
+                                                'message'        => 'Message 6',
+                                                'node_id'        => $result['items'][0]['related_logs']['next'][2]['node_id'],
+                                                'node_name'      => 'Node Name 6',
+                                                'service'        => 'starting_point',
+                                                'severity'       => 'ERROR',
+                                                'timestamp'      => $result['items'][0]['related_logs']['prev'][2]['timestamp'],
+                                                'topology_id'    => 'Topology ID 6',
+                                                'topology_name'  => 'Topology Name 6',
+                                            ],
+                                            [
+                                                'correlation_id' => 'Correlation ID 7',
+                                                'id'             => $result['items'][0]['related_logs']['next'][1]['id'],
+                                                'message'        => 'Message 7',
+                                                'node_id'        => $result['items'][0]['related_logs']['next'][2]['node_id'],
+                                                'node_name'      => 'Node Name 7',
+                                                'service'        => 'starting_point',
+                                                'severity'       => 'ERROR',
+                                                'timestamp'      => $result['items'][0]['related_logs']['prev'][2]['timestamp'],
+                                                'topology_id'    => 'Topology ID 7',
+                                                'topology_name'  => 'Topology Name 7',
+                                            ],
+                                            [
+                                                'correlation_id' => 'Correlation ID 8',
+                                                'id'             => $result['items'][0]['related_logs']['next'][2]['id'],
+                                                'message'        => 'Message 8',
+                                                'node_id'        => $result['items'][0]['related_logs']['next'][2]['node_id'],
+                                                'node_name'      => 'Node Name 8',
+                                                'service'        => 'starting_point',
+                                                'severity'       => 'ERROR',
+                                                'timestamp'      => $result['items'][0]['related_logs']['prev'][2]['timestamp'],
+                                                'topology_id'    => 'Topology ID 8',
+                                                'topology_name'  => 'Topology Name 8',
+                                            ],
+                                        ],
+                                    'prev' =>
+                                        [
+                                            [
+                                                'correlation_id' => 'Correlation ID 2',
+                                                'id'             => $result['items'][0]['related_logs']['prev'][0]['id'],
+                                                'message'        => 'Message 2',
+                                                'node_id'        => $result['items'][0]['related_logs']['prev'][2]['node_id'],
+                                                'node_name'      => 'Node Name 2',
+                                                'service'        => 'starting_point',
+                                                'severity'       => 'ERROR',
+                                                'timestamp'      => $result['items'][0]['related_logs']['prev'][2]['timestamp'],
+                                                'topology_id'    => 'Topology ID 2',
+                                                'topology_name'  => 'Topology Name 2',
+                                            ],
+                                            [
+                                                'correlation_id' => 'Correlation ID 3',
+                                                'id'             => $result['items'][0]['related_logs']['prev'][1]['id'],
+                                                'message'        => 'Message 3',
+                                                'node_id'        => $result['items'][0]['related_logs']['prev'][2]['node_id'],
+                                                'node_name'      => 'Node Name 3',
+                                                'service'        => 'starting_point',
+                                                'severity'       => 'ERROR',
+                                                'timestamp'      => $result['items'][0]['related_logs']['prev'][2]['timestamp'],
+                                                'topology_id'    => 'Topology ID 3',
+                                                'topology_name'  => 'Topology Name 3',
+                                            ],
+                                            [
+                                                'correlation_id' => 'Correlation ID 4',
+                                                'id'             => $result['items'][0]['related_logs']['prev'][2]['id'],
+                                                'message'        => 'Message 4',
+                                                'node_id'        => $result['items'][0]['related_logs']['prev'][2]['node_id'],
+                                                'node_name'      => 'Node Name 4',
+                                                'service'        => 'starting_point',
+                                                'severity'       => 'ERROR',
+                                                'timestamp'      => $result['items'][0]['related_logs']['prev'][2]['timestamp'],
+                                                'topology_id'    => 'Topology ID 4',
+                                                'topology_name'  => 'Topology Name 4',
+                                            ],
+                                        ],
+                                ],
+                            'service'        => 'starting_point',
+                            'severity'       => 'ERROR',
+                            'timestamp'      => $result['items'][0]['timestamp'],
+                            'topology_id'    => 'Topology ID 5',
+                            'topology_name'  => '',
+                        ],
+                    ],
                 'paging' =>
                     [
-                        'page'         => 1,
                         'itemsPerPage' => 10,
-                        'total'        => 1,
-                        'nextPage'     => 1,
                         'lastPage'     => 1,
+                        'nextPage'     => 1,
+                        'page'         => 1,
                         'previousPage' => 1,
+                        'total'        => 1,
                     ],
+                'search' => NULL,
+                'sorter' => [],
             ],
             $result,
         );
