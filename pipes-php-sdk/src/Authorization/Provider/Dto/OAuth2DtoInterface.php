@@ -23,9 +23,9 @@ interface OAuth2DtoInterface
     /**
      * @param string $redirectUrl
      *
-     * @return OAuth2DtoInterface
+     * @return self
      */
-    public function setRedirectUrl(string $redirectUrl): OAuth2DtoInterface;
+    public function setRedirectUrl(string $redirectUrl): self;
 
     /**
      *

@@ -168,8 +168,8 @@ final class OAuth1ApplicationAbstractTest extends KernelTestCaseAbstract
                 new Response(200, [], '[]'),
                 [
                     'created'           => '2023-02-13 13:58:17',
-                    'updated'           => '2023-02-13 13:58:17',
                     'encryptedSettings' => '001_e/JlNGWNzxhpMluJq6AIXqSwIGG/kwy7UCMcQxLRg4s=:nUgeUUcCdDtl+VjR+HuO8/YQcLVqysMzLPVogoPea14=:2PhXCdXiAaYy+EA8dptzNimqa6hkMB3x:fhdQJm5XryXFfIWfXpN894nThpk1eDLsElHN7NDAfFJqZV62kUN0E83M/cte/0GIfeX39nD4AHBhctVQW2rsDhfCLY83DUJgMCH95yjH83I4zWjbvFj5',
+                    'updated'           => '2023-02-13 13:58:17',
                 ],
             ),
         );

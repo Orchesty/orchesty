@@ -50,13 +50,13 @@ final class SystemConfigDto
     /**
      * @param string $param
      *
-     * @return SystemConfigDto
+     * @return self
      */
-    public static function fromString(string $param): SystemConfigDto
+    public static function fromString(string $param): self
     {
         $result = Json::decode($param);
 
-        return new SystemConfigDto(
+        return new self(
             $result[self::SDK][self::HOST],
             $result[self::BRIDGE][self::HOST],
             $result[self::RABBIT][self::PREFETCH],
@@ -74,7 +74,6 @@ final class SystemConfigDto
     {
         return Json::encode(
             [
-                self::SDK      => [self::HOST => $this->getSdkHost()],
                 self::BRIDGE   => [
                     self::HOST    => $this->getBridgeHost(),
                     self::TIMEOUT => $this->getTimeout(),
@@ -85,6 +84,7 @@ final class SystemConfigDto
                     self::HOPS     => $this->getRepeaterHops(),
                     self::INTERVAL => $this->getRepeaterInterval(),
                 ],
+                self::SDK      => [self::HOST => $this->getSdkHost()],
             ],
         );
     }

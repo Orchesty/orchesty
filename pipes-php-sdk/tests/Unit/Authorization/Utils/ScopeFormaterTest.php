@@ -29,7 +29,7 @@ final class ScopeFormaterTest extends TestCase
     /**
      * @return mixed[]
      */
-    public function getScopeProvider(): array
+    public static function getScopeProvider(): array
     {
         return [
             [[], ''],

@@ -34,13 +34,13 @@ final class ConnectorsMetricsTest extends DatabaseTestCaseAbstract
             ->setNewObj(
                 [
                     'fields' => [
-                        'sent_request_total_duration' => 10,
                         'created'                     => DateTimeUtils::getUtcDateTime('1.1.2020')->getTimestamp(),
+                        'sent_request_total_duration' => 10,
                     ],
                     'tags'   => [
                         'node_id'     => '1',
-                        'topology_id' => '2',
                         'queue'       => '12',
+                        'topology_id' => '2',
                     ],
                 ],
             )

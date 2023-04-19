@@ -44,7 +44,7 @@ class UserTaskMessage
      *
      * @return UserTaskMessage
      */
-    public function setBody(string $body): UserTaskMessage
+    public function setBody(string $body): self
     {
         $this->body = $body;
 
@@ -64,7 +64,7 @@ class UserTaskMessage
      *
      * @return UserTaskMessage
      */
-    public function setHeaders(array $headers): UserTaskMessage
+    public function setHeaders(array $headers): self
     {
         $this->headers = $headers;
 
@@ -76,7 +76,7 @@ class UserTaskMessage
      *
      * @return UserTaskMessage
      */
-    public function fromArray(array $data): UserTaskMessage
+    public function fromArray(array $data): self
     {
         if (array_key_exists(self::BODY, $data)) {
             $this->body = $data[self::BODY];

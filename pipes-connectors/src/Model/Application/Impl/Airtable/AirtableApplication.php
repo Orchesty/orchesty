@@ -71,9 +71,9 @@ final class AirtableApplication extends BasicApplicationAbstract
         $request = new RequestDto($this->getUri($url), $method, $dto);
         $request->setHeaders(
             [
-                'Content-Type'  => 'application/json',
                 'Accept'        => 'application/json',
                 'Authorization' => sprintf('Bearer %s', $this->getAccessToken($applicationInstall)),
+                'Content-Type'  => 'application/json',
             ],
         );
         if (isset($data)) {
@@ -90,8 +90,8 @@ final class AirtableApplication extends BasicApplicationAbstract
     {
         $form = new Form(ApplicationInterface::AUTHORIZATION_FORM, 'Authorization settings');
         $form->addField(new Field(Field::TEXT, BasicApplicationAbstract::TOKEN, 'API Key', NULL, TRUE));
-        $form->addField(new Field(Field::TEXT, AirtableApplication::BASE_ID, 'Base id', NULL, TRUE));
-        $form->addField(new Field(Field::TEXT, AirtableApplication::TABLE_NAME, 'Table name', NULL, TRUE));
+        $form->addField(new Field(Field::TEXT, self::BASE_ID, 'Base id', NULL, TRUE));
+        $form->addField(new Field(Field::TEXT, self::TABLE_NAME, 'Table name', NULL, TRUE));
 
         $formStack = new FormStack();
         $formStack->addForm($form);
@@ -113,11 +113,11 @@ final class AirtableApplication extends BasicApplicationAbstract
             )
             &&
             isset(
-                $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][AirtableApplication::BASE_ID],
+                $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][self::BASE_ID],
             )
             &&
             isset(
-                $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][AirtableApplication::TABLE_NAME],
+                $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][self::TABLE_NAME],
             );
     }
 

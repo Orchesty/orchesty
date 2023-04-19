@@ -58,8 +58,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
             $this->jwt,
             __DIR__ . '/data/ApplicationController/getUsersApplicationRequest.json',
             [
-                'id'      => '123456789',
                 'created' => '2010-10-10 10:10:10',
+                'id'      => '123456789',
                 'updated' => '2010-10-10 10:10:10',
             ],
         );
@@ -78,8 +78,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
             $this->jwt,
             __DIR__ . '/data/ApplicationController/getApplicationDetailRequest.json',
             [
-                'id'            => '123456789',
                 'created'       => '2010-10-10 10:10:10',
+                'id'            => '123456789',
                 'updated'       => '2010-10-10 10:10:10',
             ],
         );
@@ -108,8 +108,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
             $this->jwt,
             __DIR__ . '/data/ApplicationController/updateApplicationSettingsRequest.json',
             [
-                'id'      => '123456789',
                 'created' => '2010-10-10 10:10:10',
+                'id'      => '123456789',
                 'updated' => '2010-10-10 10:10:10',
             ],
         );
@@ -128,8 +128,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
             $this->jwt,
             __DIR__ . '/data/ApplicationController/uninstallApplicationRequest.json',
             [
-                'id'      => '123456789',
                 'created' => '2010-10-10 10:10:10',
+                'id'      => '123456789',
                 'updated' => '2010-10-10 10:10:10',
             ],
         );
@@ -148,8 +148,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
             $this->jwt,
             __DIR__ . '/data/ApplicationController/saveApplicationPasswordRequest.json',
             [
-                'id'      => '123456789',
                 'created' => '2010-10-10 10:10:10',
+                'id'      => '123456789',
                 'updated' => '2010-10-10 10:10:10',
             ],
         );

@@ -17,8 +17,8 @@ use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DataProvider;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
 use HbPFConnectorsTests\MockCurlMethod;
-use HbPFConnectorsTests\MockServer\Mock;
-use HbPFConnectorsTests\MockServer\MockServer;
+use PipesPhpSdkTests\MockServer\Mock;
+use PipesPhpSdkTests\MockServer\MockServer;
 
 /**
  * Class AirtableNewRecordConnectorTest
@@ -186,9 +186,9 @@ final class AirtableNewRecordConnectorTest extends KernelTestCaseAbstract
         $applicationInstall->setSettings(
             [
                 ApplicationInterface::AUTHORIZATION_FORM => [
-                    BasicApplicationAbstract::TOKEN => self::API_KEY,
                     AirtableApplication::BASE_ID    => $baseId,
                     AirtableApplication::TABLE_NAME => self::TABLE_NAME,
+                    BasicApplicationAbstract::TOKEN => self::API_KEY,
                 ],
             ],
         );

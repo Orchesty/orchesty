@@ -45,8 +45,8 @@ final class MailchimpCreateContactMapperTest extends KernelTestCaseAbstract
 
         $applicationInstall->setSettings(
             [
-                MailchimpApplication::AUDIENCE_ID => '2a8******8',
                 MailchimpApplication::API_KEYPOINT => $app->getApiEndpoint($applicationInstall),
+                MailchimpApplication::AUDIENCE_ID => '2a8******8',
             ],
         );
 

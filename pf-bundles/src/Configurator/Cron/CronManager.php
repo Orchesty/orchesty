@@ -75,8 +75,8 @@ final class CronManager
     {
         $body = [
             [
-                self::TOPOLOGY => $node->getTopology(),
                 self::NODE     => $node->getId(),
+                self::TOPOLOGY => $node->getTopology(),
             ],
         ];
 
@@ -100,10 +100,10 @@ final class CronManager
     {
         $body = array_values(
             array_map(static fn(Node $node): array => [
-                self::TOPOLOGY   => $node->getTopology(),
                 self::NODE       => $node->getId(),
-                self::TIME       => $node->getCron(),
                 self::PARAMETERS => $node->getCronParams(),
+                self::TIME       => $node->getCron(),
+                self::TOPOLOGY   => $node->getTopology(),
             ], $nodes),
         );
 

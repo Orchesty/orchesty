@@ -143,15 +143,15 @@ final class HubSpotCreateContactMapper extends CommonNodeAbstract
     private function requestedFields(): array
     {
         return [
+            'address'   => 'streets',
+            'city'      => 'city',
+            'company'   => 'company',
             'email'     => 'customerEmail',
             'firstname' => 'firstName',
             'lastname'  => 'lastName',
-            'website'   => '',
-            'company'   => 'company',
             'phone'     => 'phone',
-            'address'   => 'streets',
-            'city'      => 'city',
             'state'     => 'state',
+            'website'   => '',
             'zip'       => 'postalCode',
         ];
     }

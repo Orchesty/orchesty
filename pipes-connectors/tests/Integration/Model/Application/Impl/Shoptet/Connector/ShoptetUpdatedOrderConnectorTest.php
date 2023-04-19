@@ -15,8 +15,8 @@ use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DataProvider;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
-use HbPFConnectorsTests\MockServer\Mock;
-use HbPFConnectorsTests\MockServer\MockServer;
+use PipesPhpSdkTests\MockServer\Mock;
+use PipesPhpSdkTests\MockServer\MockServer;
 
 /**
  * Class ShoptetUpdatedOrderConnectorTest
@@ -31,8 +31,8 @@ final class ShoptetUpdatedOrderConnectorTest extends KernelTestCaseAbstract
     private const USER    = 'user';
     private const SENDER  = 'sender';
     private const HEADERS = [
-        'user'        => self::USER,
         'application' => ShoptetApplication::SHOPTET_KEY,
+        'user'        => self::USER,
     ];
 
     private const SETTINGS = [

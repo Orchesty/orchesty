@@ -28,7 +28,7 @@ final class Form
      * @param string $key
      * @param string $publicName
      */
-    public function __construct(private string $key, private string $publicName){
+    public function __construct(private readonly string $key, private string $publicName){
     }
 
     /**
@@ -41,9 +41,9 @@ final class Form
     /**
      * @param string $value
      *
-     * @return $this
+     * @return self
      */
-    public function setDescription(string $value): Form {
+    public function setDescription(string $value): self {
         $this->description = $value;
 
         return $this;
@@ -66,9 +66,9 @@ final class Form
     /**
      * @param string $value
      *
-     * @return $this
+     * @return self
      */
-    public function setPublicName(string $value): Form {
+    public function setPublicName(string $value): self {
         $this->publicName = $value;
 
         return $this;
@@ -77,9 +77,9 @@ final class Form
     /**
      * @param Field $field
      *
-     * @return Form
+     * @return self
      */
-    public function addField(Field $field): Form
+    public function addField(Field $field): self
     {
         $this->fields[] = $field;
 
@@ -105,9 +105,9 @@ final class Form
         }
 
         return [
+            'description' => $this->description,
             'key' => $this->key,
             'publicName' => $this->publicName,
-            'description' => $this->description,
             ApplicationInterface::FIELDS => $fields,
         ];
     }

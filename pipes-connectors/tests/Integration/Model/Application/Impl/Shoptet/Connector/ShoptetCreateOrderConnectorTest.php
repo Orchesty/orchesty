@@ -17,8 +17,8 @@ use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DataProvider;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
-use HbPFConnectorsTests\MockServer\Mock;
-use HbPFConnectorsTests\MockServer\MockServer;
+use PipesPhpSdkTests\MockServer\Mock;
+use PipesPhpSdkTests\MockServer\MockServer;
 
 /**
  * Class ShoptetCreateOrderConnectorTest
@@ -36,21 +36,21 @@ final class ShoptetCreateOrderConnectorTest extends KernelTestCaseAbstract
     private const SENDER = 'sender';
 
     private const HEADERS = [
-        self::USER    => self::USER,
-        self::TYPE    => 'cancelled',
         'application' => ShoptetApplication::SHOPTET_KEY,
         'internal-id' => '1',
+        self::TYPE    => 'cancelled',
+        self::USER    => self::USER,
     ];
 
     private const SETTINGS = [
-        'form'           => [
-            'cancelled' => -1,
-        ],
         'clientSettings' => [
             'token' => [
                 'access_token' => 'Access Token',
                 'expires_in'   => '2147483647',
             ],
+        ],
+        'form'           => [
+            'cancelled' => -1,
         ],
     ];
 
@@ -190,8 +190,8 @@ final class ShoptetCreateOrderConnectorTest extends KernelTestCaseAbstract
                 [],
                 [
                     self::ID   => 'Unknown',
-                    self::USER => self::USER,
                     self::TYPE => 'Type',
+                    self::USER => self::USER,
                 ],
             ),
         );
@@ -237,8 +237,8 @@ final class ShoptetCreateOrderConnectorTest extends KernelTestCaseAbstract
             $this->prepareProcessDto(
                 [],
                 [
-                    self::USER => self::USER,
                     self::ID   => $applicationInstall->getId(),
+                    self::USER => self::USER,
                 ],
             ),
         );
@@ -288,9 +288,9 @@ final class ShoptetCreateOrderConnectorTest extends KernelTestCaseAbstract
             $this->prepareProcessDto(
                 [],
                 [
+                    self::ID   => $applicationInstall->getId(),
                     self::TYPE => 'Type',
                     self::USER => self::USER,
-                    self::ID   => $applicationInstall->getId(),
                 ],
             ),
         );

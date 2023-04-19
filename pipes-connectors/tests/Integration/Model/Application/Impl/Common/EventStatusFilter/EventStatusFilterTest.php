@@ -38,8 +38,8 @@ final class EventStatusFilterTest extends KernelTestCaseAbstract
 
         self::assertEquals(
             [
-                'result-message' => 'Filtered out!',
                 'result-code'    => '1003',
+                'result-message' => 'Filtered out!',
             ],
             $dto->getHeaders(),
         );

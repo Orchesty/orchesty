@@ -128,8 +128,8 @@ final class TopologyConfigFactory
                 ];
             case TypeEnum::DEBUG->value:
                 return [
-                    self::TYPE     => $this->getWorkerByType($node),
                     self::SETTINGS => [],
+                    self::TYPE     => $this->getWorkerByType($node),
                 ];
             default:
                 $host   = $this->getHost($node->getType(), $node->getSystemConfigs());
@@ -137,18 +137,18 @@ final class TopologyConfigFactory
                 $parsed = explode(':', $host);
 
                 return [
-                    self::TYPE     => $this->getWorkerByType($node),
                     self::SETTINGS => [
+                        self::APPLICATION  => $node->getApplication(),
+                        self::HEADERS      => $this->sdkRepository->findByHost($host),
                         self::HOST         => $parsed[0] ?? '',
-                        self::PROCESS_PATH => $path[self::PROCESS_PATH],
-                        self::STATUS_PATH  => $path[self::STATUS_PATH],
                         self::METHOD       => CurlManager::METHOD_POST,
                         self::PORT         => (int) ($parsed[1] ?? $this->getPort($node->getType())),
-                        self::HEADERS      => $this->sdkRepository->findByHost($host),
-                        self::APPLICATION  => $node->getApplication(),
                         self::PREFETCH     => $node->getSystemConfigs()?->getPrefetch(),
+                        self::PROCESS_PATH => $path[self::PROCESS_PATH],
+                        self::STATUS_PATH  => $path[self::STATUS_PATH],
                         self::TIMEOUT      => $node->getSystemConfigs()?->getTimeout(),
                     ],
+                    self::TYPE     => $this->getWorkerByType($node),
                 ];
         }
     }
@@ -177,18 +177,18 @@ final class TopologyConfigFactory
     {
         return [
             self::DOCKER_PF_BRIDGE_IMAGE => $this->configs[self::DOCKER_PF_BRIDGE_IMAGE],
-            self::RABBITMQ_HOST          => $this->configs[self::RABBITMQ_HOST],
-            self::RABBITMQ_USER          => $this->configs[self::RABBITMQ_USER],
-            self::RABBITMQ_PASS          => $this->configs[self::RABBITMQ_PASS],
-            self::RABBITMQ_VHOST         => $this->configs[self::RABBITMQ_VHOST],
-            self::MONGODB_DSN            => $this->configs[self::MONGODB_DSN],
             self::METRICS_DSN            => $this->configs[self::METRICS_DSN],
-            self::WORKER_DEFAULT_PORT    => (int) $this->configs[self::WORKER_DEFAULT_PORT],
-            self::UDP_LOGGER_URL         => $this->configs[self::UDP_LOGGER_URL],
-            self::TOPOLOGY_POD_LABELS    => $this->configs[self::TOPOLOGY_POD_LABELS],
-            self::STARTING_POINT_DSN     => $this->configs[self::STARTING_POINT_DSN],
+            self::MONGODB_DSN            => $this->configs[self::MONGODB_DSN],
             self::ORCHESTY_API_KEY       => $this->apiTokenRepository
                     ->findOneBy(['user' => ApplicationController::SYSTEM_USER])?->getKey() ?? '',
+            self::RABBITMQ_HOST          => $this->configs[self::RABBITMQ_HOST],
+            self::RABBITMQ_PASS          => $this->configs[self::RABBITMQ_PASS],
+            self::RABBITMQ_USER          => $this->configs[self::RABBITMQ_USER],
+            self::RABBITMQ_VHOST         => $this->configs[self::RABBITMQ_VHOST],
+            self::STARTING_POINT_DSN     => $this->configs[self::STARTING_POINT_DSN],
+            self::TOPOLOGY_POD_LABELS    => $this->configs[self::TOPOLOGY_POD_LABELS],
+            self::UDP_LOGGER_URL         => $this->configs[self::UDP_LOGGER_URL],
+            self::WORKER_DEFAULT_PORT    => (int) $this->configs[self::WORKER_DEFAULT_PORT],
         ];
     }
 

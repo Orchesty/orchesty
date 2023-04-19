@@ -29,13 +29,11 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     /**
      * ControllerTestCaseAbstract constructor.
      *
-     * @param null    $name
-     * @param mixed[] $data
-     * @param string  $dataName
+     * @param non-empty-string $name
      */
-    public function __construct($name = NULL, array $data = [], $dataName = '')
+    public function __construct($name = 'test')
     {
-        parent::__construct($name, $data, $dataName);
+        parent::__construct($name);
 
         $this->encoder = new NativePasswordHasher(3);
     }
@@ -142,8 +140,8 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
         }
 
         return (object) [
-            'status'  => $response->getStatusCode(),
             'content' => (object) $content,
+            'status'  => $response->getStatusCode(),
         ];
     }
 

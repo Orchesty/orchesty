@@ -92,9 +92,9 @@ final class BigcommerceApplication extends OAuth2ApplicationAbstract
         $request = new RequestDto($this->getUri($url), $method, $dto);
         $request->setHeaders(
             [
-                'Content-Type'  => 'application/json',
                 'Accept'        => 'application/json',
                 'Authorization' => sprintf('OAuth %s', $this->getAccessToken($applicationInstall)),
+                'Content-Type'  => 'application/json',
             ],
         );
 

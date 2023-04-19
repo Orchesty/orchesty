@@ -72,9 +72,9 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
     {
         $data = $this->manager->create(
             [
-                Sdk::URL  => 'url',
-                Sdk::NAME => 'Name',
                 Sdk::HEADERS => [],
+                Sdk::NAME => 'Name',
+                Sdk::URL  => 'url',
             ],
         );
 

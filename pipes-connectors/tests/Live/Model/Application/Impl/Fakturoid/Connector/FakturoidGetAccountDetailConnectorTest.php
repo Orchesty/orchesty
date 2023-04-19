@@ -31,8 +31,8 @@ final class FakturoidGetAccountDetailConnectorTest extends ControllerTestCaseAbs
         $applicationInstall->setSettings(
             [
                 ApplicationInterface::AUTHORIZATION_FORM => [
-                    BasicApplicationInterface::USER     => 'hanabo****nator.com',
                     BasicApplicationInterface::PASSWORD => '******1bbef40dcd864859b625ec4c478184',
+                    BasicApplicationInterface::USER     => 'hanabo****nator.com',
                     FakturoidApplication::ACCOUNT => 'fakturacnitest',
                 ],
             ],

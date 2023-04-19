@@ -11,8 +11,8 @@ use Hanaboso\PhpCheckUtils\PhpUnit\Traits\CustomAssertTrait;
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DataProvider;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
-use HbPFConnectorsTests\MockServer\Mock;
-use HbPFConnectorsTests\MockServer\MockServer;
+use PipesPhpSdkTests\MockServer\Mock;
+use PipesPhpSdkTests\MockServer\MockServer;
 
 /**
  * Class MailchimpCreateContactConnectorTest
@@ -46,9 +46,9 @@ final class MailchimpCreateContactConnectorTest extends KernelTestCaseAbstract
 
         $applicationInstall->setSettings(
             [
-                MailchimpApplication::AUDIENCE_ID  => 'c9e7f***5b',
-                MailchimpApplication::API_KEYPOINT => $app->getApiEndpoint($applicationInstall),
                 'form'                             => ['audience_id' => '123'],
+                MailchimpApplication::API_KEYPOINT => $app->getApiEndpoint($applicationInstall),
+                MailchimpApplication::AUDIENCE_ID  => 'c9e7f***5b',
             ],
         );
 

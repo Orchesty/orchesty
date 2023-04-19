@@ -87,8 +87,8 @@ final class ShopifyApplication extends BasicApplicationAbstract implements Webho
         $request = new RequestDto($this->getUri($uri), $method, $dto);
         $request->setHeaders(
             [
-                'Content-Type'           => 'application/json',
                 'Accept'                 => 'application/json',
+                'Content-Type'           => 'application/json',
                 'X-Shopify-Access-Token' => $this->getPassword($applicationInstall),
             ],
         );
@@ -149,9 +149,9 @@ final class ShopifyApplication extends BasicApplicationAbstract implements Webho
                 [
                     'webhook' =>
                         [
-                            'topic'   => $subscription->getParameters()['name'],
                             'address' => $url,
                             'format'  => 'json',
+                            'topic'   => $subscription->getParameters()['name'],
                         ],
                 ],
             ),

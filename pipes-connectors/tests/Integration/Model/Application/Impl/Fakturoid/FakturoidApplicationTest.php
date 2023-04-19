@@ -78,8 +78,8 @@ final class FakturoidApplicationTest extends KernelTestCaseAbstract
         $applicationInstall->setSettings(
             [
                 ApplicationInterface::AUTHORIZATION_FORM => [
-                    BasicApplicationInterface::USER     => 'hana******.com',
                     BasicApplicationInterface::PASSWORD => 'cf4*****191bbef40dcd86*****625ec4c4*****',
+                    BasicApplicationInterface::USER     => 'hana******.com',
                     FakturoidApplication::ACCOUNT       => 'test',
                 ],
             ],
@@ -99,8 +99,8 @@ final class FakturoidApplicationTest extends KernelTestCaseAbstract
         $applicationInstall->setSettings(
             [
                 ApplicationInterface::AUTHORIZATION_FORM => [
-                    BasicApplicationInterface::USER     => 'hana******.com',
                     BasicApplicationInterface::PASSWORD => 'cf4*****191bbef40dcd86*****625ec4c4*****',
+                    BasicApplicationInterface::USER     => 'hana******.com',
                     FakturoidApplication::ACCOUNT       => 'test',
                 ],
             ],

@@ -108,7 +108,7 @@ final class TableParserTest extends KernelTestCaseAbstract
     /**
      * @return mixed[]
      */
-    public function getParseToJsonData(): array
+    public static function getParseToJsonData(): array
     {
         return [
             ['/data/input-10.xlsx', '/data/output-10.json', FALSE],
@@ -127,7 +127,7 @@ final class TableParserTest extends KernelTestCaseAbstract
     /**
      * @return mixed[]
      */
-    public function getParseFromJsonData(): array
+    public static function getParseFromJsonData(): array
     {
         return [
             ['/data/output-10.json', TableParserInterface::XLSX, FALSE],

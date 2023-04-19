@@ -18,8 +18,8 @@ use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
-use HbPFConnectorsTests\MockServer\Mock;
-use HbPFConnectorsTests\MockServer\MockServer;
+use PipesPhpSdkTests\MockServer\Mock;
+use PipesPhpSdkTests\MockServer\MockServer;
 use Throwable;
 
 /**
@@ -187,11 +187,11 @@ final class S3GetObjectConnectorTest extends KernelTestCaseAbstract
             ->setSettings(
                 [
                     ApplicationInterface::AUTHORIZATION_FORM => [
-                        AwsApplicationAbstract::KEY      => 'Key',
-                        AwsApplicationAbstract::SECRET   => 'Secret',
-                        AwsApplicationAbstract::REGION   => 'eu-central-1',
-                        S3Application::BUCKET            => 'Bucket',
                         AwsApplicationAbstract::ENDPOINT => 'http://fakes3:4567',
+                        AwsApplicationAbstract::KEY      => 'Key',
+                        AwsApplicationAbstract::REGION   => 'eu-central-1',
+                        AwsApplicationAbstract::SECRET   => 'Secret',
+                        S3Application::BUCKET            => 'Bucket',
                     ],
                 ],
             );

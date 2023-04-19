@@ -175,11 +175,11 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
 
         return $manager->jwsFromPayload(
             [
-                'sub'      => 'user/app/id',
-                'eu_sub'   => 'endUser',
                 'eu_alias' => 'end_user_human_readable_alias_name',
-                'iat'      => time(),
+                'eu_sub'   => 'endUser',
                 'exp'      => time() + 3_600,
+                'iat'      => time(),
+                'sub'      => 'user/app/id',
             ],
         );
     }
@@ -191,12 +191,12 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     protected function getJweToken(): string
     {
         $payload = [
-            'sub'      => 'user/app/id',
-            'eu_sub'   => 'endUser',
             'eu_alias' => 'end_user_human_readable_alias_name',
-            'iat'      => time(),
+            'eu_sub'   => 'endUser',
             'exp'      => time() + 3_600,
+            'iat'      => time(),
             'settings' => ['user' => 'abc', 'pass' => '1213'],
+            'sub'      => 'user/app/id',
         ];
 
         $jweSerializer = self::getContainer()->get('jose.jwe_serializer.serializer');

@@ -97,9 +97,9 @@ class ApplicationInstall extends DocumentAbstract
     /**
      * @param DateTime|null $created
      *
-     * @return $this
+     * @return self
      */
-    public function setCreated(?DateTime $created): ApplicationInstall
+    public function setCreated(?DateTime $created): self
     {
         $this->created = $created ?? new DateTime();
 
@@ -117,9 +117,9 @@ class ApplicationInstall extends DocumentAbstract
     /**
      * @param DateTime|null $updated
      *
-     * @return $this
+     * @return self
      */
-    public function setUpdated(?DateTime $updated): ApplicationInstall
+    public function setUpdated(?DateTime $updated): self
     {
         $this->updated = $updated ?? new DateTime();
 
@@ -145,9 +145,9 @@ class ApplicationInstall extends DocumentAbstract
     /**
      * @param bool|null $deleted
      *
-     * @return $this
+     * @return self
      */
-    public function setDeleted(?bool $deleted): ApplicationInstall
+    public function setDeleted(?bool $deleted): self
     {
         $this->deleted = $deleted ?? FALSE;
 
@@ -165,9 +165,9 @@ class ApplicationInstall extends DocumentAbstract
     /**
      * @param mixed[]|null $settings
      *
-     * @return $this
+     * @return self
      */
-    public function setSettings(?array $settings): ApplicationInstall
+    public function setSettings(?array $settings): self
     {
         $this->settings = $settings ?? [];
 
@@ -177,9 +177,9 @@ class ApplicationInstall extends DocumentAbstract
     /**
      * @param mixed[] $settings
      *
-     * @return ApplicationInstall
+     * @return self
      */
-    public function addSettings(array $settings): ApplicationInstall
+    public function addSettings(array $settings): self
     {
         $this->settings = array_merge($this->settings, $settings);
 
@@ -197,9 +197,9 @@ class ApplicationInstall extends DocumentAbstract
     /**
      * @param string|null $encryptedSettings
      *
-     * @return $this
+     * @return self
      */
-    public function setEncryptedSettings(?string $encryptedSettings): ApplicationInstall
+    public function setEncryptedSettings(?string $encryptedSettings): self
     {
         $this->encryptedSettings = $encryptedSettings ?? '';
 
@@ -209,9 +209,9 @@ class ApplicationInstall extends DocumentAbstract
     /**
      * @param string|null $user
      *
-     * @return $this
+     * @return self
      */
-    public function setUser(?string $user): ApplicationInstall
+    public function setUser(?string $user): self
     {
         $this->user = $user;
 
@@ -237,9 +237,9 @@ class ApplicationInstall extends DocumentAbstract
     /**
      * @param DateTime|null $expires
      *
-     * @return ApplicationInstall
+     * @return self
      */
-    public function setExpires(?DateTime $expires): ApplicationInstall
+    public function setExpires(?DateTime $expires): self
     {
         $this->expires = $expires;
 
@@ -257,9 +257,9 @@ class ApplicationInstall extends DocumentAbstract
     /**
      * @param string|null $key
      *
-     * @return $this
+     * @return self
      */
-    public function setKey(?string $key): ApplicationInstall
+    public function setKey(?string $key): self
     {
         $this->key = $key;
 
@@ -277,9 +277,9 @@ class ApplicationInstall extends DocumentAbstract
     /**
      * @param mixed[] $nonEncryptedSettings
      *
-     * @return ApplicationInstall
+     * @return self
      */
-    public function setNonEncryptedSettings(array $nonEncryptedSettings): ApplicationInstall
+    public function setNonEncryptedSettings(array $nonEncryptedSettings): self
     {
         $this->nonEncryptedSettings = $nonEncryptedSettings;
 
@@ -289,9 +289,9 @@ class ApplicationInstall extends DocumentAbstract
     /**
      * @param mixed[] $nonEncryptedSettings
      *
-     * @return ApplicationInstall
+     * @return self
      */
-    public function addNonEncryptedSettings(array $nonEncryptedSettings): ApplicationInstall
+    public function addNonEncryptedSettings(array $nonEncryptedSettings): self
     {
         $this->nonEncryptedSettings = array_merge($this->nonEncryptedSettings, $nonEncryptedSettings);
 
@@ -309,9 +309,9 @@ class ApplicationInstall extends DocumentAbstract
     /**
      * @param bool|null $enabled
      *
-     * @return $this
+     * @return self
      */
-    public function setEnabled(?bool $enabled): ApplicationInstall
+    public function setEnabled(?bool $enabled): self
     {
         $this->enabled = $enabled ?? FALSE;
 
@@ -326,16 +326,16 @@ class ApplicationInstall extends DocumentAbstract
         $expires = $this->getExpires();
 
         return [
-            'id'                     => $this->getId(),
-            ApplicationInstall::USER => $this->getUser(),
-            ApplicationInstall::NAME => $this->getKey(),
-            'nonEncryptedSettings'   => $this->getNonEncryptedSettings(),
-            'encryptedSettings'      => $this->getEncryptedSettings(),
-            'settings'               => $this->getSettings(),
-            'created'                => $this->getCreated()?->format(DateTimeUtils::DATE_TIME),
-            'updated'                => $this->getUpdated()?->format(DateTimeUtils::DATE_TIME),
-            'expires'                => $expires?->format(DateTimeUtils::DATE_TIME),
-            'enabled'                => $this->isEnabled(),
+            'created'              => $this->getCreated()?->format(DateTimeUtils::DATE_TIME),
+            'enabled'              => $this->isEnabled(),
+            'encryptedSettings'    => $this->getEncryptedSettings(),
+            'expires'              => $expires?->format(DateTimeUtils::DATE_TIME),
+            'id'                   => $this->getId(),
+            'nonEncryptedSettings' => $this->getNonEncryptedSettings(),
+            'settings'             => $this->getSettings(),
+            'updated'              => $this->getUpdated()?->format(DateTimeUtils::DATE_TIME),
+            self::NAME             => $this->getKey(),
+            self::USER             => $this->getUser(),
         ];
     }
 
@@ -350,17 +350,17 @@ class ApplicationInstall extends DocumentAbstract
     /**
      * @param mixed[] $data
      *
-     * @return ApplicationInstall
+     * @return self
      * @throws Exception
      */
-    protected function fromArray(array $data): ApplicationInstall
+    protected function fromArray(array $data): self
     {
         if (array_key_exists('id', $data))
             $this->setId($data['id']);
-        if (array_key_exists(ApplicationInstall::USER, $data))
-            $this->setUser($data[ApplicationInstall::USER]);
-        if (array_key_exists(ApplicationInstall::NAME, $data))
-            $this->setKey($data[ApplicationInstall::NAME]);
+        if (array_key_exists(self::USER, $data))
+            $this->setUser($data[self::USER]);
+        if (array_key_exists(self::NAME, $data))
+            $this->setKey($data[self::NAME]);
         if (array_key_exists('nonEncryptedSettings', $data))
             $this->setNonEncryptedSettings($data['nonEncryptedSettings']);
         if (array_key_exists('encryptedSettings', $data))

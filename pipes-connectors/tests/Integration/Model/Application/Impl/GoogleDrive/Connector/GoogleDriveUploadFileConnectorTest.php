@@ -13,8 +13,8 @@ use Hanaboso\HbPFConnectors\Model\Application\Impl\GoogleDrive\GoogleDriveApplic
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DataProvider;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
-use HbPFConnectorsTests\MockServer\Mock;
-use HbPFConnectorsTests\MockServer\MockServer;
+use PipesPhpSdkTests\MockServer\Mock;
+use PipesPhpSdkTests\MockServer\MockServer;
 
 /**
  * Class GoogleDriveUploadFileConnectorTest
@@ -110,8 +110,8 @@ final class GoogleDriveUploadFileConnectorTest extends KernelTestCaseAbstract
             $this->app->getName(),
             'user',
             Json::encode([
-                             'name'  => 'John Doe',
                              'email' => 'noreply@johndoe.com',
+                             'name'  => 'John Doe',
                              'phone' => '555-555',
                          ]),
         );

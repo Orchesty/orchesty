@@ -77,10 +77,10 @@ final class AuthorizationController extends AbstractController
             self::REFRESH_TOKEN,
             $refreshToken,
             [
-                'secure'   => $request->isSecure(),
                 'expires'  => intval($refreshExpiration),
-                'samesite' => $this->sameSite,
                 'httponly' => TRUE,
+                'samesite' => $this->sameSite,
+                'secure'   => $request->isSecure(),
             ],
         );
 

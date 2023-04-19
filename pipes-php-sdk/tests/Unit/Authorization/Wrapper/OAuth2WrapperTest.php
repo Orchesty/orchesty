@@ -39,8 +39,8 @@ final class OAuth2WrapperTest extends KernelTestCaseAbstract
 
         $wrapper = new OAuth2Wrapper(
             [
-                'urlAuthorize'            => 'auth/url',
                 'urlAccessToken'          => 'access/url',
+                'urlAuthorize'            => 'auth/url',
                 'urlResourceOwnerDetails' => 'resource/url',
             ],
         );

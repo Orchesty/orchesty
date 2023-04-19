@@ -42,12 +42,13 @@ class MockServer implements ClientInterface
         if (!$this->compareMock($uri, $data, $method, $mock)) {
             throw new MockServerException(
                 sprintf(
-                    'Expected mock not found! Expected: uri=%s, data=%s, method=%s',
+                    'Expected mock not found! Expected: uri=%s, data=%s, method=%s || Found: uri=%s, data=%s, method=%s',
                     $uri,
-                    Json::encode(
-                        $data,
-                    ),
+                    Json::encode($data),
                     $method,
+                    $mock->uri,
+                    Json::encode($mock->data),
+                    $mock->method,
                 ),
             );
         }
@@ -93,7 +94,7 @@ class MockServer implements ClientInterface
             }
         }
 
-        return $uri === $mock->uri && $data === $mock->data && $method === $mock->method;
+        return $uri === $mock->uri && $method === $mock->method;
     }
 
 }

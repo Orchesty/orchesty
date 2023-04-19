@@ -68,8 +68,8 @@ final class TestOAuth2NullApplication extends OAuth2ApplicationAbstract
         $request = new RequestDto($this->getUri($url), $method, $dto);
         $request->setHeaders(
             [
-                'Content-Type' => 'application/vnd.shoptet.v1.0',
                 'Accept'       => 'application/json',
+                'Content-Type' => 'application/vnd.shoptet.v1.0',
             ],
         );
         if (isset($data)) {

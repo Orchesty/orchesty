@@ -14,8 +14,8 @@ use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DataProvider;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
-use HbPFConnectorsTests\MockServer\Mock;
-use HbPFConnectorsTests\MockServer\MockServer;
+use PipesPhpSdkTests\MockServer\Mock;
+use PipesPhpSdkTests\MockServer\MockServer;
 
 /**
  * Class FakturoidCreateNewSubjectConnectorTest
@@ -42,8 +42,8 @@ final class FakturoidCreateNewSubjectConnectorTest extends KernelTestCaseAbstrac
         $applicationInstall->setSettings(
             [
                 ApplicationInterface::AUTHORIZATION_FORM => [
-                    BasicApplicationInterface::USER     => $user,
                     BasicApplicationInterface::PASSWORD => 'c********d864859b625ec4c478184',
+                    BasicApplicationInterface::USER     => $user,
                     FakturoidApplication::ACCOUNT => 'fakturacnitest',
                 ],
             ],

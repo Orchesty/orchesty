@@ -61,7 +61,7 @@ final class PipedriveApplicationTest extends KernelTestCaseAbstract
         );
 
         self::assertEquals(
-            '{"subscription_url":"https:\/\/seznam.cz","event_action":"added","event_object":"activity"}',
+            '{"event_action":"added","event_object":"activity","subscription_url":"https:\/\/seznam.cz"}',
             $request->getBody(),
         );
 

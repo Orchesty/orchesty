@@ -2,7 +2,7 @@
     "name": "orchesty/php-connectors",
     "description": "PHP Connectors and Applications for Orchesty",
     "license": "Apache-2.0",
-    "version": "3.0",
+    "version": "3.0.1",
     "require": {
         "php": "^8.2",
         "ext-ctype": "*",
@@ -12,7 +12,7 @@
     },
     "require-dev": {
         "aws/aws-sdk-php-symfony": "^2.5",
-        "hanaboso/php-check-utils": "^1.4",
+        "hanaboso/php-check-utils": "^1.5",
         "mockery/mockery": "^1.5.1",
         "symfony/debug-bundle": "^v6.2",
         "symfony/security-bundle": "^v6.2",
@@ -37,7 +37,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "HbPFConnectorsTests\\": "tests"
+            "HbPFConnectorsTests\\": "tests",
+            "PipesPhpSdkTests\\": "vendor/orchesty/php-sdk/tests"
         }
     },
     "config": {

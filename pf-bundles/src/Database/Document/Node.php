@@ -134,7 +134,7 @@ class Node
      *
      * @return Node
      */
-    public function setApplication(string $application): Node
+    public function setApplication(string $application): self
     {
         $this->application = $application;
 
@@ -154,7 +154,7 @@ class Node
      *
      * @return Node
      */
-    public function setSchemaId(string $schemaId): Node
+    public function setSchemaId(string $schemaId): self
     {
         $this->schemaId = $schemaId;
 
@@ -174,7 +174,7 @@ class Node
      *
      * @return Node
      */
-    public function setName(string $name): Node
+    public function setName(string $name): self
     {
         $this->name = $name;
 
@@ -194,7 +194,7 @@ class Node
      *
      * @return Node
      */
-    public function setTopology(string $topology): Node
+    public function setTopology(string $topology): self
     {
         $this->topology = $topology;
 
@@ -218,7 +218,7 @@ class Node
      *
      * @return Node
      */
-    public function addNext(EmbedNode $next): Node
+    public function addNext(EmbedNode $next): self
     {
         $this->next[] = $next;
 
@@ -230,7 +230,7 @@ class Node
      *
      * @return Node
      */
-    public function setNext(array $next): Node
+    public function setNext(array $next): self
     {
         $this->next = $next;
 
@@ -251,7 +251,7 @@ class Node
      * @return Node
      * @throws NodeException
      */
-    public function setType(string $type): Node
+    public function setType(string $type): self
     {
         if (TypeEnum::tryFrom($type)) {
             $this->type = $type;
@@ -279,7 +279,7 @@ class Node
      * @return Node
      * @throws NodeException
      */
-    public function setHandler(string $handler): Node
+    public function setHandler(string $handler): self
     {
         if (HandlerEnum::tryFrom($handler)) {
             $this->handler = $handler;
@@ -306,7 +306,7 @@ class Node
      *
      * @return Node
      */
-    public function setEnabled(bool $enabled): Node
+    public function setEnabled(bool $enabled): self
     {
         $this->enabled = $enabled;
 
@@ -326,7 +326,7 @@ class Node
      *
      * @return Node
      */
-    public function setCron(?string $cron): Node
+    public function setCron(?string $cron): self
     {
         $this->cron = $cron;
 
@@ -346,7 +346,7 @@ class Node
      *
      * @return Node
      */
-    public function setCronParams(?string $cronParams): Node
+    public function setCronParams(?string $cronParams): self
     {
         $this->cronParams = $cronParams;
 
@@ -358,7 +358,7 @@ class Node
      *
      * @return Node
      */
-    public function setSystemConfigs(SystemConfigDto $dto): Node
+    public function setSystemConfigs(SystemConfigDto $dto): self
     {
         $this->systemConfigs = $dto->toString();
 
@@ -383,16 +383,16 @@ class Node
     public function toArray(): array
     {
         return [
-            '_id'         => $this->getId(),
-            'name'        => $this->getName(),
-            'topology_id' => $this->getTopology(),
-            'next'        => $this->getNext(),
-            'type'        => $this->getType(),
-            'handler'     => $this->getHandler(),
-            'enabled'     => $this->isEnabled(),
-            'schema_id'   => $this->getSchemaId(),
-            'cron_time'   => $this->getCron(),
             'cron_params' => $this->getCronParams(),
+            'cron_time'   => $this->getCron(),
+            'enabled'     => $this->isEnabled(),
+            'handler'     => $this->getHandler(),
+            'name'        => $this->getName(),
+            'next'        => $this->getNext(),
+            'schema_id'   => $this->getSchemaId(),
+            'topology_id' => $this->getTopology(),
+            'type'        => $this->getType(),
+            '_id'         => $this->getId(),
         ];
     }
 

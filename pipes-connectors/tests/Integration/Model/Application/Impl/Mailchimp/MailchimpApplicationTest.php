@@ -82,10 +82,10 @@ final class MailchimpApplicationTest extends KernelTestCaseAbstract
         );
         $applicationInstall->addSettings(
             [
-                ApplicationInterface::AUTHORIZATION_FORM => [
-                    ...$applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM],
-                    MailchimpApplication::AUDIENCE_ID => '2a8******8',
-                ],
+                ApplicationInterface::AUTHORIZATION_FORM => array_merge(
+                    $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM],
+                    [MailchimpApplication::AUDIENCE_ID => '2a8******8'],
+                ),
                 MailchimpApplication::API_KEYPOINT       => $this->application->getApiEndpoint($applicationInstall),
             ],
         );
@@ -244,8 +244,8 @@ final class MailchimpApplicationTest extends KernelTestCaseAbstract
         $providerMock = self::createPartialMock(OAuth2Provider::class, ['getAccessToken']);
         $providerMock->method('getAccessToken')->willReturn(
             [
-                'code'         => 'code123',
                 'access_token' => 'token333',
+                'code'         => 'code123',
             ],
         );
         $this->setApplication();
@@ -260,8 +260,8 @@ final class MailchimpApplicationTest extends KernelTestCaseAbstract
         $return = $this->application->setAuthorizationToken(
             $applicationInstall,
             [
-                'code'         => 'code123',
                 'access_token' => 'token333',
+                'code'         => 'code123',
             ],
         );
         self::assertEquals(MailchimpApplication::class, $return::class);

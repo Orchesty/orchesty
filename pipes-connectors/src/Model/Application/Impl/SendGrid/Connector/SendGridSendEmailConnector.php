@@ -47,20 +47,20 @@ final class SendGridSendEmailConnector extends ConnectorAbstract
         }
 
         $body = [
+            'from'             => [
+                'email' => 'noreply@johndoe.com',
+                'name'  => 'John Doe',
+            ],
             'personalizations' => [
                 [
+                    'subject' => $data['subject'],
                     'to'      => [
                         [
                             'email' => $data['email'],
                             'name'  => $data['name'],
                         ],
                     ],
-                    'subject' => $data['subject'],
                 ],
-            ],
-            'from'             => [
-                'email' => 'noreply@johndoe.com',
-                'name'  => 'John Doe',
             ],
             'reply_to'         => [
                 'email' => 'noreply@johndoe.com',

@@ -130,7 +130,7 @@ class Topology
      *
      * @return Topology
      */
-    public function setName(string $name): Topology
+    public function setName(string $name): self
     {
         $this->name = $name;
 
@@ -150,7 +150,7 @@ class Topology
      *
      * @return Topology
      */
-    public function setVersion(int $version): Topology
+    public function setVersion(int $version): self
     {
         $this->version = $version;
 
@@ -170,7 +170,7 @@ class Topology
      *
      * @return Topology
      */
-    public function setDescr(string $descr): Topology
+    public function setDescr(string $descr): self
     {
         $this->descr = $descr;
 
@@ -191,7 +191,7 @@ class Topology
      * @return Topology
      * @throws EnumException
      */
-    public function setVisibility(string $visibility): Topology
+    public function setVisibility(string $visibility): self
     {
         if (!TopologyStatusEnum::tryFrom($visibility)) {
             throw new EnumException();
@@ -215,7 +215,7 @@ class Topology
      * @return Topology
      * @throws EnumException
      */
-    public function setStatus(string $status): Topology
+    public function setStatus(string $status): self
     {
         if (!StatusEnum::tryFrom($status)) {
             throw new EnumException();
@@ -238,7 +238,7 @@ class Topology
      *
      * @return Topology
      */
-    public function setEnabled(bool $enabled): Topology
+    public function setEnabled(bool $enabled): self
     {
         $this->enabled = $enabled;
 
@@ -258,7 +258,7 @@ class Topology
      *
      * @return Topology
      */
-    public function setBpmn(array $bpmn): Topology
+    public function setBpmn(array $bpmn): self
     {
         $this->bpmn = Json::encode($bpmn);
 
@@ -278,7 +278,7 @@ class Topology
      *
      * @return Topology
      */
-    public function setRawBpmn(string $rawBpmn): Topology
+    public function setRawBpmn(string $rawBpmn): self
     {
         $this->rawBpmn = $rawBpmn;
 
@@ -298,7 +298,7 @@ class Topology
      *
      * @return Topology
      */
-    public function setCategory(?string $category): Topology
+    public function setCategory(?string $category): self
     {
         $this->category = $category;
 
@@ -310,7 +310,7 @@ class Topology
      *
      * @return Topology
      */
-    public function setContentHash(string $contentHash): Topology
+    public function setContentHash(string $contentHash): self
     {
         $this->contentHash = $contentHash;
 
@@ -338,7 +338,7 @@ class Topology
      *
      * @return Topology
      */
-    public function setApplications(array $applications): Topology
+    public function setApplications(array $applications): self
     {
         $this->applications = new ArrayCollection($applications);
 

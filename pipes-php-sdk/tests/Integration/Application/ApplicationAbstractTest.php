@@ -48,14 +48,14 @@ final class ApplicationAbstractTest extends KernelTestCaseAbstract
     {
         self::assertEquals(
             [
-                'name'               => 'Null',
-                'authorization_type' => 'basic',
                 'application_type'   => 'cron',
-                'key'                => 'null-key',
+                'authorization_type' => 'basic',
                 'description'        => 'Application for test purposes',
                 'info'               => '',
-                'logo'               => NULL,
                 'isInstallable'      => TRUE,
+                'key'                => 'null-key',
+                'logo'               => NULL,
+                'name'               => 'Null',
             ],
             $this->application->toArray(),
         );

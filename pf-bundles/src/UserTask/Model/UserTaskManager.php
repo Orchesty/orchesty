@@ -171,12 +171,14 @@ final class UserTaskManager
         return array_map(function (array $doc) {
             $topo = $this->dm->getRepository(Topology::class)->findOneBy(['id' => $doc[UserTask::TOPOLOGY_ID]]);
 
-            return [
-                ...$doc,
-                UserTask::TOPOLOGY_DESCR   => $topo?->getDescr() ?? '',
-                UserTask::TOPOLOGY_VERSION => $topo?->getVersion() ?? 0,
-                UserTask::TOPOLOGY_DELETED => $topo?->isDeleted() ?? FALSE,
-            ];
+            return array_merge(
+                $doc,
+                [
+                    UserTask::TOPOLOGY_DELETED => $topo?->isDeleted() ?? FALSE,
+                    UserTask::TOPOLOGY_DESCR   => $topo?->getDescr() ?? '',
+                    UserTask::TOPOLOGY_VERSION => $topo?->getVersion() ?? 0,
+                ],
+            );
         }, $res);
     }
 

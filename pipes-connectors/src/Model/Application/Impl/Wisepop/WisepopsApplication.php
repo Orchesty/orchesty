@@ -86,13 +86,13 @@ final class WisepopsApplication extends BasicApplicationAbstract implements Webh
         $request = new RequestDto($this->getUri($url), $method, $dto);
         $request->setHeaders(
             [
-                'Content-Type'  => 'application/json',
                 'Accept'        => 'application/json',
                 'Authorization' =>
                     sprintf(
                         'WISEPOPS-API key="%s"',
                         $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][self::API_KEY],
                     ),
+                'Content-Type'  => 'application/json',
             ],
         );
         if (isset($data)) {
@@ -145,11 +145,11 @@ final class WisepopsApplication extends BasicApplicationAbstract implements Webh
             new ProcessDto(),
             $applicationInstall,
             CurlManager::METHOD_POST,
-            WisepopsApplication::WISEPOOPS_URL,
+            self::WISEPOOPS_URL,
             Json::encode(
                 [
-                    'target_url' => $url,
                     'event'      => $subscription->getParameters()['name'],
+                    'target_url' => $url,
                 ],
             ),
         );
@@ -171,7 +171,7 @@ final class WisepopsApplication extends BasicApplicationAbstract implements Webh
             new ProcessDto(),
             $applicationInstall,
             CurlManager::METHOD_DELETE,
-            sprintf('%s?hook_id=%s', WisepopsApplication::WISEPOOPS_URL, $webhook->getWebhookId()),
+            sprintf('%s?hook_id=%s', self::WISEPOOPS_URL, $webhook->getWebhookId()),
         );
     }
 

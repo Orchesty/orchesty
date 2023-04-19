@@ -76,11 +76,11 @@ final class FakturoidApplication extends BasicApplicationAbstract
 
         $request->setHeaders(
             [
-                'Content-Type'  => 'application/json',
                 'Authorization' => sprintf(
                     'Basic %s',
                     Base64::base64UrlEncode(sprintf('%s:%s', $userName, $password)),
                 ),
+                'Content-Type'  => 'application/json',
             ],
         );
 

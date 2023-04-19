@@ -68,7 +68,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
         );
         $response = $this->client->getResponse();
 
-        self::assertEquals(500, $response->getStatusCode());
+        self::assertEquals(400, $response->getStatusCode());
     }
 
     /**
@@ -94,7 +94,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
         );
         $response = $this->client->getResponse();
 
-        self::assertEquals(500, $response->getStatusCode());
+        self::assertEquals(400, $response->getStatusCode());
     }
 
     /**

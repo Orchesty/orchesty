@@ -123,7 +123,7 @@ final class TrashController extends AbstractController
             }
 
             return $this->getResponse(
-                $this->userTaskHandler->acceptBatch([UserTask::TYPE => 'trash', ...$filter]),
+                $this->userTaskHandler->acceptBatch(array_merge([UserTask::TYPE => 'trash'], $filter)),
             );
         } catch (Throwable $t) {
             return $this->getErrorResponse($t);
@@ -147,7 +147,7 @@ final class TrashController extends AbstractController
             }
 
             return $this->getResponse(
-                $this->userTaskHandler->rejectBatch([UserTask::TYPE => 'trash', ...$filter]),
+                $this->userTaskHandler->rejectBatch(array_merge([UserTask::TYPE => 'trash'], $filter)),
             );
         } catch (Throwable $t) {
             return $this->getErrorResponse($t);
@@ -184,15 +184,15 @@ final class TrashController extends AbstractController
             [
                 [
                     [
-                        GridFilterAbstract::OPERATOR => GridFilterAbstract::EQ,
                         GridFilterAbstract::COLUMN   => UserTask::TYPE,
+                        GridFilterAbstract::OPERATOR => GridFilterAbstract::EQ,
                         GridFilterAbstract::VALUE    => ['trash'],
                     ],
                 ],
                 [
                     [
-                        GridFilterAbstract::OPERATOR => GridFilterAbstract::EQ,
                         GridFilterAbstract::COLUMN   => UserTask::USER,
+                        GridFilterAbstract::OPERATOR => GridFilterAbstract::EQ,
                         GridFilterAbstract::VALUE    => [$this->authenticator->getAuthUser()],
                     ],
                 ],

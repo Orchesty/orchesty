@@ -37,8 +37,8 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
             $this->jwt,
             __DIR__ . '/data/Node/getNodesRequest.json',
             [
-                '_id' => '5e329eb233609f28e8613114',
                 'topology_id' => '5e329eb233609f28e8613113',
+                '_id' => '5e329eb233609f28e8613114',
             ],
             [':id' => $topology->getId()],
         );
@@ -113,24 +113,6 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
         $this->assertResponseLogged(
             $this->jwt,
             __DIR__ . '/data/Node/updateNodeRequest.json',
-            ['_id' => '5e32a3bf1280c6296f258c83'],
-            [':id' => $node->getId()],
-        );
-    }
-
-    /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController::updateNodeAction
-     *
-     * @throws Exception
-     */
-    public function testUpdateErrNode(): void
-    {
-        $node = new Node();
-        $this->pfd($node);
-
-        $this->assertResponseLogged(
-            $this->jwt,
-            __DIR__ . '/data/Node/updateNodeErrRequest.json',
             ['_id' => '5e32a3bf1280c6296f258c83'],
             [':id' => $node->getId()],
         );

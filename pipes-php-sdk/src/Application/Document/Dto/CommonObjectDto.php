@@ -56,8 +56,8 @@ final class CommonObjectDto
      */
     public function toArray(): array {
         return [
-            self::NAME => $this->getName(),
             self::APP  => $this->getApp(),
+            self::NAME => $this->getName(),
         ];
     }
 

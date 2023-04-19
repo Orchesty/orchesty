@@ -82,7 +82,7 @@ class ApiToken
      *
      * @return ApiToken
      */
-    public function setUser(string $user): ApiToken
+    public function setUser(string $user): self
     {
         $this->user = $user;
 
@@ -102,7 +102,7 @@ class ApiToken
      *
      * @return ApiToken
      */
-    public function setKey(string $key): ApiToken
+    public function setKey(string $key): self
     {
         $this->key = $key;
 
@@ -122,7 +122,7 @@ class ApiToken
      *
      * @return ApiToken
      */
-    public function setExpireAt(?DateTime $expireAt): ApiToken
+    public function setExpireAt(?DateTime $expireAt): self
     {
         $this->expireAt = $expireAt;
 
@@ -142,7 +142,7 @@ class ApiToken
      *
      * @return ApiToken
      */
-    public function setScopes(array $scopes): ApiToken
+    public function setScopes(array $scopes): self
     {
         $this->scopes = $scopes;
 
@@ -155,12 +155,12 @@ class ApiToken
     public function toArray(): array
     {
         return [
-            self::ID        => $this->id,
             self::CREATED   => $this->created->format(DateTimeUtils::DATE_TIME_UTC),
-            self::USER      => $this->user,
-            self::KEY       => $this->key,
             self::EXPIRE_AT => $this->expireAt ? $this->expireAt->format(DateTimeUtils::DATE_TIME_UTC) : NULL,
+            self::ID        => $this->id,
+            self::KEY       => $this->key,
             self::SCOPES    => implode(',', $this->scopes),
+            self::USER      => $this->user,
         ];
     }
 

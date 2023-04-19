@@ -124,9 +124,9 @@ final class ZendeskApplicationTest extends KernelTestCaseAbstract
 
         self::assertEquals(
             [
-                'Content-Type'  => 'application/json',
                 'Accept'        => 'application/json',
                 'Authorization' => 'Bearer token123',
+                'Content-Type'  => 'application/json',
             ],
             $dto->getHeaders(),
         );
@@ -176,10 +176,10 @@ final class ZendeskApplicationTest extends KernelTestCaseAbstract
         $applicationInstall = DataProvider::getOauth2AppInstall($this->application->getName());
         $applicationInstall->addSettings(
             [
-                ApplicationInterface::AUTHORIZATION_FORM => [
-                    ...$applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM],
-                    'subdomain' => 'domain123',
-                ],
+                ApplicationInterface::AUTHORIZATION_FORM => array_merge(
+                    $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM],
+                    ['subdomain' => 'domain123'],
+                ),
             ],
         );
 

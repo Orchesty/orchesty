@@ -119,10 +119,10 @@ final class QuickbooksApplicationTest extends KernelTestCaseAbstract
         );
         $applicationInstall->addSettings(
             [
-                ApplicationInterface::AUTHORIZATION_FORM => [
-                    ...$applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM],
-                    QuickbooksApplication::APP_ID => self::SHOP_ID,
-                ],
+                ApplicationInterface::AUTHORIZATION_FORM => array_merge(
+                    $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM],
+                    [QuickbooksApplication::APP_ID => self::SHOP_ID],
+                ),
             ],
         );
 
@@ -136,9 +136,9 @@ final class QuickbooksApplicationTest extends KernelTestCaseAbstract
 
         self::assertEquals(
             [
-                'Content-Type'  => 'application/json',
                 'Accept'        => 'application/json',
                 'Authorization' => 'Bearer token',
+                'Content-Type'  => 'application/json',
             ],
             $dto->getHeaders(),
         );

@@ -11,8 +11,8 @@ use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\ControllerTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
-use HbPFConnectorsTests\MockServer\Mock;
-use HbPFConnectorsTests\MockServer\MockServer;
+use PipesPhpSdkTests\MockServer\Mock;
+use PipesPhpSdkTests\MockServer\MockServer;
 
 /**
  * Class IDokladApplicationTest

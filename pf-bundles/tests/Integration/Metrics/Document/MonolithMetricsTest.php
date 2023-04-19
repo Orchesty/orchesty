@@ -36,14 +36,14 @@ final class MonolithMetricsTest extends DatabaseTestCaseAbstract
             ->setNewObj(
                 [
                     'fields' => [
+                        'created'             => new UTCDateTime(DateTimeUtils::getUtcDateTime('1.1.2020')),
                         'fpm_cpu_kernel_time' => '1.111',
                         'fpm_cpu_user_time'   => '2.222',
-                        'created'             => new UTCDateTime(DateTimeUtils::getUtcDateTime('1.1.2020')),
                     ],
                     'tags'   => [
                         'node_id'     => '1',
-                        'topology_id' => '2',
                         'queue'       => '12',
+                        'topology_id' => '2',
                     ],
                 ],
             )

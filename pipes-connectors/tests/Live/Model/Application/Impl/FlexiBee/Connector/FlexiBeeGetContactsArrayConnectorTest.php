@@ -15,8 +15,8 @@ use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DataProvider;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
-use HbPFConnectorsTests\MockServer\Mock;
-use HbPFConnectorsTests\MockServer\MockServer;
+use PipesPhpSdkTests\MockServer\Mock;
+use PipesPhpSdkTests\MockServer\MockServer;
 
 /**
  * Class FlexiBeeGetContactsArrayConnectorTest
@@ -85,10 +85,10 @@ final class FlexiBeeGetContactsArrayConnectorTest extends KernelTestCaseAbstract
             [
                 ApplicationInterface::AUTHORIZATION_FORM =>
                     [
-                        'user'     => 'winstrom',
-                        'password' => 'winstrom',
                         'auth'        => 'http',
                         'flexibeeUrl' => 'https://demo.flexibee.eu/c/demo',
+                        'password' => 'winstrom',
+                        'user'     => 'winstrom',
                     ],
             ],
         );
@@ -116,8 +116,8 @@ final class FlexiBeeGetContactsArrayConnectorTest extends KernelTestCaseAbstract
 
                 $request->setHeaders(
                     [
-                        'Content-Type' => 'application/json',
                         'Accept'       => 'application/json',
+                        'Content-Type' => 'application/json',
                     ],
                 );
 

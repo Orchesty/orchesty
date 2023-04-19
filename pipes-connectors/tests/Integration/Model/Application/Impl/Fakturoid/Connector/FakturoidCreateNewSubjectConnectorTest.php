@@ -11,15 +11,15 @@ use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DataProvider;
-use HbPFConnectorsTests\MockServer\Mock;
-use HbPFConnectorsTests\MockServer\MockServer;
+use PipesPhpSdkTests\MockServer\Mock;
+use PipesPhpSdkTests\MockServer\MockServer;
 
 /**
  * Class FakturoidCreateNewSubjectConnectorTest
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Fakturoid\Connector
  */
-final class FakturoidCreateNewSubjectConnectorTest extends FakturoidAbstractConnectorTest
+final class FakturoidCreateNewSubjectConnectorTest extends FakturoidAbstractTestConnector
 {
 
     /**

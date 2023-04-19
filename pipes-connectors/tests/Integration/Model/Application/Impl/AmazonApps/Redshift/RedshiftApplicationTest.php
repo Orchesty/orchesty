@@ -121,10 +121,10 @@ final class RedshiftApplicationTest extends KernelTestCaseAbstract
         $application = (new ApplicationInstall())->setSettings(
             [
                 ApplicationInterface::AUTHORIZATION_FORM => [
-                    RedshiftApplication::KEY         => 'Key',
-                    RedshiftApplication::SECRET      => 'Secret',
-                    RedshiftApplication::REGION      => 'eu-central-1',
                     RedshiftApplication::DB_PASSWORD => 'dbPasswd',
+                    RedshiftApplication::KEY         => 'Key',
+                    RedshiftApplication::REGION      => 'eu-central-1',
+                    RedshiftApplication::SECRET      => 'Secret',
                 ],
             ],
         );
@@ -155,10 +155,10 @@ final class RedshiftApplicationTest extends KernelTestCaseAbstract
 
         $settings = [
             ApplicationInterface::AUTHORIZATION_FORM => [
-                RedshiftApplication::KEY         => 'Key',
-                RedshiftApplication::SECRET      => 'Secret',
-                RedshiftApplication::REGION      => 'eu-central-1',
                 RedshiftApplication::DB_PASSWORD => 'dbPasswd',
+                RedshiftApplication::KEY         => 'Key',
+                RedshiftApplication::REGION      => 'eu-central-1',
+                RedshiftApplication::SECRET      => 'Secret',
             ],
         ];
 
@@ -177,12 +177,12 @@ final class RedshiftApplicationTest extends KernelTestCaseAbstract
                 'Clusters' => [
                     [
                         'ClusterIdentifier' => '',
-                        'MasterUsername'    => '',
                         'DBName'            => '',
                         'Endpoint'          => [
                             'Address' => '',
                             'Port'    => '',
                         ],
+                        'MasterUsername'    => '',
                     ],
                 ],
             ],
@@ -195,10 +195,10 @@ final class RedshiftApplicationTest extends KernelTestCaseAbstract
         $innerApplication->method('getRedshiftClient')->willReturn($client);
 
         $settings = [
-            RedshiftApplication::KEY         => 'Key',
-            RedshiftApplication::SECRET      => 'Secret',
-            RedshiftApplication::REGION      => 'eu-central-1',
             RedshiftApplication::DB_PASSWORD => 'dbPasswd',
+            RedshiftApplication::KEY         => 'Key',
+            RedshiftApplication::REGION      => 'eu-central-1',
+            RedshiftApplication::SECRET      => 'Secret',
         ];
 
         $application = (new ApplicationInstall())->setSettings([ApplicationInterface::AUTHORIZATION_FORM => $settings]);
@@ -242,10 +242,10 @@ final class RedshiftApplicationTest extends KernelTestCaseAbstract
         $innerApplication->method('getRedshiftClient')->willReturn($client);
 
         $settings = [
-            RedshiftApplication::KEY         => 'Key',
-            RedshiftApplication::SECRET      => 'Secret',
-            RedshiftApplication::REGION      => 'eu-central-1',
             RedshiftApplication::DB_PASSWORD => 'dbPasswd',
+            RedshiftApplication::KEY         => 'Key',
+            RedshiftApplication::REGION      => 'eu-central-1',
+            RedshiftApplication::SECRET      => 'Secret',
         ];
 
         $innerApplication->setApplicationSettings(
@@ -265,12 +265,12 @@ final class RedshiftApplicationTest extends KernelTestCaseAbstract
         $this->prepareConnection(static fn() => new Connection());
 
         $settings = [
-            'host'           => '',
-            'Port'           => '',
-            'DBName'         => '',
-            'MasterUsername' => '',
             'Address'        => '',
+            'DBName'         => '',
             'DbPassword'     => '',
+            'host'           => '',
+            'MasterUsername' => '',
+            'Port'           => '',
         ];
 
         $application = (new ApplicationInstall())->setSettings($settings);
@@ -292,12 +292,12 @@ final class RedshiftApplicationTest extends KernelTestCaseAbstract
         $this->application->getConnection(
             (new ApplicationInstall())->setSettings(
                 [
-                    'host'           => '',
-                    'Port'           => '',
-                    'DBName'         => '',
-                    'MasterUsername' => '',
                     'Address'        => '',
+                    'DBName'         => '',
                     'DbPassword'     => '',
+                    'host'           => '',
+                    'MasterUsername' => '',
+                    'Port'           => '',
                 ],
             ),
         );

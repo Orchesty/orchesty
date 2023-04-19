@@ -86,9 +86,9 @@ class UsageStatsEvent
      * @return UsageStatsEvent
      * @throws DateTimeException
      */
-    public static function createFromBillingEvent(string $iid, Event\BillingEvent $event): UsageStatsEvent
+    public static function createFromBillingEvent(string $iid, Event\BillingEvent $event): self
     {
-        return (new UsageStatsEvent($iid, $event->getType()))->setBillingData($event->getData());
+        return (new self($iid, $event->getType()))->setBillingData($event->getData());
     }
 
     /**
@@ -104,7 +104,7 @@ class UsageStatsEvent
      *
      * @return $this
      */
-    public function setIid(string $iid): UsageStatsEvent
+    public function setIid(string $iid): self
     {
         $this->iid = $iid;
 
@@ -124,7 +124,7 @@ class UsageStatsEvent
      *
      * @return $this
      */
-    public function setType(string $type): UsageStatsEvent
+    public function setType(string $type): self
     {
         $this->type = $type;
 
@@ -144,7 +144,7 @@ class UsageStatsEvent
      *
      * @return $this
      */
-    public function setVersion(int $version): UsageStatsEvent
+    public function setVersion(int $version): self
     {
         $this->version = $version;
 
@@ -172,7 +172,7 @@ class UsageStatsEvent
      *
      * @return $this
      */
-    public function setBillingData(BillingData $data): UsageStatsEvent
+    public function setBillingData(BillingData $data): self
     {
         $this->data = $data->toArray();
 
@@ -184,7 +184,7 @@ class UsageStatsEvent
      *
      * @return $this
      */
-    public function setHeartBeatData(HearthBeatData $data): UsageStatsEvent
+    public function setHeartBeatData(HearthBeatData $data): self
     {
         $this->data = $data->toArray();
 
@@ -204,7 +204,7 @@ class UsageStatsEvent
      *
      * @return $this
      */
-    public function setSent(?int $sent): UsageStatsEvent
+    public function setSent(?int $sent): self
     {
         $this->sent = $sent;
 
@@ -217,11 +217,11 @@ class UsageStatsEvent
     public function toArray(): array
     {
         return [
+            'created' => $this->created->format('Uu'),
+            'data'    => $this->data,
             'iid'     => $this->iid,
             'type'    => $this->type,
             'version' => $this->version,
-            'data'    => $this->data,
-            'created' => $this->created->format('Uu'),
         ];
     }
 

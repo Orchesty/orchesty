@@ -80,7 +80,7 @@ final class CategoryParser
      *
      * @return CategoryParser
      */
-    public function addRoot(string $alias, string $path): CategoryParser
+    public function addRoot(string $alias, string $path): self
     {
         $this->roots[$alias] = $path;
 
@@ -93,7 +93,7 @@ final class CategoryParser
      *
      * @return CategoryParser
      */
-    public function addExclude(string $rootAlias, string $folder): CategoryParser
+    public function addExclude(string $rootAlias, string $folder): self
     {
         if (array_key_exists($rootAlias, $this->roots)) {
             $this->excludes[$rootAlias][] = $folder;
@@ -109,7 +109,7 @@ final class CategoryParser
      *
      * @return CategoryParser
      */
-    public function addAlias(string $rootAlias, string $folder, string $alias): CategoryParser
+    public function addAlias(string $rootAlias, string $folder, string $alias): self
     {
         if (array_key_exists($rootAlias, $this->roots)) {
             $this->aliases[$rootAlias][$alias] = $folder;

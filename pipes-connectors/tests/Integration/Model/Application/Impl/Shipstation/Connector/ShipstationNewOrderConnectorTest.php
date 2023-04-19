@@ -12,8 +12,8 @@ use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DataProvider;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
 use HbPFConnectorsTests\MockCurlMethod;
-use HbPFConnectorsTests\MockServer\Mock;
-use HbPFConnectorsTests\MockServer\MockServer;
+use PipesPhpSdkTests\MockServer\Mock;
+use PipesPhpSdkTests\MockServer\MockServer;
 
 /**
  * Class ShipstationNewOrderConnectorTest
@@ -114,17 +114,6 @@ final class ShipstationNewOrderConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @return mixed[]
-     */
-    public function getDataProvider(): array
-    {
-        return [
-            [404, FALSE],
-            [200, TRUE],
-        ];
-    }
-
-    /**
      * @throws Exception
      */
     public function testGetName(): void
@@ -137,6 +126,17 @@ final class ShipstationNewOrderConnectorTest extends KernelTestCaseAbstract
             'shipstation_new_order',
             $shipstationNewOrderConnector->getName(),
         );
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public static function getDataProvider(): array
+    {
+        return [
+            [404, FALSE],
+            [200, TRUE],
+        ];
     }
 
 }

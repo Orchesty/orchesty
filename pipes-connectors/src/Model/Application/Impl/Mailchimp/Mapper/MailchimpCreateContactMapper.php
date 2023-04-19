@@ -107,11 +107,11 @@ final class MailchimpCreateContactMapper extends CommonNodeAbstract
     private function requestedFields(): array
     {
         return [
+            'ADDRESS'   => 'fullAddress',
             'FNAME'     => 'firstname',
+            'HUBSPOTID' => 'vid',
             'LNAME'     => 'lastname',
             'PHONE'     => 'phone',
-            'ADDRESS'   => 'fullAddress',
-            'HUBSPOTID' => 'vid',
         ];
     }
 

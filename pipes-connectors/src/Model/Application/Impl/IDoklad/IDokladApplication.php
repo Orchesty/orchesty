@@ -75,9 +75,9 @@ final class IDokladApplication extends OAuth2ApplicationAbstract
         $request = new RequestDto($this->getUri($url ?? self::BASE_URL), $method, $dto);
         $request->setHeaders(
             [
-                'Content-Type'        => 'application/json',
                 'Accept'        => 'application/json',
                 'Authorization' => sprintf('Bearer %s', $this->getAccessToken($applicationInstall)),
+                'Content-Type'        => 'application/json',
             ],
         );
 

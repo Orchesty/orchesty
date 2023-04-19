@@ -89,9 +89,9 @@ class Webhook extends DocumentAbstract
     /**
      * @param DateTime|null $created
      *
-     * @return $this
+     * @return self
      */
-    public function setCreated(?DateTime $created): Webhook
+    public function setCreated(?DateTime $created): self
     {
         $this->created = $created;
 
@@ -109,9 +109,9 @@ class Webhook extends DocumentAbstract
     /**
      * @param string|null $name
      *
-     * @return $this
+     * @return self
      */
-    public function setName(?string $name): Webhook
+    public function setName(?string $name): self
     {
         $this->name = $name;
 
@@ -129,9 +129,9 @@ class Webhook extends DocumentAbstract
     /**
      * @param string|null $user
      *
-     * @return $this
+     * @return self
      */
-    public function setUser(?string $user): Webhook
+    public function setUser(?string $user): self
     {
         $this->user = $user;
 
@@ -149,9 +149,9 @@ class Webhook extends DocumentAbstract
     /**
      * @param string|null $token
      *
-     * @return $this
+     * @return self
      */
-    public function setToken(?string $token): Webhook
+    public function setToken(?string $token): self
     {
         $this->token = $token;
 
@@ -169,9 +169,9 @@ class Webhook extends DocumentAbstract
     /**
      * @param string|null $node
      *
-     * @return $this
+     * @return self
      */
-    public function setNode(?string $node): Webhook
+    public function setNode(?string $node): self
     {
         $this->node = $node;
 
@@ -189,9 +189,9 @@ class Webhook extends DocumentAbstract
     /**
      * @param string|null $topology
      *
-     * @return $this
+     * @return self
      */
-    public function setTopology(?string $topology): Webhook
+    public function setTopology(?string $topology): self
     {
         $this->topology = $topology;
 
@@ -209,9 +209,9 @@ class Webhook extends DocumentAbstract
     /**
      * @param string|null $application
      *
-     * @return $this
+     * @return self
      */
-    public function setApplication(?string $application): Webhook
+    public function setApplication(?string $application): self
     {
         $this->application = $application;
 
@@ -229,9 +229,9 @@ class Webhook extends DocumentAbstract
     /**
      * @param string|null $webhookId
      *
-     * @return $this
+     * @return self
      */
-    public function setWebhookId(?string $webhookId): Webhook
+    public function setWebhookId(?string $webhookId): self
     {
         $this->webhookId = $webhookId;
 
@@ -249,9 +249,9 @@ class Webhook extends DocumentAbstract
     /**
      * @param bool|null $unsubscribeFailed
      *
-     * @return $this
+     * @return self
      */
-    public function setUnsubscribeFailed(?bool $unsubscribeFailed): Webhook
+    public function setUnsubscribeFailed(?bool $unsubscribeFailed): self
     {
         $this->unsubscribeFailed = $unsubscribeFailed ?? FALSE;
 
@@ -264,32 +264,32 @@ class Webhook extends DocumentAbstract
     public function toArray(): array
     {
         return [
-            'id'                 => $this->getId(),
-            Webhook::USER        => $this->getUser(),
-            Webhook::APPLICATION => $this->getApplication(),
-            'created'            => $this->getCreated()?->format(DateTimeUtils::DATE_TIME),
-            'name'               => $this->getName(),
-            'webhookId'          => $this->getWebhookId(),
-            'node'               => $this->getNode(),
-            'token'              => $this->getToken(),
-            'topology'           => $this->getTopology(),
+            'created'         => $this->getCreated()?->format(DateTimeUtils::DATE_TIME),
+            'id'              => $this->getId(),
+            'name'            => $this->getName(),
+            'node'            => $this->getNode(),
+            'token'           => $this->getToken(),
+            'topology'        => $this->getTopology(),
+            'webhookId'       => $this->getWebhookId(),
+            self::APPLICATION => $this->getApplication(),
+            self::USER        => $this->getUser(),
         ];
     }
 
     /**
      * @param mixed[] $data
      *
-     * @return Webhook
+     * @return self
      * @throws Exception
      */
-    protected function fromArray(array $data): Webhook
+    protected function fromArray(array $data): self
     {
         if (array_key_exists('id', $data))
             $this->setId($data['id']);
-        if (array_key_exists(Webhook::USER, $data))
-            $this->setUser($data[Webhook::USER]);
-        if (array_key_exists(Webhook::APPLICATION, $data))
-            $this->setApplication($data[Webhook::APPLICATION]);
+        if (array_key_exists(self::USER, $data))
+            $this->setUser($data[self::USER]);
+        if (array_key_exists(self::APPLICATION, $data))
+            $this->setApplication($data[self::APPLICATION]);
         if (array_key_exists('created', $data))
             $this->setCreated($data['created'] ? new DateTime($data['created']) : NULL);
         if (array_key_exists('name', $data))

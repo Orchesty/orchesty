@@ -137,8 +137,8 @@ final class OAuth2Provider extends OAuthProviderAbstract implements OAuth2Provid
                 'clientId'                => $dto->getClientId(),
                 'clientSecret'            => $dto->getClientSecret(),
                 'redirectUri'             => $dto->isRedirectUrl() ? $dto->getRedirectUrl() : $this->getRedirectUri(),
-                'urlAuthorize'            => $dto->getAuthorizeUrl(),
                 'urlAccessToken'          => $dto->getTokenUrl(),
+                'urlAuthorize'            => $dto->getAuthorizeUrl(),
                 'urlResourceOwnerDetails' => $dto->getAuthorizeUrl(),
             ],
         );

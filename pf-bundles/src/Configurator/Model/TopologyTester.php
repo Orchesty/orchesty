@@ -91,8 +91,8 @@ final class TopologyTester
                         $data[] = [
                             'id'     => $id,
                             'name'   => $name,
-                            'status' => 'nok',
                             'reason' => $response ? $response->getBody()->getContents() : $throwable->getMessage(),
+                            'status' => 'nok',
                         ];
                     },
                 );

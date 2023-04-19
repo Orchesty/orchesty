@@ -108,12 +108,12 @@ final class NodeSchemaDto
     public function getSystemConfigsArray(): array
     {
         return [
-            'sdkHost' => $this->systemConfigs->getSdkHost(),
             'bridgeHost' => $this->systemConfigs->getBridgeHost(),
             'prefetch' => $this->systemConfigs->getPrefetch(),
             'repeaterEnabled' => $this->systemConfigs->isRepeaterEnabled(),
             'repeaterHops' => $this->systemConfigs->getRepeaterHops(),
             'repeaterInterval' => $this->systemConfigs->getRepeaterInterval(),
+            'sdkHost' => $this->systemConfigs->getSdkHost(),
         ];
     }
 
@@ -131,14 +131,14 @@ final class NodeSchemaDto
     public function toArray(): array
     {
         return [
+            self::APPLICATION    => $this->getApplication(),
+            self::CRON_PARAMS    => $this->getCronParams(),
+            self::CRON_TIME      => $this->getCronTime(),
             self::HANDLER        => $this->getHandler(),
             self::ID             => $this->getId(),
             self::NAME           => $this->getName(),
-            self::CRON_TIME      => $this->getCronTime(),
-            self::CRON_PARAMS    => $this->getCronParams(),
             self::PIPES_TYPE     => $this->getPipesType(),
             self::SYSTEM_CONFIGS => $this->getSystemConfigs(),
-            self::APPLICATION    => $this->getApplication(),
         ];
     }
 

@@ -153,8 +153,9 @@ final class ApplicationManagerTest extends KernelTestCaseAbstract
                 CurlManager::METHOD_POST,
                 new Response(200, [], Json::encode([])),
                 [
-                    'created'           => '2023-02-07 14:48:15', 'updated' => '2023-02-07 14:48:15',
+                    'created'           => '2023-02-07 14:48:15',
                     'encryptedSettings' => '001_ObRtYWb+OGRvqTg8PGi26fgX/bx3nM3Q8AVrpOFM2FU=:r5xJ1EXfKK+DvR98OcqDz6CovUTBr9ii5h4m5rjS4eg=:SDw7MvseSYbStJkhcwUMGfv8wdywHvho:LNPFZ+OQTvLVaUzXTzjSKY1KVtczQcjJlKVocd728JcrE5Ec8RjprP1YpCZIpXHPSbkX+iKF+raxN3i3WKOWh6InyhAGUh5HTfTlHdycaJjLPlkAlZlOxr1F1Jrb',
+                    'updated' => '2023-02-07 14:48:15',
                 ],
             ),
         );
@@ -197,18 +198,19 @@ final class ApplicationManagerTest extends KernelTestCaseAbstract
                 CurlManager::METHOD_POST,
                 new Response(200, [], Json::encode(
                     [
+                        'enabled'              => FALSE,
+                        'expires'              => NULL,
                         'id'                   => NULL,
-                        'user'                 => 'user',
                         'name'                 => 'null',
                         'nonEncryptedSettings' => [],
                         'settings'             => [],
-                        'expires'              => NULL,
-                        'enabled'              => FALSE,
+                        'user'                 => 'user',
                     ],
                 )),
                 [
-                    'created'           => '2023-02-07 14:50:24', 'updated' => '2023-02-07 14:50:24',
+                    'created'           => '2023-02-07 14:50:24',
                     'encryptedSettings' => '001_P7+I5eF8qhpNgD/hJ6OBbiEZQYO6iypZr3hslnsUDiU=:3i+4cOfb8vltypUNU3zs/HM9RsiqbMDWQOUUUSyJuJA=:teOlLIozzwd/wIW8SAZXv4X6GpeSyRIE:BG+whL84D2x7x9taG7zl7yxdWqbdIjAlhtm0kE+4kmEVu/yDCajXOl3n8r7Znkwz2+49bM0tlDxEZwaOdeq+tRFWOoBCPTFUyWDpAV6Cg2JX9UNvtlkf4Q==',
+                    'updated' => '2023-02-07 14:50:24',
                 ],
             ),
         );
@@ -257,8 +259,9 @@ final class ApplicationManagerTest extends KernelTestCaseAbstract
                     '[{"id":null,"user":"user","name":"null2","nonEncryptedSettings":[],"settings":"1234","created":"2023-02-07 14:00:19","updated":"2023-02-07 14:00:19","expires":null,"enabled":false}]',
                 ),
                 [
-                    'created'           => '2023-02-07 14:39:49', 'updated' => '2023-02-07 14:39:49',
+                    'created'           => '2023-02-07 14:39:49',
                     'encryptedSettings' => '001_xwZIYhzIkttZeyWj0dDpnRI5WkXbcdq3ObCnMmiOH6w=:xXUVXEpdq+s19FgjJnUCvTN0NMRWvFeLrFNoGryY0SU=:MoQyac6h0L23BO4zUcmGNZ2Q38vKA8kZ:ARQJ7k+8g3fw+CZo+ooLVs07ZyNPUL5sUQRWOyU0qT7EpRhy+7AxJ2ZGBoIYWSkpe0JtgQwHpCls1eovbZU2svMrxyqlznOcwfclQ4TNUjAi7ZzoOZVRryLAjfdSAtDseB2JV91RYcdp',
+                    'updated' => '2023-02-07 14:39:49',
                 ],
             ),
         );
@@ -454,8 +457,9 @@ final class ApplicationManagerTest extends KernelTestCaseAbstract
                 CurlManager::METHOD_POST,
                 new Response(200, [], '{}'),
                 [
-                    'created'           => '2023-02-08 07:06:08', 'updated' => '2023-02-08 07:06:08',
+                    'created'           => '2023-02-08 07:06:08',
                     'encryptedSettings' => '001_BvuBCBrJ7e8vd9UsA821Zxk3U4xbTZmSxA7SfbrWYok=:T4YvPOSj+uZ+EUN8vBnh1QSWHhYswp1di11l6xpxjwI=:V0fpKivn8HW1CLH0ek7kPXl4MKDf9yiL:tSYCWGehNagn2hyVJi+502imCWSzDoF4LsYl0OQu+lH/jAL1WYScv1v4YNwOC64b1OrZVg6GLq+RyTEcitz5o0tPXpvKxXa2moKsMxO8KS83VsOMRGhr1w==',
+                    'updated' => '2023-02-08 07:06:08',
                 ],
             ),
         );
@@ -507,8 +511,9 @@ final class ApplicationManagerTest extends KernelTestCaseAbstract
                 CurlManager::METHOD_POST,
                 new Response(200, [], '[]'),
                 [
-                    'created'           => '2023-02-08 07:16:53', 'updated' => '2023-02-08 07:16:53',
+                    'created'           => '2023-02-08 07:16:53',
                     'encryptedSettings' => '001_HEMX/bKpm94Myv/t7wmqxcrrXfprDJWdlKejp9pjcUc=:G3E6MAlfYscXxkVWeIoeqroNIIVagWiUJqQ6rPuv84s=:Hx4xv4if6bHCdDrIe5RVMlFbcIZcs/vh:sswo7RtnCHP/GxEkVYnI+KibVeluEhdl7JwVy60rc9lrnUMXpIvq23GmLLLsDQQSDcJQzLodiT5RReo9KsV1w2E8XoS+NqkgIQejzTl6R0wjW5q2z4CwqhVWNvktfQI2cwt2iMRQw7H/AOHfyBAm+RQFQTOYR9zcvKjs4PLeIb0oaTjed61WdTxOsiR4zsZcIQYu/kOz3Nt0niAzxKG6+TFaaDkqXAYXVqFk4Ox0j8wrR1B/dg==',
+                    'updated' => '2023-02-08 07:16:53',
                 ],
             ),
         );
@@ -531,8 +536,8 @@ final class ApplicationManagerTest extends KernelTestCaseAbstract
             'example1',
             [
                 ApplicationInterface::AUTHORIZATION_FORM => [
-                    BasicApplicationInterface::USER     => 'testUser',
                     BasicApplicationInterface::PASSWORD => 'testPass',
+                    BasicApplicationInterface::USER     => 'testUser',
                 ],
             ],
         );
@@ -568,8 +573,9 @@ final class ApplicationManagerTest extends KernelTestCaseAbstract
                 CurlManager::METHOD_POST,
                 new Response(200, [], '[{}]'),
                 [
-                    'created'           => '2023-02-08 07:21:20', 'updated' => '2023-02-08 07:21:20',
+                    'created'           => '2023-02-08 07:21:20',
                     'encryptedSettings' => '001_o71NlhKnJYQ6p11UNmc0d1Pj6xUbnG7H6RidyAShaGs=:SpXgmXNqYWTLYXsF1ipgHE6cSTiTp/f+QxsK0c+eocY=:93VXLj3j+sIU3TIIpONA0yAVIJVk9s61:wu+QHyhuJanT4OuFZ8UM4vl15nmMf6QV3cc43QTZ9kftHxNGmzS0Kb4MuQ2Lvtq+8qrdTav7La2LMd7Hjfdv4ghd7ckUq4bPUV6SVwzkN4y5HIqe3FeZLchdjSgwOwPZ20+epwuWZX3iSSoAWLLopKbB6mhySaXEZoDk+4YNAeLelFP7EAlfUEdprPvjziXBjSAQQGGERO6zyoSpe3BMhMdvaQs1NQ4Zw3ndxk2PeQ==',
+                    'updated' => '2023-02-08 07:21:20',
                 ],
             ),
         );
@@ -592,9 +598,9 @@ final class ApplicationManagerTest extends KernelTestCaseAbstract
             'example1',
             [
                 ApplicationInterface::AUTHORIZATION_FORM => [
-                    BasicApplicationInterface::USER     => 'data1',
-                    BasicApplicationInterface::PASSWORD => 'data2',
                     'settings3'                         => 'secret',
+                    BasicApplicationInterface::PASSWORD => 'data2',
+                    BasicApplicationInterface::USER     => 'data1',
                 ],
             ],
         );
@@ -623,13 +629,14 @@ final class ApplicationManagerTest extends KernelTestCaseAbstract
             new Mock(
                 '/document/ApplicationInstall',
                 Json::decode(
-                    '[{"id":null,"user":"example1","name":"null","nonEncryptedSettings":[],"encryptedSettings":"001_o71NlhKnJYQ6p11UNmc0d1Pj6xUbnG7H6RidyAShaGs=:SpXgmXNqYWTLYXsF1ipgHE6cSTiTp\/f+QxsK0c+eocY=:93VXLj3j+sIU3TIIpONA0yAVIJVk9s61:wu+QHyhuJanT4OuFZ8UM4vl15nmMf6QV3cc43QTZ9kftHxNGmzS0Kb4MuQ2Lvtq+8qrdTav7La2LMd7Hjfdv4ghd7ckUq4bPUV6SVwzkN4y5HIqe3FeZLchdjSgwOwPZ20+epwuWZX3iSSoAWLLopKbB6mhySaXEZoDk+4YNAeLelFP7EAlfUEdprPvjziXBjSAQQGGERO6zyoSpe3BMhMdvaQs1NQ4Zw3ndxk2PeQ==","settings":[],"created":"2023-02-08 07:21:20","updated":"2023-02-08 07:21:20","expires":null,"enabled":false}]',
+                    '[{"created":"2023-02-08 07:21:20","enabled":false,"encryptedSettings":"001_OwOydBUnllknSduqitxQXqLDPdCmAazvxNtOVt2DRy8=:g5SthlOq6CrY1klYlcjZP6cHU+QFdv\/6dpLD49H6ReM=:+u1sXjDqWvCvYpbnQSmObUNbKHw1zMwJ:JnVqv\/nBuzw2azcT+JVxCni\/LbCIxNt17z8fXk\/aRlQ5BXQKxXp0FibA5s6hN3Z9Hqkgc2h3OhRxrMQUIqd3mH4ERBwlHBoY7W3n2YN5kDHIbw0jCGsERoqXzYkQ4q53WJJYBSArJQrV1AzPk1dff8NhkK3JKOoowPs4720bw538fVTzI9oVofiAMu2Z8+lvF4eQPTPvLYQC6wHY8ClRi0y2DG2IWp3mgfknP3rBrA==","expires":null,"id":null,"nonEncryptedSettings":[],"settings":[],"updated":"2023-02-08 07:21:20","name":"null","user":"example1"}]',
                 ),
                 CurlManager::METHOD_POST,
                 new Response(200, [], '[{}]'),
                 [
-                    'created'           => '2023-02-08 07:21:20', 'updated' => '2023-02-08 07:21:20',
+                    'created'           => '2023-02-08 07:21:20',
                     'encryptedSettings' => '001_o71NlhKnJYQ6p11UNmc0d1Pj6xUbnG7H6RidyAShaGs=:SpXgmXNqYWTLYXsF1ipgHE6cSTiTp/f+QxsK0c+eocY=:93VXLj3j+sIU3TIIpONA0yAVIJVk9s61:wu+QHyhuJanT4OuFZ8UM4vl15nmMf6QV3cc43QTZ9kftHxNGmzS0Kb4MuQ2Lvtq+8qrdTav7La2LMd7Hjfdv4ghd7ckUq4bPUV6SVwzkN4y5HIqe3FeZLchdjSgwOwPZ20+epwuWZX3iSSoAWLLopKbB6mhySaXEZoDk+4YNAeLelFP7EAlfUEdprPvjziXBjSAQQGGERO6zyoSpe3BMhMdvaQs1NQ4Zw3ndxk2PeQ==',
+                    'updated' => '2023-02-08 07:21:20',
                 ],
             ),
         );
@@ -641,7 +648,7 @@ final class ApplicationManagerTest extends KernelTestCaseAbstract
                 new Response(
                     200,
                     [],
-                    '[{"id":null,"user":"example1","name":"null","nonEncryptedSettings":[],"encryptedSettings":"001_o71NlhKnJYQ6p11UNmc0d1Pj6xUbnG7H6RidyAShaGs=:SpXgmXNqYWTLYXsF1ipgHE6cSTiTp\/f+QxsK0c+eocY=:93VXLj3j+sIU3TIIpONA0yAVIJVk9s61:wu+QHyhuJanT4OuFZ8UM4vl15nmMf6QV3cc43QTZ9kftHxNGmzS0Kb4MuQ2Lvtq+8qrdTav7La2LMd7Hjfdv4ghd7ckUq4bPUV6SVwzkN4y5HIqe3FeZLchdjSgwOwPZ20+epwuWZX3iSSoAWLLopKbB6mhySaXEZoDk+4YNAeLelFP7EAlfUEdprPvjziXBjSAQQGGERO6zyoSpe3BMhMdvaQs1NQ4Zw3ndxk2PeQ==","settings":[],"created":"2023-02-08 07:21:20","updated":"2023-02-08 07:21:20","expires":null,"enabled":false}]',
+                    '[{"created":"2023-02-08 07:21:20","enabled":false,"encryptedSettings":"001_emfnbPpKcBxmznhBWnWSAv5o8UhayuAjtqOpWplnEN0=:uU\/+t7tTMon4+9SX69jgDICNI2CC22BX86l4rixpRSs=:MSrf+ajtaGhNHTic\/uclacy\/S8fztnu7:nIPHc46JEy7Bazb9SIKuqULR7BiwpFzN0RD20QkdEU8BhBP9HavF3whOgGsjVLNIhQQEuMFnXt3ReXcSI3ihTa6q8O0mrpkflffmMYqMivsNoJmi+oJTUr3btWx1xS1LFztkqjrdbolSVP4aaI9bL3x2dhkpypyXFXaduKCEl6JvgUb\/EdEN9Z0nyvZcj3NxMm9zBE2GH5flumPoZzrsPtnySKhhK9k8TAiqmga\/vw==","expires":null,"id":null,"nonEncryptedSettings":[],"settings":[],"updated":"2023-02-08 07:21:20","name":"null","user":"example1"}]',
                 ),
             ),
         );
@@ -652,8 +659,8 @@ final class ApplicationManagerTest extends KernelTestCaseAbstract
             'example1',
             [
                 ApplicationInterface::AUTHORIZATION_FORM => [
-                    BasicApplicationInterface::USER     => 'data1',
                     BasicApplicationInterface::PASSWORD => 'data2',
+                    BasicApplicationInterface::USER     => 'data1',
                 ],
             ],
         );

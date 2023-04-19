@@ -60,14 +60,14 @@ final class GoogleDriveUploadFileConnector extends ConnectorAbstract
         $multipart = [
             RequestOptions::MULTIPART => [
                 [
-                    'name'     => 'metadata',
                     'contents' => Json::encode(['name' => $this->fileName, 'parents' => [$this->folder]]),
                     'headers'  => ['Content-Type' => 'application/json; charset=UTF-8'],
+                    'name'     => 'metadata',
                 ],
                 [
-                    'name'     => 'file',
                     'contents' => fopen($tmpFileName, 'r'),
                     'headers'  => ['Content-Type' => 'application/octet-stream'],
+                    'name'     => 'file',
                 ],
             ],
         ];

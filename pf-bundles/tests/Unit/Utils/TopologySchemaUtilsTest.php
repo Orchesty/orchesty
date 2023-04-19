@@ -47,11 +47,11 @@ final class TopologySchemaUtilsTest extends KernelTestCaseAbstract
         self::assertEquals(
             [
                 'Event_1lqi8dm' => ['Task_1taayin'],
+                'Task_0nwvqkt'  => ['Task_00wzy7d'],
+                'Task_1niijps'  => ['Task_1wcc82o', 'Task_0nwvqkt'],
                 'Task_1taayin'  => ['Task_152x7cw', 'Task_1niijps'],
                 'Task_1wcc82o'  => ['Task_0h8gpta'],
                 'Task_152x7cw'  => ['Task_0fzjb0y'],
-                'Task_1niijps'  => ['Task_1wcc82o', 'Task_0nwvqkt'],
-                'Task_0nwvqkt'  => ['Task_00wzy7d'],
             ],
             $schema->getSequences(),
         );
