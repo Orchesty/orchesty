@@ -102,12 +102,12 @@ final class WebhookManagerTest extends KernelTestCaseAbstract
                     Json::encode(
                         (new Webhook(
                             [
-                                'user'        => 'User',
-                                'token'       => 'a344c694874a1ebb8fb0881714c2c424b3e5fbd895cded820c',
-                                'node'        => 'node',
-                                'topology'    => 'topology',
-                                'webhook'     => 'webhook',
                                 'application' => 'webhook',
+                                'node'        => 'node',
+                                'token'       => 'a344c694874a1ebb8fb0881714c2c424b3e5fbd895cded820c',
+                                'topology'    => 'topology',
+                                'user'        => 'User',
+                                'webhook'     => 'webhook',
                                 'webhookId'   => 'id',
                             ],
                         ))->toArray(),
@@ -176,7 +176,7 @@ final class WebhookManagerTest extends KernelTestCaseAbstract
             new Mock(
                 '/document/Webhook',
                 Json::decode(
-                    '[{"id":null,"user":"User","application":"webhook","created":"2023-02-13 11:55:26","name":"name","webhookId":"id","node":"name","token":"7d2fe1873b77049267371062a784c4923b65a6e4a3cf549294","topology":"topology"}]',
+                    '[{"created":"2023-02-13 11:55:26","id":null,"name":"name","node":"name","token":"cccb4b3a5f16783305e7ac945b03708832450ef6093217e9a3","topology":"topology","webhookId":"id","application":"webhook","user":"User"}]',
                 ),
                 CurlManager::METHOD_POST,
                 new Response(
@@ -287,9 +287,9 @@ final class WebhookManagerTest extends KernelTestCaseAbstract
 
         self::assertEquals(
             [
-                'name'     => 'name',
                 'default'  => TRUE,
                 'enabled'  => TRUE,
+                'name'     => 'name',
                 'topology' => '1',
             ],
             $result[0],

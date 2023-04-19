@@ -41,22 +41,16 @@ interface OAuth2ApplicationInterface extends ApplicationInterface
      * @param ApplicationInstall $applicationInstall
      * @param string             $redirectUrl
      *
-     * @return OAuth2ApplicationInterface
+     * @return self
      */
-    public function setFrontendRedirectUrl(
-        ApplicationInstall $applicationInstall,
-        string $redirectUrl,
-    ): OAuth2ApplicationInterface;
+    public function setFrontendRedirectUrl(ApplicationInstall $applicationInstall, string $redirectUrl): self;
 
     /**
      * @param ApplicationInstall $applicationInstall
      * @param mixed[]            $token
      *
-     * @return OAuth2ApplicationInterface
+     * @return self
      */
-    public function setAuthorizationToken(
-        ApplicationInstall $applicationInstall,
-        array $token,
-    ): OAuth2ApplicationInterface;
+    public function setAuthorizationToken(ApplicationInstall $applicationInstall, array $token): self;
 
 }

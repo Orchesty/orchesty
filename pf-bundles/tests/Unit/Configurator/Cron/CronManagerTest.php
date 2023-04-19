@@ -66,10 +66,10 @@ final class CronManagerTest extends KernelTestCaseAbstract
                 self::assertEquals(
                     [
                         [
-                            'topology'   => 'topology-1',
                             'node'       => 'node-1',
-                            'time'       => '1 1 1 1 1',
                             'parameters' => '"key":"value"',
+                            'time'       => '1 1 1 1 1',
+                            'topology'   => 'topology-1',
                         ],
                     ],
                     Json::decode($request->getBody()),
@@ -96,8 +96,8 @@ final class CronManagerTest extends KernelTestCaseAbstract
                 self::assertEquals(
                     [
                         [
-                            'topology' => 'topology-1',
                             'node'     => 'node-1',
+                            'topology' => 'topology-1',
                         ],
                     ],
                     Json::decode($request->getBody()),
@@ -123,22 +123,22 @@ final class CronManagerTest extends KernelTestCaseAbstract
                 self::assertEquals(
                     [
                         [
-                            'topology'   => 'topology-1',
                             'node'       => 'node-1',
+                            'parameters' => '"key":"value"',
                             'time'       => '1 1 1 1 1',
-                            'parameters' => '"key":"value"',
+                            'topology'   => 'topology-1',
                         ],
                         [
-                            'topology'   => 'topology-2',
                             'node'       => 'node-2',
-                            'time'       => '2 2 2 2 2',
                             'parameters' => '"key":"value"',
+                            'time'       => '2 2 2 2 2',
+                            'topology'   => 'topology-2',
                         ],
                         [
-                            'topology'   => 'topology-3',
                             'node'       => 'node-3',
-                            'time'       => '3 3 3 3 3',
                             'parameters' => '"key":"value"',
+                            'time'       => '3 3 3 3 3',
+                            'topology'   => 'topology-3',
                         ],
                     ],
                     Json::decode($request->getBody()),

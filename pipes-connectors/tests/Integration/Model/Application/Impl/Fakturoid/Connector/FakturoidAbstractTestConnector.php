@@ -12,11 +12,11 @@ use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
 
 /**
- * Class FakturoidAbstractConnectorTest
+ * Class FakturoidAbstractTestConnector
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Fakturoid\Connector
  */
-abstract class FakturoidAbstractConnectorTest extends KernelTestCaseAbstract
+abstract class FakturoidAbstractTestConnector extends KernelTestCaseAbstract
 {
 
     /**
@@ -75,8 +75,8 @@ abstract class FakturoidAbstractConnectorTest extends KernelTestCaseAbstract
         $applicationInstall->setSettings(
             [
                 ApplicationInterface::AUTHORIZATION_FORM => [
-                    BasicApplicationInterface::USER => 'hana******.com',
                     BasicApplicationInterface::PASSWORD => '123456',
+                    BasicApplicationInterface::USER => 'hana******.com',
                     FakturoidApplication::ACCOUNT   => $account,
                 ],
             ],

@@ -118,8 +118,8 @@ final class ShoptetApplication extends OAuth2ApplicationAbstract implements Webh
         $request = new RequestDto($this->getUri($url), $method, $dto);
         $request->setHeaders(
             [
-                'Content-Type'         => 'application/vnd.shoptet.v1.0',
                 'Accept'               => 'application/json',
+                'Content-Type'         => 'application/vnd.shoptet.v1.0',
                 'Shoptet-Access-Token' => $this->getApiToken($applicationInstall, $dto),
             ],
         );
@@ -300,9 +300,9 @@ final class ShoptetApplication extends OAuth2ApplicationAbstract implements Webh
         );
         $request->setHeaders(
             [
+                'Accept'        => 'application/json',
                 'Authorization' => sprintf('Bearer %s', $oauthAccessToken),
                 'Content-Type'  => 'application/json',
-                'Accept'        => 'application/json',
             ],
         );
 

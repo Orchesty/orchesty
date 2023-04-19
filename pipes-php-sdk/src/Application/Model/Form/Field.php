@@ -77,9 +77,9 @@ final class Field
     /**
      * @param mixed $value
      *
-     * @return Field
+     * @return self
      */
-    public function setValue(mixed $value): Field
+    public function setValue(mixed $value): self
     {
         $this->value = $value;
 
@@ -89,9 +89,9 @@ final class Field
     /**
      * @param string $label
      *
-     * @return Field
+     * @return self
      */
-    public function setLabel(string $label): Field
+    public function setLabel(string $label): self
     {
         $this->label = $label;
 
@@ -101,9 +101,9 @@ final class Field
     /**
      * @param string $description
      *
-     * @return Field
+     * @return self
      */
-    public function setDescription(string $description): Field
+    public function setDescription(string $description): self
     {
         $this->description = $description;
 
@@ -113,9 +113,9 @@ final class Field
     /**
      * @param bool $required
      *
-     * @return Field
+     * @return self
      */
-    public function setRequired(bool $required): Field
+    public function setRequired(bool $required): self
     {
         $this->required = $required;
 
@@ -125,9 +125,9 @@ final class Field
     /**
      * @param bool $readOnly
      *
-     * @return Field
+     * @return self
      */
-    public function setReadOnly(bool $readOnly): Field
+    public function setReadOnly(bool $readOnly): self
     {
         $this->readOnly = $readOnly;
 
@@ -137,9 +137,9 @@ final class Field
     /**
      * @param bool $disabled
      *
-     * @return Field
+     * @return self
      */
-    public function setDisabled(bool $disabled): Field
+    public function setDisabled(bool $disabled): self
     {
         $this->disabled = $disabled;
 
@@ -149,9 +149,9 @@ final class Field
     /**
      * @param mixed[] $choices
      *
-     * @return Field
+     * @return self
      */
-    public function setChoices(array $choices): Field
+    public function setChoices(array $choices): self
     {
         $this->choices = $choices;
 
@@ -228,15 +228,15 @@ final class Field
     public function toArray(): array
     {
         return [
-            'type'        => $this->getType(),
-            'key'         => $this->getKey(),
-            'value'       => $this->getValue(),
-            'label'       => $this->getLabel(),
-            'description' => $this->getDescription(),
-            'required'    => $this->isRequired(),
-            'readOnly'    => $this->isReadOnly(),
-            'disabled'    => $this->isDisabled(),
             'choices'     => $this->getChoices(),
+            'description' => $this->getDescription(),
+            'disabled'    => $this->isDisabled(),
+            'key'         => $this->getKey(),
+            'label'       => $this->getLabel(),
+            'readOnly'    => $this->isReadOnly(),
+            'required'    => $this->isRequired(),
+            'type'        => $this->getType(),
+            'value'       => $this->getValue(),
         ];
     }
 

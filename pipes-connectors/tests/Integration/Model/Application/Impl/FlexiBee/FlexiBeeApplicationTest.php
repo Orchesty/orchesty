@@ -18,9 +18,9 @@ use Hanaboso\Utils\Exception\DateTimeException;
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DataProvider;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
-use HbPFConnectorsTests\MockServer\Mock;
-use HbPFConnectorsTests\MockServer\MockServer;
 use PHPUnit\Framework\MockObject\MockObject;
+use PipesPhpSdkTests\MockServer\Mock;
+use PipesPhpSdkTests\MockServer\MockServer;
 
 /**
  * Class FlexiBeeApplicationTest
@@ -87,9 +87,9 @@ final class FlexiBeeApplicationTest extends KernelTestCaseAbstract
                 CurlManager::METHOD_POST,
                 new Response(200, [], Json::encode([$this->getAppInstall()->toArray()])),
                 [
+                    'created'           => '2023-02-23 09:13:56',
                     'encryptedSettings' => '001_FlnM4agF7XW43FfvLS3rCJl8nGu9b7I8Dy63UaP6D2k=:20E8SbaXH/JUGpp+7C4fxTQkOp9RvZ+ev6uaKfuOWzU=:xNX4LIh6HKFk7e2xKyTj+BM4nNXBWhF6:mxeDUNj08GJOb0nrTFJMTuH+8ZkkHGBj/puzSvCxkxNSE7G5nA8y8+NXxFcWYORVlVvmY5kMxTk1JXvkBcQTQL0pHj2Bjgs8OExG3IS7kW/9DJ7J5EsM1hkbZBJLr2voPa7HTec8aFoTL1w0YifVUf5y5cT1cwJBJ2V4tEcbHZSmitnvhSoh4Hba9VcbVlQ7x1G8gvVGYLQrmaCtMVhpAXXEn1k/5DFrkZ50ZYrKGKD63FvKjL0fXKrgAoeobaCcr+YwEvKeGgUzr3G3QD2ZKHBkC16P901hEtjRP6pSS87gBC7+3IwUs23a0bZftIer5qn6AlPYrguL/y2WeiLKM3XlZdFbXGgazOGoNsc2/bXL0USk/dsdSoGB8jHzsSGTDWiHGeZQQS5Uam+hvwcfDCXS9tY91qo4nUCBFub5nFumWeWPuVAOPgH1ezUBKwNqebUPw8ZC/wukCzh8',
-                    'created' => '2023-02-23 09:13:56',
-                    'updated' => '2023-02-23 09:13:56',
+                    'updated'           => '2023-02-23 09:13:56',
                 ],
             ),
         );
@@ -424,11 +424,13 @@ final class FlexiBeeApplicationTest extends KernelTestCaseAbstract
             $appInstall->addSettings(
                 [
                     ApplicationInterface::AUTHORIZATION_FORM =>
-                        [
-                            ...$arrayAuthSetttings,
-                            'auth'        => $auth,
-                            'flexibeeUrl' => 'https://demo.flexibee.eu/c/demo',
-                        ],
+                        array_merge(
+                            $arrayAuthSetttings,
+                            [
+                                'auth'        => $auth,
+                                'flexibeeUrl' => 'https://demo.flexibee.eu/c/demo',
+                            ],
+                        ),
 
                 ],
             );
@@ -436,10 +438,7 @@ final class FlexiBeeApplicationTest extends KernelTestCaseAbstract
             $appInstall->addSettings(
                 [
                     ApplicationInterface::AUTHORIZATION_FORM =>
-                        [
-                            ...$arrayAuthSetttings,
-                            'auth' => $auth,
-                        ],
+                        array_merge($arrayAuthSetttings, ['auth' => $auth]),
                 ],
             );
         }

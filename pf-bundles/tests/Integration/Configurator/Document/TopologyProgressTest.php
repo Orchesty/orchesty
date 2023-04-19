@@ -45,15 +45,15 @@ final class TopologyProgressTest extends DatabaseTestCaseAbstract
         self::assertEquals($t, $progress->getStartedAt());
         self::assertEquals(
             [
-                'id'             => 'id',
                 'correlationId'  => '123',
                 'duration'       => 0,
-                'status'         => 'FAILED',
+                'failed'         => 1,
+                'finished'       => $t->format(DateTimeUtils::DATE_TIME_UTC),
+                'id'             => 'id',
                 'nodesProcessed' => 2,
                 'nodesTotal'     => 2,
                 'started'        => $t->format(DateTimeUtils::DATE_TIME_UTC),
-                'finished'       => $t->format(DateTimeUtils::DATE_TIME_UTC),
-                'failed'         => 1,
+                'status'         => 'FAILED',
                 'user'           => '',
             ],
             $progress->toArray(),

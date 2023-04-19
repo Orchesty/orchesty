@@ -23,9 +23,9 @@ abstract class DocumentAbstract
     /**
      * @param mixed[] $data
      *
-     * @return DocumentAbstract
+     * @return self
      */
-    abstract protected function fromArray(array $data): DocumentAbstract;
+    abstract protected function fromArray(array $data): self;
 
     /**
      * DocumentAbstract constructor.
@@ -50,9 +50,9 @@ abstract class DocumentAbstract
     /**
      * @param string|null $id
      *
-     * @return $this
+     * @return self
      */
-    public function setId(?string $id): DocumentAbstract
+    public function setId(?string $id): self
     {
         $this->id = $id;
 

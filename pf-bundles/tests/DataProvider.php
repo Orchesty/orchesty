@@ -16,11 +16,11 @@ final class DataProvider
     public static function topologiesProcessTimeMetrics(): array
     {
         return [
+            'avg'    => '2.00',
+            'errors' => '2',
             'max'    => '2',
             'min'    => '2',
-            'avg'    => '2.00',
             'total'  => '2',
-            'errors' => '2',
         ];
     }
 
@@ -30,64 +30,68 @@ final class DataProvider
     public static function dashboardData(): array
     {
         return [
-            'process'       =>
+            'alertLogs'     =>
                 [
-                    'activeTopologies'   => 1,
-                    'disabledTopologies' => 2,
-                    'totalRuns'          => 3,
-                    'errorsCount'        => 4,
-                    'successCount'       => 5,
+                    0 =>
+                        [
+                            'level'        => 'INFO',
+                            'nodeId'       => '11ssd-ad25-a77',
+                            'nodeName'     => 'abc.v1',
+                            'time'         => 'date time',
+                            'topologyId'   => '11ssd-ad25-a77',
+                            'topologyName' => 'abc.v1',
+                        ],
+                    1 =>
+                        [
+                            'level'        => 'INFO',
+                            'nodeId'       => '11ssd-ad25-a77',
+                            'nodeName'     => 'abc.v1',
+                            'time'         => 'date time',
+                            'topologyId'   => '11ssd-ad25-a77',
+                            'topologyName' => 'abc.v1',
+                        ],
+                    2 =>
+                        [
+                            'level'        => 'INFO',
+                            'nodeId'       => '11ssd-ad25-a77',
+                            'nodeName'     => 'abc.v1',
+                            'time'         => 'date time',
+                            'topologyId'   => '11ssd-ad25-a77',
+                            'topologyName' => 'abc.v1',
+                        ],
                 ],
             'errorLogs'     =>
                 [
                     0 =>
                         [
+                            'level'        => 'ERROR',
+                            'nodeId'       => '11ssd-ad25-a77',
+                            'nodeName'     => 'abc.v1',
                             'time'         => 'date time',
                             'topologyId'   => '11ssd-ad25-a77',
                             'topologyName' => 'abc.v1',
-                            'nodeId'       => '11ssd-ad25-a77',
-                            'nodeName'     => 'abc.v1',
-                            'level'        => 'ERROR',
                         ],
                     1 =>
                         [
+                            'level'        => 'ERROR',
+                            'nodeId'       => '11ssd-ad25-a77',
+                            'nodeName'     => 'abc.v1',
                             'time'         => 'date time',
                             'topologyId'   => '11ssd-ad25-a77',
                             'topologyName' => 'abc.v1',
-                            'nodeId'       => '11ssd-ad25-a77',
-                            'nodeName'     => 'abc.v1',
-                            'level'        => 'ERROR',
                         ],
                 ],
-            'alertLogs'     =>
+            'filter'        =>
                 [
-                    0 =>
-                        [
-                            'time'         => 'date time',
-                            'topologyId'   => '11ssd-ad25-a77',
-                            'topologyName' => 'abc.v1',
-                            'nodeId'       => '11ssd-ad25-a77',
-                            'nodeName'     => 'abc.v1',
-                            'level'        => 'INFO',
-                        ],
-                    1 =>
-                        [
-                            'time'         => 'date time',
-                            'topologyId'   => '11ssd-ad25-a77',
-                            'topologyName' => 'abc.v1',
-                            'nodeId'       => '11ssd-ad25-a77',
-                            'nodeName'     => 'abc.v1',
-                            'level'        => 'INFO',
-                        ],
-                    2 =>
-                        [
-                            'time'         => 'date time',
-                            'topologyId'   => '11ssd-ad25-a77',
-                            'topologyName' => 'abc.v1',
-                            'nodeId'       => '11ssd-ad25-a77',
-                            'nodeName'     => 'abc.v1',
-                            'level'        => 'INFO',
-                        ],
+                    'range' => '24h',
+                ],
+            'process'       =>
+                [
+                    'activeTopologies'   => 1,
+                    'disabledTopologies' => 2,
+                    'errorsCount'        => 4,
+                    'successCount'       => 5,
+                    'totalRuns'          => 3,
                 ],
             'systemMetrics' =>
                 [
@@ -95,10 +99,6 @@ final class DataProvider
                     'memory'         => 6.2,
                     'space'          => 7.2,
                     'tcpConnections' => 8,
-                ],
-            'filter'        =>
-                [
-                    'range' => '24h',
                 ],
         ];
     }
@@ -111,13 +111,13 @@ final class DataProvider
     public static function dashboardLog(bool $isError = FALSE): array
     {
         return [
-            'timestamp'     => 'date time',
-            'topology_id'   => '11ssd-ad25-a77',
-            'topology_name' => 'abc.v1',
+            'message'       => 'Some message',
             'node_id'       => '11ssd-ad25-a77',
             'node_name'     => 'abc.v1',
             'severity'      => $isError ? 'ERROR' : 'INFO',
-            'message'       => 'Some message',
+            'timestamp'     => 'date time',
+            'topology_id'   => '11ssd-ad25-a77',
+            'topology_name' => 'abc.v1',
         ];
     }
 

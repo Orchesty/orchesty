@@ -46,29 +46,29 @@ final class LogsTest extends DatabaseTestCaseAbstract
             ->insert()
             ->setNewObj(
                 [
+                    'host'      => 'host',
+                    'message'   => 'msg',
+                    'pipes'     => [
+                        'channel'        => 'chn',
+                        'correlation_id' => '1',
+                        'hostname'       => 'host',
+                        'nodeName'      => 'NodeName',
+                        'node_id'        => '3',
+                        'service'        => 'type',
+                        'severity'       => 'ERROR',
+                        'stacktrace'     => [
+                            'class'   => 'class',
+                            'code'    => 'code',
+                            'file'    => 'file',
+                            'message' => 'msg',
+                            'trace'   => 'trace',
+                        ],
+                        'timestamp'      => 2_222,
+                        'topologyName'  => 'TopoName',
+                        'topology_id'    => '2',
+                    ],
                     'timestamp' => '1111',
                     'version'   => '1.2',
-                    'message'   => 'msg',
-                    'host'      => 'host',
-                    'pipes'     => [
-                        'timestamp'      => 2_222,
-                        'service'        => 'type',
-                        'hostname'       => 'host',
-                        'channel'        => 'chn',
-                        'severity'       => 'ERROR',
-                        'correlation_id' => '1',
-                        'topology_id'    => '2',
-                        'topologyName'  => 'TopoName',
-                        'node_id'        => '3',
-                        'nodeName'      => 'NodeName',
-                        'stacktrace'     => [
-                            'message' => 'msg',
-                            'class'   => 'class',
-                            'file'    => 'file',
-                            'trace'   => 'trace',
-                            'code'    => 'code',
-                        ],
-                    ],
 
                 ],
             )

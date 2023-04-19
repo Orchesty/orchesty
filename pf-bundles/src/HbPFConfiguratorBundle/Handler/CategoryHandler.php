@@ -128,9 +128,9 @@ final class CategoryHandler
     private function getCategoryData(Category $category): array
     {
         return [
-            '_id'    => $category->getId(),
             'name'   => $category->getName(),
             'parent' => $category->getParent(),
+            '_id'    => $category->getId(),
         ];
     }
 

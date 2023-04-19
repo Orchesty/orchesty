@@ -48,11 +48,11 @@ final class UsageStatsEventTest extends DatabaseTestCaseAbstract
         $arr['created'] = '1';
         self::assertEquals(
             [
+                'created' => '1',
+                'data'    => ['aid' => '1', 'euid' => '1'],
                 'iid'     => '2',
                 'type'    => '2',
                 'version' => 1,
-                'data'    => ['aid' => '1', 'euid' => '1'],
-                'created' => '1',
             ],
             $arr,
         );

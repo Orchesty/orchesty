@@ -92,7 +92,8 @@ abstract class HubSpotCreateContactAbstract extends ConnectorAbstract implements
                 $this->logger->error(
                     sprintf('Contact "%s" already exist.', $parsed['identityProfile']['identity'][0]['value'] ?? ''),
                     array_merge(
-                        ['response' => $response->getBody(), PipesHeaders::debugInfo($dto->getHeaders())],
+                        ['response' => $response->getBody()],
+                        PipesHeaders::debugInfo($dto->getHeaders()),
                     ),
                 );
             }

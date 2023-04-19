@@ -13,12 +13,12 @@ use Symfony\Bundle\SecurityBundle\SecurityBundle;
 return [
     DebugBundle::class           => ['dev' => TRUE, 'test' => TRUE],
     FrameworkBundle::class       => ['all' => TRUE],
-    MonologBundle::class         => ['all' => TRUE],
-    SecurityBundle::class        => ['all' => TRUE],
 
     HbPFApplicationBundle::class     => ['all' => TRUE],
     HbPFCommonsBundle::class         => ['all' => TRUE],
     HbPFConnectorBundle::class       => ['all' => TRUE],
     HbPFConnectorsBundle::class      => ['all' => TRUE],
     HbPFCustomNodeBundle::class      => ['all' => TRUE],
+    MonologBundle::class         => ['all' => TRUE],
+    SecurityBundle::class        => ['all' => TRUE],
 ];

@@ -57,10 +57,10 @@ final class FlexiBeeApplicationTest extends ControllerTestCaseAbstract
             [
                 ApplicationInterface::AUTHORIZATION_FORM =>
                     [
-                        'user'        => 'user123',
-                        'password'    => 'pass123',
                         'auth'        => 'http',
                         'flexibeeUrl' => 'https://demo.flexibee.eu/c/demo',
+                        'password'    => 'pass123',
+                        'user'        => 'user123',
                     ],
             ],
         );

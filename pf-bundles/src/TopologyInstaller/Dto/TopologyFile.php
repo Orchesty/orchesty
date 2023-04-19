@@ -29,7 +29,7 @@ final class TopologyFile
      *
      * @return TopologyFile
      */
-    public static function from(SplFileInfo $file): TopologyFile
+    public static function from(SplFileInfo $file): self
     {
         return new self($file->getFilename(), $file->getPathname());
     }

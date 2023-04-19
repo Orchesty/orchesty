@@ -20,8 +20,8 @@ use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DataProvider;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
-use HbPFConnectorsTests\MockServer\Mock;
-use HbPFConnectorsTests\MockServer\MockServer;
+use PipesPhpSdkTests\MockServer\Mock;
+use PipesPhpSdkTests\MockServer\MockServer;
 
 /**
  * Class ShoptetUpdateOrderConnectorTest
@@ -40,23 +40,23 @@ final class ShoptetUpdateOrderConnectorTest extends KernelTestCaseAbstract
     private const SENDER      = 'sender';
 
     private const HEADERS = [
-        'user'            => self::USER,
-        self::TYPE        => 'cancelled',
         'application'     => ShoptetApplication::SHOPTET_KEY,
         'internal-id'     => '1',
+        'user'            => self::USER,
         self::EXTERNAL_ID => '1',
+        self::TYPE        => 'cancelled',
     ];
 
     private const SETTINGS = [
-        ApplicationInterface::AUTHORIZATION_FORM => [
-            'cancelled'                  => -1,
-            ShoptetApplication::ESHOP_ID => 125,
-        ],
         'clientSettings'                         => [
             'token' => [
                 'access_token' => 'Access Token',
                 'expires_in'   => '2147483647',
             ],
+        ],
+        ApplicationInterface::AUTHORIZATION_FORM => [
+            'cancelled'                  => -1,
+            ShoptetApplication::ESHOP_ID => 125,
         ],
     ];
 
@@ -248,9 +248,9 @@ final class ShoptetUpdateOrderConnectorTest extends KernelTestCaseAbstract
             $this->prepareProcessDto(
                 [],
                 [
-                    self::USER        => self::USER,
                     self::EXTERNAL_ID => '1',
                     self::ID          => $applicationInstall->getId(),
+                    self::USER        => self::USER,
                 ],
             ),
         );
@@ -308,9 +308,9 @@ final class ShoptetUpdateOrderConnectorTest extends KernelTestCaseAbstract
                 [],
                 [
                     self::EXTERNAL_ID => '1',
+                    self::ID          => $applicationInstall->getId(),
                     self::TYPE        => 'Type',
                     self::USER        => self::USER,
-                    self::ID          => $applicationInstall->getId(),
                 ],
             ),
         );
@@ -364,9 +364,9 @@ final class ShoptetUpdateOrderConnectorTest extends KernelTestCaseAbstract
             $this->prepareProcessDto(
                 [],
                 [
-                    self::USER        => self::USER,
                     self::EXTERNAL_ID => '1',
                     self::ID          => $applicationInstall->getId(),
+                    self::USER        => self::USER,
                 ],
             ),
         );

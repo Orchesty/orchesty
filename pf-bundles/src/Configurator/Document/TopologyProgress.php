@@ -97,7 +97,7 @@ class TopologyProgress
      *
      * @return TopologyProgress
      */
-    public function setTopologyId(string $topologyId): TopologyProgress
+    public function setTopologyId(string $topologyId): self
     {
         $this->topologyId = $topologyId;
 
@@ -117,7 +117,7 @@ class TopologyProgress
      *
      * @return TopologyProgress
      */
-    public function setStartedAt(DateTime $startedAt): TopologyProgress
+    public function setStartedAt(DateTime $startedAt): self
     {
         $this->startedAt = $startedAt;
 
@@ -137,7 +137,7 @@ class TopologyProgress
      *
      * @return TopologyProgress
      */
-    public function setFinishedAt(?DateTime $finishedAt): TopologyProgress
+    public function setFinishedAt(?DateTime $finishedAt): self
     {
         $this->finishedAt = $finishedAt;
 
@@ -157,7 +157,7 @@ class TopologyProgress
      *
      * @return TopologyProgress
      */
-    public function setOk(int $ok): TopologyProgress
+    public function setOk(int $ok): self
     {
         $this->ok = $ok;
 
@@ -177,7 +177,7 @@ class TopologyProgress
      *
      * @return TopologyProgress
      */
-    public function setNok(int $nok): TopologyProgress
+    public function setNok(int $nok): self
     {
         $this->nok = $nok;
 
@@ -197,7 +197,7 @@ class TopologyProgress
      *
      * @return TopologyProgress
      */
-    public function setTotal(int $total): TopologyProgress
+    public function setTotal(int $total): self
     {
         $this->total = $total;
 
@@ -217,7 +217,7 @@ class TopologyProgress
      *
      * @return TopologyProgress
      */
-    public function setProcessedCount(int $processedCount): TopologyProgress
+    public function setProcessedCount(int $processedCount): self
     {
         $this->processedCount = $processedCount;
 
@@ -237,7 +237,7 @@ class TopologyProgress
      *
      * @return TopologyProgress
      */
-    public function setUser(string $user): TopologyProgress
+    public function setUser(string $user): self
     {
         $this->user = $user;
 
@@ -255,15 +255,15 @@ class TopologyProgress
         $count    = $this->ok + $this->nok;
 
         return [
-            'id'             => $this->topologyId,
             'correlationId'  => $this->id,
-            'duration'       => TopologyProgress::durationInMs($this->startedAt, $end),
-            'started'        => $this->startedAt->format(DateTimeUtils::DATE_TIME_UTC),
+            'duration'       => self::durationInMs($this->startedAt, $end),
+            'failed'         => $this->nok,
             'finished'       => $finished,
+            'id'             => $this->topologyId,
             'nodesProcessed' => $count,
             'nodesTotal'     => $this->total,
+            'started'        => $this->startedAt->format(DateTimeUtils::DATE_TIME_UTC),
             'status'         => $count < $this->total ? 'IN PROGRESS' : ($this->nok > 0 ? 'FAILED' : 'SUCCESS'),
-            'failed'         => $this->nok,
             'user'           => $this->user ?? '',
         ];
     }

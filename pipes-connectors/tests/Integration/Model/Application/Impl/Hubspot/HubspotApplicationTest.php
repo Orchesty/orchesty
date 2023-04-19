@@ -161,8 +161,8 @@ final class HubspotApplicationTest extends KernelTestCaseAbstract
         $applicationInstall->setSettings(
             [
                 ApplicationInterface::AUTHORIZATION_FORM => [
-                    HubSpotApplication::APP_ID  => '123xx',
                     ApplicationInterface::TOKEN => [OAuth2Provider::ACCESS_TOKEN => 'token123'],
+                    HubSpotApplication::APP_ID  => '123xx',
                 ],
             ],
         );
@@ -189,7 +189,7 @@ final class HubspotApplicationTest extends KernelTestCaseAbstract
             $response->getUriString(),
         );
         self::assertEquals(
-            '{"webhookUrl":"","subscriptionDetails":{"subscriptionType":"name2","propertyName":"email"},"enabled":false}',
+            '{"enabled":false,"subscriptionDetails":{"propertyName":"email","subscriptionType":"name2"},"webhookUrl":""}',
             $response->getBody(),
         );
         self::assertEquals(

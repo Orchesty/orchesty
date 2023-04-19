@@ -50,7 +50,7 @@ class Category
      *
      * @return Category
      */
-    public function setName(string $name): Category
+    public function setName(string $name): self
     {
         $this->name = $name;
 
@@ -70,7 +70,7 @@ class Category
      *
      * @return Category
      */
-    public function setParent(?string $parent): Category
+    public function setParent(?string $parent): self
     {
         $this->parent = $parent;
 

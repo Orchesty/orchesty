@@ -38,9 +38,9 @@ final class UserTaskControllerTest extends ControllerTestCaseAbstract
             __DIR__ . '/data/UserTaskController/getRequest.json',
             [
                 'created'         => '2020-02-02 10:10:10',
-                'updated'         => '2020-02-02 10:10:10',
                 'topologyId'      => 'topo',
                 'topologyVersion' => '0',
+                'updated'         => '2020-02-02 10:10:10',
             ],
         );
     }
@@ -58,9 +58,9 @@ final class UserTaskControllerTest extends ControllerTestCaseAbstract
             __DIR__ . '/data/UserTaskController/filterRequest.json',
             [
                 'created'         => '2020-02-02 10:10:10',
-                'updated'         => '2020-02-02 10:10:10',
                 'topologyId'      => 'topo',
                 'topologyVersion' => '0',
+                'updated'         => '2020-02-02 10:10:10',
             ],
         );
     }
@@ -78,9 +78,9 @@ final class UserTaskControllerTest extends ControllerTestCaseAbstract
             __DIR__ . '/data/UserTaskController/updateRequest.json',
             [
                 'created'         => '2020-02-02 10:10:10',
-                'updated'         => '2020-02-02 10:10:10',
                 'topologyId'      => 'topo',
                 'topologyVersion' => '0',
+                'updated'         => '2020-02-02 10:10:10',
             ],
         );
     }

@@ -15,8 +15,8 @@ use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\System\PipesHeaders;
 use HbPFConnectorsTests\DataProvider;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
-use HbPFConnectorsTests\MockServer\Mock;
-use HbPFConnectorsTests\MockServer\MockServer;
+use PipesPhpSdkTests\MockServer\Mock;
+use PipesPhpSdkTests\MockServer\MockServer;
 
 /**
  * Class RefreshOAuth2TokenCustomNodeTest
@@ -48,8 +48,8 @@ final class RefreshOAuth2TokenCustomNodeTest extends KernelTestCaseAbstract
         $providerMock = self::createMock(OAuth2Provider::class);
         $providerMock->method('refreshAccessToken')->willReturn(
             [
-                'code'         => 'code123',
                 'access_token' => 'token333',
+                'code'         => 'code123',
             ],
         );
 
@@ -68,8 +68,8 @@ final class RefreshOAuth2TokenCustomNodeTest extends KernelTestCaseAbstract
                 ApplicationInterface::AUTHORIZATION_FORM => [
                     ApplicationInterface::TOKEN => [
                         'code'          => 'code123',
-                        'token'         => 'fa830d8d43*****bac307906e83de659',
                         'refresh_token' => 'refresh_token22',
+                        'token'         => 'fa830d8d43*****bac307906e83de659',
                     ],
                 ],
             ],
@@ -77,9 +77,9 @@ final class RefreshOAuth2TokenCustomNodeTest extends KernelTestCaseAbstract
         $dto = DataProvider::getProcessDto('mailchimp', 'user', '');
         $dto->setHeaders(
             [
-                PipesHeaders::USER                           => 'user',
-                PipesHeaders::APPLICATION                    => 'mailchimp',
                 GetApplicationForRefreshBatchConnector::NAME => $applicationInstall->getId(),
+                PipesHeaders::APPLICATION                    => 'mailchimp',
+                PipesHeaders::USER                           => 'user',
             ],
         );
 

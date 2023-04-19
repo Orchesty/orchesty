@@ -39,8 +39,8 @@ final class TrashControllerTest extends ControllerTestCaseAbstract
             __DIR__ . '/data/TrashController/getTrashItemsRequest.json',
             [
                 'created'    => '2020-02-02 10:10:10',
-                'updated'    => '2020-02-02 10:10:10',
                 'topologyId' => 'topo',
+                'updated'    => '2020-02-02 10:10:10',
             ],
         );
     }
@@ -59,8 +59,8 @@ final class TrashControllerTest extends ControllerTestCaseAbstract
             __DIR__ . '/data/TrashController/getTrashItemDetailRequest.json',
             [
                 'created'    => '2020-02-02 10:10:10',
-                'updated'    => '2020-02-02 10:10:10',
                 'topologyId' => 'topo',
+                'updated'    => '2020-02-02 10:10:10',
             ],
         );
     }
@@ -79,8 +79,8 @@ final class TrashControllerTest extends ControllerTestCaseAbstract
             __DIR__ . '/data/TrashController/updateTrashItemRequest.json',
             [
                 'created'    => '2020-02-02 10:10:10',
-                'updated'    => '2020-02-02 10:10:10',
                 'topologyId' => 'topo',
+                'updated'    => '2020-02-02 10:10:10',
             ],
         );
     }

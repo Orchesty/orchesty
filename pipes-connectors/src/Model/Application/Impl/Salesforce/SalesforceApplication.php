@@ -73,9 +73,9 @@ final class SalesforceApplication extends OAuth2ApplicationAbstract
         $request = new RequestDto($this->getUri($url), $method, $dto);
         $request->setHeaders(
             [
-                'Content-Type'  => 'application/json',
                 'Accept'        => 'application/json',
                 'Authorization' => sprintf('Bearer %s', $this->getAccessToken($applicationInstall)),
+                'Content-Type'  => 'application/json',
             ],
         );
 
@@ -95,7 +95,7 @@ final class SalesforceApplication extends OAuth2ApplicationAbstract
         $form
             ->addField(new Field(Field::TEXT, OAuth2ApplicationInterface::CLIENT_ID, 'Client Id', NULL, TRUE))
             ->addField(new Field(Field::TEXT, OAuth2ApplicationInterface::CLIENT_SECRET, 'Client Secret', NULL, TRUE))
-            ->addField(new Field(Field::TEXT, SalesforceApplication::INSTANCE_NAME, 'Instance Name', NULL, TRUE));
+            ->addField(new Field(Field::TEXT, self::INSTANCE_NAME, 'Instance Name', NULL, TRUE));
 
         $formStack = new FormStack();
         $formStack->addForm($form);

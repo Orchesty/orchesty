@@ -26,9 +26,9 @@ final class LogsControllerTest extends ControllerTestCaseAbstract
             __DIR__ . '/data/LogsController/getDataForTableActionRequest.json',
             [
                 'created'    => '2020-02-02 10:10:10',
-                'updated'    => '2020-02-02 10:10:10',
-                'topologyId' => 'topo',
                 'id'         => 'id',
+                'topologyId' => 'topo',
+                'updated'    => '2020-02-02 10:10:10',
             ],
         );
     }
@@ -45,9 +45,9 @@ final class LogsControllerTest extends ControllerTestCaseAbstract
             __DIR__ . '/data/LogsController/getDataForTableActionFilteredRequest.json',
             [
                 'created'    => '2020-02-02 10:10:10',
-                'updated'    => '2020-02-02 10:10:10',
-                'topologyId' => 'topo',
                 'id'         => 'id',
+                'topologyId' => 'topo',
+                'updated'    => '2020-02-02 10:10:10',
             ],
         );
     }
@@ -63,20 +63,20 @@ final class LogsControllerTest extends ControllerTestCaseAbstract
                 ->insert()
                 ->setNewObj(
                     [
+                        'host'      => 'host',
+                        'message'   => 'msg',
+                        'pipes'     => [
+                            'correlation_id' => '1',
+                            'node_id'        => strval($i),
+                            'process_id'     => '2',
+                            'service'        => 'sdk',
+                            'severity'       => 'info',
+                            'timestamp'      => 2_222,
+                            'topology_id'    => '2',
+                            'user_id'        => 'endUser',
+                        ],
                         'timestamp' => '1111',
                         'version'   => '1.2',
-                        'message'   => 'msg',
-                        'host'      => 'host',
-                        'pipes'     => [
-                            'user_id'        => 'endUser',
-                            'severity'       => 'info',
-                            'service'        => 'sdk',
-                            'timestamp'      => 2_222,
-                            'node_id'        => strval($i),
-                            'topology_id'    => '2',
-                            'correlation_id' => '1',
-                            'process_id'     => '2',
-                        ],
                     ],
                 )
                 ->getQuery()
@@ -87,20 +87,20 @@ final class LogsControllerTest extends ControllerTestCaseAbstract
             ->insert()
             ->setNewObj(
                 [
+                    'host'      => 'host',
+                    'message'   => 'msg',
+                    'pipes'     => [
+                        'correlation_id' => '1',
+                        'node_id'        => '1',
+                        'process_id'     => '2',
+                        'service'        => 'sdk',
+                        'severity'       => 'info',
+                        'timestamp'      => 2_222,
+                        'topology_id'    => '2',
+                        'user_id'        => 'User2',
+                    ],
                     'timestamp' => '1111',
                     'version'   => '1.2',
-                    'message'   => 'msg',
-                    'host'      => 'host',
-                    'pipes'     => [
-                        'user_id'        => 'User2',
-                        'severity'       => 'info',
-                        'service'        => 'sdk',
-                        'timestamp'      => 2_222,
-                        'node_id'        => '1',
-                        'topology_id'    => '2',
-                        'correlation_id' => '1',
-                        'process_id'     => '2',
-                    ],
                 ],
             )
             ->getQuery()

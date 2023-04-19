@@ -124,15 +124,14 @@ final class FlexiBeeApplication extends BasicApplicationAbstract
         if ($applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][self::AUTH] == self::AUTH_JSON) {
             $request->setHeaders(
                 [
-                    'Content-Type'    => 'application/json',
                     'Accept'          => 'application/json',
+                    'Content-Type'    => 'application/json',
                     'X-authSessionId' => $this->getApiToken($applicationInstall, $dto),
                 ],
             );
         } else if ($applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][self::AUTH] == self::AUTH_HTTP) {
             $request->setHeaders(
                 [
-                    'Content-Type'  => 'application/json',
                     'Accept'        => 'application/json',
                     'Authorization' => base64_encode(
                         sprintf(
@@ -143,6 +142,7 @@ final class FlexiBeeApplication extends BasicApplicationAbstract
                             )[ApplicationInterface::AUTHORIZATION_FORM][BasicApplicationInterface::PASSWORD],
                         ),
                     ),
+                    'Content-Type'  => 'application/json',
                 ],
             );
         }
@@ -238,8 +238,8 @@ final class FlexiBeeApplication extends BasicApplicationAbstract
 
         $request->setHeaders(
             [
-                'Content-Type' => 'application/json',
                 'Accept'       => 'application/json',
+                'Content-Type' => 'application/json',
             ],
         )->setBody(Json::encode([self::USER => $user, self::PASSWORD => $password]));
 
@@ -304,8 +304,8 @@ final class FlexiBeeApplication extends BasicApplicationAbstract
                 [
                     self::CLIENT_SETTINGS => [
                         self::AUTH_SESSION_ID => $token[self::AUTH_SESSION_ID],
-                        self::REFRESH_TOKEN   => $token[self::REFRESH_TOKEN],
                         self::CSRF_TOKEN      => $token[self::CSRF_TOKEN],
+                        self::REFRESH_TOKEN   => $token[self::REFRESH_TOKEN],
                         self::TOKEN_GET       => DateTimeUtils::getUtcDateTime()->getTimestamp(),
                     ],
                 ],

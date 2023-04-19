@@ -153,12 +153,12 @@ final class CustomAction
     public function toArray(): array
     {
         return [
-            'name'         => $this->name,
-            'url'          => $this->url,
             'action'       => $this->action,
             'body'         => $this->body,
-            'topologyName' => $this->topologyName,
+            'name'         => $this->name,
             'nodeName'     => $this->nodeName,
+            'topologyName' => $this->topologyName,
+            'url'          => $this->url,
         ];
     }
 

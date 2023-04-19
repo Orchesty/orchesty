@@ -1,6 +1,18 @@
 {
     "properties": [
         {
+            "property": "address",
+            "value": "25 First Street"
+        },
+        {
+            "property": "city",
+            "value": "Cambridge"
+        },
+        {
+            "property": "company",
+            "value": "HubSpot"
+        },
+        {
             "property": "email",
             "value": "testingapis@hubspot.com"
         },
@@ -13,28 +25,16 @@
             "value": "Mott"
         },
         {
-            "property": "website",
-            "value": null
-        },
-        {
-            "property": "company",
-            "value": "HubSpot"
-        },
-        {
             "property": "phone",
             "value": "555-122-2323"
         },
         {
-            "property": "address",
-            "value": "25 First Street"
-        },
-        {
-            "property": "city",
-            "value": "Cambridge"
-        },
-        {
             "property": "state",
             "value": "MA"
+        },
+        {
+            "property": "website",
+            "value": null
         },
         {
             "property": "zip",

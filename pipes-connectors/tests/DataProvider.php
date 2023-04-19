@@ -92,8 +92,8 @@ final class DataProvider
             ->setData($body)
             ->setHeaders(
                 [
-                    PipesHeaders::USER        => $user,
                     PipesHeaders::APPLICATION => $key,
+                    PipesHeaders::USER        => $user,
                 ],
             );
 

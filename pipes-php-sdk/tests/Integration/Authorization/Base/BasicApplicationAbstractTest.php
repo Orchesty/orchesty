@@ -95,9 +95,9 @@ final class BasicApplicationAbstractTest extends KernelTestCaseAbstract
                     [
                         ApplicationInterface::AUTHORIZATION_FORM =>
                             [
-                                BasicApplicationInterface::USER     => 'user',
                                 BasicApplicationInterface::PASSWORD => 'passwd',
                                 BasicApplicationInterface::TOKEN    => '__token__',
+                                BasicApplicationInterface::USER     => 'user',
                             ],
                     ],
                 ),
@@ -107,9 +107,9 @@ final class BasicApplicationAbstractTest extends KernelTestCaseAbstract
             $applicationInstall,
             [
                 ApplicationInterface::AUTHORIZATION_FORM => [
+                    BasicApplicationInterface::PASSWORD => 'new_passwd',
                     BasicApplicationInterface::TOKEN    => '__new_token__',
                     BasicApplicationInterface::USER     => 'new_user',
-                    BasicApplicationInterface::PASSWORD => 'new_passwd',
                 ],
             ],
         );

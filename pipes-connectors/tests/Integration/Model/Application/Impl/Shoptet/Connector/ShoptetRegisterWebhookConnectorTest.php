@@ -14,8 +14,8 @@ use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DataProvider;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
-use HbPFConnectorsTests\MockServer\Mock;
-use HbPFConnectorsTests\MockServer\MockServer;
+use PipesPhpSdkTests\MockServer\Mock;
+use PipesPhpSdkTests\MockServer\MockServer;
 
 /**
  * Class ShoptetRegisterWebhookConnectorTest
@@ -31,8 +31,8 @@ final class ShoptetRegisterWebhookConnectorTest extends KernelTestCaseAbstract
     private const SENDER = 'sender';
 
     private const HEADERS = [
-        'user'        => self::USER,
         'application' => ShoptetApplication::SHOPTET_KEY,
+        'user'        => self::USER,
     ];
 
     private const SETTINGS = [

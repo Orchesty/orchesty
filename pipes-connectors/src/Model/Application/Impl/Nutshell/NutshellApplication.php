@@ -67,9 +67,9 @@ final class NutshellApplication extends BasicApplicationAbstract
         $request = new RequestDto($this->getUri($url), $method, $dto);
         $request->setHeaders(
             [
-                'Content-Type'  => 'application/json',
                 'Accept'        => 'application/json',
                 'Authorization' => sprintf('Basic %s', $this->getToken($applicationInstall)),
+                'Content-Type'  => 'application/json',
             ],
         );
         if (isset($data)) {

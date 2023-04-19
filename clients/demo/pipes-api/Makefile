@@ -36,8 +36,7 @@ composer-outdated:
 	$(DE) composer outdated
 
 clear-cache:
-	$(DE) rm -rf var/log
-	$(DE) php bin/console cache:clear --env=test
+	$(DE) rm -rf var
 	$(DE) php bin/console cache:warmup --env=test
 
 phpcodesniffer:
@@ -53,7 +52,7 @@ phpcontroller:
 	$(DE) php ./vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --colors=always tests/Controller
 
 phpcoverage:
-	$(DE) ./vendor/bin/paratest -c vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --coverage-html var/coverage --whitelist src --exclude-group live tests
+	$(DE) ./vendor/bin/paratest -c vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --coverage-html var/coverage --coverage-filter src --exclude-group live tests
 
 phpcoverage-ci:
 	$(DE) ./vendor/hanaboso/php-check-utils/bin/coverage.sh -c 50 -p $$(nproc) -e live

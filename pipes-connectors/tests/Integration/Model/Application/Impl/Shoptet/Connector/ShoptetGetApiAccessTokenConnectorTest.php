@@ -16,8 +16,8 @@ use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DataProvider;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
-use HbPFConnectorsTests\MockServer\Mock;
-use HbPFConnectorsTests\MockServer\MockServer;
+use PipesPhpSdkTests\MockServer\Mock;
+use PipesPhpSdkTests\MockServer\MockServer;
 
 /**
  * Class ShoptetGetApiAccessTokenConnectorTest
@@ -30,8 +30,8 @@ final class ShoptetGetApiAccessTokenConnectorTest extends KernelTestCaseAbstract
     use PrivateTrait;
 
     private const HEADERS = [
-        'user'        => 'user',
         'application' => ShoptetApplication::SHOPTET_KEY,
+        'user'        => 'user',
     ];
 
     private const API_TOKEN_URL = 'https://12345.myshoptet.com/action/ApiOAuthServer/getAccessToken';
@@ -135,9 +135,9 @@ final class ShoptetGetApiAccessTokenConnectorTest extends KernelTestCaseAbstract
             '',
             '{"data":"data"}',
             [
+                'Accept'        => 'application/json',
                 'Authorization' => sprintf('Bearer %s', '___access_token__'),
                 'Content-Type'  => 'application/json',
-                'Accept'        => 'application/json',
             ],
         );
 

@@ -122,9 +122,9 @@ final class MailchimpApplication extends OAuth2ApplicationAbstract implements We
         $request = new RequestDto($this->getUri($url), $method, $dto);
         $request->setHeaders(
             [
-                'Content-Type'  => 'application/json',
                 'Accept'        => 'application/json',
                 'Authorization' => sprintf('OAuth %s', $this->getAccessToken($applicationInstall)),
+                'Content-Type'  => 'application/json',
             ],
         );
 
@@ -237,15 +237,15 @@ final class MailchimpApplication extends OAuth2ApplicationAbstract implements We
             ),
             Json::encode(
                 [
-                    'url'     => $url,
                     'events'  => [
                         $subscription->getParameters()['name'] => TRUE,
                     ],
                     'sources' => [
-                        'user'  => TRUE,
                         'admin' => TRUE,
                         'api'   => TRUE,
+                        'user'  => TRUE,
                     ],
+                    'url'     => $url,
                 ],
             ),
         );

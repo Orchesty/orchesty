@@ -57,18 +57,6 @@ final class OAuth2ProviderTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @return mixed[]
-     */
-    public function authorizeDataProvider(): array
-    {
-        return [
-            [
-                'authorize/url?state=7403bf6b94330ff59bb941ed7418ae30&response_type=code&approval_prompt=auto&redirect_uri=127.0.0.4%2Fred&client_id=cl_id',
-            ],
-        ];
-    }
-
-    /**
      * @dataProvider getAccessTokenDataProvider
      *
      * @param mixed[] $request
@@ -91,17 +79,6 @@ final class OAuth2ProviderTest extends KernelTestCaseAbstract
         $token = $provider->getAccessToken($dto, $request);
 
         self::assertNotEmpty($token);
-    }
-
-    /**
-     * @return mixed[]
-     */
-    public function getAccessTokenDataProvider(): array
-    {
-        return [
-            [[], TRUE],
-            [['code' => '456'], FALSE],
-        ];
     }
 
     /**
@@ -169,7 +146,30 @@ final class OAuth2ProviderTest extends KernelTestCaseAbstract
     /**
      * @return mixed[]
      */
-    public function refreshTokenDataProvider(): array
+    public static function authorizeDataProvider(): array
+    {
+        return [
+            [
+                'authorize/url?state=7403bf6b94330ff59bb941ed7418ae30&response_type=code&approval_prompt=auto&redirect_uri=127.0.0.4%2Fred&client_id=cl_id',
+            ],
+        ];
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public static function getAccessTokenDataProvider(): array
+    {
+        return [
+            [[], TRUE],
+            [['code' => '456'], FALSE],
+        ];
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public static function refreshTokenDataProvider(): array
     {
         return [
             [[], TRUE],

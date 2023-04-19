@@ -76,9 +76,9 @@ final class WebhookManager
                 }
 
                 return [
-                    'name'     => $subscription->getName(),
                     'default'  => $subscription->getTopology() !== '',
                     'enabled'  => $enabled,
+                    'name'     => $subscription->getName(),
                     'topology' => $topology,
                 ];
             },
@@ -123,13 +123,13 @@ final class WebhookManager
             $this->webhookRepository->insert(
                 new Webhook(
                     [
-                        'name'        => $subscription->getName(),
-                        'user'        => $userId,
-                        'node'        => $subscription->getName(),
-                        'topology'    => $name,
                         'application' => $application->getName(),
-                        'webhookId'   => $webhookId,
+                        'name'        => $subscription->getName(),
+                        'node'        => $subscription->getName(),
                         'token'       => $token,
+                        'topology'    => $name,
+                        'user'        => $userId,
+                        'webhookId'   => $webhookId,
                     ],
                 ),
             );

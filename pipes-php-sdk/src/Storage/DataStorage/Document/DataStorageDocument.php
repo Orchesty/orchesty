@@ -53,12 +53,12 @@ class DataStorageDocument
     /**
      * @param mixed $data
      *
-     * @return DataStorageDocument
+     * @return self
      * @throws Exception
      */
-    public static function fromJson(mixed $data): DataStorageDocument
+    public static function fromJson(mixed $data): self
     {
-        $document = new DataStorageDocument();
+        $document = new self();
         $document
             ->setId($data['id'])
             ->setUser($data['user'])
@@ -80,9 +80,9 @@ class DataStorageDocument
     /**
      * @param string $id
      *
-     * @return DataStorageDocument
+     * @return self
      */
-    public function setId(string $id): DataStorageDocument
+    public function setId(string $id): self
     {
         $this->id = $id;
 
@@ -100,9 +100,9 @@ class DataStorageDocument
     /**
      * @param string|null $user
      *
-     * @return DataStorageDocument
+     * @return self
      */
-    public function setUser(?string $user): DataStorageDocument
+    public function setUser(?string $user): self
     {
         $this->user = $user;
 
@@ -120,9 +120,9 @@ class DataStorageDocument
     /**
      * @param string|null $application
      *
-     * @return DataStorageDocument
+     * @return self
      */
-    public function setApplication(?string $application): DataStorageDocument
+    public function setApplication(?string $application): self
     {
         $this->application = $application;
 
@@ -148,9 +148,9 @@ class DataStorageDocument
     /**
      * @param mixed $data
      *
-     * @return DataStorageDocument
+     * @return self
      */
-    public function setData(mixed $data): DataStorageDocument
+    public function setData(mixed $data): self
     {
         $this->data = $data;
 
@@ -163,20 +163,20 @@ class DataStorageDocument
     public function toArray(): array
     {
         return [
-            'id'          => $this->id,
-            'user'        => $this->user,
             'application' => $this->application,
             'created'     => $this->created->format(DateTimeUtils::DATE_TIME_GO),
             'data'        => $this->data,
+            'id'          => $this->id,
+            'user'        => $this->user,
         ];
     }
 
     /**
      * @param DateTime $created
      *
-     * @return $this
+     * @return self
      */
-    private function setCreated(DateTime $created): DataStorageDocument
+    private function setCreated(DateTime $created): self
     {
         $this->created = $created;
 

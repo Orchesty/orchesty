@@ -166,13 +166,13 @@ final class PipedriveApplication extends BasicApplicationAbstract implements Web
             CurlManager::METHOD_POST,
             sprintf(
                 '%s/v1/webhooks',
-                PipedriveApplication::PIPEDRIVE_URL,
+                self::PIPEDRIVE_URL,
             ),
             Json::encode(
                 [
-                    'subscription_url' => $url,
                     'event_action'     => $subscription->getParameters()['action'],
                     'event_object'     => $subscription->getParameters()['object'],
+                    'subscription_url' => $url,
                 ],
             ),
         );
@@ -196,7 +196,7 @@ final class PipedriveApplication extends BasicApplicationAbstract implements Web
             CurlManager::METHOD_DELETE,
             sprintf(
                 '%s/v1/webhooks/%s',
-                PipedriveApplication::PIPEDRIVE_URL,
+                self::PIPEDRIVE_URL,
                 $webhook->getWebhookId(),
             ),
         );

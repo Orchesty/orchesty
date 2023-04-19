@@ -154,13 +154,14 @@ final class ApplicationHandler
         return array_merge(
             $application->toArray(),
             [
-                self::AUTHORIZED           => $application->isAuthorized($applicationInstall),
-                self::ENABLED              => $applicationInstall->isEnabled(),
                 self::APPLICATION_SETTINGS => $application->getApplicationForms($applicationInstall),
-                self::WEBHOOK_SETTINGS     => $application->getApplicationType() === ApplicationTypeEnum::WEBHOOK->value ?
-                    $this->webhookManager->getWebhooks($application, $user) :
-                    [],
+                self::AUTHORIZED           => $application->isAuthorized($applicationInstall),
                 self::CUSTOM_ACTIONS       => $this->customActionsToArray($application->getCustomActions()),
+                self::ENABLED              => $applicationInstall->isEnabled(),
+                self::WEBHOOK_SETTINGS     => $application->getApplicationType() === ApplicationTypeEnum::WEBHOOK->value
+                    ? $this->webhookManager->getWebhooks($application, $user)
+                    : [],
+
             ],
         );
     }
@@ -182,8 +183,8 @@ final class ApplicationHandler
         return array_merge(
             $application->toArray(),
             [
-                self::AUTHORIZED           => $application->isAuthorized($applicationInstall),
                 self::APPLICATION_SETTINGS => $application->getApplicationForms($applicationInstall),
+                self::AUTHORIZED           => $application->isAuthorized($applicationInstall),
             ],
         );
     }
@@ -202,8 +203,8 @@ final class ApplicationHandler
         return array_merge(
             $this->applicationManager->uninstallApplication($key, $user)->toArray(),
             [
-                self::AUTHORIZED           => FALSE,
                 self::APPLICATION_SETTINGS => NULL,
+                self::AUTHORIZED           => FALSE,
             ],
         );
     }

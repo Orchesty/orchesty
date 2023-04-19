@@ -77,9 +77,9 @@ final class WisepopsApplicationTest extends KernelTestCaseAbstract
 
         self::assertEquals(
             [
-                'Content-Type'  => 'application/json',
                 'Accept'        => 'application/json',
                 'Authorization' => 'WISEPOPS-API key="123"',
+                'Content-Type'  => 'application/json',
             ],
             $dto->getHeaders(),
         );
@@ -125,7 +125,7 @@ final class WisepopsApplicationTest extends KernelTestCaseAbstract
         );
 
         self::assertEquals(
-            Json::encode(['target_url' => 'www.target_url...', 'event' => 'email']),
+            Json::encode(['event' => 'email', 'target_url' => 'www.target_url...']),
             $dto->getBody(),
         );
     }

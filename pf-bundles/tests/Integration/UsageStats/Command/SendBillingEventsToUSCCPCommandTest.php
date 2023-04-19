@@ -57,28 +57,28 @@ final class SendBillingEventsToUSCCPCommandTest extends DatabaseTestCaseAbstract
 
         self::assertEquals(
             [
-                'iid'     => '1234',
-                'type'    => 'applinth_enduser_app_install',
-                'version' => 1,
+                'created' => $data[0]->getCreated()->format('Uu'),
                 'data'    => [
                     'aid'  => '1',
                     'euid' => '1',
                 ],
-                'created' => $data[0]->getCreated()->format('Uu'),
+                'iid'     => '1234',
+                'type'    => 'applinth_enduser_app_install',
+                'version' => 1,
             ],
             $data[0]->toArray(),
         );
         self::assertNotEquals(NULL, $data[0]->getSent());
         self::assertEquals(
             [
-                'iid'     => '1235',
-                'type'    => 'applinth_enduser_app_uninstall',
-                'version' => 1,
+                'created' => $data[1]->getCreated()->format('Uu'),
                 'data'    => [
                     'aid'  => '2',
                     'euid' => '2',
                 ],
-                'created' => $data[1]->getCreated()->format('Uu'),
+                'iid'     => '1235',
+                'type'    => 'applinth_enduser_app_uninstall',
+                'version' => 1,
             ],
             $data[1]->toArray(),
         );

@@ -22,8 +22,8 @@ use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DataProvider;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
-use HbPFConnectorsTests\MockServer\Mock;
-use HbPFConnectorsTests\MockServer\MockServer;
+use PipesPhpSdkTests\MockServer\Mock;
+use PipesPhpSdkTests\MockServer\MockServer;
 
 /**
  * Class ShoptetGetEshopInfoTest
@@ -36,8 +36,8 @@ final class ShoptetGetEshopInfoTest extends KernelTestCaseAbstract
     use PrivateTrait;
 
     private const HEADERS = [
-        'user'        => 'user',
         'application' => ShoptetApplication::SHOPTET_KEY,
+        'user'        => 'user',
     ];
 
     /**

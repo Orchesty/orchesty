@@ -25,10 +25,10 @@ final class ProgressFilter extends GridFilterAbstract
     protected function filterCols(): array
     {
         return [
-            'topologyId' => 'topologyId',
             'started'    => 'startedAt',
-            'user'       => 'user',
             'status'     => 'status',
+            'topologyId' => 'topologyId',
+            'user'       => 'user',
         ];
     }
 
@@ -38,9 +38,9 @@ final class ProgressFilter extends GridFilterAbstract
     protected function orderCols(): array
     {
         return [
-            'started'        => 'startedAt',
-            'finished'       => 'finishedAt',
             'correlation_id' => 'correlationId',
+            'finished'       => 'finishedAt',
+            'started'        => 'startedAt',
         ];
     }
 

@@ -48,8 +48,7 @@ composer-update:
 	$(DE) composer normalize
 
 clear-cache:
-	$(DE) rm -rf var/log
-	$(DE) bin/console cache:clear --env=test
+	$(DE) rm -rf var
 	$(DE) bin/console cache:warmup --env=test
 
 # App
@@ -74,7 +73,7 @@ phpcontroller:
 	$(DE) vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --colors=always tests/Controller
 
 phpcoverage:
-	$(DE) php vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --coverage-html var/coverage --whitelist src tests
+	$(DE) php vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --coverage-html var/coverage --coverage-filter src tests
 
 phpcoverage-ci:
 	$(DE) ./vendor/hanaboso/php-check-utils/bin/coverage.sh -p $$(nproc) -c 70

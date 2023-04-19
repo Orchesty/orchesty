@@ -512,8 +512,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
             'PUT',
             '/applications/someApp/users/bar/password',
             [
-                'formKey'  => ApplicationInterface::AUTHORIZATION_FORM,
                 'fieldKey' => BasicApplicationInterface::PASSWORD,
+                'formKey'  => ApplicationInterface::AUTHORIZATION_FORM,
                 'password' => 'Passw0rd',
             ],
         );
@@ -543,8 +543,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
             'PUT',
             '/applications/application/users/user/password',
             [
-                'formKey'  => ApplicationInterface::AUTHORIZATION_FORM,
                 'fieldKey' => BasicApplicationInterface::PASSWORD,
+                'formKey'  => ApplicationInterface::AUTHORIZATION_FORM,
                 'password' => 'Passw0rd',
             ],
         );

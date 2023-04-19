@@ -53,8 +53,8 @@ final class LogsController extends AbstractController
         $dto->setAdditionalFilters([
             [
                 [
-                    GridFilterAbstract::OPERATOR => GridFilterAbstract::EQ,
                     GridFilterAbstract::COLUMN   => self::USER,
+                    GridFilterAbstract::OPERATOR => GridFilterAbstract::EQ,
                     GridFilterAbstract::VALUE    => [$this->authenticator->getAuthUser()],
                 ],
             ],

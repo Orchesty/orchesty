@@ -250,15 +250,15 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
             }
 
             return (object) [
-                'status'  => $response->getStatusCode(),
                 'content' => Json::decode((string) $response->getContent()),
+                'status'  => $response->getStatusCode(),
             ];
         } catch (Throwable $e) {
             $e;
 
             return (object) [
-                'status'  => $response->getStatusCode(),
                 'content' => (string) $response->getContent(),
+                'status'  => $response->getStatusCode(),
             ];
         }
     }

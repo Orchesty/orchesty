@@ -84,9 +84,9 @@ final class AirtableApplicationTest extends KernelTestCaseAbstract
         $applicationInstall->setSettings(
             [
                 ApplicationInterface::AUTHORIZATION_FORM => [
-                    ApplicationInterface::TOKEN     => self::API_KEY,
                     AirtableApplication::BASE_ID    => self::BASE_ID,
                     AirtableApplication::TABLE_NAME => self::TABLE_NAME,
+                    ApplicationInterface::TOKEN     => self::API_KEY,
                 ],
             ],
         );

@@ -23,15 +23,15 @@ final class UserTaskFilter extends GridFilterAbstract
      * @var mixed[]
      */
     protected array $projection = [
-        UserTask::ID             => 1,
+        UserTask::CORRELATION_ID => 1,
         UserTask::CREATED        => 1,
+        UserTask::ID             => 1,
         UserTask::NODE_ID        => 1,
         UserTask::NODE_NAME      => 1,
-        UserTask::TYPE           => 1,
         UserTask::TOPOLOGY_ID    => 1,
         UserTask::TOPOLOGY_NAME  => 1,
+        UserTask::TYPE           => 1,
         UserTask::UPDATED        => 1,
-        UserTask::CORRELATION_ID => 1,
     ];
 
     /**
@@ -48,17 +48,17 @@ final class UserTaskFilter extends GridFilterAbstract
     protected function filterCols(): array
     {
         return [
+            UserTask::CORRELATION_ID => UserTask::CORRELATION_ID,
+            UserTask::CREATED        => UserTask::CREATED,
             UserTask::ID             => UserTask::ID,
+            UserTask::MESSAGE        => 'message.body',
             UserTask::NODE_ID        => UserTask::NODE_ID,
             UserTask::NODE_NAME      => UserTask::NODE_NAME,
             UserTask::TOPOLOGY_ID    => UserTask::TOPOLOGY_ID,
             UserTask::TOPOLOGY_NAME  => UserTask::TOPOLOGY_NAME,
-            UserTask::CORRELATION_ID => UserTask::CORRELATION_ID,
             UserTask::TYPE           => UserTask::TYPE,
-            UserTask::CREATED        => UserTask::CREATED,
             UserTask::UPDATED        => UserTask::UPDATED,
             UserTask::USER           => UserTask::USER,
-            UserTask::MESSAGE        => 'message.body',
         ];
     }
 
@@ -68,10 +68,10 @@ final class UserTaskFilter extends GridFilterAbstract
     protected function orderCols(): array
     {
         return [
-            UserTask::ID        => UserTask::ID,
             UserTask::CREATED   => UserTask::CREATED,
-            UserTask::UPDATED   => UserTask::UPDATED,
+            UserTask::ID        => UserTask::ID,
             UserTask::NODE_NAME => UserTask::NODE_NAME,
+            UserTask::UPDATED   => UserTask::UPDATED,
         ];
     }
 

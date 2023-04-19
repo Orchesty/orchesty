@@ -74,8 +74,8 @@ final class ProcessController extends AbstractController
             [
                 [
                     [
-                        GridFilterAbstract::OPERATOR => GridFilterAbstract::EQ,
                         GridFilterAbstract::COLUMN   => self::USER,
+                        GridFilterAbstract::OPERATOR => GridFilterAbstract::EQ,
                         GridFilterAbstract::VALUE    => [$this->authenticator->getAuthUser()],
                     ],
                 ],

@@ -27,7 +27,7 @@ final class ProcessDtoFactory
     {
         $data = Json::decode($request->getContent());
 
-        return self::createDto($data[self::BODY], $data[self::HEADERS]);
+        return self::createDto($data[self::BODY] ?? '', $data[self::HEADERS] ?? []);
     }
 
     /**
@@ -39,7 +39,7 @@ final class ProcessDtoFactory
     {
         $data = Json::decode($request->getContent());
 
-        return self::createBatchDto($data[self::BODY], $data[self::HEADERS]);
+        return self::createBatchDto($data[self::BODY] ?? '', $data[self::HEADERS] ?? []);
     }
 
     /**

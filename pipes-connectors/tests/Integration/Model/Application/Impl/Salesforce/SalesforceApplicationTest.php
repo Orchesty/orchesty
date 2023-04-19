@@ -117,9 +117,9 @@ final class SalesforceApplicationTest extends KernelTestCaseAbstract
 
         self::assertEquals(
             [
-                'Content-Type'  => 'application/json',
                 'Accept'        => 'application/json',
                 'Authorization' => 'Bearer token123',
+                'Content-Type'  => 'application/json',
             ],
             $dto->getHeaders(),
         );

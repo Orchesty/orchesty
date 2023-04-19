@@ -94,7 +94,7 @@ class Tags
      *
      * @return $this
      */
-    public function setNodeId(string $nodeId): Tags
+    public function setNodeId(string $nodeId): self
     {
         $this->nodeId = $nodeId;
 
@@ -106,7 +106,7 @@ class Tags
      *
      * @return $this
      */
-    public function setTopologyId(string $topologyId): Tags
+    public function setTopologyId(string $topologyId): self
     {
         $this->topologyId = $topologyId;
 
@@ -118,7 +118,7 @@ class Tags
      *
      * @return Tags
      */
-    public function setQueue(string $queue): Tags
+    public function setQueue(string $queue): self
     {
         $this->queue = $queue;
 

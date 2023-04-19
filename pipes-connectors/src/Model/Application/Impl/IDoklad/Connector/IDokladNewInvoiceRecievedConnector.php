@@ -45,23 +45,27 @@ final class IDokladNewInvoiceRecievedConnector extends ConnectorAbstract
         try {
             $data = $dto->getJsonData();
             Validations::checkParams(
-                [
-                    'DateOfMaturity',
-                    'DateOfReceiving',
-                    'Description',
-                    'DocumentSerialNumber',
-                    'IsIncomeTax',
-                    'Items' => [
-                        [
-                            'Name',
-                            'PriceType',
-                            'UnitPrice',
-                            'VatRateType',
+                array_merge(
+                    [
+                        'DateOfMaturity',
+                        'DateOfReceiving',
+                        'Description',
+                        'DocumentSerialNumber',
+                        'IsIncomeTax',
+                        'PartnerId',
+                        'PaymentOptionId',
+                    ],
+                    [
+                        'Items' => [
+                            [
+                                'Name',
+                                'PriceType',
+                                'UnitPrice',
+                                'VatRateType',
+                            ],
                         ],
                     ],
-                    'PartnerId',
-                    'PaymentOptionId',
-                ],
+                ),
                 $data,
             );
 
@@ -80,7 +84,7 @@ final class IDokladNewInvoiceRecievedConnector extends ConnectorAbstract
             $this->evaluateStatusCode($response->getStatusCode(), $dto);
 
             $dto->setData($response->getBody());
-        } catch (CurlException | ConnectorException $e) {
+        } catch (CurlException|ConnectorException $e) {
             throw new OnRepeatException($dto, $e->getMessage(), $e->getCode(), $e);
         } catch (LogicException $e) {
             return $dto->setStopProcess(ProcessDto::DO_NOT_CONTINUE, $e->getMessage());

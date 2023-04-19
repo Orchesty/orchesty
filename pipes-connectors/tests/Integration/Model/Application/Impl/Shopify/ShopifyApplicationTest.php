@@ -89,8 +89,8 @@ final class ShopifyApplicationTest extends KernelTestCaseAbstract
         self::assertEquals('https://hana1.myshopify.com/admin/api/2020-01/customers.json', $request->getUri());
         self::assertEquals(
             [
-                'Content-Type'           => 'application/json',
                 'Accept'                 => 'application/json',
+                'Content-Type'           => 'application/json',
                 'X-Shopify-Access-Token' => '079a9710da9264428749be8a148*****',
             ],
             $request->getHeaders(),
@@ -201,8 +201,8 @@ final class ShopifyApplicationTest extends KernelTestCaseAbstract
             [
                 ApplicationInterface::AUTHORIZATION_FORM =>
                     [
-                        BasicApplicationInterface::USER     => self::ESHOP_NAME,
                         BasicApplicationInterface::PASSWORD => self::PASSWORD,
+                        BasicApplicationInterface::USER     => self::ESHOP_NAME,
                     ],
             ],
         );

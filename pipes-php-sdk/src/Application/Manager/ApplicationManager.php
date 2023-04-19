@@ -132,10 +132,10 @@ final class ApplicationManager
         $res                = $application->saveApplicationForms($applicationInstall, $data)->toArray();
         $this->applicationInstallRepository->update($applicationInstall);
 
-        return [
-            ...$res,
-            self::APPLICATION_SETTINGS => $application->getApplicationForms($applicationInstall),
-        ];
+        return array_merge(
+            $res,
+            [self::APPLICATION_SETTINGS => $application->getApplicationForms($applicationInstall)],
+        );
     }
 
     /**

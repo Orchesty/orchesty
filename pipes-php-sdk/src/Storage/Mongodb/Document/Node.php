@@ -33,9 +33,9 @@ final class Node extends DocumentAbstract
     /**
      * @param SystemConfigDto|null $dto
      *
-     * @return $this
+     * @return self
      */
-    public function setSystemConfigs(?SystemConfigDto $dto): Node
+    public function setSystemConfigs(?SystemConfigDto $dto): self
     {
         $this->systemConfigs = $dto?->toString();
 
@@ -60,17 +60,17 @@ final class Node extends DocumentAbstract
     public function toArray(): array
     {
         return [
-            '_id'         => $this->getId(),
             'systemConfigs'        => $this->getSystemConfigs(),
+            '_id'         => $this->getId(),
         ];
     }
 
     /**
      * @param mixed[] $data
      *
-     * @return $this
+     * @return self
      */
-    protected function fromArray(array $data): Node
+    protected function fromArray(array $data): self
     {
         if (array_key_exists('id', $data))
             $this->setId($data['id']);

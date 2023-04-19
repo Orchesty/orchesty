@@ -38,10 +38,10 @@ final class MailchimpTagContactConnectorTest extends KernelTestCaseAbstract
 
         $applicationInstall->setSettings(
             [
-                MailchimpApplication::AUDIENCE_ID  => 'c9e7f***5b',
-                MailchimpApplication::API_KEYPOINT => $app->getApiEndpoint($applicationInstall),
-                MailchimpApplication::SEGMENT_ID   => '181***',
                 'form'                             => ['audience_id' => '123'],
+                MailchimpApplication::API_KEYPOINT => $app->getApiEndpoint($applicationInstall),
+                MailchimpApplication::AUDIENCE_ID  => 'c9e7f***5b',
+                MailchimpApplication::SEGMENT_ID   => '181***',
             ],
         );
 

@@ -85,9 +85,9 @@ final class ShipstationApplication extends BasicApplicationAbstract implements W
         $request = new RequestDto($this->getUri($url), $method, $dto);
         $request->setHeaders(
             [
-                'Content-Type'  => 'application/json',
                 'Accept'        => 'application/json',
                 'Authorization' => sprintf('Basic %s', $this->getToken($applicationInstall)),
+                'Content-Type'  => 'application/json',
             ],
         );
         if (isset($data)) {
@@ -144,14 +144,14 @@ final class ShipstationApplication extends BasicApplicationAbstract implements W
             CurlManager::METHOD_POST,
             sprintf(
                 '%s/webhooks/subscribe',
-                ShipstationApplication::SHIPSTATION_URL,
+                self::SHIPSTATION_URL,
             ),
             Json::encode(
                 [
-                    'target_url' => $url,
                     'event'      => self::ORDER_NOTIFY,
-                    'store_id'   => NULL,
                     'name'       => $subscription->getParameters()['name'],
+                    'store_id'   => NULL,
+                    'target_url' => $url,
                 ],
             ),
         );
@@ -175,7 +175,7 @@ final class ShipstationApplication extends BasicApplicationAbstract implements W
             CurlManager::METHOD_DELETE,
             sprintf(
                 '%s/webhooks/%s',
-                ShipstationApplication::SHIPSTATION_URL,
+                self::SHIPSTATION_URL,
                 $webhook->getWebhookId(),
             ),
         );

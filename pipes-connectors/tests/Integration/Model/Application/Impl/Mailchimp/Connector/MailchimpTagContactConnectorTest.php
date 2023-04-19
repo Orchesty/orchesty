@@ -13,8 +13,8 @@ use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DataProvider;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
 use HbPFConnectorsTests\MockCurlMethod;
-use HbPFConnectorsTests\MockServer\Mock;
-use HbPFConnectorsTests\MockServer\MockServer;
+use PipesPhpSdkTests\MockServer\Mock;
+use PipesPhpSdkTests\MockServer\MockServer;
 
 /**
  * Class MailchimpTagContactConnectorTest
@@ -68,10 +68,10 @@ final class MailchimpTagContactConnectorTest extends KernelTestCaseAbstract
 
         $applicationInstall->addSettings(
             [
-                ApplicationInterface::AUTHORIZATION_FORM => [
-                    ...$applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM],
-                    MailchimpApplication::AUDIENCE_ID => '2a8******8',
-                ],
+                ApplicationInterface::AUTHORIZATION_FORM => array_merge(
+                    $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM],
+                    [MailchimpApplication::AUDIENCE_ID => '2a8******8'],
+                ),
                 MailchimpApplication::API_KEYPOINT       => $app->getApiEndpoint($applicationInstall),
                 MailchimpApplication::SEGMENT_ID         => 'segment_id',
             ],
@@ -107,17 +107,6 @@ final class MailchimpTagContactConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @return mixed[]
-     */
-    public function getDataProvider(): array
-    {
-        return [
-            [400, FALSE],
-            [200, TRUE],
-        ];
-    }
-
-    /**
      * @throws Exception
      */
     public function testGetName(): void
@@ -130,6 +119,17 @@ final class MailchimpTagContactConnectorTest extends KernelTestCaseAbstract
             'mailchimp_tag_contact',
             $mailchimpCreateContactConnector->getName(),
         );
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public static function getDataProvider(): array
+    {
+        return [
+            [400, FALSE],
+            [200, TRUE],
+        ];
     }
 
 }

@@ -222,19 +222,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @return mixed[]
-     */
-    public function topologyErrorProvider(): array
-    {
-        return [
-            [new TopologyException(code: TopologyException::TOPOLOGY_NODE_TYPE_NOT_FOUND)],
-            [new TopologyException(code: TopologyException::TOPOLOGY_NODE_NAME_NOT_FOUND)],
-            [new TopologyException(code: TopologyException::TOPOLOGY_NODE_TYPE_NOT_EXIST)],
-            [new LogicException()],
-        ];
-    }
-
-    /**
      * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::updateTopologyAction
      * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::updateTopology
      * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologyById
@@ -286,8 +273,8 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         );
         $response = $this->client->getResponse();
         $response = (object) [
-            'status'  => $response->getStatusCode(),
             'content' => $response->getContent(),
+            'status'  => $response->getStatusCode(),
         ];
 
         self::assertEquals(200, $response->status);
@@ -317,8 +304,8 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             [],
             [],
             [
-                'CONTENT_TYPE'       => 'application/xml',
                 'ACCEPT'             => 'application/xml',
+                'CONTENT_TYPE'       => 'application/xml',
                 self::$AUTHORIZATION => $this->jwt,
             ],
             $this->getBpmn(),
@@ -362,8 +349,8 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             [],
             [],
             [
-                'CONTENT_TYPE'       => 'application/xml',
                 'ACCEPT'             => 'application/xml',
+                'CONTENT_TYPE'       => 'application/xml',
                 self::$AUTHORIZATION => $this->jwt,
             ],
             $this->getBpmn(),
@@ -401,8 +388,8 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             [],
             [],
             [
-                'CONTENT_TYPE'       => 'application/xml',
                 'ACCEPT'             => 'application/xml',
+                'CONTENT_TYPE'       => 'application/xml',
                 self::$AUTHORIZATION => $this->jwt,
             ],
             $this->getBpmn(),
@@ -428,8 +415,8 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             [],
             [],
             [
-                'CONTENT_TYPE'       => 'application/xml',
                 'ACCEPT'             => 'application/xml',
+                'CONTENT_TYPE'       => 'application/xml',
                 self::$AUTHORIZATION => $this->jwt,
             ],
             $this->getBpmn(),
@@ -463,8 +450,8 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             [],
             [],
             [
-                'CONTENT_TYPE'       => 'application/xml',
                 'ACCEPT'             => 'application/xml',
+                'CONTENT_TYPE'       => 'application/xml',
                 self::$AUTHORIZATION => $this->jwt,
             ],
             str_replace('name="Start Event"', '', $this->getBpmn()),
@@ -495,16 +482,16 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             [],
             [],
             [
-                'CONTENT_TYPE'       => 'application/xml',
                 'ACCEPT'             => 'application/xml',
+                'CONTENT_TYPE'       => 'application/xml',
                 self::$AUTHORIZATION => $this->jwt,
             ],
             str_replace('pipes:pipesType="custom"', 'pipes:pipesType="Unknown"', $this->getBpmn()),
         );
         $response = $this->client->getResponse();
         $response = (object) [
-            'status'  => $response->getStatusCode(),
             'content' => Json::decode((string) $response->getContent()),
+            'status'  => $response->getStatusCode(),
         ];
 
         self::assertEquals(400, $response->status);
@@ -531,8 +518,8 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             [],
             [],
             [
-                'CONTENT_TYPE'       => 'application/xml',
                 'ACCEPT'             => 'application/xml',
+                'CONTENT_TYPE'       => 'application/xml',
                 self::$AUTHORIZATION => $this->jwt,
             ],
             str_replace('pipes:cronTime="*/2 * * * *"', 'pipes:cronTime="Unknown"', $this->getBpmn()),
@@ -587,8 +574,8 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         );
         $response = $this->client->getResponse();
         $response = (object) [
-            'status'  => $response->getStatusCode(),
             'content' => $response->getContent(),
+            'status'  => $response->getStatusCode(),
         ];
         self::assertEquals(200, $response->status);
         self::assertEquals($this->getBpmn(), $response->content);
@@ -654,11 +641,11 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
                 'items' => [
                     [
                         'name'            => 'Topology-Node',
-                        'time'            => '*/1 * * * *',
-                        'topology_status' => TRUE,
-                        'topology_id'     => 'Topology ID',
-                        'topology'        => 'Topology',
                         'node'            => 'Node',
+                        'time'            => '*/1 * * * *',
+                        'topology'        => 'Topology',
+                        'topology_id'     => 'Topology ID',
+                        'topology_status' => TRUE,
                     ],
                 ],
             ],
@@ -720,11 +707,11 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         $this->mockHandler(
             'cloneTopology',
             [
-                '_id'         => '999',
-                'type'        => 'type',
-                'name'        => 'name',
                 'description' => 'desc',
+                'name'        => 'name',
                 'status'      => 'status',
+                'type'        => 'type',
+                '_id'         => '999',
             ],
         );
 
@@ -856,6 +843,19 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         self::assertEquals($topology1->getVersion(), $response['body'][1]['version']);
         self::assertEquals($node1->getId(), $response['body'][1]['nodes'][0]['id']);
         self::assertEquals($node1->getName(), $response['body'][1]['nodes'][0]['name']);
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public static function topologyErrorProvider(): array
+    {
+        return [
+            [new TopologyException(code: TopologyException::TOPOLOGY_NODE_TYPE_NOT_FOUND)],
+            [new TopologyException(code: TopologyException::TOPOLOGY_NODE_NAME_NOT_FOUND)],
+            [new TopologyException(code: TopologyException::TOPOLOGY_NODE_TYPE_NOT_EXIST)],
+            [new LogicException()],
+        ];
     }
 
     /**

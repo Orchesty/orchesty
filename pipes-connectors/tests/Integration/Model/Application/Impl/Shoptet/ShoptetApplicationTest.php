@@ -139,8 +139,8 @@ final class ShoptetApplicationTest extends KernelTestCaseAbstract
                 ->setSettings(
                     [
                         ApplicationInterface::AUTHORIZATION_FORM => [
-                            ApplicationInterface::TOKEN => [OAuth2Provider::ACCESS_TOKEN => '___access_token___'],
                             'api_token_url'             => 'https://12345.myshoptet.com/action/ApiOAuthServer/token',
+                            ApplicationInterface::TOKEN => [OAuth2Provider::ACCESS_TOKEN => '___access_token___'],
                         ],
                     ],
                 ),
@@ -356,8 +356,8 @@ final class ShoptetApplicationTest extends KernelTestCaseAbstract
             ->addSettings(
                 [
                     ApplicationInterface::AUTHORIZATION_FORM => [
-                        ApplicationInterface::TOKEN => [OAuth2Provider::ACCESS_TOKEN => '___access_token___'],
                         'api_token_url'             => 'https://12345.myshoptet.com/action/ApiOAuthServer/token',
+                        ApplicationInterface::TOKEN => [OAuth2Provider::ACCESS_TOKEN => '___access_token___'],
                     ],
                 ],
             );
@@ -365,9 +365,9 @@ final class ShoptetApplicationTest extends KernelTestCaseAbstract
 
         self::assertEquals(
             [
+                'Accept'        => 'application/json',
                 'Authorization' => 'Bearer ___access_token___',
                 'Content-Type'  => 'application/json',
-                'Accept'        => 'application/json',
             ],
             $dto->getHeaders(),
         );
@@ -436,8 +436,8 @@ final class ShoptetApplicationTest extends KernelTestCaseAbstract
             'api token',
             $jsonContent,
             [
-                'user'        => 'user',
                 'application' => ShoptetApplication::SHOPTET_KEY,
+                'user'        => 'user',
             ],
         );
 

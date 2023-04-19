@@ -130,13 +130,13 @@ final class RedshiftApplication extends AwsApplicationAbstract
 
         return $applicationInstall->setSettings(
             [
-                RedshiftApplication::CLUSTER_IDENTIFIER => $cluster[RedshiftApplication::CLUSTER_IDENTIFIER],
-                RedshiftApplication::MASTER_USER        => $cluster[RedshiftApplication::MASTER_USER],
-                RedshiftApplication::DB_PASSWORD        => $applicationInstall
+                self::CLUSTER_IDENTIFIER => $cluster[self::CLUSTER_IDENTIFIER],
+                self::DBNAME             => $cluster[self::DBNAME],
+                self::DB_PASSWORD        => $applicationInstall
                                                                ->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][self::DB_PASSWORD],
-                RedshiftApplication::DBNAME             => $cluster[RedshiftApplication::DBNAME],
-                RedshiftApplication::HOST               => $cluster[RedshiftApplication::ENDPOINT][RedshiftApplication::ADDRESS],
-                RedshiftApplication::PORT               => $cluster[RedshiftApplication::ENDPOINT][RedshiftApplication::PORT],
+                self::HOST               => $cluster[self::ENDPOINT][self::ADDRESS],
+                self::MASTER_USER        => $cluster[self::MASTER_USER],
+                self::PORT               => $cluster[self::ENDPOINT][self::PORT],
             ],
         );
     }
@@ -150,11 +150,11 @@ final class RedshiftApplication extends AwsApplicationAbstract
     public function getConnection(ApplicationInstall $applicationInstall): Connection
     {
         $settings = $applicationInstall->getSettings();
-        $host     = $settings[RedshiftApplication::HOST];
-        $port     = $settings[RedshiftApplication::PORT];
-        $dbname   = $settings[RedshiftApplication::DBNAME];
-        $user     = $settings[RedshiftApplication::MASTER_USER];
-        $password = $settings[RedshiftApplication::DB_PASSWORD];
+        $host     = $settings[self::HOST];
+        $port     = $settings[self::PORT];
+        $dbname   = $settings[self::DBNAME];
+        $user     = $settings[self::MASTER_USER];
+        $password = $settings[self::DB_PASSWORD];
 
         $connection = pg_connect(
             sprintf('host=%s port=%s dbname=%s user=%s password=%s', $host, $port, $dbname, $user, $password),

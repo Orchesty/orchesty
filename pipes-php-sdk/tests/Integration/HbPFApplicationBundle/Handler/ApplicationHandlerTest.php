@@ -50,35 +50,35 @@ final class ApplicationHandlerTest extends KernelTestCaseAbstract
         $ex = [
             'items' => [
                 [
-                    'key'                => 'null-key',
-                    'name'               => 'Null',
-                    'authorization_type' => 'basic',
                     'application_type'   => 'cron',
+                    'authorization_type' => 'basic',
                     'description'        => 'Application for test purposes',
                     'info'               => '',
-                    'logo'               => NULL,
                     'isInstallable'      => TRUE,
+                    'key'                => 'null-key',
+                    'logo'               => NULL,
+                    'name'               => 'Null',
 
                 ],
                 [
-                    'key'                => 'null2',
-                    'name'               => 'Null2',
-                    'authorization_type' => 'oauth2',
                     'application_type'   => 'cron',
+                    'authorization_type' => 'oauth2',
                     'description'        => 'Application for test purposes',
                     'info'               => '',
-                    'logo'               => NULL,
                     'isInstallable'      => TRUE,
+                    'key'                => 'null2',
+                    'logo'               => NULL,
+                    'name'               => 'Null2',
                 ],
                 [
-                    'key'                => 'null1',
-                    'name'               => 'null1',
-                    'authorization_type' => 'oauth',
                     'application_type'   => 'webhook',
+                    'authorization_type' => 'oauth',
                     'description'        => 'This is null ouath1 app.',
                     'info'               => '',
-                    'logo'               => NULL,
                     'isInstallable'      => TRUE,
+                    'key'                => 'null1',
+                    'logo'               => NULL,
+                    'name'               => 'null1',
                 ],
             ],
         ];
@@ -96,15 +96,15 @@ final class ApplicationHandlerTest extends KernelTestCaseAbstract
         $this->privateSetUp();
         self::assertEquals(
             [
-                'key'                => 'null-key',
-                'name'               => 'Null',
-                'authorization_type' => 'basic',
                 'application_type'   => 'cron',
+                'authorization_type' => 'basic',
                 'description'        => 'Application for test purposes',
-                'syncMethods'        => ['testSynchronous', 'returnBody'],
                 'info'               => '',
-                'logo'               => NULL,
                 'isInstallable'      => TRUE,
+                'key'                => 'null-key',
+                'logo'               => NULL,
+                'name'               => 'Null',
+                'syncMethods'        => ['testSynchronous', 'returnBody'],
             ],
             $this->handler->getApplicationByKey('null'),
         );
@@ -277,8 +277,8 @@ final class ApplicationHandlerTest extends KernelTestCaseAbstract
                 new Response(200, [], '[]'),
                 [
                     'created'           => '2023-02-13 13:21:23',
-                    'updated'           => '2023-02-13 13:21:23',
                     'encryptedSettings' => '001_nobgP7JUTYhsadJ56IPtuX03bUDbPwmAtl7MkPifJUs=:wL6pmknQU9qKjTLg2Aao49RswmMyt28/8r/KeWGAYWU=:RHlWFtL4HtAmh0420xuugb3Z/AT+/e5Y:8uF+I3CNSdsDreN0vHE1pkIA/2h/ddLXhg4guLU6h1U+oc6RvPES88E8a9QKRVPrIECgRNOxtgwE3GvpjU6vUZOm7v03iBHatqYWmSFu1sU=',
+                    'updated'           => '2023-02-13 13:21:23',
                 ],
             ),
         );
@@ -319,14 +319,14 @@ final class ApplicationHandlerTest extends KernelTestCaseAbstract
             new Mock(
                 '/document/ApplicationInstall',
                 Json::decode(
-                    '[{"id":null,"user":null,"name":"null","nonEncryptedSettings":[],"encryptedSettings":"001_JvxO9FaH6uNM6+wjwsaQEkz+fF6VyF+xS3+lBMzMWvE=:GiwVCx/v8p+P4nCzJeVBQLVgQZD/0BHHUN/LIHNK8WA=:93Vx1D26qlpncGVdKTpQscpUKdQ+P5vj:eM1CUKfoEPs6pP5JMt/USNGXR3yPcJlxYXpbkRadsC/d4lpvhRUDs8qQDzNgDgN3oSoRNMfId2JtdqYki0p+CbV8LVnixZEhIlAzWj2AakU0CrvEofrFjQ==","settings":[],"created":"2023-02-13 13:24:27","updated":"2023-02-13 13:24:27","expires":null,"enabled":false}]',
+                    '[{"id":null,"user":null,"name":"null","nonEncryptedSettings":[],"encryptedSettings":"001_JvxO9FaH6uNM6+wjwsaQEkz+fF6VyF+xS3+lBMzMWvE=:GiwVCx\/v8p+P4nCzJeVBQLVgQZD\/0BHHUN\/LIHNK8WA=:93Vx1D26qlpncGVdKTpQscpUKdQ+P5vj:eM1CUKfoEPs6pP5JMt\/USNGXR3yPcJlxYXpbkRadsC\/d4lpvhRUDs8qQDzNgDgN3oSoRNMfId2JtdqYki0p+CbV8LVnixZEhIlAzWj2AakU0CrvEofrFjQ==","settings":[],"created":"2023-02-13 13:24:27","updated":"2023-02-13 13:24:27","expires":null,"enabled":false}]',
                 ),
                 CurlManager::METHOD_POST,
                 new Response(200, [], '[]'),
                 [
                     'created'           => '2023-02-13 13:24:27',
-                    'updated'           => '2023-02-13 13:24:27',
                     'encryptedSettings' => '001_JvxO9FaH6uNM6+wjwsaQEkz+fF6VyF+xS3+lBMzMWvE=:GiwVCx/v8p+P4nCzJeVBQLVgQZD/0BHHUN/LIHNK8WA=:93Vx1D26qlpncGVdKTpQscpUKdQ+P5vj:eM1CUKfoEPs6pP5JMt/USNGXR3yPcJlxYXpbkRadsC/d4lpvhRUDs8qQDzNgDgN3oSoRNMfId2JtdqYki0p+CbV8LVnixZEhIlAzWj2AakU0CrvEofrFjQ==',
+                    'updated'           => '2023-02-13 13:24:27',
                 ],
             ),
         );
@@ -347,8 +347,8 @@ final class ApplicationHandlerTest extends KernelTestCaseAbstract
             'null',
             'user',
             [
-                'formKey'  => ApplicationInterface::AUTHORIZATION_FORM,
                 'fieldKey' => BasicApplicationInterface::PASSWORD,
+                'formKey'  => ApplicationInterface::AUTHORIZATION_FORM,
                 'password' => '_newPasswd_',
             ],
         );
@@ -372,8 +372,8 @@ final class ApplicationHandlerTest extends KernelTestCaseAbstract
             'null',
             'user',
             [
-                'formKey'  => ApplicationInterface::AUTHORIZATION_FORM,
                 'fieldKey' => BasicApplicationInterface::PASSWORD,
+                'formKey'  => ApplicationInterface::AUTHORIZATION_FORM,
                 'username' => 'newUsername',
             ],
         );

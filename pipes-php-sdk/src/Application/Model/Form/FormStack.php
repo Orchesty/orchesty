@@ -25,9 +25,9 @@ final class FormStack
     /**
      * @param Form $value
      *
-     * @return $this
+     * @return self
      */
-    public function addForm(Form $value): FormStack {
+    public function addForm(Form $value): self {
         $this->forms[] = $value;
 
         return $this;

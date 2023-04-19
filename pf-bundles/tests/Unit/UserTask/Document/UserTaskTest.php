@@ -59,19 +59,19 @@ final class UserTaskTest extends KernelTestCaseAbstract
         self::assertEquals('topo', $userTask->getTopologyName());
         self::assertEquals(
             [
-                UserTask::ID             => 'id',
-                UserTask::NODE_ID        => 'nid',
-                UserTask::TOPOLOGY_ID    => 'tid',
-                UserTask::TYPE           => 'userTask',
+                UserTask::AUDIT_LOGS     => [['a']],
                 UserTask::CORRELATION_ID => 'cid',
+                UserTask::CREATED        => '2020-01-01T10:10:10Z',
+                UserTask::ID             => 'id',
                 UserTask::MESSAGE        => [
                     UserTaskMessage::BODY    => '',
                     UserTaskMessage::HEADERS => [],
                 ],
-                UserTask::AUDIT_LOGS     => [['a']],
-                UserTask::TOPOLOGY_NAME  => 'topo',
+                UserTask::NODE_ID        => 'nid',
                 UserTask::NODE_NAME      => 'node',
-                UserTask::CREATED        => '2020-01-01T10:10:10Z',
+                UserTask::TOPOLOGY_ID    => 'tid',
+                UserTask::TOPOLOGY_NAME  => 'topo',
+                UserTask::TYPE           => 'userTask',
                 UserTask::UPDATED        => '2020-01-01T10:10:10Z',
                 UserTask::USER           => NULL,
             ],

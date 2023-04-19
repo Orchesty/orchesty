@@ -28,7 +28,7 @@ final class BatchControllerTest extends ControllerTestCaseAbstract
         $this->client->request('POST', '/batch/magento/action', [], [], [], '{}');
 
         $response = $this->client->getResponse();
-        self::assertEquals(500, $response->getStatusCode());
+        self::assertEquals(400, $response->getStatusCode());
     }
 
     /**
@@ -46,7 +46,7 @@ final class BatchControllerTest extends ControllerTestCaseAbstract
         $this->client->request('POST', '/batch/magento/action', [], [], [], '{}');
 
         $response = $this->client->getResponse();
-        self::assertEquals(500, $response->getStatusCode());
+        self::assertEquals(400, $response->getStatusCode());
     }
 
     /**

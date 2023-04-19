@@ -110,11 +110,11 @@ final class S3ApplicationTest extends KernelTestCaseAbstract
         $application = (new ApplicationInstall())->setSettings(
             [
                 ApplicationInterface::AUTHORIZATION_FORM => [
-                    S3Application::KEY      => 'Key',
-                    S3Application::SECRET   => 'Secret',
-                    S3Application::REGION   => 'eu-central-1',
                     S3Application::BUCKET   => 'Bucket',
                     S3Application::ENDPOINT => 'http://fakes3:4567',
+                    S3Application::KEY      => 'Key',
+                    S3Application::REGION   => 'eu-central-1',
+                    S3Application::SECRET   => 'Secret',
                 ],
             ],
         );

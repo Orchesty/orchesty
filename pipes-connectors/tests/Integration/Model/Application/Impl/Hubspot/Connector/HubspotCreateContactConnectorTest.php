@@ -16,8 +16,8 @@ use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DataProvider;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
-use HbPFConnectorsTests\MockServer\Mock;
-use HbPFConnectorsTests\MockServer\MockServer;
+use PipesPhpSdkTests\MockServer\Mock;
+use PipesPhpSdkTests\MockServer\MockServer;
 use Psr\Log\NullLogger;
 
 /**
@@ -191,10 +191,10 @@ final class HubspotCreateContactConnectorTest extends KernelTestCaseAbstract
         $appInstall = DataProvider::getOauth2AppInstall($this->app->getName());
         $appInstall->setSettings(
             [
-                ApplicationInterface::AUTHORIZATION_FORM => [
-                    ...$appInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM],
-                    HubSpotApplication::APP_ID => 'app_id',
-                ],
+                ApplicationInterface::AUTHORIZATION_FORM => array_merge(
+                    $appInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM],
+                    [HubSpotApplication::APP_ID => 'app_id'],
+                ),
             ],
         );
 

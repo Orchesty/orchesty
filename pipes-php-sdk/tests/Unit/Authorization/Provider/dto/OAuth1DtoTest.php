@@ -31,12 +31,12 @@ final class OAuth1DtoTest extends KernelTestCaseAbstract
             ->setSettings(
                 [
                     ApplicationInterface::AUTHORIZATION_FORM => [
-                        OAuth1ApplicationInterface::CONSUMER_KEY    => '__consumerKey__',
-                        OAuth1ApplicationInterface::CONSUMER_SECRET => '__consumerSecret__',
                         ApplicationInterface::TOKEN => [
                             'access_token' => '__token__',
                             'expires_in'   => 'inFuture',
                         ],
+                        OAuth1ApplicationInterface::CONSUMER_KEY    => '__consumerKey__',
+                        OAuth1ApplicationInterface::CONSUMER_SECRET => '__consumerSecret__',
                     ],
                 ],
             )

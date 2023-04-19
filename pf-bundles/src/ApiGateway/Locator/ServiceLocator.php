@@ -77,12 +77,12 @@ final class ServiceLocator implements LoggerAwareInterface
         $res['filter'] = [];
         $res['sorter'] = [];
         $res['paging'] = [
-            'page'         => 1,
             'itemsPerPage' => 50,
-            'total'        => count($res['items']),
-            'nextPage'     => 1,
             'lastPage'     => 1,
+            'nextPage'     => 1,
+            'page'         => 1,
             'previousPage' => 1,
+            'total'        => count($res['items']),
         ];
 
         return $res;
@@ -115,12 +115,12 @@ final class ServiceLocator implements LoggerAwareInterface
         $res['sorter'] = [];
         $res['filter'] = [];
         $res['paging'] = [
-            'page'         => 1,
             'itemsPerPage' => 50,
-            'total'        => count($res['items']),
-            'nextPage'     => 1,
             'lastPage'     => 1,
+            'nextPage'     => 1,
+            'page'         => 1,
             'previousPage' => 1,
+            'total'        => count($res['items']),
         ];
 
         return $res;

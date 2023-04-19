@@ -40,7 +40,7 @@ import JiraCreateIssueConnector from '@orchesty/nodejs-connectors/dist/lib/Jira/
 import JiraApplication from '@orchesty/nodejs-connectors/dist/lib/Jira/JiraApplication';
 import Magento2Application from '@orchesty/nodejs-connectors/dist/lib/Magento2/Magento2Application';
 import MailchimpApplication from '@orchesty/nodejs-connectors/dist/lib/Mailchimp/MailchimpApplication';
-import MoneyS5Application from '@orchesty/nodejs-connectors/dist/lib/MoneyS5/MoneyS5Application';
+import MoneyS5Application from '@orchesty/nodejs-connectors/dist/lib/MoneyS4-5/MoneyS5Application';
 import NutshellApplication from '@orchesty/nodejs-connectors/dist/lib/Nutshell/NutshellApplication';
 import PipedriveApplication from '@orchesty/nodejs-connectors/dist/lib/Pipedrive/PipedriveApplication';
 import QuickBooksApplication from '@orchesty/nodejs-connectors/dist/lib/QuickBooks/QuickBooksApplication';

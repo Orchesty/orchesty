@@ -102,8 +102,8 @@ final class OAuth2ApplicationAbstractTest extends KernelTestCaseAbstract
             ->method('refreshAccessToken')
             ->willReturn(
                 [
-                    OAuth2Provider::EXPIRES      => DateTimeUtils::getUtcDateTime('tomorrow')->getTimestamp(),
                     OAuth2Provider::ACCESS_TOKEN => '__token__',
+                    OAuth2Provider::EXPIRES      => DateTimeUtils::getUtcDateTime('tomorrow')->getTimestamp(),
                 ],
             );
 
@@ -147,8 +147,8 @@ final class OAuth2ApplicationAbstractTest extends KernelTestCaseAbstract
             ->method('getAccessToken')
             ->willReturn(
                 [
-                    OAuth2Provider::EXPIRES      => DateTimeUtils::getUtcDateTime('tomorrow')->getTimestamp(),
                     OAuth2Provider::ACCESS_TOKEN => '__token__',
+                    OAuth2Provider::EXPIRES      => DateTimeUtils::getUtcDateTime('tomorrow')->getTimestamp(),
                 ],
             );
         $application = new NullOAuth2Application($provider);

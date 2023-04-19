@@ -75,17 +75,6 @@ final class OAuth1ProviderTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @return mixed[]
-     */
-    public function authorizeDataProvider(): array
-    {
-        return [
-            [[], TRUE],
-            [['oauth_token' => 'token', 'oauth_token_secret' => 'secret'], FALSE],
-        ];
-    }
-
-    /**
      * @covers       \Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider::getAccessToken
      * @covers       \Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider::tokenAndSecretChecker
      *
@@ -149,18 +138,6 @@ final class OAuth1ProviderTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @return mixed[]
-     */
-    public function getAccessTokenDataProvider(): array
-    {
-        return [
-            [[], [], TRUE],
-            [['oauth_token' => 'token', 'oauth_token_secret' => 'secret'], [], TRUE],
-            [['oauth_token' => 'token', 'oauth_token_secret' => 'secret'], ['oauth_verifier' => 'ver'], FALSE],
-        ];
-    }
-
-    /**
      * @covers       \Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider::getAuthorizeHeader
      * @covers       \Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider::tokenAndSecretChecker
      *
@@ -193,17 +170,6 @@ final class OAuth1ProviderTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @return mixed[]
-     */
-    public function getHeaderDataProvider(): array
-    {
-        return [
-            [[], TRUE],
-            [['oauth_token' => 'token', 'oauth_token_secret' => 'secret'], FALSE],
-        ];
-    }
-
-    /**
      * @covers \Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider::createClient
      *
      * @throws Exception
@@ -228,6 +194,39 @@ final class OAuth1ProviderTest extends KernelTestCaseAbstract
         self::assertFake();
     }
 
+    /**
+     * @return mixed[]
+     */
+    public static function authorizeDataProvider(): array
+    {
+        return [
+            [[], TRUE],
+            [['oauth_token' => 'token', 'oauth_token_secret' => 'secret'], FALSE],
+        ];
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public static function getAccessTokenDataProvider(): array
+    {
+        return [
+            [[], [], TRUE],
+            [['oauth_token' => 'token', 'oauth_token_secret' => 'secret'], [], TRUE],
+            [['oauth_token' => 'token', 'oauth_token_secret' => 'secret'], ['oauth_verifier' => 'ver'], FALSE],
+        ];
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public static function getHeaderDataProvider(): array
+    {
+        return [
+            [[], TRUE],
+            [['oauth_token' => 'token', 'oauth_token_secret' => 'secret'], FALSE],
+        ];
+    }
 
     /**
      * ---------------------------------------- HELPERS ------------------------------------

@@ -2,7 +2,7 @@
     "name": "orchesty/applinth",
     "description": "Orchesty - applinth - Backend",
     "license": "Elastic-2.0",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "require": {
         "doctrine/annotations": "^1.14",
         "orchesty/backend": "^3.0",
@@ -14,7 +14,7 @@
         "web-token/jwt-signature-algorithm-eddsa": "^3.1"
     },
     "require-dev": {
-        "hanaboso/php-check-utils": "^1.4"
+        "hanaboso/php-check-utils": "^1.5"
     },
     "repositories": [
         {
