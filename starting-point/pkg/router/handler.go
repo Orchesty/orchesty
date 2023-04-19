@@ -110,6 +110,8 @@ func handleByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	r.Header.Set(utils.UserID, getUser(r))
+
 	processMessage(w, r, topology, init)
 }
 
@@ -131,6 +133,8 @@ func handleByName(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	r.Header.Set(utils.UserID, getUser(r))
+
 	processMessage(w, r, topology, init)
 }
 
@@ -151,14 +155,13 @@ func handleByApplication(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	r.Header.Set(utils.UserID, webhook.User)
 	r.Header.Set(utils.ApplicationID, webhook.Application)
 
 	processMessage(w, r, topology, init)
 }
 
 func processMessage(w http.ResponseWriter, r *http.Request, topology *storage.Topology, init map[string]float64) {
-	r.Header.Set(utils.UserID, getUser(r))
-
 	corrId, _ := service.RabbitMq.SendMessage(r, *topology, init)
 
 	writeResponse(w, map[string]interface{}{"state": "ok", "started": 1, "correlation_id": corrId})
