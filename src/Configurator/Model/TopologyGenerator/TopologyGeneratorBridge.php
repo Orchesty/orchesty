@@ -30,11 +30,13 @@ final class TopologyGeneratorBridge
 
     public const TOPOLOGY_API   = 'topology-api';
     public const STARTING_POINT = 'starting-point';
+    public const LIMITER        = 'limiter';
 
     protected const BASE_TOPOLOGY_URL      = 'http://%s/v1/api/topologies/%s';
     protected const GET_TOPOLOGY_HOST_URL  = 'http://%s/v1/api/topologies/%s/host';
     protected const GENERATOR_TOPOLOGY_URL = 'http://%s/v1/api/topologies/%s';
     protected const STARTING_POINT_URL     = '%s/topologies/%s/invalidate-cache';
+    protected const LIMITER_URL            = '%s/terminate/topology-api/%s';
 
     private const HEADERS = ['Content-Type' => 'application/json'];
 
@@ -141,12 +143,31 @@ final class TopologyGeneratorBridge
      *
      * @return mixed[]
      * @throws CurlException
-     * @throws JsonException
      */
     public function invalidateTopologyCache(string $topologyName): array
     {
         $uri         = sprintf(self::STARTING_POINT_URL, $this->configs[self::STARTING_POINT], $topologyName);
         $requestDto  = new RequestDto(new Uri($uri), CurlManager::METHOD_POST, new ProcessDto());
+        $responseDto = $this->curlManager->send($requestDto);
+
+        if ($responseDto->getStatusCode() === 200) {
+            return Json::decode($responseDto->getBody());
+        } else {
+            throw new CurlException(sprintf('Request error: %s', $responseDto->getReasonPhrase()));
+        }
+    }
+
+    /**
+     * @param string  $topologyId
+     * @param mixed[] $headers
+     *
+     * @return mixed[]
+     * @throws CurlException
+     */
+    public function removeAllLimiterAndRepeaterMessages(string $topologyId, array $headers): array
+    {
+        $uri         = sprintf(self::LIMITER_URL, $this->configs[self::LIMITER], $topologyId);
+        $requestDto  = new RequestDto(new Uri($uri), CurlManager::METHOD_DELETE, new ProcessDto(), '', $headers);
         $responseDto = $this->curlManager->send($requestDto);
 
         if ($responseDto->getStatusCode() === 200) {

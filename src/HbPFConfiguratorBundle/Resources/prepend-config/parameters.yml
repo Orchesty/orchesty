@@ -14,6 +14,9 @@ parameters:
     worker_default_port: "%env(int:WORKER_DEFAULT_PORT)%"
     env(WORKER_DEFAULT_PORT): 8000
 
+    env(LIMITER_URL): "limiter"
+    limiter: "%env(string:LIMITER_URL)%"
+
     topology_api: "%env(string:TOPOLOGY_API_DSN)%"
     starting_point: "%startingPointHost%"
     monolith_api_host: "%backendHost%"
@@ -40,3 +43,4 @@ parameters:
     topology_generator_configs:
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge::TOPOLOGY_API: "%topology_api%"
         !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge::STARTING_POINT: "%starting_point%"
+        !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge::LIMITER: "%limiter%"

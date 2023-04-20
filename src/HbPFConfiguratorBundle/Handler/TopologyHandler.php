@@ -25,14 +25,12 @@ use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\PipesFramework\Database\Repository\TopologyRepository;
 use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController;
 use Hanaboso\PipesFramework\HbPFUserTaskBundle\Handler\UserTaskHandler;
-use Hanaboso\PipesFramework\UserTask\Exception\UserTaskException;
 use Hanaboso\Utils\Exception\EnumException;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\String\UriParams;
 use Hanaboso\Utils\System\ControllerUtils;
 use Hanaboso\Utils\Validations\Validations;
-use JsonException;
 use Throwable;
 
 /**
@@ -157,7 +155,6 @@ final class TopologyHandler
      * @return mixed[]
      * @throws CurlException
      * @throws CronException
-     * @throws JsonException
      */
     public function getCronTopologies(): array
     {
@@ -215,7 +212,6 @@ final class TopologyHandler
      * @throws TopologyException
      * @throws MongoDBException
      * @throws CurlException
-     * @throws JsonException
      */
     public function updateTopology(string $id, array $data): array
     {
@@ -249,7 +245,6 @@ final class TopologyHandler
      * @throws NodeException
      * @throws TopologyException
      * @throws MongoDBException
-     * @throws JsonException
      */
     public function saveTopologySchema(string $id, string $content, array $data): array
     {
@@ -328,7 +323,6 @@ final class TopologyHandler
      * @throws NodeException
      * @throws TopologyException
      * @throws MongoDBException
-     * @throws JsonException
      */
     public function cloneTopology(string $id): array
     {
@@ -345,10 +339,8 @@ final class TopologyHandler
      * @return ResponseDto
      * @throws CronException
      * @throws CurlException
-     * @throws JsonException
      * @throws MongoDBException
      * @throws TopologyException
-     * @throws UserTaskException
      */
     public function deleteTopology(string $id, ?bool $removeWithTasks = FALSE): ResponseDto
     {
@@ -360,11 +352,12 @@ final class TopologyHandler
             $res = $this->generatorBridge->deleteTopology($id);
         }
 
-        $this->topologyManager->deleteTopology($topology);
         $this->generatorBridge->invalidateTopologyCache($topology->getName());
         $this->topologyManager->deleteTopology($topology);
         if ($removeWithTasks) {
             $this->userTaskHandler->removeAllUserTasks($topology->getId());
+            $headers = $this->topologyManager->getHeadersForTopologyRunRequest();
+            $this->generatorBridge->removeAllLimiterAndRepeaterMessages($topology->getId(), $headers);
         }
 
         return $res;
