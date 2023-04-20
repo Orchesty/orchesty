@@ -81,7 +81,9 @@ spec:
                   key: metrics_dsn
                   name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
             - name: TOPOLOGY_API_DSN
-              value: topology-api:8080
+              value: "{{ include "pipes.fullname" (dict "suffix" "topology-api" "root" .) }}:8080"
+            - name: LIMITER_URL
+              value: "{{ include "pipes.fullname" (dict "suffix" "limiter" "root" .) }}:80"
             - name: FRONTEND_URL
               value: "{{ .Values.global.frontend_url }}/"
 

@@ -27,6 +27,7 @@ type (
 	app struct {
 		Debug            bool   `env:"APP_DEBUG" default:"false"`
 		TcpServerAddress string `env:"LIMITER_ADDR" default:"0.0.0.0:3333"`
+		SystemUser       string
 	}
 
 	logs struct {
@@ -53,6 +54,7 @@ func init() {
 	if err := configor.Load(&c); err != nil {
 		panic(err)
 	}
+	c.App.SystemUser = "orchesty"
 
 	zerolog.NewLogger(zerolog.NewUdpSender(Logs.Url))
 	Logger = zerolog.NewLogger(zerolog.Printer{})

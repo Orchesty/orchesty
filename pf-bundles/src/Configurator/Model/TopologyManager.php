@@ -443,6 +443,28 @@ final class TopologyManager
     }
 
     /**
+     * @return mixed[]
+     */
+    public function getHeadersForTopologyRunRequest(): array
+    {
+        $apiTokenRepository = $this->dm->getRepository(ApiToken::class);
+        $apiToken           = $apiTokenRepository->findOneBy(
+            [
+                'scopes' => ApiTokenScopesEnum::TOPOLOGY_RUN,
+                'user'   => ApplicationController::SYSTEM_USER,
+            ],
+        );
+
+        if ($apiToken) {
+            return [
+                'orchesty-api-key' => $apiToken->getKey(),
+            ];
+        }
+
+        return [];
+    }
+
+    /**
      * ----------------------------------------------- HELPERS -----------------------------------------------
      */
 
@@ -791,28 +813,6 @@ final class TopologyManager
             self::STARTED        => $started,
             self::STARTING_POINT => $startingPointId,
         ];
-    }
-
-    /**
-     * @return mixed[]
-     */
-    private function getHeadersForTopologyRunRequest(): array
-    {
-        $apiTokenRepository = $this->dm->getRepository(ApiToken::class);
-        $apiToken           = $apiTokenRepository->findOneBy(
-            [
-                'scopes' => ApiTokenScopesEnum::TOPOLOGY_RUN,
-                'user'   => ApplicationController::SYSTEM_USER,
-            ],
-        );
-
-        if ($apiToken) {
-            return [
-                'orchesty-api-key' => $apiToken->getKey(),
-            ];
-        }
-
-        return [];
     }
 
 }

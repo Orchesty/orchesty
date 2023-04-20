@@ -16,9 +16,3 @@ spec:
       protocol: TCP
       port: 80
       targetPort: http
-
-    # hardcoded in bridge for now
-    - name: http-legacy
-      protocol: TCP
-      port: 3333
-      targetPort: http
