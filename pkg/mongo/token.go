@@ -17,7 +17,7 @@ func (this MongoSvc) GetApiToken() string {
 	err := this.connection.Database.Collection(config.MongoDb.ApiTokenCollection).FindOne(
 		contextx.WithTimeoutSecondsCtx(30),
 		bson.D{
-			{"user", "orchesty"},
+			{"user", config.App.SystemUser},
 		},
 		&options.FindOneOptions{
 			Projection: bson.D{{
