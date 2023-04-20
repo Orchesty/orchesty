@@ -52,6 +52,7 @@ export default class LoggerRouter {
                 logger.debug(resp);
                 res.json(resp);
             } catch (e) {
+                res.statusCode = 400;
                 logger.error(e);
                 if (e instanceof Error) {
                     res.json({ message: { error: e.message } });

@@ -15,7 +15,7 @@ func (svc RabbitMqStats) GatherQueuesInfo() ([]Queue, error) {
 	var list []Queue
 
 	url := fmt.Sprintf(
-		"%s/api/queues/%s",
+		"http://%s:15672/api/queues/%s",
 		strings.TrimRight(config.RabbitMQ.Host, "/"),
 		strings.TrimLeft(config.RabbitMQ.VHost, "/"),
 	)

@@ -1,7 +1,7 @@
 DC=docker-compose
 DE=docker-compose exec -T app
 IMAGE=dkr.hanaboso.net/pipes/pipes/detector
-PUBLIC_IMAGE=hanaboso/detector
+PUBLIC_IMAGE=orchesty/detector
 
 .env:
 	sed -e 's/{DEV_UID}/$(shell id -u)/g' \

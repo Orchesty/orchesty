@@ -206,19 +206,22 @@ router.beforeEach(async (to, _from, next) => {
     next()
     return
   }
+
   const needsAuth = Boolean(to.meta?.auth)
   const hasTokenInQuery = Boolean(to.query?.u)
+
   if (needsAuth) {
     const hasAccessToken = await authService.isAuthenticatedOrRefresh(false)
     let authenticated = false
-    if (hasAccessToken) {
-      authenticated = true
-    } else if (hasTokenInQuery) {
+    if (hasTokenInQuery) {
       authenticated = await authService.initialAuthentication(to.query.u)
       if (authenticated) {
         next({ path: to.path })
       }
+    } else if (hasAccessToken) {
+      authenticated = true
     }
+
     if (!authenticated) {
       let hasValidAuthBacklink = false
       try {

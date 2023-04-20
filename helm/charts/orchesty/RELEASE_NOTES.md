@@ -1,5 +1,11 @@
 # Release Notes
 
+## 2.0.3
+
+### Changes
+
+- Worker-api: added metricsDb env
+
 ## 2.0.2
 
 ### Changes

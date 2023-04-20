@@ -51,6 +51,10 @@ export default class Mongo {
         return this.client.db().collection(collectionName);
     }
 
+    public getMetricsCollection(collectionName: string): Collection {
+        return this.client.db(mongoOptions.metricsDb).collection(collectionName);
+    }
+
     public async dropCollections(): Promise<void> {
         for (const collection of Object.values(DocumentEnum)) {
             try {
