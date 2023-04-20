@@ -1,5 +1,6 @@
 import { Application } from 'express';
 import Joi, { ValidationResult } from 'joi';
+import { logger } from '../logger/Logger';
 import MetricsManager, { IConnectorFields, IMetricsInput, IMonolithFields } from '../manager/MetricsManager';
 
 const monolithInputSchema = Joi.object<IMetricsInput<IMonolithFields>>({
@@ -20,16 +21,16 @@ const connectorsInputSchema = Joi.object<IMetricsInput<IConnectorFields>>({
     /* eslint-disable @typescript-eslint/naming-convention */
     fields: Joi.object({
         created: Joi.string().isoDate().required(),
-        user_id: Joi.string().required(),
-        application_id: Joi.string().required(),
-        send_request_total_duration: Joi.number().required(),
+        sent_request_total_duration: Joi.number().required(),
         response_code: Joi.number().required(),
     }).required(),
     /* eslint-enable @typescript-eslint/naming-convention */
     tags: Joi.object({
-        topology_id: Joi.string(),
-        node_id: Joi.string(),
+        user_id: Joi.string().required(),
+        node_id: Joi.string().required(),
+        application_id: Joi.string(),
         correlation_id: Joi.string(),
+        url: Joi.string(),
     }).required(),
 }).required();
 
@@ -53,10 +54,14 @@ export default class MetricsRouter {
                     result = connectorsInputSchema.validate(req.body);
                     break;
                 default:
-                    throw new Error('Unsupported metric measurement!');
+                    logger.error('Unsupported metric measurement!');
+                    res.statusCode = 404;
+                    res.json({ message: { error: 'Unsupported metric measurement!' } });
+                    return;
             }
 
             if (result.error) {
+                logger.error(result.error);
                 res.statusCode = 400;
                 res.json({ message: { error: result.error.message } });
                 return;
@@ -66,6 +71,8 @@ export default class MetricsRouter {
                 await this.metricsManager.saveMetrics(req.body, measurement);
                 res.json({ message: { status: 'OK', data: '' } });
             } catch (e) {
+                res.statusCode = 400;
+                logger.error(e);
                 if (e instanceof Error) {
                     res.json({ message: { error: e.message } });
                 }
