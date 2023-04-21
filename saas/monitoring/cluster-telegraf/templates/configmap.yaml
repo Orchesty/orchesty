@@ -187,9 +187,9 @@ data:
 
       [[inputs.rabbitmq]]
         interval = "1m"
-        url = "http://rabbitmq-c1n1.europe-west1-b.c.orchesty-cloud-prod.internal:15672"
-        username = "admin"
-        password = "ZJEnuTi6obB7UMSeslyQUAzUtnn5bG3B"
+        url = "${RABBITMQ_URL}"
+        username = "${RABBITMQ_USERNAME}"
+        password = "${RABBITMQ_PASSWORD}"
         metric_exclude = ["federation"]
 
 

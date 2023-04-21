@@ -33,6 +33,11 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: spec.nodeName
+            - name: INFLUXDB_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "cluster-telegraf.fullname" . }}
+                  key: INFLUXDB_URL
             - name: INFLUXDB_ORG
               valueFrom:
                 secretKeyRef:
