@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: oc-send-usage-stats
+spec:
+  # not supproted by our K8S/GKE version yet
+  #timeZone: Etc/UTC
+  schedule: "01 00 * * *"
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          serviceAccount: orchesty-cloud-companion
+          restartPolicy: Never
+          containers:
+          - name: send-usage-stats
+            image: bitnami/kubectl
+            imagePullPolicy: IfNotPresent
+            args: ["exec", "deployment/pipes-backend", "--", "bin/console", "usage_stats:send-events"]
