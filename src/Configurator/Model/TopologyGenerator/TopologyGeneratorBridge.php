@@ -14,11 +14,16 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
+use Hanaboso\PipesFramework\Configurator\Document\ApiToken;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyConfigException;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory;
+use Hanaboso\PipesFramework\Configurator\Repository\ApiTokenRepository;
 use Hanaboso\PipesFramework\Database\Document\Node;
+use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController;
 use Hanaboso\Utils\String\Json;
+use Hanaboso\Utils\Traits\LoggerTrait;
 use JsonException;
+use Psr\Log\NullLogger;
 
 /**
  * Class TopologyGeneratorBridge
@@ -27,6 +32,8 @@ use JsonException;
  */
 final class TopologyGeneratorBridge
 {
+
+    use LoggerTrait;
 
     public const TOPOLOGY_API   = 'topology-api';
     public const STARTING_POINT = 'starting-point';
@@ -46,6 +53,11 @@ final class TopologyGeneratorBridge
     private DocumentManager $dm;
 
     /**
+     * @var ObjectRepository<ApiToken>&ApiTokenRepository
+     */
+    private ApiTokenRepository $apiTokenRepository;
+
+    /**
      * TopologyGeneratorBridge constructor.
      *
      * @param DatabaseManagerLocator $dml
@@ -54,15 +66,17 @@ final class TopologyGeneratorBridge
      * @param mixed[]                $configs
      */
     public function __construct(
-        DatabaseManagerLocator $dml,
+        DatabaseManagerLocator         $dml,
         protected CurlManagerInterface $curlManager,
-        private TopologyConfigFactory $configFactory,
-        private array $configs,
+        private TopologyConfigFactory  $configFactory,
+        private array                  $configs,
     )
     {
+        $this->logger = new NullLogger();
         /** @var DocumentManager $dm */
-        $dm       = $dml->getDm();
-        $this->dm = $dm;
+        $dm                       = $dml->getDm();
+        $this->dm                 = $dm;
+        $this->apiTokenRepository = $dm->getRepository(ApiToken::class);
     }
 
     /**
@@ -108,12 +122,12 @@ final class TopologyGeneratorBridge
      * @return ResponseDto
      * @throws CurlException
      */
-    public function stopTopology(string $topologyId): ResponseDto
+    public function stopTopology(string $topologyId, $deleteQueues = FALSE): ResponseDto
     {
         try {
-            $this->callTopologyBridge($topologyId, CurlManager::METHOD_DELETE, 'clear');
+            $this->callTopologyBridge($topologyId, CurlManager::METHOD_DELETE, $deleteQueues ? 'api/destroy' : 'close');
         } catch (Exception $e) {
-            $e;
+            $this->logger->warning(sprintf('Calling bridge: %s', $e->getMessage()));
             // Ignore and continue to shut bridge down
         }
 
@@ -196,9 +210,21 @@ final class TopologyGeneratorBridge
         $responseDto = $this->curlManager->send($requestDto);
 
         if ($responseDto->getStatusCode() === 200) {
+            $headers = [];
+            if (str_starts_with($uriPath, 'api/')) {
+                $headers['orchesty-api-key'] = $this->apiTokenRepository
+                    ->findOneBy(['user' => ApplicationController::SYSTEM_USER])?->getKey() ?? '';
+            }
+
             $res        = Json::decode($responseDto->getBody());
             $host       = $res['host'] ?? '';
-            $requestDto = new RequestDto(new Uri(sprintf('%s/%s', $host, $uriPath)), $method, new ProcessDto());
+            $requestDto = new RequestDto(
+                new Uri(sprintf('%s/%s', $host, $uriPath)),
+                $method,
+                new ProcessDto(),
+                '',
+                $headers
+            );
 
             $responseDto = $this->curlManager->send($requestDto);
 

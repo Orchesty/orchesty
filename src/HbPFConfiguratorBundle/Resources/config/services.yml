@@ -23,6 +23,8 @@ services:
             - '@hbpf.transport.curl_manager'
             - '@hbpf.topology.configurator'
             - '%topology_generator_configs%'
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]
 
     hbpf.install.topology.manager:
         class: Hanaboso\PipesFramework\TopologyInstaller\InstallManager

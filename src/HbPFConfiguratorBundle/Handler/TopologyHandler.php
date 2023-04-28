@@ -70,13 +70,14 @@ final class TopologyHandler
      * @param TopologyTester          $topologyTester
      */
     public function __construct(
-        DatabaseManagerLocator $dml,
-        protected TopologyManager $topologyManager,
-        protected NodeManager $nodeManager,
+        DatabaseManagerLocator            $dml,
+        protected TopologyManager         $topologyManager,
+        protected NodeManager             $nodeManager,
         protected TopologyGeneratorBridge $generatorBridge,
-        protected UserTaskHandler $userTaskHandler,
-        protected TopologyTester $topologyTester,
-    ) {
+        protected UserTaskHandler         $userTaskHandler,
+        protected TopologyTester          $topologyTester,
+    )
+    {
         /** @var DocumentManager $dm */
         $dm                       = $dml->getDm();
         $this->dm                 = $dm;
@@ -115,7 +116,7 @@ final class TopologyHandler
     public function runTopologyByName(
         string $topologyName,
         string $nodeName,
-        array $data,
+        array  $data,
         string $user = ApplicationController::SYSTEM_USER,
     ): array
     {
@@ -348,7 +349,7 @@ final class TopologyHandler
         $res      = new ResponseDto(200, '', '{}', []);
 
         if ($topology->getVisibility() === TopologyStatusEnum::PUBLIC->value) {
-            $this->generatorBridge->stopTopology($id);
+            $this->generatorBridge->stopTopology($id, TRUE);
             $res = $this->generatorBridge->deleteTopology($id);
         }
 
