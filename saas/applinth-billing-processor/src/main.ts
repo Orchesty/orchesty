@@ -75,7 +75,8 @@ async function getEvents(instanceId: string, lastHighestDateTimestamp?: string):
     const coll = mongo.getUsageStatsCollection(CollectionEnum.EVENTS);
     // const filter = lastHighestDateTimestamp ? { created: { $gt: lastHighestDateTimestamp } } : {};
     const filter = {};
-    const res = coll.find({ ...filter, iid: instanceId }).sort({ created: 1 });
+    // const res = coll.find({ ...filter, iid: instanceId }).sort({ created: 1 });
+    const res = coll.find({ ...filter, iid: instanceId });
 
     const events = [];
 
