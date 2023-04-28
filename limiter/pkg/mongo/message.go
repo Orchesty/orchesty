@@ -1,7 +1,9 @@
 package mongo
 
 import (
+	"fmt"
 	"github.com/hanaboso/go-utils/pkg/contextx"
+	"github.com/hanaboso/go-utils/pkg/intx"
 	"github.com/hanaboso/go-utils/pkg/timex"
 	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/bson"
@@ -9,6 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"limiter/pkg/enum"
 	"limiter/pkg/model"
+	"sync"
 	"time"
 )
 
@@ -21,12 +24,18 @@ type Message struct {
 	Message    *model.MessageDto  `bson:"message"`
 	InProcess  bool               `bson:"inProcess"`
 	Prioritize bool               `bson:"prioritize"`
+	Retries    int                `bson:"retries"`
 }
 
 type LimitItem struct {
 	Id     string `bson:"_id"`
 	Amount int    `bson:"amount"`
 }
+
+var (
+	lock    = sync.Mutex{}
+	delayed = map[string]struct{}{}
+)
 
 func (this MongoSvc) GetAllLimitKeys() (map[string]int, error) {
 	ctx := contextx.WithTimeoutSecondsCtx(30)
@@ -86,24 +95,43 @@ func (this MongoSvc) UnmarkAllMessages() error {
 	return nil
 }
 
-func (this MongoSvc) UnmarkInProcess(id string) error {
-	objectId, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		return errors.WithMessage(err, "unmarking process")
+func (this MongoSvc) RetryByTopologyId(topologyId string, delaySeconds int) error {
+	existed := existKey(topologyId, intx.Max(1, delaySeconds-2))
+	if existed {
+		return nil
 	}
 
-	return this.UnmarkInProcessByObjectId(objectId)
-}
+	_, err := this.collection.UpdateMany(contextx.WithTimeoutSecondsCtx(30), bson.D{{
+		fmt.Sprintf("message.headers.%s", enum.Header_TopologyId), topologyId,
+	}}, bson.A{
+		bson.M{
+			"$set": bson.M{
+				"allowedAt": bson.M{
+					"$cond": bson.M{
+						"if": bson.M{"$gt": bson.A{"$allowedAt", "$$NOW"}},
+						"then": bson.D{{
+							"$dateAdd", bson.M{
+								"startDate": "$allowedAt",
+								"unit":      "second",
+								"amount":    delaySeconds,
+							},
+						}},
+						"else": bson.D{{
+							"$dateAdd", bson.M{
+								"startDate": "$$NOW",
+								"unit":      "second",
+								"amount":    delaySeconds,
+							},
+						}},
+					},
+				},
+				"retries":   bson.D{{"$add", bson.A{"$retries", 1}}},
+				"inProcess": false,
+			},
+		},
+	})
 
-func (this MongoSvc) UnmarkInProcessByObjectId(id primitive.ObjectID) error {
-	_, err := this.collection.UpdateOne(contextx.WithTimeoutSecondsCtx(30), bson.D{{
-		"_id", id,
-	}}, bson.D{{
-		"$set", bson.D{{
-			"inProcess", false,
-		}},
-	}})
-	return errors.WithMessage(err, "unmarking process by id")
+	return errors.WithMessage(err, "delayed retry by topologyId")
 }
 
 func (this MongoSvc) FetchMessages(key string, limit int) ([]Message, error) {
@@ -175,4 +203,24 @@ func FromDto(dto *model.MessageDto, headers map[string]interface{}, limitKey str
 		Published:  value.(int64),
 		Prioritize: repeatDelay > 0,
 	}
+}
+
+// zakomponovat do GoUtils
+func existKey(key string, timeout int) bool {
+	lock.Lock()
+	defer lock.Unlock()
+	if _, ok := delayed[key]; ok {
+		return true
+	}
+	delayed[key] = struct{}{}
+	go unlockKey(key, timeout)
+
+	return false
+}
+
+func unlockKey(key string, timeout int) {
+	<-time.After(time.Duration(timeout) * time.Second)
+	lock.Lock()
+	delete(delayed, key)
+	lock.Unlock()
 }

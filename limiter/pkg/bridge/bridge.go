@@ -27,7 +27,7 @@ var (
 	keyUntil int64
 )
 
-func (this BridgeSvc) Send(message RequestMessage) error {
+func (this BridgeSvc) Send(message RequestMessage) {
 	data, _ := json.Marshal(message)
 	request, _ := http.NewRequest("POST", message.BridgeUrl(), bytes.NewReader(data))
 
@@ -73,14 +73,12 @@ func (this BridgeSvc) Send(message RequestMessage) error {
 FINISH_PROCESS:
 	this.limits.FinishProcess(limitKeys)
 	if err != nil || !responseMessage.Ok {
-		if errMark := this.mongo.UnmarkInProcess(message.MessageId); errMark != nil {
-			log.Error().Err(errors.Wrap(errMark, "unmarking processed message")).Send()
+		if errMark := this.mongo.RetryByTopologyId(message.GetHeader(enum.Header_TopologyId), 60); errMark != nil {
+			log.Error().Err(errors.Wrap(errMark, "delay by topologyId")).Send()
 		}
 	} else {
 		this.cache.FinishProcess(limitKey)
 	}
-
-	return nil
 }
 
 func NewBridgeSvc(mongo mongo.MongoSvc, limits *limiter.LimitSvc, cache *limiter.Cache) BridgeSvc {

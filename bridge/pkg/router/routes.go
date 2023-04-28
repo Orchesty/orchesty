@@ -15,8 +15,8 @@ func routes() []Route {
 		"": {
 			{
 				Method:  DELETE,
-				Pattern: "/clear",
-				Handler: Clear,
+				Pattern: "/close",
+				Handler: Close,
 			},
 		},
 		"/api": {
@@ -24,6 +24,12 @@ func routes() []Route {
 				Method:    POST,
 				Pattern:   "/process",
 				Handler:   Process,
+				Protected: true,
+			},
+			{
+				Method:    DELETE,
+				Pattern:   "/destroy",
+				Handler:   Destroy,
 				Protected: true,
 			},
 		},
