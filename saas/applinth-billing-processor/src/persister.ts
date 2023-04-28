@@ -58,7 +58,8 @@ export async function persist(
     const dryRunInfo = mode === PersisterMode.DRY_RUN ? '(DRY RUN)' : '';
 
     const persisted = collection
-        .find({ instanceId, created: { $gt: lastHighestDateTimestamp } })
+        // .find({ instanceId, created: { $gt: lastHighestDateTimestamp } })
+        .find({ instanceId })
         .sort({ _id: 1 }); // todo: we need some monotonic ordering key for sorting purposes, this will kick our ass one day
 
     // iterate through newly generated and previously persisted documents side by side
