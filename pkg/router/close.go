@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func Clear(writer http.ResponseWriter, _ *http.Request, _ httprouter.Params, container Container) {
+func Close(writer http.ResponseWriter, _ *http.Request, _ httprouter.Params, container Container) {
 	<-container.CloseApp
 	response(writer, "{}")
 
