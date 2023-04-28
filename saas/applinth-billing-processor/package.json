@@ -8,7 +8,8 @@
     "private": true,
     "scripts": {
         "build": "tsc",
-        "lint": "eslint src test --ext .ts --fix",
+        "lint": "eslint src --ext .ts --fix",
+        "test": "echo \"Error: no test specified\" && exit 1",
         "run-command": "ts-node ./src/main.ts all"
     },
     "dependencies": {

@@ -5,10 +5,10 @@
 schedule: "0 0 * * *"
 
 image:
-  repository: dkr.hanaboso.net/pipes/pipes/cloud/applinth-billing-processor
+  repository: dkr.hanaboso.net/pipes/pipes/saas/applinth-billing-processor
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: handmade
+  tag: master
 
 nameOverride: ""
 fullnameOverride: ""

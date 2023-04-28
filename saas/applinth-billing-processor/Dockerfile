@@ -29,4 +29,4 @@ WORKDIR /srv/app
 COPY --from=build /srv/app/dist/src /srv/app/
 COPY --from=precache /tmp/_node_prod /srv/app
 
-ENTRYPOINT ["node", "dist/main.js"]
+ENTRYPOINT ["node", "main.js"]

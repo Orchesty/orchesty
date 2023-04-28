@@ -25,7 +25,7 @@ RUN npm run build
 
 FROM node:19-alpine as prod
 
-ENV APP_PORT=8000
+ENV APP_PORT=8080
 ENV NODE_ENV=prod
 
 WORKDIR /srv/app

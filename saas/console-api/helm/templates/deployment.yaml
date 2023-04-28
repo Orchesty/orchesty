@@ -24,23 +24,20 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
-            # proc je v DC APP_ENV? stejne nefunguje
-            - name: NODE_ENV
-              value: prod
             - name: MONGODB_DSN
-                  valueFrom:
-                    secretKeyRef:
-                      name: billing
-                      key: consoleApiMongodbDsn
+              valueFrom:
+                secretKeyRef:
+                  name: billing
+                  key: consoleApiMongodbDsn
             - name: MONGODB_BILLINGDB_NAME
               value: {{ .Values.mongodbBillingDB }}
             - name: MONGODB_CLOUDDB_NAME
               value: {{ .Values.mongodbCloudDB }}
             - name: FIREBASE_API_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: billing
-                      key: firebaseApiKey
+              valueFrom:
+                secretKeyRef:
+                  name: billing
+                  key: firebaseApiKey
             - name: FIREBASE_AUTH_DOMAIN
               value: {{ .Values.firebaseAuthDomain }}
           resources:

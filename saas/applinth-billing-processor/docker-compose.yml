@@ -19,9 +19,9 @@ services:
         command: sleep infinity
 
     mongodb:
-        image: mongo:5
+        image: mongo:latest
         ports:
-            - 127.0.0.7:27017:27017
+            - ${DEV_IP}:27017:27017
         volumes:
             - mongodb:/data/db
 

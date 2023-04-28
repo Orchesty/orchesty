@@ -1,4 +1,5 @@
 DCS=docker-compose exec -T usccp
+IMAGE=dkr.hanaboso.net/pipes/pipes/cloud/usccp:$(TAG)
 
 ALIAS?=alias
 postprocess:

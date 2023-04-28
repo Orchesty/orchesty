@@ -1,7 +1,7 @@
 // --- COMMONS ---
 import * as process from 'process';
 
-process.env.NODE_ENV = 'debug'
+process.env.NODE_ENV = 'prod' // 'debug' <= use it if you want to see more logs
 
 if (process.env.JEST_DOCKER) {
     // --- DOCKER ---

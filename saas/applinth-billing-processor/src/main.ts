@@ -65,6 +65,7 @@ mongo.connect().then(async () => {
     logger.info('MongoDB connected!');
 }).catch((e) => {
     logger.error(e);
+    process.exit(1);
 });
 
 const eventFactory = new EventFactory();
@@ -186,6 +187,8 @@ async function commandAll(): Promise<void> {
 
     logger.debug({ memoryUsage: process.memoryUsage() });
     await mongo.disconnect();
+    process.exit(0);
 }()).catch((e) => {
     logger.error(e);
+    process.exit(1);
 });
