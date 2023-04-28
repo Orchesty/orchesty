@@ -18,7 +18,7 @@ type BridgeMock struct {
 	ResultMessages  chan bridge.RequestMessage
 }
 
-func (this *BridgeMock) Send(message bridge.RequestMessage) error {
+func (this *BridgeMock) Send(message bridge.RequestMessage) {
 	if this.ResultMessages != nil {
 		this.ResultMessages <- message
 	}
@@ -36,10 +36,8 @@ func (this *BridgeMock) Send(message bridge.RequestMessage) error {
 	_ = this.Mongo.Delete(message.MessageId)
 	this.Limits.FinishProcess(limitKeys)
 	if toReturn != nil {
-		_ = this.Mongo.UnmarkInProcess(message.MessageId)
+		_ = this.Mongo.RetryByTopologyId(message.GetHeader(enum.Header_TopologyId), 60)
 	} else {
 		this.Cache.FinishProcess(limitKey)
 	}
-
-	return toReturn
 }

@@ -9,8 +9,9 @@ import (
 )
 
 type MongoSvc struct {
-	connection *mongodb.Connection
-	collection *mongo.Collection
+	connection         *mongodb.Connection
+	collection         *mongo.Collection
+	userTaskCollection *mongo.Collection
 }
 
 func NewMongoSvc() MongoSvc {
@@ -24,8 +25,9 @@ func NewMongoSvc() MongoSvc {
 	}
 
 	return MongoSvc{
-		connection: connection,
-		collection: database,
+		connection:         connection,
+		collection:         database,
+		userTaskCollection: connection.Database.Collection(config.MongoDb.UserTaskCollection),
 	}
 }
 
