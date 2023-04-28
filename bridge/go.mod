@@ -5,9 +5,7 @@ go 1.19
 require (
 	github.com/gofrs/uuid v4.4.0+incompatible
 	github.com/hanaboso/go-log v1.0.4
-	github.com/hanaboso/go-metrics v1.0.4
-	github.com/hanaboso/go-mongodb v1.0.6
-	github.com/hanaboso/go-rabbitmq v1.1.1
+	github.com/hanaboso/go-rabbitmq v1.1.5
 	github.com/hanaboso/go-utils v0.0.0-20230130141939-8576cc6c8307
 	github.com/jinzhu/configor v1.2.1
 	github.com/julienschmidt/httprouter v1.3.0
