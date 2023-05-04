@@ -53,7 +53,7 @@ final class TopologyGeneratorBridge
     private DocumentManager $dm;
 
     /**
-     * @var ObjectRepository<ApiToken>&ApiTokenRepository
+     * @var ApiTokenRepository
      */
     private ApiTokenRepository $apiTokenRepository;
 
@@ -66,10 +66,10 @@ final class TopologyGeneratorBridge
      * @param mixed[]                $configs
      */
     public function __construct(
-        DatabaseManagerLocator         $dml,
+        DatabaseManagerLocator $dml,
         protected CurlManagerInterface $curlManager,
-        private TopologyConfigFactory  $configFactory,
-        private array                  $configs,
+        private TopologyConfigFactory $configFactory,
+        private array $configs,
     )
     {
         $this->logger = new NullLogger();
@@ -118,11 +118,12 @@ final class TopologyGeneratorBridge
 
     /**
      * @param string $topologyId
+     * @param bool   $deleteQueues
      *
      * @return ResponseDto
      * @throws CurlException
      */
-    public function stopTopology(string $topologyId, $deleteQueues = FALSE): ResponseDto
+    public function stopTopology(string $topologyId, bool $deleteQueues = FALSE): ResponseDto
     {
         try {
             $this->callTopologyBridge($topologyId, CurlManager::METHOD_DELETE, $deleteQueues ? 'api/destroy' : 'close');
@@ -223,7 +224,7 @@ final class TopologyGeneratorBridge
                 $method,
                 new ProcessDto(),
                 '',
-                $headers
+                $headers,
             );
 
             $responseDto = $this->curlManager->send($requestDto);
