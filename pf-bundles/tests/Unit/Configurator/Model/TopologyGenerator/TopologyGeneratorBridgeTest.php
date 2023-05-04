@@ -161,8 +161,13 @@ final class TopologyGeneratorBridgeTest extends KernelTestCaseAbstract
         $nodeRepository = self::createPartialMock(NodeRepository::class, ['getNodesByTopology']);
         $nodeRepository->method('getNodesByTopology')->willReturn([$node]);
 
+        $apiTokenRepository = self::createPartialMock(ApiTokenRepository::class, ['findOneBy']);
+        $apiTokenRepository->method('findOneBy')->willReturn(NULL);
+
         $documentManager = self::createPartialMock(DocumentManager::class, ['getRepository']);
-        $documentManager->method('getRepository')->willReturn($nodeRepository);
+        $documentManager->method('getRepository')->willReturnCallback(
+            static fn(string $className): DocumentRepository => $className === Node::class ? $nodeRepository : $apiTokenRepository,
+        );
 
         $curlManager = self::createPartialMock(CurlManager::class, ['send']);
         $curlManager->method('send')->willReturnCallback(
@@ -179,9 +184,6 @@ final class TopologyGeneratorBridgeTest extends KernelTestCaseAbstract
 
         $sdkRepository = self::createPartialMock(SdkRepository::class, ['findByHost']);
         $sdkRepository->method('findByHost')->willReturn([]);
-
-        $apiTokenRepository = self::createPartialMock(ApiTokenRepository::class, ['findOneBy']);
-        $apiTokenRepository->method('findOneBy')->willReturn(NULL);
 
         $dm = self::createPartialMock(DocumentManager::class, ['getRepository']);
         $dm->method('getRepository')->willReturnCallback(

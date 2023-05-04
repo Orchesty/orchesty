@@ -70,12 +70,12 @@ final class TopologyHandler
      * @param TopologyTester          $topologyTester
      */
     public function __construct(
-        DatabaseManagerLocator            $dml,
-        protected TopologyManager         $topologyManager,
-        protected NodeManager             $nodeManager,
+        DatabaseManagerLocator $dml,
+        protected TopologyManager $topologyManager,
+        protected NodeManager $nodeManager,
         protected TopologyGeneratorBridge $generatorBridge,
-        protected UserTaskHandler         $userTaskHandler,
-        protected TopologyTester          $topologyTester,
+        protected UserTaskHandler $userTaskHandler,
+        protected TopologyTester $topologyTester,
     )
     {
         /** @var DocumentManager $dm */
@@ -116,7 +116,7 @@ final class TopologyHandler
     public function runTopologyByName(
         string $topologyName,
         string $nodeName,
-        array  $data,
+        array $data,
         string $user = ApplicationController::SYSTEM_USER,
     ): array
     {
