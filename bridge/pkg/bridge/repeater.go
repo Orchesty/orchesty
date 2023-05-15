@@ -35,6 +35,8 @@ func (r *repeater) publish(node types.Node, dto *model.ProcessMessage) model.Pro
 
 	// TODO should be routingKey + exchange -> needs repeater rework
 	dto.SetHeader(enum.Header_RepeatQueue, fmt.Sprintf("node.%s.1", node.Id()))
+	dto.SetHeader(enum.Header_LimitReturnExchange, fmt.Sprintf("node.%s.hx", node.Id()))
+	dto.SetHeader(enum.Header_LimitReturnRoutingKey, "1") // TODO routing key based on shard
 
 	if err := r.publisher.Publish(dto.IntoOriginalAmqp()); err != nil {
 		return dto.Error(err)
