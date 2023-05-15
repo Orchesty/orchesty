@@ -81,6 +81,42 @@ func (this *Cache) FromLimits(limits map[string]int) {
 	}
 }
 
+// TODO temporary method to check limiter deadlock problem
+func (this *Cache) ReFromLimits(limits map[string]int) {
+	this.lock.Lock()
+	defer this.lock.Unlock()
+
+	usedToHave := len(this.activeKeys)
+	this.activeKeys = map[string]CacheItem{}
+	this.activeKeys[""] = CacheItem{
+		Keys:   []string{""},
+		Amount: 0,
+	}
+
+	for key, amount := range limits {
+		item, ok := this.activeKeys[key]
+		if !ok {
+			item = CacheItem{
+				Keys:   arrayx.NthItemsFrom(strings.Split(key, ";"), 3, 0),
+				Amount: intx.Max(0, amount),
+			}
+		} else {
+			item.Amount = intx.Max(0, item.Amount+amount)
+		}
+
+		if item.Amount > 0 {
+			this.activeKeys[key] = item
+		} else {
+			delete(this.activeKeys, key)
+		}
+	}
+
+	refreshedCount := len(this.activeKeys)
+	if usedToHave != refreshedCount {
+		log.Error().Err(fmt.Errorf("cache limit count did not match, had: %d, refreshed to: %d", usedToHave, refreshedCount)).Send()
+	}
+}
+
 func (this *Cache) startWatcher() {
 	for range time.Tick(time.Minute) {
 		this.lock.Lock()

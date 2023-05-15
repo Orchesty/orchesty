@@ -12,6 +12,7 @@ import (
 	"os/signal"
 	"sync"
 	"syscall"
+	"time"
 )
 
 func Start() {
@@ -39,6 +40,9 @@ func Start() {
 	cacheSvc.FromLimits(existingKeys)
 	limiterSvc.FillLimits(existingKeys)
 
+	// TODO temporary refresher to see if keys are causing limiter to stop sending messages - remove whole func later on
+	go refresh(mongoSvc, cacheSvc, limiterSvc)
+
 	go rabbitSvc.LimiterConsumer.Consume(ProcessMessage(mongoSvc, cacheSvc, limiterSvc))
 	go rabbitSvc.RepeaterConsumer.Consume(ProcessMessage(mongoSvc, cacheSvc, limiterSvc))
 	serverStop := StartServer(mongoSvc)
@@ -64,4 +68,17 @@ func Start() {
 
 	<-closeApp
 	wg.Wait()
+}
+
+func refresh(mongoSvc mongo.MongoSvc, cacheSvc *limiter.Cache, limiterSvc *limiter.LimitSvc) {
+	for _ = range time.NewTicker(30 * time.Minute).C {
+		log.Info().Msg("Refreshing limiter keys based on db")
+		existingKeys, err := mongoSvc.GetAllLimitKeys()
+		if err != nil {
+			log.Fatal().Err(err).Send()
+		}
+
+		cacheSvc.ReFromLimits(existingKeys)
+		limiterSvc.ReFillLimits(existingKeys)
+	}
 }
