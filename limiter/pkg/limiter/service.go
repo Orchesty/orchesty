@@ -20,6 +20,33 @@ func (this *LimitSvc) FillLimits(limits map[string]int) {
 	}
 }
 
+// TODO temporary method to check limiter deadlock problem
+func (this *LimitSvc) ReFillLimits(limits map[string]int) {
+	this.lock.Lock()
+	defer this.lock.Unlock()
+
+	usedToHave := len(this.limits)
+	this.limits = make(map[string]*model.Limit)
+
+	for key := range limits {
+		limits := model.ParseLimits(key)
+
+		for _, limit := range limits {
+			if current, ok := this.limits[limit.FullKey]; ok {
+				current.Time = limit.Time
+				current.Maximum = limit.Maximum
+			} else {
+				this.limits[limit.FullKey] = &limit
+			}
+		}
+	}
+
+	refreshedCount := len(this.limits)
+	if usedToHave != refreshedCount {
+		log.Error().Err(fmt.Errorf("service limit count did not match, had: %d, refreshed to: %d", usedToHave, refreshedCount)).Send()
+	}
+}
+
 func (this *LimitSvc) UpsertLimits(limits []model.Limit) {
 	this.lock.Lock()
 	defer this.lock.Unlock()
