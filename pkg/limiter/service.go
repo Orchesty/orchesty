@@ -116,7 +116,9 @@ func (this *LimitSvc) startRefreshTicker() {
 		this.lock.Lock()
 		for key, limit := range this.limits {
 			if remove := limit.Refresh(); remove {
-				delete(this.limits, key)
+				if key != "" {
+					delete(this.limits, key)
+				}
 			}
 		}
 		this.lock.Unlock()

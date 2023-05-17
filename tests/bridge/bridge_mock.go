@@ -18,12 +18,11 @@ type BridgeMock struct {
 	ResultMessages  chan bridge.RequestMessage
 }
 
-func (this *BridgeMock) Send(message bridge.RequestMessage) {
+func (this *BridgeMock) Send(message bridge.RequestMessage, limitKey string) {
 	if this.ResultMessages != nil {
 		this.ResultMessages <- message
 	}
 
-	limitKey := message.GetHeader(enum.Header_LimitKey)
 	limitKeys := arrayx.NthItemsFrom(strings.Split(limitKey, ";"), 3, 0)
 
 	toReturn := this.returnErrorOnce

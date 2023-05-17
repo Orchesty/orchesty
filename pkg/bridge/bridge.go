@@ -27,7 +27,7 @@ var (
 	keyUntil int64
 )
 
-func (this BridgeSvc) Send(message RequestMessage) {
+func (this BridgeSvc) Send(message RequestMessage, limitKey string) {
 	data, _ := json.Marshal(message)
 	request, _ := http.NewRequest("POST", message.BridgeUrl(), bytes.NewReader(data))
 
@@ -42,7 +42,6 @@ func (this BridgeSvc) Send(message RequestMessage) {
 	}
 	request.Header.Add("Content-Type", "application/json")
 
-	limitKey := message.GetHeader(enum.Header_LimitKey)
 	limitKeys := arrayx.NthItemsFrom(strings.Split(limitKey, ";"), 3, 0)
 	var responseData []byte
 	var responseMessage ResultMessage

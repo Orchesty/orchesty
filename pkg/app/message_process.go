@@ -7,7 +7,6 @@ import (
 	"github.com/hanaboso/go-utils/pkg/intx"
 	"github.com/rs/zerolog/log"
 	"limiter/pkg/bridge"
-	"limiter/pkg/enum"
 	"limiter/pkg/limiter"
 	"limiter/pkg/mongo"
 	"strings"
@@ -78,7 +77,7 @@ func (this MessageProcessor) send(message mongo.Message, wg *sync.WaitGroup) {
 		Headers:   message.Message.Headers,
 		Body:      message.Message.Body,
 		Published: message.Published,
-	})
+	}, message.LimitKey)
 	wg.Done()
 }
 
@@ -88,10 +87,12 @@ func (this MessageProcessor) trash(message mongo.Message, wg *sync.WaitGroup) {
 	}
 	_ = this.mongoSvc.Delete(message.Id.Hex())
 
-	limitKey := message.Message.GetHeader(enum.Header_LimitKey)
-	limitKeys := arrayx.NthItemsFrom(strings.Split(limitKey, ";"), 3, 0)
-	this.limiterSvc.FinishProcess(limitKeys)
-	this.cacheSvc.FinishProcess(limitKey)
+	limitKey, _, err := message.Message.ParseLimitKeys()
+	if err != nil {
+		limitKeys := arrayx.NthItemsFrom(strings.Split(limitKey, ";"), 3, 0)
+		this.limiterSvc.FinishProcess(limitKeys)
+		this.cacheSvc.FinishProcess(limitKey)
+	}
 
 	wg.Done()
 }
@@ -106,5 +107,5 @@ func NewMessageProcessor(sender Sender, mongoSvc mongo.MongoSvc, limiterSvc *lim
 }
 
 type Sender interface {
-	Send(message bridge.RequestMessage)
+	Send(message bridge.RequestMessage, limitKey string)
 }
