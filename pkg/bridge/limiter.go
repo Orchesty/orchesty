@@ -28,7 +28,7 @@ func parseLimitApplications(limitKey string) map[string]struct{} {
 }
 
 func (l *limiter) process(node types.Node, dto *model.ProcessMessage) model.ProcessResult {
-	if node.WorkerType() == enum.WorkerType_Null || node.WorkerType() == enum.WorkerType_UserTask {
+	if node.WorkerType() == enum.WorkerType_Null || node.WorkerType() == enum.WorkerType_UserTask || node.WorkerType() == enum.WorkerType_Custom {
 		return dto.Ok()
 	}
 

@@ -21,7 +21,7 @@ func Get(name enum.WorkerType) (types.Worker, error) {
 	switch name {
 	case enum.WorkerType_Null:
 		return workers.null, nil
-	case enum.WorkerType_Http:
+	case enum.WorkerType_Custom, enum.WorkerType_Http:
 		return workers.http, nil
 	case enum.WorkerType_Batch:
 		return workers.batch, nil
