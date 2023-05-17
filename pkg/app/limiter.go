@@ -71,7 +71,7 @@ func Start() {
 }
 
 func refresh(mongoSvc mongo.MongoSvc, cacheSvc *limiter.Cache, limiterSvc *limiter.LimitSvc) {
-	for _ = range time.NewTicker(5 * time.Minute).C {
+	for _ = range time.NewTicker(30 * time.Minute).C {
 		log.Info().Msg("Refreshing limiter keys based on db")
 		existingKeys, err := mongoSvc.GetAllLimitKeys()
 		if err != nil {
