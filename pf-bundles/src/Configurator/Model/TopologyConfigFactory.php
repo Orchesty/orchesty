@@ -56,6 +56,7 @@ final class TopologyConfigFactory
     public const WORKER_HTTP_XML_PARSER = 'worker.http_xml_parser';
     public const WORKER_USER            = 'worker.user';
     public const WORKER_HTTP            = 'worker.http';
+    public const WORKER_CUSTOM_NODE     = 'worker.custom_node';
     public const WORKER_BATCH           = 'worker.batch';
     public const HOST                   = 'host';
 
@@ -224,6 +225,7 @@ final class TopologyConfigFactory
             TypeEnum::WEBHOOK->value, TypeEnum::GATEWAY->value, TypeEnum::DEBUG->value, TypeEnum::CRON->value, TypeEnum::START->value => self::WORKER_NULL,
             TypeEnum::XML_PARSER->value => self::WORKER_HTTP_XML_PARSER,
             TypeEnum::USER->value => self::WORKER_USER,
+            TypeEnum::CUSTOM->value => self::WORKER_CUSTOM_NODE,
             default => self::WORKER_HTTP,
         };
     }
