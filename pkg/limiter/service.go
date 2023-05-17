@@ -42,7 +42,7 @@ func (this *LimitSvc) ReFillLimits(limits map[string]int) {
 	}
 
 	refreshedCount := len(this.limits)
-	if usedToHave != refreshedCount {
+	if usedToHave < refreshedCount {
 		log.Error().Err(fmt.Errorf("service limit count did not match, had: %d, refreshed to: %d", usedToHave, refreshedCount)).Send()
 	}
 }

@@ -112,7 +112,7 @@ func (this *Cache) ReFromLimits(limits map[string]int) {
 	}
 
 	refreshedCount := len(this.activeKeys)
-	if usedToHave != refreshedCount {
+	if usedToHave < refreshedCount {
 		log.Error().Err(fmt.Errorf("cache limit count did not match, had: %d, refreshed to: %d", usedToHave, refreshedCount)).Send()
 	}
 }
