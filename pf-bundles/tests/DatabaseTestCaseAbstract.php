@@ -32,24 +32,23 @@ abstract class DatabaseTestCaseAbstract extends KernelTestCaseAbstract
 
     /**
      * @param string  $path
-     * @param mixed[] $arrayResult
+     * @param mixed[] $ar
      */
-    protected function assertResult(string $path, array $arrayResult): void
+    protected function assertResult(string $path, array $ar): void
     {
         $fileContent = File::getContent($path);
         $i           = 0;
 
-        foreach ($arrayResult['node_config'] as $key => $value) {
+        foreach ($ar['node_config'] as $key => $value) {
             $value;
             if (strlen((string) $key) === 24) {
-                $arrayResult['node_config']
-                [sprintf('5d6d17e1e7ad880000000000%s', $i)] = $arrayResult['node_config'][$key];
+                $ar['node_config'][sprintf('5d6d17e1e7ad880000000000%s', $i)] = $ar['node_config'][$key];
                 $i++;
-                unset($arrayResult['node_config'][$key]);
+                unset($ar['node_config'][$key]);
             }
         }
 
-        self::assertEquals(Json::decode($fileContent ?: ''), $arrayResult);
+        self::assertEquals(Json::decode($fileContent ?: ''), $ar);
     }
 
 }
