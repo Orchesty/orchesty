@@ -34,6 +34,8 @@ func (this MessageProcessor) Start(ctx context.Context, wg *sync.WaitGroup) {
 			continue
 		}
 
+		log.Info().Msgf("Processing keys %v", keys)
+
 		for key, item := range keys {
 			allowed := intx.Min(this.limiterSvc.AllowedMessages(item.Keys), 30)
 			if allowed <= 0 {
@@ -41,6 +43,7 @@ func (this MessageProcessor) Start(ctx context.Context, wg *sync.WaitGroup) {
 			}
 
 			messages, err := this.mongoSvc.FetchMessages(key, allowed)
+			log.Info().Msgf("Allowed messages for [%s]: %d, fetched messages: %d", key, allowed, len(messages))
 
 			if len(messages) < allowed {
 				this.limiterSvc.RefreshMissingMessages(item.Keys, allowed-len(messages))
