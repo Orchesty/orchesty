@@ -5,6 +5,7 @@ import (
 	"github.com/hanaboso/go-utils/pkg/arrayx"
 	"github.com/hanaboso/go-utils/pkg/chanx"
 	"github.com/hanaboso/go-utils/pkg/intx"
+	"github.com/hanaboso/go-utils/pkg/timex"
 	"github.com/rs/zerolog/log"
 	"limiter/pkg/bridge"
 	"limiter/pkg/limiter"
@@ -33,8 +34,6 @@ func (this MessageProcessor) Start(ctx context.Context, wg *sync.WaitGroup) {
 			continue
 		}
 
-		log.Info().Msgf("Processing keys %v", keys)
-
 		for key, item := range keys {
 			allowed := intx.Min(this.limiterSvc.AllowedMessages(item.Keys), 30)
 			if allowed <= 0 {
@@ -42,7 +41,6 @@ func (this MessageProcessor) Start(ctx context.Context, wg *sync.WaitGroup) {
 			}
 
 			messages, err := this.mongoSvc.FetchMessages(key, allowed)
-			log.Info().Msgf("Allowed messages for [%s]: %d, fetched messages: %d", key, allowed, len(messages))
 
 			if len(messages) < allowed {
 				this.limiterSvc.RefreshMissingMessages(item.Keys, allowed-len(messages))
@@ -76,7 +74,7 @@ func (this MessageProcessor) send(message mongo.Message, wg *sync.WaitGroup) {
 		MessageId: message.Id.Hex(),
 		Headers:   message.Message.Headers,
 		Body:      message.Message.Body,
-		Published: message.Published,
+		Published: timex.UnixMs(),
 	}, message.LimitKey)
 	wg.Done()
 }
