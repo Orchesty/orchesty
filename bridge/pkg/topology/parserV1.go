@@ -140,6 +140,8 @@ func workerTypeFromString(workerType string) (enum.WorkerType, error) {
 		return enum.WorkerType_Batch, nil
 	case "worker.user", "worker.userTask":
 		return enum.WorkerType_UserTask, nil
+	case "worker.custom_node":
+		return enum.WorkerType_Custom, nil
 	}
 
 	return enum.WorkerType_Null, fmt.Errorf("unknown worker type [%s]", workerType)
