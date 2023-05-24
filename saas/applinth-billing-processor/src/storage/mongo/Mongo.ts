@@ -46,4 +46,19 @@ export default class Mongo {
         ]);
     }
 
+    public async dropCollections(): Promise<void> {
+        await this.dropCollection(config.billingDb, CollectionEnum.USAGE_STATS_MONTHLY);
+        await this.dropCollection(config.billingDb, CollectionEnum.USAGE_STATS_METADATA);
+        await this.dropCollection(config.usDb, CollectionEnum.EVENTS);
+        await this.dropCollection(config.billingAdminDb, CollectionEnum.APPLINTH);
+        await this.dropCollection(config.billingAdminDb, CollectionEnum.MODULE);
+    }
+
+    private async dropCollection(dbName: string, collection: string): Promise<void> {
+        try {
+            await this.client.db(dbName).dropCollection(collection);
+        } catch (e) {
+        }
+    }
+
 }

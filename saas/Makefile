@@ -27,5 +27,5 @@ init: docker-up-force
 create-fixture-data:
 	$(DCS) pnpm run create-fixture-data
 
-run-command:
-	$(DCB) pnpm run-command
+generate-usage-stats:
+	$(DCB) pnpm generate-usage-stats

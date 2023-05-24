@@ -15,7 +15,7 @@ services:
             JEST_DOCKER: 1
             APP_ENV: 'debug'
             NODE_ENV: 'dev'
-            MONGODB_DSN: mongodb://mongo
+            MONGODB_DSN: mongodb://mongodb
         command: sleep infinity
 
     mongodb:

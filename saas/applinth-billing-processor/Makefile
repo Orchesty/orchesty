@@ -58,3 +58,6 @@ localtest:
 fasttest: lint unit
 
 test: docker-up-force install fasttest docker-down-clean
+
+create-fixture-data:
+	$(DCS) pnpm run create-fixture-data
