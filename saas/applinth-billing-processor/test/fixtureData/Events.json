@@ -1,0 +1,212 @@
+[
+    {
+        "created": "1672542000000000",
+        "data": {
+            "aid": "shoptet",
+            "euid": "1"
+        },
+        "iid": "iid1",
+        "type": "applinth_enduser_app_install",
+        "version": 1
+    },
+    {
+        "created": "1672714800000000",
+        "data": {
+            "aid": "shoptet",
+            "euid": "1"
+        },
+        "iid": "iid1",
+        "type": "applinth_enduser_app_uninstall",
+        "version": 1
+    },
+    {
+        "created": "1672887600000000",
+        "data": {
+            "aid": "shoptet",
+            "euid": "1"
+        },
+        "iid": "iid1",
+        "type": "applinth_enduser_app_install",
+        "version": 1
+    },
+    {
+        "created": "1675558800000000",
+        "data": {
+            "aid": "shoptet",
+            "euid": "1"
+        },
+        "iid": "iid1",
+        "type": "applinth_enduser_app_uninstall",
+        "version": 1
+    },
+    {
+        "created": "1677978000000000",
+        "data": {
+            "aid": "shoptet",
+            "euid": "1"
+        },
+        "iid": "iid1",
+        "type": "applinth_enduser_app_install",
+        "version": 1
+    },
+    {
+        "created": "1678410000000000",
+        "data": {
+            "aid": "shoptet",
+            "euid": "1"
+        },
+        "iid": "iid1",
+        "type": "applinth_enduser_app_uninstall",
+        "version": 1
+    },
+    {
+        "created": "1678842000000000",
+        "data": {
+            "aid": "shoptet",
+            "euid": "1"
+        },
+        "iid": "iid1",
+        "type": "applinth_enduser_app_install",
+        "version": 1
+    },
+    {
+        "created": "1678597200000000",
+        "data": {
+            "aid": "shoptet",
+            "euid": "2"
+        },
+        "iid": "iid1",
+        "type": "applinth_enduser_app_install",
+        "version": 1
+    },
+    {
+        "created": "1678597200000000",
+        "data": {
+            "aid": "woocommerce",
+            "euid": "3"
+        },
+        "iid": "iid1",
+        "type": "applinth_enduser_app_install",
+        "version": 1
+    },
+    {
+        "created": "1677978000000000",
+        "data": {
+            "aid": "shoptet",
+            "euid": "4"
+        },
+        "iid": "iid2",
+        "type": "applinth_enduser_app_install",
+        "version": 1
+    },
+    {
+        "created": "1678410000000000",
+        "data": {
+            "aid": "shoptet",
+            "euid": "4"
+        },
+        "iid": "iid2",
+        "type": "applinth_enduser_app_uninstall",
+        "version": 1
+    },
+    {
+        "created": "1678842000000000",
+        "data": {
+            "aid": "shoptet",
+            "euid": "4"
+        },
+        "iid": "iid2",
+        "type": "applinth_enduser_app_install",
+        "version": 1
+    },
+    {
+        "created": "1677560400000000",
+        "data": {
+            "aid": "shoptet",
+            "euid": "5"
+        },
+        "iid": "iid3",
+        "type": "applinth_enduser_app_install",
+        "version": 1
+    },
+    {
+        "created": "1678410000000000",
+        "data": {
+            "aid": "shoptet",
+            "euid": "5"
+        },
+        "iid": "iid3",
+        "type": "applinth_enduser_app_uninstall",
+        "version": 1
+    },
+    {
+        "created": "1678842000000000",
+        "data": {
+            "aid": "shoptet",
+            "euid": "5"
+        },
+        "iid": "iid3",
+        "type": "applinth_enduser_app_install",
+        "version": 1
+    },
+    {
+        "created": "1677560400000000",
+        "data": {
+            "aid": "woocommerce",
+            "euid": "5"
+        },
+        "iid": "iid3",
+        "type": "applinth_enduser_app_install",
+        "version": 1
+    },
+    {
+        "created": "1678410000000000",
+        "data": {
+            "aid": "woocommerce",
+            "euid": "5"
+        },
+        "iid": "iid3",
+        "type": "applinth_enduser_app_uninstall",
+        "version": 1
+    },
+    {
+        "created": "1678842000000000",
+        "data": {
+            "aid": "woocommerce",
+            "euid": "5"
+        },
+        "iid": "iid3",
+        "type": "applinth_enduser_app_install",
+        "version": 1
+    },
+    {
+        "created": "1677560400000000",
+        "data": {
+            "aid": "shopify",
+            "euid": "5"
+        },
+        "iid": "iid3",
+        "type": "applinth_enduser_app_install",
+        "version": 1
+    },
+    {
+        "created": "1678410000000000",
+        "data": {
+            "aid": "shopify",
+            "euid": "5"
+        },
+        "iid": "iid3",
+        "type": "applinth_enduser_app_uninstall",
+        "version": 1
+    },
+    {
+        "created": "1678842000000000",
+        "data": {
+            "aid": "shopify",
+            "euid": "5"
+        },
+        "iid": "iid3",
+        "type": "applinth_enduser_app_install",
+        "version": 1
+    }
+]

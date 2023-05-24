@@ -7,25 +7,26 @@
     "license": "proprietary",
     "private": true,
     "scripts": {
-        "build": "tsc",
+        "build": "rm -rf build && tsc -p tsconfig.prod.json",
         "lint": "eslint src --ext .ts --fix",
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "run-command": "ts-node ./src/main.ts all"
+        "test": "jest --coverage --detectOpenHandles --passWithNoTests --runInBand",
+        "generate-usage-stats": "ts-node ./src/main.ts",
+        "create-fixture-data": "ts-node ./test/CreateFixtureData.ts"
     },
     "dependencies": {
         "commander": "^9.5.0",
-        "deep-object-diff": "^1.1.9",
-        "joi": "^17.9.2",
         "lodash.unset": "^4.5.2",
-        "mongodb": "^5.3.0",
-        "pino": "^8.12.0",
+        "mongodb": "^5.5.0",
+        "pino": "^8.14.1",
         "pino-pretty": "^9.4.0"
     },
     "devDependencies": {
         "@hanaboso/eslint-plugin": "^1.0.8",
+        "@types/jest": "^29.5.1",
         "@types/lodash.unset": "^4.5.7",
-        "@types/node": "^18.16.3",
+        "@types/node": "^20.2.3",
         "jest": "^29.5.0",
+        "ts-jest": "^29.1.0",
         "ts-node": "^10.9.1",
         "typescript": "^5.0.4"
     }

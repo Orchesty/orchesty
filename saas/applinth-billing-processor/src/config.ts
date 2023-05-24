@@ -3,6 +3,7 @@ export interface Config {
     usDb: string;
     billingDb: string;
     billingAdminDb: string;
+    debug: boolean;
 }
 
 export const config: Config = {
@@ -12,4 +13,5 @@ export const config: Config = {
     usDb: process.env.MONGODB_USAGE_STATS_DB ?? 'usage-stats',
     billingDb: process.env.MONGODB_USAGE_STATS_DB ?? 'usage-stats',
     billingAdminDb: process.env.MONGODB_BILLING_ADMIN_DB ?? 'cloud',
+    debug: process.env.NODE_ENV === 'debug',
 };

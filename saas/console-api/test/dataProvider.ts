@@ -45,6 +45,7 @@ function generateUsageStatsRow(
         cost,
         estimatedCost,
         installed,
+        type: 'normal',
     };
 }
 
