@@ -10,24 +10,33 @@ global:
   starting_point_url: https://start-hm8rohmtf6.eu1.cloud.orchesty.io
 
   imageOverrides:
-    nodejssdk: hanaboso/demo-nodejs:master
     applinth-marketplace-ui: dkr.hanaboso.net/pipes/pipes/applinth-marketplace-ui:2.0.0
     backend: dkr.hanaboso.net/pipes/pipes/applinth:2.0.0
 
-  nodejsSdk:
-    extraEnv:
-      APP_ENV:
-        value: debug
-      AWS_SES_KEY:
-        valueFrom:
-          secretKeyRef:
-            name: pipes-secrets
-            key: aws_ses_key
-      AWS_SES_SECRET:
-        valueFrom:
-          secretKeyRef:
-            name: pipes-secrets
-            key: aws_ses_secret
+  workers:
+    default:
+      sdk: node-js
+      image: hanaboso/demo-nodejs:master
+      extraEnv:
+        APP_ENV:
+          value: debug
+        AWS_SES_KEY:
+          valueFrom:
+            secretKeyRef:
+              name: pipes-secrets
+              key: aws_ses_key
+        AWS_SES_SECRET:
+          valueFrom:
+            secretKeyRef:
+              name: pipes-secrets
+              key: aws_ses_secret
+
+    laborer:
+      sdk: nodejs
+      image: dkr.hanaboso.net/north-dent/laboratory/orchesty/worker:master
+      extraEnv:
+        APP_ENV:
+          value: debug
 
   backend:
     alpha_instance_id: hm8rohmtf6

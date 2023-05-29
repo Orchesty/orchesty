@@ -7,6 +7,7 @@
 - Worker-api: added metricsDb env
 - Backend: added limiter env
 - Limiter - service: removed deprecated port (3333)
+- Added support for multiple workers
 
 ## 2.0.2
 
