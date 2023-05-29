@@ -1,7 +1,8 @@
 {{- $root := . -}}
-{{- range $workerName, $worker := .Values.global.workers -}}
-{{- $componentName := printf "worker-%s" $workerName -}}
+{{ range $workerName, $worker := .Values.global.workers }}
 ---
+{{- $componentName := eq $workerName "default" | ternary (printf "worker") (printf "worker-%s" $workerName) -}}
+
 apiVersion: v1
 kind: Service
 metadata:
@@ -18,4 +19,4 @@ spec:
       port: 80
       targetPort: http
 
-{{- end -}}
+{{ end }}

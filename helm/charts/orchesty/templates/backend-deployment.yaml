@@ -14,7 +14,6 @@ spec:
   template:
     metadata:
       labels:
-        timestamp: "{{ now | date "20060102150405" }}"
 {{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 8 }}
     spec:
 {{ include "pipes.imagePullSecrets" . | indent 6 }}

@@ -1,5 +1,11 @@
 # Release Notes
 
+## 2.1.0
+
+### Changes
+
+- Workers: removed deprecated config for set up a worker
+
 ## 2.0.3
 
 ### Changes
