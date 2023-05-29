@@ -6,5 +6,5 @@ version: 0.1.0
 appVersion: 0.1.0
 dependencies:
   - name: orchesty
-    version: "~2.0.1"
+    version: "~2.1.0"
     repository: "https://orchesty.github.io/helm-charts/"

@@ -15,7 +15,7 @@ global:
 
   workers:
     default:
-      sdk: node-js
+      sdk: nodejs
       image: hanaboso/demo-nodejs:master
       extraEnv:
         APP_ENV:
@@ -37,6 +37,8 @@ global:
       extraEnv:
         APP_ENV:
           value: debug
+        REDIS_DSN:
+          value: redis://redis
 
   backend:
     alpha_instance_id: hm8rohmtf6
