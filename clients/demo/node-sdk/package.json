@@ -16,7 +16,7 @@
     "@aws-sdk/client-ses": "^3.341.0",
     "@aws-sdk/util-endpoints": "^3.341.0",
     "@orchesty/nodejs-connectors": "^3.0.29",
-    "@orchesty/nodejs-sdk": "^4.2.26",
+    "@orchesty/nodejs-sdk": "^4.2.27",
     "@types/node": "^18.16.16",
     "copyfiles": "^2.4.1",
     "lodash": "^4.17.21",

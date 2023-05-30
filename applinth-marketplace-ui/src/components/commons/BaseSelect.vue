@@ -10,6 +10,7 @@
     :items="items"
     :item-value="itemValue"
     :item-text="itemKey"
+    :multiple="multiple"
   />
 </template>
 
@@ -56,6 +57,10 @@ export default {
     value: {
       type: String,
       default: () => "",
+    },
+    multiple: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {

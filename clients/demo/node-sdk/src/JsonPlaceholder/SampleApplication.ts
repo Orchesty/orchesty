@@ -69,8 +69,8 @@ export default class SampleApplication extends ABasicApplication implements IWeb
             .addField(new Field(FieldType.TEXT, 'readName', 'Read Name', 'default').setReadOnly(true))
 
             .addField(new Field(FieldType.URL, 'url', 'Url'))
-            .addField(new Field(FieldType.URL, 'disUrl', 'Disabled Url', 'default').setDisabled(true))
-            .addField(new Field(FieldType.URL, 'readUrl', 'Read Url', 'default').setReadOnly(true))
+            .addField(new Field(FieldType.URL, 'disUrl', 'Disabled Url', 'https://default.local').setDisabled(true))
+            .addField(new Field(FieldType.URL, 'readUrl', 'Read Url', 'https://default.local').setReadOnly(true))
 
             .addField(new Field(FieldType.CHECKBOX, 'check', 'IsOk'))
             .addField(new Field(FieldType.CHECKBOX, 'disCheck', 'IsOk').setDisabled(true))
@@ -84,6 +84,15 @@ export default class SampleApplication extends ABasicApplication implements IWeb
 
             .addField(new Field(FieldType.PASSWORD, 'pass', 'Password'))
             .addField(new Field(FieldType.PASSWORD, 'pass2', 'Password2'))
+
+            .addField(new Field(FieldType.MULTI_SELECT, 'multi', 'MultiSelect').setChoices([{ key: 'val' }, { foo: 'bar' }, { some: 'bbq' }]))
+            .addField(new Field(FieldType.MULTI_SELECT, 'disMulti', 'Disabled MultiSelect', 'key')
+                .setChoices([{ key: 'val' }])
+                .setDescription('Some desc for multi-selectbox')
+                .setDisabled(true))
+            .addField(new Field(FieldType.MULTI_SELECT, 'readMulti', 'Read MultiSelect', ['key', 'some'])
+                .setChoices([{ key: 'val' }, { foo: 'bar' }, { some: 'bbq' }])
+                .setReadOnly(true))
 
             .addField(new Field(FieldType.SELECT_BOX, 'sel', 'Select').setChoices([{ key: 'val' }]))
             .addField(new Field(FieldType.SELECT_BOX, 'disSel', 'Disabled Select', 'key')
