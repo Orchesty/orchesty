@@ -140,6 +140,21 @@
                       :items="getEntries(field.choices)"
                     />
                   </validation-provider>
+                  <validation-provider
+                    v-if="field.type === 'multiselect'"
+                    :name="field.key"
+                    slim
+                  >
+                    <app-select
+                      v-model="settingsForms[index].fields[field.key]"
+                      :clearable="!field.readOnly"
+                      :readonly="field.readOnly"
+                      :disabled="field.disabled"
+                      :label="field.label"
+                      :multiple="true"
+                      :items="getEntries(field.choices)"
+                    />
+                  </validation-provider>
                   <app-item-password-modal
                     v-if="field.type === 'password' && !form.readOnly"
                     :form-key="form.key"
