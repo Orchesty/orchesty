@@ -27,6 +27,15 @@ func (this *LimitSvc) ReFillLimits(limits map[string]int) {
 
 	usedToHave := len(this.limits)
 	this.limits = make(map[string]*model.Limit)
+	this.limits[""] = &model.Limit{
+		FullKey:       "",
+		SystemKey:     "",
+		UserKey:       "",
+		Time:          1,
+		TimeToRefresh: 1,
+		Maximum:       999,
+		Allowed:       999,
+	}
 
 	for key := range limits {
 		limits := model.ParseLimits(key)
