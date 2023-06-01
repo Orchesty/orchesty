@@ -1,5 +1,11 @@
 # Release Notes
 
+## 2.1.2
+
+### Changes
+
+- Backend: removed prefix from TOPOLOGY_API_DSN value
+
 ## 2.1.1
 
 ### Changes
