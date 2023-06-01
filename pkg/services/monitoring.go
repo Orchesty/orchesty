@@ -35,13 +35,17 @@ func (m *Monitoring) Run() {
 			config.Logger.Fatal(err)
 		}
 
-		limiterCount, err := m.limiterCollection.CountDocuments(context, map[string]interface{}{})
+		limiterCount, err := m.limiterCollection.CountDocuments(context, bson.M{
+			"allowedAt": bson.M{"$eq": "$created"},
+		})
 
 		if err != nil {
 			config.Logger.Fatal(err)
 		}
 
-		repeaterCount, err := m.repeaterCollection.CountDocuments(context, map[string]interface{}{})
+		repeaterCount, err := m.repeaterCollection.CountDocuments(context, bson.M{
+			"allowedAt": bson.M{"$ne": "$created"},
+		})
 
 		if err != nil {
 			config.Logger.Fatal(err)
