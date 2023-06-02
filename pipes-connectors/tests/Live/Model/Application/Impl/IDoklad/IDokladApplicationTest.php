@@ -74,6 +74,7 @@ final class IDokladApplicationTest extends ControllerTestCaseAbstract
      */
     public function testCreateAccessToken(): void
     {
+        self::markTestSkipped('live tests');
         $this->mockServer = new MockServer();
         self::getContainer()->set('hbpf.worker-api', $this->mockServer);
 

@@ -25,6 +25,7 @@ final class FakturoidGetAccountDetailConnectorTest extends ControllerTestCaseAbs
      */
     public function testAuthorize(): void
     {
+        self::markTestSkipped('live tests');
         $app = self::getContainer()->get('hbpf.application.fakturoid');
 
         $applicationInstall = new ApplicationInstall();
