@@ -1,7 +1,7 @@
 import assert from 'assert';
 import { Express } from 'express';
 import supertest, { Response } from 'supertest';
-import { createDbTenants, createUsageStats, getJWTToken } from '../../../test/dataProvider';
+import { createDbTenants, createUsageStats, dropMetadata, getJWTToken } from '../../../test/dataProvider';
 import { app } from '../../config/config';
 import Services from '../../DIContainer/Services';
 import GranularityError from '../../errors/GranularityError';
@@ -220,6 +220,18 @@ describe('usageStatsController', () => {
                 estimatedTotalCost: 1200000,
             },
             ]);
+            assert.deepEqual(resp.statusCode, 200);
+        });
+        it('without metadata', async () => {
+            await dropMetadata();
+            const resp = await supertest(getServer()).get('/billing/reports/apps').query({
+                timeRangeStart: '2018-07-20T05:17:36Z',
+                timeRangeEnd: '2024-07-20T05:17:36Z',
+                granularity: 'monthly',
+                appId: 'neco',
+            }).set(authorization);
+            assert.notEqual(resp.body.billingHistoryStart, null);
+            assert.notEqual(resp.body.billingHistoryEnd, null);
             assert.deepEqual(resp.statusCode, 200);
         });
     });
