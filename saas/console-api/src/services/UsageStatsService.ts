@@ -81,11 +81,10 @@ export default class UsageStatsService {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-call
             row.instanceIds.sort();
         });
-        const metadata = await this.findMetadata(tenantId, query.instanceId);
+
         return {
             rows,
-            billingHistoryStart: new Date(metadata.billingHistoryStart).toISOString(),
-            billingHistoryEnd: new Date(metadata.billingHistoryEnd).toISOString(),
+            ...await this.prepareMetadata(tenantId, query.instanceId),
         };
     }
 
@@ -130,11 +129,10 @@ export default class UsageStatsService {
         ];
 
         const rows = await this.db.getBillingCollection(collectionName).aggregate(aggregations).toArray();
-        const metadata = await this.findMetadata(tenantId, query.instanceId);
+
         return {
             rows,
-            billingHistoryStart: new Date(metadata.billingHistoryStart).toISOString(),
-            billingHistoryEnd: new Date(metadata.billingHistoryEnd).toISOString(),
+            ...await this.prepareMetadata(tenantId, query.instanceId),
         };
     }
 
@@ -182,11 +180,10 @@ export default class UsageStatsService {
             row.instanceIds.sort();
             /* eslint-enable @typescript-eslint/no-unsafe-call */
         });
-        const metadata = await this.findMetadata(tenantId, query.instanceId);
+
         return {
             rows,
-            billingHistoryStart: new Date(metadata.billingHistoryStart).toISOString(),
-            billingHistoryEnd: new Date(metadata.billingHistoryEnd).toISOString(),
+            ...await this.prepareMetadata(tenantId, query.instanceId),
         };
     }
 
@@ -221,11 +218,10 @@ export default class UsageStatsService {
         ];
 
         const rows = await this.db.getBillingCollection(collectionName).aggregate(aggregations).toArray();
-        const metadata = await this.findMetadata(tenantId, query.instanceId);
+
         return {
             rows,
-            billingHistoryStart: new Date(metadata.billingHistoryStart).toISOString(),
-            billingHistoryEnd: new Date(metadata.billingHistoryEnd).toISOString(),
+            ...await this.prepareMetadata(tenantId, query.instanceId),
         };
     }
 
@@ -270,11 +266,10 @@ export default class UsageStatsService {
         ];
 
         const rows = await this.db.getBillingCollection(collectionName).aggregate(aggregations).toArray();
-        const metadata = await this.findMetadata(tenantId, query.instanceId);
+
         return {
             rows,
-            billingHistoryStart: new Date(metadata.billingHistoryStart).toISOString(),
-            billingHistoryEnd: new Date(metadata.billingHistoryEnd).toISOString(),
+            ...await this.prepareMetadata(tenantId, query.instanceId),
         };
     }
 
@@ -399,9 +394,26 @@ export default class UsageStatsService {
             row.instanceIds.sort();
             /* eslint-enable @typescript-eslint/no-unsafe-call */
         });
-        const metadata = await this.findMetadata(tenantId, query.instanceId);
+
         return {
             rows,
+            ...await this.prepareMetadata(tenantId, query.instanceId),
+        };
+    }
+
+    private async prepareMetadata(
+        tenantId: string,
+        instanceId: string | undefined = undefined,
+    ): Promise<IMetadataResponse> {
+        let metadata = {
+            billingHistoryStart: new Date(),
+            billingHistoryEnd: new Date(),
+        };
+        try {
+            metadata = await this.findMetadata(tenantId, instanceId);
+        } catch (e) {}
+
+        return {
             billingHistoryStart: new Date(metadata.billingHistoryStart).toISOString(),
             billingHistoryEnd: new Date(metadata.billingHistoryEnd).toISOString(),
         };

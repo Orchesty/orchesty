@@ -167,6 +167,11 @@ export async function createDbTenants(tenantId = '', drop = true): Promise<void>
     await getDb().getCloudCollection(CollectionEnum.TENANT).insertOne(generateDbTenantMockedData(tenantId));
 }
 
+export async function dropMetadata(): Promise<void> {
+    await getDb().getBillingCollection(CollectionEnum.USAGE_STATS_METADATA)
+        .drop();
+}
+
 export async function createUsageStats(): Promise<void> {
     await getDb().getBillingCollection(CollectionEnum.USAGE_STATS_MONTHLY)
         .drop();
