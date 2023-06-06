@@ -38,7 +38,7 @@ global:
         APP_ENV:
           value: debug
         REDIS_DSN:
-          value: redis://redis
+          value: redis://pipes-redis
 
   backend:
     alpha_instance_id: hm8rohmtf6
