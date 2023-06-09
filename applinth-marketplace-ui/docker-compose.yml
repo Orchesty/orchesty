@@ -29,6 +29,10 @@ services:
       STARTING_POINT_URL: starting-point:8080
       CRON_DSN: http://cron-api:8080
       JWT_KEY: BWoCz4gxw3YHDMkqE5HD1WT2u6zqIAtiJkYVyf6UucL4ZtbhhatQooP5IgTQRwowYR6z8wE3biqZTl37
+      RABBITMQ_DSN: amqp://rabbitmq:5672
+      DOCKER_PF_BRIDGE_IMAGE: orchesty/bridge:2.0.0
+      EMAIL_DSN: smtp://mailhog:1025
+      ALPHA_INSTANCE_ID: 'demo'
       JWE_PRIVATE_KEY: |
         -----BEGIN EC PRIVATE KEY-----
         MIHcAgEBBEIAGmQ//yMnyMlFAN/E2yfZjzFL1ziTrAbDwa08KEPBq+NUWHvrxrs7
@@ -54,7 +58,7 @@ services:
       STARTING_POINT_DSN: starting-point:8080
       WORKER_API_HOST: http://worker-api:8080
       ORCHESTY_API_KEY: ${ORCHESTY_API_KEY}
-    command: sh -c 'pnpm install && pnpm run start'
+    command: sh -c 'pnpm run start'
 
   worker-api:
       image: worker-api:tag
@@ -62,13 +66,13 @@ services:
       user: ${DEV_UID}:${DEV_GID}
       working_dir: /var/www
       volumes:
-        - ./../worker-api:/var/www
+        - ./../worker-api:/var/www:cached
       environment:
         APP_ENV: 'debug'
         MONGODB_DSN: mongodb://mongo/pipes
         FLUENTD_DSN: 'fluentd:9880'
         TZ: 'UTC'
-      command: sh -c 'pnpm install && pnpm run start'
+      command: sh -c 'pnpm run start'
 
   mongo:
     image: mongo:latest

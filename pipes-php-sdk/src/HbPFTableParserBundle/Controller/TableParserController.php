@@ -2,9 +2,7 @@
 
 namespace Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Controller;
 
-use Hanaboso\CommonsBundle\Exception\FileStorageException;
 use Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler;
-use Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandlerException;
 use Hanaboso\PipesPhpSdk\Parser\Exception\TableParserException;
 use Hanaboso\Utils\System\ControllerUtils;
 use Hanaboso\Utils\Traits\ControllerTrait;
@@ -76,7 +74,7 @@ final class TableParserController
     {
         try {
             return $this->getResponse($this->tableParserHandler->parseFromJson($type, $request->request->all()));
-        } catch (TableParserHandlerException | TableParserException | FileStorageException | Throwable $e) {
+        } catch (Throwable $e) {
             return $this->getErrorResponse($e, 500, ControllerUtils::INTERNAL_SERVER_ERROR, $request->headers->all());
         }
     }

@@ -77,7 +77,7 @@ export default {
     },
     name: {
       type: String,
-      required: true,
+      default: () => "",
     },
     formKey: {
       type: String,
@@ -115,6 +115,7 @@ export default {
         },
       })
       this.isSaving = false
+      this.isOpen = false
     },
     togglePasswordVisibility() {
       this.isPasswordVisible = !this.isPasswordVisible
