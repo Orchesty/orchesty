@@ -32,7 +32,6 @@ paths:
                                 - iid
                                 - type
                                 - version
-                                - data
                                 - created
                             properties:
                                 iid:
@@ -41,12 +40,14 @@ paths:
                                     maxLength: 32
                                 type:
                                     type: string
+                                    enum: [applinth_enduser_app_install, applinth_enduser_app_uninstall, cloud_install, cloud_uninstall, applinth_enduser_app_hearthbeat, orchesty_operations]
                                     minLength: 3
                                     maxLength: 64
-                                vesrsion:
+                                version:
                                     type: integer
                                 data:
                                     type: object
+                                    description: Required for types applinth_enduser_app_install, applinth_enduser_app_uninstall [aid, euid] and orchesty_operations [total, day]
                                     properties:
                                         aid:
                                             type: string
@@ -54,6 +55,11 @@ paths:
                                         euid:
                                             type: string
                                             maxLength: 100
+                                        total:
+                                            type: number
+                                            maxLength: 100
+                                        day:
+                                            type: string
                                 created:
                                     type: string
                                     format: int64
