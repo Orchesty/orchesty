@@ -2,11 +2,11 @@ import assert from 'assert';
 import { Express } from 'express';
 import supertest, { Response } from 'supertest';
 import { createDbTenants, createUsageStats, dropMetadata, getJWTToken } from '../../../test/dataProvider';
-import { app } from '../../config/config';
-import Services from '../../DIContainer/Services';
-import GranularityError from '../../errors/GranularityError';
+import { app } from '../../base/config/config';
+import Services from '../../base/DIContainer/Services';
+import GranularityError from '../../base/errors/GranularityError';
+import Mongo from '../../base/storage/mongo/Mongo';
 import { container } from '../../index';
-import Mongo from '../../storage/mongo/Mongo';
 
 function assertUserData(resp: Response): void {
     assert.deepEqual(resp.body.rows.length, 4);

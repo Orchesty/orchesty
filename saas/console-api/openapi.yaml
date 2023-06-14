@@ -867,36 +867,6 @@ paths:
                 '500':
                     $ref: "#/components/responses/500BadRequest"
 
-        delete:
-            description: Delete Cloud entity
-            x-swagger-router-controller: clouds
-            operationId: deleteCloud
-            tags:
-                - Clouds
-            parameters:
-                -   $ref: "#/components/parameters/_idPath"
-            responses:
-                '200':
-                    description: Success
-                    content:
-                        application/json:
-                            schema:
-                                type: object
-                                properties:
-                                    msg:
-                                        description: Message for address
-                                        type: string
-                '400':
-                    $ref: "#/components/responses/400BadRequest"
-                '401':
-                    $ref: "#/components/responses/401Unauthorized"
-                '403':
-                    $ref: "#/components/responses/403Forbidden"
-                '404':
-                    $ref: "#/components/responses/404NotFound"
-                '500':
-                    $ref: "#/components/responses/500BadRequest"
-
     /clouds:
         get:
             description: Get list of Clouds
@@ -911,27 +881,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: "#/components/schemas/CloudsRows"
-                '400':
-                    $ref: "#/components/responses/400BadRequest"
-                '401':
-                    $ref: "#/components/responses/401Unauthorized"
-                '403':
-                    $ref: "#/components/responses/403Forbidden"
-                '404':
-                    $ref: "#/components/responses/404NotFound"
-                '500':
-                    $ref: "#/components/responses/500BadRequest"
-        post:
-            description: Create Cloud entity
-            x-swagger-router-controller: clouds
-            operationId: createCloud
-            tags:
-                - Clouds
-            requestBody:
-                $ref: '#/components/requestBodies/CloudBody'
-            responses:
-                '200':
-                    description: Success
                 '400':
                     $ref: "#/components/responses/400BadRequest"
                 '401':
@@ -1059,7 +1008,7 @@ paths:
             tags:
                 - Applinths
             requestBody:
-                $ref: '#/components/requestBodies/ApplinthBody'
+                $ref: '#/components/requestBodies/ApplinthWithCloudBody'
             responses:
                 '200':
                     description: Success
@@ -1190,7 +1139,7 @@ paths:
             tags:
                 - Orchestras
             requestBody:
-                $ref: '#/components/requestBodies/OrchestyBody'
+                $ref: '#/components/requestBodies/OrchestyWithCloudBody'
             responses:
                 '200':
                     description: Success
@@ -1663,7 +1612,7 @@ components:
                         oneOf:
                             -   $ref: '#/components/schemas/CreateTenant'
         UpdateTenantBody:
-            description: A JSON object containing user information
+            description: A JSON object containing tenant information
             required: true
             content:
                 application/json:
@@ -1671,7 +1620,7 @@ components:
                         oneOf:
                             -   $ref: '#/components/schemas/UpdateTenant'
         ClientBody:
-            description: A JSON object containing user information
+            description: A JSON object containing client information
             required: true
             content:
                 application/json:
@@ -1679,7 +1628,7 @@ components:
                         oneOf:
                             -   $ref: '#/components/schemas/CreateClient'
         AddressBody:
-            description: A JSON object containing user information
+            description: A JSON object containing address information
             required: true
             content:
                 application/json:
@@ -1687,7 +1636,7 @@ components:
                         oneOf:
                             -   $ref: '#/components/schemas/CreateAddress'
         CloudBody:
-            description: A JSON object containing user information
+            description: A JSON object containing cloud information
             required: true
             content:
                 application/json:
@@ -1695,21 +1644,37 @@ components:
                         oneOf:
                             -   $ref: '#/components/schemas/CreateCloud'
         ApplinthBody:
-            description: A JSON object containing user information
+            description: A JSON object containing applinth information
             required: true
             content:
                 application/json:
                     schema:
                         oneOf:
                             -   $ref: '#/components/schemas/CreateApplinth'
+        ApplinthWithCloudBody:
+            description: A JSON object containing applinth information
+            required: true
+            content:
+                application/json:
+                    schema:
+                        oneOf:
+                            -   $ref: '#/components/schemas/CreateApplinthWithCloud'
         OrchestyBody:
-            description: A JSON object containing user information
+            description: A JSON object containing orchesty information
             required: true
             content:
                 application/json:
                     schema:
                         oneOf:
                             -   $ref: '#/components/schemas/CreateOrchesty'
+        OrchestyWithCloudBody:
+            description: A JSON object containing orchesty information
+            required: true
+            content:
+                application/json:
+                    schema:
+                        oneOf:
+                            -   $ref: '#/components/schemas/CreateOrchestyWithCloud'
         CorrectionBody:
             description: A JSON object containing user information
             required: true
@@ -2095,6 +2060,31 @@ components:
                     type: number
                 minPriceDate:
                     type: string
+        CreateApplinthWithCloud:
+            type:
+                object
+            properties:
+                created:
+                    type: string
+                    nullable: true
+                updated:
+                    type: string
+                    nullable: true
+                deleted:
+                    type: string
+                    nullable: true
+                tenantId:
+                    type: string
+                instanceId:
+                    type: string
+                minPrice:
+                    type: number
+                minPriceDate:
+                    type: string
+                instanceDisplayName:
+                    type: string
+                cloud:
+                    $ref: '#/components/schemas/CreateCloud'
         CreateOrchesty:
             type:
                 object
@@ -2118,6 +2108,34 @@ components:
                     type: number
                 startDate:
                     type: string
+        CreateOrchestyWithCloud:
+            type:
+                object
+            properties:
+                created:
+                    type: string
+                    nullable: true
+                updated:
+                    type: string
+                    nullable: true
+                deleted:
+                    type: string
+                    nullable: true
+                tenantId:
+                    type: string
+                instanceId:
+                    type: string
+                version:
+                    type: string
+                price:
+                    type: number
+                startDate:
+                    type: string
+                instanceDisplayName:
+                    type: string
+                cloud:
+                    $ref: '#/components/schemas/CreateCloud'
+
         CreateCorrection:
             type:
                 object

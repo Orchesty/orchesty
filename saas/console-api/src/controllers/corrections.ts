@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import Services from '../DIContainer/Services';
+import CorrectionService from '../admin/services/CorrectionService';
+import Services from '../base/DIContainer/Services';
 import { container } from '../index';
-import CorrectionService from '../services/CorrectionService';
 import { create, get, ISearchQuery, list, remove, update } from './baseController';
 
 export interface ICorrectionSearchQuery extends ISearchQuery {

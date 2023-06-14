@@ -1,12 +1,18 @@
 import { Request, Response } from 'express';
-import Services from '../DIContainer/Services';
+import Cloud from '../admin/entities/Cloud';
+import OrchestyService from '../admin/services/OrchestyService';
+import Services from '../base/DIContainer/Services';
+import { ResourceEnum } from '../base/enums/ResourceEnum';
+import handleError from '../base/handlers/errorHandler';
+import { preprocessRequestForAdmin } from '../base/security/securityService';
 import { container } from '../index';
-import OrchestyService from '../services/OrchestyService';
-import { create, get, ISearchQuery, list, remove, update } from './baseController';
+import { get, ISearchQuery, list, update } from './baseController';
 
 export interface IOrchestySearchQuery extends ISearchQuery {
     tenantId?: string | null;
     instanceId?: string | null;
+    instanceDisplayName?: string;
+    cloud?: Cloud;
 }
 
 function getOrchestrasService(): OrchestyService {
@@ -30,11 +36,14 @@ export async function getOrchesty(req: Request, res: Response): Promise<void> {
 }
 
 export async function createOrchesty(req: Request, res: Response): Promise<void> {
-    const orchesty = await create(getOrchestrasService(), req, res);
-    if (!orchesty) {
-        return;
+    try {
+        const orchesty = await getOrchestrasService().createOrchesty(
+            preprocessRequestForAdmin(req, ResourceEnum.SUPER_ADMIN),
+        );
+        res.status(200).send({ orchesty });
+    } catch (e) {
+        handleError(e as Error, req, res);
     }
-    res.status(200).send({ orchesty });
 }
 
 export async function updateOrchesty(req: Request, res: Response): Promise<void> {
@@ -46,9 +55,12 @@ export async function updateOrchesty(req: Request, res: Response): Promise<void>
 }
 
 export async function deleteOrchesty(req: Request, res: Response): Promise<void> {
-    const msg = await remove(getOrchestrasService(), req, res);
-    if (!msg) {
-        return;
+    try {
+        const resp = await getOrchestrasService().deleteOrchesty(
+            preprocessRequestForAdmin(req, ResourceEnum.SUPER_ADMIN),
+        );
+        res.status(200).send(resp);
+    } catch (e) {
+        handleError(e as Error, req, res);
     }
-    res.status(200).send(msg);
 }

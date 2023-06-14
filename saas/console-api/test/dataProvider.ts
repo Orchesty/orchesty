@@ -9,13 +9,16 @@ import {
 import { sign } from 'jsonwebtoken';
 import { DateTime } from 'luxon';
 import { Document, InsertManyResult, ObjectId } from 'mongodb';
-import { CollectionEnum } from '../src/enums/CollectionEnum';
-import { getAllResources } from '../src/enums/ResourceEnum';
+import { CollectionEnum } from '../src/base/enums/CollectionEnum';
+import { getAllResources } from '../src/base/enums/ResourceEnum';
 import GetUsersResult = auth.GetUsersResult;
 import { container } from '../src';
-import Services from '../src/DIContainer/Services';
-import Tenant from '../src/entities/Tenant';
-import Mongo from '../src/storage/mongo/Mongo';
+import Cloud from '../src/admin/entities/Cloud';
+import { CloudPlan } from '../src/admin/enums/CloudPlan';
+import { Period } from '../src/admin/enums/Period';
+import Services from '../src/base/DIContainer/Services';
+import Tenant from '../src/base/entities/Tenant';
+import Mongo from '../src/base/storage/mongo/Mongo';
 
 function generateUsageStatsRow(
     start: DateTime,
@@ -262,4 +265,21 @@ export async function getBillingApiData(collection: string, _id: string): Promis
             $exists: false,
         },
     });
+}
+
+export const cloudBasicData = {
+    created: null,
+    updated: null,
+    deleted: null,
+    tenantId: 'tenantId',
+    instanceId: 'instanceId',
+    plan: CloudPlan.BASIC,
+    price: 0,
+    period: Period.MONTHLY,
+    startDate: new Date('2022-01-01'),
+    closeDate: new Date('2022-01-01'),
+} as Cloud;
+
+export async function createClouds(data: Cloud = cloudBasicData): Promise<InsertManyResult> {
+    return createBillingApiData(CollectionEnum.CLOUD, [data]);
 }

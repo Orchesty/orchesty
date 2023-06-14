@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import Services from '../DIContainer/Services';
+import ModuleService from '../admin/services/ModuleService';
+import Services from '../base/DIContainer/Services';
 import { container } from '../index';
-import ModuleService from '../services/ModuleService';
 import { create, get, ISearchQuery, list, remove, update } from './baseController';
 
 export interface IModuleSearchQuery extends ISearchQuery {

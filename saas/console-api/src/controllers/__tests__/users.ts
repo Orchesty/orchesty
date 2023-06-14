@@ -10,7 +10,7 @@ import {
     generateUsersExport,
     getJWTToken,
 } from '../../../test/dataProvider';
-import Services from '../../DIContainer/Services';
+import Services from '../../base/DIContainer/Services';
 import { container } from '../../index';
 
 const adminAuth = admin.auth().tenantManager().authForTenant('t-123456789');

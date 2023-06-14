@@ -18,6 +18,9 @@ services:
             MONGODB_DSN: mongodb://mongo
             FIREBASE_API_KEY: AIzaSyANIRePUXX1f8fr-IS2ljSU8FgLkC53a0o
             FIREBASE_AUTH_DOMAIN: 'orchesty-cloud-stage.firebaseapp.com'
+            USCCP_URI: 'http://usscp'
+            CLOUD_CONTROLLER_URI: 'http://cloud_controller'
+            CLOUD_BRIDGE: 'false'
         command: sleep infinity
 
     mongo:

@@ -1,11 +1,12 @@
 import { Request, Response } from 'express';
-import Services from '../DIContainer/Services';
+import CloudService from '../admin/services/CloudService';
+import Services from '../base/DIContainer/Services';
 import { container } from '../index';
-import CloudService from '../services/CloudService';
-import { create, get, ISearchQuery, list, remove, update } from './baseController';
+import { get, ISearchQuery, list, update } from './baseController';
 
 export interface ICloudSearchQuery extends ISearchQuery {
     tenantId?: string | null;
+    instanceId?: string;
 }
 
 function getCloudsService(): CloudService {
@@ -28,26 +29,10 @@ export async function getCloud(req: Request, res: Response): Promise<void> {
     res.status(200).send({ cloud });
 }
 
-export async function createCloud(req: Request, res: Response): Promise<void> {
-    const cloud = await create(getCloudsService(), req, res);
-    if (!cloud) {
-        return;
-    }
-    res.status(200).send({ cloud });
-}
-
 export async function updateCloud(req: Request, res: Response): Promise<void> {
     const cloud = await update(getCloudsService(), req, res);
     if (!cloud) {
         return;
     }
     res.status(200).send({ cloud });
-}
-
-export async function deleteCloud(req: Request, res: Response): Promise<void> {
-    const msg = await remove(getCloudsService(), req, res);
-    if (!msg) {
-        return;
-    }
-    res.status(200).send(msg);
 }

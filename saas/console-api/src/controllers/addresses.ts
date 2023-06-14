@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import Services from '../DIContainer/Services';
+import AddressService from '../admin/services/AddressService';
+import Services from '../base/DIContainer/Services';
 import { container } from '../index';
-import AddressService from '../services/AddressService';
 import { create, get, ISearchQuery, list, remove, update } from './baseController';
 
 export interface IAddressSearchQuery extends ISearchQuery {

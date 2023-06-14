@@ -7,21 +7,22 @@ import jsyaml from 'js-yaml';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-expect-error
 import { configure, initializeMiddleware } from 'oas-tools';
-import { app, firebase, mongo } from './config/config';
-import DIContainer from './DIContainer/Container';
-import Services from './DIContainer/Services';
-import { logger } from './logger/logger';
-import AddressService from './services/AddressService';
-import ApplinthService from './services/ApplinthService';
-import ClientService from './services/ClientService';
-import CloudService from './services/CloudService';
-import CorrectionService from './services/CorrectionService';
-import ModuleService from './services/ModuleService';
-import OrchestyService from './services/OrchestyService';
-import TenantService from './services/TenantService';
-import UsageStatsService from './services/UsageStatsService';
-import UsersService from './services/UsersService';
-import Mongo from './storage/mongo/Mongo';
+import CloudController from './admin/cloudController/CloudController';
+import AddressService from './admin/services/AddressService';
+import ApplinthService from './admin/services/ApplinthService';
+import ClientService from './admin/services/ClientService';
+import CloudService from './admin/services/CloudService';
+import CorrectionService from './admin/services/CorrectionService';
+import ModuleService from './admin/services/ModuleService';
+import OrchestyService from './admin/services/OrchestyService';
+import { app, firebase, mongo } from './base/config/config';
+import DIContainer from './base/DIContainer/Container';
+import Services from './base/DIContainer/Services';
+import { logger } from './base/logger/logger';
+import TenantService from './base/services/TenantService';
+import UsersService from './base/services/UsersService';
+import Mongo from './base/storage/mongo/Mongo';
+import UsageStatsService from './billing/services/UsageStatsService';
 
 const container = new DIContainer();
 
@@ -51,8 +52,8 @@ async function initServices(): Promise<void> {
     const clientService = new ClientService(db);
     const addressService = new AddressService(db);
     const cloudService = new CloudService(db);
-    const applinthService = new ApplinthService(db);
-    const orchestyService = new OrchestyService(db);
+    const applinthService = new ApplinthService(db, cloudService, new CloudController());
+    const orchestyService = new OrchestyService(db, cloudService, new CloudController());
     const correctionService = new CorrectionService(db);
     const moduleService = new ModuleService(db);
     const tenantService = new TenantService(db);

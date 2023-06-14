@@ -1,6 +1,6 @@
-import { app } from './config/config';
+import { app } from './base/config/config';
+import { logger } from './base/logger/logger';
 import { createServer, initServices } from './index';
-import { logger } from './logger/logger';
 
 initServices()
     .then(() => {

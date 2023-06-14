@@ -2,9 +2,9 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import {container, createServer, initServices} from '../src';
 import {generateAuth} from '../test/dataProvider';
-import Mongo from '../src/storage/mongo/Mongo';
-import Services from '../src/DIContainer/Services';
-import {CollectionEnum} from "../src/enums/CollectionEnum";
+import Mongo from '../src/base/storage/mongo/Mongo';
+import Services from '../src/base/DIContainer/Services';
+import {CollectionEnum} from "../src/base/enums/CollectionEnum";
 
 beforeEach(async () => {
     const storage = container.get<Mongo>(Services.STORAGE)

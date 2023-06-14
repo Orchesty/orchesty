@@ -3,9 +3,9 @@ import { Express } from 'express';
 import { InsertManyResult } from 'mongodb';
 import supertest from 'supertest';
 import { createBillingApiData, getBillingApiData } from '../../../test/dataProvider';
-import Services from '../../DIContainer/Services';
-import Address from '../../entities/Address';
-import { CollectionEnum } from '../../enums/CollectionEnum';
+import Address from '../../admin/entities/Address';
+import Services from '../../base/DIContainer/Services';
+import { CollectionEnum } from '../../base/enums/CollectionEnum';
 import { container } from '../../index';
 
 const basicData = {

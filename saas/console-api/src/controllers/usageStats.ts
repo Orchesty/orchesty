@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
-import Services from '../DIContainer/Services';
-import { ResourceEnum } from '../enums/ResourceEnum';
-import handleError from '../handlers/errorHandler';
+import Services from '../base/DIContainer/Services';
+import { ResourceEnum } from '../base/enums/ResourceEnum';
+import handleError from '../base/handlers/errorHandler';
+import { preprocessRequest } from '../base/security/securityService';
+import UsageStatsService from '../billing/services/UsageStatsService';
 import { container } from '../index';
-import { preprocessRequest } from '../security/securityService';
-import UsageStatsService from '../services/UsageStatsService';
 
 export interface IAppsAggregationParams {
     tenantId?: string;

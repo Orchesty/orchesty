@@ -13,7 +13,7 @@ import {
     generateUserMockedData,
     getJWTToken,
 } from '../../../test/dataProvider';
-import Services from '../../DIContainer/Services';
+import Services from '../../base/DIContainer/Services';
 import { authApp, container } from '../../index';
 
 const tenantManager = admin.auth().tenantManager();
