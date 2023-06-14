@@ -1,16 +1,16 @@
 import { Request, Response } from 'express';
 import { ObjectId } from 'mongodb';
-import BaseEntity from '../entities/BaseEntity';
-import { ResourceEnum } from '../enums/ResourceEnum';
-import handleError from '../handlers/errorHandler';
-import { preprocessRequestForAdmin } from '../security/securityService';
-import BaseService from '../services/BaseService';
+import BaseEntity from '../admin/entities/BaseEntity';
+import BaseService from '../admin/services/BaseService';
+import { ResourceEnum } from '../base/enums/ResourceEnum';
+import handleError from '../base/handlers/errorHandler';
+import { preprocessRequestForAdmin } from '../base/security/securityService';
 
 export interface ISearchQuery {
     _id?: ObjectId;
     created?: Date;
     updated?: Date;
-    deleted?: Date;
+    deleted?: Date | null;
 }
 
 export async function list<

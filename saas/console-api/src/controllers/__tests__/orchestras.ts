@@ -2,11 +2,13 @@ import assert from 'assert';
 import { Express } from 'express';
 import { InsertManyResult } from 'mongodb';
 import supertest from 'supertest';
-import { createBillingApiData, getBillingApiData } from '../../../test/dataProvider';
-import Services from '../../DIContainer/Services';
-import Orchesty from '../../entities/Orchesty';
-import { CollectionEnum } from '../../enums/CollectionEnum';
-import { OrchestyVersion } from '../../enums/OrchestyVersion';
+import { mockAdapter } from '../../../.jest/testLifecycle';
+import { cloudBasicData, createBillingApiData, createClouds, getBillingApiData } from '../../../test/dataProvider';
+import Orchesty from '../../admin/entities/Orchesty';
+import { OrchestyVersion } from '../../admin/enums/OrchestyVersion';
+import Services from '../../base/DIContainer/Services';
+import { CollectionEnum } from '../../base/enums/CollectionEnum';
+import Mongo from '../../base/storage/mongo/Mongo';
 import { container } from '../../index';
 
 const basicData = {
@@ -24,11 +26,18 @@ function getServer(): Express {
     return container.get<Express>(Services.SERVER);
 }
 
+function getMongo(): Mongo {
+    return container.get<Mongo>(Services.STORAGE);
+}
+
 async function createOrchestras(data: Orchesty = basicData): Promise<InsertManyResult> {
     return createBillingApiData(CollectionEnum.ORCHESTY, [data]);
 }
 
 describe('orchestrasController', () => {
+    beforeAll(() => {
+        mockAdapter.onPut('http://usscp').reply(200);
+    });
     describe('list', () => {
         it('ok', async () => {
             await createOrchestras();
@@ -50,12 +59,29 @@ describe('orchestrasController', () => {
     });
     describe('create', () => {
         it('ok', async () => {
-            const resp = await supertest(getServer()).post('/orchestras').send(basicData);
+            const resp = await supertest(getServer()).post('/orchestras').send({
+                ...basicData,
+                cloud: cloudBasicData,
+            });
             assert.deepEqual(resp.statusCode, 200);
             const data = JSON.parse(JSON.stringify(basicData));
-            data._id = resp.body.orchesty._id;
-            data.created = resp.body.orchesty.created;
-            assert.deepEqual(resp.body.orchesty, data);
+            const { orchesty } = resp.body;
+            data._id = orchesty._id;
+            data.created = orchesty.created;
+            assert.deepEqual(orchesty, data);
+
+            const cloud = await getMongo().getCloudCollection(
+                CollectionEnum.CLOUD,
+            ).findOne({ instanceId: orchesty.instanceId });
+
+            const cloudData = JSON.parse(JSON.stringify(cloudBasicData));
+            cloudData._id = cloud?._id;
+            cloudData.created = cloud?.created;
+            if (cloud) {
+                cloud.closeDate = cloudData.closeDate;
+                cloud.startDate = cloudData.startDate;
+            }
+            assert.deepEqual(cloud, cloudData);
         });
     });
     describe('get', () => {
@@ -93,11 +119,17 @@ describe('orchestrasController', () => {
     describe('delete', () => {
         it('ok', async () => {
             const insertedId = Object.values((await createOrchestras(basicData)).insertedIds)[0].toString();
+            await createClouds(cloudBasicData);
             const resp = await supertest(getServer()).delete(`/orchestras/${insertedId}`);
             assert.deepEqual(resp.statusCode, 200);
             assert.deepEqual(resp.body.msg, 'Entity successfully deleted!');
-            const entity = await getBillingApiData(CollectionEnum.ADDRESS, insertedId);
+            const entity = await getBillingApiData(CollectionEnum.ORCHESTY, insertedId);
             assert.deepEqual(entity, null);
+
+            const cloudCount = await getMongo().getCloudCollection(
+                CollectionEnum.CLOUD,
+            ).countDocuments({ deleted: null });
+            assert.deepEqual(cloudCount, 0);
         });
     });
 });

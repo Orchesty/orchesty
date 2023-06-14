@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
-import Services from '../DIContainer/Services';
-import { ResourceEnum } from '../enums/ResourceEnum';
-import handleError from '../handlers/errorHandler';
+import Services from '../base/DIContainer/Services';
+import { ResourceEnum } from '../base/enums/ResourceEnum';
+import handleError from '../base/handlers/errorHandler';
+import { preprocessRequest } from '../base/security/securityService';
+import UsersService from '../base/services/UsersService';
 import { container } from '../index';
-import { preprocessRequest } from '../security/securityService';
-import UsersService from '../services/UsersService';
 
 export interface IUserCreateParams extends IUserUpdateParams {
     email?: string;

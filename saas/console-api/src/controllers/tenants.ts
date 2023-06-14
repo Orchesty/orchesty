@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
-import Services from '../DIContainer/Services';
-import { ResourceEnum } from '../enums/ResourceEnum';
-import handleError from '../handlers/errorHandler';
+import Services from '../base/DIContainer/Services';
+import { ResourceEnum } from '../base/enums/ResourceEnum';
+import handleError from '../base/handlers/errorHandler';
+import { preprocessRequest } from '../base/security/securityService';
+import TenantService from '../base/services/TenantService';
 import { container } from '../index';
-import { preprocessRequest } from '../security/securityService';
-import TenantService from '../services/TenantService';
 
 export interface ITenantCreateRequest {
     displayName?: string;

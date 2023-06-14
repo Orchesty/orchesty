@@ -15,6 +15,8 @@ services:
       NODE_ENV: "debug"
       MONGODB_DSN: mongodb://mongo
       FIREBASE_API_KEY: AIzaSyANIRePUXX1f8fr-IS2ljSU8FgLkC53a0o
+      USCCP_URI: 'http://usscp'
+      CLOUD_CONTROLLER_URI: 'http://cloud_controller'
     command: sh -c 'pnpm install && pnpm start'
 
   mongo:

@@ -1,8 +1,8 @@
 import { readFileSync } from 'fs';
 import path from 'path';
-import { mongo } from '../src/config/config';
-import { CollectionEnum } from '../src/enums/CollectionEnum';
-import Mongo from '../src/storage/mongo/Mongo';
+import { mongo } from '../src/base/config/config';
+import { CollectionEnum } from '../src/base/enums/CollectionEnum';
+import Mongo from '../src/base/storage/mongo/Mongo';
 
 async function createFixtureData(): Promise<void> {
     const db = new Mongo(mongo.dsn);

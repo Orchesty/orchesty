@@ -1,7 +1,7 @@
 import assert from 'assert';
 import { Express } from 'express';
 import supertest from 'supertest';
-import Services from '../../DIContainer/Services';
+import Services from '../../base/DIContainer/Services';
 import { container } from '../../index';
 
 describe('statusController', () => {

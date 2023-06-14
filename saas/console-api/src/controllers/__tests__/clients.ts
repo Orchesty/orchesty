@@ -3,9 +3,9 @@ import { Express } from 'express';
 import { InsertManyResult } from 'mongodb';
 import supertest from 'supertest';
 import { createBillingApiData, getBillingApiData } from '../../../test/dataProvider';
-import Services from '../../DIContainer/Services';
-import Client from '../../entities/Client';
-import { CollectionEnum } from '../../enums/CollectionEnum';
+import Client from '../../admin/entities/Client';
+import Services from '../../base/DIContainer/Services';
+import { CollectionEnum } from '../../base/enums/CollectionEnum';
 import { container } from '../../index';
 
 const basicData = {
@@ -104,7 +104,7 @@ describe('clientsController', () => {
             const resp = await supertest(getServer()).delete(`/clients/${insertedId}`);
             assert.deepEqual(resp.statusCode, 200);
             assert.deepEqual(resp.body.msg, 'Entity successfully deleted!');
-            const entity = await getBillingApiData(CollectionEnum.ADDRESS, insertedId);
+            const entity = await getBillingApiData(CollectionEnum.CLIENT, insertedId);
             assert.deepEqual(entity, null);
         });
     });

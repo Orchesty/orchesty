@@ -1,12 +1,18 @@
 import { Request, Response } from 'express';
-import Services from '../DIContainer/Services';
+import Cloud from '../admin/entities/Cloud';
+import ApplinthService from '../admin/services/ApplinthService';
+import Services from '../base/DIContainer/Services';
+import { ResourceEnum } from '../base/enums/ResourceEnum';
+import handleError from '../base/handlers/errorHandler';
+import { preprocessRequestForAdmin } from '../base/security/securityService';
 import { container } from '../index';
-import ApplinthService from '../services/ApplinthService';
-import { create, get, ISearchQuery, list, remove, update } from './baseController';
+import { get, ISearchQuery, list, update } from './baseController';
 
 export interface IApplinthSearchQuery extends ISearchQuery {
     tenantId?: string | null;
     instanceId?: string | null;
+    instanceDisplayName?: string;
+    cloud?: Cloud;
 }
 
 function getApplinthsService(): ApplinthService {
@@ -30,11 +36,14 @@ export async function getApplinth(req: Request, res: Response): Promise<void> {
 }
 
 export async function createApplinth(req: Request, res: Response): Promise<void> {
-    const applinth = await create(getApplinthsService(), req, res);
-    if (!applinth) {
-        return;
+    try {
+        const applinth = await getApplinthsService().createApplinth(
+            preprocessRequestForAdmin(req, ResourceEnum.SUPER_ADMIN),
+        );
+        res.status(200).send({ applinth });
+    } catch (e) {
+        handleError(e as Error, req, res);
     }
-    res.status(200).send({ applinth });
 }
 
 export async function updateApplinth(req: Request, res: Response): Promise<void> {
@@ -46,9 +55,12 @@ export async function updateApplinth(req: Request, res: Response): Promise<void>
 }
 
 export async function deleteApplinth(req: Request, res: Response): Promise<void> {
-    const msg = await remove(getApplinthsService(), req, res);
-    if (!msg) {
-        return;
+    try {
+        const resp = await getApplinthsService().deleteApplinth(
+            preprocessRequestForAdmin(req, ResourceEnum.SUPER_ADMIN),
+        );
+        res.status(200).send(resp);
+    } catch (e) {
+        handleError(e as Error, req, res);
     }
-    res.status(200).send(msg);
 }
