@@ -1,26 +1,37 @@
 import { Collection, ObjectId, UpdateFilter } from 'mongodb';
-import { UsageStatsType } from './enums/UsageStatsType';
-import { USEvent, USEventType } from './events';
-import { logger } from './index';
-import Mongo, { CollectionEnum } from './storage/mongo/Mongo';
-import TimeModule from './TimeModule';
+import Services from '../DIContainer/Services';
+import { UsageStatsType } from '../enums/UsageStatsType';
+import { USEvent, USEventType } from '../events';
+import { container, logger } from '../index';
+import Mongo, { CollectionEnum } from '../storage/mongo/Mongo';
+import { BaseProcessor, countMetadata, IMetadata, IUsageStatsMonthly } from './BaseProcessor';
+import IProcessor from './IProcessor';
 
-export class UsageStatsGenerator {
+export class EndUserAppInstallProcessor extends BaseProcessor implements IProcessor {
 
-    private readonly currentDateKey: string;
+    public async process(metadataRecord: Record<string, unknown>): Promise<Record<string, unknown>> {
+        const mongo = container.get<Mongo>(Services.MONGO);
 
-    public constructor(private readonly usageStatsCollection: Collection, private readonly timeModule: TimeModule) {
-        const date = new Date(this.timeModule.getNow());
-        this.currentDateKey = date.toISOString().slice(0, 7);
+        const applinths = await mongo.getBillingAdminCollection(CollectionEnum.APPLINTH).find().toArray();
+        const colMetadata = mongo.getBillingCollection(CollectionEnum.USAGE_STATS_METADATA);
+        const colModule = mongo.getBillingAdminCollection(CollectionEnum.MODULE);
+
+        return this.generate(
+            metadataRecord,
+            applinths as IApplinth[],
+            colMetadata,
+            colModule,
+            mongo,
+        );
     }
 
-    public async generateForApplinths(
+    private async generate(
+        metadataRecord: Record<string, unknown>,
         applinths: IApplinth[],
         colMetadata: Collection,
-        colMonthly: Collection,
         colModule: Collection,
         mongo: Mongo,
-    ): Promise<void> {
+    ): Promise<Record<string, unknown>> {
         for (const applinth of applinths) {
             const metadata = (await colMetadata.findOne(
                 { tenantId: applinth.tenantId },
@@ -30,18 +41,20 @@ export class UsageStatsGenerator {
 
             const coll = mongo.getUsageStatsCollection(CollectionEnum.EVENTS);
             const res = await coll.find({ iid: applinth.instanceId }).sort({ created: 1 }).limit(1).toArray();
-            const historyStart = res.length ? new Date(res[0].created / 1000) : null;
 
+            const historyStart = res.length ? new Date(res[0].created / 1000) : null;
             const highestDate = await this.generateMonthlyStats(colModule, coll, applinth, lastHighestDate);
 
-            await colMetadata.updateOne({ tenantId: applinth.tenantId }, {
-                $set: {
-                    [`instances.${applinth.instanceId}.billingHistoryStart`]: historyStart,
-                    [`instances.${applinth.instanceId}.billingHistoryEnd`]: new Date(this.timeModule.getNow()),
-                    [`instances.${applinth.instanceId}.lastRunHighestEventDate`]: highestDate,
-                },
-            }, { upsert: true });
+            countMetadata(
+                metadataRecord as Record<string, IMetadata>,
+                applinth.instanceId,
+                applinth.tenantId,
+                historyStart,
+                highestDate,
+            );
         }
+
+        return metadataRecord;
     }
 
     private async generateMonthlyStats(
@@ -54,7 +67,11 @@ export class UsageStatsGenerator {
         const applinthId = String(applinth._id);
         const currentDate = new Date(this.timeModule.getNow());
 
-        let highestDate = lastHighestDate;
+        if (lastHighestDate && currentDate < lastHighestDate) {
+            throw new Error('Current date is lower than last run date!');
+        }
+
+        let highestDate = lastHighestDate ? new Date(lastHighestDate) : null;
 
         for (const module of await moduleCollection.find({ applinthId }).toArray()) {
             const minPrice = module.minPrice ?? applinth.minPrice;
@@ -65,7 +82,8 @@ export class UsageStatsGenerator {
                 instanceId,
                 end: { $lt: currentDate },
                 appId: module.appName,
-            }).toArray() as IUsageStatsMonthly[];
+                type: UsageStatsType.ENDUSER_APP_INSTALL,
+            }).sort({ end: 1 }).toArray() as IUsageStatsMonthly[];
 
             highestDate = await this.generateMonthlyStatsForModule(
                 minPrice,
@@ -109,8 +127,14 @@ export class UsageStatsGenerator {
             minPriceUsageStats = {};
         }
 
-        const events = await this.getEvents(eventsCollection, applinth.instanceId, appName, lastHighestDate);
-        logger.info(`Found ${events.length} new events for instanceId ${applinth.instanceId} and appName ${appName}`);
+        const events = await this.getEvents(
+            eventsCollection,
+            lastHighestDate,
+            ['applinth_enduser_app_install', 'applinth_enduser_app_uninstall'],
+            applinth.instanceId,
+            appName,
+        );
+        logger.info(`Found ${events.length} new EndUser Application install events for instanceId ${applinth.instanceId} and appName ${appName}`);
 
         if (events.length) {
             const newestEvent = events[events.length - 1];
@@ -119,30 +143,30 @@ export class UsageStatsGenerator {
                 highestDate = newestEvent.created;
             }
         }
+
         for (const event of events) {
             const install = installed
-                .findLast((i) => i.endUserId === event.data.endUserId && i.appId === event.data.appId);
+                .findLast((i) => i.endUserId === event?.data?.endUserId && i.appId === event?.data?.appId);
 
             if (install) {
                 if (event.type === USEventType.APPLINTH_END_USER_APP_INSTALL) {
-                    const iEnd: Date = new Date(install.end);
-                    const eCreate = new Date(event.created);
+                    if (install.installed === false) {
+                        const iEnd: Date = new Date(install.end);
+                        const eCreate = new Date(event.created);
 
-                    if (
-                        install.installed === false
-                        && iEnd.setHours(0, 0, 0, 0) === eCreate.setHours(0, 0, 0, 0)
-                    ) {
-                        install.end = currentDate;
-                        install.installed = true;
-                    } else {
-                        installed.push(this.generateUsageStat(
-                            event,
-                            currentDate,
-                            instanceId,
-                            tenantId,
-                            true,
-                            UsageStatsType.NORMAL,
-                        ));
+                        if (iEnd.setHours(0, 0, 0, 0) === eCreate.setHours(0, 0, 0, 0)) {
+                            install.end = currentDate;
+                            install.installed = true;
+                        } else {
+                            installed.push(this.generateUsageStat(
+                                event,
+                                currentDate,
+                                instanceId,
+                                tenantId,
+                                true,
+                                UsageStatsType.ENDUSER_APP_INSTALL,
+                            ));
+                        }
                     }
                 } else {
                     install.end = event.created;
@@ -155,7 +179,7 @@ export class UsageStatsGenerator {
                     instanceId,
                     tenantId,
                     true,
-                    UsageStatsType.NORMAL,
+                    UsageStatsType.ENDUSER_APP_INSTALL,
                 ));
             }
         }
@@ -221,11 +245,11 @@ export class UsageStatsGenerator {
         installed: boolean,
         type: UsageStatsType,
     ): IUsageStatsMonthly {
-        const { data, created: start } = event;
-        const { appId, endUserId } = data;
+        const { created: start } = event;
+        const endUserId = event.data?.endUserId;
 
         return {
-            appId,
+            appId: event.data?.appId ?? '',
             start,
             end,
             endUserId,
@@ -281,80 +305,19 @@ export class UsageStatsGenerator {
             return null;
         }
 
-        const nextMonthDate = new Date(install.start.getTime());
-        nextMonthDate.setDate(1);
-        nextMonthDate.setHours(0, 0, 0, 0);
-        nextMonthDate.setMonth(nextMonthDate.getMonth() + 1);
-
-        const oldInstall: IUsageStatsMonthly = {} as IUsageStatsMonthly;
-        Object.assign(oldInstall, install);
-        oldInstall.end = nextMonthDate;
-        oldInstall.installed = false;
-        oldInstall.cost = this.computeCost(oldInstall.start, oldInstall.end, price);
-        delete oldInstall._id;
-        delete oldInstall.estimatedCost;
-
+        const nextMonthDate = this.prepareNextMonthDate(install);
+        const oldInstall = this.cloneOldInstall(install, nextMonthDate, price);
         install.start = nextMonthDate;
 
         if (minPriceUsageStats) {
             const key = oldInstall.start.toISOString().slice(0, 7);
             if (key !== this.currentDateKey) {
-                minPriceUsageStats[key] = (minPriceUsageStats[key] ?? 0) + oldInstall.cost;
+                minPriceUsageStats[key] = (minPriceUsageStats[key] ?? 0) + (oldInstall?.cost ?? 0);
             }
         }
         await this.usageStatsCollection.insertOne(oldInstall);
 
         return this.saveUsageStat(install, price, minPriceUsageStats);
-    }
-
-    private computeCost(
-        start: Date,
-        end: Date,
-        price: number,
-    ): number {
-        const dim = this.daysInMonth(start.getUTCFullYear(), start.getMonth() + 1);
-        const dailyPrice = price / dim;
-
-        const diff = (end.getTime() - start.getTime()) / (1000 * 3600 * 24);
-
-        return Math.round(Math.ceil(diff) * dailyPrice);
-    }
-
-    private daysInMonth(year: number, month: number): number {
-        const d = new Date(Date.UTC(year, month, 0));
-        return d.getUTCDate();
-    }
-
-    private async getEvents(
-        coll: Collection,
-        instanceId: string,
-        appName: string,
-        lastHighestTimestamp: Date | null,
-    ): Promise<USEvent[]> {
-        const filter = {
-            created: {
-                $lte: String(this.timeModule.getNow()),
-                $gt: lastHighestTimestamp ? (lastHighestTimestamp.valueOf() + 1000).toString() : '',
-            },
-        };
-
-        const res = coll.find({
-            ...filter,
-            iid: instanceId,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            'data.aid': appName,
-            type: { $nin: ['applinth_enduser_app_hearthbeat', null] },
-        }).sort({ created: 1 });
-
-        return (await res.toArray()).map((doc) => ({
-            type: doc.type === 'applinth_enduser_app_install' ? USEventType.APPLINTH_END_USER_APP_INSTALL : USEventType.APPLINTH_END_USER_APP_UNINSTALL,
-            instanceId: doc.iid,
-            created: new Date(parseInt(doc.created, 10) / 1000),
-            data: {
-                appId: doc.data.aid,
-                endUserId: doc.data.euid,
-            },
-        }));
     }
 
 }
@@ -365,19 +328,4 @@ export interface IApplinth {
     instanceId: string;
     minPrice?: number;
     minPriceDate?: Date;
-}
-
-export interface IUsageStatsMonthly {
-    appId: string;
-    start: Date;
-    end: Date;
-    type: UsageStatsType;
-    _id?: ObjectId;
-    endUserId?: string;
-    installId?: string;
-    tenantId?: string;
-    instanceId?: string;
-    installed?: boolean;
-    cost?: number;
-    estimatedCost?: number;
 }

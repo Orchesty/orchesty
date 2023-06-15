@@ -6,6 +6,8 @@ export enum CollectionEnum {
     USAGE_STATS_METADATA = 'usage_stats_metadata',
     APPLINTH = 'applinth',
     MODULE = 'module',
+    CLOUD = 'cloud',
+    ORCHESTY = 'orchesty',
     EVENTS = 'Events',
 }
 
@@ -52,6 +54,8 @@ export default class Mongo {
         await this.dropCollection(config.usDb, CollectionEnum.EVENTS);
         await this.dropCollection(config.billingAdminDb, CollectionEnum.APPLINTH);
         await this.dropCollection(config.billingAdminDb, CollectionEnum.MODULE);
+        await this.dropCollection(config.billingAdminDb, CollectionEnum.ORCHESTY);
+        await this.dropCollection(config.billingAdminDb, CollectionEnum.CLOUD);
     }
 
     private async dropCollection(dbName: string, collection: string): Promise<void> {

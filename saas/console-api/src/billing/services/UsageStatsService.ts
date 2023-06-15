@@ -14,7 +14,7 @@ interface IMongoQuery {
     instanceId?: string;
     appId?: string;
     installed?: boolean;
-    type?: string;
+    type?: object | string;
 }
 
 interface IMetadata {
@@ -426,7 +426,7 @@ export default class UsageStatsService {
         setDefaultDateIfNotSet = false,
     ): IMongoQuery {
         const mongoQuery = {} as IMongoQuery;
-        mongoQuery.type = 'normal';
+        mongoQuery.type = 'enduser_app_install';
 
         if (query.tenantId) {
             mongoQuery.tenantId = query.tenantId;

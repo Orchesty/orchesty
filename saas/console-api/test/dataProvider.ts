@@ -48,7 +48,7 @@ function generateUsageStatsRow(
         cost,
         estimatedCost,
         installed,
-        type: 'normal',
+        type: 'enduser_app_install',
     };
 }
 
