@@ -36,7 +36,7 @@ func (m *Monitoring) Run() {
 		}
 
 		limiterCount, err := m.limiterCollection.CountDocuments(context, bson.M{
-			"allowedAt": bson.M{"$eq": "$created"},
+			"$expr": bson.M{"$eq": bson.A{"$allowedAt", "$created"}},
 		})
 
 		if err != nil {
@@ -44,7 +44,7 @@ func (m *Monitoring) Run() {
 		}
 
 		repeaterCount, err := m.repeaterCollection.CountDocuments(context, bson.M{
-			"allowedAt": bson.M{"$ne": "$created"},
+			"$expr": bson.M{"$ne": bson.A{"$allowedAt", "$created"}},
 		})
 
 		if err != nil {
