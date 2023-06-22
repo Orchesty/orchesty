@@ -2,7 +2,8 @@
 
 namespace Hanaboso\PipesFramework\UsageStats\Event;
 
-use Hanaboso\PipesFramework\UsageStats\Document\BillingData;
+use Hanaboso\PipesFramework\UsageStats\Document\AppInstallBillingData;
+use Hanaboso\PipesFramework\UsageStats\Document\OperationBillingData;
 use Hanaboso\PipesFramework\UsageStats\Enum\EventTypeEnum;
 use Hanaboso\Utils\Exception\EnumException;
 use LogicException;
@@ -19,9 +20,9 @@ final class BillingEvent extends Event
     public const NAME = 'user.stats';
 
     /**
-     * @var BillingData
+     * @var AppInstallBillingData | OperationBillingData
      */
-    private BillingData $data;
+    private AppInstallBillingData | OperationBillingData $data;
 
     /**
      * BillingEvent constructor.
@@ -60,9 +61,9 @@ final class BillingEvent extends Event
     }
 
     /**
-     * @return BillingData
+     * @return AppInstallBillingData | OperationBillingData
      */
-    public function getData(): BillingData
+    public function getData(): AppInstallBillingData | OperationBillingData
     {
         return $this->data;
     }
@@ -81,13 +82,15 @@ final class BillingEvent extends Event
     /**
      * @param mixed[] $data
      *
-     * @return BillingData
+     * @return AppInstallBillingData|OperationBillingData
      * @throws LogicException
      */
-    private function checkData(array $data): BillingData
+    private function checkData(array $data): AppInstallBillingData | OperationBillingData
     {
         if (array_key_exists('aid', $data) && array_key_exists('euid', $data)) {
-            return new BillingData($data['aid'], $data['euid']);
+            return new AppInstallBillingData($data['aid'], $data['euid']);
+        } else if (array_key_exists('day', $data) && array_key_exists('total', $data)) {
+            return new OperationBillingData($data['day'], $data['total']);
         } else {
             throw new LogicException('Missing key aid and/or euid in data field!');
         }

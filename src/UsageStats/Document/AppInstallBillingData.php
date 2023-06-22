@@ -3,15 +3,15 @@
 namespace Hanaboso\PipesFramework\UsageStats\Document;
 
 /**
- * Class BillingData
+ * Class AppInstallBillingData
  *
  * @package Hanaboso\PipesFramework\UsageStats\Document
  */
-final class BillingData
+final class AppInstallBillingData
 {
 
     /**
-     * BillingData constructor.
+     * AppInstallBillingData constructor.
      *
      * @param string $aid
      * @param string $euid

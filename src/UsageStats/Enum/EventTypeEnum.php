@@ -12,6 +12,7 @@ enum EventTypeEnum: string
 
     case INSTALL    = 'applinth_enduser_app_install';
     case UNINSTALL  = 'applinth_enduser_app_uninstall';
+    case OPERATION  = 'orchesty_operation';
     case HEARTHBEAT = 'applinth_enduser_app_hearthbeat';
 
 }
