@@ -3,7 +3,7 @@
 namespace PipesFrameworkTests\Unit\UsageStats\Document;
 
 use Exception;
-use Hanaboso\PipesFramework\UsageStats\Document\BillingData;
+use Hanaboso\PipesFramework\UsageStats\Document\AppInstallBillingData;
 use Hanaboso\PipesFramework\UsageStats\Document\HearthBeatData;
 use Hanaboso\PipesFramework\UsageStats\Document\UsageStatsEvent;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
@@ -43,7 +43,7 @@ final class UsageStatsEventTest extends DatabaseTestCaseAbstract
         $usageStatsEvent->setIid('2');
         $usageStatsEvent->setHeartBeatData(new HearthBeatData(1, '1'));
         $usageStatsEvent->setData(['2']);
-        $usageStatsEvent->setBillingData(new BillingData('1', '1'));
+        $usageStatsEvent->setAppInstallBillingData(new AppInstallBillingData('1', '1'));
         $arr            = $usageStatsEvent->toArray();
         $arr['created'] = '1';
         self::assertEquals(

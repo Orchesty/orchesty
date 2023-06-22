@@ -3,7 +3,7 @@
 namespace PipesFrameworkTests\Unit\UsageStats\Document;
 
 use Exception;
-use Hanaboso\PipesFramework\UsageStats\Document\BillingData;
+use Hanaboso\PipesFramework\UsageStats\Document\AppInstallBillingData;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -15,26 +15,26 @@ final class BillingDataTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\UsageStats\Document\BillingData
-     * @covers \Hanaboso\PipesFramework\UsageStats\Document\BillingData::setEuid
-     * @covers \Hanaboso\PipesFramework\UsageStats\Document\BillingData::setAid
-     * @covers \Hanaboso\PipesFramework\UsageStats\Document\BillingData::getEuid
-     * @covers \Hanaboso\PipesFramework\UsageStats\Document\BillingData::getAid
-     * @covers \Hanaboso\PipesFramework\UsageStats\Document\BillingData::toArray
+     * @covers \Hanaboso\PipesFramework\UsageStats\Document\AppInstallBillingData
+     * @covers \Hanaboso\PipesFramework\UsageStats\Document\AppInstallBillingData::setEuid
+     * @covers \Hanaboso\PipesFramework\UsageStats\Document\AppInstallBillingData::setAid
+     * @covers \Hanaboso\PipesFramework\UsageStats\Document\AppInstallBillingData::getEuid
+     * @covers \Hanaboso\PipesFramework\UsageStats\Document\AppInstallBillingData::getAid
+     * @covers \Hanaboso\PipesFramework\UsageStats\Document\AppInstallBillingData::toArray
      *
      * @throws Exception
      */
     public function testBillingEvent(): void
     {
-        $billingData = new BillingData('1', '1');
-        self::assertEquals('1', $billingData->getAid());
-        self::assertEquals('1', $billingData->getEuid());
-        self::assertEquals(['aid' => '1', 'euid' => '1'], $billingData->toArray());
-        $billingData->setAid('2');
-        $billingData->setEuid('2');
-        self::assertEquals('2', $billingData->getAid());
-        self::assertEquals('2', $billingData->getEuid());
-        self::assertEquals(['aid' => '2', 'euid' => '2'], $billingData->toArray());
+        $appInstallBillingData = new AppInstallBillingData('1', '1');
+        self::assertEquals('1', $appInstallBillingData->getAid());
+        self::assertEquals('1', $appInstallBillingData->getEuid());
+        self::assertEquals(['aid' => '1', 'euid' => '1'], $appInstallBillingData->toArray());
+        $appInstallBillingData->setAid('2');
+        $appInstallBillingData->setEuid('2');
+        self::assertEquals('2', $appInstallBillingData->getAid());
+        self::assertEquals('2', $appInstallBillingData->getEuid());
+        self::assertEquals(['aid' => '2', 'euid' => '2'], $appInstallBillingData->toArray());
     }
 
 }

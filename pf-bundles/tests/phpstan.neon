@@ -18,6 +18,7 @@ parameters:
 			path: ../tests/*
 	ergebnis:
 		classesAllowedToBeExtended:
+			- Hanaboso\PipesFramework\HbPFUsageStatsBundle\Manager\SenderAbstract
 			- Hanaboso\AclBundle\Enum\ResourceEnum
 			- Hanaboso\MongoDataGrid\GridFilterAbstract
 			- Hanaboso\PipesFramework\Logs\LogsAbstract
@@ -34,6 +35,9 @@ parameters:
 			- Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator
 
 		classesNotRequiredToBeAbstractOrFinal:
+			- Hanaboso\PipesFramework\HbPFUsageStatsBundle\Manager\AppInstallUsageStatsSender
+			- Hanaboso\PipesFramework\HbPFUsageStatsBundle\Manager\OperationUsageStatsSender
+			- Hanaboso\PipesFramework\HbPFUsageStatsBundle\Manager\SenderManager
 			- Hanaboso\PipesFramework\Database\Document\Embed\EmbedNode
 			- Hanaboso\PipesFramework\Application\Document\ApplicationInstall
 			- Hanaboso\PipesFramework\Application\Document\Webhook

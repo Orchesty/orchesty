@@ -21,7 +21,7 @@ final class UsageStatsEventListenerTest extends DatabaseTestCaseAbstract
      * @covers \Hanaboso\PipesFramework\UsageStats\Listener\UsageStatsEventListener::onProcessBillingEvent
      * @covers \Hanaboso\PipesFramework\UsageStats\Event\BillingEvent::checkData
      * @covers \Hanaboso\PipesFramework\UsageStats\Document\UsageStatsEvent::createFromBillingEvent
-     * @covers \Hanaboso\PipesFramework\UsageStats\Document\UsageStatsEvent::setBillingData
+     * @covers \Hanaboso\PipesFramework\UsageStats\Document\UsageStatsEvent::setAppInstallBillingData
      * @covers \Hanaboso\PipesFramework\UsageStats\Document\UsageStatsEvent::toArray
      *
      * @throws Exception
