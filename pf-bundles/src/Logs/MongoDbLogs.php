@@ -38,6 +38,7 @@ final class MongoDbLogs extends LogsAbstract
      * @param int            $timeMargin
      *
      * @return mixed[]
+     * @throws MongoDBException
      */
     public function getData(GridRequestDto $dto, int $timeMargin): array
     {

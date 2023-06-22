@@ -2,6 +2,7 @@
 
 namespace Hanaboso\PipesFramework\UsageStats\Document;
 
+use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Hanaboso\CommonsBundle\Database\Traits\Document\CreatedTrait;
 use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
@@ -61,7 +62,7 @@ class UsageStatsEvent
      *
      * @ODM\Field(type="int")
      */
-    private ?int $sent;
+    private ?int $sent = NULL;
 
     /**
      * UsageStatsEvent constructor.
@@ -88,7 +89,10 @@ class UsageStatsEvent
      */
     public static function createFromBillingEvent(string $iid, Event\BillingEvent $event): self
     {
-        return (new self($iid, $event->getType()))->setBillingData($event->getData());
+        /** @var AppInstallBillingData $data */
+        $data = $event->getData();
+
+        return (new self($iid, $event->getType()))->setAppInstallBillingData($data);
     }
 
     /**
@@ -168,11 +172,23 @@ class UsageStatsEvent
     }
 
     /**
-     * @param BillingData $data
+     * @param AppInstallBillingData $data
      *
      * @return $this
      */
-    public function setBillingData(BillingData $data): self
+    public function setAppInstallBillingData(AppInstallBillingData $data): self
+    {
+        $this->data = $data->toArray();
+
+        return $this;
+    }
+
+    /**
+     * @param OperationBillingData $data
+     *
+     * @return $this
+     */
+    public function setOperationBillingData(OperationBillingData $data): self
     {
         $this->data = $data->toArray();
 
@@ -207,6 +223,26 @@ class UsageStatsEvent
     public function setSent(?int $sent): self
     {
         $this->sent = $sent;
+
+        return $this;
+    }
+
+    /**
+     * @return DateTime
+     */
+    public function getCreated(): DateTime
+    {
+        return $this->created;
+    }
+
+    /**
+     * @param DateTime $created
+     *
+     * @return UsageStatsEvent
+     */
+    public function setCreated(DateTime $created): self
+    {
+        $this->created = $created;
 
         return $this;
     }
