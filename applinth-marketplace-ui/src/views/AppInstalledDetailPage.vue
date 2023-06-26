@@ -236,6 +236,8 @@ export default {
       handler() {
         if (this.appActive) {
           this.hasOauth()
+          this.isActivationEnabled = Boolean(this.appActive.applicationSettings)
+          this.isActivated = this.appActive.enabled
         }
       },
     },
