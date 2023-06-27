@@ -99,7 +99,7 @@ export default class DocumentManager {
                     break;
                 case DocumentEnum.WEBHOOK:
                     if (this.isWebhookQuery(query.filter)) {
-                        this.addFilterField(filter, 'app', 'in', query.filter.apps);
+                        this.addFilterField(filter, 'application', 'in', query.filter.apps);
                         this.addFilterField(filter, 'user', 'in', query.filter.users);
                     }
                     break;
