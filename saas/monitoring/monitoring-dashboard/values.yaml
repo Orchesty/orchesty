@@ -1,0 +1,19 @@
+influxdb2:
+    service:
+        type: NodePort
+        nodePort: 30051
+
+    adminUser:
+        organization: default
+        bucket: default
+        user: admin
+        retention_policy: 4w
+        existingSecret: monitoring-dashboard-influxdb
+
+grafana:
+    service:
+        type: NodePort
+        nodePort: 30050
+
+    admin:
+        existingSecret: monitoring-dashboard-grafana

@@ -1,0 +1,844 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 2,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 9,
+      "panels": [],
+      "title": "Vitals",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "868PzC5Vz"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "displayName": "Failed procs in last 2hrs",
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 0,
+        "y": 1
+      },
+      "id": 5,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.3.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "868PzC5Vz"
+          },
+          "query": "import \"date\"\n\n// prevent aligning of windows (stolen)\ninstances = ${instances:json}\nevery = 2h\noffset = duration(v: string(v: uint(v: now()) - uint(v:date.truncate(t: now(), unit: every))) + \"ns\")\n\n// v.windowPeriod is a variable referring to the current optimized window period (currently: $interval)\nfrom(bucket: v.bucket)\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"orchesty\")\n  |> filter(fn: (r) => r[\"_field\"] == \"procs_failed\")\n  |> filter(fn: (r) => contains(value: r[\"instance\"], set: instances))\n  |> group(columns: [\"url\"])\n  |> sort(columns: [\"_time\"])\n  |> increase()\n  |> aggregateWindow(every: every, offset: offset, fn: max)\n  |> difference()\n  |> group(columns: [\"_time\"])\n  |> sum()\n  |> group()\n",
+          "refId": "A"
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "868PzC5Vz"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "noValue": "Consumers OK",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 9,
+        "x": 4,
+        "y": 1
+      },
+      "id": 13,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {
+          "titleSize": 18,
+          "valueSize": 18
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "9.3.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "868PzC5Vz"
+          },
+          "query": "instances = ${instances:json}\n\n// v.bucket, v.timeRangeStart, and v.timeRange stop are all variables supported by the flux plugin and influxdb\nfrom(bucket: v.bucket)\n  |> range(start: -10m)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"logging.googleapis.com/user\" and r[\"_field\"] == \"no-rabbit-conn-messages\")\n  |> filter(fn: (r) => contains(value: r[\"instance\"], set: instances))\n  |> group(columns: [\"namespace_name\", \"orchesty_service\", \"_field\"])\n  |> max()\n",
+          "refId": "A"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": ".*namespace_name=\\\"(.*?)\\\".*orchesty_service=\\\"(.*?)\\\".*",
+            "renamePattern": "NO CONSUMER / $1 / $2"
+          }
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "868PzC5Vz"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "_value"
+            },
+            "properties": [
+              {
+                "id": "custom.displayMode",
+                "value": "color-background-solid"
+              },
+              {
+                "id": "displayName",
+                "value": "messages"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "vhost"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "vhost"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 9,
+        "x": 13,
+        "y": 1
+      },
+      "id": 19,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "9.3.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "868PzC5Vz"
+          },
+          "query": "import \"array\"\nimport \"strings\"\n\ninstances = ${instances:json}\n  |> array.map(fn: (x) => strings.joinStr(arr: [\"instance\", x], v: \"-\"))\n\n// v.windowPeriod is a variable referring to the current optimized window period (currently: $interval)\nfrom(bucket: v.bucket)\n  |> range(start: -10m)\n  |> filter(fn: (r) =>\n    r[\"_measurement\"] == \"rabbitmq_queue\"\n    and (r[\"_field\"] == \"messages\" or r[\"_field\"] == \"messages_ack\")\n    and contains(value: r[\"vhost\"], set: instances)\n  )\n  |> group(columns: [\"_field\", \"vhost\", \"queue\"])\n\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> difference(columns: [\"messages_ack\"])\n  |> max(column: \"messages_ack\")\n  |> min(column: \"messages\")\n\n  |> map(fn: (r) => ({ r with _value: (\n      if r.messages > 0 and r.messages_ack == 0 then\n       r.messages\n      else\n       0\n    )}))\n  |> drop(columns: [\"messages\", \"messages_ack\", \"_measurement\", \"_time\"])\n\n  |> group(columns: [\"_value\", \"vhost\"], mode: \"except\")\n  |> filter(fn: (r) => r._value > 0)\n",
+          "refId": "A"
+        }
+      ],
+      "title": "Has non-empty queues with no messages consumed last 10min",
+      "type": "table"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 6
+      },
+      "id": 7,
+      "panels": [],
+      "title": "Total process stats",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "868PzC5Vz"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 11,
+        "x": 0,
+        "y": 7
+      },
+      "id": 3,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.75,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [
+            "max",
+            "last"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "orientation": "vertical",
+        "showValue": "never",
+        "stacking": "normal",
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "xField": "_time",
+        "xTickLabelRotation": 60,
+        "xTickLabelSpacing": 0
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "868PzC5Vz"
+          },
+          "hide": false,
+          "query": "every = 30m\ninstances = ${instances:json}\n\n// v.windowPeriod is a variable referring to the current optimized window period (currently: $interval)\nfrom(bucket: v.bucket)\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"orchesty\")\n  |> filter(fn: (r) => r[\"_field\"] == \"procs_failed\")\n  |> filter(fn: (r) => contains(value: r[\"instance\"], set: instances))\n  |> group(columns: [\"instance\", \"_field\"])\n  |> sort(columns: [\"_time\"])\n  |> increase()\n  |> aggregateWindow(every: every, fn: last)\n  |> difference()\n  |> keep(columns: [\"_measurement\", \"_field\", \"_value\", \"_time\", \"instance\"])\n",
+          "refId": "A"
+        }
+      ],
+      "title": "Failed processes",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "868PzC5Vz"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 11,
+        "x": 11,
+        "y": 7
+      },
+      "id": 2,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.75,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [
+            "max",
+            "last",
+            "mean"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "orientation": "vertical",
+        "showValue": "never",
+        "stacking": "normal",
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "xField": "_time",
+        "xTickLabelRotation": 60,
+        "xTickLabelSpacing": 0
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "868PzC5Vz"
+          },
+          "hide": false,
+          "query": "every = 30m\ninstances = ${instances:json}\n\n// v.windowPeriod is a variable referring to the current optimized window period (currently: $interval)\nfrom(bucket: v.bucket)\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"orchesty\")\n  |> filter(fn: (r) => r[\"_field\"] == \"procs_succeeded\")\n  |> filter(fn: (r) => contains(value: r[\"instance\"], set: instances))\n  |> group(columns: [\"instance\", \"_field\"])\n  |> sort(columns: [\"_time\"])\n  |> increase()\n  |> aggregateWindow(every: every, fn: last)\n  |> difference()\n  |> keep(columns: [\"_measurement\", \"_field\", \"_value\", \"_time\", \"instance\"])\n",
+          "refId": "A"
+        }
+      ],
+      "title": "Successful processes",
+      "transformations": [],
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "868PzC5Vz"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 11,
+        "x": 0,
+        "y": 15
+      },
+      "id": 14,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.75,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [
+            "max",
+            "last",
+            "mean"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "orientation": "vertical",
+        "showValue": "never",
+        "stacking": "normal",
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "xField": "_time",
+        "xTickLabelRotation": 60,
+        "xTickLabelSpacing": 0
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "868PzC5Vz"
+          },
+          "hide": false,
+          "query": "every = 30m\ninstances = ${instances:json}\n\n// v.windowPeriod is a variable referring to the current optimized window period (currently: $interval)\nfrom(bucket: v.bucket)\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"orchesty\")\n  |> filter(fn: (r) => r[\"_field\"] == \"limiter_count\")\n  |> filter(fn: (r) => contains(value: r[\"instance\"], set: instances))\n  |> group(columns: [\"instance\"])\n  |> sort(columns: [\"_time\"])\n  |> aggregateWindow(every: every, fn: max)\n  |> keep(columns: [\"_measurement\", \"_value\", \"_time\", \"instance\"])\n",
+          "refId": "A"
+        }
+      ],
+      "title": "Limiter stats",
+      "transformations": [
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "_value (.*)",
+            "renamePattern": "limiter messages for instance-$1"
+          }
+        }
+      ],
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "868PzC5Vz"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 11,
+        "x": 11,
+        "y": 15
+      },
+      "id": 15,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.75,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [
+            "max",
+            "last",
+            "mean"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "orientation": "vertical",
+        "showValue": "never",
+        "stacking": "normal",
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "xField": "_time",
+        "xTickLabelRotation": 60,
+        "xTickLabelSpacing": 0
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "868PzC5Vz"
+          },
+          "hide": false,
+          "query": "every = 30m\ninstances = ${instances:json}\n\n// v.windowPeriod is a variable referring to the current optimized window period (currently: $interval)\nfrom(bucket: v.bucket)\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"orchesty\")\n  |> filter(fn: (r) => r[\"_field\"] == \"repeater_count\")\n  |> filter(fn: (r) => contains(value: r[\"instance\"], set: instances))\n  |> group(columns: [\"instance\"])\n  |> sort(columns: [\"_time\"])\n  |> aggregateWindow(every: every, fn: max)\n  |> keep(columns: [\"_measurement\", \"_value\", \"_time\", \"instance\"])\n",
+          "refId": "A"
+        }
+      ],
+      "title": "Repeater stats",
+      "transformations": [
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "_value (.*)",
+            "renamePattern": "repeater messages for instance-$1"
+          }
+        }
+      ],
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "868PzC5Vz"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "k8s_container"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "api"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "purple",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 11,
+        "x": 0,
+        "y": 23
+      },
+      "id": 17,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.88,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "auto",
+        "showValue": "auto",
+        "stacking": "normal",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelRotation": 45,
+        "xTickLabelSpacing": 0
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "868PzC5Vz"
+          },
+          "query": "// v.windowPeriod is a variable referring to the current optimized window period (currently: $interval)\nfrom(bucket: v.bucket)\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"logging.googleapis.com/billing\")\n  |> filter(fn: (r) => r[\"_field\"] == \"bytes_ingested\")\n  |> group(columns: [\"resource_type\", \"_field\", \"_measurement\"])\n  |> aggregateWindow(every: 60m, fn: max)\n  |> keep(columns: [\"_value\", \"_time\", \"resource_type\"])\n  |> yield()",
+          "refId": "A"
+        }
+      ],
+      "title": "Cloud Logging / Log bytes",
+      "type": "barchart"
+    }
+  ],
+  "refresh": "1d",
+  "schemaVersion": 37,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": {
+          "type": "influxdb",
+          "uid": "868PzC5Vz"
+        },
+        "definition": "import \"influxdata/influxdb/v1\"\nv1.tagValues(\n    bucket: v.bucket,\n    tag: \"instance\",\n    predicate: (r) => r._measurement == \"orchesty\",\n    start: -1d\n)",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Orchesty Instances",
+        "multi": true,
+        "name": "instances",
+        "options": [],
+        "query": "import \"influxdata/influxdb/v1\"\nv1.tagValues(\n    bucket: v.bucket,\n    tag: \"instance\",\n    predicate: (r) => r._measurement == \"orchesty\",\n    start: -1d\n)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Orchesty Cloud Overview",
+  "uid": "yL7Q3j24z",
+  "version": 25,
+  "weekStart": ""
+}
