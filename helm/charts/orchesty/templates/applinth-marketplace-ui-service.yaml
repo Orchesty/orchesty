@@ -11,9 +11,15 @@ metadata:
 spec:
   selector:
 {{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 4 }}
+  {{- if (eq .Values.global.applinthMarketplaceUI.service.type "NodePort") }}
+  type: {{ .Values.global.applinthMarketplaceUI.service.type }}
+  {{- end }}
   ports:
     - protocol: TCP
       port: 80
       targetPort: http
+      {{- if (and (eq .Values.global.applinthMarketplaceUI.service.type "NodePort") (not (empty .Values.global.applinthMarketplaceUI.service.nodePort))) }}
+      nodePort: {{ .Values.global.applinthMarketplaceUI.service.nodePort }}
+      {{- end }}
 
 {{- end }}

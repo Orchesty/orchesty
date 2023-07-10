@@ -19,9 +19,25 @@ global:
 
   applinthMarketplaceUI:
     auth_backlink: https://applinth-demo-client-page.netlify.app/hanaboso-stage/
+    service:
+      type: NodePort
+      nodePort: 30153
+
+  startingPoint:
+    service:
+      type: NodePort
+      nodePort: 30152
 
   backend:
     alpha_instance_id: hb-stage
+    service:
+      type: NodePort
+      nodePort: 30151
+
+  frontend:
+    service:
+      type: NodePort
+      nodePort: 30150
 
   workers:
     default:

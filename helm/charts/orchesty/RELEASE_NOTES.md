@@ -1,5 +1,11 @@
 # Release Notes
 
+## 2.1.3
+
+### Changes
+
+- Backend, Frontend, StartingPoint, MarketplaceUI: added support for Service.NodePort
+
 ## 2.1.2
 
 ### Changes

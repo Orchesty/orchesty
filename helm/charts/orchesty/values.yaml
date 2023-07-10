@@ -54,10 +54,14 @@ global:
     serviceAnnotations: {}
 
   applinthMarketplaceUI:
+    service:
+      type: none
     auth_backlink: not-set
     serviceAnnotations: {}
 
   backend:
+    service:
+      type: none
     alpha_instance_id: not-set
     checkInfinityLoop: true
     # values for backward compat, will be reset
@@ -80,6 +84,8 @@ global:
         cpu: 50m
 
   frontend:
+    service:
+      type: none
     serviceAnnotations: {}
     # values for backward compat, will be reset
     resources:
@@ -121,6 +127,8 @@ global:
         cpu: 200m
 
   startingPoint:
+    service:
+      type: none
     serviceAnnotations: {}
     # values for backward compat, will be reset
     resources:
