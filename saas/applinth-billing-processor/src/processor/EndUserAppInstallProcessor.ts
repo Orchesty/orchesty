@@ -74,9 +74,6 @@ export class EndUserAppInstallProcessor extends BaseProcessor implements IProces
         let highestDate = lastHighestDate ? new Date(lastHighestDate) : null;
 
         for (const module of await moduleCollection.find({ applinthId }).toArray()) {
-            const minPrice = module.minPrice ?? applinth.minPrice;
-            const minPriceDate = module.minPriceDate ?? applinth.minPriceDate;
-
             const installed: IUsageStatsMonthly[] = await this.usageStatsCollection.find({
                 installed: true,
                 instanceId,
@@ -86,8 +83,6 @@ export class EndUserAppInstallProcessor extends BaseProcessor implements IProces
             }).sort({ end: 1 }).toArray() as IUsageStatsMonthly[];
 
             highestDate = await this.generateMonthlyStatsForModule(
-                minPrice,
-                minPriceDate,
                 currentDate,
                 eventsCollection,
                 applinth,
@@ -99,14 +94,16 @@ export class EndUserAppInstallProcessor extends BaseProcessor implements IProces
                 instanceId,
                 tenantId,
             );
+
+            await this.generateMinPriceDiffForModule(applinth, module as unknown as IModule, lastHighestDate);
         }
+
+        await this.generateMinPriceDiffForModule(applinth, null, lastHighestDate);
 
         return highestDate;
     }
 
     private async generateMonthlyStatsForModule(
-        minPrice: number,
-        minPriceDate: Date,
         currentDate: Date,
         eventsCollection: Collection,
         applinth: IApplinth,
@@ -118,14 +115,10 @@ export class EndUserAppInstallProcessor extends BaseProcessor implements IProces
         instanceId: string,
         tenantId: string,
     ): Promise<Date | null> {
-        let minPriceUsageStats: Record<string, number> | null = null;
         const checkDate = new Date(this.timeModule.getNow());
         checkDate.setDate(1);
         checkDate.setMonth(currentDate.getMonth() - 1);
         checkDate.setHours(0, 0, 0, 0);
-        if (minPrice > 0 && minPriceDate <= checkDate) {
-            minPriceUsageStats = {};
-        }
 
         const events = await this.getEvents(
             eventsCollection,
@@ -189,46 +182,101 @@ export class EndUserAppInstallProcessor extends BaseProcessor implements IProces
                 install.end = currentDate;
             }
 
-            await this.saveUsageStat(install, price, minPriceUsageStats);
-        }
-
-        if (minPriceUsageStats) {
-            await this.generateMinPriceDiff(minPriceUsageStats, minPrice, applinth, appName);
+            await this.saveUsageStat(install, price);
         }
 
         return highestDate;
     }
 
-    private async generateMinPriceDiff(
-        minPriceUsageStats: Record<string, number>,
-        minPrice: number,
+    private async generateMinPriceDiffForModule(
         applinth: IApplinth,
-        appName: string,
+        module: IModule | null,
+        lastHighestDate: Date | null,
     ): Promise<void> {
-        for (const [key, value] of Object.entries(minPriceUsageStats)) {
-            const startDate = new Date(key);
-            if (value < minPrice) {
+        const { minPrice, minPriceDate } = module ?? applinth;
+        if (!minPrice || !minPriceDate) {
+            return;
+        }
+
+        const startDate = new Date(lastHighestDate ?? 1);
+        startDate.setHours(0, 0, 0);
+        startDate.setDate(1);
+
+        const currentDate = new Date(this.timeModule.getNow());
+        currentDate.setHours(0, 0, 0);
+        currentDate.setDate(1);
+
+        let modules: { _id: ObjectId; appName?: string }[] = [];
+        if (!module) {
+            modules = await this.moduleCollection.find({
+                applinthId: String(applinth._id),
+                minPriceDate: {
+                    $lt: currentDate,
+                },
+                minPrice: {
+                    $ne: null,
+                },
+            }).toArray();
+        }
+
+        const result = await this.usageStatsCollection.aggregate([
+            {
+                $match: {
+                    type: {
+                        $in: [UsageStatsType.ENDUSER_APP_INSTALL],
+                    },
+                    start: {
+                        $gte: startDate > minPriceDate ? startDate : minPriceDate,
+                        $lt: currentDate,
+                    },
+                    instanceId: applinth.instanceId,
+                    appId: module?.appName ?? {
+                        $nin: modules.map((m) => m.appName),
+                    },
+                    tenantId: applinth.tenantId,
+                },
+            },
+            {
+                $group: {
+                    _id: {
+                        year: {
+                            $year: '$start',
+                        },
+                        month: {
+                            $month: '$start',
+                        },
+                    },
+                    cost: { $sum: '$cost' },
+                },
+            },
+            {
+                $sort: { year: 1, month: 1 },
+            },
+        ]).toArray();
+
+        for (const item of result) {
+            const monthStartDate = new Date(item._id.year, item._id.month - 1, 1, 0, 0, 0);
+            if (item.cost < minPrice) {
                 const minPriceEvent = await this.usageStatsCollection.findOne({
                     type: UsageStatsType.MIN_PRICE_DIFF,
                     instanceId: applinth.instanceId,
-                    appId: appName,
-                    start: startDate,
+                    appId: module?.appName ?? null,
+                    start: monthStartDate,
                     tenantId: applinth.tenantId,
                 });
 
-                const diff = minPrice - value;
+                const diff = minPrice - item.cost;
                 if (minPriceEvent && minPriceEvent.cost !== diff) {
-                    minPriceEvent.cost = diff;
-                    await this.usageStatsCollection.updateOne({ _id: minPriceEvent._id }, { price: diff });
+                    await this.usageStatsCollection.updateOne({ _id: minPriceEvent._id }, { cost: diff });
                 } else {
-                    const endDate = new Date(key);
+                    const endDate = new Date(monthStartDate);
                     endDate.setMonth(endDate.getMonth() + 1);
                     await this.usageStatsCollection.insertOne({
-                        appId: appName,
+                        appId: module?.appName ?? null,
                         cost: diff,
                         end: endDate,
                         instanceId: applinth.instanceId,
-                        start: startDate,
+                        start: monthStartDate,
                         tenantId: applinth.tenantId,
                         type: UsageStatsType.MIN_PRICE_DIFF,
                     });
@@ -264,7 +312,6 @@ export class EndUserAppInstallProcessor extends BaseProcessor implements IProces
     private async saveUsageStat(
         install: IUsageStatsMonthly,
         price: number,
-        minPriceUsageStats: Record<string, number> | null,
     ): Promise<IUsageStatsMonthly | null> {
         if (
             install.start.getMonth() === install.end.getMonth()
@@ -285,20 +332,8 @@ export class EndUserAppInstallProcessor extends BaseProcessor implements IProces
             }
 
             if (install._id) {
-                if (minPriceUsageStats) {
-                    const key = install.start.toISOString().slice(0, 7);
-                    if (key !== this.currentDateKey) {
-                        minPriceUsageStats[key] = (minPriceUsageStats[key] ?? 0) + install.cost;
-                    }
-                }
                 await this.usageStatsCollection.updateOne({ _id: install._id }, update);
             } else {
-                if (minPriceUsageStats) {
-                    const key = install.start.toISOString().slice(0, 7);
-                    if (key !== this.currentDateKey) {
-                        minPriceUsageStats[key] = (minPriceUsageStats[key] ?? 0) + install.cost;
-                    }
-                }
                 await this.usageStatsCollection.insertOne(install);
             }
 
@@ -309,15 +344,9 @@ export class EndUserAppInstallProcessor extends BaseProcessor implements IProces
         const oldInstall = this.cloneOldInstall(install, nextMonthDate, price);
         install.start = nextMonthDate;
 
-        if (minPriceUsageStats) {
-            const key = oldInstall.start.toISOString().slice(0, 7);
-            if (key !== this.currentDateKey) {
-                minPriceUsageStats[key] = (minPriceUsageStats[key] ?? 0) + (oldInstall?.cost ?? 0);
-            }
-        }
         await this.usageStatsCollection.insertOne(oldInstall);
 
-        return this.saveUsageStat(install, price, minPriceUsageStats);
+        return this.saveUsageStat(install, price);
     }
 
 }
@@ -326,6 +355,14 @@ export interface IApplinth {
     _id: ObjectId;
     tenantId: string;
     instanceId: string;
+    minPrice?: number;
+    minPriceDate?: Date;
+}
+
+export interface IModule {
+    appName: string;
+    applinthId: string;
+    price: number;
     minPrice?: number;
     minPriceDate?: Date;
 }
