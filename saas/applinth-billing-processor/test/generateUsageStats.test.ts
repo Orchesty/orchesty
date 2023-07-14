@@ -22,7 +22,7 @@ describe('generate usageStats', () => {
         await command();
 
         const usageStatsMonthlyAppInstall = await mongo.getUsageStatsCollection(CollectionEnum.USAGE_STATS_MONTHLY)
-            .find({ type: { $in: ['enduser_app_install', 'enduser_app_uninstall', 'min_price_diff'] } }).toArray();
+            .find({ type: { $in: ['enduser_app_install', 'enduser_app_uninstall', 'min_price_diff'] } }).sort({ start: 1 }).toArray();
 
         const usageStatsMonthlyCloudInstall = await mongo.getUsageStatsCollection(CollectionEnum.USAGE_STATS_MONTHLY)
             .find({ type: { $in: ['cloud_install', 'cloud_uninstall'] } }).toArray();

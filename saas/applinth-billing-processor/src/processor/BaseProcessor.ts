@@ -42,21 +42,18 @@ export function countMetadata(
 
 export class BaseProcessor {
 
-    protected readonly currentDateKey: string;
-
     protected readonly timeModule: TimeModule;
 
     protected readonly usageStatsCollection: Collection;
 
-    public constructor() {
-        const timeModule = container.get<TimeModule>(Services.TIME_MODULE);
-        this.timeModule = timeModule;
+    protected readonly moduleCollection: Collection;
 
-        const date = new Date(timeModule.getNow());
-        this.currentDateKey = date.toISOString().slice(0, 7);
+    public constructor() {
+        this.timeModule = container.get<TimeModule>(Services.TIME_MODULE);
 
         const mongo = container.get<Mongo>(Services.MONGO);
         this.usageStatsCollection = mongo.getBillingCollection(CollectionEnum.USAGE_STATS_MONTHLY);
+        this.moduleCollection = mongo.getBillingAdminCollection(CollectionEnum.MODULE);
     }
 
     protected async getEvents(
@@ -158,7 +155,7 @@ export interface IUsageStatsMonthly {
     end: Date;
     type: UsageStatsType;
     _id?: ObjectId;
-    appId?: string;
+    appId?: string | null;
     endUserId?: string;
     installId?: string;
     tenantId?: string;
