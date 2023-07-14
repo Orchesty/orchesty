@@ -34,9 +34,14 @@ func NewMongo() MongoDb {
 			ExpireAfterSeconds: &month,
 		},
 	}
+	indexCreated := mongo.IndexModel{
+		Keys: bson.M{
+			"created": 1,
+		},
+	}
 
 	coll := mongoDbCon.Database.Collection(config.MongoDb.CounterCollection)
-	if _, err := coll.Indexes().CreateMany(ctx, []mongo.IndexModel{indexFinished, indexExpires}); err != nil {
+	if _, err := coll.Indexes().CreateMany(ctx, []mongo.IndexModel{indexFinished, indexExpires, indexCreated}); err != nil {
 		log.Err(err).Send()
 	}
 
