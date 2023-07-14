@@ -11,19 +11,17 @@ func indices() []mongo.IndexModel {
 			Keys: bson.D{{"limitKey", 1}},
 		},
 		{
-			Keys: bson.D{{"prioritize", -1}},
-		},
-		{
 			Keys: bson.D{
-				{"prioritize", -1},
+				{"limitKey", 1},
 				{"allowedAt", 1},
+				{"inProcess", 1},
+				{"prioritize", -1},
 			},
 		},
 		{
 			Keys: bson.D{
-				{"limitKey", 1},
-				{"prioritize", -1},
 				{"allowedAt", 1},
+				{"created", 1},
 			},
 		},
 	}
