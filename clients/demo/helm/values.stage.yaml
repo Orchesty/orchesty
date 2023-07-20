@@ -1,24 +1,21 @@
 ---
 
+orchesty:
+  # force legacy resource names
+  nameOverride: pipes
+
 global:
   backend_url: https://api-orchesty.stage.hanaboso.net
   frontend_url: https://orchesty.stage.hanaboso.net
   starting_point_url: https://sp-orchesty.stage.hanaboso.net
+  applinth_marketplace_url: https://applinth-orchesty.stage.hanaboso.net
 
   imageOverrides:
-    bridge: hanaboso/bridge:dev
-    counter: hanaboso/counter:dev
-    frontend: hanaboso/pipes-app-ui:dev
-    backend: hanaboso/pipes-pf-bundle:dev
-    topology-api: hanaboso/pipes-topology-api-v2:dev
-    starting-point: hanaboso/pipes-starting-point:dev
-    fluentd: hanaboso/fluentd:dev
-    cron-api: hanaboso/cron:dev
-    limiter: hanaboso/limiter:dev
-    detector: hanaboso/detector:dev
+    applinth-marketplace-ui: dkr.hanaboso.net/pipes/pipes/applinth-marketplace-ui:541b6ac4
+    backend: dkr.hanaboso.net/pipes/pipes/applinth:2.0.0
 
   applinthMarketplaceUI:
-    auth_backlink: https://applinth-demo-client-page.netlify.app/hanaboso-stage/
+    auth_backlink: https://demo-applinth-orchesty.stage.hanaboso.net
     service:
       type: NodePort
       nodePort: 30153
@@ -42,7 +39,7 @@ global:
   workers:
     default:
       sdk: nodejs
-      image: dkr.hanaboso.net/pipes/demo/demo-nodejs:master
+      image: hanaboso/demo-nodejs:master
       extraEnv:
         AWS_SES_KEY:
           valueFrom:
@@ -56,7 +53,7 @@ global:
               key: aws_ses_secret
 
 customPersistence:
-  node: node1
+  node: k3snode1
   pvDir: /srv/pipes3
   pvPrefix: pipes3
   pvcPrefix: pipes3
@@ -64,9 +61,9 @@ customPersistence:
 mongodb:
   pvcName: pipes3-mongodb
   nodeSelector:
-    kubernetes.io/hostname: "node1"
+    kubernetes.io/hostname: "k3snode1"
 
 rabbitmq:
   pvcName: pipes3-rabbitmq
   nodeSelector:
-    kubernetes.io/hostname: "node1"
+    kubernetes.io/hostname: "k3snode1"

@@ -1,0 +1,25 @@
+version: '3.5'
+services:
+    sdk:
+        image: marketplace-test:tag
+        build: ./docker
+        user: ${DEV_UID}:${DEV_GID}
+        working_dir: /var/www
+        ports:
+            - ${DEV_IP}:8000:8000
+        volumes:
+            - ./:/var/www
+        environment:
+            # Envs for tests are load from .jest/testEnvs.js
+            JEST_DOCKER: 1
+            APP_ENV: 'debug'
+            APP_PORT: 8000
+            APPLINTH_HOST: 'https://applinth-orchesty.stage.hanaboso.net'
+            JWE_PUBLIC_KEY: |
+                -----BEGIN PUBLIC KEY-----
+                MIGbMBAGByqGSM49AgEGBSuBBAAjA4GGAAQAZSNvw4LyVUjEI5et0ME5ijXvuzZ0
+                3vDABAfjIB996UsqVErTr0nx3jxLkdP2dDWGEInonTwAUsAEjLNvWiySbcoB/68Y
+                xgRtq5MFQDcRG8vXdt8G9Zk3FbeFxQR5ZaS+dlFTnrb0QxkHnBwteNYgQ01s0VoV
+                9YycMrxYqRIGU5cozV8=
+                -----END PUBLIC KEY-----
+        command: pnpm run start

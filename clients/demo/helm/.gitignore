@@ -3,5 +3,7 @@
 !/charts/mongodb
 !/charts/influxdb
 !/charts/pipes
+!/charts/demo-applinth
 
 /secrets-configmap-*.yaml
+secrets*

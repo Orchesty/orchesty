@@ -76,22 +76,6 @@ stage:deploy:
     - when: manual
 
 
-demo:deploy:
-  extends: .base-deploy
-  environment: demo
-  variables:
-    PROJECT_DIR: clients/demo
-    HELM_ARGS: -f helm/values.demo.yaml
-
-  rules:
-    - if: $DEPLOY_DEMO1_VERSION != ""
-      when: always
-    - when: never
-
-  before_script:
-    - sed -E "s/VERSION_TAG/${DEPLOY_DEMO1_VERSION}/g" -i clients/demo/helm/values.demo.yaml
-
-
 demo2:deploy:
   extends: .base-deploy-current
   environment: demo2
@@ -107,19 +91,3 @@ demo2:deploy:
   before_script:
     - echo "${DEMO2_VALUES}" > clients/demo/helm/values.demo2.yaml
     - sed -E "s/VERSION_TAG/${DEPLOY_DEMO2_VERSION}/g" -i clients/demo/helm/values.demo2.yaml
-
-demo3c:deploy:
-  extends: .base-deploy-current
-  environment: demo3c
-  variables:
-    PROJECT_DIR: clients/demo
-    HELM_DIR: ./helm-hanaboso
-    HELM_ARGS: -f ./helm-hanaboso/values.cloud.yaml
-
-  rules:
-    - if: $DEPLOY_DEMO3C_VERSION != ""
-      when: always
-    - when: manual
-
-  before_script:
-    - sed -E "s/VERSION_TAG/${DEPLOY_DEMO3C_VERSION}/g" -i clients/demo/helm-hanaboso/values.demo3c.yaml

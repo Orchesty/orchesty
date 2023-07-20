@@ -1,0 +1,12 @@
+fullnameOverride: ""
+nameOverride: ""
+
+image:
+  repository: dkr.hanaboso.net/pipes/pipes/demo-applinth-marketplace-ui
+  pullPolicy: Always
+  tag: master
+
+service:
+  type: NodePort
+  port: 8000
+  nodePort: 30154
