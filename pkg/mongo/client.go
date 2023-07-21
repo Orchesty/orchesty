@@ -34,13 +34,15 @@ func NewMongo() MongoDb {
 			ExpireAfterSeconds: &month,
 		},
 	}
+
+	indexCreatedName := "created_search"
 	indexCreated := mongo.IndexModel{
 		Keys: bson.M{
 			"created": 1,
 		},
 		Options: &options.IndexOptions{
-            Name: "created_search",
-        },
+			Name: &indexCreatedName,
+		},
 	}
 
 	coll := mongoDbCon.Database.Collection(config.MongoDb.CounterCollection)
