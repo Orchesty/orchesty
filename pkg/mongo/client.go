@@ -38,6 +38,9 @@ func NewMongo() MongoDb {
 		Keys: bson.M{
 			"created": 1,
 		},
+		Options: &options.IndexOptions{
+            Name: "created_search",
+        },
 	}
 
 	coll := mongoDbCon.Database.Collection(config.MongoDb.CounterCollection)
