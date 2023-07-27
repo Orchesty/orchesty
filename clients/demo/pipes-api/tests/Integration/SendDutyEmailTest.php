@@ -2,12 +2,16 @@
 
 namespace DemoTests\Integration;
 
+use Demo\Connector\PagerDutyConnector;
 use Demo\CustomNode\SendDutyEmail;
 use DemoTests\KernelTestCaseAbstract;
 use EmailServiceBundle\Mailer\Mailer;
 use EmailServiceBundle\Transport\TransportInterface;
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
+use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
+use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Json;
 
 /**
@@ -31,10 +35,24 @@ final class SendDutyEmailTest extends KernelTestCaseAbstract
         $transport = $this->createPartialMock(TransportInterface::class, ['send', 'setLogger']);
         $transport->method('send');
 
-        $pagerDuty = self::getContainer()->get('hbpf.connector.pager-duty');
-        $repo      = self::getContainer()->get('hbpf.application_install.repository');
-        $result    = new SendDutyEmail($repo, new Mailer($transport), $pagerDuty);
-        $dto       = (new ProcessDto())
+        $curl = self::createMock(CurlManagerInterface::class);
+        $curl->method('send')->willReturn(
+            new ResponseDto(
+                200,
+                '',
+                File::getContent(__DIR__ . '/Connector/data/pagerDuty.json'),
+                [],
+            ),
+        );
+
+        $repo = self::getContainer()->get('hbpf.application_install.repository');
+
+        $pagerDutyConnector = new PagerDutyConnector($repo);
+        $pagerDutyConnector->setSender($curl);
+
+        $repo   = self::getContainer()->get('hbpf.application_install.repository');
+        $result = new SendDutyEmail($repo, new Mailer($transport), $pagerDutyConnector);
+        $dto    = (new ProcessDto())
             ->setData(Json::encode(['since' => '2019-04-19', 'until' => '2019-04-29']));
 
         self::assertNotEmpty($result->processAction($dto)->getData());

@@ -60,9 +60,9 @@ final class EndUserAuthenticator extends AbstractAuthenticator
      */
     public function authenticate(Request $request): Passport
     {
-        $token = $request->headers->get(self::AUTHORIZATION) ?? $request->query->get(
-            self::AUTHORIZATION,
-        ) ?? $request->cookies->get(self::REFRESH_TOKEN) ?? '';
+        $token = $request->headers->get(self::AUTHORIZATION)
+            ?? $request->query->get(self::AUTHORIZATION)
+            ?? $request->cookies->get(self::REFRESH_TOKEN) ?? '';
 
         if (empty($token)) {
             throw new AuthenticationException('Missing token');

@@ -20,8 +20,22 @@ security:
             pattern: ^/api/status
             security: false
         unsecured_applinth:
-            pattern: ^/api/applinth/authorization/login
+            pattern: ^/api/applinth/authorization/(login|refresh)
             security: false
+
+
+        applinth_authorization_logged:
+            pattern: ^/api/applinth/logged
+            stateless: true
+            provider: user_provider
+            custom_authenticator:
+                - Hanaboso\Applinth\Authenticator\EndUserAuthenticator
+        secured_applinth:
+            pattern: ^/api/applinth
+            stateless: true
+            provider: user_provider
+            custom_authenticator:
+                - Hanaboso\Applinth\Authenticator\EndUserAuthenticator
 
         secured_usage_stats_events:
             pattern: ^/api/usage-stats/.*
@@ -29,24 +43,12 @@ security:
             provider: user_provider
             custom_authenticator:
                 - Hanaboso\PipesFramework\ApiGateway\Authenticator\ApiKey\ApiKeyAuthenticator
-        applinth_authorization_logged:
-            pattern: ^/api/applinth/logged
-            stateless: true
-            provider: user_provider
-            custom_authenticator:
-                - Hanaboso\Applinth\Authenticator\EndUserAuthenticator
         secured_applications:
             pattern: ^/api/applications
             stateless: true
             provider: user_provider
             custom_authenticator:
                 - Hanaboso\PipesFramework\ApiGateway\Authenticator\ApiKey\ApiKeyAuthenticator
-        secured_applinth:
-            pattern: ^/api/applinth
-            stateless: true
-            provider: user_provider
-            custom_authenticator:
-                - Hanaboso\Applinth\Authenticator\EndUserAuthenticator
         secured_area:
             pattern: ^/
             security: true

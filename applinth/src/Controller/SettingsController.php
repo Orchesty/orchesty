@@ -38,6 +38,7 @@ final class SettingsController extends AbstractController
     }
 
     /**
+     * @Route("", methods={"GET"})
      * @Route("/", methods={"GET"})
      *
      * @return Response
@@ -54,6 +55,7 @@ final class SettingsController extends AbstractController
     }
 
     /**
+     * @Route("", methods={"PUT"})
      * @Route("/", methods={"PUT"})
      *
      * @param Request $request

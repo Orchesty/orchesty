@@ -1,0 +1,6 @@
+{
+    "http": "POST /api/applinth/authorization/refresh",
+    "body": {
+        "refresh_token": "token"
+    }
+}

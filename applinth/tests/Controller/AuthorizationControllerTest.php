@@ -22,7 +22,7 @@ final class AuthorizationControllerTest extends ControllerTestCaseAbstract
      */
     public function testLogin(): void
     {
-        $this->mockLocator('installApp');
+        $this->mockLocator();
         $this->assertResponse(
             __DIR__ . '/data/AuthorizationController/loginRequest.json',
             [
@@ -30,6 +30,23 @@ final class AuthorizationControllerTest extends ControllerTestCaseAbstract
                 'expires_in' => '123',
             ],
             requestHeadersReplacements:[self::$AUTHORIZATION => $this->getJweToken()],
+        );
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testLoginWithScopes(): void
+    {
+        $this->mockLocator();
+        $this->assertResponse(
+            __DIR__ . '/data/AuthorizationController/loginScopedRequest.json',
+            [
+                'access_token'  => 'abcd',
+                'expires_in'    => '123',
+                'refresh_token' => 'abcd',
+            ],
+            requestHeadersReplacements: [self::$AUTHORIZATION => $this->getJweToken()],
         );
     }
 
@@ -51,13 +68,28 @@ final class AuthorizationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @param string $method
+     * @throws Exception
      */
-    private function mockLocator(string $method): void
+    public function testRefreshToken(): void
     {
-        $handler = self::createPartialMock(ServiceLocator::class, [$method]);
+        $this->assertResponse(
+            __DIR__ . '/data/AuthorizationController/refreshRequest.json',
+            [
+                'access_token' => 'abcd',
+                'expires_in'   => '123',
+            ],
+            requestBodyReplacements: ['refresh_token'=> $this->getJwsToken()],
+        );
+    }
+
+    /**
+     * @return void
+     */
+    private function mockLocator(): void
+    {
+        $handler = self::createPartialMock(ServiceLocator::class, ['installApp']);
         $this->setProperty($handler, 'sdkRepository', $this->dm->getRepository(Sdk::class));
-        $handler->expects(self::any())->method($method)->willReturnCallback(function (): array {
+        $handler->expects(self::any())->method('installApp')->willReturnCallback(function (): array {
             $app = new ApplicationInstall();
             $app
                 ->setKey('user/app/id')

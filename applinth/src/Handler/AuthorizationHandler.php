@@ -175,7 +175,7 @@ final class AuthorizationHandler
     {
         $payload = $this->authorizationManager->payloadFromJwe($jweToken);
 
-        if($includeSettings && isset($payload[self::SETTINGS])){
+        if ($includeSettings && isset($payload[self::SETTINGS])) {
             unset($payload[self::SETTINGS]);
         }
 
@@ -183,21 +183,23 @@ final class AuthorizationHandler
     }
 
     /**
-     * @param mixed[] $payload
-     * @param int     $expirationTime
+     * @param mixed[]  $payload
+     * @param int|null $expirationTime
      *
      * @return mixed[]
      */
-    public function jwsFromJwe(array $payload, int $expirationTime = 3_600): array
+    public function jwsFromJwe(array $payload, ?int $expirationTime = 3_600): array
     {
         unset($payload[self::EU_ALIAS]);
 
         $payload[self::IAT] = time();
-        $payload[self::EXP] = time() + $expirationTime;
+        if ($expirationTime) {
+            $payload[self::EXP] = time() + $expirationTime;
+        }
 
         return [
             $this->jwsFromPayload($payload),
-            $payload[self::EXP],
+            $payload[self::EXP] ?? NULL,
         ];
     }
 
