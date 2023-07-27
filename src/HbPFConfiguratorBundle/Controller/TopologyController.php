@@ -159,7 +159,7 @@ final class TopologyController
     {
         try {
             return $this->getResponse($this->topologyHandler->updateTopology($id, $request->request->all()));
-        } catch (TopologyException|Throwable $e) {
+        } catch (Throwable $e) {
             return $this->getErrorResponse($e);
         }
     }
@@ -204,7 +204,7 @@ final class TopologyController
                     $request->request->all(),
                 ),
             );
-        } catch (TopologyException|Throwable $e) {
+        } catch (Throwable $e) {
             return $this->getErrorResponse(
                 $e,
                 in_array(
@@ -239,7 +239,7 @@ final class TopologyController
                     $request->request->all(),
                 ),
             );
-        } catch (TopologyException|Throwable $e) {
+        } catch (Throwable $e) {
             return $this->getErrorResponse(
                 $e,
                 in_array(
