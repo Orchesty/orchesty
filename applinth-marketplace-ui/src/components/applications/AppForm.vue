@@ -2,7 +2,7 @@
   <div>
     <v-row>
       <v-col>
-        <v-tabs v-model="tab" height="40">
+        <v-tabs v-model="tab" height="40" :show-arrows="true">
           <v-tab
             v-for="form in settingsConfig"
             :key="form.key"
