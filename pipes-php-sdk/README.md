@@ -1,45 +1,58 @@
-# Orchesty PHP SDK
+# PHP Orchesty SDK
 
-## Popis služby
-SDK pro tvorbu workerů za pomocí jazyka PHP.
+## How to use ?
+- Install package `orchesty/php-sdk`
+- Register bundles from PHP SDK into your Symfony Application:
+```
+# config/Bundles.php
+ 
+  ...
+  HbPFApplicationBundle::class     => ['all' => TRUE],
+  HbPFCommonsBundle::class         => ['all' => TRUE],
+  HbPFConnectorBundle::class       => ['all' => TRUE],
+  HbPFConnectorsBundle::class      => ['all' => TRUE],
+  HbPFCustomNodeBundle::class      => ['all' => TRUE],
+  ...
+```
+- Register routes from PHP SDK into your Symfony Application:
+```
+# config/routes/routing.yaml
 
-SDK poskytuje Abstrakce pro tvorbu uzlů topologie typu:
-- Connector
-- Custom Node
+...
+hb_pf_applications:
+    resource: "@HbPFApplicationBundle/Controller"
+    type: annotation
 
-Dále je možné vytvořit Application, která poskytuje možnost autorizaci pro daný sw 3. strany. Aplikaci je pak možné využívat v různých connectorech. 
+hb_pf_connector:
+    resource: "@HbPFConnectorBundle/Controller"
+    type: annotation
 
-## Spuštění služby - development
-- `make init`       - spustí containery a nainstaluje balíčky pomocí composeru
-- `make test`       - spustí containery, stáhne balíčky a spustí testy
-- `make fasttest`   - spustí testy
+hb_pf_custom_node:
+    resource: "@HbPFCustomNodeBundle/Controller"
+    type: annotation
 
-## Konfigurační volby
-- DEV_UID 
-    - Povinný: `ANO`
-    - ID Uživatele pod kterým se spouští PHP-FPM
-    - Například: `${DEV_UID}` - UID se bere ze souboru `.env`
-- DEV_GID 
-    - Povinný: `ANO`
-    - ID Skupiny pod kterým se spouští PHP-FPM
-    - Například: `${DEV_GID}` - GID se bere ze souboru `.env`
-- KERNEL_CLASS 
-    - Povinný: `ANO`
-    - Namespace of Symfony Kernel File. 
-    - Například: `PipesPhpSdkTests\Kernel`
-- COMPOSER_HOME 
-    - Povinný: `ANO`
-    - Cesta k ComposerCache souborům
-    - Například: `${HOME}/dev/.composer` - HOME se bere ze souboru `.env`
-- PHP_IDE_CONFIG 
-    - Povinný: `NE`
-    - ID Uživatele pod kterým se spouští PHP-FPM
-    - Například: `${PHP_IDE_CONFIG}` - PHP_IDE_CONFIG se bere ze souboru `.env`
+hb_pf_batch:
+    resource: "@HbPFBatchBundle/Controller"
+    type: annotation
+```
+- Add parameters where will be your nodes and application registered:
+```
+# config/services.yaml
+parameters:
+    node_services_dirs:
+        - '%kernel.project_dir%/config'
+    applications:
+        - '%kernel.project_dir%/config'
+```
+- Add required environment variables:
+```
+Example values:
+BACKEND_DSN: 'http://127.0.0.10:8080'
+STARTING_POINT_DSN: 'http://starting-point:8080'
+WORKER_API_HOST: 'http://worker-api:8000'
+ORCHESTY_API_KEY: 'ThisIsNotSoSecretApiKey'
+```
 
-## Použité technologie
-- PHP 8.1+
-
-## Závislosti
-- MongoDB
-- MariaDB (optional)
-- RabbitMQ (optional)
+## How to develop
+1. Run `make init` for start dev environment
+2. Tests can be run by `make test` or `make fasttest`

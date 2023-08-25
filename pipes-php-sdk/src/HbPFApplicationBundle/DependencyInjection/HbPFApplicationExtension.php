@@ -45,6 +45,7 @@ final class HbPFApplicationExtension extends Extension implements PrependExtensi
         $this->processConfiguration($configuration, $configs);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
+        $loader->load('parameters.yaml');
         $loader->load('controller.yaml');
         $loader->load('handler.yaml');
         $loader->load('listener.yaml');

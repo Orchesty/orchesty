@@ -5,13 +5,6 @@ parameters:
         dumper:
             inline_factories: true
 
-    backendHost: '%env(BACKEND_DSN)%'
-    startingPointHost: "%env(string:STARTING_POINT_DSN)%"
-
-    env(UDP_LOGGER_URL): "fluentd:5120"
-    udp_logger_url: "%env(string:UDP_LOGGER_URL)%"
-
-    access_token_refresh_interval: 3600
     node_services_dirs:
         - '%kernel.project_dir%/config'
         - '%kernel.project_dir%/vendor/orchesty/php-connectors/src/Resources/config/'
