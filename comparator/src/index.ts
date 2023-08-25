@@ -13,7 +13,7 @@ import { Comparator } from './service/comparator';
 import {
     ComparatorBufferRepository,
     ComparatorHashRepository,
-    ComparatorLockRepository
+    ComparatorLockRepository,
 } from './service/storage/repository';
 
 export async function initialize(): Promise<void> {

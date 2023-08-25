@@ -1,4 +1,4 @@
-# PHP Orchesty SDK
+# PHP Orchesty Connectors
 
 ## How to use ?
 - Install package `orchesty/php-sdk` and follow the SDK readme

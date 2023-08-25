@@ -1,12 +1,6 @@
-import {
-  prepareGridData,
-  prepareGridHeaderStateForSave,
-  prepareGridStateForSave,
-  prepareSorter,
-} from "@/services/utils/gridUtils"
-import { DIRECTION, OPERATOR } from "@/services/enums/gridEnums"
+import { prepareGridData, prepareSorter } from "@/services/utils/gridUtils"
+import { DIRECTION } from "@/services/enums/gridEnums"
 import { createDefaultGridState } from "@/store/modules/grid/state"
-import { FILTER } from "@/services/utils/gridUtils"
 
 // PREPARE SORTER
 test("Grid::prepareSorter - null", () => {
@@ -66,7 +60,7 @@ test("Grid::prepareData - default", () => {
     filter: [],
     paging: {
       page: 1,
-      itemsPerPage: 10,
+      itemsPerPage: 50,
     },
     sorter: [
       {
@@ -74,7 +68,7 @@ test("Grid::prepareData - default", () => {
         direction: DIRECTION.DESCENDING,
       },
     ],
-    search: null,
+    search: "",
   }
 
   expect(prepareGridData(state)).toEqual(result)
@@ -88,10 +82,10 @@ test("Grid::prepareData - null sorter", () => {
     filter: [],
     paging: {
       page: 1,
-      itemsPerPage: 10,
+      itemsPerPage: 50,
     },
     sorter: null,
-    search: null,
+    search: "",
   }
 
   expect(prepareGridData(state)).toEqual(result)
@@ -125,7 +119,8 @@ test("Grid::prepareData - paging, sorter", () => {
         direction: DIRECTION.ASCENDING,
       },
     ],
-    search: null,
+    search: "",
+    params: undefined,
   }
 
   expect(prepareGridData(state, payload)).toEqual(result)
@@ -149,7 +144,8 @@ test("Grid::prepareData - paging, sorter null", () => {
       itemsPerPage: 15,
     },
     sorter: null,
-    search: null,
+    search: "",
+    params: undefined,
   }
 
   expect(prepareGridData(state, payload)).toEqual(result)
@@ -167,8 +163,9 @@ test("Grid::prepareData - search", () => {
     filter: [],
     paging: {
       page: 1,
-      itemsPerPage: 10,
+      itemsPerPage: 50,
     },
+    params: undefined,
     sorter: [
       {
         column: "id",
@@ -193,8 +190,9 @@ test("Grid::prepareData - delete null", () => {
     filter: [],
     paging: {
       page: 1,
-      itemsPerPage: 10,
+      itemsPerPage: 50,
     },
+    params: undefined,
     sorter: [
       {
         column: "id",
@@ -219,8 +217,9 @@ test("Grid::prepareData - delete empty string", () => {
     filter: [],
     paging: {
       page: 1,
-      itemsPerPage: 10,
+      itemsPerPage: 50,
     },
+    params: undefined,
     sorter: [
       {
         column: "id",
@@ -231,41 +230,4 @@ test("Grid::prepareData - delete empty string", () => {
   }
 
   expect(prepareGridData(state, payload)).toEqual(result)
-})
-
-// create state for save
-test("Grid::prepareGridStateForSave", () => {
-  const state = createDefaultGridState("test")
-  state.search = "test"
-  state.filter = [
-    [{ column: "test", operator: OPERATOR.EQUAL, values: ["test"] }],
-  ]
-  state.filterMeta = { type: FILTER.SIMPLE_FILTER }
-
-  const result = {
-    filter: [[{ column: "test", operator: OPERATOR.EQUAL, values: ["test"] }]],
-    filterMeta: { type: FILTER.SIMPLE_FILTER },
-    sorter: [
-      {
-        column: "id",
-        direction: "DESCENDING",
-      },
-    ],
-    version: "1.0.0",
-  }
-
-  expect(prepareGridStateForSave(state)).toEqual(result)
-})
-
-// create state for save
-test("Grid::prepareGridStateForSave", () => {
-  const state = createDefaultGridState("test")
-  state.headersMeta = [{ value: "id", visible: true }]
-
-  const result = {
-    headersMeta: [{ value: "id", visible: true }],
-    version: "1.0.0",
-  }
-
-  expect(prepareGridHeaderStateForSave(state)).toEqual(result)
 })

@@ -13,8 +13,7 @@
     "lint:styles:fix": "stylelint --fix '**/*.{css,scss,vue}'",
     "format:check": "prettier --check '**/*.{js,ts,vue,json,yml,mjs,css,scss,md}'",
     "format": "prettier --write '**/*.{js,ts,vue,json,yml,mjs,css,scss,md}'",
-    "test": "",
-    "validate": "run-p -l lint lint:styles format:check test"
+    "validate": "run-p -l lint lint:styles format:check"
   },
   "packageManager": "pnpm@7.21.0",
   "dependencies": {

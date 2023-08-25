@@ -32,7 +32,7 @@ services:
       RABBITMQ_DSN: amqp://rabbitmq:5672
       DOCKER_PF_BRIDGE_IMAGE: orchesty/bridge:2.0.0
       EMAIL_DSN: smtp://mailhog:1025
-      ALPHA_INSTANCE_ID: 'demo'
+      ALPHA_INSTANCE_ID: "demo"
       JWE_PRIVATE_KEY: |
         -----BEGIN EC PRIVATE KEY-----
         MIHcAgEBBEIAGmQ//yMnyMlFAN/E2yfZjzFL1ziTrAbDwa08KEPBq+NUWHvrxrs7
@@ -61,18 +61,18 @@ services:
     command: sh -c 'pnpm run start'
 
   worker-api:
-      image: worker-api:tag
-      build: ./../worker-api/docker
-      user: ${DEV_UID}:${DEV_GID}
-      working_dir: /var/www
-      volumes:
-        - ./../worker-api:/var/www:cached
-      environment:
-        APP_ENV: 'debug'
-        MONGODB_DSN: mongodb://mongo/pipes
-        FLUENTD_DSN: 'fluentd:9880'
-        TZ: 'UTC'
-      command: sh -c 'pnpm run start'
+    image: worker-api:tag
+    build: ./../worker-api/docker
+    user: ${DEV_UID}:${DEV_GID}
+    working_dir: /var/www
+    volumes:
+      - ./../worker-api:/var/www:cached
+    environment:
+      APP_ENV: "debug"
+      MONGODB_DSN: mongodb://mongo/pipes
+      FLUENTD_DSN: "fluentd:9880"
+      TZ: "UTC"
+    command: sh -c 'pnpm run start'
 
   mongo:
     image: mongo:latest

@@ -18,3 +18,6 @@ build-dev:
 	docker push ${BASE_IMAGE}:${TAG}
 	docker tag ${BASE_IMAGE}:${TAG} $(PUBLIC_BASE_IMAGE):$(TAG)
 	docker push $(PUBLIC_BASE_IMAGE):$(TAG)
+
+test:
+	pnpm run validate

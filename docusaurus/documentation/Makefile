@@ -19,3 +19,6 @@ deploy:
 	fi
 	find ./build -regextype egrep -regex '.*\.(html|js)$$' -exec sed 's|%PORTAL_API_URL%|${PORTAL_API_URL}|g' -i {} \;
 	aws s3 sync --acl public-read --delete ./build/ s3://pipes-website-${ENV}/
+
+test:
+	pnpm run build

@@ -12,11 +12,11 @@ dependencies:
     specifier: ^3.398.0
     version: 3.398.0
   '@orchesty/nodejs-connectors':
-    specifier: ^3.0.52
-    version: 3.0.52
+    specifier: ^3.0.53
+    version: 3.0.53
   '@orchesty/nodejs-sdk':
-    specifier: ^4.2.30
-    version: 4.2.30
+    specifier: ^4.2.31
+    version: 4.2.31
   copyfiles:
     specifier: ^2.4.1
     version: 2.4.1
@@ -1452,8 +1452,8 @@ packages:
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
     dev: true
 
-  /@cloudamqp/amqp-client@3.1.0:
-    resolution: {integrity: sha512-FaI40hFTtdZPmrHNMy/YZr0THIHINhGagT1bj9FCIQivM4+9WUFYNUJGp5PEH83Gf08oNO+bldSpOjdMpvz39Q==}
+  /@cloudamqp/amqp-client@3.1.1:
+    resolution: {integrity: sha512-bYPOH7jJ9eE9bHNyZqlgTyT4uh5L1KSndskK38b1PIePTKxNUTU1FibLQgcJm1+yGahTZwwQl3thgcRoiqIV5Q==}
     engines: {node: '>=16.0.0'}
     requiresBuild: true
     dev: false
@@ -1927,11 +1927,11 @@ packages:
     dev: false
     optional: true
 
-  /@orchesty/nodejs-connectors@3.0.52:
-    resolution: {integrity: sha512-4TX/YV3cQPgQmcwfKVtI7DuGFWLBBQD/p3vpyNShXTEtC0fu4DG8hZLhO7kjuIE82ugPumEdp3v1lC5i/zuMFQ==}
+  /@orchesty/nodejs-connectors@3.0.53:
+    resolution: {integrity: sha512-IFLAfw6bEv0zN4F+kMMPDsf3bMYF6WRNO3glt3wypTIB/LnLh1KPtGZdl8OjNmRQLpCuJ305mXp5ikRKtuf9Cw==}
     engines: {node: '>=19'}
     dependencies:
-      '@orchesty/nodejs-sdk': 4.2.30
+      '@orchesty/nodejs-sdk': 4.2.31
       axios: 1.4.0
       express: 5.0.0-beta.1
       form-data: 4.0.0
@@ -1949,7 +1949,7 @@ packages:
       '@azure/arm-powerbiembedded': 2.0.2
       '@azure/core-rest-pipeline': 1.12.0
       '@azure/identity': 3.3.0
-      '@cloudamqp/amqp-client': 3.1.0
+      '@cloudamqp/amqp-client': 3.1.1
       fast-xml-parser: 4.2.7
       mariadb: 3.2.0
       mysql2: 3.6.0
@@ -1977,8 +1977,8 @@ packages:
       - supports-color
     dev: false
 
-  /@orchesty/nodejs-sdk@4.2.30:
-    resolution: {integrity: sha512-/XD79lwtaV0k/UAgvHqdYvdDZ2sQ1la5OBlJQakUu/AoXeH++z9mT/Rgc2/c4VAnyXAm69mSym5LjBjSo0JkEA==}
+  /@orchesty/nodejs-sdk@4.2.31:
+    resolution: {integrity: sha512-i9f1gC3fKRKmi0tLJV3omDMNGj4esTnyzq33/XqyBAOi9BKqNKtdIVN3+s5mR/QIYvI2JtHw/IqQJ3joeY2+ZA==}
     dependencies:
       async-mutex: 0.4.0
       axios: 1.4.0

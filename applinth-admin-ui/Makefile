@@ -31,3 +31,5 @@ rebuild:
 generate-fixture-data: init
 	docker-compose exec console-api pnpm run create-fixture-data
 
+test:
+	pnpm run validate

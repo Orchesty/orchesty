@@ -24,6 +24,7 @@ import DropboxApplication from '@orchesty/nodejs-connectors/dist/lib/Dropbox/Dro
 import FacebookAdsApplication from '@orchesty/nodejs-connectors/dist/lib/FacebookAds/FacebookAdsApplication';
 import FakturoidApplication from '@orchesty/nodejs-connectors/dist/lib/Fakturoid/FakturoidApplication';
 import FlexiBeeApplication from '@orchesty/nodejs-connectors/dist/lib/FlexiBee/FexiBeeApplication';
+import GitHubGetRepositoryConnector from '@orchesty/nodejs-connectors/dist/lib/GitHub/Connector/GitHubGetRepositoryConnector';
 import GitHubApplication from '@orchesty/nodejs-connectors/dist/lib/GitHub/GitHubApplication';
 import GoogleCalendarApplication
     from '@orchesty/nodejs-connectors/dist/lib/Google/GoogleCalendar/GoogleCalendarApplication';
@@ -294,6 +295,7 @@ export function start(): void {
 
     const githubApplication = new GitHubApplication();
     container.setApplication(githubApplication);
+    container.setNode(new GitHubGetRepositoryConnector(), githubApplication);
 
     const listPosts = new ListPosts();
     listPosts.setSender(sender);

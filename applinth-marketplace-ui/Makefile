@@ -17,3 +17,6 @@ rebuild:
 
 generate-link:
 	echo "http://localhost:8080/?u=$$(node JWEGen.js)"
+
+test:
+	pnpm run validate

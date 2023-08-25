@@ -1,23 +1,39 @@
-TEST=make test && make docker-down-clean
+TEST=make test
+DOWN=make docker-down-clean
 VENDOR=rm -rf vendor || true
 VAR=rm -rf var || true
 DOCKER=make docker-up-force
-INSTALL=docker-compose exec -T app composer global require hirak/prestissimo
 COMPOSER=make composer-update
 
-test: test-php test-go
+test: test-php test-go test-js
 
 test-go:
-	cd starting-point && $(TEST)
-	cd rabbitmq-telegraf && $(TEST)
-	cd topology-generator && $(TEST)
+	cd bridge && $(TEST) && $(DOWN)
+	cd counter && $(TEST) && $(DOWN)
+	cd cron && $(TEST) && $(DOWN)
+	cd detector && $(TEST) && $(DOWN)
+	cd limiter && $(TEST) && $(DOWN)
+	cd starting-point && $(TEST) && $(DOWN)
+	cd topology-generator && $(TEST) && $(DOWN)
 
 test-php:
-	cd pipes-php-sdk && $(TEST)
-	cd pipes-connectors && $(TEST)
-	cd pf-bundles && $(TEST)
-	cd applinth && $(TEST)
-	cd clients/demo/pipes-api && $(TEST)
+	cd pipes-php-sdk && $(TEST) && $(DOWN)
+	cd pipes-connectors && $(TEST) && $(DOWN)
+	cd pf-bundles && $(TEST) && $(DOWN)
+	cd applinth && $(TEST) && $(DOWN)
+	cd clients/demo/pipes-api && $(TEST) && $(DOWN)
+
+test-js:
+	cd app-ui && $(TEST)
+	cd applinth-admin-ui && $(TEST)
+	cd applinth-marketplace-ui && $(TEST)
+	cd clients/demo/node-sdk && $(TEST) && $(DOWN)
+	cd comparator && $(TEST) && $(DOWN)
+	cd docusaurus/documentation && $(TEST)
+	cd saas/applinth-billing-processor && $(TEST) && $(DOWN)
+	cd saas/console-api && $(TEST) && $(DOWN)
+	cd saas/usccp && $(TEST) && $(DOWN)
+	cd worker-api && $(TEST) && $(DOWN)
 
 vendor-remove: var-remove
 	cd pipes-php-sdk && $(VENDOR)
@@ -34,11 +50,11 @@ var-remove:
 	cd clients/demo/pipes-api && $(VAR)
 
 vendor-refresh:
-	cd pipes-php-sdk && $(VENDOR) && $(DOCKER) && $(INSTALL) && $(COMPOSER)
-	cd pipes-connectors && $(VENDOR) && $(DOCKER) && $(INSTALL) && $(COMPOSER)
-	cd pf-bundles && $(VENDOR) && $(DOCKER) && $(INSTALL) && $(COMPOSER)
-	cd applinth && $(VENDOR) && $(DOCKER) && $(INSTALL) && $(COMPOSER)
-	cd clients/demo/pipes-api && $(VENDOR) && $(DOCKER) && $(INSTALL) && $(COMPOSER)
+	cd pipes-php-sdk && $(VENDOR) && $(DOCKER) && $(COMPOSER)
+	cd pipes-connectors && $(VENDOR) && $(DOCKER) && $(COMPOSER)
+	cd pf-bundles && $(VENDOR) && $(DOCKER) && $(COMPOSER)
+	cd applinth && $(VENDOR) && $(DOCKER) && $(COMPOSER)
+	cd clients/demo/pipes-api && $(VENDOR) && $(DOCKER) && $(COMPOSER)
 
 rebuild-all:
 	cd detector && make build TAG=$(TAG)
