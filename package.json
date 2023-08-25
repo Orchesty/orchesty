@@ -13,8 +13,7 @@
     "lint:styles:fix": "stylelint --fix '**/*.{css,scss,vue}'",
     "format:check": "prettier --check '**/*.{js,ts,vue,json,yml,mjs,css,scss,md}'",
     "format": "prettier --write '**/*.{js,ts,vue,json,yml,mjs,css,scss,md}'",
-    "test": "",
-    "validate": "run-p -l lint lint:styles format:check test",
+    "validate": "run-p -l lint lint:styles format:check test:unit",
     "vue-i18n-extract": "node ./src/localization/transform.mjs && vue-i18n-extract report --vueFiles './src/**/*.?(js|vue)' --languageFiles './src/localization/generated/*.json' && rm -rf './src/localization/generated/'"
   },
   "packageManager": "pnpm@7.21.0",
