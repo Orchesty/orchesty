@@ -1,0 +1,31 @@
+{
+    "name": "pipes/status-service",
+    "license": "Apache-2.0",
+    "version": "1.0.0",
+    "require": {
+        "php": "^8.1",
+        "hanaboso/pipes-php-sdk": "^1.6"
+    },
+    "require-dev": {
+        "hanaboso/php-check-utils": "^1.4",
+        "psr/log": "^2"
+    },
+    "replace": {
+        "ralouphie/getallheaders": "*",
+        "symfony/polyfill-ctype": "*",
+        "symfony/polyfill-iconv": "*",
+        "symfony/polyfill-intl-grapheme": "*",
+        "symfony/polyfill-intl-idn": "*",
+        "symfony/polyfill-intl-normalizer": "*",
+        "symfony/polyfill-mbstring": "*",
+        "symfony/polyfill-php72": "*",
+        "symfony/polyfill-php73": "*",
+        "symfony/polyfill-php74": "*",
+        "symfony/polyfill-php80": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Pipes\\StatusService\\": "src/"
+        }
+    }
+}
