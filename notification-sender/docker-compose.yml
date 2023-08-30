@@ -1,0 +1,68 @@
+version: '3.5'
+services:
+    consumer:
+        image: hanabosocom/php-dev:php-8.0-alpine
+        user: ${DEV_UID}:${DEV_GID}
+        working_dir: /var/www
+        environment:
+            - APP_ENV=dev
+            - RABBITMQ_DSN=amqp://rabbitmq:5672
+            - SMTP_DSN=smtp://root:root@mailhog:1025
+            - KERNEL_CLASS=Hanaboso\NotificationSender\Kernel
+            - DEV_UID=${DEV_UID}
+            - DEV_GID=${DEV_GID}
+        volumes:
+            - ./:/var/www
+            - ${SSH_AUTH}:/tmp/.ssh-auth-sock
+        command: bash -c 'while ! [ -f vendor/autoload.php ];do sleep 1; echo "sleep 1"; done; bin/console rabbit_mq:consumer:notification'
+
+    app:
+        image: hanabosocom/php-dev:php-8.0-alpine
+        user: ${DEV_UID}:${DEV_GID}
+        ports:
+            - ${DEV_IP}:80:80
+        volumes:
+            - ./:/var/www:cached
+            - ${SSH_AUTH}:/tmp/.ssh-auth-sock
+            - ${HOME}/dev/.composer:${HOME}/dev/.composer:cached
+        environment:
+            - APP_ENV=test
+            - RABBITMQ_DSN=amqp://rabbitmq:5672
+            - SMTP_DSN=smtp://root:root@mailhog:1025
+            - KERNEL_CLASS=Hanaboso\NotificationSender\Kernel
+            - DEV_UID=${DEV_UID}
+            - DEV_GID=${DEV_GID}
+            - PHP_IDE_CONFIG=${PHP_IDE_CONFIG}
+            - COMPOSER_HOME=${HOME}/dev/.composer
+
+    mongodb:
+        image: mongo:latest
+        environment:
+            - MONGO_DATA_DIR=/data/db
+        ports:
+            - ${DEV_IP}:27017:27017
+        volumes:
+            - mongodb:/data/db
+
+    rabbitmq:
+        image: rabbitmq:management-alpine
+        ports:
+            - ${DEV_IP}:15672:15672
+            - ${DEV_IP}:5672:5672
+
+    mailhog:
+        image: mailhog/mailhog
+        ports:
+            - ${DEV_IP}:8025:8025
+
+    swagger-ui:
+        image: swaggerapi/swagger-ui
+        ports:
+            - ${DEV_IP}:8080:8080
+        volumes:
+            - ./openapi.yaml:/api.yaml
+        environment:
+            SWAGGER_JSON: /api.yaml
+
+volumes:
+    mongodb: {}

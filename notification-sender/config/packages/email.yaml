@@ -1,0 +1,15 @@
+services:
+    _defaults:
+        autowire: false
+        autoconfigure: false
+        public: '%public.services%'
+
+    mailer:
+        class: EmailServiceBundle\Mailer\Mailer
+        arguments:
+            - '@EmailServiceBundle\Transport\Impl\SymfonyMailerTransport'
+
+    Symfony\Component\Mailer\Mailer:
+        class: Symfony\Component\Mailer\Mailer
+        arguments:
+            - '@mailer.transports'

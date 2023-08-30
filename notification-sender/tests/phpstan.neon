@@ -1,0 +1,20 @@
+includes:
+	- ../vendor/hanaboso/php-check-utils/phpstan.neon
+
+parameters:
+	doctrine:
+		objectManagerLoader: DocumentManagerLoader.php
+	symfony:
+		container_xml_path: %rootDir%/../../../var/cache/test/Hanaboso_NotificationSender_KernelTestDebugContainer.xml
+	ergebnis:
+		classesAllowedToBeExtended:
+			- Hanaboso\NotificationSender\Model\Notification\Handler\CurlHandlerAbstract
+			- Hanaboso\NotificationSender\Model\Notification\Handler\EmailHandlerAbstract
+			- Hanaboso\NotificationSender\Model\Notification\Handler\RabbitHandlerAbstract
+			- Hanaboso\Utils\Exception\PipesFrameworkExceptionAbstract
+			- NotificationSenderTests\ControllerTestCaseAbstract
+			- NotificationSenderTests\DatabaseTestCaseAbstract
+			- NotificationSenderTests\KernelTestCaseAbstract
+
+		classesNotRequiredToBeAbstractOrFinal:
+			- Hanaboso\NotificationSender\Document\NotificationSettings

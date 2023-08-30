@@ -1,0 +1,19 @@
+services:
+    _defaults:
+        autowire: false
+        autoconfigure: false
+        public: '%service_visibility%'
+
+    notification.sender.curl:
+        class: Hanaboso\NotificationSender\Model\Notification\Sender\CurlSender
+        arguments:
+            - '@hbpf.transport.curl_manager'
+
+    notification.sender.email:
+        class: Hanaboso\NotificationSender\Model\Notification\Sender\EmailSender
+        arguments:
+            - '@mailer.mailer'
+
+    notification.sender.rabbit:
+        class: Hanaboso\NotificationSender\Model\Notification\Sender\RabbitSender
+        arguments:

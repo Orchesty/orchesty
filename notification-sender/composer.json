@@ -1,0 +1,43 @@
+{
+    "name": "hanaboso/notification-sender",
+    "description": "NotificationSender for Symfony",
+    "version": "1.2.1",
+    "license": "GPL-3.0-or-later",
+    "require": {
+        "php": "^8.0",
+        "ext-ctype": "*",
+        "ext-iconv": "*",
+        "ext-intl": "*",
+        "ext-mbstring": "*",
+        "doctrine/mongodb-odm-bundle": "^4.2",
+        "hanaboso/commons-bundle": "^2.3",
+        "hanaboso/email-service-bundle": "^1.2",
+        "hanaboso/rabbit-mq-bundle": "^1.5",
+        "hanaboso/rest-bundle": "^1.1",
+        "hanaboso/utils": "^1.1"
+    },
+    "replace": {
+        "ralouphie/getallheaders": "*",
+        "symfony/polyfill-ctype": "*",
+        "symfony/polyfill-iconv": "*",
+        "symfony/polyfill-intl-idn": "*",
+        "symfony/polyfill-mbstring": "*",
+        "symfony/polyfill-php72": "*",
+        "symfony/polyfill-php73": "*",
+        "symfony/polyfill-php74": "*",
+        "symfony/polyfill-php80": "*"
+    },
+    "require-dev": {
+        "hanaboso/php-check-utils": "^1.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Hanaboso\\NotificationSender\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "NotificationSenderTests\\": "tests"
+        }
+    }
+}
