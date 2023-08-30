@@ -1,0 +1,63 @@
+dbrp "pipes"."default"
+
+var sample = 5s
+var retention = '5s'
+
+var connectorData = stream
+    |from()
+       .database('pipes')
+       .retentionPolicy('default')
+       .measurement('connectors')
+    |barrier()
+       .period(sample)
+    |window()
+       .period(sample)
+       .every(sample)
+    |groupBy('node_id', 'application_id', 'user_id', 'correlation_id')
+    |default()
+        .field('sent_request_total_duration', 0)
+        .field('user_id', 0)
+        .field('application_id', 0)
+
+// Monolith data
+var reqAvg = connectorData
+    |mean('sent_request_total_duration')
+        .as('time')
+
+var reqMin = connectorData
+    |min('sent_request_total_duration')
+        .as('time')
+
+var reqMax = connectorData
+    |max('sent_request_total_duration')
+        .as('time')
+
+var reqSum = connectorData
+    |sum('sent_request_total_duration')
+        .as('time')
+
+var reqCount = connectorData
+    |count('sent_request_total_duration')
+        .as('time')
+
+var user_id = connectorData
+    |count('user_id')
+        .as('count')
+
+var app_id = connectorData
+    |count('application_id')
+        .as('count')
+
+reqAvg
+   |join(reqMin, reqMax, reqSum, reqCount, user_id, app_id)
+       .as('avg', 'min', 'max', 'sum', 'count', 'user_id', 'app_id')
+   |delete()
+       .field('min.user_id')
+       .field('max.user_id')
+       .field('min.application_id')
+       .field('max.application_id')
+   |influxDBOut()
+       .database('pipes')
+       .measurement('connectors')
+       .precision('ms')
+       .retentionPolicy(retention)
