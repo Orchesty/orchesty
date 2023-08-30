@@ -1,0 +1,27 @@
+.base-pf-bridge: 
+  variables:
+    DIR: pf-bridge
+    IMAGE: ${REGISTRY}/${IMAGE_PREFIX}pf-bridge
+  
+  rules:
+    - if: '$FORCE_PIPELINE =~ /ALL/ || $FORCE_PIPELINE =~ /pf-bridge/'
+    - if: '$CI_COMMIT_BEFORE_SHA == $_BANNED_RUN_ALL_SHA'
+      when: never
+    - changes:
+      - ${DIR}/**/*
+
+
+pf-bridge:build:
+  stage: build
+  needs: []
+  extends:
+    - .base-kaniko-build
+    - .base-pf-bridge
+
+pf-bridge:test:
+  stage: test
+  needs: []
+
+  extends:
+    - .base-go-test # todo: don't use go-test for non-go app
+    - .base-limiter
