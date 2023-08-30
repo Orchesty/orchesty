@@ -1,0 +1,15 @@
+dbrp "pipes"."30m"
+
+var sample = 4h
+var retention = '4h'
+
+batch
+   |query('SELECT (sum("sum.time") / sum("count.time")) as "avg.message", max("max.message") as "max.message", sum("sum.time") as "sum.time", count("count.time") as "count.time" FROM "pipes"."30m"."rabbitmq"')
+       .period(sample)
+       .every(sample)
+       .groupBy('queue')
+   |influxDBOut()
+       .database('pipes')
+       .measurement('rabbitmq')
+       .precision('ms')
+       .retentionPolicy(retention)
