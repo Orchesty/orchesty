@@ -1,0 +1,30 @@
+module topology-generator
+
+go 1.14
+
+require (
+	github.com/Microsoft/go-winio v0.4.14 // indirect
+	github.com/docker/distribution v2.7.1+incompatible // indirect
+	github.com/docker/docker v1.13.1
+	github.com/docker/go-connections v0.4.0 // indirect
+	github.com/docker/go-units v0.4.0 // indirect
+	github.com/gin-contrib/sse v0.0.0-20190301062529-5545eab6dad3 // indirect
+	github.com/gin-gonic/gin v1.3.0
+	github.com/hanaboso/go-log v0.0.0-20200316105142-2513eeb2ee4e
+	github.com/hanaboso/go-mongodb v0.0.0-20200219152830-da09213c767a
+	github.com/jinzhu/configor v1.0.0
+	github.com/mattn/go-isatty v0.0.7 // indirect
+	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
+	github.com/pkg/errors v0.9.1
+	github.com/spf13/cobra v0.0.3
+	github.com/stretchr/testify v1.6.1
+	github.com/ugorji/go v1.1.4 // indirect
+	github.com/xdg/stringprep v1.0.0 // indirect
+	go.mongodb.org/mongo-driver v1.3.0
+	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
+	gopkg.in/go-playground/validator.v8 v8.18.2 // indirect
+	gopkg.in/yaml.v2 v2.2.8
+	k8s.io/api v0.20.0
+	k8s.io/apimachinery v0.20.0
+	k8s.io/client-go v0.20.0
+)
