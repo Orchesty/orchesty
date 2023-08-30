@@ -1,0 +1,27 @@
+.base-logstash:
+  variables:
+    DIR: logstash
+    IMAGE: ${REGISTRY}/${IMAGE_PREFIX}logstash
+  rules:
+    - if: '$FORCE_PIPELINE =~ /ALL/ || $FORCE_PIPELINE =~ /logstash/'
+    - if: '$CI_COMMIT_BEFORE_SHA == $_BANNED_RUN_ALL_SHA'
+      when: never
+    - changes:
+      - ${DIR}/**/*
+
+
+logstash:build:
+  stage: build
+  needs: ["collect-tags"]
+  extends:
+    - .base-kaniko-build
+    - .base-logstash
+
+  variables:
+    # logstash image causes a segfault in our custom alpine kaniko 
+    KANIKO_IMAGE: gcr.io/kaniko-project/executor:debug
+    NO_GIT: 1
+
+  script:
+    - source ../export_tags
+    - /kaniko/executor --context . --build-arg TYPE=mongo --destination ${IMAGE}:${TAG_LOGSTASH} --destination ${IMAGE}:${TAG_BRANCH} --cache=true
