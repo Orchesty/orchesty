@@ -1,0 +1,26 @@
+parameters:
+    stdout_path: "%kernel.logs_dir%/stdout_%kernel.environment%.log"
+    public.services: true
+
+    node_services_dirs:
+        - '%kernel.project_dir%/vendor/hanaboso/pipes-php-sdk/src/HbPFConnectorBundle/Resources/config/'
+        - '%kernel.project_dir%/vendor/hanaboso/pipes-php-sdk/src/HbPFCustomNodeBundle/Resources/config/'
+        - '%kernel.project_dir%/config/packages/test/'
+    applications: [ '%kernel.project_dir%/config/packages/test' ]
+
+services:
+    _defaults:
+        public: '%public.services%'
+
+    hbpf.connector.null:
+        class: PipesFrameworkTests\NullConnector
+        arguments:
+
+    hbpf.application.null:
+        class: PipesFrameworkTests\NullApplication
+        arguments:
+
+    hbpf.transport.curl_client_factory:
+        class: Hanaboso\CommonsBundle\Transport\Curl\CurlClientFactory
+        arguments:
+            - {"timeout": 1}

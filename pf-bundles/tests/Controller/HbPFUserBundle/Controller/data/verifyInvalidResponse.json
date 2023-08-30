@@ -1,0 +1,9 @@
+{
+    "http": 401,
+    "body": {
+        "status": "UNAUTHORIZED",
+        "error_code": 3102,
+        "type": "Hanaboso\\PipesFramework\\ApiGateway\\Exception\\LicenseException",
+        "message": "Your license is not valid or user limit is exceeded"
+    }
+}

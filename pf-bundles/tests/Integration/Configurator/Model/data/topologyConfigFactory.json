@@ -1,0 +1,78 @@
+{
+    "environment": {
+        "docker_registry": "dkr.hanaboso.net\/pipes\/pipes",
+        "docker_pf_bridge_image": "pf-bridge:dev",
+        "rabbitmq_host": "rabbitmq:5672",
+        "rabbitmq_user": "guest",
+        "rabbitmq_pass": "guest",
+        "rabbitmq_vhost": "\/",
+        "metrics_dsn": "influx://8089",
+        "metrics_service": "influx",
+        "worker_default_port": 8008,
+        "mongodb_dsn": "mongodb://mongo",
+        "mongodb_db": "pipes",
+        "udp_logger_url": "logstash:5120"
+    },
+    "node_config": {
+        "5d6d17e1e7ad8800000000000": {
+            "worker": {
+                "type": "worker.null"
+            }
+        },
+        "5d6d17e1e7ad8800000000001": {
+            "worker": {
+                "type": "worker.http",
+                "settings": {
+                    "host": "someSdkHost",
+                    "process_path": "\/connector\/example2\/action",
+                    "status_path": "\/connector\/example2\/action\/test",
+                    "method": "POST",
+                    "port": 80,
+                    "headers": {
+                        "key": "value"
+                    }
+                }
+            },
+            "faucet": {
+                "settings": {
+                    "prefetch": 10
+                }
+            }
+        },
+        "5d6d17e1e7ad8800000000002": {
+            "worker": {
+                "type": "worker.batch",
+                "settings": {
+                    "host": "127.0.0.2",
+                    "process_path": "/batch/example3/action",
+                    "status_path": "/batch/example3/action/test",
+                    "method": "POST",
+                    "port": 80,
+                    "headers": {
+                        "key": "value"
+                    }
+                }
+            }
+        },
+        "5d6d17e1e7ad8800000000003": {
+            "worker": {
+                "type": "worker.http",
+                "settings": {
+                    "host": "127.0.0.2",
+                    "process_path": "\/connector\/example4\/action",
+                    "status_path": "\/connector\/example4\/action\/test",
+                    "method": "POST",
+                    "port": 80,
+                    "headers": {
+                        "key": "value"
+                    }
+                }
+            }
+        },
+        "5d6d17e1e7ad8800000000004": {
+            "worker": {
+                "type": "worker.user"
+            }
+        }
+    }
+}
