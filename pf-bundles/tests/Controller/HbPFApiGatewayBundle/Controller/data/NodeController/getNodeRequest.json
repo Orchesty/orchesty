@@ -1,0 +1,5 @@
+{
+    "http": "GET /api/nodes/:id",
+    "body": [],
+    "headers": []
+}

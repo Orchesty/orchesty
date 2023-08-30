@@ -1,0 +1,8 @@
+{
+    "http": "POST /api/categories",
+    "body": {
+        "name": "Test category",
+        "parent": "12"
+    },
+    "headers": []
+}

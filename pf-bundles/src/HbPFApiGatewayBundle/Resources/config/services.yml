@@ -1,0 +1,24 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    hbpp.service.locator:
+        class: Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+            - '@hbpf.redirect'
+        calls:
+            - ['setLogger',['@monolog.logger.commons']]
+
+    listener.controller.exception:
+        class: Hanaboso\PipesFramework\ApiGateway\Listener\ControllerExceptionListener
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]
+        tags:
+            - { name: kernel.event_subscriber }
+
+    hbpf.authenticator.api_key:
+        class: Hanaboso\PipesFramework\ApiGateway\Authenticator\ApiKey\ApiKeyAuthenticator
+        arguments:
+            - '%env(string:X_AUTH_KEY)%'

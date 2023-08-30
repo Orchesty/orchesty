@@ -1,0 +1,8 @@
+{
+    "http": 200,
+    "body": {
+        "id": "123456789",
+        "email": "test@example.com",
+        "settings": []
+    }
+}

@@ -1,0 +1,5 @@
+{
+    "http": "DELETE /api/categories/:id",
+    "body": [],
+    "headers": []
+}

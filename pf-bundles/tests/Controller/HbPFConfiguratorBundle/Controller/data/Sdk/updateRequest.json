@@ -1,0 +1,8 @@
+{
+    "http": "PUT /api/sdks/:id",
+    "body": {
+        "key": "One",
+        "value": "value"
+    },
+    "headers": []
+}

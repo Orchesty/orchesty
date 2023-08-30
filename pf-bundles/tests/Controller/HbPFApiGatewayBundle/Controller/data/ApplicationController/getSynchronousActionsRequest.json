@@ -1,0 +1,7 @@
+{
+    "http": "GET /api/applications/null/sync/list",
+    "body": [],
+    "headers": {
+        "HTTP_X-Auth": "abc-123"
+    }
+}

@@ -1,0 +1,10 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    Hanaboso\PipesFramework\HbPFNotificationBundle\Controller\NotificationController:
+        class: Hanaboso\PipesFramework\HbPFNotificationBundle\Controller\NotificationController
+        arguments:
+            - '@hbpf.notification.handler.notification'
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]

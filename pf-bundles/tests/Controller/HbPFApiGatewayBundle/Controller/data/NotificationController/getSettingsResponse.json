@@ -1,0 +1,43 @@
+{
+    "http": 200,
+    "body": {
+        "items": [
+            {
+                "id": "123456789",
+                "created": "2010-10-10 10:10:10",
+                "updated": "2010-10-10 10:10:10",
+                "name": "CURL Sender",
+                "type": "curl",
+                "class": "Hanaboso\\NotificationSender\\Model\\Notification\\Handler\\Impl\\CurlNotificationHandler",
+                "events": [],
+                "settings": [],
+                "status": true,
+                "status_message": null
+            },
+            {
+                "id": "123456789",
+                "created": "2010-10-10 10:10:10",
+                "updated": "2010-10-10 10:10:10",
+                "name": "Email Sender",
+                "type": "email",
+                "class": "Hanaboso\\NotificationSender\\Model\\Notification\\Handler\\Impl\\EmailNotificationHandler",
+                "events": [],
+                "settings": [],
+                "status": true,
+                "status_message": null
+            },
+            {
+                "id": "123456789",
+                "created": "2010-10-10 10:10:10",
+                "updated": "2010-10-10 10:10:10",
+                "name": "AMQP Sender",
+                "type": "rabbit",
+                "class": "Hanaboso\\NotificationSender\\Model\\Notification\\Handler\\Impl\\RabbitNotificationHandler",
+                "events": [],
+                "settings": [],
+                "status": true,
+                "status_message": null
+            }
+        ]
+    }
+}

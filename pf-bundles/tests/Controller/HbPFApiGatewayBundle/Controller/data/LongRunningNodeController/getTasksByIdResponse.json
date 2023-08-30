@@ -1,0 +1,23 @@
+{
+    "http": 200,
+    "body": {
+        "limit": 10,
+        "offset": 0,
+        "count": 1,
+        "total": 1,
+        "items": [
+            {
+                "topologyId": "123456789",
+                "nodeId": "",
+                "topologyName": "",
+                "nodeName": "",
+                "auditLogs": "[]",
+                "created": "2010-10-10 10:10:10",
+                "updated": "2010-10-10 10:10:10",
+                "id": "123456789",
+                "processId": "7",
+                "data": "data"
+            }
+        ]
+    }
+}

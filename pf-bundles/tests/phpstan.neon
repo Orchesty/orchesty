@@ -1,0 +1,57 @@
+includes:
+	- ../vendor/hanaboso/php-check-utils/phpstan.neon
+
+parameters:
+	doctrine:
+		objectManagerLoader: DocumentManagerLoader.php
+	symfony:
+		container_xml_path: %rootDir%/../../../var/cache/test/Hanaboso_PipesFramework_KernelTestDebugContainer.xml
+	ignoreErrors:
+		- '#Service \"snc_redis\.default\" is private\.#'
+		-
+		    message: '#Calling json_encode\(\)#'
+		    path: ../src/Configurator/Model/TopologyConfigFactory.php
+		-
+		    message: '#Access to an undefined property#'
+		    path: ../tests/*
+		-
+		    message: '#PHPDoc tag @var for variable .+ contains unresolvable type#'
+		    path: ../tests/*
+	ergebnis:
+		classesAllowedToBeExtended:
+			- Hanaboso\AclBundle\Enum\ResourceEnum
+			- Hanaboso\MongoDataGrid\GridFilterAbstract
+			- Hanaboso\PipesFramework\Logs\LogsAbstract
+			- Hanaboso\PipesFramework\Metrics\Manager\MetricsManagerAbstract
+			- Hanaboso\PipesFramework\User\Document\UserSettings
+			- Hanaboso\PipesFramework\User\Document\UserSettings
+			- Hanaboso\PipesFramework\User\Filter\UserDocumentFilter
+			- Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract
+			- Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract
+			- Hanaboso\PipesPhpSdk\LongRunningNode\Model\LongRunningNodeAbstract
+			- Hanaboso\Utils\Enum\EnumAbstract
+			- Hanaboso\Utils\Exception\PipesFrameworkExceptionAbstract
+			- PipesFrameworkTests\ControllerTestCaseAbstract
+			- PipesFrameworkTests\DatabaseTestCaseAbstract
+			- PipesFrameworkTests\KernelTestCaseAbstract
+			- Symfony\Component\Security\Guard\AbstractGuardAuthenticator
+
+		classesNotRequiredToBeAbstractOrFinal:
+			- Hanaboso\PipesFramework\Configurator\Document\NodeProgress
+			- Hanaboso\PipesFramework\Configurator\Document\Sdk
+			- Hanaboso\PipesFramework\Configurator\Document\TopologyProgress
+			- Hanaboso\PipesFramework\Logs\Document\Logs
+			- Hanaboso\PipesFramework\Logs\Document\Pipes
+			- Hanaboso\PipesFramework\Logs\Document\Stacktrace
+			- Hanaboso\PipesFramework\Metrics\Document\BridgesMetrics
+			- Hanaboso\PipesFramework\Metrics\Document\BridgesMetricsFields
+			- Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetrics
+			- Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetricsFields
+			- Hanaboso\PipesFramework\Metrics\Document\MonolithMetrics
+			- Hanaboso\PipesFramework\Metrics\Document\MonolithMetricsFields
+			- Hanaboso\PipesFramework\Metrics\Document\ProcessesMetrics
+			- Hanaboso\PipesFramework\Metrics\Document\ProcessesMetricsFields
+			- Hanaboso\PipesFramework\Metrics\Document\RabbitMetrics
+			- Hanaboso\PipesFramework\Metrics\Document\RabbitMetricsFields
+			- Hanaboso\PipesFramework\Metrics\Document\Tags
+			- Hanaboso\PipesFramework\User\Document\UserSettings

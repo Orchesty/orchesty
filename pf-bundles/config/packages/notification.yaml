@@ -1,0 +1,2 @@
+parameters:
+    notification_host: "%env(NOTIFICATION_DSN)%"

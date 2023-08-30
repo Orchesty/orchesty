@@ -1,0 +1,5 @@
+{
+  "http": "GET /api/applications/statistics/application/:key",
+  "body": [],
+  "headers": []
+}

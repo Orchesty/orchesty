@@ -1,0 +1,22 @@
+{
+    "http": 200,
+    "body": {
+        "items": [
+            {
+                "_id": "123456789",
+                "type": "webhook",
+                "name": "Topology",
+                "descr": "",
+                "status": "New",
+                "visibility": "draft",
+                "version": 1,
+                "category": null,
+                "enabled": true
+            }
+        ],
+        "total": 1,
+        "limit": null,
+        "count": 1,
+        "offset": null
+    }
+}
