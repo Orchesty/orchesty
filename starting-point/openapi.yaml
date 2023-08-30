@@ -1,0 +1,394 @@
+openapi: 3.0.0
+
+info:
+    title: Starting Point
+    description: Starting Point API
+    version: "1.0"
+
+servers:
+    -   url: http://127.0.0.44
+        description: Docker Localhost
+
+paths:
+    /status:
+        get:
+            tags: [ Status ]
+            responses:
+                '200':
+                    $ref: '#/components/responses/Status'
+
+    /topologies/{topology}/nodes/{node}/run:
+        post:
+            tags: [ Topologies ]
+            parameters:
+                -   $ref: '#/components/parameters/Topology'
+                -   $ref: '#/components/parameters/Node'
+            requestBody:
+                $ref: '#/components/requestBodies/Empty'
+            responses:
+                '200':
+                    $ref: '#/components/responses/Topology'
+                '400':
+                    $ref: '#/components/responses/Topology400'
+                '404':
+                    $ref: '#/components/responses/TopologyById404'
+
+    /topologies/{topology}/nodes/{node}/user/{user}/run:
+        post:
+            tags: [ Topologies ]
+            parameters:
+                -   $ref: '#/components/parameters/Topology'
+                -   $ref: '#/components/parameters/Node'
+                -   $ref: '#/components/parameters/User'
+            requestBody:
+                $ref: '#/components/requestBodies/Empty'
+            responses:
+                '200':
+                    $ref: '#/components/responses/Topology'
+                '400':
+                    $ref: '#/components/responses/Topology400'
+                '404':
+                    $ref: '#/components/responses/TopologyById404'
+
+    /topologies/{topology}/nodes/{node}/run-by-name:
+        post:
+            tags: [ Topologies ]
+            parameters:
+                -   $ref: '#/components/parameters/Topology'
+                -   $ref: '#/components/parameters/Node'
+            requestBody:
+                $ref: '#/components/requestBodies/Empty'
+            responses:
+                '200':
+                    $ref: '#/components/responses/Topology'
+                '400':
+                    $ref: '#/components/responses/Topology400'
+                '404':
+                    $ref: '#/components/responses/TopologyByName404'
+
+    /topologies/{topology}/nodes/{node}/user/{user}/run-by-name:
+        post:
+            tags: [ Topologies ]
+            parameters:
+                -   $ref: '#/components/parameters/Topology'
+                -   $ref: '#/components/parameters/Node'
+                -   $ref: '#/components/parameters/User'
+            requestBody:
+                $ref: '#/components/requestBodies/Empty'
+            responses:
+                '200':
+                    $ref: '#/components/responses/Topology'
+                '400':
+                    $ref: '#/components/responses/Topology400'
+                '404':
+                    $ref: '#/components/responses/TopologyByName404'
+
+    /topologies/{topology}/nodes/{node}/token/{token}/run:
+        post:
+            tags: [ Topologies ]
+            parameters:
+                -   $ref: '#/components/parameters/Topology'
+                -   $ref: '#/components/parameters/Node'
+                -   $ref: '#/components/parameters/Token'
+            requestBody:
+                $ref: '#/components/requestBodies/Empty'
+            responses:
+                '200':
+                    $ref: '#/components/responses/Topology'
+                '400':
+                    $ref: '#/components/responses/Topology400'
+                '404':
+                    $ref: '#/components/responses/TopologyByApplication404'
+
+    /human-tasks/topologies/{topology}/nodes/{node}/run:
+        post:
+            tags: [ Human tasks ]
+            parameters:
+                -   $ref: '#/components/parameters/Topology'
+                -   $ref: '#/components/parameters/Node'
+            requestBody:
+                $ref: '#/components/requestBodies/Empty'
+            responses:
+                '200':
+                    $ref: '#/components/responses/Topology'
+                '400':
+                    $ref: '#/components/responses/Topology400'
+                '404':
+                    $ref: '#/components/responses/HumanTaskTopologyById404'
+
+    /human-tasks/topologies/{topology}/nodes/{node}/token/{token}/run:
+        post:
+            tags: [ Human tasks ]
+            parameters:
+                -   $ref: '#/components/parameters/Topology'
+                -   $ref: '#/components/parameters/Node'
+                -   $ref: '#/components/parameters/Token'
+            requestBody:
+                $ref: '#/components/requestBodies/Empty'
+            responses:
+                '200':
+                    $ref: '#/components/responses/Topology'
+                '400':
+                    $ref: '#/components/responses/Topology400'
+                '404':
+                    $ref: '#/components/responses/HumanTaskTopologyById404'
+
+    /human-tasks/topologies/{topology}/nodes/{node}/run-by-name:
+        post:
+            tags: [ Human tasks ]
+            parameters:
+                -   $ref: '#/components/parameters/Topology'
+                -   $ref: '#/components/parameters/Node'
+            requestBody:
+                $ref: '#/components/requestBodies/Empty'
+            responses:
+                '200':
+                    $ref: '#/components/responses/Topology'
+                '400':
+                    $ref: '#/components/responses/Topology400'
+                '404':
+                    $ref: '#/components/responses/HumanTaskTopologyByName404'
+
+    /human-tasks/topologies/{topology}/nodes/{node}/token/{token}/run-by-name:
+        post:
+            tags: [ Human tasks ]
+            parameters:
+                -   $ref: '#/components/parameters/Topology'
+                -   $ref: '#/components/parameters/Node'
+                -   $ref: '#/components/parameters/Token'
+            requestBody:
+                $ref: '#/components/requestBodies/Empty'
+            responses:
+                '200':
+                    $ref: '#/components/responses/Topology'
+                '400':
+                    $ref: '#/components/responses/Topology400'
+                '404':
+                    $ref: '#/components/responses/HumanTaskTopologyByName404'
+
+    /human-tasks/topologies/{topology}/nodes/{node}/stop:
+        post:
+            tags: [ Human tasks ]
+            parameters:
+                -   $ref: '#/components/parameters/Topology'
+                -   $ref: '#/components/parameters/Node'
+            requestBody:
+                $ref: '#/components/requestBodies/Empty'
+            responses:
+                '200':
+                    $ref: '#/components/responses/Topology'
+                '400':
+                    $ref: '#/components/responses/Topology400'
+                '404':
+                    $ref: '#/components/responses/HumanTaskTopologyById404'
+
+    /human-tasks/topologies/{topology}/nodes/{node}/token/{token}/stop:
+        post:
+            tags: [ Human tasks ]
+            parameters:
+                -   $ref: '#/components/parameters/Topology'
+                -   $ref: '#/components/parameters/Node'
+                -   $ref: '#/components/parameters/Token'
+            requestBody:
+                $ref: '#/components/requestBodies/Empty'
+            responses:
+                '200':
+                    $ref: '#/components/responses/Topology'
+                '400':
+                    $ref: '#/components/responses/Topology400'
+                '404':
+                    $ref: '#/components/responses/HumanTaskTopologyById404'
+
+    /human-tasks/topologies/{topology}/nodes/{node}/stop-by-name:
+        post:
+            tags: [ Human tasks ]
+            parameters:
+                -   $ref: '#/components/parameters/Topology'
+                -   $ref: '#/components/parameters/Node'
+            requestBody:
+                $ref: '#/components/requestBodies/Empty'
+            responses:
+                '200':
+                    $ref: '#/components/responses/Topology'
+                '400':
+                    $ref: '#/components/responses/Topology400'
+                '404':
+                    $ref: '#/components/responses/HumanTaskTopologyByName404'
+
+    /human-tasks/topologies/{topology}/nodes/{node}/token/{token}/stop-by-name:
+        post:
+            tags: [ Human tasks ]
+            parameters:
+                -   $ref: '#/components/parameters/Topology'
+                -   $ref: '#/components/parameters/Node'
+                -   $ref: '#/components/parameters/Token'
+            requestBody:
+                $ref: '#/components/requestBodies/Empty'
+            responses:
+                '200':
+                    $ref: '#/components/responses/Topology'
+                '400':
+                    $ref: '#/components/responses/Topology400'
+                '404':
+                    $ref: '#/components/responses/HumanTaskTopologyByName404'
+
+    /topologies/{topology}/invalidate-cache:
+        post:
+            tags: [ Cache ]
+            parameters:
+                -   $ref: '#/components/parameters/Topology'
+            requestBody:
+                $ref: '#/components/requestBodies/Empty'
+            responses:
+                '200':
+                    $ref: '#/components/responses/Cache'
+
+components:
+    requestBodies:
+        Empty:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        type: object
+
+    responses:
+        Cache:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            cache:
+                                type: integer
+                                example: 1
+
+        Status:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            database:
+                                type: boolean
+                                example: true
+
+        Topology:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            state:
+                                type: string
+                                example: 'ok'
+                            started:
+                                type: integer
+                                example: 1
+
+        Topology400:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Message'
+                    example:
+                        message: "Content is not valid: Invalid JSON!"
+
+        TopologyById404:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Message'
+                    examples:
+                        Topology not found:
+                            value:
+                                message: "Topology with key 'Unknown' not found!"
+                        Node not found:
+                            value:
+                                message: "Node with key 'Unknown' not found!"
+
+        TopologyByName404:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Message'
+                    example:
+                        message: "Topology with name 'Unknown' and node with name 'Unknown' not found!"
+
+        TopologyByApplication404:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Message'
+                    example:
+                        message: "Topology with name 'Unknown', node with name 'Unknown' and webhook with token 'Unknown' not found!"
+
+        HumanTaskTopologyById404:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Message'
+                    examples:
+                        Topology not found:
+                            value:
+                                message: "Topology with key 'Unknown' not found!"
+                        Node not found:
+                            value:
+                                message: "Node with key 'Unknown' not found!"
+                        Human task not found:
+                            value:
+                                message: "Human task with token 'Unknown' not found!"
+
+        HumanTaskTopologyByName404:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Message'
+                    example:
+                        message: "Topology with name 'Unknown', node with name 'Unknown' and human task with token 'Unknown' not found!"
+
+    schemas:
+        Message:
+            type: object
+            properties:
+                message:
+                    type: string
+
+    parameters:
+        Topology:
+            name: topology
+            in: path
+            required: true
+            example: Topology
+            schema:
+                type: string
+        Node:
+            name: node
+            in: path
+            required: true
+            example: Node
+            schema:
+                type: string
+        User:
+            name: user
+            in: path
+            required: true
+            example: User
+            schema:
+                type: string
+        Token:
+            name: token
+            in: path
+            required: true
+            example: Token
+            schema:
+                type: string
