@@ -1,0 +1,7 @@
+{
+    "http": 200,
+    "body": {
+        "database": true,
+        "rabbitmq": true
+    }
+}

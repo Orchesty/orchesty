@@ -1,0 +1,21 @@
+{
+    "http": "PUT /notifications/settings/:id",
+    "headers": [],
+    "body": {
+        "events": [
+            "access_expiration"
+        ],
+        "settings": {
+            "host": "host",
+            "port": "port",
+            "username": "username",
+            "password": "password",
+            "encryption": "ssl",
+            "emails": [
+                "another-one@example.com",
+                "another-two@example.com"
+            ],
+            "email": "email@example.com"
+        }
+    }
+}
