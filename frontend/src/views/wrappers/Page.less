@@ -1,0 +1,42 @@
+.page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+
+  .page-top{
+    display: flex;
+    flex-direction: row;
+    border-bottom: 1px solid #E6E9ED;
+    padding-right: 10px;
+    padding-top: 10px;
+
+    .page-top-nav{
+      flex: 1;
+      display: flex;
+      flex-flow: row wrap-reverse;
+      overflow: visible;
+      justify-content: space-between;
+
+      .tab-container{
+        flex: 1;
+      }
+
+      > .action-button-panel{
+        flex: 0 0 250px;
+        min-width: 290px;
+        margin-bottom: 5px;
+        margin-left: 5px;
+      }
+    }
+  }
+
+  .page-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 10px 10px 0;
+  }
+}

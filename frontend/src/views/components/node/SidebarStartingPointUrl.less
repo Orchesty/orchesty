@@ -1,0 +1,31 @@
+.sidebar-node-starting-point {
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid #ccc;
+  width: 250px;
+  margin-bottom: 10px;
+
+  .url-item {
+    padding: 0 0 10px 15px;
+    margin: 0;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:before {
+      content: none;
+    }
+
+    .url-label {
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .url-value {
+      font-size: 12px;
+      word-break: break-word;
+      width: 230px;
+    }
+  }
+}

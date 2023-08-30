@@ -1,0 +1,26 @@
+.select-server{
+  margin: 0;
+  padding: 0;
+
+  li{
+    display: inline;
+    padding: 5px 10px;
+    border-left: 1px solid #D8D8D8;
+
+    &.active{
+      background-color: rgba(0, 0, 0, 0.15);
+    }
+
+    &:first-child{
+      border-left: none;
+      border-bottom-left-radius: 6px;
+      border-top-left-radius: 6px;
+    }
+
+    &:last-child{
+      border-bottom-right-radius: 6px;
+      border-top-right-radius: 6px;
+    }
+
+  }
+}

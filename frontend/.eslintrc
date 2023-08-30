@@ -1,0 +1,6 @@
+{
+  "extends": "webpack",
+  "rules": {
+    "func-names": ["error", "never"]
+  }
+}

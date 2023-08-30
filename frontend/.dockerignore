@@ -1,0 +1,9 @@
+*
+!src
+!.babelrc
+!entrypoint.sh
+!nginx.conf
+!package.json
+!package-lock.json
+!webpack.config.common.js
+!webpack.config.prod.js
