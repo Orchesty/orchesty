@@ -1,0 +1,39 @@
+version: '3.5'
+
+services:
+    app:
+        image: hanabosocom/go-base:1.13
+        user: ${DEV_UID}:${DEV_GID}
+        environment:
+            DEV_UID: ${DEV_UID}
+            DEV_GID: ${DEV_GID}
+            APP_DEBUG: 'true'
+            METRICS_DSN: mongodb://mongodb/starting-point?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
+        volumes:
+            - ./:/app
+            - ${GOPATH}/pkg:/go/pkg
+        ports:
+            - ${DEV_IP}:80:8080
+        command: go run main.go
+
+    rabbitmq:
+        image: rabbitmq:management-alpine
+        ports:
+            - ${DEV_IP}:15672:15672
+        volumes:
+            - rabbitmq:/var/lib/rabbitmq
+
+    mongodb:
+        image: mongo:latest
+        ports:
+            - ${DEV_IP}:27017:27017
+        volumes:
+            - mongodb:/data/db
+
+    kapacitor:
+        image: dkr.hanaboso.net/pipes/pipes/kapacitor:dev
+        hostname: kapacitor
+
+volumes:
+    mongodb:
+    rabbitmq:
