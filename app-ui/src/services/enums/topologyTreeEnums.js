@@ -1,0 +1,4 @@
+export const TOPOLOGY_TREE = {
+  FOLDER: 'CATEGORY',
+  TOPOLOGY: 'TOPOLOGY',
+}

@@ -1,0 +1,5 @@
+export const SIMPLE_FILTER = {
+  TRASH: 'SIMPLE_TRASH_FILTER',
+  LOGS: 'SIMPLE_LOG_FILTER',
+  NONE: 'NONE',
+}

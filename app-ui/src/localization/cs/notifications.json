@@ -1,0 +1,14 @@
+{
+  "notifications": {
+    "event": "Událost",
+    "set": "Stav",
+    "service": "Služba",
+    "modal": {
+      "title": "Editovat notifikaci"
+    },
+    "curl": "CURL Sender",
+    "email": "Email Sender",
+    "rabbit": "AMQP Sender",
+    "headers": "Přidat headry"
+  }
+}

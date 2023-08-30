@@ -1,0 +1,14 @@
+{
+  "curlSender": {
+    "form": {
+      "method": {
+        "name": "metoda",
+        "label": "Metoda"
+      },
+      "url": {
+        "name": "url",
+        "label": "URL"
+      }
+    }
+  }
+}
