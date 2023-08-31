@@ -1,0 +1,53 @@
+{
+    "http": 200,
+    "body": {
+        "items": [
+            {
+                "correlationId": "corr",
+                "created": "2020-02-02T10:10:10Z",
+                "nodeId": "node",
+                "nodeName": "",
+                "topologyId": "topo",
+                "topologyName": "",
+                "topologyDescr": "",
+                "topologyVersion": 0,
+                "type": "userTask",
+                "updated": "2020-02-02T10:10:10Z",
+                "id": "507f191e810c19729de860ea"
+            },
+            {
+                "correlationId": "corr",
+                "created": "2020-02-02T10:10:10Z",
+                "nodeId": "node",
+                "nodeName": "",
+                "topologyId": "topo",
+                "topologyName": "",
+                "topologyDescr": "",
+                "topologyVersion": 0,
+                "type": "userTask",
+                "updated": "2020-02-02T10:10:10Z",
+                "id": "507f191e810c19729de860eb"
+            }
+        ],
+        "filter": [
+            [
+                {
+                    "column": "nodeId",
+                    "operator": "EQ",
+                    "value": [
+                        "node"
+                    ]
+                }
+            ]
+        ],
+        "sorter": [],
+        "paging": {
+            "page": 1,
+            "itemsPerPage": 10,
+            "total": 2,
+            "nextPage": 1,
+            "lastPage": 1,
+            "previousPage": 1
+        }
+    }
+}

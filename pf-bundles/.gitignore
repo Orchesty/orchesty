@@ -1,0 +1,9 @@
+.env
+.idea
+/app
+/vendor
+/var
+
+/tests/Unit/TopologyGenerator/DockerCompose/output/*
+!/tests/Unit/TopologyGenerator/DockerCompose/output/.gitkeep
+/tests/Unit/Utils/data/license/license

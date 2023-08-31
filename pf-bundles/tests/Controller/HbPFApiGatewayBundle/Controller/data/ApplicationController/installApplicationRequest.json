@@ -1,0 +1,7 @@
+{
+    "http": "POST /api/applications/null/users/user",
+    "body": [],
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
+}

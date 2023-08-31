@@ -1,0 +1,11 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    listener.usage_stats:
+        class: Hanaboso\PipesFramework\UsageStats\Listener\UsageStatsEventListener
+        arguments:
+            - '@hbpf.database_manager_locator'
+            - '%alpha_instance_id%'
+        tags:
+            - { name: kernel.event_subscriber }

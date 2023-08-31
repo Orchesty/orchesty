@@ -1,0 +1,18 @@
+#!/usr/bin/env php
+<?php declare(strict_types=1);
+
+use Hanaboso\PipesFramework\Kernel;
+use Hanaboso\PipesPhpSdk\Command\IncludeCommands;
+use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\Debug\Debug;
+
+set_time_limit(0);
+require __DIR__.'/../vendor/autoload.php';
+require_once __DIR__ . '/../public/odm_metrics.php';
+
+$input = new ArgvInput();
+$env = $input->getParameterOption(['--env', '-e'], $_SERVER['APP_ENV'] ?? 'dev');
+$debug = ($_SERVER['APP_DEBUG'] ?? ('prod' !== $env)) && !$input->hasParameterOption(['--no-debug', '']);
+$kernel = new Kernel($env, $debug);
+$commands = new IncludeCommands($kernel);
+$commands->run($input);
