@@ -1,0 +1,56 @@
+version: '3.5'
+
+services:
+    app:
+        image: hanabosocom/go-base:1.19
+        user: ${DEV_UID}:${DEV_GID}
+        environment:
+            DEV_UID: ${DEV_UID}
+            DEV_GID: ${DEV_GID}
+            GITLAB_CI: ${GITLAB_CI}
+            APP_DEBUG: 'true'
+            MONGO_DSN: mongodb://mongodb/starting-point
+            METRICS_DSN: mongodb://mongodb/metrics
+            RABBIT_DELIVERY_MODE: 2
+            APP_CLEANUP_TIME: 300
+            GOROUTINE_LIMIT: 1000
+        volumes:
+            - ./:/app
+            - ${GOPATH}/pkg:/go/pkg
+        ports:
+            - ${DEV_IP}:80:8080
+        command: go run cmd/starting-point.go
+
+    mongodb:
+        image: mongo:latest
+        ports:
+            - ${DEV_IP}:27017:27017
+        volumes:
+            - mongodb:/data/db
+
+    rabbitmq:
+        image: rabbitmq:3-management-alpine
+        ports:
+            - ${DEV_IP}:15672:15672
+        volumes:
+            - rabbitmq:/var/lib/rabbitmq
+
+    influxdb:
+        image: dkr.hanaboso.net/pipes/pipes/influxdb:dev
+
+    swagger-ui:
+        image: swaggerapi/swagger-ui
+        ports:
+            - ${DEV_IP}:8080:8080
+        volumes:
+            - ./openapi.yaml:/api.yaml
+        environment:
+            SWAGGER_JSON: /api.yaml
+
+    test: # Usage: docker-compose exec -T test wrk -t25 -c2500 -d1m --latency http://app/status
+        image: alpine:edge
+        command: /bin/sh -c 'apk update --no-cache && apk upgrade --no-cache && apk add --no-cache wrk && tail -f /dev/null'
+
+volumes:
+    mongodb:
+    rabbitmq:
