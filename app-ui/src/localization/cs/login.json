@@ -1,0 +1,22 @@
+{
+  "login": {
+    "form": {
+      "email": {
+        "name": "email",
+        "label": "Emailová adresa"
+      },
+      "password": {
+        "name": "heslo",
+        "label": "Heslo"
+      },
+      "rememberMe": {
+        "name": "zapamatovat si mě?",
+        "label": "Zapamatovat si mě?"
+      },
+      "submit": {
+        "label": "Přihlásit"
+      }
+    },
+    "forgot_link": "Zapomenuté heslo"
+  }
+}
