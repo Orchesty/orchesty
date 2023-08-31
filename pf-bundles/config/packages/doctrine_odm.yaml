@@ -1,0 +1,89 @@
+doctrine_mongodb:
+    default_document_manager: default
+    default_connection: default
+    auto_generate_proxy_classes: true
+    auto_generate_hydrator_classes: true
+    auto_generate_persistent_collection_classes: 3
+    proxy_namespace: OdmProxies
+    proxy_dir: "%kernel.cache_dir%/doctrine/odm/mongodb/Proxies"
+    hydrator_namespace: OdmHydrators
+    hydrator_dir: "%kernel.cache_dir%/doctrine/odm/mongodb/Hydrators"
+    connections:
+        default:
+            server: "%env(string:MONGODB_DSN)%"
+            options:
+                connectTimeoutMS: 60000
+                socketTimeoutMS: 60000
+        metrics:
+            server: "%env(string:METRICS_ODM_DSN)%"
+            options:
+                connectTimeoutMS: 60000
+                socketTimeoutMS: 60000
+    default_database: "%env(string:MONGODB_DB)%"
+    document_managers:
+        default:
+            connection: default
+            database: "%env(string:MONGODB_DB)%"
+            mappings:
+                HbPFUserBundle: ~
+                HbPFAclBundle: ~
+                HbPFCommonsBundle: ~
+                ApplicationDocument:
+                    type: annotation
+                    is_bundle: false
+                    dir: "%kernel.project_dir%/src/../vendor/orchesty/php-sdk/src/Application/Document"
+                    prefix: Hanaboso\PipesPhpSdk\Application\Document
+                WebhookDocument:
+                    type: annotation
+                    is_bundle: false
+                    dir: "%kernel.project_dir%/src/../vendor/orchesty/app-store/src/Document"
+                    prefix: Hanaboso\HbPFAppStore\Document
+                FileDocument:
+                    type: annotation
+                    is_bundle: false
+                    dir: "%kernel.project_dir%/src/../vendor/hanaboso/commons-bundle/src/FileStorage/Document"
+                    prefix: Hanaboso\CommonsBundle\FileStorage\Document
+                CommonsDocument:
+                    type: annotation
+                    is_bundle: false
+                    dir: "%kernel.project_dir%/src/../vendor/orchesty/php-sdk/src/Database/Document"
+                    prefix: Hanaboso\PipesPhpSdk\Database\Document
+                FileMongo:
+                    type: annotation
+                    is_bundle: false
+                    dir: "%kernel.project_dir%/src/../vendor/hanaboso/commons-bundle/src/FileStorage/Driver/Impl/Mongo"
+                    prefix: Hanaboso\CommonsBundle\FileStorage\Driver\Impl\Mongo
+                LogsDocument:
+                    type: annotation
+                    is_bundle: false
+                    dir: "%kernel.project_dir%/src/Logs/Document"
+                    prefix: Hanaboso\PipesFramework\Logs\Document
+                UsageStatsDocument:
+                    type: annotation
+                    is_bundle: false
+                    dir: "%kernel.project_dir%/src/UsageStats/Document"
+                    prefix: Hanaboso\PipesFramework\UsageStats\Document
+                ConfiguratorDocument:
+                    type: annotation
+                    is_bundle: false
+                    dir: "%kernel.project_dir%/src/Configurator/Document"
+                    prefix: Hanaboso\PipesFramework\Configurator\Document
+                UserSettings:
+                    type: annotation
+                    is_bundle: false
+                    dir: "%kernel.project_dir%/src/User/Document"
+                    prefix: Hanaboso\PipesFramework\User\Document
+                UserTask:
+                    type: annotation
+                    is_bundle: false
+                    dir: "%kernel.project_dir%/src/UserTask/Document"
+                    prefix: Hanaboso\PipesFramework\UserTask\Document
+        metrics:
+            connection: metrics
+            database: "%env(string:METRICS_DB)%"
+            mappings:
+                MetricsDocument:
+                    type: annotation
+                    is_bundle: false
+                    dir: "%kernel.project_dir%/src/Metrics/Document"
+                    prefix: Hanaboso\PipesFramework\Metrics\Document

@@ -1,0 +1,117 @@
+version: '3.5'
+services:
+    app:
+        image: hanabosocom/php-dev:php-8.1-alpine
+        user: ${DEV_UID}:${DEV_GID}
+        ports:
+            - ${DEV_IP}:80:80
+        volumes:
+            - ./:/var/www:cached
+            - ../app-store:/var/app-store:cached
+            - ../pipes-php-sdk:/var/pipes-php-sdk:cached
+            - ${SSH_AUTH}:/tmp/.ssh-auth-sock
+            - ${HOME}/dev/.composer:${HOME}/dev/.composer:cached
+        environment:
+            - APP_ENV=dev
+            - APP_DEBUG=true
+            - DEV_UID=${DEV_UID}
+            - DEV_GID=${DEV_GID}
+            - X_AUTH_KEY=abc-123
+            - KERNEL_CLASS=Hanaboso\PipesFramework\Kernel
+            - COMPOSER_HOME=${HOME}/dev/.composer
+            - FRONTEND_DSN=${DEV_IP}
+            - BACKEND_DSN=${DEV_IP}
+            - MONGODB_DSN=mongodb://mongo
+            - MONGODB_DB=pipes
+            - METRICS_DSN=influx://8089
+            - METRICS_DB=metrics
+            - METRICS_SERVICE=influx
+            - CHECK_INFINITY_LOOP=true
+            - NOTIFICATION_DSN=http://notification-sender-api
+            - TOPOLOGY_API_DSN=topology-api:80
+            - STARTING_POINT_DSN=starting-point:8080
+            - CRON_DSN=http://cron-api:8080
+            - ELASTICSEARCH_DSN=elasticsearch://elasticsearch
+            - RABBITMQ_DSN=amqp://rabbitmq:5672
+            - MONOLITH_API_DSN=${DEV_IP}
+            - WORKER_DEFAULT_PORT=8000
+            - JWT_KEY=test1234
+            - LOGS_SERVICE=mongo
+            - ALPHA_INSTANCE_ID=1234
+            - USCCP_URI=https://eol7tmdt6fll11k.m.pipedream.net
+
+    starting-point:
+        image: dkr.hanaboso.net/pipes/pipes/starting-point:master
+        environment:
+            MONGO_DSN: mongodb://mongo/demo?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
+            METRICS_DSN: mongodb://mongo/metrics?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
+            RABBIT_COUNTER_QUEUE_DURABLE: 'true'
+            RABBIT_QUEUE_DURABLE: 'true'
+            RABBIT_DELIVERY_MODE: 2
+
+    cron-api:
+        user: ${DEV_UID}:${DEV_GID}
+        image: dkr.hanaboso.net/pipes/pipes/cron:master
+        environment:
+            MONGO_DSN: mongodb://mongo/cron?connectTimeoutMS=2500&serverSelectionTimeoutMS=2500&socketTimeoutMS=2500&heartbeatFrequencyMS=2500
+            MONGO_COLLECTION: cron
+
+    notification-sender-api:
+        image: dkr.hanaboso.net/pipes/pipes/notification-sender:master
+        working_dir: /var/www
+        environment:
+            MONGO_HOST: mongo
+
+    mongo:
+        image: mongo:latest
+        ports:
+            - ${DEV_IP}:27017:27017
+        volumes:
+            - mongo:/data/db
+
+    rabbitmq:
+        image: rabbitmq:management-alpine
+        volumes:
+            - rabbit-mq:/var/lib/rabbitmq
+        ports:
+            - ${DEV_IP}:15672:15672
+
+    redis:
+        image: redis:alpine
+        ports:
+            - ${DEV_IP}:6379:6379
+        volumes:
+            - redis:/data
+
+    elasticsearch:
+        image: elasticsearch:7.4.2
+        environment:
+            LS_JAVA_OPTS: -Xms512m -Xmx512m
+            discovery.type: single-node
+        volumes:
+            - elasticsearch:/usr/share/elasticsearch/data
+
+    influxdb:
+        image: dkr.hanaboso.net/pipes/pipes/influxdb:dev
+        ports:
+            - ${DEV_IP}:8083:8083
+            - ${DEV_IP}:8086:8086
+            - ${DEV_IP}:8089:8089/udp
+        volumes:
+            - influxdb:/var/lib/influxdb
+
+    swagger-ui:
+        image: swaggerapi/swagger-ui
+        ports:
+            - ${DEV_IP}:8080:8080
+        volumes:
+            - ./openapi.yaml:/api.yaml
+        environment:
+            SWAGGER_JSON: /api.yaml
+
+volumes:
+    mongo: {}
+    rabbit-mq: {}
+    redis: {}
+    influxdb: {}
+    elasticsearch: {}

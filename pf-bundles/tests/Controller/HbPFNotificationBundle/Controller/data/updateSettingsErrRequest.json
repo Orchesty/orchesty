@@ -1,0 +1,11 @@
+{
+    "http": "PUT /api/notification_settings/1",
+    "body": [
+        {
+            "foo": "bar"
+        }
+    ],
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
+}

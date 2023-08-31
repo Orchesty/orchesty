@@ -1,0 +1,7 @@
+{
+    "http": "POST /api/webhook/applications/key/users/user/unsubscribe",
+    "body": [],
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
+}

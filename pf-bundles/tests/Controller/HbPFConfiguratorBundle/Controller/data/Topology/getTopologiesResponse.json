@@ -1,0 +1,35 @@
+{
+    "http": 200,
+    "body": {
+        "items": [
+            {
+                "_id": "5e32b04ce99e002a011e0d25",
+                "type": "webhook",
+                "name": "name 3",
+                "descr": "descr 3",
+                "status": "New",
+                "visibility": "draft",
+                "version": 1,
+                "category": null,
+                "enabled": true,
+                "cronSettings": []
+            },
+            {
+                "_id": "5e32b04ce99e002a011e0d25",
+                "type": "webhook",
+                "name": "name 2",
+                "descr": "descr 2",
+                "status": "New",
+                "visibility": "draft",
+                "version": 1,
+                "category": null,
+                "enabled": true,
+                "cronSettings": []
+            }
+        ],
+        "total": 4,
+        "limit": 2,
+        "count": 2,
+        "offset": 1
+    }
+}

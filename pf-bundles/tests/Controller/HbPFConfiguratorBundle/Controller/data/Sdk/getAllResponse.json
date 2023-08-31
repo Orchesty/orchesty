@@ -1,0 +1,27 @@
+{
+    "http": 200,
+    "body": {
+        "items": [
+            {
+                "id": "5e32a7a41ffeab2445696983",
+                "name": "One",
+                "url": "One",
+                "headers": []
+            },
+            {
+                "id": "5e32a7a41ffeab2445696983",
+                "name": "Two",
+                "url": "Two",
+                "headers": []
+            }
+        ],
+        "paging": {
+            "page": 1,
+            "itemsPerPage": 50,
+            "total": 2,
+            "nextPage": 2,
+            "lastPage": 2,
+            "previousPage": 1
+        }
+    }
+}

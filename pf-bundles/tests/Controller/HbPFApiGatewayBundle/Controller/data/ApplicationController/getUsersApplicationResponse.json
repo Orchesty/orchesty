@@ -1,0 +1,16 @@
+{
+    "http": 200,
+    "body": {
+        "items": [],
+        "sorter": [],
+        "filter": [],
+        "paging": {
+            "page": 1,
+            "itemsPerPage": 50,
+            "total": 0,
+            "nextPage": 2,
+            "lastPage": 2,
+            "previousPage": 1
+        }
+    }
+}
