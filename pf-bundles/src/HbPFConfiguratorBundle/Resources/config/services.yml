@@ -1,0 +1,60 @@
+parameters:
+
+services:
+    _defaults:
+        public: '%public.services%'
+
+    hbpf.cron.manager:
+        class: Hanaboso\PipesFramework\Configurator\Cron\CronManager
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.transport.curl_manager'
+            - '%startingPointHost%'
+            - '%cronHost%'
+            - '%orchestyApikey%'
+
+    hbpf.topology.configurator:
+        class: Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory
+        arguments:
+            - '%topology_configs%'
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.topology_generator.bridge:
+        class: Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge
+        arguments:
+            - '@hbpf.database_manager_locator'
+            - '@hbpf.transport.curl_manager'
+            - '@hbpf.topology.configurator'
+            - '%topology_generator_configs%'
+
+    hbpf.install.topology.manager:
+        class: Hanaboso\PipesFramework\TopologyInstaller\InstallManager
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.configurator.manager.topology'
+            - '@hbpf.topology_generator.bridge'
+            - '@hbpf.category.parser'
+            - '@rest.decoder.xml'
+            - '@hbpf.install.cache.null'
+            - '%installer_dirs%'
+            - '%checkInfiniteLoop%'
+
+    hbpf.install.cache.null:
+        class: Hanaboso\PipesFramework\TopologyInstaller\Cache\NullCache
+
+    hbpf.install.cache.redis:
+        class: Hanaboso\PipesFramework\TopologyInstaller\Cache\RedisCache
+        arguments:
+            - '%env(string:REDIS_DSN)%'
+
+    hbpf.category.parser:
+        class: Hanaboso\PipesFramework\TopologyInstaller\CategoryParser
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.configurator.manager.category'
+            - '%installer_dirs%'
+
+    hbpf.progress.filter:
+        class: Hanaboso\PipesFramework\Configurator\Model\Filters\ProgressFilter
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'

@@ -1,0 +1,10 @@
+{
+    "http": "PUT /api/categories/:id",
+    "body": {
+        "name": "edited",
+        "parent": ""
+    },
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
+}

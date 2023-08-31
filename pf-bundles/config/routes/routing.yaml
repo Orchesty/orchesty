@@ -1,0 +1,36 @@
+hb_pf_api_gateway:
+    resource: '@HbPFApiGatewayBundle'
+    type:     annotation
+    prefix:   /api
+
+hb_pf_configurator:
+    resource: '@HbPFConfiguratorBundle'
+    type: annotation
+
+hb_pf_metrics:
+    resource: '@HbPFMetricsBundle'
+    type: annotation
+
+hb_pf_notification:
+    resource: '@HbPFNotificationBundle'
+    type: annotation
+
+hb_pf_logs:
+    resource: '@HbPFLogsBundle'
+    type: annotation
+
+hb_pf_users:
+    resource: "@HbPFUsersBundle"
+    type: annotation
+
+hb_pf_user:
+    resource: "@HbPFUserBundle"
+    type: annotation
+
+hb_pf_user_task:
+    resource: "@HbPFUserTaskBundle"
+    type: annotation
+
+hb_pf_usage_stats:
+    resource: "@HbPFUsageStatsBundle"
+    type: annotation

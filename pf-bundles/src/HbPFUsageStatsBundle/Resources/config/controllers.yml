@@ -1,0 +1,10 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    Hanaboso\PipesFramework\HbPFUsageStatsBundle\Controller\UsageStatsController:
+        class: Hanaboso\PipesFramework\HbPFUsageStatsBundle\Controller\UsageStatsController
+        arguments:
+            - '@hbpf.usage_stats.handler.usage_stats'
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]

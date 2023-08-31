@@ -1,0 +1,31 @@
+{
+    "http": 200,
+    "body": {
+        "queue_depth": {
+            "max": "5",
+            "avg": "0.00"
+        },
+        "waiting_time": {
+            "max": "0",
+            "avg": "0.00",
+            "min": "0"
+        },
+        "process_time": {
+            "max": "0",
+            "avg": "0.00",
+            "min": "0"
+        },
+        "cpu_time": {
+            "max": "0",
+            "avg": "0.00",
+            "min": "0"
+        },
+        "process": {
+            "max": "0",
+            "min": "0",
+            "avg": "0.00",
+            "total": "0",
+            "errors": "0"
+        }
+    }
+}

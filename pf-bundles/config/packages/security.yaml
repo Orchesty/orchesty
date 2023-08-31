@@ -1,0 +1,53 @@
+security:
+    enable_authenticator_manager: true
+    password_hashers:
+        Hanaboso\UserBundle\Document\User:
+            algorithm: auto
+            cost: 12
+    providers:
+        user_provider:
+            mongodb:
+                class: Hanaboso\UserBundle\Document\User
+                property: email
+        api_provider:
+            mongodb:
+                class: Hanaboso\UserBundle\Document\User
+                property: email
+    firewalls:
+        unsecured_test_api:
+            pattern: ^/api/applications/authorize/token
+            security: false
+        unsecured_user_api:
+            pattern: ^/api/(user/login|user/logout|user/\w+/activate|user/\w+/set_password|user/reset_password|user/register|user/\w+/verify)
+            security: false
+        unsecured_status_api:
+            pattern: ^/api/status
+            security: false
+
+        secured_usage_stats_events:
+            pattern: ^/api/usage-stats/.*
+            stateless: true
+            provider: api_provider
+            custom_authenticator:
+                - Hanaboso\PipesFramework\ApiGateway\Authenticator\ApiKey\ApiKeyAuthenticator
+        secured_applications:
+            pattern: ^/api/applications/.*/(sync|users)/.*
+            stateless: true
+            provider: api_provider
+            custom_authenticator:
+                - Hanaboso\PipesFramework\ApiGateway\Authenticator\ApiKey\ApiKeyAuthenticator
+        secured_area:
+            pattern: ^/
+            security: true
+            provider: user_provider
+            custom_authenticators:
+                - Hanaboso\UserBundle\Model\Security\JWTAuthenticator
+            form_login:
+                check_path: /api/user/login
+                login_path: /api/user/login
+                default_target_path: /
+
+            logout:
+                path: /api/user/logout
+                target: /
+                invalidate_session: true

@@ -1,0 +1,47 @@
+services:
+    _defaults:
+        public: '%public.services%'
+        autowire: true
+        autoconfigure: true
+
+    Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\CategoryController:
+        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\CategoryController
+        arguments:
+            - '@hbpf.handler.category'
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]
+
+    Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController:
+        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController
+        arguments:
+            - '@hbpf.configurator.handler.node'
+        calls:
+            - [ 'setLogger', [ '@monolog.logger.commons' ] ]
+
+    Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController:
+        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController
+        arguments:
+            - '@hbpf.configurator.handler.topology'
+        calls:
+            - [ 'setLogger', [ '@monolog.logger.commons' ] ]
+
+    Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\SdkController:
+        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\SdkController
+        arguments:
+            - '@hbpf.configurator.handler.sdk'
+        calls:
+            - [ 'setLogger', [ '@monolog.logger.commons' ] ]
+
+    Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyProgressController:
+        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyProgressController
+        arguments:
+            - '@hbpf.configurator.handler.topology_progress'
+        calls:
+            - [ 'setLogger', [ '@monolog.logger.commons' ] ]
+
+    Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\DashboardController:
+        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\DashboardController
+        arguments:
+            - '@hbpf.handler.dashboard'
+        calls:
+            - [ 'setLogger', [ '@monolog.logger.commons' ] ]

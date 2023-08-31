@@ -1,0 +1,7 @@
+{
+    "http": "POST /api/connector/null/action",
+    "body": [],
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
+}

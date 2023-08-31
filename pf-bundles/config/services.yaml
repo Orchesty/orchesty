@@ -1,0 +1,18 @@
+parameters:
+  # Base params
+  locale: en
+
+  # A secret key that's used to generate certain security-related tokens
+  secret: ThisTokenIsNotSoSecretChangeIt
+
+  frontendHost: "%env(string:FRONTEND_DSN)%"
+  backendHost: "%env(string:BACKEND_DSN)%"
+  cronHost: "%env(string:CRON_DSN)%"
+  startingPointHost: "%env(string:STARTING_POINT_DSN)%"
+  notificationHost: "%env(NOTIFICATION_DSN)%"
+  activateLink: '%backendHost%/user/%s/activate'
+  passwordLink: 'restore-password/%s'
+  cryptSecret: '%env(CRYPT_SECRET)%'
+
+  env(ORCHESTY_API_KEY): ''
+  orchestyApikey: "%env(string:ORCHESTY_API_KEY)%"
