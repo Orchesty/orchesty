@@ -1,0 +1,45 @@
+version: '3.5'
+
+services:
+    app:
+        image: hanabosocom/go-base:1.18
+        user: ${DEV_UID}:${DEV_GID}
+        environment:
+            APP_DEBUG: ${APP_DEBUG}
+            TOPOLOGY_JSON: ${TOPOLOGY_JSON}
+            MONGODB_DSN: ${MONGODB_DSN}
+            METRICS_DSN: ${METRICS_DSN}
+        volumes:
+            - ./:/app
+            - ${GOPATH}/pkg:/go/pkg
+        ports:
+            - ${DEV_IP}:8080:8080
+            - ${DEV_IP}:6666:6666
+#        command: /run.sh -p main.go -c start -l 6666
+        command: tail -f /dev/null
+        security_opt:
+            - 'seccomp:unconfined'
+
+    rabbitmq:
+        image: rabbitmq:management-alpine
+        ports:
+            - ${DEV_IP}:15672:15672
+            - ${DEV_IP}:5672:5672
+        volumes:
+            - rabbitmq:/var/lib/rabbitmq
+
+    mongodb:
+        image: mongo
+        ports:
+            - ${DEV_IP}:27017:27017
+        volumes:
+            - mongodb:/data/db
+
+    logstash:
+        image: mendhak/udp-listener
+        environment:
+            - UDPPORT=5120
+
+volumes:
+    rabbitmq:
+    mongodb:
