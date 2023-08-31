@@ -1,0 +1,47 @@
+version: '2'
+services:
+  rabbitmq:
+    image: 'rabbitmq:management-alpine'
+
+  redis:
+    image: 'redis:alpine'
+
+  influxdb:
+    image: 'influxdb:alpine'
+
+  mongo:
+    image: 'mongo:3.4'
+
+  logstash:
+      image: mendhak/udp-listener
+      environment:
+          UDPPORT: 4444
+
+  limiter:
+    image: hanaboso/limiter:master
+    environment:
+      - MONGO_HOST=mongo
+      - RABBITMQ_HOST=rabbitmq
+      - LOGSTASH_HOST=logstash
+      - LOGSTASH_PORT=4444
+
+  test:
+      image: node:14-alpine
+      user: ${DEV_UID}:${DEV_GID}
+      working_dir: /srv/app
+      volumes:
+      - ./:/srv/app
+      environment:
+        - RABBITMQ_HOST=rabbitmq
+        - REDIS_HOST=redis
+        - MONGO_HOST=mongo
+        - METRICS_HOST=influxdb
+        - METRICS_PORT=8086
+        - NPM_CONFIG_CACHE=/tmp
+      depends_on:
+        - rabbitmq
+        - redis
+        - mongo
+        - influxdb
+        - logstash
+      command: sleep infinity
