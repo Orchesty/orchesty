@@ -1,0 +1,13 @@
+services:
+    hbpf.notification.handler.notification:
+        class: Hanaboso\PipesFramework\HbPFNotificationBundle\Handler\NotificationHandler
+        arguments:
+            - '@hbpf.notification.manager.notification'
+
+    hbpf.notification.manager.notification:
+        class: Hanaboso\PipesFramework\Notification\Model\NotificationManager
+        arguments:
+            - '@hbpf.transport.curl_manager'
+            - '%notificationHost%'
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]

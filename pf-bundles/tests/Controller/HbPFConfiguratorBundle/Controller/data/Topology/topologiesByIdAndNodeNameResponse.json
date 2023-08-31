@@ -1,0 +1,27 @@
+{
+    "http": 200,
+    "body": [
+        {
+            "id": "6239c34b12a203775f360a9e",
+            "name": "SameName",
+            "version": 1,
+            "nodes": [
+                {
+                    "id": "6239c34b12a203775f360a9f",
+                    "name": "testNode"
+                }
+            ]
+        },
+        {
+            "id": "6239c34b12a203775f360aa0",
+            "name": "SameName",
+            "version": 2,
+            "nodes": [
+                {
+                    "id": "6239c34b12a203775f360a9f",
+                    "name": "testNode"
+                }
+            ]
+        }
+    ]
+}

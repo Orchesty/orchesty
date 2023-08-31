@@ -1,0 +1,10 @@
+{
+    "http": 200,
+    "body": {
+        "_id": "999",
+        "type": "type",
+        "name": "name",
+        "descr": "desc",
+        "status": "status"
+    }
+}

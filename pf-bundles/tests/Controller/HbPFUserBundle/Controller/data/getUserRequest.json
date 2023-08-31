@@ -1,0 +1,7 @@
+{
+    "http": "GET /api/user/:id",
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    },
+    "body": []
+}

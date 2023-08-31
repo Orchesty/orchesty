@@ -1,0 +1,16 @@
+parameters:
+    # Mailer service params
+    mailer_from: dev@hanaboso.com
+    mailer_async: false
+    mailer_builder_id: generic
+    env(EMAIL_DSN): 'smtp://localhost:25'
+
+framework:
+    mailer:
+        dsn: '%env(EMAIL_DSN)%'
+
+services:
+    Symfony\Component\Mailer\Mailer:
+        class: Symfony\Component\Mailer\Mailer
+        arguments:
+            - '@mailer.transports'
