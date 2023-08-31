@@ -1,0 +1,74 @@
+{
+  "name": "Pipes",
+  "prefix": "pipes",
+  "uri": "http://www.omg.org/spec/Pipes/20100524/MODEL",
+  "xml": {
+    "tagAlias": "lowerCase"
+  },
+  "associations": [],
+  "types": [
+    {
+      "name": "PipesParameters",
+      "extends": [
+        "bpmn:BaseElement"
+      ],
+      "properties": [
+        {
+          "name": "pipesType",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "sdkHost",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "rabbitPrefetch",
+          "isAttr": true,
+          "type": "Int"
+        },
+        {
+          "name": "limiterInterval",
+          "isAttr": true,
+          "type": "Int"
+        },
+        {
+          "name": "limiterValue",
+          "isAttr": true,
+          "type": "Int"
+        },
+        {
+          "name": "timeout",
+          "isAttr": true,
+          "type": "Int"
+        },
+        {
+          "name": "cronTime",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "cronParams",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "repeaterEnabled",
+          "isAttr": true,
+          "type": "Bool"
+        },
+        {
+          "name": "repeaterHops",
+          "isAttr": true,
+          "type": "Int"
+        },
+        {
+          "name": "repeaterInterval",
+          "isAttr": true,
+          "type": "Int"
+        }
+      ]
+    }
+  ]
+}
