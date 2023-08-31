@@ -16,3 +16,11 @@ frontend:build:
   extends:
     - .base-kaniko-build
     - .base-frontend
+
+frontend:test:
+  stage: test
+  needs: []
+
+  extends:
+    - .base-go-test # todo: don't use go-test
+    - .base-frontend

@@ -1,17 +1,11 @@
-## UI Template
+## Orchesty UI (Frontend)
 
-#### Cookie hack
-
-```text
-chrome://flags/
-#same-site-by-default-cookies
-#cookies-without-same-site-must-be-secure
-```
+The Orchesty UI allows the user to manage topologies, applications. Monitor individual processes and metrics of the entire Orchesty ecosystem.
 
 #### HOW TO RUN
 
 ```bash
-# Install dependecies
+# Install dependencies
 pnpm install
 # Compiles and hot-reloads for development
 pnpm run serve || pnpm start

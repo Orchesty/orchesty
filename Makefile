@@ -1,23 +1,34 @@
-BASE_IMAGE=dkr.hanaboso.net/pipes/pipes/nodejs-build
-PUBLIC_BASE_IMAGE=hanabosocom/nodejs-build
+DC=docker-compose exec -T ui
 
-IMAGE?=dkr.hanaboso.net/pipes/pipes/app-ui
-PUBLIC_IMAGE?=orchesty/frontend
+IMAGE=orchesty/frontend
 
-init:
+ALIAS?=alias
+Darwin:
+	sudo ifconfig lo0 $(ALIAS) $(shell awk '$$1 ~ /^DEV_IP/' .env.dist | sed -e "s/^DEV_IP=//")
+Linux:
+	@echo 'skipping ...'
+.lo0-up:
+	-@make `uname`
+.lo0-down:
+	-@make `uname` ALIAS='-alias'
+.env:
+	sed -e "s/{DEV_UID}/$(shell if [ "$(shell uname)" = "Linux" ]; then echo $(shell id -u); else echo '1001'; fi)/g" \
+		-e "s/{DEV_GID}/$(shell if [ "$(shell uname)" = "Linux" ]; then echo $(shell id -g); else echo '1001'; fi)/g" \
+		.env.dist > .env
+
+docker-compose.ci.yml:
+	# Comment out any port
+	sed -r 's/^(\s+ports:)$$/#\1/g; s/^(\s+- \$$\{DEV_IP\}.*)$$/#\1/g' docker-compose.yml > docker-compose.ci.yml
+
+init: .env
 	docker-compose up -d --force-recreate
+	$(DC) pnpm install
 
 rebuild:
 	docker build -t ${IMAGE}:${TAG} --pull .
 	docker push ${IMAGE}:${TAG}
-	docker tag ${IMAGE}:${TAG} $(PUBLIC_IMAGE):$(TAG)
-	docker push $(PUBLIC_IMAGE):$(TAG)
-
-build-dev:
-	cd docker && docker build -t ${BASE_IMAGE}:${TAG} --pull .
-	docker push ${BASE_IMAGE}:${TAG}
-	docker tag ${BASE_IMAGE}:${TAG} $(PUBLIC_BASE_IMAGE):$(TAG)
-	docker push $(PUBLIC_BASE_IMAGE):$(TAG)
 
 test:
-	pnpm run validate
+	$(DC) pnpm run validate
+
+ci-test: init test
