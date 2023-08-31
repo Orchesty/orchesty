@@ -1,0 +1,15 @@
+{
+    "http": 200,
+    "body": {
+        "_id": "5e32a3bf1280c6296f258c83",
+        "name": "name",
+        "topology_id": "topo",
+        "next": [],
+        "type": "api",
+        "handler": "action",
+        "enabled": true,
+        "schema_id": "",
+        "cron_time": null,
+        "cron_params": null
+    }
+}

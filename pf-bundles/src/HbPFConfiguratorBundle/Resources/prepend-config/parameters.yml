@@ -1,0 +1,42 @@
+parameters:
+    installer_dirs: "%env(json:INSTALLER_DIRS)%"
+    env(INSTALLER_DIRS): "[]"
+
+    checkInfiniteLoop: "%env(bool:CHECK_INFINITY_LOOP)%"
+    env(CHECK_INFINITY_LOOP): true
+
+    docker_pf_bridge_image: "%env(string:DOCKER_PF_BRIDGE_IMAGE)%"
+    env(DOCKER_PF_BRIDGE_IMAGE): orchesty/bridge:1.0
+
+    env(XML_PARSER_API_DSN): "xml-parser-api"
+    xml_parser_api_host: "%env(string:XML_PARSER_API_DSN)%"
+
+    worker_default_port: "%env(int:WORKER_DEFAULT_PORT)%"
+    env(WORKER_DEFAULT_PORT): 8000
+
+    topology_api: "%env(string:TOPOLOGY_API_DSN)%"
+    starting_point: "%startingPointHost%"
+    monolith_api_host: "%backendHost%"
+    metrics_dsn: "%env(string:METRICS_DSN)%"
+
+    env(UDP_LOGGER_URL): "fluentd:5120"
+    udp_logger_url: "%env(string:UDP_LOGGER_URL)%"
+
+    env(TOPOLOGY_POD_LABELS): ""
+    topology_pod_labels: "%env(string:TOPOLOGY_POD_LABELS)%"
+
+    topology_configs:
+        !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::RABBITMQ_DSN: "%env(string:RABBITMQ_DSN)%"
+        !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::DOCKER_PF_BRIDGE_IMAGE: "%docker_pf_bridge_image%"
+        !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::METRICS_DSN: "%metrics_dsn%"
+        !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::WORKER_DEFAULT_PORT: "%worker_default_port%"
+        !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::MONOLITH_API_HOST: "%monolith_api_host%"
+        !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::XML_PARSER_API_HOST: "%xml_parser_api_host%"
+        !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::MONGODB_DSN: "%env(string:MONGODB_DSN)%"
+        !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::UDP_LOGGER_URL: "%udp_logger_url%"
+        !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::TOPOLOGY_POD_LABELS: "%topology_pod_labels%"
+        !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyConfigFactory::STARTING_POINT_DSN: "%starting_point%"
+
+    topology_generator_configs:
+        !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge::TOPOLOGY_API: "%topology_api%"
+        !php/const Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge::STARTING_POINT: "%starting_point%"

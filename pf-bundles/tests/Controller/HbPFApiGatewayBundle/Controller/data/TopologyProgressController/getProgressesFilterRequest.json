@@ -1,0 +1,7 @@
+{
+    "http": "GET /api/progress?filter={\"filter\":[[{\"column\":\"status\",\"operator\":\"EQ\",\"value\":[\"failed\"]}]]}",
+    "body": [],
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
+}
