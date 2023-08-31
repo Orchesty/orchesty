@@ -1,0 +1,65 @@
+{
+    "name": "orchesty/backend",
+    "description": "Orchesty backend",
+    "license": "Elastic-2.0",
+    "version": "2.16.0",
+    "require": {
+        "php": "^8.1",
+        "ext-ctype": "*",
+        "ext-iconv": "*",
+        "ext-intl": "*",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "ext-mongodb": "*",
+        "doctrine/orm": "^2.13",
+        "hanaboso/acl-bundle": "^1.6",
+        "hanaboso/email-service-bundle": "^1.2",
+        "hanaboso/mongo-data-grid": "^1.6",
+        "hanaboso/rabbit-mq-bundle": "^1.5",
+        "hanaboso/rest-bundle": "^1.1",
+        "hanaboso/user-bundle": "^1.6",
+        "orchesty/php-sdk": "^2.2",
+        "symfony/security-bundle": "^v6.1",
+        "symfony/serializer": "^v6.1",
+        "web-token/jwt-signature-algorithm-rsa": "^3.1"
+    },
+    "require-dev": {
+        "hanaboso/php-check-utils": "^1.4",
+        "predis/predis": "^v1.1"
+    },
+    "replace": {
+        "ralouphie/getallheaders": "*",
+        "symfony/polyfill-ctype": "*",
+        "symfony/polyfill-iconv": "*",
+        "symfony/polyfill-intl-grapheme": "*",
+        "symfony/polyfill-intl-icu": "*",
+        "symfony/polyfill-intl-idn": "*",
+        "symfony/polyfill-intl-normalizer": "*",
+        "symfony/polyfill-mbstring": "*",
+        "symfony/polyfill-php72": "*",
+        "symfony/polyfill-php73": "*",
+        "symfony/polyfill-php74": "*",
+        "symfony/polyfill-php80": "*",
+        "symfony/polyfill-php81": "*"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../pipes-php-sdk",
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Hanaboso\\PipesFramework\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PipesFrameworkTests\\": "tests",
+            "UserBundleTests\\": "vendor/hanaboso/user-bundle/tests"
+        }
+    }
+}

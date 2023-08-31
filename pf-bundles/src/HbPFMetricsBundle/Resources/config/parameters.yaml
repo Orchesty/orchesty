@@ -1,0 +1,7 @@
+parameters:
+    # Kapacitor
+    kapacitor.host: kapacitor
+    kapacitor.port: 9092
+
+    env(METRICS_RABBIT_INTERVAL): 5
+    metrics_rabbit_interval: '%env(int:METRICS_RABBIT_INTERVAL)%'

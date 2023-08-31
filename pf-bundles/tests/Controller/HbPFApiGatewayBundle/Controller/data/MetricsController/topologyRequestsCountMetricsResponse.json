@@ -1,0 +1,28 @@
+{
+    "http": 200,
+    "body": {
+        "items": {
+            "topology": {
+                "process_time": {
+                    "min": "2",
+                    "avg": "2.00",
+                    "max": "2"
+                },
+                "process": {
+                    "total": "1",
+                    "errors": "0"
+                }
+            }
+        },
+        "filter": [],
+        "sorter": [],
+        "paging": {
+            "page": 1,
+            "itemsPerPage": 10,
+            "total": 0,
+            "nextPage": 1,
+            "lastPage": 1,
+            "previousPage": 1
+        }
+    }
+}

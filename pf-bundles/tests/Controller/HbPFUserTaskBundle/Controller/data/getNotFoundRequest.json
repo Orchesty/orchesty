@@ -1,0 +1,7 @@
+{
+    "http": "GET /user-task/losos",
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    },
+    "body": {}
+}

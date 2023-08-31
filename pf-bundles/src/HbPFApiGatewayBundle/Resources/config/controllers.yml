@@ -1,0 +1,58 @@
+services:
+    _defaults:
+        public: '%public.services%'
+        autowire: true
+        autoconfigure: true
+
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController
+        arguments:
+            - '@hbpp.service.locator'
+        calls:
+            - [ 'setLogger', [ '@monolog.logger.commons' ] ]
+
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\DashboardController:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\DashboardController
+
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\CategoryController:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\CategoryController
+
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\LogsController:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\LogsController
+
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\MetricsController:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\MetricsController
+
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NodeController:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NodeController
+        arguments:
+            - '@hbpp.service.locator'
+
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyController:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyController
+
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserController:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserController
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]
+
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\SdkController:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\SdkController
+
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\WebhookController:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\WebhookController
+        arguments:
+            - '@hbpp.service.locator'
+
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyProgressController:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyProgressController
+
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserTaskController:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserTaskController
+
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\StatusController:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\StatusController
+
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UsageStatsController:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UsageStatsController
+

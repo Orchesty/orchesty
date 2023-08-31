@@ -1,0 +1,24 @@
+{
+    "http": 200,
+    "body": {
+        "process": {
+            "activeTopologies": 0,
+            "disabledTopologies": 0,
+            "totalRuns": 2,
+            "errorsCount": 1,
+            "successCount": 1,
+            "installedApps": 0
+        },
+        "errorLogs": [],
+        "alertLogs": [],
+        "systemMetrics": {
+            "cpu": 0,
+            "memory": 0,
+            "space": 0,
+            "tcpConnections": 0
+        },
+        "filter": {
+            "range": "10000h"
+        }
+    }
+}

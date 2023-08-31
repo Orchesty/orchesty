@@ -1,0 +1,7 @@
+{
+    "http": "POST /api/topologies/:id/clone",
+    "body": [],
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
+}

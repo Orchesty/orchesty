@@ -1,0 +1,24 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    hbpf.metrics.handler.metrics:
+        class: Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler
+        arguments:
+            - "@doctrine_mongodb.odm.default_document_manager"
+            - "@hbpf.metrics.manager.mongo_metrics"
+
+    hbpf.metrics.manager.mongo_metrics:
+        class: Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager
+        arguments:
+            - "@doctrine_mongodb.odm.default_document_manager"
+            - "%mongodb.node_table%"
+            - "%mongodb.monolith_table%"
+            - "%mongodb.rabbit_table%"
+            - "%mongodb.counter_table%"
+            - "%mongodb.connector_table%"
+            - '@doctrine_mongodb.odm.metrics_document_manager'
+            - '%metrics_rabbit_interval%'
+            - '%mongodb.rabbit_consumer_table%'
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]

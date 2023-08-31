@@ -1,0 +1,16 @@
+{
+    "http": 200,
+    "body": {
+        "topology": {
+            "process_time": {
+                "min": "2",
+                "avg": "2.00",
+                "max": "2"
+            },
+            "process": {
+                "total": "3",
+                "errors": "2"
+            }
+        }
+    }
+}

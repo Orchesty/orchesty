@@ -1,0 +1,88 @@
+{
+    "environment": {
+        "docker_registry": "dkr.hanaboso.net\/pipes\/pipes",
+        "docker_pf_bridge_image": "pf-bridge:dev",
+        "rabbitmq_host": "rabbitmq:5672",
+        "rabbitmq_user": "guest",
+        "rabbitmq_pass": "guest",
+        "rabbitmq_vhost": "\/",
+        "metrics_dsn": "mongodb://mongo",
+        "worker_default_port": 8000,
+        "mongodb_dsn": "mongodb://mongo",
+        "udp_logger_url": "fluentd:5120",
+        "topology_pod_labels": "",
+        "starting_point_dsn": "starting-point:8080",
+        "orchesty_api_key": ""
+    },
+    "node_config": {
+        "5d6d17e1e7ad8800000000000": {
+            "worker": {
+                "type": "worker.null"
+            }
+        },
+        "5d6d17e1e7ad8800000000001": {
+            "worker": {
+                "type": "worker.http",
+                "settings": {
+                    "host": "someSdkHost",
+                    "process_path": "\/connector\/example2\/action",
+                    "status_path": "\/connector\/example2\/action\/test",
+                    "method": "POST",
+                    "port": 80,
+                    "application": "",
+                    "prefetch": 10,
+                    "timeout": 60,
+                    "headers": {
+                        "key": "value"
+                    }
+                }
+            },
+            "faucet": {
+                "settings": {
+                    "prefetch": 10
+                }
+            }
+        },
+        "5d6d17e1e7ad8800000000002": {
+            "worker": {
+                "type": "worker.batch",
+                "settings": {
+                    "host": "127.0.0.2",
+                    "process_path": "/batch/example3/action",
+                    "status_path": "/batch/example3/action/test",
+                    "method": "POST",
+                    "port": 80,
+                    "application": "",
+                    "prefetch": null,
+                    "timeout": null,
+                    "headers": {
+                        "key": "value"
+                    }
+                }
+            }
+        },
+        "5d6d17e1e7ad8800000000003": {
+            "worker": {
+                "type": "worker.http",
+                "settings": {
+                    "host": "127.0.0.2",
+                    "process_path": "\/connector\/example4\/action",
+                    "status_path": "\/connector\/example4\/action\/test",
+                    "method": "POST",
+                    "port": 80,
+                    "application": "",
+                    "prefetch": null,
+                    "timeout": null,
+                    "headers": {
+                        "key": "value"
+                    }
+                }
+            }
+        },
+        "5d6d17e1e7ad8800000000004": {
+            "worker": {
+                "type": "worker.user"
+            }
+        }
+    }
+}

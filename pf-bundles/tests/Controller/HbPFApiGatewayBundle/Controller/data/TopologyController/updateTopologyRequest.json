@@ -1,0 +1,9 @@
+{
+    "http": "PUT /api/topologies/:id",
+    "body": {
+        "name": "Another Topology"
+    },
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
+}
