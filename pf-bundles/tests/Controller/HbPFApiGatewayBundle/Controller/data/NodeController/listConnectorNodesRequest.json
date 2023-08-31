@@ -1,0 +1,7 @@
+{
+    "http": "GET /api/nodes/connector/list_nodes",
+    "body": [],
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
+}

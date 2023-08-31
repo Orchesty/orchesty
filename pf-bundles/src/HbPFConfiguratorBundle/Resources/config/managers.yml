@@ -1,0 +1,40 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    hbpf.configurator.manager.topology:
+        class: Hanaboso\PipesFramework\Configurator\Model\TopologyManager
+        arguments:
+            - '@hbpf.database_manager_locator'
+            - '@hbpf.cron.manager'
+            - '%checkInfiniteLoop%'
+            - '@hbpf.transport.curl_manager'
+            - '%startingPointHost%'
+
+    hbpf.configurator.manager.node:
+        class: Hanaboso\PipesFramework\Configurator\Model\NodeManager
+        arguments:
+            - '@hbpf.database_manager_locator'
+
+    hbpf.configurator.manager.category:
+        class: Hanaboso\PipesFramework\Configurator\Model\CategoryManager
+        arguments:
+            - '@hbpf.database_manager_locator'
+
+    hbpf.configurator.manager.sdk:
+        class: Hanaboso\PipesFramework\Configurator\Model\SdkManager
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.configurator.manager.topology_progress:
+        class: Hanaboso\PipesFramework\Configurator\Model\ProgressManager
+        arguments:
+            - '@hbpf.progress.filter'
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.configurator.manager.dashboard:
+        class: Hanaboso\PipesFramework\Configurator\Model\DashboardManager
+        arguments:
+            - '@Hanaboso\PipesFramework\Logs\LogsInterface'
+            - '@hbpf.metrics.manager_loader'
+            - '@doctrine_mongodb.odm.default_document_manager'

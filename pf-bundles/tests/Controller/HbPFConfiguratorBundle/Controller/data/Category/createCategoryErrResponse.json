@@ -1,0 +1,9 @@
+{
+    "http": 500,
+    "body": {
+        "status": "INTERNAL_SERVER_ERROR",
+        "error_code": 2301,
+        "type": "Hanaboso\\CommonsBundle\\Exception\\CategoryException",
+        "message": "Parent node [12] not found"
+    }
+}
