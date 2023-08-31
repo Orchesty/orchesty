@@ -1,0 +1,16 @@
+{
+  "navigation": {
+    "home": "Nástěnka",
+    "users": "Uživatelé",
+    "profile": "Profil",
+    "setting": "Nastavení",
+    "logout": "Odhlásit",
+    "topologies": "Topologie",
+    "notifications": "Notifikace",
+    "healthCheck": "Health Check",
+    "scheduledTask": "Naplánované události",
+    "userTask": "Uživatelské akce",
+    "appStore": "Obchod s aplikacemi",
+    "implementations": "Servisa"
+  }
+}

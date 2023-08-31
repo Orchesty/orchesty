@@ -1,0 +1,39 @@
+{
+  "appStore": {
+    "installed": "Installed",
+    "available": "Available",
+    "authorized": "Authorized",
+    "unauthorized": "Unauthorized",
+    "activated": "Activated",
+    "notactivated": "Not activated",
+    "app": {
+      "detail": "Detail",
+      "install": "Install",
+      "uninstall": "Uninstall",
+      "installed": "Installed",
+      "appUninstall": "Uninstall Application",
+      "appUninstallConfirmation": "Uninstall application {app}",
+      "tabs": {
+        "info": "Info"
+      }
+    },
+    "detail": {
+      "appStore": "Applications",
+      "details": "Details",
+      "authorization": "Authorization",
+      "authorize": "Authorize",
+      "uninstall": "Uninstall",
+      "webhooks": "Webhooks",
+      "application": "Settings",
+      "applicationDetail": "App Detail"
+    },
+    "form": {
+      "clientID": "Client ID",
+      "clientID_name": "client id",
+      "clientSecret": "Client Secret",
+      "clientSecret_name": "client secret",
+      "password": "Password",
+      "password_name": "password"
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "scheduledTask": {
+    "grid": {
+      "status": "Stav",
+      "topology": "Topologie",
+      "node": "Uzel",
+      "settings": "Nastavení",
+      "nextRun": "Další běh"
+    }
+  }
+}
