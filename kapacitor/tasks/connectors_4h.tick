@@ -1,0 +1,15 @@
+dbrp "pipes"."30m"
+
+var sample = 4h
+var retention = '4h'
+
+batch
+   |query('SELECT (sum("sum.time") / sum("count.time")) as "avg.time",  min("min.time") as "min.time", max("max.time") as "max.time", sum("sum.time") as "sum.time", count("count.time") as "count.time", count("user_id.count") as "user_id.count", count("app_id.count") as "app_id.count" FROM "pipes"."30m"."connectors"')
+       .period(sample)
+       .every(sample)
+       .groupBy('topology_id', 'node_id', 'application', 'user', 'correlation_id')
+   |influxDBOut()
+       .database('pipes')
+       .measurement('connectors')
+       .precision('ms')
+       .retentionPolicy(retention)

@@ -1,0 +1,15 @@
+dbrp "pipes"."1m"
+
+var sample = 30m
+var retention = '30m'
+
+batch
+   |query('SELECT (sum("sum.time") / sum("count.time")) as "cpu_kernel.avg",  max("cpu_max.kernel") as "cpu_max.kernel", max("cpu_max.user") as "cpu_max.user", min(cpu_min.kernel) as "cpu_min.kernel", min("cpu_min.user") as "cpu_min.user", (sum("sum_user.time") / sum("count_user.time")) as "cpu_user.avg", sum("sum.time") as "sum.time", count("count.time") as "count.time" FROM "pipes"."1m"."monolith"')
+       .period(sample)
+       .every(sample)
+       .groupBy('topology_id', 'node_id')
+   |influxDBOut()
+       .database('pipes')
+       .measurement('monolith')
+       .precision('ms')
+       .retentionPolicy(retention)
