@@ -1,0 +1,360 @@
+openapi: 3.0.0
+
+info:
+    title: Topology Generator
+    description: Topology Generator API
+    version: "1.0"
+
+servers:
+    -   url: http://127.0.0.33
+        description: Docker Localhost
+
+paths:
+    /v1/status:
+        get:
+            tags: [ Status ]
+            responses:
+                '200':
+                    $ref: '#/components/responses/Status'
+
+    /v1/api/topologies/{topology}:
+        get:
+            tags: [ Topologies ]
+            parameters:
+                -   $ref: '#/components/parameters/Topology'
+            responses:
+                '200':
+                    $ref: '#/components/responses/Get'
+                '404':
+                    $ref: '#/components/responses/Get'
+                '500':
+                    $ref: '#/components/responses/500'
+
+        post:
+            tags: [ Topologies ]
+            parameters:
+                -   $ref: '#/components/parameters/Topology'
+            requestBody:
+                $ref: '#/components/requestBodies/Create'
+            responses:
+                '200':
+                    $ref: '#/components/responses/Create'
+                '500':
+                    $ref: '#/components/responses/500'
+
+        put:
+            tags: [ Topologies ]
+            parameters:
+                -   $ref: '#/components/parameters/Topology'
+            requestBody:
+                $ref: '#/components/requestBodies/Update'
+            responses:
+                '200':
+                    $ref: '#/components/responses/Update'
+                '500':
+                    $ref: '#/components/responses/500'
+
+        delete:
+            tags: [ Topologies ]
+            parameters:
+                -   $ref: '#/components/parameters/Topology'
+            responses:
+                '200':
+                    $ref: '#/components/responses/Delete'
+                '500':
+                    $ref: '#/components/responses/500'
+
+components:
+    requestBodies:
+        Create:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            environment:
+                                type: object
+                                properties:
+                                    docker_registry:
+                                        type: string
+                                    docker_pf_bridge_image:
+                                        type: string
+                                    rabbitmq_dsn:
+                                        type: string
+                                    metrics_host:
+                                        type: string
+                                    metrics_port:
+                                        type: string
+                                    metrics_service:
+                                        type: string
+                                    worker_default_port:
+                                        type: integer
+                                    generator_mode:
+                                        type: string
+                            node_config:
+                                type: object
+                                properties:
+                                    nodeOne:
+                                        type: object
+                                        properties:
+                                            worker:
+                                                type: object
+                                                properties:
+                                                    type:
+                                                        type: string
+                                                    settings:
+                                                        type: object
+                                                        properties:
+                                                            host:
+                                                                type: string
+                                                            port:
+                                                                type: integer
+                                                            method:
+                                                                type: string
+                                                            process_path:
+                                                                type: string
+                                                            status_path:
+                                                                type: string
+                                                            publish_queue:
+                                                                type: object
+                                                                properties:
+                                                                    Name:
+                                                                        type: string
+                                                                    Options:
+                                                                        type: string
+                                                            parser_settings:
+                                                                type: array
+                                                                items:
+                                                                    type: string
+                                                            secure:
+                                                                type: boolean
+                                                            opts:
+                                                                type: array
+                                                                items:
+                                                                    type: string
+                                            faucet:
+                                                type: object
+                                                properties:
+                                                    settings:
+                                                        type: object
+                                                        properties:
+                                                            objectOne:
+                                                                type: integer
+
+        Update:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            action:
+                                type: string
+                                enum:
+                                    - start
+                                    - stop
+
+    responses:
+        Status:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            database:
+                                type: boolean
+                                example: true
+
+        Get:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            message:
+                                type: string
+                            docker-info:
+                                $ref: '#/components/schemas/DockerInfo'
+
+        Create:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            message:
+                                type: string
+
+        Update:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            message:
+                                type: string
+                            docker-info:
+                                $ref: '#/components/schemas/DockerInfo'
+
+        Delete:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            message:
+                                type: string
+
+        500:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Error'
+                    example:
+                        code: "INTERNAL_SERVER_ERROR"
+                        codeDescription: "Internal server error occurred."
+                        details: "Something gone wrong!"
+
+    schemas:
+        Error:
+            type: object
+            properties:
+                code:
+                    type: string
+                codeDescription:
+                    type: string
+                details:
+                    type: string
+
+        DockerInfo:
+            type: array
+            items:
+                type: object
+                properties:
+                    Id:
+                        type: string
+                    Names:
+                        type: array
+                        items:
+                            type: string
+                    Image:
+                        type: string
+                    ImageId:
+                        type: string
+                    Command:
+                        type: string
+                    Created:
+                        type: integer
+                    Ports:
+                        type: array
+                        items:
+                            type: object
+                            properties:
+                                Ip:
+                                    type: string
+                                PrivatePort:
+                                    type: integer
+                                PublicPort:
+                                    type: integer
+                                Type:
+                                    type: string
+                    SizeRw:
+                        type: integer
+                    SizeRootFs:
+                        type: integer
+                    Labels:
+                        type: object
+                        properties:
+                            objectOne:
+                                type: string
+                            objectTwo:
+                                type: string
+                    State:
+                        type: string
+                    Status:
+                        type: string
+                    HostConfig:
+                        type: object
+                        properties:
+                            NetworkMode:
+                                type: string
+                    NetworkSettings:
+                        type: object
+                        properties:
+                            objectOne:
+                                type: object
+                                properties:
+                                    IpamConfig:
+                                        type: object
+                                        properties:
+                                            Ipv4Address:
+                                                type: string
+                                            Ipv6Address:
+                                                type: string
+                                            LinkLocalIps:
+                                                type: array
+                                                items:
+                                                    type: string
+                                    Links:
+                                        type: array
+                                        items:
+                                            type: string
+                                    Aliases:
+                                        type: array
+                                        items:
+                                            type: string
+                                    NetworkId:
+                                        type: string
+                                    EndpointId:
+                                        type: string
+                                    Gateway:
+                                        type: string
+                                    IpAddress:
+                                        type: string
+                                    IpPrefixLen:
+                                        type: integer
+                                    Ipv6Gateway:
+                                        type: string
+                                    GlobalIpv6Address:
+                                        type: string
+                                    GlobalIpv6PrefixLen:
+                                        type: integer
+                                    MacAdress:
+                                        type: string
+                    Mounts:
+                        type: array
+                        items:
+                            type: object
+                            properties:
+                                Type:
+                                    type: string
+                                Name:
+                                    type: string
+                                Source:
+                                    type: string
+                                Destination:
+                                    type: string
+                                Driver:
+                                    type: string
+                                Mode:
+                                    type: string
+                                Rw:
+                                    type: boolean
+                                Propagation:
+                                    type: string
+
+    parameters:
+        Topology:
+            name: topology
+            in: path
+            required: true
+            example: Topology
+            schema:
+                type: string
