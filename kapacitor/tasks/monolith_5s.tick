@@ -1,0 +1,77 @@
+dbrp "pipes"."default"
+
+var sample = 5s
+var retention = '5s'
+
+var monolithData = stream
+   |from()
+       .database('pipes')
+       .retentionPolicy('default')
+       .measurement('monolith')
+   |barrier()
+       .period(sample)
+   |window()
+       .period(sample)
+       .every(sample)
+   |groupBy('topology_id', 'node_id')
+
+var cpuKernelAvg = monolithData
+    |mean('fpm_cpu_kernel_time')
+        .as('avg')
+
+var cpuMinKernel = monolithData
+    |min('fpm_cpu_kernel_time')
+        .as('kernel')
+
+var cpuMinUser = monolithData
+    |min('fpm_cpu_user_time')
+        .as('user')
+
+var cpuMin = cpuMinKernel
+    |join(cpuMinUser)
+        .as('kernel', 'user')
+    |eval(lambda: "kernel.kernel", lambda: "user.user")
+        .as('kernel', 'user')
+
+var cpuMaxKernel = monolithData
+    |max('fpm_cpu_kernel_time')
+        .as('kernel')
+
+var cpuMaxUser = monolithData
+    |max('fpm_cpu_user_time')
+        .as('user')
+
+var cpuMax = cpuMaxKernel
+    |join(cpuMaxUser)
+        .as('kernel', 'user')
+    |eval(lambda: "kernel.kernel", lambda: "user.user")
+        .as('kernel', 'user')
+
+var cpuUserAvg = monolithData
+    |mean('fpm_cpu_user_time')
+        .as('avg')
+
+var cpuSum = monolithData
+    |sum('fpm_cpu_kernel_time')
+        .as('time')
+
+var cpuCount = monolithData
+    |count('fpm_cpu_kernel_time')
+        .as('time')
+
+var cpuUserSum = monolithData
+    |sum('fpm_cpu_user_time')
+        .as('time')
+
+var cpuUserCount = monolithData
+    |count('fpm_cpu_user_time')
+        .as('time')
+
+cpuKernelAvg
+   |join(cpuMin, cpuMax, cpuUserAvg, cpuSum, cpuCount, cpuUserSum, cpuUserCount)
+       .as('cpu_kernel', 'cpu_min', 'cpu_max', 'cpu_user', 'sum', 'count', 'sum_user', 'count_user')
+   |influxDBOut()
+       .database('pipes')
+       .measurement('monolith')
+       .precision('ms')
+       .retentionPolicy(retention)

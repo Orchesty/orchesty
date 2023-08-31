@@ -1,0 +1,85 @@
+dbrp "pipes"."default"
+
+var sample = 5s
+var retention = '5s'
+
+var bridgeData = stream
+   |from()
+       .database('pipes')
+       .retentionPolicy('default')
+       .measurement('pipes_node')
+   |barrier()
+       .period(sample)
+   |window()
+       .period(sample)
+       .every(sample)
+   |groupBy('topology_id', 'node_id')
+
+// Total Processes
+var total = bridgeData
+   |count('result_success')
+
+var totalFailed = bridgeData
+   |where(lambda: "result_success" == FALSE)
+   |count('result_success')
+
+// Bridge data
+var waitingTimeAvg = bridgeData
+    |mean('waiting_duration')
+        .as('time')
+
+var timeMinWaiting = bridgeData
+    |min('waiting_duration')
+        .as('waiting')
+
+var timeMinProcess = bridgeData
+    |min('total_duration')
+        .as('process')
+
+var timeMin = timeMinWaiting
+    |join(timeMinProcess)
+        .as('waiting', 'process')
+    |eval(lambda: "waiting.waiting", lambda: "process.process")
+        .as('waiting', 'process')
+
+var timeMaxWaiting = bridgeData
+    |max('waiting_duration')
+        .as('waiting')
+
+var timeMaxProcess = bridgeData
+    |max('total_duration')
+        .as('process')
+
+var timeMax = timeMaxWaiting
+    |join(timeMaxProcess)
+        .as('waiting', 'process')
+    |eval(lambda: "waiting.waiting", lambda: "process.process")
+        .as('waiting', 'process')
+
+var processTimeAvg = bridgeData
+    |mean('total_duration')
+        .as('time')
+
+var jobSum = bridgeData
+    |sum('total_duration')
+        .as('time')
+
+var jobCount = bridgeData
+    |count('total_duration')
+        .as('time')
+
+var jobSumWaiting = bridgeData
+    |sum('waiting_duration')
+        .as('time')
+
+var jobCountWaiting = bridgeData
+    |count('waiting_duration')
+        .as('time')
+total
+   |join(totalFailed, waitingTimeAvg, timeMin, timeMax, processTimeAvg, jobSum, jobCount, jobSumWaiting, jobCountWaiting)
+       .as('total', 'failed', 'avg_waiting', 'job_min', 'job_max', 'avg_process', 'sum', 'count', 'sum_waiting', 'count_waiting')
+   |influxDBOut()
+       .database('pipes')
+       .measurement('bridges')
+       .precision('ms')
+       .retentionPolicy(retention)
