@@ -1,0 +1,58 @@
+dbrp "pipes"."default"
+
+var sample = 5s
+var retention = '5s'
+
+var data = stream
+   |from()
+       .database('pipes')
+       .retentionPolicy('default')
+       .measurement('pipes_counter')
+   |barrier()
+       .period(sample)
+   |window()
+       .period(sample)
+       .every(sample)
+   |groupBy('topology_id')
+
+var total = data
+    |count('result')
+
+var totalFailed = data
+    |where(lambda: "result" == FALSE)
+    |count('result')
+
+var timeAvg = data
+    |mean('duration')
+        .as('time')
+
+var timeMin = data
+    |min('duration')
+        .as('time')
+    |delete().field('fail_count')
+    |delete().field('ok_count')
+    |delete().field('result')
+
+var timeMax = data
+    |max('duration')
+        .as('time')
+    |delete().field('fail_count')
+    |delete().field('ok_count')
+    |delete().field('result')
+
+var processSum = data
+    |sum('duration')
+        .as('time')
+
+var processCount = data
+    |count('duration')
+        .as('time')
+
+total
+    |join(totalFailed, timeAvg, timeMin, timeMax, processSum, processCount)
+        .as('total', 'failed', 'avg', 'min', 'max', 'sum', 'count')
+    |influxDBOut()
+        .database('pipes')
+        .measurement('processes')
+        .precision('ms')
+        .retentionPolicy(retention)
