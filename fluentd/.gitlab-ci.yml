@@ -1,0 +1,19 @@
+.base-fluentd:
+  variables:
+    DIR: fluentd
+    IMAGE: ${REGISTRY}/${IMAGE_PREFIX}fluentd
+  rules:
+    - if: '$FORCE_PIPELINE =~ /ALL/ || $FORCE_PIPELINE =~ /fluentd/'
+    - if: '$CI_COMMIT_BEFORE_SHA == $_BANNED_RUN_ALL_SHA'
+      when: never
+    - changes:
+      - ${DIR}/**/*
+
+
+fluentd:build:
+  stage: build
+  needs: ["collect-tags"]
+  extends:
+    - .base-kaniko-build
+    - .base-fluentd
+
