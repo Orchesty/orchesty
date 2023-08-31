@@ -17,7 +17,7 @@ Linux:
 
 docker-compose.ci.yml:
 	# Comment out any port forwarding
-	sed -r 's/^(\s+ports:)$$/#\1/g; s/^(\s+- \$$\{DEV_IP\}.*)$$/#\1/g' docker-compose.yaml > docker-compose.ci.yml
+	sed -r 's/^(\s+ports:)$$/#\1/g; s/^(\s+- \$$\{DEV_IP\}.*)$$/#\1/g' docker-compose.yml > docker-compose.ci.yml
 
 docker-up-force: .env .lo0-up
 	docker-compose pull --ignore-pull-failures
@@ -58,6 +58,8 @@ localtest:
 fasttest: lint unit
 
 test: docker-up-force install fasttest docker-down-clean
+
+ci-test: test
 
 create-fixture-data:
 	$(DCS) pnpm run create-fixture-data

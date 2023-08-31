@@ -1,6 +1,6 @@
-## Orchesty Cron
+## Orchesty Counter
 
-The Orchesty Cron is used to start topologies with a cron start event.
+The Orchesty Counter is used to evaluate the status of processes.
 
 #### HOW TO RUN
 

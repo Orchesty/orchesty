@@ -16,3 +16,10 @@ applinth-marketplace-ui:build:
   extends:
     - .base-kaniko-build
     - .base-applinth-marketplace-ui
+
+applinth-marketplace-ui:test:
+  stage: test
+  needs: []
+  extends:
+    - .base-go-test # todo: don't use go-test
+    - .base-applinth-marketplace-ui

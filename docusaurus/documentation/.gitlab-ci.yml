@@ -43,4 +43,3 @@ documentation deploy prod:
   only:
     refs:
       - master
-      - dev

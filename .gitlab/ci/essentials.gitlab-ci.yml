@@ -48,6 +48,7 @@ default:
 
   before_script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY --username $CI_REGISTRY_USER --password-stdin
+    - echo "$RELEASE_REGISTRY_PASSWORD" | docker login $RELEASE_REGISTRY_HOST --username $RELEASE_REGISTRY_USERNAME --password-stdin
 
   tags:
     - dind

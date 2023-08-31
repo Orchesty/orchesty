@@ -17,7 +17,7 @@ cloud-console-api:test:
 
   extends:
     - .base-go-test
-    - .base-worker-api
+    - .base-cloud-console-api
 
 cloud-console-api:build:
   stage: build

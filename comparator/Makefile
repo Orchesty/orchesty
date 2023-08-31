@@ -21,7 +21,7 @@ build: .env
 
 docker-compose.ci.yml:
 	# Comment out any port forwarding
-	sed -r 's/^(\s+ports:)$$/#\1/g; s/^(\s+- \$$\{DEV_IP\}.*)$$/#\1/g;' docker-compose.dev.yml > docker-compose.ci.yml
+	sed -r 's/^(\s+ports:)$$/#\1/g; s/^(\s+- \$$\{DEV_IP\}.*)$$/#\1/g;' docker-compose.yml > docker-compose.ci.yml
 
 init: .env .lo0-up
 	docker-compose pull --ignore-pull-failures
@@ -29,6 +29,9 @@ init: .env .lo0-up
 
 docker-down-clean: .env .lo0-down
 	docker-compose down -v
+
+install:
+	$(DC) pnpm install
 
 lint:
 	$(DC) pnpm run lint-ci
@@ -38,4 +41,6 @@ unit:
 
 fasttest: lint unit
 
-test: init fasttest docker-down-clean
+test: init install fasttest docker-down-clean
+
+ci-test: test
