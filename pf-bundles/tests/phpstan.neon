@@ -1,0 +1,74 @@
+includes:
+	- ../vendor/hanaboso/php-check-utils/phpstan.neon
+
+parameters:
+	doctrine:
+		objectManagerLoader: DocumentManagerLoader.php
+	symfony:
+		container_xml_path: %rootDir%/../../../var/cache/test/Hanaboso_PipesFramework_KernelTestDebugContainer.xml
+	ignoreErrors:
+		-
+			message: '#Calling putenv\(\) is forbidden, might overwrite existing variables#'
+			path: ../tests/KernelTestCaseAbstract.php
+		-
+			message: '#Calling putenv\(\) is forbidden, might overwrite existing variables#'
+			path: ../tests/ControllerTestCaseAbstract.php
+		-
+			message: '#Access to an undefined property#'
+			path: ../tests/*
+	ergebnis:
+		classesAllowedToBeExtended:
+			- Hanaboso\PipesFramework\HbPFUsageStatsBundle\Manager\SenderAbstract
+			- Hanaboso\AclBundle\Enum\ResourceEnum
+			- Hanaboso\MongoDataGrid\GridFilterAbstract
+			- Hanaboso\PipesFramework\Logs\LogsAbstract
+			- Hanaboso\PipesFramework\Metrics\Manager\MetricsManagerAbstract
+			- Hanaboso\PipesFramework\User\Document\UserSettings
+			- Hanaboso\PipesFramework\User\Document\UserSettings
+			- Hanaboso\PipesFramework\User\Filter\UserDocumentFilter
+			- Hanaboso\PipesFramework\Authorization\Base\Basic\BasicApplicationAbstract
+			- Hanaboso\PipesFramework\Connector\ConnectorAbstract
+			- Hanaboso\Utils\Exception\PipesFrameworkExceptionAbstract
+			- PipesFrameworkTests\ControllerTestCaseAbstract
+			- PipesFrameworkTests\DatabaseTestCaseAbstract
+			- PipesFrameworkTests\KernelTestCaseAbstract
+			- Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator
+
+		classesNotRequiredToBeAbstractOrFinal:
+			- Hanaboso\PipesFramework\HbPFUsageStatsBundle\Manager\AppInstallUsageStatsSender
+			- Hanaboso\PipesFramework\HbPFUsageStatsBundle\Manager\OperationUsageStatsSender
+			- Hanaboso\PipesFramework\HbPFUsageStatsBundle\Manager\SenderManager
+			- Hanaboso\PipesFramework\Database\Document\Embed\EmbedNode
+			- Hanaboso\PipesFramework\Application\Document\ApplicationInstall
+			- Hanaboso\PipesFramework\Application\Document\Webhook
+			- Hanaboso\PipesFramework\Database\Document\Category
+			- Hanaboso\PipesFramework\Database\Document\Node
+			- Hanaboso\PipesFramework\Database\Document\TopologyApplication
+			- Hanaboso\PipesFramework\Database\Document\Topology
+			- Hanaboso\PipesFramework\Configurator\Document\NodeProgress
+			- Hanaboso\PipesFramework\Configurator\Document\Sdk
+			- Hanaboso\PipesFramework\Configurator\Document\TopologyProgress
+			- Hanaboso\PipesFramework\Logs\Document\Logs
+			- Hanaboso\PipesFramework\Logs\Document\Pipes
+			- Hanaboso\PipesFramework\Logs\Document\Stacktrace
+			- Hanaboso\PipesFramework\Metrics\Document\BridgesMetrics
+			- Hanaboso\PipesFramework\Metrics\Document\BridgesMetricsFields
+			- Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetrics
+			- Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetricsFields
+			- Hanaboso\PipesFramework\Metrics\Document\ContainerMetrics
+			- Hanaboso\PipesFramework\Metrics\Document\ContainerMetricsFields
+			- Hanaboso\PipesFramework\Metrics\Document\ContainerMetricsFieldsPods
+			- Hanaboso\PipesFramework\Metrics\Document\MonolithMetrics
+			- Hanaboso\PipesFramework\Metrics\Document\MonolithMetricsFields
+			- Hanaboso\PipesFramework\Metrics\Document\ProcessesMetrics
+			- Hanaboso\PipesFramework\Metrics\Document\ProcessesMetricsFields
+			- Hanaboso\PipesFramework\Metrics\Document\RabbitMetrics
+			- Hanaboso\PipesFramework\Metrics\Document\RabbitMetricsFields
+			- Hanaboso\PipesFramework\Metrics\Document\RabbitConsumerFields
+			- Hanaboso\PipesFramework\Metrics\Document\RabbitConsumerMetrics
+			- Hanaboso\PipesFramework\Metrics\Document\Tags
+			- Hanaboso\PipesFramework\UserTask\Document\UserTask
+			- Hanaboso\PipesFramework\UserTask\Document\UserTaskMessage
+			- Hanaboso\PipesFramework\User\Document\UserSettings
+			- Hanaboso\PipesFramework\UsageStats\Document\UsageStatsEvent
+			- Hanaboso\PipesFramework\Configurator\Document\ApiToken

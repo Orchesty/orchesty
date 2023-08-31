@@ -1,0 +1,69 @@
+parameters:
+    ##########################
+    #   Database Locator     #
+    ##########################
+    database_type: 'ODM' # 'ORM'
+
+    ##########################
+    #        Metrics         #
+    ##########################
+    #MongoDb sender
+    mongodb.monolith_table: monolith
+    mongodb.connector_table: connectors
+    mongodb.node_table: pipes_node
+    mongodb.rabbit_table: rabbitmq
+    mongodb.rabbit_consumer_table: rabbitmq_consumer
+    mongodb.counter_table: pipes_counter
+
+services:
+    _defaults:
+        public: '%public.services%'
+
+    ##########################
+    #    Session Handlers    #
+    ##########################
+    session.handler.mongodb:
+        class: Symfony\Component\HttpFoundation\Session\Storage\Handler\MongoDbSessionHandler
+        arguments:
+            - "@doctrine_mongodb.odm.default_connection"
+            - {database: "%env(string:MONGODB_DB)%", collection: "Session"}
+
+    ##########################
+    #    Database Locator    #
+    ##########################
+
+    hbpf.database_manager_locator:
+        class: Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocator
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - null
+            - '%database_type%'
+
+    ##########################
+    #   Transport Services   #
+    ##########################
+
+    hbpf.transport.curl_client_factory:
+        class: Hanaboso\CommonsBundle\Transport\Curl\CurlClientFactory
+
+    hbpf.transport.curl_manager:
+        class: Hanaboso\CommonsBundle\Transport\Curl\CurlManager
+        arguments:
+            - '@hbpf.transport.curl_client_factory'
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]
+
+    ##########################
+    #      ACL Provider      #
+    ##########################
+
+    hbpf.acl.provider:
+        class: Hanaboso\AclBundle\Provider\Impl\AclProvider
+        arguments:
+            - '@hbpf.database_manager_locator'
+            - '@hbpf.user.provider.resource'
+            - '%resource_enum%'
+            - '@hbpf.acl.cache.null'
+
+    hbpf.acl.cache.null:
+        class: Hanaboso\AclBundle\Cache\NullCache

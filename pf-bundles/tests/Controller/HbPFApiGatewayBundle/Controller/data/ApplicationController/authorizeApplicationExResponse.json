@@ -1,0 +1,6 @@
+{
+    "http": 500,
+    "body": {
+        "Error": "App null is not found!"
+    }
+}

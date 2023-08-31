@@ -1,0 +1,22 @@
+parameters:
+    stdout_path: 'php://stdout'
+
+monolog:
+    use_microseconds: false
+    channels: [commons]
+    handlers:
+        # Handler for docker container
+        stdout:
+            type:  stream
+            path:  "%stdout_path%"
+            level: info
+            formatter: logstash_formatter
+            max_files: 10
+            channels: ['!php', '!request', '!security']
+
+services:
+    _defaults:
+        public: '%public.services%'
+
+    logstash_formatter:
+        class: Hanaboso\CommonsBundle\Monolog\LogstashFormatter
