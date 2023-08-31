@@ -1,6 +1,5 @@
 DCS=docker-compose exec -T worker-api
-IMAGE=dkr.hanaboso.net/pipes/pipes/worker-api
-PUBLIC_IMAGE=orchesty/worker-api
+IMAGE=orchesty/worker-api
 
 ALIAS?=alias
 Darwin:
@@ -19,8 +18,6 @@ Linux:
 build:
 	docker build -t $(IMAGE):$(TAG) .
 	docker push $(IMAGE):$(TAG)
-	docker tag $(IMAGE):$(TAG) $(PUBLIC_IMAGE):$(TAG)
-	docker push $(PUBLIC_IMAGE):$(TAG)
 
 docker-compose.ci.yml:
 	# Comment out any port forwarding
