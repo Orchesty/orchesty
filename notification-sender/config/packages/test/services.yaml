@@ -1,0 +1,25 @@
+services:
+    _defaults:
+        autowire: false
+        autoconfigure: false
+        public: '%service_visibility%'
+
+    hbpf.notification.handler.null.curl:
+        class: NotificationSenderTests\Integration\Model\Notification\Handler\Impl\NullCurlHandler
+        arguments:
+        tags: ['hbpf.notification.handler']
+
+    hbpf.notification.handler.null.email:
+        class: NotificationSenderTests\Integration\Model\Notification\Handler\Impl\NullEmailHandler
+        arguments:
+        tags: ['hbpf.notification.handler']
+
+    hbpf.notification.handler.null.rabbit:
+        class: NotificationSenderTests\Integration\Model\Notification\Handler\Impl\NullRabitHandler
+        arguments:
+        tags: ['hbpf.notification.handler']
+
+    hbpf.notification.handler.null.unknown:
+        class: NotificationSenderTests\Integration\Model\Notification\Handler\Impl\NullUnknownHandler
+        arguments:
+        tags: ['hbpf.notification.handler']
