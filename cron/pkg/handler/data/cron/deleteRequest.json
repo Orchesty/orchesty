@@ -1,0 +1,13 @@
+{
+    "http": "DELETE /crons",
+    "body": [
+        {
+            "topology": "Topology One",
+            "node": "Node One"
+        },
+        {
+            "topology": "Topology Two",
+            "node": "Node Two"
+        }
+    ]
+}

@@ -1,0 +1,150 @@
+openapi: 3.0.0
+
+info:
+    title: CRON
+    version: '1.0'
+
+servers:
+    -
+        url: http://127.0.0.49
+        description: Docker Localhost
+
+paths:
+    /status:
+        get:
+            tags: [ Status ]
+            responses:
+                '200':
+                    $ref: '#/components/responses/Status'
+
+    /crons:
+        get:
+            tags: [ CRONs ]
+            responses:
+                '200':
+                    $ref: '#/components/responses/Crons'
+                '500':
+                    $ref: '#/components/responses/500'
+
+        patch:
+            tags: [ CRONs ]
+            requestBody:
+                $ref: '#/components/requestBodies/Crons'
+            responses:
+                '200':
+                    $ref: '#/components/responses/Empty'
+                '400':
+                    $ref: '#/components/responses/400'
+                '500':
+                    $ref: '#/components/responses/500'
+
+        delete:
+            tags: [ CRONs ]
+            requestBody:
+                $ref: '#/components/requestBodies/Crons'
+            responses:
+                '200':
+                    $ref: '#/components/responses/Empty'
+                '500':
+                    $ref: '#/components/responses/500'
+
+components:
+    requestBodies:
+        Crons:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        type: array
+                        items:
+                            $ref: '#/components/schemas/Cron'
+
+    responses:
+        Empty:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        type: object
+
+        Status:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            database:
+                                type: boolean
+                                example: true
+                            scheduler:
+                                type: boolean
+                                example: true
+                            startingPoint:
+                                type: boolean
+                                example: true
+
+        Crons:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        type: array
+                        items:
+                            $ref: '#/components/schemas/Cron'
+
+        400:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Message'
+                    examples:
+                        Invalid JSON:
+                            value:
+                                message: 'Unexpected JSON error: Invalid JSON!'
+                        Invalid CRON:
+                            value:
+                                message: 'Unexpected CRON error: Invalid CRON!'
+
+        404:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Message'
+                    example:
+                        message: 'Unsupported CRON!'
+
+        500:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Message'
+                    example:
+                        message: 'Internal Server Error'
+
+    schemas:
+        Message:
+            type: object
+            properties:
+                message:
+                    type: string
+
+        Cron:
+            type: object
+            properties:
+                topology:
+                    type: string
+                    example: topology
+                node:
+                    type: string
+                    example: node
+                time:
+                    type: string
+                    example: '* * * * *'
+                parameters:
+                    type: string
+                    format: json
+                    example: '{}'
