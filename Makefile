@@ -1,6 +1,4 @@
-TAG?=dev
-IMAGE=dkr.hanaboso.net/pipes/pipes/bridge
-PUBLIC_IMAGE=orchesty/bridge
+IMAGE=orchesty/bridge
 
 DC=docker-compose
 DE=docker-compose exec -T app
@@ -24,8 +22,6 @@ Linux:
 build:
 	docker build -t ${IMAGE}:${TAG} .
 	docker push ${IMAGE}:${TAG}
-	docker tag ${IMAGE}:${TAG} $(PUBLIC_IMAGE):$(TAG)
-	docker push $(PUBLIC_IMAGE):$(TAG)
 
 docker-up-force: .env .lo0-up
 	$(DC) pull
