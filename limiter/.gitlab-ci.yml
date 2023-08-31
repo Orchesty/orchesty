@@ -1,0 +1,26 @@
+.base-limiter:
+  variables:
+    DIR: limiter
+    IMAGE: ${REGISTRY}/${IMAGE_PREFIX}limiter
+  rules:
+    - if: '$FORCE_PIPELINE =~ /ALL/ || $FORCE_PIPELINE =~ /limiter/'
+    - if: '$CI_COMMIT_BEFORE_SHA == $_BANNED_RUN_ALL_SHA'
+      when: never
+    - changes:
+      - ${DIR}/**/*
+
+limiter:build:
+  stage: build
+  needs: []
+  extends:
+    - .base-kaniko-build
+    - .base-limiter
+
+
+limiter:test:
+  stage: test
+  needs: []
+
+  extends:
+    - .base-go-test
+    - .base-limiter
