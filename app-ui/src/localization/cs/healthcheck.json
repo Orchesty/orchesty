@@ -1,0 +1,9 @@
+{
+  "list": {
+    "errorQueueItemTitle": "Chybějící konzumer pro frontu {name}",
+    "errorQueueItemText": "Zkuste restartovat docker kontejner {service} s bridží pro topologii {topology}.",
+    "errorServiceItem": "Služba {name} neběží",
+    "errorServiceItemText": "Zkuste restartovat docker kontejner {name}.",
+    "itWorks": "Vše funguje správně."
+  }
+}

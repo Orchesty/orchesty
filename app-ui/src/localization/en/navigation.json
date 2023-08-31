@@ -1,0 +1,18 @@
+{
+  "navigation": {
+    "home": "Dashboard",
+    "users": "Users",
+    "profile": "Profile",
+    "setting": "Settings",
+    "logs": "Logs",
+    "logout": "Log Out",
+    "topologies": "Topologies",
+    "notifications": "Notifications",
+    "scheduledTask": "Scheduled Tasks",
+    "healthCheck": "Health Check",
+    "userTask": "User Tasks",
+    "appStore": "Applications",
+    "implementations": "Workers",
+    "trash": "Trash"
+  }
+}

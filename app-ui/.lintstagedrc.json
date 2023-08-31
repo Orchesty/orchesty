@@ -1,0 +1,3 @@
+{
+  "./src/**/*.{js,ts,vue,json}": "npm run lint-and-format"
+}
