@@ -1,0 +1,112 @@
+{
+    "id": "60e8309331fc8466ca5e09d2-htt",
+    "topology_id": "60e8309331fc8466ca5e09d2",
+    "topology_name": "http",
+    "nodes": [
+        {
+            "id": "60e8309331fc8466ca5e09d3-sta",
+            "label": {
+                "id": "60e8309331fc8466ca5e09d3-sta",
+                "node_id": "60e8309331fc8466ca5e09d3",
+                "node_name": "Start"
+            },
+            "faucet": {},
+            "worker": {
+                "type": "worker.null",
+                "settings": {
+                    "publish_queue": {}
+                }
+            },
+            "next": [
+                "60e8309331fc8466ca5e09d4-htt"
+            ],
+            "debug": {
+                "port": 8008,
+                "host": "mb-60e8309331fc8466ca5e09d2",
+                "url": "http://mb-60e8309331fc8466ca5e09d2:8008/status"
+            }
+        },
+        {
+            "id": "60e8309331fc8466ca5e09d4-htt",
+            "label": {
+                "id": "60e8309331fc8466ca5e09d4-htt",
+                "node_id": "60e8309331fc8466ca5e09d4",
+                "node_name": "http"
+            },
+            "faucet": {},
+            "worker": {
+                "type": "worker.http_limited",
+                "settings": {
+                    "host": "node-sdk",
+                    "process_path": "/connector/http/action",
+                    "status_path": "/connector/http/action/test",
+                    "method": "POST",
+                    "port": 8080,
+                    "publish_queue": {}
+                }
+            },
+            "next": [
+                "60e83176025ba932d33181f4-htt"
+            ],
+            "debug": {
+                "port": 8009,
+                "host": "mb-60e8309331fc8466ca5e09d2",
+                "url": "http://mb-60e8309331fc8466ca5e09d2:8009/status"
+            }
+        },
+        {
+            "id": "60e83176025ba932d33181f4-htt",
+            "label": {
+                "id": "60e83176025ba932d33181f4-htt",
+                "node_id": "60e83176025ba932d33181f4",
+                "node_name": "http"
+            },
+            "faucet": {},
+            "worker": {
+                "type": "worker.batch",
+                "settings": {
+                    "host": "node-sdk",
+                    "process_path": "/batch/batch/action",
+                    "status_path": "/batch/batch/action/test",
+                    "method": "POST",
+                    "port": 8080,
+                    "publish_queue": {}
+                }
+            },
+            "next": [
+                "60e83176025ba932d33181f5-cus"
+            ],
+            "debug": {
+                "port": 8010,
+                "host": "mb-60e8309331fc8466ca5e09d2",
+                "url": "http://mb-60e8309331fc8466ca5e09d2:8010/status"
+            }
+        },
+        {
+            "id": "60e83176025ba932d33181f5-cus",
+            "label": {
+                "id": "60e83176025ba932d33181f5-cus",
+                "node_id": "60e83176025ba932d33181f5",
+                "node_name": "custom"
+            },
+            "faucet": {},
+            "worker": {
+                "type": "worker.http_limited",
+                "settings": {
+                    "host": "node-sdk",
+                    "process_path": "/custom_node/custom/process",
+                    "status_path": "/custom_node/custom/process/test",
+                    "method": "POST",
+                    "port": 8080,
+                    "publish_queue": {}
+                }
+            },
+            "next": [],
+            "debug": {
+                "port": 8011,
+                "host": "mb-60e8309331fc8466ca5e09d2",
+                "url": "http://mb-60e8309331fc8466ca5e09d2:8011/status"
+            }
+        }
+    ]
+}

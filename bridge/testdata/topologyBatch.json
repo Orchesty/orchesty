@@ -1,0 +1,68 @@
+{
+    "id": "topo",
+    "topology_id": "topo",
+    "topology_name": "test",
+    "nodes": [
+        {
+            "id": "node1",
+            "label": {
+                "id": "node1",
+                "node_id": "node1",
+                "node_name": "Node1"
+            },
+            "faucet": {},
+            "worker": {
+                "type": "worker.null",
+                "settings": {
+                    "publish_queue": {}
+                }
+            },
+            "next": [
+                "node2"
+            ],
+            "debug": {}
+        },
+        {
+            "id": "node2",
+            "label": {
+                "id": "node2",
+                "node_id": "node2",
+                "node_name": "Node2"
+            },
+            "faucet": {},
+            "worker": {
+                "type": "worker.batch",
+                "settings": {
+                    "publish_queue": {},
+                    "host": "http://httpbin.org",
+                    "port": 80,
+                    "process_path": "/anything"
+                }
+            },
+            "next": [
+                "node3"
+            ],
+            "debug": {}
+        },
+        {
+            "id": "node3",
+            "label": {
+                "id": "node3",
+                "node_id": "node3",
+                "node_name": "Node3"
+            },
+            "faucet": {},
+            "worker": {
+                "type": "worker.http",
+                "settings": {
+                    "publish_queue": {},
+                    "host": "http://httpbin.org",
+                    "port": 80,
+                    "process_path": "/anything"
+                }
+            },
+            "next": [],
+            "debug": {}
+        }
+    ]
+}
