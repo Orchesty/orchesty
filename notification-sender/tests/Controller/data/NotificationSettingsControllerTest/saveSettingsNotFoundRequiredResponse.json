@@ -1,0 +1,9 @@
+{
+    "http": 404,
+    "body": {
+        "status": "NOT_FOUND",
+        "error_code": 101,
+        "type": "Hanaboso\\NotificationSender\\Exception\\NotificationException",
+        "message": "Required settings 'host' for type 'email' is missing!"
+    }
+}
