@@ -1,0 +1,16 @@
+services:
+    _defaults:
+        autowire: false
+        autoconfigure: false
+        public: '%service_visibility%'
+
+    Hanaboso\NotificationSender\Controller\StatusController:
+        class: Hanaboso\NotificationSender\Controller\StatusController
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@rabbit_mq.connection_manager'
+
+    Hanaboso\NotificationSender\Controller\NotificationSettingsController:
+        class: Hanaboso\NotificationSender\Controller\NotificationSettingsController
+        arguments:
+            - '@notification.handler.settings'

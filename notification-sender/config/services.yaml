@@ -1,0 +1,21 @@
+parameters:
+    locale: 'en'
+    secret: '%env(APP_SECRET)%'
+    container:
+        dumper:
+            inline_factories: true
+
+    env(APP_SECRET): ASERGTNHMUUKUIP8616SEVSVN,.SWEWDAFAF@AWFAFAF156486651AFSEF4S3G15
+    env(MONGO_HOST): mongodb
+    env(MONGO_PORT): null
+    env(MONGO_DB): notification-sender
+    env(MONGO_USER): root
+    env(MONGO_PASSWORD): root
+    env(MONGO_CONNECTION): 'mongodb://%mongo_host%'
+    mongo_host: '%env(MONGO_HOST)%'
+    mongo_port: '%env(MONGO_PORT)%'
+    mongo_db: '%env(MONGO_DB)%'
+    mongo_user: '%env(MONGO_USER)%'
+    mongo_password: '%env(MONGO_PASSWORD)%'
+    mongo_connection: '%env(MONGO_CONNECTION)%'
+

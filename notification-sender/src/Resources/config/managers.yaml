@@ -1,0 +1,25 @@
+services:
+    _defaults:
+        autowire: false
+        autoconfigure: false
+        public: '%service_visibility%'
+
+    notification.manager:
+        class: Hanaboso\NotificationSender\Model\Notification\NotificationManager
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - !tagged hbpf.notification.handler
+            - '@notification.sender.curl'
+            - '@notification.sender.email'
+            - '@notification.sender.rabbit'
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]
+
+    notification.manager.settings:
+        class: Hanaboso\NotificationSender\Model\Notification\NotificationSettingsManager
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - !tagged hbpf.notification.handler
+            - '@notification.sender.curl'
+            - '@notification.sender.email'
+            - '@notification.sender.rabbit'

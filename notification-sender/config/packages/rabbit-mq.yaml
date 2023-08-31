@@ -1,0 +1,18 @@
+rabbit_mq:
+    logger: 'monolog.logger.commons'
+
+    connections:
+        default:
+            dsn: '%env(string:RABBITMQ_DSN)%'
+
+    queues:
+        pipes.notifications:
+            durable: true
+
+    publishers:
+        notification-rabbit:
+
+    consumers:
+        notification:
+            queue: pipes.notifications
+            callback: notification.callback.message

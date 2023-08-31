@@ -1,0 +1,5 @@
+{
+    "http": "GET /notifications/settings",
+    "headers": [],
+    "body": []
+}
