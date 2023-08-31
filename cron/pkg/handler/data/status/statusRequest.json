@@ -1,0 +1,4 @@
+{
+    "http": "GET /status",
+    "body": []
+}
