@@ -1,0 +1,43 @@
+{
+    "name": "orchesty/notification-sender",
+    "description": "NotificationSender for Orchesty",
+    "version": "1.3.0",
+    "license": "Elastic",
+    "require": {
+        "php": "^8.0",
+        "ext-ctype": "*",
+        "ext-iconv": "*",
+        "ext-intl": "*",
+        "ext-mbstring": "*",
+        "doctrine/mongodb-odm-bundle": "^4.5",
+        "hanaboso/commons-bundle": "^2.6",
+        "hanaboso/email-service-bundle": "^1.2",
+        "hanaboso/rabbit-mq-bundle": "^1.5",
+        "hanaboso/rest-bundle": "^1.1",
+        "hanaboso/utils": "^1.2"
+    },
+    "require-dev": {
+        "hanaboso/php-check-utils": "^1.4"
+    },
+    "replace": {
+        "ralouphie/getallheaders": "*",
+        "symfony/polyfill-ctype": "*",
+        "symfony/polyfill-iconv": "*",
+        "symfony/polyfill-intl-idn": "*",
+        "symfony/polyfill-mbstring": "*",
+        "symfony/polyfill-php72": "*",
+        "symfony/polyfill-php73": "*",
+        "symfony/polyfill-php74": "*",
+        "symfony/polyfill-php80": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Hanaboso\\NotificationSender\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "NotificationSenderTests\\": "tests"
+        }
+    }
+}
