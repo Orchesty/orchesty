@@ -27,7 +27,6 @@ build: .env
 
 docker-compose.ci.yml:
 	# Comment out any port
-# forwarding
 	sed -r 's/^(\s+ports:)$$/#\1/g; s/^(\s+- \$$\{DEV_IP\}.*)$$/#\1/g' docker-compose.yml > docker-compose.ci.yml
 
 # Docker

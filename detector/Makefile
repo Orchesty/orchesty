@@ -1,7 +1,6 @@
 DC=docker-compose
 DE=docker-compose exec -T app
-IMAGE=dkr.hanaboso.net/pipes/pipes/detector
-PUBLIC_IMAGE=orchesty/detector
+IMAGE=orchesty/detector
 
 .env:
 	sed -e 's/{DEV_UID}/$(shell id -u)/g' \
@@ -11,8 +10,6 @@ PUBLIC_IMAGE=orchesty/detector
 build:
 	docker build -t ${IMAGE}:${TAG} --pull .
 	docker push ${IMAGE}:${TAG}
-	docker tag ${IMAGE}:${TAG} $(PUBLIC_IMAGE):$(TAG)
-	docker push $(PUBLIC_IMAGE):$(TAG)
 
 docker-up-force: .env
 	$(DC) pull

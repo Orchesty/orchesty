@@ -16,3 +16,6 @@ _old_ci/*
 .pnpm-store
 
 public_repo
+
+docker-compose.ci.yml
+docker-compose.ci.yaml

@@ -1,33 +1,14 @@
-# Pipes Limiter
+## Orchesty Limiter
 
+The Orchesty Limiter controls the flow of messages in individual processes and prevents limits from being exceeded.
 
-## Popis služby
-Limiter je mikroservica, která počítá zda může být požadovaný request na cílový systém proveden, ještě předtím, než se skutečně provede tak, aby jsme zbytečně neatakovali limity, které jsou na daném vzdáleném systému nastaveny.
-Díky tomu můžeme předejít různým banům cizích systémů při překračování limitů.
+#### HOW TO RUN
 
-## Spuštění služby - development
-- `make ci-test`       - spustí containery, stáhne balíčky a spustí testy
-
-## Konfigurační volby
-- REDIS_HOST 
-    - Povinný: `ANO`
-    - Redus host
-    - Například: `redis`
-- REDIS_PORT 
-    - Povinný: `NE`
-    - Redus host
-    - Například: `6379`
-- REDIS_PASS 
-    - Povinný: `NE`
-    - Redus host
-    - Například: ``
-- REDIS_DB 
-    - Povinný: `NE`
-    - Redus host
-    - Například: `0`
-
-## Použité technologie
-- GO 1.13+
-
-## Závislosti
-- Redis
+```bash
+# Start docker containers
+make init-dev
+# Run tests
+make fasttest
+# Lint
+make lint
+```

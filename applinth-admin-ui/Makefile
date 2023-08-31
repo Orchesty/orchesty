@@ -1,3 +1,6 @@
+DC=docker-compose -f docker-compose.test.yml
+DCU=$(DC) exec -T ui
+
 IMAGE?=dkr.hanaboso.net/pipes/pipes/applinth-admin-ui
 
 ALIAS?=alias
@@ -12,7 +15,15 @@ Linux:
 .env:
 	sed -e "s/{DEV_UID}/$(shell if [ "$(shell uname)" = "Linux" ]; then echo $(shell id -u); else echo '1001'; fi)/g" \
 		-e "s/{DEV_GID}/$(shell if [ "$(shell uname)" = "Linux" ]; then echo $(shell id -g); else echo '1001'; fi)/g" \
-		.env.dist > .env; \
+		.env.dist > .env
+
+docker-compose.ci.yml:
+	# Comment out any port
+	sed -r 's/^(\s+ports:)$$/#\1/g; s/^(\s+- \$$\{DEV_IP\}.*)$$/#\1/g' docker-compose.test.yml > docker-compose.ci.yml
+
+init-test: .env
+	$(DC) up -d --force-recreate
+	$(DCU) pnpm install
 
 init: .env .lo0-up
 	docker-compose pull --ignore-pull-failures
@@ -32,4 +43,6 @@ generate-fixture-data: init
 	docker-compose exec console-api pnpm run create-fixture-data
 
 test:
-	pnpm run validate
+	$(DCU) pnpm run validate
+
+ci-test: init-test test

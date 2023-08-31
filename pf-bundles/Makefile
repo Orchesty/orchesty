@@ -1,6 +1,4 @@
-TAG?=dev
-IMAGE=dkr.hanaboso.net/pipes/pipes/pf-bundle:$(TAG)
-PUBLIC_IMAGE=orchesty/backend:$(TAG)
+IMAGE=orchesty/backend:$(TAG)
 
 DC=docker-compose
 DE=docker-compose exec -T app
@@ -26,8 +24,6 @@ build: .env
 	cp .dockerignore ../.dockerignore
 	docker build -f Dockerfile -t $(IMAGE) --pull ../. || rm ../.dockerignore
 	docker push $(IMAGE)
-	docker tag ${IMAGE} $(PUBLIC_IMAGE)
-	docker push $(PUBLIC_IMAGE)
 	rm ../.dockerignore || true
 
 # Docker

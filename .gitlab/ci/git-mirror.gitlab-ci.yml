@@ -22,10 +22,7 @@
     - git filter-branch -f --prune-empty --subdirectory-filter ${DIR} -- -q --all
     - git remote add dest ${MIRROR_GIT_REPOSITORY_BASE_URL}/${MIRROR_REPOSITORY_NAME}
     - git push dest master -f
-    - git push dest dev -f
     - "[[ ${CI_COMMIT_REF_NAME} == 'master' ]] && git push dest ${CI_COMMIT_REF_NAME}:refs/tags/v$(cat ../_tmp_git_full/${DIR}/composer.json | grep version | grep -oE '[[:digit:]]+\\.[[:digit:]]+\\.[[:digit:]]+') || true"
-    - "[[ ${CI_COMMIT_REF_NAME} == 'dev' ]] && git push dest ${CI_COMMIT_REF_NAME}:refs/tags/v$(cat ../_tmp_git_full/${DIR}/composer.json | grep version | grep -oE '[[:digit:]]+\\.[[:digit:]]+\\.[[:digit:]]+') || true"
-
     - "curl -X POST -F token=${MIRROR_TRIGGER_TOKEN} -F ref=master -F variables\\[REPO\\]=${MIRROR_TRIGGER_REPO_VAR} ${MIRROR_TRIGGER_URL}"
 
   tags:

@@ -16,3 +16,10 @@ applinth-admin-ui:build:
   extends:
     - .base-kaniko-build
     - .base-applinth-admin-ui
+
+applinth-admin-ui:test:
+  stage: test
+  needs: []
+  extends:
+    - .base-go-test # todo: don't use go-test
+    - .base-applinth-admin-ui

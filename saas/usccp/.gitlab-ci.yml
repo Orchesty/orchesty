@@ -1,6 +1,6 @@
 .base-cloud-usccp:
   variables:
-    DIR: saas/console-api
+    DIR: saas/usccp
     IMAGE: ${REGISTRY}/${IMAGE_PREFIX}cloud-usccp
 
   rules:
@@ -17,7 +17,7 @@ cloud-usccp:test:
 
   extends:
     - .base-go-test
-    - .base-worker-api
+    - .base-cloud-usccp
 
 cloud-usccp:build:
   stage: build

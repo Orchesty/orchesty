@@ -1,11 +1,7 @@
-.PHONY: docker-build docker-push go-test
-
 DC=docker-compose
 DE=docker-compose exec -T app
 
-TAG := dev
-DOCKER_REGISTRY := dkr.hanaboso.net/pipes/pipes/limiter
-PUBLIC_REGISTRY := orchesty/limiter
+DOCKER_REGISTRY := orchesty/limiter
 
 init: .env docker-up-force
 
@@ -26,8 +22,6 @@ lint:
 build:
 	docker build -t $(DOCKER_REGISTRY):$(TAG) .
 	docker push $(DOCKER_REGISTRY):$(TAG)
-	docker tag ${DOCKER_REGISTRY}:${TAG} $(PUBLIC_REGISTRY):$(TAG)
-	docker push $(PUBLIC_REGISTRY):$(TAG)
 
 docker-compose.ci.yml:
 	# Comment out any port forwarding

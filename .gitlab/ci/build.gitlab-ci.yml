@@ -10,7 +10,6 @@
     - apk add --no-cache make
     - cd ${DIR}
 
-
 .base-kaniko-build:
   needs:
     - collect-tags
@@ -18,9 +17,7 @@
   variables:
     DIR: "PROVIDE-WHEN-EXTENDING"
     IMAGE: "PROVIDE-WHEN-EXTENDING"
-
-    # todo: determine default image
-    KANIKO_IMAGE: ${REGISTRY}/kaniko-alpine:latest
+    KANIKO_IMAGE: ${REGISTRY}/kaniko-alpine:master
 
   image:
     name: ${KANIKO_IMAGE}
@@ -35,10 +32,7 @@
     - env | egrep "^(TAG_|IMAGE)"
 
     - mkdir -p /kaniko/.docker
-    - echo "{\"auths\":{" > /kaniko/.docker/config.json
-    - echo "\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}," >> /kaniko/.docker/config.json
-    - echo "\"$RELEASE_REGISTRY_HOST\":{\"username\":\"$RELEASE_REGISTRY_USERNAME\",\"password\":\"$RELEASE_REGISTRY_PASSWORD\"}" >> /kaniko/.docker/config.json
-    - echo "}}" >> /kaniko/.docker/config.json
+    - echo "{\"auths\":{\"${CI_REGISTRY}\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"},\"${RELEASE_REGISTRY_HOST}\":{\"auth\":\"$(printf "%s:%s" ${RELEASE_REGISTRY_USERNAME} "${RELEASE_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
 
   # feel free to override
   script:

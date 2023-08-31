@@ -22,6 +22,9 @@ services:
             CLOUD_CONTROLLER_URI: 'http://cloud_controller'
             CLOUD_BRIDGE: 'false'
         command: sleep infinity
+        depends_on:
+            mongo:
+                condition: service_healthy
 
     mongo:
         image: mongo:latest
@@ -29,6 +32,12 @@ services:
             - ${DEV_IP}:27017:27017
         volumes:
             - mongo:/data/db
+        healthcheck:
+            test: echo 'db.runCommand("ping").ok' | mongosh mongo:27017/test --quiet
+            interval: 10s
+            timeout: 10s
+            retries: 5
+            start_period: 40s
 
 volumes:
     mongo: { }

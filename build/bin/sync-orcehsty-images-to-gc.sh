@@ -16,6 +16,7 @@ IMAGES="\
 	pf-bridge \
 	starting-point \
 	topology-api \
+	worker-api \
 "
 
 TOKEN=$(gcloud auth print-access-token)
