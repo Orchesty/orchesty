@@ -1,0 +1,29 @@
+{
+  "appStore": {
+    "installed": "Nainstalované",
+    "available": "Dostupné",
+    "authorized":  "Autorizované",
+    "unauthorized":  "Neautorizované",
+    "app": {
+      "detail": "Detail",
+      "install": "Instalovat",
+      "uninstall": "Odinstalovat"
+    },
+    "detail": {
+      "appStore": "Aplikace",
+      "details": "Detaily",
+      "authorization": "Autorizace",
+      "authorize": "Autorizovat",
+      "uninstall": "Odinstalovat",
+      "webhooks": "Webhooky"
+    },
+    "form": {
+      "clientID": "Client ID",
+      "clientID_name": "client ID",
+      "clientSecret": "Client secret",
+      "clientSecret_name": "client secret",
+      "password": "Heslo",
+      "password_name": "heslo"
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "notifications": {
+    "event": "Event",
+    "set": "State",
+    "service": "Service",
+    "edit": "Edit",
+    "modal": {
+      "title": "Edit {0}"
+    },
+    "curl": "CURL Sender",
+    "email": "Email Sender",
+    "rabbit": "AMQP Sender",
+    "headers": "Add headers",
+    "serviceOk": "Service is working",
+    "serviceNOk": "Service is not working"
+  }
+}
