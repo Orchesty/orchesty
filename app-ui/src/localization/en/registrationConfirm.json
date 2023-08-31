@@ -1,0 +1,21 @@
+{
+  "registrationConfirm": {
+    "notValidToken": "This token is no longer valid",
+    "form": {
+      "email": {
+        "label": "Email"
+      },
+      "password": {
+        "name": "password",
+        "label": "Password"
+      },
+      "confirm": {
+        "name": "repeat password",
+        "label": "Repeat Password"
+      },
+      "register": {
+        "name": "Register"
+      }
+    }
+  }
+}

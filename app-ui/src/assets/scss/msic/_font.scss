@@ -1,0 +1,22 @@
+$body-font-family: 'Montserrat', sans-serif;
+$heading-font-family: 'Montserrat', sans-serif;
+
+@font-face {
+  font-family: Montserrat;
+  font-style: normal;
+}
+
+.truncate {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width:1px;
+}
+
+.v-data-table > .v-data-table__wrapper > table > tbody > tr > td, .v-data-table > .v-data-table__wrapper > table > thead > tr > td, .v-data-table > .v-data-table__wrapper > table > tfoot > tr > td {
+  font-size: .95em;
+}
+.v-data-table > .v-data-table__wrapper > table > tbody > tr > th, .v-data-table > .v-data-table__wrapper > table > thead > tr > th, .v-data-table > .v-data-table__wrapper > table > tfoot > tr > th {
+  font-size: .85em;
+
+}
