@@ -1,0 +1,17 @@
+# Exclude IDE
+.idea
+.vscode
+
+# Exclude env
+.env
+
+# Exclude dependencies
+node_modules
+
+# Exclude build
+dist
+
+.pnpm-store
+
+# Exclude anything generated
+generated/
