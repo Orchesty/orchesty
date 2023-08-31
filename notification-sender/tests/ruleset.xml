@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<ruleset name="HANABOSO_NOTIFICATION_SENDER_CODESTYLE">
+    <rule ref="./vendor/hanaboso/php-check-utils/ruleset.xml"/>
+    <rule ref="SlevomatCodingStandard.Files.TypeNameMatchesFileName">
+        <properties>
+            <property name="rootNamespaces" type="array">
+                <element key="src" value="Hanaboso\NotificationSender"/>
+                <element key="tests" value="NotificationSenderTests"/>
+            </property>
+        </properties>
+    </rule>
+</ruleset>
