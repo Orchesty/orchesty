@@ -16,6 +16,9 @@ parameters:
 		-
 			message: '#Access to an undefined property#'
 			path: ../tests/*
+		-
+			message: '#expects array, array|ArrayAccess given#'
+			path: ../tests/*
 	ergebnis:
 		classesAllowedToBeExtended:
 			- Hanaboso\PipesFramework\HbPFUsageStatsBundle\Manager\SenderAbstract
