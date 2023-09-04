@@ -8,6 +8,9 @@ export async function startWorker() {
       if (req.url.pathname.startsWith("/assets/")) {
         return
       }
+      if (req.url.pathname.startsWith("/whitelabel/")) {
+        return
+      }
       print.warning()
     },
   })

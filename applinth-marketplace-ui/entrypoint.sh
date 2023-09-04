@@ -2,7 +2,7 @@
 
 if [ -n "$BRANDING_PACKAGE_URL" ]; then
   echo "Using branding package: ${BRANDING_PACKAGE_URL}"
-  curl $BRANDING_PACKAGE_URL | lz4cat | tar xv -C /var/www/html/
+  curl $BRANDING_PACKAGE_URL | lz4cat | tar xv -C /var/www/html/whitelabel
 fi
 
 if [[ -z "$FRONTEND_URL" || -z "$BACKEND_URL" || -z "$AUTH_BACKLINK" ]]; then

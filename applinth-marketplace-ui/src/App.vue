@@ -8,7 +8,7 @@
           alt="Applinth Logo"
           contain
           min-width="100"
-          src="./assets/svg/logo.svg"
+          :src="loadLogo()"
           width="100"
         />
       </router-link>
@@ -99,6 +99,27 @@ export default {
     onAppChanged(name) {
       this.currentAppName = name
     },
+
+    loadLogo() {
+      try {
+        return require("@/whitelabel/logo.svg")
+      } catch (e) {
+        return require("@/assets/svg/logo.svg")
+      }
+    },
+  },
+  created() {
+    try {
+      require("@/whitelabel/style.css")
+    } catch (e) {
+      // ignore exception
+    }
+
+    try {
+      require("@/whitelabel/font.css")
+    } catch (e) {
+      // ignore exception
+    }
   },
 }
 </script>

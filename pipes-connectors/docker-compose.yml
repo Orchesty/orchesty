@@ -18,6 +18,8 @@ services:
             - COMPOSER_HOME=${HOME}/dev/.composer
             - WORKER_API=https://test.com
             - ORCHESTY_API_KEY=ThisIsNotRealKEy
+            - BACKEND_DSN=https://test.com
+            - STARTING_POINT_DSN=https://starting-point
 
     fakes3:
         image: olalond3/fakes3

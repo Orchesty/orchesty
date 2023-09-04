@@ -12,9 +12,6 @@ framework:
         strict_requirements: ~
 
 parameters:
-    startingPointHost: 'https://starting-point'
-    backendHost: 'https://127.0.0.11'
-
     # Base params
     locale: en
 

@@ -21,11 +21,11 @@ docker-compose.ci.yml:
 	# Comment out any port
 	sed -r 's/^(\s+ports:)$$/#\1/g; s/^(\s+- \$$\{DEV_IP\}.*)$$/#\1/g' docker-compose.test.yml > docker-compose.ci.yml
 
-init-test: .env
+init-test: .env .lo0-up
 	$(DC) up -d --force-recreate
 	$(DCU) pnpm install
 
-init: .env
+init: .env .lo0-up
 	docker-compose up -d --force-recreate
 	docker-compose exec app bin/console service:install node-sdk node-sdk:8080
 	docker-compose exec app bin/console api-token:create --key "$(shell grep 'ORCHESTY_API_KEY' .env | cut -d "=" -f2)"

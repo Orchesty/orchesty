@@ -13,6 +13,9 @@ parameters:
             -
                 message: '#Class Hanaboso\\Applinth\\Authenticator\\Document\\MarketPlaceRestrictedToken is neither abstract nor final.#'
                 path: ../src/Authenticator/Document/MarketPlaceRestrictedToken.php
+            -
+                message: '#expects array, array|ArrayAccess given#'
+                path: ../tests/*
     ergebnis:
         classesAllowedToBeExtended:
             - ApplinthTests\ControllerTestCaseAbstract

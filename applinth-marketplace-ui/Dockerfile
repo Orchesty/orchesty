@@ -32,6 +32,8 @@ COPY nginx.conf /etc/nginx/nginx.conf
 
 COPY entrypoint.sh /
 
+RUN rm -rf /var/www/html/mockServiceWorker.js
+
 ENTRYPOINT ["/entrypoint.sh"]
 
 CMD nginx -g 'daemon off;'

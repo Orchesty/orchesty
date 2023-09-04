@@ -3,6 +3,9 @@ node_modules
 /dist
 .pnpm-store
 
+src/whitelabel
+!src/whitelabel/.gitkeep
+
 
 # local env files
 .env
