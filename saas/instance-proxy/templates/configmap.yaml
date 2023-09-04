@@ -202,6 +202,24 @@ data:
         use_backend pdf-cs-wsrxg1vqtw if pdf-cs-instance-wsrxg1vqtw
 
 
+        # instance-wcb90jldr1
+
+        acl api-instance-wcb90jldr1 hdr_beg(host) api-wcb90jldr1.eu1.cloud.orchesty.io
+        use_backend api-wcb90jldr1 if api-instance-wcb90jldr1
+
+        acl ui-instance-wcb90jldr1 hdr_beg(host) ui-wcb90jldr1.eu1.cloud.orchesty.io
+        use_backend ui-wcb90jldr1 if ui-instance-wcb90jldr1
+
+        acl start-instance-wcb90jldr1 hdr_beg(host) start-wcb90jldr1.eu1.cloud.orchesty.io
+        use_backend start-wcb90jldr1 if start-instance-wcb90jldr1
+
+        acl applinth-instance-wcb90jldr1 hdr_beg(host) applinth-wcb90jldr1.eu1.cloud.orchesty.io
+        use_backend applinth-wcb90jldr1 if applinth-instance-wcb90jldr1
+
+        acl shoptet-cs-instance-wcb90jldr1 hdr_beg(host) shoptet-cs-wcb90jldr1.eu1.cloud.orchesty.io
+        use_backend shoptet-cs-wcb90jldr1 if shoptet-cs-instance-wcb90jldr1
+
+
     ### backends ###
 
 
@@ -386,6 +404,29 @@ data:
     backend pdf-cs-wsrxg1vqtw
         mode http
         server svc pdf-service.instance-wsrxg1vqtw.svc.cluster.local:80
+
+
+    # instance-wcb90jldr1
+
+    backend api-wcb90jldr1
+        mode http
+        server svc backend.instance-wcb90jldr1.svc.cluster.local:80
+
+    backend ui-wcb90jldr1
+        mode http
+        server svc frontend.instance-wcb90jldr1.svc.cluster.local:80
+
+    backend start-wcb90jldr1
+        mode http
+        server svc starting-point.instance-wcb90jldr1.svc.cluster.local:8080
+
+    backend applinth-wcb90jldr1
+        mode http
+        server svc applinth-marketplace-ui.instance-wcb90jldr1.svc.cluster.local:80
+
+    backend shoptet-cs-wcb90jldr1
+        mode http
+        server svc shoptet-plugin.instance-wcb90jldr1.svc.cluster.local:80
 
 
     # ping backend
