@@ -2049,16 +2049,16 @@
         },
         {
             "name": "hanaboso/user-bundle",
-            "version": "1.7.0",
+            "version": "1.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/user-bundle.git",
-                "reference": "b5379daca7ce196ce44f4f25af3d037e7cc8f546"
+                "reference": "411425e22c1ca5f8bff3cafa84e190f5c41c1823"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/user-bundle/zipball/b5379daca7ce196ce44f4f25af3d037e7cc8f546",
-                "reference": "b5379daca7ce196ce44f4f25af3d037e7cc8f546",
+                "url": "https://api.github.com/repos/hanaboso/user-bundle/zipball/411425e22c1ca5f8bff3cafa84e190f5c41c1823",
+                "reference": "411425e22c1ca5f8bff3cafa84e190f5c41c1823",
                 "shasum": ""
             },
             "require": {
@@ -2066,21 +2066,21 @@
                 "hanaboso/email-service-bundle": "^1.3",
                 "hanaboso/rest-bundle": "^1.2",
                 "php": "^8.2",
-                "symfony/yaml": "^v6.2",
-                "web-token/jwt-checker": "^3.1",
-                "web-token/jwt-core": "^3.1",
-                "web-token/jwt-key-mgmt": "^3.1",
-                "web-token/jwt-signature": "^3.1",
-                "web-token/jwt-signature-algorithm-hmac": "^3.1"
+                "symfony/yaml": "^v6.3",
+                "web-token/jwt-checker": "^3.2",
+                "web-token/jwt-core": "^3.2",
+                "web-token/jwt-key-mgmt": "^3.2",
+                "web-token/jwt-signature": "^3.2",
+                "web-token/jwt-signature-algorithm-hmac": "^3.2"
             },
             "require-dev": {
-                "doctrine/doctrine-bundle": "^2.9",
-                "doctrine/mongodb-odm-bundle": "^4.5",
-                "doctrine/orm": "^2.15",
+                "doctrine/doctrine-bundle": "^2.10",
+                "doctrine/mongodb-odm-bundle": "^4.6",
+                "doctrine/orm": "^2.16",
                 "ext-apcu": "*",
                 "hanaboso/php-check-utils": "^1.5",
                 "symfony/monolog-bundle": "^v3.8",
-                "symfony/security-bundle": "^v6.2"
+                "symfony/security-bundle": "^v6.3"
             },
             "suggest": {
                 "doctrine/doctrine-bundle": "Install me, if you using MySQL.",
@@ -2098,9 +2098,9 @@
             ],
             "description": "Hanaboso - user-bundle",
             "support": {
-                "source": "https://github.com/hanaboso/user-bundle/tree/1.7.0"
+                "source": "https://github.com/hanaboso/user-bundle/tree/1.7.1"
             },
-            "time": "2023-05-04T11:10:39+00:00"
+            "time": "2023-09-06T11:16:46+00:00"
         },
         {
             "name": "hanaboso/utils",
@@ -9054,16 +9054,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "10.3.2",
+            "version": "10.3.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "0dafb1175c366dd274eaa9a625e914451506bcd1"
+                "reference": "241ed4dd0db1c096984e62d414c4e1ac8d5dbff4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/0dafb1175c366dd274eaa9a625e914451506bcd1",
-                "reference": "0dafb1175c366dd274eaa9a625e914451506bcd1",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/241ed4dd0db1c096984e62d414c4e1ac8d5dbff4",
+                "reference": "241ed4dd0db1c096984e62d414c4e1ac8d5dbff4",
                 "shasum": ""
             },
             "require": {
@@ -9135,7 +9135,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/10.3.2"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/10.3.3"
             },
             "funding": [
                 {
@@ -9151,7 +9151,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-08-15T05:34:23+00:00"
+            "time": "2023-09-05T04:34:51+00:00"
         },
         {
             "name": "predis/predis",
