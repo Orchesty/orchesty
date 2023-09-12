@@ -6,6 +6,7 @@ INSTANCE="instance-${INSTANCE_ID}"
 MONGODB_PWD=$(pwgen -1s 16)
 RABBITMQ_PWD=$(pwgen -1s 16)
 ORCHESTY_PWD=$(pwgen -1s 16)
+ORCHESTY_USR="pipes@hanaboso.com"
 
 if ! [ -x "$(command -v jq)" ]; then
   echo 'Error: jq is not installed.' >&2
@@ -53,7 +54,11 @@ kubectl -n cloud-control get secret hanaboso -ojson | jq 'del(.metadata.namespac
 echo
 echo Secrets:
 echo
-echo UI: https://ui-$INSTANCE_ID.eu1.cloud.orchesty.io / pipes@hanaboso.com / $ORCHESTY_PWD
+echo UI: https://ui-$INSTANCE_ID.eu1.cloud.orchesty.io / $ORCHESTY_USR / $ORCHESTY_PWD
 echo mongodb DSN: mongodb://$INSTANCE:$MONGODB_PWD@mongos.default.svc.cluster.local/$INSTANCE?authSource=admin
 echo mongodb metrics DSN: mongodb://$INSTANCE:$MONGODB_PWD@mongos.default.svc.cluster.local/$INSTANCE-metrics?authSource=admin
 echo rabbitmq dsn: amqp://$INSTANCE:$RABBITMQ_PWD@rabbitmq-proxy.default.svc.cluster.local:5672/$INSTANCE
+echo
+echo Usefull Commands:
+echo
+echo kubectl -n $INSTANCE exec -ti <backend-pod> bin/console u:c $ORCHESTY_USR $ORCHESTY_PWD

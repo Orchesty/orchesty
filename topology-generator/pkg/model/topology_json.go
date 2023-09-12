@@ -35,7 +35,7 @@ type TopologyBridgeWorkerSettingsJSON struct {
 	ParserSettings []string                              `json:"parser_settings,omitempty"`
 	// Bridge
 	Timeout        int `json:"timeout"`
-	RabbitPrefetch int `json:"rabbitPrefetch"`
+	RabbitPrefetch int `json:"prefetch"`
 }
 
 // TopologyBridgeWorkerJSON TopologyBridgeWorkerJSON
