@@ -32,6 +32,12 @@ spec:
               value: "{{ .Values.global.frontend_url }}"
             - name: AUTH_BACKLINK
               value: "{{ .Values.global.applinthMarketplaceUI.auth_backlink }}"
+
+{{- if .Values.global.applinthMarketplaceUI.branding_package_url }}
+            - name: BRANDING_PACKAGE_URL
+              value: "{{ .Values.global.applinthMarketplaceUI.branding_package_url }}"
+{{- else }}
+
           resources:
 {{ toYaml .Values.global.applinthMarketplaceUI.resources | indent 12 }}
 

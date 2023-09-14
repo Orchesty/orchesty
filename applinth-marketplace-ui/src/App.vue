@@ -45,6 +45,29 @@
         <router-view @appChanged="onAppChanged" />
       </v-container>
     </v-main>
+    <v-footer absolute inset app width="auto" class="pb-1">
+      <v-container>
+        <v-row justify="center">
+          <v-col
+            lg="2"
+            md="3"
+            cols="12"
+            align-self="center"
+            class="text--secondary"
+          >
+            Powered by
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://applinth.io"
+              class="text--secondary"
+            >
+              Applinth
+            </a>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-footer>
   </v-app>
 </template>
 
@@ -101,25 +124,8 @@ export default {
     },
 
     loadLogo() {
-      try {
-        return require("@/whitelabel/logo.svg")
-      } catch (e) {
-        return require("@/assets/svg/logo.svg")
-      }
+      return require("@/assets/svg/logo.svg")
     },
-  },
-  created() {
-    try {
-      require("@/whitelabel/style.css")
-    } catch (e) {
-      // ignore exception
-    }
-
-    try {
-      require("@/whitelabel/font.css")
-    } catch (e) {
-      // ignore exception
-    }
   },
 }
 </script>

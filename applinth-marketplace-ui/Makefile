@@ -29,6 +29,12 @@ init: .env .lo0-up
 	docker-compose up -d --force-recreate
 	docker-compose exec app bin/console service:install node-sdk node-sdk:8080
 	docker-compose exec app bin/console api-token:create --key "$(shell grep 'ORCHESTY_API_KEY' .env | cut -d "=" -f2)"
+	docker-compose cp ./exampleApplinthLogsData.json mongo:/tmp
+	docker-compose cp ./exampleApplinthTrashData.json mongo:/tmp
+	docker-compose cp ./exampleApplinthProcessData.json mongo:/tmp
+	docker-compose exec mongo mongoimport --db pipes --collection Logs --file /tmp/exampleApplinthLogsData.json --jsonArray
+	docker-compose exec mongo mongoimport --db pipes --collection UserTask --file /tmp/exampleApplinthTrashData.json --jsonArray
+	docker-compose exec mongo mongoimport --db pipes --collection MultiCounter --file /tmp/exampleApplinthProcessData.json --jsonArray
 
 rebuild:
 	docker build -t ${IMAGE}:${TAG} --pull .

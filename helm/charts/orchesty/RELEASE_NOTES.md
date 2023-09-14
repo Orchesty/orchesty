@@ -1,5 +1,11 @@
 # Release Notes
 
+## 2.1.4
+
+### Changes
+
+- MarketplaceUI: added support for Custom branding
+
 ## 2.1.3
 
 ### Changes

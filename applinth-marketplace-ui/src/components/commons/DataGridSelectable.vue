@@ -202,18 +202,6 @@ export default {
 
 <style lang="scss" scoped>
 .custom-table ::v-deep {
-  .v-data-table-header {
-    background: var(--v-primary-base) !important;
-
-    th {
-      color: var(--v-white-base) !important;
-
-      .theme--light.v-icon {
-        color: var(--v-white-base) !important;
-      }
-    }
-  }
-
   .selected-row {
     background: var(--v-gray-base) !important;
   }

@@ -6,11 +6,13 @@
       :grid-settings="GRIDS.LOGS"
       :sort-by="['timestamp']"
       :sort-desc="[true]"
-      item-key="timestamp"
+      item-key="id"
       show-expand
     >
       <template #expand="{ items }">
-        <span class="error--text">{{ items.item.message }}</span>
+        <span :class="`${setColor(items.item.severity)}--text`">{{
+          items.item.message
+        }}</span>
       </template>
       <template #default="{ items, expanded }">
         <td :style="expanded ? 'border-bottom: none' : ''">
@@ -129,7 +131,7 @@ export default {
       if (props.toLowerCase() === "warning") {
         return "warning"
       }
-      if (props.toLowerCase() === "ok") {
+      if (props.toLowerCase() === "ok" || props.toLowerCase() === "info") {
         return "info"
       }
       return "black"

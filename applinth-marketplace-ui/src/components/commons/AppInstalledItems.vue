@@ -44,6 +44,7 @@
                 }"
                 color="primary"
                 custom-class="mb-2"
+                :min-width="120"
               />
               <uninstall-app-modal
                 v-if="app.isInstallable"
@@ -51,6 +52,7 @@
                 :is-uninstalling="isUninstalling"
                 :app-name="app.name"
                 :on-click="() => uninstall(app.key)"
+                :min-width="120"
               />
             </v-col>
           </v-row>

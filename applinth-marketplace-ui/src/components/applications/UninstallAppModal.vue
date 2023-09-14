@@ -10,6 +10,7 @@
         :button-title="$t('button.uninstall')"
         :attrs="attrs"
         :on="on"
+        :min-width="minWidth"
       />
     </template>
     <template #content>
@@ -60,6 +61,10 @@ export default {
     disabled: {
       type: Boolean,
       default: false,
+    },
+    minWidth: {
+      type: Number,
+      default: 110,
     },
   },
   data() {

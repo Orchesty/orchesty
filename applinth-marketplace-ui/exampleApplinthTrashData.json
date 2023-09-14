@@ -1,0 +1,33 @@
+[
+    {
+        "correlationId": "ddb91645-6e69-44a3-a4c0-79b79d1abc2f",
+        "created": "2023-09-13T14:37:30.961Z",
+        "message": {
+            "body": "{\"foo\":\"bar\"}",
+            "headers": {
+                "limiter-key": "",
+                "process-id": "c482bd17-1869-48b0-83c5-5ec9ce49b6c4",
+                "process-started": 1694615850857,
+                "applications": "foo",
+                "parent-id": "",
+                "previous-node-id": "643fea2d1fc32741850361b4",
+                "user": "endUser",
+                "worker-followers": "[{\"id\":\"643fea2d1fc32741850361ae\",\"name\":\"terminate-gateway\"}]",
+                "result-message": "result status [400], message: Error occurred: ApplicationInstall with user [bc5ef770-a7d4-49f9-a3d6-1158aed69db9] and name [foo] has not been found!",
+                "correlation-id": "ddb91645-6e69-44a3-a4c0-79b79d1abc2f",
+                "node-id": "643fea2d1fc32741850361ac",
+                "topology-id": "643fea2d1fc32741850361aa",
+                "content-type": "application/json"
+            }
+        },
+        "nodeId": "643fea2d1fc32741850361ac",
+        "nodeName": "mapper",
+        "returnExchange": "node.643fea2d1fc32741850361ac.hx",
+        "returnRoutingKey": "1",
+        "topologyId": "643fea2d1fc32741850361aa",
+        "topologyName": "test-topo-name-1",
+        "type": "trash",
+        "updated": "2023-09-13T14:37:30.961Z",
+        "user": "endUser"
+    }
+]

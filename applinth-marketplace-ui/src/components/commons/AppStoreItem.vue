@@ -1,6 +1,6 @@
 <template>
   <v-col xl="2" lg="4" md="6" sm="6" cols="12">
-    <v-card rounded="lg" elevation="2" min-height="205">
+    <v-card rounded="lg" elevation="2" class="app-card-list">
       <v-container fluid>
         <v-row dense>
           <v-col cols="6" sm="5">
@@ -97,5 +97,9 @@ export default {
   -webkit-line-clamp: 3;
   display: -webkit-box;
   overflow: hidden;
+}
+
+.app-card-list {
+  min-height: 205px;
 }
 </style>
