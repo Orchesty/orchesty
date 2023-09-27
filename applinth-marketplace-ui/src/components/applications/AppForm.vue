@@ -22,7 +22,7 @@
       >
         <template v-if="form.key === 'info'">
           <!-- eslint-disable-next-line vue/no-v-html -->
-          <div class="mt-2" v-html="form.info" />
+          <div class="mt-2 ml-2" v-html="form.info" />
         </template>
         <template v-else>
           <v-row v-if="form.description.length > 0" dense class="mt-2">
