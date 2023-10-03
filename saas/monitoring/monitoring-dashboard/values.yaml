@@ -11,6 +11,9 @@ influxdb2:
         existingSecret: monitoring-dashboard-influxdb
 
 grafana:
+    persistence:
+        enabled: true
+
     service:
         type: NodePort
         nodePort: 30050
