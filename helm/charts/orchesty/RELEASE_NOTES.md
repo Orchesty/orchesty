@@ -5,6 +5,7 @@
 ### Changes
 
 - MarketplaceUI: added support for Custom branding
+- TopologyAPI: added support for extra specs
 
 ## 2.1.3
 
