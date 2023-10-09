@@ -54,8 +54,20 @@ spec:
             - name: APP_PASS_{{ $name }}
               {{- $def | toYaml | nindent 14}}
 {{- end }}
+{{- with .Values.global.topologyApi.topologiesExtraSpec }}
+            - name: BRIDGE_PODS_ADDITIONAL_SPEC
+              value: /config-volume/topologies-extra-spec.yaml
+{{- end }}
+          volumeMounts:
+            - name: config-volume
+              mountPath: /config-volume
           resources:
 {{ toYaml .Values.global.topologyApi.resources | indent 12 }}
+
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ include "pipes.fullname" (dict "suffix" $componentName "root" .) }}
 
 {{- with .Values.global.nodeSelector }}
       nodeSelector:
