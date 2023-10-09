@@ -170,6 +170,9 @@ global:
     topologiesExtraEnv: {}
 #     FOO:
 #       value: bar
+    topologiesExtraSpec: {}
+#     nodeSelector:
+#       purpose: bridges
 
   worker:
     hostPathMounts: []

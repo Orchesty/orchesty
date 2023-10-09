@@ -36,7 +36,7 @@ spec:
 {{- if .Values.global.applinthMarketplaceUI.branding_package_url }}
             - name: BRANDING_PACKAGE_URL
               value: "{{ .Values.global.applinthMarketplaceUI.branding_package_url }}"
-{{- else }}
+{{- end }}
 
           resources:
 {{ toYaml .Values.global.applinthMarketplaceUI.resources | indent 12 }}
