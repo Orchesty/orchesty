@@ -116,6 +116,7 @@ func (c *MultiCounter) finishProcess(process model.Process) {
 	apiToken, err := c.mongo.GetApiToken("orchesty", []string{"topology:run"})
 
 	if err != nil {
+		config.Log.Warn("Unable to fetch orchesty ApiKey to process topology result", err)
 		return
 	}
 
