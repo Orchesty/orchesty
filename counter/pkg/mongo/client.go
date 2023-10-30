@@ -5,6 +5,7 @@ import (
 	"github.com/hanaboso/pipes/counter/pkg/config"
 	"github.com/rs/zerolog/log"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -105,4 +106,9 @@ func NewMongo() MongoDb {
 
 func (m *MongoDb) Close() {
 	m.connection.Disconnect()
+}
+
+func getId(id string) primitive.ObjectID {
+	oid, _ := primitive.ObjectIDFromHex(id)
+	return oid
 }
