@@ -122,7 +122,8 @@ func (c *MultiCounter) finishProcess(process model.Process) {
 
 	apiKey := apiToken.Key
 
-	sendFinishedProcess(process, errs, apiKey)
+	topology, _ := c.mongo.GetTopology(process.TopologyId)
+	sendFinishedProcess(process, errs, apiKey, topology)
 	c.sendMetrics(process)
 }
 
