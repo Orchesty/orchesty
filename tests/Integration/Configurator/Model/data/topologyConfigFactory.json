@@ -46,7 +46,7 @@
             "worker": {
                 "type": "worker.batch",
                 "settings": {
-                    "host": "127.0.0.2",
+                    "host": "{{host}}",
                     "process_path": "/batch/example3/action",
                     "status_path": "/batch/example3/action/test",
                     "method": "POST",
@@ -64,7 +64,7 @@
             "worker": {
                 "type": "worker.http",
                 "settings": {
-                    "host": "127.0.0.2",
+                    "host": "{{host}}",
                     "process_path": "\/connector\/example4\/action",
                     "status_path": "\/connector\/example4\/action\/test",
                     "method": "POST",

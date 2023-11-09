@@ -52,7 +52,10 @@ final class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
 
         $sdk = (new Sdk())->setName('name')->setHeaders(['key'=> 'value'])->setUrl('someSdkHost');
         $this->pfd($sdk);
-        $sdk2 = (new Sdk())->setName('name2')->setHeaders(['key'=> 'value'])->setUrl('127.0.0.2');
+        $sdk2 = (new Sdk())
+            ->setName('name2')
+            ->setHeaders(['key'=> 'value'])
+            ->setUrl(getenv('BACKEND_URL') ?: '');
         $this->pfd($sdk2);
 
         $embedNode = new EmbedNode();
@@ -71,6 +74,7 @@ final class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
 
         $configFactory = self::getContainer()->get('hbpf.topology.configurator');
         $result        = $configFactory->create($nodes);
+        $result        = str_replace(getenv('BACKEND_URL') ?: '', '{{host}}', $result);
         $arr           = Json::decode($result);
 
         self::assertArrayNotHasKey(TopologyConfigFactory::WORKER, $arr);
@@ -146,10 +150,10 @@ final class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
         $configFactory = self::getContainer()->get('hbpf.topology.configurator');
 
         $result = $this->invokeMethod($configFactory, 'getHost', [TypeEnum::CONNECTOR->value, NULL]);
-        self::assertEquals('127.0.0.2', $result);
+        self::assertEquals(getenv('BACKEND_URL'), $result);
 
         $result = $this->invokeMethod($configFactory, 'getHost', [TypeEnum::BATCH->value, NULL]);
-        self::assertEquals('127.0.0.2', $result);
+        self::assertEquals(getenv('BACKEND_URL'), $result);
 
         $result = $this->invokeMethod($configFactory, 'getHost', [TypeEnum::USER->value, NULL]);
         self::assertEquals('', $result);
