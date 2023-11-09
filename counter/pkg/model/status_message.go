@@ -7,12 +7,15 @@ type StatusMessage struct {
 }
 
 type StatusMessageData struct {
-	TopologyId    string `bson:"topologyId" json:"topologyId"`
-	ResultMessage string `bson:"resultMessage" json:"resultMessage"`
-	CorrelationId string `bson:"correlationId" json:"correlationId"`
-	ProcessId     string `bson:"processId" json:"processId"`
-	User          string `bson:"user" json:"user"`
-	TimestampMs   int64  `bson:"timestampMs" json:"timestampMs"`
+	TopologyId      string `bson:"topologyId" json:"topologyId"`
+	TopologyName    string `bson:"topologyName" json:"topologyName"`
+	TopologyVersion int    `bson:"topologyVersion" json:"topologyVersion"`
+	Applications    string `bson:"applications" json:"applications"`
+	ResultMessage   string `bson:"resultMessage" json:"resultMessage"`
+	CorrelationId   string `bson:"correlationId" json:"correlationId"`
+	ProcessId       string `bson:"processId" json:"processId"`
+	User            string `bson:"user" json:"user"`
+	TimestampMs     int64  `bson:"timestampMs" json:"timestampMs"`
 }
 
 type StatusMessageContent struct {

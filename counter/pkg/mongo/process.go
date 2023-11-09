@@ -16,7 +16,7 @@ func (m *MongoDb) GetApiToken(user string, scopes []string) (*model.ApiToken, er
 	var apiToken model.ApiToken
 	err := m.connection.Database.
 		Collection(config.MongoDb.ApiTokenCollection).
-		FindOne(ctx, map[string]interface{}{"user": user, "scopes": scopes}).
+		FindOne(ctx, map[string]interface{}{"user": user, "scopes": bson.M{"$in": scopes}}).
 		Decode(&apiToken)
 
 	if err != nil {

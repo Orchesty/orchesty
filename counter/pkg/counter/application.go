@@ -100,7 +100,7 @@ func (c *MultiCounter) commit(msg amqp.Delivery) {
 		c.wg.Wait()
 		finished := c.mongo.UpdateProcesses(c.processes, c.subProcesses, c.finishes, c.errors)
 		for _, process := range finished {
-			go c.finishProcess(process)
+			go c.finishProcess(process, msg.Headers)
 		}
 		c.clear()
 		_ = msg.Ack(true)
@@ -111,17 +111,19 @@ func (c *MultiCounter) commit(msg amqp.Delivery) {
 	}
 }
 
-func (c *MultiCounter) finishProcess(process model.Process) {
+func (c *MultiCounter) finishProcess(process model.Process, headers amqp.Table) {
 	errs, _ := c.mongo.FetchErrorMessages(process.Id)
 	apiToken, err := c.mongo.GetApiToken("orchesty", []string{"topology:run"})
 
 	if err != nil {
+		config.Log.Warn("Unable to fetch orchesty ApiKey to process topology result", err)
 		return
 	}
 
 	apiKey := apiToken.Key
 
-	sendFinishedProcess(process, errs, apiKey)
+	topology, _ := c.mongo.GetTopology(process.TopologyId)
+	sendFinishedProcess(process, errs, apiKey, headers, topology)
 	c.sendMetrics(process)
 }
 

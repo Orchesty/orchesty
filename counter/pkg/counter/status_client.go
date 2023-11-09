@@ -8,6 +8,7 @@ import (
 	"github.com/hanaboso/pipes/counter/pkg/config"
 	"github.com/hanaboso/pipes/counter/pkg/enum"
 	"github.com/hanaboso/pipes/counter/pkg/model"
+	"github.com/rabbitmq/amqp091-go"
 	"github.com/rs/zerolog/log"
 	"net/http"
 	"time"
@@ -20,7 +21,7 @@ const (
 
 var client = http.Client{}
 
-func sendFinishedProcess(process model.Process, errors []model.ErrorMessage, apiKey string) {
+func sendFinishedProcess(process model.Process, errors []model.ErrorMessage, apiKey string, headers amqp091.Table, topology model.Topology) {
 	if process.SystemEvent {
 		return
 	}
@@ -46,12 +47,15 @@ func sendFinishedProcess(process model.Process, errors []model.ErrorMessage, api
 	message := model.StatusMessage{
 		Type: messageType,
 		Data: model.StatusMessageData{
-			TopologyId:    process.TopologyId,
-			ResultMessage: "",
-			CorrelationId: process.Id,
-			ProcessId:     process.Id,
-			User:          process.User,
-			TimestampMs:   finished.UnixMilli(),
+			TopologyId:      process.TopologyId,
+			TopologyName:    topology.Name,
+			TopologyVersion: topology.Version,
+			Applications:    getHeader(headers, string(enum.Header_Applications)),
+			ResultMessage:   "",
+			CorrelationId:   process.Id,
+			ProcessId:       process.Id,
+			User:            process.User,
+			TimestampMs:     finished.UnixMilli(),
 		},
 		Contents: contents,
 	}
@@ -85,4 +89,10 @@ func sendFinishedProcess(process model.Process, errors []model.ErrorMessage, api
 	}
 
 	_ = response.Body.Close()
+}
+
+func getHeader(headers amqp091.Table, key string) string {
+	val, _ := headers[key]
+
+	return fmt.Sprint(val)
 }
