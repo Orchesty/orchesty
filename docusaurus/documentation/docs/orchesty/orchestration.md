@@ -1,3 +1,5 @@
+import Image from '/src/components/ThemedImg';
+
 # Orchestration
 
 The orchestration layer allows modeling data flow traffic with an emphasis on data performance and security.

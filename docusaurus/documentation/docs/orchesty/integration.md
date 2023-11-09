@@ -1,3 +1,5 @@
+import Image from '/src/components/ThemedImg';
+
 # Integration
 
 Orchesty offers two basic principles for integration of services that can complement each other.
