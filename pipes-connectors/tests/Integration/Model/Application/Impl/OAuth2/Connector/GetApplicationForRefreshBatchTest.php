@@ -2,17 +2,14 @@
 
 namespace HbPFConnectorsTests\Integration\Model\Application\Impl\OAuth2\Connector;
 
-use DateTime;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Response;
 use Hanaboso\CommonsBundle\Process\BatchProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\OAuth2\Connector\GetApplicationForRefreshBatchConnector;
-use Hanaboso\Utils\Date\DateTimeUtils;
 use Hanaboso\Utils\Exception\DateTimeException;
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
-use Mockery;
 use PipesPhpSdkTests\MockServer\Mock;
 use PipesPhpSdkTests\MockServer\MockServer;
 
@@ -31,7 +28,7 @@ final class GetApplicationForRefreshBatchTest extends KernelTestCaseAbstract
      */
     public function testProcessAction(): void
     {
-        self::markTestSkipped('Mockery fails');
+        self::markTestSkipped('Mock Date properly');
 
         $mockServer = new MockServer();
         self::getContainer()->set('hbpf.worker-api', $mockServer);
@@ -48,10 +45,6 @@ final class GetApplicationForRefreshBatchTest extends KernelTestCaseAbstract
                 ),
             ),
         );
-
-        $dateTimeUtilsMock = Mockery::mock(sprintf('alias:%s', DateTimeUtils::class));
-        /** @phpstan-ignore-next-line */
-        $dateTimeUtilsMock->shouldReceive('getUtcDateTime')->andReturn((new DateTime())->setTimestamp(1_677_137_981));
 
         /** @var GetApplicationForRefreshBatchConnector $conn */
         $conn = self::getContainer()->get('hbpf.batch.batch-get_application_for_refresh');

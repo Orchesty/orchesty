@@ -2,16 +2,16 @@
     "name": "orchesty/applinth",
     "description": "Orchesty - applinth - Backend",
     "license": "Elastic-2.0",
-    "version": "1.1.1",
+    "version": "1.1.2",
     "require": {
         "doctrine/annotations": "^1.14",
         "orchesty/backend": "^3.0",
-        "web-token/jwt-bundle": "^3.1",
-        "web-token/jwt-encryption": "^3.1",
-        "web-token/jwt-encryption-algorithm-aesgcm": "^3.1",
-        "web-token/jwt-encryption-algorithm-ecdh-es": "^3.1",
-        "web-token/jwt-encryption-algorithm-rsa": "^3.1",
-        "web-token/jwt-signature-algorithm-eddsa": "^3.1"
+        "web-token/jwt-bundle": "^3.2",
+        "web-token/jwt-encryption": "^3.2",
+        "web-token/jwt-encryption-algorithm-aesgcm": "^3.2",
+        "web-token/jwt-encryption-algorithm-ecdh-es": "^3.2",
+        "web-token/jwt-encryption-algorithm-rsa": "^3.2",
+        "web-token/jwt-signature-algorithm-eddsa": "^3.2"
     },
     "require-dev": {
         "hanaboso/php-check-utils": "^1.5"

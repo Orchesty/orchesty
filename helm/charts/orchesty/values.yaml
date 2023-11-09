@@ -1,4 +1,5 @@
 global:
+  orchestyVersion: 2.0.1
   frontend_url: https://pipes.example.com
   backend_url: https://backend.pipes.example.com
   starting_point_url: http://starting-point.pipes.example.com
@@ -18,19 +19,19 @@ global:
 
   images:
     applinth-marketplace-ui: ""
-    backend: backend:2.0.0
-    frontend: frontend:2.0.0
-    cron-api: cron:2.0.0
+    backend: backend
+    frontend: frontend
+    cron-api: cron
 
-    bridge: bridge:2.0.0
-    counter: counter:2.0.0
+    bridge: bridge
+    counter: counter
 
-    limiter: limiter:2.0.0
-    starting-point: starting-point:2.0.0
-    topology-api: topology-api:2.0.0
-    fluentd: fluentd:2.0.0
-    detector: detector:2.0.0
-    worker-api: worker-api:2.0.0
+    limiter: limiter
+    starting-point: starting-point
+    topology-api: topology-api
+    fluentd: fluentd
+    detector: detector
+    worker-api: worker-api
 
   # Default global node selector
   nodeSelector: {}
@@ -57,132 +58,135 @@ global:
     service:
       type: none
     auth_backlink: not-set
+    branding_package_url: ""
     serviceAnnotations: {}
+    resources:
+      requests:
+        memory: 8Mi
+        cpu: 1m
+      limits:
+        memory: 12Mi
+        cpu: 10m
 
   backend:
     service:
       type: none
     alpha_instance_id: not-set
     checkInfinityLoop: true
-    # values for backward compat, will be reset
     resources:
       requests:
-        memory: 96Mi
-        cpu: 25m
+        memory: 80Mi
+        cpu: 1m
       limits:
-        memory: 144Mi
-        cpu: 200m
+        memory: 96Mi
+        cpu: 50m
 
   cronApi:
-    # values for backward compat, will be reset
     resources:
       requests:
-        memory: 32Mi
-        cpu: 10m
+        memory: 20Mi
+        cpu: 1m
       limits:
-        memory: 64Mi
+        memory: 32Mi
         cpu: 50m
 
   frontend:
     service:
       type: none
     serviceAnnotations: {}
-    # values for backward compat, will be reset
     resources:
       requests:
-        memory: 16Mi
-        cpu: 25m
+        memory: 8Mi
+        cpu: 1m
       limits:
-        memory: 64Mi
-        cpu: 50m
+        memory: 12Mi
+        cpu: 10m
 
   limiter:
-    # values for backward compat, will be reset
     resources:
       requests:
-        memory: 64Mi
-        cpu: 100m
+        memory: 20Mi
+        cpu: 10m
       limits:
-        memory: 128Mi
+        memory: 32Mi
         cpu: 500m
 
   fluentd:
-    # values for backward compat, will be reset
     resources:
       requests:
-        memory: 128Mi
-        cpu: 50m
-      limits:
-        memory: 512Mi
-        cpu: 200m
-
-  multiCounter:
-    # values for backward compat, will be reset
-    resources:
-      requests:
-        memory: 64Mi
+        memory: 100Mi
         cpu: 10m
       limits:
-        memory: 96Mi
-        cpu: 200m
+        memory: 128Mi
+        cpu: 150m
+
+  multiCounter:
+    resources:
+      requests:
+        memory: 20Mi
+        cpu: 5m
+      limits:
+        memory: 32Mi
+        cpu: 500m
 
   startingPoint:
     service:
       type: none
     serviceAnnotations: {}
-    # values for backward compat, will be reset
     resources:
       requests:
-        memory: 64Mi
+        memory: 20Mi
         cpu: 10m
       limits:
-        memory: 128Mi
+        memory: 32Mi
         cpu: 500m
 
   detector:
     manageServiceAccount: true
     manageRBAC: true
-    # values for backward compat, will be reset
     resources:
       requests:
-        memory: 64Mi
-        cpu: 50m
+        memory: 55Mi
+        cpu: 10m
       limits:
-        memory: 128Mi
-        cpu: 200m
+        memory: 64Mi
+        cpu: 100m
 
   topologyApi:
     manageServiceAccount: true
     manageRBAC: true
-    # values for backward compat, will be reset
     resources:
       requests:
-        memory: 64Mi
-        cpu: 10m
+        memory: 50Mi
+        cpu: 5m
       limits:
-        memory: 128Mi
-        cpu: 200m
+        memory: 64Mi
+        cpu: 100m
     topologiesResources:
-      defaultRequestCpu: 100m
-      defaultRequestMemory: 128Mi
-      defaultLimitCpu: 1000m
-      defaultLimitMemory: 512Mi
+      defaultRequestCpu: 10m
+      defaultRequestMemory: 50Mi
+      defaultLimitCpu: 200m
+      defaultLimitMemory: 128Mi
     topologiesExtraEnv: {}
 #     FOO:
 #       value: bar
     topologiesExtraSpec: {}
-#     nodeSelector:
-#       purpose: bridges
+#      nodeSelector:
+#        bridgepool: "true"
+#      tolerations:
+#        -   effect: NoSchedule
+#            key: bridgepool
+#            operator: Equal
+#            value: "true"
 
   worker:
     hostPathMounts: []
     nodeSelector: {}
     tolerations: []
-    # values for backward compat, will be reset
     resources:
       requests:
-        memory: 256Mi
-        cpu: 250m
+        memory: 128Mi
+        cpu: 50m
       limits:
         memory: 512Mi
         cpu: 1001m
@@ -197,14 +201,13 @@ global:
 
   workerApi:
     serviceAnnotations: {}
-    # values for backward compat, will be reset
     resources:
       requests:
-        memory: 64Mi
-        cpu: 50m
+        memory: 50Mi
+        cpu: 5m
       limits:
-        memory: 256Mi
-        cpu: 200m
+        memory: 64Mi
+        cpu: 250m
 
 nameOverride: ""
 fullnameOverride: ""

@@ -29,7 +29,7 @@ final class AuthorizationControllerTest extends ControllerTestCaseAbstract
                 'access_token' => 'abcd',
                 'expires_in' => '123',
             ],
-            requestHeadersReplacements:[self::$AUTHORIZATION => $this->getJweToken()],
+            requestHeadersReplacements: [self::$AUTHORIZATION => $this->getJweToken()],
         );
     }
 

@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.1
+- minor bug and security fixes
+
 ## 2.0.0
 
 ### Environment variable changes
@@ -35,11 +38,13 @@ For more concrete settings, you can provide an object containing **success**, **
 **stopAndFailed** (sends message into trash as failed) ranges.
 
 Example ranges:
+```
   - '200-300' - left inclusive
   - [200, 201] - specific codes
   - '>=400' - allowed prefixes '>=', '<=', '>', '<'
   - 200 - single number
   - [200, '>=400'] - mix of different types in an array
+```
 
 Sdk provides a set of pre-defined settings:  
 **repeatOnErrorRanges** (repeats on any error )  

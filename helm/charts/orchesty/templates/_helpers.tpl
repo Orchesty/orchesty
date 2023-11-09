@@ -9,7 +9,8 @@ imagePullSecrets:
 
 {{- define "pipes.imageFullname" -}}
 {{- $defaultImage := get .root.Values.global.images .image -}}
-{{- $defaultImageFull := printf "%s/%s/%s" .root.Values.global.imageRegistry.server .root.Values.global.imageRegistry.path $defaultImage -}}
+{{- $version := .root.Values.global.orchestyVersion -}}
+{{- $defaultImageFull := printf "%s/%s/%s:%s" .root.Values.global.imageRegistry.server .root.Values.global.imageRegistry.path $defaultImage $version -}}
 {{- default $defaultImageFull (get .root.Values.global.imageOverrides .image) -}}
 {{- end -}}
 

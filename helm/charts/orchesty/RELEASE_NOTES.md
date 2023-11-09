@@ -1,5 +1,11 @@
 # Release Notes
 
+## 2.1.5
+
+### Changes
+
+- Helm: added global orchestyVersion variable
+
 ## 2.1.4
 
 ### Changes
