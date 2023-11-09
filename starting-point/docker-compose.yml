@@ -35,9 +35,6 @@ services:
         volumes:
             - rabbitmq:/var/lib/rabbitmq
 
-    influxdb:
-        image: dkr.hanaboso.net/pipes/pipes/influxdb:dev
-
     swagger-ui:
         image: swaggerapi/swagger-ui
         ports:

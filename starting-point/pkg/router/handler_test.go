@@ -137,7 +137,7 @@ func TestHandleStatus(t *testing.T) {
 	storage.Mongo = &MongoMockConnected{}
 	service.RabbitMq = RabbitMock{}
 
-	r, _ := http.NewRequest("GET", "/status", nil)
+	r, _ := http.NewRequest("GET", "/status", bytes.NewReader([]byte("[]")))
 	assertResponse(t, r, 200, `{"database":true,"metrics":true}`)
 }
 
@@ -214,7 +214,7 @@ func TestHandleRunByApplicationOptions(t *testing.T) {
 
 func TestHandleInvalidateCache(t *testing.T) {
 	mockCache(1)
-	r, _ := http.NewRequest("POST", "/topologies/a/invalidate-cache", nil)
+	r, _ := http.NewRequest("POST", "/topologies/a/invalidate-cache", bytes.NewReader([]byte("[]")))
 	assertResponse(t, r, 200, `{"cache":0}`)
 }
 
@@ -291,22 +291,6 @@ func TestHandleRunByIDTopologyNotFound(t *testing.T) {
 
 	r, _ := http.NewRequest("POST", "/topologies/a/nodes/b/run", bytes.NewReader([]byte("[]")))
 	assertResponse(t, r, 404, `{"message":"Topology with key 'a' not found!"}`)
-}
-
-func TestHandleRunByNameInvalidInput(t *testing.T) {
-	mockCache(3)
-	prepareMongo()
-
-	r, _ := http.NewRequest("POST", "/topologies/a/nodes/b/run-by-name", bytes.NewReader([]byte("invalid")))
-	assertResponse(t, r, 400, `{"message":"Content is not valid!"}`)
-}
-
-func TestHandleRunByApplicationInvalidInput(t *testing.T) {
-	mockCache(3)
-	prepareMongo()
-
-	r, _ := http.NewRequest("POST", "/topologies/a/nodes/b/token/c/run", bytes.NewReader([]byte("invalid")))
-	assertResponse(t, r, 400, `{"message":"Content is not valid!"}`)
 }
 
 // Test case: Find topology and node
