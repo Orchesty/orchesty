@@ -8,6 +8,13 @@ RABBITMQ_PWD=$(pwgen -1s 16)
 ORCHESTY_PWD=$(pwgen -1s 16)
 ORCHESTY_USR="pipes@hanaboso.com"
 
+BACKEND_JWT_KEY=$(pwgen -1s 64)
+CRYPT_SECRET=$(pwgen -1s 64)
+ORCHESTY_API_KEY=$(pwgen -1s 64)
+
+BKND_CONSOLE="kubectl -n ${INSTANCE} exec <backend-pod> -- sh -c \"bin/console"
+BKND_CONSOLE_END="\""
+
 if ! [ -x "$(command -v jq)" ]; then
   echo 'Error: jq is not installed.' >&2
   exit 1
@@ -49,7 +56,7 @@ $RABBITMQCTL set_permissions --vhost $INSTANCE $INSTANCE "'.*'" "'.*'" "'.*'"
 echo "Creating Kubernetes namespace..."
 kubectl create ns $INSTANCE
 kubectl label ns $INSTANCE oc-instance-displayname="$NAME"
-kubectl -n cloud-control get secret hanaboso -ojson | jq 'del(.metadata.namespace)' | kubectl apply -f -
+kubectl -n cloud-control get secret hanaboso -ojson | jq 'del(.metadata.namespace)' | kubectl apply -f - n $INSTANCE
 
 echo
 echo Secrets:
@@ -59,6 +66,17 @@ echo mongodb DSN: mongodb://$INSTANCE:$MONGODB_PWD@mongos.default.svc.cluster.lo
 echo mongodb metrics DSN: mongodb://$INSTANCE:$MONGODB_PWD@mongos.default.svc.cluster.local/$INSTANCE-metrics?authSource=admin
 echo rabbitmq dsn: amqp://$INSTANCE:$RABBITMQ_PWD@rabbitmq-proxy.default.svc.cluster.local:5672/$INSTANCE
 echo
-echo Usefull Commands:
+echo backend_jwt_key: $BACKEND_JWT_KEY
+echo crypt_secret: $CRYPT_SECRET
+echo orchesty_api_key: $ORCHESTY_API_KEY
 echo
-echo kubectl -n $INSTANCE exec -ti <backend-pod> bin/console u:c $ORCHESTY_USR $ORCHESTY_PWD
+echo Run Commands:
+echo
+echo Create default db scheme: ${BKND_CONSOLE} doctrine:mongodb:schema:update --dm default${BKND_CONSOLE_END}
+echo Create metrics db scheme: ${BKND_CONSOLE} doctrine:mongodb:schema:update --dm metrics${BKND_CONSOLE_END}
+echo Create db indexes: ${BKND_CONSOLE} mongodb:index:update${BKND_CONSOLE_END}
+echo Register worker: ${BKND_CONSOLE} service:install nodejs-sdk worker:80${BKND_CONSOLE_END}
+echo Create api_key: ${BKND_CONSOLE} api-token:create --key ${ORCHESTY_API_KEY}${BKND_CONSOLE_END}
+echo Create orchesty user: ${BKND_CONSOLE} u:c ${ORCHESTY_USR} ${ORCHESTY_PWD}${BKND_CONSOLE_END}
+echo
+echo \(optional\) Create system topologies: ${BKND_CONSOLE} topology:install -c -u --force worker:80${BKND_CONSOLE_END}

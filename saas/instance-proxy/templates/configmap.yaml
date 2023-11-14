@@ -220,6 +220,21 @@ data:
         use_backend shoptet-cs-wcb90jldr1 if shoptet-cs-instance-wcb90jldr1
 
 
+        # instance-dc2i2gqrfo
+
+        acl api-instance-dc2i2gqrfo hdr_beg(host) api-dc2i2gqrfo.eu1.cloud.orchesty.io
+        use_backend api-dc2i2gqrfo if api-instance-dc2i2gqrfo
+
+        acl ui-instance-dc2i2gqrfo hdr_beg(host) ui-dc2i2gqrfo.eu1.cloud.orchesty.io
+        use_backend ui-dc2i2gqrfo if ui-instance-dc2i2gqrfo
+
+        acl start-instance-dc2i2gqrfo hdr_beg(host) start-dc2i2gqrfo.eu1.cloud.orchesty.io
+        use_backend start-dc2i2gqrfo if start-instance-dc2i2gqrfo
+
+        acl applinth-instance-dc2i2gqrfo hdr_beg(host) applinth-dc2i2gqrfo.eu1.cloud.orchesty.io
+        use_backend applinth-dc2i2gqrfo if applinth-instance-dc2i2gqrfo
+
+
     ### backends ###
 
 
@@ -428,6 +443,24 @@ data:
         mode http
         server svc shoptet-plugin.instance-wcb90jldr1.svc.cluster.local:80
 
+
+    # instance-dc2i2gqrfo
+
+    backend api-dc2i2gqrfo
+    mode http
+    server svc backend.instance-dc2i2gqrfo.svc.cluster.local:80
+
+    backend ui-dc2i2gqrfo
+    mode http
+    server svc frontend.instance-dc2i2gqrfo.svc.cluster.local:80
+
+    backend start-dc2i2gqrfo
+    mode http
+    server svc starting-point.instance-dc2i2gqrfo.svc.cluster.local:8080
+
+    backend applinth-dc2i2gqrfo
+    mode http
+    server svc applinth-marketplace-ui.instance-dc2i2gqrfo.svc.cluster.local:80
 
     # ping backend
 
