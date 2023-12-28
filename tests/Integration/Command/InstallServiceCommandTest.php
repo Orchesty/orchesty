@@ -5,6 +5,7 @@ namespace PipesFrameworkTests\Integration\Command;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
  * Class InstallServiceCommandTest
@@ -21,7 +22,9 @@ final class InstallServiceCommandTest extends DatabaseTestCaseAbstract
      */
     public function testExecute(): void
     {
-        $application = new Application(self::$kernel);
+        /** @var KernelInterface $kernel */
+        $kernel      = self::$kernel;
+        $application = new Application($kernel);
         $command     = $application->get('service:install');
 
         $commandTester = new CommandTester($command);

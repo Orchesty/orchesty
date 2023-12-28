@@ -29,52 +29,47 @@ final class UserController extends AbstractController
     }
 
     /**
-     * @Route("/user/login", methods={"POST", "OPTIONS"})
-     *
      * @return Response
      */
+    #[Route('/user/login', methods: ['POST'])]
     public function loginAction(): Response
     {
         return $this->forward('Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::loginUserAction');
     }
 
     /**
-     * @Route("/user/logout", methods={"POST", "OPTIONS"})
-     *
      * @return Response
      */
+    #[Route('/user/logout', methods: ['POST'])]
     public function logoutAction(): Response
     {
         return $this->forward('Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::logoutAction');
     }
 
     /**
-     * @Route("/user/check_logged", methods={"GET", "OPTIONS"})
-     *
      * @return Response
      */
+    #[Route('/user/check_logged', methods: ['GET'])]
     public function loggedUserAction(): Response
     {
         return $this->forward('Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::loggedUserAction');
     }
 
     /**
-     * @Route("/user/register", methods={"POST", "OPTIONS"})
-     *
      * @return Response
      */
+    #[Route('/user/register', methods: ['POST'])]
     public function registerAction(): Response
     {
         return $this->forward('Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::registerAction');
     }
 
     /**
-     * @Route("/user/{token}/activate", requirements={"token": "\w+"}, methods={"POST", "OPTIONS"})
-     *
      * @param string $token
      *
      * @return Response
      */
+    #[Route('/user/{token}/activate', requirements: ['token' => '\w+'], methods: ['POST'])]
     public function activateAction(string $token): Response
     {
         return $this->forward(
@@ -84,12 +79,11 @@ final class UserController extends AbstractController
     }
 
     /**
-     * @Route("/user/{token}/verify", requirements={"token": "\w+"}, methods={"POST", "OPTIONS"})
-     *
      * @param string $token
      *
      * @return Response
      */
+    #[Route('/user/{token}/verify', requirements: ['token' => '\w+'], methods: ['POST'])]
     public function verifyAction(string $token): Response
     {
         return $this->forward(
@@ -99,12 +93,11 @@ final class UserController extends AbstractController
     }
 
     /**
-     * @Route("/user/{token}/set_password", requirements={"token": "\w+"}, methods={"POST", "OPTIONS"})
-     *
      * @param string $token
      *
      * @return Response
      */
+    #[Route('/user/{token}/set_password', requirements: ['token' => '\w+'], methods: ['POST'])]
     public function setPasswordAction(string $token): Response
     {
         return $this->forward(
@@ -114,12 +107,11 @@ final class UserController extends AbstractController
     }
 
     /**
-     * @Route("/user/change_password", methods={"POST", "OPTIONS"})
-     *
      * @param Request $request
      *
      * @return Response
      */
+    #[Route('/user/change_password', methods: ['POST'])]
     public function changePasswordAction(Request $request): Response
     {
         if($request->request->get('old_password') !== NULL) {
@@ -132,22 +124,20 @@ final class UserController extends AbstractController
     }
 
     /**
-     * @Route("/user/reset_password", methods={"POST", "OPTIONS"})
-     *
      * @return Response
      */
+    #[Route('/user/reset_password', methods: ['POST'])]
     public function resetPasswordAction(): Response
     {
         return $this->forward('Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::resetPasswordAction');
     }
 
     /**
-     * @Route("/user/{id}/delete", methods={"DELETE", "OPTIONS"})
-     *
      * @param string $id
      *
      * @return Response
      */
+    #[Route('/user/{id}/delete', methods: ['DELETE'])]
     public function deleteAction(string $id): Response
     {
         return $this->forward(
@@ -157,12 +147,11 @@ final class UserController extends AbstractController
     }
 
     /**
-     * @Route("/user/list", methods={"POST", "OPTIONS"})
-     *
      * @param Request $request
      *
      * @return Response
      */
+    #[Route('/user/list', methods: ['POST'])]
     public function getAllUsersAction(Request $request): Response
     {
         return $this->forward(
@@ -173,12 +162,11 @@ final class UserController extends AbstractController
     }
 
     /**
-     * @Route("/user/{id}/saveSettings", methods={"POST", "OPTIONS"})
-     *
      * @param string $id
      *
      * @return Response
      */
+    #[Route('/user/{id}/saveSettings', methods: ['POST'])]
     public function saveUserSettingsAction(string $id): Response
     {
         return $this->forward(
@@ -188,12 +176,11 @@ final class UserController extends AbstractController
     }
 
     /**
-     * @Route("/user/{id}", methods={"GET", "OPTIONS"})
-     *
      * @param string $id
      *
      * @return Response
      */
+    #[Route('/user/{id}', methods: ['GET'])]
     public function getUserAction(string $id): Response
     {
         return $this->forward(

@@ -9,9 +9,8 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  * Class ProcessesMetricsFields
  *
  * @package Hanaboso\PipesFramework\Metrics\Document
- *
- * @ODM\EmbeddedDocument()
  */
+#[ODM\EmbeddedDocument]
 class ProcessesMetricsFields
 {
 
@@ -19,23 +18,20 @@ class ProcessesMetricsFields
 
     /**
      * @var bool
-     *
-     * @ODM\Field(type="bool", name="result")
      */
+    #[ODM\Field(name: 'result', type: 'bool')]
     private bool $success;
 
     /**
      * @var int
-     *
-     * @ODM\Field(type="int", name="duration")
      */
+    #[ODM\Field(name: 'duration', type: 'int')]
     private int $duration;
 
     /**
      * @var DateTime
-     *
-     * @ODM\Field(type="date")
      */
+    #[ODM\Field(type: 'date')]
     private DateTime $created;
 
     /**

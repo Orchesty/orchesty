@@ -9,9 +9,8 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  * Class BridgesMetricsFields
  *
  * @package Hanaboso\PipesFramework\Metrics\Document
- *
- * @ODM\EmbeddedDocument()
  */
+#[ODM\EmbeddedDocument]
 class BridgesMetricsFields
 {
 
@@ -19,30 +18,26 @@ class BridgesMetricsFields
 
     /**
      * @var bool
-     *
-     * @ODM\Field(type="bool", name="result_success")
      */
+    #[ODM\Field(name: 'result_success', type: 'bool')]
     private bool $success;
 
     /**
      * @var int
-     *
-     * @ODM\Field(type="int", name="waiting_duration")
      */
+    #[ODM\Field(name: 'waiting_duration', type: 'int')]
     private int $waitingDuration;
 
     /**
      * @var int
-     *
-     * @ODM\Field(type="int", name="total_duration")
      */
+    #[ODM\Field(name: 'total_duration', type: 'int')]
     private int $totalDuration;
 
     /**
      * @var DateTime
-     *
-     * @ODM\Field(type="date")
      */
+    #[ODM\Field(type: 'date')]
     private DateTime $created;
 
     /**

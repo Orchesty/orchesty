@@ -8,45 +8,39 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  * Class Stacktrace
  *
  * @package Hanaboso\PipesFramework\Logs\Document
- *
- * @ODM\EmbeddedDocument()
  */
+#[ODM\EmbeddedDocument]
 class Stacktrace
 {
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $message;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $class;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $file;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $trace;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $code;
 
     /**

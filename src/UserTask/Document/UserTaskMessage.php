@@ -8,9 +8,8 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  * Class UserTaskMessage
  *
  * @package Hanaboso\PipesFramework\UserTask\Document
- *
- * @ODM\EmbeddedDocument()
  */
+#[ODM\EmbeddedDocument]
 class UserTaskMessage
 {
 
@@ -19,16 +18,14 @@ class UserTaskMessage
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $body = '';
 
     /**
      * @var mixed[]
-     *
-     * @ODM\Field(type="hash")
      */
+    #[ODM\Field(type: 'hash')]
     private array $headers = [];
 
     /**

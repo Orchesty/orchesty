@@ -9,10 +9,9 @@ use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
  * Class ContainerMetrics
  *
  * @package Hanaboso\PipesFramework\Metrics\Document
- *
- * @ODM\Document(collection="container")
- * @ODM\Index(name="createdIndex", keys={"fields.created"="desc"})
  */
+#[ODM\Document(collection: 'container')]
+#[ODM\Index(keys: ['fields.created' =>'desc'], name: 'createdIndex')]
 class ContainerMetrics
 {
 
@@ -20,16 +19,14 @@ class ContainerMetrics
 
     /**
      * @var ContainerMetricsFields
-     *
-     * @ODM\EmbedOne(targetDocument="Hanaboso\PipesFramework\Metrics\Document\ContainerMetricsFields")
      */
+    #[ODM\EmbedOne(targetDocument: 'Hanaboso\PipesFramework\Metrics\Document\ContainerMetricsFields')]
     private ContainerMetricsFields $fields;
 
     /**
      * @var Tags
-     *
-     * @ODM\EmbedOne(targetDocument="Hanaboso\PipesFramework\Metrics\Document\Tags")
      */
+    #[ODM\EmbedOne(targetDocument: 'Hanaboso\PipesFramework\Metrics\Document\Tags')]
     private Tags $tags;
 
     /**

@@ -33,12 +33,11 @@ final class ApplicationController extends AbstractController
     {}
 
     /**
-     * @Route("/applications/available", methods={"GET", "OPTIONS"})
-     *
      * @param Request $request
      *
      * @return Response
      */
+    #[Route('/applications/available', methods: ['GET'])]
     public function listOfApplicationsAction(Request $request): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done
@@ -46,12 +45,11 @@ final class ApplicationController extends AbstractController
     }
 
     /**
-     * @Route("/applications/installed", methods={"GET", "OPTIONS"})
-     *
      * @param Request $request
      *
      * @return Response
      */
+    #[Route('/applications/installed', methods: ['GET'])]
     public function getUsersApplicationAction(Request $request): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done
@@ -59,12 +57,11 @@ final class ApplicationController extends AbstractController
     }
 
     /**
-     * @Route("/applications/{key}/preview", methods={"GET", "OPTIONS"})
-     *
      * @param string $key
      *
      * @return Response
      */
+    #[Route('/applications/{key}/preview', methods: ['GET'])]
     public function getApplicationAction(string $key): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done
@@ -73,12 +70,11 @@ final class ApplicationController extends AbstractController
 
 
     /**
-     * @Route("/applications/{key}", methods={"GET", "OPTIONS"})
-     *
      * @param string $key
      *
      * @return Response
      */
+    #[Route('/applications/{key}', methods: ['GET'])]
     public function getApplicationDetailAction(string $key): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done
@@ -86,12 +82,11 @@ final class ApplicationController extends AbstractController
     }
 
     /**
-     * @Route("/applications/{key}", methods={"POST", "OPTIONS"})
-     *
      * @param string $key
      *
      * @return Response
      */
+    #[Route('/applications/{key}', methods: ['POST'])]
     public function installApplicationAction(string $key): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done
@@ -99,13 +94,12 @@ final class ApplicationController extends AbstractController
     }
 
     /**
-     * @Route("/applications/{key}", methods={"PUT", "OPTIONS"})
-     *
      * @param Request $request
      * @param string  $key
      *
      * @return Response
      */
+    #[Route('/applications/{key}', methods: ['PUT'])]
     public function updateApplicationSettingsAction(Request $request, string $key): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done
@@ -113,12 +107,11 @@ final class ApplicationController extends AbstractController
     }
 
     /**
-     * @Route("/applications/{key}", methods={"DELETE", "OPTIONS"})
-     *
      * @param string $key
      *
      * @return Response
      */
+    #[Route('/applications/{key}', methods: ['DELETE'])]
     public function uninstallApplicationAction(string $key): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done
@@ -126,14 +119,13 @@ final class ApplicationController extends AbstractController
     }
 
     /**
-     * @Route("/applications/{key}/changeState", methods={"PUT", "OPTIONS"})
-     * @Route("/applications/{key}/change-state", methods={"PUT", "OPTIONS"})
-     *
      * @param Request $request
      * @param string  $key
      *
      * @return Response
      */
+    #[Route('/applications/{key}/change-state', methods: ['PUT'])]
+    #[Route('/applications/{key}/changeState', methods: ['PUT'])]
     public function changeStateApplicationAction(Request $request, string $key): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done
@@ -141,13 +133,12 @@ final class ApplicationController extends AbstractController
     }
 
     /**
-     * @Route("/applications/{key}/password", methods={"PUT", "OPTIONS"})
-     *
      * @param Request $request
      * @param string  $key
      *
      * @return Response
      */
+    #[Route('/applications/{key}/password', methods: ['PUT'])]
     public function saveApplicationPasswordAction(Request $request, string $key): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done
@@ -155,13 +146,12 @@ final class ApplicationController extends AbstractController
     }
 
     /**
-     * @Route("/applications/{key}/authorize", methods={"GET", "OPTIONS"})
-     *
      * @param Request $request
      * @param string  $key
      *
      * @return Response
      */
+    #[Route('/applications/{key}/authorize', methods: ['GET'])]
     public function authorizeApplicationAction(Request $request, string $key): Response
     {
         try {
@@ -175,12 +165,11 @@ final class ApplicationController extends AbstractController
     }
 
     /**
-     * @Route("/applications/{key}/sync/list", methods={"GET", "OPTIONS"})
-     *
      * @param string $key
      *
      * @return Response
      */
+    #[Route('/applications/{key}/sync/list', methods: ['GET'])]
     public function getSynchronousActionsAction(string $key): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done
@@ -188,14 +177,13 @@ final class ApplicationController extends AbstractController
     }
 
     /**
-     * @Route("/applications/{key}/sync/{method}", methods={"GET", "POST"})
-     *
      * @param Request $request
      * @param string  $key
      * @param string  $method
      *
      * @return Response
      */
+    #[Route('/applications/{key}/sync/{method}', methods: ['GET', 'POST'])]
     public function runSynchronousActionsAction(Request $request, string $key, string $method): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done
@@ -203,14 +191,13 @@ final class ApplicationController extends AbstractController
     }
 
     /**
-     * @Route("/applications/{key}/users/{user}/authorize/token", methods={"GET", "OPTIONS"})
-     *
      * @param Request $request
      * @param string  $key
      * @param string  $user
      *
      * @return Response
      */
+    #[Route('/applications/{key}/users/{user}/authorize/token', methods: ['GET'])]
     public function setAuthorizationTokenAction(Request $request, string $key, string $user): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done
@@ -220,12 +207,11 @@ final class ApplicationController extends AbstractController
     }
 
     /**
-     * @Route("/applications/authorize/token", methods={"GET", "OPTIONS"})
-     *
      * @param Request $request
      *
      * @return Response
      */
+    #[Route('/applications/authorize/token', methods: ['GET'])]
     public function setAuthorizationTokenQueryAction(Request $request): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done

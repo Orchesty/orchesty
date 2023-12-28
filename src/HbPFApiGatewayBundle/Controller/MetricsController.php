@@ -16,13 +16,12 @@ final class MetricsController extends AbstractController
 {
 
     /**
-     * @Route("/metrics/topology/{topology}", methods={"GET", "OPTIONS"})
-     *
      * @param Request $request
      * @param string  $topology
      *
      * @return Response
      */
+    #[Route('/metrics/topology/{topology}', methods: ['GET'])]
     public function topologyMetricsAction(Request $request, string $topology): Response
     {
         return $this->forward(
@@ -32,14 +31,13 @@ final class MetricsController extends AbstractController
     }
 
     /**
-     * @Route("/metrics/topology/{topology}/node/{node}", methods={"GET", "OPTIONS"})
-     *
      * @param Request $request
      * @param string  $topology
      * @param string  $node
      *
      * @return Response
      */
+    #[Route('/metrics/topology/{topology}/node/{node}', methods: ['GET'])]
     public function nodeMetricsAction(Request $request, string $topology, string $node): Response
     {
         return $this->forward(
@@ -49,12 +47,11 @@ final class MetricsController extends AbstractController
     }
 
     /**
-     * @Route("/metrics/healthcheck", methods={"GET", "OPTIONS"})
-     *
      * @param Request $request
      *
      * @return Response
      */
+    #[Route('/metrics/healthcheck', methods: ['GET'])]
     public function healthcheckMetricsAction(Request $request): Response
     {
         return $this->forward(
@@ -64,13 +61,12 @@ final class MetricsController extends AbstractController
     }
 
     /**
-     * @Route("/metrics/topology/{topology}/requests", methods={"GET", "OPTIONS"})
-     *
      * @param Request $request
      * @param string  $topology
      *
      * @return Response
      */
+    #[Route('/metrics/topology/{topology}/requests', methods: ['GET'])]
     public function topologyRequestsCountMetricsAction(Request $request, string $topology): Response
     {
         return $this->forward(

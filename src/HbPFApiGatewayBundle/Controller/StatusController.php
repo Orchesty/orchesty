@@ -16,10 +16,9 @@ final class StatusController extends AbstractController
 {
 
     /**
-     * @Route("/status", methods={"GET"})
-     *
      * @return Response
      */
+    #[Route('/status', methods: ['GET'])]
     public function getStatusAction(): Response
     {
         return new JsonResponse(['status' => 'ok']);

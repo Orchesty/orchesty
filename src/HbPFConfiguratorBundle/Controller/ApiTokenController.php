@@ -39,14 +39,13 @@ final class ApiTokenController extends AbstractController
     }
 
     /**
-     * @Route("/apiTokens", methods={"GET", "OPTIONS"})
-     *
      * @param Request $request
      *
      * @return Response
      * @throws MongoDBException
      * @throws GridException
      */
+    #[Route('/apiTokens', methods: ['GET'])]
     public function getApiTokensAction(Request $request): Response
     {
         $query = Json::decode($request->query->get('filter', '{}'));
@@ -70,13 +69,12 @@ final class ApiTokenController extends AbstractController
     }
 
     /**
-     * @Route("/apiTokens", methods={"POST", "OPTIONS"})
-     *
      * @param Request $request
      *
      * @return Response
      * @throws Exception
      */
+    #[Route('/apiTokens', methods: ['POST'])]
     public function createAction(Request $request): Response
     {
         try {
@@ -89,12 +87,11 @@ final class ApiTokenController extends AbstractController
     }
 
     /**
-     * @Route("/apiTokens/{id}", methods={"DELETE", "OPTIONS"}, requirements={"id": "\w+"})
-     *
      * @param string $id
      *
      * @return Response
      */
+    #[Route('/apiTokens/{id}', requirements: ['id' => '\w+'], methods: ['DELETE'])]
     public function deleteAction(string $id): Response
     {
         try {

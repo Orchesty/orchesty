@@ -35,8 +35,6 @@ final class TopologyProgressController
     }
 
     /**
-     * @Route("/progress/topology/{topologyId}", methods={"GET", "OPTIONS"})
-     *
      * @param Request $request
      * @param string  $topologyId
      *
@@ -44,6 +42,7 @@ final class TopologyProgressController
      * @throws GridException
      * @throws MongoDBException
      */
+    #[Route('/progress/topology/{topologyId}', methods: ['GET'])]
     public function getProgressTopologyAction(Request $request, string $topologyId): Response
     {
         $query = Json::decode($request->query->get('filter', '{}'));
@@ -67,13 +66,12 @@ final class TopologyProgressController
     }
 
     /**
-     * @Route("/progress}", methods={"GET", "OPTIONS"})
-     *
      * @param Request $request
      *
      * @return Response
      * @throws MongoDBException
      */
+    #[Route('/progress}', methods: ['GET'])]
     public function getProgressesAction(Request $request): Response
     {
         $query = Json::decode($request->query->get('filter', '{}'));

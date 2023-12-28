@@ -16,12 +16,11 @@ final class LogsController extends AbstractController
 {
 
     /**
-     * @Route("/logs", methods={"GET", "OPTIONS"})
-     *
      * @param Request $request
      *
      * @return Response
      */
+    #[Route('/logs', methods: ['GET'])]
     public function topologyMetricsAction(Request $request): Response
     {
         return $this->forward(

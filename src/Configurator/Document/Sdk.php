@@ -10,9 +10,8 @@ use Hanaboso\Utils\String\Json;
  * Class Sdk
  *
  * @package Hanaboso\PipesFramework\Configurator\Document
- *
- * @ODM\Document(repositoryClass="Hanaboso\PipesFramework\Configurator\Repository\SdkRepository")
  */
+#[ODM\Document(repositoryClass: 'Hanaboso\PipesFramework\Configurator\Repository\SdkRepository')]
 class Sdk
 {
 
@@ -25,23 +24,20 @@ class Sdk
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $name;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $url;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $headers = '[]';
 
     /**

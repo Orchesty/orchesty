@@ -16,12 +16,11 @@ final class CategoryController extends AbstractController
 {
 
     /**
-     * @Route("/categories", methods={"GET", "OPTIONS"})
-     *
      * @param Request $request
      *
      * @return Response
      */
+    #[Route('/categories', methods: ['GET'])]
     public function getCategoriesAction(Request $request): Response
     {
         return $this->forward(
@@ -31,10 +30,9 @@ final class CategoryController extends AbstractController
     }
 
     /**
-     * @Route("/categories", methods={"POST", "OPTIONS"})
-     *
      * @return Response
      */
+    #[Route('/categories', methods: ['POST'])]
     public function createCategoryAction(): Response
     {
         return $this->forward(
@@ -43,12 +41,11 @@ final class CategoryController extends AbstractController
     }
 
     /**
-     * @Route("/categories/{id}", defaults={}, requirements={"id": "\w+"}, methods={"PUT", "PATCH", "OPTIONS"})
-     *
      * @param string $id
      *
      * @return Response
      */
+    #[Route('/categories/{id}', requirements: ['id' => '\w+'], methods: ['PUT', 'PATCH'])]
     public function updateCategoryAction(string $id): Response
     {
         return $this->forward(
@@ -58,12 +55,11 @@ final class CategoryController extends AbstractController
     }
 
     /**
-     * @Route("/categories/{id}", defaults={}, requirements={"id": "\w+"}, methods={"DELETE", "OPTIONS"})
-     *
      * @param string $id
      *
      * @return Response
      */
+    #[Route('/categories/{id}', requirements: ['id' => '\w+'], methods: ['DELETE'])]
     public function deleteCategoryAction(string $id): Response
     {
         return $this->forward(

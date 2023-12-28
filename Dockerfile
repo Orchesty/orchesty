@@ -1,4 +1,4 @@
-FROM hanabosocom/php-base:php-8.2-alpine
+FROM hanabosocom/php-base:php-8.3-alpine
 
 COPY . .
 RUN cd pf-bundles && \
@@ -14,7 +14,7 @@ RUN cd pf-bundles && \
     ALPHA_INSTANCE_ID=orchesty \
     bin/console cache:warmup
 
-FROM hanabosocom/php-base:php-8.2-alpine
+FROM hanabosocom/php-base:php-8.3-alpine
 
 ENV APP_DEBUG=0 APP_ENV=prod PHP_FPM_MAX_CHILDREN=10 PHP_FPM_MAX_REQUESTS=500
 ENV INSTALLER_DIRS='["/var/www/topology"]'

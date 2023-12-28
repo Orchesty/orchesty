@@ -16,14 +16,9 @@ use Hanaboso\Utils\String\Json;
  * Class Topology
  *
  * @package Hanaboso\PipesFramework\Database\Document
- *
- * @ODM\Document(
- *     repositoryClass="Hanaboso\PipesFramework\Database\Repository\TopologyRepository",
- *     indexes={
- *         @ODM\Index(keys={"name": "asc", "version": "asc"}, unique=true)
- *     }
- * )
  */
+#[ODM\Document(repositoryClass: 'Hanaboso\PipesFramework\Database\Repository\TopologyRepository')]
+#[ODM\Index(keys: ['name'=> 'asc', 'version'=>'asc'], unique: TRUE)]
 class Topology
 {
 
@@ -32,80 +27,69 @@ class Topology
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     protected string $name = '';
 
     /**
      * @var int
-     *
-     * @ODM\Field(type="int", options={"default":"1"})
      */
+    #[ODM\Field(type: 'int', options: ['default' => 1])]
     protected int $version = 1;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     protected string $descr = '';
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string", options={"default":"draft"})
      */
+    #[ODM\Field(type: 'string', options: ['default' => 'draft'])]
     protected string $visibility = TopologyStatusEnum::DRAFT->value;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     protected string $status = StatusEnum::NEW->value;
 
     /**
      * @var bool
-     *
-     * @ODM\Field(type="boolean", options={"default":"0"})
      */
+    #[ODM\Field(type: 'boolean', options: ['default' => 0])]
     protected bool $enabled = FALSE;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     protected string $bpmn = '';
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     protected string $rawBpmn = '';
 
     /**
      * @var string|null
-     *
-     * @ODM\Field(type="string")
-     * @ODM\Index()
      */
+    #[ODM\Field(type: 'string')]
+    #[ODM\Index]
     protected ?string $category = NULL;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     protected string $contentHash = '';
 
     /**
      * @var Collection<int, TopologyApplication>
-     *
-     * @ODM\EmbedMany(targetDocument="Hanaboso\PipesFramework\Database\Document\TopologyApplication")
      */
+    #[ODM\EmbedMany(targetDocument: 'Hanaboso\PipesFramework\Database\Document\TopologyApplication')]
     protected Collection $applications;
 
     /**
