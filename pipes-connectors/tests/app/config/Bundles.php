@@ -8,7 +8,6 @@ use Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\HbPFCustomNodeBundle;
 use Symfony\Bundle\DebugBundle\DebugBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\MonologBundle\MonologBundle;
-use Symfony\Bundle\SecurityBundle\SecurityBundle;
 
 return [
     DebugBundle::class           => ['dev' => TRUE, 'test' => TRUE],
@@ -20,5 +19,4 @@ return [
     HbPFConnectorsBundle::class      => ['all' => TRUE],
     HbPFCustomNodeBundle::class      => ['all' => TRUE],
     MonologBundle::class         => ['all' => TRUE],
-    SecurityBundle::class        => ['all' => TRUE],
 ];

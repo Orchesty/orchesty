@@ -9,24 +9,21 @@ use Hanaboso\PipesFramework\Database\Document\Node;
  * Class EmbedNode
  *
  * @package Hanaboso\PipesFramework\Database\Document\Embed
- *
- * @ODM\EmbeddedDocument
  */
+#[ODM\EmbeddedDocument]
 class EmbedNode
 {
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     protected string $id;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     protected string $name;
 
     /**

@@ -9,6 +9,7 @@ use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\RefreshCronCommand;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
  * Class RefreshCronCommandTest
@@ -27,7 +28,10 @@ final class RefreshCronCommandTest extends DatabaseTestCaseAbstract
     {
         self::getContainer()->set('hbpf.transport.curl_manager', self::createMock(CurlManagerInterface::class));
 
-        self::assertEquals(0, (new CommandTester((new Application(self::$kernel))->get('cron:refresh')))->execute([]));
+        /** @var KernelInterface $kernel */
+        $kernel      = self::$kernel;
+        $application = new Application($kernel);
+        self::assertEquals(0, (new CommandTester($application->get('cron:refresh')))->execute([]));
     }
 
     /**

@@ -19,9 +19,8 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
  * Class AuthorizationController
  *
  * @package Hanaboso\Applinth\Controller
- *
- * @Route("/authorization")
  */
+#[Route('/authorization')]
 final class AuthorizationController extends AbstractController
 {
 
@@ -49,14 +48,13 @@ final class AuthorizationController extends AbstractController
     }
 
     /**
-     * @route("/login", methods={"POST"})
-     *
      * @param Request $request
      *
      * @return Response
      * @throws DateTimeException
      * @throws MongoDBException
      */
+    #[Route('/login', methods: ['POST'])]
     public function login(Request $request): Response
     {
         try {
@@ -97,24 +95,22 @@ final class AuthorizationController extends AbstractController
     }
 
     /**
-     * @route("/refresh", methods={"POST"})
-     *
      * @param Request $request
      *
      * @return Response
      */
+    #[Route('/refresh', methods: ['POST'])]
     public function refresh(Request $request): Response
     {
         return $this->logged($request);
     }
 
     /**
-     * @route("/logged", methods={"GET"})
-     *
      * @param Request $request
      *
      * @return Response
      */
+    #[Route('/logged', methods: ['GET'])]
     public function logged(Request $request): Response
     {
         try {

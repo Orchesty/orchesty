@@ -32,22 +32,20 @@ final class CategoryController
     }
 
     /**
-     * @Route("/categories", methods={"GET", "OPTIONS"})
-     *
      * @return Response
      */
+    #[Route('/categories', methods: ['GET'])]
     public function getCategoriesAction(): Response
     {
         return $this->getResponse($this->categoryHandler->getCategories());
     }
 
     /**
-     * @Route("/categories", methods={"POST", "OPTIONS"})
-     *
      * @param Request $request
      *
      * @return Response
      */
+    #[Route('/categories', methods: ['POST'])]
     public function createCategoryAction(Request $request): Response
     {
         try {
@@ -58,13 +56,12 @@ final class CategoryController
     }
 
     /**
-     * @Route("/categories/{id}", defaults={}, requirements={"id": "\w+"}, methods={"PUT", "PATCH", "OPTIONS"})
-     *
      * @param Request $request
      * @param string  $id
      *
      * @return Response
      */
+    #[Route('/categories/{id}', requirements: ['id' => '\w+'], methods: ['PUT', 'PATCH'])]
     public function updateCategoryAction(Request $request, string $id): Response
     {
         try {
@@ -77,12 +74,11 @@ final class CategoryController
     }
 
     /**
-     * @Route("/categories/{id}", defaults={}, requirements={"id": "\w+"}, methods={"DELETE", "OPTIONS"})
-     *
      * @param string $id
      *
      * @return Response
      */
+    #[Route('/categories/{id}', requirements: ['id' => '\w+'], methods: ['DELETE'])]
     public function deleteCategoryAction(string $id): Response
     {
         try {

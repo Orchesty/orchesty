@@ -7,6 +7,7 @@ use Hanaboso\PipesFramework\Configurator\Document\ApiToken;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
  * Class CreateApiTokenCommandTest
@@ -22,7 +23,9 @@ final class CreateApiTokenCommandTest extends DatabaseTestCaseAbstract
      */
     public function testExecute(): void
     {
-        $application = new Application(self::$kernel);
+        /** @var KernelInterface $kernel */
+        $kernel      = self::$kernel;
+        $application = new Application($kernel);
         $command     = $application->get('api-token:create');
 
         $commandTester = new CommandTester($command);

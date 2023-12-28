@@ -31,11 +31,11 @@ final class UsageStatsController
     }
 
     /**
-     * @Route("/usage-stats/emit-event", methods={"POST", "OPTIONS"})
      * @param Request $request
      *
      * @return Response
      */
+    #[Route('/usage-stats/emit-event', methods: ['POST'])]
     public function emitEventAction(Request $request): Response
     {
         try {

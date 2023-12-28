@@ -10,8 +10,8 @@ use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
 use Hanaboso\PipesPhpSdk\Authorization\Wrapper\OAuth2Wrapper;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
+use Monolog\Logger;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
-use Symfony\Bridge\Monolog\Logger;
 
 /**
  * Class OAuth2ProviderTest

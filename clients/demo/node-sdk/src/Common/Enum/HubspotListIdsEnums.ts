@@ -8,22 +8,22 @@ enum HubspotListIdsEnums {
 }
 
 function getHubspotListName(hubSpotList: HubspotListIdsEnums): string {
-    switch (hubSpotList) {
-        case HubspotListIdsEnums.NEWSLETTER:
-            return 'newsletter';
-        case HubspotListIdsEnums.COMMUNITY:
-            return 'community';
-        case HubspotListIdsEnums.SALES:
-            return 'sales';
-        case HubspotListIdsEnums.CONTACT_FROM:
-            return 'contact-from';
-        case HubspotListIdsEnums.CONTACT_APPLINTH:
-            return 'contact-applinth';
-        case HubspotListIdsEnums.WHITE_PAPER_APPLINTH:
-            return 'white-paper-applinth';
-        default:
-            throw Error(`Unknown hubSpot list [${hubSpotList}]`);
-    }
+  switch (hubSpotList) {
+    case HubspotListIdsEnums.NEWSLETTER:
+      return 'newsletter';
+    case HubspotListIdsEnums.COMMUNITY:
+      return 'community';
+    case HubspotListIdsEnums.SALES:
+      return 'sales';
+    case HubspotListIdsEnums.CONTACT_FROM:
+      return 'contact-from';
+    case HubspotListIdsEnums.CONTACT_APPLINTH:
+      return 'contact-applinth';
+    case HubspotListIdsEnums.WHITE_PAPER_APPLINTH:
+      return 'white-paper-applinth';
+    default:
+      throw Error(`Unknown hubSpot list [${hubSpotList}]`);
+  }
 }
 
 export { getHubspotListName, HubspotListIdsEnums };

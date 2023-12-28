@@ -14,7 +14,6 @@ use Hanaboso\PipesFramework\HbPFUserBundle\HbPFUsersBundle;
 use Hanaboso\PipesFramework\HbPFUserTaskBundle\HbPFUserTaskBundle;
 use Hanaboso\RestBundle\RestBundle;
 use Hanaboso\UserBundle\HbPFUserBundle;
-use Jose\Bundle\JoseFramework\JoseFrameworkBundle;
 use RabbitMqBundle\RabbitMqBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\MonologBundle\MonologBundle;
@@ -23,7 +22,6 @@ use Symfony\Bundle\SecurityBundle\SecurityBundle;
 return [
     DoctrineMongoDBBundle::class => ['all' => TRUE],
     FrameworkBundle::class       => ['all' => TRUE],
-    JoseFrameworkBundle::class   => ['all' => TRUE],
     MonologBundle::class         => ['all' => TRUE],
     SecurityBundle::class        => ['all' => TRUE],
 

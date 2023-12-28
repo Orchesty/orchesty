@@ -43,7 +43,7 @@ final class NodeRepository extends DocumentRepository
      */
     public function getNodeByTopology(string $nodeName, string $topologyId): ?Node
     {
-        /** @var Node $result */
+        /** @var Node|NULL $result */
         $result = $this->createQueryBuilder()
             ->field('name')->equals($nodeName)
             ->field('topology')->equals($topologyId)

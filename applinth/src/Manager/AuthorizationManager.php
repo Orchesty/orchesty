@@ -3,8 +3,14 @@
 namespace Hanaboso\Applinth\Manager;
 
 use Hanaboso\Utils\String\Json;
+use Jose\Component\Core\AlgorithmManager;
 use Jose\Component\Core\JWK;
+use Jose\Component\Encryption\Algorithm\ContentEncryption\A128GCM;
+use Jose\Component\Encryption\Algorithm\KeyEncryption\ECDHES;
+use Jose\Component\Encryption\Compression\CompressionMethodManager;
+use Jose\Component\Encryption\Compression\Deflate;
 use Jose\Component\Encryption\JWEDecrypter;
+use Jose\Component\Encryption\Serializer\CompactSerializer as JWECompactSerializer;
 use Jose\Component\Encryption\Serializer\JWESerializerManager;
 use Jose\Component\KeyManagement\JWKFactory;
 use Jose\Component\Signature\Algorithm\HS512;
@@ -19,30 +25,53 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
  *
  * @package Hanaboso\Applinth\Manager
  */
-final class AuthorizationManager
+final readonly class AuthorizationManager
 {
+
+    /**
+     * @var JWESerializerManager
+     */
+    private JWESerializerManager $jweSerializerManager;
+
+    /**
+     * @var JWEDecrypter
+     */
+    private JWEDecrypter $jweDecrypter;
+
+    /**
+     * @var JWSSerializerManager
+     */
+    private JWSSerializerManager $jwsSerializerManager;
+
+    /**
+     * @var JWSBuilder
+     */
+    private JWSBuilder $jwsBuilder;
+
+    /**
+     * @var JWSVerifier
+     */
+    private JWSVerifier $jwsVerifier;
 
     /**
      * AuthorizationManager constructor.
      *
-     * @param string               $jwePrivateKey
-     * @param string               $jwsKey
-     * @param JWESerializerManager $jweSerializerManager
-     * @param JWEDecrypter         $jweDecrypter
-     * @param JWSSerializerManager $jwsSerializerManager
-     * @param JWSBuilder           $jwsBuilder
-     * @param JWSVerifier          $jwsVerifier
+     * @param string $jwePrivateKey
+     * @param string $jwsKey
      */
-    public function __construct(
-        private readonly string $jwePrivateKey,
-        private readonly string $jwsKey,
-        private readonly JWESerializerManager $jweSerializerManager,
-        private readonly JWEDecrypter $jweDecrypter,
-        private readonly JWSSerializerManager $jwsSerializerManager,
-        private readonly JWSBuilder $jwsBuilder,
-        private readonly JWSVerifier $jwsVerifier,
-    )
+    public function __construct(private string $jwePrivateKey, private string $jwsKey)
     {
+
+        $this->jweSerializerManager = new JWESerializerManager([new JWECompactSerializer()]);
+        $this->jweDecrypter         = new JWEDecrypter(
+            new AlgorithmManager([new ECDHES()]),
+            new AlgorithmManager([new A128GCM()]),
+            new CompressionMethodManager([new Deflate()]),
+        );
+        $this->jwsSerializerManager = new JWSSerializerManager([new CompactSerializer()]);
+        $algoManager                = new AlgorithmManager([new HS512()]);
+        $this->jwsBuilder           = new JWSBuilder($algoManager);
+        $this->jwsVerifier          = new JWSVerifier($algoManager);
     }
 
     /**

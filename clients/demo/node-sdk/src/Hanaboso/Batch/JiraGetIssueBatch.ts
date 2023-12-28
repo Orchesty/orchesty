@@ -12,64 +12,64 @@ export const NAME = 'jira-get-issue-batch';
 
 export default class JiraGetIssueBatch extends ABatchNode {
 
-    public constructor(private readonly dataStorageManager: DataStorageManager) {
-        super();
+  public constructor(private readonly dataStorageManager: DataStorageManager) {
+    super();
+  }
+
+  public getName(): string {
+    return NAME;
+  }
+
+  public async processAction(dto: BatchProcessDto): Promise<BatchProcessDto> {
+    const appInstall = await this.getApplicationInstallFromProcess(dto);
+
+    const pointer = Number(dto.getBatchCursor('0'));
+
+    const worklogEtl = await this.dataStorageManager.load<IEtl<IWorklogDataMinimal>>(
+      dto.getHeader(CORRELATION_ID) ?? '',
+    );
+
+    const worklogData = worklogEtl?.[0].getData()?.data;
+    const id = worklogData?.[pointer]?.issueId;
+
+    if (!id) {
+      dto.setStopProcess(ResultCode.STOP_AND_FAILED, 'Connector is missing required data: "id".');
+      return dto;
     }
 
-    public getName(): string {
-        return NAME;
+    const request = await this.getApplication().getRequestDto(
+      dto,
+      appInstall,
+      HttpMethods.GET,
+      `${JIRA_GET_ISSUE_ENDPOINT}/${id}`,
+    );
+    const response = await this.getSender().send<IResponse>(request);
+    const responseBody = response.getJsonBody();
+
+    await this.dataStorageManager.remove(
+      dto.getHeader(CORRELATION_ID) ?? '',
+    );
+
+    Object.assign(worklogData[pointer], {
+      key: responseBody.key,
+      name: responseBody.fields.customfield_10500?.[0]?.name,
+      labels: responseBody.fields.labels,
+      issueName: responseBody.fields.summary,
+    });
+
+    await this.dataStorageManager.store(
+      dto.getHeader(CORRELATION_ID) ?? '',
+      [{ data: worklogData, date: worklogEtl?.[0].getData()?.date }],
+    );
+
+    if (worklogData?.length && worklogData.length - 1 > pointer) {
+      dto.setBatchCursor((pointer + 1).toString(), true);
+    } else {
+      dto.addItem({ success: 'ok' });
     }
 
-    public async processAction(dto: BatchProcessDto): Promise<BatchProcessDto> {
-        const appInstall = await this.getApplicationInstallFromProcess(dto);
-
-        const pointer = Number(dto.getBatchCursor('0'));
-
-        const worklogEtl = await this.dataStorageManager.load<IEtl<IWorklogDataMinimal>>(
-            dto.getHeader(CORRELATION_ID) ?? '',
-        );
-
-        const worklogData = worklogEtl?.[0].getData()?.data;
-        const id = worklogData?.[pointer]?.issueId;
-
-        if (!id) {
-            dto.setStopProcess(ResultCode.STOP_AND_FAILED, 'Connector is missing required data: "id".');
-            return dto;
-        }
-
-        const request = await this.getApplication().getRequestDto(
-            dto,
-            appInstall,
-            HttpMethods.GET,
-            `${JIRA_GET_ISSUE_ENDPOINT}/${id}`,
-        );
-        const response = await this.getSender().send<IResponse>(request);
-        const responseBody = response.getJsonBody();
-
-        await this.dataStorageManager.remove(
-            dto.getHeader(CORRELATION_ID) ?? '',
-        );
-
-        Object.assign(worklogData[pointer], {
-            key: responseBody.key,
-            name: responseBody.fields.customfield_10500?.[0]?.name,
-            labels: responseBody.fields.labels,
-            issueName: responseBody.fields.summary,
-        });
-
-        await this.dataStorageManager.store(
-            dto.getHeader(CORRELATION_ID) ?? '',
-            [{ data: worklogData, date: worklogEtl?.[0].getData()?.date }],
-        );
-
-        if (worklogData?.length && worklogData.length - 1 > pointer) {
-            dto.setBatchCursor((pointer + 1).toString(), true);
-        } else {
-            dto.addItem({ success: 'ok' });
-        }
-
-        return dto;
-    }
+    return dto;
+  }
 
 }
 

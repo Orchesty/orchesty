@@ -29,57 +29,57 @@ doctrine_mongodb:
                 HbPFAclBundle: ~
                 HbPFCommonsBundle: ~
                 ApplicationDocument:
-                    type: annotation
+                    type: attribute
                     is_bundle: false
                     dir: "%kernel.project_dir%/src/../vendor/orchesty/backend/src/Application/Document"
                     prefix: Hanaboso\PipesFramework\Application\Document
                 FileDocument:
-                    type: annotation
+                    type: attribute
                     is_bundle: false
                     dir: "%kernel.project_dir%/src/../vendor/hanaboso/commons-bundle/src/FileStorage/Document"
                     prefix: Hanaboso\CommonsBundle\FileStorage\Document
                 CommonsDocument:
-                    type: annotation
+                    type: attribute
                     is_bundle: false
                     dir: "%kernel.project_dir%/src/../vendor/orchesty/backend/src/Database/Document"
                     prefix: Hanaboso\PipesFramework\Database\Document
                 FileMongo:
-                    type: annotation
+                    type: attribute
                     is_bundle: false
                     dir: "%kernel.project_dir%/src/../vendor/hanaboso/commons-bundle/src/FileStorage/Driver/Impl/Mongo"
                     prefix: Hanaboso\CommonsBundle\FileStorage\Driver\Impl\Mongo
                 UserDocument:
-                    type: annotation
+                    type: attribute
                     is_bundle: false
                     dir: "%kernel.project_dir%/src/../vendor/hanaboso/user-bundle/src/Document"
                     prefix: Hanaboso\UserBundle\Document
                 LogsDocument:
-                    type: annotation
+                    type: attribute
                     is_bundle: false
                     dir: "%kernel.project_dir%/src/../vendor/orchesty/backend/src/Logs/Document"
                     prefix: Hanaboso\PipesFramework\Logs\Document
                 UsageStatsDocument:
-                    type: annotation
+                    type: attribute
                     is_bundle: false
                     dir: "%kernel.project_dir%/src/../vendor/orchesty/backend/src/UsageStats/Document"
                     prefix: Hanaboso\PipesFramework\UsageStats\Document
                 ConfiguratorDocument:
-                    type: annotation
+                    type: attribute
                     is_bundle: false
                     dir: "%kernel.project_dir%/src/../vendor/orchesty/backend/src/Configurator/Document"
                     prefix: Hanaboso\PipesFramework\Configurator\Document
                 UserSettings:
-                    type: annotation
+                    type: attribute
                     is_bundle: false
                     dir: "%kernel.project_dir%/src/../vendor/orchesty/backend/src/User/Document"
                     prefix: Hanaboso\PipesFramework\User\Document
                 UserTask:
-                    type: annotation
+                    type: attribute
                     is_bundle: false
                     dir: "%kernel.project_dir%/src/../vendor/orchesty/backend/src/UserTask/Document"
                     prefix: Hanaboso\PipesFramework\UserTask\Document
                 ApplinthAuthenticator:
-                    type: annotation
+                    type: attribute
                     is_bundle: false
                     dir: "%kernel.project_dir%/src/Authenticator/Document"
                     prefix: Hanaboso\Applinth\Authenticator\Document
@@ -88,7 +88,7 @@ doctrine_mongodb:
             database: "%env(string:METRICS_DB)%"
             mappings:
                 MetricsDocument:
-                    type: annotation
+                    type: attribute
                     is_bundle: false
                     dir: "%kernel.project_dir%/src/../vendor/orchesty/backend/src/Metrics/Document"
                     prefix: Hanaboso\PipesFramework\Metrics\Document

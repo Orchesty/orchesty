@@ -16,16 +16,14 @@ use Hanaboso\Utils\String\Json;
  * Class UserTask
  *
  * @package Hanaboso\PipesFramework\UserTask\Document
- *
- * @ODM\Document(repositoryClass="Hanaboso\PipesFramework\UserTask\Repository\UserTaskRepository", indexes={
- *     @ODM\Index(keys={"node_id"="asc","created"="asc"}),
- *     @ODM\Index(keys={"topology_id"="asc","created"="asc"}),
- *     @ODM\Index(keys={"correlationId"="asc","created"="asc"}),
- *     @ODM\Index(keys={"topology_id"="asc","node_id":"asc","created"="asc"}),
- *     @ODM\Index(keys={"message.body":"text"})
- * })
- * @ODM\HasLifecycleCallbacks()
  */
+#[ODM\Document(repositoryClass: 'Hanaboso\PipesFramework\UserTask\Repository\UserTaskRepository')]
+#[ODM\Index(keys: ['node_id' => 'asc', 'created' => 'asc'])]
+#[ODM\Index(keys: ['topology_id' => 'asc', 'created' => 'asc'])]
+#[ODM\Index(keys: ['correlationId' => 'asc', 'created' => 'asc'])]
+#[ODM\Index(keys: ['topology_id' => 'asc', 'node_id' => 'asc', 'created' => 'asc'])]
+#[ODM\Index(keys: ['message.body' => 'text'])]
+#[ODM\HasLifecycleCallbacks]
 class UserTask
 {
 
@@ -53,79 +51,68 @@ class UserTask
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $nodeId;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $topologyId;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $nodeName;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $topologyName;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $type;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $returnExchange;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $returnRoutingKey;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $correlationId;
 
     /**
      * @var UserTaskMessage
-     *
-     * @ODM\EmbedOne(targetDocument="Hanaboso\PipesFramework\UserTask\Document\UserTaskMessage")
      */
+    #[ODM\EmbedOne(targetDocument: 'Hanaboso\PipesFramework\UserTask\Document\UserTaskMessage')]
     private UserTaskMessage $message;
 
     /**
      * @var mixed[]|string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private array|string $auditLogs = [];
 
     /**
      * @var string|null
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private ?string $user = NULL;
 
     /**
@@ -361,10 +348,9 @@ class UserTask
     }
 
     /**
-     * @ODM\PreFlush()
-     *
      * @throws Exception
      */
+    #[ODM\PreFlush]
     public function preFlush(): void
     {
         if (is_array($this->auditLogs)) {
@@ -373,8 +359,9 @@ class UserTask
     }
 
     /**
-     * @ODM\PostLoad()
+     *
      */
+    #[ODM\PostLoad]
     public function postLoad(): void
     {
         $this->getAuditLogs();

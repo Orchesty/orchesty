@@ -31,12 +31,11 @@ final class LogsController
     }
 
     /**
-     * @Route("/logs", methods={"GET", "OPTIONS"})
-     *
      * @param Request $request
      *
      * @return Response
      */
+    #[Route('/logs', methods: ['GET', 'OPTIONS'])]
     public function getDataForTableAction(Request $request): Response
     {
         $filter     = Json::decode($request->query->get('filter', '{}'));

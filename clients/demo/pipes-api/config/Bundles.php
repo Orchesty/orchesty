@@ -18,7 +18,6 @@ return [
     DebugBundle::class           => ['dev' => TRUE, 'test' => TRUE],
     FrameworkBundle::class       => ['all' => TRUE],
     MonologBundle::class         => ['all' => TRUE],
-    SecurityBundle::class        => ['all' => TRUE],
 
     EmailServiceBundle::class    => ['all' => TRUE],
     HbPFApplicationBundle::class => ['all' => TRUE],

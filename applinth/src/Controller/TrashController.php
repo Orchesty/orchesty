@@ -20,9 +20,8 @@ use Throwable;
  * Class TrashController
  *
  * @package Hanaboso\Applinth\Controller
- *
- * @Route("/trash")
  */
+#[Route('/trash')]
 final class TrashController extends AbstractController
 {
 
@@ -42,12 +41,11 @@ final class TrashController extends AbstractController
     }
 
     /**
-     * @Route("", methods={"GET"})
-     *
      * @param Request $request
      *
      * @return Response
      */
+    #[Route('', methods: ['GET'])]
     public function getTrashItems(Request $request): Response
     {
         try {
@@ -58,13 +56,12 @@ final class TrashController extends AbstractController
     }
 
     /**
-     * @Route("/{id}", methods={"PUT"})
-     *
      * @param Request $request
      * @param string  $id
      *
      * @return Response
      */
+    #[Route('/{id}', methods: ['PUT'])]
     public function updateTrashItem(Request $request, string $id): Response
     {
         try {
@@ -75,12 +72,11 @@ final class TrashController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/accept", methods={"POST"})
-     *
      * @param string $id
      *
      * @return Response
      */
+    #[Route('/{id}/accept', methods: ['POST'])]
     public function acceptTrashItem(string $id): Response
     {
         try {
@@ -91,12 +87,11 @@ final class TrashController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/reject", methods={"POST"})
-     *
      * @param string $id
      *
      * @return Response
      */
+    #[Route('/{id}/reject', methods: ['POST'])]
     public function rejectTrashItem(string $id): Response
     {
         try {
@@ -107,12 +102,11 @@ final class TrashController extends AbstractController
     }
 
     /**
-     * @Route("/accept", methods={"POST"})
-     *
      * @param Request $request
      *
      * @return Response
      */
+    #[Route('/accept', methods: ['POST'])]
     public function acceptTrashItems(Request $request): Response
     {
         try {
@@ -131,12 +125,11 @@ final class TrashController extends AbstractController
     }
 
     /**
-     * @Route("/reject", methods={"POST"})
-     *
      * @param Request $request
      *
      * @return Response
      */
+    #[Route('/reject', methods: ['POST'])]
     public function rejectTrashItems(Request $request): Response
     {
         try {
@@ -155,12 +148,11 @@ final class TrashController extends AbstractController
     }
 
     /**
-     * @Route("/{id}", methods={"GET"})
-     *
      * @param string $id
      *
      * @return Response
      */
+    #[Route('/{id}', methods: ['GET'])]
     public function getTrashItemDetail(string $id): Response
     {
         try {

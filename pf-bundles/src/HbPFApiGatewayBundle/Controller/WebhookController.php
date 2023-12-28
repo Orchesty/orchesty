@@ -27,13 +27,12 @@ final class WebhookController extends AbstractController
     }
 
     /**
-     * @Route("/webhook/applications/{key}/subscribe", methods={"POST", "OPTIONS"})
-     *
      * @param Request $request
      * @param string  $key
      *
      * @return Response
      */
+    #[Route('/webhook/applications/{key}/subscribe', methods: ['POST', 'OPTIONS'])]
     public function subscribeWebhooksAction(Request $request, string $key): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done
@@ -43,13 +42,12 @@ final class WebhookController extends AbstractController
     }
 
     /**
-     * @Route("/webhook/applications/{key}/unsubscribe", methods={"POST", "OPTIONS"})
-     *
      * @param Request $request
      * @param string  $key
      *
      * @return Response
      */
+    #[Route('/webhook/applications/{key}/unsubscribe', methods: ['POST', 'OPTIONS'])]
     public function unsubscribeWebhooksAction(Request $request, string $key): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done

@@ -17,10 +17,9 @@ final class DefaultController
     use ControllerTrait;
 
     /**
-     * @Route("/", name="homepage")
-     *
      * @return Response
      */
+    #[Route('/', name: 'homepage')]
     public function indexAction(): Response
     {
         return $this->getResponse(['status' => 'ok']);

@@ -26,12 +26,11 @@ final class NodeController extends AbstractController
     }
 
     /**
-     * @Route("/topologies/{id}/nodes", methods={"GET", "OPTIONS"})
-     *
      * @param string $id
      *
      * @return Response
      */
+    #[Route('/topologies/{id}/nodes', methods: ['GET'])]
     public function getNodesAction(string $id): Response
     {
         return $this->forward(
@@ -41,12 +40,11 @@ final class NodeController extends AbstractController
     }
 
     /**
-     * @Route("/nodes/{id}", methods={"GET", "OPTIONS"})
-     *
      * @param string $id
      *
      * @return Response
      */
+    #[Route('/nodes/{id}', methods: ['GET'])]
     public function getNodeAction(string $id): Response
     {
         return $this->forward(
@@ -56,12 +54,11 @@ final class NodeController extends AbstractController
     }
 
     /**
-     * @Route("/nodes/{id}", methods={"PATCH", "OPTIONS"})
-     *
      * @param string $id
      *
      * @return Response
      */
+    #[Route('/nodes/{id}', methods: ['PATCH'])]
     public function updateNodeAction(string $id): Response
     {
         return $this->forward(
@@ -71,10 +68,9 @@ final class NodeController extends AbstractController
     }
 
     /**
-     * @Route("/nodes/list/name", methods={"GET", "OPTIONS"})
-     *
      * @return Response
      */
+    #[Route('/nodes/list/name', methods: ['GET'])]
     public function listNodesNamesAction(): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done

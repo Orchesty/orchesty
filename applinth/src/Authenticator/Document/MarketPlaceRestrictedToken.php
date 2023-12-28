@@ -12,13 +12,11 @@ use Hanaboso\Utils\Exception\DateTimeException;
  * Class MarketPlaceRestrictedToken
  *
  * @package Hanaboso\Applinth\Authenticator\Document
- *
- * @ODM\Document(repositoryClass="Hanaboso\Applinth\Authenticator\Repository\MarketPlaceRestrictedTokenRepository", indexes={
- *     @ODM\Index(keys={"value"="asc"}),
- *     @ODM\Index(name="expireIndex", keys={"created"=1}, options={"expireAfterSeconds"=86400})
- * })
- * @ODM\HasLifecycleCallbacks()
  */
+#[ODM\Document(repositoryClass: 'Hanaboso\Applinth\Authenticator\Repository\MarketPlaceRestrictedTokenRepository')]
+#[ODM\Index(keys: ['value' => 'asc'])]
+#[ODM\Index(keys: ['created' => 'asc'], name: 'expireIndex', expireAfterSeconds: 86_400)]
+#[ODM\HasLifecycleCallbacks]
 class MarketPlaceRestrictedToken
 {
 
@@ -29,9 +27,8 @@ class MarketPlaceRestrictedToken
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $value;
 
     /**

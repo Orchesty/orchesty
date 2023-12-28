@@ -20,9 +20,8 @@ use Throwable;
  * Class ApplicationController
  *
  * @package Hanaboso\Applinth\Controller
- *
- * @Route("/application")
  */
+#[Route('/application')]
 final class ApplicationController extends AbstractController
 {
 
@@ -46,10 +45,9 @@ final class ApplicationController extends AbstractController
     }
 
     /**
-     * @Route("/installed", methods={"GET"})
-     *
      * @return Response
      */
+    #[Route('/installed', methods: ['GET'])]
     public function getInstalledApplications(): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done
@@ -62,10 +60,9 @@ final class ApplicationController extends AbstractController
     }
 
     /**
-     * @Route("/available", methods={"GET"})
-     *
      * @return Response
      */
+    #[Route('/available', methods: ['GET'])]
     public function getAvailableApplications(): Response
     {
         return $this->forward(
@@ -76,13 +73,12 @@ final class ApplicationController extends AbstractController
     }
 
     /**
-     * @Route("/{key}/preview", methods={"GET"})
-     *
      * @param Request $request
      * @param string  $key
      *
      * @return Response
      */
+    #[Route('/{key}/preview', methods: ['GET'])]
     public function getApplicationDetail(Request $request, string $key): Response
     {
         return $this->forward(
@@ -92,12 +88,12 @@ final class ApplicationController extends AbstractController
     }
 
     /**
-     * @Route("/{key}", methods={"GET"})
-     *
      * @param string $key
      *
      * @return Response
+     * @throws Throwable
      */
+    #[Route('/{key}', methods: ['GET'])]
     public function getInstalledApplicationDetail(string $key): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done
@@ -111,14 +107,13 @@ final class ApplicationController extends AbstractController
     }
 
     /**
-     * @Route("/topologies/{topologyName}/nodes/{nodeName}/run-by-name", methods={"POST"})
-     *
      * @param Request $request
      * @param string  $topologyName
      * @param string  $nodeName
      *
      * @return Response
      */
+    #[Route('/topologies/{topologyName}/nodes/{nodeName}/run-by-name', methods: ['POST'])]
     public function runTopology(Request $request, string $topologyName, string $nodeName): Response
     {
         try {
@@ -133,12 +128,11 @@ final class ApplicationController extends AbstractController
     }
 
     /**
-     * @Route("/{key}", methods={"POST"})
-     *
      * @param string $key
      *
      * @return Response
      */
+    #[Route('/{key}', methods: ['POST'])]
     public function installApplication(string $key): Response
     {
         $user = $this->authenticator->getAuthUser();
@@ -151,13 +145,12 @@ final class ApplicationController extends AbstractController
     }
 
     /**
-     * @Route("/{key}", methods={"PUT"})
-     *
      * @param Request $request
      * @param string  $key
      *
      * @return Response
      */
+    #[Route('/{key}', methods: ['PUT'])]
     public function updateApplication(Request $request, string $key): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done
@@ -171,12 +164,11 @@ final class ApplicationController extends AbstractController
     }
 
     /**
-     * @Route("/{key}", methods={"DELETE"})
-     *
      * @param string $key
      *
      * @return Response
      */
+    #[Route('/{key}', methods: ['DELETE'])]
     public function uninstallApplication(string $key): Response
     {
         $user = $this->authenticator->getAuthUser();
@@ -191,14 +183,13 @@ final class ApplicationController extends AbstractController
     }
 
     /**
-     * @Route("/{key}/changeState", methods={"PUT"})
-     * @Route("/{key}/change-state", methods={"PUT"})
-     *
      * @param Request $request
      * @param string  $key
      *
      * @return Response
      */
+    #[Route('/{key}/change-state', methods: ['PUT'])]
+    #[Route('/{key}/changeState', methods: ['PUT'])]
     public function changeStateApplication(Request $request, string $key): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done
@@ -212,13 +203,12 @@ final class ApplicationController extends AbstractController
     }
 
     /**
-     * @Route("/{key}/set-password", methods={"PUT"})
-     *
      * @param Request $request
      * @param string  $key
      *
      * @return Response
      */
+    #[Route('/{key}/set-password', methods: ['PUT'])]
     public function setPassword(Request $request, string $key): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done
@@ -232,13 +222,12 @@ final class ApplicationController extends AbstractController
     }
 
     /**
-     * @Route("/{key}/authorize", methods={"GET"})
-     *
      * @param Request $request
      * @param string  $key
      *
      * @return Response
      */
+    #[Route('/{key}/authorize', methods: ['GET'])]
     public function authorizeApplication(Request $request, string $key): Response
     {
         try {

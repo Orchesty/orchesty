@@ -11,21 +11,21 @@ export const LAST_TOPOLOGY_RUN = 'lastTopologyRun';
 
 export default class SetupGoogleSheetSettingSpreadsheet extends ACommonNode {
 
-    public getName(): string {
-        return NAME;
-    }
+  public getName(): string {
+    return NAME;
+  }
 
-    public async processAction(dto: ProcessDto<IInput>): Promise<ProcessDto<IOutput>> {
-        const body = dto.getJsonData();
-        const applicationInstall = await this.getApplicationInstallFromProcess(dto);
+  public async processAction(dto: ProcessDto<IInput>): Promise<ProcessDto<IOutput>> {
+    const body = dto.getJsonData();
+    const applicationInstall = await this.getApplicationInstallFromProcess(dto);
 
-        body.spredsheetId ??= applicationInstall.getSettings()[DIRECTORY_SETTINGS]?.[SPREADSHEET_ID];
-        body.from ??= applicationInstall.getNonEncryptedSettings()[LAST_TOPOLOGY_RUN]
+    body.spredsheetId ??= applicationInstall.getSettings()[DIRECTORY_SETTINGS]?.[SPREADSHEET_ID];
+    body.from ??= applicationInstall.getNonEncryptedSettings()[LAST_TOPOLOGY_RUN]
             ?? DateTimeUtils.getFormattedDate(DateTime.utc().minus({ day: 1 }), DATE_FORMAT);
-        body.to ??= DateTimeUtils.getFormattedDate(DateTime.utc(), DATE_FORMAT);
+    body.to ??= DateTimeUtils.getFormattedDate(DateTime.utc(), DATE_FORMAT);
 
-        return dto.addHeader(SPREADSHEET_ID, body.spredsheetId).setNewJsonData(body);
-    }
+    return dto.addHeader(SPREADSHEET_ID, body.spredsheetId).setNewJsonData(body);
+  }
 
 }
 

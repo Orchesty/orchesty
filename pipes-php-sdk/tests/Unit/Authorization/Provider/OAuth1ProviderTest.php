@@ -9,10 +9,10 @@ use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1\OAuth1ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth1Dto;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider;
+use Monolog\Logger;
 use OAuth;
 use OAuthException;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
-use Symfony\Bridge\Monolog\Logger;
 
 /**
  * Class OAuth1ProviderTest

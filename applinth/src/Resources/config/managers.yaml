@@ -15,8 +15,3 @@ services:
         arguments:
             - '%jwe_private_key%'
             - '%jwt_key%'
-            - '@jose.jwe_serializer.serializer'
-            - '@jose.jwe_decrypter.decrypter'
-            - '@jose.jws_serializer.serializer'
-            - '@jose.jws_builder.builder'
-            - '@jose.jws_verifier.verifier'

@@ -32,13 +32,12 @@ final class DashboardController
     }
 
     /**
-     * @Route("/dashboards/default", methods={"GET"})
-     *
      * @param Request $request
      *
      * @return Response
      * @throws DateTimeException
      */
+    #[Route('/dashboards/default', methods: ['GET'])]
     public function getDashboardAction(Request $request): Response
     {
         $range = $request->get('range', '24h');

@@ -7,20 +7,20 @@ enum PageEnum {
 }
 
 function getPageName(emailTemplate: PageEnum): string {
-    switch (emailTemplate) {
-        case PageEnum.NEWSLETTER:
-            return 'newsletter';
-        case PageEnum.COMMUNITY:
-            return 'community';
-        case PageEnum.SALES:
-            return 'sales';
-        case PageEnum.CONTACT:
-            return 'contact';
-        case PageEnum.WHITE_PAPER:
-            return 'white-paper';
-        default:
-            throw Error(`Unknown email template [${emailTemplate}]`);
-    }
+  switch (emailTemplate) {
+    case PageEnum.NEWSLETTER:
+      return 'newsletter';
+    case PageEnum.COMMUNITY:
+      return 'community';
+    case PageEnum.SALES:
+      return 'sales';
+    case PageEnum.CONTACT:
+      return 'contact';
+    case PageEnum.WHITE_PAPER:
+      return 'white-paper';
+    default:
+      throw Error(`Unknown email template [${emailTemplate}]`);
+  }
 }
 
 export { getPageName, PageEnum };

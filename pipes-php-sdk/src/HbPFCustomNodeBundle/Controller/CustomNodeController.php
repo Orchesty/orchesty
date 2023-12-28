@@ -39,8 +39,6 @@ final class CustomNodeController implements LoggerAwareInterface
     }
 
     /**
-     * @Route("/custom-node/{id}/process", methods={"POST", "OPTIONS"})
-     *
      * @param Request $request
      * @param string  $id
      *
@@ -48,6 +46,7 @@ final class CustomNodeController implements LoggerAwareInterface
      * @throws OnRepeatException
      * @throws PipesFrameworkExceptionAbstract
      */
+    #[Route('/custom-node/{id}/process', methods: ['POST', 'OPTIONS'])]
     public function sendAction(Request $request, string $id): Response
     {
         try {
@@ -62,12 +61,11 @@ final class CustomNodeController implements LoggerAwareInterface
     }
 
     /**
-     * @Route("/custom-node/{id}/process/test", methods={"GET", "OPTIONS"})
-     *
      * @param string $id
      *
      * @return Response
      */
+    #[Route('/custom-node/{id}/process/test', methods: ['GET', 'OPTIONS'])]
     public function sendTestAction(string $id): Response
     {
         try {
@@ -80,10 +78,9 @@ final class CustomNodeController implements LoggerAwareInterface
     }
 
     /**
-     * @Route("/custom-node/list", methods={"GET"})
-     *
      * @return Response
      */
+    #[Route('/custom-node/list', methods: ['GET'])]
     public function listOfCustomNodesAction(): Response
     {
         try {

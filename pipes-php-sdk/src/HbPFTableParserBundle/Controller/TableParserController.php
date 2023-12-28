@@ -31,12 +31,11 @@ final class TableParserController
     }
 
     /**
-     * @Route("/parser/{type}/to/json", requirements={"type": "\w+"}, methods={"POST"})
-     *
      * @param Request $request
      *
      * @return Response
      */
+    #[Route('/parser/{type}/to/json', methods: ['POST'], requirements: ['type' => '\w+'])]
     public function toJsonAction(Request $request): Response
     {
         try {
@@ -47,10 +46,9 @@ final class TableParserController
     }
 
     /**
-     * @Route("/parser/{type}/to/json/test", requirements={"type": "\w+"}, methods={"GET", "OPTIONS"})
-     *
      * @return Response
      */
+    #[Route('/parser/{type}/to/json/test', methods: ['GET', 'OPTIONS'], requirements: ['type' => '\w+'])]
     public function toJsonTestAction(): Response
     {
         try {
@@ -70,6 +68,7 @@ final class TableParserController
      *
      * @return Response
      */
+    #[Route('/parser/json/to/{type}', methods: ['POST'], requirements: ['type' => '\w+'])]
     public function fromJsonAction(Request $request, string $type): Response
     {
         try {
@@ -80,12 +79,11 @@ final class TableParserController
     }
 
     /**
-     * @Route("/parser/json/to/{type}/test", requirements={"type": "\w+"}, methods={"GET", "OPTIONS"})
-     *
      * @param string $type
      *
      * @return Response
      */
+    #[Route('/parser/json/to/{type}/test', methods: ['GET', 'OPTIONS'], requirements: ['type' => '\w+'])]
     public function fromJsonTestAction(string $type): Response
     {
         try {

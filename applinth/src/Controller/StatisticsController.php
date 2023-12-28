@@ -13,9 +13,8 @@ use Throwable;
  * Class StatisticsController
  *
  * @package Hanaboso\Applinth\Controller
- *
- * @Route("/statistics")
  */
+#[Route('/statistics')]
 final class StatisticsController
 {
 
@@ -31,10 +30,9 @@ final class StatisticsController
     }
 
     /**
-     * @Route("/applications", methods={"GET"})
-     *
      * @return Response
      */
+    #[Route('/applications', methods: ['GET'])]
     public function getApplicationsBasicDataAction(): Response
     {
         try {
@@ -45,10 +43,9 @@ final class StatisticsController
     }
 
     /**
-     * @Route("/users", methods={"GET"})
-     *
      * @return Response
      */
+    #[Route('/users', methods: ['GET'])]
     public function getUsersBasicDataAction(): Response
     {
         try {
@@ -59,12 +56,11 @@ final class StatisticsController
     }
 
     /**
-     * @Route("/applications/{application}", methods={"GET"})
-     *
      * @param string $application
      *
      * @return Response
      */
+    #[Route('/applications/{application}', methods: ['GET'])]
     public function getApplicationsUsersAction(string $application): Response
     {
         try {
@@ -75,13 +71,12 @@ final class StatisticsController
     }
 
     /**
-     * @Route("/applications/application/{key}", methods={"GET", "OPTIONS"})
-     *
      * @param Request     $request
      * @param string|null $key
      *
      * @return Response
      */
+    #[Route('/applications/application/{key}', methods: ['GET'])]
     public function applicationStatisticsAction(Request $request, ?string $key): Response
     {
         try {
@@ -94,13 +89,12 @@ final class StatisticsController
     }
 
     /**
-     * @Route("/applications/user/{user}", methods={"GET", "OPTIONS"})
-     *
      * @param Request     $request
      * @param string|null $user
      *
      * @return Response
      */
+    #[Route('/applications/user/{user}', methods: ['GET'])]
     public function userStatisticsAction(Request $request, ?string $user): Response
     {
         try {

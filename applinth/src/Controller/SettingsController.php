@@ -11,14 +11,14 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Throwable;
 
 /**
  * Class SettingsController
  *
  * @package Hanaboso\Applinth\Controller
- *
- * @Route("/settings")
  */
+#[Route('/settings')]
 final class SettingsController extends AbstractController
 {
 
@@ -38,11 +38,11 @@ final class SettingsController extends AbstractController
     }
 
     /**
-     * @Route("", methods={"GET"})
-     * @Route("/", methods={"GET"})
-     *
      * @return Response
+     * @throws Throwable
      */
+    #[Route('/', methods: ['GET'])]
+    #[Route('', methods: ['GET'])]
     public function getApplicationDetail(): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done
@@ -55,13 +55,12 @@ final class SettingsController extends AbstractController
     }
 
     /**
-     * @Route("", methods={"PUT"})
-     * @Route("/", methods={"PUT"})
-     *
      * @param Request $request
      *
      * @return Response
      */
+    #[Route('/', methods: ['PUT'])]
+    #[Route('', methods: ['PUT'])]
     public function updateApplication(Request $request): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done
@@ -75,12 +74,11 @@ final class SettingsController extends AbstractController
     }
 
     /**
-     * @Route("/authorize", methods={"GET"})
-     *
      * @param Request $request
      *
      * @return Response
      */
+    #[Route('/authorize', methods: ['GET'])]
     public function authorizeApplication(Request $request): Response
     {
         try {
@@ -98,12 +96,11 @@ final class SettingsController extends AbstractController
     }
 
     /**
-     * @Route("/set-password", methods={"PUT"})
-     *
      * @param Request $request
      *
      * @return Response
      */
+    #[Route('/set-password', methods: ['PUT'])]
     public function setPassword(Request $request): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done

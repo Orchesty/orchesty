@@ -25,7 +25,7 @@
       />
     </v-app-bar>
 
-    <v-main>
+    <v-main style="padding-bottom: 60px">
       <v-container class="wrapper">
         <v-row>
           <v-col>

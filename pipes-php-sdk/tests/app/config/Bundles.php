@@ -9,7 +9,6 @@ use Hanaboso\PipesPhpSdk\HbPFTableParserBundle\HbPFTableParserBundle;
 use Symfony\Bundle\DebugBundle\DebugBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\MonologBundle\MonologBundle;
-use Symfony\Bundle\SecurityBundle\SecurityBundle;
 
 return [
     DebugBundle::class           => ['dev' => TRUE, 'test' => TRUE],
@@ -21,5 +20,4 @@ return [
     HbPFCustomNodeBundle::class  => ['all' => TRUE],
     HbPFTableParserBundle::class => ['all' => TRUE],
     MonologBundle::class         => ['all' => TRUE],
-    SecurityBundle::class        => ['all' => TRUE],
 ];

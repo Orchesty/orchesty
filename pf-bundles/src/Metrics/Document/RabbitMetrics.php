@@ -9,12 +9,11 @@ use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
  * Class RabbitMetrics
  *
  * @package Hanaboso\PipesFramework\Metrics\Document
- *
- * @ODM\Document(collection="rabbitmq")
- * @ODM\Index(name="queueIndex", keys={"tags.queue"="text"})
- * @ODM\Index(name="createdIndex", keys={"fields.created"="desc"})
- * @ODM\Index(name="expireIndex", keys={"fields.created"=1}, options={"expireAfterSeconds"=2628000})
  */
+#[ODM\Document(collection: 'rabbitmq')]
+#[ODM\Index(keys: ['tags.queue' => 'text'], name: 'queueIndex')]
+#[ODM\Index(keys: ['fields.created' => 'desc'], name: 'createdIndex')]
+#[ODM\Index(keys: ['fields.created' => 'asc'], name: 'expireIndex', expireAfterSeconds: 2_628_000)]
 class RabbitMetrics
 {
 
@@ -22,16 +21,14 @@ class RabbitMetrics
 
     /**
      * @var RabbitMetricsFields
-     *
-     * @ODM\EmbedOne(targetDocument="Hanaboso\PipesFramework\Metrics\Document\RabbitMetricsFields")
      */
+    #[ODM\EmbedOne(targetDocument: 'Hanaboso\PipesFramework\Metrics\Document\RabbitMetricsFields')]
     private RabbitMetricsFields $fields;
 
     /**
      * @var Tags
-     *
-     * @ODM\EmbedOne(targetDocument="Hanaboso\PipesFramework\Metrics\Document\Tags")
      */
+    #[ODM\EmbedOne(targetDocument: 'Hanaboso\PipesFramework\Metrics\Document\Tags')]
     private Tags $tags;
 
     /**

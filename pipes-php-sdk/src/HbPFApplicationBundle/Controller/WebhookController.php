@@ -31,14 +31,13 @@ final class WebhookController
     }
 
     /**
-     * @Route("/webhook/applications/{key}/users/{user}/subscribe", methods={"POST"})
-     *
      * @param Request $request
      * @param string  $key
      * @param string  $user
      *
      * @return Response
      */
+    #[Route('/webhook/applications/{key}/users/{user}/subscribe', methods: ['POST'])]
     public function subscribeWebhooksAction(Request $request, string $key, string $user): Response
     {
         try {
@@ -53,14 +52,13 @@ final class WebhookController
     }
 
     /**
-     * @Route("/webhook/applications/{key}/users/{user}/unsubscribe", methods={"POST"})
-     *
      * @param Request $request
      * @param string  $key
      * @param string  $user
      *
      * @return Response
      */
+    #[Route('/webhook/applications/{key}/users/{user}/unsubscribe', methods: ['POST'])]
     public function unsubscribeWebhooksAction(Request $request, string $key, string $user): Response
     {
         try {

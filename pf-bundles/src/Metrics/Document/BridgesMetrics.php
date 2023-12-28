@@ -9,12 +9,11 @@ use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
  * Class BridgesMetrics
  *
  * @package Hanaboso\PipesFramework\Metrics\Document
- *
- * @ODM\Document(collection="pipes_node")
- * @ODM\Index(name="SearchIndex", keys={"tags.node_id"="text","tags.topology_id"="text"}),
- * @ODM\Index(name="createdIndex", keys={"fields.created"="desc"})
- * @ODM\Index(name="expireIndex", keys={"fields.created"=1}, options={"expireAfterSeconds"=2628000})
  */
+#[ODM\Document(collection: 'pipes_node')]
+#[ODM\Index(keys: ['tags.node_id' => 'text', 'tags.topology_id' => 'text'], name: 'SearchIndex')]
+#[ODM\Index(keys: ['fields.created' => 'desc'], name: 'createdIndex')]
+#[ODM\Index(keys: ['fields.created' => 'asc'], name: 'expireIndex', expireAfterSeconds: 2_628_000)]
 class BridgesMetrics
 {
 
@@ -22,16 +21,14 @@ class BridgesMetrics
 
     /**
      * @var BridgesMetricsFields
-     *
-     * @ODM\EmbedOne(targetDocument="Hanaboso\PipesFramework\Metrics\Document\BridgesMetricsFields")
      */
+    #[ODM\EmbedOne(targetDocument: 'Hanaboso\PipesFramework\Metrics\Document\BridgesMetricsFields')]
     private BridgesMetricsFields $fields;
 
     /**
      * @var Tags
-     *
-     * @ODM\EmbedOne(targetDocument="Hanaboso\PipesFramework\Metrics\Document\Tags")
      */
+    #[ODM\EmbedOne(targetDocument: 'Hanaboso\PipesFramework\Metrics\Document\Tags')]
     private Tags $tags;
 
     /**

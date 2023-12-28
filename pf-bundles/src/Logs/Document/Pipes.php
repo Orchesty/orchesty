@@ -8,94 +8,81 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  * Class Pipes
  *
  * @package Hanaboso\PipesFramework\Logs\Document
- *
- * @ODM\EmbeddedDocument()
  */
+#[ODM\EmbeddedDocument]
 class Pipes
 {
 
     /**
      * @var int
-     *
-     * @ODM\Field(type="int")
      */
+    #[ODM\Field(type: 'int')]
     private int $timestamp;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $service;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $hostname;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $channel;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $severity;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string", name="correlation_id")
      */
+    #[ODM\Field(name: 'correlation_id', type: 'string')]
     private string $correlationId;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string", name="topology_id")
      */
+    #[ODM\Field(name: 'topology_id', type: 'string')]
     private string $topologyId;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string", name="topologyName")
      */
+    #[ODM\Field(name: 'topologyName', type: 'string')]
     private string $topologyName;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string", name="node_id")
      */
+    #[ODM\Field(name: 'node_id', type: 'string')]
     private string $nodeId;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string", name="user_id")
      */
+    #[ODM\Field(name: 'user_id', type: 'string')]
     private string $userId;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string", name="nodeName")
      */
+    #[ODM\Field(name: 'nodeName', type: 'string')]
     private string $nodeName;
 
     /**
      * @var Stacktrace
-     *
-     * @ODM\EmbedOne(targetDocument="Hanaboso\PipesFramework\Logs\Document\Stacktrace")
      */
+    #[ODM\EmbedOne(targetDocument: 'Hanaboso\PipesFramework\Logs\Document\Stacktrace')]
     private Stacktrace $stacktrace;
 
     /**

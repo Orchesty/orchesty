@@ -19,13 +19,12 @@ final class TopologyProgressController extends AbstractController
     use ControllerTrait;
 
     /**
-     * @Route("/progress/topology/{topologyId}", methods={"GET", "OPTIONS"})
-     *
      * @param Request $request
      * @param string  $topologyId
      *
      * @return Response
      */
+    #[Route('/progress/topology/{topologyId}', methods: ['GET'])]
     public function getProgressTopologyAction(Request $request, string $topologyId): Response
     {
         return $this->forward(
@@ -38,12 +37,11 @@ final class TopologyProgressController extends AbstractController
     }
 
     /**
-     * @Route("/progress", methods={"GET", "OPTIONS"})
-     *
      * @param Request $request
      *
      * @return Response
      */
+    #[Route('/progress', methods: ['GET'])]
     public function getProgressesAction(Request $request): Response
     {
         return $this->forward(

@@ -5,6 +5,7 @@ namespace PipesPhpSdkTests\Integration\Command;
 use Hanaboso\PipesPhpSdk\Command\IncludeCommands;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
  * Class IncludeCommandTest
@@ -21,7 +22,9 @@ final class IncludeCommandTest extends KernelTestCaseAbstract
      */
     public function testIncludeCommands(): void
     {
-        $commands = new IncludeCommands(self::$kernel);
+        /** @var KernelInterface $kernel */
+        $kernel   = self::$kernel;
+        $commands = new IncludeCommands($kernel);
         $commands->addIncludedCommand('test:command');
         $commands->add(new Command('test'));
 

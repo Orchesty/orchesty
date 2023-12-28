@@ -3,6 +3,7 @@
 namespace Hanaboso\Applinth\Controller;
 
 use Hanaboso\Applinth\Authenticator\EndUserAuthenticator;
+use Hanaboso\MongoDataGrid\Exception\GridException;
 use Hanaboso\MongoDataGrid\GridFilterAbstract;
 use Hanaboso\MongoDataGrid\GridRequestDto;
 use Hanaboso\PipesFramework\HbPFLogsBundle\Handler\LogsHandler;
@@ -40,12 +41,12 @@ final class LogsController extends AbstractController
     }
 
     /**
-     * @Route("/logs", methods={"GET", "OPTIONS"})
-     *
      * @param Request $request
      *
      * @return Response
+     * @throws GridException
      */
+    #[Route('/logs', methods: ['GET'])]
     public function getDataForTableAction(Request $request): Response
     {
         $dto = new GridRequestDto(Json::decode($request->query->get('filter', '{}')));

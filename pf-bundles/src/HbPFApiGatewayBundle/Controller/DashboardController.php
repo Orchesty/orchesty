@@ -15,10 +15,9 @@ final class DashboardController extends AbstractController
 {
 
     /**
-     * @Route("/dashboards/default", methods={"GET"})
-     *
      * @return Response
      */
+    #[Route('/dashboards/default', methods: ['GET'])]
     public function getDashboardAction(): Response
     {
         return $this->forward(

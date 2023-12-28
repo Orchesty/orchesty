@@ -20,8 +20,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 final class RefreshCronCommand extends Command
 {
 
-    protected static $defaultName = 'cron:refresh';
-
     /**
      * RefreshCronCommand constructor.
      *
@@ -38,7 +36,9 @@ final class RefreshCronCommand extends Command
      */
     protected function configure(): void
     {
-        $this->setDescription('Refresh CRONs');
+        $this
+            ->setName('cron:refresh')
+            ->setDescription('Refresh CRONs');
     }
 
     /**

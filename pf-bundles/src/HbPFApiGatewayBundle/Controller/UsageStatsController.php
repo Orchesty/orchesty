@@ -18,10 +18,9 @@ final class UsageStatsController extends AbstractController
     use ControllerTrait;
 
     /**
-     * @Route("/usage-stats/emit-event", methods={"POST", "OPTIONS"})
-     *
      * @return Response
      */
+    #[Route('/usage-stats/emit-event', methods: ['POST'])]
     public function loginAction(): Response
     {
         return $this->forward(

@@ -7,37 +7,37 @@ import AProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/AProcessDto';
 
 export default class NonInstallableApplication extends ABasicApplication {
 
-    protected isInstallable = false;
+  protected isInstallable = false;
 
-    public getDescription(): string {
-        return 'Non-installable application description';
-    }
+  public getDescription(): string {
+    return 'Non-installable application description';
+  }
 
-    public getName(): string {
-        return 'non-installable';
-    }
+  public getName(): string {
+    return 'non-installable';
+  }
 
-    public getPublicName(): string {
-        return 'Non-installable Application';
-    }
+  public getPublicName(): string {
+    return 'Non-installable Application';
+  }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    public isAuthorized(applicationInstall: ApplicationInstall): boolean {
-        return true;
-    }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public isAuthorized(applicationInstall: ApplicationInstall): boolean {
+    return true;
+  }
 
-    public getRequestDto(
-        dto: AProcessDto,
-        applicationInstall: ApplicationInstall,
-        method: HttpMethods,
-        url?: string,
-        data?: unknown,
-    ): RequestDto {
-        return new RequestDto(url ?? '', method, dto, data ?? '');
-    }
+  public getRequestDto(
+    dto: AProcessDto,
+    applicationInstall: ApplicationInstall,
+    method: HttpMethods,
+    url?: string,
+    data?: unknown,
+  ): RequestDto {
+    return new RequestDto(url ?? '', method, dto, data ?? '');
+  }
 
-    public getFormStack(): FormStack {
-        return new FormStack();
-    }
+  public getFormStack(): FormStack {
+    return new FormStack();
+  }
 
 }

@@ -34,8 +34,6 @@ final class ConnectorController implements LoggerAwareInterface
     }
 
     /**
-     * @Route("/connector/{id}/action", methods={"POST", "OPTIONS"})
-     *
      * @param string  $id
      * @param Request $request
      *
@@ -43,6 +41,7 @@ final class ConnectorController implements LoggerAwareInterface
      * @throws OnRepeatException
      * @throws PipesFrameworkExceptionAbstract
      */
+    #[Route('/connector/{id}/action', methods: ['POST', 'OPTIONS'])]
     public function processActionAction(string $id, Request $request): Response
     {
         try {
@@ -57,13 +56,12 @@ final class ConnectorController implements LoggerAwareInterface
     }
 
     /**
-     * @Route("/connector/{id}/action/test", methods={"GET", "OPTIONS"})
-     *
      * @param Request $request
      * @param string  $id
      *
      * @return Response
      */
+    #[Route('/connector/{id}/action/test', methods: ['GET', 'OPTIONS'])]
     public function processActionTestAction(Request $request, string $id): Response
     {
         try {
@@ -76,10 +74,9 @@ final class ConnectorController implements LoggerAwareInterface
     }
 
     /**
-     * @Route("/connector/list", methods={"GET"})
-     *
      * @return Response
      */
+    #[Route('/connector/list', methods: ['GET'])]
     public function listOfConnectorsAction(): Response
     {
         try {

@@ -32,24 +32,22 @@ final class NodeController
     }
 
     /**
-     * @Route("/topologies/{id}/nodes", defaults={}, requirements={"id": "\w+"}, methods={"GET", "OPTIONS"})
-     *
      * @param string $id
      *
      * @return Response
      */
+    #[Route('/topologies/{id}/nodes', requirements: ['id' => '\w+'], methods: ['GET'])]
     public function getNodesAction(string $id): Response
     {
         return $this->getResponse($this->nodeHandler->getNodes($id));
     }
 
     /**
-     * @Route("/nodes/{id}", defaults={}, requirements={"id": "\w+"}, methods={"GET", "OPTIONS"})
-     *
      * @param string $id
      *
      * @return Response
      */
+    #[Route('/nodes/{id}', requirements: ['id' => '\w+'], methods: ['GET'])]
     public function getNodeAction(string $id): Response
     {
         try {
@@ -62,13 +60,12 @@ final class NodeController
     }
 
     /**
-     * @Route("/nodes/{id}", defaults={}, requirements={"id": "\w+"}, methods={"PATCH", "OPTIONS"})
-     *
      * @param Request $request
      * @param string  $id
      *
      * @return Response
      */
+    #[Route('/nodes/{id}', requirements: ['id' => '\w+'], methods: ['PATCH'])]
     public function updateNodeAction(Request $request, string $id): Response
     {
         try {

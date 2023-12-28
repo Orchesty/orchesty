@@ -34,11 +34,10 @@ final class ApplicationController
     }
 
     /**
-     * @Route("/applications", methods={"GET"})
-     * @Route("/applications/", methods={"GET"})
-     *
      * @return Response
      */
+    #[Route('/applications', methods: ['GET'])]
+    #[Route('/applications/', methods: ['GET'])]
     public function listOfApplicationsAction(): Response
     {
         try {
@@ -49,12 +48,11 @@ final class ApplicationController
     }
 
     /**
-     * @Route("/applications/limits", methods={"POST"})
-     * @Route("/applications/limits/", methods={"POST"})
-     *
      * @param Request $request
      * @return Response
      */
+    #[Route('/applications/limits', methods: ['POST'])]
+    #[Route('/applications/limits/', methods: ['POST'])]
     public function listOfApplicationsLimitsAction(Request $request): Response
     {
         try {
@@ -72,12 +70,11 @@ final class ApplicationController
     }
 
     /**
-     * @Route("/applications/{key}", methods={"GET"})
-     *
      * @param string $key
      *
      * @return Response
      */
+    #[Route('/applications/{key}', methods: ['GET'])]
     public function getApplicationAction(string $key): Response
     {
         try {
@@ -90,12 +87,11 @@ final class ApplicationController
     }
 
     /**
-     * @Route("/applications/{key}/sync/list", methods={"GET"})
-     *
      * @param string $key
      *
      * @return Response
      */
+    #[Route('/applications/{key}/sync/list', methods: ['GET'])]
     public function getSynchronousActionsAction(string $key): Response
     {
         try {
@@ -108,14 +104,13 @@ final class ApplicationController
     }
 
     /**
-     * @Route("/applications/{key}/sync/{method}", methods={"GET", "POST"})
-     *
      * @param Request $request
      * @param string  $key
      * @param string  $method
      *
      * @return Response
      */
+    #[Route('/applications/{key}/sync/{method}', methods: ['GET', 'POST'])]
     public function runSynchronousActionsAction(Request $request, string $key, string $method): Response
     {
         try {
@@ -135,14 +130,13 @@ final class ApplicationController
     }
 
     /**
-     * @Route("/applications/{key}/users/{user}/authorize", methods={"GET"})
-     *
      * @param Request $request
      * @param string  $key
      * @param string  $user
      *
      * @return Response
      */
+    #[Route('/applications/{key}/users/{user}/authorize', methods: ['GET'])]
     public function authorizeApplicationAction(Request $request, string $key, string $user): Response
     {
         try {
@@ -163,14 +157,13 @@ final class ApplicationController
     }
 
     /**
-     * @Route("/applications/{key}/users/{user}/authorize/token", methods={"GET"})
-     *
      * @param Request $request
      * @param string  $key
      * @param string  $user
      *
      * @return Response
      */
+    #[Route('/applications/{key}/users/{user}/authorize/token', methods: ['GET'])]
     public function setAuthorizationTokenAction(Request $request, string $key, string $user): Response
     {
         try {
@@ -185,12 +178,11 @@ final class ApplicationController
     }
 
     /**
-     * @Route("/applications/authorize/token", methods={"GET"})
-     *
      * @param Request $request
      *
      * @return Response
      */
+    #[Route('/applications/authorize/token', methods: ['GET'])]
     public function setAuthorizationTokenQueryAction(Request $request): Response
     {
         try {
@@ -207,12 +199,11 @@ final class ApplicationController
     }
 
     /**
-     * @Route("/applications/users/{user}", methods={"GET"})
-     *
      * @param string $user
      *
      * @return Response
      */
+    #[Route('/applications/users/{user}', methods: ['GET'])]
     public function getUsersApplicationAction(string $user): Response
     {
         try {
@@ -223,13 +214,12 @@ final class ApplicationController
     }
 
     /**
-     * @Route("/applications/{key}/users/{user}",  methods={"GET"})
-     *
      * @param string $key
      * @param string $user
      *
      * @return Response
      */
+    #[Route('/applications/{key}/users/{user}', methods: ['GET'])]
     public function getApplicationDetailAction(string $key, string $user): Response
     {
         try {
@@ -242,13 +232,12 @@ final class ApplicationController
     }
 
     /**
-     * @Route("/applications/{key}/users/{user}/install",  methods={"POST"})
-     *
      * @param string $key
      * @param string $user
      *
      * @return Response
      */
+    #[Route('/applications/{key}/users/{user}/install', methods: ['POST'])]
     public function installApplicationAction(string $key, string $user): Response
     {
         try {
@@ -261,13 +250,12 @@ final class ApplicationController
     }
 
     /**
-     * @Route("/applications/{key}/users/{user}/uninstall", methods={"DELETE"})
-     *
      * @param string $key
      * @param string $user
      *
      * @return Response
      */
+    #[Route('/applications/{key}/users/{user}/uninstall', methods: ['DELETE'])]
     public function uninstallApplicationAction(string $key, string $user): Response
     {
         try {
@@ -280,14 +268,13 @@ final class ApplicationController
     }
 
     /**
-     * @Route("/applications/{key}/users/{user}/changeState'", methods={"PUT"})
-     *
      * @param Request $request
      * @param string  $key
      * @param string  $user
      *
      * @return Response
      */
+    #[Route('/applications/{key}/users/{user}/changeState', methods: ['PUT'])]
     public function changeStateOfApplication(Request $request, string $key, string $user): Response
     {
         try {
@@ -304,14 +291,13 @@ final class ApplicationController
     }
 
     /**
-     * @Route("/applications/{key}/users/{user}/settings", methods={"PUT"})
-     *
      * @param Request $request
      * @param string  $key
      * @param string  $user
      *
      * @return Response
      */
+    #[Route('/applications/{key}/users/{user}/settings', methods: ['PUT'])]
     public function updateApplicationSettingsAction(Request $request, string $key, string $user): Response
     {
         try {
@@ -326,14 +312,13 @@ final class ApplicationController
     }
 
     /**
-     * @Route("/applications/{key}/users/{user}/password", methods={"PUT"})
-     *
      * @param Request $request
      * @param string  $key
      * @param string  $user
      *
      * @return Response
      */
+    #[Route('/applications/{key}/users/{user}/password', methods: ['PUT'])]
     public function saveApplicationPasswordAction(Request $request, string $key, string $user): Response
     {
         try {

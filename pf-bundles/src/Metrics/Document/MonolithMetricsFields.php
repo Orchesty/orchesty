@@ -9,9 +9,8 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  * Class MonolithMetricsFields
  *
  * @package Hanaboso\PipesFramework\Metrics\Document
- *
- * @ODM\EmbeddedDocument()
  */
+#[ODM\EmbeddedDocument]
 class MonolithMetricsFields
 {
 
@@ -19,23 +18,20 @@ class MonolithMetricsFields
 
     /**
      * @var float
-     *
-     * @ODM\Field(type="float", name="fpm_cpu_kernel_time")
      */
+    #[ODM\Field(name: 'fpm_cpu_kernel_time', type: 'float')]
     private float $kernelTime;
 
     /**
      * @var float
-     *
-     * @ODM\Field(type="float", name="fpm_cpu_user_time")
      */
+    #[ODM\Field(name: 'fpm_cpu_user_time', type: 'float')]
     private float $userTime;
 
     /**
      * @var DateTime
-     *
-     * @ODM\Field(type="date")
      */
+    #[ODM\Field(type: 'date')]
     private DateTime $created;
 
     /**

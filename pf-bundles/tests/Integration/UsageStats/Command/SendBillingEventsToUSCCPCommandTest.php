@@ -19,6 +19,7 @@ use PHPUnit\Framework\MockObject\Exception;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
  * Class SendBillingEventsToUSCCPCommandTest
@@ -60,7 +61,9 @@ final class SendBillingEventsToUSCCPCommandTest extends DatabaseTestCaseAbstract
                 return $methods[$counter++]($request);
             });
 
-        $application = new Application(self::$kernel);
+        /** @var KernelInterface $kernel */
+        $kernel      = self::$kernel;
+        $application = new Application($kernel);
         $command     = $application->get('usage_stats:send-events');
         $this->setProperty($command, 'curlManager', $curl);
         $commandTester = new CommandTester($command);

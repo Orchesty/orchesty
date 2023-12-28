@@ -16,12 +16,11 @@ final class UserTaskController extends AbstractController
 {
 
     /**
-     * @Route("/user-task", methods={"GET", "OPTIONS"})
-     *
      * @param Request $request
      *
      * @return Response
      */
+    #[Route('/user-task', methods: ['GET'])]
     public function filterAction(Request $request): Response
     {
         return $this->forward(
@@ -32,12 +31,11 @@ final class UserTaskController extends AbstractController
     }
 
     /**
-     * @Route("/user-task/{id}/accept", methods={"POST", "OPTIONS"})
-     *
      * @param string $id
      *
      * @return Response
      */
+    #[Route('/user-task/{id}/accept', methods: ['POST'])]
     public function acceptAction(string $id): Response
     {
         return $this->forward(
@@ -47,12 +45,11 @@ final class UserTaskController extends AbstractController
     }
 
     /**
-     * @Route("/user-task/accept", methods={"POST", "OPTIONS"})
-     *
      * @param Request $request
      *
      * @return Response
      */
+    #[Route('/user-task/accept', methods: ['POST'])]
     public function accpetBatchAction(Request $request): Response
     {
         return $this->forward(
@@ -62,12 +59,11 @@ final class UserTaskController extends AbstractController
     }
 
     /**
-     * @Route("/user-task/{id}/reject", methods={"POST", "OPTIONS"})
-     *
      * @param string $id
      *
      * @return Response
      */
+    #[Route('/user-task/{id}/reject', methods: ['POST'])]
     public function rejectAction(string $id): Response
     {
         return $this->forward(
@@ -77,12 +73,11 @@ final class UserTaskController extends AbstractController
     }
 
     /**
-     * @Route("/user-task/reject", methods={"POST", "OPTIONS"})
-     *
      * @param Request $request
      *
      * @return Response
      */
+    #[Route('/user-task/reject', methods: ['POST'])]
     public function rejectBatchAction(Request $request): Response
     {
         return $this->forward(
@@ -92,12 +87,11 @@ final class UserTaskController extends AbstractController
     }
 
     /**
-     * @Route("/user-task/{id}", methods={"GET", "OPTIONS"})
-     *
      * @param string $id
      *
      * @return Response
      */
+    #[Route('/user-task/{id}', methods: ['GET'])]
     public function getAction(string $id): Response
     {
         return $this->forward(
@@ -107,12 +101,11 @@ final class UserTaskController extends AbstractController
     }
 
     /**
-     * @Route("/user-task/{id}", methods={"PUT", "OPTIONS"})
-     *
      * @param string $id
      *
      * @return Response
      */
+    #[Route('/user-task/{id}', methods: ['PUT'])]
     public function updateAction(string $id): Response
     {
         return $this->forward(

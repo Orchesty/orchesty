@@ -16,12 +16,11 @@ final class ApiTokenController extends AbstractController
 {
 
     /**
-     * @Route("/apiTokens", methods={"GET", "OPTIONS"})
-     *
      * @param Request $request
      *
      * @return Response
      */
+    #[Route('/apiTokens', methods: ['GET'])]
     public function getApiTokensAction(Request $request): Response
     {
         return $this->forward(
@@ -31,12 +30,11 @@ final class ApiTokenController extends AbstractController
     }
 
     /**
-     * @Route("/apiTokens", methods={"POST", "OPTIONS"})
-     *
      * @param Request $request
      *
      * @return Response
      */
+    #[Route('/apiTokens', methods: ['POST'])]
     public function createAction(Request $request): Response
     {
         return $this->forward(
@@ -46,12 +44,11 @@ final class ApiTokenController extends AbstractController
     }
 
     /**
-     * @Route("/apiTokens/{id}", methods={"DELETE", "OPTIONS"}, requirements={"id": "\w+"})
-     *
      * @param string $id
      *
      * @return Response
      */
+    #[Route('/apiTokens/{id}', requirements: ['id' => '\w+'], methods: ['DELETE'])]
     public function deleteAction(string $id): Response
     {
         return $this->forward(

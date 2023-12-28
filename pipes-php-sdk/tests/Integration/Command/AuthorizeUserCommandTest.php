@@ -16,6 +16,7 @@ use PipesPhpSdkTests\MockServer\Mock;
 use PipesPhpSdkTests\MockServer\MockServer;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\HttpKernel\KernelInterface;
 use TypeError;
 
 /**
@@ -70,7 +71,9 @@ final class AuthorizeUserCommandTest extends KernelTestCaseAbstract
                 ['created' => '2023-02-08 07:41:54', 'updated' => '2023-02-08 07:41:54', 'encryptedSettings' => '001_njvjIYXBFEyG3SN5aorqcpzWmAzDOoa2YD3yJ1E1nqk=:cOQj3xzk1PbgK7Cp5S56fLZGFnBvC3Vr94tvB2DgQO8=:+4+bYTP/BdXDiJPrOnF4JNL9XFDWQ4eb:m5qmJyCQxXY6d1jHzu91ouU4mzwgKizyTlYG0DxbE/rxJYf7wO8L9iyw3ka47Ut9KE2oph81Ma4qAbJP4s4K/J51Rk2rSZMBxmyraqB5YXCbd96+m5pOexGQ'],
             ),
         );
-        $application = new Application(self::$kernel);
+        /** @var KernelInterface $kernel */
+        $kernel      = self::$kernel;
+        $application = new Application($kernel);
 
         self::expectOutputString('');
         $command       = $application->get('user:authorize');
@@ -98,7 +101,6 @@ final class AuthorizeUserCommandTest extends KernelTestCaseAbstract
             'authorize/url',
             static function (): void {
             },
-            [],
         );
 
         $this->expectOutputString('authorize/url?oauth_callback=127.0.0.4&oauth_token=aabbcc');
@@ -109,7 +111,9 @@ final class AuthorizeUserCommandTest extends KernelTestCaseAbstract
      */
     public function testExecuteMissingEnvParam(): void
     {
-        $application   = new Application(self::$kernel);
+        /** @var KernelInterface $kernel */
+        $kernel        = self::$kernel;
+        $application   = new Application($kernel);
         $command       = $application->get('user:authorize');
         $commandTester = new CommandTester($command);
 
@@ -127,7 +131,9 @@ final class AuthorizeUserCommandTest extends KernelTestCaseAbstract
      */
     public function testExecuteMissingUserParam(): void
     {
-        $application   = new Application(self::$kernel);
+        /** @var KernelInterface $kernel */
+        $kernel        = self::$kernel;
+        $application   = new Application($kernel);
         $command       = $application->get('user:authorize');
         $commandTester = new CommandTester($command);
 

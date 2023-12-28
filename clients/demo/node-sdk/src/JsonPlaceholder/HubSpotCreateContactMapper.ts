@@ -10,25 +10,25 @@ interface IInputJson {
 
 export default class HubSpotCreateContactMapper extends ACommonNode {
 
-    public getName(): string {
-        return 'hub-spot-create-contact-mapper';
-    }
+  public getName(): string {
+    return 'hub-spot-create-contact-mapper';
+  }
 
-    public processAction(dto: ProcessDto<IInputJson>): ProcessDto | Promise<ProcessDto> {
-        const body = dto.getJsonData();
-        const name = body.name.split(' ');
+  public processAction(dto: ProcessDto<IInputJson>): ProcessDto | Promise<ProcessDto> {
+    const body = dto.getJsonData();
+    const name = body.name.split(' ');
 
-        dto.setJsonData({
-            properties: {
-                company: body.company.name,
-                email: body.email,
-                firstname: name[0] ?? '',
-                lastname: name[1] ?? '',
-                website: body.website,
-            },
-        });
+    dto.setJsonData({
+      properties: {
+        company: body.company.name,
+        email: body.email,
+        firstname: name[0] ?? '',
+        lastname: name[1] ?? '',
+        website: body.website,
+      },
+    });
 
-        return dto;
-    }
+    return dto;
+  }
 
 }

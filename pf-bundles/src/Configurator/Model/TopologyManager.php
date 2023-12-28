@@ -343,7 +343,6 @@ final class TopologyManager
             $nodesMap[$topologyNode->getId()] = ['orig' => $topologyNode, 'copy' => $nodeCopy];
         }
 
-        /** @var mixed[] $node */
         foreach ($nodesMap as $node) {
             /** @var Node $orig */
             $orig = $node['orig'];

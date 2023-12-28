@@ -10,8 +10,14 @@ use Hanaboso\PhpCheckUtils\PhpUnit\Traits\DatabaseTestTrait;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
 use Hanaboso\UserBundle\Document\User;
 use Hanaboso\Utils\String\Json;
+use Jose\Component\Core\AlgorithmManager;
 use Jose\Component\Encryption\Algorithm\ContentEncryption\A128GCM;
 use Jose\Component\Encryption\Algorithm\KeyEncryption\ECDHES;
+use Jose\Component\Encryption\Compression\CompressionMethodManager;
+use Jose\Component\Encryption\Compression\Deflate;
+use Jose\Component\Encryption\JWEBuilder;
+use Jose\Component\Encryption\Serializer\CompactSerializer as JWECompactSerializer;
+use Jose\Component\Encryption\Serializer\JWESerializerManager;
 use Jose\Component\KeyManagement\JWKFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
@@ -199,8 +205,12 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
             'sub'      => 'user/app/id',
         ];
 
-        $jweSerializer = self::getContainer()->get('jose.jwe_serializer.serializer');
-        $jweBuilder    = self::getContainer()->get('jose.jwe_builder.builder');
+        $jweSerializer = new JWESerializerManager([new JWECompactSerializer()]);
+        $jweBuilder    = new JWEBuilder(
+            new AlgorithmManager([new ECDHES()]),
+            new AlgorithmManager([new A128GCM()]),
+            new CompressionMethodManager([new Deflate()]),
+        );
 
         $publicKey = '-----BEGIN PUBLIC KEY-----
 MIGbMBAGByqGSM49AgEGBSuBBAAjA4GGAAQAZyRJCpJxZ6cbpkhZOTBSBGE5tkXm

@@ -34,8 +34,6 @@ final class BatchController implements LoggerAwareInterface
     }
 
     /**
-     * @Route("/batch/{id}/action", methods={"POST", "OPTIONS"})
-     *
      * @param string  $id
      * @param Request $request
      *
@@ -43,6 +41,7 @@ final class BatchController implements LoggerAwareInterface
      * @throws OnRepeatException
      * @throws PipesFrameworkExceptionAbstract
      */
+    #[Route('/batch/{id}/action', methods: ['POST', 'OPTIONS'])]
     public function processActionAction(string $id, Request $request): Response
     {
         try {
@@ -57,13 +56,12 @@ final class BatchController implements LoggerAwareInterface
     }
 
     /**
-     * @Route("/batch/{id}/action/test", methods={"GET", "OPTIONS"})
-     *
      * @param Request $request
      * @param string  $id
      *
      * @return Response
      */
+    #[Route('/batch/{id}/action/test', methods: ['GET', 'OPTIONS'])]
     public function processActionTestAction(Request $request, string $id): Response
     {
         try {
@@ -80,6 +78,7 @@ final class BatchController implements LoggerAwareInterface
      *
      * @return Response
      */
+    #[Route('/batch/list', methods: ['GET'])]
     public function listOfConnectorsAction(): Response
     {
         try {

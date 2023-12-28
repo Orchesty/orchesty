@@ -19,9 +19,8 @@ use Throwable;
  * Class ProcessController
  *
  * @package Hanaboso\Applinth\Controller
- *
- * @Route("/process")
  */
+#[Route('/process')]
 final class ProcessController extends AbstractController
 {
 
@@ -43,12 +42,11 @@ final class ProcessController extends AbstractController
     }
 
     /**
-     * @Route("/overview", methods={"GET"})
-     *
      * @param Request $request
      *
      * @return Response
      */
+    #[Route('/overview', methods: ['GET'])]
     public function getOverview(Request $request): Response
     {
         try {

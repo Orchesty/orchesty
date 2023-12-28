@@ -12,9 +12,8 @@ use Hanaboso\Utils\Exception\DateTimeException;
  * Class Webhook
  *
  * @package Hanaboso\PipesFramework\Application\Document
- *
- * @ODM\Document(repositoryClass="Hanaboso\PipesFramework\Application\Repository\WebhookRepository")
  */
+#[ODM\Document(repositoryClass: 'Hanaboso\PipesFramework\Application\Repository\WebhookRepository')]
 class Webhook
 {
 
@@ -26,58 +25,50 @@ class Webhook
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $name;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $user;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $token;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $node;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $topology;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $application;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $webhookId;
 
     /**
      * @var bool
-     *
-     * @ODM\Field(type="boolean")
      */
+    #[ODM\Field(type: 'boolean')]
     private bool $unsubscribeFailed = FALSE;
 
     /**

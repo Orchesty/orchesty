@@ -10,14 +10,23 @@ use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
  * Class Logs
  *
  * @package Hanaboso\PipesFramework\Logs\Document
- *
- * @ODM\Document()
- * @ODM\Index(name="SearchIndex", keys={"message"="text", "pipes.correlationId"="text", "pipes.topologyId"="text", "pipes.topologyName"="text", "pipes.nodeId"="text", "pipes.nodeName"="text"}),
- * @ODM\Index(name="SeverityIndex", keys={"pipes.severity"="hashed"}),
- * @ODM\Index(name="LevelIndex", keys={"pipes.level"="hashed"}),
- * @ODM\Index(name="LogsTimestampIndex", keys={"ts"="desc"})
- * @ODM\Index(name="expireIndex", keys={"ts"=1}, options={"expireAfterSeconds"=2628000})
  */
+#[ODM\Document]
+#[ODM\Index(
+    keys: [
+        'message' =>'text',
+        'pipes.correlationId' =>'text',
+        'pipes.nodeId' =>'text',
+        'pipes.nodeName' =>'text',
+        'pipes.topologyId' =>'text',
+        'pipes.topologyName' =>'text',
+    ],
+    name: 'SearchIndex',
+)]
+#[ODM\Index(keys: ['pipes.severity' => 'hashed'], name: 'SeverityIndex')]
+#[ODM\Index(keys: ['pipes.level' => 'hashed'], name: 'LevelIndex')]
+#[ODM\Index(keys: ['ts' => 'desc'], name: 'LogsTimestampIndex')]
+#[ODM\Index(keys: ['ts' => 'asc'], name: 'expireIndex', expireAfterSeconds: 2_628_000)]
 class Logs
 {
 
@@ -40,37 +49,32 @@ class Logs
 
     /**
      * @var DateTime
-     *
-     * @ODM\Field(type="date", name="ts")
      */
+    #[ODM\Field(name: 'ts', type: 'date')]
     private DateTime $timestamp;
 
     /**
      * @var Pipes
-     *
-     * @ODM\EmbedOne(targetDocument="Hanaboso\PipesFramework\Logs\Document\Pipes")
      */
+    #[ODM\EmbedOne(targetDocument: 'Hanaboso\PipesFramework\Logs\Document\Pipes')]
     private Pipes $pipes;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string", name="@version")
      */
+    #[ODM\Field(name: '@version', type: 'string')]
     private string $version;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $message;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $host;
 
     /**

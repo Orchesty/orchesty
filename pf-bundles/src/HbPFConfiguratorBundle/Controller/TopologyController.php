@@ -33,12 +33,11 @@ final class TopologyController
     }
 
     /**
-     * @Route("/topologies", methods={"GET", "OPTIONS"})
-     *
      * @param mixed $query
      *
      * @return Response
      */
+    #[Route('/topologies', methods: ['GET'])]
     public function getTopologiesAction(mixed $query): Response
     {
         try {
@@ -57,13 +56,12 @@ final class TopologyController
     }
 
     /**
-     * @Route("/topologies/{id}/run", methods={"POST", "OPTIONS"})
-     *
      * @param Request $request
      * @param string  $id
      *
      * @return Response
      */
+    #[Route('/topologies/{id}/run', methods: ['POST'])]
     public function runTopologiesAction(Request $request, string $id): Response
     {
         try {
@@ -74,14 +72,13 @@ final class TopologyController
     }
 
     /**
-     * @Route("/topologies/{topologyName}/nodes/{nodeName}/run-by-name", methods={"POST", "OPTIONS"})
-     *
      * @param Request $request
      * @param string  $topologyName
      * @param string  $nodeName
      *
      * @return Response
      */
+    #[Route('/topologies/{topologyName}/nodes/{nodeName}/run-by-name', methods: ['POST'])]
     public function runTopologyByNameAction(Request $request, string $topologyName, string $nodeName): Response
     {
         try {
@@ -94,10 +91,9 @@ final class TopologyController
     }
 
     /**
-     * @Route("/topologies/cron", methods={"GET", "OPTIONS"})
-     *
      * @return Response
      */
+    #[Route('/topologies/cron', methods: ['GET'])]
     public function getCronTopologiesAction(): Response
     {
         try {
@@ -108,12 +104,11 @@ final class TopologyController
     }
 
     /**
-     * @Route("/topologies/{id}", defaults={}, requirements={"id": "\w+"}, methods={"GET", "OPTIONS"})
-     *
      * @param string $id
      *
      * @return Response
      */
+    #[Route('/topologies/{id}', requirements: ['id' => '\w+'], methods: ['GET'])]
     public function getTopologyAction(string $id): Response
     {
         try {
@@ -124,12 +119,11 @@ final class TopologyController
     }
 
     /**
-     * @Route("/topologies", methods={"POST"})
-     *
      * @param Request $request
      *
      * @return Response
      */
+    #[Route('/topologies', methods: ['POST'])]
     public function createTopologyAction(Request $request): Response
     {
         try {
@@ -148,13 +142,12 @@ final class TopologyController
     }
 
     /**
-     * @Route("/topologies/{id}", defaults={}, requirements={"id": "\w+"}, methods={"PUT", "PATCH", "OPTIONS"})
-     *
      * @param Request $request
      * @param string  $id
      *
      * @return Response
      */
+    #[Route('/topologies/{id}', requirements: ['id' => '\w+'], methods: ['PUT', 'PATCH'])]
     public function updateTopologyAction(Request $request, string $id): Response
     {
         try {
@@ -165,12 +158,16 @@ final class TopologyController
     }
 
     /**
-     * @Route("/topologies/{id}/schema.bpmn", defaults={"_format"="xml"}, requirements={"id": "\w+"}, methods={"GET", "OPTIONS"})
-     *
      * @param string $id
      *
      * @return Response
      */
+    #[Route(
+        '/topologies/{id}/schema.bpmn',
+        requirements: ['id' => '\w+'],
+        defaults: ['_format' => 'xml'],
+        methods: ['GET'],
+    )]
     public function getTopologySchemaAction(string $id): Response
     {
         try {
@@ -184,13 +181,17 @@ final class TopologyController
     }
 
     /**
-     * @Route("/topologies/{id}/schema.bpmn", defaults={"_format"="xml"}, requirements={"id": "\w+"}, methods={"PUT", "OPTIONS"})
-     *
      * @param Request $request
      * @param string  $id
      *
      * @return Response
      */
+    #[Route(
+        '/topologies/{id}/schema.bpmn',
+        requirements: ['id' => '\w+'],
+        defaults: ['_format' => 'xml'],
+        methods: ['PUT'],
+    )]
     public function saveTopologySchemaAction(Request $request, string $id): Response
     {
         try {
@@ -223,13 +224,17 @@ final class TopologyController
     }
 
     /**
-     * @Route("/topologies/check/{id}/schema.bpmn", defaults={"_format"="xml"}, requirements={"id": "\w+"}, methods={"POST", "OPTIONS"})
-     *
      * @param Request $request
      * @param string  $id
      *
      * @return Response
      */
+    #[Route(
+        '/topologies/check/{id}/schema.bpmn',
+        requirements: ['id' => '\w+'],
+        defaults: ['_format' => 'xml'],
+        methods: ['POST'],
+    )]
     public function checkTopologySchemaDifferencesAction(Request $request, string $id): Response
     {
         try {
@@ -258,12 +263,11 @@ final class TopologyController
     }
 
     /**
-     * @Route("/topologies/{id}/publish", defaults={}, requirements={"id": "\w+"}, methods={"POST", "OPTIONS"})
-     *
      * @param string $id
      *
      * @return Response
      */
+    #[Route('/topologies/{id}/publish', requirements: ['id' => '\w+'], methods: ['POST'])]
     public function publishTopologyAction(string $id): Response
     {
         try {
@@ -276,12 +280,11 @@ final class TopologyController
     }
 
     /**
-     * @Route("/topologies/{id}/clone", defaults={}, requirements={"id": "\w+"}, methods={"POST", "OPTIONS"})
-     *
      * @param string $id
      *
      * @return Response
      */
+    #[Route('/topologies/{id}/clone', requirements: ['id' => '\w+'], methods: ['POST'])]
     public function cloneTopologyAction(string $id): Response
     {
         try {
@@ -294,13 +297,12 @@ final class TopologyController
     }
 
     /**
-     * @Route("/topologies/{id}", defaults={}, requirements={"id": "\w+"}, methods={"DELETE", "OPTIONS"})
-     *
      * @param Request $request
      * @param string  $id
      *
      * @return Response
      */
+    #[Route('/topologies/{id}', requirements: ['id' => '\w+'], methods: ['DELETE'])]
     public function deleteTopologyAction(Request $request, string $id): Response
     {
         try {
@@ -314,12 +316,11 @@ final class TopologyController
     }
 
     /**
-     * @Route("/topologies/{id}/test", methods={"GET"})
-     *
      * @param string $topologyId
      *
      * @return Response
      */
+    #[Route('/topologies/{id}/test', methods: ['GET'])]
     public function testAction(string $topologyId): Response
     {
         try {
@@ -332,13 +333,12 @@ final class TopologyController
     }
 
     /**
-     * @Route("/topologies/{topologyId}/versions/node/{nodeName}", methods={"GET"})
-     *
      * @param string $topologyId
      * @param string $nodeName
      *
      * @return Response
      */
+    #[Route('/topologies/{topologyId}/versions/node/{nodeName}', methods: ['GET'])]
     public function getTopologyVersions(string $topologyId, string $nodeName): Response
     {
         try {

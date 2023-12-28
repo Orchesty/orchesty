@@ -8,9 +8,8 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  * Class Tags
  *
  * @package Hanaboso\PipesFramework\Metrics\Document
- *
- * @ODM\EmbeddedDocument()
  */
+#[ODM\EmbeddedDocument]
 class Tags
 {
 
@@ -46,23 +45,20 @@ class Tags
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string", name="node_id")
      */
+    #[ODM\Field(name: 'node_id', type: 'string')]
     private string $nodeId;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string", name="topology_id")
      */
+    #[ODM\Field(name: 'topology_id', type: 'string')]
     private string $topologyId;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $queue;
 
     /**

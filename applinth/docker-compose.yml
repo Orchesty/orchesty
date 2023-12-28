@@ -1,14 +1,13 @@
 version: '3.5'
 services:
     app:
-        image: hanabosocom/php-dev:php-8.2-alpine
+        image: hanabosocom/php-dev:php-8.3-alpine
         user: ${DEV_UID}:${DEV_GID}
         ports:
             - ${DEV_IP}:80:80
         working_dir: /var/www/pipes/applinth
         volumes:
             - ../:/var/www/pipes:cached
-            - ${SSH_AUTH}:/tmp/.ssh-auth-sock
             - ${HOME}/dev/.composer:${HOME}/dev/.composer:cached
         environment:
             APP_ENV: dev

@@ -5,20 +5,20 @@ import BatchProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/BatchProcessDto
 
 export default class ListPosts extends ABatchNode {
 
-    public getName(): string {
-        return 'list-posts';
-    }
+  public getName(): string {
+    return 'list-posts';
+  }
 
-    public async processAction(dto: BatchProcessDto): Promise<BatchProcessDto> {
-        const request = new RequestDto('https://jsonplaceholder.typicode.com/posts', HttpMethods.GET, dto);
-        const res = await this.getSender().send<IResponse[]>(request);
+  public async processAction(dto: BatchProcessDto): Promise<BatchProcessDto> {
+    const request = new RequestDto('https://jsonplaceholder.typicode.com/posts', HttpMethods.GET, dto);
+    const res = await this.getSender().send<IResponse[]>(request);
 
-        res.getJsonBody().forEach((item) => {
-            dto.addItem(item, dto.getUser());
-        });
+    res.getJsonBody().forEach((item) => {
+      dto.addItem(item, dto.getUser());
+    });
 
-        return dto;
-    }
+    return dto;
+  }
 
 }
 

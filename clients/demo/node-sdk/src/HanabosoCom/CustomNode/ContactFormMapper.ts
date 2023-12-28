@@ -8,41 +8,41 @@ export const NAME = 'hanaboso-contact-form-mapper';
 
 export default class ContactFormMapper extends ACommonNode {
 
-    public getName(): string {
-        return NAME;
+  public getName(): string {
+    return NAME;
+  }
+
+  public processAction(dto: ProcessDto<IInput>): ProcessDto<IInput | IOutput> {
+    const { email, message, name } = dto.getJsonData();
+
+    if (!email || !message || !name) {
+      dto.setStopProcess(
+        ResultCode.STOP_AND_FAILED,
+        'Not all required informations were send.',
+      );
+      return dto;
     }
 
-    public processAction(dto: ProcessDto<IInput>): ProcessDto<IInput | IOutput> {
-        const { email, message, name } = dto.getJsonData();
-
-        if (!email || !message || !name) {
-            dto.setStopProcess(
-                ResultCode.STOP_AND_FAILED,
-                'Not all required informations were send.',
-            );
-            return dto;
-        }
-
-        return dto.setNewJsonData<IOutput>({
-            /* eslint-disable @typescript-eslint/naming-convention */
-            Destination: {
-                ToAddresses: ['sales@hanaboso.com'],
-            },
-            Source: 'info@hanaboso.com',
-            ReplyToAddresses: [email],
-            Message: {
-                Subject: {
-                    Data: `Zpráva z kontaktní fomuláře: ${name}`,
-                },
-                Body: {
-                    Text: {
-                        Data: `Od: ${name}${os.EOL}Zpráva: ${message}`,
-                    },
-                },
-            },
-            /* eslint-disable @typescript-eslint/naming-convention */
-        });
-    }
+    return dto.setNewJsonData<IOutput>({
+      /* eslint-disable @typescript-eslint/naming-convention */
+      Destination: {
+        ToAddresses: ['sales@hanaboso.com'],
+      },
+      Source: 'info@hanaboso.com',
+      ReplyToAddresses: [email],
+      Message: {
+        Subject: {
+          Data: `Zpráva z kontaktní fomuláře: ${name}`,
+        },
+        Body: {
+          Text: {
+            Data: `Od: ${name}${os.EOL}Zpráva: ${message}`,
+          },
+        },
+      },
+      /* eslint-disable @typescript-eslint/naming-convention */
+    });
+  }
 
 }
 

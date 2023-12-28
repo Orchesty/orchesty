@@ -10,12 +10,12 @@ export const DIRECTORY_SETTINGS = 'directory_settings';
 
 export default class GoogleSheetApplication extends BaseGoogleSheetApplication {
 
-    public getFormStack(): FormStack {
-        return super.getFormStack().addForm(
-            new Form(DIRECTORY_SETTINGS, 'Settings')
-                .addField(new Field(FieldType.TEXT, SPREADSHEET_ID, 'Spreadsheet ID for reports', null, true))
-                .addField(new Field(FieldType.TEXT, DIRECTORY_ID, 'Directory ID for per project reports', null, true)),
-        );
-    }
+  public getFormStack(): FormStack {
+    return super.getFormStack().addForm(
+      new Form(DIRECTORY_SETTINGS, 'Settings')
+        .addField(new Field(FieldType.TEXT, SPREADSHEET_ID, 'Spreadsheet ID for reports', null, true))
+        .addField(new Field(FieldType.TEXT, DIRECTORY_ID, 'Directory ID for per project reports', null, true)),
+    );
+  }
 
 }
