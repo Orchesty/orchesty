@@ -2,19 +2,19 @@ import Mongo from '../database/Mongo';
 
 export default class MetricsManager {
 
-    public constructor(private readonly mongo: Mongo) {
-    }
+  public constructor(private readonly mongo: Mongo) {
+  }
 
-    public async saveMetrics(metrics: IMetricsInput<{ created: Date }>, measurement: string): Promise<void> {
-        const { fields, tags } = metrics;
+  public async saveMetrics(metrics: IMetricsInput<{ created: Date }>, measurement: string): Promise<void> {
+    const { fields, tags } = metrics;
 
-        const measurementCollection = this.mongo.getMetricsCollection(measurement);
-        fields.created = new Date(fields.created);
-        await measurementCollection.insertOne({
-            tags,
-            fields,
-        });
-    }
+    const measurementCollection = this.mongo.getMetricsCollection(measurement);
+    fields.created = new Date(fields.created);
+    await measurementCollection.insertOne({
+      tags,
+      fields,
+    });
+  }
 
 }
 
