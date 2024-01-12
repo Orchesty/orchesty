@@ -1,6 +1,7 @@
-FROM hanabosocom/go-base:1.19
+FROM --platform=$BUILDPLATFORM hanabosocom/go-base:1.19
 COPY . .
-RUN go build -ldflags='-s -w' -o /detector main.go && upx -9 /detector
+ARG TARGETOS TARGETARCH
+RUN GOOS=$TARGETOS GOARCH=$TARGETARCH go build -ldflags='-s -w' -o /detector main.go && upx -9 /detector
 
 FROM alpine
 RUN apk update --no-cache && apk upgrade --no-cache && \

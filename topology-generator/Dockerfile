@@ -1,6 +1,7 @@
-FROM hanabosocom/go-base:1.18
+FROM --platform=$BUILDPLATFORM hanabosocom/go-base:1.19
 COPY . .
-RUN go build -ldflags='-s -w' -o /topology-generator main.go && upx -9 /topology-generator
+ARG TARGETOS TARGETARCH
+RUN GOOS=$TARGETOS GOARCH=$TARGETARCH go build -ldflags='-s -w' -o /topology-generator main.go && upx -9 /topology-generator
 
 FROM alpine
 RUN apk update --no-cache && \
