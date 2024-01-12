@@ -2,7 +2,7 @@ export default {
   getSettings: {
     id: "GET_SETTINGS_DETAIL",
     request: () => ({
-      url: `/settings/`,
+      url: `/settings`,
       method: "GET",
     }),
   },
@@ -16,7 +16,7 @@ export default {
   saveSettings: {
     id: "SAVE_SETTINGS",
     request: ({ data }) => ({
-      url: `/settings/`,
+      url: `/settings`,
       method: "PUT",
       data,
     }),
