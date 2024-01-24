@@ -175,7 +175,7 @@ final class AuthorizationHandler
     {
         $payload = $this->authorizationManager->payloadFromJwe($jweToken);
 
-        if ($includeSettings && isset($payload[self::SETTINGS])) {
+        if (!$includeSettings && isset($payload[self::SETTINGS])) {
             unset($payload[self::SETTINGS]);
         }
 

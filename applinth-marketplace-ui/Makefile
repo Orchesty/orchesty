@@ -37,8 +37,8 @@ init: .env .lo0-up
 	docker-compose exec mongo mongoimport --db pipes --collection MultiCounter --file /tmp/exampleApplinthProcessData.json --jsonArray
 
 rebuild:
-	docker build -t ${IMAGE}:${TAG} --pull .
-	docker push ${IMAGE}:${TAG}
+	if ! docker buildx inspect multi; then docker buildx create --name multi --platform linux/amd64,linux/arm64/v8 --use --bootstrap; fi
+	docker buildx build --pull --push --platform linux/amd64,linux/arm64/v8 -t $(IMAGE):$(TAG) .
 
 generate-link:
 	echo "http://localhost:8080/?u=$$(node JWEGen.js)"

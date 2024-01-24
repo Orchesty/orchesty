@@ -41,7 +41,6 @@ final class SettingsController extends AbstractController
      * @return Response
      * @throws Throwable
      */
-    #[Route('/', methods: ['GET'])]
     #[Route('', methods: ['GET'])]
     public function getApplicationDetail(): Response
     {
@@ -59,7 +58,6 @@ final class SettingsController extends AbstractController
      *
      * @return Response
      */
-    #[Route('/', methods: ['PUT'])]
     #[Route('', methods: ['PUT'])]
     public function updateApplication(Request $request): Response
     {
