@@ -41,5 +41,4 @@ documentation deploy prod:
     PORTAL_API_URL: ${PORTAL_API_URL_PROD}
   extends: .site_deploy
   only:
-    refs:
-      - master
+    - master
