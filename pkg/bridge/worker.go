@@ -138,7 +138,7 @@ func (n *node) process(dto *model.ProcessMessage) bool {
 				ack = false
 			} else {
 				trashId := trashId.Hex()
-				sendFinishedProcess(result.Message(), enum.StatusType_TrashMessage, &trashId)
+				sendFinishedProcess(result.Message(), enum.StatusType_TrashMessage, &trashId, n.topologyName)
 			}
 		}
 
