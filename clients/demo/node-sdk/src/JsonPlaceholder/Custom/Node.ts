@@ -3,12 +3,12 @@ import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
 
 export default class Node extends ACommonNode {
 
-  public getName(): string {
-    return 'node';
-  }
+    public getName(): string {
+        return 'node';
+    }
 
-  public processAction(dto: ProcessDto): ProcessDto | Promise<ProcessDto> {
-    return dto;
-  }
+    public processAction(dto: ProcessDto): ProcessDto | Promise<ProcessDto> {
+        return dto;
+    }
 
 }

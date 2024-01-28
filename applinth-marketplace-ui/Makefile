@@ -26,7 +26,8 @@ init-test: .env .lo0-up
 	$(DCU) pnpm install
 
 init: .env .lo0-up
-	docker-compose up -d --force-recreate
+	docker-compose up -d --force-recreate --build
+	sleep 5
 	docker-compose exec app bin/console service:install node-sdk node-sdk:8080
 	docker-compose exec app bin/console api-token:create --key "$(shell grep 'ORCHESTY_API_KEY' .env | cut -d "=" -f2)"
 	docker-compose cp ./exampleApplinthLogsData.json mongo:/tmp

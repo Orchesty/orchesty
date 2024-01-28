@@ -10,25 +10,25 @@ export const DIRECTORY_ID = 'directory_id';
 
 export default class SetupGoogleSheetSettingDirectory extends ACommonNode {
 
-  public getName(): string {
-    return NAME;
-  }
+    public getName(): string {
+        return NAME;
+    }
 
-  public async processAction(dto: ProcessDto<IInput>): Promise<ProcessDto<IOutput>> {
-    const body = dto.getJsonData();
-    const applicationInstall = await this.getApplicationInstallFromProcess(dto);
+    public async processAction(dto: ProcessDto<IInput>): Promise<ProcessDto<IOutput>> {
+        const body = dto.getJsonData();
+        const applicationInstall = await this.getApplicationInstallFromProcess(dto);
 
-    body.directoryId ??= applicationInstall.getSettings()[DIRECTORY_SETTINGS]?.[DIRECTORY_ID];
-    body.from ??= DateTimeUtils.getFormattedDate(DateTime.utc().minus({ month: 1 }), DATE_FORMAT);
-    body.to ??= DateTimeUtils.getFormattedDate(DateTime.utc(), DATE_FORMAT);
+        body.directoryId ??= applicationInstall.getSettings()[DIRECTORY_SETTINGS]?.[DIRECTORY_ID];
+        body.from ??= DateTimeUtils.getFormattedDate(DateTime.utc().minus({ month: 1 }), DATE_FORMAT);
+        body.to ??= DateTimeUtils.getFormattedDate(DateTime.utc(), DATE_FORMAT);
 
-    return dto.setNewJsonData({
-      parentId: body.directoryId,
-      name: DateTimeUtils.getFormattedDate(DateTime.utc().minus({ month: 1 }), 'yyyy-LL'),
-      from: body.from,
-      to: body.to,
-    });
-  }
+        return dto.setNewJsonData({
+            parentId: body.directoryId,
+            name: DateTimeUtils.getFormattedDate(DateTime.utc().minus({ month: 1 }), 'yyyy-LL'),
+            from: body.from,
+            to: body.to,
+        });
+    }
 
 }
 

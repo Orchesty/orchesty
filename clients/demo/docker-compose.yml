@@ -23,7 +23,7 @@ services:
         command: sh -c 'pnpm install && pnpm run start'
 
     php-sdk:
-        image: hanabosocom/php-dev:php-8.2-alpine
+        image: hanabosocom/php-dev:php-8.3-alpine
         user: ${DEV_UID}:${DEV_GID}
         environment:
             PHP_WEBROOT: /var/www/pipes/clients/demo/pipes-api/public
@@ -95,7 +95,7 @@ services:
         security_opt: ['seccomp:unconfined']
 
     backend:
-        image: hanabosocom/php-dev:php-8.2-alpine
+        image: hanabosocom/php-dev:php-8.3-alpine
         user: ${DEV_UID}:${DEV_GID}
         ports:
             - ${DEV_IP}:8080:80

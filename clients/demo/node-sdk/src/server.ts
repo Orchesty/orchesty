@@ -6,7 +6,7 @@ start();
 listen();
 
 process.on('unhandledRejection', (err) => {
-  const error = err as Error;
-  logger.error(error.message, {}, false, error);
-  process.exit(1);
+    const error = err as Error;
+    logger.error(error.message, {}, false, error);
+    process.exit(1);
 });

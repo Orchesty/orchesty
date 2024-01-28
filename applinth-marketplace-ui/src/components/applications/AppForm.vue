@@ -18,7 +18,11 @@
       <v-tab-item
         v-for="(form, index) in settingsConfig"
         :key="form.key"
-        class="application-settings-wrapper-form"
+        :class="
+          form.key === 'info'
+            ? 'application-settings-wrapper-info'
+            : 'application-settings-wrapper-form'
+        "
       >
         <template v-if="form.key === 'info'">
           <!-- eslint-disable-next-line vue/no-v-html -->
@@ -309,6 +313,7 @@ export default {
           requestData: API.appStore.getApp,
           params: { key: this.app.key },
         })
+        this.initSettings()
       }
       await this.$refs[key][0].reset()
 
@@ -342,5 +347,9 @@ export default {
 
 .application-settings-wrapper-form {
   max-width: 50ch;
+}
+
+.application-settings-wrapper-info {
+  max-width: 200ch;
 }
 </style>

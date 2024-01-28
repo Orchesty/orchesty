@@ -13,54 +13,54 @@ const HOST_URL = 'prefix_url';
 
 export default class JiraGetUpdatedWorklogIdsBatch extends ABatchNode {
 
-  public constructor(private readonly dataStorageManager: DataStorageManager) {
-    super();
-  }
-
-  public getName(): string {
-    return NAME;
-  }
-
-  public async processAction(dto: BatchProcessDto<IInput>): Promise<BatchProcessDto<IInput>> {
-    const appInstall = await this.getApplicationInstallFromProcess(dto);
-
-    const { from, to } = dto.getJsonData();
-    const dateFrom = new Date(from);
-    dateFrom.setHours(0, 0, 0);
-
-    const dateTo = new Date(to);
-    dateTo.setHours(23, 59, 59);
-
-    const url = `${JIRA_GET_UPDATED_WORKLOG_IDS_ENDPOINT}?since=${dateFrom.getTime()}`;
-    const nextUrl = dto.getBatchCursor(url);
-    const request = await this.getApplication().getRequestDto(dto, appInstall, HttpMethods.GET, nextUrl);
-    const response = await this.getSender().send<IResponse>(request);
-
-    const responseData = response.getJsonBody();
-    const worklogIds = responseData.values
-      .filter((item) => item.updatedTime <= dateTo.getTime())
-      .map((item) => item.worklogId);
-
-    await this.dataStorageManager.store(
-      dto.getHeader(CORRELATION_ID) ?? '',
-      [{
-        worklogIds,
-        date: { from, to },
-      } as IEtlWorklogIds],
-    );
-
-    if (!responseData.lastPage && responseData.until < dateTo.getTime()) {
-      const baseUrl = appInstall.getSettings()?.[CoreFormsEnum.AUTHORIZATION_FORM]?.[HOST_URL];
-      const nextPageUrl = responseData.nextPage.replace(baseUrl, '');
-      dto.setBatchCursor(nextPageUrl, true);
+    public constructor(private readonly dataStorageManager: DataStorageManager) {
+        super();
     }
 
-    if (responseData.lastPage) {
-      dto.addItem({ status: 'success' });
+    public getName(): string {
+        return NAME;
     }
 
-    return dto;
-  }
+    public async processAction(dto: BatchProcessDto<IInput>): Promise<BatchProcessDto<IInput>> {
+        const appInstall = await this.getApplicationInstallFromProcess(dto);
+
+        const { from, to } = dto.getJsonData();
+        const dateFrom = new Date(from);
+        dateFrom.setHours(0, 0, 0);
+
+        const dateTo = new Date(to);
+        dateTo.setHours(23, 59, 59);
+
+        const url = `${JIRA_GET_UPDATED_WORKLOG_IDS_ENDPOINT}?since=${dateFrom.getTime()}`;
+        const nextUrl = dto.getBatchCursor(url);
+        const request = await this.getApplication().getRequestDto(dto, appInstall, HttpMethods.GET, nextUrl);
+        const response = await this.getSender().send<IResponse>(request);
+
+        const responseData = response.getJsonBody();
+        const worklogIds = responseData.values
+            .filter((item) => item.updatedTime <= dateTo.getTime())
+            .map((item) => item.worklogId);
+
+        await this.dataStorageManager.store(
+            dto.getHeader(CORRELATION_ID) ?? '',
+            [{
+                worklogIds,
+                date: { from, to },
+            } as IEtlWorklogIds],
+        );
+
+        if (!responseData.lastPage && responseData.until < dateTo.getTime()) {
+            const baseUrl = appInstall.getSettings()?.[CoreFormsEnum.AUTHORIZATION_FORM]?.[HOST_URL];
+            const nextPageUrl = responseData.nextPage.replace(baseUrl, '');
+            dto.setBatchCursor(nextPageUrl, true);
+        }
+
+        if (responseData.lastPage) {
+            dto.addItem({ status: 'success' });
+        }
+
+        return dto;
+    }
 
 }
 

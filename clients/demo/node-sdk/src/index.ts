@@ -3,7 +3,7 @@ import LambdaApplication from '@orchesty/nodejs-connectors/dist/lib/AmazonApps/L
 import RDSAddRoleToDBCluster from '@orchesty/nodejs-connectors/dist/lib/AmazonApps/RDS/Connector/RDSAddRoleToDBCluster';
 import RDSApplication from '@orchesty/nodejs-connectors/dist/lib/AmazonApps/RDS/RDSApplication';
 import RedshiftExecuteQueryConnector
-  from '@orchesty/nodejs-connectors/dist/lib/AmazonApps/Redshift/Connector/RedshiftExecuteQueryConnector';
+    from '@orchesty/nodejs-connectors/dist/lib/AmazonApps/Redshift/Connector/RedshiftExecuteQueryConnector';
 import RedshiftApplication from '@orchesty/nodejs-connectors/dist/lib/AmazonApps/Redshift/RedshiftApplication';
 import S3Application from '@orchesty/nodejs-connectors/dist/lib/AmazonApps/S3/S3Application';
 import SESSendEmail from '@orchesty/nodejs-connectors/dist/lib/AmazonApps/SimpleEmailService/Connector/SESSendEmail';
@@ -15,10 +15,10 @@ import { EventEnum } from '@orchesty/nodejs-connectors/dist/lib/Common/Events/Ev
 import EventStatusFilter from '@orchesty/nodejs-connectors/dist/lib/Common/EventStatusFilter/EventStatusFilter';
 import ListUsersCommon from '@orchesty/nodejs-connectors/dist/lib/Common/ListUsers/ListUsers';
 import GetApplicationForRefreshBatchConnector
-  from '@orchesty/nodejs-connectors/dist/lib/Common/OAuth2/GetApplicationForRefreshBatchConnector';
+    from '@orchesty/nodejs-connectors/dist/lib/Common/OAuth2/GetApplicationForRefreshBatchConnector';
 import RefreshOAuth2TokenNode from '@orchesty/nodejs-connectors/dist/lib/Common/OAuth2/RefreshOAuth2TokenNode';
 import DiscordSendMessageConnector
-  from '@orchesty/nodejs-connectors/dist/lib/Discord/Connector/DiscordSendMessageConnector';
+    from '@orchesty/nodejs-connectors/dist/lib/Discord/Connector/DiscordSendMessageConnector';
 import DiscordApplication from '@orchesty/nodejs-connectors/dist/lib/Discord/DiscordApplication';
 import DropboxApplication from '@orchesty/nodejs-connectors/dist/lib/Dropbox/DropboxApplication';
 import FacebookAdsApplication from '@orchesty/nodejs-connectors/dist/lib/FacebookAds/FacebookAdsApplication';
@@ -27,13 +27,13 @@ import FlexiBeeApplication from '@orchesty/nodejs-connectors/dist/lib/FlexiBee/F
 import GitHubGetRepositoryConnector from '@orchesty/nodejs-connectors/dist/lib/GitHub/Connector/GitHubGetRepositoryConnector';
 import GitHubApplication from '@orchesty/nodejs-connectors/dist/lib/GitHub/GitHubApplication';
 import GoogleCalendarApplication
-  from '@orchesty/nodejs-connectors/dist/lib/Google/GoogleCalendar/GoogleCalendarApplication';
+    from '@orchesty/nodejs-connectors/dist/lib/Google/GoogleCalendar/GoogleCalendarApplication';
 import GoogleDriveApplication from '@orchesty/nodejs-connectors/dist/lib/Google/GoogleDrive/GoogleDriveApplication';
 import GoogleDriveUploadFileConnector
-  from '@orchesty/nodejs-connectors/dist/lib/Google/GoogleSheet/Connector/GoogleSheetCreateSpreadsheetConnector';
+    from '@orchesty/nodejs-connectors/dist/lib/Google/GoogleSheet/Connector/GoogleSheetCreateSpreadsheetConnector';
 import YoutubeApplication from '@orchesty/nodejs-connectors/dist/lib/Google/Youtube/YoutubeApplication';
 import HubSpotSendTransactionEmailConnector
-  from '@orchesty/nodejs-connectors/dist/lib/Hubspot/Connector/HubSpotSendTransactionEmailConnector';
+    from '@orchesty/nodejs-connectors/dist/lib/Hubspot/Connector/HubSpotSendTransactionEmailConnector';
 import HubSpotApplication from '@orchesty/nodejs-connectors/dist/lib/Hubspot/HubSpotApplication';
 import HubSpotApplicationBasic from '@orchesty/nodejs-connectors/dist/lib/Hubspot/HubSpotApplicationBasic';
 import IDokladApplication from '@orchesty/nodejs-connectors/dist/lib/IDoklad/IDokladApplication';
@@ -80,9 +80,9 @@ import FileSystem from '@orchesty/nodejs-sdk/dist/lib/Storage/File/FileSystem';
 import Redis from '@orchesty/nodejs-sdk/dist/lib/Storage/Redis/Redis';
 import CurlSender from '@orchesty/nodejs-sdk/dist/lib/Transport/Curl/CurlSender';
 import HubspotApplinthContactAddContactToListMapper
-  from './ApplinthIo/CustomNode/HubspotApplinthContactAddContactToListMapper';
+    from './ApplinthIo/CustomNode/HubspotApplinthContactAddContactToListMapper';
 import HubspotApplinthWhitePaperAddContactToListMapper
-  from './ApplinthIo/CustomNode/HubspotApplinthWhitePaperAddContactToListMapper';
+    from './ApplinthIo/CustomNode/HubspotApplinthWhitePaperAddContactToListMapper';
 import HubspotWhiterPaperToSesEmailMapper from './ApplinthIo/CustomNode/HubspotWhiterPaperToSesEmailMapper';
 import HubSpotAddEmailToListConnector from './Common/Connector/HubSpotAddEmailToListConnector';
 import HubSpotCreateContactConnector from './Common/Connector/HubSpotCreateContactConnector';
@@ -117,425 +117,425 @@ import SampleApplication from './JsonPlaceholder/SampleApplication';
 import TenantApplication from './JsonPlaceholder/TenantApplication';
 
 export function start(): void {
-  initiateContainer();
-  const sender = container.get(CurlSender);
-  const mongoDb = container.get(DatabaseClient);
-  const provider = container.get(OAuth2Provider);
-  const etl = new DataStorageManager(new FileSystem());
-  const redis = new Redis('');
-  const cache = new CacheService(redis, sender);
+    initiateContainer();
+    const sender = container.get(CurlSender);
+    const mongoDb = container.get(DatabaseClient);
+    const provider = container.get(OAuth2Provider);
+    const etl = new DataStorageManager(new FileSystem());
+    const redis = new Redis('');
+    const cache = new CacheService(redis, sender);
 
-  const eventStatusFilterSuccess = new EventStatusFilter(EventEnum.PROCESS_SUCCESS);
-  container.setCustomNode(eventStatusFilterSuccess);
+    const eventStatusFilterSuccess = new EventStatusFilter(EventEnum.PROCESS_SUCCESS);
+    container.setCustomNode(eventStatusFilterSuccess);
 
-  const eventStatusFilterError = new EventStatusFilter(EventEnum.PROCESS_FAILED);
-  container.setCustomNode(eventStatusFilterError);
+    const eventStatusFilterError = new EventStatusFilter(EventEnum.PROCESS_FAILED);
+    container.setCustomNode(eventStatusFilterError);
 
-  const eventStatusFilterLimiter = new EventStatusFilter(EventEnum.LIMIT_OVERFLOW);
-  container.setCustomNode(eventStatusFilterLimiter);
+    const eventStatusFilterLimiter = new EventStatusFilter(EventEnum.LIMIT_OVERFLOW);
+    container.setCustomNode(eventStatusFilterLimiter);
 
-  const eventStatusFilterTrash = new EventStatusFilter(EventEnum.MESSAGE_IN_TRASH);
-  container.setCustomNode(eventStatusFilterTrash);
+    const eventStatusFilterTrash = new EventStatusFilter(EventEnum.MESSAGE_IN_TRASH);
+    container.setCustomNode(eventStatusFilterTrash);
 
-  const sampleApp = new SampleApplication();
-  container.setApplication(sampleApp);
+    const sampleApp = new SampleApplication();
+    container.setApplication(sampleApp);
 
-  const tenantApp = new TenantApplication();
-  container.setApplication(tenantApp);
+    const tenantApp = new TenantApplication();
+    container.setApplication(tenantApp);
 
-  const nonInstallableApp = new NonInstallableApplication();
-  container.setApplication(nonInstallableApp);
+    const nonInstallableApp = new NonInstallableApplication();
+    container.setApplication(nonInstallableApp);
 
-  const airtableApp = new AirtableApplication();
-  container.setApplication(airtableApp);
+    const airtableApp = new AirtableApplication();
+    container.setApplication(airtableApp);
 
-  const tabletauApp = new TableauApplication(sender, mongoDb);
-  container.setApplication(tabletauApp);
+    const tabletauApp = new TableauApplication(sender, mongoDb);
+    container.setApplication(tabletauApp);
 
-  const awsRds = new RDSApplication();
-  container.setApplication(awsRds);
+    const awsRds = new RDSApplication();
+    container.setApplication(awsRds);
 
-  const awsRedshift = new RedshiftApplication();
-  container.setApplication(awsRedshift);
+    const awsRedshift = new RedshiftApplication();
+    container.setApplication(awsRedshift);
 
-  const s3App = new S3Application();
-  container.setApplication(s3App);
+    const s3App = new S3Application();
+    container.setApplication(s3App);
 
-  const lambdaApp = new LambdaApplication();
-  container.setApplication(lambdaApp);
+    const lambdaApp = new LambdaApplication();
+    container.setApplication(lambdaApp);
 
-  const sesApp = new SESApplication();
-  container.setApplication(sesApp);
+    const sesApp = new SESApplication();
+    container.setApplication(sesApp);
 
-  const dropBoxApp = new DropboxApplication(provider);
-  container.setApplication(dropBoxApp);
+    const dropBoxApp = new DropboxApplication(provider);
+    container.setApplication(dropBoxApp);
 
-  const facebookApp = new FacebookAdsApplication(provider);
-  container.setApplication(facebookApp);
+    const facebookApp = new FacebookAdsApplication(provider);
+    container.setApplication(facebookApp);
 
-  const stripeApp = new StripeApplication();
-  container.setApplication(stripeApp);
+    const stripeApp = new StripeApplication();
+    container.setApplication(stripeApp);
 
-  const jiraApp = new JiraApplication();
-  container.setApplication(jiraApp);
+    const jiraApp = new JiraApplication();
+    container.setApplication(jiraApp);
 
-  const slackApp = new SlackApplication(provider);
-  container.setApplication(slackApp);
+    const slackApp = new SlackApplication(provider);
+    container.setApplication(slackApp);
 
-  const discordApp = new DiscordApplication();
-  container.setApplication(discordApp);
+    const discordApp = new DiscordApplication();
+    container.setApplication(discordApp);
 
-  const trelloApp = new TrelloApplication();
-  container.setApplication(trelloApp);
+    const trelloApp = new TrelloApplication();
+    container.setApplication(trelloApp);
 
-  const asanaApp = new AsanaApplication(provider);
-  container.setApplication(asanaApp);
+    const asanaApp = new AsanaApplication(provider);
+    container.setApplication(asanaApp);
 
-  const bigcommerceApplicationApp = new BigcommerceApplication(provider);
-  container.setApplication(bigcommerceApplicationApp);
+    const bigcommerceApplicationApp = new BigcommerceApplication(provider);
+    container.setApplication(bigcommerceApplicationApp);
 
-  const fakturoidApp = new FakturoidApplication();
-  container.setApplication(fakturoidApp);
+    const fakturoidApp = new FakturoidApplication();
+    container.setApplication(fakturoidApp);
 
-  const flexiBeeApp = new FlexiBeeApplication(sender, mongoDb);
-  container.setApplication(flexiBeeApp);
+    const flexiBeeApp = new FlexiBeeApplication(sender, mongoDb);
+    container.setApplication(flexiBeeApp);
 
-  const googleDriveApp = new GoogleDriveApplication(provider);
-  container.setApplication(googleDriveApp);
+    const googleDriveApp = new GoogleDriveApplication(provider);
+    container.setApplication(googleDriveApp);
 
-  const googleCallendarApp = new GoogleCalendarApplication(provider);
-  container.setApplication(googleCallendarApp);
+    const googleCallendarApp = new GoogleCalendarApplication(provider);
+    container.setApplication(googleCallendarApp);
 
-  const googleSheetApp = new GoogleSheetApplication(provider);
-  container.setApplication(googleSheetApp);
+    const googleSheetApp = new GoogleSheetApplication(provider);
+    container.setApplication(googleSheetApp);
 
-  const youtubeApp = new YoutubeApplication(provider);
-  container.setApplication(youtubeApp);
+    const youtubeApp = new YoutubeApplication(provider);
+    container.setApplication(youtubeApp);
 
-  const twilioApp = new TwilioApplication();
-  container.setApplication(twilioApp);
+    const twilioApp = new TwilioApplication();
+    container.setApplication(twilioApp);
 
-  const webflowApp = new WebflowApplication();
-  container.setApplication(webflowApp);
+    const webflowApp = new WebflowApplication();
+    container.setApplication(webflowApp);
 
-  const hubspotApp = new HubSpotApplication(provider);
-  container.setApplication(hubspotApp);
+    const hubspotApp = new HubSpotApplication(provider);
+    container.setApplication(hubspotApp);
 
-  const hubspotAppBasic = new HubSpotApplicationBasic();
-  container.setApplication(hubspotAppBasic);
+    const hubspotAppBasic = new HubSpotApplicationBasic();
+    container.setApplication(hubspotAppBasic);
 
-  const idokaldApp = new IDokladApplication(provider);
-  container.setApplication(idokaldApp);
+    const idokaldApp = new IDokladApplication(provider);
+    container.setApplication(idokaldApp);
 
-  const mailchimpApp = new MailchimpApplication(sender, provider);
-  container.setApplication(mailchimpApp);
+    const mailchimpApp = new MailchimpApplication(sender, provider);
+    container.setApplication(mailchimpApp);
 
-  const magento2App = new Magento2Application(cache);
-  container.setApplication(magento2App);
+    const magento2App = new Magento2Application(cache);
+    container.setApplication(magento2App);
 
-  const moneyS5App = new MoneyS5Application(cache);
-  container.setApplication(moneyS5App);
+    const moneyS5App = new MoneyS5Application(cache);
+    container.setApplication(moneyS5App);
 
-  const shoptetPremApp = new ShoptetPremiumApplication();
-  container.setApplication(shoptetPremApp);
+    const shoptetPremApp = new ShoptetPremiumApplication();
+    container.setApplication(shoptetPremApp);
 
-  const shopifyApp = new ShopifyApplication(sender, provider);
-  container.setApplication(shopifyApp);
+    const shopifyApp = new ShopifyApplication(sender, provider);
+    container.setApplication(shopifyApp);
 
-  const nutshellApp = new NutshellApplication();
-  container.setApplication(nutshellApp);
+    const nutshellApp = new NutshellApplication();
+    container.setApplication(nutshellApp);
 
-  const pipedriveApp = new PipedriveApplication();
-  container.setApplication(pipedriveApp);
+    const pipedriveApp = new PipedriveApplication();
+    container.setApplication(pipedriveApp);
 
-  const quickbooksApp = new QuickBooksApplication(provider, mongoDb, sender);
-  container.setApplication(quickbooksApp);
+    const quickbooksApp = new QuickBooksApplication(provider, mongoDb, sender);
+    container.setApplication(quickbooksApp);
 
-  const salesForceApp = new SalesForceApplication(provider);
-  container.setApplication(salesForceApp);
+    const salesForceApp = new SalesForceApplication(provider);
+    container.setApplication(salesForceApp);
 
-  const sendGridApp = new SendGridApplication();
-  container.setApplication(sendGridApp);
+    const sendGridApp = new SendGridApplication();
+    container.setApplication(sendGridApp);
 
-  const shipstationApp = new ShipstationApplication();
-  container.setApplication(shipstationApp);
+    const shipstationApp = new ShipstationApplication();
+    container.setApplication(shipstationApp);
 
-  const wisepopsApp = new WisepopsApplication();
-  container.setApplication(wisepopsApp);
+    const wisepopsApp = new WisepopsApplication();
+    container.setApplication(wisepopsApp);
 
-  const zendeskApp = new ZendeskApplication(provider);
-  container.setApplication(zendeskApp);
+    const zendeskApp = new ZendeskApplication(provider);
+    container.setApplication(zendeskApp);
 
-  const zohoApp = new ZohoApplication(provider);
-  container.setApplication(zohoApp);
+    const zohoApp = new ZohoApplication(provider);
+    container.setApplication(zohoApp);
 
-  const zoomApp = new ZoomApplication(provider);
-  container.setApplication(zoomApp);
+    const zoomApp = new ZoomApplication(provider);
+    container.setApplication(zoomApp);
 
-  const wooCommerce = new WooCommerceApplication();
-  container.setApplication(wooCommerce);
+    const wooCommerce = new WooCommerceApplication();
+    container.setApplication(wooCommerce);
 
-  const upGatesApp = new UpgatesApplication();
-  container.setApplication(upGatesApp);
+    const upGatesApp = new UpgatesApplication();
+    container.setApplication(upGatesApp);
 
-  const mysqlApp = new MySqlApplication();
-  container.setApplication(mysqlApp);
+    const mysqlApp = new MySqlApplication();
+    container.setApplication(mysqlApp);
 
-  const mssqlApp = new MsSqlApplication();
-  container.setApplication(mssqlApp);
+    const mssqlApp = new MsSqlApplication();
+    container.setApplication(mssqlApp);
 
-  const mariaDbApp = new MariaDbApplication();
-  container.setApplication(mariaDbApp);
+    const mariaDbApp = new MariaDbApplication();
+    container.setApplication(mariaDbApp);
 
-  const postgresSqlApp = new PostgreSqlApplication();
-  container.setApplication(postgresSqlApp);
+    const postgresSqlApp = new PostgreSqlApplication();
+    container.setApplication(postgresSqlApp);
 
-  const sqlLiteApp = new SqliteApplication();
-  container.setApplication(sqlLiteApp);
+    const sqlLiteApp = new SqliteApplication();
+    container.setApplication(sqlLiteApp);
 
-  const githubApplication = new GitHubApplication();
-  container.setApplication(githubApplication);
-  container.setNode(new GitHubGetRepositoryConnector(), githubApplication);
+    const githubApplication = new GitHubApplication();
+    container.setApplication(githubApplication);
+    container.setNode(new GitHubGetRepositoryConnector(), githubApplication);
 
-  const listPosts = new ListPosts();
-  listPosts.setSender(sender);
-  container.setBatch(listPosts);
+    const listPosts = new ListPosts();
+    listPosts.setSender(sender);
+    container.setBatch(listPosts);
 
-  const listUsers = new ListUsers();
-  listUsers.setSender(sender);
-  container.setBatch(listUsers);
+    const listUsers = new ListUsers();
+    listUsers.setSender(sender);
+    container.setBatch(listUsers);
 
-  const binSender = new BinSender();
-  binSender.setSender(sender);
-  container.setConnector(binSender);
+    const binSender = new BinSender();
+    binSender.setSender(sender);
+    container.setConnector(binSender);
 
-  const hubspotCreateContact = new HubSpotCreateContactConnector();
-  hubspotCreateContact
-    .setSender(sender)
-    .setApplication(hubspotAppBasic)
-    .setDb(mongoDb);
-  container.setConnector(hubspotCreateContact);
+    const hubspotCreateContact = new HubSpotCreateContactConnector();
+    hubspotCreateContact
+        .setSender(sender)
+        .setApplication(hubspotAppBasic)
+        .setDb(mongoDb);
+    container.setConnector(hubspotCreateContact);
 
-  const hubspotContactMapper = new HubSpotCreateContactMapper();
-  hubspotContactMapper
-    .setDb(mongoDb)
-    .setApplication(hubspotAppBasic);
-  container.setCustomNode(hubspotContactMapper);
+    const hubspotContactMapper = new HubSpotCreateContactMapper();
+    hubspotContactMapper
+        .setDb(mongoDb)
+        .setApplication(hubspotAppBasic);
+    container.setCustomNode(hubspotContactMapper);
 
-  const hubSpotContactMapper = new HanabosoHubSpotContactMapper();
-  container.setCustomNode(hubSpotContactMapper);
+    const hubSpotContactMapper = new HanabosoHubSpotContactMapper();
+    container.setCustomNode(hubSpotContactMapper);
 
-  const hubSpotAddEmailToListConnector = new HubSpotAddEmailToListConnector()
-    .setSender(sender)
-    .setApplication(hubspotAppBasic)
-    .setDb(mongoDb);
-  container.setConnector(hubSpotAddEmailToListConnector);
+    const hubSpotAddEmailToListConnector = new HubSpotAddEmailToListConnector()
+        .setSender(sender)
+        .setApplication(hubspotAppBasic)
+        .setDb(mongoDb);
+    container.setConnector(hubSpotAddEmailToListConnector);
 
-  const addContactToHubspotSalesListMapper = new HubspotAddContactToListMapper(HubspotListIdsEnums.SALES);
-  container.setCustomNode(addContactToHubspotSalesListMapper);
+    const addContactToHubspotSalesListMapper = new HubspotAddContactToListMapper(HubspotListIdsEnums.SALES);
+    container.setCustomNode(addContactToHubspotSalesListMapper);
 
-  const addContactToHubspotContactListMapper = new HubspotAddContactToListMapper(HubspotListIdsEnums.CONTACT_FROM);
-  container.setCustomNode(addContactToHubspotContactListMapper);
+    const addContactToHubspotContactListMapper = new HubspotAddContactToListMapper(HubspotListIdsEnums.CONTACT_FROM);
+    container.setCustomNode(addContactToHubspotContactListMapper);
 
-  const addContactToHubspotCommunityListMapper = new HubspotAddContactToListMapper(HubspotListIdsEnums.COMMUNITY);
-  container.setCustomNode(addContactToHubspotCommunityListMapper);
+    const addContactToHubspotCommunityListMapper = new HubspotAddContactToListMapper(HubspotListIdsEnums.COMMUNITY);
+    container.setCustomNode(addContactToHubspotCommunityListMapper);
 
-  const addContactToHubspotNewsletterListMapper = new HubspotAddContactToListMapper(HubspotListIdsEnums.NEWSLETTER);
-  container.setCustomNode(addContactToHubspotNewsletterListMapper);
+    const addContactToHubspotNewsletterListMapper = new HubspotAddContactToListMapper(HubspotListIdsEnums.NEWSLETTER);
+    container.setCustomNode(addContactToHubspotNewsletterListMapper);
 
-  const hubspotApplinthAddContactToListMapper = new HubspotApplinthContactAddContactToListMapper();
-  container.setCustomNode(hubspotApplinthAddContactToListMapper);
+    const hubspotApplinthAddContactToListMapper = new HubspotApplinthContactAddContactToListMapper();
+    container.setCustomNode(hubspotApplinthAddContactToListMapper);
 
-  const hubspotApplinthWhitePaperAddContactToListMapper = new HubspotApplinthWhitePaperAddContactToListMapper();
-  container.setCustomNode(hubspotApplinthWhitePaperAddContactToListMapper);
+    const hubspotApplinthWhitePaperAddContactToListMapper = new HubspotApplinthWhitePaperAddContactToListMapper();
+    container.setCustomNode(hubspotApplinthWhitePaperAddContactToListMapper);
 
-  const hubspotToJiraSalesMapper = new HanabosoToJiraMapper(PageEnum.SALES, ['sales']);
-  container.setCustomNode(hubspotToJiraSalesMapper);
+    const hubspotToJiraSalesMapper = new HanabosoToJiraMapper(PageEnum.SALES, ['sales']);
+    container.setCustomNode(hubspotToJiraSalesMapper);
 
-  const hubspotToJiraContactMapper = new HanabosoToJiraMapper(PageEnum.CONTACT, ['contact']);
-  container.setCustomNode(hubspotToJiraContactMapper);
+    const hubspotToJiraContactMapper = new HanabosoToJiraMapper(PageEnum.CONTACT, ['contact']);
+    container.setCustomNode(hubspotToJiraContactMapper);
 
-  const hubspotToJiraCommunityMapper = new HanabosoToJiraMapper(PageEnum.COMMUNITY, ['community']);
-  container.setCustomNode(hubspotToJiraCommunityMapper);
+    const hubspotToJiraCommunityMapper = new HanabosoToJiraMapper(PageEnum.COMMUNITY, ['community']);
+    container.setCustomNode(hubspotToJiraCommunityMapper);
 
-  const discordSendMessage = new DiscordSendMessageConnector()
-    .setSender(sender)
-    .setApplication(discordApp)
-    .setDb(mongoDb);
-  container.setConnector(discordSendMessage);
-
-  const slackSendMessage = new SlackSendMessageConnector()
-    .setSender(sender)
-    .setApplication(slackApp);
-  container.setConnector(slackSendMessage);
-
-  const asanaCreateTask = new AsanaCreateTaskConnector()
-    .setSender(sender)
-    .setApplication(asanaApp)
-    .setDb(mongoDb);
-  container.setConnector(asanaCreateTask);
-
-  const trelloCreateCard = new TrelloCreateCardConnector()
-    .setSender(sender)
-    .setApplication(trelloApp)
-    .setDb(mongoDb);
-  container.setConnector(trelloCreateCard);
-
-  const jiraCreateIssue = new JiraCreateIssueConnector()
-    .setSender(sender)
-    .setApplication(jiraApp)
-    .setDb(mongoDb);
-  container.setConnector(jiraCreateIssue);
-
-  const jiraGetWorklogsBatch = new JiraGetWorklogsBatch(etl)
-    .setSender(sender)
-    .setApplication(jiraApp)
-    .setDb(mongoDb);
-  container.setBatch(jiraGetWorklogsBatch);
-
-  const jiraGetIssueBatch = new JiraGetIssueBatch(etl)
-    .setSender(sender)
-    .setApplication(jiraApp)
-    .setDb(mongoDb);
-  container.setBatch(jiraGetIssueBatch);
-
-  const jiraGetUpdatedWorklogsIds = new JiraGetUpdatedWorklogIdsBatch(etl)
-    .setSender(sender)
-    .setApplication(jiraApp)
-    .setDb(mongoDb);
-  container.setBatch(jiraGetUpdatedWorklogsIds);
-
-  const jiraSortWorklogsByProjectsBatch = new JiraSortWorklogsByProjectsBatch(etl)
-    .setSender(sender)
-    .setApplication(jiraApp)
-    .setDb(mongoDb);
-  container.setBatch(jiraSortWorklogsByProjectsBatch);
-
-  const jiraWorklogGoogleDriveMapper = new JiraWorklogGoogleDriveMapper();
-  container.setCustomNode(jiraWorklogGoogleDriveMapper);
-
-  const jiraWorklogsToGoogleDriveMapper = new JiraWorklogsToGoogleDriveMapper(etl)
-    .setApplication(jiraApp)
-    .setDb(mongoDb);
-  container.setCustomNode(jiraWorklogsToGoogleDriveMapper);
-
-  const setupGoogleSheetSettingDirectory = new SetupGoogleSheetSettingDirectory()
-    .setApplication(googleSheetApp)
-    .setDb(mongoDb);
-  container.setCustomNode(setupGoogleSheetSettingDirectory);
-
-  const setupGoogleSheetSettingSpreadsheet = new SetupGoogleSheetSettingSpreadsheet()
-    .setApplication(googleSheetApp)
-    .setDb(mongoDb);
-  container.setCustomNode(setupGoogleSheetSettingSpreadsheet);
-
-  const googleDriveCreateDirectoryConnector = new GoogleDriveCreateDirectoryConnector()
-    .setSender(sender)
-    .setApplication(googleDriveApp)
-    .setDb(mongoDb);
-  container.setConnector(googleDriveCreateDirectoryConnector);
-
-  const googleDriveUpdateFileConnector = new GoogleDriveUpdateFileConnector()
-    .setSender(sender)
-    .setApplication(googleDriveApp)
-    .setDb(mongoDb);
-  container.setConnector(googleDriveUpdateFileConnector);
-
-  const googleSheetCreateSpreadsheet = new GoogleDriveUploadFileConnector()
-    .setSender(sender)
-    .setApplication(googleSheetApp)
-    .setDb(mongoDb);
-  container.setConnector(googleSheetCreateSpreadsheet);
-
-  const googleSheetGetSpreadsheet = new GoogleSheetGetSpreadsheet(etl)
-    .setSender(sender)
-    .setApplication(googleSheetApp)
-    .setDb(mongoDb);
-  container.setConnector(googleSheetGetSpreadsheet);
-
-  const googleSheetUpdateBatchSpreadsheet = new GoogleSheetUpdateBatchSpreadsheet(etl)
-    .setSender(sender)
-    .setApplication(googleSheetApp)
-    .setDb(mongoDb);
-  container.setConnector(googleSheetUpdateBatchSpreadsheet);
-
-  const awsRdsRoleConnector = new RDSAddRoleToDBCluster()
-    .setSender(sender)
-    .setApplication(awsRds)
-    .setDb(mongoDb);
-  container.setConnector(awsRdsRoleConnector);
-
-  const awsSesSendEmail = new SESSendEmail()
-    .setSender(sender)
-    .setApplication(sesApp)
-    .setDb(mongoDb);
-  container.setConnector(awsSesSendEmail);
-
-  const redShiftExecQuery = new RedshiftExecuteQueryConnector()
-    .setSender(sender)
-    .setApplication(awsRedshift)
-    .setDb(mongoDb);
-  container.setConnector(redShiftExecQuery);
-
-  const node = new Node();
-  container.setCustomNode(node);
-
-  const xeroApplication = new XeroApplication(provider, mongoDb, sender);
-  container.setApplication(xeroApplication);
-
-  const oracleDbApplication = new OracleDbApplication();
-  container.setApplication(oracleDbApplication);
-
-  const boxApplication = new BoxApplication(provider);
-  container.setApplication(boxApplication);
-
-  const listUsersCommon = new ListUsersCommon()
-    .setApplication(sampleApp)
-    .setDb(mongoDb);
-  container.setBatch(listUsersCommon);
-
-  const jiraListUsers = new ListUsersCommon()
-    .setApplication(jiraApp)
-    .setDb(mongoDb);
-  container.setBatch(jiraListUsers);
-
-  const hubspotToHubspotSalesTransactionEmail = new HubspotToSesTransactionEmailMapper(
-    PageEnum.SALES,
-  );
-  container.setCustomNode(hubspotToHubspotSalesTransactionEmail);
-
-  const hubspotToHubspotContactTransactionEmail = new HubspotToSesTransactionEmailMapper(
-    PageEnum.CONTACT,
-  );
-  container.setCustomNode(hubspotToHubspotContactTransactionEmail);
-
-  const hubspotToHubspotCommunityTransactionEmail = new HubspotToSesTransactionEmailMapper(
-    PageEnum.COMMUNITY,
-  );
-  container.setCustomNode(hubspotToHubspotCommunityTransactionEmail);
-
-  const hubspotToHubspotNewsletterTransactionEmail = new HubspotToSesTransactionEmailMapper(
-    PageEnum.NEWSLETTER,
-  );
-  container.setCustomNode(hubspotToHubspotNewsletterTransactionEmail);
-
-  const hubspotWhiterPaperToSesEmailMapper = new HubspotWhiterPaperToSesEmailMapper(PageEnum.WHITE_PAPER);
-  container.setCustomNode(hubspotWhiterPaperToSesEmailMapper);
-
-  const hanabosoContactFormEmail = new HanabosoContactFormMapper();
-  container.setCustomNode(hanabosoContactFormEmail);
-
-  const hubSpotSendTransactionEmailConnector = new HubSpotSendTransactionEmailConnector()
-    .setSender(sender)
-    .setApplication(hubspotAppBasic)
-    .setDb(mongoDb);
-  container.setConnector(hubSpotSendTransactionEmailConnector);
-
-  const getApplicationForRefreshBatchConnector = new GetApplicationForRefreshBatchConnector()
-    .setDb(mongoDb);
-  container.setBatch(getApplicationForRefreshBatchConnector);
-
-  const refreshOAuth2TokenNode = new RefreshOAuth2TokenNode(container)
-    .setDb(mongoDb);
-  container.setConnector(refreshOAuth2TokenNode);
+    const discordSendMessage = new DiscordSendMessageConnector()
+        .setSender(sender)
+        .setApplication(discordApp)
+        .setDb(mongoDb);
+    container.setConnector(discordSendMessage);
+
+    const slackSendMessage = new SlackSendMessageConnector()
+        .setSender(sender)
+        .setApplication(slackApp);
+    container.setConnector(slackSendMessage);
+
+    const asanaCreateTask = new AsanaCreateTaskConnector()
+        .setSender(sender)
+        .setApplication(asanaApp)
+        .setDb(mongoDb);
+    container.setConnector(asanaCreateTask);
+
+    const trelloCreateCard = new TrelloCreateCardConnector()
+        .setSender(sender)
+        .setApplication(trelloApp)
+        .setDb(mongoDb);
+    container.setConnector(trelloCreateCard);
+
+    const jiraCreateIssue = new JiraCreateIssueConnector()
+        .setSender(sender)
+        .setApplication(jiraApp)
+        .setDb(mongoDb);
+    container.setConnector(jiraCreateIssue);
+
+    const jiraGetWorklogsBatch = new JiraGetWorklogsBatch(etl)
+        .setSender(sender)
+        .setApplication(jiraApp)
+        .setDb(mongoDb);
+    container.setBatch(jiraGetWorklogsBatch);
+
+    const jiraGetIssueBatch = new JiraGetIssueBatch(etl)
+        .setSender(sender)
+        .setApplication(jiraApp)
+        .setDb(mongoDb);
+    container.setBatch(jiraGetIssueBatch);
+
+    const jiraGetUpdatedWorklogsIds = new JiraGetUpdatedWorklogIdsBatch(etl)
+        .setSender(sender)
+        .setApplication(jiraApp)
+        .setDb(mongoDb);
+    container.setBatch(jiraGetUpdatedWorklogsIds);
+
+    const jiraSortWorklogsByProjectsBatch = new JiraSortWorklogsByProjectsBatch(etl)
+        .setSender(sender)
+        .setApplication(jiraApp)
+        .setDb(mongoDb);
+    container.setBatch(jiraSortWorklogsByProjectsBatch);
+
+    const jiraWorklogGoogleDriveMapper = new JiraWorklogGoogleDriveMapper();
+    container.setCustomNode(jiraWorklogGoogleDriveMapper);
+
+    const jiraWorklogsToGoogleDriveMapper = new JiraWorklogsToGoogleDriveMapper(etl)
+        .setApplication(jiraApp)
+        .setDb(mongoDb);
+    container.setCustomNode(jiraWorklogsToGoogleDriveMapper);
+
+    const setupGoogleSheetSettingDirectory = new SetupGoogleSheetSettingDirectory()
+        .setApplication(googleSheetApp)
+        .setDb(mongoDb);
+    container.setCustomNode(setupGoogleSheetSettingDirectory);
+
+    const setupGoogleSheetSettingSpreadsheet = new SetupGoogleSheetSettingSpreadsheet()
+        .setApplication(googleSheetApp)
+        .setDb(mongoDb);
+    container.setCustomNode(setupGoogleSheetSettingSpreadsheet);
+
+    const googleDriveCreateDirectoryConnector = new GoogleDriveCreateDirectoryConnector()
+        .setSender(sender)
+        .setApplication(googleDriveApp)
+        .setDb(mongoDb);
+    container.setConnector(googleDriveCreateDirectoryConnector);
+
+    const googleDriveUpdateFileConnector = new GoogleDriveUpdateFileConnector()
+        .setSender(sender)
+        .setApplication(googleDriveApp)
+        .setDb(mongoDb);
+    container.setConnector(googleDriveUpdateFileConnector);
+
+    const googleSheetCreateSpreadsheet = new GoogleDriveUploadFileConnector()
+        .setSender(sender)
+        .setApplication(googleSheetApp)
+        .setDb(mongoDb);
+    container.setConnector(googleSheetCreateSpreadsheet);
+
+    const googleSheetGetSpreadsheet = new GoogleSheetGetSpreadsheet(etl)
+        .setSender(sender)
+        .setApplication(googleSheetApp)
+        .setDb(mongoDb);
+    container.setConnector(googleSheetGetSpreadsheet);
+
+    const googleSheetUpdateBatchSpreadsheet = new GoogleSheetUpdateBatchSpreadsheet(etl)
+        .setSender(sender)
+        .setApplication(googleSheetApp)
+        .setDb(mongoDb);
+    container.setConnector(googleSheetUpdateBatchSpreadsheet);
+
+    const awsRdsRoleConnector = new RDSAddRoleToDBCluster()
+        .setSender(sender)
+        .setApplication(awsRds)
+        .setDb(mongoDb);
+    container.setConnector(awsRdsRoleConnector);
+
+    const awsSesSendEmail = new SESSendEmail()
+        .setSender(sender)
+        .setApplication(sesApp)
+        .setDb(mongoDb);
+    container.setConnector(awsSesSendEmail);
+
+    const redShiftExecQuery = new RedshiftExecuteQueryConnector()
+        .setSender(sender)
+        .setApplication(awsRedshift)
+        .setDb(mongoDb);
+    container.setConnector(redShiftExecQuery);
+
+    const node = new Node();
+    container.setCustomNode(node);
+
+    const xeroApplication = new XeroApplication(provider, mongoDb, sender);
+    container.setApplication(xeroApplication);
+
+    const oracleDbApplication = new OracleDbApplication();
+    container.setApplication(oracleDbApplication);
+
+    const boxApplication = new BoxApplication(provider);
+    container.setApplication(boxApplication);
+
+    const listUsersCommon = new ListUsersCommon()
+        .setApplication(sampleApp)
+        .setDb(mongoDb);
+    container.setBatch(listUsersCommon);
+
+    const jiraListUsers = new ListUsersCommon()
+        .setApplication(jiraApp)
+        .setDb(mongoDb);
+    container.setBatch(jiraListUsers);
+
+    const hubspotToHubspotSalesTransactionEmail = new HubspotToSesTransactionEmailMapper(
+        PageEnum.SALES,
+    );
+    container.setCustomNode(hubspotToHubspotSalesTransactionEmail);
+
+    const hubspotToHubspotContactTransactionEmail = new HubspotToSesTransactionEmailMapper(
+        PageEnum.CONTACT,
+    );
+    container.setCustomNode(hubspotToHubspotContactTransactionEmail);
+
+    const hubspotToHubspotCommunityTransactionEmail = new HubspotToSesTransactionEmailMapper(
+        PageEnum.COMMUNITY,
+    );
+    container.setCustomNode(hubspotToHubspotCommunityTransactionEmail);
+
+    const hubspotToHubspotNewsletterTransactionEmail = new HubspotToSesTransactionEmailMapper(
+        PageEnum.NEWSLETTER,
+    );
+    container.setCustomNode(hubspotToHubspotNewsletterTransactionEmail);
+
+    const hubspotWhiterPaperToSesEmailMapper = new HubspotWhiterPaperToSesEmailMapper(PageEnum.WHITE_PAPER);
+    container.setCustomNode(hubspotWhiterPaperToSesEmailMapper);
+
+    const hanabosoContactFormEmail = new HanabosoContactFormMapper();
+    container.setCustomNode(hanabosoContactFormEmail);
+
+    const hubSpotSendTransactionEmailConnector = new HubSpotSendTransactionEmailConnector()
+        .setSender(sender)
+        .setApplication(hubspotAppBasic)
+        .setDb(mongoDb);
+    container.setConnector(hubSpotSendTransactionEmailConnector);
+
+    const getApplicationForRefreshBatchConnector = new GetApplicationForRefreshBatchConnector()
+        .setDb(mongoDb);
+    container.setBatch(getApplicationForRefreshBatchConnector);
+
+    const refreshOAuth2TokenNode = new RefreshOAuth2TokenNode(container)
+        .setDb(mongoDb);
+    container.setConnector(refreshOAuth2TokenNode);
 }

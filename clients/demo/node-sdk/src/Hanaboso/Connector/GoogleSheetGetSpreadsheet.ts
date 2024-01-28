@@ -14,62 +14,62 @@ const GOOGLE_SHEET_GET_SPREADSHEET = '/v4/spreadsheets';
 
 export default class GoogleSheetGetSpreadsheet extends AConnector {
 
-  public constructor(private readonly dataStorageManager: DataStorageManager) {
-    super();
-  }
-
-  public getName(): string {
-    return NAME;
-  }
-
-  public async processAction(dto: ProcessDto<IInput>): Promise<ProcessDto> {
-    const app = this.getApplication<GoogleSheetApplication>();
-    const spredsheetId = dto.getHeader(SPREADSHEET_ID);
-    const spredsheetCacheKey = `${spredsheetId}-${dto.getHeader(CORRELATION_ID)}`;
-
-    if (!spredsheetId) {
-      dto.setStopProcess(ResultCode.STOP_AND_FAILED, 'Connector is missing required Header: "spredsheetId".');
-      return dto;
+    public constructor(private readonly dataStorageManager: DataStorageManager) {
+        super();
     }
 
-    const req = await app.getRequestDto(
-      dto,
-      await this.getApplicationInstallFromProcess(dto),
-      HttpMethods.GET,
-      `${GOOGLE_SHEET_GET_SPREADSHEET}/${spredsheetId}?includeGridData=true`,
-    );
+    public getName(): string {
+        return NAME;
+    }
 
-    const response = await this.getSender().send<IResponse>(req, [200]);
+    public async processAction(dto: ProcessDto<IInput>): Promise<ProcessDto> {
+        const app = this.getApplication<GoogleSheetApplication>();
+        const spredsheetId = dto.getHeader(SPREADSHEET_ID);
+        const spredsheetCacheKey = `${spredsheetId}-${dto.getHeader(CORRELATION_ID)}`;
 
-    const data = response.getJsonBody();
-    const minimalSpreadsheet: IResponse = {
-      sheets: data.sheets?.map((item) => ({
-        data: item.data?.map((allData) => ({
-          rowData: allData.rowData?.map((rowData) => ({
-            values: rowData.values?.map((value) => ({
-              userEnteredValue: {
-                stringValue: value.userEnteredValue?.stringValue ?? '',
-              },
+        if (!spredsheetId) {
+            dto.setStopProcess(ResultCode.STOP_AND_FAILED, 'Connector is missing required Header: "spredsheetId".');
+            return dto;
+        }
+
+        const req = await app.getRequestDto(
+            dto,
+            await this.getApplicationInstallFromProcess(dto),
+            HttpMethods.GET,
+            `${GOOGLE_SHEET_GET_SPREADSHEET}/${spredsheetId}?includeGridData=true`,
+        );
+
+        const response = await this.getSender().send<IResponse>(req, [200]);
+
+        const data = response.getJsonBody();
+        const minimalSpreadsheet: IResponse = {
+            sheets: data.sheets?.map((item) => ({
+                data: item.data?.map((allData) => ({
+                    rowData: allData.rowData?.map((rowData) => ({
+                        values: rowData.values?.map((value) => ({
+                            userEnteredValue: {
+                                stringValue: value.userEnteredValue?.stringValue ?? '',
+                            },
+                        })),
+                    })),
+                })),
+                properties: {
+                    sheetId: item.properties.sheetId,
+                    title: item.properties.title,
+                },
             })),
-          })),
-        })),
-        properties: {
-          sheetId: item.properties.sheetId,
-          title: item.properties.title,
-        },
-      })),
-      spreadsheetUrl: data.spreadsheetUrl,
-      properties: data.properties,
-      spreadsheetId: data.spreadsheetId,
-    };
+            spreadsheetUrl: data.spreadsheetUrl,
+            properties: data.properties,
+            spreadsheetId: data.spreadsheetId,
+        };
 
-    await this.dataStorageManager.store(
-      spredsheetCacheKey,
-      [minimalSpreadsheet],
-    );
+        await this.dataStorageManager.store(
+            spredsheetCacheKey,
+            [minimalSpreadsheet],
+        );
 
-    return dto.setJsonData({ success: 'ok' });
-  }
+        return dto.setJsonData({ success: 'ok' });
+    }
 
 }
 

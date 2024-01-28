@@ -19,79 +19,79 @@ const GOOGLE_SHEET_GET_SPREADSHEET = '/v4/spreadsheets';
 
 export default class GoogleSheetUpdateBatchSpreadsheet extends AConnector {
 
-  public constructor(private readonly dataStorageManager: DataStorageManager) {
-    super();
-  }
-
-  public getName(): string {
-    return NAME;
-  }
-
-  public async processAction(dto: ProcessDto<IInput>): Promise<ProcessDto> {
-    const app = this.getApplication<GoogleSheetApplication>();
-    const spredsheetId = dto.getHeader(SPREADSHEET_ID);
-    const spredsheetCacheKey = `${spredsheetId}-${dto.getHeader(CORRELATION_ID)}`;
-
-    if (!spredsheetId) {
-      dto.setStopProcess(ResultCode.STOP_AND_FAILED, 'Connector is missing required Header: "spredsheetId".');
-      return dto;
+    public constructor(private readonly dataStorageManager: DataStorageManager) {
+        super();
     }
 
-    const sheetEtl = await this.dataStorageManager.load<ISpreadsheet>(
-      spredsheetCacheKey,
-    );
-
-    const sheet = sheetEtl?.[0].getData()?.sheets[0];
-
-    if (!sheet) {
-      dto.setStopProcess(ResultCode.STOP_AND_FAILED, 'Connector is missing required data: "sheet".');
-      return dto;
+    public getName(): string {
+        return NAME;
     }
 
-    const body = {
-      requests: [
-        {
-          updateCells: {
-            start: {
-              columnIndex: 0,
-              rowIndex: 0,
-              sheetId: sheet.properties.sheetId,
-            },
-            rows: sheet.data[0].rowData,
-            fields: '*',
-          },
-        },
-      ],
-    };
+    public async processAction(dto: ProcessDto<IInput>): Promise<ProcessDto> {
+        const app = this.getApplication<GoogleSheetApplication>();
+        const spredsheetId = dto.getHeader(SPREADSHEET_ID);
+        const spredsheetCacheKey = `${spredsheetId}-${dto.getHeader(CORRELATION_ID)}`;
 
-    const applicationInstall = await this.getApplicationInstallFromProcess(dto);
+        if (!spredsheetId) {
+            dto.setStopProcess(ResultCode.STOP_AND_FAILED, 'Connector is missing required Header: "spredsheetId".');
+            return dto;
+        }
 
-    const req = await app.getRequestDto(
-      dto,
-      applicationInstall,
-      HttpMethods.POST,
-      `${GOOGLE_SHEET_GET_SPREADSHEET}/${spredsheetId}:batchUpdate`,
-      body,
-    );
+        const sheetEtl = await this.dataStorageManager.load<ISpreadsheet>(
+            spredsheetCacheKey,
+        );
 
-    await this.getSender().send<IResponse>(req, [200]);
+        const sheet = sheetEtl?.[0].getData()?.sheets[0];
 
-    await this.dataStorageManager.remove(
-      spredsheetCacheKey,
-    );
+        if (!sheet) {
+            dto.setStopProcess(ResultCode.STOP_AND_FAILED, 'Connector is missing required data: "sheet".');
+            return dto;
+        }
 
-    await this.writeLastTimeRun(applicationInstall);
+        const body = {
+            requests: [
+                {
+                    updateCells: {
+                        start: {
+                            columnIndex: 0,
+                            rowIndex: 0,
+                            sheetId: sheet.properties.sheetId,
+                        },
+                        rows: sheet.data[0].rowData,
+                        fields: '*',
+                    },
+                },
+            ],
+        };
 
-    return dto.setJsonData({ success: 'ok' });
-  }
+        const applicationInstall = await this.getApplicationInstallFromProcess(dto);
 
-  private async writeLastTimeRun(applicationInstall: ApplicationInstall): Promise<void> {
-    applicationInstall.addNonEncryptedSettings({
-      [LAST_TOPOLOGY_RUN]: DateTimeUtils.getFormattedDate(DateTime.utc(), DATE_FORMAT),
-    });
+        const req = await app.getRequestDto(
+            dto,
+            applicationInstall,
+            HttpMethods.POST,
+            `${GOOGLE_SHEET_GET_SPREADSHEET}/${spredsheetId}:batchUpdate`,
+            body,
+        );
 
-    await this.getDbClient().getApplicationRepository().update(applicationInstall);
-  }
+        await this.getSender().send<IResponse>(req, [200]);
+
+        await this.dataStorageManager.remove(
+            spredsheetCacheKey,
+        );
+
+        await this.writeLastTimeRun(applicationInstall);
+
+        return dto.setJsonData({ success: 'ok' });
+    }
+
+    private async writeLastTimeRun(applicationInstall: ApplicationInstall): Promise<void> {
+        applicationInstall.addNonEncryptedSettings({
+            [LAST_TOPOLOGY_RUN]: DateTimeUtils.getFormattedDate(DateTime.utc(), DATE_FORMAT),
+        });
+
+        await this.getDbClient().getApplicationRepository().update(applicationInstall);
+    }
 
 }
 
