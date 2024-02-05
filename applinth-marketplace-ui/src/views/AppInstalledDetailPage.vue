@@ -77,7 +77,7 @@
           </div>
         </v-col>
       </v-row>
-      <AppForm :active-app="appActive" />
+      <AppForm :active-app="appActive" @appFormSaved="onFormSaved" />
     </div>
   </div>
 </template>
@@ -228,6 +228,14 @@ export default {
 
     hasLogo(app) {
       return app?.logo ? app.logo : ""
+    },
+
+    async onFormSaved() {
+      this.appActive = await callApi({
+        requestData: API.appStore.getApp,
+        params: { key: this.$route.params.id },
+      })
+      this.isActivationEnabled = Boolean(this.appActive.applicationSettings)
     },
   },
   watch: {

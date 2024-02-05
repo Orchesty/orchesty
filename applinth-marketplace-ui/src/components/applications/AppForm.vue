@@ -314,6 +314,7 @@ export default {
           params: { key: this.app.key },
         })
         this.initSettings()
+        this.$emit("appFormSaved", this.app.name)
       }
       await this.$refs[key][0].reset()
 
