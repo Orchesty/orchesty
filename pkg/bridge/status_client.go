@@ -41,7 +41,7 @@ func sendFinishedProcess(process *model.ProcessMessage, status string, trashId *
 		Contents: []model.StatusMessageContent{
 			{
 				TrashId: trashId,
-				Body:    string(process.Body),
+				Body:    process.GetOriginalBody(),
 			},
 		},
 	}
