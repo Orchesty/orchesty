@@ -235,6 +235,20 @@ data:
         use_backend applinth-dc2i2gqrfo if applinth-instance-dc2i2gqrfo
 
 
+        # instance-z6o6lhc9d6
+
+        acl api-instance-z6o6lhc9d6 hdr_beg(host) api-z6o6lhc9d6.eu1.cloud.orchesty.io
+        use_backend api-z6o6lhc9d6 if api-instance-z6o6lhc9d6
+
+        acl ui-instance-z6o6lhc9d6 hdr_beg(host) ui-z6o6lhc9d6.eu1.cloud.orchesty.io
+        use_backend ui-z6o6lhc9d6 if ui-instance-z6o6lhc9d6
+
+        acl start-instance-z6o6lhc9d6 hdr_beg(host) start-z6o6lhc9d6.eu1.cloud.orchesty.io
+        use_backend start-z6o6lhc9d6 if start-instance-z6o6lhc9d6
+
+        acl applinth-instance-z6o6lhc9d6 hdr_beg(host) applinth-z6o6lhc9d6.eu1.cloud.orchesty.io
+        use_backend applinth-z6o6lhc9d6 if applinth-instance-z6o6lhc9d6
+
     ### backends ###
 
 
@@ -447,20 +461,39 @@ data:
     # instance-dc2i2gqrfo
 
     backend api-dc2i2gqrfo
-    mode http
-    server svc backend.instance-dc2i2gqrfo.svc.cluster.local:80
+        mode http
+        server svc backend.instance-dc2i2gqrfo.svc.cluster.local:80
 
     backend ui-dc2i2gqrfo
-    mode http
-    server svc frontend.instance-dc2i2gqrfo.svc.cluster.local:80
+        mode http
+        server svc frontend.instance-dc2i2gqrfo.svc.cluster.local:80
 
     backend start-dc2i2gqrfo
-    mode http
-    server svc starting-point.instance-dc2i2gqrfo.svc.cluster.local:8080
+        mode http
+        server svc starting-point.instance-dc2i2gqrfo.svc.cluster.local:8080
 
     backend applinth-dc2i2gqrfo
-    mode http
-    server svc applinth-marketplace-ui.instance-dc2i2gqrfo.svc.cluster.local:80
+        mode http
+        server svc applinth-marketplace-ui.instance-dc2i2gqrfo.svc.cluster.local:80
+
+
+    # instance-z6o6lhc9d6
+
+    backend api-z6o6lhc9d6
+        mode http
+        server svc backend.instance-z6o6lhc9d6.svc.cluster.local:80
+
+    backend ui-z6o6lhc9d6
+        mode http
+        server svc frontend.instance-z6o6lhc9d6.svc.cluster.local:80
+
+    backend start-z6o6lhc9d6
+        mode http
+        server svc starting-point.instance-z6o6lhc9d6.svc.cluster.local:8080
+
+    backend applinth-z6o6lhc9d6
+        mode http
+        server svc applinth-marketplace-ui.instance-z6o6lhc9d6.svc.cluster.local:80
 
     # ping backend
 
