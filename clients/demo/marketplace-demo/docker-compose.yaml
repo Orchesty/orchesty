@@ -15,6 +15,7 @@ services:
             APP_ENV: 'debug'
             APP_PORT: 8000
             APPLINTH_HOST: 'https://applinth-orchesty.stage.hanaboso.net'
+            TENANT: 'tenant'
             JWE_PUBLIC_KEY: |
                 -----BEGIN PUBLIC KEY-----
                 MIGbMBAGByqGSM49AgEGBSuBBAAjA4GGAAQAZSNvw4LyVUjEI5et0ME5ijXvuzZ0

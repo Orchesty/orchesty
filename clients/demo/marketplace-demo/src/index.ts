@@ -17,7 +17,7 @@ app.get('/', async (req, res) => {
 
     const key = await importSPKI(process.env.JWE_PUBLIC_KEY ?? '', 'ECDH-ES');
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    const token = await new EncryptJWT({ sub: 'tenant', eu_sub: u ?? 'hanaboso-user', eu_alias: 'Name' })
+    const token = await new EncryptJWT({ sub: process.env.TENANT ?? 'tenant', eu_sub: u ?? 'hanaboso-user', eu_alias: 'Name' })
         .setProtectedHeader({ alg: 'ECDH-ES', enc: 'A128GCM' })
         .setIssuedAt()
         .setExpirationTime('2h')
