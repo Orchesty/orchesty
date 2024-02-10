@@ -22,4 +22,4 @@ services:
             - STARTING_POINT_DSN=https://starting-point
 
     fakes3:
-        image: olalond3/fakes3
+        image: rflpazini/fakes3-docker

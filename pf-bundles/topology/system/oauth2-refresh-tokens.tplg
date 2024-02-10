@@ -3,11 +3,11 @@
     <bpmn:event id="Event_03idyfg" pipes:pipesType="cron" pipes:sdkHost="nodejs-sdk:8080" pipes:cronTime="*/5 * * * *" name="cron" pipes:sdkHostName="nodejs-sdk">
       <bpmn:outgoing>Flow_02ohh38</bpmn:outgoing>
     </bpmn:event>
-    <bpmn:task id="Activity_0jmxsco" pipes:pipesType="batch" pipes:sdkHost="nodejs-sdk:8080" name="get-application-for-refresh" pipes:sdkHostName="nodejs-sdk" pipes:appName="xero">
+    <bpmn:task id="Activity_0jmxsco" pipes:pipesType="batch" pipes:sdkHost="nodejs-sdk:8080" name="get-application-for-refresh" pipes:sdkHostName="nodejs-sdk">
       <bpmn:incoming>Flow_02ohh38</bpmn:incoming>
       <bpmn:outgoing>Flow_0rjbqwa</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:task id="Activity_13kux8k" pipes:pipesType="connector" pipes:sdkHost="nodejs-sdk:8080" name="refresh-oauth2-token" pipes:sdkHostName="nodejs-sdk" pipes:appName="xero">
+    <bpmn:task id="Activity_13kux8k" pipes:pipesType="connector" pipes:sdkHost="nodejs-sdk:8080" name="refresh-oauth2-token" pipes:sdkHostName="nodejs-sdk">
       <bpmn:incoming>Flow_0rjbqwa</bpmn:incoming>
     </bpmn:task>
     <bpmn:sequenceFlow id="Flow_02ohh38" sourceRef="Event_03idyfg" targetRef="Activity_0jmxsco"/>

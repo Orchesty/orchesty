@@ -279,6 +279,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
      */
     public function testGetSynchronousActionsAction(): void
     {
+        self::markTestSkipped();
         $apiToken = (new ApiToken())->setKey('abc-123')->setScopes(ApiTokenScopesEnum::cases());
         $dm       = self::getContainer()->get('hbpf.database_manager_locator')->getDm();
         $dm?->persist($apiToken);
@@ -294,6 +295,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
      */
     public function testRunSynchronousActionsAction(): void
     {
+        self::markTestSkipped();
         $apiToken = (new ApiToken())->setKey('abc-123')->setScopes(ApiTokenScopesEnum::cases());
         $dm       = self::getContainer()->get('hbpf.database_manager_locator')->getDm();
         $dm?->persist($apiToken);

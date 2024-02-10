@@ -2,7 +2,7 @@
     "name": "orchesty/backend",
     "description": "Orchesty backend",
     "license": "Elastic-2.0",
-    "version": "3.1.0",
+    "version": "3.1.1",
     "require": {
         "php": "^8.2",
         "ext-ctype": "*",
