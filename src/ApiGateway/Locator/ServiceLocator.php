@@ -336,9 +336,9 @@ final class ServiceLocator implements LoggerAwareInterface
      * @param string  $key
      * @param string  $method
      *
-     * @return mixed[]
+     * @return string
      */
-    public function runSyncActions(Request $request, string $key, string $method): array
+    public function runSyncActions(Request $request, string $key, string $method): string
     {
         return $this->doRequest(
             sprintf('applications/%s/sync/%s%s', $key, $method, $this->queryToString($request->query->all())),
@@ -347,7 +347,8 @@ final class ServiceLocator implements LoggerAwareInterface
             FALSE,
             [],
             TRUE,
-        );
+            TRUE,
+        )[0];
     }
 
     /**
@@ -453,6 +454,7 @@ final class ServiceLocator implements LoggerAwareInterface
      * @param bool    $multiple
      * @param mixed[] $headers
      * @param bool    $allowThrowException
+     * @param bool    $allowOriginalResponse
      *
      * @return mixed[]
      * @throws Throwable
@@ -464,6 +466,7 @@ final class ServiceLocator implements LoggerAwareInterface
         bool $multiple = FALSE,
         array $headers = [],
         bool $allowThrowException = FALSE,
+        bool $allowOriginalResponse = FALSE,
     ): array
     {
         $out = [];
@@ -484,7 +487,9 @@ final class ServiceLocator implements LoggerAwareInterface
 
                 $res = $this->curlManager->send($dto);
                 if (in_array($res->getStatusCode(), [200, 201], TRUE)) {
-                    if (!empty($res->getJsonBody())) {
+                    if($allowOriginalResponse){
+                        $out[] = $res->getBody();
+                    }else if (!empty($res->getJsonBody())) {
                         if (!$multiple) {
                             $out = array_merge($res->getJsonBody(), ['host' => $ip]);
 

@@ -187,7 +187,7 @@ final class ApplicationController extends AbstractController
     public function runSynchronousActionsAction(Request $request, string $key, string $method): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done
-        return new JsonResponse($this->locator->runSyncActions($request, $key, $method));
+        return new Response($this->locator->runSyncActions($request, $key, $method));
     }
 
     /**

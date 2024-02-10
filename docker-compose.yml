@@ -29,13 +29,13 @@ services:
             - JWT_KEY=test1234test1234test1234test1234test1234test1234test1234test1234test1234
 
     starting-point:
-        image: orchesty/starting-point:2.0.0
+        image: orchesty/starting-point:2.0
         environment:
             MONGO_DSN: mongodb://mongo/demo
             METRICS_DSN: mongodb://mongo/metrics
 
     cron-api:
-        image: orchesty/cron:2.0.0
+        image: orchesty/cron:2.0
         environment:
             STARTING_POINT_DSN: starting-point:8080
             MONGO_DSN: mongodb://mongo/cron
