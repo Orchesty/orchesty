@@ -36,18 +36,8 @@ func NewMongo() MongoDb {
 		},
 	}
 
-	indexCreatedName := "created_search"
-	indexCreated := mongo.IndexModel{
-		Keys: bson.M{
-			"created": 1,
-		},
-		Options: &options.IndexOptions{
-			Name: &indexCreatedName,
-		},
-	}
-
 	coll := mongoDbCon.Database.Collection(config.MongoDb.CounterCollection)
-	if _, err := coll.Indexes().CreateMany(ctx, []mongo.IndexModel{indexFinished, indexExpires, indexCreated}); err != nil {
+	if _, err := coll.Indexes().CreateMany(ctx, []mongo.IndexModel{indexFinished, indexExpires}); err != nil {
 		log.Err(err).Send()
 	}
 
