@@ -14,7 +14,7 @@ import {
 } from '../service/comparator';
 import { ComparatorBufferRepository, ComparatorLockRepository } from '../service/storage/repository';
 
-export const NAME = 'filter';
+export const NAME = 'comparator';
 
 const schema = Joi.object({
     items: Joi.array().required(),
@@ -26,6 +26,7 @@ const schema = Joi.object({
         ttl: Joi.number().optional().allow(null),
         totalCount: Joi.number().optional().allow(null),
         isLast: Joi.boolean().optional().allow(null),
+        passAsListOfExistingItems: Joi.boolean().optional().allow(null).default(false),
         isBuffered: Joi.boolean().optional().allow(null),
     }).required(),
 });
@@ -45,7 +46,7 @@ export class ComparatorFilter extends ACommonNode {
     }
 
     @validate(schema)
-    public async processAction(dto: ProcessDto<IInput>): Promise<ProcessDto<IOutput>> {
+    public async processAction(dto: ProcessDto<IInput>): Promise<ProcessDto<IOutput | Record<string, unknown>[]>> {
         let { items, configuration } = dto.getJsonData(); // eslint-disable-line
         dto.setNewJsonData({}); // clear message body
 
@@ -100,14 +101,19 @@ export class ComparatorFilter extends ACommonNode {
         items: Record<string, unknown>[],
         configuration: IConfiguration,
         dto: ProcessDto,
-    ): Promise<ProcessDto<IOutput>> {
+    ): Promise<ProcessDto<IOutput | Record<string, unknown>[]>> {
         const changes = await this.comparator.compare({ items, configuration });
-        if (configuration.stopOnEmptyArray
-            && !changes.created.length
-            && !changes.updated.length
-            && !changes.deleted.length
-        ) {
-            return dto.setNewJsonData(emptyOutput).setStopProcess(ResultCode.DO_NOT_CONTINUE, 'empty Comparator result');
+
+        if (configuration.stopOnEmptyArray) {
+            if (configuration.passAsListOfExistingItems && !(changes as Record<string, unknown>[]).length) {
+                return dto.setNewJsonData([]).setStopProcess(ResultCode.DO_NOT_CONTINUE, 'empty Comparator result');
+            }
+            if (!configuration.passAsListOfExistingItems
+                && !(changes as IOutput).created.length
+                && !(changes as IOutput).updated.length
+                && !(changes as IOutput).deleted.length) {
+                return dto.setNewJsonData(emptyOutput).setStopProcess(ResultCode.DO_NOT_CONTINUE, 'empty Comparator result');
+            }
         }
 
         return dto.setNewJsonData(changes);
