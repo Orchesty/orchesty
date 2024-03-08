@@ -1,6 +1,7 @@
 export interface IConfiguration {
     idField: string;
     masterKey: string;
+    passAsListOfExistingItems?: boolean;
     excludedFields?: string[];
     stopOnEmptyArray?: boolean;
     ttl?: number;

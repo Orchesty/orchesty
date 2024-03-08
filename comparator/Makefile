@@ -1,4 +1,5 @@
 DC=docker-compose exec -T app
+IMAGE=dkr.hanaboso.net/pipes/pipes/comparator:$(TAG)
 
 ALIAS?=alias
 Darwin:
@@ -16,7 +17,7 @@ Linux:
 		.env.dist > .env
 
 build: .env
-	docker build -f docker/Dockerfile -t ${IMAGE} --pull
+	docker build --target prod -f Dockerfile -t ${IMAGE} --pull .
 	docker push $(IMAGE)
 
 docker-compose.ci.yml:

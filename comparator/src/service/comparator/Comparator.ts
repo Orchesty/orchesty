@@ -15,7 +15,7 @@ export class Comparator {
     public constructor(private readonly comparatorHashRepository: ComparatorHashRepository) {
     }
 
-    public async compare(input: IInput): Promise<IOutput> {
+    public async compare(input: IInput): Promise<IOutput | Record<string, unknown>[]> {
         const hashes: Record<string, IHash> = {};
         const { idField, excludedFields, masterKey } = input.configuration;
 
@@ -31,7 +31,7 @@ export class Comparator {
         dbHashes: ComparatorHash[],
         hashes: Record<string, IHash>,
         settings: IConfiguration,
-    ): Promise<IOutput> {
+    ): Promise<IOutput | Record<string, unknown>[]> {
         const result: IOutput = {
             created: [],
             updated: [],
@@ -42,6 +42,7 @@ export class Comparator {
 
         dbHashes.forEach((item) => {
             const dataHash = hashes?.[item.externalId];
+
             if (dataHash) {
                 if (item.hash !== dataHash.hash) {
                     result.updated.push(dataHash.data);
@@ -67,7 +68,7 @@ export class Comparator {
 
         await Promise.all(promises);
 
-        return result;
+        return settings.passAsListOfExistingItems ? [...result.created, ...result.updated] : result;
     }
 
     public createHash(data: object, excludedFields: string[] = []): string {
