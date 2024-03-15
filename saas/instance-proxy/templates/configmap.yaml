@@ -249,6 +249,18 @@ data:
         acl applinth-instance-z6o6lhc9d6 hdr_beg(host) applinth-z6o6lhc9d6.eu1.cloud.orchesty.io
         use_backend applinth-z6o6lhc9d6 if applinth-instance-z6o6lhc9d6
 
+
+        # instance-dasarom5ru
+
+        acl api-instance-dasarom5ru hdr_beg(host) api-dasarom5ru.eu1.cloud.orchesty.io
+        use_backend api-dasarom5ru if api-instance-dasarom5ru
+
+        acl ui-instance-dasarom5ru hdr_beg(host) ui-dasarom5ru.eu1.cloud.orchesty.io
+        use_backend ui-dasarom5ru if ui-instance-dasarom5ru
+
+        acl start-instance-dasarom5ru hdr_beg(host) start-dasarom5ru.eu1.cloud.orchesty.io
+        use_backend start-dasarom5ru if start-instance-dasarom5ru
+
     ### backends ###
 
 
@@ -494,6 +506,21 @@ data:
     backend applinth-z6o6lhc9d6
         mode http
         server svc applinth-marketplace-ui.instance-z6o6lhc9d6.svc.cluster.local:80
+
+
+    # instance-dasarom5ru
+
+    backend api-dasarom5ru
+        mode http
+        server svc backend.instance-dasarom5ru.svc.cluster.local:80
+
+    backend ui-dasarom5ru
+        mode http
+        server svc frontend.instance-dasarom5ru.svc.cluster.local:80
+
+    backend start-dasarom5ru
+        mode http
+        server svc starting-point.instance-dasarom5ru.svc.cluster.local:8080
 
     # ping backend
 

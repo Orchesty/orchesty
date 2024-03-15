@@ -56,7 +56,7 @@ $RABBITMQCTL set_permissions --vhost $INSTANCE $INSTANCE "'.*'" "'.*'" "'.*'"
 echo "Creating Kubernetes namespace..."
 kubectl create ns $INSTANCE
 kubectl label ns $INSTANCE oc-instance-displayname="$NAME"
-kubectl -n cloud-control get secret hanaboso -ojson | jq 'del(.metadata.namespace)' | kubectl apply -f - n $INSTANCE
+kubectl -n cloud-control get secret hanaboso -ojson | jq 'del(.metadata.namespace)' | kubectl -n $INSTANCE apply -f -
 
 echo
 echo Secrets:
