@@ -54,7 +54,7 @@ export class ComparatorBufferRepository extends AbstractRepository<ComparatorBuf
             },
         );
 
-        return result.value as unknown as IBufferInfo;
+        return result as unknown as IBufferInfo;
     }
 
     /**

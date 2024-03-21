@@ -20,7 +20,9 @@ export class Comparator {
         const { idField, excludedFields, masterKey } = input.configuration;
 
         input.items.forEach((item) => {
-            hashes[item[idField] as string] = { data: item, hash: this.createHash(item, excludedFields) };
+            hashes[item[idField] as string] = {
+                data: item, hash: this.createHash(structuredClone(item), excludedFields),
+            };
         });
         const dbHashes = await this.comparatorHashRepository.findMany({ masterKey });
 
@@ -46,7 +48,7 @@ export class Comparator {
             if (dataHash) {
                 if (item.hash !== dataHash.hash) {
                     result.updated.push(dataHash.data);
-                    promises.push(this.updateHash(item, dataHash.hash));
+                    promises.push(this.updateHash(item, dataHash.hash, settings.masterKey));
                 }
 
                 delete hashes[item.externalId];
@@ -109,8 +111,8 @@ export class Comparator {
         return Promise.all(promises);
     }
 
-    private async updateHash(dbHash: ComparatorHash, hash: string): Promise<void> {
-        await this.comparatorHashRepository.updateHash(dbHash.externalId, hash, dbHash.ttl);
+    private async updateHash(dbHash: ComparatorHash, hash: string, masterKey: string): Promise<void> {
+        await this.comparatorHashRepository.updateHash(dbHash.externalId, hash, masterKey, dbHash.ttl);
     }
 
     private getTtl(ttl?: number): Date | undefined {

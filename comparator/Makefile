@@ -3,7 +3,7 @@ IMAGE=dkr.hanaboso.net/pipes/pipes/comparator:$(TAG)
 
 ALIAS?=alias
 Darwin:
-	sudo ifconfig lo0 $(ALIAS) $(shell awk '$$1 ~ /^DEV_IP/' .env.dist | sed -e "s/^DEV_IP=//")
+	sudo ifconfig lo0 $(ALIAS) $(shell awk '$$1 ~ /^DEV_IP/' .env | sed -e "s/^DEV_IP=//")
 Linux:
 	@echo 'skipping ...'
 .lo0-up:
@@ -11,14 +11,15 @@ Linux:
 .lo0-down:
 	-@make `uname` ALIAS='-alias'
 .env:
-	sed -e "s|{DEV_UID}|$(shell id -u)|g" \
-		-e "s|{DEV_GID}|$(shell id -u)|g" \
-		-e 's/{ORCHESTY_API_KEY}/$(shell tr -dc A-Za-z0-9 </dev/urandom | head -c 20)/g' \
+	sed -e "s/{DEV_UID}/$(shell if [ "$(shell uname)" = "Linux" ]; then echo $(shell id -u); else echo '1001'; fi)/g" \
+		-e "s/{DEV_GID}/$(shell if [ "$(shell uname)" = "Linux" ]; then echo $(shell id -g); else echo '1001'; fi)/g" \
+		-e 's/{ORCHESTY_API_KEY}/$(shell export LC_CTYPE=C && tr -dc A-Za-z0-9 </dev/urandom | head -c 65)/g' \
 		.env.dist > .env
 
+# Build
 build: .env
-	docker build --target prod -f Dockerfile -t ${IMAGE} --pull .
-	docker push $(IMAGE)
+	if ! docker buildx inspect multi; then docker buildx create --name multi --platform linux/amd64,linux/arm64/v8 --use --bootstrap; fi
+	docker buildx build -f Dockerfile --pull --push --platform linux/amd64,linux/arm64/v8 -t $(IMAGE) .
 
 docker-compose.ci.yml:
 	# Comment out any port forwarding

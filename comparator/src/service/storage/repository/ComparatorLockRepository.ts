@@ -30,7 +30,7 @@ export class ComparatorLockRepository extends AbstractRepository<ComparatorLock>
             },
         );
 
-        return result.value === null;
+        return result === null;
     }
 
     public async unlock(masterKey: string): Promise<void> {

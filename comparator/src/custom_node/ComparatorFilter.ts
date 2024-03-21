@@ -90,7 +90,7 @@ export class ComparatorFilter extends ACommonNode {
         };
 
         const info = await this.bufferRepository.upsertBuffer(buffer);
-        if (info.closed && info.total >= (configuration.totalCount || 0)) {
+        if (info.closed && info.total >= (configuration.totalCount ?? 0)) {
             return this.bufferRepository.findOne({ key });
         }
 

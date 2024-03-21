@@ -12,9 +12,9 @@ export class ComparatorHashRepository extends AbstractRepository<ComparatorHash>
         },
     ];
 
-    public async updateHash(externalId: string, hash: string, ttl?: Date): Promise<void> {
+    public async updateHash(externalId: string, hash: string, masterKey: string, ttl?: Date): Promise<void> {
         await this.collection.updateOne(
-            { externalId },
+            { externalId, masterKey },
             {
                 $set: { hash, ttl },
             },
