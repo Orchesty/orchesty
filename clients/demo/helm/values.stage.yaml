@@ -5,14 +5,15 @@ orchesty:
   nameOverride: pipes
 
 global:
+  orchestyVersion: 2.0.1
   backend_url: https://api-orchesty.stage.hanaboso.net
   frontend_url: https://orchesty.stage.hanaboso.net
   starting_point_url: https://sp-orchesty.stage.hanaboso.net
   applinth_marketplace_url: https://applinth-orchesty.stage.hanaboso.net
 
   imageOverrides:
-    applinth-marketplace-ui: dkr.hanaboso.net/pipes/pipes/applinth-marketplace-ui:541b6ac4
-    backend: dkr.hanaboso.net/pipes/pipes/applinth:2.0.0
+    applinth-marketplace-ui: dkr.hanaboso.net/pipes/pipes/applinth-marketplace-ui:2.0
+    backend: dkr.hanaboso.net/pipes/pipes/applinth:2.0
 
   applinthMarketplaceUI:
     auth_backlink: https://demo-applinth-orchesty.stage.hanaboso.net
@@ -27,6 +28,10 @@ global:
 
   backend:
     alpha_instance_id: hb-stage
+    ## TODO: smazat
+    resources:
+      limits:
+        cpu: 500m
     service:
       type: NodePort
       nodePort: 30151
