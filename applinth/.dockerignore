@@ -11,3 +11,4 @@
 !pf-bundles/composer.json
 !pipes-php-sdk/src
 !pipes-php-sdk/composer.json
+!pf-bundles/cron
