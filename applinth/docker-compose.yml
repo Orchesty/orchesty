@@ -38,6 +38,7 @@ services:
                 pXzObmLNvN3u75L2pADOg4p+GkgwtFdfSa5HhMoQD2jEEmL3otvyjf8jF5t8u2YP
                 GcXwowJ2vWSQ6pyW17FLVqmUy2ZW5VSowkPp29CvYQ==
                 -----END EC PRIVATE KEY-----
+            CRON_BILLING: '0' # '1' will turn on usage_stats:send-events cron job
 
     swagger-ui:
         image: swaggerapi/swagger-ui
