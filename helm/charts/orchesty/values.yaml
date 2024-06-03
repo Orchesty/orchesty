@@ -79,7 +79,7 @@ global:
         cpu: 1m
       limits:
         memory: 96Mi
-        cpu: 50m
+        cpu: 500m
 
   cronApi:
     resources:

@@ -167,11 +167,10 @@ data:
         name_override = "orchesty"
         metric_version = 2
         urls = [
-          "http://pipes-detector.instance-ed8qk85cpa.svc.cluster.local/metrics",
           "http://pipes-detector.instance-hm8rohmtf6.svc.cluster.local/metrics",
           "http://pipes-detector.instance-k9vbai2soj.svc.cluster.local/metrics",
           "http://pipes-detector.instance-iqnb4x3vhd.svc.cluster.local/metrics",
-          "http://pipes-detector.instance-wsrxg1vqtw.svc.cluster.local/metrics",
+          "http://pipes-detector.instance-iagdk5rylw.svc.cluster.local/metrics",
         ]
 
       [[processors.regex]]
