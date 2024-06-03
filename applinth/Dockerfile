@@ -20,7 +20,7 @@ ENV APP_DEBUG=0 APP_ENV=prod PHP_FPM_MAX_CHILDREN=10 PHP_FPM_MAX_REQUESTS=500
 ENV INSTALLER_DIRS='["/var/www/topology"]'
 COPY applinth/php-local.ini /usr/local/etc/php/conf.d/zz_local.ini
 COPY --from=0 /var/www/applinth .
-RUN rm -rf html localhost
+RUN rm -rf html localhost || true
 RUN mkdir -p /var/lib/nginx/tmp/client_body && \
     chmod -R 774 /var/www/var /var/lib/nginx && \
     chown -R www-data /var/www/var /var/lib/nginx
