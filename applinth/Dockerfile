@@ -25,7 +25,7 @@ RUN mkdir -p /var/lib/nginx/tmp/client_body && \
     chmod -R 774 /var/www/var /var/lib/nginx && \
     chown -R www-data /var/www/var /var/lib/nginx
 
-# Prepares crontab folder & it's logs
+#  Prepares crontab folder & it's logs
 RUN mkdir -p /var/log/cron \
     && mkdir -m 0644 -p /var/spool/cron/crontabs \
     && touch /var/log/cron/cron.log
