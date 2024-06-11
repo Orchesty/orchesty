@@ -1,5 +1,11 @@
 # Release Notes
 
+## 2.1.6
+
+### Changes
+
+- Helm: updated resource limit for Backend
+
 ## 2.1.5
 
 ### Changes
