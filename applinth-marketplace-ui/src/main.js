@@ -3,7 +3,7 @@ import App from "./App.vue"
 import router from "./router"
 import store from "./store"
 import vuetify from "./plugins/vuetify"
-import { i18n } from "@/localization"
+import { i18n, LOCALE } from "@/localization"
 import { config } from "@/config"
 import {
   setInteractionMode,
@@ -25,12 +25,17 @@ async function prepareInitialization() {
   }
 }
 
-prepareInitialization().then(() => {
-  new Vue({
-    router,
-    store,
-    i18n,
-    vuetify,
-    render: (h) => h(App),
-  }).$mount("#app")
-})
+prepareInitialization()
+  .then(() => {
+    new Vue({
+      router,
+      store,
+      i18n,
+      vuetify,
+      render: (h) => h(App),
+    }).$mount("#app")
+  })
+  .then(() => {
+    let h = document.querySelector("html")
+    h.setAttribute("lang", LOCALE)
+  })
