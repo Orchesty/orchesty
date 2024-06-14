@@ -261,6 +261,9 @@ data:
         acl start-instance-dasarom5ru hdr_beg(host) start-dasarom5ru.eu1.cloud.orchesty.io
         use_backend start-dasarom5ru if start-instance-dasarom5ru
 
+        acl api-gw-instance-dasarom5ru hdr_beg(host) api-gw-dasarom5ru.eu1.cloud.orchesty.io
+        use_backend api-gw-dasarom5ru if api-gw-instance-dasarom5ru
+
 
         # instance-iagdk5rylw
 
@@ -536,6 +539,10 @@ data:
     backend start-dasarom5ru
         mode http
         server svc starting-point.instance-dasarom5ru.svc.cluster.local:8080
+
+    backend api-gw-dasarom5ru
+        mode http
+        server svc api-gateway.instance-dasarom5ru.svc.cluster.local:80
 
     # instance-iagdk5rylw
 
