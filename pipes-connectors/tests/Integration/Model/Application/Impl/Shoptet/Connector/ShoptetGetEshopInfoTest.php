@@ -22,6 +22,7 @@ use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DataProvider;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\MockServer\Mock;
 use PipesPhpSdkTests\MockServer\MockServer;
 
@@ -30,6 +31,7 @@ use PipesPhpSdkTests\MockServer\MockServer;
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Shoptet\Connector
  */
+#[CoversClass(ShoptetGetEshopInfo::class)]
 final class ShoptetGetEshopInfoTest extends KernelTestCaseAbstract
 {
 

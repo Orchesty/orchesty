@@ -11,6 +11,7 @@ use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\ControllerTestCaseAbstract;
 use HbPFConnectorsTests\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 use PipesPhpSdkTests\MockServer\Mock;
 use PipesPhpSdkTests\MockServer\MockServer;
 
@@ -28,9 +29,9 @@ final class IDokladApplicationTest extends ControllerTestCaseAbstract
     private MockServer $mockServer;
 
     /**
-     * @group live
      * @throws Exception
      */
+    #[Group('live')]
     public function testAuthorize(): void
     {
         $this->mockServer = new MockServer();
@@ -69,9 +70,9 @@ final class IDokladApplicationTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @group live
      * @throws Exception
      */
+    #[Group('live')]
     public function testCreateAccessToken(): void
     {
         self::markTestSkipped('live tests');

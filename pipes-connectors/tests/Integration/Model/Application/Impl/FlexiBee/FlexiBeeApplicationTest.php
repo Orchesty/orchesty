@@ -18,6 +18,7 @@ use Hanaboso\Utils\Exception\DateTimeException;
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DataProvider;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PipesPhpSdkTests\MockServer\Mock;
 use PipesPhpSdkTests\MockServer\MockServer;
@@ -27,6 +28,7 @@ use PipesPhpSdkTests\MockServer\MockServer;
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\FlexiBee
  */
+#[CoversClass(FlexiBeeApplication::class)]
 final class FlexiBeeApplicationTest extends KernelTestCaseAbstract
 {
 
@@ -289,8 +291,6 @@ final class FlexiBeeApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\FlexiBee\FlexiBeeApplication::getFormStack
-     *
      * @throws Exception
      */
     public function testGetFormStack(): void
@@ -302,8 +302,6 @@ final class FlexiBeeApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\FlexiBee\FlexiBeeApplication::isAuthorized
-     *
      * @throws Exception
      */
     public function testIsAuthorized(): void
@@ -312,8 +310,6 @@ final class FlexiBeeApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\FlexiBee\FlexiBeeApplication::isAuthorized
-     *
      * @throws Exception
      */
     public function testIsNotAuthorize(): void

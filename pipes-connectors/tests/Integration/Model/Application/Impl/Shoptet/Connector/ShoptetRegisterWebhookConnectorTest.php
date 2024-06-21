@@ -8,12 +8,14 @@ use GuzzleHttp\Psr7\Response;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
+use Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetConnectorAbstract;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetRegisterWebhookConnector;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DataProvider;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\MockServer\Mock;
 use PipesPhpSdkTests\MockServer\MockServer;
 
@@ -22,6 +24,8 @@ use PipesPhpSdkTests\MockServer\MockServer;
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Shoptet\Connector
  */
+#[CoversClass(ShoptetRegisterWebhookConnector::class)]
+#[CoversClass(ShoptetConnectorAbstract::class)]
 final class ShoptetRegisterWebhookConnectorTest extends KernelTestCaseAbstract
 {
 
@@ -61,7 +65,7 @@ final class ShoptetRegisterWebhookConnectorTest extends KernelTestCaseAbstract
     private MockServer $mockServer;
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetRegisterWebhookConnector::getName
+     * @return void
      */
     public function testGetName(): void
     {
@@ -69,9 +73,6 @@ final class ShoptetRegisterWebhookConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetRegisterWebhookConnector::processAction
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetConnectorAbstract::processResponse
-     *
      * @throws Exception
      * @throws GuzzleException
      */
@@ -111,9 +112,6 @@ final class ShoptetRegisterWebhookConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetRegisterWebhookConnector::processAction
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetConnectorAbstract::processResponse
-     *
      * @throws Exception
      * @throws GuzzleException
      */

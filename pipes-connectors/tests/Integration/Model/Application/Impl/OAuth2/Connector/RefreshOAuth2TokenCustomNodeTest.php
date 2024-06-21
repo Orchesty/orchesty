@@ -15,6 +15,7 @@ use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\System\PipesHeaders;
 use HbPFConnectorsTests\DataProvider;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\MockServer\Mock;
 use PipesPhpSdkTests\MockServer\MockServer;
 
@@ -23,6 +24,7 @@ use PipesPhpSdkTests\MockServer\MockServer;
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\OAuth2\Connector
  */
+#[CoversClass(RefreshOAuth2TokenNode::class)]
 final class RefreshOAuth2TokenCustomNodeTest extends KernelTestCaseAbstract
 {
 
@@ -88,7 +90,7 @@ final class RefreshOAuth2TokenCustomNodeTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\OAuth2\Connector\RefreshOAuth2TokenNode::getName
+     * @return void
      */
     public function testGetName(): void
     {

@@ -20,6 +20,7 @@ use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DataProvider;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\MockServer\Mock;
 use PipesPhpSdkTests\MockServer\MockServer;
 
@@ -28,12 +29,11 @@ use PipesPhpSdkTests\MockServer\MockServer;
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\FlexiBee\Connector
  */
+#[CoversClass(FlexiBeeCreateNewContactConnector::class)]
 final class FlexiBeeCreateNewContactConnectorTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\FlexiBee\Connector\FlexiBeeCreateNewContactConnector::getName
-     *
      * @throws Exception
      */
     public function testGetName(): void

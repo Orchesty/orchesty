@@ -12,12 +12,14 @@ use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DataProvider;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Class IDokladApplicationTest
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\IDoklad
  */
+#[CoversClass(IDokladApplication::class)]
 final class IDokladApplicationTest extends KernelTestCaseAbstract
 {
 
@@ -27,8 +29,6 @@ final class IDokladApplicationTest extends KernelTestCaseAbstract
     private IDokladApplication $app;
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\IDoklad\IDokladApplication::getName
-     *
      * @throws Exception
      */
     public function testGetKey(): void
@@ -37,8 +37,6 @@ final class IDokladApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\IDoklad\IDokladApplication::getPublicName
-     *
      * @throws Exception
      */
     public function testGetPublicName(): void
@@ -47,8 +45,6 @@ final class IDokladApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\IDoklad\IDokladApplication::getDescription
-     *
      * @throws Exception
      */
     public function testGetDescription(): void
@@ -57,8 +53,6 @@ final class IDokladApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\IDoklad\IDokladApplication::getAuthUrl
-     *
      * @throws Exception
      */
     public function testGetAuthUrl(): void
@@ -67,8 +61,6 @@ final class IDokladApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\IDoklad\IDokladApplication::getTokenUrl
-     *
      * @throws Exception
      */
     public function testGetTokenUrl(): void
@@ -77,8 +69,6 @@ final class IDokladApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\IDoklad\IDokladApplication::getFormStack
-     *
      * @throws Exception
      */
     public function testGetFormStack(): void

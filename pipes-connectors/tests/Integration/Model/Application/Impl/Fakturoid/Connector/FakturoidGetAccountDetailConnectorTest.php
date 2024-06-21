@@ -11,6 +11,7 @@ use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DataProvider;
 use HbPFConnectorsTests\MockCurlMethod;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\MockServer\Mock;
 use PipesPhpSdkTests\MockServer\MockServer;
 
@@ -19,12 +20,11 @@ use PipesPhpSdkTests\MockServer\MockServer;
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Fakturoid\Connector
  */
+#[CoversClass(FakturoidGetAccountDetailConnector::class)]
 final class FakturoidGetAccountDetailConnectorTest extends FakturoidAbstractTestConnector
 {
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Fakturoid\Connector\FakturoidGetAccountDetailConnector::getName
-     *
      * @throws Exception
      */
     public function testGetKey(): void

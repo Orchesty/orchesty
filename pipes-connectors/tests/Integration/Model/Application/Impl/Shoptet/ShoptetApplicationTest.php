@@ -20,12 +20,14 @@ use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
 use Hanaboso\Utils\Date\DateTimeUtils;
 use HbPFConnectorsTests\DataProvider;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Class ShoptetApplicationTest
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Shoptet
  */
+#[CoversClass(ShoptetApplication::class)]
 final class ShoptetApplicationTest extends KernelTestCaseAbstract
 {
 
@@ -54,8 +56,6 @@ final class ShoptetApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication::getApplicationType
-     *
      * @throws Exception
      */
     public function testGetApplicationType(): void
@@ -65,8 +65,6 @@ final class ShoptetApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication::getName
-     *
      * @throws Exception
      */
     public function testGetKey(): void
@@ -76,8 +74,6 @@ final class ShoptetApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication::getPublicName
-     *
      * @throws Exception
      */
     public function testGetPublicName(): void
@@ -87,8 +83,6 @@ final class ShoptetApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication::getDescription
-     *
      * @throws Exception
      */
     public function testGetDescription(): void
@@ -98,8 +92,6 @@ final class ShoptetApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication::getFormStack
-     *
      * @throws Exception
      */
     public function testGetFormStack(): void
@@ -123,9 +115,6 @@ final class ShoptetApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication::getRequestDto
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication::getApiToken
-     *
      * @throws Exception
      */
     public function testGetRequestDto(): void
@@ -153,8 +142,6 @@ final class ShoptetApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication::getAuthUrl
-     *
      * @throws Exception
      */
     public function testGetAuthUrl(): void
@@ -164,8 +151,6 @@ final class ShoptetApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication::getTokenUrl
-     *
      * @throws Exception
      */
     public function testGetTokenUrl(): void
@@ -175,8 +160,6 @@ final class ShoptetApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication::getAuthUrlWithServerUrl
-     *
      * @throws Exception
      */
     public function testGetAuthUrlWithServerUrl(): void
@@ -194,8 +177,6 @@ final class ShoptetApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication::getTokenUrlWithServerUrl
-     *
      * @throws Exception
      */
     public function testGetTokenUrlWithServerUrl(): void
@@ -213,8 +194,6 @@ final class ShoptetApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication::getWebhookSubscriptions
-     *
      * @throws Exception
      */
     public function testGetWebhookSubscriptions(): void
@@ -224,9 +203,6 @@ final class ShoptetApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication::getWebhookSubscribeRequestDto
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication::getApiTokenFromSettings
-     *
      * @throws Exception
      */
     public function testGetWebhookSubscribeRequestDto(): void
@@ -258,9 +234,6 @@ final class ShoptetApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication::getWebhookSubscribeRequestDto
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication::getApiTokenFromSettings
-     *
      * @throws Exception
      */
     public function testGetWebhookSubscribeRequestDtoError(): void
@@ -284,8 +257,6 @@ final class ShoptetApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication::getWebhookUnsubscribeRequestDto
-     *
      * @throws Exception
      */
     public function testGetWebhookUnsubscribeRequestDto(): void
@@ -311,8 +282,6 @@ final class ShoptetApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication::processWebhookSubscribeResponse
-     *
      * @throws Exception
      */
     public function testProcessWebhookSubscribeResponse(): void
@@ -327,8 +296,6 @@ final class ShoptetApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication::processWebhookUnsubscribeResponse
-     *
      * @throws Exception
      */
     public function testProcessWebhookUnsubscribeResponse(): void
@@ -346,7 +313,6 @@ final class ShoptetApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication::getApiTokenDto
      * @throws Exception
      */
     public function testGetApiTokenDto(): void
@@ -374,7 +340,6 @@ final class ShoptetApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication::createDto
      * @throws Exception
      */
     public function testCreateDto(): void
@@ -401,8 +366,6 @@ final class ShoptetApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication::getTopologyUrl
-     *
      * @throws Exception
      */
     public function testGetTopologyUrl(): void

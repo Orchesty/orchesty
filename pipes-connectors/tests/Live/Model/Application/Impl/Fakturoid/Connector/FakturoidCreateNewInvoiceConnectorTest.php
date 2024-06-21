@@ -14,6 +14,7 @@ use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DataProvider;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
+use PHPUnit\Framework\Attributes\Group;
 use PipesPhpSdkTests\MockServer\Mock;
 use PipesPhpSdkTests\MockServer\MockServer;
 
@@ -28,9 +29,9 @@ final class FakturoidCreateNewInvoiceConnectorTest extends KernelTestCaseAbstrac
     use CustomAssertTrait;
 
     /**
-     * @group live
      * @throws Exception
      */
+    #[Group('live')]
     public function testSend(): void
     {
         $mockServer = new MockServer();

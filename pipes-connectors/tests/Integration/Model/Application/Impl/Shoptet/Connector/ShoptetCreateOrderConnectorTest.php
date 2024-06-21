@@ -8,6 +8,7 @@ use GuzzleHttp\Psr7\Response;
 use Hanaboso\CommonsBundle\Exception\OnRepeatException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
+use Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetConnectorAbstract;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetCreateOrderConnector;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\ShoptetApplication;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
@@ -17,6 +18,7 @@ use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DataProvider;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\MockServer\Mock;
 use PipesPhpSdkTests\MockServer\MockServer;
 
@@ -25,6 +27,8 @@ use PipesPhpSdkTests\MockServer\MockServer;
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Shoptet\Connector
  */
+#[CoversClass(ShoptetCreateOrderConnector::class)]
+#[CoversClass(ShoptetConnectorAbstract::class)]
 final class ShoptetCreateOrderConnectorTest extends KernelTestCaseAbstract
 {
 
@@ -71,7 +75,7 @@ final class ShoptetCreateOrderConnectorTest extends KernelTestCaseAbstract
     private MockServer $mockServer;
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetCreateOrderConnector::getName
+     * @return void
      */
     public function testGetName(): void
     {
@@ -79,11 +83,6 @@ final class ShoptetCreateOrderConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetCreateOrderConnector::processAction
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetConnectorAbstract
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetConnectorAbstract::getApplicationInstall
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetConnectorAbstract::processResponse
-     *
      * @throws Exception
      * @throws GuzzleException
      */
@@ -129,8 +128,6 @@ final class ShoptetCreateOrderConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetCreateOrderConnector::processAction
-     *
      * @throws Exception
      * @throws GuzzleException
      */
@@ -162,9 +159,6 @@ final class ShoptetCreateOrderConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetCreateOrderConnector::processAction
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetConnectorAbstract::getApplicationInstall
-     *
      * @throws Exception
      * @throws GuzzleException
      */
@@ -198,8 +192,6 @@ final class ShoptetCreateOrderConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetCreateOrderConnector::processAction
-     *
      * @throws Exception
      * @throws GuzzleException
      */
@@ -245,8 +237,6 @@ final class ShoptetCreateOrderConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetCreateOrderConnector::processAction
-     *
      * @throws Exception
      * @throws GuzzleException
      */
@@ -297,8 +287,6 @@ final class ShoptetCreateOrderConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetCreateOrderConnector::processAction
-     *
      * @throws Exception
      * @throws GuzzleException
      */

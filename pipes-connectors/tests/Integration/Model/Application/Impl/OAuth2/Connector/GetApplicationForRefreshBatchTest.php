@@ -10,6 +10,7 @@ use Hanaboso\HbPFConnectors\Model\Application\Impl\OAuth2\Connector\GetApplicati
 use Hanaboso\Utils\Exception\DateTimeException;
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\MockServer\Mock;
 use PipesPhpSdkTests\MockServer\MockServer;
 
@@ -18,6 +19,7 @@ use PipesPhpSdkTests\MockServer\MockServer;
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\OAuth2\Connector
  */
+#[CoversClass(GetApplicationForRefreshBatchConnector::class)]
 final class GetApplicationForRefreshBatchTest extends KernelTestCaseAbstract
 {
 
@@ -54,7 +56,7 @@ final class GetApplicationForRefreshBatchTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\OAuth2\Connector\GetApplicationForRefreshBatchConnector::getName
+     * @return void
      */
     public function testGetName(): void
     {

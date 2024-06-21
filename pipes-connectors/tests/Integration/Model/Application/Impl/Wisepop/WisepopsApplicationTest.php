@@ -14,12 +14,14 @@ use Hanaboso\PipesPhpSdk\Application\Document\Webhook;
 use Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookSubscription;
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Class WisepopsApplicationTest
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Wisepop
  */
+#[CoversClass(WisepopsApplication::class)]
 final class WisepopsApplicationTest extends KernelTestCaseAbstract
 {
 
@@ -29,7 +31,7 @@ final class WisepopsApplicationTest extends KernelTestCaseAbstract
     private WisepopsApplication $application;
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Wisepop\WisepopsApplication::getApplicationType
+     * @return void
      */
     public function testGetApplicationType(): void
     {
@@ -37,7 +39,7 @@ final class WisepopsApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Wisepop\WisepopsApplication::getName
+     * @return void
      */
     public function testGetKey(): void
     {
@@ -45,7 +47,7 @@ final class WisepopsApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Wisepop\WisepopsApplication::getPublicName
+     * @return void
      */
     public function testGetName(): void
     {
@@ -53,7 +55,7 @@ final class WisepopsApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Wisepop\WisepopsApplication::getDescription
+     * @return void
      */
     public function testGetDescription(): void
     {
@@ -61,8 +63,6 @@ final class WisepopsApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Wisepop\WisepopsApplication::getRequestDto
-     *
      * @throws Exception
      */
     public function testGetRequestDto(): void
@@ -86,8 +86,6 @@ final class WisepopsApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Wisepop\WisepopsApplication::getFormStack
-     *
      * @throws Exception
      */
     public function testGetFormStack(): void
@@ -101,7 +99,7 @@ final class WisepopsApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Wisepop\WisepopsApplication::getWebhookSubscriptions
+     * @return void
      */
     public function testGetWebhookSubscriptions(): void
     {
@@ -109,9 +107,6 @@ final class WisepopsApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Wisepop\WisepopsApplication::getWebhookSubscribeRequestDto
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Wisepop\WisepopsApplication::getRequestDto
-     *
      * @throws Exception
      */
     public function testGetWebhookSubscribeRequestDto(): void
@@ -131,8 +126,6 @@ final class WisepopsApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Wisepop\WisepopsApplication::getWebhookUnsubscribeRequestDto
-     *
      * @throws Exception
      */
     public function testGetWebhookUnsubscribeRequestDto(): void
@@ -147,8 +140,6 @@ final class WisepopsApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Wisepop\WisepopsApplication::processWebhookSubscribeResponse
-     *
      * @throws Exception
      */
     public function testProcessWebhookSubscribeResponse(): void
@@ -163,7 +154,7 @@ final class WisepopsApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Wisepop\WisepopsApplication::processWebhookUnsubscribeResponse
+     * @return void
      */
     public function testProcessWebhookUnsubscribeResponse(): void
     {
@@ -173,8 +164,6 @@ final class WisepopsApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Wisepop\WisepopsApplication::isAuthorized
-     *
      * @throws Exception
      */
     public function testIsAuthorized(): void

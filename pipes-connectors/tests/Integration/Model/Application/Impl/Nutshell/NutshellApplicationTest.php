@@ -9,12 +9,14 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\Nutshell\NutshellApplication;
 use HbPFConnectorsTests\DataProvider;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Class NutshellApplicationTest
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Nutshell
  */
+#[CoversClass(NutshellApplication::class)]
 final class NutshellApplicationTest extends KernelTestCaseAbstract
 {
 
@@ -27,10 +29,6 @@ final class NutshellApplicationTest extends KernelTestCaseAbstract
     private NutshellApplication $application;
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Nutshell\NutshellApplication::getRequestDto
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Nutshell\NutshellApplication::getToken
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Nutshell\NutshellApplication::getName
-     *
      * @throws Exception
      */
     public function testAuthorization(): void
@@ -58,7 +56,7 @@ final class NutshellApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Nutshell\NutshellApplication::getApplicationType
+     * @return void
      */
     public function testGetApplicationType(): void
     {
@@ -66,7 +64,7 @@ final class NutshellApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Nutshell\NutshellApplication::getPublicName
+     * @return void
      */
     public function testPublicName(): void
     {
@@ -74,7 +72,7 @@ final class NutshellApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Nutshell\NutshellApplication::getDescription
+     * @return void
      */
     public function testGetDescription(): void
     {
@@ -82,8 +80,6 @@ final class NutshellApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Nutshell\NutshellApplication::getFormStack
-     *
      * @throws Exception
      */
     public function testGetFormStack(): void

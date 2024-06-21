@@ -10,12 +10,14 @@ use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DataProvider;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Class GoogleDriveApplicationTest
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\GoogleDrive
  */
+#[CoversClass(GoogleDriveApplication::class)]
 final class GoogleDriveApplicationTest extends KernelTestCaseAbstract
 {
 
@@ -25,8 +27,6 @@ final class GoogleDriveApplicationTest extends KernelTestCaseAbstract
     private GoogleDriveApplication $app;
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\GoogleDrive\GoogleDriveApplication::getName
-     *
      * @throws Exception
      */
     public function testGetKey(): void
@@ -35,8 +35,6 @@ final class GoogleDriveApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\GoogleDrive\GoogleDriveApplication::getPublicName
-     *
      * @throws Exception
      */
     public function testGetPublicName(): void
@@ -45,8 +43,6 @@ final class GoogleDriveApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\GoogleDrive\GoogleDriveApplication::getDescription
-     *
      * @throws Exception
      */
     public function testGetDescription(): void
@@ -55,8 +51,6 @@ final class GoogleDriveApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\GoogleDrive\GoogleDriveApplication::getAuthUrl
-     *
      * @throws Exception
      */
     public function testGetAuthUrl(): void
@@ -65,8 +59,6 @@ final class GoogleDriveApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\GoogleDrive\GoogleDriveApplication::getTokenUrl
-     *
      * @throws Exception
      */
     public function testGetTokenUrl(): void
@@ -75,8 +67,6 @@ final class GoogleDriveApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\GoogleDrive\GoogleDriveApplication::getRequestDto
-     *
      * @throws Exception
      */
     public function testGetRequestDto(): void
@@ -94,8 +84,6 @@ final class GoogleDriveApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\GoogleDrive\GoogleDriveApplication::getFormStack
-     *
      * @throws Exception
      */
     public function testGetFormStack(): void
@@ -107,9 +95,6 @@ final class GoogleDriveApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\GoogleDrive\GoogleDriveApplication::authorize
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\GoogleDrive\GoogleDriveApplication::getScopes
-     *
      * @throws Exception
      */
     public function testAuthorize(): void

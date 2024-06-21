@@ -12,6 +12,7 @@ use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DataProvider;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
 use HbPFConnectorsTests\MockCurlMethod;
+use PHPUnit\Framework\Attributes\DataProvider as PhpunitDataProvider;
 use PipesPhpSdkTests\MockServer\Mock;
 use PipesPhpSdkTests\MockServer\MockServer;
 
@@ -31,9 +32,8 @@ final class ShipstationNewOrderConnectorTest extends KernelTestCaseAbstract
      * @param bool $isValid
      *
      * @throws Exception
-     *
-     * @dataProvider getDataProvider
      */
+    #[PhpunitDataProvider('getDataProvider')]
     public function testProcessAction(int $code, bool $isValid): void
     {
         $mockServer = new MockServer();

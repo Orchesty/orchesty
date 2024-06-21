@@ -11,12 +11,14 @@ use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
 use HbPFConnectorsTests\DataProvider;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Class QuickbooksApplicationTest
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Quickbooks
  */
+#[CoversClass(QuickbooksApplication::class)]
 final class QuickbooksApplicationTest extends KernelTestCaseAbstract
 {
 
@@ -30,7 +32,7 @@ final class QuickbooksApplicationTest extends KernelTestCaseAbstract
     private QuickbooksApplication $application;
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Quickbooks\QuickbooksApplication::getApplicationType
+     * @return void
      */
     public function testGetApplicationType(): void
     {
@@ -38,7 +40,7 @@ final class QuickbooksApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Quickbooks\QuickbooksApplication::getName
+     * @return void
      */
     public function testGetKey(): void
     {
@@ -46,7 +48,7 @@ final class QuickbooksApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Quickbooks\QuickbooksApplication::getPublicName
+     * @return void
      */
     public function testPublicName(): void
     {
@@ -54,7 +56,7 @@ final class QuickbooksApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Quickbooks\QuickbooksApplication::getDescription
+     * @return void
      */
     public function testGetDescription(): void
     {
@@ -62,7 +64,7 @@ final class QuickbooksApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Quickbooks\QuickbooksApplication::getAuthUrl
+     * @return void
      */
     public function testAuthUrl(): void
     {
@@ -70,7 +72,7 @@ final class QuickbooksApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Quickbooks\QuickbooksApplication::getTokenUrl
+     * @return void
      */
     public function testTokenUrl(): void
     {
@@ -81,8 +83,6 @@ final class QuickbooksApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Quickbooks\QuickbooksApplication::getFormStack
-     *
      * @throws Exception
      */
     public function testGetFormStack(): void
@@ -103,9 +103,6 @@ final class QuickbooksApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Quickbooks\QuickbooksApplication::getRequestDto
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Quickbooks\QuickbooksApplication::getBaseUrl
-     *
      * @throws Exception
      */
     public function testGetRequestDto(): void

@@ -16,6 +16,7 @@ use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DataProvider;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\MockServer\Mock;
 use PipesPhpSdkTests\MockServer\MockServer;
 
@@ -24,6 +25,7 @@ use PipesPhpSdkTests\MockServer\MockServer;
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Shoptet\Connector
  */
+#[CoversClass(ShoptetGetApiAccessTokenConnector::class)]
 final class ShoptetGetApiAccessTokenConnectorTest extends KernelTestCaseAbstract
 {
 
@@ -47,7 +49,6 @@ final class ShoptetGetApiAccessTokenConnectorTest extends KernelTestCaseAbstract
     private MockServer $mockServer;
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetGetApiAccessTokenConnector::getName
      * @throws Exception
      */
     public function testGetName(): void
@@ -56,9 +57,6 @@ final class ShoptetGetApiAccessTokenConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetGetApiAccessTokenConnector::processAction
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetGetApiAccessTokenConnector::processActionArray
-     *
      * @throws Exception
      */
     public function testProcessAction(): void
@@ -80,8 +78,6 @@ final class ShoptetGetApiAccessTokenConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shoptet\Connector\ShoptetGetApiAccessTokenConnector::processActionArray
-     *
      * @throws Exception
      */
     public function testProcessActionArray(): void

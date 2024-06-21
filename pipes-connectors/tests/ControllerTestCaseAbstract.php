@@ -5,6 +5,7 @@ namespace HbPFConnectorsTests;
 use Exception;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\ControllerTestTrait;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\CustomAssertTrait;
+use Hanaboso\PhpCheckUtils\PhpUnit\Traits\RestoreErrorHandlersTrait;
 use Hanaboso\Utils\String\Json;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,6 +21,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
 
     use ControllerTestTrait;
     use CustomAssertTrait;
+    use RestoreErrorHandlersTrait;
 
     /**
      * @var NativePasswordHasher
@@ -31,7 +33,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
      *
      * @param non-empty-string $name
      */
-    public function __construct($name = 'test')
+    public function __construct($name = 'test') // @phpstan-ignore-line
     {
         parent::__construct($name);
 
@@ -143,6 +145,16 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
             'content' => (object) $content,
             'status'  => $response->getStatusCode(),
         ];
+    }
+
+    /**
+     * @return void
+     */
+    protected function tearDown(): void {
+        parent::tearDown();
+
+        $this->restoreErrorHandler();
+        $this->restoreExceptionHandler();
     }
 
 }

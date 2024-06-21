@@ -12,6 +12,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\CustomAssertTrait;
+use Hanaboso\PhpCheckUtils\PhpUnit\Traits\RestoreErrorHandlersTrait;
 use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Json;
 use PHPUnit\Framework\MockObject\Stub\ReturnCallback;
@@ -27,6 +28,7 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
 {
 
     use CustomAssertTrait;
+    use RestoreErrorHandlersTrait;
 
     /**
      *
@@ -231,6 +233,16 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
     protected function prepareProcessDto(array|string $data = [], array $headers = []): ProcessDto
     {
         return (new ProcessDto())->setData(is_array($data) ? Json::encode($data) : $data)->setHeaders($headers);
+    }
+
+    /**
+     * @return void
+     */
+    protected function tearDown(): void {
+        parent::tearDown();
+
+        $this->restoreErrorHandler();
+        $this->restoreExceptionHandler();
     }
 
     /**

@@ -10,6 +10,7 @@ use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\Utils\File\File;
 use HbPFConnectorsTests\ControllerTestCaseAbstract;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Class FakturoidGetAccountDetailConnectorTest
@@ -20,9 +21,9 @@ final class FakturoidGetAccountDetailConnectorTest extends ControllerTestCaseAbs
 {
 
     /**
-     * @group live
      * @throws Exception
      */
+    #[Group('live')]
     public function testAuthorize(): void
     {
         self::markTestSkipped('live tests');

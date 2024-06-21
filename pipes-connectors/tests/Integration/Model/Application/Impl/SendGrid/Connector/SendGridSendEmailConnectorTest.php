@@ -16,6 +16,7 @@ use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DataProvider;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\MockServer\Mock;
 use PipesPhpSdkTests\MockServer\MockServer;
 
@@ -24,6 +25,7 @@ use PipesPhpSdkTests\MockServer\MockServer;
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\SendGrid\Connector
  */
+#[CoversClass(SendGridSendEmailConnector::class)]
 final class SendGridSendEmailConnectorTest extends KernelTestCaseAbstract
 {
 
@@ -38,8 +40,6 @@ final class SendGridSendEmailConnectorTest extends KernelTestCaseAbstract
     private MockServer $mockServer;
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\SendGrid\Connector\SendGridSendEmailConnector::getName
-     *
      * @throws Exception
      */
     public function testGetName(): void
@@ -51,8 +51,6 @@ final class SendGridSendEmailConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\SendGrid\Connector\SendGridSendEmailConnector::processAction
-     *
      * @throws Exception
      */
     public function testProcessAction(): void
@@ -79,8 +77,6 @@ final class SendGridSendEmailConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\SendGrid\Connector\SendGridSendEmailConnector::processAction
-     *
      * @throws Exception
      */
     public function testProcessActionDataException(): void
@@ -106,8 +102,6 @@ final class SendGridSendEmailConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\SendGrid\Connector\SendGridSendEmailConnector::processAction
-     *
      * @throws Exception
      */
     public function testProcessActionRequestException(): void
@@ -135,8 +129,6 @@ final class SendGridSendEmailConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\SendGrid\Connector\SendGridSendEmailConnector::processAction
-     *
      * @throws Exception
      */
     public function testProcessActionException(): void

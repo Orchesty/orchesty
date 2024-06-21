@@ -10,12 +10,14 @@ use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Class FakturoidApplicationTest
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Fakturoid
  */
+#[CoversClass(FakturoidApplication::class)]
 final class FakturoidApplicationTest extends KernelTestCaseAbstract
 {
 
@@ -25,8 +27,6 @@ final class FakturoidApplicationTest extends KernelTestCaseAbstract
     private FakturoidApplication $app;
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Fakturoid\FakturoidApplication::getName
-     *
      * @throws Exception
      */
     public function testGetKey(): void
@@ -35,8 +35,6 @@ final class FakturoidApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Fakturoid\FakturoidApplication::getPublicName
-     *
      * @throws Exception
      */
     public function testGetPublicName(): void
@@ -45,8 +43,6 @@ final class FakturoidApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Fakturoid\FakturoidApplication::getDescription
-     *
      * @throws Exception
      */
     public function testGetDescription(): void
@@ -55,8 +51,6 @@ final class FakturoidApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Fakturoid\FakturoidApplication::getFormStack
-     *
      * @throws Exception
      */
     public function testGetFormStack(): void
@@ -68,8 +62,6 @@ final class FakturoidApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Fakturoid\FakturoidApplication::isAuthorized
-     *
      * @throws Exception
      */
     public function testIsAuthorized(): void
@@ -88,8 +80,6 @@ final class FakturoidApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Fakturoid\FakturoidApplication::getRequestDto
-     *
      * @throws Exception
      */
     public function testGetRequestDtoWithData(): void

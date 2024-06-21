@@ -13,6 +13,7 @@ use Hanaboso\HbPFConnectors\Model\Application\Impl\GoogleDrive\GoogleDriveApplic
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DataProvider;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\MockServer\Mock;
 use PipesPhpSdkTests\MockServer\MockServer;
 
@@ -21,6 +22,7 @@ use PipesPhpSdkTests\MockServer\MockServer;
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\GoogleDrive\Connector
  */
+#[CoversClass(GoogleDriveUploadFileConnector::class)]
 final class GoogleDriveUploadFileConnectorTest extends KernelTestCaseAbstract
 {
 
@@ -35,8 +37,6 @@ final class GoogleDriveUploadFileConnectorTest extends KernelTestCaseAbstract
     private MockServer $mockServer;
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\GoogleDrive\Connector\GoogleDriveUploadFileConnector::getName
-     *
      * @throws Exception
      */
     public function testGetName(): void
@@ -48,8 +48,6 @@ final class GoogleDriveUploadFileConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\GoogleDrive\Connector\GoogleDriveUploadFileConnector::processAction
-     *
      * @throws Exception
      */
     public function testProcessAction(): void
@@ -87,8 +85,6 @@ final class GoogleDriveUploadFileConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\GoogleDrive\Connector\GoogleDriveUploadFileConnector::processAction
-     *
      * @throws Exception
      */
     public function testProcessActionRequestException(): void

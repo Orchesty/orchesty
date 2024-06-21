@@ -11,12 +11,14 @@ use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DataProvider;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Class SendGridApplicationTest
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\SendGrid
  */
+#[CoversClass(SendGridApplication::class)]
 final class SendGridApplicationTest extends KernelTestCaseAbstract
 {
 
@@ -26,8 +28,6 @@ final class SendGridApplicationTest extends KernelTestCaseAbstract
     private SendGridApplication $app;
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\SendGrid\SendGridApplication::getName
-     *
      * @throws Exception
      */
     public function testGetKey(): void
@@ -36,8 +36,6 @@ final class SendGridApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\SendGrid\SendGridApplication::getPublicName
-     *
      * @throws Exception
      */
     public function testGetPublicName(): void
@@ -46,8 +44,6 @@ final class SendGridApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\SendGrid\SendGridApplication::getDescription
-     *
      * @throws Exception
      */
     public function testGetDescription(): void
@@ -56,8 +52,6 @@ final class SendGridApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\SendGrid\SendGridApplication::isAuthorized
-     *
      * @throws Exception
      */
     public function testIsAuthorized(): void
@@ -72,9 +66,6 @@ final class SendGridApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\SendGrid\SendGridApplication::getRequestDto
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\SendGrid\SendGridApplication::isAuthorized
-     *
      * @throws Exception
      */
     public function testGetRequestDto(): void
@@ -102,8 +93,6 @@ final class SendGridApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\SendGrid\SendGridApplication::getFormStack
-     *
      * @throws Exception
      */
     public function testGetFormStack(): void

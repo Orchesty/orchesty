@@ -16,12 +16,14 @@ use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\Utils\File\File;
 use HbPFConnectorsTests\DataProvider;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Class ShopifyApplicationTest
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Shopify
  */
+#[CoversClass(ShopifyApplication::class)]
 final class ShopifyApplicationTest extends KernelTestCaseAbstract
 {
 
@@ -34,8 +36,7 @@ final class ShopifyApplicationTest extends KernelTestCaseAbstract
     private ShopifyApplication $application;
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shopify\ShopifyApplication
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shopify\ShopifyApplication::getApplicationType
+     * @return void
      */
     public function testGetApplicationType(): void
     {
@@ -43,7 +44,7 @@ final class ShopifyApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shopify\ShopifyApplication::getName
+     * @return void
      */
     public function testGetKey(): void
     {
@@ -51,7 +52,7 @@ final class ShopifyApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shopify\ShopifyApplication::getPublicName
+     * @return void
      */
     public function testPublicName(): void
     {
@@ -59,7 +60,7 @@ final class ShopifyApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shopify\ShopifyApplication::getDescription
+     * @return void
      */
     public function testGetDescription(): void
     {
@@ -67,11 +68,6 @@ final class ShopifyApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shopify\ShopifyApplication::getRequestDto
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shopify\ShopifyApplication::getBaseUrl
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shopify\ShopifyApplication::getPassword
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shopify\ShopifyApplication::getShopName
-     *
      * @throws Exception
      */
     public function testGetRequestDto(): void
@@ -99,8 +95,6 @@ final class ShopifyApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shopify\ShopifyApplication::getFormStack
-     *
      * @throws Exception
      */
     public function testGetFormStack(): void
@@ -120,9 +114,6 @@ final class ShopifyApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shopify\ShopifyApplication::getWebhookSubscriptions
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shopify\ShopifyApplication::getWebhookSubscribeRequestDto
-     *
      * @throws Exception
      */
     public function testWebhookSubscribeRequestDto(): void
@@ -139,7 +130,6 @@ final class ShopifyApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shopify\ShopifyApplication::getWebhookUnsubscribeRequestDto
      * @throws CurlException
      * @throws Exception
      */
@@ -155,8 +145,6 @@ final class ShopifyApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shopify\ShopifyApplication::processWebhookSubscribeResponse
-     *
      * @throws Exception
      */
     public function testProcessWebhookSubscribeResponse(): void
@@ -169,7 +157,7 @@ final class ShopifyApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Shopify\ShopifyApplication::processWebhookUnsubscribeResponse
+     * @return void
      */
     public function testProcessWebhookUnsubscribeResponse(): void
     {

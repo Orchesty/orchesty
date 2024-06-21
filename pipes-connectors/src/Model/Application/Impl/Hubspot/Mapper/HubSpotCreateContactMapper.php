@@ -88,6 +88,7 @@ final class HubSpotCreateContactMapper extends CommonNodeAbstract
     {
         $data['billTo']['streets'] = implode(
             ', ',
+            // @phpstan-ignore-next-line
             array_filter(
                 [
                     $data['billTo']['street1'] ?? NULL,
@@ -99,6 +100,7 @@ final class HubSpotCreateContactMapper extends CommonNodeAbstract
 
         $data['billTo']['streets'] = implode(
             ',',
+            // @phpstan-ignore-next-line
             array_filter(
                 [
                     $data['shipTo']['street1'] ?? NULL,

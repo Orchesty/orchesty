@@ -11,6 +11,7 @@ use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DataProvider;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
+use PHPUnit\Framework\Attributes\Group;
 use PipesPhpSdkTests\MockServer\Mock;
 use PipesPhpSdkTests\MockServer\MockServer;
 
@@ -25,9 +26,9 @@ final class HubspotCreateContactConnectorTest extends KernelTestCaseAbstract
     use CustomAssertTrait;
 
     /**
-     * @group live
      * @throws Exception
      */
+    #[Group('live')]
     public function testProcessAction(): void
     {
         $mockServer = new MockServer();

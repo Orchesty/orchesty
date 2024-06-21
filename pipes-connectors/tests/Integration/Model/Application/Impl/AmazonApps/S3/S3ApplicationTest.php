@@ -10,12 +10,14 @@ use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
 use LogicException;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Class S3ApplicationTest
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\AmazonApps\S3
  */
+#[CoversClass(S3Application::class)]
 final class S3ApplicationTest extends KernelTestCaseAbstract
 {
 
@@ -25,7 +27,7 @@ final class S3ApplicationTest extends KernelTestCaseAbstract
     private S3Application $application;
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\S3Application::getName
+     * @return void
      */
     public function testGetKey(): void
     {
@@ -33,7 +35,7 @@ final class S3ApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\S3Application::getApplicationType
+     * @return void
      */
     public function testGetApplicationType(): void
     {
@@ -41,7 +43,7 @@ final class S3ApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\S3Application::getPublicName
+     * @return void
      */
     public function testGetPublicName(): void
     {
@@ -49,7 +51,7 @@ final class S3ApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\S3Application::getDescription
+     * @return void
      */
     public function testGetDescription(): void
     {
@@ -60,7 +62,7 @@ final class S3ApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\S3Application::getRequestDto
+     * @return void
      */
     public function testGetRequestDto(): void
     {
@@ -78,8 +80,6 @@ final class S3ApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\S3Application::getFormStack
-     *
      * @throws Exception
      */
     public function testGetFormStack(): void
@@ -101,8 +101,6 @@ final class S3ApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\S3Application::isAuthorized
-     *
      * @throws Exception
      */
     public function testIsAuthorized(): void
@@ -123,8 +121,6 @@ final class S3ApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\AmazonApps\S3\S3Application::isAuthorized
-     *
      * @throws Exception
      */
     public function testIsNotAuthorized(): void

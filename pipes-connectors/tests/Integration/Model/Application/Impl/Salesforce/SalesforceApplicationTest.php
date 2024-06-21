@@ -10,12 +10,14 @@ use Hanaboso\HbPFConnectors\Model\Application\Impl\Salesforce\SalesforceApplicat
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract;
 use HbPFConnectorsTests\DataProvider;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Class SalesforceApplicationTest
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Salesforce
  */
+#[CoversClass(SalesforceApplication::class)]
 final class SalesforceApplicationTest extends KernelTestCaseAbstract
 {
 
@@ -27,7 +29,7 @@ final class SalesforceApplicationTest extends KernelTestCaseAbstract
     private SalesforceApplication $application;
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Salesforce\SalesforceApplication::getApplicationType
+     * @return void
      */
     public function testGetApplicationType(): void
     {
@@ -39,7 +41,7 @@ final class SalesforceApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Salesforce\SalesforceApplication::getName
+     * @return void
      */
     public function testGetKey(): void
     {
@@ -51,7 +53,7 @@ final class SalesforceApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Salesforce\SalesforceApplication::getPublicName
+     * @return void
      */
     public function testGetName(): void
     {
@@ -63,7 +65,7 @@ final class SalesforceApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Salesforce\SalesforceApplication::getDescription
+     * @return void
      */
     public function testGetDescription(): void
     {
@@ -75,8 +77,6 @@ final class SalesforceApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Salesforce\SalesforceApplication::getFormStack
-     *
      * @throws Exception
      */
     public function testGetFormStack(): void
@@ -98,8 +98,6 @@ final class SalesforceApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Salesforce\SalesforceApplication::getRequestDto
-     *
      * @throws Exception
      */
     public function testGetRequestDto(): void
@@ -126,7 +124,7 @@ final class SalesforceApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Salesforce\SalesforceApplication::getAuthUrl
+     * @return void
      */
     public function testGetAuthUrl(): void
     {
@@ -138,7 +136,7 @@ final class SalesforceApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Salesforce\SalesforceApplication::getTokenUrl
+     * @return void
      */
     public function testGetTokenUrl(): void
     {
@@ -150,7 +148,6 @@ final class SalesforceApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Salesforce\SalesforceApplication::authorize
      * @throws Exception
      */
     public function testAuthorize(): void

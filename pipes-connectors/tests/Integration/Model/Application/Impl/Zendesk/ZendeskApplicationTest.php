@@ -14,6 +14,7 @@ use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract;
 use HbPFConnectorsTests\DataProvider;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
+use PHPUnit\Framework\Attributes\CoversClass;
 use ReflectionException;
 
 /**
@@ -21,6 +22,7 @@ use ReflectionException;
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Zendesk
  */
+#[CoversClass(ZendeskApplication::class)]
 final class ZendeskApplicationTest extends KernelTestCaseAbstract
 {
 
@@ -32,7 +34,7 @@ final class ZendeskApplicationTest extends KernelTestCaseAbstract
     private ZendeskApplication $application;
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Zendesk\ZendeskApplication::getApplicationType
+     * @return void
      */
     public function testGetApplicationType(): void
     {
@@ -44,7 +46,7 @@ final class ZendeskApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Zendesk\ZendeskApplication::getName
+     * @return void
      */
     public function testGetKey(): void
     {
@@ -56,7 +58,7 @@ final class ZendeskApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Zendesk\ZendeskApplication::getPublicName
+     * @return void
      */
     public function testGetPublicName(): void
     {
@@ -68,7 +70,7 @@ final class ZendeskApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Zendesk\ZendeskApplication::getDescription
+     * @return void
      */
     public function testGetDescription(): void
     {
@@ -80,8 +82,6 @@ final class ZendeskApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Zendesk\ZendeskApplication::getFormStack
-     *
      * @throws Exception
      */
     public function testGetFormStack(): void
@@ -103,8 +103,6 @@ final class ZendeskApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Zendesk\ZendeskApplication::getRequestDto
-     *
      * @throws CurlException
      * @throws ApplicationInstallException
      * @throws Exception
@@ -133,8 +131,6 @@ final class ZendeskApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Zendesk\ZendeskApplication::getAuthUrlWithSubdomain
-     *
      * @throws Exception
      */
     public function testGetAuthUrlWithSubdomain(): void
@@ -149,8 +145,6 @@ final class ZendeskApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Zendesk\ZendeskApplication::getTokenUrlWithSubdomain
-     *
      * @throws Exception
      */
     public function testGetTokenUrlWithDomain(): void
@@ -165,9 +159,6 @@ final class ZendeskApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Zendesk\ZendeskApplication::authorize
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Zendesk\ZendeskApplication::getScopes
-     *
      * @throws Exception
      */
     public function testAuthorize(): void
@@ -188,7 +179,7 @@ final class ZendeskApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Zendesk\ZendeskApplication::getAuthUrl
+     * @return void
      */
     public function testGetAuthUrl(): void
     {
@@ -197,7 +188,7 @@ final class ZendeskApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Zendesk\ZendeskApplication::getTokenUrl
+     * @return void
      */
     public function testGetTokenUrl(): void
     {
@@ -206,7 +197,6 @@ final class ZendeskApplicationTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Zendesk\ZendeskApplication::createDto
      * @throws ReflectionException
      * @throws Exception
      */

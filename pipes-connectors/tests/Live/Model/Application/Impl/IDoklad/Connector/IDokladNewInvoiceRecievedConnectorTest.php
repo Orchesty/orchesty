@@ -10,6 +10,7 @@ use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DataProvider;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
+use PHPUnit\Framework\Attributes\Group;
 use PipesPhpSdkTests\MockServer\Mock;
 use PipesPhpSdkTests\MockServer\MockServer;
 
@@ -29,9 +30,9 @@ final class IDokladNewInvoiceRecievedConnectorTest extends KernelTestCaseAbstrac
     private MockServer $mockServer;
 
     /**
-     * @group live
      * @throws Exception
      */
+    #[Group('live')]
     public function testSend(): void
     {
         $this->mockServer = new MockServer();

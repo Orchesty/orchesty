@@ -16,6 +16,7 @@ use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DataProvider;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\MockServer\Mock;
 use PipesPhpSdkTests\MockServer\MockServer;
 use ReflectionException;
@@ -24,9 +25,8 @@ use ReflectionException;
  * Class NutshellCreateContactConnectorTest
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Nutshell\Connector
- *
- * @covers  \Hanaboso\HbPFConnectors\Model\Application\Impl\Nutshell\Connector\NutshellCreateContactConnector
  */
+#[CoversClass(NutshellCreateContactConnector::class)]
 final class NutshellCreateContactConnectorTest extends KernelTestCaseAbstract
 {
 
@@ -43,7 +43,7 @@ final class NutshellCreateContactConnectorTest extends KernelTestCaseAbstract
     private MockServer $mockServer;
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Nutshell\Connector\NutshellCreateContactConnector::getName
+     * @return void
      */
     public function testGetName(): void
     {
@@ -51,8 +51,6 @@ final class NutshellCreateContactConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Nutshell\Connector\NutshellCreateContactConnector::processAction
-     *
      * @throws ReflectionException
      * @throws CurlException
      * @throws ApplicationInstallException

@@ -16,6 +16,7 @@ use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\DataProvider;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\MockServer\Mock;
 use PipesPhpSdkTests\MockServer\MockServer;
 use Psr\Log\NullLogger;
@@ -25,6 +26,7 @@ use Psr\Log\NullLogger;
  *
  * @package HbPFConnectorsTests\Integration\Model\Application\Impl\Hubspot\Connector
  */
+#[CoversClass(HubSpotCreateContactConnector::class)]
 final class HubspotCreateContactConnectorTest extends KernelTestCaseAbstract
 {
 
@@ -39,8 +41,6 @@ final class HubspotCreateContactConnectorTest extends KernelTestCaseAbstract
     private MockServer $mockServer;
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Connector\HubSpotCreateContactConnector::getName
-     *
      * @throws Exception
      */
     public function testGetName(): void
@@ -52,8 +52,6 @@ final class HubspotCreateContactConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Connector\HubSpotCreateContactConnector::processAction
-     *
      * @throws Exception
      */
     public function testProcessAction(): void
@@ -80,8 +78,6 @@ final class HubspotCreateContactConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Connector\HubSpotCreateContactConnector::processAction
-     *
      * @throws Exception
      */
     public function testProcessActionDuplicitData(): void
@@ -112,8 +108,6 @@ final class HubspotCreateContactConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\HbPFConnectors\Model\Application\Impl\Hubspot\Connector\HubSpotCreateContactConnector::processAction
-     *
      * @throws Exception
      */
     public function testProcessActionRequestException(): void
