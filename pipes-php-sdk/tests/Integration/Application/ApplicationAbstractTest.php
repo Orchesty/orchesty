@@ -4,9 +4,11 @@ namespace PipesPhpSdkTests\Integration\Application;
 
 use Exception;
 use Hanaboso\CommonsBundle\Enum\ApplicationTypeEnum;
+use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 
 /**
@@ -14,6 +16,8 @@ use PipesPhpSdkTests\KernelTestCaseAbstract;
  *
  * @package PipesPhpSdkTests\Integration\Application
  */
+#[CoversClass(ApplicationAbstract::class)]
+#[CoversClass(ApplicationInstall::class)]
 final class ApplicationAbstractTest extends KernelTestCaseAbstract
 {
 
@@ -23,7 +27,6 @@ final class ApplicationAbstractTest extends KernelTestCaseAbstract
     private TestNullApplication $application;
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract::getLogo
      * @throws Exception
      */
     public function testGetLogo(): void
@@ -32,7 +35,6 @@ final class ApplicationAbstractTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract::getApplicationType
      * @throws Exception
      */
     public function testGetApplicationType(): void
@@ -41,7 +43,6 @@ final class ApplicationAbstractTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract::toArray
      * @throws Exception
      */
     public function testToArray(): void
@@ -62,11 +63,6 @@ final class ApplicationAbstractTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract::getApplicationForms
-     * @covers \Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall::setKey
-     * @covers \Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall::setUser
-     * @covers \Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall::setSettings
-     *
      * @throws Exception
      */
     public function testGetApplicationForm(): void
@@ -79,11 +75,6 @@ final class ApplicationAbstractTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract::saveApplicationForms
-     * @covers \Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall::setKey
-     * @covers \Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall::setUser
-     * @covers \Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall::setSettings
-     *
      * @throws Exception
      */
     public function testSetApplicationSettings(): void
@@ -102,7 +93,7 @@ final class ApplicationAbstractTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract::getUri
+     * @return void
      */
     public function testGetUri(): void
     {

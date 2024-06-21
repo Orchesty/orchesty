@@ -4,8 +4,10 @@ namespace PipesPhpSdkTests\Controller\HbPFBatchBundle\Controller;
 
 use Exception;
 use Hanaboso\CommonsBundle\Process\BatchProcessDto;
+use Hanaboso\PipesPhpSdk\HbPFBatchBundle\Controller\BatchController;
 use Hanaboso\PipesPhpSdk\HbPFBatchBundle\Handler\BatchHandler;
 use Hanaboso\Utils\String\Json;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\ControllerTestCaseAbstract;
 
 /**
@@ -15,12 +17,11 @@ use PipesPhpSdkTests\ControllerTestCaseAbstract;
  *
  * @covers  \Hanaboso\PipesPhpSdk\HbPFBatchBundle\Controller\BatchController
  */
+#[CoversClass(BatchController::class)]
 final class BatchControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFBatchBundle\Controller\BatchController::processActionAction
-     *
      * @throws Exception
      */
     public function testProcessActionActionErr(): void
@@ -32,8 +33,6 @@ final class BatchControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFBatchBundle\Controller\BatchController::processActionAction
-     *
      * @throws Exception
      */
     public function testProcessActionActionErr2(): void
@@ -50,8 +49,6 @@ final class BatchControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFBatchBundle\Controller\BatchController::processActionTestAction
-     *
      * @throws Exception
      */
     public function testProcessActionTestActionErr(): void
@@ -61,8 +58,6 @@ final class BatchControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFBatchBundle\Controller\BatchController::listOfConnectorsAction
-     *
      * @throws Exception
      */
     public function testListOfConnectorsAction(): void
@@ -77,8 +72,6 @@ final class BatchControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFBatchBundle\Controller\BatchController::processActionAction
-     *
      * @throws Exception
      */
     public function testProcessAction(): void

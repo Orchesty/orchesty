@@ -11,10 +11,12 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\PipesPhpSdk\Listener\RepeaterListener;
 use Hanaboso\PipesPhpSdk\Storage\Mongodb\Document\Dto\SystemConfigDto;
 use Hanaboso\PipesPhpSdk\Storage\Mongodb\Document\Node;
+use Hanaboso\PipesPhpSdk\Storage\Mongodb\Repository\NodeFilter;
 use Hanaboso\PipesPhpSdk\Storage\Mongodb\Repository\NodeRepository;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\System\PipesHeaders;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\ControllerTestCaseAbstract;
 use PipesPhpSdkTests\MockServer\Mock;
 use PipesPhpSdkTests\MockServer\MockServer;
@@ -27,9 +29,11 @@ use Throwable;
  * Class RepeaterListenerTest
  *
  * @package PipesPhpSdkTests\Controller\Listener
- *
- * @covers  \Hanaboso\PipesPhpSdk\Listener\RepeaterListener
  */
+#[CoversClass(RepeaterListener::class)]
+#[CoversClass(Node::class)]
+#[CoversClass(NodeRepository::class)]
+#[CoversClass(NodeFilter::class)]
 final class RepeaterListenerTest extends ControllerTestCaseAbstract
 {
 
@@ -39,12 +43,6 @@ final class RepeaterListenerTest extends ControllerTestCaseAbstract
     private MockServer $mockServer;
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Listener\RepeaterListener::onRepeatableException
-     * @covers \Hanaboso\PipesPhpSdk\Storage\Mongodb\Document\Node
-     * @covers \Hanaboso\PipesPhpSdk\Storage\Mongodb\Document\Node::fromArray
-     * @covers \Hanaboso\PipesPhpSdk\Storage\Mongodb\Repository\NodeRepository
-     * @covers \Hanaboso\PipesPhpSdk\Storage\Mongodb\Repository\NodeFilter
-     *
      * @return void
      * @throws GuzzleException
      * @throws PipesFrameworkException
@@ -87,8 +85,6 @@ final class RepeaterListenerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Listener\RepeaterListener::onRepeatableException
-     *
      * @throws Exception
      */
     public function testOnRepeatableExceptionReturn(): void
@@ -101,9 +97,6 @@ final class RepeaterListenerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Listener\RepeaterListener::onRepeatableException
-     * @covers \Hanaboso\PipesPhpSdk\Storage\Mongodb\Document\Node
-     *
      * @throws Exception
      */
     public function testException(): void
@@ -136,8 +129,6 @@ final class RepeaterListenerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Listener\RepeaterListener::onRepeatableException
-     *
      * @throws Exception
      * @throws GuzzleException
      */
@@ -189,7 +180,7 @@ final class RepeaterListenerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Listener\RepeaterListener::getSubscribedEvents
+     * @return void
      */
     public function testGetSubscribedEvents(): void
     {

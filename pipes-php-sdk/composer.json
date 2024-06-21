@@ -2,24 +2,24 @@
     "name": "orchesty/php-sdk",
     "description": "PHP sdk for Orchesty",
     "license": "Apache-2.0",
-    "version": "3.1.0",
+    "version": "3.1.1",
     "require": {
-        "php": "^8.2",
+        "php": "^8.3",
         "ext-fileinfo": "*",
         "ext-json": "*",
         "ext-mongodb": "*",
         "ext-oauth": "*",
-        "hanaboso/commons-bundle": "^2.10",
-        "hanaboso/mongo-data-grid": "^1.7",
+        "hanaboso/commons-bundle": "^2.11",
+        "hanaboso/mongo-data-grid": "^1.8",
         "league/oauth2-client": "^2.7",
         "phpoffice/phpspreadsheet": "^1.29",
         "symfony/monolog-bundle": "^3.10",
-        "symfony/yaml": "^7.0"
+        "symfony/yaml": "^7.1"
     },
     "require-dev": {
-        "hanaboso/php-check-utils": "^1.5",
-        "symfony/debug-bundle": "^7.0",
-        "symfony/serializer": "^7.0"
+        "hanaboso/php-check-utils": "^1.6",
+        "symfony/debug-bundle": "^7.1",
+        "symfony/serializer": "^7.1"
     },
     "autoload": {
         "psr-4": {

@@ -3,9 +3,11 @@
 namespace PipesPhpSdkTests\Unit\Batch\Model;
 
 use Exception;
+use Hanaboso\PipesPhpSdk\Batch\BatchAbstract;
 use Hanaboso\PipesPhpSdk\Batch\Model\BatchManager;
 use Hanaboso\PipesPhpSdk\Utils\ProcessDtoFactory;
 use Hanaboso\Utils\String\Json;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 use PipesPhpSdkTests\Unit\HbPFBatchBundle\Loader\NullBatch;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,13 +17,12 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @package PipesPhpSdkTests\Unit\Batch\Model
  */
+#[CoversClass(BatchManager::class)]
+#[CoversClass(BatchAbstract::class)]
 final class BatchManagerTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Batch\Model\BatchManager::processAction
-     * @covers \Hanaboso\PipesPhpSdk\Batch\BatchAbstract::getApplicationKey
-     *
      * @throws Exception
      */
     public function testProcessAction(): void

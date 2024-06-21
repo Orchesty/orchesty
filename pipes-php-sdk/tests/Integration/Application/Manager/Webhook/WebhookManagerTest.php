@@ -19,6 +19,7 @@ use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\PipesPhpSdk\Application\Repository\WebhookRepository;
 use Hanaboso\Utils\Exception\DateTimeException;
 use Hanaboso\Utils\String\Json;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 use PipesPhpSdkTests\MockServer\Mock;
 use PipesPhpSdkTests\MockServer\MockServer;
@@ -28,6 +29,9 @@ use PipesPhpSdkTests\MockServer\MockServer;
  *
  * @package PipesPhpSdkTests\Integration\Application\Manager\Webhook
  */
+#[CoversClass(WebhookManager::class)]
+#[CoversClass(WebhookSubscription::class)]
+#[CoversClass(Webhook::class)]
 final class WebhookManagerTest extends KernelTestCaseAbstract
 {
 
@@ -47,16 +51,6 @@ final class WebhookManagerTest extends KernelTestCaseAbstract
     private WebhookRepository $repository;
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookManager::subscribeWebhooks
-     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookManager::unsubscribeWebhooks
-     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookSubscription
-     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookSubscription::getTopology
-     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookSubscription::getNode
-     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookSubscription::getName
-     * @covers \Hanaboso\PipesPhpSdk\Application\Document\Webhook::fromArray
-     * @covers \Hanaboso\PipesPhpSdk\Application\Document\Webhook::toArray
-     * @covers \Hanaboso\PipesPhpSdk\Application\Document\Webhook
-     *
      * @return void
      * @throws ApplicationInstallException
      * @throws GuzzleException
@@ -154,9 +148,6 @@ final class WebhookManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookManager::subscribeWebhooks
-     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookManager::unsubscribeWebhooks
-     *
      * @throws Exception
      * @throws GuzzleException
      */
@@ -234,8 +225,6 @@ final class WebhookManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookManager::subscribeWebhooks
-     *
      * @throws Exception
      * @throws GuzzleException
      */
@@ -260,10 +249,6 @@ final class WebhookManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookManager::getWebhooks
-     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookSubscription::getTopology
-     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookSubscription::getName
-     *
      * @return void
      * @throws GuzzleException
      * @throws Exception
@@ -297,9 +282,6 @@ final class WebhookManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookManager::subscribeWebhooks
-     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookSubscription::getParameters
-     *
      * @throws Exception
      * @throws GuzzleException
      */
@@ -315,9 +297,6 @@ final class WebhookManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Application\Repository\WebhookFilter
-     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookManager::unsubscribeWebhooks
-     *
      * @throws Exception
      * @throws GuzzleException
      */

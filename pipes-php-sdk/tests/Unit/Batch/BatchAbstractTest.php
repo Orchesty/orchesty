@@ -6,7 +6,9 @@ use Exception;
 use Hanaboso\CommonsBundle\Process\BatchProcessDto;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
 use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
+use Hanaboso\PipesPhpSdk\Batch\BatchAbstract;
 use Hanaboso\PipesPhpSdk\CustomNode\Exception\CustomNodeException;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\Integration\Application\TestNullApplication;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 
@@ -15,6 +17,7 @@ use PipesPhpSdkTests\KernelTestCaseAbstract;
  *
  * @package PipesPhpSdkTests\Unit\Batch
  */
+#[CoversClass(BatchAbstract::class)]
 final class BatchAbstractTest extends KernelTestCaseAbstract
 {
 
@@ -26,8 +29,6 @@ final class BatchAbstractTest extends KernelTestCaseAbstract
     private TestNullBatch $nullBatchConnector;
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Batch\BatchAbstract::evaluateStatusCode
-     *
      * @throws Exception
      */
     public function testEvaluateStatusCode(): void
@@ -40,7 +41,7 @@ final class BatchAbstractTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Batch\BatchAbstract::setApplication
+     * @throws CustomNodeException
      */
     public function testSetApplication(): void
     {
@@ -50,8 +51,6 @@ final class BatchAbstractTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Batch\BatchAbstract::getApplication
-
      * @throws Exception
      */
     public function testGetApplicationException(): void
@@ -61,8 +60,6 @@ final class BatchAbstractTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Batch\BatchAbstract::getApplication
-
      * @throws Exception
      */
     public function testGetApplication(): void

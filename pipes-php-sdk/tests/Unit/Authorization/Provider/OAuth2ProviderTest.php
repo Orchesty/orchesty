@@ -7,10 +7,13 @@ use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth2Dto;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
+use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuthProviderAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Wrapper\OAuth2Wrapper;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
 use Monolog\Logger;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 
 /**
@@ -18,16 +21,17 @@ use PipesPhpSdkTests\KernelTestCaseAbstract;
  *
  * @package PipesPhpSdkTests\Unit\Authorization\Provider
  */
+#[CoversClass(OAuth2Provider::class)]
+#[CoversClass(OAuthProviderAbstract::class)]
 final class OAuth2ProviderTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @dataProvider authorizeDataProvider
-     *
      * @param string $url
      *
      * @throws Exception
      */
+    #[DataProvider('authorizeDataProvider')]
     public function testAuthorize(string $url): void
     {
         $provider = $this->getMockedProvider($url);
@@ -40,12 +44,11 @@ final class OAuth2ProviderTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @dataProvider authorizeDataProvider
-     *
      * @param string $url
      *
      * @throws Exception
      */
+    #[DataProvider('authorizeDataProvider')]
     public function testAuthorizeCustomApp(string $url): void
     {
         $provider = $this->getMockedProvider($url);
@@ -57,13 +60,12 @@ final class OAuth2ProviderTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @dataProvider getAccessTokenDataProvider
-     *
      * @param mixed[] $request
      * @param bool    $exception
      *
      * @throws Exception
      */
+    #[DataProvider('getAccessTokenDataProvider')]
     public function testGetAccessToken(array $request, bool $exception): void
     {
         $provider = $this->getMockedProvider('');
@@ -82,13 +84,12 @@ final class OAuth2ProviderTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @dataProvider refreshTokenDataProvider
-     *
      * @param mixed[] $token
      * @param bool    $exception
      *
      * @throws Exception
      */
+    #[DataProvider('refreshTokenDataProvider')]
     public function testRefreshAccessToken(array $token, bool $exception): void
     {
         $provider = $this->getMockedProvider('');
@@ -107,7 +108,7 @@ final class OAuth2ProviderTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider::stateDecode
+     * @return void
      */
     public function testStateDecode(): void
     {
@@ -117,9 +118,6 @@ final class OAuth2ProviderTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider::getTokenByGrant
-     * @covers \Hanaboso\PipesPhpSdk\Authorization\Provider\OAuthProviderAbstract::getRedirectUri
-     *
      * @throws Exception
      */
     public function testGetTokenByGrant(): void

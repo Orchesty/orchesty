@@ -8,7 +8,9 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlClientFactory;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
 use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
+use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
 use Hanaboso\PipesPhpSdk\CustomNode\Exception\CustomNodeException;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\Integration\Application\TestNullApplication;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 
@@ -17,6 +19,7 @@ use PipesPhpSdkTests\KernelTestCaseAbstract;
  *
  * @package PipesPhpSdkTests\Unit\Connector
  */
+#[CoversClass(ConnectorAbstract::class)]
 final class ConnectorAbstractTest extends KernelTestCaseAbstract
 {
 
@@ -28,8 +31,6 @@ final class ConnectorAbstractTest extends KernelTestCaseAbstract
     private TestNullConnector $nullConnector;
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract::evaluateStatusCode
-     *
      * @throws Exception
      */
     public function testEvaluateStatusCode(): void
@@ -42,7 +43,6 @@ final class ConnectorAbstractTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract::setApplication
      * @throws CustomNodeException
      */
     public function testSetApplication(): void
@@ -53,7 +53,7 @@ final class ConnectorAbstractTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract::getApplicationKey
+     * @throws CustomNodeException
      */
     public function testGetApplicationKey(): void
     {
@@ -63,8 +63,6 @@ final class ConnectorAbstractTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract::getApplication
-
      * @throws Exception
      */
     public function testGetApplicationException(): void
@@ -74,8 +72,6 @@ final class ConnectorAbstractTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract::getApplication
-
      * @throws Exception
      */
     public function testGetApplication(): void
@@ -85,8 +81,6 @@ final class ConnectorAbstractTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract::getApplication
-
      * @throws Exception
      */
     public function testGetSetSender(): void

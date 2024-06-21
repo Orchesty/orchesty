@@ -4,6 +4,7 @@ namespace PipesPhpSdkTests\Unit\Utils;
 
 use Hanaboso\PipesPhpSdk\Utils\ProcessDtoFactory;
 use Hanaboso\Utils\String\Json;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -12,12 +13,12 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @package PipesPhpSdkTests\Unit\Utils
  */
+#[CoversClass(ProcessDtoFactory::class)]
 final class ProcessDtoFactoryTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Utils\ProcessDtoFactory::createFromRequest
-     * @covers \Hanaboso\PipesPhpSdk\Utils\ProcessDtoFactory::createDto
+     * @return void
      */
     public function testCreateFromRequest(): void
     {
@@ -36,8 +37,7 @@ final class ProcessDtoFactoryTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Utils\ProcessDtoFactory::createBatchFromRequest
-     * @covers \Hanaboso\PipesPhpSdk\Utils\ProcessDtoFactory::createBatchDto
+     * @return void
      */
     public function testCreateBatchFromRequest(): void
     {

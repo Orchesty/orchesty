@@ -3,6 +3,8 @@
 namespace PipesPhpSdkTests\Integration\Application\Loader;
 
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
+use Hanaboso\PipesPhpSdk\Application\Loader\ApplicationLoader;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 
 /**
@@ -10,11 +12,12 @@ use PipesPhpSdkTests\KernelTestCaseAbstract;
  *
  * @package PipesPhpSdkTests\Integration\Application\Loader
  */
+#[CoversClass(ApplicationLoader::class)]
 final class ApplicationLoaderTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Application\Loader\ApplicationLoader::getApplication
+     * @return void
      */
     public function testGetApplication(): void
     {
@@ -25,7 +28,7 @@ final class ApplicationLoaderTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Application\Loader\ApplicationLoader::getApplications
+     * @return void
      */
     public function testGetApplications(): void
     {

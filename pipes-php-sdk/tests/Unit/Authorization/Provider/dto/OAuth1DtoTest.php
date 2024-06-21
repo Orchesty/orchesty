@@ -6,6 +6,7 @@ use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1\OAuth1ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth1Dto;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 
 /**
@@ -13,17 +14,12 @@ use PipesPhpSdkTests\KernelTestCaseAbstract;
  *
  * @package PipesPhpSdkTests\Unit\Authorization\Provider\dto
  */
+#[CoversClass(OAuth1Dto::class)]
 final class OAuth1DtoTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth1Dto
-     * @covers \Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth1Dto::getConsumerKey
-     * @covers \Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth1Dto::getConsumerSecret
-     * @covers \Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth1Dto::getSignatureMethod
-     * @covers \Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth1Dto::getAuthType
-     * @covers \Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth1Dto::getApplicationInstall
-     * @covers \Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth1Dto::getToken
+     * @return void
      */
     public function testOauth1Dto(): void
     {

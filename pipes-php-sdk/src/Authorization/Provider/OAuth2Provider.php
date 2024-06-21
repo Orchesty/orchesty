@@ -118,7 +118,7 @@ final class OAuth2Provider extends OAuthProviderAbstract implements OAuth2Provid
     {
         $params = explode(':', Base64::base64UrlDecode($state));
 
-        return [$params[0] ?? '', $params[1] ?? ''];
+        return [$params[0], $params[1] ?? ''];
     }
 
     /**

@@ -3,12 +3,15 @@
 namespace PipesPhpSdkTests\Controller\HbPFTableParserBundle\Controller;
 
 use Exception;
+use Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Controller\TableParserController;
 use Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler;
 use Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandlerException;
 use Hanaboso\PipesPhpSdk\Parser\Exception\TableParserException;
+use Hanaboso\PipesPhpSdk\Parser\TableParser;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Json;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\ControllerTestCaseAbstract;
 use Throwable;
 
@@ -17,12 +20,13 @@ use Throwable;
  *
  * @package PipesPhpSdkTests\Controller\HbPFTableParserBundle\Controller
  */
+#[CoversClass(TableParserController::class)]
+#[CoversClass(TableParserHandler::class)]
+#[CoversClass(TableParser::class)]
 final class ApiControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Controller\TableParserController::toJsonAction
-     *
      * @throws Exception
      */
     public function testToJson(): void
@@ -42,8 +46,6 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Controller\TableParserController::toJsonAction
-     *
      * @throws Exception
      */
     public function testToJsonActionErr(): void
@@ -57,8 +59,6 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Controller\TableParserController::toJsonAction
-     *
      * @throws Exception
      */
     public function testToJsonActionErr2(): void
@@ -71,8 +71,6 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Controller\TableParserController::toJsonAction
-     *
      * @throws Exception
      */
     public function testToJsonNotFound(): void
@@ -86,7 +84,6 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Controller\TableParserController::toJsonTestAction
      * @throws Exception
      */
     public function testToJsonTest(): void
@@ -97,8 +94,6 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Controller\TableParserController::toJsonTestAction
-     *
      * @throws Exception
      */
     public function testToJsonTestErr(): void
@@ -110,8 +105,6 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Controller\TableParserController::fromJsonAction
-     *
      * @throws Exception
      */
     public function testFromJson(): void
@@ -128,8 +121,6 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Controller\TableParserController::fromJsonAction
-     *
      * @throws Exception
      */
     public function testToFromNotFound(): void
@@ -143,8 +134,6 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Controller\TableParserController::fromJsonAction
-     *
      * @throws Exception
      */
     public function testFromJsonNotFoundWriter(): void
@@ -163,10 +152,6 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Controller\TableParserController::fromJsonTestAction
-     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler::parseFromJsonTest
-     * @covers \Hanaboso\PipesPhpSdk\Parser\TableParser::createWriter
-     *
      * @throws Exception
      */
     public function testFromTestJson(): void
@@ -177,10 +162,6 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Controller\TableParserController::fromJsonTestAction
-     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Handler\TableParserHandler::parseFromJsonTest
-     * @covers \Hanaboso\PipesPhpSdk\Parser\TableParser::createWriter
-     *
      * @throws Exception
      */
     public function testFromTestJsonNotFound(): void
@@ -191,8 +172,6 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFTableParserBundle\Controller\TableParserController::fromJsonTestAction
-     *
      * @throws Exception
      */
     public function testFromTestJsonNotFoundErr(): void

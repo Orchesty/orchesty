@@ -3,6 +3,7 @@
 namespace PipesPhpSdkTests\Integration\Command;
 
 use Hanaboso\PipesPhpSdk\Command\IncludeCommands;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -12,13 +13,12 @@ use Symfony\Component\HttpKernel\KernelInterface;
  *
  * @package PipesPhpSdkTests\Integration\Command
  */
+#[CoversClass(IncludeCommands::class)]
 final class IncludeCommandTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Command\IncludeCommands::addIncludedCommand
-     * @covers \Hanaboso\PipesPhpSdk\Command\IncludeCommands::getIncludedCommands
-     * @covers \Hanaboso\PipesPhpSdk\Command\IncludeCommands::add
+     * @return void
      */
     public function testIncludeCommands(): void
     {

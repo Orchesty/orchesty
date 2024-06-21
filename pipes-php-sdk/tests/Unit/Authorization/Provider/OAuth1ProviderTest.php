@@ -12,6 +12,8 @@ use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider;
 use Monolog\Logger;
 use OAuth;
 use OAuthException;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 
 /**
@@ -19,21 +21,17 @@ use PipesPhpSdkTests\KernelTestCaseAbstract;
  *
  * @package PipesPhpSdkTests\Unit\Authorization\Provider
  */
+#[CoversClass(OAuth1Provider::class)]
 final class OAuth1ProviderTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers       \Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider
-     * @covers       \Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider::authorize
-     * @covers       \Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider::getAuthorizeUrl
-     *
-     * @dataProvider authorizeDataProvider
-     *
      * @param mixed[] $data
      * @param bool    $exception
      *
      * @throws Exception
      */
+    #[DataProvider('authorizeDataProvider')]
     public function testAuthorize(array $data, bool $exception): void
     {
         $install  = new ApplicationInstall();
@@ -58,7 +56,6 @@ final class OAuth1ProviderTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider::authorize
      * @throws Exception
      */
     public function testAuthorizeErr(): void
@@ -75,17 +72,13 @@ final class OAuth1ProviderTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers       \Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider::getAccessToken
-     * @covers       \Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider::tokenAndSecretChecker
-     *
-     * @dataProvider getAccessTokenDataProvider
-     *
      * @param mixed[] $data
      * @param mixed[] $request
      * @param bool    $exception
      *
      * @throws Exception
      */
+    #[DataProvider('getAccessTokenDataProvider')]
     public function testGetAccessToken(array $data, array $request, bool $exception): void
     {
         $install = new ApplicationInstall();
@@ -107,8 +100,6 @@ final class OAuth1ProviderTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider::getAccessToken
-     *
      * @throws Exception
      */
     public function testGetAccessTokenErr(): void
@@ -138,16 +129,12 @@ final class OAuth1ProviderTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers       \Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider::getAuthorizeHeader
-     * @covers       \Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider::tokenAndSecretChecker
-     *
-     * @dataProvider getHeaderDataProvider
-     *
      * @param mixed[] $data
      * @param bool    $exception
      *
      * @throws Exception
      */
+    #[DataProvider('getHeaderDataProvider')]
     public function testGetAuthorizeHeader(array $data, bool $exception): void
     {
         $install = new ApplicationInstall();
@@ -170,8 +157,6 @@ final class OAuth1ProviderTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider::createClient
-     *
      * @throws Exception
      */
     public function testCreateClient(): void

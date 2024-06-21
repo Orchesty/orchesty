@@ -15,6 +15,7 @@ use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler;
 use Hanaboso\Utils\String\Json;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 use PipesPhpSdkTests\MockServer\Mock;
 use PipesPhpSdkTests\MockServer\MockServer;
@@ -25,6 +26,8 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @package PipesPhpSdkTests\Integration\HbPFApplicationBundle\Handler
  */
+#[CoversClass(ApplicationHandler::class)]
+#[CoversClass(ApplicationManager::class)]
 final class ApplicationHandlerTest extends KernelTestCaseAbstract
 {
 
@@ -39,9 +42,6 @@ final class ApplicationHandlerTest extends KernelTestCaseAbstract
     private ApplicationHandler $handler;
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler::getApplications
-     *
      * @throws Exception
      */
     public function testGetApplications(): void
@@ -86,9 +86,6 @@ final class ApplicationHandlerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler::getApplications
-     *
      * @throws Exception
      */
     public function testGetApplication(): void
@@ -111,8 +108,6 @@ final class ApplicationHandlerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler::getSynchronousActions
-     *
      * @throws Exception
      */
     public function testGetSynchronousActions(): void
@@ -122,8 +117,6 @@ final class ApplicationHandlerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler::runSynchronousAction
-     *
      * @throws Exception
      */
     public function testRunSynchronousAction(): void
@@ -139,8 +132,6 @@ final class ApplicationHandlerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler::authorizeApplication
-     *
      * @throws Exception
      */
     public function testAuthorizeApplication(): void
@@ -156,8 +147,6 @@ final class ApplicationHandlerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler::saveAuthToken
-     *
      * @throws Exception
      */
     public function testSaveAuthToken(): void
@@ -173,8 +162,6 @@ final class ApplicationHandlerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler::saveAuthToken
-     *
      * @throws Exception
      */
     public function testAuthToken(): void
@@ -193,10 +180,6 @@ final class ApplicationHandlerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler::getApplicationsByUser
-     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager::getApplication
-     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager::getInstalledApplications
-     *
      * @throws Exception
      * @throws GuzzleException
      */
@@ -219,8 +202,6 @@ final class ApplicationHandlerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler::getApplicationByKeyAndUser
-     *
      * @throws Exception
      */
     public function testGetApplicationByKeyAndUser(): void
@@ -249,9 +230,6 @@ final class ApplicationHandlerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler::updateApplicationSettings
-     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager::saveApplicationSettings
-     *
      * @throws Exception
      * @throws GuzzleException
      */
@@ -296,8 +274,6 @@ final class ApplicationHandlerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler::updateApplicationPassword
-     *
      * @return void
      * @throws GuzzleException
      * @throws ApplicationInstallException
@@ -360,8 +336,6 @@ final class ApplicationHandlerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler::updateApplicationPassword
-     *
      * @throws Exception
      */
     public function testUpdateApplicationPasswordErr(): void

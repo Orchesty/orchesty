@@ -18,6 +18,7 @@ use Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookManager;
 use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
 use Hanaboso\Utils\String\Json;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\Integration\Application\TestOAuth2NullApplication;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 use PipesPhpSdkTests\MockServer\Mock;
@@ -29,6 +30,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @package PipesPhpSdkTests\Integration\Application\Manager
  */
+#[CoversClass(ApplicationManager::class)]
 final class ApplicationManagerTest extends KernelTestCaseAbstract
 {
 
@@ -53,7 +55,6 @@ final class ApplicationManagerTest extends KernelTestCaseAbstract
     private ApplicationInstallRepository $applicationInstallRepository;
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager::getApplications
      * @throws Exception
      */
     public function testGetApplications(): void
@@ -63,8 +64,6 @@ final class ApplicationManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager::getApplication
-     *
      * @throws Exception
      */
     public function testGetApplication(): void
@@ -75,9 +74,6 @@ final class ApplicationManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager::getSynchronousActions
-     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager::isSynchronous
-     *
      * @throws Exception
      */
     public function testGetSynchronousActions(): void
@@ -88,8 +84,6 @@ final class ApplicationManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager::runSynchronousAction
-     *
      * @throws Exception
      */
     public function testRunSynchronousAction(): void
@@ -114,8 +108,6 @@ final class ApplicationManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager::runSynchronousAction
-     *
      * @throws Exception
      */
     public function testRunSynchronousActionException(): void
@@ -131,8 +123,6 @@ final class ApplicationManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager::saveApplicationSettings
-     *
      * @return void
      * @throws ApplicationInstallException
      * @throws CryptException
@@ -180,8 +170,6 @@ final class ApplicationManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager::saveApplicationPassword
-     *
      * @throws Exception
      */
     public function testSaveApplicationPassword(): void
@@ -232,8 +220,6 @@ final class ApplicationManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager::saveAuthorizationToken
-     *
      * @throws Exception
      * @throws GuzzleException
      */
@@ -359,8 +345,6 @@ final class ApplicationManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager::installApplication
-     *
      * @throws Exception
      * @throws GuzzleException
      */
@@ -401,8 +385,6 @@ final class ApplicationManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager::installApplication
-     *
      * @throws Exception
      * @throws GuzzleException
      */
@@ -438,8 +420,6 @@ final class ApplicationManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository::findOneByName
-     *
      * @throws Exception
      * @throws GuzzleException
      */
@@ -679,8 +659,6 @@ final class ApplicationManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager::subscribeWebhooks
-     *
      * @throws Exception
      * @throws GuzzleException
      */

@@ -6,7 +6,9 @@ use Exception;
 use Hanaboso\CommonsBundle\Crypt\CryptManager;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\Integration\Application\TestNullApplication;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 
@@ -15,6 +17,7 @@ use PipesPhpSdkTests\KernelTestCaseAbstract;
  *
  * @package PipesPhpSdkTests\Integration\Authorization\Base
  */
+#[CoversClass(BasicApplicationAbstract::class)]
 final class BasicApplicationAbstractTest extends KernelTestCaseAbstract
 {
 
@@ -24,7 +27,7 @@ final class BasicApplicationAbstractTest extends KernelTestCaseAbstract
     private TestNullApplication $testApp;
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract::getAuthorizationType
+     * @return void
      */
     public function testGetAuthorizationType(): void
     {
@@ -32,8 +35,6 @@ final class BasicApplicationAbstractTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract::isAuthorized
-     *
      * @throws Exception
      */
     public function testIsAuthorize(): void
@@ -54,8 +55,6 @@ final class BasicApplicationAbstractTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract::saveApplicationForms
-     *
      * @throws Exception
      */
     public function testSetApplicationToken(): void
@@ -81,8 +80,6 @@ final class BasicApplicationAbstractTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract::saveApplicationForms
-     *
      * @throws Exception
      */
     public function testSetApplicationSettings(): void

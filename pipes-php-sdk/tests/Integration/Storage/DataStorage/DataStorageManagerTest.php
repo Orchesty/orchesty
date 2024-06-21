@@ -6,6 +6,7 @@ use Exception;
 use Hanaboso\PipesPhpSdk\Storage\DataStorage\DataStorageManager;
 use Hanaboso\PipesPhpSdk\Storage\DataStorage\Document\DataStorageDocument;
 use Hanaboso\PipesPhpSdk\Storage\File\FileSystem;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 
 /**
@@ -13,6 +14,7 @@ use PipesPhpSdkTests\KernelTestCaseAbstract;
  *
  * @package PipesPhpSdkTests\Integration\Storage\DataStorage
  */
+#[CoversClass(DataStorageManager::class)]
 final class DataStorageManagerTest extends KernelTestCaseAbstract
 {
 
@@ -27,10 +29,6 @@ final class DataStorageManagerTest extends KernelTestCaseAbstract
     private FileSystem $fileSystem;
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Storage\DataStorage\DataStorageManager::store
-     * @covers \Hanaboso\PipesPhpSdk\Storage\DataStorage\DataStorageManager::load
-     * @covers \Hanaboso\PipesPhpSdk\Storage\DataStorage\DataStorageManager::remove
-     *
      * @throws Exception
      */
     public function testSaveLoadAndRemove(): void

@@ -130,7 +130,7 @@ final class FileSystem implements LoggerAwareInterface
                 return $this->read($file, $actualTry +1);
             }
 
-            $data = Json::decode(fread($openFile, filesize($dataPath) ?: 0) ?: '');
+            $data = Json::decode(fread($openFile, filesize($dataPath) ?: 1) ?: '');
             fclose($openFile);
 
             return array_map(static fn($item) => DataStorageDocument::fromJson($item), $data);

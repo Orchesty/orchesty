@@ -9,12 +9,15 @@ use Hanaboso\PipesPhpSdk\Application\Base\ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
+use Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager;
 use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationInterface;
+use Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController;
 use Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler;
 use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Base64;
 use Hanaboso\Utils\String\Json;
 use LogicException;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\ControllerTestCaseAbstract;
 use PipesPhpSdkTests\Integration\Application\Manager\NullApplication;
 use PipesPhpSdkTests\MockServer\Mock;
@@ -26,6 +29,9 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @package PipesPhpSdkTests\Controller\HbPFApplicationBundle\Controller
  */
+#[CoversClass(ApplicationController::class)]
+#[CoversClass(ApplicationHandler::class)]
+#[CoversClass(ApplicationManager::class)]
 final class ApplicationControllerTest extends ControllerTestCaseAbstract
 {
 
@@ -35,8 +41,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     private MockServer $mockServer;
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::listOfApplicationsAction
-     *
      * @throws Exception
      */
     public function testListOfApplications(): void
@@ -48,8 +52,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::listOfApplicationsAction
-     *
      * @throws Exception
      */
     public function testListOfApplicationsErr(): void
@@ -61,8 +63,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::getApplicationAction
-     *
      * @throws Exception
      */
     public function testGetApplication(): void
@@ -77,8 +77,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::getApplicationAction
-     *
      * @throws Exception
      */
     public function testGetApplicationException(): void
@@ -89,8 +87,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::getSynchronousActionsAction
-     *
      * @throws Exception
      */
     public function testGetSynchronousActionsAction(): void
@@ -103,8 +99,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::getSynchronousActionsAction
-     *
      * @throws Exception
      */
     public function testGetSynchronousActionsActionErr(): void
@@ -115,8 +109,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::runSynchronousActionsAction
-     *
      * @throws Exception
      */
     public function testRunSynchronousActionsAction(): void
@@ -135,8 +127,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::runSynchronousActionsAction
-     *
      * @throws Exception
      */
     public function testRunSynchronousActionsActionErr(): void
@@ -147,9 +137,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::authorizeApplicationAction
-     *
      * @throws Exception
      */
     public function testAuthorizeApplicationAction(): void
@@ -161,8 +148,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::authorizeApplicationAction
-     *
      * @throws Exception
      */
     public function testAuthorizeApplicationActionNotFound(): void
@@ -174,8 +159,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::authorizeApplicationAction
-     *
      * @throws Exception
      */
     public function testAuthorizeApplicationActionErr(): void
@@ -187,8 +170,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::setAuthorizationTokenAction
-     *
      * @throws Exception
      */
     public function testSetAuthorizationTokenAction(): void
@@ -207,8 +188,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::setAuthorizationTokenAction
-     *
      * @throws Exception
      */
     public function testSetAuthorizationTokenActionNotFound(): void
@@ -220,8 +199,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::setAuthorizationTokenAction
-     *
      * @throws Exception
      */
     public function testSetAuthorizationTokenActionErr(): void
@@ -233,8 +210,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::setAuthorizationTokenQueryAction
-     *
      * @throws Exception
      */
     public function testSetAuthorizationTokenQueryAction(): void
@@ -255,8 +230,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::setAuthorizationTokenQueryAction
-     *
      * @throws Exception
      */
     public function testSetAuthorizationTokenQueryActionNotFound(): void
@@ -268,8 +241,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::setAuthorizationTokenQueryAction
-     *
      * @throws Exception
      */
     public function testSetAuthorizationTokenQueryActionErr(): void
@@ -281,8 +252,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::getUsersApplicationAction
-     *
      * @throws Exception
      */
     public function testGetUsersApplication(): void
@@ -303,8 +272,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::getUsersApplicationAction
-     *
      * @throws Exception
      */
     public function testGetUsersApplicationErr(): void
@@ -316,10 +283,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::getApplicationDetailAction
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler::getApplicationByKeyAndUser
-     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookManager::getWebhooks
-     *
      * @throws Exception
      */
     public function testGetApplicationDetail(): void
@@ -348,8 +311,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::getApplicationDetailAction
-     *
      * @throws Exception
      */
     public function testApplicationDetailErr(): void
@@ -361,9 +322,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::installApplicationAction
-     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager::installApplication
-     *
      * @throws Exception
      */
     public function testInstallApplication(): void
@@ -408,8 +366,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::installApplicationAction
-     *
      * @throws Exception
      */
     public function testInstallApplicationErr(): void
@@ -422,11 +378,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::uninstallApplicationAction
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\ApplicationHandler::uninstallApplication
-     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager::uninstallApplication
-     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager::unsubscribeWebhooks
-     *
      * @throws Exception
      */
     public function testUninstallApplication(): void
@@ -452,8 +403,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::uninstallApplicationAction
-     *
      * @throws Exception
      */
     public function testUninstallApplicationErr(): void
@@ -465,8 +414,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::updateApplicationSettingsAction
-     *
      * @throws Exception
      */
     public function testUpdateApplicationSettings(): void
@@ -487,8 +434,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::updateApplicationSettingsAction
-     *
      * @throws Exception
      */
     public function testUpdateApplicationSettingsErr(): void
@@ -500,8 +445,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::saveApplicationPasswordAction
-     *
      * @throws Exception
      */
     public function testSaveApplicationPassword(): void
@@ -522,8 +465,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::saveApplicationPasswordAction
-     *
      * @throws Exception
      */
     public function testSaveApplicationPassword404(): void
@@ -553,8 +494,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\ApplicationController::saveApplicationPasswordAction
-     *
      * @throws Exception
      */
     public function testSaveApplicationPasswordErr(): void

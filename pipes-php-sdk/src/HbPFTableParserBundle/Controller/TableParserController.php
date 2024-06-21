@@ -52,9 +52,9 @@ final class TableParserController
     public function toJsonTestAction(): Response
     {
         try {
-            $this->tableParserHandler->parseToJsonTest();
+            $test = $this->tableParserHandler->parseToJsonTest();
 
-            return $this->getResponse([]);
+            return $this->getResponse(['test' => $test]);
         } catch (Throwable $e) {
             return $this->getErrorResponse($e);
         }

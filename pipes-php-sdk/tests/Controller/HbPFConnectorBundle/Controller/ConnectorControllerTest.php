@@ -5,8 +5,10 @@ namespace PipesPhpSdkTests\Controller\HbPFConnectorBundle\Controller;
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\PipesPhpSdk\Application\Document\Dto\CommonObjectDto;
+use Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Controller\ConnectorController;
 use Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Handler\ConnectorHandler;
 use Hanaboso\Utils\String\Json;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\ControllerTestCaseAbstract;
 
 /**
@@ -14,12 +16,11 @@ use PipesPhpSdkTests\ControllerTestCaseAbstract;
  *
  * @package PipesPhpSdkTests\Controller\HbPFConnectorBundle\Controller
  */
+#[CoversClass(ConnectorController::class)]
 final class ConnectorControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Controller\ConnectorController::processActionAction
-     *
      * @throws Exception
      */
     public function testProcessActionActionErr(): void
@@ -31,8 +32,6 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Controller\ConnectorController::processActionAction
-     *
      * @throws Exception
      */
     public function testProcessActionActionErr2(): void
@@ -49,8 +48,6 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Controller\ConnectorController::processActionTestAction
-     *
      * @throws Exception
      */
     public function testProcessActionTestActionErr(): void
@@ -60,8 +57,6 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Controller\ConnectorController::listOfConnectorsAction
-     *
      * @throws Exception
      */
     public function testListOfConnectorsAction(): void
@@ -76,8 +71,6 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Controller\ConnectorController::processActionAction
-     *
      * @throws Exception
      */
     public function testProcessAction(): void

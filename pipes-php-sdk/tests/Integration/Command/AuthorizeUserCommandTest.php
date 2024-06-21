@@ -7,10 +7,18 @@ use GuzzleHttp\Psr7\Response;
 use Hanaboso\CommonsBundle\Redirect\RedirectInterface;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\PipesPhpSdk\Application\Loader\ApplicationLoader;
+use Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager;
+use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
+use Hanaboso\PipesPhpSdk\Application\Utils\ApplicationUtils;
+use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth1Dto;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider;
+use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
+use Hanaboso\PipesPhpSdk\Command\AuthorizeUserCommand;
 use Hanaboso\Utils\String\Json;
 use OAuth;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 use PipesPhpSdkTests\MockServer\Mock;
 use PipesPhpSdkTests\MockServer\MockServer;
@@ -24,6 +32,13 @@ use TypeError;
  *
  * @package PipesPhpSdkTests\Integration\Command
  */
+#[CoversClass(ApplicationLoader::class)]
+#[CoversClass(ApplicationManager::class)]
+#[CoversClass(ApplicationUtils::class)]
+#[CoversClass(ApplicationInstallRepository::class)]
+#[CoversClass(AuthorizeUserCommand::class)]
+#[CoversClass(OAuth2ApplicationAbstract::class)]
+#[CoversClass(OAuth2Provider::class)]
 final class AuthorizeUserCommandTest extends KernelTestCaseAbstract
 {
 
@@ -33,19 +48,6 @@ final class AuthorizeUserCommandTest extends KernelTestCaseAbstract
     private MockServer $mockServer;
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Application\Loader\ApplicationLoader
-     * @covers \Hanaboso\PipesPhpSdk\Application\Loader\ApplicationLoader::getApplication
-     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager
-     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\ApplicationManager::authorizeApplication
-     * @covers \Hanaboso\PipesPhpSdk\Application\Utils\ApplicationUtils::generateUrl
-     * @covers \Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository::findUserApp
-     * @covers \Hanaboso\PipesPhpSdk\Command\AuthorizeUserCommand
-     * @covers \Hanaboso\PipesPhpSdk\Command\AuthorizeUserCommand::execute
-     * @covers \Hanaboso\PipesPhpSdk\Command\AuthorizeUserCommand::getHelper
-     * @covers \Hanaboso\PipesPhpSdk\Command\AuthorizeUserCommand::configure
-     * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract
-     * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationAbstract::authorize
-     * @covers \Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider::createClient
      * @throws Exception
      */
     public function testExecuteOauth2(): void
@@ -107,7 +109,7 @@ final class AuthorizeUserCommandTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Command\AuthorizeUserCommand::execute
+     * @return void
      */
     public function testExecuteMissingEnvParam(): void
     {
@@ -127,7 +129,7 @@ final class AuthorizeUserCommandTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Command\AuthorizeUserCommand::execute
+     * @return void
      */
     public function testExecuteMissingUserParam(): void
     {

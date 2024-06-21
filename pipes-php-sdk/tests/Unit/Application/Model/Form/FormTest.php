@@ -6,6 +6,7 @@ use Exception;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Form;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 
 /**
@@ -13,14 +14,11 @@ use PipesPhpSdkTests\KernelTestCaseAbstract;
  *
  * @package PipesPhpSdkTests\Unit\Application\Model\Form
  */
+#[CoversClass(Form::class)]
 final class FormTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Application\Model\Form\Form::addField
-     * @covers \Hanaboso\PipesPhpSdk\Application\Model\Form\Form::toArray
-     * @covers \Hanaboso\PipesPhpSdk\Application\Model\Form\Form::getFields
-     *
      * @throws Exception
      */
     public function testForm(): void

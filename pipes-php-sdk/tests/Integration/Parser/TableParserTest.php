@@ -13,6 +13,8 @@ use PhpOffice\PhpSpreadsheet\Writer\Csv;
 use PhpOffice\PhpSpreadsheet\Writer\Html;
 use PhpOffice\PhpSpreadsheet\Writer\Ods;
 use PhpOffice\PhpSpreadsheet\Writer\Xls;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 
 /**
@@ -20,11 +22,11 @@ use PipesPhpSdkTests\KernelTestCaseAbstract;
  *
  * @package PipesPhpSdkTests\Integration\Parser
  */
+#[CoversClass(TableParser::class)]
 final class TableParserTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Parser\TableParser::createWriter
      * @throws Exception
      */
     public function testCreateWriter(): void
@@ -46,17 +48,13 @@ final class TableParserTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers       \Hanaboso\PipesPhpSdk\Parser\TableParser::parseToJson
-     * @covers       \Hanaboso\PipesPhpSdk\Parser\TableParser::getTrimmedCellValue
-     *
-     * @dataProvider getParseToJsonData
-     *
      * @param string $input
      * @param string $output
      * @param bool   $hasHeaders
      *
      * @throws Exception
      */
+    #[DataProvider('getParseToJsonData')]
     public function testParseToJson(string $input, string $output, bool $hasHeaders): void
     {
         $parser = new TableParser();
@@ -65,18 +63,13 @@ final class TableParserTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers       \Hanaboso\PipesPhpSdk\Parser\TableParser::parseFromJson
-     * @covers       \Hanaboso\PipesPhpSdk\Parser\TableParser::setCellValue
-     * @covers       \Hanaboso\PipesPhpSdk\Parser\TableParser::createWriter
-     *
-     * @dataProvider getParseFromJsonData
-     *
      * @param string $input
      * @param string $type
      * @param bool   $hasHeaders
      *
      * @throws Exception
      */
+    #[DataProvider('getParseFromJsonData')]
     public function testParseFromJson(string $input, string $type, bool $hasHeaders): void
     {
         $parser = new TableParser();
@@ -89,7 +82,6 @@ final class TableParserTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Parser\TableParser::getTrimmedCellValue
      * @throws Exception
      */
     public function testGetTrimmedCellValue(): void

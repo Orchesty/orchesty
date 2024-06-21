@@ -4,6 +4,7 @@ namespace PipesPhpSdkTests\Unit\Application\Model\CustomAction;
 
 use Exception;
 use Hanaboso\PipesPhpSdk\Application\Model\CustomAction\CustomAction;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 
 /**
@@ -11,13 +12,11 @@ use PipesPhpSdkTests\KernelTestCaseAbstract;
  *
  * @package PipesPhpSdkTests\Unit\Application\Model\CustomAction
  */
+#[CoversClass(CustomAction::class)]
 final class CustomActionTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Application\Model\CustomAction\CustomAction::toArray
-     * @covers \Hanaboso\PipesPhpSdk\Application\Model\CustomAction\CustomAction::getBody
-     *
      * @throws Exception
      */
     public function testCustomAction(): void

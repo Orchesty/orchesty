@@ -5,6 +5,7 @@ namespace PipesPhpSdkTests\Integration\Storage\File;
 use Exception;
 use Hanaboso\PipesPhpSdk\Storage\DataStorage\Document\DataStorageDocument;
 use Hanaboso\PipesPhpSdk\Storage\File\FileSystem;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 
 /**
@@ -12,6 +13,7 @@ use PipesPhpSdkTests\KernelTestCaseAbstract;
  *
  * @package PipesPhpSdkTests\Integration\Storage\File
  */
+#[CoversClass(FileSystem::class)]
 final class FileSystemTest extends KernelTestCaseAbstract
 {
 
@@ -21,10 +23,6 @@ final class FileSystemTest extends KernelTestCaseAbstract
     private FileSystem $fileSystem;
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Storage\File\FileSystem::write
-     * @covers \Hanaboso\PipesPhpSdk\Storage\File\FileSystem::read
-     * @covers \Hanaboso\PipesPhpSdk\Storage\File\FileSystem::delete
-     *
      * @throws Exception
      */
     public function testSaveLoadAndRemove(): void
@@ -41,8 +39,6 @@ final class FileSystemTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Storage\File\FileSystem::getFilePath
-     *
      * @throws Exception
      */
     public function testGetFilePath(): void
@@ -52,8 +48,6 @@ final class FileSystemTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Storage\File\FileSystem::getDirectoryPath
-     *
      * @throws Exception
      */
     public function testGetDirectoryPath(): void

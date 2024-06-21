@@ -6,6 +6,7 @@ use Exception;
 use Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Handler\ConnectorHandler;
 use Hanaboso\PipesPhpSdk\Utils\ProcessDtoFactory;
 use Hanaboso\Utils\String\Json;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -14,6 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @package PipesPhpSdkTests\Integration\HbPFConnectorBundle\Handler
  */
+#[CoversClass(ConnectorHandler::class)]
 final class ConnectorHandlerTest extends KernelTestCaseAbstract
 {
 
@@ -23,8 +25,6 @@ final class ConnectorHandlerTest extends KernelTestCaseAbstract
     private ConnectorHandler $handler;
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Handler\ConnectorHandler::processTest
-     *
      * @throws Exception
      */
     public function testProcessTest(): void
@@ -35,8 +35,6 @@ final class ConnectorHandlerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFConnectorBundle\Handler\ConnectorHandler::processAction
-     *
      * @throws Exception
      */
     public function testProcessAction(): void

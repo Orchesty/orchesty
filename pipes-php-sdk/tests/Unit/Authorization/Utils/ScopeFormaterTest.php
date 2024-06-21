@@ -3,6 +3,7 @@
 namespace PipesPhpSdkTests\Unit\Authorization\Utils;
 
 use Hanaboso\PipesPhpSdk\Authorization\Utils\ScopeFormatter;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -14,11 +15,10 @@ final class ScopeFormaterTest extends TestCase
 {
 
     /**
-     * @dataProvider getScopeProvider
-     *
      * @param string[] $scopes
      * @param string   $result
      */
+    #[DataProvider('getScopeProvider')]
     public function testGetScopes(array $scopes, string $result): void
     {
         $scopes = ScopeFormatter::getScopes($scopes);

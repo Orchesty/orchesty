@@ -387,6 +387,7 @@ final class ApplicationManager
             );
         }, $applicationInstalls);
 
+        // @phpstan-ignore-next-line
         return array_filter($appLimits);
     }
 

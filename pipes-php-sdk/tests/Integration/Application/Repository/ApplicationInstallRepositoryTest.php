@@ -9,6 +9,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\Utils\String\Json;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 use PipesPhpSdkTests\MockServer\Mock;
 use PipesPhpSdkTests\MockServer\MockServer;
@@ -18,6 +19,7 @@ use PipesPhpSdkTests\MockServer\MockServer;
  *
  * @package PipesPhpSdkTests\Integration\Application\Repository
  */
+#[CoversClass(ApplicationInstallRepository::class)]
 final class ApplicationInstallRepositoryTest extends KernelTestCaseAbstract
 {
 
@@ -27,8 +29,6 @@ final class ApplicationInstallRepositoryTest extends KernelTestCaseAbstract
     private MockServer $mockServer;
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository::findUserApp
-     *
      * @throws Exception
      * @throws GuzzleException
      */

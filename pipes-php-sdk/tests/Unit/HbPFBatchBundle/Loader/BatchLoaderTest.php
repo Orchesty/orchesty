@@ -5,6 +5,7 @@ namespace PipesPhpSdkTests\Unit\HbPFBatchBundle\Loader;
 use Exception;
 use Hanaboso\PipesPhpSdk\Application\Document\Dto\CommonObjectDto;
 use Hanaboso\PipesPhpSdk\HbPFBatchBundle\Loader\BatchLoader;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 
 /**
@@ -12,6 +13,7 @@ use PipesPhpSdkTests\KernelTestCaseAbstract;
  *
  * @package PipesPhpSdkTests\Unit\HbPFBatchBundle\Loader
  */
+#[CoversClass(BatchLoader::class)]
 final class BatchLoaderTest extends KernelTestCaseAbstract
 {
 
@@ -21,8 +23,6 @@ final class BatchLoaderTest extends KernelTestCaseAbstract
     private BatchLoader $loader;
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFBatchBundle\Loader\BatchLoader::getBatch
-     *
      * @throws Exception
      */
     public function testGetBatch(): void
@@ -32,8 +32,6 @@ final class BatchLoaderTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFBatchBundle\Loader\BatchLoader::getList
-     *
      * @throws Exception
      */
     public function testListBatches(): void

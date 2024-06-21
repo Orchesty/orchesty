@@ -6,6 +6,7 @@ use Exception;
 use Hanaboso\PipesPhpSdk\HbPFBatchBundle\Handler\BatchHandler;
 use Hanaboso\PipesPhpSdk\Utils\ProcessDtoFactory;
 use Hanaboso\Utils\String\Json;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -13,9 +14,8 @@ use Symfony\Component\HttpFoundation\Request;
  * Class BatchHandlerTest
  *
  * @package PipesPhpSdkTests\Integration\HbPFBatchBundle\Handler
- *
- * @covers \Hanaboso\PipesPhpSdk\HbPFBatchBundle\Handler\BatchHandler
  */
+#[CoversClass(BatchHandler::class)]
 final class BatchHandlerTest extends KernelTestCaseAbstract
 {
 
@@ -25,8 +25,6 @@ final class BatchHandlerTest extends KernelTestCaseAbstract
     private BatchHandler $handler;
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFBatchBundle\Handler\BatchHandler::processTest
-     *
      * @throws Exception
      */
     public function testProcessTest(): void
@@ -37,8 +35,6 @@ final class BatchHandlerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFBatchBundle\Handler\BatchHandler::processAction
-     *
      * @throws Exception
      */
     public function testProcessAction(): void

@@ -8,12 +8,14 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
+use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1\OAuth1ApplicationAbstract;
 use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1\OAuth1ApplicationInterface;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\Dto\OAuth1Dto;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth1Provider;
 use Hanaboso\PipesPhpSdk\Authorization\Provider\OAuth2Provider;
 use Hanaboso\Utils\Date\DateTimeUtils;
 use Hanaboso\Utils\String\Json;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\Integration\Command\NullOAuth1Application;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 use PipesPhpSdkTests\MockServer\Mock;
@@ -24,6 +26,7 @@ use PipesPhpSdkTests\MockServer\MockServer;
  *
  * @package PipesPhpSdkTests\Integration\Authorization\Base
  */
+#[CoversClass(OAuth1ApplicationAbstract::class)]
 final class OAuth1ApplicationAbstractTest extends KernelTestCaseAbstract
 {
 
@@ -33,8 +36,6 @@ final class OAuth1ApplicationAbstractTest extends KernelTestCaseAbstract
     private NullOAuth1Application $testApp;
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1\OAuth1ApplicationAbstract
-     * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1\OAuth1ApplicationAbstract::getAuthorizationType
      * @throws Exception
      */
     public function testGetType(): void
@@ -44,8 +45,6 @@ final class OAuth1ApplicationAbstractTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1\OAuth1ApplicationAbstract::isAuthorized
-     *
      * @throws Exception
      */
     public function testIsAuthorized(): void
@@ -60,8 +59,6 @@ final class OAuth1ApplicationAbstractTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1\OAuth1ApplicationAbstract::getApplicationForms
-     *
      * @throws Exception
      */
     public function testGetApplicationForm(): void
@@ -79,10 +76,6 @@ final class OAuth1ApplicationAbstractTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1\OAuth1ApplicationAbstract::createDto
-     * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1\OAuth1ApplicationAbstract::saveOauthStuff
-     * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1\OAuth1ApplicationAbstract::authorize
-     *
      * @throws Exception
      */
     public function testAuthorize(): void
@@ -108,9 +101,6 @@ final class OAuth1ApplicationAbstractTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1\OAuth1ApplicationAbstract::createDto
-     * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1\OAuth1ApplicationAbstract::setAuthorizationToken
-     *
      * @throws Exception
      */
     public function testSetAuthorizationToken(): void
@@ -135,9 +125,6 @@ final class OAuth1ApplicationAbstractTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1\OAuth1ApplicationAbstract::setFrontendRedirectUrl
-     * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1\OAuth1ApplicationAbstract::getFrontendRedirectUrl
-     *
      * @throws Exception
      */
     public function testGetAndSetFrontendRedirectUrl(): void
@@ -150,8 +137,6 @@ final class OAuth1ApplicationAbstractTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Authorization\Base\OAuth1\OAuth1ApplicationAbstract::saveOauthStuff
-     *
      * @throws Exception
      */
     public function testSaveOauthStuff(): void

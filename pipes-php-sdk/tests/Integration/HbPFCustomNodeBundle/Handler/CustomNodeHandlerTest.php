@@ -6,6 +6,7 @@ use Exception;
 use Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Handler\CustomNodeHandler;
 use Hanaboso\PipesPhpSdk\Utils\ProcessDtoFactory;
 use Hanaboso\Utils\String\Json;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -14,6 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @package PipesPhpSdkTests\Integration\HbPFCustomNodeBundle\Handler
  */
+#[CoversClass(CustomNodeHandler::class)]
 final class CustomNodeHandlerTest extends KernelTestCaseAbstract
 {
 
@@ -23,9 +25,6 @@ final class CustomNodeHandlerTest extends KernelTestCaseAbstract
     private CustomNodeHandler $handler;
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Handler\CustomNodeHandler
-     * @covers \Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Handler\CustomNodeHandler::processAction
-     *
      * @throws Exception
      */
     public function testProcess(): void
@@ -39,8 +38,6 @@ final class CustomNodeHandlerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Handler\CustomNodeHandler::processTest
-     *
      * @throws Exception
      */
     public function testProcessTest(): void
@@ -50,7 +47,7 @@ final class CustomNodeHandlerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFCustomNodeBundle\Handler\CustomNodeHandler::getCustomNodes
+     * @return void
      */
     public function testGetCustomNodes(): void
     {

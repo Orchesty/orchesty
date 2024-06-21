@@ -7,8 +7,11 @@ use GuzzleHttp\Psr7\Response;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
+use Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookManager;
+use Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\WebhookController;
 use Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\WebhookHandler;
 use Hanaboso\Utils\String\Json;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\ControllerTestCaseAbstract;
 use PipesPhpSdkTests\MockServer\Mock;
 use PipesPhpSdkTests\MockServer\MockServer;
@@ -17,11 +20,11 @@ use PipesPhpSdkTests\MockServer\MockServer;
  * Class WebhookControllerTest
  *
  * @package PipesPhpSdkTests\Controller\HbPFBatchBundle
- *
- * @covers  \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\WebhookController
- * @covers  \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\WebhookHandler
- * @covers  \Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookManager
  */
+#[CoversClass(WebhookController::class)]
+#[CoversClass(WebhookHandler::class)]
+#[CoversClass(WebhookManager::class)]
+#[CoversClass(ApplicationInstall::class)]
 final class WebhookControllerTest extends ControllerTestCaseAbstract
 {
 
@@ -31,11 +34,6 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
     private MockServer $mockServer;
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\WebhookController::subscribeWebhooksAction
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\WebhookHandler::subscribeWebhooks
-     * @covers \Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall::fromArray
-     * @covers \Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall::toArray
-     *
      * @throws Exception
      */
     public function testSubscribeWebhooksAction(): void
@@ -62,8 +60,6 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\WebhookController::subscribeWebhooksAction
-     *
      * @throws Exception
      */
     public function testSubscribeWebhooksErr(): void
@@ -75,8 +71,6 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\WebhookController::subscribeWebhooksAction
-     *
      * @throws Exception
      */
     public function testSubscribeWebhooksErr2(): void
@@ -88,10 +82,6 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\WebhookController::unsubscribeWebhooksAction
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Handler\WebhookHandler::unsubscribeWebhooks
-     * @covers \Hanaboso\PipesPhpSdk\Application\Manager\Webhook\WebhookManager::unsubscribeWebhooks
-     *
      * @throws Exception
      */
     public function testUnsubscribeWebhooksAction(): void
@@ -118,8 +108,6 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\WebhookController::unsubscribeWebhooksAction
-     *
      * @throws Exception
      */
     public function testUnsubscribeWebhooksErr(): void
@@ -131,8 +119,6 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\HbPFApplicationBundle\Controller\WebhookController::unsubscribeWebhooksAction
-     *
      * @throws Exception
      */
     public function testUnsubscribeWebhooksErr2(): void

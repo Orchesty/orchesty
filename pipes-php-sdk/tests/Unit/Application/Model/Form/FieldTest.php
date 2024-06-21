@@ -4,6 +4,7 @@ namespace PipesPhpSdkTests\Unit\Application\Model\Form;
 
 use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Application\Model\Form\Field;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 
 /**
@@ -11,28 +12,12 @@ use PipesPhpSdkTests\KernelTestCaseAbstract;
  *
  * @package PipesPhpSdkTests\Unit\Application\Model\Form
  */
+#[CoversClass(Field::class)]
 final class FieldTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Application\Model\Form\Field
-     * @covers \Hanaboso\PipesPhpSdk\Application\Model\Form\Field::getType
-     * @covers \Hanaboso\PipesPhpSdk\Application\Model\Form\Field::setValue
-     * @covers \Hanaboso\PipesPhpSdk\Application\Model\Form\Field::getValue
-     * @covers \Hanaboso\PipesPhpSdk\Application\Model\Form\Field::getLabel
-     * @covers \Hanaboso\PipesPhpSdk\Application\Model\Form\Field::setLabel
-     * @covers \Hanaboso\PipesPhpSdk\Application\Model\Form\Field::setDescription
-     * @covers \Hanaboso\PipesPhpSdk\Application\Model\Form\Field::setRequired
-     * @covers \Hanaboso\PipesPhpSdk\Application\Model\Form\Field::setReadOnly
-     * @covers \Hanaboso\PipesPhpSdk\Application\Model\Form\Field::setDisabled
-     * @covers \Hanaboso\PipesPhpSdk\Application\Model\Form\Field::setChoices
-     * @covers \Hanaboso\PipesPhpSdk\Application\Model\Form\Field::getKey
-     * @covers \Hanaboso\PipesPhpSdk\Application\Model\Form\Field::getDescription
-     * @covers \Hanaboso\PipesPhpSdk\Application\Model\Form\Field::isReadOnly
-     * @covers \Hanaboso\PipesPhpSdk\Application\Model\Form\Field::isDisabled
-     * @covers \Hanaboso\PipesPhpSdk\Application\Model\Form\Field::getChoices
-     * @covers \Hanaboso\PipesPhpSdk\Application\Model\Form\Field::toArray
-     * @covers \Hanaboso\PipesPhpSdk\Application\Model\Form\Field::getTypes
+     * @return void
      */
     public function testField(): void
     {

@@ -4,6 +4,7 @@ namespace PipesPhpSdkTests\Unit\Application\Utils;
 
 use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 use Hanaboso\PipesPhpSdk\Application\Utils\ApplicationUtils;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 
 /**
@@ -11,11 +12,12 @@ use PipesPhpSdkTests\KernelTestCaseAbstract;
  *
  * @package PipesPhpSdkTests\Unit\Application\Utils
  */
+#[CoversClass(ApplicationUtils::class)]
 final class ApplicationUtilsTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\Application\Utils\ApplicationUtils::generateUrl
+     * @return void
      */
     public function testGenerateUrl(): void
     {

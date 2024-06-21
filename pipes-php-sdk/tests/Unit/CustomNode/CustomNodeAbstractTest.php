@@ -8,8 +8,10 @@ use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\WorkerApi\Client;
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
 use Hanaboso\PipesPhpSdk\Application\Repository\ApplicationInstallRepository;
+use Hanaboso\PipesPhpSdk\CustomNode\CommonNodeAbstract;
 use Hanaboso\PipesPhpSdk\CustomNode\Exception\CustomNodeException;
 use Hanaboso\Utils\String\Json;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\Integration\Application\TestNullApplication;
 use PipesPhpSdkTests\KernelTestCaseAbstract;
 
@@ -18,6 +20,7 @@ use PipesPhpSdkTests\KernelTestCaseAbstract;
  *
  * @package PipesPhpSdkTests\Unit\CustomNode
  */
+#[CoversClass(CommonNodeAbstract::class)]
 final class CustomNodeAbstractTest extends KernelTestCaseAbstract
 {
 
@@ -29,7 +32,6 @@ final class CustomNodeAbstractTest extends KernelTestCaseAbstract
     private TestNullCustomNode $nullConnector;
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\CustomNode\CommonNodeAbstract::setApplication
      * @throws Exception
      */
     public function testSetApplication(): void
@@ -40,7 +42,6 @@ final class CustomNodeAbstractTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\CustomNode\CommonNodeAbstract::getApplicationKey
      * @throws Exception
      */
     public function testGetApplicationKey(): void
@@ -51,7 +52,6 @@ final class CustomNodeAbstractTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\CustomNode\CommonNodeAbstract::getApplicationKey
      * @throws Exception
      */
     public function testGetApplicationKeyWithApplication(): void
@@ -61,8 +61,6 @@ final class CustomNodeAbstractTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\CustomNode\CommonNodeAbstract::getApplication
-
      * @throws Exception
      */
     public function testGetApplicationException(): void
@@ -72,8 +70,6 @@ final class CustomNodeAbstractTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\CustomNode\CommonNodeAbstract::getApplication
-
      * @throws Exception
      */
     public function testGetApplication(): void
@@ -83,8 +79,6 @@ final class CustomNodeAbstractTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\CustomNode\CommonNodeAbstract::getApplicationInstall
-
      * @throws Exception
      */
     public function testGetAppInstall(): void
@@ -95,8 +89,6 @@ final class CustomNodeAbstractTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\CustomNode\CommonNodeAbstract::getApplicationInstallFromProcess
-
      * @throws Exception
      */
     public function testGetAppInstallFromProcess(): void
@@ -110,8 +102,6 @@ final class CustomNodeAbstractTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesPhpSdk\CustomNode\CommonNodeAbstract::getApplicationInstallFromProcess
-
      * @throws Exception
      */
     public function testGetAppInstallFromProcessWithoutUser(): void
