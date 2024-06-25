@@ -3,23 +3,22 @@
 namespace PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller;
 
 use Exception;
+use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\LogsController;
 use Hanaboso\PipesFramework\Logs\Document\Logs;
 use Hanaboso\PipesFramework\Logs\Document\Pipes;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 
 /**
  * Class LogsControllerTest
  *
  * @package PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller
- *
- * @covers  \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\LogsController
  */
+#[CoversClass(LogsController::class)]
 final class LogsControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\LogsController::topologyMetricsAction
-     *
      * @throws Exception
      */
     public function testTopologyMetricsAction(): void

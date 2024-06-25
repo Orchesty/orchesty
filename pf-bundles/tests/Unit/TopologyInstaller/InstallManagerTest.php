@@ -16,6 +16,7 @@ use Hanaboso\PipesFramework\TopologyInstaller\Dto\TopologyFile;
 use Hanaboso\PipesFramework\TopologyInstaller\Dto\UpdateObject;
 use Hanaboso\PipesFramework\TopologyInstaller\InstallManager;
 use Monolog\Logger;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 
 /**
@@ -23,16 +24,12 @@ use PipesFrameworkTests\KernelTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Unit\TopologyInstaller
  */
+#[CoversClass(InstallManager::class)]
+#[CoversClass(NullCache::class)]
 final class InstallManagerTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::setLogger
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::prepareInstall
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::generateOutput
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Cache\NullCache
-     *
      * @throws Exception
      */
     public function testPrepareInstall(): void
@@ -52,14 +49,6 @@ final class InstallManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::makeInstall
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::makeCreate
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::makeUpdate
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::makeRunnable
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::makeDeletable
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::logException
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Cache\NullCache
-     *
      * @throws Exception
      */
     public function testMakeInstall(): void
@@ -75,9 +64,6 @@ final class InstallManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::makeInstall
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Cache\NullCache
-     *
      * @throws Exception
      */
     public function testMakeInstallEx(): void
@@ -94,10 +80,6 @@ final class InstallManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::makeCreate
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::logException
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Cache\NullCache
-     *
      * @throws Exception
      */
     public function testMakeCreateEx(): void
@@ -119,10 +101,6 @@ final class InstallManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::makeUpdate
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::logException
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Cache\NullCache
-     *
      * @throws Exception
      */
     public function testMakeUpdateEx(): void
@@ -145,10 +123,6 @@ final class InstallManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::makeDelete
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::makeDeletable
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Cache\NullCache
-     *
      * @throws Exception
      */
     public function testMakeDelete(): void
@@ -167,10 +141,6 @@ final class InstallManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::makeDelete
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::logException
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Cache\NullCache
-     *
      * @throws Exception
      */
     public function testMakeDeleteEx(): void

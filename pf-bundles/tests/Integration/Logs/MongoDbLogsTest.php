@@ -11,6 +11,11 @@ use Hanaboso\PipesFramework\Database\Document\Node;
 use Hanaboso\PipesFramework\Logs\Document\Logs;
 use Hanaboso\PipesFramework\Logs\Document\Pipes;
 use Hanaboso\PipesFramework\Logs\Document\Stacktrace;
+use Hanaboso\PipesFramework\Logs\LogsAbstract;
+use Hanaboso\PipesFramework\Logs\LogsFilter;
+use Hanaboso\PipesFramework\Logs\MongoDbLogs;
+use Hanaboso\PipesFramework\Logs\StartingPointsFilter;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -18,23 +23,14 @@ use PipesFrameworkTests\DatabaseTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Integration\Logs
  */
+#[CoversClass(MongoDbLogs::class)]
+#[CoversClass(LogsFilter::class)]
+#[CoversClass(StartingPointsFilter::class)]
+#[CoversClass(LogsAbstract::class)]
 final class MongoDbLogsTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\Logs\MongoDbLogs
-     * @covers \Hanaboso\PipesFramework\Logs\MongoDbLogs::getData
-     * @covers \Hanaboso\PipesFramework\Logs\MongoDbLogs::getNonEmptyValue
-     * @covers \Hanaboso\PipesFramework\Logs\MongoDbLogs::processStartingPoints
-     * @covers \Hanaboso\PipesFramework\Logs\LogsFilter::filterCols
-     * @covers \Hanaboso\PipesFramework\Logs\LogsFilter::orderCols
-     * @covers \Hanaboso\PipesFramework\Logs\LogsFilter::searchableCols
-     * @covers \Hanaboso\PipesFramework\Logs\LogsFilter::useTextSearch
-     * @covers \Hanaboso\PipesFramework\Logs\LogsFilter::prepareSearchQuery
-     * @covers \Hanaboso\PipesFramework\Logs\LogsFilter::setDocument
-     * @covers \Hanaboso\PipesFramework\Logs\StartingPointsFilter::setDocument
-     * @covers \Hanaboso\PipesFramework\Logs\LogsAbstract
-     *
      * @throws Exception
      */
     public function testGetData(): void
@@ -101,19 +97,6 @@ final class MongoDbLogsTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Logs\MongoDbLogs
-     * @covers \Hanaboso\PipesFramework\Logs\MongoDbLogs::getData
-     * @covers \Hanaboso\PipesFramework\Logs\MongoDbLogs::getNonEmptyValue
-     * @covers \Hanaboso\PipesFramework\Logs\MongoDbLogs::processStartingPoints
-     * @covers \Hanaboso\PipesFramework\Logs\LogsFilter::filterCols
-     * @covers \Hanaboso\PipesFramework\Logs\LogsFilter::orderCols
-     * @covers \Hanaboso\PipesFramework\Logs\LogsFilter::searchableCols
-     * @covers \Hanaboso\PipesFramework\Logs\LogsFilter::useTextSearch
-     * @covers \Hanaboso\PipesFramework\Logs\LogsFilter::prepareSearchQuery
-     * @covers \Hanaboso\PipesFramework\Logs\LogsFilter::setDocument
-     * @covers \Hanaboso\PipesFramework\Logs\StartingPointsFilter::setDocument
-     * @covers \Hanaboso\PipesFramework\Logs\LogsAbstract
-     *
      * @throws Exception
      */
     public function testGetDataWithRange(): void

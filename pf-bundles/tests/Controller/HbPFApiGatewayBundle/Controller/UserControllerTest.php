@@ -3,24 +3,24 @@
 namespace PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller;
 
 use Exception;
+use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserController;
+use Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController as UserControllerBase;
+use Hanaboso\UserBundle\Handler\UserHandler;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 
 /**
  * Class UserControllerTest
  *
  * @package PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller
- *
- * @covers  \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserController
  */
+#[CoversClass(UserController::class)]
+#[CoversClass(UserControllerBase::class)]
+#[CoversClass(UserHandler::class)]
 final class UserControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserController::loginAction
-     * @covers \Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController::loginUserAction
-     * @covers \Hanaboso\PipesFramework\HbPFUserBundle\Handler\UserHandler::login
-     * @covers \Hanaboso\PipesFramework\HbPFUserBundle\Handler\UserHandler::getSettings
-     *
      * @throws Exception
      */
     public function testLoginAction(): void
@@ -32,8 +32,6 @@ final class UserControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserController::logoutAction
-     *
      * @throws Exception
      */
     public function testLogoutAction(): void
@@ -42,8 +40,6 @@ final class UserControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserController::loggedUserAction
-     *
      * @throws Exception
      */
     public function testLoggedUserAction(): void
@@ -56,8 +52,6 @@ final class UserControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserController::registerAction
-     *
      * @throws Exception
      */
     public function testRegisterAction(): void
@@ -66,8 +60,6 @@ final class UserControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserController::activateAction
-     *
      * @throws Exception
      */
     public function testActivateAction(): void
@@ -76,8 +68,6 @@ final class UserControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserController::verifyAction
-     *
      * @throws Exception
      */
     public function testVerifyAction(): void
@@ -86,8 +76,6 @@ final class UserControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserController::setPasswordAction
-     *
      * @throws Exception
      */
     public function testSetPasswordAction(): void
@@ -96,8 +84,6 @@ final class UserControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserController::changePasswordAction
-     *
      * @throws Exception
      */
     public function testChangePasswordAction(): void
@@ -106,8 +92,6 @@ final class UserControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserController::resetPasswordAction
-     *
      * @throws Exception
      */
     public function testResetPasswordAction(): void
@@ -116,8 +100,6 @@ final class UserControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserController::deleteAction
-     *
      * @throws Exception
      */
     public function testDeleteAction(): void
@@ -126,8 +108,6 @@ final class UserControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserController::getUserAction
-     *
      * @throws Exception
      */
     public function testGetAction(): void

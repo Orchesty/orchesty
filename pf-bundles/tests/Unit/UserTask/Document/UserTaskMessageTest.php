@@ -3,15 +3,15 @@
 namespace PipesFrameworkTests\Unit\UserTask\Document;
 
 use Hanaboso\PipesFramework\UserTask\Document\UserTaskMessage;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 
 /**
  * Class UserTaskMessageTest
  *
  * @package PipesFrameworkTests\Unit\UserTask\Document
- *
- * @covers  \Hanaboso\PipesFramework\UserTask\Document\UserTaskMessage
  */
+#[CoversClass(UserTaskMessage::class)]
 final class UserTaskMessageTest extends KernelTestCaseAbstract
 {
 

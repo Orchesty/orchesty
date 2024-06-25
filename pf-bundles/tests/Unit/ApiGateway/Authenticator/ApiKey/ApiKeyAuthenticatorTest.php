@@ -8,6 +8,7 @@ use Hanaboso\PipesFramework\ApiGateway\Authenticator\ApiKey\ApiKeyAuthenticator;
 use Hanaboso\PipesFramework\Configurator\Document\ApiToken;
 use Hanaboso\PipesFramework\Configurator\Enum\ApiTokenScopesEnum;
 use Hanaboso\PipesFramework\Configurator\Model\ApiTokenManager;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -18,6 +19,8 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
  *
  * @package PipesFrameworkTests\Unit\ApiGateway\Authenticator\ApiKey
  */
+#[CoversClass(ApiKeyAuthenticator::class)]
+#[CoversClass(ApiTokenManager::class)]
 final class ApiKeyAuthenticatorTest extends KernelTestCaseAbstract
 {
 
@@ -25,8 +28,6 @@ final class ApiKeyAuthenticatorTest extends KernelTestCaseAbstract
 
     /**
      * @throws Exception
-     *
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Authenticator\ApiKey\ApiKeyAuthenticator::supports
      */
     public function testSupports(): void
     {
@@ -43,11 +44,6 @@ final class ApiKeyAuthenticatorTest extends KernelTestCaseAbstract
 
     /**
      * @throws Exception
-     *
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Authenticator\ApiKey\ApiKeyAuthenticator::authenticate
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\ApiTokenManager::create
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\ApiTokenManager::delete
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\ApiTokenManager::getAllBy
      */
     public function testAuthenticate(): void
     {
@@ -69,8 +65,6 @@ final class ApiKeyAuthenticatorTest extends KernelTestCaseAbstract
 
     /**
      * @throws Exception
-     *
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Authenticator\ApiKey\ApiKeyAuthenticator::authenticate
      */
     public function testAuthenticateErr(): void
     {
@@ -84,8 +78,6 @@ final class ApiKeyAuthenticatorTest extends KernelTestCaseAbstract
 
     /**
      * @throws Exception
-     *
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Authenticator\ApiKey\ApiKeyAuthenticator::onAuthenticationFailure
      */
     public function testOnAuthenticationFailure(): void
     {
@@ -95,8 +87,6 @@ final class ApiKeyAuthenticatorTest extends KernelTestCaseAbstract
 
     /**
      * @throws Exception
-     *
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Authenticator\ApiKey\ApiKeyAuthenticator::onAuthenticationSuccess
      */
     public function testOnAuthenticationSuccess(): void
     {

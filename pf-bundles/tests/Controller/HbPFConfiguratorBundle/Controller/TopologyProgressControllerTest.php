@@ -4,24 +4,25 @@ namespace PipesFrameworkTests\Controller\HbPFConfiguratorBundle\Controller;
 
 use Exception;
 use Hanaboso\PipesFramework\Configurator\Document\TopologyProgress;
+use Hanaboso\PipesFramework\Configurator\Model\ProgressManager;
+use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyProgressController;
+use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyProgressHandler;
 use Hanaboso\Utils\Date\DateTimeUtils;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 
 /**
  * Class TopologyProgressControllerTest
  *
  * @package PipesFrameworkTests\Controller\HbPFConfiguratorBundle\Controller
- *
- * @covers  \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyProgressController
- * @covers  \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyProgressHandler
- * @covers  \Hanaboso\PipesFramework\Configurator\Model\ProgressManager
  */
+#[CoversClass(TopologyProgressController::class)]
+#[CoversClass(TopologyProgressHandler::class)]
+#[CoversClass(ProgressManager::class)]
 final class TopologyProgressControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyProgressController::getProgressTopologyAction
-     *
      * @throws Exception
      */
     public function testGetTopologyProgressAction(): void
@@ -38,8 +39,6 @@ final class TopologyProgressControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyProgressController::getProgressesAction
-     *
      * @throws Exception
      */
     public function testGetAllAction(): void

@@ -6,6 +6,7 @@ use Exception;
 use Hanaboso\PipesFramework\UsageStats\Enum\EventTypeEnum;
 use Hanaboso\PipesFramework\UsageStats\Event\BillingEvent;
 use LogicException;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -13,16 +14,11 @@ use PipesFrameworkTests\DatabaseTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Unit\UsageStats\Event
  */
+#[CoversClass(BillingEvent::class)]
 final class BillingEventTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\UsageStats\Event\BillingEvent
-     * @covers \Hanaboso\PipesFramework\UsageStats\Event\BillingEvent::getData
-     * @covers \Hanaboso\PipesFramework\UsageStats\Event\BillingEvent::setData
-     * @covers \Hanaboso\PipesFramework\UsageStats\Event\BillingEvent::getType
-     * @covers \Hanaboso\PipesFramework\UsageStats\Event\BillingEvent::setType
-     *
      * @throws Exception
      */
     public function testBillingEvent(): void

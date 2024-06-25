@@ -10,11 +10,18 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Configurator\Document\TopologyProgress;
+use Hanaboso\PipesFramework\Configurator\Repository\TopologyProgressRepository;
+use Hanaboso\PipesFramework\HbPFUsageStatsBundle\Command\SendUsageStatsEventsToUSCCPCommand;
+use Hanaboso\PipesFramework\HbPFUsageStatsBundle\Manager\OperationUsageStatsSender;
+use Hanaboso\PipesFramework\HbPFUsageStatsBundle\Manager\SenderAbstract;
+use Hanaboso\PipesFramework\HbPFUsageStatsBundle\Manager\SenderManager;
 use Hanaboso\PipesFramework\UsageStats\Document\AppInstallBillingData;
 use Hanaboso\PipesFramework\UsageStats\Document\OperationBillingData;
 use Hanaboso\PipesFramework\UsageStats\Document\UsageStatsEvent;
 use Hanaboso\PipesFramework\UsageStats\Enum\EventTypeEnum;
+use Hanaboso\PipesFramework\UsageStats\Repository\UsageStatsEventRepository;
 use Hanaboso\Utils\Exception\DateTimeException;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\Exception;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
@@ -26,21 +33,16 @@ use Symfony\Component\HttpKernel\KernelInterface;
  *
  * @package PipesFrameworkTests\Integration\UsageStats\Command
  */
+#[CoversClass(SendUsageStatsEventsToUSCCPCommand::class)]
+#[CoversClass(SenderAbstract::class)]
+#[CoversClass(SenderManager::class)]
+#[CoversClass(OperationUsageStatsSender::class)]
+#[CoversClass(UsageStatsEventRepository::class)]
+#[CoversClass(TopologyProgressRepository::class)]
 final class SendBillingEventsToUSCCPCommandTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFUsageStatsBundle\Command\SendUsageStatsEventsToUSCCPCommand::execute
-     * @covers \Hanaboso\PipesFramework\HbPFUsageStatsBundle\Command\SendUsageStatsEventsToUSCCPCommand::configure
-     * @covers \Hanaboso\PipesFramework\HbPFUsageStatsBundle\Manager\SenderAbstract::sendRequest
-     * @covers \Hanaboso\PipesFramework\HbPFUsageStatsBundle\Manager\SenderAbstract::send
-     * @covers \Hanaboso\PipesFramework\HbPFUsageStatsBundle\Manager\SenderManager::registerSender
-     * @covers \Hanaboso\PipesFramework\HbPFUsageStatsBundle\Manager\SenderManager::send
-     * @covers \Hanaboso\PipesFramework\HbPFUsageStatsBundle\Manager\OperationUsageStatsSender::generateOperationEvents
-     * @covers \Hanaboso\PipesFramework\UsageStats\Repository\UsageStatsEventRepository::findBillingEventsByTypesForSender
-     * @covers \Hanaboso\PipesFramework\UsageStats\Repository\UsageStatsEventRepository::getRemainingEventCount
-     * @covers \Hanaboso\PipesFramework\Configurator\Repository\TopologyProgressRepository::getDataForOperationEventSending
-     *
      * @return void
      * @throws DateTimeException
      * @throws MongoDBException

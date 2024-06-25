@@ -8,7 +8,9 @@ use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\PipesFramework\Database\Document\Node;
 use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\PipesFramework\Database\Reduction\NodeReduction;
+use Hanaboso\PipesFramework\Database\Repository\NodeRepository;
 use LogicException;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -16,12 +18,11 @@ use PipesFrameworkTests\DatabaseTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Integration\Database\Repository
  */
+#[CoversClass(NodeRepository::class)]
 final class NodeRepositoryTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\Database\Repository\NodeRepository::getEventNodesByTopology
-     *
      * @throws Exception
      */
     public function testGetEventNodesByTopology(): void
@@ -68,8 +69,6 @@ final class NodeRepositoryTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Database\Repository\NodeRepository::getNodeByTopology
-     *
      * @throws Exception
      */
     public function testGetNodeByTopology(): void
@@ -92,8 +91,6 @@ final class NodeRepositoryTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Database\Repository\NodeRepository::getStartingNode
-     *
      * @throws Exception
      */
     public function testGetStartingPoint(): void
@@ -118,8 +115,6 @@ final class NodeRepositoryTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Database\Repository\NodeRepository::getStartingNode
-     *
      * @throws Exception
      */
     public function testGetStartingPointNotFound(): void
@@ -146,9 +141,6 @@ final class NodeRepositoryTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Database\Repository\NodeRepository::getCronNodes
-     * @covers \Hanaboso\PipesFramework\Database\Repository\NodeRepository::getTopologyType
-     *
      * @throws Exception
      */
     public function testGetTopologyType(): void
@@ -191,8 +183,6 @@ final class NodeRepositoryTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Database\Repository\NodeRepository::getNodesByTopology
-     *
      * @throws Exception
      */
     public function testGetNodesByTopology(): void

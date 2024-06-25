@@ -2,6 +2,8 @@
 
 namespace PipesFrameworkTests\Integration\Command;
 
+use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\InstallServiceCommand;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -12,13 +14,12 @@ use Symfony\Component\HttpKernel\KernelInterface;
  *
  * @package PipesFrameworkTests\Integration\Command
  */
+#[CoversClass(InstallServiceCommand::class)]
 final class InstallServiceCommandTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\InstallServiceCommand
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\InstallServiceCommand::configure
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\InstallServiceCommand::execute
+     * @return void
      */
     public function testExecute(): void
     {

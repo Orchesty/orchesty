@@ -111,9 +111,9 @@ final class Schema
             $index   = [];
             $index[] = $this->getIndexItem($start);
             $nextIds = $this->getNextIds($start);
+            $tree    = [];
 
             if ($checkInfiniteLoop) {
-                $tree  = [];
                 $clone = $nextIds;
                 $this->addToTree($tree, $start, $clone);
             }

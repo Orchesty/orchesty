@@ -6,6 +6,7 @@ use Hanaboso\CommonsBundle\Exception\CronException;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\RefreshCronCommand;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -16,13 +17,12 @@ use Symfony\Component\HttpKernel\KernelInterface;
  *
  * @package PipesFrameworkTests\Integration\Command
  */
+#[CoversClass(RefreshCronCommand::class)]
 final class RefreshCronCommandTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\RefreshCronCommand
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\RefreshCronCommand::execute
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\RefreshCronCommand::configure
+     * @return void
      */
     public function testExecute(): void
     {
@@ -35,9 +35,7 @@ final class RefreshCronCommandTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\RefreshCronCommand
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\RefreshCronCommand::execute
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\RefreshCronCommand::configure
+     * @return void
      */
     public function testExecuteError(): void
     {

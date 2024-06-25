@@ -5,7 +5,11 @@ namespace PipesFrameworkTests\Controller\HbPFConfiguratorBundle\Controller;
 use DateTime;
 use Exception;
 use Hanaboso\PipesFramework\Configurator\Document\ApiToken;
+use Hanaboso\PipesFramework\Configurator\Model\SdkManager;
 use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController;
+use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\SdkController;
+use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\SdkHandler;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 
 /**
@@ -13,6 +17,9 @@ use PipesFrameworkTests\ControllerTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Controller\HbPFConfiguratorBundle\Controller
  */
+#[CoversClass(SdkController::class)]
+#[CoversClass(SdkHandler::class)]
+#[CoversClass(SdkManager::class)]
 final class ApiTokenControllerTest extends ControllerTestCaseAbstract
 {
 
@@ -88,11 +95,6 @@ final class ApiTokenControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\SdkController::deleteAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\SdkHandler::delete
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\SdkHandler::get
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\SdkManager::delete
-     *
      * @throws Exception
      */
     public function testDelete(): void

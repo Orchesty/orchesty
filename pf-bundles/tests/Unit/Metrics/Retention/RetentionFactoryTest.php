@@ -5,6 +5,7 @@ namespace PipesFrameworkTests\Unit\Metrics\Retention;
 use Exception;
 use Hanaboso\PipesFramework\Metrics\Retention\RetentionFactory;
 use Hanaboso\Utils\Date\DateTimeUtils;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 
 /**
@@ -12,13 +13,11 @@ use PipesFrameworkTests\KernelTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Unit\Metrics\Retention
  */
+#[CoversClass(RetentionFactory::class)]
 final class RetentionFactoryTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\Metrics\Retention\RetentionFactory::getRetention
-     * @covers \Hanaboso\PipesFramework\Metrics\Retention\RetentionFactory::getRetentionInSeconds
-     *
      * @throws Exception
      */
     public function testGetRetention(): void

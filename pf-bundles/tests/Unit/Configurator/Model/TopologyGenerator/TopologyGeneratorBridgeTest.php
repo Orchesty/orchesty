@@ -18,6 +18,7 @@ use Hanaboso\PipesFramework\Configurator\Repository\ApiTokenRepository;
 use Hanaboso\PipesFramework\Configurator\Repository\SdkRepository;
 use Hanaboso\PipesFramework\Database\Document\Node;
 use Hanaboso\PipesFramework\Database\Repository\NodeRepository;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 
 /**
@@ -25,6 +26,7 @@ use PipesFrameworkTests\KernelTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Unit\Configurator\Model\TopologyGenerator
  */
+#[CoversClass(TopologyGeneratorBridge::class)]
 final class TopologyGeneratorBridgeTest extends KernelTestCaseAbstract
 {
 
@@ -125,8 +127,6 @@ final class TopologyGeneratorBridgeTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge::invalidateTopologyCache
-     *
      * @throws Exception
      */
     public function testInvalidateTopologyCacheErr(): void

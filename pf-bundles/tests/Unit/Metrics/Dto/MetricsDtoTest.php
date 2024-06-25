@@ -3,6 +3,7 @@
 namespace PipesFrameworkTests\Unit\Metrics\Dto;
 
 use Hanaboso\PipesFramework\Metrics\Dto\MetricsDto;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 
 /**
@@ -10,20 +11,12 @@ use PipesFrameworkTests\KernelTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Unit\Metrics\Dto
  */
+#[CoversClass(MetricsDto::class)]
 final class MetricsDtoTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\Metrics\Dto\MetricsDto::setMin
-     * @covers \Hanaboso\PipesFramework\Metrics\Dto\MetricsDto::setMax
-     * @covers \Hanaboso\PipesFramework\Metrics\Dto\MetricsDto::setAvg
-     * @covers \Hanaboso\PipesFramework\Metrics\Dto\MetricsDto::setTotal
-     * @covers \Hanaboso\PipesFramework\Metrics\Dto\MetricsDto::setErrors
-     * @covers \Hanaboso\PipesFramework\Metrics\Dto\MetricsDto::getMin
-     * @covers \Hanaboso\PipesFramework\Metrics\Dto\MetricsDto::getMax
-     * @covers \Hanaboso\PipesFramework\Metrics\Dto\MetricsDto::getAvg
-     * @covers \Hanaboso\PipesFramework\Metrics\Dto\MetricsDto::getTotal
-     * @covers \Hanaboso\PipesFramework\Metrics\Dto\MetricsDto::getErrors
+     * @return void
      */
     public function testDto(): void
     {

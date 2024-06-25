@@ -4,6 +4,7 @@ namespace PipesFrameworkTests\Unit\Metrics\Enum;
 
 use Exception;
 use Hanaboso\PipesFramework\Metrics\Enum\ServiceNameByQueueEnum;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -11,13 +12,11 @@ use PipesFrameworkTests\DatabaseTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Unit\Metrics\Enum
  */
+#[CoversClass(ServiceNameByQueueEnum::class)]
 final class ServiceNameByQueueEnumTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\Metrics\Enum\ServiceNameByQueueEnum
-     * @covers \Hanaboso\PipesFramework\Metrics\Enum\ServiceNameByQueueEnum::getNameAndNodeId
-     *
      * @throws Exception
      */
     public function testBillingEvent(): void

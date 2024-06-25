@@ -5,6 +5,7 @@ namespace PipesFrameworkTests\Unit\HbPFMetricsBundle\Handler;
 use Exception;
 use Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler;
 use Hanaboso\PipesFramework\Metrics\Exception\MetricsException;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 
 /**
@@ -12,6 +13,7 @@ use PipesFrameworkTests\KernelTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Unit\HbPFMetricsBundle\Handler
  */
+#[CoversClass(MetricsHandler::class)]
 final class MetricsHandlerTest extends KernelTestCaseAbstract
 {
 
@@ -21,8 +23,6 @@ final class MetricsHandlerTest extends KernelTestCaseAbstract
     private MetricsHandler $handler;
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler::getTopologyById
-     *
      * @throws Exception
      */
     public function testGetTopologyId(): void
@@ -32,8 +32,6 @@ final class MetricsHandlerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler::getNodeByTopologyAndNodeId
-     *
      * @throws Exception
      */
     public function testGetNodeByTopologyAndNodeId(): void

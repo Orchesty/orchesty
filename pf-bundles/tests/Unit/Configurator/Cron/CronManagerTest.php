@@ -12,6 +12,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
 use Hanaboso\PipesFramework\Database\Document\Node;
 use Hanaboso\Utils\String\Json;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 
 /**
@@ -19,14 +20,11 @@ use PipesFrameworkTests\KernelTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Unit\Configurator\Cron
  */
+#[CoversClass(CronManager::class)]
 final class CronManagerTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager
-     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::getAll
-     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::sendAndProcessRequest
-     *
      * @throws Exception
      */
     public function testGetAll(): void
@@ -52,9 +50,6 @@ final class CronManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::upsert
-     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::sendAndProcessRequest
-     *
      * @throws Exception
      */
     public function testUpsert(): void
@@ -81,10 +76,6 @@ final class CronManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::delete
-     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::getUrl
-     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::sendAndProcessRequest
-     *
      * @throws Exception
      */
     public function testDelete(): void
@@ -109,9 +100,6 @@ final class CronManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::batchUpsert
-     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::sendAndProcessRequest
-     *
      * @throws Exception
      */
     public function testBatchUpsert(): void
@@ -150,9 +138,6 @@ final class CronManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::upsert
-     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::sendAndProcessRequest
-     *
      * @throws Exception
      */
     public function testRequestFail(): void

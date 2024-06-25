@@ -4,36 +4,19 @@ namespace PipesFrameworkTests\Integration\Application\Document;
 
 use Exception;
 use Hanaboso\PipesFramework\Application\Document\Webhook;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
  * Class WebhookTest
  *
  * @package PipesFrameworkTests\Integration\Application\Document
- *
- * @covers  \Hanaboso\PipesFramework\Application\Document\Webhook
  */
+#[CoversClass(Webhook::class)]
 final class WebhookTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\Application\Document\Webhook::getName
-     * @covers \Hanaboso\PipesFramework\Application\Document\Webhook::setName
-     * @covers \Hanaboso\PipesFramework\Application\Document\Webhook::setUser
-     * @covers \Hanaboso\PipesFramework\Application\Document\Webhook::getUser
-     * @covers \Hanaboso\PipesFramework\Application\Document\Webhook::getToken
-     * @covers \Hanaboso\PipesFramework\Application\Document\Webhook::setToken
-     * @covers \Hanaboso\PipesFramework\Application\Document\Webhook::getNode
-     * @covers \Hanaboso\PipesFramework\Application\Document\Webhook::setName
-     * @covers \Hanaboso\PipesFramework\Application\Document\Webhook::getTopology
-     * @covers \Hanaboso\PipesFramework\Application\Document\Webhook::setTopology
-     * @covers \Hanaboso\PipesFramework\Application\Document\Webhook::getApplication
-     * @covers \Hanaboso\PipesFramework\Application\Document\Webhook::setApplication
-     * @covers \Hanaboso\PipesFramework\Application\Document\Webhook::getWebhookId
-     * @covers \Hanaboso\PipesFramework\Application\Document\Webhook::setWebhookId
-     * @covers \Hanaboso\PipesFramework\Application\Document\Webhook::isUnsubscribeFailed
-     * @covers \Hanaboso\PipesFramework\Application\Document\Webhook::setUnsubscribeFailed
-     *
      * @throws Exception
      */
     public function testDocument(): void

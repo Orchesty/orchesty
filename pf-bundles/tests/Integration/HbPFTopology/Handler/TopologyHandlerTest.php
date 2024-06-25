@@ -16,6 +16,7 @@ use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\PipesFramework\Database\Repository\NodeRepository;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler;
 use Hanaboso\PipesFramework\HbPFUserTaskBundle\Handler\UserTaskHandler;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 use Throwable;
 
@@ -24,13 +25,16 @@ use Throwable;
  *
  * @package PipesFrameworkTests\Integration\HbPFTopology\Handler
  */
+#[CoversClass(TopologyHandler::class)]
 final class TopologyHandlerTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getCronTopologies
-     *
      * @throws Exception
+     */
+
+    /**
+     * @return void
      */
     public function testGetCronTopologies(): void
     {
@@ -41,8 +45,6 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::publishTopology
-     *
      * @throws Exception
      */
     public function testPublishTopology(): void
@@ -65,8 +67,6 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::publishTopology
-     *
      * @throws Exception
      */
     public function testPublishTopologyErr(): void
@@ -86,8 +86,6 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::publishTopology
-     *
      * @throws Exception
      */
     public function testPublishTopologyErr2(): void
@@ -107,8 +105,6 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::cloneTopology
-     *
      * @throws Exception
      */
     public function testCloneTopology(): void
@@ -122,8 +118,6 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::deleteTopology
-     *
      * @throws Exception
      */
     public function testDeleteTopology(): void
@@ -144,8 +138,6 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::runTest
-     *
      * @throws Exception
      */
     public function testRunTest(): void

@@ -171,6 +171,7 @@ final class CategoryParser
      */
     private function getParsedPath(string $path): array
     {
+        // @phpstan-ignore-next-line
         return array_filter(explode('/', $path));
     }
 

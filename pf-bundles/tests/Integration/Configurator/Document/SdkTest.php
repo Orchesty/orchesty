@@ -4,6 +4,7 @@ namespace PipesFrameworkTests\Integration\Configurator\Document;
 
 use Exception;
 use Hanaboso\PipesFramework\Configurator\Document\Sdk;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -11,18 +12,11 @@ use PipesFrameworkTests\DatabaseTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Integration\Configurator\Document
  */
+#[CoversClass(Sdk::class)]
 final class SdkTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Document\Sdk::getName
-     * @covers \Hanaboso\PipesFramework\Configurator\Document\Sdk::getHeaders
-     * @covers \Hanaboso\PipesFramework\Configurator\Document\Sdk::setHeaders
-     * @covers \Hanaboso\PipesFramework\Configurator\Document\Sdk::setName
-     * @covers \Hanaboso\PipesFramework\Configurator\Document\Sdk::getUrl
-     * @covers \Hanaboso\PipesFramework\Configurator\Document\Sdk::setUrl
-     * @covers \Hanaboso\PipesFramework\Configurator\Document\Sdk::toArray
-     *
      * @throws Exception
      */
     public function testDocument(): void

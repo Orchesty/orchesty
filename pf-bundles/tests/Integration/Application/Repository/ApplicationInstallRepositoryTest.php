@@ -4,7 +4,9 @@ namespace PipesFrameworkTests\Integration\Application\Repository;
 
 use Exception;
 use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
+use Hanaboso\PipesFramework\Application\Repository\ApplicationInstallRepository;
 use Hanaboso\Utils\Date\DateTimeUtils;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -12,15 +14,12 @@ use PipesFrameworkTests\DatabaseTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Integration\Application\Repository
  */
+#[CoversClass(ApplicationInstall::class)]
+#[CoversClass(ApplicationInstallRepository::class)]
 final class ApplicationInstallRepositoryTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers  \Hanaboso\PipesFramework\Application\Repository\ApplicationInstallRepository::getApplicationsCount
-     * @covers  \Hanaboso\PipesFramework\Application\Document\ApplicationInstall::setUser
-     * @covers  \Hanaboso\PipesFramework\Application\Document\ApplicationInstall::setKey
-     * @covers  \Hanaboso\PipesFramework\Application\Document\ApplicationInstall::setExpires
-     *
      * @throws Exception
      */
     public function testGetApplicationsBasicData(): void
@@ -35,11 +34,6 @@ final class ApplicationInstallRepositoryTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers  \Hanaboso\PipesFramework\Application\Repository\ApplicationInstallRepository::getApplicationsCount
-     * @covers  \Hanaboso\PipesFramework\Application\Document\ApplicationInstall::setUser
-     * @covers  \Hanaboso\PipesFramework\Application\Document\ApplicationInstall::setKey
-     * @covers  \Hanaboso\PipesFramework\Application\Document\ApplicationInstall::setExpires
-     *
      * @throws Exception
      */
     public function testGetApplicationsCount(): void
@@ -55,11 +49,6 @@ final class ApplicationInstallRepositoryTest extends DatabaseTestCaseAbstract
 
 
     /**
-     * @covers  \Hanaboso\PipesFramework\Application\Repository\ApplicationInstallRepository::getApplicationsCountDetails
-     * @covers  \Hanaboso\PipesFramework\Application\Document\ApplicationInstall::setUser
-     * @covers  \Hanaboso\PipesFramework\Application\Document\ApplicationInstall::setKey
-     * @covers  \Hanaboso\PipesFramework\Application\Document\ApplicationInstall::setExpires
-     *
      * @throws Exception
      */
     public function testGetApplicationsUsers(): void
@@ -82,8 +71,6 @@ final class ApplicationInstallRepositoryTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Application\Repository\ApplicationInstallRepository::findUserApp
-     *
      * @throws Exception
      */
     public function testFindUserAppErr(): void

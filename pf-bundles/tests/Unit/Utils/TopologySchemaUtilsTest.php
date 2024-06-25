@@ -7,6 +7,7 @@ use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
 use Hanaboso\RestBundle\Model\Decoder\XmlDecoder;
 use Hanaboso\Utils\File\File;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 
 /**
@@ -14,14 +15,11 @@ use PipesFrameworkTests\KernelTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Unit\Utils
  */
+#[CoversClass(TopologySchemaUtils::class)]
 final class TopologySchemaUtilsTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\Utils\TopologySchemaUtils::getSchemaObject
-     * @covers \Hanaboso\PipesFramework\Utils\TopologySchemaUtils::getPipesType
-     * @covers \Hanaboso\PipesFramework\Utils\TopologySchemaUtils::createConfigDto
-     *
      * @throws Exception
      */
     public function testGetSchemaObject(): void
@@ -70,8 +68,6 @@ final class TopologySchemaUtilsTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Utils\TopologySchemaUtils::getPipesType
-     *
      * @throws Exception
      */
     public function testGetPipesType(): void

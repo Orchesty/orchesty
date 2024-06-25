@@ -5,21 +5,20 @@ namespace PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller;
 use Exception;
 use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 use Hanaboso\PipesFramework\Configurator\Document\Sdk;
+use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\WebhookController;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 
 /**
  * Class WebhookControllerTest
  *
  * @package PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller
- *
- * @covers  \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\WebhookController
  */
+#[CoversClass(WebhookController::class)]
 final class WebhookControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\WebhookController::subscribeWebhooksAction
-     *
      * @throws Exception
      */
     public function testSubscribeWebhookAction(): void
@@ -29,8 +28,6 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\WebhookController::unsubscribeWebhooksAction
-     *
      * @throws Exception
      */
     public function testUnsubscribeWebhookAction(): void

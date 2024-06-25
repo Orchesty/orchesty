@@ -9,9 +9,14 @@ use Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGenerat
 use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\PipesFramework\TopologyInstaller\Cache\RedisCache;
 use Hanaboso\PipesFramework\TopologyInstaller\CategoryParser;
+use Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto;
+use Hanaboso\PipesFramework\TopologyInstaller\Dto\TopologyFile;
+use Hanaboso\PipesFramework\TopologyInstaller\Dto\UpdateObject;
 use Hanaboso\PipesFramework\TopologyInstaller\InstallManager;
+use Hanaboso\PipesFramework\TopologyInstaller\TopologiesComparator;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
 use Hanaboso\Utils\File\File;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 use Predis\Client;
 use Predis\Connection\Parameters;
@@ -21,6 +26,12 @@ use Predis\Connection\Parameters;
  *
  * @package PipesFrameworkTests\Integration\TopologyInstaller
  */
+#[CoversClass(InstallManager::class)]
+#[CoversClass(CompareResultDto::class)]
+#[CoversClass(TopologyFile::class)]
+#[CoversClass(UpdateObject::class)]
+#[CoversClass(TopologiesComparator::class)]
+#[CoversClass(RedisCache::class)]
 final class InstallManagerTest extends DatabaseTestCaseAbstract
 {
 
@@ -30,22 +41,6 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
     private Client $redis;
 
     /**
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::prepareInstall
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::generateOutput
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto::toArray
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto::getArrayFromFiles
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto::getArrayFromTopologies
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto::getArrayFromObject
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\TopologyFile::getName
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\TopologyFile::getPath
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\TopologyFile::getFileContents
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\UpdateObject::getTopology
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\UpdateObject::getFile
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\TopologiesComparator::compare
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\TopologiesComparator::prepareFiles
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Cache\RedisCache
-     *
      * @throws Exception
      */
     public function testPrepareInstall(): void
@@ -66,26 +61,6 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::prepareInstall
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::generateOutput
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto::toArray
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto::getArrayFromFiles
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto::getArrayFromTopologies
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto::getArrayFromObject
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\TopologyFile::getName
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\TopologyFile::getPath
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\TopologyFile::getFileContents
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\TopologyFile::from
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\UpdateObject
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\UpdateObject::getTopology
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\UpdateObject::getFile
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::makeInstall
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::makeCreate
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::makeRunnable
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::makeUpdate
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::makeDelete
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Cache\RedisCache
-     *
      * @throws Exception
      */
     public function testMakeInstall(): void
@@ -110,9 +85,6 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::makeInstall
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Cache\RedisCache
-     *
      * @throws Exception
      */
     public function testMakeInstallEx(): void

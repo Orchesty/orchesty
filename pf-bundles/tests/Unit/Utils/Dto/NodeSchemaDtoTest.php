@@ -4,6 +4,7 @@ namespace PipesFrameworkTests\Unit\Utils\Dto;
 
 use Hanaboso\PipesFramework\Database\Document\Dto\SystemConfigDto;
 use Hanaboso\PipesFramework\Utils\Dto\NodeSchemaDto;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 
 /**
@@ -11,13 +12,12 @@ use PipesFrameworkTests\KernelTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Unit\Utils\Dto
  */
+#[CoversClass(NodeSchemaDto::class)]
 final class NodeSchemaDtoTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\Utils\Dto\NodeSchemaDto
-     * @covers \Hanaboso\PipesFramework\Utils\Dto\NodeSchemaDto::getSystemConfigs
-     * @covers \Hanaboso\PipesFramework\Utils\Dto\NodeSchemaDto::toArray
+     * @return void
      */
     public function testNodeSchemaDto(): void
     {

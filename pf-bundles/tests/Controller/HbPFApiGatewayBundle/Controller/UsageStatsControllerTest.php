@@ -3,16 +3,18 @@
 namespace PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller;
 
 use Exception;
+use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UsageStatsController;
+use Hanaboso\PipesFramework\HbPFUsageStatsBundle\Controller\UsageStatsController as UsageStatsControllerBase;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 
 /**
  * Class UsageStatsControllerTest
  *
  * @package PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller
- *
- * @covers  \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UsageStatsController
- * @covers  \Hanaboso\PipesFramework\HbPFUsageStatsBundle\Controller\UsageStatsController
  */
+#[CoversClass(UsageStatsController::class)]
+#[CoversClass(UsageStatsControllerBase::class)]
 final class UsageStatsControllerTest extends ControllerTestCaseAbstract
 {
 

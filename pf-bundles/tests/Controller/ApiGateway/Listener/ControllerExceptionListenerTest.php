@@ -11,6 +11,7 @@ use Hanaboso\UserBundle\Model\User\UserManagerException;
 use Hanaboso\Utils\Exception\EnumException;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\System\PipesHeaders;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 use RabbitMqBundle\Consumer\Callback\Exception\CallbackException;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -27,11 +28,12 @@ use Throwable;
  *
  * @covers  \Hanaboso\PipesFramework\ApiGateway\Listener\ControllerExceptionListener
  */
+#[CoversClass(ControllerExceptionListener::class)]
 final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Listener\ControllerExceptionListener::onKernelException
+     * @return void
      */
     public function testListener(): void
     {
@@ -44,8 +46,6 @@ final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Listener\ControllerExceptionListener::onKernelException
-     *
      * @throws Exception
      */
     public function testKernelException(): void
@@ -75,7 +75,7 @@ final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Listener\ControllerExceptionListener::getSubscribedEvents
+     * @return void
      */
     public function testGetSubscribedEvents(): void
     {
@@ -86,8 +86,6 @@ final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Listener\ControllerExceptionListener::onKernelException
-     *
      * @throws Exception
      */
     public function testConnectorException(): void
@@ -108,8 +106,6 @@ final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Listener\ControllerExceptionListener::onKernelException
-     *
      * @throws Exception
      */
     public function testLicenseException(): void
@@ -131,8 +127,6 @@ final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Listener\ControllerExceptionListener::onKernelException
-     *
      * @throws Exception
      */
     public function testSecurityManagerException(): void
@@ -154,8 +148,6 @@ final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Listener\ControllerExceptionListener::onKernelException
-     *
      * @throws Exception
      */
     public function testPipesFrameworkException(): void
@@ -177,8 +169,6 @@ final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Listener\ControllerExceptionListener::onKernelException
-     *
      * @throws Exception
      */
     public function testMongoDbException(): void
@@ -200,8 +190,6 @@ final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Listener\ControllerExceptionListener::onKernelException
-     *
      * @throws Exception
      */
     public function testUserManagerException(): void

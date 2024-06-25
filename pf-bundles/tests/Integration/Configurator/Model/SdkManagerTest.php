@@ -8,6 +8,7 @@ use Exception;
 use Hanaboso\PipesFramework\Configurator\Document\Sdk;
 use Hanaboso\PipesFramework\Configurator\Model\SdkManager;
 use Hanaboso\PipesFramework\Configurator\Repository\SdkRepository;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -15,6 +16,7 @@ use PipesFrameworkTests\DatabaseTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Integration\Configurator\Model
  */
+#[CoversClass(SdkManager::class)]
 final class SdkManagerTest extends DatabaseTestCaseAbstract
 {
 
@@ -29,8 +31,6 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
     private SdkRepository $sdkRepo;
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\SdkManager::getAll
-     *
      * @throws Exception
      */
     public function testGetAll(): void
@@ -48,8 +48,6 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\SdkManager::getOne
-     *
      * @throws Exception
      */
     public function testGetOne(): void
@@ -64,8 +62,6 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\SdkManager::create
-     *
      * @throws Exception
      */
     public function testCreate(): void
@@ -86,8 +82,6 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\SdkManager::update
-     *
      * @throws Exception
      */
     public function testUpdate(): void
@@ -108,8 +102,6 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\SdkManager::delete
-     *
      * @throws Exception
      */
     public function testDelete(): void

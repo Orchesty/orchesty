@@ -4,6 +4,7 @@ namespace PipesFrameworkTests\Integration\Database\Document;
 
 use Exception;
 use Hanaboso\PipesFramework\Database\Document\Category;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -11,16 +12,11 @@ use PipesFrameworkTests\DatabaseTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Integration\Database\Document
  */
+#[CoversClass(Category::class)]
 final class CategoryTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\Database\Document\Category
-     * @covers \Hanaboso\PipesFramework\Database\Document\Category::getName
-     * @covers \Hanaboso\PipesFramework\Database\Document\Category::setName
-     * @covers \Hanaboso\PipesFramework\Database\Document\Category::getParent
-     * @covers \Hanaboso\PipesFramework\Database\Document\Category::setParent
-     *
      * @throws Exception
      */
     public function testCategory(): void

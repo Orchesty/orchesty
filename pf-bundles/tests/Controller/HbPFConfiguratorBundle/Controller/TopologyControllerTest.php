@@ -12,13 +12,18 @@ use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Configurator\Document\ApiToken;
 use Hanaboso\PipesFramework\Configurator\Enum\ApiTokenScopesEnum;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
+use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
 use Hanaboso\PipesFramework\Database\Document\Node;
 use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController;
+use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler;
+use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
 use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Json;
 use LogicException;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 use Throwable;
 
@@ -26,11 +31,11 @@ use Throwable;
  * Class TopologyControllerTest
  *
  * @package PipesFrameworkTests\Controller\HbPFConfiguratorBundle\Controller
- *
- * @covers  \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController
- * @covers  \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler
- * @covers  \Hanaboso\PipesFramework\Configurator\Model\TopologyManager
  */
+#[CoversClass(TopologyController::class)]
+#[CoversClass(TopologyHandler::class)]
+#[CoversClass(TopologyManager::class)]
+#[CoversClass(TopologySchemaUtils::class)]
 final class TopologyControllerTest extends ControllerTestCaseAbstract
 {
 
@@ -67,8 +72,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::runTopologiesAction
-     *
      * @throws Exception
      */
     public function testRunTopologies(): void
@@ -83,8 +86,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::runTopologiesAction
-     *
      * @throws Exception
      */
     public function testRunTopologiesErr(): void
@@ -99,10 +100,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::getTopologiesAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologies
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologyData
-     *
      * @throws Exception
      */
     public function testGetTopologiesErr(): void
@@ -124,11 +121,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::getTopologyAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopology
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologyById
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologyData
-     *
      * @throws Exception
      */
     public function testGetTopology(): void
@@ -144,11 +136,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::getTopologyAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopology
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologyById
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologyData
-     *
      * @throws Exception
      */
     public function testGetTopologyNotFound(): void
@@ -157,10 +144,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::createTopologyAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::createTopology
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologyData
-     *
      * @throws Exception
      */
     public function testCreateTopology(): void
@@ -173,15 +156,11 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers       \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::createTopologyAction
-     * @covers       \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::createTopology
-     *
-     * @dataProvider topologyErrorProvider
-     *
      * @param Exception $exception
      *
      * @throws Exception
      */
+    #[DataProvider('topologyErrorProvider')]
     public function testCreateTopologyError(Exception $exception): void
     {
         $han = $this->createPartialMock(TopologyHandler::class, ['createTopology']);
@@ -222,10 +201,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::updateTopologyAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::updateTopology
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologyById
-     *
      * @throws Exception
      */
     public function testUpdateTopology(): void
@@ -244,10 +219,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::updateTopologyAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::updateTopology
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologyById
-     *
      * @throws Exception
      */
     public function testUpdateTopologyNotFound(): void
@@ -256,10 +227,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::getTopologySchemaAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologySchema
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologyById
-     *
      * @throws Exception
      */
     public function testGetTopologySchema(): void
@@ -282,11 +249,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::checkTopologySchemaDifferencesAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologyById
-     * @covers \Hanaboso\PipesFramework\Utils\TopologySchemaUtils::getSchemaObject
-     * @covers \Hanaboso\PipesFramework\Utils\TopologySchemaUtils::getSchemaFullIndexHash
-     *
      * @return void
      * @throws Exception
      */
@@ -318,11 +280,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::checkTopologySchemaDifferencesAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologyById
-     * @covers \Hanaboso\PipesFramework\Utils\TopologySchemaUtils::getSchemaObject
-     * @covers \Hanaboso\PipesFramework\Utils\TopologySchemaUtils::getSchemaFullIndexHash
-     *
      * @throws Exception
      */
     public function testGetTopologySchemaNotFound(): void
@@ -364,10 +321,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::saveTopologySchemaAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::saveTopologySchema
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologyById
-     *
      * @throws Exception
      */
     public function testSaveTopologySchema(): void
@@ -400,11 +353,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::saveTopologySchemaAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::saveTopologySchema
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologyById
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologyData
-     *
      * @throws Exception
      */
     public function testSaveTopologySchemaNotFound(): void
@@ -430,10 +378,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::saveTopologySchemaAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::saveTopologySchema
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologyById
-     *
      * @throws Exception
      */
     public function testSaveTopologySchemaNameNotFound(): void
@@ -462,10 +406,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::saveTopologySchemaAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::saveTopologySchema
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologyById
-     *
      * @throws Exception
      */
     public function testSaveTopologySchemaTypeNotExist(): void
@@ -498,10 +438,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::saveTopologySchemaAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::saveTopologySchema
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologyById
-     *
      * @throws Exception
      */
     public function testSaveTopologySchemaCronNotValid(): void
@@ -530,9 +466,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::saveTopologySchemaAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::saveTopologySchema
-     *
      * @throws Exception
      */
     public function testSaveTopologySchema2(): void
@@ -552,10 +485,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::getTopologySchemaAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologySchema
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologyById
-     *
      * @throws Exception
      */
     public function testSaveAndGetTopologySchema(): void
@@ -582,9 +511,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::deleteTopologyAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::deleteTopology
-     *
      * @throws Exception
      */
     public function testDeleteTopology(): void
@@ -606,9 +532,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::deleteTopologyAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::deleteTopology
-     *
      * @throws Exception
      */
     public function testDeleteTopologyErr(): void
@@ -628,9 +551,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::getCronTopologiesAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getCronTopologies
-     *
      * @throws Exception
      */
     public function testGetCronTopologies(): void
@@ -655,8 +575,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::publishTopologyAction
-     *
      * @throws Exception
      */
     public function testPublishTopologyAction(): void
@@ -680,8 +598,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::publishTopologyAction
-     *
      * @throws Exception
      */
     public function testPublishTopologyErrAction(): void
@@ -692,8 +608,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::cloneTopologyAction
-     *
      * @throws Exception
      */
     public function testCloneTopologyAction(): void
@@ -724,8 +638,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::cloneTopologyAction
-     *
      * @throws Exception
      */
     public function testCloneTopologyActionErr(): void
@@ -736,8 +648,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::getCronTopologiesAction
-     *
      * @throws Exception
      */
     public function testGetCronTopologiesErr(): void
@@ -747,8 +657,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::testAction
-     *
      * @throws Exception
      */
     public function testAction(): void
@@ -770,8 +678,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::testAction
-     *
      * @throws Exception
      */
     public function testActionErr(): void
