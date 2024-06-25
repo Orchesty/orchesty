@@ -1,6 +1,3 @@
----
-version: '3.5'
-
 services:
     node-sdk:
         image: node-sdk:tag

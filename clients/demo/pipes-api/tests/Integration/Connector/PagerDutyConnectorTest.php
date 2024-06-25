@@ -12,14 +12,15 @@ use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Json;
+use PHPUnit\Framework\Attributes\CoversClass;
 use ReflectionException;
 
 /**
  * Class PagerDutyConnectorTest
  *
  * @package DemoTests\Integration\Connector
- * @covers  \Demo\Connector\PagerDutyConnector
  */
+#[CoversClass(PagerDutyConnector::class)]
 final class PagerDutyConnectorTest extends KernelTestCaseAbstract
 {
 
@@ -29,7 +30,7 @@ final class PagerDutyConnectorTest extends KernelTestCaseAbstract
     private PagerDutyConnector $connector;
 
     /**
-     * @covers \Demo\Connector\PagerDutyConnector::getName
+     * @return void
      */
     public function testGetName(): void
     {
@@ -37,8 +38,6 @@ final class PagerDutyConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Demo\Connector\PagerDutyConnector::processAction
-     *
      * @throws Exception
      */
     public function testProcessAction(): void
@@ -62,8 +61,6 @@ final class PagerDutyConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Demo\Connector\PagerDutyConnector::processAction
-     *
      * @throws Exception
      */
     public function testProcessHourAction(): void
@@ -87,8 +84,6 @@ final class PagerDutyConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Demo\Connector\PagerDutyConnector::processAction
-     *
      * @throws Exception
      */
     public function testProcessActionException(): void
@@ -102,8 +97,6 @@ final class PagerDutyConnectorTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Demo\Connector\PagerDutyConnector::getComputedHours
-     *
      * @throws ReflectionException
      */
     public function testGetComputedHours(): void

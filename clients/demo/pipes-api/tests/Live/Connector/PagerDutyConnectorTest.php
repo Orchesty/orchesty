@@ -6,6 +6,7 @@ use Demo\Connector\PagerDutyConnector;
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\Utils\String\Json;
+use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 /**
@@ -17,10 +18,9 @@ final class PagerDutyConnectorTest extends KernelTestCase
 {
 
     /**
-     * @group live
-     *
      * @throws Exception
      */
+    #[Group('live')]
     public function testProcessAction(): void
     {
         $sender    = self::getContainer()->get('hbpf.transport.curl_manager');

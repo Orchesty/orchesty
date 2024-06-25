@@ -7,20 +7,18 @@ use DemoTests\KernelTestCaseAbstract;
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Monolog\Logger;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Class DummyExceptionConnectorTest
  *
  * @package DemoTests\Integration\CustomNode
  */
+#[CoversClass(DummyExceptionConnector::class)]
 final class DummyExceptionConnectorTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers \Demo\CustomNode\DummyExceptionConnector
-     * @covers \Demo\CustomNode\DummyExceptionConnector::processAction
-     * @covers \Demo\CustomNode\DummyExceptionConnector::throwDummyException
-     * @covers \Demo\CustomNode\DummyExceptionConnector::setLogger
      * @throws Exception
      */
     public function testProcess(): void

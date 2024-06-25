@@ -4,17 +4,19 @@ namespace DemoTests\Controller;
 
 use Demo\Controller\DefaultController;
 use DemoTests\KernelTestCaseAbstract;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Class DefaultControllerTest
  *
  * @package DemoTests\Controller
  */
+#[CoversClass(DefaultController::class)]
 final class DefaultControllerTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers \Demo\Controller\DefaultController::indexAction
+     * @return void
      */
     public function testIndex(): void
     {

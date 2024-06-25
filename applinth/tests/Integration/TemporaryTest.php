@@ -3,6 +3,7 @@
 namespace ApplinthTests\Integration;
 
 use ApplinthTests\KernelTestCaseAbstract;
+use Hanaboso\PhpCheckUtils\PhpUnit\Traits\CustomAssertTrait;
 
 /**
  * Class TemporaryTest
@@ -12,12 +13,14 @@ use ApplinthTests\KernelTestCaseAbstract;
 final class TemporaryTest extends KernelTestCaseAbstract
 {
 
+    use CustomAssertTrait;
+
     /**
      *
      */
     public function testBasic(): void
     {
-        self::assertCount(0, []);
+        self::assertFake();
     }
 
 }

@@ -5,12 +5,14 @@ namespace DemoTests\Integration\CustomNode;
 use Demo\CustomNode\DummyConnector;
 use DemoTests\KernelTestCaseAbstract;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Class DummyConnectorTest
  *
  * @package DemoTests\Integration\CustomNode
  */
+#[CoversClass(DummyConnector::class)]
 final class DummyConnectorTest extends KernelTestCaseAbstract
 {
 

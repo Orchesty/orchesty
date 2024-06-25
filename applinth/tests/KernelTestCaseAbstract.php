@@ -3,6 +3,7 @@
 namespace ApplinthTests;
 
 use Hanaboso\PhpCheckUtils\PhpUnit\Traits\PrivateTrait;
+use Hanaboso\PhpCheckUtils\PhpUnit\Traits\RestoreErrorHandlersTrait;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 /**
@@ -14,6 +15,7 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
 {
 
     use PrivateTrait;
+    use RestoreErrorHandlersTrait;
 
     /**
      *
@@ -23,6 +25,16 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
         parent::setUp();
 
         self::bootKernel();
+    }
+
+    /**
+     * @return void
+     */
+    protected function tearDown(): void {
+        parent::tearDown();
+
+        $this->restoreErrorHandler();
+        $this->restoreExceptionHandler();
     }
 
 }

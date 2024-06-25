@@ -6,18 +6,18 @@ use Demo\CustomNode\FilterStockExchange;
 use DemoTests\KernelTestCaseAbstract;
 use Exception;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Class FilterStockExchangeTest
  *
  * @package DemoTests\Integration\CustomNode
  */
+#[CoversClass(FilterStockExchange::class)]
 final class FilterStockExchangeTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers \Demo\CustomNode\FilterStockExchange
-     * @covers \Demo\CustomNode\FilterStockExchange::processAction
      * @throws Exception
      */
     public function testProcess(): void

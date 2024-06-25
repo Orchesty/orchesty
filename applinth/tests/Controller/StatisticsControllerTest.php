@@ -5,27 +5,25 @@ namespace ApplinthTests\Controller;
 use ApplinthTests\ControllerTestCaseAbstract;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
+use Hanaboso\Applinth\Controller\StatisticsController;
 use Hanaboso\Applinth\Handler\StatisticsHandler;
+use Hanaboso\Applinth\Manager\StatisticsManager;
 use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 use Hanaboso\Utils\Date\DateTimeUtils;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Class StatisticsControllerTest
  *
  * @package ApplinthTests\Controller
- *
- * @covers  \Hanaboso\Applinth\Controller\StatisticsController
- * @covers  \Hanaboso\Applinth\Handler\StatisticsHandler
- * @covers  \Hanaboso\Applinth\Manager\StatisticsManager
  */
+#[CoversClass(StatisticsController::class)]
+#[CoversClass(StatisticsHandler::class)]
+#[CoversClass(StatisticsManager::class)]
 final class StatisticsControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\Applinth\Controller\StatisticsController::getApplicationsBasicDataAction
-     * @covers \Hanaboso\Applinth\Handler\StatisticsHandler::getApplicationsBasicData
-     * @covers \Hanaboso\Applinth\Manager\StatisticsManager::getApplicationsBasicData
-     *
      * @throws Exception
      */
     public function testGetApplicationsBasicData(): void
@@ -38,8 +36,6 @@ final class StatisticsControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\Applinth\Controller\StatisticsController::getApplicationsBasicDataAction
-     *
      * @throws Exception
      */
     public function testGetApplicationBasicDataErr(): void
@@ -52,10 +48,6 @@ final class StatisticsControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\Applinth\Controller\StatisticsController::getApplicationsUsersAction
-     * @covers \Hanaboso\Applinth\Handler\StatisticsHandler::getApplicationsUsers
-     * @covers \Hanaboso\Applinth\Manager\StatisticsManager::getApplicationsUsers
-     *
      * @throws Exception
      */
     public function testGetApplicationsUsers(): void
@@ -68,8 +60,6 @@ final class StatisticsControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\Applinth\Controller\StatisticsController::getApplicationsUsersAction
-     *
      * @throws Exception
      */
     public function testGetApplicationUserErr(): void
@@ -82,8 +72,6 @@ final class StatisticsControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\Applinth\Controller\StatisticsController::applicationStatisticsAction
-     *
      * @throws Exception
      */
     public function testApplicationStatisticsAction(): void
@@ -95,8 +83,6 @@ final class StatisticsControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\Applinth\Controller\StatisticsController::applicationStatisticsAction
-     *
      * @throws Exception
      */
     public function testApplicationStatisticsActionErr(): void
@@ -109,8 +95,6 @@ final class StatisticsControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\Applinth\Controller\StatisticsController::userStatisticsAction
-     *
      * @throws Exception
      */
     public function testUserStatisticsAction(): void
@@ -122,8 +106,6 @@ final class StatisticsControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\Applinth\Controller\StatisticsController::userStatisticsAction
-     *
      * @throws Exception
      */
     public function testUserStatisticsActionErr(): void
@@ -136,10 +118,6 @@ final class StatisticsControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\Applinth\Controller\StatisticsController::getUsersBasicDataAction
-     * @covers \Hanaboso\Applinth\Handler\StatisticsHandler::getUsersBasicData
-     * @covers \Hanaboso\Applinth\Manager\StatisticsManager::getUsersBasicData
-     *
      * @throws Exception
      */
     public function testGetUsersBasicData(): void
@@ -153,8 +131,6 @@ final class StatisticsControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\Applinth\Controller\StatisticsController::getUsersBasicDataAction
-     *
      * @throws Exception
      */
     public function testGetUsersBasicDataErr(): void

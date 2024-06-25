@@ -13,21 +13,18 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Json;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Class SendDutyEmailTest
  *
  * @package DemoTests\Integration
  */
+#[CoversClass(SendDutyEmail::class)]
 final class SendDutyEmailTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers \Demo\CustomNode\SendDutyEmail
-     * @covers \Demo\CustomNode\SendDutyEmail::processAction
-     * @covers \Demo\CustomNode\SendDutyEmail::send
-     * @covers \Demo\CustomNode\SendDutyEmail::getSubject
-     *
      * @throws Exception
      */
     public function testSend(): void

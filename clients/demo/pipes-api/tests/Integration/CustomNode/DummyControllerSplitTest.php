@@ -6,17 +6,18 @@ use Demo\CustomNode\DummyConnectorSplit;
 use DemoTests\KernelTestCaseAbstract;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\Utils\Exception\DateTimeException;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Class DummyControllerSplitTest
  *
  * @package DemoTests\Integration\CustomNode
  */
+#[CoversClass(DummyConnectorSplit::class)]
 final class DummyControllerSplitTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers \Demo\CustomNode\DummyConnectorSplit::processAction
      * @throws DateTimeException
      */
     public function testProcess(): void

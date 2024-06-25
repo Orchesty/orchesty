@@ -84,7 +84,7 @@ final readonly class AuthorizationManager
         $jwe = $this->jweSerializerManager->unserialize($jweToken);
 
         if ($this->jweDecrypter->decryptUsingKey($jwe, $this->createJweJwk(), 0)) {
-            return Json::decode($jwe->getPayload());
+            return Json::decode($jwe->getPayload() ?? '[]');
         }
 
         throw new AuthenticationException('Not valid token', 403);

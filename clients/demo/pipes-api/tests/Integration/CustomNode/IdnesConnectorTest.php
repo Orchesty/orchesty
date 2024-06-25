@@ -6,18 +6,18 @@ use Demo\Connector\IdnesConnector;
 use DemoTests\KernelTestCaseAbstract;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Class IdnesConnectorTest
  *
  * @package DemoTests\Integration\CustomNode
  */
+#[CoversClass(IdnesConnector::class)]
 final class IdnesConnectorTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers \Demo\Connector\IdnesConnector
-     * @covers \Demo\Connector\IdnesConnector::processAction
      * @throws CurlException
      */
     public function testProcess(): void
