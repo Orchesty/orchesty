@@ -5,8 +5,10 @@ namespace PipesFrameworkTests\Integration\Metrics\Document;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Exception;
 use Hanaboso\PipesFramework\Metrics\Document\MonolithMetrics;
+use Hanaboso\PipesFramework\Metrics\Document\MonolithMetricsFields;
 use Hanaboso\Utils\Date\DateTimeUtils;
 use MongoDB\BSON\UTCDateTime;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -14,16 +16,12 @@ use PipesFrameworkTests\DatabaseTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Integration\Metrics\Document
  */
+#[CoversClass(MonolithMetrics::class)]
+#[CoversClass(MonolithMetricsFields::class)]
 final class MonolithMetricsTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\Metrics\Document\MonolithMetrics::getFields
-     * @covers \Hanaboso\PipesFramework\Metrics\Document\MonolithMetrics::getTags
-     * @covers \Hanaboso\PipesFramework\Metrics\Document\MonolithMetricsFields::getCreated
-     * @covers \Hanaboso\PipesFramework\Metrics\Document\MonolithMetricsFields::getUserTime
-     * @covers \Hanaboso\PipesFramework\Metrics\Document\MonolithMetricsFields::getKernelTime
-     *
      * @throws Exception
      */
     public function testDocument(): void

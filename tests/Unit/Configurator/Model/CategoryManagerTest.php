@@ -8,6 +8,7 @@ use Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocator;
 use Hanaboso\PipesFramework\Configurator\Model\CategoryManager;
 use Hanaboso\PipesFramework\Database\Document\Category;
 use Hanaboso\PipesFramework\Database\Repository\CategoryRepository;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 
 /**
@@ -15,12 +16,11 @@ use PipesFrameworkTests\KernelTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Unit\Configurator\Model
  */
+#[CoversClass(CategoryManager::class)]
 final class CategoryManagerTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\CategoryManager::createCategory
-     *
      * @throws Exception
      */
     public function testCreateCategory(): void
@@ -41,8 +41,6 @@ final class CategoryManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\CategoryManager::updateCategory
-     *
      * @throws Exception
      */
     public function testUpdateCategory(): void

@@ -7,6 +7,7 @@ use Hanaboso\PipesFramework\UsageStats\Document\UsageStatsEvent;
 use Hanaboso\PipesFramework\UsageStats\Enum\EventTypeEnum;
 use Hanaboso\PipesFramework\UsageStats\Event\BillingEvent;
 use Hanaboso\PipesFramework\UsageStats\Listener\UsageStatsEventListener;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -14,16 +15,13 @@ use PipesFrameworkTests\DatabaseTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Integration\UsageStats\Listener
  */
+#[CoversClass(UsageStatsEventListener::class)]
+#[CoversClass(BillingEvent::class)]
+#[CoversClass(UsageStatsEvent::class)]
 final class UsageStatsEventListenerTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\UsageStats\Listener\UsageStatsEventListener::onProcessBillingEvent
-     * @covers \Hanaboso\PipesFramework\UsageStats\Event\BillingEvent::checkData
-     * @covers \Hanaboso\PipesFramework\UsageStats\Document\UsageStatsEvent::createFromBillingEvent
-     * @covers \Hanaboso\PipesFramework\UsageStats\Document\UsageStatsEvent::setAppInstallBillingData
-     * @covers \Hanaboso\PipesFramework\UsageStats\Document\UsageStatsEvent::toArray
-     *
      * @throws Exception
      */
     public function testListener(): void

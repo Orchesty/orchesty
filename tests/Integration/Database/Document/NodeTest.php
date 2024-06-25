@@ -7,6 +7,7 @@ use Hanaboso\CommonsBundle\Exception\NodeException;
 use Hanaboso\PipesFramework\Database\Document\Dto\SystemConfigDto;
 use Hanaboso\PipesFramework\Database\Document\Embed\EmbedNode;
 use Hanaboso\PipesFramework\Database\Document\Node;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -14,31 +15,11 @@ use PipesFrameworkTests\DatabaseTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Integration\Database\Document
  */
+#[CoversClass(Node::class)]
 final class NodeTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\Database\Document\Node
-     * @covers \Hanaboso\PipesFramework\Database\Document\Node::getSchemaId
-     * @covers \Hanaboso\PipesFramework\Database\Document\Node::getName
-     * @covers \Hanaboso\PipesFramework\Database\Document\Node::setName
-     * @covers \Hanaboso\PipesFramework\Database\Document\Node::getTopology
-     * @covers \Hanaboso\PipesFramework\Database\Document\Node::getNext
-     * @covers \Hanaboso\PipesFramework\Database\Document\Node::addNext
-     * @covers \Hanaboso\PipesFramework\Database\Document\Node::setNext
-     * @covers \Hanaboso\PipesFramework\Database\Document\Node::getType
-     * @covers \Hanaboso\PipesFramework\Database\Document\Node::setType
-     * @covers \Hanaboso\PipesFramework\Database\Document\Node::getHandler
-     * @covers \Hanaboso\PipesFramework\Database\Document\Node::setHandler
-     * @covers \Hanaboso\PipesFramework\Database\Document\Node::isEnabled
-     * @covers \Hanaboso\PipesFramework\Database\Document\Node::setEnabled
-     * @covers \Hanaboso\PipesFramework\Database\Document\Node::getCron
-     * @covers \Hanaboso\PipesFramework\Database\Document\Node::setCron
-     * @covers \Hanaboso\PipesFramework\Database\Document\Node::getCronParams
-     * @covers \Hanaboso\PipesFramework\Database\Document\Node::setCronParams
-     * @covers \Hanaboso\PipesFramework\Database\Document\Node::setSystemConfigs
-     * @covers \Hanaboso\PipesFramework\Database\Document\Node::getSystemConfigs
-     *
      * @throws Exception
      */
     public function testNode(): void
@@ -78,8 +59,6 @@ final class NodeTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Database\Document\Node::setType
-     *
      * @throws Exception
      */
     public function testSetTypeErr(): void
@@ -90,8 +69,6 @@ final class NodeTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Database\Document\Node::setHandler
-     *
      * @throws Exception
      */
     public function testSetHandler(): void
@@ -102,8 +79,6 @@ final class NodeTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Database\Document\Node::getSystemConfigs
-     *
      * @throws Exception
      */
     public function testGetSystemConfigs(): void

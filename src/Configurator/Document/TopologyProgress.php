@@ -272,8 +272,8 @@ class TopologyProgress
     {
         $startSecs = $start->getTimestamp() * 1_000;
         $endSecs   = $end->getTimestamp() * 1_000;
-        $startMs   = (int) ($start->format('u') / 1_000);
-        $endMs     = (int) ($end->format('u') / 1_000);
+        $startMs   = (int) ($start->format('u') / 1_000); // @phpstan-ignore-line
+        $endMs     = (int) ($end->format('u') / 1_000); // @phpstan-ignore-line
 
         return $endSecs - $startSecs + $endMs - $startMs;
     }

@@ -3,6 +3,7 @@
 namespace PipesFrameworkTests\Unit\Configurator\Model;
 
 use Hanaboso\PipesFramework\Configurator\Model\DashboardDto;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DataProvider;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 
@@ -11,24 +12,12 @@ use PipesFrameworkTests\KernelTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Unit\Configurator\Model
  */
+#[CoversClass(DashboardDto::class)]
 final class DashboardDtoTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\DashboardDto::setActiveTopologies
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\DashboardDto::setDisabledTopologies
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\DashboardDto::setTotalRuns
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\DashboardDto::setErrorsCount
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\DashboardDto::setSuccessCount
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\DashboardDto::setCpu
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\DashboardDto::setMemory
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\DashboardDto::setSpace
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\DashboardDto::setTcpConnections
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\DashboardDto::setRange
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\DashboardDto::setErrorLogs
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\DashboardDto::setAlertLogs
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\DashboardDto::addAlertLog
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\DashboardDto::addErrorLog
+     * @return void
      */
     public function testDto(): void
     {

@@ -3,6 +3,7 @@
 namespace PipesFrameworkTests\Unit\Configurator\Event;
 
 use Hanaboso\PipesFramework\Configurator\Event\TopologyEvent;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 
 /**
@@ -12,11 +13,12 @@ use PipesFrameworkTests\KernelTestCaseAbstract;
  *
  * @covers  \Hanaboso\PipesFramework\Configurator\Event\TopologyEvent
  */
+#[CoversClass(TopologyEvent::class)]
 final class TopologyEventTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Event\TopologyEvent::getTopologyName
+     * @return void
      */
     public function testEvent(): void
     {

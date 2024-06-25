@@ -4,21 +4,20 @@ namespace PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller;
 
 use Exception;
 use Hanaboso\PipesFramework\Configurator\Document\Sdk;
+use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\SdkController;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 
 /**
  * Class SdkControllerTest
  *
  * @package PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller
- *
- * @covers  \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\SdkController
  */
+#[CoversClass(SdkController::class)]
 final class SdkControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\SdkController::getAllAction
-     *
      * @throws Exception
      */
     public function testGetAllAction(): void
@@ -33,8 +32,6 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\SdkController::getOneAction
-     *
      * @throws Exception
      */
     public function testGetOneAction(): void
@@ -48,8 +45,6 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\SdkController::createAction
-     *
      * @throws Exception
      */
     public function testCreateAction(): void
@@ -62,8 +57,6 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\SdkController::updateAction
-     *
      * @throws Exception
      */
     public function testUpdateAction(): void
@@ -77,8 +70,6 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\SdkController::deleteAction
-     *
      * @throws Exception
      */
     public function testDeleteAction(): void

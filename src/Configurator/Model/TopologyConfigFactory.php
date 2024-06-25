@@ -141,7 +141,7 @@ final class TopologyConfigFactory
                     self::SETTINGS => [
                         self::APPLICATION  => $node->getApplication(),
                         self::HEADERS      => $this->sdkRepository->findByHost($host),
-                        self::HOST         => $parsed[0] ?? '',
+                        self::HOST         => $parsed[0],
                         self::METHOD       => CurlManager::METHOD_POST,
                         self::PORT         => (int) ($parsed[1] ?? $this->getPort($node->getType())),
                         self::PREFETCH     => $node->getSystemConfigs()?->getPrefetch(),

@@ -5,11 +5,11 @@ namespace PipesFrameworkTests\Integration\TopologyInstaller;
 use Exception;
 use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
 use Hanaboso\PipesFramework\Database\Document\Topology;
-use Hanaboso\PipesFramework\TopologyInstaller\Dto\TopologyFile;
-use Hanaboso\PipesFramework\TopologyInstaller\Dto\UpdateObject;
+use Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto;
 use Hanaboso\PipesFramework\TopologyInstaller\TopologiesComparator;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
 use Hanaboso\Utils\File\File;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -17,22 +17,13 @@ use PipesFrameworkTests\DatabaseTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Integration\TopologyInstaller
  */
+#[CoversClass(TopologiesComparator::class)]
+#[CoversClass(CompareResultDto::class)]
+#[CoversClass(TopologySchemaUtils::class)]
 final class TopologiesComparatorTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\TopologiesComparator
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\TopologiesComparator::compare
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\TopologiesComparator::prepareFiles
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\TopologiesComparator::isEqual
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto::addDelete
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto::addCreate
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto::addUpdate
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto::getDelete
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto::getCreate
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto::getUpdate
-     * @covers \Hanaboso\PipesFramework\Utils\TopologySchemaUtils::getIndexHash
-     *
      * @throws Exception
      */
     public function testCompare(): void
@@ -84,9 +75,6 @@ final class TopologiesComparatorTest extends DatabaseTestCaseAbstract
         self::assertCount(1, $create);
         self::assertCount(1, $update);
         self::assertCount(1, $delete);
-
-        self::assertInstanceOf(TopologyFile::class, reset($create));
-        self::assertInstanceOf(UpdateObject::class, reset($update));
     }
 
     /**

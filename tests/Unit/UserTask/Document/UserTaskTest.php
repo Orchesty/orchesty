@@ -8,15 +8,15 @@ use Hanaboso\PipesFramework\UserTask\Document\UserTaskMessage;
 use Hanaboso\PipesFramework\UserTask\Enum\UserTaskEnum;
 use Hanaboso\Utils\Date\DateTimeUtils;
 use Hanaboso\Utils\Exception\EnumException;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 
 /**
  * Class UserTaskTest
  *
  * @package PipesFrameworkTests\Unit\UserTask\Document
- *
- * @covers  \Hanaboso\PipesFramework\UserTask\Document\UserTask
  */
+#[CoversClass(UserTask::class)]
 final class UserTaskTest extends KernelTestCaseAbstract
 {
 

@@ -5,15 +5,15 @@ namespace PipesFrameworkTests\Integration\Configurator\Document;
 use Exception;
 use Hanaboso\PipesFramework\Configurator\Document\TopologyProgress;
 use Hanaboso\Utils\Date\DateTimeUtils;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
  * Class TopologyProgressTest
  *
  * @package PipesFrameworkTests\Integration\Configurator\Document
- *
- * @covers  \Hanaboso\PipesFramework\Configurator\Document\TopologyProgress
  */
+#[CoversClass(TopologyProgress::class)]
 final class TopologyProgressTest extends DatabaseTestCaseAbstract
 {
 

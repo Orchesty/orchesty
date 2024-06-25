@@ -5,6 +5,9 @@ namespace PipesFrameworkTests\Integration\Logs\Document;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Exception;
 use Hanaboso\PipesFramework\Logs\Document\Logs;
+use Hanaboso\PipesFramework\Logs\Document\Pipes;
+use Hanaboso\PipesFramework\Logs\Document\Stacktrace;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -12,32 +15,13 @@ use PipesFrameworkTests\DatabaseTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Integration\Logs\Document
  */
+#[CoversClass(Logs::class)]
+#[CoversClass(Pipes::class)]
+#[CoversClass(Stacktrace::class)]
 final class LogsTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\Logs\Document\Logs::getTimestamp
-     * @covers \Hanaboso\PipesFramework\Logs\Document\Logs::getPipes
-     * @covers \Hanaboso\PipesFramework\Logs\Document\Logs::getMessage
-     * @covers \Hanaboso\PipesFramework\Logs\Document\Logs::getHost
-     * @covers \Hanaboso\PipesFramework\Logs\Document\Logs::getVersion
-     * @covers \Hanaboso\PipesFramework\Logs\Document\Pipes::getTimestamp
-     * @covers \Hanaboso\PipesFramework\Logs\Document\Pipes::getService
-     * @covers \Hanaboso\PipesFramework\Logs\Document\Pipes::getHostname
-     * @covers \Hanaboso\PipesFramework\Logs\Document\Pipes::getChannel
-     * @covers \Hanaboso\PipesFramework\Logs\Document\Pipes::getSeverity
-     * @covers \Hanaboso\PipesFramework\Logs\Document\Pipes::getCorrelationId
-     * @covers \Hanaboso\PipesFramework\Logs\Document\Pipes::getTopologyId
-     * @covers \Hanaboso\PipesFramework\Logs\Document\Pipes::getTopologyName
-     * @covers \Hanaboso\PipesFramework\Logs\Document\Pipes::getNodeId
-     * @covers \Hanaboso\PipesFramework\Logs\Document\Pipes::getNodeName
-     * @covers \Hanaboso\PipesFramework\Logs\Document\Pipes::getStacktrace
-     * @covers \Hanaboso\PipesFramework\Logs\Document\Stacktrace::getMessage
-     * @covers \Hanaboso\PipesFramework\Logs\Document\Stacktrace::getClass
-     * @covers \Hanaboso\PipesFramework\Logs\Document\Stacktrace::getFile
-     * @covers \Hanaboso\PipesFramework\Logs\Document\Stacktrace::getTrace
-     * @covers \Hanaboso\PipesFramework\Logs\Document\Stacktrace::getCode
-     *
      * @throws Exception
      */
     public function testDocument(): void

@@ -4,6 +4,7 @@ namespace PipesFrameworkTests\Unit\UsageStats\Document;
 
 use Exception;
 use Hanaboso\PipesFramework\UsageStats\Document\HearthBeatData;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -11,17 +12,11 @@ use PipesFrameworkTests\DatabaseTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Unit\UsageStats\Document
  */
+#[CoversClass(HearthBeatData::class)]
 final class HeartbeatDataTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\UsageStats\Document\HearthBeatData
-     * @covers \Hanaboso\PipesFramework\UsageStats\Document\HearthBeatData::setType
-     * @covers \Hanaboso\PipesFramework\UsageStats\Document\HearthBeatData::getType
-     * @covers \Hanaboso\PipesFramework\UsageStats\Document\HearthBeatData::setCount
-     * @covers \Hanaboso\PipesFramework\UsageStats\Document\HearthBeatData::getCount
-     * @covers \Hanaboso\PipesFramework\UsageStats\Document\HearthBeatData::toArray
-     *
      * @throws Exception
      */
     public function testBillingEvent(): void

@@ -3,21 +3,20 @@
 namespace PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller;
 
 use Exception;
+use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\StatusController;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 
 /**
  * Class StatusControllerTest
  *
  * @package PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller
- *
- * @covers  \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\StatusController
  */
+#[CoversClass(StatusController::class)]
 final class StatusControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\StatusController::getStatusAction
-     *
      * @throws Exception
      */
     public function testDashboardAction(): void

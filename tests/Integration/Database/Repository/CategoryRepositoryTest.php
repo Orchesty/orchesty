@@ -4,6 +4,8 @@ namespace PipesFrameworkTests\Integration\Database\Repository;
 
 use Exception;
 use Hanaboso\PipesFramework\Database\Document\Category;
+use Hanaboso\PipesFramework\Database\Repository\CategoryRepository;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -11,12 +13,11 @@ use PipesFrameworkTests\DatabaseTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Integration\Database\Repository
  */
+#[CoversClass(CategoryRepository::class)]
 final class CategoryRepositoryTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\Database\Repository\CategoryRepository::childrenLevelUp
-     *
      * @throws Exception
      */
     public function testChildrenLevelUp(): void

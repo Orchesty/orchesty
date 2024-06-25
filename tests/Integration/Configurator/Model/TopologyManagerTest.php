@@ -20,6 +20,7 @@ use Hanaboso\PipesFramework\Utils\Dto\NodeSchemaDto;
 use Hanaboso\PipesFramework\Utils\Dto\Schema;
 use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Json;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -27,6 +28,9 @@ use PipesFrameworkTests\DatabaseTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Integration\Configurator\Model
  */
+#[CoversClass(TopologyManager::class)]
+#[CoversClass(Schema::class)]
+#[CoversClass(SystemConfigDto::class)]
 final class TopologyManagerTest extends DatabaseTestCaseAbstract
 {
 
@@ -36,9 +40,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     private TopologyManager $manager;
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::createTopology
-     *
      * @throws Exception
      */
     public function testCreateTopologyWithSameName(): void
@@ -50,11 +51,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::createTopology
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateTopology
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::setTopologyData
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::checkTopologyName
-     *
      * @throws Exception
      */
     public function testUpdateUnpublishedTopologyWithName(): void
@@ -68,12 +64,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::createTopology
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::normalizeName
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateTopology
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::checkTopologyName
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::setTopologyData
-     *
      * @throws Exception
      */
     public function testUpdatePublishedTopologyWithName(): void
@@ -89,12 +79,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::createTopology
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateTopology
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::normalizeName
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::setTopologyData
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::checkTopologyName
-     *
      * @throws Exception
      */
     public function testCheckTopologyNameUnPublished(): void
@@ -110,11 +94,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateTopology
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::normalizeName
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::setTopologyData
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::checkTopologyName
-     *
      * @throws Exception
      */
     public function testUpdateTopology(): void
@@ -149,8 +128,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::checkTopologySchemaIsSame
-     *
      * @throws Exception
      */
     public function testCheckTopologyIsSame(): void
@@ -171,8 +148,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::publishTopology
-     *
      * @throws Exception
      */
     public function testPublishTopology(): void
@@ -197,8 +172,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::publishTopology
-     *
      * @throws Exception
      */
     public function testPublishTopologyNoNodes(): void
@@ -216,10 +189,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::cloneTopology
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::makePatchRequestForCron
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::cloneTopologyShallow
-     *
      * @throws Exception
      */
     public function testCloneTopology(): void
@@ -329,10 +298,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::cloneTopology
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::makePatchRequestForCron
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::cloneTopologyShallow
-     *
      * @throws Exception
      */
     public function testCloneTopologyWithoutBpmn(): void
@@ -359,19 +324,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::saveTopologySchema
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::cloneTopologyShallow
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::generateNodes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::removeNodesByTopology
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNodes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNode
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::checkNodeAttributes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::getNodeBySchemaId
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::setNodeAttributes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::createNode
-     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getSequences
-     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getNodes
-     *
      * @throws Exception
      */
     public function testSaveTopologySchema(): void
@@ -393,19 +345,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::saveTopologySchema
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::cloneTopologyShallow
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::generateNodes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::removeNodesByTopology
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNodes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNode
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::checkNodeAttributes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::getNodeBySchemaId
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::setNodeAttributes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::createNode
-     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getSequences
-     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getNodes
-     *
      * @throws Exception
      */
     public function testReSaveTopologySchema(): void
@@ -433,17 +372,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::saveTopologySchema
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::cloneTopologyShallow
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::generateNodes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::removeNodesByTopology
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNodes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNode
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::checkNodeAttributes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::getNodeBySchemaId
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::setNodeAttributes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::createNode
-     *
      * @throws Exception
      */
     public function testSaveTopologySchemaWithClone(): void
@@ -494,17 +422,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::saveTopologySchema
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::cloneTopologyShallow
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::generateNodes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::removeNodesByTopology
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNodes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNode
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::checkNodeAttributes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::getNodeBySchemaId
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::setNodeAttributes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::createNode
-     *
      * @throws Exception
      */
     public function testSaveTopologySchemaUpdateNodes(): void
@@ -570,17 +487,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::saveTopologySchema
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::cloneTopologyShallow
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::generateNodes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::removeNodesByTopology
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNodes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNode
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::checkNodeAttributes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::getNodeBySchemaId
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::setNodeAttributes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::createNode
-     *
      * @throws Exception
      */
     public function testSaveTopologySchemaNameNotFound(): void
@@ -599,17 +505,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::saveTopologySchema
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::cloneTopologyShallow
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::generateNodes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::removeNodesByTopology
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNodes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNode
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::checkNodeAttributes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::getNodeBySchemaId
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::setNodeAttributes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::createNode
-     *
      * @throws Exception
      */
     public function testSaveTopologySchemaTypeNotExist(): void
@@ -628,17 +523,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::saveTopologySchema
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::cloneTopologyShallow
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::generateNodes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::removeNodesByTopology
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNodes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNode
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::checkNodeAttributes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::getNodeBySchemaId
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::setNodeAttributes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::createNode
-     *
      * @throws Exception
      */
     public function testSaveTopologySchemaCronNotValid(): void
@@ -657,9 +541,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::deleteTopology
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::removeNodesByTopology
-     *
      * @throws Exception
      */
     public function testDeleteTopology(): void
@@ -691,8 +572,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::getCronTopologies
-     *
      * @throws Exception
      */
     public function testGetCronTopologies(): void
@@ -753,8 +632,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::getCronTopologies
-     *
      * @throws Exception
      */
     public function testGetCronTopologiesRes(): void
@@ -810,8 +687,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::getCronTopologies
-     *
      * @throws Exception
      */
     public function testGetCronTopologiesNotFound(): void
@@ -827,12 +702,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Database\Document\Dto\SystemConfigDto
-     * @covers \Hanaboso\PipesFramework\Database\Document\Node::setName
-     * @covers \Hanaboso\PipesFramework\Database\Document\Node::setSystemConfigs
-     * @covers \Hanaboso\PipesFramework\Database\Document\Node::getName
-     * @covers \Hanaboso\PipesFramework\Database\Document\Node::getSystemConfigs
-     *
      * @throws Exception
      */
     public function testSystemConfig(): void
@@ -852,8 +721,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::unPublishTopology
-     *
      * @throws Exception
      */
     public function testUnPublishTopology(): void
@@ -864,8 +731,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNodes
-     *
      * @throws Exception
      */
     public function testUpdateNodes(): void
@@ -890,8 +755,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::checkNodeAttributes
-     *
      * @throws Exception
      */
     public function testCheckNodeAttributes(): void
@@ -903,8 +766,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::getNodeBySchemaId
-     *
      * @throws Exception
      */
     public function testGetNodeBySchemaId(): void
@@ -917,8 +778,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::setTopologyData
-     *
      * @throws Exception
      */
     public function testSetTopologyData(): void

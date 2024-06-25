@@ -3,6 +3,9 @@
 namespace PipesFrameworkTests\Controller\HbPFLogsBundle\Controller;
 
 use Exception;
+use Hanaboso\PipesFramework\HbPFLogsBundle\Controller\LogsController;
+use Hanaboso\PipesFramework\HbPFLogsBundle\Handler\LogsHandler;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 
 /**
@@ -10,15 +13,12 @@ use PipesFrameworkTests\ControllerTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Controller\HbPFLogsBundle\Controller
  */
+#[CoversClass(LogsController::class)]
+#[CoversClass(LogsHandler::class)]
 final class LogsControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFLogsBundle\Controller\LogsController
-     * @covers \Hanaboso\PipesFramework\HbPFLogsBundle\Controller\LogsController::getDataForTableAction
-     * @covers \Hanaboso\PipesFramework\HbPFLogsBundle\Handler\LogsHandler
-     * @covers \Hanaboso\PipesFramework\HbPFLogsBundle\Handler\LogsHandler::getData
-     *
      * @throws Exception
      */
     public function testGetDataForTableAction(): void

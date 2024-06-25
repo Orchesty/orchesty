@@ -5,7 +5,9 @@ namespace PipesFrameworkTests\Integration\Metrics\Document;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Exception;
 use Hanaboso\PipesFramework\Metrics\Document\RabbitMetrics;
+use Hanaboso\PipesFramework\Metrics\Document\RabbitMetricsFields;
 use Hanaboso\Utils\Date\DateTimeUtils;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -13,15 +15,12 @@ use PipesFrameworkTests\DatabaseTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Integration\Metrics\Document
  */
+#[CoversClass(RabbitMetrics::class)]
+#[CoversClass(RabbitMetricsFields::class)]
 final class RabbitMetricsTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\Metrics\Document\RabbitMetrics::getTags
-     * @covers \Hanaboso\PipesFramework\Metrics\Document\RabbitMetrics::getFields
-     * @covers \Hanaboso\PipesFramework\Metrics\Document\RabbitMetricsFields::getCreated
-     * @covers \Hanaboso\PipesFramework\Metrics\Document\RabbitMetricsFields::getMessages
-     *
      * @throws Exception
      */
     public function testDocument(): void

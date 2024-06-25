@@ -4,6 +4,7 @@ namespace PipesFrameworkTests\Unit\UsageStats\Document;
 
 use Exception;
 use Hanaboso\PipesFramework\UsageStats\Document\AppInstallBillingData;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -11,17 +12,11 @@ use PipesFrameworkTests\DatabaseTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Unit\UsageStats\Document
  */
+#[CoversClass(AppInstallBillingData::class)]
 final class BillingDataTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\UsageStats\Document\AppInstallBillingData
-     * @covers \Hanaboso\PipesFramework\UsageStats\Document\AppInstallBillingData::setEuid
-     * @covers \Hanaboso\PipesFramework\UsageStats\Document\AppInstallBillingData::setAid
-     * @covers \Hanaboso\PipesFramework\UsageStats\Document\AppInstallBillingData::getEuid
-     * @covers \Hanaboso\PipesFramework\UsageStats\Document\AppInstallBillingData::getAid
-     * @covers \Hanaboso\PipesFramework\UsageStats\Document\AppInstallBillingData::toArray
-     *
      * @throws Exception
      */
     public function testBillingEvent(): void

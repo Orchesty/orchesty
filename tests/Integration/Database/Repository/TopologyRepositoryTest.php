@@ -7,7 +7,9 @@ use Exception;
 use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
 use Hanaboso\PipesFramework\Database\Document\Category;
 use Hanaboso\PipesFramework\Database\Document\Topology;
+use Hanaboso\PipesFramework\Database\Repository\TopologyRepository;
 use Hanaboso\Utils\Exception\EnumException;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -15,12 +17,11 @@ use PipesFrameworkTests\DatabaseTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Integration\Database\Repository
  */
+#[CoversClass(TopologyRepository::class)]
 final class TopologyRepositoryTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\Database\Repository\TopologyRepository::getTotalCount
-     *
      * @throws Exception
      */
     public function testGetTotalCount(): void
@@ -40,8 +41,6 @@ final class TopologyRepositoryTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Database\Repository\TopologyRepository::getCountByEnable
-     *
      * @throws Exception
      */
     public function testGetCountByEnable(): void
@@ -66,8 +65,6 @@ final class TopologyRepositoryTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Database\Repository\TopologyRepository::getMaxVersion
-     *
      * @throws Exception
      */
     public function testGetMaxVersion(): void
@@ -134,8 +131,6 @@ final class TopologyRepositoryTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Database\Repository\TopologyRepository::getTopologiesByCategory
-     *
      * @throws Exception
      */
     public function testGetTopologiesByCategory(): void
@@ -170,8 +165,6 @@ final class TopologyRepositoryTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Database\Repository\TopologyRepository::getTopologiesCountByName
-     *
      * @throws Exception
      */
     public function testGetTopologiesCountByName(): void
@@ -191,8 +184,6 @@ final class TopologyRepositoryTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Database\Repository\TopologyRepository::getPublicEnabledTopologies
-     *
      * @throws Exception
      */
     public function testGetPublicEnabledTopologies(): void

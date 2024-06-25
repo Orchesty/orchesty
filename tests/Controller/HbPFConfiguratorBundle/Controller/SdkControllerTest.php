@@ -4,6 +4,10 @@ namespace PipesFrameworkTests\Controller\HbPFConfiguratorBundle\Controller;
 
 use Exception;
 use Hanaboso\PipesFramework\Configurator\Document\Sdk;
+use Hanaboso\PipesFramework\Configurator\Model\SdkManager;
+use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\SdkController;
+use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\SdkHandler;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 
 /**
@@ -11,17 +15,13 @@ use PipesFrameworkTests\ControllerTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Controller\HbPFConfiguratorBundle\Controller
  */
+#[CoversClass(SdkController::class)]
+#[CoversClass(SdkHandler::class)]
+#[CoversClass(SdkManager::class)]
 final class SdkControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers  \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\SdkController::getAllAction
-     * @covers  \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\SdkController
-     * @covers  \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\SdkHandler::getAll
-     * @covers  \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\SdkHandler
-     * @covers  \Hanaboso\PipesFramework\Configurator\Model\SdkManager::getAll
-     * @covers  \Hanaboso\PipesFramework\Configurator\Model\SdkManager
-     *
      * @throws Exception
      */
     public function testGetAll(): void
@@ -37,10 +37,6 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\SdkController::getOneAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\SdkHandler::getOne
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\SdkManager::getOne
-     *
      * @throws Exception
      */
     public function testGetOne(): void
@@ -54,10 +50,6 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\SdkController::getOneAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\SdkHandler::getOne
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\SdkManager::getOne
-     *
      * @throws Exception
      */
     public function testGetOneNotFound(): void
@@ -66,10 +58,6 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\SdkController::createAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\SdkHandler::create
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\SdkManager::create
-     *
      * @throws Exception
      */
     public function testCreate(): void
@@ -82,10 +70,6 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\SdkController::createAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\SdkHandler::create
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\SdkManager::create
-     *
      * @throws Exception
      */
     public function testCreateErr(): void
@@ -94,11 +78,6 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\SdkController::updateAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\SdkHandler::update
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\SdkHandler::get
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\SdkManager::update
-     *
      * @throws Exception
      */
     public function testUpdate(): void
@@ -112,11 +91,6 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\SdkController::updateAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\SdkHandler::update
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\SdkHandler::get
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\SdkManager::update
-     *
      * @throws Exception
      */
     public function testUpdateNotFound(): void
@@ -125,11 +99,6 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\SdkController::deleteAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\SdkHandler::delete
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\SdkHandler::get
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\SdkManager::delete
-     *
      * @throws Exception
      */
     public function testDelete(): void
@@ -143,10 +112,6 @@ final class SdkControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\SdkController::deleteAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\SdkHandler::delete
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\SdkManager::delete
-     *
      * @throws Exception
      */
     public function testDeleteErr(): void

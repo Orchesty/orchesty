@@ -6,6 +6,7 @@ use DateTime;
 use Exception;
 use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 use Hanaboso\Utils\Date\DateTimeUtils;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -13,17 +14,11 @@ use PipesFrameworkTests\DatabaseTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Integration\Application\Document
  */
+#[CoversClass(ApplicationInstall::class)]
 final class ApplicationInstallTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\Application\Document\ApplicationInstall::getExpires
-     * @covers \Hanaboso\PipesFramework\Application\Document\ApplicationInstall::getNonEncryptedSettings
-     * @covers \Hanaboso\PipesFramework\Application\Document\ApplicationInstall::setNonEncryptedSettings
-     * @covers \Hanaboso\PipesFramework\Application\Document\ApplicationInstall::addNonEncryptedSettings
-     * @covers \Hanaboso\PipesFramework\Application\Document\ApplicationInstall::toArray
-     * @covers \Hanaboso\PipesFramework\Application\Document\ApplicationInstall
-     *
      * @throws Exception
      */
     public function testApplicationInstall(): void

@@ -11,7 +11,9 @@ use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 use Hanaboso\PipesFramework\Configurator\Document\ApiToken;
 use Hanaboso\PipesFramework\Configurator\Document\Sdk;
 use Hanaboso\PipesFramework\Configurator\Enum\ApiTokenScopesEnum;
+use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController;
 use Hanaboso\Utils\String\Json;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -19,15 +21,12 @@ use Symfony\Component\HttpFoundation\Response;
  * Class ApplicationControllerTest
  *
  * @package PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller
- *
- * @covers  \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController
  */
+#[CoversClass(ApplicationController::class)]
 final class ApplicationControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::listOfApplicationsAction
-     *
      * @throws Exception
      */
     public function testListApplicationsAction(): void
@@ -36,8 +35,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::getApplicationAction
-     *
      * @throws Exception
      */
     public function testGetApplicationAction(): void
@@ -46,8 +43,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::getUsersApplicationAction
-     *
      * @throws Exception
      */
     public function testGetUsersApplicationAction(): void
@@ -66,8 +61,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::getApplicationDetailAction
-     *
      * @throws Exception
      */
     public function testGetApplicationDetailAction(): void
@@ -86,8 +79,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::installApplicationAction
-     *
      * @throws Exception
      */
     public function testInstallApplicationAction(): void
@@ -96,8 +87,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::updateApplicationSettingsAction
-     *
      * @throws Exception
      */
     public function testUpdateApplicationSettingsAction(): void
@@ -116,8 +105,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::uninstallApplicationAction
-     *
      * @throws Exception
      */
     public function testUninstallApplicationAction(): void
@@ -136,8 +123,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::saveApplicationPasswordAction
-     *
      * @throws Exception
      */
     public function testSaveApplicationPasswordAction(): void
@@ -156,8 +141,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::authorizeApplicationAction
-     *
      * @throws Exception
      */
     public function testAuthorizeApplicationAction(): void
@@ -191,8 +174,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::authorizeApplicationAction
-     *
      * @throws Exception
      */
     public function testAuthorizeApplicationActionException(): void
@@ -215,8 +196,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::setAuthorizationTokenAction
-     *
      * @throws Exception
      */
     public function testSetAuthorizationTokenAction(): void
@@ -244,8 +223,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::setAuthorizationTokenQueryAction
-     *
      * @throws Exception
      */
     public function testSetAuthorizationTokenQueryAction(): void
@@ -273,8 +250,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::getSynchronousActionsAction
-     *
      * @throws Exception
      */
     public function testGetSynchronousActionsAction(): void
@@ -289,8 +264,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::runSynchronousActionsAction
-     *
      * @throws Exception
      */
     public function testRunSynchronousActionsAction(): void

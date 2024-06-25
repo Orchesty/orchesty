@@ -5,12 +5,17 @@ namespace PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller;
 use DateTime;
 use Exception;
 use Hanaboso\PipesFramework\Configurator\Document\TopologyProgress;
+use Hanaboso\PipesFramework\Configurator\Model\DashboardDto;
 use Hanaboso\PipesFramework\Configurator\Model\DashboardManager;
 use Hanaboso\PipesFramework\Database\Document\Node;
 use Hanaboso\PipesFramework\Database\Document\Topology;
+use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\DashboardController;
+use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\DashboardHandler;
 use Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetrics;
 use Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetricsFields;
 use Hanaboso\PipesFramework\Metrics\Document\Tags;
+use Hanaboso\PipesFramework\Metrics\Manager\MetricsManagerAbstract;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 use PipesFrameworkTests\MongoTestTrait;
 
@@ -18,26 +23,18 @@ use PipesFrameworkTests\MongoTestTrait;
  * Class DashboardControllerTest
  *
  * @package PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller
- *
- * @covers  \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\DashboardController
  */
+#[CoversClass(DashboardController::class)]
+#[CoversClass(DashboardHandler::class)]
+#[CoversClass(DashboardManager::class)]
+#[CoversClass(MetricsManagerAbstract::class)]
+#[CoversClass(DashboardDto::class)]
 final class DashboardControllerTest extends ControllerTestCaseAbstract
 {
 
     use MongoTestTrait;
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\DashboardController::getDashboardAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\DashboardHandler::getMetrics
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\DashboardManager::getDashboardData
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MetricsManagerAbstract::getTopologiesProcessTimeMetrics
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\DashboardDto::setTotalRuns
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\DashboardDto::setErrorsCount
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\DashboardDto::setSuccessCount
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\DashboardDto::setActiveTopologies
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\DashboardDto::setDisabledTopologies
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\DashboardDto::setInstalledApps
-     *
      * @throws Exception
      */
     public function testDashboardAction(): void
