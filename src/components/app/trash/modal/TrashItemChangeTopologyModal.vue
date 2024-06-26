@@ -84,7 +84,7 @@ export default {
     state() {
       return this[REQUESTS_STATE.GETTERS.GET_STATE](
         API.userTask.accept.id,
-        API.topology.getTopologyNodes.id
+        API.topology.getTopologyNodes.id,
       )
     },
     topologyOptions() {
@@ -128,9 +128,8 @@ export default {
       })
     },
     async fetchTopologyNodes(topologyId) {
-      const response = await this[TOPOLOGIES.ACTIONS.TOPOLOGY.RETURN_NODES](
-        topologyId
-      )
+      const response =
+        await this[TOPOLOGIES.ACTIONS.TOPOLOGY.RETURN_NODES](topologyId)
       if (response) {
         this.topologyNodes = response.items
       }

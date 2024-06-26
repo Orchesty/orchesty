@@ -242,7 +242,7 @@ export default {
       await this[action](this.topologyActive._id)
       await this[TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID](this.topologyActive._id)
       await this[TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES](
-        this.topologyActive._id
+        this.topologyActive._id,
       )
     },
     async run(item) {
@@ -267,7 +267,7 @@ export default {
       nodeType,
       topologyId,
       topologyName,
-      data = {}
+      data = {},
     ) {
       return nodeType === "webhook"
         ? `${baseURL}/topologies/${topologyName}/nodes/${nodeName}/token/${
@@ -282,14 +282,14 @@ export default {
         item.name,
         item.type,
         item.topology_id,
-        this.topologyActive.name
+        this.topologyActive.name,
       )
     },
   },
   watch: {
     topologyActiveNodes() {
       let start = this.topologyActiveNodes.filter(
-        (node) => node.type === "start"
+        (node) => node.type === "start",
       )[0]
       if (!start) return
       this.startingPoint = this.createStartingPoint(start)

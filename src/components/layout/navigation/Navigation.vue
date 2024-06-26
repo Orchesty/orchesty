@@ -137,7 +137,7 @@ export default {
         this.lastSelectedTopology?._id
       ) {
         await this[TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID](
-          this.lastSelectedTopology._id
+          this.lastSelectedTopology._id,
         )
         await redirectTo(this.$router, {
           name: ROUTES.TOPOLOGY.VIEWER,

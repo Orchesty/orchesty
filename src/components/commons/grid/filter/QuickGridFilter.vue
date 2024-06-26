@@ -58,7 +58,7 @@ export default {
     return {
       items: this.createItems(
         this.quickFilters,
-        this.filterMeta.index || undefined
+        this.filterMeta.index || undefined,
       ),
     }
   },

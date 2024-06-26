@@ -117,15 +117,15 @@ export default {
       return item.visibility === TOPOLOGY_ENUMS.DRAFT
         ? "draft"
         : item.enabled
-        ? "enabled"
-        : "disabled"
+          ? "enabled"
+          : "disabled"
     },
     topologyColor(item) {
       return item.visibility === TOPOLOGY_ENUMS.DRAFT
         ? "primary"
         : item.enabled
-        ? "success"
-        : "error"
+          ? "success"
+          : "error"
     },
     topologyTitleVersion(item) {
       return getTopologyVersionString(item)
@@ -134,7 +134,7 @@ export default {
       if (!activeItems[0]) {
         if (
           [ROUTES.TOPOLOGY.DEFAULT, ROUTES.TOPOLOGY.VIEWER].includes(
-            this.$router.currentRoute.name
+            this.$router.currentRoute.name,
           )
         ) {
           if (
@@ -143,7 +143,7 @@ export default {
           ) {
             this.active = [this.lastSelectedTopology]
             await this[TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID](
-              this.active[0]._id
+              this.active[0]._id,
             )
             await redirectTo(this.$router, {
               name: ROUTES.TOPOLOGY.VIEWER,
@@ -183,7 +183,7 @@ export default {
         (!route.matched.some(
           (matchedRoutes) =>
             matchedRoutes.name === ROUTES.TOPOLOGY.DEFAULT ||
-            matchedRoutes.name === ROUTES.EDITOR
+            matchedRoutes.name === ROUTES.EDITOR,
         ) &&
           this.active[0]) ||
         route.params.hideTopology
@@ -209,7 +209,7 @@ export default {
       handler(treeview) {
         localStorage.setItem(
           TOPOLOGY_ENUMS.TREE_VIEW,
-          JSON.stringify(treeview || [])
+          JSON.stringify(treeview || []),
         )
       },
     },

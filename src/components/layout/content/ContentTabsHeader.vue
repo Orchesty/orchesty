@@ -95,7 +95,7 @@ export default {
     isCrone() {
       if (
         this.$route.matched.some(
-          (route) => route.name === ROUTES.TOPOLOGY.DEFAULT
+          (route) => route.name === ROUTES.TOPOLOGY.DEFAULT,
         )
       ) {
         return this.topologyActive?.type === TOPOLOGY_ENUMS.CRON

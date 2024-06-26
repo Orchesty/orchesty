@@ -346,14 +346,16 @@ export default {
       document.querySelectorAll(".badge-error").forEach((badgeError) => {
         badgeError.addEventListener("click", function () {
           window.dispatchEvent(
-            new CustomEvent("nodeSelection", { detail: badgeError })
+            new CustomEvent("nodeSelection", { detail: badgeError }),
           )
         })
       })
       document.querySelectorAll(".starting-point").forEach((startingPoint) => {
         startingPoint.addEventListener("click", function () {
           window.dispatchEvent(
-            new CustomEvent("showNodeContextActions", { detail: startingPoint })
+            new CustomEvent("showNodeContextActions", {
+              detail: startingPoint,
+            }),
           )
         })
       })
@@ -366,14 +368,14 @@ export default {
         .forEach((error) =>
           !condition
             ? (error.style["display"] = "none")
-            : (error.style["display"] = "block")
+            : (error.style["display"] = "block"),
         )
     },
 
     //CONDITIONS CHECKER
     isStartingPoint(element) {
       return this.startEventTypes.some(
-        (excludedName) => element.businessObject.pipesType === excludedName
+        (excludedName) => element.businessObject.pipesType === excludedName,
       )
     },
     hasTests(topology) {
@@ -392,7 +394,7 @@ export default {
           node.type === "webhook"
         ) {
           let svg = document.querySelectorAll(
-            `g[data-element-id='${node.schema_id}'] .djs-visual > *:not(text)`
+            `g[data-element-id='${node.schema_id}'] .djs-visual > *:not(text)`,
           )
           svg.forEach((svg) => {
             !node.enabled
@@ -408,7 +410,7 @@ export default {
           topology.test.forEach((test) => {
             if (test.id === node._id) {
               let svg = document.querySelectorAll(
-                `g[data-element-id='${node.schema_id}'] .djs-visual > *:not(text)`
+                `g[data-element-id='${node.schema_id}'] .djs-visual > *:not(text)`,
               )
               if (test.status !== "ok") {
                 svg.forEach((svg) => {
@@ -447,7 +449,7 @@ export default {
 
       const title = document.createElementNS(
         "http://www.w3.org/2000/svg",
-        "title"
+        "title",
       )
       title.textContent = name
       label.appendChild(title)
@@ -488,7 +490,7 @@ export default {
     window.addEventListener("queueDepthCheckbox", this.toggleOverlaysHandler)
     window.addEventListener(
       "showNodeContextActions",
-      this.showNodeContextActions
+      this.showNodeContextActions,
     )
   },
   mounted() {
@@ -501,7 +503,7 @@ export default {
     window.removeEventListener("queueDepthCheckbox", this.toggleOverlaysHandler)
     window.removeEventListener(
       "showNodeContextActions",
-      this.showNodeContextActions
+      this.showNodeContextActions,
     )
   },
 }

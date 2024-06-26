@@ -164,7 +164,7 @@ export default {
         null,
         this.activeFilter,
         this.activePaging,
-        this.activeSorter
+        this.activeSorter,
       )
     },
     async updateInfo(item) {
@@ -190,7 +190,7 @@ export default {
       null,
       null,
       this.pagingInitial,
-      this.sorterInitial
+      this.sorterInitial,
     )
     this.init("updated")
 

@@ -119,7 +119,7 @@ export default {
         null,
         null,
         this.pagingInitial,
-        this.sorterInitial
+        this.sorterInitial,
       )
     },
     async deleteItem(item) {
@@ -147,7 +147,7 @@ export default {
       null,
       null,
       this.pagingInitial,
-      this.sorterInitial
+      this.sorterInitial,
     )
   },
   created() {

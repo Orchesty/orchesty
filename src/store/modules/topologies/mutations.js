@@ -45,7 +45,7 @@ export default {
         topologiesAll: state.topologiesAll,
         processes: state.processes,
       },
-      createState()
+      createState(),
     )
   },
 }

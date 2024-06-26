@@ -58,7 +58,7 @@ export default {
 
       const reduce = (items) => {
         const categories = items.filter(
-          (item) => item.type === TOPOLOGY_ENUMS.CATEGORY
+          (item) => item.type === TOPOLOGY_ENUMS.CATEGORY,
         )
 
         categories.forEach((category) => {

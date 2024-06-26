@@ -15,7 +15,7 @@ export default {
   },
   [TOPOLOGIES.GETTERS.GET_STARTING_POINT_EVENTS]: (state) => {
     return state.topologyActiveNodes.filter(
-      (node) => node.type === "start" || node.type === "cron"
+      (node) => node.type === "start" || node.type === "cron",
     )
   },
   [TOPOLOGIES.GETTERS.GET_ACTIVE_TOPOLOGY_DIAGRAM]: (state) => {

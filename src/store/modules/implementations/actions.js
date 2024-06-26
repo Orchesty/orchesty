@@ -11,7 +11,7 @@ export default {
   },
   [IMPLEMENTATIONS.ACTIONS.CREATE_IMPLEMENTATIONS_REQUEST]: async (
     { dispatch },
-    payload
+    payload,
   ) => {
     try {
       await callApi(dispatch, {
@@ -27,13 +27,13 @@ export default {
         withNamespace(DATA_GRIDS.IMPLEMENTATIONS_LIST, GRID.ACTIONS.GRID_FETCH),
         {
           namespace: DATA_GRIDS.IMPLEMENTATIONS_LIST,
-        }
+        },
       )
 
       addSuccessMessage(
         dispatch,
         API.implementation.update.id,
-        "flashMessages.implementationCreated"
+        "flashMessages.implementationCreated",
       )
 
       return true
@@ -43,7 +43,7 @@ export default {
   },
   [IMPLEMENTATIONS.ACTIONS.UPDATE_IMPLEMENTATIONS_REQUEST]: async (
     { dispatch },
-    payload
+    payload,
   ) => {
     try {
       await callApi(dispatch, {
@@ -58,13 +58,13 @@ export default {
         withNamespace(DATA_GRIDS.IMPLEMENTATIONS_LIST, GRID.ACTIONS.GRID_FETCH),
         {
           namespace: DATA_GRIDS.IMPLEMENTATIONS_LIST,
-        }
+        },
       )
 
       addSuccessMessage(
         dispatch,
         API.implementation.update.id,
-        "flashMessages.implementationUpdated"
+        "flashMessages.implementationUpdated",
       )
 
       return true
@@ -74,7 +74,7 @@ export default {
   },
   [IMPLEMENTATIONS.ACTIONS.GET_IMPLEMENTATION_REQUEST]: async (
     { dispatch, commit },
-    payload
+    payload,
   ) => {
     try {
       const data = await callApi(dispatch, {
@@ -107,7 +107,7 @@ export default {
   },
   [IMPLEMENTATIONS.ACTIONS.DELETE_IMPLEMENTATIONS_REQUEST]: async (
     { dispatch },
-    payload
+    payload,
   ) => {
     try {
       await callApi(dispatch, {
@@ -122,13 +122,13 @@ export default {
         withNamespace(DATA_GRIDS.IMPLEMENTATIONS_LIST, GRID.ACTIONS.GRID_FETCH),
         {
           namespace: DATA_GRIDS.IMPLEMENTATIONS_LIST,
-        }
+        },
       )
 
       addSuccessMessage(
         dispatch,
         API.implementation.delete.id,
-        "flashMessages.implementationDeleted"
+        "flashMessages.implementationDeleted",
       )
       return true
     } catch {

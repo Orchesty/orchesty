@@ -43,8 +43,9 @@
                           </v-list-item-action>
                           <v-list-item-title
                             :class="{ 'error--text': !!errors[0] }"
-                            v-text="item.name"
-                          />
+                          >
+                            {item.name}
+                          </v-list-item-title>
                         </template>
                       </v-list-item>
                     </v-list-item-group>
@@ -126,7 +127,7 @@ export default {
     startingPoints() {
       if (this.nodeItems) {
         return this.nodeItems.filter((node) =>
-          ["start", "cron", "webhook"].includes(node.type)
+          ["start", "cron", "webhook"].includes(node.type),
         )
       } else {
         return []
@@ -161,7 +162,7 @@ export default {
       this.selectedTopology = topology
       this.selectedTopologyMemory = topology
       this.nodes = await this[TOPOLOGIES.ACTIONS.TOPOLOGY.RETURN_NODES](
-        this.selectedTopology._id
+        this.selectedTopology._id,
       )
       this.setStartingPoints()
       this.loadRunSettings()
@@ -191,12 +192,12 @@ export default {
     saveRunSettings() {
       localStorage.setItem(
         "orchesty:runSettings",
-        JSON.stringify({ id: this.selectedTopology._id, settings: this.body })
+        JSON.stringify({ id: this.selectedTopology._id, settings: this.body }),
       )
     },
     loadRunSettings() {
       const runSettings = JSON.parse(
-        localStorage.getItem("orchesty:runSettings")
+        localStorage.getItem("orchesty:runSettings"),
       )
       if (runSettings) {
         if (runSettings.id === this.selectedTopology._id) {
@@ -217,7 +218,7 @@ export default {
             this.saveRunSettings()
             this.isOpen = false
           }
-        }
+        },
       )
     },
   },

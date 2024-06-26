@@ -78,7 +78,7 @@ export default {
           darkMode: value,
           language: this.$i18n.locale,
           show: this.show,
-        })
+        }),
       )
       this[ADMIN_USERS.ACTIONS.UPDATE_USER_REQUEST]({
         data: {
@@ -99,7 +99,7 @@ export default {
           darkMode: this.$vuetify.theme.dark,
           language: value,
           show: this.show,
-        })
+        }),
       )
       this[ADMIN_USERS.ACTIONS.UPDATE_USER_REQUEST]({
         data: {

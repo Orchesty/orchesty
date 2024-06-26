@@ -103,7 +103,7 @@ export default {
           header.key === "" ||
           header.value === "" ||
           header.key === null ||
-          header.value === null
+          header.value === null,
       )
       return checkEmptyHeaders.length >= 1 && this.headers.length > 0
     },
@@ -115,7 +115,7 @@ export default {
           header.key === "" ||
           header.value === "" ||
           header.key === null ||
-          header.value === null
+          header.value === null,
       )
       if (checkEmptyHeaders.length >= 1 && this.headers.length > 0) {
         return

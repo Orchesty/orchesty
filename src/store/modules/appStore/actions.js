@@ -21,7 +21,7 @@ export default {
   },
   [APP_STORE.ACTIONS.GET_INSTALLED_APPS]: async (
     { dispatch, commit },
-    payload
+    payload,
   ) => {
     try {
       const response = await callApi(dispatch, {
@@ -39,7 +39,7 @@ export default {
 
   [APP_STORE.ACTIONS.GET_INSTALLED_APP]: async (
     { commit, dispatch },
-    payload
+    payload,
   ) => {
     try {
       const response = await callApi(dispatch, {
@@ -67,13 +67,13 @@ export default {
         {
           namespace: DATA_GRIDS.INSTALLED_APPS,
           params: { id: payload.userId },
-        }
+        },
       )
 
       addSuccessMessage(
         dispatch,
         API.admin.delete.id,
-        "flashMessages.appUninstalled"
+        "flashMessages.appUninstalled",
       )
 
       return true
@@ -90,7 +90,7 @@ export default {
       addSuccessMessage(
         dispatch,
         API.admin.delete.id,
-        "flashMessages.appInstalled"
+        "flashMessages.appInstalled",
       )
 
       return true
@@ -113,7 +113,7 @@ export default {
   },
   [APP_STORE.ACTIONS.GET_AVAILABLE_APP]: async (
     { dispatch, commit },
-    payload
+    payload,
   ) => {
     try {
       const response = await callApi(dispatch, {
@@ -138,7 +138,7 @@ export default {
       addSuccessMessage(
         dispatch,
         API.admin.delete.id,
-        "flashMessages.passwordChanged"
+        "flashMessages.passwordChanged",
       )
 
       return true
@@ -159,7 +159,7 @@ export default {
         addSuccessMessage(
           dispatch,
           API.appStore.subscribeToWebhook.id,
-          "flashMessages.subscribed"
+          "flashMessages.subscribed",
         )
       }
 
@@ -181,7 +181,7 @@ export default {
         addSuccessMessage(
           dispatch,
           API.appStore.unsubscribeToWebhook.id,
-          "flashMessages.unsubscribed"
+          "flashMessages.unsubscribed",
         )
       }
 
@@ -201,7 +201,7 @@ export default {
         API.appStore.activateApp.id,
         payload.data.enabled
           ? "flashMessages.activated"
-          : "flashMessages.deactivated"
+          : "flashMessages.deactivated",
       )
 
       return true

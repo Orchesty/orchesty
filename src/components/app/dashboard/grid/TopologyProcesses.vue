@@ -148,7 +148,7 @@ export default {
     ...mapGetters(REQUESTS_STATE.NAMESPACE, [REQUESTS_STATE.GETTERS.GET_STATE]),
     state() {
       return this[REQUESTS_STATE.GETTERS.GET_STATE](
-        API.dashboard.getProcesses.id
+        API.dashboard.getProcesses.id,
       )
     },
   },
@@ -170,7 +170,7 @@ export default {
         }
 
         return this.prettifyMilliseconds(
-          currentTimeMilliseconds - processStartedMilliseconds
+          currentTimeMilliseconds - processStartedMilliseconds,
         )
       } else {
         return this.prettifyMilliseconds(process.duration)
@@ -211,7 +211,7 @@ export default {
       null,
       null,
       this.pagingInitial,
-      this.sorterInitial
+      this.sorterInitial,
     )
   },
 }

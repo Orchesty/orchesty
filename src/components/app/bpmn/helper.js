@@ -41,8 +41,8 @@ export function fitIntoScreen(viewer, diagram, margins = [20, 60]) {
       scaleLimit[1],
       Math.max(
         Math.min(maxW / (right - left), maxH / (bottom - top)),
-        scaleLimit[0]
-      )
+        scaleLimit[0],
+      ),
     )
     maxW = maxW / scale - margins[0]
     maxH = maxH / scale - margins[1]

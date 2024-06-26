@@ -6,7 +6,7 @@ export default function (content, fileName, mimeType) {
     // IE10
     return navigator.msSaveBlob(
       new Blob([content], { type: mimeType }),
-      fileName
+      fileName,
     )
   } else if ("download" in a) {
     // html5 A[download]

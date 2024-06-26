@@ -146,8 +146,8 @@ export default {
       let nodeKeys = keys.filter((node) =>
         Object.prototype.hasOwnProperty.call(
           this.topologyActiveStatistics.items[node],
-          "queue_depth"
-        )
+          "queue_depth",
+        ),
       )
       this.nodes = nodeKeys.map((node) => ({
         data: { ...this.topologyActiveStatistics.items[node] },
@@ -158,8 +158,8 @@ export default {
       this.nodes.forEach((node) => {
         parameters.push(
           ...Object.keys(node.data).filter(
-            (it) => it !== "queue_depth" && it !== "process"
-          )
+            (it) => it !== "queue_depth" && it !== "process",
+          ),
         )
       })
       this.nodeParameters = [...new Set(parameters)]
@@ -184,8 +184,8 @@ export default {
           ) {
             labels.push(
               this.topologyActiveNodes.filter(
-                (name) => name._id === node.name
-              )[0].name
+                (name) => name._id === node.name,
+              )[0].name,
             )
           }
         }
@@ -238,7 +238,7 @@ export default {
         ) {
           labels.push(
             this.topologyActiveNodes.filter((name) => name._id === node.name)[0]
-              .name
+              .name,
           )
         }
       })

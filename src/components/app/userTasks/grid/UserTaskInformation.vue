@@ -42,7 +42,7 @@
                 <span>{{
                   userTask || isTrash
                     ? $options.filters.internationalFormat(
-                        trashTaskSwitcher("created")
+                        trashTaskSwitcher("created"),
                       )
                     : ""
                 }}</span>
@@ -59,7 +59,7 @@
                 <span>{{
                   userTask || isTrash
                     ? $options.filters.internationalFormat(
-                        trashTaskSwitcher("updated")
+                        trashTaskSwitcher("updated"),
                       )
                     : ""
                 }}</span>
