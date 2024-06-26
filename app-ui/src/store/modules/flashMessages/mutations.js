@@ -16,7 +16,7 @@ export default {
   },
   [FLASH_MESSAGES.MUTATIONS.REMOVE]: (state, payload) => {
     state.flashMessages = state.flashMessages.filter(
-      (item) => item.id === payload
+      (item) => item.id === payload,
     )
   },
   [FLASH_MESSAGES.MUTATIONS.RESET]: (state) => {

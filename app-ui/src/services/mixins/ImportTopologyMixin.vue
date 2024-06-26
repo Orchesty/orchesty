@@ -83,13 +83,13 @@ export default {
         }
         if (setDiagramState) {
           await this[TOPOLOGIES.ACTIONS.TOPOLOGY.SET_LOCAL_DIAGRAM](
-            new XMLSerializer().serializeToString(xmlDoc)
+            new XMLSerializer().serializeToString(xmlDoc),
           )
           this.isOpen = false
         } else {
           await this.saveTopology(
             form,
-            new XMLSerializer().serializeToString(xmlDoc)
+            new XMLSerializer().serializeToString(xmlDoc),
           )
         }
         this.showFlashMessage(false, "Topoplogy imported")
@@ -107,7 +107,7 @@ export default {
         if (!xmlDoc.getElementsByTagName("bpmn:process")[0]) {
           this.showFlashMessage(
             true,
-            "Error reading the file. Please check your file format/encoding."
+            "Error reading the file. Please check your file format/encoding.",
           )
           return
         }

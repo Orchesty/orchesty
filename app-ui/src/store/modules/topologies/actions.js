@@ -19,7 +19,7 @@ export default {
       addSuccessMessage(
         dispatch,
         API.topology.enable.id,
-        "flashMessages.topologyCreated"
+        "flashMessages.topologyCreated",
       )
 
       return response
@@ -40,7 +40,7 @@ export default {
       addSuccessMessage(
         dispatch,
         API.topology.enable.id,
-        `flashMessages.topologySaved`
+        `flashMessages.topologySaved`,
       )
 
       return response
@@ -51,7 +51,7 @@ export default {
 
   [TOPOLOGIES.ACTIONS.TOPOLOGY.CHECK_DIAGRAM_CHANGED]: async (
     { dispatch },
-    payload
+    payload,
   ) => {
     try {
       const response = await callApi(dispatch, {
@@ -114,7 +114,7 @@ export default {
 
   [TOPOLOGIES.ACTIONS.DATA.GET_STATISTICS]: async (
     { dispatch, commit },
-    payload
+    payload,
   ) => {
     try {
       const response = await callApi(dispatch, {
@@ -133,7 +133,7 @@ export default {
   },
   [TOPOLOGIES.ACTIONS.TOPOLOGY.GET_DIAGRAM]: async (
     { dispatch, commit },
-    payload
+    payload,
   ) => {
     try {
       const response = await callApi(dispatch, {
@@ -150,7 +150,7 @@ export default {
   },
   [TOPOLOGIES.ACTIONS.TOPOLOGY.RETURN_DIAGRAM]: async (
     { dispatch },
-    payload
+    payload,
   ) => {
     try {
       return await callApi(dispatch, {
@@ -180,7 +180,7 @@ export default {
       addSuccessMessage(
         dispatch,
         API.topology.enable.id,
-        "flashMessages.topologyEnabled"
+        "flashMessages.topologyEnabled",
       )
 
       return true
@@ -198,7 +198,7 @@ export default {
       addSuccessMessage(
         dispatch,
         API.topology.disable.id,
-        "flashMessages.topologyDisabled"
+        "flashMessages.topologyDisabled",
       )
 
       return true
@@ -223,13 +223,13 @@ export default {
         addErrorMessage(
           dispatch,
           API.topology.run.id,
-          "flashMessages.topologyRunFail"
+          "flashMessages.topologyRunFail",
         )
       } else {
         addSuccessMessage(
           dispatch,
           API.topology.run.id,
-          "flashMessages.topologyRunSuccess"
+          "flashMessages.topologyRunSuccess",
         )
       }
 
@@ -248,7 +248,7 @@ export default {
       addSuccessMessage(
         dispatch,
         API.topology.test.id,
-        "flashMessages.topologyTested"
+        "flashMessages.topologyTested",
       )
 
       return true
@@ -266,7 +266,7 @@ export default {
       addSuccessMessage(
         dispatch,
         API.topology.publish.id,
-        "flashMessages.topologyPublished"
+        "flashMessages.topologyPublished",
       )
 
       return true
@@ -276,7 +276,7 @@ export default {
   },
   [TOPOLOGIES.ACTIONS.TOPOLOGY.NODES]: async (
     { dispatch, commit },
-    payload
+    payload,
   ) => {
     try {
       const response = await callApi(dispatch, {
@@ -303,7 +303,7 @@ export default {
   },
   [TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID]: async (
     { commit, dispatch },
-    payload
+    payload,
   ) => {
     try {
       const response = await callApi(dispatch, {
@@ -329,7 +329,7 @@ export default {
       addSuccessMessage(
         dispatch,
         API.topology.clone.id,
-        "flashMessages.topologyCloned"
+        "flashMessages.topologyCloned",
       )
 
       return response
@@ -360,7 +360,7 @@ export default {
   },
   [TOPOLOGIES.ACTIONS.DATA.GET_PROGRESS]: async (
     { commit, dispatch },
-    payload
+    payload,
   ) => {
     try {
       const response = await callApi(dispatch, {
@@ -387,7 +387,7 @@ export default {
       addSuccessMessage(
         dispatch,
         API.topology.enable.id,
-        "flashMessages.topologyMoved"
+        "flashMessages.topologyMoved",
       )
 
       return true
@@ -405,7 +405,7 @@ export default {
       addSuccessMessage(
         dispatch,
         API.topology.enable.id,
-        "flashMessages.topologyDeleted"
+        "flashMessages.topologyDeleted",
       )
 
       return true
@@ -425,7 +425,7 @@ export default {
       addSuccessMessage(
         dispatch,
         API.topology.enable.id,
-        "flashMessages.topologyEdited"
+        "flashMessages.topologyEdited",
       )
 
       return true
@@ -445,7 +445,7 @@ export default {
       addSuccessMessage(
         dispatch,
         API.topology.enable.id,
-        "flashMessages.folderCreated"
+        "flashMessages.folderCreated",
       )
 
       return true
@@ -463,7 +463,7 @@ export default {
       addSuccessMessage(
         dispatch,
         API.topology.enable.id,
-        "flashMessages.folderDeleted"
+        "flashMessages.folderDeleted",
       )
 
       return true
@@ -483,7 +483,7 @@ export default {
       addSuccessMessage(
         dispatch,
         API.topology.enable.id,
-        "flashMessages.folderEdited"
+        "flashMessages.folderEdited",
       )
 
       return true

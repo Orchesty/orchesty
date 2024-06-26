@@ -94,7 +94,7 @@ export default {
         this.event,
         this.altName.toString(),
         this.folderId,
-        this.setDiagramState
+        this.setDiagramState,
       )
       this.isOpen = false
     },
@@ -112,7 +112,7 @@ export default {
         this.implementationsFile = state.implementationsFile.map((file) => {
           if (
             this.implementationsProject.filter(
-              (implementationProject) => implementationProject.url === file
+              (implementationProject) => implementationProject.url === file,
             ).length
           ) {
             return { name: file, replace: file }

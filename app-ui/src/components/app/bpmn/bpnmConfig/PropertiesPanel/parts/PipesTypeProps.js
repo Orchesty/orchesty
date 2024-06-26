@@ -17,6 +17,6 @@ export default function (group, element, translate) {
       modelProperty: "pipesType",
       // eslint-disable-next-line no-unused-vars
       hidden: (element) => true,
-    })
+    }),
   )
 }

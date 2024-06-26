@@ -60,7 +60,7 @@ export default {
           if (res) {
             this.isOpen = false
           }
-        }
+        },
       )
     },
   },

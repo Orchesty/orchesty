@@ -89,7 +89,7 @@ export default {
         })
       } else {
         await this[TOPOLOGIES.ACTIONS.TOPOLOGY.GET_DIAGRAM](
-          this.topologyActive._id
+          this.topologyActive._id,
         )
       }
     },
@@ -101,7 +101,7 @@ export default {
     events.listen(EVENTS.EDITOR.COMPARE_XML, async (redirectFunction) => {
       this.redirectFunction = redirectFunction
       const xml = new XMLSerializer().serializeToString(
-        await this.$refs.editor.getCurrentXMLDiagram()
+        await this.$refs.editor.getCurrentXMLDiagram(),
       )
 
       const diagramChanged = await this[

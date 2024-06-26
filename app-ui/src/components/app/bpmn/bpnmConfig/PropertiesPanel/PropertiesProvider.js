@@ -16,7 +16,7 @@ function createGeneralTabGroups(
   element,
   bpmnFactory,
   elementRegistry,
-  translate
+  translate,
 ) {
   if (is(element, "bpmn:SequenceFlow")) {
     return
@@ -54,7 +54,7 @@ function createRepeaterTabGroups(
   element,
   bpmnFactory,
   elementRegistry,
-  translate
+  translate,
 ) {
   const repeaterGroup = {
     id: "repeater",
@@ -73,7 +73,7 @@ function createLimiterTabGroups(
   element,
   bpmnFactory,
   elementRegistry,
-  translate
+  translate,
 ) {
   const limiterGroup = {
     id: "limiter",
@@ -91,7 +91,7 @@ function createBridgeTabGroups(
   element,
   bpmnFactory,
   elementRegistry,
-  translate
+  translate,
 ) {
   const bridgeGroup = {
     id: "bridge",
@@ -108,7 +108,7 @@ export default function PipesPropertiesProvider(
   eventBus,
   bpmnFactory,
   elementRegistry,
-  translate
+  translate,
 ) {
   PropertiesActivator.call(this, eventBus)
 
@@ -121,7 +121,7 @@ export default function PipesPropertiesProvider(
           element,
           bpmnFactory,
           elementRegistry,
-          translate
+          translate,
         ),
       },
       {
@@ -131,7 +131,7 @@ export default function PipesPropertiesProvider(
           element,
           bpmnFactory,
           elementRegistry,
-          translate
+          translate,
         ),
       },
       {
@@ -141,7 +141,7 @@ export default function PipesPropertiesProvider(
           element,
           bpmnFactory,
           elementRegistry,
-          translate
+          translate,
         ),
       },
       {
@@ -151,7 +151,7 @@ export default function PipesPropertiesProvider(
           element,
           bpmnFactory,
           elementRegistry,
-          translate
+          translate,
         ),
       },
     ]

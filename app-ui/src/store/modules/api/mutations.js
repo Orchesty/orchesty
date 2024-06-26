@@ -5,7 +5,7 @@ import { resetState } from "../../utils"
 export default {
   [REQUESTS_STATE.MUTATIONS.START_SENDING]: (
     state,
-    { id, errorType, loadingType }
+    { id, errorType, loadingType },
   ) => {
     const items = { ...state.items }
 

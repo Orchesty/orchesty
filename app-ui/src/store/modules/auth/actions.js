@@ -30,7 +30,7 @@ export default {
       addSuccessMessage(
         dispatch,
         API.auth.forgotPassword.id,
-        "flashMessages.welcomeBack"
+        "flashMessages.welcomeBack",
       )
     } catch (e) {
       addErrorMessage(dispatch, API.auth.forgotPassword.id, e)
@@ -73,7 +73,7 @@ export default {
       addSuccessMessage(
         dispatch,
         API.auth.forgotPassword.id,
-        "flashMessages.forgotPassword"
+        "flashMessages.forgotPassword",
       )
 
       return payload.email
@@ -116,7 +116,7 @@ export default {
   },
   [AUTH.ACTIONS.CHECK_REGISTER_TOKEN_REQUEST]: async (
     { dispatch },
-    payload
+    payload,
   ) => {
     try {
       const data = await callApi(dispatch, {
@@ -150,7 +150,7 @@ export default {
       addSuccessMessage(
         dispatch,
         API.auth.changePassword.id,
-        "flashMessages.changePassword"
+        "flashMessages.changePassword",
       )
 
       return true
@@ -160,7 +160,7 @@ export default {
   },
   [AUTH.ACTIONS.UPDATE_CONTACT_REQUEST]: async (
     { dispatch, commit },
-    payload
+    payload,
   ) => {
     try {
       await callApi(dispatch, {

@@ -24,7 +24,7 @@ export default {
   [REQUESTS_STATE.GETTERS.GET_GLOBAL_ERRORS]: (state) => {
     return (
       Object.values(state.items).filter(
-        (item) => item.isError && item.errorType === undefined
+        (item) => item.isError && item.errorType === undefined,
       ) || []
     )
   },
@@ -39,7 +39,7 @@ export default {
       } else {
         requests =
           Object.values(state.items).filter(
-            (item) => ids.includes(item.id) && type === item.errorType
+            (item) => ids.includes(item.id) && type === item.errorType,
           ) || []
       }
 

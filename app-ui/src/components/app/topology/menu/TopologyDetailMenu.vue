@@ -103,7 +103,7 @@ export default {
     ]),
     async clone() {
       let response = await this[TOPOLOGIES.ACTIONS.TOPOLOGY.CLONE](
-        this.topologyActive._id
+        this.topologyActive._id,
       )
       if (response) {
         await this[TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES]()
@@ -116,12 +116,12 @@ export default {
     },
     async exportXML() {
       await this[TOPOLOGIES.ACTIONS.TOPOLOGY.GET_DIAGRAM](
-        this.topologyActive._id
+        this.topologyActive._id,
       )
       download(
         this.topologyActiveDiagram,
         `${this.topologyActive.name}.v${this.topologyActive.version}` + ".tplg",
-        "application/bpmn+xml"
+        "application/bpmn+xml",
       )
     },
   },

@@ -172,7 +172,7 @@ export default {
             node[0].name,
             node[0].type,
             node[0].topology_id,
-            this.topologyActive.name
+            this.topologyActive.name,
           )
         } else {
           this.startingPoint = null
@@ -187,7 +187,7 @@ export default {
       nodeType,
       topologyId,
       topologyName,
-      data = {}
+      data = {},
     ) {
       return nodeType === "webhook"
         ? `${baseURL}/topologies/${topologyName}/nodes/${nodeName}/token/${
@@ -219,7 +219,7 @@ export default {
 
       const title = document.createElementNS(
         "http://www.w3.org/2000/svg",
-        "title"
+        "title",
       )
       title.textContent = name
       label.appendChild(title)
@@ -245,13 +245,13 @@ export default {
         ({ context }) => {
           const modeling = this.modeler.get("modeling")
           modeling.updateLabel(context.shape, context.shape.pipesType)
-        }
+        },
       )
 
       this.modeler.on("shape.added", (event) => {
         //get sdk service names
         let implementations = JSON.parse(
-          localStorage.getItem(LOCAL_STORAGE.IMPLEMENTATIONS)
+          localStorage.getItem(LOCAL_STORAGE.IMPLEMENTATIONS),
         ).items
         if (!implementations) {
           return
@@ -262,14 +262,14 @@ export default {
 
         //get all sdk services available
         const sdkHostServices = JSON.parse(
-          localStorage.getItem(LOCAL_STORAGE.SDK_OPTIONS)
+          localStorage.getItem(LOCAL_STORAGE.SDK_OPTIONS),
         )
 
         //get name of the used SDK
         const sdkServiceName =
           implementations.filter(
             (implementation) =>
-              implementation.url === event.element.businessObject.sdkHost
+              implementation.url === event.element.businessObject.sdkHost,
           )[0]?.name || null
 
         //check if node sdk name has service options for the provided pipes type
@@ -281,11 +281,11 @@ export default {
             (item) => ({
               name: item.name,
               value: item.name,
-            })
+            }),
           )
           event.element.businessObject.set(
             "sdkHostOptions",
-            [""].concat(options)
+            [""].concat(options),
           )
         }
 
@@ -298,7 +298,7 @@ export default {
                 let option = document.createElement("option")
                 option.value = option.text = item.name ?? ""
                 select.add(option)
-              }
+              },
             )
           }
         }
@@ -314,7 +314,7 @@ export default {
 
         //get sdk service names
         let implementations = JSON.parse(
-          localStorage.getItem(LOCAL_STORAGE.IMPLEMENTATIONS)
+          localStorage.getItem(LOCAL_STORAGE.IMPLEMENTATIONS),
         ).items
         if (!implementations) {
           return
@@ -333,13 +333,13 @@ export default {
 
         //get all sdk services available
         const sdkHostServices = JSON.parse(
-          localStorage.getItem(LOCAL_STORAGE.SDK_OPTIONS)
+          localStorage.getItem(LOCAL_STORAGE.SDK_OPTIONS),
         )
 
         //get name of the used SDK
         const sdkServiceName = implementations.filter(
           (implementation) =>
-            implementation.url === event.element.businessObject.sdkHost
+            implementation.url === event.element.businessObject.sdkHost,
         )[0].name
 
         if (event.element.businessObject.get("sdkHost")) {
@@ -356,7 +356,7 @@ export default {
               if (event.element.businessObject.name === item.name) {
                 event.element.businessObject.set(
                   "pipes:appName",
-                  item.app || ""
+                  item.app || "",
                 )
               }
 
@@ -364,11 +364,11 @@ export default {
                 name: item.name,
                 value: item.name,
               }
-            }
+            },
           )
           event.element.businessObject.set(
             "sdkHostOptions",
-            [""].concat(options)
+            [""].concat(options),
           )
         }
 
@@ -381,7 +381,7 @@ export default {
                 let option = document.createElement("option")
                 option.value = option.text = item.name ?? ""
                 select.add(option)
-              }
+              },
             )
           }
         }
@@ -431,7 +431,7 @@ export default {
     async saveDiagram() {
       if (this.modeler) {
         const xml = new XMLSerializer().serializeToString(
-          await this.getCurrentXMLDiagram()
+          await this.getCurrentXMLDiagram(),
         )
 
         return await this[TOPOLOGIES.ACTIONS.TOPOLOGY.SAVE_DIAGRAM]({
@@ -455,11 +455,11 @@ export default {
             new XMLSerializer().serializeToString(xml),
             `${this.topologyActive.name}.v${this.topologyActive.version}` +
               ".tplg",
-            "application/bpmn+xml"
+            "application/bpmn+xml",
           )
           this.showFlashMessage(
             false,
-            `Topology ${this.topologyActive.name} exported`
+            `Topology ${this.topologyActive.name} exported`,
           )
         } catch (err) {
           this.showFlashMessage(true, err.response.data.message)

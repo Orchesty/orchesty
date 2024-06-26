@@ -485,12 +485,12 @@ export default {
     async authorizeApp() {
       const authorizeURL = new URL(
         `/api/applications/${this.appActive.key}/authorize`,
-        config.backend.apiBaseUrl
+        config.backend.apiBaseUrl,
       )
       authorizeURL.searchParams.append("redirect_url", window.location.href)
       authorizeURL.searchParams.append(
         "Authorization",
-        localStorage.getItem(LOCAL_STORAGE.USER_TOKEN)
+        localStorage.getItem(LOCAL_STORAGE.USER_TOKEN),
       )
       window.open(authorizeURL.href, "_blank").focus()
 
@@ -537,14 +537,14 @@ export default {
       this.settingsSnapshots = this.settingsConfig.map((form) => ({
         key: form.key,
         fields: Object.fromEntries(
-          form.fields.map((field) => [field.key, field.value])
+          form.fields.map((field) => [field.key, field.value]),
         ),
       }))
 
       this.settingsForms = this.settingsConfig.map((form) => ({
         key: form.key,
         fields: Object.fromEntries(
-          form.fields.map((field) => [field.key, field.value])
+          form.fields.map((field) => [field.key, field.value]),
         ),
         matchesWithSnapshot: true,
         hasValidSettings: true,
@@ -579,7 +579,7 @@ export default {
 
     areFormsMatching(keys, modifiedForm, snapshot) {
       return keys.every(
-        (key) => snapshot.fields[key] === modifiedForm.fields[key]
+        (key) => snapshot.fields[key] === modifiedForm.fields[key],
       )
     },
 
@@ -595,7 +595,7 @@ export default {
         modifiedForm.matchesWithSnapshot = this.areFormsMatching(
           keys,
           modifiedForm,
-          snapshot
+          snapshot,
         )
       }
     },

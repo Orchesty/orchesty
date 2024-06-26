@@ -51,8 +51,8 @@ export default {
             }
 
             return item
-          })
-        )
+          }),
+        ),
       ),
     }
   },

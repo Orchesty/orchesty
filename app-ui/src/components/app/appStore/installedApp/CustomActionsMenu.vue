@@ -67,7 +67,7 @@ export default {
           if (res.started === true) {
             this.showFlashMessage(
               false,
-              this.$t("flashMessages.actionCallSuccess")
+              this.$t("flashMessages.actionCallSuccess"),
             )
           } else {
             this.showFlashMessage(true, res.message)

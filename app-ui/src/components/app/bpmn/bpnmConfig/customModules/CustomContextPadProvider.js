@@ -15,7 +15,7 @@ export default function CustomContextPadProvider(
   popupMenu,
   canvas,
   rules,
-  translate
+  translate,
 ) {
   ContextPadProvider.call(
     this,
@@ -30,7 +30,7 @@ export default function CustomContextPadProvider(
     popupMenu,
     canvas,
     rules,
-    translate
+    translate,
   )
 
   const cached = bind(this.getContextPadEntries, this)

@@ -53,7 +53,7 @@
       >
         <span
           :class="`font-weight-bold ${setColor(
-            items.item.severity
+            items.item.severity,
           )}--text text-uppercase`"
           >{{ items.item.severity }}</span
         >
@@ -209,7 +209,7 @@ export default {
       null,
       null,
       this.pagingInitial,
-      this.sorterInitial
+      this.sorterInitial,
     )
   },
 }

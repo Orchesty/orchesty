@@ -28,7 +28,7 @@ export default {
       addSuccessMessage(
         dispatch,
         API.jwtTokens.create.id,
-        "flashMessages.jwtTokenCreated"
+        "flashMessages.jwtTokenCreated",
       )
 
       return true
@@ -48,7 +48,7 @@ export default {
       addSuccessMessage(
         dispatch,
         API.jwtTokens.delete.id,
-        "flashMessages.jwtTokenDeleted"
+        "flashMessages.jwtTokenDeleted",
       )
 
       return true

@@ -32,6 +32,6 @@ export default function (group, element, translate) {
 
         return idError ? { id: idError } : {}
       },
-    })
+    }),
   )
 }

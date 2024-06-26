@@ -61,7 +61,7 @@ export default {
             await this[TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES]()
             this.isOpen = false
           }
-        }
+        },
       )
     },
   },

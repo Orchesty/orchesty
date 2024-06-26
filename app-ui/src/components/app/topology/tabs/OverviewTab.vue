@@ -138,7 +138,7 @@ export default {
         }
 
         return this.prettifyMilliseconds(
-          currentTimeMilliseconds - processStartedMilliseconds
+          currentTimeMilliseconds - processStartedMilliseconds,
         )
       } else {
         return this.prettifyMilliseconds(process.duration)
@@ -177,7 +177,7 @@ export default {
       null,
       null,
       this.pagingInitial,
-      this.sorterInitial
+      this.sorterInitial,
     )
   },
 }

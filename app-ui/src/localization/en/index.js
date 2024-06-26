@@ -23,5 +23,5 @@ export default Object.assign(
   page,
   grid,
   modal,
-  contextMenu
+  contextMenu,
 )

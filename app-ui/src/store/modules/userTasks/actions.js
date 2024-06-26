@@ -17,7 +17,7 @@ export default {
       addSuccessMessage(
         dispatch,
         API.userTask.accept.id,
-        "flashMessages.userTaskAccept"
+        "flashMessages.userTaskAccept",
       )
 
       return true
@@ -37,7 +37,7 @@ export default {
       addSuccessMessage(
         dispatch,
         API.userTask.acceptAll.id,
-        "flashMessages.userTaskAcceptList"
+        "flashMessages.userTaskAcceptList",
       )
 
       return true
@@ -61,7 +61,7 @@ export default {
   },
   [USER_TASKS.ACTIONS.USER_TASK_FETCH_TASKS]: async (
     { dispatch, commit },
-    payload
+    payload,
   ) => {
     try {
       const data = await callApi(dispatch, {
@@ -88,7 +88,7 @@ export default {
       addSuccessMessage(
         dispatch,
         API.userTask.reject.id,
-        "flashMessages.userTaskReject"
+        "flashMessages.userTaskReject",
       )
 
       return true
@@ -108,7 +108,7 @@ export default {
       addSuccessMessage(
         dispatch,
         API.userTask.rejectAll.id,
-        "flashMessages.userTaskRejectList"
+        "flashMessages.userTaskRejectList",
       )
 
       return true
@@ -130,7 +130,7 @@ export default {
       addSuccessMessage(
         dispatch,
         API.userTask.update.id,
-        "flashMessages.userTaskUpdate"
+        "flashMessages.userTaskUpdate",
       )
 
       return true

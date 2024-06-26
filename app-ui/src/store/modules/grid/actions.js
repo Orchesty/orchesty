@@ -44,7 +44,7 @@ export default {
   },
   [GRID.ACTIONS.FETCH_WITH_INITIAL_STATE]: async (
     { dispatch, state },
-    payload
+    payload,
   ) => {
     const defaultState = createDefaultGridState(payload.namespace, state.backup)
     dispatch(GRID.ACTIONS.GRID_FETCH, {

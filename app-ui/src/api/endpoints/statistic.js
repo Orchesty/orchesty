@@ -25,7 +25,7 @@ export default {
     request: ({ payload }) => {
       return {
         url: `metrics/topology/${payload.id}/requests?filter=${JSON.stringify(
-          payload.settings || []
+          payload.settings || [],
         )}`,
         method: "GET",
       }

@@ -69,7 +69,7 @@ export default {
     ]),
     async submit(values) {
       await this[IMPLEMENTATIONS.ACTIONS.CREATE_IMPLEMENTATIONS_REQUEST](
-        values
+        values,
       ).then((res) => {
         if (res) {
           this.isOpen = false

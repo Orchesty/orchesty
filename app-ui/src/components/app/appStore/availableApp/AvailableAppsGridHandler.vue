@@ -116,7 +116,7 @@ export default {
       if (this.appsAvailable)
         this.appsMerged = this.appsAvailable.map((availableAppData) => {
           const installedAppData = this.appsInstalled.find(
-            (installedApp) => installedApp.key === availableAppData.key
+            (installedApp) => installedApp.key === availableAppData.key,
           )
           if (installedAppData) {
             const app = {

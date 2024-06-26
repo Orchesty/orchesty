@@ -337,7 +337,7 @@ export default {
           paging: paging || this.paging,
           sorter: sorter || this.sorter,
           params: this.fixedParams,
-        }
+        },
       )
     },
 
@@ -358,7 +358,7 @@ export default {
           paging: paging || null,
           sorter: sorter || null,
           params: this.fixedParams,
-        }
+        },
       )
     },
     async fetchGridWithInitials(search, params, filter, paging, sorter) {
@@ -378,7 +378,7 @@ export default {
           paging: paging || null,
           sorter: sorter || null,
           params: this.fixedParams,
-        }
+        },
       )
 
       this.initialsFetched = true
@@ -406,7 +406,7 @@ export default {
         return truncatedHeader
       })
       return truncatedHeaders.filter(
-        (item) => item.visible === true || item.alwaysVisible === true
+        (item) => item.visible === true || item.alwaysVisible === true,
       )
     },
     isItemVisible(name) {
@@ -443,7 +443,7 @@ export default {
             this.fixedParams,
             this.filter,
             paging,
-            sorter
+            sorter,
           )
         }
       },
@@ -461,7 +461,7 @@ export default {
   },
   async beforeDestroy() {
     await this.$store.dispatch(
-      withNamespace(this.namespace, GRID.ACTIONS.RESET)
+      withNamespace(this.namespace, GRID.ACTIONS.RESET),
     )
   },
 }

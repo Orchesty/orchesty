@@ -4,7 +4,7 @@ import { REQUESTS_STATE } from "@/store/modules/api/types"
 export default {
   [REQUESTS_STATE.ACTIONS.CALL_CUSTOM_REQUEST]: async (
     { dispatch },
-    payload
+    payload,
   ) => {
     try {
       return callCustomApi(dispatch, {

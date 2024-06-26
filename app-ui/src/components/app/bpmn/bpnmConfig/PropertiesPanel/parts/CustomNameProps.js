@@ -42,7 +42,7 @@ export default function (group, element, translate) {
         setProperty(element, properties) {
           return cmdHelper.updateProperties(element, properties)
         },
-      })
+      }),
     )
   }
 
@@ -70,7 +70,7 @@ export default function (group, element, translate) {
         setProperty(element, properties) {
           return cmdHelper.updateProperties(element, properties)
         },
-      })
+      }),
     )
   } else {
     if (!getBusinessObject(element).name) {
@@ -102,7 +102,7 @@ export default function (group, element, translate) {
         setProperty(element, properties) {
           return cmdHelper.updateProperties(element, properties)
         },
-      })
+      }),
     )
   }
 }

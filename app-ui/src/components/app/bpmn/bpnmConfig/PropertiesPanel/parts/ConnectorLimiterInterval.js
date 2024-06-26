@@ -38,6 +38,6 @@ export default function (group, element, translate) {
       setProperty(element, properties) {
         return cmdHelper.updateProperties(element, properties)
       },
-    })
+    }),
   )
 }

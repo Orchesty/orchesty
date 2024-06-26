@@ -18,7 +18,7 @@ export default {
       addSuccessMessage(
         dispatch,
         API.admin.create.id,
-        "flashMessages.emailSent"
+        "flashMessages.emailSent",
       )
       return true
     } catch {
@@ -27,7 +27,7 @@ export default {
   },
   [ADMIN_USERS.ACTIONS.GET_USER_REQUEST]: async (
     { dispatch, commit },
-    payload
+    payload,
   ) => {
     try {
       commit(ADMIN_USERS.MUTATIONS.GET_USER_RESPONSE, null)
@@ -49,7 +49,7 @@ export default {
   },
   [ADMIN_USERS.ACTIONS.UPDATE_USER_REQUEST]: async (
     { dispatch, commit },
-    payload
+    payload,
   ) => {
     try {
       await callApi(dispatch, {
@@ -64,7 +64,7 @@ export default {
       addSuccessMessage(
         dispatch,
         API.admin.create.id,
-        "flashMessages.userUpdated"
+        "flashMessages.userUpdated",
       )
       return true
     } catch {
@@ -86,12 +86,12 @@ export default {
         withNamespace(DATA_GRIDS.ADMIN_USERS_LIST, GRID.ACTIONS.GRID_FETCH),
         {
           namespace: DATA_GRIDS.ADMIN_USERS_LIST,
-        }
+        },
       )
       addSuccessMessage(
         dispatch,
         API.admin.delete.id,
-        "flashMessages.userDeleted"
+        "flashMessages.userDeleted",
       )
 
       return true

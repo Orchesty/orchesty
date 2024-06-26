@@ -58,7 +58,7 @@ const checkError = (errors, store, id, errorType) => {
 
 const call = (
   { requestData, params = null, throwError = false, store },
-  sender
+  sender,
 ) => {
   const { id, errorType, loadingType, request, reduce, mock } = requestData
 
