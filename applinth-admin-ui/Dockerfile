@@ -1,5 +1,5 @@
 ### Build step
-FROM node:16-alpine as builder
+FROM node:18-alpine AS builder
 
 RUN apk add --no-cache python3 make g++
 
@@ -12,7 +12,7 @@ COPY pnpm-lock.yaml ./
 RUN pnpm install
 
 ### Build step
-FROM node:16-alpine as pre-cache
+FROM node:18-alpine AS pre-cache
 
 # Build
 WORKDIR /build

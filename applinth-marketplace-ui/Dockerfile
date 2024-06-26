@@ -1,5 +1,5 @@
 ### Build step
-FROM node:18-slim as builder
+FROM node:18-slim AS builder
 
 RUN npm i -g pnpm
 
@@ -10,7 +10,7 @@ COPY pnpm-lock.yaml ./
 RUN pnpm install
 
 ### Build step
-FROM node:18-slim as pre-cache
+FROM node:18-slim AS pre-cache
 
 # Build
 WORKDIR /build
