@@ -376,7 +376,7 @@ export default {
   min-width: 0;
   flex-direction: column;
 
-  @media #{map-get($display-breakpoints, 'sm-and-down')} {
+  @media #{map.get($display-breakpoints, 'sm-and-down')} {
     flex: 1 0 100%;
     align-items: flex-start;
   }
