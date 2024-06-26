@@ -77,7 +77,7 @@ describe('clientsController', () => {
         });
         it('400', async () => {
             await createClients();
-            const resp = await supertest(getServer()).get('/clients/123456789012');
+            const resp = await supertest(getServer()).get('/clients/123456789012123456789012');
             assert.deepEqual(resp.statusCode, 400);
         });
     });
@@ -94,7 +94,7 @@ describe('clientsController', () => {
         });
         it('400', async () => {
             await createClients();
-            const resp = await supertest(getServer()).put('/clients/123456789012').send({ clientId: 'clientId1' });
+            const resp = await supertest(getServer()).put('/clients/123456789012123456789012').send({ clientId: 'clientId1' });
             assert.deepEqual(resp.statusCode, 400);
         });
     });

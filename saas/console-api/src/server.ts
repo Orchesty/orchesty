@@ -7,6 +7,6 @@ initServices()
         const server = createServer();
         server.listen(app.port);
         logger.info('Servers started');
-    }).catch((e) => {
+    }).catch((e: unknown) => {
         logger.error(e);
     });

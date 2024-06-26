@@ -435,7 +435,7 @@ export default class UsageStatsService {
         }
 
         if (query.tail) {
-            if (query.timeRangeStart || query.timeRangeEnd || query.installedDate) {
+            if (query.timeRangeStart ?? query.timeRangeEnd ?? query.installedDate) {
                 throw new DateParseError('Parameter installedDate, timeRangeStart and/or timeRangeEnd is/are set with tail!', 3);
             }
 

@@ -40,7 +40,7 @@ describe('cloudsController', () => {
         });
         it('400', async () => {
             await createClouds();
-            const resp = await supertest(getServer()).get('/clouds/123456789012');
+            const resp = await supertest(getServer()).get('/clouds/123456789012123456789012');
             assert.deepEqual(resp.statusCode, 400);
         });
     });
@@ -57,7 +57,7 @@ describe('cloudsController', () => {
         });
         it('400', async () => {
             await createClouds();
-            const resp = await supertest(getServer()).put('/clouds/123456789012').send({ tenantId: 'tenantId1' });
+            const resp = await supertest(getServer()).put('/clouds/123456789012123456789012').send({ tenantId: 'tenantId1' });
             assert.deepEqual(resp.statusCode, 400);
         });
     });

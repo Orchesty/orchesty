@@ -80,7 +80,7 @@ describe('addressesController', () => {
         });
         it('400', async () => {
             await createAddresses();
-            const resp = await supertest(getServer()).get('/addresses/123456789012');
+            const resp = await supertest(getServer()).get('/addresses/123456789012123456789012');
             assert.deepEqual(resp.statusCode, 400);
         });
     });
@@ -97,7 +97,7 @@ describe('addressesController', () => {
         });
         it('400', async () => {
             await createAddresses();
-            const resp = await supertest(getServer()).put('/addresses/123456789012').send({ tenantId: 'tenantId1' });
+            const resp = await supertest(getServer()).put('/addresses/123456789012123456789012').send({ tenantId: 'tenantId1' });
             assert.deepEqual(resp.statusCode, 400);
         });
     });

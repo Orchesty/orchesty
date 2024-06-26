@@ -48,7 +48,7 @@ async function process() {
   await createTransformedPath()
   await fs.writeFile(
     path.join(relativePath("generated"), "en.json"),
-    JSON.stringify(transformedTranslations, null, 2)
+    JSON.stringify(transformedTranslations, null, 2),
   )
 }
 

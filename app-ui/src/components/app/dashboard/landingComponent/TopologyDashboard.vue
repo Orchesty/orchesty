@@ -172,7 +172,7 @@ export default {
 
 .dashboardCol {
   flex: 0 1 25%;
-  @media #{map-get($display-breakpoints, 'sm-and-down')} {
+  @media #{map.get($display-breakpoints, 'sm-and-down')} {
     flex: 0 1 100%;
   }
 }

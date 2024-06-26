@@ -68,7 +68,7 @@ describe('modulesController', () => {
         });
         it('400', async () => {
             await createModules();
-            const resp = await supertest(getServer()).get('/modules/123456789012');
+            const resp = await supertest(getServer()).get('/modules/123456789012123456789012');
             assert.deepEqual(resp.statusCode, 400);
         });
     });
@@ -85,7 +85,7 @@ describe('modulesController', () => {
         });
         it('400', async () => {
             await createModules();
-            const resp = await supertest(getServer()).put('/modules/123456789012').send({ clientId: 'clientId1' });
+            const resp = await supertest(getServer()).put('/modules/123456789012123456789012').send({ clientId: 'clientId1' });
             assert.deepEqual(resp.statusCode, 400);
         });
     });

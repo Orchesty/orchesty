@@ -54,7 +54,7 @@ export default {
     max-height: unset;
     object-fit: cover;
 
-    @media #{map-get($display-breakpoints, 'md-and-down')} {
+    @media #{map.get($display-breakpoints, 'md-and-down')} {
       border-top-right-radius: 8px;
       border-top-left-radius: 8px;
       border-bottom-right-radius: 0;

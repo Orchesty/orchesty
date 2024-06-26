@@ -29,7 +29,9 @@
 .bpp-properties-panel [contenteditable]:focus {
   outline: none;
   border-color: #1a70ff;
-  box-shadow: 0 0 0 2px #a2c5ff, 0 0 0 1px #cdcdcd inset;
+  box-shadow:
+    0 0 0 2px #a2c5ff,
+    0 0 0 1px #cdcdcd inset;
 }
 .bpp-properties-panel button.invalid,
 .bpp-properties-panel input.invalid,
@@ -43,7 +45,9 @@
 .bpp-properties-panel select.invalid:focus,
 .bpp-properties-panel textarea.invalid:focus,
 .bpp-properties-panel [contenteditable].invalid:focus {
-  box-shadow: 0 0 0 2px #ffb3b3, 0 0 0 1px #cdcdcd inset;
+  box-shadow:
+    0 0 0 2px #ffb3b3,
+    0 0 0 1px #cdcdcd inset;
 }
 .bpp-properties-panel [type="text"],
 .bpp-properties-panel [contenteditable],

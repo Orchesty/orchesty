@@ -59,7 +59,7 @@ export default class TenantService {
 
     public async createTenant(createTenantRequest: ITenantCreateRequest): Promise<{ tenant: unknown }> {
         let createUser = false;
-        if (createTenantRequest.email || createTenantRequest.userDisplayName) {
+        if (createTenantRequest.email ?? createTenantRequest.userDisplayName) {
             if (createTenantRequest.email && createTenantRequest.userDisplayName) {
                 createUser = true;
             } else {

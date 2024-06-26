@@ -68,7 +68,7 @@ describe('correctionsController', () => {
         });
         it('400', async () => {
             await createCorrections();
-            const resp = await supertest(getServer()).get('/corrections/123456789012');
+            const resp = await supertest(getServer()).get('/corrections/123456789012123456789012');
             assert.deepEqual(resp.statusCode, 400);
         });
     });
@@ -85,7 +85,7 @@ describe('correctionsController', () => {
         });
         it('400', async () => {
             await createCorrections();
-            const resp = await supertest(getServer()).put('/corrections/123456789012').send({ tenantId: 'tenantId1' });
+            const resp = await supertest(getServer()).put('/corrections/123456789012123456789012').send({ tenantId: 'tenantId1' });
             assert.deepEqual(resp.statusCode, 400);
         });
     });

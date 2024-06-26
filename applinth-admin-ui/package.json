@@ -4,8 +4,8 @@
   "license": "Elastic-2.0",
   "scripts": {
     "serve": "vue-cli-service serve",
-    "start": "vue-cli-service serve",
-    "build": "vue-cli-service build --modern",
+    "start": "export NODE_OPTIONS=--openssl-legacy-provider && vue-cli-service serve",
+    "build": "export NODE_OPTIONS=--openssl-legacy-provider && vue-cli-service build --modern",
     "dev": "run-p -l serve api:mock api:ui",
     "storybook": "vue-cli-service storybook:serve -p 6006 -s ./public",
     "storybook:build": "vue-cli-service storybook:build",

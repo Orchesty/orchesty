@@ -3,5 +3,7 @@
         "plugin:@hanaboso/orchesty"
     ],
     "rules": {
+        "semi": "off",
+        "@typescript-eslint/no-unsafe-enum-comparison": "off"
     }
 }

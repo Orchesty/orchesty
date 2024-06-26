@@ -93,7 +93,7 @@ describe('applinthsController', () => {
         });
         it('400', async () => {
             await createApplinths();
-            const resp = await supertest(getServer()).get('/applinths/123456789012');
+            const resp = await supertest(getServer()).get('/applinths/123456789012123456789012');
             assert.deepEqual(resp.statusCode, 400);
         });
     });
@@ -110,7 +110,7 @@ describe('applinthsController', () => {
         });
         it('400', async () => {
             await createApplinths();
-            const resp = await supertest(getServer()).put('/applinths/123456789012').send({ tenantId: 'tenantId1' });
+            const resp = await supertest(getServer()).put('/applinths/123456789012123456789012').send({ tenantId: 'tenantId1' });
             assert.deepEqual(resp.statusCode, 400);
         });
     });
