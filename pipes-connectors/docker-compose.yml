@@ -21,4 +21,4 @@ services:
             - STARTING_POINT_DSN=https://starting-point
 
     fakes3:
-        image: rflpazini/fakes3-docker
+        image: skomitov/fakes3
