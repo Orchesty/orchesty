@@ -116,13 +116,13 @@ export default class ApplicationDetailPage extends Vue {
   labels: string[] = []
   data: number[] = []
   breadcrumbTitle: string | undefined = ""
-  monthlyPrice = 19900000 // todo odstranit konstantu
+  monthlyPrice = 0
 
   async created() {
     this.loading = true
 
     const selectedApplications = await callApi<UsageStatsAppsRequest>(
-      api.overview.apps,
+      api.overviewFull.full,
       {
         appId: this.$route.params.id,
         granularity: "monthly",
@@ -132,8 +132,10 @@ export default class ApplicationDetailPage extends Vue {
 
     this.applicationDetail = this.applicationsMetadata[this.$route.params.id]
 
-    if (selectedApplications.length > 0) {
-      this.application = selectedApplications[0]
+    if (selectedApplications.rows.length > 0) {
+      this.application = selectedApplications.rows[0]
+      this.monthlyPrice =
+        selectedApplications.modulePrices[this.application.appName ?? ""] ?? 0
 
       this.breadcrumbTitle =
         this.applicationDetail?.publicName || this.application.appName

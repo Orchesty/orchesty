@@ -8,7 +8,7 @@ import {
 } from 'firebase-admin/lib/auth';
 import { sign } from 'jsonwebtoken';
 import { DateTime } from 'luxon';
-import { Document, InsertManyResult, ObjectId } from 'mongodb';
+import { Document, InsertManyResult, InsertOneResult, ObjectId, OptionalId } from 'mongodb';
 import { CollectionEnum } from '../src/base/enums/CollectionEnum';
 import { getAllResources } from '../src/base/enums/ResourceEnum';
 import GetUsersResult = auth.GetUsersResult;
@@ -84,6 +84,23 @@ export function generateListTenantsResultMockedData(name = 'neco'): ListTenantsR
     return {
         tenants: [generateTenantMockedData(name)],
     };
+}
+
+export function generateDbApplinthMockedData(tenantId = ''): OptionalId<unknown> {
+    return {
+        instanceId: '1234567890',
+        tenantId: tenantId || 't123456789',
+        minPrice: 100000,
+        minPriceDate: new Date('2022-07-28T08:21:20.000Z'),
+    } as unknown as OptionalId<unknown>;
+}
+
+export function generateDbModuleMockedData(applinthId: string, appName: string): OptionalId<unknown> {
+    return {
+        applinthId,
+        appName,
+        price: 19900000,
+    } as unknown as OptionalId<unknown>;
 }
 
 export function generateUserMockedData(name = 'neco'): UserRecord {
@@ -168,6 +185,22 @@ export async function createDbTenants(tenantId = '', drop = true): Promise<void>
         await getDb().getCloudCollection(CollectionEnum.TENANT).drop();
     }
     await getDb().getCloudCollection(CollectionEnum.TENANT).insertOne(generateDbTenantMockedData(tenantId));
+}
+
+export async function createDbApplinth(tenantId: string, drop = true): Promise<InsertOneResult<unknown>> {
+    if (drop) {
+        await getDb().getCloudCollection(CollectionEnum.APPLINTH).drop();
+    }
+    return getDb()
+        .getCloudCollection(CollectionEnum.APPLINTH)
+        .insertOne(generateDbApplinthMockedData(tenantId));
+}
+
+export async function createDbModule(applinthId: string, appName: string, drop = true): Promise<void> {
+    if (drop) {
+        await getDb().getCloudCollection(CollectionEnum.MODULE).drop();
+    }
+    await getDb().getCloudCollection(CollectionEnum.MODULE).insertOne(generateDbModuleMockedData(applinthId, appName));
 }
 
 export async function dropMetadata(): Promise<void> {

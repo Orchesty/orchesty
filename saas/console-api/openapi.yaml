@@ -1727,6 +1727,8 @@ components:
                     type: string
                 billingHistoryEnd:
                     type: string
+                modulePrices:
+                    type: object
         UsageStatsInstalledApps:
             type: object
             properties:

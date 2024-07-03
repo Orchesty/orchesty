@@ -40,6 +40,10 @@ spec:
                   key: firebaseApiKey
             - name: FIREBASE_AUTH_DOMAIN
               value: {{ .Values.firebaseAuthDomain }}
+            - name: USCCP_URI
+              value: {{ .Values.usccpUri }}
+            - name: CLOUD_CONTROLLER_URI
+              value: {{ .Values.cloudControllerUri }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
 

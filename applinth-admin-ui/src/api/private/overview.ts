@@ -9,6 +9,7 @@ import {
 } from "@/api/generated"
 
 export type OverviewApi = "apps"
+export type OverviewApiFull = "full"
 export type OverviewTimeBucketUsersApi = "data"
 
 export const overview: ApiConfigs<OverviewApi> = {
@@ -16,6 +17,13 @@ export const overview: ApiConfigs<OverviewApi> = {
     id: "OVERVIEW_APPS",
     request: (params) => apiClient.billingApi.usageStatsApps(params),
     transform: (data: UsageStatsApps | undefined) => data?.rows || [],
+  },
+}
+
+export const overviewFull: ApiConfigs<OverviewApiFull> = {
+  full: {
+    id: "OVERVIEW_APPS",
+    request: (params) => apiClient.billingApi.usageStatsApps(params),
   },
 }
 

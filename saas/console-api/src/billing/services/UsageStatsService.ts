@@ -5,6 +5,7 @@ import BillingMongo from '../../base/storage/mongo/Mongo';
 import { IAppsAggregationParams } from '../../controllers/usageStats';
 import DateParseError from '../errors/DateParseError';
 import MetadataSearchError from '../errors/MetadataSearchError';
+import ModuleSearchError from '../errors/ModuleSearchError';
 
 interface IMongoQuery {
     tenantId?: string;
@@ -27,6 +28,19 @@ interface IDbMetadata {
     instances: Record<string, IMetadata>;
 }
 
+interface IDbApplinth {
+    _id: string;
+    instanceId: string;
+    tenantId: string;
+    minPrice: number;
+    minPriceDate: Date;
+}
+
+interface IDbModule {
+    appName: string;
+    price: number;
+}
+
 interface IMetadataResponse {
     billingHistoryStart: string;
     billingHistoryEnd: string;
@@ -40,7 +54,7 @@ export default class UsageStatsService {
     public async getDataForAppsAggregation(
         query: IAppsAggregationParams,
         tenantId: string,
-    ): Promise<IMetadataResponse & { rows: unknown }> {
+    ): Promise<IMetadataResponse & { rows: unknown, modulePrices: Record<string, number>, }> {
         const mongoQuery = this.prepareMongoQuery(query, tenantId, false, true);
         const collectionName = switchGranularity(query.granularity);
 
@@ -85,6 +99,7 @@ export default class UsageStatsService {
         return {
             rows,
             ...await this.prepareMetadata(tenantId, query.instanceId),
+            modulePrices: await this.prepareModuleData(tenantId),
         };
     }
 
@@ -419,6 +434,15 @@ export default class UsageStatsService {
         };
     }
 
+    private async prepareModuleData(tenantId: string): Promise<Record<string, number>> {
+        let moduleData: Record<string, number> = {};
+        try {
+            moduleData = await this.findModuleData(tenantId);
+        } catch (e) {}
+
+        return moduleData;
+    }
+
     private prepareMongoQuery(
         query: IAppsAggregationParams,
         tenantId: string,
@@ -525,6 +549,31 @@ export default class UsageStatsService {
         }
 
         throw new MetadataSearchError();
+    }
+
+    private async findModuleData(tenantId: string): Promise<Record<string, number>> {
+        const applinth = await this.db
+            .getCloudCollection(CollectionEnum.APPLINTH)
+            .findOne({ tenantId }) as unknown as IDbApplinth;
+
+        if (!applinth) {
+            throw new ModuleSearchError();
+        }
+
+        const modules = await this.db
+            .getCloudCollection(CollectionEnum.MODULE)
+            .find({ applinthId: applinth._id.toString() }).toArray() as unknown as IDbModule[];
+
+        if (!modules.length) {
+            throw new ModuleSearchError();
+        }
+
+        const result: Record<string, number> = {};
+        modules.forEach((item) => {
+            result[item.appName] = item.price;
+        });
+
+        return result;
     }
 
 }

@@ -1,7 +1,14 @@
 import assert from 'assert';
 import { Express } from 'express';
 import supertest, { Response } from 'supertest';
-import { createDbTenants, createUsageStats, dropMetadata, getJWTToken } from '../../../test/dataProvider';
+import {
+    createDbApplinth,
+    createDbModule,
+    createDbTenants,
+    createUsageStats,
+    dropMetadata,
+    getJWTToken,
+} from '../../../test/dataProvider';
 import { app } from '../../base/config/config';
 import Services from '../../base/DIContainer/Services';
 import GranularityError from '../../base/errors/GranularityError';
@@ -34,6 +41,8 @@ describe('usageStatsController', () => {
     beforeEach(async () => {
         await createDbTenants();
         await createDbTenants('t123', false);
+        const applinth = await createDbApplinth('1234567890')
+        await createDbModule(applinth.insertedId.toString(), 'appName')
         await createUsageStats();
     });
     const authorization = getJWTToken();
@@ -200,6 +209,7 @@ describe('usageStatsController', () => {
                     estimatedTotalCost: 1200000,
                 },
             ]);
+            assert.deepEqual(resp.body.modulePrices, {});
             assert.deepEqual(resp.statusCode, 200);
         });
         it('shouldReturnSingleRow', async () => {

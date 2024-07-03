@@ -44,6 +44,12 @@ export interface UsageStatsApps {
      * @memberof UsageStatsApps
      */
     billingHistoryEnd?: string;
+    /**
+     *
+     * @type {Record<string, number>}
+     * @memberof UsageStatsApps
+     */
+    modulePrices?: Record<string, number>;
 }
 
 export function UsageStatsAppsFromJSON(json: any): UsageStatsApps {
@@ -55,10 +61,10 @@ export function UsageStatsAppsFromJSONTyped(json: any, ignoreDiscriminator: bool
         return json;
     }
     return {
-        
         'rows': !exists(json, 'rows') ? undefined : ((json['rows'] as Array<any>).map(UsageStatsAppsRowsInnerFromJSON)),
         'billingHistoryStart': !exists(json, 'billingHistoryStart') ? undefined : json['billingHistoryStart'],
         'billingHistoryEnd': !exists(json, 'billingHistoryEnd') ? undefined : json['billingHistoryEnd'],
+        'modulePrices': !exists(json, 'modulePrices') ? undefined : json['modulePrices'],
     };
 }
 
@@ -70,7 +76,6 @@ export function UsageStatsAppsToJSON(value?: UsageStatsApps | null): any {
         return null;
     }
     return {
-        
         'rows': value.rows === undefined ? undefined : ((value.rows as Array<any>).map(UsageStatsAppsRowsInnerToJSON)),
         'billingHistoryStart': value.billingHistoryStart,
         'billingHistoryEnd': value.billingHistoryEnd,

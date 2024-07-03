@@ -36,8 +36,7 @@ down: .lo0-down
 	docker-compose down -v
 
 rebuild:
-	docker build -t ${IMAGE}:${TAG} --pull .
-	docker push ${IMAGE}:${TAG}
+	docker buildx build --platform=linux/amd64 -f Dockerfile -t ${IMAGE}:${TAG} --pull --push .
 
 generate-fixture-data: init
 	docker-compose exec console-api pnpm run create-fixture-data

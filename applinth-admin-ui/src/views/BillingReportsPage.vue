@@ -47,6 +47,7 @@ import { Getter } from "vuex-class"
 import { AuthGetters, authNamespace, User } from "@/store/modules/auth"
 import { callApi } from "@/utils"
 import {
+  UsageStatsApps,
   UsageStatsAppsRequest,
   UsageStatsAppsRowsInner,
   UsageStatsTimeBucketHistoryRequest,
@@ -66,8 +67,6 @@ import {
   getTimeRangeEndForApiCall,
   getTimeRangeStartForApiCall,
 } from "@/service/billingService"
-
-const PRICE = 19900000
 
 export interface IFilterYearMonthOptions {
   [key: number]: number[]
@@ -91,9 +90,9 @@ export default class BillingReportsPage extends Vue {
   currentUser!: User
 
   loading = false
-  applicationsCount = PRICE
+  applicationsCount = 0
   installationCount = 10
-  totalCost = PRICE
+  totalCost = 0
   tableItems: HistoryTableApplicationItemType[] = []
   granularity: "monthly" | "daily" = "monthly"
   filter: HistoryFilterType = { year: DateTime.now().year, month: VALUE_ALL }
@@ -153,17 +152,25 @@ export default class BillingReportsPage extends Vue {
             this.filter.month === VALUE_ALL ? 12 : this.filter.month
           )
 
-    const applications: UsageStatsAppsRowsInner[] =
-      await callApi<UsageStatsAppsRequest>(api.overview.apps, {
+    const applications: UsageStatsApps = await callApi<UsageStatsAppsRequest>(
+      api.overviewFull.full,
+      {
         granularity: "monthly",
         timeRangeStart: filterDateFrom.toISO(),
         timeRangeEnd: filterDateTo.plus({ second: 1 }).toISO(),
-      })
+      }
+    )
 
-    this.recalculateValues(applications)
+    this.recalculateValues(
+      applications.rows ?? [],
+      applications.modulePrices ?? {}
+    )
   }
 
-  private recalculateValues(applications: UsageStatsAppsRowsInner[]): void {
+  private recalculateValues(
+    applications: UsageStatsAppsRowsInner[],
+    prices: Record<string, number>
+  ): void {
     this.applicationsCount = applications.length
     let installationCountAccumulator = 0
     let totalCostAccumulator = 0
@@ -172,7 +179,10 @@ export default class BillingReportsPage extends Vue {
       installationCountAccumulator += application.installCount || 0
       totalCostAccumulator += application.totalCost || 0
 
-      return { ...application, pricePerInstance: PRICE } // todo PIP-1365 load from BE
+      return {
+        ...application,
+        pricePerInstance: prices[application.appName ?? ""] ?? 0,
+      }
     })
 
     this.installationCount = installationCountAccumulator

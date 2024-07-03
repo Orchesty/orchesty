@@ -34,4 +34,4 @@ ENV NODE_ENV=prod
 
 ENTRYPOINT ["/entrypoint.sh"]
 
-CMD nginx -g 'daemon off;'
+CMD ["nginx", "-g", "daemon off;"]
