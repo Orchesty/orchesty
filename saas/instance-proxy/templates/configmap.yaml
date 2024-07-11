@@ -265,6 +265,21 @@ data:
         use_backend api-gw-dasarom5ru if api-gw-instance-dasarom5ru
 
 
+        # instance-6qalrogarw
+
+        acl api-instance-6qalrogarw hdr_beg(host) api-6qalrogarw.eu1.cloud.orchesty.io
+        use_backend api-6qalrogarw if api-instance-6qalrogarw
+
+        acl ui-instance-6qalrogarw hdr_beg(host) ui-6qalrogarw.eu1.cloud.orchesty.io
+        use_backend ui-6qalrogarw if ui-instance-6qalrogarw
+
+        acl start-instance-6qalrogarw hdr_beg(host) start-6qalrogarw.eu1.cloud.orchesty.io
+        use_backend start-6qalrogarw if start-instance-6qalrogarw
+
+        acl api-gw-instance-6qalrogarw hdr_beg(host) api-gw-6qalrogarw.eu1.cloud.orchesty.io
+        use_backend api-gw-6qalrogarw if api-gw-instance-6qalrogarw
+
+
         # instance-iagdk5rylw
 
         acl api-instance-iagdk5rylw hdr_beg(host) api-iagdk5rylw.eu1.cloud.orchesty.io
@@ -543,6 +558,26 @@ data:
     backend api-gw-dasarom5ru
         mode http
         server svc api-gateway.instance-dasarom5ru.svc.cluster.local:80
+
+
+    # instance-6qalrogarw
+
+    backend api-6qalrogarw
+        mode http
+        server svc backend.instance-6qalrogarw.svc.cluster.local:80
+
+    backend ui-6qalrogarw
+        mode http
+        server svc frontend.instance-6qalrogarw.svc.cluster.local:80
+
+    backend start-6qalrogarw
+        mode http
+        server svc starting-point.instance-6qalrogarw.svc.cluster.local:8080
+
+    backend api-gw-6qalrogarw
+        mode http
+        server svc api-gateway.instance-6qalrogarw.svc.cluster.local:80
+
 
     # instance-iagdk5rylw
 
