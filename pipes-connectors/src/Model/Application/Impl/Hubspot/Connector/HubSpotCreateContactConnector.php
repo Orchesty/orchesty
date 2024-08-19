@@ -48,6 +48,8 @@ final class HubSpotCreateContactConnector extends ConnectorAbstract implements L
     {
         $applicationInstall = $this->getApplicationInstallFromProcess($dto);
         $body               = $dto->getJsonData();
+        unset($body['properties']['language']);
+        unset($body['properties']['subscribed']);
 
         try {
             $response = $this->getSender()->send(
