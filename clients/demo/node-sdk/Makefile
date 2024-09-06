@@ -16,8 +16,7 @@ Linux:
 		.env.dist > .env; \
 
 build:
-	docker build -t $(IMAGE):$(TAG) .
-	docker push $(IMAGE):$(TAG)
+	docker buildx build --platform=linux/amd64 -f Dockerfile -t $(IMAGE):$(TAG) --pull --push .
 
 docker-compose.ci.yml:
 	# Comment out any port forwarding
