@@ -14,18 +14,18 @@
   "license": "Apache-2.0",
   "packageManager": "pnpm@9.1.4",
   "dependencies": {
-    "@aws-sdk/client-ses": "^3.645.0",
-    "@aws-sdk/util-endpoints": "^3.645.0",
-    "@orchesty/nodejs-connectors": "^3.0.141",
+    "@aws-sdk/client-ses": "^3.650.0",
+    "@aws-sdk/util-endpoints": "^3.649.0",
+    "@orchesty/nodejs-connectors": "^3.0.146",
     "@orchesty/nodejs-sdk": "^4.2.48",
     "copyfiles": "^2.4.1",
     "lodash": "^4.17.21",
     "luxon": "^3.5.0",
-    "mongodb": "^6.8.0"
+    "mongodb": "^6.9.0"
   },
   "devDependencies": {
-    "@hanaboso/eslint-plugin": "^1.1.2",
-    "@types/jest": "^29.5.12",
+    "@hanaboso/eslint-plugin": "1.1.2",
+    "@types/jest": "^29.5.13",
     "@types/luxon": "^3.4.2",
     "@types/node": "^22.5.4",
     "@types/supertest": "^6.0.2",
@@ -34,6 +34,6 @@
     "nodemon": "^3.1.4",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
-    "typescript": "^5.5.4"
+    "typescript": "^5.6.2"
   }
 }
