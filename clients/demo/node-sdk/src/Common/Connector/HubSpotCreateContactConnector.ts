@@ -5,12 +5,16 @@ import { IOutput as IInput } from '../CustomNode/HanabosoHubSpotContactMapper';
 export default class HubSpotCreateContactConnector extends Base {
 
     public async processAction(dto: ProcessDto<IInput>): Promise<ProcessDto> {
-        const { properties } = dto.getJsonData();
-        const superDto = await super.processAction(dto);
+        const data = dto.getJsonData();
+        const language = data.properties.language;
+        delete data.properties.language;
+        delete data.properties.subscribed;
 
+        // eslint-disable-next-line
+        const superDto = await super.processAction(dto.setNewJsonData<any>(data));
         const out = {
             ...(superDto.getJsonData() as object),
-            ...{ email: properties.email, language: properties.language },
+            ...{ email: data.properties.email, language },
         };
 
         return superDto.setNewJsonData<unknown>({ properties: out });
