@@ -15,13 +15,15 @@ export class ComparatorLockRepository extends AbstractRepository<ComparatorLock>
     ];
 
     public async acquireLock(masterKey: string): Promise<boolean> {
-        const now = new Date();
+        const ttl = new Date();
+        ttl.setMinutes(ttl.getMinutes() + TTL_MINUTES);
+
         const result = await this.collection.findOneAndUpdate(
             { masterKey },
             {
                 $setOnInsert: {
                     masterKey,
-                    ttl: now.setMinutes(now.getMinutes() + TTL_MINUTES),
+                    ttl,
                 },
             },
             {
