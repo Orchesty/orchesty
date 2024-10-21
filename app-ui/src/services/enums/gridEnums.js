@@ -23,7 +23,7 @@ export const FILTER = {
 }
 
 export const OPERATOR = {
-  EQUAL: "`1`",
+  EQUAL: "1",
   NOT_EQUAL: "NOT_EQUAL",
   LIKE: "LIKE",
   STARTS_WITH: "STARTS_WITH",

@@ -108,21 +108,20 @@ export default {
   },
   computed: {
     ...mapGetters(REQUESTS_STATE.NAMESPACE, [REQUESTS_STATE.GETTERS.GET_STATE]),
-    ...mapGetters(USER_TASKS.NAMESPACE, {
-      userTasks: USER_TASKS.GETTERS.GET_USER_TASKS,
-    }),
+    // ...mapGetters(USER_TASKS.NAMESPACE, {
+    //   userTasks: USER_TASKS.GETTERS.GET_USER_TASKS,
+    // }),
     ...mapGetters(TOPOLOGIES.NAMESPACE, {
       topologyActive: TOPOLOGIES.GETTERS.GET_ACTIVE_TOPOLOGY,
       topologyActiveNodes: TOPOLOGIES.GETTERS.GET_ACTIVE_TOPOLOGY_NODES,
-      topologyActiveStatistics:
-        TOPOLOGIES.GETTERS.GET_ACTIVE_TOPOLOGY_STATISTICS,
+      // topologyActiveStatistics: TOPOLOGIES.GETTERS.GET_ACTIVE_TOPOLOGY_STATISTICS,
       topologyActiveDiagram: TOPOLOGIES.GETTERS.GET_ACTIVE_TOPOLOGY_DIAGRAM,
     }),
     state() {
       return this[REQUESTS_STATE.GETTERS.GET_STATE]([
         API.topology.getNodes.id,
         API.implementation.getList.id,
-        API.statistic.getList.id,
+        //API.statistic.getList.id,
       ])
     },
     canvasHeight() {
@@ -159,32 +158,32 @@ export default {
     ...mapActions(TOPOLOGIES.NAMESPACE, [
       TOPOLOGIES.ACTIONS.TOPOLOGY.NODES,
       TOPOLOGIES.ACTIONS.TOPOLOGY.GET_DIAGRAM,
-      TOPOLOGIES.ACTIONS.DATA.GET_STATISTICS,
+      // TOPOLOGIES.ACTIONS.DATA.GET_STATISTICS,
     ]),
-    ...mapActions(USER_TASKS.NAMESPACE, [
-      USER_TASKS.ACTIONS.USER_TASK_FETCH_TASKS,
-    ]),
+    // ...mapActions(USER_TASKS.NAMESPACE, [
+    //   USER_TASKS.ACTIONS.USER_TASK_FETCH_TASKS,
+    // ]),
 
     //#1 BACKEND DATA FETCH
     async initData(topologyActive) {
       await Promise.all([
         this[TOPOLOGIES.ACTIONS.TOPOLOGY.NODES](topologyActive._id),
         this[TOPOLOGIES.ACTIONS.TOPOLOGY.GET_DIAGRAM](topologyActive._id),
-        this[TOPOLOGIES.ACTIONS.DATA.GET_STATISTICS]({
-          id: topologyActive._id,
-          settings: null,
-        }),
-        this[USER_TASKS.ACTIONS.USER_TASK_FETCH_TASKS]({
-          filter: [
-            [
-              {
-                column: "topologyId",
-                operator: OPERATOR.EQUAL,
-                value: topologyActive._id,
-              },
-            ],
-          ],
-        }),
+        // this[TOPOLOGIES.ACTIONS.DATA.GET_STATISTICS]({
+        //   id: topologyActive._id,
+        //   settings: null,
+        // }),
+        // this[USER_TASKS.ACTIONS.USER_TASK_FETCH_TASKS]({
+        //   filter: [
+        //     [
+        //       {
+        //         column: "topologyId",
+        //         operator: OPERATOR.EQUAL,
+        //         value: topologyActive._id,
+        //       },
+        //     ],
+        //   ],
+        // }),
       ]).then(async () => await this.prepareCanvas(topologyActive))
     },
 
