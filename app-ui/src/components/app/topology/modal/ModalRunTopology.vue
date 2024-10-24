@@ -29,8 +29,8 @@
                   <validation-provider v-slot="{ errors }" rules="required">
                     <v-list-item-group v-model="selected" multiple class="mb-2">
                       <v-list-item
-                        v-for="item in startingPoints"
-                        :key="item._id"
+                        v-for="{ _id, name } in startingPoints"
+                        :key="_id"
                         dense
                         class="d-flex justify-space-between align-center"
                       >
@@ -44,7 +44,7 @@
                           <v-list-item-title
                             :class="{ 'error--text': !!errors[0] }"
                           >
-                            {item.name}
+                            {{ name }}
                           </v-list-item-title>
                         </template>
                       </v-list-item>
