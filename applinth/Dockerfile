@@ -4,7 +4,7 @@ COPY . .
 RUN cd applinth && \
     sed -i -e 's/"symlink": true/"symlink": false/g' composer.json && \
     sed -i -e 's/"symlink": true/"symlink": false/g' composer.lock && \
-    composer install -a --no-dev && \
+    composer install -a --no-dev --ignore-platform-reqs && \
     APP_ENV=prod APP_DEBUG=0 RABBITMQ_DSN=amqp://rabbitmq:5672/ \
     MONGODB_DSN=mongodb://mongo:27017 MONGODB_DB=pipes \
     METRICS_DSN=mongodb://mongo:27017 METRICS_DB=metrics \

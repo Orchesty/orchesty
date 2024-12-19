@@ -2468,11 +2468,11 @@
         },
         {
             "name": "orchesty/backend",
-            "version": "3.1.2",
+            "version": "3.1.3",
             "dist": {
                 "type": "path",
                 "url": "../pf-bundles",
-                "reference": "9ff85a6223bcffe2eb06959ea5fa73e272352122"
+                "reference": "0a1ef869ac35b90b15ac265ac53ec67d6f74e61c"
             },
             "require": {
                 "doctrine/mongodb-odm-bundle": "^5.0",

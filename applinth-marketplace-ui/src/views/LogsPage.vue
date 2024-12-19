@@ -19,7 +19,7 @@
           {{ toLocalDateTime(items.item.timestamp) }}
         </td>
         <td :style="expanded ? 'border-bottom: none' : ''">
-          {{ items.item.topology_name }}
+          {{ items.item.topology_description ?? items.item.topology_name }}
         </td>
         <td :style="expanded ? 'border-bottom: none' : ''">
           {{ items.item.node_id }}
