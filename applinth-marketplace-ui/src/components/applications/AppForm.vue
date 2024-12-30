@@ -18,11 +18,7 @@
       <v-tab-item
         v-for="(form, index) in settingsConfig"
         :key="form.key"
-        :class="
-          form.key === 'info'
-            ? 'application-settings-wrapper-info'
-            : 'application-settings-wrapper-form'
-        "
+        class="application-settings-wrapper-info"
       >
         <template v-if="form.key === 'info'">
           <!-- eslint-disable-next-line vue/no-v-html -->
@@ -31,10 +27,11 @@
         <template v-else>
           <v-row v-if="form.description.length > 0" dense class="mt-2">
             <v-col>
-              {{ form.description }}
+              <!-- eslint-disable-next-line vue/no-v-html -->
+              <div class="ml-2 application-settings-wrapper-info" v-html="form.description" />
             </v-col>
           </v-row>
-          <v-row dense class="mt-2">
+          <v-row dense class="mt-2 application-settings-wrapper-form">
             <v-col>
               <validation-observer
                 :ref="form.key"
@@ -141,7 +138,7 @@
             </v-col>
           </v-row>
 
-          <v-row v-if="!form.readOnly" dense>
+          <v-row v-if="!form.readOnly" dense class="application-settings-wrapper-form">
             <v-col>
               <actions-wrapper>
                 <base-button
