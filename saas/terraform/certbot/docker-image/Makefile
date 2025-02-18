@@ -1,6 +1,6 @@
 .PHONY: manual-renew image-build image-push
 
-IMAGE=europe-west1-docker.pkg.dev/orchesty-cloud-prod/infrastructure/certbot:latest
+IMAGE=europe-west1-docker.pkg.dev/orchesty-cloud-prod/infrastructure/certbot:latest2
 
 # That's what I call opinionated!
 SA_STAGE=~/Downloads/orchesty-cloud-stage-hm-certbot.json
@@ -12,8 +12,5 @@ accounts.b64:
 manual-renew-stage:
 	@docker run --privileged --rm -e INFIX=stage -e BUCKET=oc-certbot-dir-stage -e GC_PROXY_NAME=lb1-target-proxy-3 -e GOOGLE_SA_KEY='$(shell cat $(SA_STAGE))' $(IMAGE) renew.sh -stage
 
-image-build:
-	docker build -t ${IMAGE} .
-
-image-push:
-	docker push ${IMAGE}
+build:
+	docker buildx build -f Dockerfile --pull --push --platform linux/amd64 -t $(IMAGE) .
