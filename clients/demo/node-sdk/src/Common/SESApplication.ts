@@ -42,7 +42,7 @@ export default class SESApplication extends Base {
                 },
                 [REGION]: settings[REGION],
                 [VERSION]: LATEST,
-                [ENDPOINT]: settings?.[ENDPOINT] ?? [],
+                // [ENDPOINT]: settings?.[ENDPOINT] ?? '',
             },
         );
     }
