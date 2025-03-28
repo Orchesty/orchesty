@@ -238,6 +238,39 @@ data:
         use_backend shoptet-cs-ht2ylz6esy if shoptet-cs-instance-ht2ylz6esy
 
 
+        # instance-tjz6hx9zi5
+
+        acl api-instance-tjz6hx9zi5 hdr_beg(host) api-tjz6hx9zi5.eu1.cloud.orchesty.io
+        use_backend api-tjz6hx9zi5 if api-instance-tjz6hx9zi5
+
+        acl ui-instance-tjz6hx9zi5 hdr_beg(host) ui-tjz6hx9zi5.eu1.cloud.orchesty.io
+        use_backend ui-tjz6hx9zi5 if ui-instance-tjz6hx9zi5
+
+        acl start-instance-tjz6hx9zi5 hdr_beg(host) start-tjz6hx9zi5.eu1.cloud.orchesty.io
+        use_backend start-tjz6hx9zi5 if start-instance-tjz6hx9zi5
+
+        acl applinth-instance-tjz6hx9zi5 hdr_beg(host) applinth-tjz6hx9zi5.eu1.cloud.orchesty.io
+        use_backend applinth-tjz6hx9zi5 if applinth-instance-tjz6hx9zi5
+
+
+        # instance-a4k9kc3qpg
+
+        acl api-instance-a4k9kc3qpg hdr_beg(host) api-a4k9kc3qpg.eu1.cloud.orchesty.io
+        use_backend api-a4k9kc3qpg if api-instance-a4k9kc3qpg
+
+        acl ui-instance-a4k9kc3qpg hdr_beg(host) ui-a4k9kc3qpg.eu1.cloud.orchesty.io
+        use_backend ui-a4k9kc3qpg if ui-instance-a4k9kc3qpg
+
+        acl start-instance-a4k9kc3qpg hdr_beg(host) start-a4k9kc3qpg.eu1.cloud.orchesty.io
+        use_backend start-a4k9kc3qpg if start-instance-a4k9kc3qpg
+
+        acl applinth-instance-a4k9kc3qpg hdr_beg(host) applinth-a4k9kc3qpg.eu1.cloud.orchesty.io
+        use_backend applinth-a4k9kc3qpg if applinth-instance-a4k9kc3qpg
+
+        acl applinth-login-instance-a4k9kc3qpg hdr_beg(host) applinth-login-a4k9kc3qpg.eu1.cloud.orchesty.io
+        use_backend applinth-login-a4k9kc3qpg if applinth-login-instance-a4k9kc3qpg
+
+
         # instance-dc2i2gqrfo
 
         acl api-instance-dc2i2gqrfo hdr_beg(host) api-dc2i2gqrfo.eu1.cloud.orchesty.io
@@ -543,6 +576,47 @@ data:
         mode http
         server svc shoptet-plugin.instance-ht2ylz6esy.svc.cluster.local:80
 
+
+    # instance-tjz6hx9zi5
+
+    backend api-tjz6hx9zi5
+        mode http
+        server svc backend.instance-tjz6hx9zi5.svc.cluster.local:80
+
+    backend ui-tjz6hx9zi5
+        mode http
+        server svc frontend.instance-tjz6hx9zi5.svc.cluster.local:80
+
+    backend start-tjz6hx9zi5
+        mode http
+        server svc starting-point.instance-tjz6hx9zi5.svc.cluster.local:8080
+
+    backend applinth-tjz6hx9zi5
+        mode http
+        server svc applinth-marketplace-ui.instance-tjz6hx9zi5.svc.cluster.local:80
+
+
+    # instance-a4k9kc3qpg
+
+    backend api-a4k9kc3qpg
+        mode http
+        server svc backend.instance-a4k9kc3qpg.svc.cluster.local:80
+
+    backend ui-a4k9kc3qpg
+        mode http
+        server svc frontend.instance-a4k9kc3qpg.svc.cluster.local:80
+
+    backend start-a4k9kc3qpg
+        mode http
+        server svc starting-point.instance-a4k9kc3qpg.svc.cluster.local:8080
+
+    backend applinth-a4k9kc3qpg
+        mode http
+        server svc applinth-marketplace-ui.instance-a4k9kc3qpg.svc.cluster.local:80
+
+    backend applinth-login-a4k9kc3qpg
+        mode http
+        server svc pipes-applinth-login-page.instance-a4k9kc3qpg.svc.cluster.local:80
 
     # instance-dc2i2gqrfo
 
