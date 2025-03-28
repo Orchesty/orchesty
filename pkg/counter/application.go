@@ -7,6 +7,7 @@ import (
 	"github.com/hanaboso/go-utils/pkg/intx"
 	"github.com/hanaboso/go-utils/pkg/timex"
 	"github.com/hanaboso/pipes/counter/pkg/config"
+	"github.com/hanaboso/pipes/counter/pkg/enum"
 	"github.com/hanaboso/pipes/counter/pkg/model"
 	"github.com/hanaboso/pipes/counter/pkg/mongo"
 	"github.com/hanaboso/pipes/counter/pkg/rabbit"
@@ -18,30 +19,32 @@ import (
 )
 
 type MultiCounter struct {
-	rabbitmq     *rabbitmq.Client
-	mongo        mongo.MongoDb
-	metrics      metrics.Interface
-	toCommit     bool
-	wg           *sync.WaitGroup
-	processes    []md.WriteModel
-	subProcesses []md.WriteModel
-	finishes     []md.WriteModel
-	errors       []bson.M
+	rabbitmq          *rabbitmq.Client
+	mongo             mongo.MongoDb
+	metrics           metrics.Interface
+	toCommit          bool
+	wg                *sync.WaitGroup
+	processes         []md.WriteModel
+	subProcesses      []md.WriteModel
+	finishes          []md.WriteModel
+	finishesProcesses []string
+	errors            []bson.M
 }
 
 var relieve = 10
 
 func NewMultiCounter(rabbitmq *rabbitmq.Client, mongo mongo.MongoDb) MultiCounter {
 	return MultiCounter{
-		rabbitmq:     rabbitmq,
-		mongo:        mongo,
-		metrics:      metrics.Connect(config.Metrics.Dsn),
-		toCommit:     false,
-		processes:    nil,
-		subProcesses: nil,
-		finishes:     nil,
-		errors:       nil,
-		wg:           &sync.WaitGroup{},
+		rabbitmq:          rabbitmq,
+		mongo:             mongo,
+		metrics:           metrics.Connect(config.Metrics.Dsn),
+		toCommit:          false,
+		processes:         nil,
+		subProcesses:      nil,
+		finishes:          nil,
+		finishesProcesses: nil,
+		errors:            nil,
+		wg:                &sync.WaitGroup{},
 	}
 }
 
@@ -93,12 +96,17 @@ func (c *MultiCounter) processMessage(message *model.ParsedMessage) {
 	if !message.ProcessMessage.ProcessBody.Success {
 		c.errors = append(c.errors, message.ErrorDoc())
 	}
+
+	c.finishesProcesses = append(
+		c.finishesProcesses,
+		message.ProcessMessage.GetHeaderOrDefault(enum.Header_CorrelationId, ""),
+	)
 }
 
 func (c *MultiCounter) commit(msg amqp.Delivery) {
 	if msg.DeliveryTag > 0 && c.toCommit {
 		c.wg.Wait()
-		finished := c.mongo.UpdateProcesses(c.processes, c.subProcesses, c.finishes, c.errors)
+		finished := c.mongo.UpdateProcesses(c.processes, c.subProcesses, c.finishes, c.errors, c.finishesProcesses)
 		for _, process := range finished {
 			go c.finishProcess(process, msg.Headers)
 		}
@@ -123,8 +131,10 @@ func (c *MultiCounter) finishProcess(process model.Process, headers amqp.Table) 
 	apiKey := apiToken.Key
 
 	topology, _ := c.mongo.GetTopology(process.TopologyId)
-	sendFinishedProcess(process, errs, apiKey, headers, topology)
-	c.sendMetrics(process)
+	if topology.Name != "" {
+		sendFinishedProcess(process, errs, apiKey, headers, topology)
+		c.sendMetrics(process)
+	}
 }
 
 func (c *MultiCounter) sendMetrics(process model.Process) {
@@ -152,4 +162,5 @@ func (c *MultiCounter) clear() {
 	c.subProcesses = nil
 	c.finishes = nil
 	c.errors = nil
+	c.finishesProcesses = nil
 }

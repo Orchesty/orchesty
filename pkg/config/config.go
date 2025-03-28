@@ -19,7 +19,8 @@ type (
 	}
 
 	app struct {
-		Debug bool `env:"APP_DEBUG" default:"false"`
+		Debug               bool `env:"APP_DEBUG" default:"false"`
+		RunCallbackTopology bool `env:"APP_RUN_CALLBACK_TOPOLOGY" default:"true"`
 	}
 
 	rabbitMq struct {
