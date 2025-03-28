@@ -72,8 +72,8 @@ echo orchesty_api_key: $ORCHESTY_API_KEY
 echo
 echo Run Commands:
 echo
-echo Create default db scheme: ${BKND_CONSOLE} doctrine:mongodb:schema:update --dm default${BKND_CONSOLE_END}
-echo Create metrics db scheme: ${BKND_CONSOLE} doctrine:mongodb:schema:update --dm metrics${BKND_CONSOLE_END}
+echo Create default db scheme: ${BKND_CONSOLE} doctrine:mongodb:schema:update --dm default --skip-search-indexes${BKND_CONSOLE_END}
+echo Create metrics db scheme: ${BKND_CONSOLE} doctrine:mongodb:schema:update --dm metrics --skip-search-indexes${BKND_CONSOLE_END}
 echo Create db indexes: ${BKND_CONSOLE} mongodb:index:update${BKND_CONSOLE_END}
 echo Register worker: ${BKND_CONSOLE} service:install worker worker:80${BKND_CONSOLE_END}
 echo Create api_key: ${BKND_CONSOLE} api-token:create --key ${ORCHESTY_API_KEY}${BKND_CONSOLE_END}
