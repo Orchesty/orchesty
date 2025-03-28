@@ -51,6 +51,7 @@ func (m *MongoDb) GetProcess(id string) (model.Process, error) {
 	return process, err
 }
 
+// TODO: asi se může smazat
 func (m *MongoDb) GetUnmarkedFinishedProcesses() ([]model.Process, error) {
 	var processes []model.Process
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
@@ -58,31 +59,13 @@ func (m *MongoDb) GetUnmarkedFinishedProcesses() ([]model.Process, error) {
 		bson.M{
 			"$match": bson.M{
 				"finished": nil,
-			},
-		},
-		bson.M{
-			"$addFields": bson.M{
-				"done": bson.M{
-					"$cond": bson.A{
-						bson.M{
-							"$eq": bson.A{
-								"$processedCount",
-								"$total",
-							},
-						},
-						true,
-						false,
+				"$expr": bson.M{
+					"$eq": bson.A{
+						"$processedCount",
+						"$total",
 					},
 				},
 			},
-		},
-		bson.M{
-			"$match": bson.M{
-				"done": true,
-			},
-		},
-		bson.M{
-			"$unset": "done",
 		},
 	})
 
@@ -92,7 +75,21 @@ func (m *MongoDb) GetUnmarkedFinishedProcesses() ([]model.Process, error) {
 	return processes, err
 }
 
-func (m *MongoDb) UpdateProcesses(processes, subProcesses, finishes []mongo.WriteModel, errors []bson.M) (finished []model.Process) {
+func (m *MongoDb) GetFinishedProcesses(ids []string) ([]model.Process, error) {
+	var processes []model.Process
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	result, err := m.connection.Database.Collection(config.MongoDb.CounterCollection).Find(ctx, bson.M{
+		"_id":      bson.M{"$in": ids},
+		"finished": bson.M{"$ne": nil},
+	})
+
+	err = result.All(ctx, &processes)
+
+	cancel()
+	return processes, err
+}
+
+func (m *MongoDb) UpdateProcesses(processes, subProcesses, finishes []mongo.WriteModel, errors []bson.M, finishesProcesses []string) (finished []model.Process) {
 	sess, err := m.connection.StartSession()
 	if err != nil {
 		log.Fatal().Err(err).Send()
@@ -121,16 +118,20 @@ func (m *MongoDb) UpdateProcesses(processes, subProcesses, finishes []mongo.Writ
 			return err
 		}
 
-		finished, err = m.GetUnmarkedFinishedProcesses()
+		_, err = m.connection.Database.Collection(config.MongoDb.CounterCollection).BulkWrite(ctx, finishes)
 		if err != nil {
 			_ = sess.AbortTransaction(ctx)
 			return err
 		}
 
-		_, err = m.connection.Database.Collection(config.MongoDb.CounterCollection).BulkWrite(ctx, finishes)
-		if err != nil {
-			_ = sess.AbortTransaction(ctx)
-			return err
+		if len(finishesProcesses) != 0 {
+			if config.App.RunCallbackTopology == true {
+				finished, err = m.GetFinishedProcesses(finishesProcesses)
+				if err != nil {
+					_ = sess.AbortTransaction(ctx)
+					return err
+				}
+			}
 		}
 
 		for _, errMsg := range errors {
