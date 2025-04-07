@@ -23,6 +23,7 @@ use Hanaboso\Utils\String\Json;
 #[ODM\Index(keys: ['correlationId' => 'asc', 'created' => 'asc'])]
 #[ODM\Index(keys: ['topology_id' => 'asc', 'node_id' => 'asc', 'created' => 'asc'])]
 #[ODM\Index(keys: ['message.body' => 'text'])]
+#[ODM\Index(keys: ['created' => 'asc'], name: 'expireIndex', expireAfterSeconds: 2_678_400)]
 #[ODM\HasLifecycleCallbacks]
 class UserTask
 {
