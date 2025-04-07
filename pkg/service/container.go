@@ -23,7 +23,7 @@ func Load() error {
 	connection := &mongodb.Connection{}
 	connection.Connect(config.Mongo.Dsn)
 
-	scheduler := gocron.NewScheduler(time.UTC)
+	scheduler := gocron.NewScheduler(time.Local)
 	scheduler.TagsUnique()
 	scheduler.StartAsync()
 
