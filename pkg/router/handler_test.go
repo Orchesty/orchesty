@@ -93,7 +93,7 @@ func prepareMongo() {
 	_ = storage.Mongo.InsertApiToken("orchesty", []string{"topology:run"}, "")
 }
 
-func (r RabbitMock) SendMessage(request *http.Request, topology storage.Topology, init map[string]float64) (string, error) {
+func (r RabbitMock) SendMessage(request *http.Request, topology storage.Topology, init map[string]interface{}) (string, error) {
 	return "1", nil
 }
 

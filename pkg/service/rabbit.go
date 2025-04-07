@@ -16,7 +16,7 @@ import (
 )
 
 type Rabbit interface {
-	SendMessage(r *http.Request, topology storage.Topology, init map[string]float64) (string, error)
+	SendMessage(r *http.Request, topology storage.Topology, init map[string]interface{}) (string, error)
 	Disconnect()
 	IsMetricsConnected() bool
 }
@@ -54,7 +54,7 @@ func ConnectToRabbit() {
 func (this RabbitSvc) SendMessage(
 	request *http.Request,
 	topology storage.Topology,
-	init map[string]float64) (string, error) {
+	init map[string]interface{}) (string, error) {
 	// Create ProcessMessage headers
 	h, c, d, t := this.builder.BuildHeaders(topology)
 
