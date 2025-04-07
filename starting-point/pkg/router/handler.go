@@ -162,7 +162,7 @@ func handleByApplication(w http.ResponseWriter, r *http.Request) {
 	processMessage(w, r, topology, init)
 }
 
-func processMessage(w http.ResponseWriter, r *http.Request, topology *storage.Topology, init map[string]float64) {
+func processMessage(w http.ResponseWriter, r *http.Request, topology *storage.Topology, init map[string]interface{}) {
 	corrId, _ := service.RabbitMq.SendMessage(r, *topology, init)
 
 	writeResponse(w, map[string]interface{}{"state": "ok", "started": 1, "correlation_id": corrId})
