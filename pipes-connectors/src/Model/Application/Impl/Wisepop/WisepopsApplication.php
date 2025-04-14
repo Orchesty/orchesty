@@ -29,9 +29,9 @@ use JsonException;
 final class WisepopsApplication extends BasicApplicationAbstract implements WebhookApplicationInterface
 {
 
-    private const API_KEY       = 'api_key';
-    private const WISEPOOPS_URL = 'https://app.wisepops.com/api1/hooks';
-    private const EMAIL_EVENT   = 'email';
+    private const string API_KEY       = 'api_key';
+    private const string WISEPOOPS_URL = 'https://app.wisepops.com/api1/hooks';
+    private const string EMAIL_EVENT   = 'email';
 
     /**
      * @return string

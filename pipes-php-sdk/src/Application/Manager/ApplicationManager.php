@@ -33,7 +33,7 @@ use Symfony\Component\HttpFoundation\Request;
 final class ApplicationManager
 {
 
-    public const APPLICATION_SETTINGS = 'applicationSettings';
+    public const string APPLICATION_SETTINGS = 'applicationSettings';
 
     /**
      * ApplicationManager constructor.
@@ -419,7 +419,7 @@ final class ApplicationManager
         $doc = $method->getDocComment();
         preg_match_all('#@SynchronousAction#s', $doc ?: '', $annotations);
 
-        return !empty($annotations[0]);
+        return $annotations[0] !== [];
     }
 
 }

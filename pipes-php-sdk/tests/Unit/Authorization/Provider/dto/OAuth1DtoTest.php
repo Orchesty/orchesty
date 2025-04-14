@@ -40,11 +40,11 @@ final class OAuth1DtoTest extends KernelTestCaseAbstract
 
         $dto = new OAuth1Dto($applicationInstall);
 
-        self::assertEquals('__consumerKey__', $dto->getConsumerKey());
-        self::assertEquals('__consumerSecret__', $dto->getConsumerSecret());
-        self::assertEquals('HMAC-SHA1', $dto->getSignatureMethod());
+        self::assertSame('__consumerKey__', $dto->getConsumerKey());
+        self::assertSame('__consumerSecret__', $dto->getConsumerSecret());
+        self::assertSame('HMAC-SHA1', $dto->getSignatureMethod());
         self::assertEquals('3', $dto->getAuthType());
-        self::assertEquals('key', $dto->getApplicationInstall()->getKey());
+        self::assertSame('key', $dto->getApplicationInstall()->getKey());
         self::assertEquals(
             [
                 'access_token' => '__token__',

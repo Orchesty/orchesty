@@ -47,7 +47,7 @@ final class BatchAbstractTest extends KernelTestCaseAbstract
     {
         $this->nullBatchConnector->setApplication(new TestNullApplication());
 
-        self::assertEquals('null-key', $this->nullBatchConnector->getApplicationKey());
+        self::assertSame('null-key', $this->nullBatchConnector->getApplicationKey());
     }
 
     /**

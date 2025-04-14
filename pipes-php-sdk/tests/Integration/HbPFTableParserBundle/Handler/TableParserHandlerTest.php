@@ -43,7 +43,7 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
                 'has_headers' => FALSE,
             ],
         );
-        self::assertEquals(Files::getContent(sprintf('%s/output-10.json', $this->path)), $result);
+        self::assertSame(Files::getContent(sprintf('%s/output-10.json', $this->path)), $result);
 
         $result = $this->handler->parseToJson(
             [
@@ -51,7 +51,7 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
                 'has_headers' => TRUE,
             ],
         );
-        self::assertEquals(Files::getContent(sprintf('%s/output-10h.json', $this->path)), $result);
+        self::assertSame(Files::getContent(sprintf('%s/output-10h.json', $this->path)), $result);
     }
 
     /**
@@ -90,7 +90,7 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
                 'has_headers' => FALSE,
             ],
         );
-        self::assertEquals(Files::getContent(sprintf('%s/output-10.json', $this->path)), $result);
+        self::assertSame(Files::getContent(sprintf('%s/output-10.json', $this->path)), $result);
         unlink($resultPath);
 
         $resultPath = $this->handler->parseFromJson(
@@ -106,7 +106,7 @@ final class TableParserHandlerTest extends KernelTestCaseAbstract
                 'has_headers' => TRUE,
             ],
         );
-        self::assertEquals(Files::getContent(sprintf('%s/output-10h.json', $this->path)), $result);
+        self::assertSame(Files::getContent(sprintf('%s/output-10h.json', $this->path)), $result);
         unlink($resultPath);
     }
 

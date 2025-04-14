@@ -25,9 +25,9 @@ final class OAuth2Dto implements OAuth2DtoInterface
     private string $clientSecret;
 
     /**
-     * @var string|null
+     * @var string
      */
-    private ?string $redirectUrl;
+    private string $redirectUrl;
 
     /**
      * @var string
@@ -95,9 +95,9 @@ final class OAuth2Dto implements OAuth2DtoInterface
     }
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function getRedirectUrl(): ?string
+    public function getRedirectUrl(): string
     {
         return $this->redirectUrl;
     }
@@ -123,7 +123,7 @@ final class OAuth2Dto implements OAuth2DtoInterface
      */
     public function isCustomApp(): bool
     {
-        return empty($this->user) && empty($this->applicationKey);
+        return $this->user === '' && $this->applicationKey === '';
     }
 
     /**

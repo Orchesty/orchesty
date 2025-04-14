@@ -20,10 +20,10 @@ use HbPFConnectorsTests\KernelTestCaseAbstract;
 final class ShipstationApplicationTest extends KernelTestCaseAbstract
 {
 
-    public const API_KEY    = '79620d3760d**********18f8a35dec8';
-    public const API_SECRET = '9cabe470**********751904f45f80e2';
+    public const string API_KEY    = '79620d3760d**********18f8a35dec8';
+    public const string API_SECRET = '9cabe470**********751904f45f80e2';
 
-    public const TOKEN = 'ODkxOWJiMjEzYWFiNDdiNDhmN2JiMDdmMWNlMWUyNWM6OTk**********jE1NDQ5OWEzODIyMWQyMjM3NTQyNGI=';
+    public const string TOKEN = 'ODkxOWJiMjEzYWFiNDdiNDhmN2JiMDdmMWNlMWUyNWM6OTk**********jE1NDQ5OWEzODIyMWQyMjM3NTQyNGI=';
 
     /**
      * @var ShipstationApplication
@@ -60,8 +60,8 @@ final class ShipstationApplicationTest extends KernelTestCaseAbstract
             (new Webhook())->setWebhookId('358'),
         );
 
-        self::assertEquals('https://ssapi.shipstation.com/webhooks/subscribe', $requestSub->getUriString());
-        self::assertEquals('https://ssapi.shipstation.com/webhooks/358', $requestUn->getUriString());
+        self::assertSame('https://ssapi.shipstation.com/webhooks/subscribe', $requestSub->getUriString());
+        self::assertSame('https://ssapi.shipstation.com/webhooks/358', $requestUn->getUriString());
     }
 
     /**
@@ -69,7 +69,7 @@ final class ShipstationApplicationTest extends KernelTestCaseAbstract
      */
     public function testPublicName(): void
     {
-        self::assertEquals('Shipstation', $this->application->getPublicName());
+        self::assertSame('Shipstation', $this->application->getPublicName());
     }
 
     /**
@@ -77,7 +77,7 @@ final class ShipstationApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetApplicationType(): void
     {
-        self::assertEquals(ApplicationTypeEnum::WEBHOOK->value, $this->application->getApplicationType());
+        self::assertSame(ApplicationTypeEnum::WEBHOOK->value, $this->application->getApplicationType());
     }
 
     /**
@@ -85,7 +85,7 @@ final class ShipstationApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetDescription(): void
     {
-        self::assertEquals('Shipstation v1', $this->application->getDescription());
+        self::assertSame('Shipstation v1', $this->application->getDescription());
     }
 
     /**
@@ -119,7 +119,7 @@ final class ShipstationApplicationTest extends KernelTestCaseAbstract
             new ResponseDto(200, '', '{"id":"id88"}', []),
             new ApplicationInstall(),
         );
-        self::assertEquals('id88', $response);
+        self::assertSame('id88', $response);
     }
 
     /**

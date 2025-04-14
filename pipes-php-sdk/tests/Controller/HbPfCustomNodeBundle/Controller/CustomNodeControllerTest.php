@@ -40,7 +40,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
 
         $response = $this->client->getResponse();
 
-        self::assertEquals(200, $response->getStatusCode());
+        self::assertSame(200, $response->getStatusCode());
         self::assertEquals(
             ['body'    => Json::encode(['test' => 'test']),
              'headers' => ['result-code' => 0, 'result-message' => '', 'result-detail' => '',  'test' => 'test'],
@@ -66,7 +66,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
         );
         $response = $this->client->getResponse();
 
-        self::assertEquals(400, $response->getStatusCode());
+        self::assertSame(400, $response->getStatusCode());
     }
 
     /**
@@ -90,7 +90,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
         );
         $response = $this->client->getResponse();
 
-        self::assertEquals(400, $response->getStatusCode());
+        self::assertSame(400, $response->getStatusCode());
     }
 
     /**
@@ -115,7 +115,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
 
         $response = $this->client->getResponse();
 
-        self::assertEquals(500, $response->getStatusCode());
+        self::assertSame(500, $response->getStatusCode());
     }
 
     /**
@@ -130,7 +130,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
 
         $assert = new CommonObjectDto('null', NULL);
         self::assertEquals([$assert->toArray()], Json::decode((string) $response->getContent()));
-        self::assertEquals(200, $response->getStatusCode());
+        self::assertSame(200, $response->getStatusCode());
     }
 
     /**
@@ -143,7 +143,7 @@ final class CustomNodeControllerTest extends ControllerTestCaseAbstract
 
         $response = $this->client->getResponse();
 
-        self::assertEquals(500, $response->getStatusCode());
+        self::assertSame(500, $response->getStatusCode());
     }
 
     /**

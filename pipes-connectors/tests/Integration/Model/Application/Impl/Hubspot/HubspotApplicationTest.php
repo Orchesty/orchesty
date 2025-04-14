@@ -24,7 +24,7 @@ use HbPFConnectorsTests\KernelTestCaseAbstract;
 final class HubspotApplicationTest extends KernelTestCaseAbstract
 {
 
-    private const CLIENT_ID = '3cc4771e-deb7-4905-8e6b-d2**********';
+    private const string CLIENT_ID = '3cc4771e-deb7-4905-8e6b-d2**********';
 
     /**
      * @var HubSpotApplication
@@ -37,7 +37,7 @@ final class HubspotApplicationTest extends KernelTestCaseAbstract
     public function testGetApplicationType(): void
     {
         $this->setApplication();
-        self::assertEquals(ApplicationTypeEnum::WEBHOOK->value, $this->application->getApplicationType());
+        self::assertSame(ApplicationTypeEnum::WEBHOOK->value, $this->application->getApplicationType());
     }
 
     /**
@@ -46,7 +46,7 @@ final class HubspotApplicationTest extends KernelTestCaseAbstract
     public function testPublicName(): void
     {
         $this->setApplication();
-        self::assertEquals('HubSpot Application', $this->application->getPublicName());
+        self::assertSame('HubSpot Application', $this->application->getPublicName());
     }
 
     /**
@@ -55,7 +55,7 @@ final class HubspotApplicationTest extends KernelTestCaseAbstract
     public function testGetDescription(): void
     {
         $this->setApplication();
-        self::assertEquals(
+        self::assertSame(
             'HubSpot offers a full stack of software for marketing, sales, and customer service, with a completely free CRM at its core. They’re powerful alone — but even better when used together.',
             $this->application->getDescription(),
         );
@@ -94,7 +94,7 @@ final class HubspotApplicationTest extends KernelTestCaseAbstract
             'token',
             self::CLIENT_ID,
         );
-        self::assertEquals(TRUE, $this->application->isAuthorized($applicationInstall));
+        self::assertTrue($this->application->isAuthorized($applicationInstall));
         $this->application->authorize($applicationInstall);
     }
 
@@ -105,7 +105,7 @@ final class HubspotApplicationTest extends KernelTestCaseAbstract
     {
         $this->setApplication();
         $applicationInstall = new ApplicationInstall();
-        self::assertEquals(FALSE, $this->application->isAuthorized($applicationInstall));
+        self::assertFalse($this->application->isAuthorized($applicationInstall));
     }
 
     /**
@@ -129,7 +129,7 @@ final class HubspotApplicationTest extends KernelTestCaseAbstract
             new ResponseDto(200, '', '{"id":"id88"}', []),
             new ApplicationInstall(),
         );
-        self::assertEquals('id88', $response);
+        self::assertSame('id88', $response);
     }
 
     /**
@@ -141,7 +141,7 @@ final class HubspotApplicationTest extends KernelTestCaseAbstract
         $response = $this->application->processWebhookUnsubscribeResponse(
             new ResponseDto(204, '', '{"id":"id88"}', []),
         );
-        self::assertEquals(TRUE, $response);
+        self::assertTrue($response);
     }
 
     /**
@@ -182,17 +182,17 @@ final class HubspotApplicationTest extends KernelTestCaseAbstract
             (new Webhook())->setWebhookId('id123'),
         );
 
-        self::assertEquals('POST', $response->getMethod());
-        self::assertEquals('DELETE', $responseUn->getMethod());
-        self::assertEquals(
+        self::assertSame('POST', $response->getMethod());
+        self::assertSame('DELETE', $responseUn->getMethod());
+        self::assertSame(
             'https://api.hubapi.com/webhooks/v1/123xx/subscriptions',
             $response->getUriString(),
         );
-        self::assertEquals(
+        self::assertSame(
             '{"enabled":false,"subscriptionDetails":{"propertyName":"email","subscriptionType":"name2"},"webhookUrl":""}',
             $response->getBody(),
         );
-        self::assertEquals(
+        self::assertSame(
             'https://api.hubapi.com/webhooks/v1/123xx/subscriptions/id123',
             $responseUn->getUriString(),
         );

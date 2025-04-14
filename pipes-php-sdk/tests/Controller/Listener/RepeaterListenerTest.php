@@ -168,15 +168,15 @@ final class RepeaterListenerTest extends ControllerTestCaseAbstract
         /** @var Response $response */
         $response = $eventMock->getResponse();
 
-        self::assertEquals(
+        self::assertSame(
             $maxHops,
             (int) $response->headers->get(PipesHeaders::REPEAT_INTERVAL),
         );
-        self::assertEquals(
+        self::assertSame(
             $interval,
             (int) $response->headers->get(PipesHeaders::REPEAT_MAX_HOPS),
         );
-        self::assertEquals(200, $response->getStatusCode());
+        self::assertSame(200, $response->getStatusCode());
     }
 
     /**

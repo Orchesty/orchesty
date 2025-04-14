@@ -31,7 +31,7 @@ final class GoogleDriveApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetKey(): void
     {
-        self::assertEquals('google-drive', $this->app->getName());
+        self::assertSame('google-drive', $this->app->getName());
     }
 
     /**
@@ -39,7 +39,7 @@ final class GoogleDriveApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetPublicName(): void
     {
-        self::assertEquals('GoogleDrive Application', $this->app->getPublicName());
+        self::assertSame('GoogleDrive Application', $this->app->getPublicName());
     }
 
     /**
@@ -47,7 +47,7 @@ final class GoogleDriveApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetDescription(): void
     {
-        self::assertEquals('GoogleDrive Application', $this->app->getDescription());
+        self::assertSame('GoogleDrive Application', $this->app->getDescription());
     }
 
     /**
@@ -55,7 +55,7 @@ final class GoogleDriveApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetAuthUrl(): void
     {
-        self::assertEquals(GoogleDriveApplication::AUTH_URL, $this->app->getAuthUrl());
+        self::assertSame(GoogleDriveApplication::AUTH_URL, $this->app->getAuthUrl());
     }
 
     /**
@@ -63,7 +63,7 @@ final class GoogleDriveApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetTokenUrl(): void
     {
-        self::assertEquals(GoogleDriveApplication::TOKEN_URL, $this->app->getTokenUrl());
+        self::assertSame(GoogleDriveApplication::TOKEN_URL, $this->app->getTokenUrl());
     }
 
     /**
@@ -78,9 +78,9 @@ final class GoogleDriveApplicationTest extends KernelTestCaseAbstract
             NULL,
             Json::encode(['foo' => 'bar']),
         );
-        self::assertEquals(CurlManager::METHOD_POST, $dto->getMethod());
+        self::assertSame(CurlManager::METHOD_POST, $dto->getMethod());
         self::assertEquals(GoogleDriveApplication::BASE_URL, $dto->getUri(TRUE));
-        self::assertEquals(Json::encode(['foo' => 'bar']), $dto->getBody());
+        self::assertSame(Json::encode(['foo' => 'bar']), $dto->getBody());
     }
 
     /**

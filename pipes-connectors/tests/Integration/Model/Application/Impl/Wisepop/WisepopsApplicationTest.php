@@ -35,7 +35,7 @@ final class WisepopsApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetApplicationType(): void
     {
-        self::assertEquals(ApplicationTypeEnum::WEBHOOK->value, $this->application->getApplicationType());
+        self::assertSame(ApplicationTypeEnum::WEBHOOK->value, $this->application->getApplicationType());
     }
 
     /**
@@ -43,7 +43,7 @@ final class WisepopsApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetKey(): void
     {
-        self::assertEquals('wisepops', $this->application->getName());
+        self::assertSame('wisepops', $this->application->getName());
     }
 
     /**
@@ -51,7 +51,7 @@ final class WisepopsApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetName(): void
     {
-        self::assertEquals('Wisepops', $this->application->getPublicName());
+        self::assertSame('Wisepops', $this->application->getPublicName());
     }
 
     /**
@@ -59,7 +59,7 @@ final class WisepopsApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetDescription(): void
     {
-        self::assertEquals('Build website popups.', $this->application->getDescription());
+        self::assertSame('Build website popups.', $this->application->getDescription());
     }
 
     /**
@@ -119,7 +119,7 @@ final class WisepopsApplicationTest extends KernelTestCaseAbstract
             'www.target_url...',
         );
 
-        self::assertEquals(
+        self::assertSame(
             Json::encode(['event' => 'email', 'target_url' => 'www.target_url...']),
             $dto->getBody(),
         );
@@ -136,7 +136,7 @@ final class WisepopsApplicationTest extends KernelTestCaseAbstract
             (new Webhook())->setWebhookId('1'),
         );
 
-        self::assertEquals('https://app.wisepops.com/api1/hooks?hook_id=1', $dto->getUriString());
+        self::assertSame('https://app.wisepops.com/api1/hooks?hook_id=1', $dto->getUriString());
     }
 
     /**
@@ -147,7 +147,7 @@ final class WisepopsApplicationTest extends KernelTestCaseAbstract
         $applicationInstall = $this->createApplicationInstall();
         $dto                = new ResponseDto(200, 'Created', '{"id": "123-456-789"}', []);
 
-        self::assertEquals(
+        self::assertSame(
             '123-456-789',
             $this->application->processWebhookSubscribeResponse($dto, $applicationInstall),
         );

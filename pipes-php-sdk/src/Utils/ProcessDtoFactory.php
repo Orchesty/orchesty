@@ -15,8 +15,8 @@ use Symfony\Component\HttpFoundation\Request;
 final class ProcessDtoFactory
 {
 
-    public const BODY    = 'body';
-    public const HEADERS = 'headers';
+    public const string BODY    = 'body';
+    public const string HEADERS = 'headers';
 
     /**
      * @param Request $request

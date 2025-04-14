@@ -56,7 +56,7 @@ final class TableParser implements TableParserInterface
                 }
             }
 
-            if (!empty($columns)) {
+            if ($columns !== []) {
                 $data[] = $columns;
             }
         }

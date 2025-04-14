@@ -12,8 +12,8 @@ use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 final class CustomAction
 {
 
-    public const ACTION_OPEN = 'open';
-    public const ACTION_CALL = 'call';
+    public const string ACTION_OPEN = 'open';
+    public const string ACTION_CALL = 'call';
 
     /**
      * CustomAction constructor.

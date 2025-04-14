@@ -44,7 +44,7 @@ final class IDokladCreateNewContactConnectorTest extends KernelTestCaseAbstract
      */
     public function testGetKey(): void
     {
-        self::assertEquals(
+        self::assertSame(
             'i-doklad.create-new-contact',
             $this->createConnector(DataProvider::createResponseDto())->getName(),
         );
@@ -84,7 +84,7 @@ final class IDokladCreateNewContactConnectorTest extends KernelTestCaseAbstract
         )
             ->setApplication($this->app)
             ->processAction($dto);
-        self::assertEquals($dataFromFile, $res->getData());
+        self::assertSame($dataFromFile, $res->getData());
     }
 
     /**

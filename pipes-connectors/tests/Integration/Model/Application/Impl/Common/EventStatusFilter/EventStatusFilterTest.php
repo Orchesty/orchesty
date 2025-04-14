@@ -54,7 +54,7 @@ final class EventStatusFilterTest extends KernelTestCaseAbstract
             EventEnum::PROCESS_SUCCESS->value,
             self::getContainer()->get('hbpf.application_install.repository'),
         );
-        self::assertEquals(
+        self::assertSame(
             'event-status-filter',
             $eventStatusFilter->getName(),
         );

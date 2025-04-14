@@ -23,9 +23,9 @@ use Hanaboso\Utils\Exception\PipesFrameworkException;
 abstract class FakturoidAbstractConnector extends ConnectorAbstract
 {
 
-    protected const NAME     = '';
-    protected const ENDPOINT = '';
-    protected const METHOD   = '';
+    protected const string NAME     = '';
+    protected const string ENDPOINT = '';
+    protected const string METHOD   = '';
 
     /**
      * @return string

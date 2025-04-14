@@ -22,10 +22,10 @@ use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
 final class SalesforceApplication extends OAuth2ApplicationAbstract
 {
 
-    public const INSTANCE_NAME = 'instance_name';
+    public const string INSTANCE_NAME = 'instance_name';
 
-    private const SALES_URL = 'https://login.salesforce.com/services/oauth2/authorize';
-    private const TOKEN_URL = 'https://login.salesforce.com/services/oauth2/token';
+    private const string SALES_URL = 'https://login.salesforce.com/services/oauth2/authorize';
+    private const string TOKEN_URL = 'https://login.salesforce.com/services/oauth2/token';
 
     /**
      * @return string
@@ -79,7 +79,7 @@ final class SalesforceApplication extends OAuth2ApplicationAbstract
             ],
         );
 
-        if (!empty($data)) {
+        if ($data !== NULL) {
             $request->setBody($data);
         }
 

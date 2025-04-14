@@ -133,13 +133,13 @@ final class WebhookManagerTest extends KernelTestCaseAbstract
         /** @var Webhook[] $webhooks */
         $webhooks = $this->repository->findMany();
         self::assertCount(1, $webhooks);
-        self::assertEquals('User', $webhooks[0]->getUser());
+        self::assertSame('User', $webhooks[0]->getUser());
         self::assertEquals(50, strlen($webhooks[0]->getToken() ?? ''));
-        self::assertEquals('node', $webhooks[0]->getNode());
-        self::assertEquals('topology', $webhooks[0]->getTopology());
-        self::assertEquals('webhook', $webhooks[0]->getApplication());
-        self::assertEquals('id', $webhooks[0]->getWebhookId());
-        self::assertEquals(FALSE, $webhooks[0]->isUnsubscribeFailed());
+        self::assertSame('node', $webhooks[0]->getNode());
+        self::assertSame('topology', $webhooks[0]->getTopology());
+        self::assertSame('webhook', $webhooks[0]->getApplication());
+        self::assertSame('id', $webhooks[0]->getWebhookId());
+        self::assertFalse($webhooks[0]->isUnsubscribeFailed());
 
         $this->getService(static fn(): ResponseDto => new ResponseDto(200, 'OK', '{"success":true}', []))
             ->unsubscribeWebhooks($this->application, 'User');
@@ -216,12 +216,12 @@ final class WebhookManagerTest extends KernelTestCaseAbstract
         /** @var Webhook[] $webhooks */
         $webhooks = $this->repository->findMany();
         self::assertCount(1, $webhooks);
-        self::assertEquals('User', $webhooks[0]->getUser());
-        self::assertEquals('node', $webhooks[0]->getNode());
-        self::assertEquals('topology', $webhooks[0]->getTopology());
-        self::assertEquals('webhook', $webhooks[0]->getApplication());
-        self::assertEquals('id', $webhooks[0]->getWebhookId());
-        self::assertEquals(TRUE, $webhooks[0]->isUnsubscribeFailed());
+        self::assertSame('User', $webhooks[0]->getUser());
+        self::assertSame('node', $webhooks[0]->getNode());
+        self::assertSame('topology', $webhooks[0]->getTopology());
+        self::assertSame('webhook', $webhooks[0]->getApplication());
+        self::assertSame('id', $webhooks[0]->getWebhookId());
+        self::assertTrue($webhooks[0]->isUnsubscribeFailed());
     }
 
     /**

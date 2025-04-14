@@ -23,8 +23,8 @@ use Hanaboso\Utils\Exception\DateTimeException;
 abstract class OAuth2ApplicationAbstract extends ApplicationAbstract implements OAuth2ApplicationInterface
 {
 
-    protected const SCOPE_SEPARATOR = ScopeFormatter::COMMA;
-    protected const CREDENTIALS     = [
+    protected const string SCOPE_SEPARATOR = ScopeFormatter::COMMA;
+    protected const array CREDENTIALS      = [
         OAuth2ApplicationInterface::CLIENT_ID,
         OAuth2ApplicationInterface::CLIENT_SECRET,
     ];

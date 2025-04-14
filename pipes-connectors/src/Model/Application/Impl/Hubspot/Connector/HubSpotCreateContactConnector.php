@@ -26,7 +26,7 @@ final class HubSpotCreateContactConnector extends ConnectorAbstract implements L
 
     use LoggerTrait;
 
-    public const NAME = 'hub-spot.create-contact';
+    public const string NAME = 'hub-spot.create-contact';
 
     /**
      * @return string

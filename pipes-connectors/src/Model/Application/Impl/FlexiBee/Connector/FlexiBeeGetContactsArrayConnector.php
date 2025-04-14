@@ -23,7 +23,7 @@ use Hanaboso\Utils\Exception\PipesFrameworkException;
 final class FlexiBeeGetContactsArrayConnector extends ConnectorAbstract
 {
 
-    private const NAME = 'flexibee.get-contacts-array';
+    private const string NAME = 'flexibee.get-contacts-array';
 
     /**
      * @return string

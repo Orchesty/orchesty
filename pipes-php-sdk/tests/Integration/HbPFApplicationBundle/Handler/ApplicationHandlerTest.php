@@ -176,7 +176,7 @@ final class ApplicationHandlerTest extends KernelTestCaseAbstract
         $handler     = new ApplicationHandler($applicationManager, $webhookManager);
         $redirectUrl = $handler->saveAuthToken('null', 'user', ['code' => '__code__']);
 
-        self::assertEquals('/redirect/url', $redirectUrl);
+        self::assertSame('/redirect/url', $redirectUrl);
     }
 
     /**

@@ -12,8 +12,8 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 final class FakturoidCreateNewSubjectConnector extends FakturoidAbstractConnector
 {
 
-    protected const NAME     = 'fakturoid.create-new-subject';
-    protected const ENDPOINT = 'subjects.json';
-    protected const METHOD   = CurlManager::METHOD_POST;
+    protected const string NAME     = 'fakturoid.create-new-subject';
+    protected const string ENDPOINT = 'subjects.json';
+    protected const string METHOD   = CurlManager::METHOD_POST;
 
 }

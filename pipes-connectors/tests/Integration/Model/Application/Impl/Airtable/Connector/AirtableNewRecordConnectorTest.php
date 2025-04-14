@@ -28,9 +28,9 @@ use PipesPhpSdkTests\MockServer\MockServer;
 final class AirtableNewRecordConnectorTest extends KernelTestCaseAbstract
 {
 
-    public const API_KEY    = 'keyfb******LvKNJI';
-    public const BASE_ID    = 'appX**********XpN';
-    public const TABLE_NAME = 'V******.com';
+    public const string API_KEY    = 'keyfb******LvKNJI';
+    public const string BASE_ID    = 'appX**********XpN';
+    public const string TABLE_NAME = 'V******.com';
 
     /**
      * @var MockServer $mockServer
@@ -126,7 +126,7 @@ final class AirtableNewRecordConnectorTest extends KernelTestCaseAbstract
         $airtableNewRecordConnector = new AirtableNewRecordConnector(
             self::getContainer()->get('hbpf.application_install.repository'),
         );
-        self::assertEquals(
+        self::assertSame(
             'airtable_new_record',
             $airtableNewRecordConnector->getName(),
         );

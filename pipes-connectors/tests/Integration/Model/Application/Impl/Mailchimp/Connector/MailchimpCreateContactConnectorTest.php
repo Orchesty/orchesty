@@ -114,7 +114,7 @@ final class MailchimpCreateContactConnectorTest extends KernelTestCaseAbstract
             self::getContainer()->get('hbpf.application_install.repository'),
         );
 
-        self::assertEquals(
+        self::assertSame(
             'mailchimp_create_contact',
             $mailchimpCreateContactConnector->getName(),
         );

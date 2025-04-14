@@ -21,9 +21,9 @@ use Hanaboso\PipesPhpSdk\Authorization\Exception\AuthorizationException;
 final class AirtableApplication extends BasicApplicationAbstract
 {
 
-    public const  BASE_URL   = 'https://api.airtable.com/v0';
-    public const  BASE_ID    = 'base_id';
-    public const  TABLE_NAME = 'table_name';
+    public const string  BASE_URL   = 'https://api.airtable.com/v0';
+    public const string  BASE_ID    = 'base_id';
+    public const string  TABLE_NAME = 'table_name';
 
     /**
      * @return string

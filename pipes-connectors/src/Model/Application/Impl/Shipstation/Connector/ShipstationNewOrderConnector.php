@@ -19,7 +19,7 @@ use Hanaboso\Utils\Exception\PipesFrameworkException;
 final class ShipstationNewOrderConnector extends ConnectorAbstract
 {
 
-    public const NAME = 'shipstation_new_order';
+    public const string NAME = 'shipstation_new_order';
 
     /**
      * @return string

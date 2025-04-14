@@ -14,16 +14,16 @@ use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 abstract class AwsObjectConnectorAbstract extends ConnectorAbstract
 {
 
-    protected const QUERY  = 'query';
-    protected const RESULT = 'result';
+    protected const string QUERY  = 'query';
+    protected const string RESULT = 'result';
 
-    protected const BUCKET = 'Bucket';
-    protected const KEY    = 'Key';
-    protected const SOURCE = 'SourceFile';
-    protected const TARGET = 'SaveAs';
+    protected const string BUCKET = 'Bucket';
+    protected const string KEY    = 'Key';
+    protected const string SOURCE = 'SourceFile';
+    protected const string TARGET = 'SaveAs';
 
-    protected const NAME    = 'name';
-    protected const CONTENT = 'content';
+    protected const string NAME    = 'name';
+    protected const string CONTENT = 'content';
 
     /**
      * @var ApplicationInstallRepository $repository

@@ -142,7 +142,7 @@ final class ApplicationController
         try {
             /** @var string $redirectUrl */
             $redirectUrl = $request->query->get('redirect_url', '');
-            if (empty($redirectUrl)) {
+            if ($redirectUrl === '') {
                 throw new InvalidArgumentException('Missing "redirect_url" query parameter.');
             }
 

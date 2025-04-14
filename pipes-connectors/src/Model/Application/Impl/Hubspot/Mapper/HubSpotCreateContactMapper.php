@@ -15,7 +15,7 @@ use Hanaboso\Utils\String\Json;
 final class HubSpotCreateContactMapper extends CommonNodeAbstract
 {
 
-    public const NAME = 'hub-spot.create-contact-mapper';
+    public const string NAME = 'hub-spot.create-contact-mapper';
 
     /**
      * @return string

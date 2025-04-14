@@ -23,7 +23,7 @@ use LogicException;
 final class IDokladCreateNewContactConnector extends ConnectorAbstract
 {
 
-    public const NAME = 'i-doklad.create-new-contact';
+    public const string NAME = 'i-doklad.create-new-contact';
 
     /**
      * @return string

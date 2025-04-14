@@ -119,7 +119,7 @@ class Repository
     {
         $result = $this->findMany($filter, $sorter, $paging);
 
-        return !empty($result) ? $result[0] : NULL;
+        return $result !== [] ? $result[0] : NULL;
     }
 
     /**
@@ -132,7 +132,7 @@ class Repository
     {
         $result = $this->findMany(new Filter([$id]));
 
-        return !empty($result) ? $result[0] : NULL;
+        return $result !== [] ? $result[0] : NULL;
     }
 
     /**
@@ -154,7 +154,7 @@ class Repository
 
         $body = $result->getBody()->getContents() ?: '{}';
         $body = Json::decode($body);
-        if (empty($body)) {
+        if ($body === []) {
             return [];
         }
 

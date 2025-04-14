@@ -63,7 +63,7 @@ class RepeaterListener implements EventSubscriberInterface, LoggerAwareInterface
     }
 
     /**
-     * @return array<string, array<int|string, array<int|string, int|string>|int|string>|string>
+     * @return array<string, list<array{0: string, 1?: int}|int|string>|string>
      */
     public static function getSubscribedEvents(): array
     {

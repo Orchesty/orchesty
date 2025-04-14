@@ -18,7 +18,7 @@ use Hanaboso\Utils\Exception\DateTimeException;
 final class GetApplicationForRefreshBatchConnector extends BatchAbstract
 {
 
-    public const NAME = 'get_application_for_refresh';
+    public const string NAME = 'get_application_for_refresh';
 
     /**
      * GetApplicationForRefreshBatchConnector constructor.

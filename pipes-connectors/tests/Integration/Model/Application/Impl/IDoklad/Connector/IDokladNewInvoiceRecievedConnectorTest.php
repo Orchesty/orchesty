@@ -44,7 +44,7 @@ final class IDokladNewInvoiceRecievedConnectorTest extends KernelTestCaseAbstrac
      */
     public function testGetKey(): void
     {
-        self::assertEquals(
+        self::assertSame(
             'i-doklad.new-invoice-recieved',
             $this->createConnector(DataProvider::createResponseDto())->getName(),
         );
@@ -84,7 +84,7 @@ final class IDokladNewInvoiceRecievedConnectorTest extends KernelTestCaseAbstrac
         )
             ->setApplication($this->app)
             ->processAction($dto);
-        self::assertEquals($dataFromFile, $res->getData());
+        self::assertSame($dataFromFile, $res->getData());
     }
 
     /**

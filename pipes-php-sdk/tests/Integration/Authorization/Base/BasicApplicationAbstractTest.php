@@ -31,7 +31,7 @@ final class BasicApplicationAbstractTest extends KernelTestCaseAbstract
      */
     public function testGetAuthorizationType(): void
     {
-        self::assertEquals('basic', $this->testApp->getAuthorizationType());
+        self::assertSame('basic', $this->testApp->getAuthorizationType());
     }
 
     /**

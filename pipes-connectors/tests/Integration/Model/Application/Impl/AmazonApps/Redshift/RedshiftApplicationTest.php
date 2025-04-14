@@ -42,7 +42,7 @@ final class RedshiftApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetKey(): void
     {
-        self::assertEquals('redshift', $this->application->getName());
+        self::assertSame('redshift', $this->application->getName());
     }
 
     /**
@@ -50,7 +50,7 @@ final class RedshiftApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetApplicationType(): void
     {
-        self::assertEquals(ApplicationTypeEnum::CRON->value, $this->application->getApplicationType());
+        self::assertSame(ApplicationTypeEnum::CRON->value, $this->application->getApplicationType());
     }
 
     /**
@@ -58,7 +58,7 @@ final class RedshiftApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetPublicName(): void
     {
-        self::assertEquals('Amazon Redshift', $this->application->getPublicName());
+        self::assertSame('Amazon Redshift', $this->application->getPublicName());
     }
 
     /**
@@ -66,7 +66,7 @@ final class RedshiftApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetDescription(): void
     {
-        self::assertEquals(
+        self::assertSame(
             'Amazon Redshift is a fast, simple, cost-effective data warehousing service.',
             $this->application->getDescription(),
         );

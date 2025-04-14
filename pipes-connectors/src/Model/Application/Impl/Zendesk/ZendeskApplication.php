@@ -24,12 +24,12 @@ use Hanaboso\PipesPhpSdk\Authorization\Utils\ScopeFormatter;
 final class ZendeskApplication extends OAuth2ApplicationAbstract
 {
 
-    protected const SCOPE_SEPARATOR = ScopeFormatter::SPACE;
+    protected const string SCOPE_SEPARATOR = ScopeFormatter::SPACE;
 
-    private const AUTH_URL  = 'https://%s.zendesk.com/oauth/authorizations/new';
-    private const TOKEN_URL = 'https://%s.zendesk.com/oauth/tokens';
-    private const SUBDOMAIN = 'subdomain';
-    private const SCOPES    = ['read', 'write'];
+    private const string AUTH_URL  = 'https://%s.zendesk.com/oauth/authorizations/new';
+    private const string TOKEN_URL = 'https://%s.zendesk.com/oauth/tokens';
+    private const string SUBDOMAIN = 'subdomain';
+    private const array SCOPES     = ['read', 'write'];
 
     /**
      * @return string
@@ -83,7 +83,7 @@ final class ZendeskApplication extends OAuth2ApplicationAbstract
             ],
         );
 
-        if (!empty($data)) {
+        if ($data !== NULL) {
             $request->setBody($data);
         }
 
@@ -100,7 +100,7 @@ final class ZendeskApplication extends OAuth2ApplicationAbstract
             ->addField((new Field(Field::TEXT, self::SUBDOMAIN, 'Subdomain', NULL, TRUE)))
             ->addField((new Field(Field::TEXT, OAuth2ApplicationInterface::CLIENT_ID, 'Client Id', NULL, TRUE)))
             ->addField(
-                (new Field(Field::TEXT, OAuth2ApplicationInterface::CLIENT_SECRET, 'Client Secret', NULL, TRUE)),
+                new Field(Field::TEXT, OAuth2ApplicationInterface::CLIENT_SECRET, 'Client Secret', NULL, TRUE),
             );
 
         $formStack = new FormStack();

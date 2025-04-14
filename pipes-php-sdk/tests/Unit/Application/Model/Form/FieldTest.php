@@ -31,11 +31,11 @@ final class FieldTest extends KernelTestCaseAbstract
             ->setDisabled(FALSE)
             ->setChoices(['val1', 'val2', 'val3', 'val4']);
 
-        self::assertEquals('selectbox', $field->getType());
+        self::assertSame('selectbox', $field->getType());
         self::assertEquals('val2', $field->getValue());
-        self::assertEquals('select', $field->getKey());
-        self::assertEquals('Select2', $field->getLabel());
-        self::assertEquals('This is selectbox.', $field->getDescription());
+        self::assertSame('select', $field->getKey());
+        self::assertSame('Select2', $field->getLabel());
+        self::assertSame('This is selectbox.', $field->getDescription());
         self::assertEquals(['val1', 'val2', 'val3', 'val4'], $field->getChoices());
         self::assertEquals(9, count($field->toArray()));
         self::assertFalse($field->isReadOnly());

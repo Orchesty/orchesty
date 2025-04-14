@@ -30,9 +30,9 @@ use JsonException;
 final class PipedriveApplication extends BasicApplicationAbstract implements WebhookApplicationInterface
 {
 
-    public const PIPEDRIVE_URL = 'https://api.pipedrive.com';
-    public const ADDED         = 'added';
-    public const ACTIVITY      = 'activity';
+    public const string PIPEDRIVE_URL = 'https://api.pipedrive.com';
+    public const string ADDED         = 'added';
+    public const string ACTIVITY      = 'activity';
 
     /**
      * @return string

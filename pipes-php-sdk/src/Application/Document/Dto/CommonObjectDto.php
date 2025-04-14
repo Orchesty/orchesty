@@ -12,8 +12,8 @@ use Hanaboso\Utils\String\Json;
 final class CommonObjectDto
 {
 
-    public const NAME = 'name';
-    public const APP  = 'app';
+    public const string NAME = 'name';
+    public const string APP  = 'app';
 
     /**
      * CommonObjectDto constructor.

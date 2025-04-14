@@ -10,8 +10,8 @@ namespace Hanaboso\PipesPhpSdk\Application\Manager\Webhook;
 final class WebhookSubscription
 {
 
-    public const NAME     = 'name';
-    public const TOPOLOGY = 'topology';
+    public const string NAME     = 'name';
+    public const string TOPOLOGY = 'topology';
 
     /**
      * WebhookSubscription constructor.

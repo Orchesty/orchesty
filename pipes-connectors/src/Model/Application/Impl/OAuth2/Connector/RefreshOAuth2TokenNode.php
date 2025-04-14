@@ -22,7 +22,7 @@ use Hanaboso\Utils\System\PipesHeaders;
 final class RefreshOAuth2TokenNode extends CommonNodeAbstract
 {
 
-    public const NAME = 'refresh_oauth2_token';
+    public const string NAME = 'refresh_oauth2_token';
 
     /**
      * RefreshOAuth2TokenNode constructor.

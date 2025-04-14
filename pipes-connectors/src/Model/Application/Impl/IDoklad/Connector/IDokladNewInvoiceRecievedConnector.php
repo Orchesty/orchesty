@@ -22,7 +22,7 @@ use LogicException;
 final class IDokladNewInvoiceRecievedConnector extends ConnectorAbstract
 {
 
-    public const NAME = 'i-doklad.new-invoice-recieved';
+    public const string NAME = 'i-doklad.new-invoice-recieved';
 
     /**
      * @return string

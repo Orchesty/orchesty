@@ -12,9 +12,9 @@ use Hanaboso\Utils\Exception\PipesFrameworkExceptionAbstract;
 final class TableParserException extends PipesFrameworkExceptionAbstract
 {
 
-    public const UNKNOWN_WRITER_TYPE = self::OFFSET + 1;
-    public const PARSER_NOT_EXISTS   = self::OFFSET + 2;
+    public const int UNKNOWN_WRITER_TYPE = self::OFFSET + 1;
+    public const int PARSER_NOT_EXISTS   = self::OFFSET + 2;
 
-    protected const OFFSET = 800;
+    protected const int OFFSET = 800;
 
 }

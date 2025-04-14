@@ -20,8 +20,8 @@ use Hanaboso\Utils\Exception\DateTimeException;
 final class WebhookManager
 {
 
-    private const URL    = '%s/webhook/topologies/%s/nodes/%s/token/%s';
-    private const LENGTH = 25;
+    private const string URL = '%s/webhook/topologies/%s/nodes/%s/token/%s';
+    private const int LENGTH = 25;
 
     /**
      * @var string

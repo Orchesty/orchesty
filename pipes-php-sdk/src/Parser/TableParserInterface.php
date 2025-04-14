@@ -10,11 +10,11 @@ namespace Hanaboso\PipesPhpSdk\Parser;
 interface TableParserInterface
 {
 
-    public const XLSX = 'xlsx';
-    public const XLS  = 'xls';
-    public const ODS  = 'ods';
-    public const CSV  = 'csv';
-    public const HTML = 'html';
+    public const string XLSX = 'xlsx';
+    public const string XLS  = 'xls';
+    public const string ODS  = 'ods';
+    public const string CSV  = 'csv';
+    public const string HTML = 'html';
 
     /**
      * @param string    $path

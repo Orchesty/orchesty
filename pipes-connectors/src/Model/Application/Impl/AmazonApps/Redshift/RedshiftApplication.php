@@ -20,15 +20,15 @@ use PgSql\Connection;
 final class RedshiftApplication extends AwsApplicationAbstract
 {
 
-    public const ENDPOINT    = 'Endpoint';
-    public const DB_PASSWORD = 'DbPassword';
+    public const string ENDPOINT    = 'Endpoint';
+    public const string DB_PASSWORD = 'DbPassword';
 
-    private const HOST               = 'host';
-    private const PORT               = 'Port';
-    private const DBNAME             = 'DBName';
-    private const ADDRESS            = 'Address';
-    private const MASTER_USER        = 'MasterUsername';
-    private const CLUSTER_IDENTIFIER = 'ClusterIdentifier';
+    private const string HOST               = 'host';
+    private const string PORT               = 'Port';
+    private const string DBNAME             = 'DBName';
+    private const string ADDRESS            = 'Address';
+    private const string MASTER_USER        = 'MasterUsername';
+    private const string CLUSTER_IDENTIFIER = 'ClusterIdentifier';
 
     /**
      * @return string

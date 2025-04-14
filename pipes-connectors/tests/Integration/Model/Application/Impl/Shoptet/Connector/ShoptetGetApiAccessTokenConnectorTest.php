@@ -31,12 +31,12 @@ final class ShoptetGetApiAccessTokenConnectorTest extends KernelTestCaseAbstract
 
     use PrivateTrait;
 
-    private const HEADERS = [
+    private const array HEADERS = [
         'application' => ShoptetApplication::SHOPTET_KEY,
         'user'        => 'user',
     ];
 
-    private const API_TOKEN_URL = 'https://12345.myshoptet.com/action/ApiOAuthServer/getAccessToken';
+    private const string API_TOKEN_URL = 'https://12345.myshoptet.com/action/ApiOAuthServer/getAccessToken';
 
     /**
      * @var ShoptetGetApiAccessTokenConnector
@@ -53,7 +53,7 @@ final class ShoptetGetApiAccessTokenConnectorTest extends KernelTestCaseAbstract
      */
     public function testGetName(): void
     {
-        self::assertEquals('shoptet-get-access-token', $this->connector->getName());
+        self::assertSame('shoptet-get-access-token', $this->connector->getName());
     }
 
     /**
@@ -74,7 +74,7 @@ final class ShoptetGetApiAccessTokenConnectorTest extends KernelTestCaseAbstract
 
         $data = $this->connector->processAction((new ProcessDto())->setHeaders(self::HEADERS));
 
-        self::assertEquals('{"data":"data"}', $data->getData());
+        self::assertSame('{"data":"data"}', $data->getData());
     }
 
     /**

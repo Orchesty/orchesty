@@ -44,7 +44,7 @@ final class ConnectorHandlerTest extends KernelTestCaseAbstract
             new Request(content: Json::encode([ProcessDtoFactory::BODY => '', ProcessDtoFactory::HEADERS => []])),
         );
 
-        self::assertEquals('', $dto->getData());
+        self::assertSame('', $dto->getData());
     }
 
     /**

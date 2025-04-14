@@ -20,7 +20,7 @@ use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
 final class NutshellApplication extends BasicApplicationAbstract
 {
 
-    public const BASE_URL = 'https://app.nutshell.com/api/v1/json';
+    public const string BASE_URL = 'https://app.nutshell.com/api/v1/json';
 
     /**
      * @return string

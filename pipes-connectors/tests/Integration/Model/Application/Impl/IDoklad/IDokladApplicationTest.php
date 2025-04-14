@@ -33,7 +33,7 @@ final class IDokladApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetKey(): void
     {
-        self::assertEquals('i-doklad', $this->app->getName());
+        self::assertSame('i-doklad', $this->app->getName());
     }
 
     /**
@@ -41,7 +41,7 @@ final class IDokladApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetPublicName(): void
     {
-        self::assertEquals('iDoklad Application', $this->app->getPublicName());
+        self::assertSame('iDoklad Application', $this->app->getPublicName());
     }
 
     /**
@@ -49,7 +49,7 @@ final class IDokladApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetDescription(): void
     {
-        self::assertEquals('iDoklad Application', $this->app->getDescription());
+        self::assertSame('iDoklad Application', $this->app->getDescription());
     }
 
     /**
@@ -57,7 +57,7 @@ final class IDokladApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetAuthUrl(): void
     {
-        self::assertEquals(IDokladApplication::AUTH_URL, $this->app->getAuthUrl());
+        self::assertSame(IDokladApplication::AUTH_URL, $this->app->getAuthUrl());
     }
 
     /**
@@ -65,7 +65,7 @@ final class IDokladApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetTokenUrl(): void
     {
-        self::assertEquals(IDokladApplication::TOKEN_URL, $this->app->getTokenUrl());
+        self::assertSame(IDokladApplication::TOKEN_URL, $this->app->getTokenUrl());
     }
 
     /**
@@ -92,9 +92,9 @@ final class IDokladApplicationTest extends KernelTestCaseAbstract
             NULL,
             Json::encode(['foo' => 'bar']),
         );
-        self::assertEquals(CurlManager::METHOD_POST, $dto->getMethod());
+        self::assertSame(CurlManager::METHOD_POST, $dto->getMethod());
         self::assertEquals(IDokladApplication::BASE_URL, $dto->getUri(TRUE));
-        self::assertEquals(Json::encode(['foo' => 'bar']), $dto->getBody());
+        self::assertSame(Json::encode(['foo' => 'bar']), $dto->getBody());
     }
 
     /**

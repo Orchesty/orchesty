@@ -32,8 +32,8 @@ final class S3DeleteObjectConnectorTest extends KernelTestCaseAbstract
 
     use PrivateTrait;
 
-    private const KEY  = 's3';
-    private const USER = 'user';
+    private const string KEY  = 's3';
+    private const string USER = 'user';
 
     /**
      * @var S3DeleteObjectConnector

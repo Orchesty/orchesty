@@ -3,7 +3,7 @@ includes:
 
 parameters:
 	symfony:
-		container_xml_path: %rootDir%/../../../var/cache/test/HbPFConnectorsTests_app_KernelTestDebugContainer.xml
+		containerXmlPath: %rootDir%/../../../var/cache/test/HbPFConnectorsTests_app_KernelTestDebugContainer.xml
 	ignoreErrors:
 		- '#Access to an undefined property*#'
 		- '#Unreachable statement \- code above always terminates.#'

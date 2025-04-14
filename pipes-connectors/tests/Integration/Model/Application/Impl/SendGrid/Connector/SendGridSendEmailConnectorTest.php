@@ -44,7 +44,7 @@ final class SendGridSendEmailConnectorTest extends KernelTestCaseAbstract
      */
     public function testGetName(): void
     {
-        self::assertEquals(
+        self::assertSame(
             'send-grid.send-email',
             $this->createConnector(DataProvider::createResponseDto())->getName(),
         );
@@ -73,7 +73,7 @@ final class SendGridSendEmailConnectorTest extends KernelTestCaseAbstract
         $res = $this->createConnector(DataProvider::createResponseDto())
             ->setApplication($this->app)
             ->processAction($dto);
-        self::assertEquals('{}', $res->getData());
+        self::assertSame('{}', $res->getData());
     }
 
     /**

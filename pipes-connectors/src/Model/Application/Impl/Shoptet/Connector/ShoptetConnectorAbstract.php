@@ -20,9 +20,9 @@ abstract class ShoptetConnectorAbstract extends ConnectorAbstract
 
     use UrlBuilderTrait;
 
-    protected const ID   = 'id';
-    protected const TYPE = 'type';
-    protected const DATA = 'data';
+    protected const string ID   = 'id';
+    protected const string TYPE = 'type';
+    protected const string DATA = 'data';
 
     /**
      * ShoptetConnectorAbstract constructor.

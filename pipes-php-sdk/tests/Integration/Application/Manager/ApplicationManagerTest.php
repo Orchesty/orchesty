@@ -70,7 +70,7 @@ final class ApplicationManagerTest extends KernelTestCaseAbstract
     {
         $this->privateSetUp();
 
-        self::assertEquals('null-key', $this->manager->getApplication('null')->getName());
+        self::assertSame('null-key', $this->manager->getApplication('null')->getName());
     }
 
     /**
@@ -263,7 +263,7 @@ final class ApplicationManagerTest extends KernelTestCaseAbstract
         $loader->expects(self::any())->method('getApplication')->willReturn($app);
         $manager = new ApplicationManager($this->applicationInstallRepository, $loader, $this->webhookManager);
 
-        self::assertEquals(
+        self::assertSame(
             '/test/redirect',
             $manager->saveAuthorizationToken('null2', 'user', ['code' => ['token']]),
         );
@@ -381,7 +381,7 @@ final class ApplicationManagerTest extends KernelTestCaseAbstract
         } catch (Exception) {
             $failed = TRUE;
         }
-        self::assertEquals(FALSE, $failed);
+        self::assertFalse($failed);
     }
 
     /**

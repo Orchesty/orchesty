@@ -16,13 +16,13 @@ use LogicException;
 abstract class AwsApplicationAbstract extends BasicApplicationAbstract
 {
 
-    public const KEY         = 'key';
-    public const SECRET      = 'secret';
-    public const REGION      = 'region';
-    public const VERSION     = 'version';
-    public const ENDPOINT    = 'endpoint';
-    public const CREDENTIALS = 'credentials';
-    public const REGIONS     = [
+    public const string KEY         = 'key';
+    public const string SECRET      = 'secret';
+    public const string REGION      = 'region';
+    public const string VERSION     = 'version';
+    public const string ENDPOINT    = 'endpoint';
+    public const string CREDENTIALS = 'credentials';
+    public const array REGIONS      = [
         'ap-east-1'      => 'Asia Pacific (Hong Kong) - ap-east-1',
         'ap-northeast-1' => 'Asia Pacific (Tokyo) - ap-northeast-1',
         'ap-northeast-2' => 'Asia Pacific (Seoul) - ap-northeast-2',
@@ -47,7 +47,7 @@ abstract class AwsApplicationAbstract extends BasicApplicationAbstract
         'us-west-2'      => 'US West (Oregon) - us-west-2',
     ];
 
-    protected const LATEST = 'latest';
+    protected const string LATEST = 'latest';
 
     /**
      * @param ProcessDtoAbstract $dto

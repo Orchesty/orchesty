@@ -19,9 +19,9 @@ use HbPFConnectorsTests\KernelTestCaseAbstract;
 final class AirtableApplicationTest extends KernelTestCaseAbstract
 {
 
-    public const API_KEY    = 'keyfb******LvKNJI';
-    public const BASE_ID    = 'appX**********XpN';
-    public const TABLE_NAME = 'V******.com';
+    public const string API_KEY    = 'keyfb******LvKNJI';
+    public const string BASE_ID    = 'appX**********XpN';
+    public const string TABLE_NAME = 'V******.com';
 
     /**
      * @var AirtableApplication
@@ -33,7 +33,7 @@ final class AirtableApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetApplicationType(): void
     {
-        self::assertEquals(ApplicationTypeEnum::CRON->value, $this->app->getApplicationType());
+        self::assertSame(ApplicationTypeEnum::CRON->value, $this->app->getApplicationType());
     }
 
     /**
@@ -41,7 +41,7 @@ final class AirtableApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetKey(): void
     {
-        self::assertEquals('airtable', $this->app->getName());
+        self::assertSame('airtable', $this->app->getName());
     }
 
     /**
@@ -49,7 +49,7 @@ final class AirtableApplicationTest extends KernelTestCaseAbstract
      */
     public function testPublicName(): void
     {
-        self::assertEquals('Airtable', $this->app->getPublicName());
+        self::assertSame('Airtable', $this->app->getPublicName());
     }
 
     /**
@@ -57,7 +57,7 @@ final class AirtableApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetDescription(): void
     {
-        self::assertEquals('Airtable v1', $this->app->getDescription());
+        self::assertSame('Airtable v1', $this->app->getDescription());
     }
 
     /**
@@ -90,7 +90,7 @@ final class AirtableApplicationTest extends KernelTestCaseAbstract
                 ],
             ],
         );
-        self::assertEquals(TRUE, $this->app->isAuthorized($applicationInstall));
+        self::assertTrue($this->app->isAuthorized($applicationInstall));
     }
 
     /**

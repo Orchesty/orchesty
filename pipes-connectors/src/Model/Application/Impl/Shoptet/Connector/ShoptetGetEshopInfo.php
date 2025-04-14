@@ -20,9 +20,9 @@ use Hanaboso\PipesPhpSdk\CustomNode\Exception\CustomNodeException;
 final class ShoptetGetEshopInfo extends ShoptetConnectorAbstract
 {
 
-    public const NAME = 'shoptet-get-eshop-info';
+    public const string NAME = 'shoptet-get-eshop-info';
 
-    private const GET_ESHOP_INFO = '/api/eshop?include=orderAdditionalFields%2CorderStatuses%2CshippingMethods%2CpaymentMethods';
+    private const string GET_ESHOP_INFO = '/api/eshop?include=orderAdditionalFields%2CorderStatuses%2CshippingMethods%2CpaymentMethods';
 
     /**
      * @return string

@@ -31,7 +31,7 @@ final class S3ApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetKey(): void
     {
-        self::assertEquals('s3', $this->application->getName());
+        self::assertSame('s3', $this->application->getName());
     }
 
     /**
@@ -39,7 +39,7 @@ final class S3ApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetApplicationType(): void
     {
-        self::assertEquals(ApplicationTypeEnum::CRON->value, $this->application->getApplicationType());
+        self::assertSame(ApplicationTypeEnum::CRON->value, $this->application->getApplicationType());
     }
 
     /**
@@ -47,7 +47,7 @@ final class S3ApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetPublicName(): void
     {
-        self::assertEquals('Amazon Simple Storage Service', $this->application->getPublicName());
+        self::assertSame('Amazon Simple Storage Service', $this->application->getPublicName());
     }
 
     /**
@@ -55,7 +55,7 @@ final class S3ApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetDescription(): void
     {
-        self::assertEquals(
+        self::assertSame(
             'Amazon Simple Storage Service (Amazon S3) is an object storage service that offers industry-leading scalability, data availability, security, and performance.',
             $this->application->getDescription(),
         );

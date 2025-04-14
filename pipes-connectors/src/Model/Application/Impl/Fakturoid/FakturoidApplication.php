@@ -22,9 +22,9 @@ use Hanaboso\Utils\String\Base64;
 final class FakturoidApplication extends BasicApplicationAbstract
 {
 
-    public const BASE_URL      = 'https://app.fakturoid.cz/api/v2';
-    public const BASE_ACCOUNTS = 'accounts';
-    public const ACCOUNT       = 'account';
+    public const string BASE_URL      = 'https://app.fakturoid.cz/api/v2';
+    public const string BASE_ACCOUNTS = 'accounts';
+    public const string ACCOUNT       = 'account';
 
     /**
      * @return string

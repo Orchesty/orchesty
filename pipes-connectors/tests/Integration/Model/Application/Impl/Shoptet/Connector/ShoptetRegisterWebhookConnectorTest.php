@@ -31,15 +31,15 @@ final class ShoptetRegisterWebhookConnectorTest extends KernelTestCaseAbstract
 
     use PrivateTrait;
 
-    private const USER   = 'user';
-    private const SENDER = 'sender';
+    private const string USER   = 'user';
+    private const string SENDER = 'sender';
 
-    private const HEADERS = [
+    private const array HEADERS = [
         'application' => ShoptetApplication::SHOPTET_KEY,
         'user'        => self::USER,
     ];
 
-    private const SETTINGS = [
+    private const array SETTINGS = [
         'clientSettings' => [
             'token' => [
                 'access_token' => 'Access Token',
@@ -48,7 +48,7 @@ final class ShoptetRegisterWebhookConnectorTest extends KernelTestCaseAbstract
         ],
     ];
 
-    private const NON_ENCRYPTED_SETTINGS = [
+    private const array NON_ENCRYPTED_SETTINGS = [
         'getApiKey' => [
             'receivingStatus' => 'unlock',
         ],
@@ -69,7 +69,7 @@ final class ShoptetRegisterWebhookConnectorTest extends KernelTestCaseAbstract
      */
     public function testGetName(): void
     {
-        self::assertEquals('shoptet-register-webhook-connector', $this->connector->getName());
+        self::assertSame('shoptet-register-webhook-connector', $this->connector->getName());
     }
 
     /**

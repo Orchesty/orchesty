@@ -32,27 +32,27 @@ use Throwable;
 final class FlexiBeeApplication extends BasicApplicationAbstract
 {
 
-    public const  CLIENT_SETTINGS = 'client_settings';
-    public const  AUTH_SESSION_ID = 'authSessionId';
-    public const  REFRESH_TOKEN   = 'refreshToken';
-    public const  CSRF_TOKEN      = 'csrfToken';
-    public const  TOKEN_GET       = 'token_get';
+    public const string  CLIENT_SETTINGS = 'client_settings';
+    public const string  AUTH_SESSION_ID = 'authSessionId';
+    public const string  REFRESH_TOKEN   = 'refreshToken';
+    public const string  CSRF_TOKEN      = 'csrfToken';
+    public const string  TOKEN_GET       = 'token_get';
 
-    public const INCORECT_RESPONSE = 'Incorect response';
-    public const CANNOT_GET_BODY   = 'Cannot get body from response.';
-    public const TOKEN_NOT_SUCCESS = 'Token is not successed returned';
+    public const string INCORECT_RESPONSE = 'Incorect response';
+    public const string CANNOT_GET_BODY   = 'Cannot get body from response.';
+    public const string TOKEN_NOT_SUCCESS = 'Token is not successed returned';
 
-    public const  FLEXIBEE_URL = 'flexibeeUrl';
+    public const string  FLEXIBEE_URL = 'flexibeeUrl';
 
-    private const KEY = 'flexibee';
+    private const string KEY = 'flexibee';
 
-    private const AUTH      = 'auth';
-    private const AUTH_JSON = 'json';
-    private const AUTH_HTTP = 'http';
+    private const string AUTH      = 'auth';
+    private const string AUTH_JSON = 'json';
+    private const string AUTH_HTTP = 'http';
 
-    private const TOKEN_MAX_LIFE = 60 * 30; // 30mmin
+    private const int TOKEN_MAX_LIFE = 60 * 30; // 30mmin
 
-    private const ENDPOINT_LOGIN = 'login-logout/login.json';
+    private const string ENDPOINT_LOGIN = 'login-logout/login.json';
 
     /**
      * FlexiBeeApplication constructor.
@@ -147,7 +147,7 @@ final class FlexiBeeApplication extends BasicApplicationAbstract
             );
         }
 
-        if (isset($data)) {
+        if ($data !== NULL) {
             $request->setBody($data);
         }
 
@@ -165,7 +165,7 @@ final class FlexiBeeApplication extends BasicApplicationAbstract
     {
         $host = $applicationInstall->getSettings()[ApplicationInterface::AUTHORIZATION_FORM][self::FLEXIBEE_URL] ?? '';
 
-        if (empty($host)) {
+        if ($host === '') {
             throw new ApplicationInstallException(
                 'There is no flexibee url',
                 ApplicationInstallException::INVALID_FIELD_TYPE,

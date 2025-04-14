@@ -37,7 +37,7 @@ final class ShoptetGetEshopInfoTest extends KernelTestCaseAbstract
 
     use PrivateTrait;
 
-    private const HEADERS = [
+    private const array HEADERS = [
         'application' => ShoptetApplication::SHOPTET_KEY,
         'user'        => 'user',
     ];
@@ -57,7 +57,7 @@ final class ShoptetGetEshopInfoTest extends KernelTestCaseAbstract
      */
     public function testGetName(): void
     {
-        self::assertEquals('shoptet-get-eshop-info', $this->connector->getName());
+        self::assertSame('shoptet-get-eshop-info', $this->connector->getName());
     }
 
     /**

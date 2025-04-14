@@ -12,8 +12,8 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 final class FakturoidGetAccountDetailConnector extends FakturoidAbstractConnector
 {
 
-    protected const NAME     = 'fakturoid.get-account-detail';
-    protected const ENDPOINT = 'account.json';
-    protected const METHOD   = CurlManager::METHOD_GET;
+    protected const string NAME     = 'fakturoid.get-account-detail';
+    protected const string ENDPOINT = 'account.json';
+    protected const string METHOD   = CurlManager::METHOD_GET;
 
 }

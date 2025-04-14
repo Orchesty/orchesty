@@ -24,12 +24,12 @@ use Symfony\Component\HttpFoundation\Request;
 final class ApplicationHandler
 {
 
-    private const SYNC_METHODS         = 'syncMethods';
-    private const AUTHORIZED           = 'authorized';
-    private const ENABLED              = 'enabled';
-    private const WEBHOOK_SETTINGS     = 'webhookSettings';
-    private const APPLICATION_SETTINGS = 'applicationSettings';
-    private const CUSTOM_ACTIONS       = 'customActions';
+    private const string SYNC_METHODS         = 'syncMethods';
+    private const string AUTHORIZED           = 'authorized';
+    private const string ENABLED              = 'enabled';
+    private const string WEBHOOK_SETTINGS     = 'webhookSettings';
+    private const string APPLICATION_SETTINGS = 'applicationSettings';
+    private const string CUSTOM_ACTIONS       = 'customActions';
 
     /**
      * ApplicationHandler constructor.

@@ -22,7 +22,7 @@ use Hanaboso\Utils\String\Json;
 final class NutshellCreateContactConnector extends ConnectorAbstract
 {
 
-    public const NAME = 'nutshell-create-contact';
+    public const string NAME = 'nutshell-create-contact';
 
     /**
      * @return string

@@ -12,8 +12,8 @@ use Hanaboso\PipesPhpSdk\Application\Base\ApplicationInterface;
 interface BasicApplicationInterface extends ApplicationInterface
 {
 
-    public const  USER     = 'user';
-    public const  PASSWORD = 'password';
+    public const string  USER     = 'user';
+    public const string  PASSWORD = 'password';
 
     /**
      * @return string

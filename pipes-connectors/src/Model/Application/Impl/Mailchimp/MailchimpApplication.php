@@ -34,12 +34,12 @@ use JsonException;
 final class MailchimpApplication extends OAuth2ApplicationAbstract implements WebhookApplicationInterface
 {
 
-    public const MAILCHIMP_URL            = 'https://login.mailchimp.com/oauth2/authorize';
-    public const MAILCHIMP_DATACENTER_URL = 'https://login.mailchimp.com';
-    public const AUDIENCE_ID              = 'audience_id';
-    public const TOKEN_URL                = 'https://login.mailchimp.com/oauth2/token';
-    public const API_KEYPOINT             = 'api_keypoint';
-    public const SEGMENT_ID               = 'segment_id';
+    public const string MAILCHIMP_URL            = 'https://login.mailchimp.com/oauth2/authorize';
+    public const string MAILCHIMP_DATACENTER_URL = 'https://login.mailchimp.com';
+    public const string AUDIENCE_ID              = 'audience_id';
+    public const string TOKEN_URL                = 'https://login.mailchimp.com/oauth2/token';
+    public const string API_KEYPOINT             = 'api_keypoint';
+    public const string SEGMENT_ID               = 'segment_id';
 
     /**
      * MailchimpApplication constructor.
@@ -128,7 +128,7 @@ final class MailchimpApplication extends OAuth2ApplicationAbstract implements We
             ],
         );
 
-        if (!empty($data)) {
+        if ($data !== NULL) {
             $request->setBody($data);
         }
 

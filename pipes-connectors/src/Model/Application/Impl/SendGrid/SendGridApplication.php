@@ -22,8 +22,8 @@ use Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract;
 final class SendGridApplication extends BasicApplicationAbstract
 {
 
-    public const BASE_URL = 'https://api.sendgrid.com/v3';
-    public const API_KEY  = 'api_key';
+    public const string BASE_URL = 'https://api.sendgrid.com/v3';
+    public const string API_KEY  = 'api_key';
 
     /**
      * @return string

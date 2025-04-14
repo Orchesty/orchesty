@@ -33,7 +33,7 @@ final class ProcessDtoFactoryTest extends KernelTestCaseAbstract
         );
 
         $dto = ProcessDtoFactory::createFromRequest($request);
-        self::assertEquals('aa', $dto->getData());
+        self::assertSame('aa', $dto->getData());
     }
 
     /**
@@ -52,7 +52,7 @@ final class ProcessDtoFactoryTest extends KernelTestCaseAbstract
         );
 
         $dto = ProcessDtoFactory::createBatchFromRequest($request);
-        self::assertEquals('aa', $dto->getData());
+        self::assertSame('aa', $dto->getData());
     }
 
 }

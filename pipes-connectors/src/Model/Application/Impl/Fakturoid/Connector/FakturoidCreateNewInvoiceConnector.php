@@ -12,8 +12,8 @@ use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 final class FakturoidCreateNewInvoiceConnector extends FakturoidAbstractConnector
 {
 
-    protected const NAME     = 'fakturoid.create-new-invoice';
-    protected const ENDPOINT = 'invoices.json';
-    protected const METHOD   = CurlManager::METHOD_POST;
+    protected const string NAME     = 'fakturoid.create-new-invoice';
+    protected const string ENDPOINT = 'invoices.json';
+    protected const string METHOD   = CurlManager::METHOD_POST;
 
 }

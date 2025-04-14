@@ -23,11 +23,11 @@ use Hanaboso\PipesPhpSdk\Authorization\Utils\ScopeFormatter;
 final class ZohoApplication extends OAuth2ApplicationAbstract
 {
 
-    protected const SCOPE_SEPARATOR = ScopeFormatter::SPACE;
+    protected const string SCOPE_SEPARATOR = ScopeFormatter::SPACE;
 
-    private const AUTH_URL  = 'https://accounts.zoho.eu/oauth/v2/auth';
-    private const TOKEN_URL = 'https://accounts.zoho.eu/oauth/v2/token';
-    private const SCOPES    = ['ZohoCRM.modules.ALL', 'ZohoCRM.settings.ALL'];
+    private const string AUTH_URL  = 'https://accounts.zoho.eu/oauth/v2/auth';
+    private const string TOKEN_URL = 'https://accounts.zoho.eu/oauth/v2/token';
+    private const array SCOPES     = ['ZohoCRM.modules.ALL', 'ZohoCRM.settings.ALL'];
 
     /**
      * @return string
@@ -81,7 +81,7 @@ final class ZohoApplication extends OAuth2ApplicationAbstract
             ],
         );
 
-        if (!empty($data)) {
+        if ($data !== NULL) {
             $request->setBody($data);
         }
 

@@ -18,7 +18,7 @@ use Hanaboso\PipesPhpSdk\Application\Model\Form\FormStack;
 final class S3Application extends AwsApplicationAbstract
 {
 
-    public const BUCKET = 'bucket';
+    public const string BUCKET = 'bucket';
 
     /**
      * @return string

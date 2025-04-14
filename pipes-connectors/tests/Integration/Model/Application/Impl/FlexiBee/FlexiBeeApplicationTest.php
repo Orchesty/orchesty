@@ -38,7 +38,7 @@ final class FlexiBeeApplicationTest extends KernelTestCaseAbstract
     public function testGetKey(): void
     {
 
-        self::assertEquals('flexibee', $this->getApp()->getName());
+        self::assertSame('flexibee', $this->getApp()->getName());
     }
 
     /**
@@ -46,7 +46,7 @@ final class FlexiBeeApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetPublicName(): void
     {
-        self::assertEquals('FlexiBee Application', $this->getApp()->getPublicName());
+        self::assertSame('FlexiBee Application', $this->getApp()->getPublicName());
     }
 
     /**
@@ -54,7 +54,7 @@ final class FlexiBeeApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetDescription(): void
     {
-        self::assertEquals('FlexiBee Application', $this->getApp()->getDescription());
+        self::assertSame('FlexiBee Application', $this->getApp()->getDescription());
     }
 
     /**
@@ -62,7 +62,7 @@ final class FlexiBeeApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetAuthorizationType(): void
     {
-        self::assertEquals(AuthorizationTypeEnum::BASIC->value, $this->getApp()->getAuthorizationType());
+        self::assertSame(AuthorizationTypeEnum::BASIC->value, $this->getApp()->getAuthorizationType());
     }
 
     /**
@@ -104,8 +104,8 @@ final class FlexiBeeApplicationTest extends KernelTestCaseAbstract
             json::encode(['foo' => 'bar']),
         );
 
-        self::assertEquals(CurlManager::METHOD_POST, $dto->getMethod());
-        self::assertEquals(Json::encode(['foo' => 'bar']), $dto->getBody());
+        self::assertSame(CurlManager::METHOD_POST, $dto->getMethod());
+        self::assertSame(Json::encode(['foo' => 'bar']), $dto->getBody());
     }
 
     /**
@@ -127,8 +127,8 @@ final class FlexiBeeApplicationTest extends KernelTestCaseAbstract
             json::encode(['foo' => 'bar']),
         );
 
-        self::assertEquals(CurlManager::METHOD_POST, $dto->getMethod());
-        self::assertEquals(Json::encode(['foo' => 'bar']), $dto->getBody());
+        self::assertSame(CurlManager::METHOD_POST, $dto->getMethod());
+        self::assertSame(Json::encode(['foo' => 'bar']), $dto->getBody());
     }
 
     /**
@@ -222,8 +222,8 @@ final class FlexiBeeApplicationTest extends KernelTestCaseAbstract
             json::encode(['foo' => 'bar']),
         );
 
-        self::assertEquals(CurlManager::METHOD_POST, $dto->getMethod());
-        self::assertEquals(Json::encode(['foo' => 'bar']), $dto->getBody());
+        self::assertSame(CurlManager::METHOD_POST, $dto->getMethod());
+        self::assertSame(Json::encode(['foo' => 'bar']), $dto->getBody());
     }
 
     /**
@@ -245,7 +245,7 @@ final class FlexiBeeApplicationTest extends KernelTestCaseAbstract
             CurlManager::METHOD_POST,
         );
 
-        self::assertEquals(CurlManager::METHOD_POST, $dto->getMethod());
+        self::assertSame(CurlManager::METHOD_POST, $dto->getMethod());
     }
 
     /**
@@ -267,7 +267,7 @@ final class FlexiBeeApplicationTest extends KernelTestCaseAbstract
             CurlManager::METHOD_POST,
         );
 
-        self::assertEquals(CurlManager::METHOD_POST, $dto->getMethod());
+        self::assertSame(CurlManager::METHOD_POST, $dto->getMethod());
     }
 
     /**

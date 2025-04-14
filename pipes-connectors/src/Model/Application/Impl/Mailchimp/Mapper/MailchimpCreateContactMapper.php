@@ -16,7 +16,7 @@ use Hanaboso\Utils\String\Json;
 final class MailchimpCreateContactMapper extends CommonNodeAbstract
 {
 
-    public const NAME = 'mailchimp_create_contact_mapper';
+    public const string NAME = 'mailchimp_create_contact_mapper';
 
     /**
      * @return string

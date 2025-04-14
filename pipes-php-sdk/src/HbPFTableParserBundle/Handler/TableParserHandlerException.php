@@ -12,8 +12,8 @@ use Hanaboso\Utils\Exception\PipesFrameworkExceptionAbstract;
 final class TableParserHandlerException extends PipesFrameworkExceptionAbstract
 {
 
-    public const PROPERTY_FILE_ID_NOT_SET = self::OFFSET + 1;
+    public const int PROPERTY_FILE_ID_NOT_SET = self::OFFSET + 1;
 
-    protected const OFFSET = 400;
+    protected const int OFFSET = 400;
 
 }

@@ -16,8 +16,8 @@ use Hanaboso\Utils\Exception\DateTimeException;
 class ApplicationInstall extends DocumentAbstract
 {
 
-    public const USER = 'user';
-    public const NAME = 'name';
+    public const string USER = 'user';
+    public const string NAME = 'name';
 
     /**
      * @var DateTime|null
@@ -78,7 +78,7 @@ class ApplicationInstall extends DocumentAbstract
      */
     public function __construct(?array $data = [])
     {
-        if (empty($data['created'])) {
+        if (!isset($data['created'])) {
             $this->created = DateTimeUtils::getUtcDateTime();
         }
         $this->updated = DateTimeUtils::getUtcDateTime();

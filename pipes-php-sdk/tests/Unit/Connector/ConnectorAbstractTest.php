@@ -49,7 +49,7 @@ final class ConnectorAbstractTest extends KernelTestCaseAbstract
     {
         $this->nullConnector->setApplication(new TestNullApplication());
 
-        self::assertEquals('null-key', $this->nullConnector->getApplicationKey());
+        self::assertSame('null-key', $this->nullConnector->getApplicationKey());
     }
 
     /**

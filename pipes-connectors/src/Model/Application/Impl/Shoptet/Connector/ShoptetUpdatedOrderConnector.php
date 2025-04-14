@@ -19,12 +19,12 @@ use Hanaboso\PipesPhpSdk\CustomNode\Exception\CustomNodeException;
 final class ShoptetUpdatedOrderConnector extends ShoptetConnectorAbstract
 {
 
-    public const NAME = 'shoptet-updated-order-connector';
+    public const string NAME = 'shoptet-updated-order-connector';
 
-    private const URL = 'api/orders/%s?include=notes';
+    private const string URL = 'api/orders/%s?include=notes';
 
-    private const EVENT_INSTANCE = 'eventInstance';
-    private const ORDER          = 'order';
+    private const string EVENT_INSTANCE = 'eventInstance';
+    private const string ORDER          = 'order';
 
     /**
      * @return string

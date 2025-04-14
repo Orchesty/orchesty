@@ -32,14 +32,14 @@ final class ShoptetUpdatedOrderConnectorTest extends KernelTestCaseAbstract
 
     use PrivateTrait;
 
-    private const USER    = 'user';
-    private const SENDER  = 'sender';
-    private const HEADERS = [
+    private const string USER   = 'user';
+    private const string SENDER = 'sender';
+    private const array HEADERS = [
         'application' => ShoptetApplication::SHOPTET_KEY,
         'user'        => self::USER,
     ];
 
-    private const SETTINGS = [
+    private const array SETTINGS = [
         'clientSettings' => [
             'token' => [
                 'access_token' => 'Access Token',
@@ -48,7 +48,7 @@ final class ShoptetUpdatedOrderConnectorTest extends KernelTestCaseAbstract
         ],
     ];
 
-    private const NON_ENCRYPTED_SETTINGS = [
+    private const array NON_ENCRYPTED_SETTINGS = [
         'getApiKey' => [
             'receivingStatus' => 'unlock',
         ],
@@ -69,7 +69,7 @@ final class ShoptetUpdatedOrderConnectorTest extends KernelTestCaseAbstract
      */
     public function testGetName(): void
     {
-        self::assertEquals('shoptet-updated-order-connector', $this->connector->getName());
+        self::assertSame('shoptet-updated-order-connector', $this->connector->getName());
     }
 
     /**
@@ -108,7 +108,7 @@ final class ShoptetUpdatedOrderConnectorTest extends KernelTestCaseAbstract
             $this->prepareProcessDto('{"eventInstance":"1", "eshopId": "user"}', self::HEADERS),
         );
 
-        self::assertEquals('{"externalCode":"1","status":{"id":"-1"}}', $dto->getData());
+        self::assertSame('{"externalCode":"1","status":{"id":"-1"}}', $dto->getData());
     }
 
     /**

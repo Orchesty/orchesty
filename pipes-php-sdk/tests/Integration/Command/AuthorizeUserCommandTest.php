@@ -125,7 +125,7 @@ final class AuthorizeUserCommandTest extends KernelTestCaseAbstract
             'Please make sure that your env is set to --env=oauthconsole.',
             $commandTester->getDisplay(),
         );
-        self::assertEquals(1, $exitCode);
+        self::assertSame(1, $exitCode);
     }
 
     /**

@@ -45,7 +45,7 @@ final class HubspotCreateContactConnectorTest extends KernelTestCaseAbstract
      */
     public function testGetName(): void
     {
-        self::assertEquals(
+        self::assertSame(
             'hub-spot.create-contact',
             $this->createConnector(DataProvider::createResponseDto())->getName(),
         );
@@ -74,7 +74,7 @@ final class HubspotCreateContactConnectorTest extends KernelTestCaseAbstract
         $res = $this->createConnector(DataProvider::createResponseDto())
             ->setApplication($this->app)
             ->processAction($dto);
-        self::assertEquals('{}', $res->getData());
+        self::assertSame('{}', $res->getData());
     }
 
     /**
@@ -104,7 +104,7 @@ final class HubspotCreateContactConnectorTest extends KernelTestCaseAbstract
         $connector->setApplication($this->app);
         $connector->setLogger(new NullLogger());
         $res = $connector->processAction($dto);
-        self::assertEquals($ex, $res->getData());
+        self::assertSame($ex, $res->getData());
     }
 
     /**

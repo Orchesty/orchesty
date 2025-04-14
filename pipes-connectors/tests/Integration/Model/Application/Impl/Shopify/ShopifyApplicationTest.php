@@ -27,8 +27,8 @@ use PHPUnit\Framework\Attributes\CoversClass;
 final class ShopifyApplicationTest extends KernelTestCaseAbstract
 {
 
-    private const ESHOP_NAME = 'hana1';
-    private const PASSWORD   = '079a9710da9264428749be8a148*****';
+    private const string ESHOP_NAME = 'hana1';
+    private const string PASSWORD   = '079a9710da9264428749be8a148*****';
 
     /**
      * @var ShopifyApplication
@@ -40,7 +40,7 @@ final class ShopifyApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetApplicationType(): void
     {
-        self::assertEquals(ApplicationTypeEnum::WEBHOOK->value, $this->application->getApplicationType());
+        self::assertSame(ApplicationTypeEnum::WEBHOOK->value, $this->application->getApplicationType());
     }
 
     /**
@@ -48,7 +48,7 @@ final class ShopifyApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetKey(): void
     {
-        self::assertEquals('shopify', $this->application->getName());
+        self::assertSame('shopify', $this->application->getName());
     }
 
     /**
@@ -56,7 +56,7 @@ final class ShopifyApplicationTest extends KernelTestCaseAbstract
      */
     public function testPublicName(): void
     {
-        self::assertEquals('Shopify', $this->application->getPublicName());
+        self::assertSame('Shopify', $this->application->getPublicName());
     }
 
     /**
@@ -64,7 +64,7 @@ final class ShopifyApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetDescription(): void
     {
-        self::assertEquals('Shopify v1', $this->application->getDescription());
+        self::assertSame('Shopify v1', $this->application->getDescription());
     }
 
     /**
@@ -91,7 +91,7 @@ final class ShopifyApplicationTest extends KernelTestCaseAbstract
             ],
             $request->getHeaders(),
         );
-        self::assertEquals(File::getContent(__DIR__ . '/data/createCustomer.json'), $request->getBody());
+        self::assertSame(File::getContent(__DIR__ . '/data/createCustomer.json'), $request->getBody());
     }
 
     /**
@@ -153,7 +153,7 @@ final class ShopifyApplicationTest extends KernelTestCaseAbstract
             new ResponseDto(200, '', File::getContent(__DIR__ . '/data/createWebhookResponse.json'), []),
             new ApplicationInstall(),
         );
-        self::assertEquals('1047897672', $response);
+        self::assertSame('1047897672', $response);
     }
 
     /**

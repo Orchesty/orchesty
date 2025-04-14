@@ -20,7 +20,7 @@ use HbPFConnectorsTests\KernelTestCaseAbstract;
 final class PipedriveApplicationTest extends KernelTestCaseAbstract
 {
 
-    public const TOKEN = 'ebcebe5e73aa8ba62**********80c05377fcd63';
+    public const string TOKEN = 'ebcebe5e73aa8ba62**********80c05377fcd63';
 
     /**
      * @var PipedriveApplication
@@ -55,17 +55,17 @@ final class PipedriveApplicationTest extends KernelTestCaseAbstract
             (new Webhook())->setWebhookId('388'),
         );
 
-        self::assertEquals(
+        self::assertSame(
             'https://api.pipedrive.com/v1/webhooks?api_token=ebcebe5e73aa8ba62**********80c05377fcd63',
             $request->getUriString(),
         );
 
-        self::assertEquals(
+        self::assertSame(
             '{"event_action":"added","event_object":"activity","subscription_url":"https:\/\/seznam.cz"}',
             $request->getBody(),
         );
 
-        self::assertEquals(
+        self::assertSame(
             'https://api.pipedrive.com/v1/webhooks/388?api_token=ebcebe5e73aa8ba62**********80c05377fcd63',
             $requestUn->getUriString(),
         );
@@ -76,7 +76,7 @@ final class PipedriveApplicationTest extends KernelTestCaseAbstract
      */
     public function testPublicName(): void
     {
-        self::assertEquals('Pipedrive', $this->application->getPublicName());
+        self::assertSame('Pipedrive', $this->application->getPublicName());
     }
 
     /**
@@ -84,7 +84,7 @@ final class PipedriveApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetApplicationType(): void
     {
-        self::assertEquals(ApplicationTypeEnum::WEBHOOK->value, $this->application->getApplicationType());
+        self::assertSame(ApplicationTypeEnum::WEBHOOK->value, $this->application->getApplicationType());
     }
 
     /**
@@ -92,7 +92,7 @@ final class PipedriveApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetDescription(): void
     {
-        self::assertEquals('Pipedrive v1', $this->application->getDescription());
+        self::assertSame('Pipedrive v1', $this->application->getDescription());
     }
 
     /**
@@ -126,7 +126,7 @@ final class PipedriveApplicationTest extends KernelTestCaseAbstract
             new ResponseDto(201, '', '{"data": {"id": 88888}}', []),
             new ApplicationInstall(),
         );
-        self::assertEquals('88888', $response);
+        self::assertSame('88888', $response);
     }
 
     /**
@@ -150,7 +150,7 @@ final class PipedriveApplicationTest extends KernelTestCaseAbstract
             self::TOKEN,
         );
 
-        self::assertEquals(TRUE, $this->application->isAuthorized($applicationInstall));
+        self::assertTrue($this->application->isAuthorized($applicationInstall));
     }
 
     /**

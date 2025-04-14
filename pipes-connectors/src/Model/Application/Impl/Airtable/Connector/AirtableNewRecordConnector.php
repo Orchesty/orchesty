@@ -24,7 +24,7 @@ use Hanaboso\Utils\Exception\PipesFrameworkException;
 final class AirtableNewRecordConnector extends ConnectorAbstract
 {
 
-    public const NAME = 'airtable_new_record';
+    public const string NAME = 'airtable_new_record';
 
     /**
      * AirtableNewRecordConnector constructor.

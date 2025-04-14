@@ -22,9 +22,9 @@ use Hanaboso\Utils\String\Json;
 final class ShoptetRegisterWebhookConnector extends ShoptetConnectorAbstract
 {
 
-    public const NAME = 'shoptet-register-webhook-connector';
+    public const string NAME = 'shoptet-register-webhook-connector';
 
-    private const WEBHOOK_URL = 'api/webhooks';
+    private const string WEBHOOK_URL = 'api/webhooks';
 
     /**
      * @return string

@@ -34,18 +34,18 @@ use Hanaboso\Utils\String\Json;
 final class ShoptetApplication extends OAuth2ApplicationAbstract implements WebhookApplicationInterface
 {
 
-    public const SHOPTET_KEY   = 'shoptet';
-    public const SHOPTET_URL   = 'https://api.myshoptet.com';
-    public const CANCELLED     = 'cancelled';
-    public const ESHOP_ID      = 'eshopId';
-    public const API_TOKEN_URL = 'api_token_url';
+    public const string SHOPTET_KEY   = 'shoptet';
+    public const string SHOPTET_URL   = 'https://api.myshoptet.com';
+    public const string CANCELLED     = 'cancelled';
+    public const string ESHOP_ID      = 'eshopId';
+    public const string API_TOKEN_URL = 'api_token_url';
 
-    private const BASE_TOPOLOGY_URL   = '%s/topologies/%s/nodes/%s/run-by-name';
-    private const EXPIRES_IN          = 'expires_in';
-    private const ACCESS_TOKEN        = 'access_token';
-    private const CLIENT_SETTINGS     = 'clientSettings';
-    private const SHOPTET_WEBHOOK_URL = 'https://api.myshoptet.com/api/webhooks';
-    private const OAUTH_URL           = 'oauth_url';
+    private const string BASE_TOPOLOGY_URL   = '%s/topologies/%s/nodes/%s/run-by-name';
+    private const string EXPIRES_IN          = 'expires_in';
+    private const string ACCESS_TOKEN        = 'access_token';
+    private const string CLIENT_SETTINGS     = 'clientSettings';
+    private const string SHOPTET_WEBHOOK_URL = 'https://api.myshoptet.com/api/webhooks';
+    private const string OAUTH_URL           = 'oauth_url';
 
     /**
      * ShoptetApplication constructor.

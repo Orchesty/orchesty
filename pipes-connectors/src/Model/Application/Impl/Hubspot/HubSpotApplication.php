@@ -32,14 +32,14 @@ use JsonException;
 final class HubSpotApplication extends OAuth2ApplicationAbstract implements WebhookApplicationInterface
 {
 
-    public const    BASE_URL    = 'https://api.hubapi.com';
-    public const    HUBSPOT_URL = 'https://app.hubspot.com/oauth/authorize';
-    public const    TOKEN_URL   = 'https://api.hubapi.com/oauth/v1/token';
-    public const    APP_ID      = 'app_id';
+    public const string    BASE_URL    = 'https://api.hubapi.com';
+    public const string    HUBSPOT_URL = 'https://app.hubspot.com/oauth/authorize';
+    public const string    TOKEN_URL   = 'https://api.hubapi.com/oauth/v1/token';
+    public const string    APP_ID      = 'app_id';
 
-    protected const SCOPE_SEPARATOR = ScopeFormatter::SPACE;
+    protected const string SCOPE_SEPARATOR = ScopeFormatter::SPACE;
 
-    private const SCOPES = ['contacts'];
+    private const array SCOPES = ['contacts'];
 
     /**
      * @return string

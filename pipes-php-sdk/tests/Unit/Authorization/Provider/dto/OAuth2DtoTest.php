@@ -34,11 +34,11 @@ final class OAuth2DtoTest extends KernelTestCaseAbstract
         $dto                = new OAuth2Dto($applicationInstall, 'auth/url', 'token/url');
         $dto->setRedirectUrl('redirect/url');
 
-        self::assertEquals('159', $dto->getClientId());
-        self::assertEquals('secret', $dto->getClientSecret());
-        self::assertEquals('auth/url', $dto->getAuthorizeUrl());
-        self::assertEquals('token/url', $dto->getTokenUrl());
-        self::assertEquals('redirect/url', $dto->getRedirectUrl());
+        self::assertSame('159', $dto->getClientId());
+        self::assertSame('secret', $dto->getClientSecret());
+        self::assertSame('auth/url', $dto->getAuthorizeUrl());
+        self::assertSame('token/url', $dto->getTokenUrl());
+        self::assertSame('redirect/url', $dto->getRedirectUrl());
         self::assertTrue($dto->isRedirectUrl());
     }
 

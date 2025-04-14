@@ -16,8 +16,8 @@ use Hanaboso\Utils\Exception\DateTimeException;
 class Webhook extends DocumentAbstract
 {
 
-    public const USER        = 'user';
-    public const APPLICATION = 'application';
+    public const string USER        = 'user';
+    public const string APPLICATION = 'application';
 
     /**
      * @var DateTime|null

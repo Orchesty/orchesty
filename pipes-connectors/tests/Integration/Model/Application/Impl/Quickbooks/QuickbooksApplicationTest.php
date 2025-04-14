@@ -22,9 +22,9 @@ use PHPUnit\Framework\Attributes\CoversClass;
 final class QuickbooksApplicationTest extends KernelTestCaseAbstract
 {
 
-    private const CLIENT_ID     = 'ABnInj8B7FNcPOCg5AMBjMLM2XFSU4Al127Yb4qe9AuVO*****';
-    private const CLIENT_SECRET = 'HgEucBQMQxiQZMHppzuQzSOabBqPKmXDTH0*****';
-    private const SHOP_ID       = '13456789';
+    private const string CLIENT_ID     = 'ABnInj8B7FNcPOCg5AMBjMLM2XFSU4Al127Yb4qe9AuVO*****';
+    private const string CLIENT_SECRET = 'HgEucBQMQxiQZMHppzuQzSOabBqPKmXDTH0*****';
+    private const string SHOP_ID       = '13456789';
 
     /**
      * @var QuickbooksApplication
@@ -36,7 +36,7 @@ final class QuickbooksApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetApplicationType(): void
     {
-        self::assertEquals(ApplicationTypeEnum::CRON->value, $this->application->getApplicationType());
+        self::assertSame(ApplicationTypeEnum::CRON->value, $this->application->getApplicationType());
     }
 
     /**
@@ -44,7 +44,7 @@ final class QuickbooksApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetKey(): void
     {
-        self::assertEquals('quickbooks', $this->application->getName());
+        self::assertSame('quickbooks', $this->application->getName());
     }
 
     /**
@@ -52,7 +52,7 @@ final class QuickbooksApplicationTest extends KernelTestCaseAbstract
      */
     public function testPublicName(): void
     {
-        self::assertEquals('Quickbooks', $this->application->getPublicName());
+        self::assertSame('Quickbooks', $this->application->getPublicName());
     }
 
     /**
@@ -60,7 +60,7 @@ final class QuickbooksApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetDescription(): void
     {
-        self::assertEquals('Quickbooks v1', $this->application->getDescription());
+        self::assertSame('Quickbooks v1', $this->application->getDescription());
     }
 
     /**
@@ -68,7 +68,7 @@ final class QuickbooksApplicationTest extends KernelTestCaseAbstract
      */
     public function testAuthUrl(): void
     {
-        self::assertEquals('https://appcenter.intuit.com/connect/oauth2', $this->application->getAuthUrl());
+        self::assertSame('https://appcenter.intuit.com/connect/oauth2', $this->application->getAuthUrl());
     }
 
     /**
@@ -76,7 +76,7 @@ final class QuickbooksApplicationTest extends KernelTestCaseAbstract
      */
     public function testTokenUrl(): void
     {
-        self::assertEquals(
+        self::assertSame(
             'https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer',
             $this->application->getTokenUrl(),
         );
@@ -140,8 +140,8 @@ final class QuickbooksApplicationTest extends KernelTestCaseAbstract
             $dto->getHeaders(),
         );
         self::assertEquals('https://quickbooks.api.intuit.com/v3/company/13456789/account', $dto->getUri());
-        self::assertEquals('{"data":"oooo"}', $dto->getBody());
-        self::assertEquals('POST', $dto->getMethod());
+        self::assertSame('{"data":"oooo"}', $dto->getBody());
+        self::assertSame('POST', $dto->getMethod());
     }
 
     /**

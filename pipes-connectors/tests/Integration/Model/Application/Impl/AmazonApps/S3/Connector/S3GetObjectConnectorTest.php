@@ -32,9 +32,9 @@ final class S3GetObjectConnectorTest extends KernelTestCaseAbstract
 
     use PrivateTrait;
 
-    private const KEY     = 's3';
-    private const USER    = 'user';
-    private const HEADERS = ['application' => self::KEY, 'user' => self::USER];
+    private const string KEY    = 's3';
+    private const string USER   = 'user';
+    private const array HEADERS = ['application' => self::KEY, 'user' => self::USER];
 
     /**
      * @var S3GetObjectConnector

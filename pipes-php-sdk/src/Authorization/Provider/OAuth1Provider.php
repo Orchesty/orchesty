@@ -19,10 +19,10 @@ use Psr\Log\LoggerAwareInterface;
 final class OAuth1Provider extends OAuthProviderAbstract implements OAuth1ProviderInterface, LoggerAwareInterface
 {
 
-    public const OAUTH_TOKEN        = 'oauth_token';
-    public const OAUTH_TOKEN_SECRET = 'oauth_token_secret';
+    public const string OAUTH_TOKEN        = 'oauth_token';
+    public const string OAUTH_TOKEN_SECRET = 'oauth_token_secret';
 
-    private const OAUTH_VERIFIER = 'oauth_verifier';
+    private const string OAUTH_VERIFIER = 'oauth_verifier';
 
     /**
      * OAuth1Provider constructor.

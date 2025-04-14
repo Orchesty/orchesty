@@ -39,7 +39,7 @@ final class ApplicationAbstractTest extends KernelTestCaseAbstract
      */
     public function testGetApplicationType(): void
     {
-        self::assertEquals(ApplicationTypeEnum::CRON->value, $this->application->getApplicationType());
+        self::assertSame(ApplicationTypeEnum::CRON->value, $this->application->getApplicationType());
     }
 
     /**
@@ -97,7 +97,7 @@ final class ApplicationAbstractTest extends KernelTestCaseAbstract
      */
     public function testGetUri(): void
     {
-        self::assertEquals(147, $this->application->getUri('google:147')->getPort());
+        self::assertSame(147, $this->application->getUri('google:147')->getPort());
     }
 
     /**

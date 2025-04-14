@@ -20,8 +20,8 @@ use PHPUnit\Framework\Attributes\CoversClass;
 final class NutshellApplicationTest extends KernelTestCaseAbstract
 {
 
-    public const USER    = 'user@user.com';
-    public const API_KEY = '271cca5c67c**********427b659988cc38e2f78';
+    public const string USER    = 'user@user.com';
+    public const string API_KEY = '271cca5c67c**********427b659988cc38e2f78';
 
     /**
      * @var NutshellApplication
@@ -47,9 +47,9 @@ final class NutshellApplicationTest extends KernelTestCaseAbstract
             '{"id": "apeye", "method": "getLead", "params": { "leadId": 1000 }, "data":{"username": "user@user.com"} }',
         );
 
-        self::assertEquals('POST', $dto->getMethod());
-        self::assertEquals('https://app.nutshell.com/api/v1/json', $dto->getUriString());
-        self::assertEquals(
+        self::assertSame('POST', $dto->getMethod());
+        self::assertSame('https://app.nutshell.com/api/v1/json', $dto->getUriString());
+        self::assertSame(
             '{"id": "apeye", "method": "getLead", "params": { "leadId": 1000 }, "data":{"username": "user@user.com"} }',
             $dto->getBody(),
         );
@@ -60,7 +60,7 @@ final class NutshellApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetApplicationType(): void
     {
-        self::assertEquals(ApplicationTypeEnum::CRON->value, $this->application->getApplicationType());
+        self::assertSame(ApplicationTypeEnum::CRON->value, $this->application->getApplicationType());
     }
 
     /**
@@ -68,7 +68,7 @@ final class NutshellApplicationTest extends KernelTestCaseAbstract
      */
     public function testPublicName(): void
     {
-        self::assertEquals('Nutshell', $this->application->getPublicName());
+        self::assertSame('Nutshell', $this->application->getPublicName());
     }
 
     /**
@@ -76,7 +76,7 @@ final class NutshellApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetDescription(): void
     {
-        self::assertEquals('Nutshell v1', $this->application->getDescription());
+        self::assertSame('Nutshell v1', $this->application->getDescription());
     }
 
     /**

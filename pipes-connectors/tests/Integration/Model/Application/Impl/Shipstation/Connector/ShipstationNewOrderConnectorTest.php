@@ -24,8 +24,8 @@ use PipesPhpSdkTests\MockServer\MockServer;
 final class ShipstationNewOrderConnectorTest extends KernelTestCaseAbstract
 {
 
-    public const API_KEY    = '79620d3760d**********18f8a35dec8';
-    public const API_SECRET = '9cabe470**********751904f45f80e2';
+    public const string API_KEY    = '79620d3760d**********18f8a35dec8';
+    public const string API_SECRET = '9cabe470**********751904f45f80e2';
 
     /**
      * @param int  $code
@@ -122,7 +122,7 @@ final class ShipstationNewOrderConnectorTest extends KernelTestCaseAbstract
             self::getContainer()->get('hbpf.application_install.repository'),
         );
 
-        self::assertEquals(
+        self::assertSame(
             'shipstation_new_order',
             $shipstationNewOrderConnector->getName(),
         );

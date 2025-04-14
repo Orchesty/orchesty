@@ -37,13 +37,13 @@ final class ShoptetUpdateOrderConnectorTest extends KernelTestCaseAbstract
 
     use PrivateTrait;
 
-    private const ID          = 'id';
-    private const TYPE        = 'type';
-    private const EXTERNAL_ID = 'external-id';
-    private const USER        = 'user';
-    private const SENDER      = 'sender';
+    private const string ID          = 'id';
+    private const string TYPE        = 'type';
+    private const string EXTERNAL_ID = 'external-id';
+    private const string USER        = 'user';
+    private const string SENDER      = 'sender';
 
-    private const HEADERS = [
+    private const array HEADERS = [
         'application'     => ShoptetApplication::SHOPTET_KEY,
         'internal-id'     => '1',
         'user'            => self::USER,
@@ -51,7 +51,7 @@ final class ShoptetUpdateOrderConnectorTest extends KernelTestCaseAbstract
         self::TYPE        => 'cancelled',
     ];
 
-    private const SETTINGS = [
+    private const array SETTINGS = [
         'clientSettings'                         => [
             'token' => [
                 'access_token' => 'Access Token',
@@ -64,7 +64,7 @@ final class ShoptetUpdateOrderConnectorTest extends KernelTestCaseAbstract
         ],
     ];
 
-    private const NON_ENCRYPTED_SETTINGS = [
+    private const array NON_ENCRYPTED_SETTINGS = [
         'getApiKey' => [
             'receivingStatus' => 'unlock',
         ],
@@ -85,7 +85,7 @@ final class ShoptetUpdateOrderConnectorTest extends KernelTestCaseAbstract
      */
     public function testGetName(): void
     {
-        self::assertEquals('shoptet-update-order', $this->connector->getName());
+        self::assertSame('shoptet-update-order', $this->connector->getName());
     }
 
     /**

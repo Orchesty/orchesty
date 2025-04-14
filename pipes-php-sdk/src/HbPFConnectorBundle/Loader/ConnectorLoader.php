@@ -18,7 +18,7 @@ use Throwable;
 final class ConnectorLoader
 {
 
-    private const CONNECTOR_PREFIX = 'hbpf.connector';
+    private const string CONNECTOR_PREFIX = 'hbpf.connector';
 
     /**
      * ConnectorLoader constructor.

@@ -20,7 +20,7 @@ use Hanaboso\Utils\String\Json;
 final class SendGridSendEmailConnector extends ConnectorAbstract
 {
 
-    public const NAME = 'send-grid.send-email';
+    public const string NAME = 'send-grid.send-email';
 
     /**
      * @return string

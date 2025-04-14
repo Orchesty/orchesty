@@ -19,9 +19,9 @@ use Hanaboso\PipesPhpSdk\CustomNode\Exception\CustomNodeException;
 final class ShoptetCreateOrderConnector extends ShoptetConnectorAbstract
 {
 
-    public const NAME = 'shoptet-create-order';
+    public const string NAME = 'shoptet-create-order';
 
-    private const URL = '/api/orders';
+    private const string URL = '/api/orders';
 
     /**
      * @return string

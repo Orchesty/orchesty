@@ -23,9 +23,9 @@ use Hanaboso\Utils\Exception\PipesFrameworkException;
 final class ShoptetUpdateOrderConnector extends ShoptetConnectorAbstract
 {
 
-    public const NAME = 'shoptet-update-order';
+    public const string NAME = 'shoptet-update-order';
 
-    private const URL = '/api/orders/%s/status?suppressDocumentGeneration=true&suppressEmailSending=true&suppressSmsSending=true';
+    private const string URL = '/api/orders/%s/status?suppressDocumentGeneration=true&suppressEmailSending=true&suppressSmsSending=true';
 
     /**
      * @return string

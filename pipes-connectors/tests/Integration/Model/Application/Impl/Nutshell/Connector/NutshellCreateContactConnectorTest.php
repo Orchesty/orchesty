@@ -47,7 +47,7 @@ final class NutshellCreateContactConnectorTest extends KernelTestCaseAbstract
      */
     public function testGetName(): void
     {
-        self::assertEquals('nutshell-create-contact', $this->connector->getName());
+        self::assertSame('nutshell-create-contact', $this->connector->getName());
     }
 
     /**
@@ -82,7 +82,7 @@ final class NutshellCreateContactConnectorTest extends KernelTestCaseAbstract
         );
         $result = $this->connector->processAction($dto);
 
-        self::assertEquals($data, $result->getData());
+        self::assertSame($data, $result->getData());
     }
 
     /**

@@ -44,7 +44,7 @@ final class BatchHandlerTest extends KernelTestCaseAbstract
             new Request(content: Json::encode([ProcessDtoFactory::BODY => '', ProcessDtoFactory::HEADERS => []])),
         );
 
-        self::assertEquals('[]', $dto->getBridgeData());
+        self::assertSame('[]', $dto->getBridgeData());
     }
 
     /**

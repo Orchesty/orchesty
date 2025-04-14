@@ -23,7 +23,7 @@ use Hanaboso\Utils\String\Json;
 final class GoogleDriveUploadFileConnector extends ConnectorAbstract
 {
 
-    public const NAME = 'google-drive.upload-file';
+    public const string NAME = 'google-drive.upload-file';
 
     /**
      * @var string

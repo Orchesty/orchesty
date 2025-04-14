@@ -86,7 +86,7 @@ final class RefreshOAuth2TokenCustomNodeTest extends KernelTestCaseAbstract
         );
 
         $response = $connector->processAction($dto);
-        self::assertEquals('', $response->getData());
+        self::assertSame('', $response->getData());
     }
 
     /**
@@ -96,7 +96,7 @@ final class RefreshOAuth2TokenCustomNodeTest extends KernelTestCaseAbstract
     {
         $application = self::getContainer()->get('hbpf.custom_node.refresh_oauth2_token');
 
-        self::assertEquals('refresh_oauth2_token', $application->getName());
+        self::assertSame('refresh_oauth2_token', $application->getName());
     }
 
 }

@@ -55,7 +55,7 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
         $this->client->request('POST', '/parser/csv/to/json');
 
         $response = $this->client->getResponse();
-        self::assertEquals(500, $response->getStatusCode());
+        self::assertSame(500, $response->getStatusCode());
     }
 
     /**
@@ -67,7 +67,7 @@ final class ApiControllerTest extends ControllerTestCaseAbstract
         $this->client->request('POST', '/parser/csv/to/json');
 
         $response = $this->client->getResponse();
-        self::assertEquals(500, $response->getStatusCode());
+        self::assertSame(500, $response->getStatusCode());
     }
 
     /**

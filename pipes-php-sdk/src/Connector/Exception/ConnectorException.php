@@ -12,8 +12,8 @@ use Hanaboso\Utils\Exception\PipesFrameworkExceptionAbstract;
 final class ConnectorException extends PipesFrameworkExceptionAbstract
 {
 
-    public const CONNECTOR_SERVICE_NOT_FOUND = self::OFFSET + 1;
+    public const int CONNECTOR_SERVICE_NOT_FOUND = self::OFFSET + 1;
 
-    protected const OFFSET = 1_000;
+    protected const int OFFSET = 1_000;
 
 }

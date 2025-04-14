@@ -38,7 +38,7 @@ final class FlexiBeeCreateNewContactConnectorTest extends KernelTestCaseAbstract
      */
     public function testGetName(): void
     {
-        self::assertEquals(
+        self::assertSame(
             'flexibee.create-new-contact',
             $this->createConnector(DataProvider::createResponseDto())->getName(),
         );
@@ -81,7 +81,7 @@ final class FlexiBeeCreateNewContactConnectorTest extends KernelTestCaseAbstract
         )
             ->setApplication($this->getApp())
             ->processAction($dto);
-        self::assertEquals($body, $res->getData());
+        self::assertSame($body, $res->getData());
     }
 
     /**

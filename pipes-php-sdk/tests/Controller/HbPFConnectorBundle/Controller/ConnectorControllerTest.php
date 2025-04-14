@@ -28,7 +28,7 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
         $this->client->request('POST', '/connector/magento/action', [], [], [], '{}');
 
         $response = $this->client->getResponse();
-        self::assertEquals(400, $response->getStatusCode());
+        self::assertSame(400, $response->getStatusCode());
     }
 
     /**
@@ -44,7 +44,7 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
         $this->client->request('POST', '/connector/magento/action', [], [], [], '{}');
 
         $response = $this->client->getResponse();
-        self::assertEquals(400, $response->getStatusCode());
+        self::assertSame(400, $response->getStatusCode());
     }
 
     /**
@@ -81,7 +81,7 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
 
         $response = $this->client->getResponse();
 
-        self::assertEquals(200, $response->getStatusCode());
+        self::assertSame(200, $response->getStatusCode());
         self::assertEquals(
             ['body'    => Json::encode(['test' => 'test']),
              'headers' => ['result-code' => 0, 'result-message' => '', 'result-detail' => ''],
@@ -102,7 +102,7 @@ final class ConnectorControllerTest extends ControllerTestCaseAbstract
 
         $assert = new CommonObjectDto('null-connector', 'null-key');
         self::assertEquals([$assert->toArray()], Json::decode((string) $response->getContent()));
-        self::assertEquals(200, $response->getStatusCode());
+        self::assertSame(200, $response->getStatusCode());
     }
 
     /**

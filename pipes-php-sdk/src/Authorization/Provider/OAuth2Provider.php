@@ -19,12 +19,12 @@ use Psr\Log\LoggerAwareInterface;
 final class OAuth2Provider extends OAuthProviderAbstract implements OAuth2ProviderInterface, LoggerAwareInterface
 {
 
-    public const  REFRESH_TOKEN     = 'refresh_token';
-    public const  ACCESS_TOKEN      = 'access_token';
-    public const  EXPIRES           = 'expires';
-    private const RESOURCE_OWNER_ID = 'resource_owner_id';
-    private const ACCESS_TYPE       = 'access_type';
-    private const STATE             = 'state';
+    public const string  REFRESH_TOKEN     = 'refresh_token';
+    public const string  ACCESS_TOKEN      = 'access_token';
+    public const string  EXPIRES           = 'expires';
+    private const string RESOURCE_OWNER_ID = 'resource_owner_id';
+    private const string ACCESS_TYPE       = 'access_type';
+    private const string STATE             = 'state';
 
     /**
      * @param OAuth2DtoInterface $dto

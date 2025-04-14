@@ -17,7 +17,7 @@ use Throwable;
 final class CustomNodeLoader
 {
 
-    public const PREFIX = 'hbpf.custom_node';
+    public const string PREFIX = 'hbpf.custom_node';
 
     /**
      * CustomNodeLoader constructor.

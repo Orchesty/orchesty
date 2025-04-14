@@ -49,7 +49,7 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
      */
     protected function mockRedirect(string $baseUrl, string $clientId, string $scopes = ''): RedirectInterface
     {
-        if (!empty($scopes)) {
+        if ($scopes !== '') {
             $scopes = sprintf('&scope=%s', $scopes);
         }
 
@@ -87,7 +87,7 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
             ->expects(self::exactly(count($array)))
             ->method('send')
             ->willReturnOnConsecutiveCalls(
-                ...array_map(
+                ...array_map( // @phpstan-ignore-line
                     fn($mockCurlMethod) => new ReturnCallback(
                         fn(): ResponseDto => new ResponseDto(
                             $mockCurlMethod->getCode(),
@@ -205,7 +205,7 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
     {
         return static function (RequestDto $dto) use ($data, $url): ResponseDto {
             if ($url) {
-                self::assertEquals($url, sprintf('%s %s', $dto->getMethod(), $dto->getUri(TRUE)));
+                self::assertSame($url, sprintf('%s %s', $dto->getMethod(), $dto->getUri(TRUE)));
             }
 
             return new ResponseDto(200, 'OK', is_array($data) ? Json::encode($data) : $data, []);

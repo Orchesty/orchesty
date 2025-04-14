@@ -29,7 +29,7 @@ final class FakturoidCreateNewInvoiceConnectorTest extends FakturoidAbstractTest
      */
     public function testGetKey(): void
     {
-        self::assertEquals(
+        self::assertSame(
             'fakturoid.create-new-invoice',
             $this->createConnector(DataProvider::createResponseDto())->getName(),
         );
@@ -66,7 +66,7 @@ final class FakturoidCreateNewInvoiceConnectorTest extends FakturoidAbstractTest
         )
             ->setApplication($app)
             ->processAction($dto);
-        self::assertEquals($dataFromFile, $res->getData());
+        self::assertSame($dataFromFile, $res->getData());
     }
 
     /**

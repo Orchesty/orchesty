@@ -35,13 +35,13 @@ final class SystemConfDtoTest extends KernelTestCaseAbstract
 
         $result = SystemConfigDto::fromString($json);
 
-        self::assertEquals('Example', $result->getSdkHost());
-        self::assertEquals(1, $result->getPrefetch());
+        self::assertSame('Example', $result->getSdkHost());
+        self::assertSame(1, $result->getPrefetch());
 
         try {
             SystemConfigDto::fromString('example');
         } catch (Exception $e) {
-            self::assertEquals('Syntax error', $e->getMessage());
+            self::assertSame('Syntax error', $e->getMessage());
         }
     }
 

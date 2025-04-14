@@ -41,7 +41,7 @@ final class OAuth1ApplicationAbstractTest extends KernelTestCaseAbstract
     public function testGetType(): void
     {
         $this->privateSetUp();
-        self::assertEquals('oauth', $this->testApp->getAuthorizationType());
+        self::assertSame('oauth', $this->testApp->getAuthorizationType());
     }
 
     /**
@@ -133,7 +133,7 @@ final class OAuth1ApplicationAbstractTest extends KernelTestCaseAbstract
         $applicationInstall = new ApplicationInstall();
         $this->testApp->setFrontendRedirectUrl($applicationInstall, '/redirect/url');
 
-        self::assertEquals('/redirect/url', $this->testApp->getFrontendRedirectUrl($applicationInstall));
+        self::assertSame('/redirect/url', $this->testApp->getFrontendRedirectUrl($applicationInstall));
     }
 
     /**

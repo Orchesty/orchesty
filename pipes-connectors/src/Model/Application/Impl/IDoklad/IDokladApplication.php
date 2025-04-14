@@ -23,11 +23,11 @@ use Hanaboso\PipesPhpSdk\Authorization\Utils\ScopeFormatter;
 final class IDokladApplication extends OAuth2ApplicationAbstract
 {
 
-    public const    BASE_URL  = 'https://api.idoklad.cz/v3';
-    public const    AUTH_URL  = 'https://identity.idoklad.cz/server/connect/authorize';
-    public const    TOKEN_URL = 'https://identity.idoklad.cz/server/connect/token';
+    public const string    BASE_URL  = 'https://api.idoklad.cz/v3';
+    public const string    AUTH_URL  = 'https://identity.idoklad.cz/server/connect/authorize';
+    public const string    TOKEN_URL = 'https://identity.idoklad.cz/server/connect/token';
 
-    protected const SCOPE_SEPARATOR = ScopeFormatter::SPACE;
+    protected const string SCOPE_SEPARATOR = ScopeFormatter::SPACE;
 
     /**
      * @return string

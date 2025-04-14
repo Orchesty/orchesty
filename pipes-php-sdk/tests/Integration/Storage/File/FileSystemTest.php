@@ -32,10 +32,10 @@ final class FileSystemTest extends KernelTestCaseAbstract
             ->setApplication('testApplication')
             ->setData(['a' => ['b' => 'c']]);
 
-        self::assertEquals(TRUE, $this->fileSystem->write('testFile', [$dataStorageDocument]));
+        self::assertTrue($this->fileSystem->write('testFile', [$dataStorageDocument]));
         $data = $this->fileSystem->read('testFile');
         self::assertEquals($data[0], $dataStorageDocument);
-        self::assertEquals(TRUE,$this->fileSystem->delete('testFile'));
+        self::assertTrue($this->fileSystem->delete('testFile'));
     }
 
     /**
@@ -43,8 +43,8 @@ final class FileSystemTest extends KernelTestCaseAbstract
      */
     public function testGetFilePath(): void
     {
-        self::assertEquals('/tmp/orchesty/data/testId.json',$this->fileSystem->getFilePath('testId'));
-        self::assertEquals('/tmp/orchesty/tmp/testId.json',$this->fileSystem->getFilePath('testId', TRUE));
+        self::assertSame('/tmp/orchesty/data/testId.json',$this->fileSystem->getFilePath('testId'));
+        self::assertSame('/tmp/orchesty/tmp/testId.json',$this->fileSystem->getFilePath('testId', TRUE));
     }
 
     /**
@@ -52,8 +52,8 @@ final class FileSystemTest extends KernelTestCaseAbstract
      */
     public function testGetDirectoryPath(): void
     {
-        self::assertEquals('/tmp/orchesty/data',$this->fileSystem->getDirectoryPath());
-        self::assertEquals('/tmp/orchesty/tmp',$this->fileSystem->getDirectoryPath(TRUE));
+        self::assertSame('/tmp/orchesty/data',$this->fileSystem->getDirectoryPath());
+        self::assertSame('/tmp/orchesty/tmp',$this->fileSystem->getDirectoryPath(TRUE));
     }
 
     /**

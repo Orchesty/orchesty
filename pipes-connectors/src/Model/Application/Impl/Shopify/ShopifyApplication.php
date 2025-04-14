@@ -30,8 +30,8 @@ use JsonException;
 final class ShopifyApplication extends BasicApplicationAbstract implements WebhookApplicationInterface
 {
 
-    public const  SHOPIFY_URL     = 'myshopify.com/admin/api/';
-    public const  SHOPIFY_VERSION = '2020-01';
+    public const string  SHOPIFY_URL     = 'myshopify.com/admin/api/';
+    public const string  SHOPIFY_VERSION = '2020-01';
 
     /**
      * @return string

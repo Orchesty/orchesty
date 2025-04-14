@@ -12,12 +12,12 @@ use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 final class Field
 {
 
-    public const TEXT       = 'text';
-    public const NUMBER     = 'number';
-    public const URL        = 'url';
-    public const PASSWORD   = 'password';
-    public const SELECT_BOX = 'selectbox';
-    public const CHECKBOX   = 'checkbox';
+    public const string TEXT       = 'text';
+    public const string NUMBER     = 'number';
+    public const string URL        = 'url';
+    public const string PASSWORD   = 'password';
+    public const string SELECT_BOX = 'selectbox';
+    public const string CHECKBOX   = 'checkbox';
 
     /**
      * @var string

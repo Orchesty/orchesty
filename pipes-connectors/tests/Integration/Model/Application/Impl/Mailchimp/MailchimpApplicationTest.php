@@ -27,7 +27,7 @@ final class MailchimpApplicationTest extends KernelTestCaseAbstract
 
     use PrivateTrait;
 
-    private const CLIENT_ID = '6748****7235';
+    private const string CLIENT_ID = '6748****7235';
 
     /**
      * @var MailchimpApplication
@@ -46,7 +46,7 @@ final class MailchimpApplicationTest extends KernelTestCaseAbstract
             'token123',
             self::CLIENT_ID,
         );
-        self::assertEquals(TRUE, $this->application->isAuthorized($applicationInstall));
+        self::assertTrue($this->application->isAuthorized($applicationInstall));
         $this->application->authorize($applicationInstall);
     }
 
@@ -57,7 +57,7 @@ final class MailchimpApplicationTest extends KernelTestCaseAbstract
     {
         $this->setApplication();
         $applicationInstall = new ApplicationInstall();
-        self::assertEquals(FALSE, $this->application->isAuthorized($applicationInstall));
+        self::assertFalse($this->application->isAuthorized($applicationInstall));
     }
 
     /**
@@ -136,7 +136,7 @@ final class MailchimpApplicationTest extends KernelTestCaseAbstract
     public function testPublicName(): void
     {
         $this->setApplication();
-        self::assertEquals(
+        self::assertSame(
             'Mailchimp',
             $this->application->getPublicName(),
         );
@@ -148,7 +148,7 @@ final class MailchimpApplicationTest extends KernelTestCaseAbstract
     public function testGetDescription(): void
     {
         $this->setApplication();
-        self::assertEquals(
+        self::assertSame(
             'Mailchimp v3',
             $this->application->getDescription(),
         );
@@ -160,7 +160,7 @@ final class MailchimpApplicationTest extends KernelTestCaseAbstract
     public function testGetApplicationType(): void
     {
         $this->setApplication();
-        self::assertEquals(
+        self::assertSame(
             ApplicationTypeEnum::WEBHOOK->value,
             $this->application->getApplicationType(),
         );
@@ -197,7 +197,7 @@ final class MailchimpApplicationTest extends KernelTestCaseAbstract
             new ResponseDto(200, '', '{"id":"id88"}', []),
             new ApplicationInstall(),
         );
-        self::assertEquals('id88', $response);
+        self::assertSame('id88', $response);
     }
 
     /**
@@ -209,7 +209,7 @@ final class MailchimpApplicationTest extends KernelTestCaseAbstract
         $response = $this->application->processWebhookUnsubscribeResponse(
             new ResponseDto(204, '', '{"id":"id88"}', []),
         );
-        self::assertEquals(TRUE, $response);
+        self::assertTrue($response);
     }
 
     /**

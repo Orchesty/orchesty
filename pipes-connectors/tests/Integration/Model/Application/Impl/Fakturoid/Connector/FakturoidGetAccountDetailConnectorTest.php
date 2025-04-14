@@ -29,7 +29,7 @@ final class FakturoidGetAccountDetailConnectorTest extends FakturoidAbstractTest
      */
     public function testGetKey(): void
     {
-        self::assertEquals(
+        self::assertSame(
             'fakturoid.get-account-detail',
             $this->createConnector(DataProvider::createResponseDto())->getName(),
         );

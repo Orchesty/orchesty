@@ -182,7 +182,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
             [],
             [],
             static function (Response $response): void {
-                self::assertEquals(200, $response->getStatusCode());
+                self::assertSame(200, $response->getStatusCode());
             },
         );
     }
@@ -224,7 +224,7 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
             [],
             [],
             static function (Response $response): void {
-                self::assertEquals(200, $response->getStatusCode());
+                self::assertSame(200, $response->getStatusCode());
             },
         );
     }

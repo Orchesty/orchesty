@@ -50,17 +50,17 @@ final class DataStorageManagerTest extends KernelTestCaseAbstract
 
         /** @var DataStorageDocument[] $entities */
         $entities = $this->dataStorageManager->load('1', 'a1', 'u1');
-        self::assertEquals($data1->getApplication(), $entities[0]->getApplication());
-        self::assertEquals($data1->getUser(), $entities[0]->getUser());
+        self::assertSame($data1->getApplication(), $entities[0]->getApplication());
+        self::assertSame($data1->getUser(), $entities[0]->getUser());
         self::assertEquals($data1->getData(), $entities[0]->getData());
 
-        self::assertEquals($data2->getApplication(), $entities[1]->getApplication());
-        self::assertEquals($data2->getUser(), $entities[1]->getUser());
+        self::assertSame($data2->getApplication(), $entities[1]->getApplication());
+        self::assertSame($data2->getUser(), $entities[1]->getUser());
         self::assertEquals($data2->getData(), $entities[1]->getData());
 
         $entities = $this->dataStorageManager->load('1', 'a1', 'u1', 1, 1);
-        self::assertEquals($data2->getApplication(), $entities[0]->getApplication());
-        self::assertEquals($data2->getUser(), $entities[0]->getUser());
+        self::assertSame($data2->getApplication(), $entities[0]->getApplication());
+        self::assertSame($data2->getUser(), $entities[0]->getUser());
         self::assertEquals($data2->getData(), $entities[0]->getData());
 
         $this->dataStorageManager->remove('1', 'a1', 'u1');

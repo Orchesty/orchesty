@@ -15,7 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 final class ApplicationLoader
 {
 
-    private const APPLICATION_PREFIX = 'hbpf.application';
+    private const string APPLICATION_PREFIX = 'hbpf.application';
 
     /**
      * ApplicationLoader constructor.

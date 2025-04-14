@@ -29,8 +29,8 @@ use JsonException;
 final class ShipstationApplication extends BasicApplicationAbstract implements WebhookApplicationInterface
 {
 
-    public const SHIPSTATION_URL = 'https://ssapi.shipstation.com';
-    public const ORDER_NOTIFY    = 'ORDER_NOTIFY';
+    public const string SHIPSTATION_URL = 'https://ssapi.shipstation.com';
+    public const string ORDER_NOTIFY    = 'ORDER_NOTIFY';
 
     /**
      * @return string

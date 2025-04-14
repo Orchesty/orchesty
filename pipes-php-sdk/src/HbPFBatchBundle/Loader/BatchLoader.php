@@ -18,7 +18,7 @@ use Throwable;
 final class BatchLoader
 {
 
-    private const BATCH_PREFIX = 'hbpf.batch';
+    private const string BATCH_PREFIX = 'hbpf.batch';
 
     /**
      * BatchLoader constructor.

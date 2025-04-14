@@ -23,12 +23,12 @@ use Hanaboso\PipesPhpSdk\Authorization\Utils\ScopeFormatter;
 final class BigcommerceApplication extends OAuth2ApplicationAbstract
 {
 
-    public const    BIGCOMMERCE_URL = 'https://login.bigcommerce.com/oauth2/authorize';
-    public const    TOKEN_URL       = 'https://login.bigcommerce.com/oauth2/token';
+    public const string    BIGCOMMERCE_URL = 'https://login.bigcommerce.com/oauth2/authorize';
+    public const string    TOKEN_URL       = 'https://login.bigcommerce.com/oauth2/token';
 
-    protected const SCOPE_SEPARATOR = ScopeFormatter::SPACE;
+    protected const string SCOPE_SEPARATOR = ScopeFormatter::SPACE;
 
-    private const  SCOPES = ['store_v2_products'];
+    private const array  SCOPES = ['store_v2_products'];
 
     /**
      * @return string
@@ -98,7 +98,7 @@ final class BigcommerceApplication extends OAuth2ApplicationAbstract
             ],
         );
 
-        if (!empty($data)) {
+        if ($data !== NULL) {
             $request->setBody($data);
         }
 

@@ -12,8 +12,8 @@ use Hanaboso\Utils\Exception\PipesFrameworkExceptionAbstract;
 final class BatchException extends PipesFrameworkExceptionAbstract
 {
 
-    public const BATCH_SERVICE_NOT_FOUND = self::OFFSET + 1;
+    public const int BATCH_SERVICE_NOT_FOUND = self::OFFSET + 1;
 
-    protected const OFFSET = 3_500;
+    protected const int OFFSET = 3_500;
 
 }

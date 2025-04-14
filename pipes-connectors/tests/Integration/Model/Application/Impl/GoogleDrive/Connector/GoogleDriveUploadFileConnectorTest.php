@@ -41,7 +41,7 @@ final class GoogleDriveUploadFileConnectorTest extends KernelTestCaseAbstract
      */
     public function testGetName(): void
     {
-        self::assertEquals(
+        self::assertSame(
             'google-drive.upload-file',
             $this->createConnector(DataProvider::createResponseDto())->getName(),
         );
@@ -78,7 +78,7 @@ final class GoogleDriveUploadFileConnectorTest extends KernelTestCaseAbstract
         )
             ->setApplication($this->app)
             ->processAction($dto);
-        self::assertEquals(
+        self::assertSame(
             '{"kind": "drive#file","id": "169PQAadbK5TMmuCcZd5aFzZa1sblBymt","name": "my.txt","mimeType": "text/plain"}',
             $res->getData(),
         );

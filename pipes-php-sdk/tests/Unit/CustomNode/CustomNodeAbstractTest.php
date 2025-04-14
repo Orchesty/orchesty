@@ -38,7 +38,7 @@ final class CustomNodeAbstractTest extends KernelTestCaseAbstract
     {
         $this->nullConnector->setApplication(new TestNullApplication());
 
-        self::assertEquals('null-key', $this->nullConnector->getApplicationKey());
+        self::assertSame('null-key', $this->nullConnector->getApplicationKey());
     }
 
     /**
@@ -57,7 +57,7 @@ final class CustomNodeAbstractTest extends KernelTestCaseAbstract
     public function testGetApplicationKeyWithApplication(): void
     {
         $this->nullConnector->setApplication(new TestNullApplication());
-        self::assertEquals('null-key',$this->nullConnector->getApplicationKey());
+        self::assertSame('null-key',$this->nullConnector->getApplicationKey());
     }
 
     /**

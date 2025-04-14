@@ -18,8 +18,8 @@ use HbPFConnectorsTests\KernelTestCaseAbstract;
 final class BigcommerceApplicationTest extends KernelTestCaseAbstract
 {
 
-    private const CLIENT_ID     = '1t22ea9p6iyih**********rq9o3xf';
-    private const CLIENT_SECRET = '811a14ca490bbb2cd188cf4bd9bef795b35c9**********737e5b805038fecb4';
+    private const string CLIENT_ID     = '1t22ea9p6iyih**********rq9o3xf';
+    private const string CLIENT_SECRET = '811a14ca490bbb2cd188cf4bd9bef795b35c9**********737e5b805038fecb4';
 
     /**
      * @var BigcommerceApplication
@@ -54,7 +54,7 @@ final class BigcommerceApplicationTest extends KernelTestCaseAbstract
     {
         $bigcommerceApplication = $this->application;
         $applicationInstall     = new ApplicationInstall();
-        self::assertEquals(FALSE, $bigcommerceApplication->isAuthorized($applicationInstall));
+        self::assertFalse($bigcommerceApplication->isAuthorized($applicationInstall));
     }
 
     /**
@@ -76,7 +76,7 @@ final class BigcommerceApplicationTest extends KernelTestCaseAbstract
             'url',
             '{"data":"hello data"}',
         );
-        self::assertEquals('{"data":"hello data"}', $dto->getBody());
+        self::assertSame('{"data":"hello data"}', $dto->getBody());
     }
 
     /**
@@ -84,7 +84,7 @@ final class BigcommerceApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetApplicationType(): void
     {
-        self::assertEquals(
+        self::assertSame(
             ApplicationTypeEnum::CRON->value,
             $this->application->getApplicationType(),
         );
@@ -95,7 +95,7 @@ final class BigcommerceApplicationTest extends KernelTestCaseAbstract
      */
     public function testPublicName(): void
     {
-        self::assertEquals(
+        self::assertSame(
             'Bigcommerce',
             $this->application->getPublicName(),
         );
@@ -106,7 +106,7 @@ final class BigcommerceApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetDescription(): void
     {
-        self::assertEquals(
+        self::assertSame(
             'Bigcommerce v1',
             $this->application->getDescription(),
         );

@@ -23,7 +23,7 @@ final class ScopeFormaterTest extends TestCase
     {
         $scopes = ScopeFormatter::getScopes($scopes);
 
-        self::assertEquals($result, $scopes);
+        self::assertSame($result, $scopes);
     }
 
     /**

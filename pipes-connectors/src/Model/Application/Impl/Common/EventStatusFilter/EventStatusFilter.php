@@ -15,7 +15,7 @@ use Hanaboso\Utils\Exception\PipesFrameworkException;
 final class EventStatusFilter extends CommonNodeAbstract
 {
 
-    public const NAME = 'event-status-filter';
+    public const string NAME = 'event-status-filter';
 
     /**
      * EventStatusFilter constructor.

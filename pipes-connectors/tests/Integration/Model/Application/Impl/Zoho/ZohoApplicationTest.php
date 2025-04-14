@@ -21,7 +21,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 final class ZohoApplicationTest extends KernelTestCaseAbstract
 {
 
-    private const CLIENT_ID = '123';
+    private const string CLIENT_ID = '123';
 
     /**
      * @var ZohoApplication
@@ -34,7 +34,7 @@ final class ZohoApplicationTest extends KernelTestCaseAbstract
     public function testGetApplicationType(): void
     {
         $this->setApplication();
-        self::assertEquals(
+        self::assertSame(
             ApplicationTypeEnum::CRON->value,
             $this->application->getApplicationType(),
         );
@@ -46,7 +46,7 @@ final class ZohoApplicationTest extends KernelTestCaseAbstract
     public function testGetKey(): void
     {
         $this->setApplication();
-        self::assertEquals(
+        self::assertSame(
             'zoho',
             $this->application->getName(),
         );
@@ -58,7 +58,7 @@ final class ZohoApplicationTest extends KernelTestCaseAbstract
     public function testGetPublicName(): void
     {
         $this->setApplication();
-        self::assertEquals(
+        self::assertSame(
             'Zoho',
             $this->application->getPublicName(),
         );
@@ -70,7 +70,7 @@ final class ZohoApplicationTest extends KernelTestCaseAbstract
     public function testGetDescription(): void
     {
         $this->setApplication();
-        self::assertEquals(
+        self::assertSame(
             'Zoho is a provider of a Customer Relationship Management (CRM) solution',
             $this->application->getDescription(),
         );
@@ -125,7 +125,7 @@ final class ZohoApplicationTest extends KernelTestCaseAbstract
     public function testGetAuthUrl(): void
     {
         $this->setApplication();
-        self::assertEquals(
+        self::assertSame(
             'https://accounts.zoho.eu/oauth/v2/auth',
             $this->application->getAuthUrl(),
         );
@@ -137,7 +137,7 @@ final class ZohoApplicationTest extends KernelTestCaseAbstract
     public function testGetTokenUrl(): void
     {
         $this->setApplication();
-        self::assertEquals(
+        self::assertSame(
             'https://accounts.zoho.eu/oauth/v2/token',
             $this->application->getTokenUrl(),
         );

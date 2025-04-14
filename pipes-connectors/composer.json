@@ -2,19 +2,19 @@
     "name": "orchesty/php-connectors",
     "description": "PHP Connectors and Applications for Orchesty",
     "license": "Apache-2.0",
-    "version": "3.1.1",
+    "version": "3.2.0",
     "require": {
-        "php": "^8.3",
+        "php": "^8.4",
         "ext-ctype": "*",
         "ext-intl": "*",
         "ext-mbstring": "*",
-        "orchesty/php-sdk": "^3.1"
+        "orchesty/php-sdk": "^3.2"
     },
     "require-dev": {
-        "aws/aws-sdk-php-symfony": "^2.7",
-        "hanaboso/php-check-utils": "^1.6",
-        "symfony/debug-bundle": "^7.1",
-        "symfony/serializer": "^7.1"
+        "aws/aws-sdk-php-symfony": "^2.8",
+        "hanaboso/php-check-utils": "^1.7",
+        "symfony/debug-bundle": "^7.2",
+        "symfony/serializer": "^7.2"
     },
     "suggest": {
         "aws/aws-sdk-php-symfony": "Install me, if you need to use Model\\Application\\Impl\\AmazonApps."

@@ -19,7 +19,7 @@ use Hanaboso\PipesPhpSdk\CustomNode\Exception\CustomNodeException;
 final class ShoptetGetApiAccessTokenConnector extends ShoptetConnectorAbstract
 {
 
-    public const NAME = 'shoptet-get-access-token';
+    public const string NAME = 'shoptet-get-access-token';
 
     /**
      * @return string

@@ -59,7 +59,7 @@ final class TableParserTest extends KernelTestCaseAbstract
     {
         $parser = new TableParser();
         $result = $parser->parseToJson(__DIR__ . $input, $hasHeaders);
-        self::assertEquals(File::getContent(__DIR__ . $output), $result);
+        self::assertSame(File::getContent(__DIR__ . $output), $result);
     }
 
     /**
@@ -76,7 +76,7 @@ final class TableParserTest extends KernelTestCaseAbstract
         $path   = $parser->parseFromJson(__DIR__ . $input, $type, $hasHeaders);
 
         $result = $parser->parseToJson($path, $hasHeaders);
-        self::assertEquals(File::getContent(__DIR__ . $input), $result);
+        self::assertSame(File::getContent(__DIR__ . $input), $result);
 
         unlink($path);
     }

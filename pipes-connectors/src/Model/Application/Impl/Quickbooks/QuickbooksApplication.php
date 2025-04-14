@@ -22,13 +22,13 @@ use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
 final class QuickbooksApplication extends OAuth2ApplicationAbstract
 {
 
-    public const  QUICKBOOKS_URL = 'https://appcenter.intuit.com/connect/oauth2';
-    public const  TOKEN_URL      = 'https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer';
-    public const  APP_ID         = 'app_id';
+    public const string  QUICKBOOKS_URL = 'https://appcenter.intuit.com/connect/oauth2';
+    public const string  TOKEN_URL      = 'https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer';
+    public const string  APP_ID         = 'app_id';
 
-    private const SCOPES   = ['com.intuit.quickbooks.accounting'];
-    private const VERSION  = 'v3';
-    private const BASE_URL = 'https://quickbooks.api.intuit.com';
+    private const array SCOPES    = ['com.intuit.quickbooks.accounting'];
+    private const string VERSION  = 'v3';
+    private const string BASE_URL = 'https://quickbooks.api.intuit.com';
 
     /**
      * @return string

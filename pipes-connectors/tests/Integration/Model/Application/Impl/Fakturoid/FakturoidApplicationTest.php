@@ -31,7 +31,7 @@ final class FakturoidApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetKey(): void
     {
-        self::assertEquals('fakturoid', $this->app->getName());
+        self::assertSame('fakturoid', $this->app->getName());
     }
 
     /**
@@ -39,7 +39,7 @@ final class FakturoidApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetPublicName(): void
     {
-        self::assertEquals('Fakturoid aplication', $this->app->getPublicName());
+        self::assertSame('Fakturoid aplication', $this->app->getPublicName());
     }
 
     /**
@@ -47,7 +47,7 @@ final class FakturoidApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetDescription(): void
     {
-        self::assertEquals('Fakturoid aplication', $this->app->getDescription());
+        self::assertSame('Fakturoid aplication', $this->app->getDescription());
     }
 
     /**

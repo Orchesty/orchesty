@@ -10,8 +10,8 @@ namespace Hanaboso\PipesPhpSdk\Authorization\Utils;
 final class ScopeFormatter
 {
 
-    public const COMMA = ',';
-    public const SPACE = ' ';
+    public const string COMMA = ',';
+    public const string SPACE = ' ';
 
     /**
      * @param string[] $scopes
@@ -21,7 +21,7 @@ final class ScopeFormatter
      */
     public static function getScopes(array $scopes, string $separator = self::COMMA): string
     {
-        if (empty($scopes)) {
+        if ($scopes === []) {
             return '';
         }
 

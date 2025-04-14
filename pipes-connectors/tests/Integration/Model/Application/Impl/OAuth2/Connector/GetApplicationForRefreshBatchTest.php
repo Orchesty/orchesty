@@ -2,17 +2,16 @@
 
 namespace HbPFConnectorsTests\Integration\Model\Application\Impl\OAuth2\Connector;
 
-use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Response;
 use Hanaboso\CommonsBundle\Process\BatchProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\HbPFConnectors\Model\Application\Impl\OAuth2\Connector\GetApplicationForRefreshBatchConnector;
-use Hanaboso\Utils\Exception\DateTimeException;
 use Hanaboso\Utils\String\Json;
 use HbPFConnectorsTests\KernelTestCaseAbstract;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PipesPhpSdkTests\MockServer\Mock;
 use PipesPhpSdkTests\MockServer\MockServer;
+use Throwable;
 
 /**
  * Class GetApplicationForRefreshBatchTest
@@ -25,8 +24,7 @@ final class GetApplicationForRefreshBatchTest extends KernelTestCaseAbstract
 
     /**
      * @return void
-     * @throws GuzzleException
-     * @throws DateTimeException
+     * @throws Throwable
      */
     public function testProcessAction(): void
     {
@@ -64,7 +62,7 @@ final class GetApplicationForRefreshBatchTest extends KernelTestCaseAbstract
             self::getContainer()->get('hbpf.application_install.repository'),
         );
 
-        self::assertEquals('get_application_for_refresh', $application->getName());
+        self::assertSame('get_application_for_refresh', $application->getName());
     }
 
 }

@@ -20,7 +20,7 @@ use Hanaboso\Utils\Exception\PipesFrameworkException;
 final class MailchimpTagContactConnector extends ConnectorAbstract
 {
 
-    public const NAME = 'mailchimp_tag_contact';
+    public const string NAME = 'mailchimp_tag_contact';
 
     /**
      * @return string

@@ -34,19 +34,19 @@ final class ShoptetCreateOrderConnectorTest extends KernelTestCaseAbstract
 
     use PrivateTrait;
 
-    private const ID     = 'id';
-    private const TYPE   = 'type';
-    private const USER   = 'user';
-    private const SENDER = 'sender';
+    private const string ID     = 'id';
+    private const string TYPE   = 'type';
+    private const string USER   = 'user';
+    private const string SENDER = 'sender';
 
-    private const HEADERS = [
+    private const array HEADERS = [
         'application' => ShoptetApplication::SHOPTET_KEY,
         'internal-id' => '1',
         self::TYPE    => 'cancelled',
         self::USER    => self::USER,
     ];
 
-    private const SETTINGS = [
+    private const array SETTINGS = [
         'clientSettings' => [
             'token' => [
                 'access_token' => 'Access Token',
@@ -58,7 +58,7 @@ final class ShoptetCreateOrderConnectorTest extends KernelTestCaseAbstract
         ],
     ];
 
-    private const NON_ENCRYPTED_SETTINGS = [
+    private const array NON_ENCRYPTED_SETTINGS = [
         'getApiKey' => [
             'receivingStatus' => 'unlock',
         ],
@@ -79,7 +79,7 @@ final class ShoptetCreateOrderConnectorTest extends KernelTestCaseAbstract
      */
     public function testGetName(): void
     {
-        self::assertEquals('shoptet-create-order', $this->connector->getName());
+        self::assertSame('shoptet-create-order', $this->connector->getName());
     }
 
     /**

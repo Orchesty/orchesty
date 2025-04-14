@@ -23,7 +23,7 @@ use Hanaboso\Utils\Exception\PipesFrameworkException;
 final class FlexiBeeCreateNewContactConnector extends ConnectorAbstract
 {
 
-    private const NAME = 'flexibee.create-new-contact';
+    private const string NAME = 'flexibee.create-new-contact';
 
     /**
      * @return string

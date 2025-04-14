@@ -21,7 +21,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 final class SalesforceApplicationTest extends KernelTestCaseAbstract
 {
 
-    private const CLIENT_ID = '123****';
+    private const string CLIENT_ID = '123****';
 
     /**
      * @var SalesforceApplication
@@ -34,7 +34,7 @@ final class SalesforceApplicationTest extends KernelTestCaseAbstract
     public function testGetApplicationType(): void
     {
         $this->setApplication();
-        self::assertEquals(
+        self::assertSame(
             ApplicationTypeEnum::CRON->value,
             $this->application->getApplicationType(),
         );
@@ -46,7 +46,7 @@ final class SalesforceApplicationTest extends KernelTestCaseAbstract
     public function testGetKey(): void
     {
         $this->setApplication();
-        self::assertEquals(
+        self::assertSame(
             'salesforce',
             $this->application->getName(),
         );
@@ -58,7 +58,7 @@ final class SalesforceApplicationTest extends KernelTestCaseAbstract
     public function testGetName(): void
     {
         $this->setApplication();
-        self::assertEquals(
+        self::assertSame(
             'Salesforce',
             $this->application->getPublicName(),
         );
@@ -70,7 +70,7 @@ final class SalesforceApplicationTest extends KernelTestCaseAbstract
     public function testGetDescription(): void
     {
         $this->setApplication();
-        self::assertEquals(
+        self::assertSame(
             'Salesforce is one of the largest CRM platform.',
             $this->application->getDescription(),
         );
@@ -129,7 +129,7 @@ final class SalesforceApplicationTest extends KernelTestCaseAbstract
     public function testGetAuthUrl(): void
     {
         $this->setApplication();
-        self::assertEquals(
+        self::assertSame(
             'https://login.salesforce.com/services/oauth2/authorize',
             $this->application->getAuthUrl(),
         );
@@ -141,7 +141,7 @@ final class SalesforceApplicationTest extends KernelTestCaseAbstract
     public function testGetTokenUrl(): void
     {
         $this->setApplication();
-        self::assertEquals(
+        self::assertSame(
             'https://login.salesforce.com/services/oauth2/token',
             $this->application->getTokenUrl(),
         );
@@ -159,7 +159,7 @@ final class SalesforceApplicationTest extends KernelTestCaseAbstract
             'token123',
             self::CLIENT_ID,
         );
-        self::assertEquals(TRUE, $this->application->isAuthorized($applicationInstall));
+        self::assertTrue($this->application->isAuthorized($applicationInstall));
         $this->application->authorize($applicationInstall);
     }
 

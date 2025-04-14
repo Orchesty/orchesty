@@ -13,9 +13,9 @@ use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
 interface OAuth1ApplicationInterface extends ApplicationInterface
 {
 
-    public const  OAUTH           = 'oauth';
-    public const  CONSUMER_KEY    = 'consumer_key';
-    public const  CONSUMER_SECRET = 'consumer_secret';
+    public const string  OAUTH           = 'oauth';
+    public const string  CONSUMER_KEY    = 'consumer_key';
+    public const string  CONSUMER_SECRET = 'consumer_secret';
 
     /**
      * @param ApplicationInstall $applicationInstall

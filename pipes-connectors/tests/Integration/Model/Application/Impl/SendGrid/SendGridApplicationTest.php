@@ -32,7 +32,7 @@ final class SendGridApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetKey(): void
     {
-        self::assertEquals('send-grid', $this->app->getName());
+        self::assertSame('send-grid', $this->app->getName());
     }
 
     /**
@@ -40,7 +40,7 @@ final class SendGridApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetPublicName(): void
     {
-        self::assertEquals('SendGrid Application', $this->app->getPublicName());
+        self::assertSame('SendGrid Application', $this->app->getPublicName());
     }
 
     /**
@@ -48,7 +48,7 @@ final class SendGridApplicationTest extends KernelTestCaseAbstract
      */
     public function testGetDescription(): void
     {
-        self::assertEquals('Send Email With Confidence.', $this->app->getDescription());
+        self::assertSame('Send Email With Confidence.', $this->app->getDescription());
     }
 
     /**
@@ -83,9 +83,9 @@ final class SendGridApplicationTest extends KernelTestCaseAbstract
             NULL,
             Json::encode(['foo' => 'bar']),
         );
-        self::assertEquals(CurlManager::METHOD_POST, $dto->getMethod());
+        self::assertSame(CurlManager::METHOD_POST, $dto->getMethod());
         self::assertEquals(SendGridApplication::BASE_URL, $dto->getUri(TRUE));
-        self::assertEquals(Json::encode(['foo' => 'bar']), $dto->getBody());
+        self::assertSame(Json::encode(['foo' => 'bar']), $dto->getBody());
 
         $appInstall = DataProvider::createApplicationInstall($this->app->getName());
         self::expectException(ApplicationInstallException::class);

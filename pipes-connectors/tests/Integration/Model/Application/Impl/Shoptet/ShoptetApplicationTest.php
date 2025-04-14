@@ -34,7 +34,7 @@ final class ShoptetApplicationTest extends KernelTestCaseAbstract
     use PrivateTrait;
     use CustomAssertTrait;
 
-    private const CLIENT_ID = '123****';
+    private const string CLIENT_ID = '123****';
 
     /**
      * @var ShoptetApplication
@@ -61,7 +61,7 @@ final class ShoptetApplicationTest extends KernelTestCaseAbstract
     public function testGetApplicationType(): void
     {
         $this->setApplication();
-        self::assertEquals(ApplicationTypeEnum::WEBHOOK->value, $this->application->getApplicationType());
+        self::assertSame(ApplicationTypeEnum::WEBHOOK->value, $this->application->getApplicationType());
     }
 
     /**
@@ -70,7 +70,7 @@ final class ShoptetApplicationTest extends KernelTestCaseAbstract
     public function testGetKey(): void
     {
         $this->setApplication();
-        self::assertEquals('shoptet', $this->application->getName());
+        self::assertSame('shoptet', $this->application->getName());
     }
 
     /**
@@ -79,7 +79,7 @@ final class ShoptetApplicationTest extends KernelTestCaseAbstract
     public function testGetPublicName(): void
     {
         $this->setApplication();
-        self::assertEquals('Shoptet', $this->application->getPublicName());
+        self::assertSame('Shoptet', $this->application->getPublicName());
     }
 
     /**
@@ -88,7 +88,7 @@ final class ShoptetApplicationTest extends KernelTestCaseAbstract
     public function testGetDescription(): void
     {
         $this->setApplication();
-        self::assertEquals('Shoptet', $this->application->getDescription());
+        self::assertSame('Shoptet', $this->application->getDescription());
     }
 
     /**
@@ -147,7 +147,7 @@ final class ShoptetApplicationTest extends KernelTestCaseAbstract
     public function testGetAuthUrl(): void
     {
         $this->setApplication();
-        self::assertEquals('', $this->application->getAuthUrl());
+        self::assertSame('', $this->application->getAuthUrl());
     }
 
     /**
@@ -156,7 +156,7 @@ final class ShoptetApplicationTest extends KernelTestCaseAbstract
     public function testGetTokenUrl(): void
     {
         $this->setApplication();
-        self::assertEquals('', $this->application->getTokenUrl());
+        self::assertSame('', $this->application->getTokenUrl());
     }
 
     /**
@@ -170,7 +170,7 @@ final class ShoptetApplicationTest extends KernelTestCaseAbstract
                 [ApplicationInterface::AUTHORIZATION_FORM => ['oauth_url' => 'https://12345.myshoptet.com/action/ApiOAuthServer/token']],
             );
 
-        self::assertEquals(
+        self::assertSame(
             'https://12345.myshoptet.com/action/ApiOAuthServer/token',
             $this->application->getAuthUrlWithServerUrl($applicationInstall),
         );
@@ -187,7 +187,7 @@ final class ShoptetApplicationTest extends KernelTestCaseAbstract
                 [ApplicationInterface::AUTHORIZATION_FORM => ['api_token_url' => 'https://12345.myshoptet.com/action/ApiOAuthServer/getAccessToken']],
             );
 
-        self::assertEquals(
+        self::assertSame(
             'https://12345.myshoptet.com/action/ApiOAuthServer/getAccessToken',
             $this->application->getTokenUrlWithServerUrl($applicationInstall),
         );
@@ -230,7 +230,7 @@ final class ShoptetApplicationTest extends KernelTestCaseAbstract
             'www.nejaka.url',
         );
 
-        self::assertEquals('{"event":"unsubscription","url":"www.nejaka.url"}', $dto->getBody());
+        self::assertSame('{"event":"unsubscription","url":"www.nejaka.url"}', $dto->getBody());
     }
 
     /**
@@ -253,7 +253,7 @@ final class ShoptetApplicationTest extends KernelTestCaseAbstract
             'www.nejaka.url',
         );
 
-        self::assertEquals('{"event":"unsubscription","url":"www.nejaka.url"}', $dto->getBody());
+        self::assertSame('{"event":"unsubscription","url":"www.nejaka.url"}', $dto->getBody());
     }
 
     /**
@@ -292,7 +292,7 @@ final class ShoptetApplicationTest extends KernelTestCaseAbstract
             new ApplicationInstall(),
         );
 
-        self::assertEquals('{"data": "data"}', $response);
+        self::assertSame('{"data": "data"}', $response);
     }
 
     /**
@@ -372,7 +372,7 @@ final class ShoptetApplicationTest extends KernelTestCaseAbstract
     {
         $this->setApplication();
 
-        self::assertEquals(
+        self::assertSame(
             'https://starting-point/topologies/123/nodes/Start/run-by-name',
             $this->application->getTopologyUrl('123'),
         );

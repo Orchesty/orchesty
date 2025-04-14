@@ -22,9 +22,9 @@ use Hanaboso\PipesPhpSdk\Authorization\Base\OAuth2\OAuth2ApplicationInterface;
 final class GoogleDriveApplication extends OAuth2ApplicationAbstract
 {
 
-    public const    BASE_URL  = 'https://www.googleapis.com';
-    public const    AUTH_URL  = 'https://accounts.google.com/o/oauth2/auth';
-    public const    TOKEN_URL = 'https://oauth2.googleapis.com/token';
+    public const string    BASE_URL  = 'https://www.googleapis.com';
+    public const string    AUTH_URL  = 'https://accounts.google.com/o/oauth2/auth';
+    public const string    TOKEN_URL = 'https://oauth2.googleapis.com/token';
 
     /**
      * @return string

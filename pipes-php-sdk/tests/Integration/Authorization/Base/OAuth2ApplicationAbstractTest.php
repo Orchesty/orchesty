@@ -35,7 +35,7 @@ final class OAuth2ApplicationAbstractTest extends KernelTestCaseAbstract
      */
     public function testGetAuthorizationType(): void
     {
-        self::assertEquals('oauth2', $this->testApp->getAuthorizationType());
+        self::assertSame('oauth2', $this->testApp->getAuthorizationType());
     }
 
     /**
@@ -124,7 +124,7 @@ final class OAuth2ApplicationAbstractTest extends KernelTestCaseAbstract
                 'settings' => [ApplicationInterface::AUTHORIZATION_FORM => [ApplicationInterface::FRONTEND_REDIRECT_URL => '/redirect/url']],
             ],
         );
-        self::assertEquals('/redirect/url', $this->testApp->getFrontendRedirectUrl($applicationInstall));
+        self::assertSame('/redirect/url', $this->testApp->getFrontendRedirectUrl($applicationInstall));
     }
 
     /**
@@ -165,7 +165,7 @@ final class OAuth2ApplicationAbstractTest extends KernelTestCaseAbstract
             ],
         );
 
-        self::assertEquals('__token__', $this->testApp->getAccessToken($applicationInstall));
+        self::assertSame('__token__', $this->testApp->getAccessToken($applicationInstall));
 
         $applicationInstall = new ApplicationInstall();
         self::expectException(ApplicationInstallException::class);
@@ -205,7 +205,7 @@ final class OAuth2ApplicationAbstractTest extends KernelTestCaseAbstract
         /** @var OAuth2Dto $dto */
         $dto = $this->invokeMethod($this->testApp, 'createDto', [$applicationInstall, '/redirect/url']);
 
-        self::assertEquals('/redirect/url', $dto->getRedirectUrl());
+        self::assertSame('/redirect/url', $dto->getRedirectUrl());
     }
 
     /**

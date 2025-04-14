@@ -29,8 +29,8 @@ use Hanaboso\Utils\String\Json;
 final class WebhookApplication extends ApplicationAbstract implements WebhookApplicationInterface
 {
 
-    private const SUBSCRIBE   = 'https://example.com/webhook/subscribe';
-    private const UNSUBSCRIBE = 'https://example.com/webhook/unsubscribe';
+    private const string SUBSCRIBE   = 'https://example.com/webhook/subscribe';
+    private const string UNSUBSCRIBE = 'https://example.com/webhook/unsubscribe';
 
     /**
      * @var WebhookSubscription[]

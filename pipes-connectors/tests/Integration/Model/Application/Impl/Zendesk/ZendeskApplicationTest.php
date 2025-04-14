@@ -39,7 +39,7 @@ final class ZendeskApplicationTest extends KernelTestCaseAbstract
     public function testGetApplicationType(): void
     {
         $this->setApplication();
-        self::assertEquals(
+        self::assertSame(
             ApplicationTypeEnum::CRON->value,
             $this->application->getApplicationType(),
         );
@@ -51,7 +51,7 @@ final class ZendeskApplicationTest extends KernelTestCaseAbstract
     public function testGetKey(): void
     {
         $this->setApplication();
-        self::assertEquals(
+        self::assertSame(
             'zendesk',
             $this->application->getName(),
         );
@@ -63,7 +63,7 @@ final class ZendeskApplicationTest extends KernelTestCaseAbstract
     public function testGetPublicName(): void
     {
         $this->setApplication();
-        self::assertEquals(
+        self::assertSame(
             'Zendesk',
             $this->application->getPublicName(),
         );
@@ -75,7 +75,7 @@ final class ZendeskApplicationTest extends KernelTestCaseAbstract
     public function testGetDescription(): void
     {
         $this->setApplication();
-        self::assertEquals(
+        self::assertSame(
             'Zendesk is a customer support software. It helps companies and organisations manage customer queries and problems through a ticketing system.',
             $this->application->getDescription(),
         );
@@ -141,7 +141,7 @@ final class ZendeskApplicationTest extends KernelTestCaseAbstract
 
         $authUrl = $this->application->getAuthUrlWithSubdomain($applicationInstall);
 
-        self::assertEquals('https://domain123.zendesk.com/oauth/authorizations/new', $authUrl);
+        self::assertSame('https://domain123.zendesk.com/oauth/authorizations/new', $authUrl);
     }
 
     /**
@@ -155,7 +155,7 @@ final class ZendeskApplicationTest extends KernelTestCaseAbstract
 
         $authUrl = $this->application->getTokenUrlWithSubdomain($applicationInstall);
 
-        self::assertEquals('https://domain123.zendesk.com/oauth/tokens', $authUrl);
+        self::assertSame('https://domain123.zendesk.com/oauth/tokens', $authUrl);
     }
 
     /**
@@ -184,7 +184,7 @@ final class ZendeskApplicationTest extends KernelTestCaseAbstract
     public function testGetAuthUrl(): void
     {
         $this->setApplication();
-        self::assertEquals('', $this->application->getAuthUrl());
+        self::assertSame('', $this->application->getAuthUrl());
     }
 
     /**
@@ -193,7 +193,7 @@ final class ZendeskApplicationTest extends KernelTestCaseAbstract
     public function testGetTokenUrl(): void
     {
         $this->setApplication();
-        self::assertEquals('', $this->application->getTokenUrl());
+        self::assertSame('', $this->application->getTokenUrl());
     }
 
     /**
