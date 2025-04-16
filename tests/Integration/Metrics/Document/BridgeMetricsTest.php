@@ -56,12 +56,12 @@ final class BridgeMetricsTest extends DatabaseTestCaseAbstract
         /** @var BridgesMetrics $result */
         $result = $repository->findAll()[0];
         self::assertTrue($result->getFields()->isSuccess());
-        self::assertEquals(10, $result->getFields()->getWaitingDuration());
-        self::assertEquals(20, $result->getFields()->getTotalDuration());
+        self::assertSame(10, $result->getFields()->getWaitingDuration());
+        self::assertSame(20, $result->getFields()->getTotalDuration());
         self::assertEquals(DateTimeUtils::getUtcDateTime('1.1.2020'), $result->getFields()->getCreated());
-        self::assertEquals('1', $result->getTags()->getNodeId());
-        self::assertEquals('2', $result->getTags()->getTopologyId());
-        self::assertEquals('12', $result->getTags()->getQueue());
+        self::assertSame('1', $result->getTags()->getNodeId());
+        self::assertSame('2', $result->getTags()->getTopologyId());
+        self::assertSame('12', $result->getTags()->getQueue());
     }
 
 }

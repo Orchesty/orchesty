@@ -22,7 +22,7 @@ final class ApplicationController extends AbstractController
 
     use ControllerTrait;
 
-    public const SYSTEM_USER = 'orchesty';
+    public const string SYSTEM_USER = 'orchesty';
 
     /**
      * ApplicationController constructor.

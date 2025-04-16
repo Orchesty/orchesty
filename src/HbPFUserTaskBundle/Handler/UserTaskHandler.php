@@ -25,7 +25,7 @@ final class UserTaskHandler
 
     use GridHandlerTrait;
 
-    public const IDS = 'ids';
+    public const string IDS = 'ids';
 
     /**
      * UserTaskHandler constructor.

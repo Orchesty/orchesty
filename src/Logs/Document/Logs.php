@@ -32,20 +32,20 @@ class Logs
 
     use IdTrait;
 
-    public const ID       = 'id';
-    public const MONGO_ID = '_id';
+    public const string ID       = 'id';
+    public const string MONGO_ID = '_id';
 
-    public const TIMESTAMP = 'ts';
-    public const MESSAGE   = 'message';
+    public const string TIMESTAMP = 'ts';
+    public const string MESSAGE   = 'message';
 
-    public const PIPES_SERVICE        = 'pipes.service';
-    public const PIPES_SEVERITY       = 'pipes.severity';
-    public const PIPES_CORRELATION_ID = 'pipes.correlation_id';
-    public const PIPES_TOPOLOGY_ID    = 'pipes.topology_id';
-    public const PIPES_NODE_ID        = 'pipes.node_id';
-    public const PIPES_TIME_MARGIN    = 'pipes.time_margin';
-    public const PIPES_TIMESTAMP      = 'pipes.timestamp';
-    public const PIPES_USER_ID        = 'pipes.user_id';
+    public const string PIPES_SERVICE        = 'pipes.service';
+    public const string PIPES_SEVERITY       = 'pipes.severity';
+    public const string PIPES_CORRELATION_ID = 'pipes.correlation_id';
+    public const string PIPES_TOPOLOGY_ID    = 'pipes.topology_id';
+    public const string PIPES_NODE_ID        = 'pipes.node_id';
+    public const string PIPES_TIME_MARGIN    = 'pipes.time_margin';
+    public const string PIPES_TIMESTAMP      = 'pipes.timestamp';
+    public const string PIPES_USER_ID        = 'pipes.user_id';
 
     /**
      * @var DateTime

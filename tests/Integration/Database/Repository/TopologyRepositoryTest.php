@@ -28,7 +28,7 @@ final class TopologyRepositoryTest extends DatabaseTestCaseAbstract
     {
         $repo   = $this->dm->getRepository(Topology::class);
         $result = $repo->getTotalCount();
-        self::assertEquals(0, $result);
+        self::assertSame(0, $result);
 
         $topology = new Topology();
         $topology->setName('name');
@@ -37,7 +37,7 @@ final class TopologyRepositoryTest extends DatabaseTestCaseAbstract
         $this->dm->flush();
 
         $result = $repo->getTotalCount();
-        self::assertEquals(1, $result);
+        self::assertSame(1, $result);
     }
 
     /**
@@ -47,7 +47,7 @@ final class TopologyRepositoryTest extends DatabaseTestCaseAbstract
     {
         $repo   = $this->dm->getRepository(Topology::class);
         $result = $repo->getCountByEnable(TRUE);
-        self::assertEquals(0, $result);
+        self::assertSame(0, $result);
 
         $topology = new Topology();
         $topology->setName('name')
@@ -58,10 +58,10 @@ final class TopologyRepositoryTest extends DatabaseTestCaseAbstract
         $this->dm->flush();
 
         $result = $repo->getCountByEnable(TRUE);
-        self::assertEquals(1, $result);
+        self::assertSame(1, $result);
 
         $result = $repo->getCountByEnable(FALSE);
-        self::assertEquals(0, $result);
+        self::assertSame(0, $result);
     }
 
     /**
@@ -71,7 +71,7 @@ final class TopologyRepositoryTest extends DatabaseTestCaseAbstract
     {
         $repo   = $this->dm->getRepository(Topology::class);
         $result = $repo->getMaxVersion('name');
-        self::assertEquals(0, $result);
+        self::assertSame(0, $result);
 
         $topology = new Topology();
         $topology
@@ -80,7 +80,7 @@ final class TopologyRepositoryTest extends DatabaseTestCaseAbstract
         $this->pfd($topology);
 
         $result = $repo->getMaxVersion('name');
-        self::assertEquals(5, $result);
+        self::assertSame(5, $result);
     }
 
     /**
@@ -161,7 +161,7 @@ final class TopologyRepositoryTest extends DatabaseTestCaseAbstract
         $topologies = $repo->getTopologiesByCategory($category);
 
         self::assertCount(1, $topologies);
-        self::assertEquals($topologyWithCategory->getId(), $topologies[0]->getId());
+        self::assertSame($topologyWithCategory->getId(), $topologies[0]->getId());
     }
 
     /**
@@ -171,7 +171,7 @@ final class TopologyRepositoryTest extends DatabaseTestCaseAbstract
     {
         $repo   = $this->dm->getRepository(Topology::class);
         $result = $repo->getTopologiesCountByName('name');
-        self::assertEquals(0, $result);
+        self::assertSame(0, $result);
 
         $topology = new Topology();
         $topology
@@ -180,7 +180,7 @@ final class TopologyRepositoryTest extends DatabaseTestCaseAbstract
         $this->pfd($topology);
 
         $result = $repo->getTopologiesCountByName('name');
-        self::assertEquals(1, $result);
+        self::assertSame(1, $result);
     }
 
     /**
@@ -197,7 +197,7 @@ final class TopologyRepositoryTest extends DatabaseTestCaseAbstract
 
         $repo   = $this->dm->getRepository(Topology::class);
         $result = $repo->getPublicEnabledTopologies();
-        self::assertEquals('name', $result[0]->getName());
+        self::assertSame('name', $result[0]->getName());
     }
 
     /**

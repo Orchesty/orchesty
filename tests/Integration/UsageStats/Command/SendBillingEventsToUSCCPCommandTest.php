@@ -71,7 +71,7 @@ final class SendBillingEventsToUSCCPCommandTest extends DatabaseTestCaseAbstract
         $commandTester = new CommandTester($command);
         $result        = $commandTester->execute(['command' => $command->getName()]);
 
-        self::assertEquals(0, $result);
+        self::assertSame(0, $result);
 
         $data = $this->dm->getRepository(UsageStatsEvent::class)->findByTypes(
             [EventTypeEnum::INSTALL->value, EventTypeEnum::UNINSTALL->value],
@@ -178,13 +178,13 @@ final class SendBillingEventsToUSCCPCommandTest extends DatabaseTestCaseAbstract
     private function prepareMethods(): array
     {
         $resEx = static function (RequestDto $request): ResponseDto {
-            self::assertEquals(CurlManager::METHOD_PUT, $request->getMethod());
+            self::assertSame(CurlManager::METHOD_PUT, $request->getMethod());
             self::assertEquals('https://usccp.cloud.orchesty.io', $request->getUri(TRUE));
 
             throw new CurlException();
         };
         $res   = static function (RequestDto $request): ResponseDto {
-            self::assertEquals(CurlManager::METHOD_PUT, $request->getMethod());
+            self::assertSame(CurlManager::METHOD_PUT, $request->getMethod());
             self::assertEquals('https://usccp.cloud.orchesty.io', $request->getUri(TRUE));
 
             return new ResponseDto(200, 'OK', '[{}]', []);

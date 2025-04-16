@@ -35,17 +35,17 @@ final class TopologyGeneratorBridge
 
     use LoggerTrait;
 
-    public const TOPOLOGY_API   = 'topology-api';
-    public const STARTING_POINT = 'starting-point';
-    public const LIMITER        = 'limiter';
+    public const string TOPOLOGY_API   = 'topology-api';
+    public const string STARTING_POINT = 'starting-point';
+    public const string LIMITER        = 'limiter';
 
-    protected const BASE_TOPOLOGY_URL      = 'http://%s/v1/api/topologies/%s';
-    protected const GET_TOPOLOGY_HOST_URL  = 'http://%s/v1/api/topologies/%s/host';
-    protected const GENERATOR_TOPOLOGY_URL = 'http://%s/v1/api/topologies/%s';
-    protected const STARTING_POINT_URL     = '%s/topologies/%s/invalidate-cache';
-    protected const LIMITER_URL            = '%s/terminate/topology-api/%s';
+    protected const string BASE_TOPOLOGY_URL      = 'http://%s/v1/api/topologies/%s';
+    protected const string GET_TOPOLOGY_HOST_URL  = 'http://%s/v1/api/topologies/%s/host';
+    protected const string GENERATOR_TOPOLOGY_URL = 'http://%s/v1/api/topologies/%s';
+    protected const string STARTING_POINT_URL     = '%s/topologies/%s/invalidate-cache';
+    protected const string LIMITER_URL            = '%s/terminate/topology-api/%s';
 
-    private const HEADERS = ['Content-Type' => 'application/json'];
+    private const array HEADERS = ['Content-Type' => 'application/json'];
 
     /**
      * @var DocumentManager

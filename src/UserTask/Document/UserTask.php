@@ -32,23 +32,23 @@ class UserTask
     use CreatedTrait;
     use UpdatedTrait;
 
-    public const ID                 = 'id';
-    public const NODE_ID            = 'nodeId';
-    public const TOPOLOGY_ID        = 'topologyId';
-    public const NODE_NAME          = 'nodeName';
-    public const TOPOLOGY_NAME      = 'topologyName';
-    public const TOPOLOGY_DESCR     = 'topologyDescr';
-    public const TOPOLOGY_VERSION   = 'topologyVersion';
-    public const TOPOLOGY_DELETED   = 'topologyDeleted';
-    public const CORRELATION_ID     = 'correlationId';
-    public const TYPE               = 'type';
-    public const RETURN_EXCHANGE    = 'returnExchange';
-    public const RETURN_ROUTING_KEY = 'returnRoutingKey';
-    public const MESSAGE            = 'message';
-    public const AUDIT_LOGS         = 'auditLogs';
-    public const CREATED            = 'created';
-    public const UPDATED            = 'updated';
-    public const USER               = 'user';
+    public const string ID                 = 'id';
+    public const string NODE_ID            = 'nodeId';
+    public const string TOPOLOGY_ID        = 'topologyId';
+    public const string NODE_NAME          = 'nodeName';
+    public const string TOPOLOGY_NAME      = 'topologyName';
+    public const string TOPOLOGY_DESCR     = 'topologyDescr';
+    public const string TOPOLOGY_VERSION   = 'topologyVersion';
+    public const string TOPOLOGY_DELETED   = 'topologyDeleted';
+    public const string CORRELATION_ID     = 'correlationId';
+    public const string TYPE               = 'type';
+    public const string RETURN_EXCHANGE    = 'returnExchange';
+    public const string RETURN_ROUTING_KEY = 'returnRoutingKey';
+    public const string MESSAGE            = 'message';
+    public const string AUDIT_LOGS         = 'auditLogs';
+    public const string CREATED            = 'created';
+    public const string UPDATED            = 'updated';
+    public const string USER               = 'user';
 
     /**
      * @var string

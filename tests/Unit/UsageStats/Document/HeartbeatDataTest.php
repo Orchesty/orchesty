@@ -22,13 +22,13 @@ final class HeartbeatDataTest extends DatabaseTestCaseAbstract
     public function testBillingEvent(): void
     {
         $hearthBeatData = new HearthBeatData(1, '1');
-        self::assertEquals('1', $hearthBeatData->getType());
-        self::assertEquals(1, $hearthBeatData->getCount());
+        self::assertSame('1', $hearthBeatData->getType());
+        self::assertSame(1, $hearthBeatData->getCount());
         self::assertEquals(['type' => '1', 'count' => 1], $hearthBeatData->toArray());
         $hearthBeatData->setType('2');
         $hearthBeatData->setCount(2);
-        self::assertEquals('2', $hearthBeatData->getType());
-        self::assertEquals(2, $hearthBeatData->getCount());
+        self::assertSame('2', $hearthBeatData->getType());
+        self::assertSame(2, $hearthBeatData->getCount());
         self::assertEquals(['type' => '2', 'count' => 2], $hearthBeatData->toArray());
     }
 

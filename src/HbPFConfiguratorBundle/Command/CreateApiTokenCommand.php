@@ -20,9 +20,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 final class CreateApiTokenCommand extends Command
 {
 
-    private const USER      = 'user';
-    private const EXPIRE_AT = 'expireAt';
-    private const SCOPES    = 'scopes';
+    private const string USER      = 'user';
+    private const string EXPIRE_AT = 'expireAt';
+    private const string SCOPES    = 'scopes';
 
     /**
      * CreateApiTokenCommand constructor.

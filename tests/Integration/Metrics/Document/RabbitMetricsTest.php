@@ -50,9 +50,9 @@ final class RabbitMetricsTest extends DatabaseTestCaseAbstract
         $repository = $dm->getRepository(RabbitMetrics::class);
         /** @var RabbitMetrics $result */
         $result = $repository->findAll()[0];
-        self::assertEquals(2, $result->getFields()->getMessages());
+        self::assertSame(2, $result->getFields()->getMessages());
         self::assertEquals(DateTimeUtils::getUtcDateTime('1.1.2020'), $result->getFields()->getCreated());
-        self::assertEquals('1', $result->getTags()->getNodeId());
+        self::assertSame('1', $result->getTags()->getNodeId());
     }
 
 }

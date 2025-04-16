@@ -37,7 +37,7 @@ final class TopologyGeneratorBridgeTest extends KernelTestCaseAbstract
     {
         $this->getManager(
             static function (RequestDto $request): ResponseDto {
-                self::assertEquals(CurlManager::METHOD_POST, $request->getMethod());
+                self::assertSame(CurlManager::METHOD_POST, $request->getMethod());
                 self::assertEquals('http://topology-api/v1/api/topologies/topology', $request->getUri(TRUE));
 
                 return new ResponseDto(200, 'OK', '{}', []);
@@ -52,9 +52,9 @@ final class TopologyGeneratorBridgeTest extends KernelTestCaseAbstract
     {
         $this->getManager(
             static function (RequestDto $request): ResponseDto {
-                self::assertEquals(CurlManager::METHOD_PUT, $request->getMethod());
+                self::assertSame(CurlManager::METHOD_PUT, $request->getMethod());
                 self::assertEquals('http://topology-api/v1/api/topologies/topology', $request->getUri(TRUE));
-                self::assertEquals('{"action":"start"}', $request->getBody());
+                self::assertSame('{"action":"start"}', $request->getBody());
 
                 return new ResponseDto(200, 'OK', '', []);
             },
@@ -68,23 +68,23 @@ final class TopologyGeneratorBridgeTest extends KernelTestCaseAbstract
     {
         $this->getManager(
             static function (RequestDto $request): ResponseDto {
-                self::assertEquals(CurlManager::METHOD_GET, $request->getMethod());
+                self::assertSame(CurlManager::METHOD_GET, $request->getMethod());
                 self::assertEquals('http://topology-api/v1/api/topologies/topology/host', $request->getUri(TRUE));
-                self::assertEquals('', $request->getBody());
+                self::assertSame('', $request->getBody());
 
                 return new ResponseDto(200, 'OK', '{"host":"http://bridge"}', []);
             },
             static function (RequestDto $request): ResponseDto {
-                self::assertEquals(CurlManager::METHOD_DELETE, $request->getMethod());
+                self::assertSame(CurlManager::METHOD_DELETE, $request->getMethod());
                 self::assertEquals('http://bridge/clear', $request->getUri(TRUE));
-                self::assertEquals('', $request->getBody());
+                self::assertSame('', $request->getBody());
 
                 return new ResponseDto(200, 'OK', '{}', []);
             },
             static function (RequestDto $request): ResponseDto {
-                self::assertEquals(CurlManager::METHOD_PUT, $request->getMethod());
+                self::assertSame(CurlManager::METHOD_PUT, $request->getMethod());
                 self::assertEquals('http://topology-api/v1/api/topologies/topology', $request->getUri(TRUE));
-                self::assertEquals('{"action":"stop"}', $request->getBody());
+                self::assertSame('{"action":"stop"}', $request->getBody());
 
                 return new ResponseDto(200, 'OK', '', []);
             },
@@ -98,9 +98,9 @@ final class TopologyGeneratorBridgeTest extends KernelTestCaseAbstract
     {
         $this->getManager(
             static function (RequestDto $request): ResponseDto {
-                self::assertEquals(CurlManager::METHOD_DELETE, $request->getMethod());
+                self::assertSame(CurlManager::METHOD_DELETE, $request->getMethod());
                 self::assertEquals('http://topology-api/v1/api/topologies/topology', $request->getUri(TRUE));
-                self::assertEquals('', $request->getBody());
+                self::assertSame('', $request->getBody());
 
                 return new ResponseDto(200, 'OK', '', []);
             },
@@ -114,12 +114,12 @@ final class TopologyGeneratorBridgeTest extends KernelTestCaseAbstract
     {
         $this->getManager(
             static function (RequestDto $request): ResponseDto {
-                self::assertEquals(CurlManager::METHOD_POST, $request->getMethod());
+                self::assertSame(CurlManager::METHOD_POST, $request->getMethod());
                 self::assertEquals(
                     'starting-point/topologies/topology/invalidate-cache',
                     $request->getUri(TRUE),
                 );
-                self::assertEquals('', $request->getBody());
+                self::assertSame('', $request->getBody());
 
                 return new ResponseDto(200, 'OK', '{}', []);
             },
@@ -135,12 +135,12 @@ final class TopologyGeneratorBridgeTest extends KernelTestCaseAbstract
 
         $this->getManager(
             static function (RequestDto $request): ResponseDto {
-                self::assertEquals(CurlManager::METHOD_POST, $request->getMethod());
+                self::assertSame(CurlManager::METHOD_POST, $request->getMethod());
                 self::assertEquals(
                     'starting-point/topologies/topology/invalidate-cache',
                     $request->getUri(TRUE),
                 );
-                self::assertEquals('', $request->getBody());
+                self::assertSame('', $request->getBody());
 
                 return new ResponseDto(400, 'NOT OK', '{}', []);
             },

@@ -31,14 +31,14 @@ final class TopologyTest extends DatabaseTestCaseAbstract
             ->setRawBpmn('bpmn');
         $this->pfd($topology);
 
-        self::assertEquals(1, $topology->getVersion());
-        self::assertEquals('Desc.', $topology->getDescr());
-        self::assertEquals('Starting', $topology->getStatus());
-        self::assertEquals('category', $topology->getCategory());
-        self::assertEquals('hash', $topology->getContentHash());
+        self::assertSame(1, $topology->getVersion());
+        self::assertSame('Desc.', $topology->getDescr());
+        self::assertSame('Starting', $topology->getStatus());
+        self::assertSame('category', $topology->getCategory());
+        self::assertSame('hash', $topology->getContentHash());
         self::assertEquals(['bpmn' => '1'], $topology->getBpmn());
-        self::assertEquals('bpmn', $topology->getRawBpmn());
-        self::assertEquals('draft', $topology->getVisibility());
+        self::assertSame('bpmn', $topology->getRawBpmn());
+        self::assertSame('draft', $topology->getVisibility());
         self::assertFalse($topology->isEnabled());
     }
 

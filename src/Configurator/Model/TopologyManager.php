@@ -48,14 +48,14 @@ final class TopologyManager
 
     use UrlBuilderTrait;
 
-    public const DEFAULT_SCHEME = '<?xml version="1.0" encoding="UTF-8"?><bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn"><bpmn:process id="%s" isExecutable="false" /><bpmndi:BPMNDiagram id="BPMNDiagram_1"><bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1" /></bpmndi:BPMNDiagram></bpmn:definitions>';
+    public const string DEFAULT_SCHEME = '<?xml version="1.0" encoding="UTF-8"?><bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn"><bpmn:process id="%s" isExecutable="false" /><bpmndi:BPMNDiagram id="BPMNDiagram_1"><bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1" /></bpmndi:BPMNDiagram></bpmn:definitions>';
 
-    private const RUN_ENDPOINT                   = 'topologies/%s/nodes/%s/run?uiRun=true';
-    private const RUN_ENDPOINT_BY_NAME_WITH_USER = 'topologies/%s/nodes/%s/user/%s/run-by-name';
+    private const string RUN_ENDPOINT                   = 'topologies/%s/nodes/%s/run?uiRun=true';
+    private const string RUN_ENDPOINT_BY_NAME_WITH_USER = 'topologies/%s/nodes/%s/user/%s/run-by-name';
 
-    private const MESSAGE        = 'message';
-    private const STARTED        = 'started';
-    private const STARTING_POINT = 'startingPoint';
+    private const string MESSAGE        = 'message';
+    private const string STARTED        = 'started';
+    private const string STARTING_POINT = 'startingPoint';
 
     /**
      * @var DocumentManager
@@ -215,7 +215,7 @@ final class TopologyManager
         $originalContentHash = $topology->getContentHash();
 
         if ($originalContentHash !== $newSchemaSha256) {
-            if (!empty($originalContentHash) && $topology->getVisibility() === TopologyStatusEnum::PUBLIC->value) {
+            if ($originalContentHash !== '' && $topology->getVisibility() === TopologyStatusEnum::PUBLIC->value) {
                 $topology = $this->cloneTopologyShallow($topology, $newSchemaSha256);
                 $cloned   = TRUE;
             } else {
@@ -224,7 +224,7 @@ final class TopologyManager
         }
 
         try {
-            if ($cloned || empty($originalContentHash)) {
+            if ($cloned || $originalContentHash === '') {
                 $this->generateNodes($topology, $newSchemaObject); // first save of topology or after topology is cloned
             } else {
                 $this->updateNodes($topology, $newSchemaObject);
@@ -274,7 +274,7 @@ final class TopologyManager
     public function publishTopology(Topology $topology): Topology
     {
         $nodes = $this->nodeRepository->findBy(['topology' => $topology->getId()]);
-        if (empty($nodes)) {
+        if ($nodes === []) {
             throw new TopologyException(
                 'Topology has no nodes. Please save your topology before publish it.',
                 TopologyException::TOPOLOGY_HAS_NO_NODES,
@@ -349,6 +349,7 @@ final class TopologyManager
             /** @var Node $copy */
             $copy = $node['copy'];
 
+            // @phpstan-ignore-next-line
             if (!empty($orig->getNext())) {
                 $nexts = $orig->getNext();
                 foreach ($nexts as $next) {
@@ -721,7 +722,9 @@ final class TopologyManager
     {
         if ($type === TypeEnum::CRON->value) {
             try {
-                !empty($node->getCron()) ? $this->cronManager->upsert($node) : $this->cronManager->delete($node);
+                $node->getCron() !== NULL && $node->getCron() !== ''
+                    ? $this->cronManager->upsert($node)
+                    : $this->cronManager->delete($node);
             } catch (CronException|CurlException $e) {
                 throw new TopologyException(
                     sprintf('Saving of Node [%s] & cron [%s] failed.', $schemaId, $type),

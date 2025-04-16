@@ -24,8 +24,8 @@ final class SdkTest extends DatabaseTestCaseAbstract
         $sdk = (new Sdk())->setUrl('value')->setName('key')->setHeaders([]);
         $this->pfd($sdk);
 
-        self::assertEquals('value', $sdk->getUrl());
-        self::assertEquals('key', $sdk->getName());
+        self::assertSame('value', $sdk->getUrl());
+        self::assertSame('key', $sdk->getName());
         self::assertEquals(
             [
                 'headers' => [],

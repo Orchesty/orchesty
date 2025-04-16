@@ -10,15 +10,15 @@ namespace Hanaboso\PipesFramework\Configurator\Model;
 final class DashboardDto
 {
 
-    private const TOPOLOGY_ID   = 'topology_id';
-    private const TOPOLOGY_NAME = 'topology_name';
-    private const NODE_ID       = 'node_id';
-    private const NODE_NAME     = 'node_name';
-    private const SEVERITY      = 'severity';
-    private const MESSAGE       = 'message';
-    private const TIMESTAMP     = 'timestamp';
+    private const string TOPOLOGY_ID   = 'topology_id';
+    private const string TOPOLOGY_NAME = 'topology_name';
+    private const string NODE_ID       = 'node_id';
+    private const string NODE_NAME     = 'node_name';
+    private const string SEVERITY      = 'severity';
+    private const string MESSAGE       = 'message';
+    private const string TIMESTAMP     = 'timestamp';
 
-    private const DEFAULT_SOURCE = 'System';
+    private const string DEFAULT_SOURCE = 'System';
 
     /**
      * @var mixed[]
@@ -203,11 +203,11 @@ final class DashboardDto
         $this->errorLogs[] = [
             'level'        => $level,
             'message'      => $message,
-            'nodeId'       => !empty($nodeId) ? $nodeId : self::DEFAULT_SOURCE,
-            'nodeName'     => !empty($nodeName) ? $nodeName : self::DEFAULT_SOURCE,
+            'nodeId'       => $nodeId !== '' ? $nodeId : self::DEFAULT_SOURCE,
+            'nodeName'     => $nodeName !== '' ? $nodeName : self::DEFAULT_SOURCE,
             'time'         => $time,
-            'topologyId'   => !empty($topologyId) ? $topologyId : self::DEFAULT_SOURCE,
-            'topologyName' => !empty($topologyName) ? $topologyName : self::DEFAULT_SOURCE,
+            'topologyId'   => $topologyId !== '' ? $topologyId : self::DEFAULT_SOURCE,
+            'topologyName' => $topologyName !== '' ? $topologyName : self::DEFAULT_SOURCE,
         ];
 
         return $this;
@@ -237,11 +237,11 @@ final class DashboardDto
         $this->alertLogs[] = [
             'level'        => $level,
             'message'      => $message,
-            'nodeId'       => !empty($nodeId) ? $nodeId : self::DEFAULT_SOURCE,
-            'nodeName'     => !empty($nodeName) ? $nodeName : self::DEFAULT_SOURCE,
+            'nodeId'       => $nodeId !== '' ? $nodeId : self::DEFAULT_SOURCE,
+            'nodeName'     => $nodeName !== '' ? $nodeName : self::DEFAULT_SOURCE,
             'time'         => $time,
-            'topologyId'   => !empty($topologyId) ? $topologyId : self::DEFAULT_SOURCE,
-            'topologyName' => !empty($topologyName) ? $topologyName : self::DEFAULT_SOURCE,
+            'topologyId'   => $topologyId !== '' ? $topologyId : self::DEFAULT_SOURCE,
+            'topologyName' => $topologyName !== '' ? $topologyName : self::DEFAULT_SOURCE,
         ];
 
         return $this;

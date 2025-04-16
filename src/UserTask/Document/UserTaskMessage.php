@@ -13,8 +13,8 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 class UserTaskMessage
 {
 
-    public const BODY    = 'body';
-    public const HEADERS = 'headers';
+    public const string BODY    = 'body';
+    public const string HEADERS = 'headers';
 
     /**
      * @var string

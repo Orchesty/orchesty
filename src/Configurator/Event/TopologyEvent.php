@@ -12,7 +12,7 @@ use Symfony\Contracts\EventDispatcher\Event;
 final class TopologyEvent extends Event
 {
 
-    public const EVENT = 'topology_event';
+    public const string EVENT = 'topology_event';
 
     /**
      * TopologyEvent constructor.

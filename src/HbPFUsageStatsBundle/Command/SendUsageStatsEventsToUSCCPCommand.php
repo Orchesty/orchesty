@@ -25,7 +25,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 final class SendUsageStatsEventsToUSCCPCommand extends Command
 {
 
-    private const CMD_NAME = 'usage_stats:send-events';
+    private const string CMD_NAME = 'usage_stats:send-events';
 
     /**
      * @var ObjectRepository<UsageStatsEvent>&UsageStatsEventRepository

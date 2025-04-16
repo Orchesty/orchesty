@@ -46,7 +46,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     {
         self::expectException(TopologyException::class);
         self::expectExceptionCode(TopologyException::TOPOLOGY_NAME_ALREADY_EXISTS);
-        self::assertEquals(1, $this->manager->createTopology(['name' => 'Topology'])->getVersion());
+        self::assertSame(1, $this->manager->createTopology(['name' => 'Topology'])->getVersion());
         $this->manager->createTopology(['name' => 'Topology'])->getVersion();
     }
 
@@ -86,7 +86,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
 
         $this->manager->createTopology(['name' => 'Another Topology']);
         $topology = $this->manager->createTopology(['name' => 'Topology']);
-        self::assertEquals(1, $topology->getVersion());
+        self::assertSame(1, $topology->getVersion());
 
         self::expectException(TopologyException::class);
         self::expectExceptionCode(TopologyException::TOPOLOGY_NAME_ALREADY_EXISTS);
@@ -120,10 +120,10 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $this->dm->clear();
         /** @var Topology $top */
         $top = $this->dm->getRepository(Topology::class)->findOneBy(['id' => $top->getId()]);
-        self::assertEquals('name', $top->getName());
-        self::assertEquals('desc', $top->getDescr());
+        self::assertSame('name', $top->getName());
+        self::assertSame('desc', $top->getDescr());
         self::assertEquals(['bpmn'], $top->getBpmn());
-        self::assertEquals('bpmn', $top->getRawBpmn());
+        self::assertSame('bpmn', $top->getRawBpmn());
         self::assertFalse($top->isEnabled());
     }
 
@@ -144,7 +144,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $this->dm->persist($top);
 
         $this->manager->saveTopologySchema($top, '', $schema);
-        self::assertEquals(TRUE, $this->manager->checkTopologySchemaIsSame($top, $schema));
+        self::assertTrue($this->manager->checkTopologySchemaIsSame($top, $schema));
     }
 
     /**
@@ -168,7 +168,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
 
         /** @var Topology $res */
         $res = $this->manager->publishTopology($top);
-        self::assertEquals(TopologyStatusEnum::PUBLIC->value, $res->getVisibility());
+        self::assertSame(TopologyStatusEnum::PUBLIC->value, $res->getVisibility());
     }
 
     /**
@@ -270,13 +270,13 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         /** @var Topology $res */
         $res = $this->manager->cloneTopology($top);
 
-        self::assertEquals($top->getName(), $res->getName());
-        self::assertEquals($top->getVersion() + 1, $res->getVersion());
-        self::assertEquals($top->getDescr(), $res->getDescr());
-        self::assertEquals(TopologyStatusEnum::DRAFT->value, $res->getVisibility());
-        self::assertEquals($top->isEnabled(), $res->isEnabled());
+        self::assertSame($top->getName(), $res->getName());
+        self::assertSame($top->getVersion() + 1, $res->getVersion());
+        self::assertSame($top->getDescr(), $res->getDescr());
+        self::assertSame(TopologyStatusEnum::DRAFT->value, $res->getVisibility());
+        self::assertSame($top->isEnabled(), $res->isEnabled());
         self::assertEquals($top->getBpmn(), $res->getBpmn());
-        self::assertEquals($top->getRawBpmn(), $res->getRawBpmn());
+        self::assertSame($top->getRawBpmn(), $res->getRawBpmn());
 
         /** @var Node[] $nodes */
         $nodes = $this->dm->getRepository(Node::class)->findBy(['topology' => $res->getId()]);
@@ -316,11 +316,11 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         /** @var Topology $res */
         $res = $this->manager->cloneTopology($top);
 
-        self::assertEquals($top->getName(), $res->getName());
-        self::assertEquals($top->getVersion() + 1, $res->getVersion());
-        self::assertEquals($top->getDescr(), $res->getDescr());
-        self::assertEquals(TopologyStatusEnum::DRAFT->value, $res->getVisibility());
-        self::assertEquals($top->isEnabled(), $res->isEnabled());
+        self::assertSame($top->getName(), $res->getName());
+        self::assertSame($top->getVersion() + 1, $res->getVersion());
+        self::assertSame($top->getDescr(), $res->getDescr());
+        self::assertSame(TopologyStatusEnum::DRAFT->value, $res->getVisibility());
+        self::assertSame($top->isEnabled(), $res->isEnabled());
     }
 
     /**
@@ -338,7 +338,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         /** @var Node[] $nodes */
         $nodes = $this->dm->getRepository(Node::class)->findBy(['topology' => $topology->getId()]);
 
-        self::assertEquals($topology->getId(), $result->getId());
+        self::assertSame($topology->getId(), $result->getId());
         self::assertEquals(7, count($nodes));
 
         self::assertNodesFromSchemaFile($nodes);
@@ -365,7 +365,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         /** @var Node[] $nodes */
         $nodes = $this->dm->getRepository(Node::class)->findBy(['topology' => $topology->getId()]);
 
-        self::assertEquals($topology->getId(), $result->getId());
+        self::assertSame($topology->getId(), $result->getId());
         self::assertEquals(7, count($nodes));
 
         self::assertNodesFromSchemaFile($nodes);
@@ -410,12 +410,12 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
 
         $result = $this->manager->saveTopologySchema($topology, '', $this->getSchema());
 
-        self::assertNotEquals($topology->getId(), $result->getId());
+        self::assertNotSame($topology->getId(), $result->getId());
 
         /** @var Node[] $nodes */
         $nodes = $this->dm->getRepository(Node::class)->findBy(['topology' => $result->getId()]);
 
-        self::assertNotEquals($topology->getId(), $result->getId()); // because it is cloned
+        self::assertNotSame($topology->getId(), $result->getId()); // because it is cloned
         self::assertEquals(7, count($nodes));
 
         self::assertNodesFromSchemaFile($nodes);
@@ -442,48 +442,48 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         /** @var Node[] $nodes2 */
         $nodes2 = $this->dm->getRepository(Node::class)->findBy(['topology' => $result2->getId()]);
 
-        self::assertEquals($topology->getId(), $result2->getId()); // it is only updated
+        self::assertSame($topology->getId(), $result2->getId()); // it is only updated
         self::assertEquals(7, count($nodes2));
 
-        self::assertEquals($nodes1[0]->getId(), $nodes2[0]->getId());
-        self::assertEquals('Start Event', $nodes2[0]->getName());
-        self::assertEquals(TypeEnum::CUSTOM->value, $nodes2[0]->getType());
-        self::assertEquals(HandlerEnum::EVENT->value, $nodes2[0]->getHandler());
+        self::assertSame($nodes1[0]->getId(), $nodes2[0]->getId());
+        self::assertSame('Start Event', $nodes2[0]->getName());
+        self::assertSame(TypeEnum::CUSTOM->value, $nodes2[0]->getType());
+        self::assertSame(HandlerEnum::EVENT->value, $nodes2[0]->getHandler());
 
-        self::assertEquals($nodes1[1]->getId(), $nodes2[1]->getId());
-        self::assertEquals('Connector DEF', $nodes2[1]->getName());
-        self::assertEquals(TypeEnum::CONNECTOR->value, $nodes2[1]->getType());
-        self::assertEquals(HandlerEnum::ACTION->value, $nodes2[1]->getHandler());
+        self::assertSame($nodes1[1]->getId(), $nodes2[1]->getId());
+        self::assertSame('Connector DEF', $nodes2[1]->getName());
+        self::assertSame(TypeEnum::CONNECTOR->value, $nodes2[1]->getType());
+        self::assertSame(HandlerEnum::ACTION->value, $nodes2[1]->getHandler());
 
-        self::assertEquals($nodes1[2]->getId(), $nodes2[2]->getId());
-        self::assertEquals('Mapper XYZ', $nodes2[2]->getName());
-        self::assertEquals(TypeEnum::MAPPER->value, $nodes2[2]->getType());
-        self::assertEquals(HandlerEnum::ACTION->value, $nodes2[2]->getHandler());
+        self::assertSame($nodes1[2]->getId(), $nodes2[2]->getId());
+        self::assertSame('Mapper XYZ', $nodes2[2]->getName());
+        self::assertSame(TypeEnum::MAPPER->value, $nodes2[2]->getType());
+        self::assertSame(HandlerEnum::ACTION->value, $nodes2[2]->getHandler());
 
-        self::assertEquals($nodes1[3]->getId(), $nodes2[3]->getId());
-        self::assertEquals('Parser ABC', $nodes2[3]->getName());
-        self::assertEquals(TypeEnum::XML_PARSER->value, $nodes2[3]->getType());
-        self::assertEquals(HandlerEnum::ACTION->value, $nodes2[3]->getHandler());
+        self::assertSame($nodes1[3]->getId(), $nodes2[3]->getId());
+        self::assertSame('Parser ABC', $nodes2[3]->getName());
+        self::assertSame(TypeEnum::XML_PARSER->value, $nodes2[3]->getType());
+        self::assertSame(HandlerEnum::ACTION->value, $nodes2[3]->getHandler());
         self::assertEquals(1, count($nodes2[3]->getNext()));
-        self::assertEquals('Connector DEF', $nodes2[3]->getNext()[0]->getName());
+        self::assertSame('Connector DEF', $nodes2[3]->getNext()[0]->getName());
 
-        self::assertEquals($nodes1[4]->getId(), $nodes2[4]->getId());
-        self::assertEquals('Splitter SPI', $nodes2[4]->getName());
-        self::assertEquals(TypeEnum::SPLITTER->value, $nodes2[4]->getType());
-        self::assertEquals(HandlerEnum::ACTION->value, $nodes2[4]->getHandler());
+        self::assertSame($nodes1[4]->getId(), $nodes2[4]->getId());
+        self::assertSame('Splitter SPI', $nodes2[4]->getName());
+        self::assertSame(TypeEnum::SPLITTER->value, $nodes2[4]->getType());
+        self::assertSame(HandlerEnum::ACTION->value, $nodes2[4]->getHandler());
 
-        self::assertEquals($nodes1[5]->getId(), $nodes2[5]->getId());
-        self::assertEquals('Event 1', $nodes2[5]->getName());
-        self::assertEquals(TypeEnum::CRON->value, $nodes2[5]->getType());
-        self::assertEquals(HandlerEnum::EVENT->value, $nodes2[5]->getHandler());
+        self::assertSame($nodes1[5]->getId(), $nodes2[5]->getId());
+        self::assertSame('Event 1', $nodes2[5]->getName());
+        self::assertSame(TypeEnum::CRON->value, $nodes2[5]->getType());
+        self::assertSame(HandlerEnum::EVENT->value, $nodes2[5]->getHandler());
         self::assertEquals(1, count($nodes2[5]->getNext()));
-        self::assertEquals('*/2 2 * * *', $nodes2[5]->getCron());
-        self::assertEquals('Parser ABC', $nodes2[5]->getNext()[0]->getName());
+        self::assertSame('*/2 2 * * *', $nodes2[5]->getCron());
+        self::assertSame('Parser ABC', $nodes2[5]->getNext()[0]->getName());
 
-        self::assertEquals($nodes1[6]->getId(), $nodes2[6]->getId());
-        self::assertEquals('Event 2', $nodes2[6]->getName());
-        self::assertEquals(TypeEnum::WEBHOOK->value, $nodes2[6]->getType());
-        self::assertEquals(HandlerEnum::EVENT->value, $nodes2[6]->getHandler());
+        self::assertSame($nodes1[6]->getId(), $nodes2[6]->getId());
+        self::assertSame('Event 2', $nodes2[6]->getName());
+        self::assertSame(TypeEnum::WEBHOOK->value, $nodes2[6]->getType());
+        self::assertSame(HandlerEnum::EVENT->value, $nodes2[6]->getHandler());
     }
 
     /**
@@ -716,7 +716,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $this->dm->flush();
         $foundNode = $this->dm->getRepository(Node::class)->findBy(['name' => 'node10']);
 
-        self::assertEquals('node10', $foundNode[0]->getName());
+        self::assertSame('node10', $foundNode[0]->getName());
         self::assertIsObject($foundNode[0]->getSystemConfigs());
     }
 
@@ -727,7 +727,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     {
         $topology = $this->manager->unPublishTopology(new Topology());
 
-        self::assertEquals(TopologyStatusEnum::DRAFT->value, $topology->getVisibility());
+        self::assertSame(TopologyStatusEnum::DRAFT->value, $topology->getVisibility());
     }
 
     /**
@@ -833,38 +833,38 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
      */
     private function assertNodesFromSchemaFile(array $nodes): void
     {
-        self::assertEquals('Start Event', $nodes[0]->getName());
-        self::assertEquals(TypeEnum::CUSTOM->value, $nodes[0]->getType());
-        self::assertEquals(HandlerEnum::EVENT->value, $nodes[0]->getHandler());
+        self::assertSame('Start Event', $nodes[0]->getName());
+        self::assertSame(TypeEnum::CUSTOM->value, $nodes[0]->getType());
+        self::assertSame(HandlerEnum::EVENT->value, $nodes[0]->getHandler());
 
-        self::assertEquals('Connector DEF', $nodes[1]->getName());
-        self::assertEquals(TypeEnum::CONNECTOR->value, $nodes[1]->getType());
-        self::assertEquals(HandlerEnum::ACTION->value, $nodes[1]->getHandler());
+        self::assertSame('Connector DEF', $nodes[1]->getName());
+        self::assertSame(TypeEnum::CONNECTOR->value, $nodes[1]->getType());
+        self::assertSame(HandlerEnum::ACTION->value, $nodes[1]->getHandler());
 
-        self::assertEquals('Mapper XYZ', $nodes[2]->getName());
-        self::assertEquals(TypeEnum::MAPPER->value, $nodes[2]->getType());
-        self::assertEquals(HandlerEnum::ACTION->value, $nodes[2]->getHandler());
+        self::assertSame('Mapper XYZ', $nodes[2]->getName());
+        self::assertSame(TypeEnum::MAPPER->value, $nodes[2]->getType());
+        self::assertSame(HandlerEnum::ACTION->value, $nodes[2]->getHandler());
 
-        self::assertEquals('Parser ABC', $nodes[3]->getName());
-        self::assertEquals(TypeEnum::XML_PARSER->value, $nodes[3]->getType());
-        self::assertEquals(HandlerEnum::ACTION->value, $nodes[3]->getHandler());
+        self::assertSame('Parser ABC', $nodes[3]->getName());
+        self::assertSame(TypeEnum::XML_PARSER->value, $nodes[3]->getType());
+        self::assertSame(HandlerEnum::ACTION->value, $nodes[3]->getHandler());
         self::assertEquals(1, count($nodes[3]->getNext()));
-        self::assertEquals('Connector DEF', $nodes[3]->getNext()[0]->getName());
+        self::assertSame('Connector DEF', $nodes[3]->getNext()[0]->getName());
 
-        self::assertEquals('Splitter SPI', $nodes[4]->getName());
-        self::assertEquals(TypeEnum::SPLITTER->value, $nodes[4]->getType());
-        self::assertEquals(HandlerEnum::ACTION->value, $nodes[4]->getHandler());
+        self::assertSame('Splitter SPI', $nodes[4]->getName());
+        self::assertSame(TypeEnum::SPLITTER->value, $nodes[4]->getType());
+        self::assertSame(HandlerEnum::ACTION->value, $nodes[4]->getHandler());
 
-        self::assertEquals('Event 1', $nodes[5]->getName());
-        self::assertEquals(TypeEnum::CRON->value, $nodes[5]->getType());
-        self::assertEquals(HandlerEnum::EVENT->value, $nodes[5]->getHandler());
+        self::assertSame('Event 1', $nodes[5]->getName());
+        self::assertSame(TypeEnum::CRON->value, $nodes[5]->getType());
+        self::assertSame(HandlerEnum::EVENT->value, $nodes[5]->getHandler());
         self::assertEquals(1, count($nodes[5]->getNext()));
-        self::assertEquals('*/2 * * * *', $nodes[5]->getCron());
-        self::assertEquals('Parser ABC', $nodes[5]->getNext()[0]->getName());
+        self::assertSame('*/2 * * * *', $nodes[5]->getCron());
+        self::assertSame('Parser ABC', $nodes[5]->getNext()[0]->getName());
 
-        self::assertEquals('Event 2', $nodes[6]->getName());
-        self::assertEquals(TypeEnum::WEBHOOK->value, $nodes[6]->getType());
-        self::assertEquals(HandlerEnum::EVENT->value, $nodes[6]->getHandler());
+        self::assertSame('Event 2', $nodes[6]->getName());
+        self::assertSame(TypeEnum::WEBHOOK->value, $nodes[6]->getType());
+        self::assertSame(HandlerEnum::EVENT->value, $nodes[6]->getHandler());
     }
 
     /**
@@ -878,11 +878,11 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     private function assertNodeAfterClone(Node $expected, Node $actual, Topology $topology, int $nextCount): void
     {
         self::assertFalse($expected->getId() == $actual->getId());
-        self::assertEquals($expected->getName(), $actual->getName());
-        self::assertEquals($expected->getType(), $actual->getType());
-        self::assertEquals($topology->getId(), $actual->getTopology());
-        self::assertEquals($expected->getHandler(), $actual->getHandler());
-        self::assertEquals($expected->isEnabled(), $actual->isEnabled());
+        self::assertSame($expected->getName(), $actual->getName());
+        self::assertSame($expected->getType(), $actual->getType());
+        self::assertSame($topology->getId(), $actual->getTopology());
+        self::assertSame($expected->getHandler(), $actual->getHandler());
+        self::assertSame($expected->isEnabled(), $actual->isEnabled());
 
         // next
         self::assertEquals($nextCount, count($expected->getNext()));
@@ -895,11 +895,11 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
 
         if ($nextCount == 1) {
             self::assertFalse($expNext[0]->getId() == $actNext[0]->getId());
-            self::assertEquals($expNext[0]->getName(), $actNext[0]->getName());
+            self::assertSame($expNext[0]->getName(), $actNext[0]->getName());
         } else if ($nextCount == 2) {
             self::assertFalse($expNext[0]->getId() == $actNext[0]->getId());
-            self::assertEquals($expNext[0]->getName(), $actNext[0]->getName());
-            self::assertEquals($expNext[1]->getName(), $actNext[1]->getName());
+            self::assertSame($expNext[0]->getName(), $actNext[0]->getName());
+            self::assertSame($expNext[1]->getName(), $actNext[1]->getName());
         }
     }
 

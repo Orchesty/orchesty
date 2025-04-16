@@ -23,12 +23,12 @@ class ApiToken
     use IdTrait;
     use CreatedTrait;
 
-    public const ID        = 'id';
-    public const CREATED   = 'created';
-    public const USER      = 'user';
-    public const KEY       = 'key';
-    public const EXPIRE_AT = 'expireAt';
-    public const SCOPES    = 'scopes';
+    public const string ID        = 'id';
+    public const string CREATED   = 'created';
+    public const string USER      = 'user';
+    public const string KEY       = 'key';
+    public const string EXPIRE_AT = 'expireAt';
+    public const string SCOPES    = 'scopes';
 
     /**
      * @var string

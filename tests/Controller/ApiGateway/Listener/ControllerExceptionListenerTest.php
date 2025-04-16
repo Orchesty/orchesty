@@ -42,7 +42,7 @@ final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
         /** @var JsonResponse $response */
         $response = $this->client->getResponse();
 
-        self::assertEquals(404, $response->getStatusCode());
+        self::assertSame(404, $response->getStatusCode());
     }
 
     /**
@@ -122,7 +122,7 @@ final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
                 $response->headers->get(PipesHeaders::RESULT_CODE),
             );
 
-            self::assertEquals(401, $response->getStatusCode());
+            self::assertSame(401, $response->getStatusCode());
         }
     }
 
@@ -143,7 +143,7 @@ final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
                 $response->headers->get(PipesHeaders::RESULT_CODE),
             );
 
-            self::assertEquals(400, $response->getStatusCode());
+            self::assertSame(400, $response->getStatusCode());
         }
     }
 
@@ -164,7 +164,7 @@ final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
                 $response->headers->get(PipesHeaders::RESULT_CODE),
             );
 
-            self::assertEquals(500, $response->getStatusCode());
+            self::assertSame(500, $response->getStatusCode());
         }
     }
 
@@ -185,7 +185,7 @@ final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
                 $response->headers->get(PipesHeaders::RESULT_CODE),
             );
 
-            self::assertEquals(500, $response->getStatusCode());
+            self::assertSame(500, $response->getStatusCode());
         }
     }
 
@@ -206,7 +206,7 @@ final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
                 $response->headers->get(PipesHeaders::RESULT_CODE),
             );
 
-            self::assertEquals(500, $response->getStatusCode());
+            self::assertSame(500, $response->getStatusCode());
         }
     }
 

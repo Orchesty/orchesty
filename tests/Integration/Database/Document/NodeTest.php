@@ -46,12 +46,12 @@ final class NodeTest extends DatabaseTestCaseAbstract
         $node->addNext($embedNode2);
         $this->pfd($node);
 
-        self::assertEquals('123', $node->getTopology());
-        self::assertEquals('node', $node->getName());
-        self::assertEquals('action', $node->getHandler());
-        self::assertEquals('789', $node->getSchemaId());
-        self::assertEquals('mapper', $node->getType());
-        self::assertEquals('cron', $node->getCron());
+        self::assertSame('123', $node->getTopology());
+        self::assertSame('node', $node->getName());
+        self::assertSame('action', $node->getHandler());
+        self::assertSame('789', $node->getSchemaId());
+        self::assertSame('mapper', $node->getType());
+        self::assertSame('cron', $node->getCron());
         self::assertEquals(2, count($node->getNext()));
         self::assertInstanceOf(SystemConfigDto::class, $node->getSystemConfigs());
         self::assertNull($node->getCronParams());

@@ -24,7 +24,7 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
 final class ApiKeyAuthenticatorTest extends KernelTestCaseAbstract
 {
 
-    private const KEY = 'key';
+    private const string KEY = 'key';
 
     /**
      * @throws Exception

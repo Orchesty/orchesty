@@ -12,7 +12,7 @@ use Symfony\Component\Finder\Finder;
 final class TplgLoader
 {
 
-    public const TPLG = '.tplg';
+    public const string TPLG = '.tplg';
 
     /**
      * @param string $dir

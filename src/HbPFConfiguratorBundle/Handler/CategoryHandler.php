@@ -113,7 +113,7 @@ final class CategoryHandler
     {
         /** @var Category|null $category */
         $category = $this->dm->getRepository(Category::class)->find($id);
-        if (empty($category)) {
+        if ($category === NULL) {
             throw new CategoryException(sprintf('Category [%s] not found', $id), CategoryException::CATEGORY_NOT_FOUND);
         }
 

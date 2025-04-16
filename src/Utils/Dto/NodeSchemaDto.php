@@ -12,14 +12,14 @@ use Hanaboso\PipesFramework\Database\Document\Dto\SystemConfigDto;
 final class NodeSchemaDto
 {
 
-    private const HANDLER        = 'handler';
-    private const ID             = 'id';
-    private const NAME           = 'name';
-    private const CRON_TIME      = 'cron_time';
-    private const CRON_PARAMS    = 'cron_params';
-    private const PIPES_TYPE     = 'pipes_type';
-    private const SYSTEM_CONFIGS = 'system_configs';
-    private const APPLICATION    = 'application';
+    private const string HANDLER        = 'handler';
+    private const string ID             = 'id';
+    private const string NAME           = 'name';
+    private const string CRON_TIME      = 'cron_time';
+    private const string CRON_PARAMS    = 'cron_params';
+    private const string PIPES_TYPE     = 'pipes_type';
+    private const string SYSTEM_CONFIGS = 'system_configs';
+    private const string APPLICATION    = 'application';
 
     /**
      * NodeSchemaDto constructor.

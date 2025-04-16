@@ -20,8 +20,8 @@ class Webhook
     use IdTrait;
     use CreatedTrait;
 
-    public const USER        = 'user';
-    public const APPLICATION = 'application';
+    public const string USER        = 'user';
+    public const string APPLICATION = 'application';
 
     /**
      * @var string

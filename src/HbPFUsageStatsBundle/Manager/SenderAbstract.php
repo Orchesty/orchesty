@@ -28,11 +28,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 abstract class SenderAbstract implements SenderInterface
 {
 
-    protected const USCCP_URI = 'https://usccp.cloud.orchesty.io';
+    protected const string USCCP_URI = 'https://usccp.cloud.orchesty.io';
 
-    protected const BATCH_SIZE            = 100;
-    protected const BATCH_TIME_LIMIT      = 45;
-    protected const BATCH_SEND_AGAIN_TIME = 5;
+    protected const int BATCH_SIZE            = 100;
+    protected const int BATCH_TIME_LIMIT      = 45;
+    protected const int BATCH_SEND_AGAIN_TIME = 5;
 
     /**
      * SenderAbstract constructor.
@@ -82,7 +82,7 @@ abstract class SenderAbstract implements SenderInterface
                 self::BATCH_SIZE,
                 $this->types,
             );
-            while ($events) {
+            while ($events !== []) {
                 foreach ($events as $billingEvent) {
                     if (time() - $startTime > self::BATCH_TIME_LIMIT) {
                         $output->writeln('Timeout limit reached.');

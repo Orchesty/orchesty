@@ -111,7 +111,7 @@ final class NodeRepositoryTest extends DatabaseTestCaseAbstract
         $this->dm->flush();
         $this->dm->clear();
 
-        self::assertEquals($node->getId(), $repo->getStartingNode($topology)->getId());
+        self::assertSame($node->getId(), $repo->getStartingNode($topology)->getId());
     }
 
     /**
@@ -162,7 +162,7 @@ final class NodeRepositoryTest extends DatabaseTestCaseAbstract
         $this->dm->clear();
 
         $type = $repo->getTopologyType($topology);
-        self::assertEquals(TypeEnum::CRON->value, $type);
+        self::assertSame(TypeEnum::CRON->value, $type);
 
         $topology = new Topology();
         $this->dm->persist($topology);
@@ -179,7 +179,7 @@ final class NodeRepositoryTest extends DatabaseTestCaseAbstract
         $this->dm->clear();
 
         $type = $repo->getTopologyType($topology);
-        self::assertEquals(TypeEnum::WEBHOOK->value, $type);
+        self::assertSame(TypeEnum::WEBHOOK->value, $type);
     }
 
     /**
@@ -207,7 +207,7 @@ final class NodeRepositoryTest extends DatabaseTestCaseAbstract
         self::assertCount(1, $nodes);
         /** @var Node $first */
         $first = reset($nodes);
-        self::assertEquals($node->getId(), $first->getId());
+        self::assertSame($node->getId(), $first->getId());
     }
 
 }

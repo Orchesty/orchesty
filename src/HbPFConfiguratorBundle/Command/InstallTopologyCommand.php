@@ -21,11 +21,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 final class InstallTopologyCommand extends Command
 {
 
-    private const CREATE     = 'create';
-    private const UPDATE     = 'update';
-    private const DELETE     = 'delete';
-    private const FORCE      = 'force';
-    private const FORCE_HOST = 'forceHost';
+    private const string CREATE     = 'create';
+    private const string UPDATE     = 'update';
+    private const string DELETE     = 'delete';
+    private const string FORCE      = 'force';
+    private const string FORCE_HOST = 'forceHost';
 
     /**
      * InstallTopologyCommand constructor.

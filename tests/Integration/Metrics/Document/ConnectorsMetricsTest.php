@@ -50,9 +50,9 @@ final class ConnectorsMetricsTest extends DatabaseTestCaseAbstract
         $repository = $dm->getRepository(ConnectorsMetrics::class);
         /** @var ConnectorsMetrics $result */
         $result = $repository->findAll()[0];
-        self::assertEquals(10, $result->getFields()->getTotalDuration());
+        self::assertSame(10, $result->getFields()->getTotalDuration());
         self::assertEquals(DateTimeUtils::getUtcDateTime('1.1.2020'), $result->getFields()->getCreated());
-        self::assertEquals('1', $result->getTags()->getNodeId());
+        self::assertSame('1', $result->getTags()->getNodeId());
     }
 
 }

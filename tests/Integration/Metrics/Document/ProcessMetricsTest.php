@@ -52,9 +52,9 @@ final class ProcessMetricsTest extends DatabaseTestCaseAbstract
         /** @var ProcessesMetrics $result */
         $result = $repository->findAll()[0];
         self::assertTrue($result->getFields()->isSuccess());
-        self::assertEquals(10, $result->getFields()->getDuration());
+        self::assertSame(10, $result->getFields()->getDuration());
         self::assertEquals(DateTimeUtils::getUtcDateTime('1.1.2020'), $result->getFields()->getCreated());
-        self::assertEquals('1', $result->getTags()->getNodeId());
+        self::assertSame('1', $result->getTags()->getNodeId());
     }
 
 }

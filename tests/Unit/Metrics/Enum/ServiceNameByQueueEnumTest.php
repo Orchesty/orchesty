@@ -22,16 +22,16 @@ final class ServiceNameByQueueEnumTest extends DatabaseTestCaseAbstract
     public function testBillingEvent(): void
     {
         $repeater = ServiceNameByQueueEnum::getNameAndNodeId('pipes.repeater');
-        self::assertEquals('Repeater', $repeater['name']);
+        self::assertSame('Repeater', $repeater['name']);
         $limiter = ServiceNameByQueueEnum::getNameAndNodeId('pipes.limiter');
-        self::assertEquals('Limiter', $limiter['name']);
+        self::assertSame('Limiter', $limiter['name']);
         $multiCounter = ServiceNameByQueueEnum::getNameAndNodeId('pipes.multi-counter');
-        self::assertEquals('Multi counter', $multiCounter['name']);
+        self::assertSame('Multi counter', $multiCounter['name']);
         $neco = ServiceNameByQueueEnum::getNameAndNodeId('neco');
-        self::assertEquals('Unknown service', $neco['name']);
+        self::assertSame('Unknown service', $neco['name']);
         $bridge = ServiceNameByQueueEnum::getNameAndNodeId('node.123abc.123');
-        self::assertEquals('bridge', $bridge['name']);
-        self::assertEquals('123abc', $bridge['nodeId']);
+        self::assertSame('bridge', $bridge['name']);
+        self::assertSame('123abc', $bridge['nodeId']);
     }
 
 }

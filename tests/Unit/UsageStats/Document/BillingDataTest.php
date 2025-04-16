@@ -22,13 +22,13 @@ final class BillingDataTest extends DatabaseTestCaseAbstract
     public function testBillingEvent(): void
     {
         $appInstallBillingData = new AppInstallBillingData('1', '1');
-        self::assertEquals('1', $appInstallBillingData->getAid());
-        self::assertEquals('1', $appInstallBillingData->getEuid());
+        self::assertSame('1', $appInstallBillingData->getAid());
+        self::assertSame('1', $appInstallBillingData->getEuid());
         self::assertEquals(['aid' => '1', 'euid' => '1'], $appInstallBillingData->toArray());
         $appInstallBillingData->setAid('2');
         $appInstallBillingData->setEuid('2');
-        self::assertEquals('2', $appInstallBillingData->getAid());
-        self::assertEquals('2', $appInstallBillingData->getEuid());
+        self::assertSame('2', $appInstallBillingData->getAid());
+        self::assertSame('2', $appInstallBillingData->getEuid());
         self::assertEquals(['aid' => '2', 'euid' => '2'], $appInstallBillingData->toArray());
     }
 

@@ -18,29 +18,29 @@ use Hanaboso\Utils\String\Json;
 final class TopologySchemaUtils
 {
 
-    private const BPMN_PROCESS = 'bpmn:process';
+    private const string BPMN_PROCESS = 'bpmn:process';
 
-    private const BPMN_START_EVENT       = 'bpmn:startEvent';
-    private const BPMN_TASK              = 'bpmn:task';
-    private const BPMN_EVENT             = 'bpmn:event';
-    private const BPMN_END_EVENT         = 'bpmn:endEvent';
-    private const BPMN_GATEWAY           = 'bpmn:gateway';
-    private const BPMN_EXCLUSIVE_GATEWAY = 'bpmn:exclusiveGateway';
+    private const string BPMN_START_EVENT       = 'bpmn:startEvent';
+    private const string BPMN_TASK              = 'bpmn:task';
+    private const string BPMN_EVENT             = 'bpmn:event';
+    private const string BPMN_END_EVENT         = 'bpmn:endEvent';
+    private const string BPMN_GATEWAY           = 'bpmn:gateway';
+    private const string BPMN_EXCLUSIVE_GATEWAY = 'bpmn:exclusiveGateway';
 
-    private const BPMN_SEQUENCE_FLOW = 'bpmn:sequenceFlow';
-    private const SOURCE_REF         = '@sourceRef';
-    private const TARGET_REF         = '@targetRef';
+    private const string BPMN_SEQUENCE_FLOW = 'bpmn:sequenceFlow';
+    private const string SOURCE_REF         = '@sourceRef';
+    private const string TARGET_REF         = '@targetRef';
 
-    private const BPMN_INCOMING = 'bpmn:incoming';
-    private const BPMN_OUTGOING = 'bpmn:outgoing';
+    private const string BPMN_INCOMING = 'bpmn:incoming';
+    private const string BPMN_OUTGOING = 'bpmn:outgoing';
 
-    private const SDK_HOST          = '@pipes:sdkHost';
-    private const BRIDGE_HOST       = '@pipes:bridgeHost';
-    private const RABBIT_PREFETCH   = '@pipes:rabbitPrefetch';
-    private const REPEATER_ENABLED  = '@pipes:repeaterEnabled';
-    private const REPEATER_HOPS     = '@pipes:repeaterHops';
-    private const REPEATER_INTERVAL = '@pipes:repeaterInterval';
-    private const TIMEOUT           = '@pipes:timeout';
+    private const string SDK_HOST          = '@pipes:sdkHost';
+    private const string BRIDGE_HOST       = '@pipes:bridgeHost';
+    private const string RABBIT_PREFETCH   = '@pipes:rabbitPrefetch';
+    private const string REPEATER_ENABLED  = '@pipes:repeaterEnabled';
+    private const string REPEATER_HOPS     = '@pipes:repeaterHops';
+    private const string REPEATER_INTERVAL = '@pipes:repeaterInterval';
+    private const string TIMEOUT           = '@pipes:timeout';
 
     /**
      * @var string[]

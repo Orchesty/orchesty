@@ -12,11 +12,11 @@ use Hanaboso\Utils\Exception\PipesFrameworkExceptionAbstract;
 final class MetricsException extends PipesFrameworkExceptionAbstract
 {
 
-    public const DB_NOT_EXIST       = self::OFFSET + 1;
-    public const NODE_NOT_FOUND     = self::OFFSET + 2;
-    public const TOPOLOGY_NOT_FOUND = self::OFFSET + 3;
-    public const QUERY_ERROR        = self::OFFSET + 4;
+    public const int DB_NOT_EXIST       = self::OFFSET + 1;
+    public const int NODE_NOT_FOUND     = self::OFFSET + 2;
+    public const int TOPOLOGY_NOT_FOUND = self::OFFSET + 3;
+    public const int QUERY_ERROR        = self::OFFSET + 4;
 
-    protected const OFFSET = 2_800;
+    protected const int OFFSET = 2_800;
 
 }

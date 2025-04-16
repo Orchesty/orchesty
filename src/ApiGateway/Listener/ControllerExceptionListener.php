@@ -102,7 +102,7 @@ final class ControllerExceptionListener implements EventSubscriberInterface, Log
     }
 
     /**
-     * @return array<string, array<int|string, array<int|string, int|string>|int|string>|string>
+     * @return array<string, string>
      */
     public static function getSubscribedEvents(): array
     {

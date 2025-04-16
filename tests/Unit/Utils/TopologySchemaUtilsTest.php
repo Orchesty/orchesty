@@ -32,11 +32,11 @@ final class TopologySchemaUtilsTest extends KernelTestCaseAbstract
         self::assertCount(6, $schema->getSequences());
         self::assertEquals(['Event_1lqi8dm'], $schema->getStartNode());
 
-        self::assertEquals('bpmn:event', $nodes['Event_1lqi8dm']->getHandler());
-        self::assertEquals('Event_1lqi8dm', $nodes['Event_1lqi8dm']->getId());
-        self::assertEquals('hubspot-updated-contact-connector', $nodes['Event_1lqi8dm']->getName());
-        self::assertEquals('', $nodes['Event_1lqi8dm']->getCronTime());
-        self::assertEquals('webhook', $nodes['Event_1lqi8dm']->getPipesType());
+        self::assertSame('bpmn:event', $nodes['Event_1lqi8dm']->getHandler());
+        self::assertSame('Event_1lqi8dm', $nodes['Event_1lqi8dm']->getId());
+        self::assertSame('hubspot-updated-contact-connector', $nodes['Event_1lqi8dm']->getName());
+        self::assertSame('', $nodes['Event_1lqi8dm']->getCronTime());
+        self::assertSame('webhook', $nodes['Event_1lqi8dm']->getPipesType());
 
         self::assertCount(9, $schema->getNodes());
         self::assertCount(6, $schema->getSequences());
@@ -58,8 +58,8 @@ final class TopologySchemaUtilsTest extends KernelTestCaseAbstract
         try {
             TopologySchemaUtils::getSchemaObject($this->getXmlDecoder()->decode($content));
         } catch (TopologyException $e) {
-            self::assertEquals('Unsupported schema!', $e->getMessage());
-            self::assertEquals(TopologyException::UNSUPPORTED_SCHEMA, $e->getCode());
+            self::assertSame('Unsupported schema!', $e->getMessage());
+            self::assertSame(TopologyException::UNSUPPORTED_SCHEMA, $e->getCode());
         }
 
         $content = $this->load('tplg-no-type.tplg');

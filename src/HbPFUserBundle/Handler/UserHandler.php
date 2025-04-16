@@ -24,7 +24,7 @@ use Hanaboso\Utils\System\ControllerUtils;
 final class UserHandler
 {
 
-    private const SETTINGS = 'settings';
+    private const string SETTINGS = 'settings';
 
     /**
      * UserHandler constructor.

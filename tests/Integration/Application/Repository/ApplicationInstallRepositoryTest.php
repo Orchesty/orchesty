@@ -41,7 +41,7 @@ final class ApplicationInstallRepositoryTest extends DatabaseTestCaseAbstract
         $this->createApps();
         $appInstallRepository = $this->dm->getRepository(ApplicationInstall::class);
 
-        self::assertEquals(
+        self::assertSame(
             4,
             $appInstallRepository->getInstalledApplicationsCount(),
         );

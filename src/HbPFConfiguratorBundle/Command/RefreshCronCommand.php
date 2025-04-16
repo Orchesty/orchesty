@@ -54,7 +54,7 @@ final class RefreshCronCommand extends Command
         /** @var Node[] $nodes */
         $nodes = array_filter(
             $this->dm->getRepository(Node::class)->findBy(['type' => TypeEnum::CRON->value, 'deleted' => FALSE]),
-            static fn(Node $node): bool => !empty($node->getCron()),
+            static fn(Node $node): bool => $node->getCron() !== NULL && $node->getCron() !== '',
         );
 
         $output->write(sprintf('Refreshing %s CRONs:', count($nodes)));

@@ -172,7 +172,7 @@ final class InstallManagerTest extends KernelTestCaseAbstract
         $repo = $this->createMock(TopologyRepository::class);
         $dm   = $this->createMock(DocumentManager::class);
         $dm->method('getRepository')->willReturn($repo);
-        $dm->method('persist')->willReturn(TRUE);
+        $dm->method('persist');
 
         $topologyManager = $this->createMock(TopologyManager::class);
         $topologyManager->method('createTopology')->willReturn(new Topology());

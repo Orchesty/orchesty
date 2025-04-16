@@ -100,7 +100,7 @@ final class Schema
      */
     public function buildIndex(bool $checkInfiniteLoop = TRUE): array
     {
-        if (!empty($this->nodes)) {
+        if ($this->nodes !== []) {
             $this->checkStartNode();
         } else {
             return [];
@@ -118,11 +118,11 @@ final class Schema
                 $this->addToTree($tree, $start, $clone);
             }
 
-            while (!empty($nextIds)) {
+            while ($nextIds !== []) {
                 $nextId  = array_shift($nextIds);
                 $index[] = $this->getIndexItem($nextId);
                 $ids     = $this->getNextIds($nextId);
-                if (!empty($ids) && $checkInfiniteLoop) {
+                if ($ids !== [] && $checkInfiniteLoop) {
                         $clone = $ids;
                         $this->addToTree($tree, $nextId, $clone);
                 }
@@ -179,7 +179,7 @@ final class Schema
                         $tree[$i][$parent][$follower] = [];
                         unset($followers[$k]);
                     }
-                } else if (!empty($f)) {
+                } else if ($f !== []) {
                     $this->addToTree($tree[$i][$name], $parent, $followers, $isLast);
                 }
             }
@@ -225,7 +225,7 @@ final class Schema
      */
     private function checkStartNode(): void
     {
-        if (empty($this->startNode)) {
+        if ($this->startNode === []) {
             throw new TopologyException(
                 'Invalid schema - starting node was not found',
                 TopologyException::SCHEMA_START_NODE_MISSING,
@@ -246,7 +246,7 @@ final class Schema
                 throw new TopologyException('Invalid schema - infinite loop', TopologyException::SCHEMA_INFINITE_LOOP);
             }
 
-            if (!empty($node)) {
+            if ($node !== []) {
                 $walked[] = $name;
                 $this->isInfinity($tree[$name], $walked);
             } else if (count($tree) == 1) {
