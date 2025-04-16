@@ -61,6 +61,7 @@ export default class Mongo {
                 // eslint-disable-next-line no-await-in-loop
                 await this.client.db().dropCollection(collection);
             } catch (e) {
+                logger.error(`Mongo error: [${e}]`);
             }
         }
     }

@@ -45,6 +45,7 @@ export default class MetricsRouter {
         this.app.post('/metrics/:measurement', async (req, res) => {
             const { measurement } = req.params;
 
+            // eslint-disable-next-line no-useless-assignment
             let result = {} as ValidationResult;
             switch (measurement) {
                 case 'monolith':

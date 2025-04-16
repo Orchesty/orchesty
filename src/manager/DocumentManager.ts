@@ -45,6 +45,7 @@ export default class DocumentManager {
         const id = entity._id;
         delete entity._id;
         if (id) {
+            // eslint-disable-next-line @typescript-eslint/no-deprecated
             await collection.updateOne({ _id: new ObjectId(id) }, { $set: entity });
         } else {
             await collection.insertOne(entity);
@@ -69,6 +70,7 @@ export default class DocumentManager {
                 filter.deleted = { $eq: false };
             }
 
+            // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
             switch (document) {
                 case DocumentEnum.APPLICATION_INSTALL:
                     if (this.isApplicationQuery(query.filter)) {

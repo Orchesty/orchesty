@@ -6,6 +6,7 @@ import { ScopeEnum } from '../../src/authorization/ScopeEnum';
 import DocumentEnum from '../../src/enum/DocumentEnum';
 
 let services: IServices;
+
 describe('Tests for logs router', () => {
     beforeAll(async () => {
         services = await init();

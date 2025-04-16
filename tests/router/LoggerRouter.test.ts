@@ -5,6 +5,7 @@ import { ORCHESTY_API_KEY } from '../../src/authorization/AuthorizationMiddlewar
 import { ScopeEnum } from '../../src/authorization/ScopeEnum';
 
 let services: IServices;
+
 describe('Tests for logs router', () => {
     beforeAll(async () => {
         services = await init();
