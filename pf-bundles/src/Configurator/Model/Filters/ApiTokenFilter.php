@@ -15,7 +15,7 @@ use Hanaboso\Utils\Date\DateTimeUtils;
 final class ApiTokenFilter extends GridFilterAbstract
 {
 
-    protected const DATE_FORMAT = DateTimeUtils::DATE_TIME_UTC;
+    protected const string DATE_FORMAT = DateTimeUtils::DATE_TIME_UTC;
 
     /**
      * @return string[]

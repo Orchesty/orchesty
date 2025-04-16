@@ -42,6 +42,9 @@ clear-cache:
 phpcodesniffer:
 	$(DE) php ./vendor/bin/phpcs --parallel=$$(nproc) --standard=./tests/ruleset.xml src tests
 
+codesnifferfix:
+	$(DE) php ./vendor/bin/phpcbf --parallel=$$(nproc) --standard=./tests/ruleset.xml src tests
+
 phpstan:
 	$(DE) php ./vendor/bin/phpstan analyse -c ./tests/phpstan.neon -l 8 src tests
 

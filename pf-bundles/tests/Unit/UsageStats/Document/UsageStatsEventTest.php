@@ -24,8 +24,8 @@ final class UsageStatsEventTest extends DatabaseTestCaseAbstract
     public function testBillingEvent(): void
     {
         $usageStatsEvent = new UsageStatsEvent('1', '1');
-        self::assertEquals('1', $usageStatsEvent->getIid());
-        self::assertEquals('1', $usageStatsEvent->getType());
+        self::assertSame('1', $usageStatsEvent->getIid());
+        self::assertSame('1', $usageStatsEvent->getType());
         $usageStatsEvent->setSent(1);
         $usageStatsEvent->setVersion(1);
         $usageStatsEvent->setType('2');

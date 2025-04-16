@@ -12,6 +12,6 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 final class HbPFUserTaskBundle extends Bundle
 {
 
-    public const KEY = 'hb_pf_user_task';
+    public const string KEY = 'hb_pf_user_task';
 
 }

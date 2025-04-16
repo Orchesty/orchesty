@@ -17,10 +17,10 @@ class Sdk
 
     use IdTrait;
 
-    public const ID      = 'id';
-    public const NAME    = 'name';
-    public const URL     = 'url';
-    public const HEADERS = 'headers';
+    public const string ID      = 'id';
+    public const string NAME    = 'name';
+    public const string URL     = 'url';
+    public const string HEADERS = 'headers';
 
     /**
      * @var string

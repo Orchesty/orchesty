@@ -23,7 +23,7 @@ final class NodeSchemaDtoTest extends KernelTestCaseAbstract
     {
         $dto = new NodeSchemaDto('handler', 'id', 'pipes', new SystemConfigDto(), 'name');
 
-        self::assertEquals(1, $dto->getSystemConfigs()->getPrefetch());
+        self::assertSame(1, $dto->getSystemConfigs()->getPrefetch());
         self::assertEquals(
             [
                 'application'    => '',

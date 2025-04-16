@@ -27,11 +27,11 @@ final class MetricsDtoTest extends KernelTestCaseAbstract
             ->setTotal(10)
             ->setErrors(10);
 
-        self::assertEquals('0', $dto->getMin());
-        self::assertEquals('0', $dto->getMax());
-        self::assertEquals('3.00', $dto->getAvg());
-        self::assertEquals('10', $dto->getTotal());
-        self::assertEquals('10', $dto->getErrors());
+        self::assertSame('0', $dto->getMin());
+        self::assertSame('0', $dto->getMax());
+        self::assertSame('3.00', $dto->getAvg());
+        self::assertSame('10', $dto->getTotal());
+        self::assertSame('10', $dto->getErrors());
     }
 
 }

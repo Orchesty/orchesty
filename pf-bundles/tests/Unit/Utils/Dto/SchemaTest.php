@@ -29,7 +29,7 @@ final class SchemaTest extends KernelTestCaseAbstract
         $content = $this->load('default.tplg');
         $schema  = TopologySchemaUtils::getSchemaObject($this->getXmlDecoder()->decode($content));
 
-        self::assertEquals($this->getExpected(), TopologySchemaUtils::getIndexHash($schema));
+        self::assertSame($this->getExpected(), TopologySchemaUtils::getIndexHash($schema));
     }
 
     /**
@@ -40,7 +40,7 @@ final class SchemaTest extends KernelTestCaseAbstract
         $content = $this->load('change-new-hash.tplg');
         $schema  = TopologySchemaUtils::getSchemaObject($this->getXmlDecoder()->decode($content));
 
-        self::assertNotEquals($this->getExpected(), TopologySchemaUtils::getIndexHash($schema));
+        self::assertNotSame($this->getExpected(), TopologySchemaUtils::getIndexHash($schema));
     }
 
     /**

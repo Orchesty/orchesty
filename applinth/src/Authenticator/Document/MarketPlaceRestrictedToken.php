@@ -23,7 +23,7 @@ class MarketPlaceRestrictedToken
     use IdTrait;
     use CreatedTrait;
 
-    public const VALUE = 'value';
+    public const string VALUE = 'value';
 
     /**
      * @var string

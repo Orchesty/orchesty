@@ -45,7 +45,7 @@ final class TopologyProgressRepository extends DocumentRepository
             ->getIterator()
             ->toArray();
 
-        return !empty($result) ? $result[0] : ['failed' => 0, 'total' => 0];
+        return $result !== [] ? $result[0] : ['failed' => 0, 'total' => 0];
     }
 
     /**

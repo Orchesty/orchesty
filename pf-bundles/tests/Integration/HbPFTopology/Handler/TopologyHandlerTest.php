@@ -63,7 +63,7 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
         $handler = new TopologyHandler($dml, $manager, $nodeManager, $generator, $userTaskHandler, $topologyTester);
         $result  = $handler->publishTopology($topology->getId());
 
-        self::assertEquals(200, $result->getStatusCode());
+        self::assertSame(200, $result->getStatusCode());
     }
 
     /**
@@ -82,7 +82,7 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
         $handler = new TopologyHandler($dml, $manager, $nodeManager, $generator, $userTaskHandler, $topologyTester);
         $result  = $handler->publishTopology($topology->getId());
 
-        self::assertEquals(400, $result->getStatusCode());
+        self::assertSame(400, $result->getStatusCode());
     }
 
     /**
@@ -101,7 +101,7 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
         $handler = new TopologyHandler($dml, $manager, $nodeManager, $generator, $userTaskHandler, $topologyTester);
         $result  = $handler->publishTopology($topology->getId());
 
-        self::assertEquals(400, $result->getStatusCode());
+        self::assertSame(400, $result->getStatusCode());
     }
 
     /**
@@ -134,7 +134,7 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
         $handler = new TopologyHandler($dml, $manager, $nodeManager, $generator, $userTaskHandler, $topologyTester);
         $result  = $handler->deleteTopology($topology->getId());
 
-        self::assertEquals(200, $result->getStatusCode());
+        self::assertSame(200, $result->getStatusCode());
     }
 
     /**

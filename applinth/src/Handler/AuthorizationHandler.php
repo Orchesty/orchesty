@@ -21,16 +21,16 @@ use Hanaboso\Utils\Exception\DateTimeException;
 final class AuthorizationHandler
 {
 
-    public const  AUTHORIZATION_FORM = 'authorization_form';
-    public const  EXP                = 'exp';
+    public const string  AUTHORIZATION_FORM = 'authorization_form';
+    public const string  EXP                = 'exp';
 
-    public const EU_ALIAS = 'eu_alias';
-    public const EU_SUB   = 'eu_sub';
-    public const SUB      = 'sub';
+    public const string EU_ALIAS = 'eu_alias';
+    public const string EU_SUB   = 'eu_sub';
+    public const string SUB      = 'sub';
 
-    private const IAT      = 'iat';
-    private const PIN      = 'pin';
-    private const SETTINGS = 'settings';
+    private const string IAT      = 'iat';
+    private const string PIN      = 'pin';
+    private const string SETTINGS = 'settings';
 
     /**
      * @var MarketPlaceRestrictedTokenRepository

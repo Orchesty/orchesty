@@ -55,7 +55,7 @@ final class MonolithMetricsTest extends DatabaseTestCaseAbstract
         self::assertEquals('1.111', $result->getFields()->getKernelTime());
         self::assertEquals('2.222', $result->getFields()->getUserTime());
         self::assertEquals(DateTimeUtils::getUtcDateTime('1.1.2020'), $result->getFields()->getCreated());
-        self::assertEquals('1', $result->getTags()->getNodeId());
+        self::assertSame('1', $result->getTags()->getNodeId());
     }
 
 }

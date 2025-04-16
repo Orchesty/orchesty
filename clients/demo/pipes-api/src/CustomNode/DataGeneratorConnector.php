@@ -16,7 +16,7 @@ use Hanaboso\Utils\String\Json;
 final class DataGeneratorConnector extends CommonNodeAbstract
 {
 
-    public const NAME = 'data-generator-connector';
+    public const string NAME = 'data-generator-connector';
 
     /**
      * @return string

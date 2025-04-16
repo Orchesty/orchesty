@@ -32,13 +32,13 @@ final class WebhookTest extends DatabaseTestCaseAbstract
             ->setUnsubscribeFailed(TRUE);
         $this->pfd($webhook);
 
-        self::assertEquals('name', $webhook->getName());
-        self::assertEquals('user', $webhook->getUser());
-        self::assertEquals('token', $webhook->getToken());
-        self::assertEquals('topo', $webhook->getTopology());
-        self::assertEquals('1', $webhook->getWebhookId());
-        self::assertEquals('node', $webhook->getNode());
-        self::assertEquals('app', $webhook->getApplication());
+        self::assertSame('name', $webhook->getName());
+        self::assertSame('user', $webhook->getUser());
+        self::assertSame('token', $webhook->getToken());
+        self::assertSame('topo', $webhook->getTopology());
+        self::assertSame('1', $webhook->getWebhookId());
+        self::assertSame('node', $webhook->getNode());
+        self::assertSame('app', $webhook->getApplication());
         self::assertTrue($webhook->isUnsubscribeFailed());
     }
 

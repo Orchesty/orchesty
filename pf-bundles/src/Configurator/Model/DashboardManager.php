@@ -76,7 +76,7 @@ final class DashboardManager
         ];
 
         return [
-            'from' => sprintf('-%s %s', $matches[1], $toWord[$matches[2]]),
+            'from' => sprintf('-%s %s', $matches[1] ?? '1', $toWord[$matches[2] ?? 'm']),
             'to'   => 'now',
         ];
     }

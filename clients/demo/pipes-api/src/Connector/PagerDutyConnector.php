@@ -25,7 +25,7 @@ use Yasumi\Yasumi;
 final class PagerDutyConnector extends ConnectorAbstract
 {
 
-    public const NAME = 'pager_duty.schedule';
+    public const string NAME = 'pager_duty.schedule';
 
     /**
      * @return string

@@ -27,14 +27,14 @@ final class FilterStockExchangeTest extends KernelTestCaseAbstract
 
         $dto = $customNode->processAction((new ProcessDto())->setData('{"bids": {"foo":"bar"}}'));
 
-        self::assertEquals('{"foo":"bar"}', $dto->getData());
+        self::assertSame('{"foo":"bar"}', $dto->getData());
 
         $this->getFunctionMock('Demo\CustomNode', 'mt_rand')
             ->expects(self::any())
             ->willReturn(5);
 
         $dto = $customNode->processAction((new ProcessDto())->setData('{}'));
-        self::assertEquals('', $dto->getData());
+        self::assertSame('', $dto->getData());
     }
 
 }

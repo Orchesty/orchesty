@@ -21,7 +21,7 @@ use Throwable;
 final class FilterStockExchange extends CommonNodeAbstract implements LoggerAwareInterface
 {
 
-    public const NAME = 'filter-stock-exchange';
+    public const string NAME = 'filter-stock-exchange';
 
     /**
      * @var LoggerInterface

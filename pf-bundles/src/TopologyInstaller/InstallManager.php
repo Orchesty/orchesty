@@ -35,11 +35,11 @@ final class InstallManager implements LoggerAwareInterface
 
     use LoggerTrait;
 
-    public const AUTO_INSTALL_KEY = 'auto-install-key';
+    public const string AUTO_INSTALL_KEY = 'auto-install-key';
 
-    private const CREATE = 'create';
-    private const UPDATE = 'update';
-    private const DELETE = 'delete';
+    private const string CREATE = 'create';
+    private const string UPDATE = 'update';
+    private const string DELETE = 'delete';
 
     /**
      * @var TopologiesComparator
@@ -313,7 +313,7 @@ final class InstallManager implements LoggerAwareInterface
      */
     private function replaceHost(string $content, string $forceHost): string
     {
-        if (!empty($forceHost)) {
+        if ($forceHost !== '') {
             $content = preg_replace('/sdkHost=".*"/Umx', sprintf('sdkHost="%s"', $forceHost), $content);
         }
 

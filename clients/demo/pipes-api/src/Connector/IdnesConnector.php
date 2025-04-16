@@ -16,7 +16,7 @@ use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
 final class IdnesConnector extends ConnectorAbstract
 {
 
-    public const NAME = 'idnes-connector';
+    public const string NAME = 'idnes-connector';
 
     /**
      * @return string

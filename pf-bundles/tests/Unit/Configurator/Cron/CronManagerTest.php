@@ -31,7 +31,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
     {
         $data = $this->getManager(
             static function (RequestDto $request): ResponseDto {
-                self::assertEquals(CurlManager::METHOD_GET, $request->getMethod());
+                self::assertSame(CurlManager::METHOD_GET, $request->getMethod());
                 self::assertEquals('https://example.com/crons', $request->getUri(TRUE));
 
                 return new ResponseDto(200, 'OK', '[{"name":"Name", "time":"*/1 * * * *"}]', []);
@@ -56,7 +56,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
     {
         $this->getManager(
             static function (RequestDto $request): ResponseDto {
-                self::assertEquals(CurlManager::METHOD_PATCH, $request->getMethod());
+                self::assertSame(CurlManager::METHOD_PATCH, $request->getMethod());
                 self::assertEquals('https://example.com/crons', $request->getUri(TRUE));
                 self::assertEquals(
                     [
@@ -82,7 +82,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
     {
         $this->getManager(
             static function (RequestDto $request): ResponseDto {
-                self::assertEquals(CurlManager::METHOD_DELETE, $request->getMethod());
+                self::assertSame(CurlManager::METHOD_DELETE, $request->getMethod());
                 self::assertEquals('https://example.com/crons', $request->getUri(TRUE));
                 self::assertEquals(
                     [
@@ -106,7 +106,7 @@ final class CronManagerTest extends KernelTestCaseAbstract
     {
         $this->getManager(
             static function (RequestDto $request): ResponseDto {
-                self::assertEquals(CurlManager::METHOD_PATCH, $request->getMethod());
+                self::assertSame(CurlManager::METHOD_PATCH, $request->getMethod());
                 self::assertEquals('https://example.com/crons', $request->getUri(TRUE));
                 self::assertEquals(
                     [

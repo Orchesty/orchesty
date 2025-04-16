@@ -28,7 +28,7 @@ final class DummyExceptionConnectorTest extends KernelTestCaseAbstract
         $connector->setLogger(new Logger('logger'));
         $dto = $connector->processAction((new ProcessDto())->setData('{}'));
 
-        self::assertEquals('{}', $dto->getData());
+        self::assertSame('{}', $dto->getData());
     }
 
 }

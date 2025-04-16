@@ -25,7 +25,7 @@ class UsageStatsEvent
     use IdTrait;
     use CreatedTrait;
 
-    private const VERSION = 1;
+    private const int VERSION = 1;
 
     /**
      * @var string

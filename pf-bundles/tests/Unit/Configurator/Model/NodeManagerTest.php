@@ -46,9 +46,9 @@ final class NodeManagerTest extends KernelTestCaseAbstract
         $nodeManager = new NodeManager($this->getDmlMock(),$this->getCronMock());
         $result      = $nodeManager->updateNode($node, $data);
 
-        self::assertEquals('test-name', $result->getName());
-        self::assertEquals($data['type'], $result->getType());
-        self::assertEquals($data['handler'], $result->getHandler());
+        self::assertSame('test-name', $result->getName());
+        self::assertSame($data['type'], $result->getType());
+        self::assertSame($data['handler'], $result->getHandler());
     }
 
     /**
@@ -67,7 +67,7 @@ final class NodeManagerTest extends KernelTestCaseAbstract
         $nodeManager = new NodeManager($this->getDmlMock(),$this->getCronMock());
         $result      = $nodeManager->updateNode($node, $data);
 
-        self::assertEquals($data['enabled'], $result->isEnabled());
+        self::assertSame($data['enabled'], $result->isEnabled());
     }
 
     /**
@@ -98,7 +98,7 @@ final class NodeManagerTest extends KernelTestCaseAbstract
     {
         $repo = self::createPartialMock(NodeRepository::class, []);
         $dm   = self::createPartialMock(DocumentManager::class, ['flush', 'getRepository']);
-        $dm->method('flush')->willReturn(TRUE);
+        $dm->method('flush');
         $dm->method('getRepository')->willReturn($repo);
 
         $dml = self::createPartialMock(DatabaseManagerLocator::class, ['getDm']);

@@ -40,7 +40,7 @@ export default class ContactFormMapper extends ACommonNode {
                     },
                 },
             },
-            /* eslint-disable @typescript-eslint/naming-convention */
+
         });
     }
 

@@ -57,7 +57,7 @@ final class UserControllerTest extends ControllerTestCaseAbstract
         $handler->expects(self::any())->method('getAllUsers')->willReturn(['paging' => ['total' => 1]]);
         $controller = new UserController($handler);
 
-        self::assertEquals(200, $controller->getAllUsersAction(new Request())->getStatusCode());
+        self::assertSame(200, $controller->getAllUsersAction(new Request())->getStatusCode());
     }
 
     /**
@@ -213,7 +213,7 @@ final class UserControllerTest extends ControllerTestCaseAbstract
 
         self::assertEquals(1, count($repository->findAll()));
         self::assertEquals(['some' => 'settings'], $setting->getSettings());
-        self::assertEquals($this->user->getId(), $setting->getUserId());
+        self::assertSame($this->user->getId(), $setting->getUserId());
     }
 
     /**

@@ -22,7 +22,7 @@ final class TopologyFileTest extends KernelTestCaseAbstract
     public function testGetPath(): void
     {
         $dto = new TopologyFile('name', __DIR__ . '/data/test.txt');
-        self::assertEquals('/var/www/tests/Unit/TopologyInstaller/Dto/data/test.txt', $dto->getPath());
+        self::assertSame('/var/www/tests/Unit/TopologyInstaller/Dto/data/test.txt', $dto->getPath());
 
         $dto->getFileContents();
     }

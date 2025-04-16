@@ -112,7 +112,7 @@ final class TrashController extends AbstractController
         try {
             $ids    = $request->request->all()[UserTaskHandler::IDS] ?? [];
             $filter = [];
-            if (!empty($ids)) {
+            if ($ids !== []) {
                 $filter = [UserTaskHandler::IDS => $ids];
             }
 
@@ -135,7 +135,7 @@ final class TrashController extends AbstractController
         try {
             $ids    = $request->request->all()[UserTaskHandler::IDS] ?? [];
             $filter = [];
-            if (!empty($ids)) {
+            if ($ids !== []) {
                 $filter = [UserTaskHandler::IDS => $ids];
             }
 

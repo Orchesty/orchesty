@@ -6,7 +6,7 @@ export default class HubSpotCreateContactConnector extends Base {
 
     public async processAction(dto: ProcessDto<IInput>): Promise<ProcessDto> {
         const data = dto.getJsonData();
-        const language = data.properties.language;
+        const { language } = data.properties;
         delete data.properties.language;
         delete data.properties.subscribed;
 

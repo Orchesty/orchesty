@@ -25,8 +25,8 @@ class ApplicationInstall
     use UpdatedTrait;
     use DeletedTrait;
 
-    public const USER = 'user';
-    public const KEY  = 'key';
+    public const string USER = 'user';
+    public const string KEY  = 'key';
 
     /**
      * @var string

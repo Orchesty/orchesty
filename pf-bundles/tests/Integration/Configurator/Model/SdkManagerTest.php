@@ -41,10 +41,10 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
         $data = $this->manager->getAll();
 
         self::assertCount(2, $data);
-        self::assertEquals('One', $data[0]->getName());
-        self::assertEquals('One', $data[0]->getUrl());
-        self::assertEquals('Two', $data[1]->getName());
-        self::assertEquals('Two', $data[1]->getUrl());
+        self::assertSame('One', $data[0]->getName());
+        self::assertSame('One', $data[0]->getUrl());
+        self::assertSame('Two', $data[1]->getName());
+        self::assertSame('Two', $data[1]->getUrl());
     }
 
     /**
@@ -54,8 +54,8 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
     {
         $data = $this->manager->getOne($this->createSdk('One')->getId());
 
-        self::assertEquals('One', $data->getName());
-        self::assertEquals('One', $data->getUrl());
+        self::assertSame('One', $data->getName());
+        self::assertSame('One', $data->getUrl());
 
         self::expectException(DocumentNotFoundException::class);
         $this->manager->getOne('Unknown');
@@ -77,8 +77,8 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
         $this->dm->clear();
         self::assertCount(1, $this->sdkRepo->findAll());
 
-        self::assertEquals('url', $data->getUrl());
-        self::assertEquals('Name', $data->getName());
+        self::assertSame('url', $data->getUrl());
+        self::assertSame('Name', $data->getName());
     }
 
     /**
@@ -97,8 +97,8 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
         $this->dm->clear();
         self::assertCount(1, $this->sdkRepo->findAll());
 
-        self::assertEquals('Name1', $data->getName());
-        self::assertEquals('url1', $data->getUrl());
+        self::assertSame('Name1', $data->getName());
+        self::assertSame('url1', $data->getUrl());
     }
 
     /**
@@ -112,8 +112,8 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
 
         self::assertCount(0, $this->sdkRepo->findAll());
 
-        self::assertEquals('One', $data->getName());
-        self::assertEquals('One', $data->getUrl());
+        self::assertSame('One', $data->getName());
+        self::assertSame('One', $data->getUrl());
     }
 
     /**

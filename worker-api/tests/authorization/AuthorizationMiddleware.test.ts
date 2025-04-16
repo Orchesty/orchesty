@@ -4,6 +4,7 @@ import { init, IServices } from '../../src';
 import { ORCHESTY_API_KEY } from '../../src/authorization/AuthorizationMiddleware';
 
 let services: IServices;
+
 describe('Tests for TestBatch', () => {
     beforeAll(async () => {
         services = await init();

@@ -22,7 +22,7 @@ final class TopologyEventTest extends KernelTestCaseAbstract
      */
     public function testEvent(): void
     {
-        self::assertEquals('Name', (new TopologyEvent('Name'))->getTopologyName());
+        self::assertSame('Name', (new TopologyEvent('Name'))->getTopologyName());
     }
 
 }

@@ -16,7 +16,7 @@ use Hanaboso\Utils\System\PipesHeaders;
 final class DummyConnectorSplit extends CommonNodeAbstract
 {
 
-    public const NAME = 'send-connector-split';
+    public const string NAME = 'send-connector-split';
 
     /**
      * @return string

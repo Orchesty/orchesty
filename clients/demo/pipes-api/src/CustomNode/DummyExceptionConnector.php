@@ -22,7 +22,7 @@ final class DummyExceptionConnector extends CommonNodeAbstract implements Logger
 
     use LoggerTrait;
 
-    public const NAME = 'dummy-exception-connector';
+    public const string NAME = 'dummy-exception-connector';
 
     /**
      * DummyExceptionConnector constructor.

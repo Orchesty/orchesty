@@ -64,24 +64,24 @@ final class LogsTest extends DatabaseTestCaseAbstract
         /** @var Logs $result */
         $result = $repository->findAll()[0];
         self::assertEquals('1111', $result->getTimestamp()->getTimestamp());
-        self::assertEquals('1.2', $result->getVersion());
-        self::assertEquals('msg', $result->getMessage());
-        self::assertEquals('host', $result->getHost());
-        self::assertEquals(2_222, $result->getPipes()->getTimestamp());
-        self::assertEquals('type', $result->getPipes()->getService());
-        self::assertEquals('host', $result->getPipes()->getHostname());
-        self::assertEquals('chn', $result->getPipes()->getChannel());
-        self::assertEquals('ERROR', $result->getPipes()->getSeverity());
-        self::assertEquals('1', $result->getPipes()->getCorrelationId());
-        self::assertEquals('2', $result->getPipes()->getTopologyId());
-        self::assertEquals('TopoName', $result->getPipes()->getTopologyName());
-        self::assertEquals('3', $result->getPipes()->getNodeId());
-        self::assertEquals('NodeName', $result->getPipes()->getNodeName());
-        self::assertEquals('msg', $result->getPipes()->getStacktrace()->getMessage());
-        self::assertEquals('class', $result->getPipes()->getStacktrace()->getClass());
-        self::assertEquals('file', $result->getPipes()->getStacktrace()->getFile());
-        self::assertEquals('trace', $result->getPipes()->getStacktrace()->getTrace());
-        self::assertEquals('code', $result->getPipes()->getStacktrace()->getCode());
+        self::assertSame('1.2', $result->getVersion());
+        self::assertSame('msg', $result->getMessage());
+        self::assertSame('host', $result->getHost());
+        self::assertSame(2_222, $result->getPipes()->getTimestamp());
+        self::assertSame('type', $result->getPipes()->getService());
+        self::assertSame('host', $result->getPipes()->getHostname());
+        self::assertSame('chn', $result->getPipes()->getChannel());
+        self::assertSame('ERROR', $result->getPipes()->getSeverity());
+        self::assertSame('1', $result->getPipes()->getCorrelationId());
+        self::assertSame('2', $result->getPipes()->getTopologyId());
+        self::assertSame('TopoName', $result->getPipes()->getTopologyName());
+        self::assertSame('3', $result->getPipes()->getNodeId());
+        self::assertSame('NodeName', $result->getPipes()->getNodeName());
+        self::assertSame('msg', $result->getPipes()->getStacktrace()->getMessage());
+        self::assertSame('class', $result->getPipes()->getStacktrace()->getClass());
+        self::assertSame('file', $result->getPipes()->getStacktrace()->getFile());
+        self::assertSame('trace', $result->getPipes()->getStacktrace()->getTrace());
+        self::assertSame('code', $result->getPipes()->getStacktrace()->getCode());
     }
 
 }

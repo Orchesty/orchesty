@@ -28,8 +28,8 @@ use Throwable;
 final class ApiKeyAuthenticator extends AbstractAuthenticator
 {
 
-    public const AUTH_HEADER   = 'X-Auth';
-    public const AUTHORIZATION = 'Authorization';
+    public const string AUTH_HEADER   = 'X-Auth';
+    public const string AUTHORIZATION = 'Authorization';
 
     /**
      * @var DocumentManager

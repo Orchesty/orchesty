@@ -25,7 +25,7 @@ final class DummyConnectorTest extends KernelTestCaseAbstract
         $connector = self::getContainer()->get('hbpf.custom_node.print-label');
 
         $dto = $connector->processAction((new ProcessDto())->setData('{"foo":"bar"}'));
-        self::assertEquals('{"foo":"bar"}', $dto->getData());
+        self::assertSame('{"foo":"bar"}', $dto->getData());
     }
 
 }

@@ -25,7 +25,7 @@ final class LogsController extends AbstractController
 
     use ControllerTrait;
 
-    private const USER = 'user_id';
+    private const string USER = 'user_id';
 
     /**
      * LogsController constructor.

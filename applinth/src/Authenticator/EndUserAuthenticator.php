@@ -24,8 +24,8 @@ use Throwable;
 final class EndUserAuthenticator extends AbstractAuthenticator
 {
 
-    public const AUTHORIZATION  = 'Authorization';
-    private const REFRESH_TOKEN = 'refresh_token';
+    public const string AUTHORIZATION  = 'Authorization';
+    private const string REFRESH_TOKEN = 'refresh_token';
 
     /**
      * @var mixed[]
@@ -64,6 +64,7 @@ final class EndUserAuthenticator extends AbstractAuthenticator
             ?? $request->query->get(self::AUTHORIZATION)
             ?? $request->cookies->get(self::REFRESH_TOKEN) ?? '';
 
+        // @phpstan-ignore-next-line
         if (empty($token)) {
             throw new AuthenticationException('Missing token');
         }

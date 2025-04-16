@@ -19,7 +19,7 @@ use Hanaboso\Utils\Exception\PipesFrameworkException;
 final class GetUsersConnector extends ConnectorAbstract
 {
 
-    public const NAME = 'get-users';
+    public const string NAME = 'get-users';
 
     /**
      * @return string

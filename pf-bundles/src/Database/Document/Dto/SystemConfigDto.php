@@ -12,17 +12,17 @@ use Hanaboso\Utils\String\Json;
 final class SystemConfigDto
 {
 
-    public const SDK      = 'sdk';
-    public const BRIDGE   = 'bridge';
-    public const RABBIT   = 'rabbit';
-    public const REPEATER = 'repeater';
+    public const string SDK      = 'sdk';
+    public const string BRIDGE   = 'bridge';
+    public const string RABBIT   = 'rabbit';
+    public const string REPEATER = 'repeater';
 
-    public const HOST     = 'host';
-    public const PREFETCH = 'prefetch';
-    public const TIMEOUT  = 'timeout';
-    public const ENABLED  = 'enabled';
-    public const HOPS     = 'hops';
-    public const INTERVAL = 'interval';
+    public const string HOST     = 'host';
+    public const string PREFETCH = 'prefetch';
+    public const string TIMEOUT  = 'timeout';
+    public const string ENABLED  = 'enabled';
+    public const string HOPS     = 'hops';
+    public const string INTERVAL = 'interval';
 
     /**
      * SystemConfigDto constructor.

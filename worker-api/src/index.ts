@@ -24,7 +24,7 @@ export async function init(): Promise<IServices> {
     expressApp.use(express.json());
 
     expressApp.use(
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+
         cors({
             origin: appOptions.corsOrigin,
             optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204

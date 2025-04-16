@@ -26,7 +26,7 @@ final class ProcessController extends AbstractController
 
     use ControllerTrait;
 
-    private const USER = 'user';
+    private const string USER = 'user';
 
     /**
      * ProcessController constructor.

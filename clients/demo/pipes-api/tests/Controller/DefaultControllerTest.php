@@ -22,7 +22,7 @@ final class DefaultControllerTest extends KernelTestCaseAbstract
     {
         $controller = new DefaultController();
         $response   = $controller->indexAction();
-        self::assertEquals(200, $response->getStatusCode());
+        self::assertSame(200, $response->getStatusCode());
     }
 
 }

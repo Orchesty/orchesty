@@ -27,8 +27,8 @@ use Throwable;
 final class JWTParser
 {
 
-    private const ORCHESTY_LICENSE = 'ORCHESTY_LICENSE';
-    private const DEFAULT_JWT      = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ2ZXJzaW9uIjoxLCJ1c2VycyI6MSwiYXBwbGljYXRpb25zIjozLCJ0eXBlIjoiZnJlZSIsImVtYWlsIjoicHVibGljQG9yY2hlc3R5LmlvIiwibmFtZSI6IkZyZWUgYWNjb3VudCIsIm51bWJlciI6IjEiLCJpc3MiOiJIYW5hYm9zbyBzLnIuby4iLCJpYXQiOjE2Mzc3NjMwNjAuNTg5MzcxLCJuYmYiOjE2Mzc3NjMwNjAuNTg5MzcxLCJleHAiOjE3MDA4MzUwNjAuNTg5MzcxfQ.Kx3dIAUHLjrri-Fd74XGCC-HXtqosAawUnLBB6yWMREim_zCTJsz876zhKEALtrJwESskVOCYu1YRAo3Hggx0jWzld2ncRjNRSotV7xivF_o5hwUfbxiwMF5ovpmvCI1NP-3m1GrV1CLRepSI3GbbvD3HwGTViJ0Ax1k6xp0jpd0jms4G-CWE5IOm4bB7HZeSTrORvjUh86aZmJun3x2JyNI46ZikohOK-AueK6VgI_AB62IEXIr46P2cfkBCrKpDzzkXJ3h-GhNgd8-E5fn9Ir_9hmyQ9KF1YTYVhe7aB4sacYkOmh2C2cmv9Heb25eUylBDIh5BoU-OLvDvTWSOaRjbTlIbttWcD2e8Mqt3l1SCNWymiOtjDNwXbZHSZznOfwLV2K6_qhE_3X-OPucdib0c1qU3pT6O2a8ENAgzYxIxPbG1h2-Qsf1Pgm1t_FARPjUW2RwJac6w9S579aSvztlIdfEWjRb4xE1gSeFUxD402dD1FIwvuK-L-ntEyK08j4aib5wSWfc7Nltfr4ADt8HyG7Qr_jNe-3IrMkk_kXkNLxbepNf_VhWp_LMYKEhKNTRnWBCQogUeY3E46-wLnhQQryLygWsE-mBbincKCt6SZySWrTzVOQQdUPP1TGRt0ARy4g6-exAchCVxYIGcBUsPOk1mqFVALh7FlsLfXY';
+    private const string ORCHESTY_LICENSE = 'ORCHESTY_LICENSE';
+    private const string DEFAULT_JWT      = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ2ZXJzaW9uIjoxLCJ1c2VycyI6MSwiYXBwbGljYXRpb25zIjozLCJ0eXBlIjoiZnJlZSIsImVtYWlsIjoicHVibGljQG9yY2hlc3R5LmlvIiwibmFtZSI6IkZyZWUgYWNjb3VudCIsIm51bWJlciI6IjEiLCJpc3MiOiJIYW5hYm9zbyBzLnIuby4iLCJpYXQiOjE2Mzc3NjMwNjAuNTg5MzcxLCJuYmYiOjE2Mzc3NjMwNjAuNTg5MzcxLCJleHAiOjE3MDA4MzUwNjAuNTg5MzcxfQ.Kx3dIAUHLjrri-Fd74XGCC-HXtqosAawUnLBB6yWMREim_zCTJsz876zhKEALtrJwESskVOCYu1YRAo3Hggx0jWzld2ncRjNRSotV7xivF_o5hwUfbxiwMF5ovpmvCI1NP-3m1GrV1CLRepSI3GbbvD3HwGTViJ0Ax1k6xp0jpd0jms4G-CWE5IOm4bB7HZeSTrORvjUh86aZmJun3x2JyNI46ZikohOK-AueK6VgI_AB62IEXIr46P2cfkBCrKpDzzkXJ3h-GhNgd8-E5fn9Ir_9hmyQ9KF1YTYVhe7aB4sacYkOmh2C2cmv9Heb25eUylBDIh5BoU-OLvDvTWSOaRjbTlIbttWcD2e8Mqt3l1SCNWymiOtjDNwXbZHSZznOfwLV2K6_qhE_3X-OPucdib0c1qU3pT6O2a8ENAgzYxIxPbG1h2-Qsf1Pgm1t_FARPjUW2RwJac6w9S579aSvztlIdfEWjRb4xE1gSeFUxD402dD1FIwvuK-L-ntEyK08j4aib5wSWfc7Nltfr4ADt8HyG7Qr_jNe-3IrMkk_kXkNLxbepNf_VhWp_LMYKEhKNTRnWBCQogUeY3E46-wLnhQQryLygWsE-mBbincKCt6SZySWrTzVOQQdUPP1TGRt0ARy4g6-exAchCVxYIGcBUsPOk1mqFVALh7FlsLfXY';
 
     /**
      * @param string|null $rootPath
@@ -61,6 +61,7 @@ final class JWTParser
 
         if (getenv(self::ORCHESTY_LICENSE)) {
             $jwt = getenv(self::ORCHESTY_LICENSE);
+            $jwt = $jwt !== FALSE ? $jwt : '';
         } else if ($rootPath) {
             $jwt = trim(File::getContent(sprintf('%s/license/license', $rootPath)));
         }

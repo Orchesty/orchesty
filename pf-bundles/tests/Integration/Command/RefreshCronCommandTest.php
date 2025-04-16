@@ -31,7 +31,7 @@ final class RefreshCronCommandTest extends DatabaseTestCaseAbstract
         /** @var KernelInterface $kernel */
         $kernel      = self::$kernel;
         $application = new Application($kernel);
-        self::assertEquals(0, (new CommandTester($application->get('cron:refresh')))->execute([]));
+        self::assertSame(0, (new CommandTester($application->get('cron:refresh')))->execute([]));
     }
 
     /**
@@ -42,7 +42,7 @@ final class RefreshCronCommandTest extends DatabaseTestCaseAbstract
         $manager = self::createPartialMock(CronManager::class, ['batchUpsert']);
         $manager->expects(self::any())->method('batchUpsert')->willThrowException(new CronException());
 
-        self::assertEquals(1, (new CommandTester(new RefreshCronCommand($this->dm, $manager)))->execute([]));
+        self::assertSame(1, (new CommandTester(new RefreshCronCommand($this->dm, $manager)))->execute([]));
     }
 
 }

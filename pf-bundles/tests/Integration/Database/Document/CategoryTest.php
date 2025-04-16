@@ -26,8 +26,8 @@ final class CategoryTest extends DatabaseTestCaseAbstract
             ->setParent('parent');
         $this->pfd($category);
 
-        self::assertEquals('name', $category->getName());
-        self::assertEquals('parent', $category->getParent());
+        self::assertSame('name', $category->getName());
+        self::assertSame('parent', $category->getParent());
     }
 
 }

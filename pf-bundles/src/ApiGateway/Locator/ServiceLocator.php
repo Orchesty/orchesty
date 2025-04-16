@@ -30,8 +30,8 @@ final class ServiceLocator implements LoggerAwareInterface
 
     use LoggerTrait;
 
-    public const USER_TASK_LIST     = ['user-task'];
-    public const CUSTOM_ACTION_PATH = '%sapi/topologies/%s/nodes/%s/run-by-name';
+    public const array USER_TASK_LIST      = ['user-task'];
+    public const string CUSTOM_ACTION_PATH = '%sapi/topologies/%s/nodes/%s/run-by-name';
 
     /**
      * @var ObjectRepository<Sdk>&SdkRepository
@@ -69,7 +69,7 @@ final class ServiceLocator implements LoggerAwareInterface
     public function getApps(string $exclude = ''): array
     {
         $res = $this->doRequest('applications');
-        if (empty($res) || !isset($res['items'])) {
+        if ($res === [] || !isset($res['items'])) {
             $res['items'] = [];
         }
 
@@ -107,7 +107,7 @@ final class ServiceLocator implements LoggerAwareInterface
     public function getUserApps(string $user, string $exclude = ''): array
     {
         $res = $this->doRequest(sprintf('applications/users/%s', $user));
-        if (empty($res) || !isset($res['items'])) {
+        if ($res === [] || !isset($res['items'])) {
             $res['items'] = [];
         }
 
@@ -481,7 +481,7 @@ final class ServiceLocator implements LoggerAwareInterface
                     '',
                     $headers,
                 );
-                if (!empty($body)) {
+                if ($body !== []) {
                     $dto->setBody(Json::encode($body));
                 }
 
@@ -489,7 +489,7 @@ final class ServiceLocator implements LoggerAwareInterface
                 if (in_array($res->getStatusCode(), [200, 201], TRUE)) {
                     if($allowOriginalResponse){
                         $out[] = $res->getBody();
-                    }else if (!empty($res->getJsonBody())) {
+                    }else if ($res->getJsonBody() !== []) {
                         if (!$multiple) {
                             $out = array_merge($res->getJsonBody(), ['host' => $ip]);
 
@@ -589,6 +589,7 @@ final class ServiceLocator implements LoggerAwareInterface
     {
         $actions = [];
         foreach ($customActions as $action) {
+            // @phpstan-ignore-next-line
             if (empty($action['url'])) {
                 $action['url'] = sprintf($path, $this->backendHost, $action['topologyName'], $action['nodeName']);
 

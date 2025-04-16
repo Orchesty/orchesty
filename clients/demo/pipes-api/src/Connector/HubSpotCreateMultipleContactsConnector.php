@@ -10,7 +10,7 @@ namespace Demo\Connector;
 final class HubSpotCreateMultipleContactsConnector extends HubSpotCreateContactAbstract
 {
 
-    public const NAME = 'hub-spot.create-multiple-contacts';
+    public const string NAME = 'hub-spot.create-multiple-contacts';
 
     /**
      * @var string

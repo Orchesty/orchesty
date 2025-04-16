@@ -41,7 +41,7 @@ export default class HubspotToSesTransactionEmailMapper extends ACommonNode {
                     },
                 },
             },
-            /* eslint-disable @typescript-eslint/naming-convention */
+
         });
     }
 

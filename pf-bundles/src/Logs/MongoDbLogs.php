@@ -18,9 +18,9 @@ use Hanaboso\Utils\Date\DateTimeUtils;
 final class MongoDbLogs extends LogsAbstract
 {
 
-    private const RELATED_LOGS = 'related_logs';
-    private const DATA         = 'data';
-    private const MAP          = 'map';
+    private const string RELATED_LOGS = 'related_logs';
+    private const string DATA         = 'data';
+    private const string MAP          = 'map';
 
     /**
      * MongoDbLogs constructor.

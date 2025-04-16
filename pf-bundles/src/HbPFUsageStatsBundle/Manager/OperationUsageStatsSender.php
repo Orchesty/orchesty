@@ -56,14 +56,17 @@ class OperationUsageStatsSender extends SenderAbstract
         $multiCounterRepository = $this->dm->getRepository(TopologyProgress::class);
 
         $operations = $multiCounterRepository->getDataForOperationEventSending(
-            !empty($lastEvent[0]) ? $lastEvent[0]->getCreated() : (new DateTime())->setTimestamp(1),
+                    // @phpstan-ignore-next-line
+            !empty($lastEvent[0]) ? $lastEvent[0]->getCreated() : new DateTime()->setTimestamp(1),
         );
 
         $days             = array_map(static fn($item) => $item['_id'], $operations);
         $usageStatsEvents = $usageStatsEventRepository->getExistingProcessCountByDay($days);
         foreach ($operations as $operation) {
-            $day   = $operation['_id'];
+            $day = $operation['_id'];
+            // @phpstan-ignore-next-line
             $total = $operation['total'] - (!empty($usageStatsEvents[$day]) ? $usageStatsEvents[$day] : 0);
+            // @phpstan-ignore-next-line
             if (!empty($total)) {
                 $event = new UsageStatsEvent($alphaInstanceId, EventTypeEnum::OPERATION->value);
                 $event->setCreated($currentDate);

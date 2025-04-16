@@ -5,7 +5,7 @@ parameters:
 	doctrine:
 		objectManagerLoader: DocumentManagerLoader.php
 	symfony:
-		container_xml_path: %rootDir%/../../../var/cache/test/Hanaboso_PipesFramework_KernelTestDebugContainer.xml
+		containerXmlPath: %rootDir%/../../../var/cache/test/Hanaboso_PipesFramework_KernelTestDebugContainer.xml
 	ignoreErrors:
 		- '#Unreachable statement \- code above always terminates.#'
 		-

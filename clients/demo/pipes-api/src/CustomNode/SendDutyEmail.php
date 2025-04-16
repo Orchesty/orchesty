@@ -24,17 +24,17 @@ use JsonException;
 final class SendDutyEmail extends CommonNodeAbstract
 {
 
-    public const NAME = 'send-duty-email';
+    public const string NAME = 'send-duty-email';
 
-    private const FROM    = 'dev.email.hb@gmail.com';
-    private const TO      = [
+    private const string FROM    = 'dev.email.hb@gmail.com';
+    private const array TO       = [
         'pavlicek.m@hanaboso.com',
         'husak.j@hanaboso.com',
         'jirsa.r@hanaboso.com',
         'krecl.v@hanaboso.com',
         'info@hanaboso.com',
     ];
-    private const SUBJECT = 'Monitoring';
+    private const string SUBJECT = 'Monitoring';
 
     /**
      * SendDutyEmail constructor.

@@ -26,11 +26,11 @@ final class AuthorizationController extends AbstractController
 
     use ControllerTrait;
 
-    private const ACCESS_TOKEN  = 'access_token';
-    private const REFRESH_TOKEN = 'refresh_token';
-    private const EXPIRES_IN    = 'expires_in';
-    private const REDIRECT_LINK = 'oauth_redirect_link';
-    private const SCOPE         = 'scope';
+    private const string ACCESS_TOKEN  = 'access_token';
+    private const string REFRESH_TOKEN = 'refresh_token';
+    private const string EXPIRES_IN    = 'expires_in';
+    private const string REDIRECT_LINK = 'oauth_redirect_link';
+    private const string SCOPE         = 'scope';
 
     /**
      * AuthorizationController constructor.

@@ -26,25 +26,25 @@ final class RetentionFactoryTest extends KernelTestCaseAbstract
             DateTimeUtils::getUtcDateTime('10.1.2020'),
             DateTimeUtils::getUtcDateTime('11.1.2020'),
         );
-        self::assertEquals(1_800, $retention);
+        self::assertSame(1_800, $retention);
 
         $retention = RetentionFactory::getRetentionInSeconds(
             DateTimeUtils::getUtcDateTime('10.1.2020'),
             DateTimeUtils::getUtcDateTime('12.1.2020'),
         );
-        self::assertEquals(1_4400, $retention);
+        self::assertSame(1_4400, $retention);
 
         $retention = RetentionFactory::getRetentionInSeconds(
             DateTimeUtils::getUtcDateTime('now'),
             DateTimeUtils::getUtcDateTime('now + 10min'),
         );
-        self::assertEquals(60, $retention);
+        self::assertSame(60, $retention);
 
         $retention = RetentionFactory::getRetentionInSeconds(
             DateTimeUtils::getUtcDateTime('now'),
             DateTimeUtils::getUtcDateTime('now + 60second'),
         );
-        self::assertEquals(5, $retention);
+        self::assertSame(5, $retention);
     }
 
 }

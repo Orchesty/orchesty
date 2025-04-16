@@ -29,9 +29,9 @@ final class EmbedNodeTest extends DatabaseTestCaseAbstract
         $node = (new Node())->setName('node-name');
         $this->pfd($node);
 
-        self::assertEquals('name', $embedNode->getName());
-        self::assertEquals('123', $embedNode->getId());
-        self::assertEquals('node-name', EmbedNode::from($node)->getName());
+        self::assertSame('name', $embedNode->getName());
+        self::assertSame('123', $embedNode->getId());
+        self::assertSame('node-name', EmbedNode::from($node)->getName());
     }
 
 }

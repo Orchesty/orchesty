@@ -17,7 +17,7 @@ use Symfony\Contracts\EventDispatcher\Event;
 final class BillingEvent extends Event
 {
 
-    public const NAME = 'user.stats';
+    public const string NAME = 'user.stats';
 
     /**
      * @var AppInstallBillingData | OperationBillingData

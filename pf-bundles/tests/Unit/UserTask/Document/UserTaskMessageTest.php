@@ -24,7 +24,7 @@ final class UserTaskMessageTest extends KernelTestCaseAbstract
         $msg->setBody('body')
             ->setHeaders(['a']);
 
-        self::assertEquals('body', $msg->getBody());
+        self::assertSame('body', $msg->getBody());
         self::assertEquals(['a'], $msg->getHeaders());
 
         $msg->fromArray(

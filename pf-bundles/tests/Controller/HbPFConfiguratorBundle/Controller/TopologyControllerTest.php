@@ -244,7 +244,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             'status'  => $response->getStatusCode(),
         ];
 
-        self::assertEquals(200, $response->status);
+        self::assertSame(200, $response->status);
         self::assertEquals($topology->getRawBpmn(), $response->content);
     }
 
@@ -434,7 +434,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             'status'  => $response->getStatusCode(),
         ];
 
-        self::assertEquals(400, $response->status);
+        self::assertSame(400, $response->status);
     }
 
     /**
@@ -506,7 +506,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             'content' => $response->getContent(),
             'status'  => $response->getStatusCode(),
         ];
-        self::assertEquals(200, $response->status);
+        self::assertSame(200, $response->status);
         self::assertEquals($this->getBpmn(), $response->content);
     }
 

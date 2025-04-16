@@ -13,6 +13,7 @@ export default class AuthorizationMiddleware {
         const { mongoClient } = this;
 
         return async (req: Request, res: Response, next: NextFunction) => {
+            // eslint-disable-next-line no-useless-assignment
             let scopes: string[] = [];
 
             const separatedPath = req.path.split('/');

@@ -13,21 +13,21 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 class Tags
 {
 
-    public const NODE_ID        = 'node_id';
-    public const TOPOLOGY_ID    = 'topology_id';
-    public const QUEUE          = 'queue';
-    public const APPLICATION_ID = 'application_id';
-    public const USER_ID        = 'user_id';
-    public const CORRELATION_ID = 'correlation_id';
+    public const string NODE_ID        = 'node_id';
+    public const string TOPOLOGY_ID    = 'topology_id';
+    public const string QUEUE          = 'queue';
+    public const string APPLICATION_ID = 'application_id';
+    public const string USER_ID        = 'user_id';
+    public const string CORRELATION_ID = 'correlation_id';
 
-    public const BRIDGE_TAGS = self::MONOLITH_TAGS;
+    public const array BRIDGE_TAGS = self::MONOLITH_TAGS;
 
-    public const MONOLITH_TAGS = [
+    public const array MONOLITH_TAGS = [
         self::NODE_ID,
         self::TOPOLOGY_ID,
     ];
 
-    public const CONNECTOR_TAGS = [
+    public const array CONNECTOR_TAGS = [
         self::NODE_ID,
         self::TOPOLOGY_ID,
         self::APPLICATION_ID,
@@ -35,11 +35,11 @@ class Tags
         self::CORRELATION_ID,
     ];
 
-    public const PROCESS_TAGS = [
+    public const array PROCESS_TAGS = [
         self::NODE_ID,
     ];
 
-    public const RABBIT_TAGS = [
+    public const array RABBIT_TAGS = [
         self::QUEUE,
     ];
 

@@ -13,7 +13,7 @@ use Hanaboso\PipesPhpSdk\CustomNode\CommonNodeAbstract;
 final class DummyConnector extends CommonNodeAbstract
 {
 
-    public const NAME = 'dummy-connector';
+    public const string NAME = 'dummy-connector';
 
     /**
      * @return string

@@ -16,7 +16,7 @@ use Hanaboso\Utils\System\PipesHeaders;
 final class HubSpotCreateMultipleContactsMapper extends CommonNodeAbstract
 {
 
-    public const NAME = 'hub-spot.create-multiple-contacts-mapper';
+    public const string NAME = 'hub-spot.create-multiple-contacts-mapper';
 
     /**
      * @return string

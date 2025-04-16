@@ -24,7 +24,7 @@ use RabbitMqBundle\Publisher\Publisher;
 final class UserTaskControllerTest extends ControllerTestCaseAbstract
 {
 
-    private const ID = '507f191e810c19729de860ea';
+    private const string ID = '507f191e810c19729de860ea';
 
     /**
      * @throws Exception
@@ -159,7 +159,7 @@ final class UserTaskControllerTest extends ControllerTestCaseAbstract
                 $parsed = Json::decode($body);
                 self::assertEquals('body', $parsed['body']);
                 self::assertArrayHasKey('user-task-state', $parsed['headers']);
-                self::assertEquals(PipesHeaders::get('user-task-state', $parsed['headers']), $state);
+                self::assertSame(PipesHeaders::get('user-task-state', $parsed['headers']), $state);
             },
         );
         $c   = self::getContainer();

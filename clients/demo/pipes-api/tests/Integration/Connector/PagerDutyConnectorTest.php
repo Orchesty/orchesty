@@ -34,7 +34,7 @@ final class PagerDutyConnectorTest extends KernelTestCaseAbstract
      */
     public function testGetName(): void
     {
-        self::assertEquals('pager_duty.schedule', $this->connector->getName());
+        self::assertSame('pager_duty.schedule', $this->connector->getName());
     }
 
     /**
@@ -103,6 +103,7 @@ final class PagerDutyConnectorTest extends KernelTestCaseAbstract
     {
         $hours = 5;
         $this->invokeMethod($this->connector, 'getComputedHours', ['2020-01-06', &$hours]);
+        // @phpstan-ignore-next-line
         self::assertEquals(0, $hours);
     }
 

@@ -5,7 +5,7 @@ parameters:
     doctrine:
         objectManagerLoader: DocumentManagerLoader.php
     symfony:
-        container_xml_path: %rootDir%/../../../var/cache/test/Hanaboso_Applinth_KernelTestDebugContainer.xml
+        containerXmlPath: %rootDir%/../../../var/cache/test/Hanaboso_Applinth_KernelTestDebugContainer.xml
     ignoreErrors:
             -
                 message: '#Calling putenv\(\) is forbidden, might overwrite existing variables#'
