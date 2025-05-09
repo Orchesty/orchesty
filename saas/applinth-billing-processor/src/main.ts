@@ -10,7 +10,7 @@ import Mongo from './storage/mongo/Mongo';
     await container.get<Mongo>(Services.MONGO).disconnect();
 
     process.exit(0);
-}()).catch((e) => {
+}()).catch((e: unknown) => {
     logger.error(e);
     process.exit(1);
 });

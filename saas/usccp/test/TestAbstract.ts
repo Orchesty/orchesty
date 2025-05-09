@@ -7,6 +7,7 @@ export async function dropCollection(name: string): Promise<void> {
 
     try {
         await db.dropCollection(name);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
     }
 }

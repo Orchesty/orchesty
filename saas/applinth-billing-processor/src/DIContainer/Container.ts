@@ -6,6 +6,7 @@ export default class DIContainer {
         this.services = new Map<string, unknown>();
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
     public get<T = unknown>(name: string): T {
         if (this.has(name)) {
             return this.services.get(name) as T;

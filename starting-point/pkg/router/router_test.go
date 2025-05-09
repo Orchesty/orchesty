@@ -25,7 +25,7 @@ func TestNotFound(t *testing.T) {
 
 func TestNotAllowed(t *testing.T) {
 	r, _ := http.NewRequest("POST", "/status", bytes.NewReader([]byte("[]")))
-	assertResponse(t, r, 405, "")
+	assertResponse(t, r, 404, "")
 }
 
 func TestErrResponse(t *testing.T) {

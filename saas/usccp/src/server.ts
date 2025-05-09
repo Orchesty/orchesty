@@ -7,6 +7,7 @@ initServices()
         const server = createServer();
         server.listen(app.port);
         logger.info('USCCP up and running!');
-    }).catch((e) => {
+    }).catch((e: unknown) => {
         logger.error(e);
+        process.exit(1);
     });

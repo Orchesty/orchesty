@@ -17,12 +17,14 @@ export function countMetadata(
         metadataRecord[instanceId].tenantId = tenantId;
 
         if (historyStart) {
+            // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
             if ((metadataRecord[instanceId].billingHistoryStart || new Date()) > historyStart) {
                 metadataRecord[instanceId].billingHistoryStart = historyStart;
             }
         }
 
         if (highestDate) {
+            // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
             if ((metadataRecord[instanceId].lastRunHighestEventDate || new Date(1)) < highestDate) {
                 metadataRecord[instanceId].lastRunHighestEventDate = highestDate;
             }

@@ -7,7 +7,7 @@ export default class TimeModule {
     public constructor() {
         const date = new Date();
         date.setHours(0, 0, 0, 0);
-        // eslint-disable-next-line import/no-mutable-exports
+
         this.now = date.getTime();
 
         this.endOfMonthDay = new Date();

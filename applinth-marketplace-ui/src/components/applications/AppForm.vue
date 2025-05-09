@@ -27,8 +27,12 @@
         <template v-else>
           <v-row v-if="form.description.length > 0" dense class="mt-2">
             <v-col>
-              <!-- eslint-disable-next-line vue/no-v-html -->
-              <div class="ml-2 application-settings-wrapper-info" v-html="form.description" />
+              <!-- eslint-disable vue/no-v-html -->
+              <div
+                class="ml-2 application-settings-wrapper-info"
+                v-html="form.description"
+              />
+              <!-- eslint-enable vue/no-v-html -->
             </v-col>
           </v-row>
           <v-row dense class="mt-2 application-settings-wrapper-form">
@@ -138,7 +142,11 @@
             </v-col>
           </v-row>
 
-          <v-row v-if="!form.readOnly" dense class="application-settings-wrapper-form">
+          <v-row
+            v-if="!form.readOnly"
+            dense
+            class="application-settings-wrapper-form"
+          >
             <v-col>
               <actions-wrapper>
                 <base-button

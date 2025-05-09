@@ -34,7 +34,7 @@ default:
   interruptible: true
 
 .base-dind:
-  image: docker:20.10.11-alpine3.14
+  image: docker:28.0.4-alpine3.21
 
   variables:
     #DOCKER_TLS_CERTDIR: "/certs"
@@ -44,7 +44,7 @@ default:
     DOCKER_DRIVER: overlay2
 
   services:
-    - docker:20.10.11-dind-alpine3.14
+    - docker:28.0.4-alpine3.21
 
   before_script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY --username $CI_REGISTRY_USER --password-stdin

@@ -18,7 +18,7 @@ func TestGetFields(t *testing.T) {
 	i := InitFields()
 	r := GetFields(i)
 
-	assert.IsType(t, float64(0), r["fpm_request_total_duration"])
-	assert.IsType(t, float64(0), r["fpm_cpu_user_time"])
-	assert.IsType(t, float64(0), r["fpm_cpu_kernel_time"])
+	assert.IsType(t, int(0), r["fpm_request_total_duration"])
+	assert.IsType(t, int(0), r["fpm_cpu_user_time"])
+	assert.IsType(t, int(0), r["fpm_cpu_kernel_time"])
 }

@@ -1,4 +1,4 @@
-import { Collection, ObjectId, UpdateFilter } from 'mongodb';
+import { Collection, Document, ObjectId, UpdateFilter } from 'mongodb';
 import Services from '../DIContainer/Services';
 import { UsageStatsType } from '../enums/UsageStatsType';
 import { USEvent, USEventType } from '../events';
@@ -325,7 +325,7 @@ export class EndUserAppInstallProcessor extends BaseProcessor implements IProces
                 delete install.estimatedCost;
             }
 
-            const update: UpdateFilter<IUsageStatsMonthly> = { $set: install };
+            const update: UpdateFilter<Document> = { $set: install };
 
             if (!install.installed) {
                 update.$unset = { estimatedCost: '' };
