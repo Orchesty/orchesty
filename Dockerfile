@@ -1,7 +1,5 @@
 ### Build step
-FROM node:18-alpine AS builder
-
-RUN apk add --no-cache python3 make g++
+FROM node:20-slim AS builder
 
 RUN npm i -g pnpm
 
@@ -12,7 +10,7 @@ COPY pnpm-lock.yaml ./
 RUN pnpm install
 
 ### Build step
-FROM node:18-alpine AS pre-cache
+FROM node:20-slim AS pre-cache
 
 # Build
 WORKDIR /build
