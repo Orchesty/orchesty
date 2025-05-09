@@ -2,7 +2,7 @@ import ACommonNode from '@orchesty/nodejs-sdk/dist/lib/Commons/ACommonNode';
 import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
 import { validate } from '@orchesty/nodejs-sdk/dist/lib/Utils/Validations';
 import Joi from 'joi';
-import { ComparatorHashRepository } from '../service/storage/repository';
+import RedisStorage from '../storage/RedisStorage';
 
 export const NAME = 'invalidate';
 
@@ -13,7 +13,9 @@ const schema = Joi.object({
 
 export class ComparatorInvalidate extends ACommonNode {
 
-    public constructor(private readonly hashRepository: ComparatorHashRepository) {
+    public constructor(
+        private readonly redis: RedisStorage,
+    ) {
         super();
     }
 
@@ -23,7 +25,9 @@ export class ComparatorInvalidate extends ACommonNode {
 
     @validate(schema)
     public async processAction(dto: ProcessDto<IInput>): Promise<ProcessDto<IInput>> {
-        await this.hashRepository.delete(dto.getJsonData());
+        const { masterKey, externalId } = dto.getJsonData();
+
+        await this.redis.delete(masterKey, externalId);
 
         return dto;
     }

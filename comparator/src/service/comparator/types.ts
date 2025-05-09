@@ -5,10 +5,11 @@ export interface IConfiguration {
     excludedFields?: string[];
     stopOnEmptyArray?: boolean;
     ttl?: number;
+    skipComparison?: boolean;
+    lock?: boolean;
     deleted?: boolean;
     totalCount?: number;
     isLast?: boolean;
-    isBuffered?: boolean;
 }
 
 export interface IInput {
@@ -21,5 +22,3 @@ export interface IOutput {
     updated: Record<string, unknown>[];
     deleted: string[];
 }
-
-export const emptyOutput: IOutput = { created: [], updated: [], deleted: [] };

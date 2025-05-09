@@ -43,6 +43,10 @@ unit:
 
 fasttest: lint unit
 
+localtest:
+	pnpm run lint
+	pnpm run test
+
 test: init install fasttest docker-down-clean
 
 ci-test: test
