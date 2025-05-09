@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"testing"
 
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/v2/bson"
 	"starting-point/pkg/service"
 	"starting-point/pkg/storage"
 	"starting-point/pkg/utils"
@@ -14,7 +14,7 @@ import (
 var topology = "Topology"
 var node = "Node"
 var customID = "4cb174e20000000000000000"
-var customObjectID, _ = primitive.ObjectIDFromHex(customID)
+var customObjectID, _ = bson.ObjectIDFromHex(customID)
 var topologyObject = storage.Topology{
 	ID:   customObjectID,
 	Name: topology,

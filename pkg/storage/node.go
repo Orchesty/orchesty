@@ -2,13 +2,13 @@ package storage
 
 import (
 	"fmt"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 // Node represents node
 type Node struct {
-	ID   primitive.ObjectID `bson:"_id" json:"id"`
-	Name string             `bson:"name" json:"name"`
+	ID   bson.ObjectID `bson:"_id" json:"id"`
+	Name string        `bson:"name" json:"name"`
 }
 
 func (n Node) Exchange() string {
