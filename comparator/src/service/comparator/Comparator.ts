@@ -1,131 +1,102 @@
 import crypto from 'crypto';
-import { ComparatorHash } from '../../model';
-import { ComparatorHashRepository } from '../storage/repository';
+import RedisStorage from '../../storage/RedisStorage';
 import { IConfiguration, IInput, IOutput } from './types';
 
-interface IHash {
-    data: Record<string, unknown>;
-    hash: string;
-}
+export const HASH_ALG = 'sha1';
 
 export class Comparator {
 
-    private readonly hashAlgorithm = 'sha1';
-
-    public constructor(private readonly comparatorHashRepository: ComparatorHashRepository) {
+    public constructor(
+        private readonly redis: RedisStorage,
+    ) {
     }
 
-    public async compare(input: IInput): Promise<IOutput | Record<string, unknown>[]> {
-        const hashes: Record<string, IHash> = {};
-        const { idField, excludedFields, masterKey } = input.configuration;
+    public async compare(input: IInput, correlationId: string): Promise<IOutput> {
+        const config = input.configuration;
+        const output = this.getEmptyOutput();
 
-        input.items.forEach((item) => {
-            hashes[item[idField] as string] = {
-                data: item, hash: this.createHash(structuredClone(item), excludedFields),
-            };
-        });
-        const dbHashes = await this.comparatorHashRepository.findMany({ masterKey });
+        const ids = input.items.map((it) => String(it[config.idField]));
+        if (!ids.length) {
+            return output;
+        }
 
-        return this.compareDbHashes(dbHashes, hashes, input.configuration);
-    }
+        const hashes = await this.redis.getValues(config.masterKey, ids);
+        const dataToStore: string[] = [];
+        const bufferedData: string[] = [];
 
-    public async compareDbHashes(
-        dbHashes: ComparatorHash[],
-        hashes: Record<string, IHash>,
-        settings: IConfiguration,
-    ): Promise<IOutput | Record<string, unknown>[]> {
-        const result: IOutput = {
-            created: [],
-            updated: [],
-            deleted: [],
-        };
+        input.items.forEach((it, index) => {
+            const externalId = it[config.idField] as string;
+            const hash = this.createHash(structuredClone(it), config.excludedFields);
 
-        const promises: Promise<unknown>[] = [];
+            if (!hashes[index]) {
+                this.prepareDataToStore(config, dataToStore, bufferedData, externalId, hash);
+                output.created.push(it);
 
-        dbHashes.forEach((item) => {
-            const dataHash = hashes?.[item.externalId];
+                return;
+            }
 
-            if (dataHash) {
-                if (item.hash !== dataHash.hash) {
-                    result.updated.push(dataHash.data);
-                    promises.push(this.updateHash(item, dataHash.hash, settings.masterKey));
-                }
-
-                delete hashes[item.externalId];
-            } else if (settings.deleted ?? true) {
-                result.deleted.push(item.externalId);
+            if (hashes[index] !== hash) {
+                this.prepareDataToStore(config, dataToStore, bufferedData, externalId, hash);
+                output.updated.push(it);
             }
         });
 
-        result.created = Object.values(hashes).map((item) => item.data);
-        promises.push(this.insertHashes(hashes, settings));
+        const pipeline = this.redis.getPipeline();
+        if (dataToStore.length > 0) {
+            this.redis.hmSet(pipeline, config.masterKey, dataToStore, config.ttl);
+        }
 
-        await this.comparatorHashRepository.delete(
-            {
-                externalId: {
-                    $in: result.deleted,
-                },
-            },
-        );
+        if (bufferedData.length > 0) {
+            const bufferKey = this.redis.getBufferKey(correlationId);
+            this.redis.hmSet(pipeline, bufferKey, bufferedData, config.ttl ?? 3600);
+        }
 
-        await Promise.all(promises);
+        if (dataToStore.length > 0 || bufferedData.length > 0) {
+            await pipeline.exec();
+        }
 
-        return settings.passAsListOfExistingItems ? [...result.created, ...result.updated] : result;
+        return output;
     }
 
-    public createHash(data: object, excludedFields: string[] = []): string {
-        const hasher = crypto.createHash(this.hashAlgorithm);
+    public async getDeletedItems(config: IConfiguration, correlationId: string): Promise<string[]> {
+        if (!config.totalCount && !config.isLast) {
+            return [];
+        }
+
+        const bufferedKey = this.redis.getBufferKey(correlationId);
+        if (config.totalCount) {
+            const totalBuffered = await this.redis.getCount(bufferedKey);
+            if (totalBuffered !== config.totalCount) {
+                return [];
+            }
+        }
+
+        const bufferedItems = await this.redis.getKeys(bufferedKey);
+        const existingItems = await this.redis.getKeys(config.masterKey);
+        const deletedItems = existingItems.filter((id) => !bufferedItems.includes(id));
+
+        if (deletedItems.length > 0) {
+            const pipeline = this.redis.getPipeline();
+            pipeline.hdel(config.masterKey, ...deletedItems);
+            await pipeline.exec();
+        }
+
+        return deletedItems;
+    }
+
+    public getEmptyOutput(): IOutput {
+        return { created: [], updated: [], deleted: [] };
+    }
+
+    private createHash(data: object, excludedFields: string[] = []): string {
+        const hasher = crypto.createHash(HASH_ALG);
         this.clearData(data, excludedFields);
 
         hasher.update(JSON.stringify(data));
-        return hasher.digest('hex').toString();
+        return hasher.digest('hex');
     }
 
-    private async insertHashes(hashes: Record<string, IHash>, settings: IConfiguration): Promise<unknown> {
-        let items: ComparatorHash[] = [];
-        const promises: Promise<void>[] = [];
-
-        Object.values(hashes).forEach(
-            (item) => {
-                items.push(
-                    {
-                        id: '',
-                        masterKey: settings.masterKey,
-                        hash: item.hash,
-                        externalId: item.data[settings.idField] as string,
-                        ttl: this.getTtl(settings.ttl),
-                    },
-                );
-
-                if (items.length >= 100) {
-                    promises.push(this.comparatorHashRepository.insertMany(items));
-                    items = [];
-                }
-            },
-        );
-
-        if (items.length > 0) {
-            promises.push(this.comparatorHashRepository.insertMany(items));
-        }
-
-        return Promise.all(promises);
-    }
-
-    private async updateHash(dbHash: ComparatorHash, hash: string, masterKey: string): Promise<void> {
-        await this.comparatorHashRepository.updateHash(dbHash.externalId, hash, masterKey, dbHash.ttl);
-    }
-
-    private getTtl(ttl?: number): Date | undefined {
-        if (!ttl) {
-            return undefined;
-        }
-
-        const date = new Date();
-        date.setSeconds(date.getSeconds() + ttl);
-
-        return date;
-    }
-
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private clearData(data: any, excludedFields: string[]): void {
         excludedFields.forEach((path) => {
             const keys = path.split('.');
@@ -134,9 +105,24 @@ export class Comparator {
             const local = keys.slice(0, last).reduce((acc, key) => acc?.[key] ?? null, data);
 
             if (local) {
+                // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
                 delete local[keys[last]];
             }
         });
+    }
+
+    private prepareDataToStore(
+        config: IConfiguration,
+        dataToStore: string[],
+        bufferedData: string[],
+        externalId: string,
+        hash: string,
+    ): void {
+        dataToStore.push(externalId, hash);
+
+        if (config.deleted === true) {
+            bufferedData.push(externalId, hash);
+        }
     }
 
 }

@@ -1,2 +1,2 @@
 export * from './Comparator';
-export * from './types';
+export type * from './types';

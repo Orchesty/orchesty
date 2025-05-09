@@ -11,12 +11,9 @@ services:
             # Envs for tests are load from node-sdk/.jest/testEnvs.js
             JEST_DOCKER: 1
             APP_ENV: debug
-        command: sh -c 'pnpm install && pnpm run start'
+        command: sleep infinity
 
-    mongodb:
-        image: mongo
+    redis:
+        image: redis
         ports:
-            - ${DEV_IP}:27017:27017
-
-volumes:
-    mongodb: {}
+            - ${DEV_IP}:6379:6379

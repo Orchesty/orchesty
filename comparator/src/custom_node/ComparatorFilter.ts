@@ -1,18 +1,17 @@
 import ACommonNode from '@orchesty/nodejs-sdk/dist/lib/Commons/ACommonNode';
+import OnRepeatException from '@orchesty/nodejs-sdk/dist/lib/Exception/OnRepeatException';
 import { CORRELATION_ID } from '@orchesty/nodejs-sdk/dist/lib/Utils/Headers';
 import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
 import ResultCode from '@orchesty/nodejs-sdk/dist/lib/Utils/ResultCode';
 import { validate } from '@orchesty/nodejs-sdk/dist/lib/Utils/Validations';
 import Joi from 'joi';
-import { ComparatorBuffer } from '../model';
 import {
     Comparator,
-    emptyOutput,
     IConfiguration,
     IInput as IComparatorInput,
     IOutput as IComparatorOutput,
 } from '../service/comparator';
-import { ComparatorBufferRepository, ComparatorLockRepository } from '../service/storage/repository';
+import RedisStorage from '../storage/RedisStorage';
 
 export const NAME = 'comparator';
 
@@ -25,9 +24,11 @@ const schema = Joi.object({
         stopOnEmptyArray: Joi.boolean().optional().allow(null),
         ttl: Joi.number().optional().allow(null),
         totalCount: Joi.number().optional().allow(null),
-        isLast: Joi.boolean().optional().allow(null),
         passAsListOfExistingItems: Joi.boolean().optional().allow(null).default(false),
-        isBuffered: Joi.boolean().optional().allow(null),
+        skipComparison: Joi.boolean().optional().allow(null),
+        lock: Joi.boolean().optional().allow(null),
+        deleted: Joi.boolean().optional().allow(null),
+        isLast: Joi.boolean().optional().allow(null),
     }).required(),
 });
 
@@ -35,8 +36,7 @@ export class ComparatorFilter extends ACommonNode {
 
     public constructor(
         private readonly comparator: Comparator,
-        private readonly bufferRepository: ComparatorBufferRepository,
-        private readonly lockRepository: ComparatorLockRepository,
+        private readonly redis: RedisStorage,
     ) {
         super();
     }
@@ -46,77 +46,69 @@ export class ComparatorFilter extends ACommonNode {
     }
 
     @validate(schema)
-    public async processAction(dto: ProcessDto<IInput>): Promise<ProcessDto<IOutput | Record<string, unknown>[]>> {
-        let { items, configuration } = dto.getJsonData(); // eslint-disable-line
-        dto.setNewJsonData({}); // clear message body
+    public async processAction(dto: ProcessDto<IInput>): Promise<ProcessDto<IOutput>> {
+        try {
+            const correlationId = dto.getHeader(CORRELATION_ID) ?? '';
+            const input = dto.getJsonData();
+            dto.setNewJsonData({}); // clear message body
 
-        if (configuration.isBuffered === true) {
-            const buffer = await this.processPage(items, configuration, dto.getHeader(CORRELATION_ID, '') ?? '');
-            if (!buffer) {
-                return dto
-                    .setNewJsonData(emptyOutput)
-                    .setStopProcess(ResultCode.DO_NOT_CONTINUE, 'unclosed Comparator buffer');
+            if (this.isLockable(input.configuration)) {
+                try {
+                    await this.redis.lock(input.configuration.masterKey);
+                } catch (e: unknown) {
+                    return dto.setRepeater(2 * 60, 5, (e as Error).message) as unknown as ProcessDto<IOutput>;
+                }
             }
 
-            items = buffer.data;
+            const output = await this.getOutput(input, correlationId);
+            output.deleted = await this.getDeletedItems(input.configuration, correlationId);
+
+            if (input.configuration.stopOnEmptyArray) {
+                const allLen = output.created.length + output.updated.length + output.deleted.length;
+                if (allLen === 0) {
+                    return dto.setStopProcess(ResultCode.DO_NOT_CONTINUE, 'Empty comparator result') as unknown as ProcessDto<IOutput>;
+                }
+            }
+
+            if (input.configuration.passAsListOfExistingItems) {
+                dto.setNewJsonData([...output.created, ...output.updated]);
+            } else {
+                dto.setNewJsonData(output);
+            }
+
+            if (this.isLockable(input.configuration)) {
+                await this.redis.unlock(input.configuration.masterKey);
+            }
+
+            return dto as unknown as ProcessDto<IOutput>;
+        } catch (e: unknown) {
+            throw new OnRepeatException(60, 20, (e as { message ?: string }).message);
         }
-
-        const acquired = await this.lockRepository.acquireLock(configuration.masterKey);
-        if (!acquired) {
-            return dto
-                .setNewJsonData(emptyOutput)
-                .setRepeater(2 * 60, 5, 'master_key locked for Comparator process');
-        }
-
-        const resultDto = this.processDataSet(items, configuration, dto);
-        await this.lockRepository.unlock(configuration.masterKey);
-
-        return resultDto;
     }
 
-    private async processPage(
-        items: Record<string, unknown>[],
-        configuration: IConfiguration,
-        correlationId: string,
-    ): Promise<ComparatorBuffer | null> {
-        const key = `${configuration.masterKey}_${correlationId}`;
-        const buffer: ComparatorBuffer = {
-            id: '',
-            ttl: new Date(),
-            pages: [],
-            key,
-            data: items,
-            closed: configuration.isLast === true,
-        };
+    private async getOutput(input: IInput, correlationId: string): Promise<IOutput> {
+        if (input.configuration.skipComparison === true) {
+            const output = this.comparator.getEmptyOutput();
+            input.items.forEach((it) => {
+                output.updated.push(it);
+            });
 
-        const info = await this.bufferRepository.upsertBuffer(buffer);
-        if (info.closed && info.total >= (configuration.totalCount ?? 0)) {
-            return this.bufferRepository.findOne({ key });
+            return output;
         }
 
-        return null;
+        return this.comparator.compare(input, correlationId);
     }
 
-    private async processDataSet(
-        items: Record<string, unknown>[],
-        configuration: IConfiguration,
-        dto: ProcessDto,
-    ): Promise<ProcessDto<IOutput | Record<string, unknown>[]>> {
-        const changes = await this.comparator.compare({ items, configuration });
+    private isLockable(config: IConfiguration): boolean {
+        return !config.skipComparison && config.lock === true;
+    }
 
-        if (configuration.stopOnEmptyArray) {
-            if (configuration.passAsListOfExistingItems && !(changes as Record<string, unknown>[]).length) {
-                return dto.setNewJsonData([]).setStopProcess(ResultCode.DO_NOT_CONTINUE, 'empty Comparator result');
-            }
-            if (!configuration.passAsListOfExistingItems
-                && !(changes as IOutput).created.length
-                && !(changes as IOutput).updated.length
-                && !(changes as IOutput).deleted.length) {
-                return dto.setNewJsonData(emptyOutput).setStopProcess(ResultCode.DO_NOT_CONTINUE, 'empty Comparator result');
-            }
+    private async getDeletedItems(config: IConfiguration, correlationId: string): Promise<string[]> {
+        if (config.deleted === true) {
+            return this.comparator.getDeletedItems(config, correlationId);
         }
 
-        return dto.setNewJsonData(changes);
+        return [];
     }
 
 }

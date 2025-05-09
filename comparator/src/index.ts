@@ -5,51 +5,34 @@ import Metrics from '@orchesty/nodejs-sdk/dist/lib/Metrics/Metrics';
 import DatabaseClient from '@orchesty/nodejs-sdk/dist/lib/Storage/Database/Client';
 import Node from '@orchesty/nodejs-sdk/dist/lib/Storage/Database/Document/Node';
 import NodeRepository from '@orchesty/nodejs-sdk/dist/lib/Storage/Database/Document/NodeRepository';
-import { MongoDb } from '@orchesty/nodejs-sdk/dist/lib/Storage/Mongo';
+import Redis from 'ioredis';
 import config from './config';
 import { ComparatorFilter } from './custom_node/ComparatorFilter';
 import { ComparatorInvalidate } from './custom_node/ComparatorInvalidate';
 import { Comparator } from './service/comparator';
-import {
-    ComparatorBufferRepository,
-    ComparatorHashRepository,
-    ComparatorLockRepository,
-} from './service/storage/repository';
+import RedisStorage from './storage/RedisStorage';
 
+export const REDIS_SERVICE_NAME = 'redis';
+
+// eslint-disable-next-line @typescript-eslint/require-await
 export async function initialize(): Promise<void> {
-    const mongo = new MongoDb(config.mongo.dsn);
-    await mongo.connect();
-
-    const hashRepository = new ComparatorHashRepository(mongo, 'ComparatorHash');
+    const redis = new Redis(config.redis.port, config.redis.host);
+    const redisStorage = new RedisStorage(redis);
 
     const loader = new CommonLoader(container);
     const databaseClient = new DatabaseClient(container);
-    const comparator = new Comparator(hashRepository);
+    const comparator = new Comparator(redisStorage);
 
-    const lockRepository = new ComparatorLockRepository(mongo, 'ComparatorLock');
-    const bufferRepository = new ComparatorBufferRepository(comparator, mongo, 'ComparatorBuffer');
-
-    const nodeRepository = new NodeRepository(
-        Node,
-        databaseClient,
-    );
     container.set(loader);
+    container.set(comparator);
     container.set(databaseClient);
-    container.set(mongo);
+    container.setNamed(REDIS_SERVICE_NAME, redis);
+    container.set(redisStorage);
     container.set(new Metrics());
+    container.setRepository(new NodeRepository(Node, databaseClient));
 
-    container.set(hashRepository);
-    container.set(lockRepository);
-    container.set(bufferRepository);
-
-    await container.get(ComparatorHashRepository).createIndices();
-    await container.get(ComparatorLockRepository).createIndices();
-    await container.get(ComparatorBufferRepository).createIndices();
-
-    container.setRepository(nodeRepository);
-
-    container.setCustomNode(new ComparatorFilter(comparator, bufferRepository, lockRepository));
-    container.setCustomNode(new ComparatorInvalidate(hashRepository));
+    container.setCustomNode(new ComparatorFilter(comparator, redisStorage));
+    container.setCustomNode(new ComparatorInvalidate(redisStorage));
 
     routes.push(new CustomNodeRouter(expressApp, loader));
 }

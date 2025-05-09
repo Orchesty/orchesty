@@ -6,8 +6,8 @@ process.env.TENANT_ID = 'test-tenant';
 
 if (process.env.JEST_DOCKER) {
   // --- DOCKER ---
-  process.env.MONGODB_DSN = 'mongodb://mongodb:27017/node-sdk'
+  process.env.REDIS_HOST = 'redis'
 } else {
   // --- LOCALHOST ---
-  process.env.MONGODB_DSN = 'mongodb://127.0.0.15:27017/node-sdk'
+  process.env.REDIS_HOST = '127.0.0.1'
 }

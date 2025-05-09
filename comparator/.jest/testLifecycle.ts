@@ -1,11 +1,6 @@
 import { container } from '@orchesty/nodejs-sdk';
-import { MongoDb } from '@orchesty/nodejs-sdk/dist/lib/Storage/Mongo';
-import { initialize } from '../src';
-import {
-    ComparatorBufferRepository,
-    ComparatorHashRepository,
-    ComparatorLockRepository,
-} from '../src/service/storage/repository';
+import { initialize, REDIS_SERVICE_NAME } from '../src';
+import Redis from "ioredis";
 
 jest.setTimeout(10000);
 
@@ -14,13 +9,13 @@ beforeAll(async function() {
 });
 
 afterAll(async function() {
-    await container.get(MongoDb).disconnect();
+    const redis: Redis = container.getNamed(REDIS_SERVICE_NAME);
+    redis.disconnect();
 });
 
 beforeEach(async function() {
-    await container.get(ComparatorLockRepository).deleteAll();
-    await container.get(ComparatorHashRepository).deleteAll();
-    await container.get(ComparatorBufferRepository).deleteAll();
+    const redis: Redis = container.getNamed(REDIS_SERVICE_NAME);
+    await redis.flushall();
 });
 
 export default class MockDate extends Date {
