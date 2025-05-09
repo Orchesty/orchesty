@@ -1,4 +1,4 @@
-import { Collection, ObjectId, UpdateFilter } from 'mongodb';
+import { Collection, Document, ObjectId, UpdateFilter } from 'mongodb';
 import Services from '../DIContainer/Services';
 import { UsageStatsType } from '../enums/UsageStatsType';
 import { USEvent, USEventType } from '../events';
@@ -23,7 +23,6 @@ export class CloudInstallProcessor extends BaseProcessor implements IProcessor {
         );
     }
 
-    // eslint-disable-next-line @typescript-eslint/require-await
     private async generate(
         metadataRecord: Record<string, unknown>,
         clouds: ICloud[],
@@ -169,7 +168,7 @@ export class CloudInstallProcessor extends BaseProcessor implements IProcessor {
         ) {
             install.cost = price;
 
-            const update: UpdateFilter<IUsageStatsMonthly> = { $set: install };
+            const update: UpdateFilter<Document> = { $set: install };
 
             if (install._id) {
                 await this.usageStatsCollection.updateOne({ _id: install._id }, update);

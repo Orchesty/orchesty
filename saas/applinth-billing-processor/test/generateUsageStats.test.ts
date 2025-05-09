@@ -6,7 +6,8 @@ import Mongo, { CollectionEnum } from '../src/storage/mongo/Mongo';
 import TimeModule from '../src/TimeModule';
 import {
     createFixtureData,
-    generateEventsForSplitImport1, generateEventsForSplitImport2,
+    generateEventsForSplitImport1,
+    generateEventsForSplitImport2,
     generateExpectedUsageStats,
 } from './dataProvider';
 
@@ -15,6 +16,7 @@ describe('generate usageStats', () => {
         const mongo = container.get<Mongo>(Services.MONGO);
         await mongo.dropCollections();
     });
+
     it('ok', async () => {
         const mongo = container.get<Mongo>(Services.MONGO);
 
@@ -22,7 +24,7 @@ describe('generate usageStats', () => {
         await command();
 
         const usageStatsMonthlyAppInstall = await mongo.getUsageStatsCollection(CollectionEnum.USAGE_STATS_MONTHLY)
-            .find({ type: { $in: ['enduser_app_install', 'enduser_app_uninstall', 'min_price_diff'] } }).sort({ start: 1 }).toArray();
+            .find({ type: { $in: ['enduser_app_install', 'enduser_app_uninstall', 'min_price_diff'] } }).sort({ start: 1, _id: 1 }).toArray();
 
         const usageStatsMonthlyCloudInstall = await mongo.getUsageStatsCollection(CollectionEnum.USAGE_STATS_MONTHLY)
             .find({ type: { $in: ['cloud_install', 'cloud_uninstall'] } }).toArray();
@@ -124,6 +126,7 @@ describe('generate usageStats', () => {
             }, tenantId: 't2',
         }]);
     });
+
     it('missing module', async () => {
         const mongo = container.get<Mongo>(Services.MONGO);
 
@@ -136,6 +139,7 @@ describe('generate usageStats', () => {
             assert.deepEqual((e as Error).message, 'Module not found! applinthId=[a1a1a1a1a1a1a1a1a1a1a1a1], appName=[woocommerce]');
         }
     });
+
     it('split run', async () => {
         await createFixtureData(false);
         await generateEventsForSplitImport1();

@@ -1,4 +1,4 @@
-FROM gcr.io/kaniko-project/executor:latest as kaniko
+FROM gcr.io/kaniko-project/executor:latest AS kaniko
 FROM alpine:latest
 
 ENV HOME=/kaniko

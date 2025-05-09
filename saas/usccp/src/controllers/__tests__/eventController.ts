@@ -30,6 +30,7 @@ describe('eventController', () => {
             version: '1',
         });
     });
+
     it('not supported event type', async () => {
         const server = container.get<Express>(Services.SERVER);
         const resp = await supertest(server).put('/').send({
@@ -41,6 +42,7 @@ describe('eventController', () => {
         assert.deepEqual(resp.statusCode, 400);
         assert.deepEqual(resp.text, '{"msg":"Not supported event type!"}');
     });
+
     it('missing data field', async () => {
         const server = container.get<Express>(Services.SERVER);
         const resp = await supertest(server).put('/').send({
@@ -52,6 +54,7 @@ describe('eventController', () => {
         assert.deepEqual(resp.statusCode, 400);
         assert.deepEqual(resp.text, '{"msg":"Missing data field or required params in data for this type of Event!"}');
     });
+
     it('missing fields in data field', async () => {
         const server = container.get<Express>(Services.SERVER);
         const resp = await supertest(server).put('/').send({

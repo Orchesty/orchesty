@@ -44,7 +44,7 @@ function createServer(): Express {
     });
 
     initialize(oasDoc, server, () => {
-        http.createServer(server);
+        http.createServer();
     });
 
     container.set(Services.SERVER, server);
