@@ -74,13 +74,13 @@ export class EndUserAppInstallProcessor extends BaseProcessor implements IProces
         let highestDate = lastHighestDate ? new Date(lastHighestDate) : null;
 
         for (const module of await moduleCollection.find({ applinthId }).toArray()) {
-            const installed: IUsageStatsMonthly[] = await this.usageStatsCollection.find({
+            const installed: IUsageStatsMonthly[] = await (this.usageStatsCollection.find({
                 installed: true,
                 instanceId,
                 end: { $lt: currentDate },
                 appId: module.appName,
                 type: UsageStatsType.ENDUSER_APP_INSTALL,
-            }).sort({ end: 1 }).toArray() as IUsageStatsMonthly[];
+            }).sort({ end: 1 }).toArray()) as IUsageStatsMonthly[];
 
             highestDate = await this.generateMonthlyStatsForModule(
                 currentDate,

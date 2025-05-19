@@ -5,8 +5,8 @@ import (
 	"fmt"
 	log "github.com/hanaboso/go-log/pkg"
 	"github.com/hanaboso/go-mongodb"
-	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 	"regexp"
 )
 
@@ -15,8 +15,8 @@ type ConsumerChecker struct {
 	connection *mongodb.Connection
 }
 type Node struct {
-	ID         primitive.ObjectID `bson:"_id" json:"id"`
-	TopologyId string             `bson:"topology" json:"topology"`
+	ID         bson.ObjectID `bson:"_id" json:"id"`
+	TopologyId string        `bson:"topology" json:"topology"`
 }
 
 const (
@@ -44,11 +44,7 @@ func (c ConsumerChecker) ConsumerCheck(queues []Queue) {
 	defer cancel()
 	reg := regexp.MustCompile("node\\.(\\d\\w+)\\.\\d+")
 
-	findOptions := &options.FindOneOptions{
-		Projection: map[string]interface{}{
-			"topology": 1,
-		},
-	}
+	findOptions := options.FindOne().SetProjection(bson.M{"topology": 1})
 
 	for _, queue := range queues {
 		serviceName, isService := services[queue.Name]
@@ -62,7 +58,7 @@ func (c ConsumerChecker) ConsumerCheck(queues []Queue) {
 
 				if len(nodeMatch) > 1 {
 					nodeId := nodeMatch[1]
-					primNodeId, err := primitive.ObjectIDFromHex(nodeId)
+					primNodeId, err := bson.ObjectIDFromHex(nodeId)
 					var node Node
 
 					if err != nil {
@@ -72,7 +68,7 @@ func (c ConsumerChecker) ConsumerCheck(queues []Queue) {
 					err = c.connection.
 						Database.
 						Collection(config.Mongo.Node).
-						FindOne(ctx, primitive.D{
+						FindOne(ctx, bson.D{
 							{"_id", primNodeId},
 						}, findOptions).
 						Decode(&node)

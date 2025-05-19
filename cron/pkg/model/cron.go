@@ -1,6 +1,8 @@
 package model
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"go.mongodb.org/mongo-driver/v2/bson"
+)
 
 const (
 	Topology   = "topology"
@@ -10,9 +12,9 @@ const (
 )
 
 type Cron struct {
-	ID         primitive.ObjectID `bson:"_id" json:"-"`
-	Topology   string             `bson:"topology" json:"topology"`
-	Node       string             `bson:"node" json:"node"`
-	Time       string             `bson:"time" json:"time"`
-	Parameters string             `bson:"parameters" json:"parameters"`
+	ID         bson.ObjectID `bson:"_id" json:"-"`
+	Topology   string        `bson:"topology" json:"topology"`
+	Node       string        `bson:"node" json:"node"`
+	Time       string        `bson:"time" json:"time"`
+	Parameters string        `bson:"parameters" json:"parameters"`
 }

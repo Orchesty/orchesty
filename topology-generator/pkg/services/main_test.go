@@ -2,6 +2,7 @@ package services
 
 import (
 	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
 	"topology-generator/pkg/config"
 	"topology-generator/pkg/model"
 )
@@ -54,8 +55,8 @@ func (m mockDockerCli) Close() error {
 	return m.mockDockerClose()
 }
 
-func getMockContainer() types.Container {
-	return types.Container{
+func getMockContainer() container.Summary {
+	return container.Summary{
 		ID:         "",
 		Names:      nil,
 		Image:      "",
@@ -69,7 +70,8 @@ func getMockContainer() types.Container {
 		State:      "",
 		Status:     "",
 		HostConfig: struct {
-			NetworkMode string `json:",omitempty"`
+			NetworkMode string            `json:",omitempty"`
+			Annotations map[string]string `json:",omitempty"`
 		}{},
 		NetworkSettings: nil,
 		Mounts:          nil,

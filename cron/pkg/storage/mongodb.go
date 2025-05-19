@@ -2,9 +2,9 @@ package storage
 
 import (
 	"github.com/hanaboso/go-mongodb"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 
 	"cron/pkg/model"
 
@@ -120,7 +120,7 @@ func (storage MongoStorage) UpsertCron(crons []model.Cron) error {
 		}, storage.createUpsert(map[string]interface{}{
 			model.Time:       cron.Time,
 			model.Parameters: cron.Parameters,
-		}), options.Update().SetUpsert(true)); err != nil {
+		}), options.UpdateOne().SetUpsert(true)); err != nil {
 			storage.logContext().Error(err)
 
 			return err

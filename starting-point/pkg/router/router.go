@@ -51,8 +51,9 @@ func Router(routes Routes) *mux.Router {
 
 func authorizationHandler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		apiKey, err := storage.Mongo.FindApiKeyByUserAndScopes("orchesty", []string{"topology:run"})
-		if err == nil && r.Header.Get("orchesty-api-key") != apiKey {
+		headerApiKey := r.Header.Get("Authorization")
+		apiKey, err := storage.Mongo.FindApiKey(headerApiKey, []string{"topology:run"})
+		if err == nil && headerApiKey != apiKey {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
