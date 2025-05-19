@@ -5,12 +5,12 @@ import (
 	"github.com/hanaboso/pipes/bridge/pkg/model"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/v2/bson"
 	"testing"
 )
 
 type message struct {
-	Id string `bson:"_id"`
+	Id bson.ObjectID `bson:"_id"`
 	// Fields used for filtering are separated should we alter headers and make them as a part of message' body
 	CorrelationId    string
 	NodeId           string
