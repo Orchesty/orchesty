@@ -90,13 +90,13 @@ func writeSuccessResponse(writer http.ResponseWriter) {
 	}
 }
 
-func writeErrorResponse(writer http.ResponseWriter, error error) {
+func writeErrorResponse(writer http.ResponseWriter, err error) {
 	status := http.StatusInternalServerError
 	message := "Internal Server Error"
 
-	if reflect.ValueOf(error).Type().String() == "*utils.Error" {
-		status = error.(*utils.Error).Code
-		message = error.(*utils.Error).Message
+	if reflect.ValueOf(err).Type().String() == "*utils.Error" {
+		status = err.(*utils.Error).Code
+		message = err.(*utils.Error).Message
 	}
 
 	writer.Header().Set(contentType, applicationJson)

@@ -19,6 +19,7 @@ type MongoInterface interface {
 	DropApiTokenCollection() error
 	InsertApiToken(user string, scopes []string, key string) error
 	FindApiKeyByUserAndScopes(user string, scopes []string) (string, error)
+	FindApiKey(apiKey string, scopes []string) (string, error)
 	FindNodeByID(nodeID, topologyID string, uiRun bool, allowedTypes []string) *Node
 	FindNodeByName(nodeName, topologyID string) []Node
 	FindTopologyByID(topologyID, nodeID string, uiRun bool, allowedTypes []string) *Topology
@@ -108,6 +109,23 @@ func (m *MongoDefault) FindApiKeyByUserAndScopes(user string, scopes []string) (
 	err := m.connection.Database.
 		Collection(config.MongoDB.ApiTokenColl).
 		FindOne(context, map[string]interface{}{"user": user, "scopes": scopes}).
+		Decode(&apiToken)
+
+	if err != nil {
+		return "", err
+	}
+
+	return apiToken.Key, err
+}
+
+func (m *MongoDefault) FindApiKey(apiKey string, scopes []string) (string, error) {
+	var apiToken ApiToken
+	context, cancel := m.connection.Context()
+	defer cancel()
+
+	err := m.connection.Database.
+		Collection(config.MongoDB.ApiTokenColl).
+		FindOne(context, map[string]interface{}{"key": apiKey, "scopes": scopes}).
 		Decode(&apiToken)
 
 	if err != nil {
@@ -272,6 +290,8 @@ func (m *MongoDefault) FindTopologyByApplication(topologyName, nodeName, token s
 		{"topology", topologyName},
 		{"node", nodeName},
 		{"token", token},
+		{"token", token},
+		{"unsubscribeFailed", bson.M{"$ne": true}},
 	}).Decode(&webhook)
 
 	if err != nil {

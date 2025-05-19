@@ -12,8 +12,8 @@ import (
 	"github.com/hanaboso/pipes/counter/pkg/mongo"
 	"github.com/hanaboso/pipes/counter/pkg/rabbit"
 	amqp "github.com/rabbitmq/amqp091-go"
-	"go.mongodb.org/mongo-driver/bson"
-	md "go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/v2/bson"
+	md "go.mongodb.org/mongo-driver/v2/mongo"
 	"sync"
 	"time"
 )

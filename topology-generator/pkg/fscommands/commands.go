@@ -1,3 +1,4 @@
+// Package fscommands FSCommands
 package fscommands
 
 import (
@@ -33,19 +34,14 @@ func RemoveDirectory(directory string) error {
 }
 
 // Execute Execute
-func Execute(command string, args ...string) (bytes.Buffer, bytes.Buffer, error) {
+func Execute(command string, args ...string) (out bytes.Buffer, stdErr bytes.Buffer, err error) {
 	logContext().Info("CMD: %s %s", command, args)
 
 	cmd := exec.Command(command, args...)
-	var (
-		out    bytes.Buffer
-		stdErr bytes.Buffer
-	)
-
 	cmd.Stdout = &out
 	cmd.Stderr = &stdErr
 
-	err := cmd.Run()
+	err = cmd.Run()
 
 	if err != nil {
 		logContext().Info("Exit:%s", err)

@@ -95,6 +95,10 @@ func TestMongo(t *testing.T) {
 	assert.Nil(t, topology)
 	assert.Nil(t, webhook)
 
+	topology, webhook = Mongo.FindTopologyByApplication(topologyCollection, nodeCollection, "Token2")
+	assert.Nil(t, topology)
+	assert.Nil(t, webhook)
+
 	assert.NotNil(t, Mongo.FindTopologyByName(topologyCollection, nodeCollection))
 }
 
@@ -256,6 +260,15 @@ func prepareData(mongo *mongo.Database) map[string][]string {
 		"deleted":  false,
 	})
 	nodeID := innerResult.InsertedID.(bson.ObjectID).Hex()
+
+	innerResult, _ = mongo.Collection(config.MongoDB.WebhookColl).InsertOne(nil, bson.M{
+		"user":              "User2",
+		"token":             "Token2",
+		"node":              "Node",
+		"topology":          "Topology",
+		"application":       "Application",
+		"unsubscribeFailed": true,
+	})
 
 	innerResult, _ = mongo.Collection(config.MongoDB.WebhookColl).InsertOne(nil, bson.M{
 		"user":        "User",

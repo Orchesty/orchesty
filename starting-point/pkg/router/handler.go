@@ -165,6 +165,11 @@ func handleByApplication(w http.ResponseWriter, r *http.Request) {
 func processMessage(w http.ResponseWriter, r *http.Request, topology *storage.Topology, init map[string]interface{}) {
 	corrId, _ := service.RabbitMq.SendMessage(r, *topology, init)
 
+	if corrId == "" {
+		writeErrorResponse(w, http.StatusInternalServerError, "Error while processing message, please try again later!")
+		return
+	}
+
 	writeResponse(w, map[string]interface{}{"state": "ok", "started": 1, "correlation_id": corrId})
 }
 

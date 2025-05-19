@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/v2/bson"
 
 	"topology-generator/pkg/config"
 	"topology-generator/pkg/model"
@@ -83,7 +83,7 @@ func getAllDockerServices(t *testing.T) {
 
 func getTestTopology() model.Topology {
 
-	id, _ := primitive.ObjectIDFromHex("5cc0474e4e9acc00282bb942")
+	id, _ := bson.ObjectIDFromHex("5cc0474e4e9acc00282bb942")
 
 	return model.Topology{
 		ID:         id,

@@ -1,7 +1,7 @@
 package services
 
 import (
-	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/v2/bson"
 	"time"
 
 	"detector/pkg/config"

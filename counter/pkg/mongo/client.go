@@ -4,10 +4,9 @@ import (
 	"github.com/hanaboso/go-mongodb"
 	"github.com/hanaboso/pipes/counter/pkg/config"
 	"github.com/rs/zerolog/log"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 type MongoDb struct {
@@ -31,9 +30,7 @@ func NewMongo() MongoDb {
 		Keys: bson.M{
 			"created": 1,
 		},
-		Options: &options.IndexOptions{
-			ExpireAfterSeconds: &month,
-		},
+		Options: options.Index().SetExpireAfterSeconds(month),
 	}
 
 	coll := mongoDbCon.Database.Collection(config.MongoDb.CounterCollection)
@@ -51,9 +48,7 @@ func NewMongo() MongoDb {
 		Keys: bson.M{
 			"created": 1,
 		},
-		Options: &options.IndexOptions{
-			ExpireAfterSeconds: &month,
-		},
+		Options: options.Index().SetExpireAfterSeconds(month),
 	}
 
 	coll = mongoDbCon.Database.Collection(config.MongoDb.CounterSubCollection)
@@ -77,9 +72,7 @@ func NewMongo() MongoDb {
 		Keys: bson.M{
 			"created": 1,
 		},
-		Options: &options.IndexOptions{
-			ExpireAfterSeconds: &month,
-		},
+		Options: options.Index().SetExpireAfterSeconds(month),
 	}
 
 	coll = mongoDbCon.Database.Collection(config.MongoDb.CounterErrCollection)
@@ -98,7 +91,7 @@ func (m *MongoDb) Close() {
 	m.connection.Disconnect()
 }
 
-func getId(id string) primitive.ObjectID {
-	oid, _ := primitive.ObjectIDFromHex(id)
+func getId(id string) bson.ObjectID {
+	oid, _ := bson.ObjectIDFromHex(id)
 	return oid
 }

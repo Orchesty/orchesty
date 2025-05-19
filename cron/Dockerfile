@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM hanabosocom/go-base:1.19
+FROM --platform=$BUILDPLATFORM hanabosocom/go-base:1.24
 COPY . .
 ARG TARGETOS TARGETARCH
 RUN GOOS=$TARGETOS GOARCH=$TARGETARCH go build -ldflags='-s -w' -o /cron cmd/cron.go && upx -9 /cron
