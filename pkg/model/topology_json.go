@@ -2,7 +2,7 @@ package model
 
 import (
 	"fmt"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/v2/bson"
 	"strings"
 )
 
@@ -82,16 +82,16 @@ type NodeSettingsJson struct {
 
 // Topology Topology
 type Topology struct {
-	ID         primitive.ObjectID `bson:"_id"`
-	Name       string             `bson:"name"`
-	Version    int                `bson:"version"`
-	Descr      string             `bson:"descr"`
-	Visibility string             `bson:"visibility"`
-	Status     string             `bson:"status"`
-	Enabled    bool               `bson:"enabled"`
-	Bpmn       string             `bson:"bpmn"`
-	RawBpmn    string             `bson:"rawBpmn"`
-	Deleted    bool               `bson:"deleted"`
+	ID         bson.ObjectID `bson:"_id"`
+	Name       string        `bson:"name"`
+	Version    int           `bson:"version"`
+	Descr      string        `bson:"descr"`
+	Visibility string        `bson:"visibility"`
+	Status     string        `bson:"status"`
+	Enabled    bool          `bson:"enabled"`
+	Bpmn       string        `bson:"bpmn"`
+	RawBpmn    string        `bson:"rawBpmn"`
+	Deleted    bool          `bson:"deleted"`
 }
 
 // TopologyBridgeFaucetSettingsJSON TopologyBridgeFaucetSettingsJSON
@@ -107,15 +107,15 @@ type NodeNext struct {
 
 // Node Node
 type Node struct {
-	ID          primitive.ObjectID `bson:"_id"`
-	Name        string             `bson:"name"`
-	Topology    string             `bson:"topology"`
-	Application string             `bson:"application"`
-	Next        []NodeNext         `bson:"next"`
-	Type        string             `bson:"type"`
-	Handler     string             `bson:"handler"`
-	Enabled     bool               `bson:"enabled"`
-	Deleted     bool               `bson:"deleted"`
+	ID          bson.ObjectID `bson:"_id"`
+	Name        string        `bson:"name"`
+	Topology    string        `bson:"topology"`
+	Application string        `bson:"application"`
+	Next        []NodeNext    `bson:"next"`
+	Type        string        `bson:"type"`
+	Handler     string        `bson:"handler"`
+	Enabled     bool          `bson:"enabled"`
+	Deleted     bool          `bson:"deleted"`
 }
 
 // GetServiceName GetServiceName

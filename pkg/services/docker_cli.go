@@ -3,7 +3,7 @@ package services
 import (
 	"context"
 	"fmt"
-	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/client"
 	"topology-generator/pkg/config"
@@ -16,13 +16,13 @@ type dockercli struct {
 }
 
 // GetDockerTopologyInfo GetDockerTopologyInfo
-func (d dockercli) GetDockerTopologyInfo(status string, name string) ([]types.Container, error) {
+func (d dockercli) GetDockerTopologyInfo(status string, name string) ([]container.Summary, error) {
 	filterList := filters.NewArgs()
 
 	filterList.Add("status", status)
 	filterList.Add("label", fmt.Sprintf("com.docker.compose.project=%s", name))
 
-	options := types.ContainerListOptions{
+	options := container.ListOptions{
 		Filters: filterList,
 	}
 
@@ -30,12 +30,12 @@ func (d dockercli) GetDockerTopologyInfo(status string, name string) ([]types.Co
 }
 
 // GetSwarmTopologyInfo GetSwarmTopologyInfo
-func (d dockercli) GetSwarmTopologyInfo(status string, name string) ([]types.Container, error) {
+func (d dockercli) GetSwarmTopologyInfo(status string, name string) ([]container.Summary, error) {
 	filterList := filters.NewArgs()
 	filterList.Add("status", status)
 	filterList.Add("label", fmt.Sprintf("com.docker.stack.namespace=%s", name))
 
-	options := types.ContainerListOptions{
+	options := container.ListOptions{
 		Filters: filterList,
 	}
 
@@ -120,8 +120,8 @@ func getDockerComposePath(dstDir string) string {
 
 // DockerCliSvc DockerCliSvc
 type DockerCliSvc interface {
-	GetDockerTopologyInfo(status string, name string) ([]types.Container, error)
-	GetSwarmTopologyInfo(status string, name string) ([]types.Container, error)
+	GetDockerTopologyInfo(status string, name string) ([]container.Summary, error)
+	GetSwarmTopologyInfo(status string, name string) ([]container.Summary, error)
 	CreateSwarmConfig(topology *model.Topology, generatorConfig config.GeneratorConfig) error
 	RunSwarm(topology *model.Topology, generatorConfig config.GeneratorConfig) error
 	StopSwarm(topology *model.Topology, prefix string) error
