@@ -66,9 +66,11 @@ func (this RabbitSvc) SendMessage(
 	limitHeader, err := GetApplicationLimits(user, topology)
 	if err != nil {
 		config.Logger.Error(fmt.Errorf("cannot fetch sdk's limits: %+v, %v", err, limitHeader))
-		return "", err
 	}
-	h[utils.LimitKey] = limitHeader
+
+	if limitHeader != "" {
+		h[utils.LimitKey] = limitHeader
+	}
 
 	apps := make([]string, len(topology.Applications))
 	for i, app := range topology.Applications {
@@ -93,6 +95,7 @@ func (this RabbitSvc) SendMessage(
 		err = this.publisher.PublishExchangeRoutingKey(m, topology.Node.Exchange(), "1")
 		if err != nil {
 			this.logger.Error(err)
+			return "", err
 		}
 	}
 
