@@ -5,8 +5,8 @@ import (
 	"github.com/hanaboso/pipes/counter/pkg/config"
 	"github.com/hanaboso/pipes/counter/pkg/model"
 	"github.com/rs/zerolog/log"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 	"time"
 )
 
@@ -51,30 +51,6 @@ func (m *MongoDb) GetProcess(id string) (model.Process, error) {
 	return process, err
 }
 
-// TODO: asi se může smazat
-func (m *MongoDb) GetUnmarkedFinishedProcesses() ([]model.Process, error) {
-	var processes []model.Process
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-	result, err := m.connection.Database.Collection(config.MongoDb.CounterCollection).Aggregate(ctx, bson.A{
-		bson.M{
-			"$match": bson.M{
-				"finished": nil,
-				"$expr": bson.M{
-					"$eq": bson.A{
-						"$processedCount",
-						"$total",
-					},
-				},
-			},
-		},
-	})
-
-	err = result.All(ctx, &processes)
-
-	cancel()
-	return processes, err
-}
-
 func (m *MongoDb) GetFinishedProcesses(ids []string) ([]model.Process, error) {
 	var processes []model.Process
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
@@ -106,7 +82,7 @@ func (m *MongoDb) UpdateProcesses(processes, subProcesses, finishes []mongo.Writ
 		log.Fatal().Err(err).Send()
 	}
 
-	err = mongo.WithSession(ctx, sess, func(sc mongo.SessionContext) error {
+	err = mongo.WithSession(ctx, sess, func(sc context.Context) error {
 		_, err := m.connection.Database.Collection(config.MongoDb.CounterCollection).BulkWrite(ctx, processes)
 		if err != nil {
 			_ = sess.AbortTransaction(ctx)
@@ -125,7 +101,7 @@ func (m *MongoDb) UpdateProcesses(processes, subProcesses, finishes []mongo.Writ
 		}
 
 		if len(finishesProcesses) != 0 {
-			if config.App.RunCallbackTopology == true {
+			if config.App.RunCallbackTopology {
 				finished, err = m.GetFinishedProcesses(finishesProcesses)
 				if err != nil {
 					_ = sess.AbortTransaction(ctx)

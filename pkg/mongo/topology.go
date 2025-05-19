@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/hanaboso/pipes/counter/pkg/config"
 	"github.com/hanaboso/pipes/counter/pkg/model"
-	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/v2/bson"
 	"time"
 )
 
