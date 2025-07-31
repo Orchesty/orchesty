@@ -29,6 +29,8 @@ spec:
             - name: http
               containerPort: 8080
           env:
+            - name: TZ
+              value: "{{ .Values.global.timezone }}"
             - name: METRICS_DSN
               valueFrom:
                 secretKeyRef:

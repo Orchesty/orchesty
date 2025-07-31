@@ -9,6 +9,10 @@ parameters:
 	ignoreErrors:
 		- '#Unreachable statement \- code above always terminates.#'
 		-
+			identifier: method.internalClass
+		-
+			identifier: method.internal
+		-
 			message: '#Calling putenv\(\) is forbidden, might overwrite existing variables#'
 			path: ../tests/KernelTestCaseAbstract.php
 		-

@@ -41,23 +41,13 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
     protected NativePasswordHasher $encoder;
 
     /**
-     * ControllerTestCaseAbstract constructor.
-     *
-     * @param non-empty-string $name
-     */
-    public function __construct(string $name = 'test') // @phpstan-ignore-line
-    {
-        parent::__construct($name);
-
-        $this->encoder = new NativePasswordHasher(3);
-    }
-
-    /**
      * @throws Exception
      */
     protected function setUp(): void
     {
         parent::setUp();
+
+        $this->encoder = new NativePasswordHasher(3);
 
         $this->startClient();
     }

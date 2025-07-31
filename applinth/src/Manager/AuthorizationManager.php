@@ -7,8 +7,6 @@ use Jose\Component\Core\AlgorithmManager;
 use Jose\Component\Core\JWK;
 use Jose\Component\Encryption\Algorithm\ContentEncryption\A128GCM;
 use Jose\Component\Encryption\Algorithm\KeyEncryption\ECDHES;
-use Jose\Component\Encryption\Compression\CompressionMethodManager;
-use Jose\Component\Encryption\Compression\Deflate;
 use Jose\Component\Encryption\JWEDecrypter;
 use Jose\Component\Encryption\Serializer\CompactSerializer as JWECompactSerializer;
 use Jose\Component\Encryption\Serializer\JWESerializerManager;
@@ -63,11 +61,7 @@ final readonly class AuthorizationManager
     {
 
         $this->jweSerializerManager = new JWESerializerManager([new JWECompactSerializer()]);
-        $this->jweDecrypter         = new JWEDecrypter(
-            new AlgorithmManager([new ECDHES()]),
-            new AlgorithmManager([new A128GCM()]),
-            new CompressionMethodManager([new Deflate()]),
-        );
+        $this->jweDecrypter         = new JWEDecrypter(new AlgorithmManager([new ECDHES(), new A128GCM()]));
         $this->jwsSerializerManager = new JWSSerializerManager([new CompactSerializer()]);
         $algoManager                = new AlgorithmManager([new HS512()]);
         $this->jwsBuilder           = new JWSBuilder($algoManager);
@@ -116,7 +110,7 @@ final readonly class AuthorizationManager
         $jws = $this->jwsBuilder
             ->create()
             ->withPayload(Json::encode($payload))
-            ->addSignature($this->createJwsJwk(), ['alg' => (new HS512())->name()])
+            ->addSignature($this->createJwsJwk(), ['alg' => new HS512()->name()])
             ->build();
 
         return $this->jwsSerializerManager->serialize(CompactSerializer::NAME, $jws);

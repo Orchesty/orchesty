@@ -1,8 +1,18 @@
 global:
-  orchestyVersion: 2.0.1
+  orchestyVersion: "2.0"
   frontend_url: https://pipes.example.com
   backend_url: https://backend.pipes.example.com
   starting_point_url: http://starting-point.pipes.example.com
+
+  timezone: "Europe/London"
+
+  useQuota: false
+  namespaceQuota:
+    resources:
+      requests.cpu: 1000m
+      requests.memory: 512Mi
+      limits.cpu: 4000m
+      limits.memory: 2Gi
 
   # defaults to internal worker-api service URL
   worker_api_url: ""
@@ -198,6 +208,14 @@ global:
   #   extraEnv:
   #     bar:
   #       value: baz
+  #   replicas: 1
+  #   resources:
+  #     requests:
+  #       memory: 128Mi
+  #       cpu: 50m
+  #     limits:
+  #       memory: 512Mi
+  #       cpu: 1001m
 
   workerApi:
     serviceAnnotations: {}

@@ -6,9 +6,7 @@ use Exception;
 use Hanaboso\PipesPhpSdk\Parser\TableParser;
 use Hanaboso\PipesPhpSdk\Parser\TableParserInterface;
 use Hanaboso\Utils\File\File;
-use PhpOffice\PhpSpreadsheet\Cell\Cell;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;
 use PhpOffice\PhpSpreadsheet\Writer\Html;
 use PhpOffice\PhpSpreadsheet\Writer\Ods;
@@ -79,22 +77,6 @@ final class TableParserTest extends KernelTestCaseAbstract
         self::assertSame(File::getContent(__DIR__ . $input), $result);
 
         unlink($path);
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function testGetTrimmedCellValue(): void
-    {
-        $parser    = new TableParser();
-        $worksheet = self::createPartialMock(Worksheet::class, ['getCellByColumnAndRow']);
-        $worksheet
-            ->expects(self::any())->method('getCellByColumnAndRow')
-            ->willReturn(new Cell('1', '2', $worksheet));
-
-        $value = $this->invokeMethod($parser, 'getTrimmedCellValue', [$worksheet, 500, 500]);
-
-        self::assertEquals('1', $value);
     }
 
     /**

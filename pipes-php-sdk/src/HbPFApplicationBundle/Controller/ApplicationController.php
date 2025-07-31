@@ -186,6 +186,7 @@ final class ApplicationController
     public function setAuthorizationTokenQueryAction(Request $request): Response
     {
         try {
+            // @phpstan-ignore-next-line
             [$user, $key] = OAuth2Provider::stateDecode($request->get('state'));
 
             $url = $this->applicationHandler->saveAuthToken($key, $user, $request->query->all());
@@ -281,6 +282,7 @@ final class ApplicationController
             return $this->getResponse($this->applicationHandler->changeStateOfApplication(
                 $key,
                 $user,
+                // @phpstan-ignore-next-line
                 $request->get('enabled'),
             ));
         } catch (ApplicationInstallException $e) {

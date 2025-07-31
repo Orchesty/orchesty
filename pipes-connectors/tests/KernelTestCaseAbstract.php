@@ -88,7 +88,7 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
             ->method('send')
             ->willReturnOnConsecutiveCalls(
                 ...array_map( // @phpstan-ignore-line
-                    fn($mockCurlMethod) => new ReturnCallback(
+                    fn($mockCurlMethod) => new ReturnCallback( // @phpstan-ignore-line
                         fn(): ResponseDto => new ResponseDto(
                             $mockCurlMethod->getCode(),
                             '',
@@ -189,7 +189,10 @@ abstract class KernelTestCaseAbstract extends KernelTestCase
             ->expects(self::exactly(count($closures)))
             ->method('send')
             ->willReturnOnConsecutiveCalls(
-                ...array_map(static fn(Closure $closure) => new ReturnCallback($closure), $closures),
+                ...array_map(
+                    static fn(Closure $closure) => new ReturnCallback($closure), // @phpstan-ignore-line
+                    $closures,
+                ),
             );
 
         return $sender;

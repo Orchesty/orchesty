@@ -5,16 +5,14 @@ namespace Hanaboso\Applinth\DependencyInjection;
 use Exception;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader;
-use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 /**
  * Class ApplinthExtension
  *
  * @package Hanaboso\Applinth\DependencyInjection
- *
- * @codeCoverageIgnore
  */
 final class ApplinthExtension extends Extension implements PrependExtensionInterface
 {

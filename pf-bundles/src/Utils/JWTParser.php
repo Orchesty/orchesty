@@ -17,6 +17,7 @@ use Jose\Component\Signature\JWSVerifier;
 use Jose\Component\Signature\Serializer\CompactSerializer;
 use Jose\Component\Signature\Serializer\JWSSerializerManager;
 use LogicException;
+use Symfony\Component\Clock\Clock;
 use Throwable;
 
 /**
@@ -47,7 +48,7 @@ final class JWTParser
      */
     public static function getJwtLicense(?string $rootPath = NULL): string
     {
-        return (new CompactSerializer())->serialize(self::jwtVerify($rootPath));
+        return new CompactSerializer()->serialize(self::jwtVerify($rootPath));
     }
 
     /**
@@ -67,21 +68,23 @@ final class JWTParser
         }
 
         try {
-            $jws = (new JWSLoader(
+            $jws = new JWSLoader(
                 new JWSSerializerManager([new CompactSerializer()]),
                 new JWSVerifier(new AlgorithmManager([new RS256()])),
                 NULL,
-            ))->loadAndVerifyWithKey(
+            )->loadAndVerifyWithKey(
                 $jwt,
                 JWKFactory::createFromKeyFile(__DIR__ . '/jwt.pem'),
                 $signature,
             );
 
-            (new ClaimCheckerManager([
-                new ExpirationTimeChecker(),
-                new NotBeforeChecker(),
-                new IssuedAtChecker(),
-            ]))->check(Json::decode($jws->getPayload() ?? '{}'));
+            $clock = new Clock();
+
+            new ClaimCheckerManager([
+                new ExpirationTimeChecker($clock),
+                new NotBeforeChecker($clock),
+                new IssuedAtChecker($clock),
+            ])->check(Json::decode($jws->getPayload() ?? '{}'));
 
             return $jws;
         } catch (Throwable) {

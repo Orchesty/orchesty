@@ -1,13 +1,21 @@
 #!/bin/bash
 
+# Použití
+if [[ $# -ne 2 ]]; then
+  echo "Použití: $0 <username> <token>"
+  exit 1
+fi
+
 SECRET_NAME="hanaboso"
 KEY=".dockerconfigjson"
-NEW_VALUE=""  # Base64 zakódovaná nová hodnota
+USERNAME="$1"
+TOKEN="$2"
 
-if (NEW_VALUE=""); then
-  echo "Nezadali jste base 64 zakódovanou novou hodnotu!!!"
-  exit 1
-fi;
+DOCKER_SECRET=$(kubectl create secret docker-registry muj-secret \
+  --docker-server=dkr.hanaboso.net \
+  --docker-username="$USERNAME" \
+  --docker-password="$TOKEN" \
+  --dry-run=client -o json | jq -r '.data[".dockerconfigjson"]')
 
 # Získání seznamu všech namespaces
 NAMESPACES=$(kubectl get namespaces -o jsonpath='{.items[*].metadata.name}')
@@ -18,7 +26,7 @@ for NAMESPACE in $NAMESPACES; do
     if kubectl get secret $SECRET_NAME -n $NAMESPACE > /dev/null 2>&1; then
         # Aktualizace hodnoty klíče v secretu
         kubectl get secret $SECRET_NAME -n $NAMESPACE -o json | \
-        jq --arg key "$KEY" --arg value "$NEW_VALUE" '.data[$key] = $value' | \
+        jq --arg key "$KEY" --arg value "$DOCKER_SECRET" '.data[$key] = $value' | \
         kubectl apply -f -
 
         if [ $? -eq 0 ]; then

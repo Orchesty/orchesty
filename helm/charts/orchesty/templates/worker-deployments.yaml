@@ -11,7 +11,12 @@ metadata:
 {{ include "pipes.labels" $root | indent 4 }}
 {{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" $root) | indent 4 }}
 spec:
+{{- if $worker.replicas }}
+  replicas: {{ $worker.replicas }}
+{{- else }}
   replicas: 1
+{{- end }}
+
   selector:
     matchLabels:
 {{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" $root) | indent 6 }}
@@ -60,7 +65,11 @@ spec:
                     name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" $root) }}
 
           resources:
+{{- if $worker.resources }}
+{{ toYaml $worker.resources | indent 12 }}
+{{- else }}
 {{ toYaml $root.Values.global.worker.resources | indent 12 }}
+{{- end }}
 
 {{- with $root.Values.global.worker.nodeSelector | default $root.Values.global.nodeSelector }}
       nodeSelector:

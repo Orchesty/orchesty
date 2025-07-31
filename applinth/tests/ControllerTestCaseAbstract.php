@@ -13,8 +13,6 @@ use Hanaboso\Utils\String\Json;
 use Jose\Component\Core\AlgorithmManager;
 use Jose\Component\Encryption\Algorithm\ContentEncryption\A128GCM;
 use Jose\Component\Encryption\Algorithm\KeyEncryption\ECDHES;
-use Jose\Component\Encryption\Compression\CompressionMethodManager;
-use Jose\Component\Encryption\Compression\Deflate;
 use Jose\Component\Encryption\JWEBuilder;
 use Jose\Component\Encryption\Serializer\CompactSerializer as JWECompactSerializer;
 use Jose\Component\Encryption\Serializer\JWESerializerManager;
@@ -206,11 +204,7 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
         ];
 
         $jweSerializer = new JWESerializerManager([new JWECompactSerializer()]);
-        $jweBuilder    = new JWEBuilder(
-            new AlgorithmManager([new ECDHES()]),
-            new AlgorithmManager([new A128GCM()]),
-            new CompressionMethodManager([new Deflate()]),
-        );
+        $jweBuilder    = new JWEBuilder(new AlgorithmManager([new ECDHES(), new A128GCM()]));
 
         $publicKey = '-----BEGIN PUBLIC KEY-----
 MIGbMBAGByqGSM49AgEGBSuBBAAjA4GGAAQAZyRJCpJxZ6cbpkhZOTBSBGE5tkXm
@@ -225,8 +219,8 @@ lMtmVuVUqMJD6dvQr2E=
             ->withPayload(Json::encode($payload))
             ->withSharedProtectedHeader(
                 [
-                    'alg' => (new ECDHES())->name(), // Key Encryption Algorithm
-                    'enc' => (new A128GCM())->name(), // Content Encryption Algorithm
+                    'alg' => new ECDHES()->name(), // Key Encryption Algorithm
+                    'enc' => new A128GCM()->name(), // Content Encryption Algorithm
                 ],
             )
             ->addRecipient($jwkPublic)

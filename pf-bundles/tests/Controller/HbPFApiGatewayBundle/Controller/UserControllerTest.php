@@ -5,7 +5,6 @@ namespace PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller;
 use Exception;
 use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserController;
 use Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController as UserControllerBase;
-use Hanaboso\UserBundle\Handler\UserHandler;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 
@@ -16,7 +15,6 @@ use PipesFrameworkTests\ControllerTestCaseAbstract;
  */
 #[CoversClass(UserController::class)]
 #[CoversClass(UserControllerBase::class)]
-#[CoversClass(UserHandler::class)]
 final class UserControllerTest extends ControllerTestCaseAbstract
 {
 

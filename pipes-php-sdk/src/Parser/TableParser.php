@@ -138,7 +138,7 @@ final class TableParser implements TableParserInterface
      */
     private function getTrimmedCellValue(Worksheet $worksheet, int $column, int $row): string
     {
-        $cell = $worksheet->getCellByColumnAndRow($column, $row);
+        $cell = $worksheet->getCell([$column, $row]);
 
         return Strings::trim($cell->getCalculatedValue());
     }
@@ -153,7 +153,7 @@ final class TableParser implements TableParserInterface
      */
     private function setCellValue(Worksheet $worksheet, int $column, int $row, string $value): void
     {
-        $cell = $worksheet->getCellByColumnAndRow($column, $row);
+        $cell = $worksheet->getCell([$column, $row]);
         $cell->setValue($value);
     }
 

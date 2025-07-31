@@ -5,7 +5,7 @@ RUN GOOS=$TARGETOS GOARCH=$TARGETARCH go build -ldflags='-s -w' -o /detector mai
 
 FROM alpine
 RUN apk update --no-cache && apk upgrade --no-cache && \
-    apk add --no-cache docker curl su-exec
+    apk add --no-cache docker curl su-exec tzdata
 
 RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
 

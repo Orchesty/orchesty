@@ -29,6 +29,8 @@ spec:
             - name: http
               containerPort: 8080
           env:
+            - name: TZ
+              value: "{{ .Values.global.timezone }}"
             - name: K8S_NAMESPACE
               value: {{ .Release.Namespace }}
             - name: PLATFORM
@@ -50,6 +52,8 @@ spec:
               value: "{{ .Values.global.topologyApi.topologiesResources.defaultRequestCpu }}"
             - name: STARTING_POINT_DSN
               value: "{{ .Values.global.starting_point_url }}"
+            - name: APP_PASS_TZ
+              value: "{{ .Values.global.timezone }}"
 {{- range $name, $def := .Values.global.topologyApi.topologiesExtraEnv }}
             - name: APP_PASS_{{ $name }}
               {{- $def | toYaml | nindent 14}}
