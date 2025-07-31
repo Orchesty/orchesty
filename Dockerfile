@@ -24,6 +24,8 @@ RUN npm run build
 
 FROM node:slim AS prod
 
+RUN apt update && apt upgrade && apt install tzdata
+
 ENV APP_PORT=8000
 ENV NODE_ENV=prod
 
