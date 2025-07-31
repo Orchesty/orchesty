@@ -17,7 +17,7 @@
    `git subrepo pull helm/charts`
 1. Update version in `helm/charts/orchesty/Chart.yaml`
 1. Update `helm/charts/orchesty/RELEASE_NOTES.md`
-1. Commit the changes
+1. Commit changes
 1. Push changes to subrepo \
    `git subrepo push helm/charts`
 1. Push changes (including now updated subrepo link) to monorepo \

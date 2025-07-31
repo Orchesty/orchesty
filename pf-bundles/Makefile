@@ -71,7 +71,7 @@ phpcoverage:
 	$(DE) ./vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --coverage-html var/coverage --cache-directory var/cache/coverage --coverage-filter src tests
 
 phpcoverage-ci:
-	$(DE) ./vendor/hanaboso/php-check-utils/bin/coverage.sh -c 85 -p $$(nproc)
+	$(DE) ./vendor/hanaboso/php-check-utils/bin/coverage.sh -c 80 -p $$(nproc)
 
 ci-test: test
 

@@ -1,0 +1,11 @@
+---
+{{- $componentName := "quota" -}}
+{{- if ( eq .Values.global.useQuota true) }}
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: {{ include "pipes.fullname" (dict "suffix" $componentName "noPrefix" true "root" .) }}
+spec:
+  hard:
+{{ toYaml .Values.global.namespaceQuota.resources | indent 6 }}
+{{- end }}

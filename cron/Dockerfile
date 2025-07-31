@@ -5,7 +5,6 @@ RUN GOOS=$TARGETOS GOARCH=$TARGETARCH go build -ldflags='-s -w' -o /cron cmd/cro
 
 FROM alpine
 RUN apk update --no-cache && apk upgrade --no-cache && apk add curl tzdata --no-cache
-ENV TZ=Europe/Prague
 
 COPY --from=0 /cron /bin/cron
 WORKDIR /bin

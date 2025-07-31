@@ -2,15 +2,10 @@
     "name": "orchesty/applinth",
     "description": "Orchesty - applinth - Backend",
     "license": "Elastic-2.0",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "require": {
         "doctrine/mongodb-odm-bundle": "^5.3",
-        "orchesty/backend": "^3.2",
-        "web-token/jwt-encryption": "^3.4",
-        "web-token/jwt-encryption-algorithm-aesgcm": "^3.4",
-        "web-token/jwt-encryption-algorithm-ecdh-es": "^3.4",
-        "web-token/jwt-encryption-algorithm-rsa": "^3.4",
-        "web-token/jwt-signature-algorithm-eddsa": "^3.4"
+        "orchesty/backend": "^3.2"
     },
     "require-dev": {
         "hanaboso/php-check-utils": "^1.7"

@@ -235,9 +235,9 @@ final class UserControllerTest extends ControllerTestCaseAbstract
         $controller = new UserController($handler);
         $controller->setLogger(new Logger('logger'));
 
-        $user = (new User())
-            ->setEmail('email@example.com')
-            ->setPassword('passw0rd');
+        $user = new User()
+            ->setPassword('passw0rd')
+            ->setEmail('email@example.com');
         $this->pfd($user);
 
         self::expectException(MongoDBException::class);

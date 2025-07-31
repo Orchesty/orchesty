@@ -20,7 +20,7 @@ services:
         command: sh -c 'pnpm install && pnpm run start'
 
     php-sdk:
-        image: hanabosocom/php-dev:php-8.3-alpine
+        image: hanabosocom/php-dev:php-8.4-alpine
         user: ${DEV_UID}:${DEV_GID}
         environment:
             PHP_WEBROOT: /var/www/pipes/clients/demo/pipes-api/public
@@ -46,7 +46,7 @@ services:
         command: sh -c 'pnpm install && pnpm run start'
 
     starting-point:
-        image: hanabosocom/go-base:1.19
+        image: hanabosocom/go-base:1.24
         user: ${DEV_UID}:${DEV_GID}
         environment:
             DEV_UID: ${DEV_UID}
@@ -77,7 +77,7 @@ services:
             - ../topology:/srv/topology
 
     cron-api:
-        image: hanabosocom/go-base:1.19
+        image: hanabosocom/go-base:1.24
         user: ${DEV_UID}:${DEV_GID}
         environment:
             DEV_UID: ${DEV_UID}
@@ -92,7 +92,7 @@ services:
         security_opt: ['seccomp:unconfined']
 
     backend:
-        image: hanabosocom/php-dev:php-8.3-alpine
+        image: hanabosocom/php-dev:php-8.4-alpine
         user: ${DEV_UID}:${DEV_GID}
         ports:
             - ${DEV_IP}:8080:80
@@ -150,7 +150,7 @@ services:
             - MONGO_COLLECTION=Logs
 
     multi-counter:
-        image: hanabosocom/go-base:1.19
+        image: hanabosocom/go-base:1.24
         user: ${DEV_UID}:${DEV_GID}
         environment:
             RABBITMQ_DSN: ${RABBITMQ_DSN}
@@ -165,7 +165,7 @@ services:
             - ./../../counter/:/app:cached
 
     limiter:
-        image: hanabosocom/go-base:1.19
+        image: hanabosocom/go-base:1.24
         user: ${DEV_UID}:${DEV_GID}
         environment:
             LIMITER_ADDR: 0.0.0.0:3333
@@ -177,7 +177,7 @@ services:
             - ./../../limiter/:/app:cached
 
     detector:
-        image: hanabosocom/go-base:1.19
+        image: hanabosocom/go-base:1.24
         user: ${DEV_UID}:${DEV_GID}
         environment:
             APP_DEBUG: 'true'
@@ -192,7 +192,7 @@ services:
         command: go run main.go
 
     frontend:
-        image: hanabosocom/nodejs-build:dev
+        build: ./../../app-ui/docker
         user: ${DEV_UID}:${DEV_GID}
         working_dir: /var/www/app-ui
         environment:
@@ -205,7 +205,7 @@ services:
         command: sh -c 'pnpm install && pnpm run serve'
 
     applinth-marketplace-ui:
-        image: hanabosocom/nodejs-build:dev
+        build: ./../../applinth-marketplace-ui/docker
         user: ${DEV_UID}:${DEV_GID}
         working_dir: /var/www/applinth-marketplace-ui
         environment:
@@ -218,7 +218,7 @@ services:
         command: sh -c 'pnpm install && pnpm start'
 
     applinth-admin-ui:
-        image: hanabosocom/nodejs-build:dev
+        build: ./../../applinth-admin-ui/docker
         user: ${DEV_UID}:${DEV_GID}
         working_dir: /var/www/applinth-admin-ui
         environment:

@@ -25,6 +25,8 @@ spec:
             - name: http
               containerPort: 80
           env:
+            - name: TZ
+              value: "{{ .Values.global.timezone }}"
             - name: BACKEND_URL
               value: "{{ .Values.global.backend_url }}"
             - name: STARTING_POINT_URL

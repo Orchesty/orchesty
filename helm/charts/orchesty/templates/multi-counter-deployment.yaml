@@ -30,6 +30,8 @@ spec:
             - name: http
               containerPort: 8005
           env:
+            - name: TZ
+              value: "{{ .Values.global.timezone }}"
             - name: UDP_LOGGER_URL
               value: {{ include "pipes.fullname" (dict "suffix" "fluentd" "root" .) }}:5120
             - name: RABBITMQ_DSN

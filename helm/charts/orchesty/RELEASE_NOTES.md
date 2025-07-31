@@ -1,5 +1,14 @@
 # Release Notes
 
+## 2.1.7
+
+### Changes
+
+- Helm: Added the option to set resource quota for namespace
+- Helm: Added the option to set timezone
+- Worker: Added the option to set resources for each worker separately
+- Worker: Added the option to set replicas for each worker separately
+
 ## 2.1.6
 
 ### Changes

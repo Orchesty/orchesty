@@ -26,6 +26,8 @@ spec:
             - name: http
               containerPort: 8080
           env:
+            - name: TZ
+              value: "{{ .Values.global.timezone }}"
             - name: MONGO_DSN
               valueFrom:
                 secretKeyRef:
