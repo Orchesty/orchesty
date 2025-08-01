@@ -19,7 +19,7 @@ include:
     - "DST_TAG=$(echo ${CI_COMMIT_REF_NAME} | sed -nE 's/v([0-9]+)\\.([0-9]+)\\.([0-9]+)/\\1.\\2.\\3/p')"
     - skopeo login --username "${CI_REGISTRY_USER}" --password "${CI_REGISTRY_PASSWORD}" "${REGISTRY}"
     - skopeo login --username "${RELEASE_REGISTRY_USERNAME}" --password "${RELEASE_REGISTRY_PASSWORD}" "$(echo $REGISTRY_RELEASE | sed -E 's|([^/]+).*|\1|')"
-    - skopeo copy docker://${REGISTRY}/${RELEASE_IMAGE}:${SRC_TAG} docker://${REGISTRY_RELEASE}/${RELEASE_IMAGE}:${DST_TAG}
+    - skopeo -multi-arch all copy docker://${REGISTRY}/${RELEASE_IMAGE}:${SRC_TAG} docker://${REGISTRY_RELEASE}/${RELEASE_IMAGE}:${DST_TAG}
 
   tags:
     - docker
@@ -39,7 +39,7 @@ include:
     - "DST_TAG=$(echo ${CI_COMMIT_REF_NAME} | sed -nE 's/v([0-9]+)\\.([0-9]+)\\.[0-9]+/\\1.\\2/p')"
     - skopeo login --username "${CI_REGISTRY_USER}" --password "${CI_REGISTRY_PASSWORD}" "${REGISTRY}"
     - skopeo login --username "${RELEASE_REGISTRY_USERNAME}" --password "${RELEASE_REGISTRY_PASSWORD}" "$(echo $REGISTRY_RELEASE | sed -E 's|([^/]+).*|\1|')"
-    - skopeo copy docker://${REGISTRY}/${RELEASE_IMAGE}:${SRC_TAG} docker://${REGISTRY_RELEASE}/${RELEASE_IMAGE}:${DST_TAG}
+    - skopeo -multi-arch all copy docker://${REGISTRY}/${RELEASE_IMAGE}:${SRC_TAG} docker://${REGISTRY_RELEASE}/${RELEASE_IMAGE}:${DST_TAG}
 
   tags:
     - docker

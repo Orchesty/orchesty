@@ -21,8 +21,7 @@ Linux:
 # Build
 build: .env
 	cp .dockerignore ../.dockerignore
-	if ! docker buildx inspect multi; then docker buildx create --name multi --platform linux/amd64,linux/arm64/v8 --use --bootstrap; fi
-	docker buildx build -f Dockerfile --pull --push --platform linux/amd64,linux/arm64/v8 -t $(IMAGE) ../. || rm ../.dockerignore
+	docker buildx build --pull --push --platform linux/amd64,linux/arm64/v8 -t $(IMAGE) . || rm ../.dockerignore
 	rm ../.dockerignore || true
 
 docker-compose.ci.yml:

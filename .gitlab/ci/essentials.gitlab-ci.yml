@@ -37,10 +37,6 @@ default:
   image: docker:28.0.4-alpine3.21
 
   variables:
-    #DOCKER_TLS_CERTDIR: "/certs"
-    DOCKER_TLS_CERTDIR: ""
-    #DOCKER_CERT_PATH: "${DOCKER_TLS_CERTDIR}/client"
-    #DOCKER_TLS_VERIFY: 1
     DOCKER_DRIVER: overlay2
 
   services:
@@ -53,12 +49,10 @@ default:
   tags:
     - dind
 
-
 .base-tooling:
   image: ${REGISTRY}/ci-tooling:latest
   tags:
     - docker
-
 
 collect-tags:
   stage: prepare
