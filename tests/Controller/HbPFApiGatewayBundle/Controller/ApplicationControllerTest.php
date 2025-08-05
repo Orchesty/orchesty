@@ -31,6 +31,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
      */
     public function testListApplicationsAction(): void
     {
+        $this->createApplication();
+
         $this->assertResponseLogged($this->jwt, __DIR__ . '/data/ApplicationController/listApplicationsRequest.json');
     }
 
@@ -39,6 +41,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
      */
     public function testGetApplicationAction(): void
     {
+        $this->createApplication();
+
         $this->assertResponseLogged($this->jwt, __DIR__ . '/data/ApplicationController/getApplicationRequest.json');
     }
 
@@ -83,6 +87,8 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
      */
     public function testInstallApplicationAction(): void
     {
+        $this->createApplication();
+
         $this->assertResponseLogged($this->jwt, __DIR__ . '/data/ApplicationController/installApplicationRequest.json');
     }
 
