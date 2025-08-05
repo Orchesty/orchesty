@@ -55,6 +55,7 @@
       "successCount": "Success runs",
       "errorsCount": "Error count",
       "noAppsAvailable": "No apps available",
+      "noSdksAvailable": "Choose one of available workers",
       "info": "Info",
       "activated": "Activated",
       "notActivated": "Not activated",

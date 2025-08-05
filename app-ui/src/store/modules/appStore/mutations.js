@@ -13,6 +13,9 @@ export default {
     state.appsInstalled = data.items
   },
   [APP_STORE.MUTATIONS.RESET]: (state) => {
-    resetState(state, createState())
+    resetState(state, createState(), ["sdk"])
+  },
+  [APP_STORE.MUTATIONS.GET_SDK]: (state, data) => {
+    state.sdk = data
   },
 }

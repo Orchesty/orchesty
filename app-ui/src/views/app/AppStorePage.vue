@@ -1,5 +1,5 @@
 <template>
-  <content-tabs :title="$t('navigation.appStore')" :tabs="tabs" />
+  <content-tabs :title="$t('navigation.appStore')" :tabs="tabs" is-app-store />
 </template>
 
 <script>

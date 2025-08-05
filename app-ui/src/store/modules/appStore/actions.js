@@ -1,15 +1,17 @@
 import { APP_STORE } from "./types"
-import { callApi, dispatchRoot, withNamespace } from "../../utils"
+import { callApi } from "../../utils"
 import { API } from "../../../api"
 import { addSuccessMessage } from "@/services/utils/flashMessages"
-import { DATA_GRIDS } from "@/services/enums/dataGridEnums"
-import { GRID } from "@/store/modules/grid/types"
 
 export default {
-  [APP_STORE.ACTIONS.GET_AVAILABLE_APPS]: async ({ dispatch, commit }) => {
+  [APP_STORE.ACTIONS.GET_AVAILABLE_APPS]: async (
+    { dispatch, commit },
+    payload,
+  ) => {
     try {
       const response = await callApi(dispatch, {
         requestData: { ...API.appStore.getAvailableApps },
+        params: payload,
       })
 
       commit(APP_STORE.MUTATIONS.GET_AVAILABLE_APPS, response)
@@ -60,16 +62,6 @@ export default {
         requestData: { ...API.appStore.uninstallApp },
         params: payload,
       })
-
-      dispatchRoot(
-        dispatch,
-        withNamespace(DATA_GRIDS.INSTALLED_APPS, GRID.ACTIONS.GRID_FETCH),
-        {
-          namespace: DATA_GRIDS.INSTALLED_APPS,
-          params: { id: payload.userId },
-        },
-      )
-
       addSuccessMessage(
         dispatch,
         API.admin.delete.id,
@@ -211,5 +203,8 @@ export default {
   },
   [APP_STORE.ACTIONS.RESET]: async ({ commit }) => {
     commit(APP_STORE.MUTATIONS.RESET)
+  },
+  [APP_STORE.ACTIONS.GET_SDK]: async ({ commit }, payload) => {
+    commit(APP_STORE.MUTATIONS.GET_SDK, payload)
   },
 }

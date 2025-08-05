@@ -328,6 +328,7 @@ export default {
   computed: {
     ...mapGetters(APP_STORE.NAMESPACE, {
       appActive: APP_STORE.GETTERS.GET_ACTIVE_APP,
+      sdk: APP_STORE.GETTERS.GET_SDK,
     }),
     ...mapGetters(TOPOLOGIES.NAMESPACE, {
       topologiesAll: TOPOLOGIES.GETTERS.GET_ALL_TOPOLOGIES,
@@ -385,11 +386,13 @@ export default {
       APP_STORE.ACTIONS.AUTHORIZE,
       APP_STORE.ACTIONS.ACTIVATE,
       APP_STORE.ACTIONS.RESET,
+      APP_STORE.ACTIONS.GET_SDK,
     ]),
 
     async uninstall(key) {
       const isInstalled = await this[APP_STORE.ACTIONS.UNINSTALL_APP_REQUEST]({
         key,
+        sdk: this.sdk,
       })
       if (isInstalled) {
         await this.$router.push({ name: ROUTES.APP_STORE.INSTALLED_APPS })
@@ -402,6 +405,7 @@ export default {
         if (this.webhooksSettings[name].enabled) {
           const result = await this[APP_STORE.ACTIONS.UNSUBSCRIBE_WEBHOOK]({
             key: this.appActive.key,
+            sdk: this.sdk,
             data: { name, topology: this.webhooksSettings[name].topology },
           })
           if (result) {
@@ -414,6 +418,7 @@ export default {
         } else {
           const result = await this[APP_STORE.ACTIONS.SUBSCRIBE_WEBHOOK]({
             key: this.appActive.key,
+            sdk: this.sdk,
             data: { name, topology: this.webhooksSettings[name].topology },
           })
           if (result) {
@@ -432,6 +437,7 @@ export default {
 
       const isActivated = await this[APP_STORE.ACTIONS.ACTIVATE]({
         key: this.$route.params.key,
+        sdk: this.sdk,
         data: {
           enabled: newState,
         },
@@ -474,21 +480,26 @@ export default {
 
       const isSaved = await this[APP_STORE.ACTIONS.SAVE_APP_SETTINGS]({
         key: this.appActive.key,
+        sdk: this.sdk,
         data: formSettings,
       })
 
       if (isSaved) {
         await this[APP_STORE.ACTIONS.GET_INSTALLED_APP]({
           key: this.$route.params.key,
+          sdk: this.sdk,
         })
       }
     },
     async authorizeApp() {
       const authorizeURL = new URL(
-        `/api/applications/${this.appActive.key}/authorize`,
+        `/api/applications/${this.appActive.key}/authorize?sdk=${this.sdk}`,
         config.backend.apiBaseUrl,
       )
-      authorizeURL.searchParams.append("redirect_url", window.location.href)
+      authorizeURL.searchParams.append(
+        "redirect_url",
+        `${window.location.href}?sdk=${this.sdk}`,
+      )
       authorizeURL.searchParams.append(
         "Authorization",
         localStorage.getItem(LOCAL_STORAGE.USER_TOKEN),
@@ -626,10 +637,28 @@ export default {
     },
   },
   async created() {
-    await this[TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES]()
-    await this[APP_STORE.ACTIONS.GET_INSTALLED_APP]({
-      key: this.$route.params.key,
-    })
+    if (this.sdk) {
+      await this[TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES]()
+      await this[APP_STORE.ACTIONS.GET_INSTALLED_APP]({
+        key: this.$route.params.key,
+        sdk: this.sdk,
+      })
+    } else if (this.$route.query.sdk) {
+      this[APP_STORE.ACTIONS.GET_SDK](this.$route.query.sdk)
+
+      await this[TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES]()
+      await this[APP_STORE.ACTIONS.GET_INSTALLED_APP]({
+        key: this.$route.params.key,
+        sdk: this.$route.query.sdk,
+      })
+
+      await this.$router.push({
+        name: ROUTES.APP_STORE.INSTALLED_APP,
+        params: { key: this.$route.params.key },
+      })
+    } else {
+      await this.$router.push({ name: ROUTES.APP_STORE.INSTALLED_APPS })
+    }
   },
   beforeDestroy() {
     this[APP_STORE.ACTIONS.RESET]()
