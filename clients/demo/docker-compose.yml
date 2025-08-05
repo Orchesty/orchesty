@@ -200,13 +200,13 @@ services:
         user: ${DEV_UID}:${DEV_GID}
         working_dir: /var/www/app-ui
         environment:
-            VUE_APP_BACKEND_URL: ${BACKEND_URL}
-            VUE_APP_STARTINGPONT_URL: ${DEV_IP}:82
+            VITE_BACKEND_URL: ${BACKEND_URL}
+            VITE_STARTINGPONT_URL: ${DEV_IP}:82
         ports:
-            - ${DEV_IP}:80:8080
+            - ${DEV_IP}:80:3000
         volumes:
             - ../../app-ui:/var/www/app-ui:cached
-        command: sh -c 'pnpm install && pnpm run serve'
+        command: sh -c 'pnpm install && pnpm run start'
 
     applinth-marketplace-ui:
         build: ./../../applinth-marketplace-ui/docker

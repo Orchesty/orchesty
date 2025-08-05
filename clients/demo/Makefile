@@ -57,6 +57,10 @@ init: up
 	$(DE_DEV) backend bin/console service:install php-sdk php-sdk:80
 	$(DE_DEV) backend bin/console topology:install -c -u --force node-sdk:8080
 	$(DE_DEV) backend bin/console api-token:create --key "$(shell grep 'ORCHESTY_API_KEY' .env | cut -d "=" -f2)"
+	$(DE_DEV) backend bin/console user:create "$(shell grep 'ORCHESTY_USER' .env | cut -d "=" -f2)" "$(shell grep 'ORCHESTY_PASSWORD' .env | cut -d "=" -f2)"
 
 destroy: .env .lo0-down
 	$(DC_DEV) down -v
+
+applinth-link:
+	echo "http://$(shell grep 'DEV_IP' .env | cut -d "=" -f2):81/?u=$$($(DE_DEV) applinth-marketplace-ui /bin/bash -c 'node JWEGen.js')"
