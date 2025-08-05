@@ -1,83 +1,83 @@
 export default {
   getInstalledApps: {
     id: "APP_STORE_LIST_INSTALLED_APPS",
-    request: () => ({
-      url: `/applications/installed`,
+    request: ({ sdk }) => ({
+      url: `/applications/installed?sdk=${sdk}`,
       method: "GET",
     }),
   },
   getAvailableApps: {
     id: "APP_STORE_LIST_AVAILABLE_APPS",
-    request: () => ({
-      url: `/applications/available`,
+    request: ({ sdk }) => ({
+      url: `/applications/available?sdk=${sdk}`,
       method: "GET",
     }),
   },
   getInstalledApp: {
     id: "APP_STORE_GET_INSTALLED_APP",
-    request: ({ key }) => ({
-      url: `/applications/${key}`,
+    request: ({ key, sdk }) => ({
+      url: `/applications/${key}?sdk=${sdk}`,
       method: "GET",
     }),
   },
   getAvailableApp: {
     id: "APP_STORE_GET_AVAILABLE_APP",
-    request: (key) => ({
-      url: `/applications/${key}/preview`,
+    request: ({ key, sdk }) => ({
+      url: `/applications/${key}/preview?sdk=${sdk}`,
       method: "GET",
     }),
   },
   installApp: {
     id: "APP_STORE_INSTALL_APP",
-    request: ({ key }) => ({
-      url: `/applications/${key}`,
+    request: ({ key, sdk }) => ({
+      url: `/applications/${key}?sdk=${sdk}`,
       method: "POST",
       data: {},
     }),
   },
   uninstallApp: {
     id: "APP_STORE_UNINSTALL_APP",
-    request: ({ key }) => ({
-      url: `/applications/${key}`,
+    request: ({ key, sdk }) => ({
+      url: `/applications/${key}?sdk=${sdk}`,
       method: "DELETE",
     }),
   },
   saveSettings: {
     id: "APP_STORE_SAVE_SETTINGS",
-    request: ({ key, data }) => ({
-      url: `/applications/${key}`,
+    request: ({ key, sdk, data }) => ({
+      url: `/applications/${key}?sdk=${sdk}`,
       method: "PUT",
       data,
     }),
   },
   subscribeToWebhook: {
     id: "APP_STORE_WEBHOOK_SUBSCRIBE",
-    request: ({ key, data }) => ({
-      url: `/webhook/applications/${key}/subscribe`,
+    request: ({ key, sdk, data }) => ({
+      url: `/webhook/applications/${key}/subscribe?sdk=${sdk}`,
       method: "POST",
       data,
     }),
   },
   unsubscribeToWebhook: {
     id: "APP_STORE_WEBHOOK_UNSUBSCRIBE",
-    request: ({ key, data }) => ({
-      url: `/webhook/applications/${key}/unsubscribe`,
+    request: ({ key, sdk, data }) => ({
+      url: `/webhook/applications/${key}/unsubscribe?sdk=${sdk}`,
       method: "POST",
       data,
     }),
   },
   setPasswordApp: {
     id: "APP_SET_PASSWORD",
-    request: ({ key, data }) => ({
-      url: `/applications/${key}/password`,
+    request: ({ key, sdk, data }) => ({
+      url: `/applications/${key}/password?sdk=${sdk}`,
       method: "PUT",
       data,
     }),
   },
   activateApp: {
     id: "ACTIVATE_APP",
-    request: ({ key, data }) => ({
-      url: `/applications/${key}/changeState`,
+    request: ({ key, sdk, data }) => ({
+      url: `/applications/${key}/changeState?sdk=${sdk}`,
       method: "PUT",
       data,
     }),

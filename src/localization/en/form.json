@@ -27,6 +27,7 @@
     "confirm": "repeat password",
     "register": "register",
     "changeSdkValue": "change diagram sdk value with",
+    "changeSdkValueAppStore": "Choose one of available workers",
     "description": "description",
     "topology": "Topology",
     "topologyNode": "Topology node",

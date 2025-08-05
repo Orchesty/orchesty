@@ -60,6 +60,7 @@ export default {
     ...mapGetters(AUTH.NAMESPACE, { userId: AUTH.GETTERS.GET_LOGGED_USER_ID }),
     ...mapGetters(APP_STORE.NAMESPACE, {
       appActive: APP_STORE.GETTERS.GET_ACTIVE_APP,
+      sdk: APP_STORE.GETTERS.GET_SDK,
     }),
   },
   methods: {
@@ -71,6 +72,7 @@ export default {
     async install() {
       let isInstalled = await this[APP_STORE.ACTIONS.INSTALL_APP_REQUEST]({
         key: this.$route.params.key,
+        sdk: this.sdk,
       })
       if (isInstalled) {
         await this.$router.push({
@@ -85,7 +87,14 @@ export default {
     },
   },
   async created() {
-    await this[APP_STORE.ACTIONS.GET_AVAILABLE_APP](this.$route.params.key)
+    if (this.sdk) {
+      await this[APP_STORE.ACTIONS.GET_AVAILABLE_APP]({
+        key: this.$route.params.key,
+        sdk: this.sdk,
+      })
+    } else {
+      await this.$router.push({ name: ROUTES.APP_STORE.AVAILABLE_APPS })
+    }
   },
   beforeDestroy() {
     this[APP_STORE.ACTIONS.RESET]()

@@ -9,7 +9,8 @@
       <v-container fluid>
         <v-row>
           <v-col class="px-0">
-            <span>{{ $t("page.status.noAppsAvailable") }}</span>
+            <span v-if="sdk">{{ $t("page.status.noAppsAvailable") }}</span>
+            <span v-else>{{ $t("page.status.noSdksAvailable") }}</span>
           </v-col>
         </v-row>
       </v-container>
@@ -94,6 +95,7 @@ export default {
     ...mapGetters(APP_STORE.NAMESPACE, {
       appsAvailable: APP_STORE.GETTERS.GET_AVAILABLE_APPS,
       appsInstalled: APP_STORE.GETTERS.GET_INSTALLED_APPS,
+      sdk: APP_STORE.GETTERS.GET_SDK,
     }),
     isRequestSending() {
       return this[REQUESTS_STATE.GETTERS.GET_STATE]([
@@ -102,6 +104,13 @@ export default {
         API.appStore.getInstalledApp.id,
         API.appStore.installApp.id,
       ]).isSending
+    },
+  },
+  watch: {
+    sdk: async function () {
+      await this[APP_STORE.ACTIONS.GET_AVAILABLE_APPS]({ sdk: this.sdk })
+      await this[APP_STORE.ACTIONS.GET_INSTALLED_APPS]({ sdk: this.sdk })
+      this.mergeWithInstalledApps()
     },
   },
   methods: {
@@ -143,10 +152,10 @@ export default {
     },
     async install(key) {
       this.appInProgress = key
-      await this[APP_STORE.ACTIONS.INSTALL_APP_REQUEST]({ key })
-      await this[APP_STORE.ACTIONS.GET_AVAILABLE_APPS]()
-      await this[APP_STORE.ACTIONS.GET_INSTALLED_APPS]()
-      await this[APP_STORE.ACTIONS.GET_INSTALLED_APP]({ key })
+      await this[APP_STORE.ACTIONS.INSTALL_APP_REQUEST]({ key, sdk: this.sdk })
+      await this[APP_STORE.ACTIONS.GET_AVAILABLE_APPS]({ sdk: this.sdk })
+      await this[APP_STORE.ACTIONS.GET_INSTALLED_APPS]({ sdk: this.sdk })
+      await this[APP_STORE.ACTIONS.GET_INSTALLED_APP]({ key, sdk: this.sdk })
       this.appInProgress = null
       await this.$router.push({
         name: ROUTES.APP_STORE.INSTALLED_APP,
@@ -155,9 +164,11 @@ export default {
     },
   },
   async created() {
-    await this[APP_STORE.ACTIONS.GET_AVAILABLE_APPS]()
-    await this[APP_STORE.ACTIONS.GET_INSTALLED_APPS]()
-    this.mergeWithInstalledApps()
+    if (this.sdk) {
+      await this[APP_STORE.ACTIONS.GET_AVAILABLE_APPS]({ sdk: this.sdk })
+      await this[APP_STORE.ACTIONS.GET_INSTALLED_APPS]({ sdk: this.sdk })
+      this.mergeWithInstalledApps()
+    }
   },
 }
 </script>

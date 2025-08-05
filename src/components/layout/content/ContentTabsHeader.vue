@@ -4,7 +4,9 @@
       <topology-title />
       <topology-action-buttons />
     </v-row>
-
+    <v-row v-else-if="isAppStore" dense justify="space-between">
+      <app-store-action-buttons />
+    </v-row>
     <v-row v-else dense>
       <v-col cols="12">
         <h1 class="headline font-weight-bold">
@@ -53,16 +55,21 @@ import { mapGetters } from "vuex"
 import cronParser from "cron-parser"
 import { REQUESTS_STATE } from "@/store/modules/api/types"
 import { API } from "@/api"
+import AppStoreActionButtons from "@/components/app/appStore/landing/AppStoreActionButtons.vue"
 
 export default {
   name: "ContentTabsHeader",
-  components: { TopologyActionButtons, TopologyTitle },
+  components: { AppStoreActionButtons, TopologyActionButtons, TopologyTitle },
   props: {
     tabs: {
       type: Array,
       required: true,
     },
     isTopology: {
+      type: Boolean,
+      default: false,
+    },
+    isAppStore: {
       type: Boolean,
       default: false,
     },

@@ -108,6 +108,7 @@ export default {
   },
   computed: {
     ...mapGetters(AUTH.NAMESPACE, { userId: AUTH.GETTERS.GET_LOGGED_USER_ID }),
+    ...mapGetters(APP_STORE.NAMESPACE, { sdk: APP_STORE.GETTERS.GET_SDK }),
   },
   methods: {
     ...mapActions(APP_STORE.NAMESPACE, [APP_STORE.ACTIONS.APP_SET_PASSWORD]),
@@ -121,6 +122,7 @@ export default {
       }
       await this[APP_STORE.ACTIONS.APP_SET_PASSWORD]({
         key: this.appKey,
+        sdk: this.sdk,
         data: {
           password: this.password,
           formKey: this.formKey,

@@ -13,4 +13,7 @@ export default {
   [APP_STORE.GETTERS.IS_INSTALLED]: (state) => (key) => {
     return state.appsInstalled.some((installedApp) => installedApp.key === key)
   },
+  [APP_STORE.GETTERS.GET_SDK]: (state) => {
+    return state.sdk
+  },
 }

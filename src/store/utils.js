@@ -1,8 +1,10 @@
 import { STORE } from "./types"
 
-export const resetState = (state, initState) => {
+export const resetState = (state, initState, excludeKeys = []) => {
   Object.keys(state).forEach((item) => {
-    state[item] = initState[item]
+    if (!excludeKeys.includes(item)) {
+      state[item] = initState[item]
+    }
   })
 }
 
