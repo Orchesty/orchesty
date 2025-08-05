@@ -1,5 +1,5 @@
 {
-    "http": "GET /api/applications/null/users/user/authorize/token",
+    "http": "GET /api/applications/null/users/user/authorize/token?sdk=php-sdk",
     "body": {
         "token": "token"
     },

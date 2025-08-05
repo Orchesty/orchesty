@@ -9,6 +9,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator;
 use Hanaboso\PipesFramework\Configurator\Document\Sdk;
 use Hanaboso\PipesFramework\Configurator\Enum\NodeImplementationEnum;
+use Hanaboso\Utils\String\Base64;
 use Hanaboso\Utils\String\Json;
 use LogicException;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -32,7 +33,7 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
     {
         $dto = new ResponseDto(200, '', Json::encode(['items' => [['key' => 'null']]]), []);
 
-        $res = $this->createLocator($dto)->getApps();
+        $res = $this->createLocator($dto)->getApps('name');
         self::assertEquals(
             [
                 'filter' => [],
@@ -59,7 +60,7 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
     {
         $dto = new ResponseDto(200, '', Json::encode(['key' => 'null']), []);
 
-        $res = $this->createLocator($dto)->getApp('null');
+        $res = $this->createLocator($dto)->getApp('null', 'name');
         self::assertEquals(['key' => 'null', 'host' => 'host'], $res);
     }
 
@@ -70,7 +71,7 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
     {
         $dto = new ResponseDto(200, '', Json::encode(['items' => [['key' => 'null']]]), []);
 
-        $res = $this->createLocator($dto)->getUserApps('user');
+        $res = $this->createLocator($dto)->getUserApps('user', 'name');
         self::assertEquals(
             [
                 'filter' => [],
@@ -97,7 +98,7 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
     {
         $dto = new ResponseDto(200, '', Json::encode([]), []);
 
-        $res = $this->createLocator($dto)->getUserApps('user');
+        $res = $this->createLocator($dto)->getUserApps('user', 'name');
         self::assertEquals(
             [
                 'filter' => [],
@@ -123,7 +124,7 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
     {
         $dto = new ResponseDto(200, '', Json::encode(['key' => 'null', 'customActions' => []]), []);
 
-        $res = $this->createLocator($dto)->getAppDetail('null', 'user');
+        $res = $this->createLocator($dto)->getAppDetail('null', 'user', 'name');
         self::assertEquals(['key' => 'null', 'host' => 'host', 'customActions' => []], $res);
     }
 
@@ -134,7 +135,7 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
     {
         $dto = new ResponseDto(200, '', Json::encode(['key' => 'null']), []);
 
-        $res = $this->createLocator($dto)->installApp('null', 'user');
+        $res = $this->createLocator($dto)->installApp('null', 'user', 'name');
         self::assertEquals(['key' => 'null', 'host' => 'host'], $res);
     }
 
@@ -145,7 +146,7 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
     {
         $dto = new ResponseDto(200, '', Json::encode(['key' => 'null']), []);
 
-        $res = $this->createLocator($dto)->uninstallApp('null', 'user');
+        $res = $this->createLocator($dto)->uninstallApp('null', 'user', 'name');
         self::assertEquals(['key' => 'null', 'host' => 'host'], $res);
     }
 
@@ -156,7 +157,7 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
     {
         $dto = new ResponseDto(200, '', Json::encode(['key' => 'null']), []);
 
-        $res = $this->createLocator($dto)->updateApp('null', 'user', ['form']);
+        $res = $this->createLocator($dto)->updateApp('null', 'user', 'name', ['form']);
         self::assertEquals(['key' => 'null', 'host' => 'host'], $res);
     }
 
@@ -167,7 +168,7 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
     {
         $dto = new ResponseDto(200, '', Json::encode(['key' => 'null']), []);
 
-        $res = $this->createLocator($dto)->updateAppPassword('null', 'user', ['pass']);
+        $res = $this->createLocator($dto)->updateAppPassword('null', 'user', 'name', ['pass']);
         self::assertEquals(['key' => 'null', 'host' => 'host'], $res);
     }
 
@@ -189,7 +190,10 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
     {
         $dto = new ResponseDto(200, '', Json::encode(['key' => 'null']), []);
 
-        $res = $this->createLocator($dto)->authorizationQueryToken(['param1' => 'aaa', 'state' => ['abc']]);
+        $res = $this->createLocator($dto)->authorizationQueryToken([
+            'param1' => 'aaa',
+            'state' => Base64::base64UrlEncode('name:name'),
+        ]);
         self::assertEquals(['key' => 'null', 'host' => 'host'], $res);
     }
 
@@ -199,7 +203,7 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
     public function testAuthorize(): void
     {
         $dto = new ResponseDto(200, '', Json::encode(['authorizeUrl' => 'redirect/url']), []);
-        $this->createLocator($dto)->authorize('key', 'user', 'redirect');
+        $this->createLocator($dto)->authorize('key', 'user', 'name', 'redirect');
         self::assertFake();
     }
 
@@ -211,7 +215,7 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
         $dto = new ResponseDto(200, '', Json::encode([]), []);
 
         self::expectException(LogicException::class);
-        $this->createLocator($dto)->authorize('key', 'user', 'redirect');
+        $this->createLocator($dto)->authorize('key', 'user', 'name', 'redirect');
     }
 
     /**
@@ -222,7 +226,7 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
         $dto = new ResponseDto(200, '', Json::encode([]), []);
 
         self::expectException(LogicException::class);
-        $this->createLocator($dto, TRUE)->authorize('key', 'user', 'redirect');
+        $this->createLocator($dto, TRUE)->authorize('key', 'user', 'name', 'redirect');
     }
 
     /**
@@ -278,7 +282,7 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
     {
         $dto = new ResponseDto(200, '', Json::encode([]), []);
 
-        $res = $this->createLocator($dto)->subscribeWebhook('key', 'user', []);
+        $res = $this->createLocator($dto)->subscribeWebhook('key', 'user', 'name', []);
         self::assertEquals([], $res);
     }
 
@@ -289,7 +293,7 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
     {
         $dto = new ResponseDto(200, '', Json::encode([]), []);
 
-        $res = $this->createLocator($dto)->unSubscribeWebhook('key', 'user', []);
+        $res = $this->createLocator($dto)->unSubscribeWebhook('key', 'user', 'name', []);
         self::assertEquals([], $res);
     }
 
@@ -300,7 +304,7 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
     {
         $dto = new ResponseDto(200, '', Json::encode([]), []);
 
-        $res = $this->createLocator($dto)->listSyncActions('key');
+        $res = $this->createLocator($dto)->listSyncActions('key', 'name');
         self::assertEquals([], $res);
     }
 
@@ -314,7 +318,7 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
         $req->setMethod('post');
 
         self::expectException(LogicException::class);
-        $this->createLocator($dto)->runSyncActions($req, 'key', 'someMethod');
+        $this->createLocator($dto)->runSyncActions($req, 'key', 'name', 'someMethod');
     }
 
     /**
