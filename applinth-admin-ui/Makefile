@@ -1,7 +1,7 @@
 DC=docker-compose -f docker-compose.test.yml
 DCU=$(DC) exec -T ui
 
-IMAGE?=dkr.hanaboso.net/pipes/pipes/applinth-admin-ui
+IMAGE=dkr.hanaboso.net/pipes/pipes/applinth-admin-ui:$(TAG)
 
 ALIAS?=alias
 Darwin:
@@ -36,7 +36,7 @@ down: .lo0-down
 	docker-compose down -v
 
 rebuild:
-	docker buildx build --platform=linux/amd64 -f Dockerfile -t ${IMAGE}:${TAG} --pull --push .
+	docker buildx build --platform=linux/amd64 -f Dockerfile -t ${IMAGE} --pull --push .
 
 generate-fixture-data: init
 	docker-compose exec console-api pnpm run create-fixture-data

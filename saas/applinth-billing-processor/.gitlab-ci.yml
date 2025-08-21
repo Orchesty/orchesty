@@ -3,25 +3,18 @@
     DIR: saas/applinth-billing-processor
     IMAGE: ${REGISTRY}/${IMAGE_PREFIX}applinth-billing-processor
 
-  rules:
-    - if: '$FORCE_PIPELINE =~ /ALL/ || $FORCE_PIPELINE =~ /applinth-billing-processor/'
-    - if: '$CI_COMMIT_BEFORE_SHA == $_BANNED_RUN_ALL_SHA'
-      when: never
-    - changes:
-      - ${DIR}/**/*
-
-
 applinth-billing-processor:test:
   stage: test
-  needs: []
-
   extends:
-    - .base-go-test # todo: don't use go-test
+    - .base-test
     - .base-applinth-billing-processor
 
 applinth-billing-processor:build:
   stage: build
-  needs: []
+  needs:
+    - job: applinth-billing-processor:test
+      optional: false
+  when: manual
   extends:
-    - .base-kaniko-build
+    - .base-dind-build
     - .base-applinth-billing-processor

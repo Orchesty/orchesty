@@ -2,31 +2,22 @@
   variables:
     DIR: pipes-php-sdk
 
-  rules:
-    - if: '$FORCE_PIPELINE =~ /ALL/ || $FORCE_PIPELINE =~ /pipes-php-sdk/'
-    - if: '$CI_COMMIT_BEFORE_SHA == $_BANNED_RUN_ALL_SHA'
-      when: never
-    - if: '"$CI_COMMIT_REF_NAME" != "master" && "$CI_COMMIT_REF_NAME" != "dev"'
-      when: never
-    - changes:
-      - ${DIR}/**/*
-
+pipes-php-sdk:test:
+  stage: test
+  extends:
+    - .base-test
+    - .base-pipes-php-sdk
 
 pipes-php-sdk:git-mirror:
-  needs: []
-
   variables:
-    MIRROR_REPOSITORY_NAME: pipes-php-sdk
+    MIRROR_REPOSITORY_NAME: orchesty-php-sdk
     MIRROR_TRIGGER_REPO_VAR: hanaboso-pipes-php-sdk
+
+  when: manual
+  needs:
+    - job: pipes-php-sdk:test
+      optional: false
 
   extends:
     - .base-git-mirror
-    - .base-pipes-php-sdk
-
-pipes-php-sdk:test:
-  stage: test
-  needs: []
-
-  extends:
-    - .base-go-test # todo: don't use go-test
     - .base-pipes-php-sdk

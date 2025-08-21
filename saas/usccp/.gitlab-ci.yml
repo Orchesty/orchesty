@@ -3,25 +3,18 @@
     DIR: saas/usccp
     IMAGE: ${REGISTRY}/${IMAGE_PREFIX}cloud-usccp
 
-  rules:
-    - if: '$FORCE_PIPELINE =~ /ALL/ || $FORCE_PIPELINE =~ /cloud-usccp/'
-    - if: '$CI_COMMIT_BEFORE_SHA == $_BANNED_RUN_ALL_SHA'
-      when: never
-    - changes:
-        - ${DIR}/**/*
-
-
 cloud-usccp:test:
   stage: test
-  needs: []
-
   extends:
-    - .base-go-test
+    - .base-test
     - .base-cloud-usccp
 
 cloud-usccp:build:
   stage: build
-  needs: []
+  needs:
+    - job: cloud-usccp:test
+      optional: false
+  when: manual
   extends:
-    - .base-kaniko-build
+    - .base-dind-build
     - .base-cloud-usccp

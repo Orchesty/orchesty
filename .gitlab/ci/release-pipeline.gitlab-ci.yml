@@ -49,155 +49,133 @@ include:
 backend:rel-x.y.z:
   extends: .base-rel-x.y.z
   before_script:
-    - . ./export_tags
     - export RELEASE_IMAGE=${IMAGE_PREFIX}backend
-    - export SRC_TAG=${TAG_BACKEND}
+    - export SRC_TAG=master
 
 bridge:rel-x.y.z:
   extends: .base-rel-x.y.z
   before_script:
-    - . ./export_tags
     - export RELEASE_IMAGE=${IMAGE_PREFIX}bridge
-    - export SRC_TAG=${TAG_BRIDGE}
+    - export SRC_TAG=master
 
 counter:rel-x.y.z:
   extends: .base-rel-x.y.z
   before_script:
-    - . ./export_tags
     - export RELEASE_IMAGE=${IMAGE_PREFIX}counter
-    - export SRC_TAG=${TAG_COUNTER}
+    - export SRC_TAG=master
 
 cron:rel-x.y.z:
   extends: .base-rel-x.y.z
   before_script:
-    - . ./export_tags
     - export RELEASE_IMAGE=${IMAGE_PREFIX}cron
-    - export SRC_TAG=${TAG_CRON}
+    - export SRC_TAG=master
 
 detector:rel-x.y.z:
   extends: .base-rel-x.y.z
   before_script:
-    - . ./export_tags
     - export RELEASE_IMAGE=${IMAGE_PREFIX}detector
-    - export SRC_TAG=${TAG_DETECTOR}
+    - export SRC_TAG=master
 
 frontend:rel-x.y.z:
   extends: .base-rel-x.y.z
   before_script:
-    - . ./export_tags
     - export RELEASE_IMAGE=${IMAGE_PREFIX}frontend
-    - export SRC_TAG=${TAG_FRONTEND}
+    - export SRC_TAG=master
 
 limiter:rel-x.y.z:
   extends: .base-rel-x.y.z
   before_script:
-    - . ./export_tags
     - export RELEASE_IMAGE=${IMAGE_PREFIX}limiter
-    - export SRC_TAG=${TAG_LIMITER}
+    - export SRC_TAG=master
 
 fluentd:rel-x.y.z:
   extends: .base-rel-x.y.z
   before_script:
-    - . ./export_tags
     - export RELEASE_IMAGE=${IMAGE_PREFIX}fluentd
-    - export SRC_TAG=${TAG_FLUENTD}
+    - export SRC_TAG=master
 
 starting-point:rel-x.y.z:
   extends: .base-rel-x.y.z
   before_script:
-    - . ./export_tags
     - export RELEASE_IMAGE=${IMAGE_PREFIX}starting-point
-    - export SRC_TAG=${TAG_STARTING_POINT}
+    - export SRC_TAG=master
 
 topology-api:rel-x.y.z:
   extends: .base-rel-x.y.z
   before_script:
-    - . ./export_tags
     - export RELEASE_IMAGE=${IMAGE_PREFIX}topology-api
-    - export SRC_TAG=${TAG_TOPOLOGY_API}
+    - export SRC_TAG=master
 
 worker-api:rel-x.y.z:
   extends: .base-rel-x.y.z
   before_script:
-    - . ./export_tags
     - export RELEASE_IMAGE=${IMAGE_PREFIX}worker-api
-    - export SRC_TAG=${TAG_WORKER_API}
+    - export SRC_TAG=master
 
 ## rel-x.y
 
 backend:rel-x.y:
   extends: .base-rel-x.y
   before_script:
-    - . ./export_tags
     - export RELEASE_IMAGE=${IMAGE_PREFIX}backend
-    - export SRC_TAG=${TAG_BACKEND}
+    - export SRC_TAG=master
 
 bridge:rel-x.y:
   extends: .base-rel-x.y
   before_script:
-    - . ./export_tags
     - export RELEASE_IMAGE=${IMAGE_PREFIX}bridge
-    - export SRC_TAG=${TAG_BRIDGE}
+    - export SRC_TAG=master
 
 counter:rel-x.y:
   extends: .base-rel-x.y
   before_script:
-    - . ./export_tags
     - export RELEASE_IMAGE=${IMAGE_PREFIX}counter
-    - export SRC_TAG=${TAG_COUNTER}
+    - export SRC_TAG=master
 
 cron:rel-x.y:
   extends: .base-rel-x.y
   before_script:
-    - . ./export_tags
     - export RELEASE_IMAGE=${IMAGE_PREFIX}cron
-    - export SRC_TAG=${TAG_CRON}
+    - export SRC_TAG=master
 
 detector:rel-x.y:
   extends: .base-rel-x.y
   before_script:
-    - . ./export_tags
     - export RELEASE_IMAGE=${IMAGE_PREFIX}detector
-    - export SRC_TAG=${TAG_DETECTOR}
+    - export SRC_TAG=master
 
 frontend:rel-x.y:
   extends: .base-rel-x.y
   before_script:
-    - . ./export_tags
     - export RELEASE_IMAGE=${IMAGE_PREFIX}frontend
-    - export SRC_TAG=${TAG_FRONTEND}
+    - export SRC_TAG=master
 
 limiter:rel-x.y:
   extends: .base-rel-x.y
   before_script:
-    - . ./export_tags
     - export RELEASE_IMAGE=${IMAGE_PREFIX}limiter
-    - export SRC_TAG=${TAG_LIMITER}
+    - export SRC_TAG=master
 
 fluentd:rel-x.y:
   extends: .base-rel-x.y
   before_script:
-    - . ./export_tags
     - export RELEASE_IMAGE=${IMAGE_PREFIX}fluentd
-    - export SRC_TAG=${TAG_FLUENTD}
+    - export SRC_TAG=master
 
 starting-point:rel-x.y:
   extends: .base-rel-x.y
   before_script:
-    - . ./export_tags
     - export RELEASE_IMAGE=${IMAGE_PREFIX}starting-point
-    - export SRC_TAG=${TAG_STARTING_POINT}
+    - export SRC_TAG=master
 
 topology-api:rel-x.y:
   extends: .base-rel-x.y
   before_script:
-    - . ./export_tags
     - export RELEASE_IMAGE=${IMAGE_PREFIX}topology-api
-    - export SRC_TAG=${TAG_TOPOLOGY_API}
+    - export SRC_TAG=master
 
 worker-api:rel-x.y:
   extends: .base-rel-x.y
   before_script:
-    - . ./export_tags
     - export RELEASE_IMAGE=${IMAGE_PREFIX}worker-api
-    - export SRC_TAG=${TAG_WORKER_API}
+    - export SRC_TAG=master

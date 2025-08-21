@@ -2,9 +2,10 @@ package model
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/hanaboso/go-utils/pkg/intx"
 	"github.com/hanaboso/go-utils/pkg/stringx"
-	"strings"
 )
 
 type Limit struct {

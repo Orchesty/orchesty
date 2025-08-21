@@ -1,15 +1,16 @@
 package app
 
 import (
-	"github.com/hanaboso/go-rabbitmq/pkg/rabbitmq"
-	"github.com/hanaboso/go-utils/pkg/arrayx"
-	"github.com/pkg/errors"
-	"github.com/rs/zerolog/log"
 	"limiter/pkg/enum"
 	"limiter/pkg/limiter"
 	"limiter/pkg/model"
 	"limiter/pkg/mongo"
 	"strings"
+
+	"github.com/hanaboso/go-rabbitmq/pkg/rabbitmq"
+	"github.com/hanaboso/go-utils/pkg/arrayx"
+	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 )
 
 func ProcessMessage(mongoSvc mongo.MongoSvc, cacheSvc *limiter.Cache, limiterSvc *limiter.LimitSvc) rabbitmq.JsonConsumerCallback[model.MessageDto] {

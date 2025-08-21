@@ -1,12 +1,11 @@
 include:
   - local: "/.gitlab/ci/essentials.gitlab-ci.yml"
-  - local: "/.gitlab/ci/default-workflow.gitlab-ci.yml"
 
-  - local: "/.gitlab/ci/accessories.gitlab-ci.yml"
+#  - local: "/.gitlab/ci/accessories.gitlab-ci.yml"
+  - local: "/.gitlab/ci/test.gitlab-ci.yml"
   - local: "/.gitlab/ci/build.gitlab-ci.yml"
   - local: "/.gitlab/ci/deploy.gitlab-ci.yml"
   - local: "/.gitlab/ci/git-mirror.gitlab-ci.yml"
-  - local: "/.gitlab/ci/go.gitlab-ci.yml"
   - local: "/.gitlab/ci/release.gitlab-ci.yml"
 
   - local: "/app-ui/.gitlab-ci.yml"

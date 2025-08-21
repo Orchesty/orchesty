@@ -2,15 +2,16 @@ package router
 
 import (
 	"fmt"
-	"github.com/hanaboso/go-utils/pkg/contextx"
-	"github.com/stretchr/testify/assert"
-	"go.mongodb.org/mongo-driver/bson"
 	"limiter/pkg/config"
 	"limiter/pkg/model"
 	"limiter/pkg/mongo"
 	"limiter/pkg/router"
 	"net/http"
 	"testing"
+
+	"github.com/hanaboso/go-utils/pkg/contextx"
+	"github.com/stretchr/testify/assert"
+	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 func TestTerminate(t *testing.T) {
@@ -23,9 +24,10 @@ func TestTerminate(t *testing.T) {
 		{"correlation-id/1", 3},
 	}
 
+	ctx, _ := contextx.WithTimeoutSecondsCtx(30)
 	mongoSvc := mongo.NewMongoSvc()
 	mongoSvc.Connection().Database.Collection(config.MongoDb.ApiTokenCollection).InsertOne(
-		contextx.WithTimeoutSecondsCtx(10),
+		ctx,
 		map[string]interface{}{"user": "orchesty", "key": "asd"},
 	)
 
@@ -40,11 +42,11 @@ func TestTerminate(t *testing.T) {
 		request.Header.Set("orchesty-api-key", "asd")
 		server.ServeHTTP(responseMock{}, request)
 
-		ctx := contextx.WithTimeoutSecondsCtx(30)
-		result, _ := mongoSvc.Collection().Find(ctx, bson.D{})
+		ctxR, _ := contextx.WithTimeoutSecondsCtx(30)
+		result, _ := mongoSvc.Collection().Find(ctxR, bson.D{})
 
 		var messages []mongo.Message
-		_ = result.All(ctx, &messages)
+		_ = result.All(ctxR, &messages)
 		assert.Equal(t, test.remaining, len(messages))
 	}
 }

@@ -2,12 +2,13 @@ package limiter
 
 import (
 	"fmt"
-	"github.com/hanaboso/go-utils/pkg/arrayx"
-	"github.com/hanaboso/go-utils/pkg/intx"
-	"github.com/rs/zerolog/log"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/hanaboso/go-utils/pkg/arrayx"
+	"github.com/hanaboso/go-utils/pkg/intx"
+	"github.com/rs/zerolog/log"
 )
 
 type Cache struct {

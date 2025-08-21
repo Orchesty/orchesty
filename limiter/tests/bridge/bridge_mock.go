@@ -1,12 +1,13 @@
 package bridge
 
 import (
-	"github.com/hanaboso/go-utils/pkg/arrayx"
 	"limiter/pkg/bridge"
 	"limiter/pkg/enum"
 	"limiter/pkg/limiter"
 	"limiter/pkg/mongo"
 	"strings"
+
+	"github.com/hanaboso/go-utils/pkg/arrayx"
 )
 
 type BridgeMock struct {

@@ -7,7 +7,6 @@ services:
         working_dir: /var/www/pipes/pipes-connectors
         volumes:
             - ../:/var/www/pipes:cached
-            - ${SSH_AUTH}:/tmp/.ssh-auth-sock
             - ${HOME}/dev/.composer:${HOME}/dev/.composer:cached
         environment:
             - DEV_UID=${DEV_UID}

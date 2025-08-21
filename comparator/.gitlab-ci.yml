@@ -2,25 +2,18 @@
   variables:
     DIR: comparator
     IMAGE: ${REGISTRY}/${IMAGE_PREFIX}comparator
-  rules:
-    - if: '$FORCE_PIPELINE =~ /ALL/ || $FORCE_PIPELINE =~ /comparator/'
-    - if: '$CI_COMMIT_BEFORE_SHA == $_BANNED_RUN_ALL_SHA'
-      when: never
-    - changes:
-      - ${DIR}/**/*
-
-
-comparator:build:
-  stage: build
-  needs: []
-  extends:
-    - .base-kaniko-build
-    - .base-comparator
-
 
 comparator:test:
   stage: test
-  needs: []
   extends:
-    - .base-go-test # todo: don't use go-test
+    - .base-test
+    - .base-comparator
+
+comparator:build:
+  stage: build
+  needs:
+    - job: comparator:test
+      optional: false
+  extends:
+    - .base-dind-build
     - .base-comparator

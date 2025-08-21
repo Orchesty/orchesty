@@ -1,11 +1,12 @@
 package app
 
 import (
-	"github.com/hanaboso/go-utils/pkg/timex"
-	"github.com/stretchr/testify/assert"
 	"limiter/tests/rabbit"
 	"testing"
 	"time"
+
+	"github.com/hanaboso/go-utils/pkg/timex"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestLimitSingleMessage(t *testing.T) {
