@@ -2,26 +2,18 @@
   variables:
     DIR: topology-generator
     IMAGE: ${REGISTRY}/${IMAGE_PREFIX}topology-api
-  rules:
-    - if: '$FORCE_PIPELINE =~ /ALL/ || $FORCE_PIPELINE =~ /topology-api/'
-    - if: '$CI_COMMIT_BEFORE_SHA == $_BANNED_RUN_ALL_SHA'
-      when: never
-    - changes:
-      - ${DIR}/**/*
-
-
-topology-api:build:
-  stage: build
-  needs: []
-  extends:
-    - .base-kaniko-build
-    - .base-topology-api
-
 
 topology-api:test:
   stage: test
-  needs: []
-
   extends:
-    - .base-go-test
+    - .base-test
+    - .base-topology-api
+
+topology-api:build:
+  stage: build
+  needs:
+    - job: topology-api:test
+      optional: false
+  extends:
+    - .base-dind-build
     - .base-topology-api

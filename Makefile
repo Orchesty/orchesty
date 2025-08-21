@@ -1,6 +1,6 @@
 DC=docker-compose
 DE=docker-compose exec -T app
-IMAGE=orchesty/topology-api
+IMAGE=orchesty/topology-api:$(TAG)
 
 .env:
 	sed -e 's/{DEV_UID}/$(shell id -u)/g' \
@@ -9,7 +9,7 @@ IMAGE=orchesty/topology-api
 		.env.dist >> .env; \
 
 build:
-	docker buildx build --pull --push --platform linux/amd64,linux/arm64/v8 -t $(IMAGE):$(TAG) .
+	docker buildx build --pull --push --platform linux/amd64,linux/arm64/v8 -t $(IMAGE) .
 
 docker-up-force: .env
 	$(DC) pull
