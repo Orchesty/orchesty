@@ -1,6 +1,6 @@
 DC=docker-compose
 DE=docker-compose exec -T app
-IMAGE=orchesty/detector
+IMAGE=orchesty/detector:$(TAG)
 
 .env:
 	sed -e 's/{DEV_UID}/$(shell id -u)/g' \
@@ -8,7 +8,7 @@ IMAGE=orchesty/detector
 		.env.dist >> .env; \
 
 build:
-	docker buildx build --pull --push --platform linux/amd64,linux/arm64/v8 -t $(IMAGE):$(TAG) .
+	docker buildx build --pull --push --platform linux/amd64,linux/arm64/v8 -t $(IMAGE) .
 
 docker-up-force: .env
 	$(DC) pull
