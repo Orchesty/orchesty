@@ -1,7 +1,0 @@
-workflow:
-  rules:
-    # Don't run pipeline on first brach commit
-    # Prevents triggering all jobs depending on `rules:changes:` with every new branch
-    - if: '$CI_COMMIT_BEFORE_SHA == $_BANNED_RUN_ALL_SHA && $FORCE_PIPELINE == ""' # && $CI_COMMIT_REF_NAME !~ "^v[0-9]+\.[0-9]+\.[0-9]+$"'
-      when: never
-    - when: always

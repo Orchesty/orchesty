@@ -1,11 +1,12 @@
 package mongo
 
 import (
+	"limiter/pkg/config"
+
 	"github.com/hanaboso/go-mongodb"
 	"github.com/hanaboso/go-utils/pkg/contextx"
 	"github.com/rs/zerolog/log"
-	"go.mongodb.org/mongo-driver/mongo"
-	"limiter/pkg/config"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
 type MongoSvc struct {
@@ -19,7 +20,8 @@ func NewMongoSvc() MongoSvc {
 	connection.Connect(config.MongoDb.Dsn)
 	database := connection.Database.Collection(config.MongoDb.MessageCollection)
 
-	_, err := database.Indexes().CreateMany(contextx.WithTimeoutSecondsCtx(60), indices())
+	ctx, _ := contextx.WithTimeoutSecondsCtx(60)
+	_, err := database.Indexes().CreateMany(ctx, indices())
 	if err != nil {
 		log.Fatal().Err(err).Send()
 	}

@@ -1,9 +1,10 @@
 package rabbit
 
 import (
-	"github.com/hanaboso/go-rabbitmq/pkg/rabbitmq"
 	"limiter/pkg/enum"
 	"limiter/pkg/model"
+
+	"github.com/hanaboso/go-rabbitmq/pkg/rabbitmq"
 )
 
 var id = 0

@@ -1,31 +1,19 @@
 .base-applinth:
   variables:
     DIR: applinth
-    IMAGE: ${REGISTRY}/${IMAGE_PREFIX}backend
-  rules:
-    - if: '$FORCE_PIPELINE =~ /ALL/ || $FORCE_PIPELINE =~ /applinth-backend/'
-    - if: '$CI_COMMIT_BEFORE_SHA == $_BANNED_RUN_ALL_SHA'
-      when: never
-    - changes:
-      - ${DIR}/**/*
-
-
-applinth:build:
-  stage: build
-  needs: []
-  extends:
-    - .base-kaniko-build
-    - .base-applinth
-
-  script:
-    - cp .dockerignore ../.dockerignore
-    - executor --context ../ --destination ${IMAGE}:${TAG_DIR_CH} --destination ${IMAGE}:${TAG_BRANCH} --cache=true
-
+    IMAGE: ${REGISTRY}/${IMAGE_PREFIX}applinth
 
 applinth:test:
   stage: test
-  needs: []
-
   extends:
-    - .base-go-test # todo: don't use go-test
+    - .base-test
+    - .base-applinth
+
+applinth:build:
+  stage: build
+  needs:
+    - job: applinth:test
+      optional: false
+  extends:
+    - .base-dind-build
     - .base-applinth

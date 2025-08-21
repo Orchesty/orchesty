@@ -6,7 +6,6 @@ services:
             - ${DEV_IP}:80:80
         volumes:
             - ./:/var/www:cached
-            - ${SSH_AUTH}:/tmp/.ssh-auth-sock
             - ${HOME}/dev/.composer:${HOME}/dev/.composer:cached
         environment:
             - DEV_UID=${DEV_UID}

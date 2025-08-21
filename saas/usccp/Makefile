@@ -34,8 +34,7 @@ docker-down-clean: .env .lo0-down
 
 # Build
 build: .env
-	docker build -f Dockerfile -t $(IMAGE) --pull .
-	docker push $(IMAGE)
+	docker buildx build --platform=linux/amd64 -f Dockerfile -t $(IMAGE) --pull --push .
 
 build-dev:
 	docker build ./docker -t node-sdk:tag

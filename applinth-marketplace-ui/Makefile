@@ -1,7 +1,7 @@
 DC=docker-compose -f docker-compose.test.yml
 DCU=$(DC) exec -T ui
 
-IMAGE?=dkr.hanaboso.net/pipes/pipes/applinth-marketplace-ui
+IMAGE=dkr.hanaboso.net/pipes/pipes/applinth-marketplace-ui:$(TAG)
 
 ALIAS?=alias
 Darwin:
@@ -38,7 +38,7 @@ init: .env .lo0-up
 	docker-compose exec mongo mongoimport --db pipes --collection MultiCounter --file /tmp/exampleApplinthProcessData.json --jsonArray
 
 rebuild:
-	docker buildx build --pull --push --platform linux/amd64,linux/arm64/v8 -t $(IMAGE):$(TAG) .
+	docker buildx build --pull --push --platform linux/amd64,linux/arm64/v8 -t $(IMAGE) .
 
 generate-link:
 	echo "http://localhost:8080/?u=$$(node JWEGen.js)"

@@ -1,9 +1,31 @@
 ---
-documentation build:
+.base-documentation:
+  variables:
+    DIR: docusaurus/documentation
+
+.deploy-documentation:
+  stage: deploy
+
+  when: manual
+  needs:
+    - job: documentation:build
+      optional: false
+
+  before_script:
+    - !reference [ .base-dind-build, before_script ]
+    - apk add --no-cache findutils aws-cli
+    - aws --version
+
+  script:
+    - cd docusaurus/documentation
+    - make deploy BUCKET=pipes-website-${ENV} PORTAL_API_URL=${PORTAL_API_URL}
+    - echo Deployed to http://pipes-website-${ENV}.s3-website-eu-west-1.amazonaws.com/
+
+documentation:build:
   stage: build
-  only:
-    changes:
-      - docusaurus/documentation/**/*
+  extends:
+    - .base-dind-build
+    - .base-documentation
   script:
     - cd docusaurus/documentation
     - make build PORTAL_API_URL=%PORTAL_API_URL% # placeholder to be replaced by deploy job (Makefile)
@@ -16,29 +38,20 @@ documentation build:
     paths:
       - docusaurus/documentation/build
 
-.site_deploy:
-  stage: deploy
-  when: manual
-  only:
-    changes:
-      - docusaurus/documentation/**/*
-  dependencies:
-    - documentation build
-  script:
-    - cd docusaurus/documentation
-    - make deploy BUCKET=pipes-website-${ENV} PORTAL_API_URL=${PORTAL_API_URL}
-    - echo Deployed to http://pipes-website-${ENV}.s3-website-eu-west-1.amazonaws.com/
-
-documentation deploy stage:
+documentation:deploy:stage:
   variables:
     ENV: stage
     PORTAL_API_URL: "${PORTAL_API_URL_STAGE}"
-  extends: .site_deploy
+  extends:
+    - .base-dind-build
+    - .base-documentation
+    - .deploy-documentation
 
-documentation deploy prod:
+documentation:deploy:prod:
   variables:
     ENV: prod
-    PORTAL_API_URL: ${PORTAL_API_URL_PROD}
-  extends: .site_deploy
-  only:
-    - master
+    PORTAL_API_URL: "${PORTAL_API_URL_PROD}"
+  extends:
+    - .base-dind-build
+    - .base-documentation
+    - .deploy-documentation

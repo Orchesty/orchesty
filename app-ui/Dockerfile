@@ -1,7 +1,15 @@
 ### Build step
-FROM node:20-slim AS builder
+FROM node:24-slim AS builder
+
+RUN apt update && apt install -y \
+    python3 \
+    make \
+    g++ \
+ && rm -rf /var/lib/apt/lists/*
 
 RUN npm i -g pnpm
+
+RUN mkdir "/.local" && chmod -R 777 "/.local"
 
 # Pre-cache packages
 WORKDIR /precache
@@ -10,7 +18,7 @@ COPY pnpm-lock.yaml ./
 RUN pnpm install
 
 ### Build step
-FROM node:20-slim AS pre-cache
+FROM node:24-slim AS pre-cache
 
 # Build
 WORKDIR /build

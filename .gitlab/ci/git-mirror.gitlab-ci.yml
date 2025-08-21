@@ -12,6 +12,12 @@
     MIRROR_TRIGGER_URL: SET-IN-GITLAB-UI
     MIRROR_TRIGGER_TOKEN: SET-IN-GITLAB-UI
 
+  rules:
+    - if: '$FORCE_PIPELINE == "ALL"'
+      when: always
+    - changes:
+        - "${DIR}/**/*"
+
   script:
     - apk add curl
     - rm -rf _tmp_git_full

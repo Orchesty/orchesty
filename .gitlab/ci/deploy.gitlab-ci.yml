@@ -1,5 +1,4 @@
 .base-deploy:
-  needs: ["collect-tags"]
   stage: deploy
   environment: stage
   image:
@@ -26,7 +25,6 @@
 
 
 .base-deploy-current:
-  needs: ["collect-tags"]
   stage: deploy
   environment: stage
 
@@ -46,18 +44,18 @@
     - cd ${PROJECT_DIR}
     - >-
       helm --kubeconfig /tmp/kubeconfig upgrade -i --wait --reset-values -f ${HELM_DIR}/resources.yaml ${HELM_ARGS}
-      --set global.imageOverrides.applinth-marketplace-ui=${REGISTRY}/${IMAGE_PREFIX}applinth-marketplace-ui:${TAG_APPLINTH_MARKETPLACE_UI}
-      --set global.imageOverrides.backend=${REGISTRY}/${IMAGE_PREFIX}backend:${TAG_BACKEND}
-      --set global.imageOverrides.frontend=${REGISTRY}/${IMAGE_PREFIX}frontend:${TAG_FRONTEND}
-      --set global.imageOverrides.cron-api=${REGISTRY}/${IMAGE_PREFIX}cron:${TAG_CRON}
-      --set global.imageOverrides.bridge=${REGISTRY}/${IMAGE_PREFIX}bridge:${TAG_BRIDGE}
-      --set global.imageOverrides.counter=${REGISTRY}/${IMAGE_PREFIX}counter:${TAG_COUNTER}
-      --set global.imageOverrides.limiter=${REGISTRY}/limiter:${TAG_LIMITER}
-      --set global.imageOverrides.starting-point=${REGISTRY}/${IMAGE_PREFIX}starting-point:${TAG_STARTING_POINT}
-      --set global.imageOverrides.topology-api=${REGISTRY}/${IMAGE_PREFIX}topology-api:${TAG_TOPOLOGY_API}
-      --set global.imageOverrides.fluentd=${REGISTRY}/${IMAGE_PREFIX}fluentd:${TAG_FLUENTD}
-      --set global.imageOverrides.detector=${REGISTRY}/${IMAGE_PREFIX}detector:${TAG_DETECTOR}
-      --set global.imageOverrides.worker-api=${REGISTRY}/${IMAGE_PREFIX}worker-api:${TAG_WORKER_API}
+      --set global.imageOverrides.applinth-marketplace-ui=${REGISTRY}/${IMAGE_PREFIX}applinth-marketplace-ui:${DEPLOY_DEMO_TAG}
+      --set global.imageOverrides.backend=${REGISTRY}/${IMAGE_PREFIX}backend:${DEPLOY_DEMO_TAG}
+      --set global.imageOverrides.frontend=${REGISTRY}/${IMAGE_PREFIX}frontend:${DEPLOY_DEMO_TAG}
+      --set global.imageOverrides.cron-api=${REGISTRY}/${IMAGE_PREFIX}cron:${DEPLOY_DEMO_TAG}
+      --set global.imageOverrides.bridge=${REGISTRY}/${IMAGE_PREFIX}bridge:${DEPLOY_DEMO_TAG}
+      --set global.imageOverrides.counter=${REGISTRY}/${IMAGE_PREFIX}counter:${DEPLOY_DEMO_TAG}
+      --set global.imageOverrides.limiter=${REGISTRY}/limiter:${DEPLOY_DEMO_TAG}
+      --set global.imageOverrides.starting-point=${REGISTRY}/${IMAGE_PREFIX}starting-point:${DEPLOY_DEMO_TAG}
+      --set global.imageOverrides.topology-api=${REGISTRY}/${IMAGE_PREFIX}topology-api:${DEPLOY_DEMO_TAG}
+      --set global.imageOverrides.fluentd=${REGISTRY}/${IMAGE_PREFIX}fluentd:${DEPLOY_DEMO_TAG}
+      --set global.imageOverrides.detector=${REGISTRY}/${IMAGE_PREFIX}detector:${DEPLOY_DEMO_TAG}
+      --set global.imageOverrides.worker-api=${REGISTRY}/${IMAGE_PREFIX}worker-api:${DEPLOY_DEMO_TAG}
       ${HELM_ARGS_EXT}
       pipes ${HELM_DIR}
 
@@ -74,20 +72,3 @@ stage:deploy:
 
   rules:
     - when: manual
-
-
-demo2:deploy:
-  extends: .base-deploy-current
-  environment: demo2
-  variables:
-    PROJECT_DIR: clients/demo
-    HELM_ARGS: -f helm/values.demo2.yaml
-
-  rules:
-    - if: $DEPLOY_DEMO2_VERSION != ""
-      when: always
-    - when: manual
-
-  before_script:
-    - echo "${DEMO2_VALUES}" > clients/demo/helm/values.demo2.yaml
-    - sed -E "s/VERSION_TAG/${DEPLOY_DEMO2_VERSION}/g" -i clients/demo/helm/values.demo2.yaml

@@ -1,49 +1,31 @@
-.base-docker-build:
+.base-dind-build:
   extends:
     - .base-dind
 
   variables:
-    DIR: "PROVIDE-WHEN-EXTENDING"
+    BUILDX_BUILDER: bob_the_builder
+    MAKE_TARGET: build
 
-  before_script:
-    - !reference [.base-dind, before_script]
-    - apk add --no-cache make
-    - cd ${DIR}
-
-.base-kaniko-build:
-  needs:
-    - collect-tags
-
-  variables:
     DIR: "PROVIDE-WHEN-EXTENDING"
     IMAGE: "PROVIDE-WHEN-EXTENDING"
-    KANIKO_IMAGE: ${REGISTRY}/kaniko-alpine:master
 
-  image:
-    name: ${KANIKO_IMAGE}
+  rules:
+    - if: '$FORCE_PIPELINE == "ALL"'
+      when: always
 
-    # this is required for :debug image and does not cause problems for our custom image
-    entrypoint: ["sh", "-c"]
+    - if: '$CI_COMMIT_REF_NAME == "master" || $CI_COMMIT_REF_NAME == "ci"'
+      changes:
+        - "${DIR}/**/*"
+
+    - when: never
 
   before_script:
+    - !reference [ .base-dind, before_script ]
+    - docker context create builders || true
+    - docker buildx create --use --name $BUILDX_BUILDER || docker buildx use $BUILDX_BUILDER
+    - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+    - docker buildx inspect --bootstrap
+
+  script:
     - 'cd ${DIR} && echo "Working directory: ${DIR}"'
-    - export TAG_BRANCH=${CI_COMMIT_REF_SLUG}
-    - '[ -z "${NO_GIT}" ] && export TAG_DIR_CH=$(git log -1 --pretty=%h --abbrev=8 .)'
-    - env | egrep "^(TAG_|IMAGE)"
-
-    - mkdir -p /kaniko/.docker
-    - echo "{\"auths\":{\"${CI_REGISTRY}\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"},\"${RELEASE_REGISTRY_HOST}\":{\"auth\":\"$(printf "%s:%s" ${RELEASE_REGISTRY_USERNAME} "${RELEASE_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
-
-  # feel free to override
-  script:
-    - executor --context . --destination ${IMAGE}:${TAG_DIR_CH} --destination ${IMAGE}:${TAG_BRANCH} --cache=true
-
-  tags:
-    - docker
-
-.base-dummy-build:
-  image: alpine
-  script:
-    - ': >>> DUMMY BUILD "OK" <<<'
-  tags:
-    - docker
+    - make ${MAKE_TARGET} IMAGE=${IMAGE}:${DEFAULT_TAG}

@@ -1,86 +1,67 @@
 stages:
   - prepare
-  - build
   - test
-  - review
+  - build
   - deploy
   - release
   - rel-x.y.z
   - rel-x.y
 
 variables:
+  DIND_IMAGE: "docker:28.0-cli"
+
   REGISTRY: "dkr.hanaboso.net/pipes/pipes"
   REGISTRY_RELEASE: "index.docker.io/orchesty"
   IMAGE_PREFIX: ""
+  DEFAULT_TAG: "master"
+
   FORCE_PIPELINE:
     description: Force running pipeline for a subset of components or ALL of them
     value: ""
 
-  DEPLOY_DEMO1_VERSION:
-    description: Enter version [x.y.z] to deploy it to the demo1 environment.
-    value: ""
-
-  DEPLOY_DEMO2_VERSION:
-    description: Enter version [x.y.z] to deploy it to the demo2 environment.
-    value: ""
-
-  DEPLOY_DEMO3_VERSION:
-    description: Enter version [x.y.z] to deploy it to the demo3c environment.
-    value: ""
-
-  _BANNED_RUN_ALL_SHA: "0000000000000000000000000000000000000000"
+  DEPLOY_DEMO_TAG:
+    description: Enter tag to deploy it to the demo environment.
+    value: "master"
 
 default:
   interruptible: true
 
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+      when: always
+
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+      when: always
+
+    - when: never
+
 .base-dind:
-  image: docker:28.0.4-alpine3.21
+  image: ${DIND_IMAGE}
 
   variables:
-    DOCKER_DRIVER: overlay2
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ""
 
   services:
-    - docker:28.0.4-alpine3.21
+    - docker:28.0-dind
 
   before_script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY --username $CI_REGISTRY_USER --password-stdin
     - echo "$RELEASE_REGISTRY_PASSWORD" | docker login $RELEASE_REGISTRY_HOST --username $RELEASE_REGISTRY_USERNAME --password-stdin
+    - mkdir -p apk
+    - apk add --cache-dir apk curl bash git make docker-compose
+
+  cache:
+    key: "base-${CI_COMMIT_REF_SLUG}"
+    paths:
+      - apk
+      - .pnpm-store
 
   tags:
     - dind
 
 .base-tooling:
   image: ${REGISTRY}/ci-tooling:latest
-  tags:
-    - docker
-
-collect-tags:
-  stage: prepare
-  image:
-    name: alpine/git:latest
-    entrypoint: ["sh", "-c"]
-
-  script:
-    - export TAG_APPLINTH_MARKETPLACE_UI=$(git log -1 --pretty=%h --abbrev=8 ./applinth-marketplace-ui)
-    - export TAG_BACKEND=$(git log -1 --pretty=%h --abbrev=8 ./pf-bundles)
-    - export TAG_FRONTEND=$(git log -1 --pretty=%h --abbrev=8 ./app-ui)
-    - export TAG_CRON=$(git log -1 --pretty=%h --abbrev=8 ./cron)
-    - export TAG_BRIDGE=$(git log -1 --pretty=%h --abbrev=8 ./bridge)
-    - export TAG_COUNTER=$(git log -1 --pretty=%h --abbrev=8 ./counter)
-    - export TAG_LIMITER=$(git log -1 --pretty=%h --abbrev=8 ./limiter)
-    - export TAG_STARTING_POINT=$(git log -1 --pretty=%h --abbrev=8 ./starting-point)
-    - export TAG_TOPOLOGY_API=$(git log -1 --pretty=%h --abbrev=8 ./topology-generator)
-    - export TAG_FLUENTD=$(git log -1 --pretty=%h --abbrev=8 ./fluentd)
-    - export TAG_DETECTOR=$(git log -1 --pretty=%h --abbrev=8 ./detector)
-    - export TAG_WORKER_API=$(git log -1 --pretty=%h --abbrev=8 ./worker-api)
-
-    - env | grep ^TAG_ | sed 's/.*/export &/' > export_tags
-    - cat export_tags
-
-  artifacts:
-    expire_in: 1 month
-    paths:
-      - ./export_tags
-
   tags:
     - docker

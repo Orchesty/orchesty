@@ -2,8 +2,6 @@ package router
 
 import (
 	"encoding/json"
-	"github.com/julienschmidt/httprouter"
-	"github.com/rs/zerolog/log"
 	"limiter/pkg/config"
 	"limiter/pkg/mongo"
 	"net/http"
@@ -12,6 +10,9 @@ import (
 	"net/url"
 	"strings"
 	"time"
+
+	"github.com/julienschmidt/httprouter"
+	"github.com/rs/zerolog/log"
 )
 
 type Route struct {

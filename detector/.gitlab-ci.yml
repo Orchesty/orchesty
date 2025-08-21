@@ -2,25 +2,19 @@
   variables:
     DIR: detector
     IMAGE: ${REGISTRY}/${IMAGE_PREFIX}detector
-  rules:
-    - if: '$FORCE_PIPELINE =~ /ALL/ || $FORCE_PIPELINE =~ /detector/'
-    - if: '$CI_COMMIT_BEFORE_SHA == $_BANNED_RUN_ALL_SHA'
-      when: never
-    - changes:
-      - ${DIR}/**/*
-
-detector:build:
-  stage: build
-  needs: []
-  extends:
-    - .base-kaniko-build
-    - .base-detector
-
 
 detector:test:
   stage: test
-  needs: []
-
   extends:
-    - .base-go-test
+    - .base-test
     - .base-detector
+
+detector:build:
+  stage: build
+  needs:
+    - job: detector:test
+      optional: false
+  extends:
+    - .base-dind-build
+    - .base-detector
+

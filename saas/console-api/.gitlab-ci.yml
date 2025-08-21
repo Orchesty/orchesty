@@ -3,25 +3,18 @@
     DIR: saas/console-api
     IMAGE: ${REGISTRY}/${IMAGE_PREFIX}cloud-console-api
 
-  rules:
-    - if: '$FORCE_PIPELINE =~ /ALL/ || $FORCE_PIPELINE =~ /cloud-console-api/'
-    - if: '$CI_COMMIT_BEFORE_SHA == $_BANNED_RUN_ALL_SHA'
-      when: never
-    - changes:
-      - ${DIR}/**/*
-
-
 cloud-console-api:test:
   stage: test
-  needs: []
-
   extends:
-    - .base-go-test
+    - .base-test
     - .base-cloud-console-api
 
 cloud-console-api:build:
   stage: build
-  needs: []
+  needs:
+    - job: cloud-console-api:test
+      optional: false
+  when: manual
   extends:
-    - .base-kaniko-build
+    - .base-dind-build
     - .base-cloud-console-api

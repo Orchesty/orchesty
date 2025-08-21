@@ -2,7 +2,6 @@ package app
 
 import (
 	"context"
-	"github.com/hanaboso/go-rabbitmq/pkg/rabbitmq"
 	"limiter/pkg/app"
 	"limiter/pkg/bridge"
 	"limiter/pkg/limiter"
@@ -10,6 +9,9 @@ import (
 	"limiter/pkg/mongo"
 	bridge_test "limiter/tests/bridge"
 	"sync"
+	"time"
+
+	"github.com/hanaboso/go-rabbitmq/pkg/rabbitmq"
 )
 
 type TestConsumer = *rabbitmq.JsonConsumerMock[model.MessageDto]
@@ -17,7 +19,7 @@ type TestConsumer = *rabbitmq.JsonConsumerMock[model.MessageDto]
 func prepareMockApplication() (outputMessages chan bridge.RequestMessage, limiterConsumer TestConsumer, repeaterConsumer TestConsumer, stop func()) {
 	messageProcessor, sender, limiterMock, repeatMock := prepareMockApplicationNotStarted()
 
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	go messageProcessor.Start(ctx, &sync.WaitGroup{})
 
 	stopFunc := func() {

@@ -1,9 +1,10 @@
 package model
 
 import (
-	"github.com/stretchr/testify/assert"
 	"limiter/pkg/model"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestAllowedBatch(t *testing.T) {

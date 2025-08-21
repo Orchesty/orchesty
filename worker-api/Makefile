@@ -1,5 +1,5 @@
 DCS=docker-compose exec -T worker-api
-IMAGE=orchesty/worker-api
+IMAGE=orchesty/worker-api:$(TAG)
 
 ALIAS?=alias
 Darwin:
@@ -16,7 +16,7 @@ Linux:
 		.env.dist > .env; \
 
 build:
-	docker buildx build --pull --push --platform linux/amd64,linux/arm64/v8 -t $(IMAGE):$(TAG) .
+	docker buildx build --pull --push --platform linux/amd64,linux/arm64/v8 -t $(IMAGE) .
 
 docker-compose.ci.yml:
 	# Comment out any port forwarding
