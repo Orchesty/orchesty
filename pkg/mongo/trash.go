@@ -1,12 +1,13 @@
 package mongo
 
 import (
-	"github.com/hanaboso/go-utils/pkg/contextx"
-	"github.com/pkg/errors"
-	"go.mongodb.org/mongo-driver/bson"
 	"limiter/pkg/enum"
 	"limiter/pkg/model"
 	"time"
+
+	"github.com/hanaboso/go-utils/pkg/contextx"
+	"github.com/pkg/errors"
+	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 func fromDto(message *model.MessageDto) bson.M {
@@ -36,7 +37,8 @@ func fromDto(message *model.MessageDto) bson.M {
 
 func (this MongoSvc) SendToTrash(message *model.MessageDto) error {
 	data := fromDto(message)
-	_, err := this.userTaskCollection.InsertOne(contextx.WithTimeoutSecondsCtx(30), data)
+	ctx, _ := contextx.WithTimeoutSecondsCtx(30)
+	_, err := this.userTaskCollection.InsertOne(ctx, data)
 
 	return errors.WithMessage(err, "sending to trash")
 }

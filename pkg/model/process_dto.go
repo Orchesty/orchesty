@@ -2,9 +2,10 @@ package model
 
 import (
 	"fmt"
-	"github.com/hanaboso/go-utils/pkg/intx"
 	"limiter/pkg/enum"
 	"strings"
+
+	"github.com/hanaboso/go-utils/pkg/intx"
 )
 
 type MessageDto struct {

@@ -2,11 +2,12 @@ package limiter
 
 import (
 	"fmt"
-	"github.com/hanaboso/go-utils/pkg/intx"
-	"github.com/rs/zerolog/log"
 	"limiter/pkg/model"
 	"sync"
 	"time"
+
+	"github.com/hanaboso/go-utils/pkg/intx"
+	"github.com/rs/zerolog/log"
 )
 
 type LimitSvc struct {

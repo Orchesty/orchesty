@@ -3,7 +3,7 @@ package mongo
 import (
 	"github.com/hanaboso/go-utils/pkg/contextx"
 	"github.com/pkg/errors"
-	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 func (this MongoSvc) ClearAll() error {
@@ -11,7 +11,8 @@ func (this MongoSvc) ClearAll() error {
 }
 
 func (this MongoSvc) Clear(filter bson.D) error {
-	_, err := this.collection.DeleteMany(contextx.WithTimeoutSecondsCtx(30), filter)
+	ctx, _ := contextx.WithTimeoutSecondsCtx(30)
+	_, err := this.collection.DeleteMany(ctx, filter)
 
 	return errors.WithMessage(err, "Clearing documents")
 }
