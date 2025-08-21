@@ -1,6 +1,6 @@
 DC=docker-compose exec -T ui
 
-IMAGE=orchesty/frontend
+IMAGE=orchesty/frontend:$(TAG)
 
 ALIAS?=alias
 Darwin:
@@ -25,7 +25,7 @@ init: .env
 	$(DC) pnpm install
 
 rebuild:
-	docker buildx build --pull --push --platform linux/amd64,linux/arm64/v8 -t $(IMAGE):$(TAG) .
+	docker buildx build --pull --push --platform linux/amd64,linux/arm64/v8 -t $(IMAGE) .
 
 test:
 	$(DC) pnpm run validate
