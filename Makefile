@@ -1,4 +1,4 @@
-IMAGE=orchesty/counter
+IMAGE=orchesty/counter:$(TAG)
 
 DC=docker-compose
 DE=docker-compose exec -T app
@@ -20,7 +20,7 @@ Linux:
 		.env.dist >> .env; \
 
 build:
-	docker buildx build --pull --push --platform linux/amd64,linux/arm64/v8 -t $(IMAGE):$(TAG) .
+	docker buildx build --pull --push --platform linux/amd64,linux/arm64/v8 -t $(IMAGE) .
 
 docker-up-force: .env .lo0-up
 	$(DC) pull
