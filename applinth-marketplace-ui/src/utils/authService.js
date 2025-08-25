@@ -9,10 +9,13 @@ export class AuthService {
 
   accessToken = ""
 
+  sdk = null
+
   /**
    * @typedef {Object} AuthenticationData
    * @property {string} access_token
    * @property {number} expires_in
+   * @property {string} sdk
    */
 
   /**
@@ -20,6 +23,7 @@ export class AuthService {
    * @param {AuthenticationData} authenticationData
    */
   authenticate(authenticationData) {
+    this.sdk = authenticationData.sdk
     this.accessToken = authenticationData.access_token
     this.setExpireTimeout(authenticationData.expires_in)
   }
@@ -32,6 +36,7 @@ export class AuthService {
     if (this.expireTimeout) clearTimeout(this.expireTimeout)
     this.expireTimeout = null
     this.accessToken = ""
+    this.sdk = null
     if (redirect) {
       // TODO ROUTES.Login does not exist
       router.push({ name: ROUTES.Login })

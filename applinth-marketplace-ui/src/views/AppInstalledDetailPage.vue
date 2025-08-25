@@ -98,6 +98,8 @@ import AppNotAuthorizedModal from "@/components/applications/AppNotAuthorizedMod
 import { authService } from "@/utils/authService"
 import CustomActionsMenu from "@/components/applications/CustomActionsMenu.vue"
 import AppForm from "@/components/applications/AppForm.vue"
+import { APP_STORE } from "@/store/appStore/types"
+import { mapActions, mapGetters } from "vuex"
 
 export default {
   name: "InstalledAppDetailPage",
@@ -131,6 +133,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(APP_STORE.NAMESPACE, {
+      sdk: APP_STORE.GETTERS.GET_SDK,
+    }),
     isRequestPending() {
       return this.isSaving || this.loading || this.isUninstalling
     },
@@ -150,6 +155,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions(APP_STORE.NAMESPACE, [APP_STORE.ACTIONS.GET_SDK]),
     toggleModal() {
       this.showModal = !this.showModal
     },
@@ -162,6 +168,7 @@ export default {
           requestData: API.appStore.activateApp,
           params: {
             key: this.$route.params.id,
+            sdk: this.sdk,
             data: {
               enabled: newState,
             },
@@ -201,7 +208,10 @@ export default {
       this.isUninstalling = true
       await callApi({
         requestData: API.appStore.uninstallApp,
-        params: { key },
+        params: {
+          key,
+          sdk: this.sdk,
+        },
       })
       await this.redirectTo(this.$router, {
         name: ROUTES.APPLICATIONS,
@@ -212,10 +222,16 @@ export default {
     async authorizeApp() {
       this.isSaving = true
       const authorizeURL = new URL(
-        API.authorize.getAuthorizationApplicationLink(this.appActive.key),
+        API.authorize.getAuthorizationApplicationLink(
+          this.appActive.key,
+          this.sdk
+        ),
         config.backend.apiBaseUrl
       )
-      authorizeURL.searchParams.append("redirect_url", window.location.href)
+      authorizeURL.searchParams.append(
+        "redirect_url",
+        `${window.location.href}?sdk=${this.sdk}`
+      )
       authorizeURL.searchParams.append("Authorization", authService.accessToken)
       window.open(authorizeURL.href, "_blank").focus()
       this.isSaving = false
@@ -233,7 +249,10 @@ export default {
     async onFormSaved() {
       this.appActive = await callApi({
         requestData: API.appStore.getApp,
-        params: { key: this.$route.params.id },
+        params: {
+          key: this.$route.params.id,
+          sdk: this.sdk,
+        },
       })
       this.isActivationEnabled = Boolean(this.appActive.applicationSettings)
     },
@@ -251,13 +270,45 @@ export default {
     },
   },
   async created() {
-    this.loading = true
-    this.appActive = await callApi({
-      requestData: API.appStore.getApp,
-      params: { key: this.$route.params.id },
-    })
-    this.$emit("appChanged", this.appActive.name)
-    this.loading = false
+    if (this.sdk) {
+      this.loading = true
+      this.appActive = await callApi({
+        requestData: API.appStore.getApp,
+        params: {
+          key: this.$route.params.id,
+          sdk: this.sdk,
+        },
+      })
+      this.$emit("appChanged", this.appActive.name)
+      this.loading = false
+
+      if (this.$route.query.sdk) {
+        await this.$router.push({
+          name: ROUTES.APPLICATION_INSTALLED,
+          params: { key: this.$route.params.id },
+        })
+      }
+    } else if (this.$route.query.sdk) {
+      this[APP_STORE.ACTIONS.GET_SDK](this.$route.query.sdk)
+
+      this.loading = true
+      this.appActive = await callApi({
+        requestData: API.appStore.getApp,
+        params: {
+          key: this.$route.params.id,
+          sdk: this.sdk,
+        },
+      })
+      this.$emit("appChanged", this.appActive.name)
+      this.loading = false
+
+      await this.$router.push({
+        name: ROUTES.APPLICATION_INSTALLED,
+        params: { key: this.$route.params.id },
+      })
+    } else {
+      await this.$router.push({ name: ROUTES.OVERVIEW })
+    }
   },
   beforeDestroy() {
     this.$emit("appChanged", null)

@@ -177,6 +177,8 @@ import { callApi } from "@/utils/apiFetch"
 import { API } from "@/api"
 import showFlashMessage from "@/utils/flashMessage"
 import { FLASH_MESSAGES_TYPES } from "@/store/flashMessages/types"
+import { APP_STORE } from "@/store/appStore/types"
+import { mapGetters } from "vuex"
 
 export default {
   name: "AppForm",
@@ -206,6 +208,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(APP_STORE.NAMESPACE, {
+      sdk: APP_STORE.GETTERS.GET_SDK,
+    }),
     isRequestPending() {
       return this.isSaving
     },
@@ -309,6 +314,7 @@ export default {
         requestData: API.appStore.saveAppSettings,
         params: {
           key: this.app.key,
+          sdk: this.sdk,
           data: formSettings,
         },
       })
@@ -316,7 +322,10 @@ export default {
       if (isSaved) {
         this.app = await callApi({
           requestData: API.appStore.getApp,
-          params: { key: this.app.key },
+          params: {
+            key: this.app.key,
+            sdk: this.sdk,
+          },
         })
         this.initSettings()
         this.$emit("appFormSaved", this.app.name)

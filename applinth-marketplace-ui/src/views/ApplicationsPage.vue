@@ -66,6 +66,8 @@ import Heading from "@/components/commons/Heading"
 import BaseProgressBarLinear from "@/components/commons/BaseProgressBarLinear"
 import showFlashMessage from "@/utils/flashMessage"
 import { FLASH_MESSAGES_TYPES } from "@/store/flashMessages/types"
+import { APP_STORE } from "@/store/appStore/types"
+import { mapGetters } from "vuex"
 
 export default {
   name: "ApplicationsPage",
@@ -83,6 +85,16 @@ export default {
       appInProgress: null,
     }
   },
+  computed: {
+    ...mapGetters(APP_STORE.NAMESPACE, {
+      sdk: APP_STORE.GETTERS.GET_SDK,
+    }),
+  },
+  watch: {
+    sdk: async function () {
+      await this.initData()
+    },
+  },
   methods: {
     async install(key, name) {
       this.appInProgress = key
@@ -90,7 +102,10 @@ export default {
 
       await callApi({
         requestData: API.appStore.installApp,
-        params: { key },
+        params: {
+          key,
+          sdk: this.sdk,
+        },
       })
 
       this.appInProgress = null
@@ -106,12 +121,24 @@ export default {
       )
     },
     async initData() {
+      if (!this.sdk) {
+        this.apps = []
+
+        return
+      }
+
       this.isLoading = true
       const availableAppsResponse = await callApi({
         requestData: API.appStore.getAvailableApps,
+        params: {
+          sdk: this.sdk,
+        },
       })
       const installedAppsResponse = await callApi({
         requestData: API.appStore.getInstalledApps,
+        params: {
+          sdk: this.sdk,
+        },
       })
       if (availableAppsResponse.items && installedAppsResponse.items) {
         this.apps = availableAppsResponse.items.map((availableAppData) => {

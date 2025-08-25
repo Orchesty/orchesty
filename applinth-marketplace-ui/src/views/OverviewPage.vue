@@ -73,6 +73,7 @@ import moment from "moment"
 import prettifyMills from "pretty-ms"
 import { callApi } from "@/utils/apiFetch"
 import { API } from "@/api"
+import { authService } from "@/utils/authService"
 
 export default {
   name: "OverviewPage",
@@ -84,6 +85,9 @@ export default {
   async beforeRouteEnter(_to, _from, next) {
     const installedApps = await callApi({
       requestData: API.appStore.getInstalledApps,
+      params: {
+        sdk: authService.sdk,
+      },
     })
     if (installedApps.items.length <= 0) {
       next((vm) => {

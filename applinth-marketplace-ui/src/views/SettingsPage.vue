@@ -10,6 +10,8 @@ import { API } from "@/api"
 import { ROUTES } from "@/router/routes"
 import { config } from "@/config"
 import AppForm from "@/components/applications/AppForm.vue"
+import { APP_STORE } from "@/store/appStore/types"
+import { mapGetters } from "vuex"
 
 export default {
   name: "SettingsPage",
@@ -28,10 +30,15 @@ export default {
       },
     }
   },
+  computed: {
+    ...mapGetters(APP_STORE.NAMESPACE, {
+      sdk: APP_STORE.GETTERS.GET_SDK,
+    }),
+  },
   methods: {
     async authorizeApp() {
       const authorizeURL = new URL(
-        API.authorize.getAuthorizationSettingsLink(),
+        API.authorize.getAuthorizationSettingsLink(this.sdk),
         config.backend.apiBaseUrl
       )
       authorizeURL.searchParams.append("redirect_url", window.location.href)
@@ -60,6 +67,9 @@ export default {
   async created() {
     this.rootApp = await callApi({
       requestData: API.settings.getSettings,
+      params: {
+        sdk: this.sdk,
+      },
     })
   },
 }

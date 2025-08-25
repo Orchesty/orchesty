@@ -14,6 +14,8 @@ import SettingsPage from "@/views/SettingsPage"
 import { authService } from "@/utils/authService.js"
 import { config } from "@/config"
 import LogsPage from "@/views/LogsPage.vue"
+import store from "../store"
+import { APP_STORE } from "@/store/appStore/types"
 
 Vue.use(VueRouter)
 
@@ -220,6 +222,10 @@ router.beforeEach(async (to, _from, next) => {
       }
     } else if (hasAccessToken) {
       authenticated = true
+      await store.dispatch(
+        `${APP_STORE.NAMESPACE}/${APP_STORE.ACTIONS.GET_SDK}`,
+        authService.sdk
+      )
     }
 
     if (!authenticated) {

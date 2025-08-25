@@ -1,30 +1,30 @@
 export default {
   getSettings: {
     id: "GET_SETTINGS_DETAIL",
-    request: () => ({
-      url: `/settings`,
+    request: ({ sdk }) => ({
+      url: `/settings?sdk=${sdk}`,
       method: "GET",
     }),
   },
   authorizeSettings: {
     id: "AUTHORIZE_SETTINGS",
-    request: () => ({
-      url: `/settings/authorize`,
+    request: ({ sdk }) => ({
+      url: `/settings/authorize?sdk=${sdk}`,
       method: "GET",
     }),
   },
   saveSettings: {
     id: "SAVE_SETTINGS",
-    request: ({ data }) => ({
-      url: `/settings`,
+    request: ({ sdk, data }) => ({
+      url: `/settings?sdk=${sdk}`,
       method: "PUT",
       data,
     }),
   },
   setPasswordSettings: {
     id: "SET_SETTINGS_PASSWORD",
-    request: ({ data }) => ({
-      url: `/settings/set-password`,
+    request: ({ sdk, data }) => ({
+      url: `/settings/set-password?sdk=${sdk}`,
       method: "PUT",
       data,
     }),

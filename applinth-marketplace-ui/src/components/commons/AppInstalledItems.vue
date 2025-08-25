@@ -73,6 +73,8 @@ import { ROUTES } from "@/router/routes"
 import BaseButton from "@/components/commons/BaseButton"
 import BaseProgressBarLinear from "@/components/commons/BaseProgressBarLinear"
 import UninstallAppModal from "@/components/applications/UninstallAppModal"
+import { mapGetters } from "vuex"
+import { APP_STORE } from "@/store/appStore/types"
 
 export default {
   name: "AppInstalledItems",
@@ -90,6 +92,16 @@ export default {
       isUninstalling: false,
       isUninstallingKeys: [],
     }
+  },
+  computed: {
+    ...mapGetters(APP_STORE.NAMESPACE, {
+      sdk: APP_STORE.GETTERS.GET_SDK,
+    }),
+  },
+  watch: {
+    sdk: async function () {
+      await this.fetchApplications()
+    },
   },
   methods: {
     appLogo(logo) {
@@ -114,21 +126,34 @@ export default {
 
       await callApi({
         requestData: API.appStore.uninstallApp,
-        params: { key },
+        params: {
+          key,
+          sdk: this.sdk,
+        },
       })
 
       this.isUninstallingKeys.push(key)
       this.isUninstalling = false
     },
     async fetchApplications() {
+      if (!this.sdk) {
+        return
+      }
+
       this.isLoading = true
 
       try {
         const availableApps = await callApi({
           requestData: API.appStore.getAvailableApps,
+          params: {
+            sdk: this.sdk,
+          },
         })
         const installedApps = await callApi({
           requestData: API.appStore.getInstalledApps,
+          params: {
+            sdk: this.sdk,
+          },
         })
         this.apps = this.mergeApps(installedApps, availableApps)
       } catch {

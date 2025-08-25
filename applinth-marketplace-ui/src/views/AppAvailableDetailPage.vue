@@ -55,10 +55,15 @@ import NavigationItem from "@/components/commons/NavigationItem"
 import { ROUTES } from "@/router/routes"
 import showFlashMessage from "@/utils/flashMessage"
 import { FLASH_MESSAGES_TYPES } from "@/store/flashMessages/types"
+import { APP_STORE } from "@/store/appStore/types"
+import { mapGetters } from "vuex"
 export default {
   name: "AppAvailableDetailPage",
   components: { NavigationItem, BaseButton },
   computed: {
+    ...mapGetters(APP_STORE.NAMESPACE, {
+      sdk: APP_STORE.GETTERS.GET_SDK,
+    }),
     appLogo() {
       return this.app.logo
         ? this.app.logo
@@ -80,7 +85,10 @@ export default {
     async install() {
       await callApi({
         requestData: API.appStore.installApp,
-        params: { key: this.$route.params.id },
+        params: {
+          key: this.$route.params.id,
+          sdk: this.sdk,
+        },
       })
       await this.$router.push({
         name: ROUTES.APPLICATION_INSTALLED,
@@ -95,7 +103,10 @@ export default {
   async created() {
     this.app = await callApi({
       requestData: API.appStore.getAppPreview,
-      params: { key: this.$route.params.id },
+      params: {
+        key: this.$route.params.id,
+        sdk: this.sdk,
+      },
     })
     this.$emit("appChanged", this.app.name)
   },

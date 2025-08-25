@@ -51,6 +51,8 @@ import BaseButton from "@/components/commons/BaseButton"
 import BaseInput from "@/components/commons/BaseInput"
 import { API } from "@/api"
 import { callApi } from "@/utils/apiFetch"
+import { APP_STORE } from "@/store/appStore/types"
+import { mapGetters } from "vuex"
 export default {
   name: "AppItemPasswordModal",
   components: {
@@ -100,6 +102,11 @@ export default {
       isPasswordVisible: false,
     }
   },
+  computed: {
+    ...mapGetters(APP_STORE.NAMESPACE, {
+      sdk: APP_STORE.GETTERS.GET_SDK,
+    }),
+  },
   methods: {
     async submit() {
       this.isSaving = true
@@ -107,6 +114,7 @@ export default {
         requestData: API.appStore.setPasswordApp,
         params: {
           key: this.appKey,
+          sdk: this.sdk,
           data: {
             password: this.password,
             formKey: this.formKey,
