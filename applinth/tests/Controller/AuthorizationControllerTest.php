@@ -4,9 +4,12 @@ namespace ApplinthTests\Controller;
 
 use ApplinthTests\ControllerTestCaseAbstract;
 use Exception;
+use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
+use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator;
 use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 use Hanaboso\PipesFramework\Configurator\Document\Sdk;
+use Hanaboso\Utils\String\Json;
 use Symfony\Component\BrowserKit\Cookie;
 
 /**
@@ -22,7 +25,8 @@ final class AuthorizationControllerTest extends ControllerTestCaseAbstract
      */
     public function testLogin(): void
     {
-        $this->mockLocator();
+        $dto = new ResponseDto(200, '', Json::encode(['items' => [['key' => 'php-sdk']]]), []);
+        $this->mockLocator($dto);
         $this->assertResponse(
             __DIR__ . '/data/AuthorizationController/loginRequest.json',
             [
@@ -38,7 +42,8 @@ final class AuthorizationControllerTest extends ControllerTestCaseAbstract
      */
     public function testLoginWithScopes(): void
     {
-        $this->mockLocator();
+        $dto = new ResponseDto(200, '', Json::encode(['items' => [['key' => 'php-sdk']]]), []);
+        $this->mockLocator($dto);
         $this->assertResponse(
             __DIR__ . '/data/AuthorizationController/loginScopedRequest.json',
             [
@@ -85,7 +90,23 @@ final class AuthorizationControllerTest extends ControllerTestCaseAbstract
     /**
      * @return void
      */
-    private function mockLocator(): void
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $sdk = new Sdk();
+        $sdk->setUrl('php-sdk')->setName('php-sdk');
+        $this->dm->persist($sdk);
+        $this->dm->flush();
+        $this->dm->clear();
+    }
+
+    /**
+     * @param ResponseDto|null $dto
+     *
+     * @return void
+     */
+    private function mockLocator(?ResponseDto $dto = NULL): void
     {
         $handler = self::createPartialMock(ServiceLocator::class, ['installApp']);
         $this->setProperty($handler, 'sdkRepository', $this->dm->getRepository(Sdk::class));
@@ -100,6 +121,12 @@ final class AuthorizationControllerTest extends ControllerTestCaseAbstract
 
             return [];
         });
+
+        if ($dto !== NULL) {
+            $curl = self::createMock(CurlManager::class);
+            $curl->method('send')->willReturn($dto);
+            $this->setProperty($handler, 'curlManager', $curl);
+        }
 
         $container = $this->client->getContainer();
         $container->set('hbpp.service.locator', $handler);

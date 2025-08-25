@@ -42,6 +42,7 @@ services:
         class: Hanaboso\Applinth\Controller\AuthorizationController
         arguments:
             - '@Hanaboso\Applinth\Handler\AuthorizationHandler'
+            - '@hbpp.service.locator'
             - '%cookieSameSite%'
         calls:
             - [ 'setLogger', [ '@monolog.logger.commons' ] ]

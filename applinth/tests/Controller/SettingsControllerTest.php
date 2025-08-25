@@ -36,12 +36,6 @@ final class SettingsControllerTest extends ControllerTestCaseAbstract
      */
     public function testAuthorizeApplication(): void
     {
-        $sdk = new Sdk();
-        $sdk->setUrl('ip')->setName('name');
-        $this->dm->persist($sdk);
-        $this->dm->flush();
-        $this->dm->clear();
-
         $curl = $this->createMock(CurlManager::class);
         $curl
             ->method('send')
@@ -84,6 +78,20 @@ final class SettingsControllerTest extends ControllerTestCaseAbstract
             $this->getJwsToken(),
             __DIR__ . '/data/SettingsController/setPasswordRequest.json',
         );
+    }
+
+    /**
+     * @return void
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $sdk = new Sdk();
+        $sdk->setUrl('php-sdk')->setName('php-sdk');
+        $this->dm->persist($sdk);
+        $this->dm->flush();
+        $this->dm->clear();
     }
 
 }

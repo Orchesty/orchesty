@@ -13,6 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\Routing\Annotation\Route;
 use Throwable;
 
@@ -24,6 +25,8 @@ use Throwable;
 #[Route('/application')]
 final class ApplicationController extends AbstractController
 {
+
+    // phpcs:disable SlevomatCodingStandard.Attributes.AttributeAndTargetSpacing.IncorrectLinesCountBetweenAttributeAndTarget
 
     use ControllerTrait;
 
@@ -45,62 +48,70 @@ final class ApplicationController extends AbstractController
     }
 
     /**
+     * @param string $sdk
+     *
      * @return Response
      */
     #[Route('/installed', methods: ['GET'])]
-    public function getInstalledApplications(): Response
+    public function getInstalledApplications(#[MapQueryParameter] string $sdk): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done
         return new JsonResponse(
             $this->locator->getUserApps(
                 $this->authenticator->getAuthUser(),
+                $sdk,
                 $this->authenticator->getRootKey(),
             ),
         );
     }
 
     /**
+     * @param string $sdk
+     *
      * @return Response
      */
     #[Route('/available', methods: ['GET'])]
-    public function getAvailableApplications(): Response
+    public function getAvailableApplications(#[MapQueryParameter] string $sdk): Response
     {
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::listOfApplicationsAction',
             [],
-            ['exclude' => $this->authenticator->getRootKey()],
-        );
-    }
-
-    /**
-     * @param Request $request
-     * @param string  $key
-     *
-     * @return Response
-     */
-    #[Route('/{key}/preview', methods: ['GET'])]
-    public function getApplicationDetail(Request $request, string $key): Response
-    {
-        return $this->forward(
-            'Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::getApplicationAction',
-            ['request' => $request, 'key' => $key],
+            ['sdk' => $sdk, 'exclude' => $this->authenticator->getRootKey()],
         );
     }
 
     /**
      * @param string $key
+     * @param string $sdk
+     *
+     * @return Response
+     */
+    #[Route('/{key}/preview', methods: ['GET'])]
+    public function getApplicationDetail(string $key, #[MapQueryParameter] string $sdk): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::getApplicationAction',
+            ['key' => $key],
+            ['sdk' => $sdk],
+        );
+    }
+
+    /**
+     * @param string $key
+     * @param string $sdk
      *
      * @return Response
      * @throws Throwable
      */
     #[Route('/{key}', methods: ['GET'])]
-    public function getInstalledApplicationDetail(string $key): Response
+    public function getInstalledApplicationDetail(string $key, #[MapQueryParameter] string $sdk): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done
         return new JsonResponse(
             $this->locator->getAppDetail(
                 $key,
                 $this->authenticator->getAuthUser(),
+                $sdk,
                 '%s/api/applinth/application/topologies/%s/nodes/%s/run-by-name',
             ),
         );
@@ -129,15 +140,16 @@ final class ApplicationController extends AbstractController
 
     /**
      * @param string $key
+     * @param string $sdk
      *
      * @return Response
      */
     #[Route('/{key}', methods: ['POST'])]
-    public function installApplication(string $key): Response
+    public function installApplication(string $key, #[MapQueryParameter] string $sdk): Response
     {
         $user = $this->authenticator->getAuthUser();
         //TODO: refactor after ServiceLocatorMS will be done
-        $resp = new JsonResponse($this->locator->installApp($key, $user));
+        $resp = new JsonResponse($this->locator->installApp($key, $user, $sdk));
 
         $this->usageStatsHandler->emitEvent(['event' => EventTypeEnum::INSTALL->value, 'aid' => $key, 'euid' => $user]);
 
@@ -147,17 +159,19 @@ final class ApplicationController extends AbstractController
     /**
      * @param Request $request
      * @param string  $key
+     * @param string  $sdk
      *
      * @return Response
      */
     #[Route('/{key}', methods: ['PUT'])]
-    public function updateApplication(Request $request, string $key): Response
+    public function updateApplication(Request $request, string $key, #[MapQueryParameter] string $sdk): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done
         return new JsonResponse(
             $this->locator->updateApp(
                 $key,
                 $this->authenticator->getAuthUser(),
+                $sdk,
                 $request->request->all(),
             ),
         );
@@ -165,15 +179,16 @@ final class ApplicationController extends AbstractController
 
     /**
      * @param string $key
+     * @param string $sdk
      *
      * @return Response
      */
     #[Route('/{key}', methods: ['DELETE'])]
-    public function uninstallApplication(string $key): Response
+    public function uninstallApplication(string $key, #[MapQueryParameter] string $sdk): Response
     {
         $user = $this->authenticator->getAuthUser();
         //TODO: refactor after ServiceLocatorMS will be done
-        $resp = new JsonResponse($this->locator->uninstallApp($key, $this->authenticator->getAuthUser()));
+        $resp = new JsonResponse($this->locator->uninstallApp($key, $this->authenticator->getAuthUser(), $sdk));
 
         $this->usageStatsHandler->emitEvent(
             ['event' => EventTypeEnum::UNINSTALL->value, 'aid' => $key, 'euid' => $user],
@@ -185,18 +200,20 @@ final class ApplicationController extends AbstractController
     /**
      * @param Request $request
      * @param string  $key
+     * @param string  $sdk
      *
      * @return Response
      */
     #[Route('/{key}/change-state', methods: ['PUT'])]
     #[Route('/{key}/changeState', methods: ['PUT'])]
-    public function changeStateApplication(Request $request, string $key): Response
+    public function changeStateApplication(Request $request, string $key, #[MapQueryParameter] string $sdk): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done
         return new JsonResponse(
             $this->locator->changeState(
                 $key,
                 $this->authenticator->getAuthUser(),
+                $sdk,
                 $request->request->all(),
             ),
         );
@@ -205,37 +222,44 @@ final class ApplicationController extends AbstractController
     /**
      * @param Request $request
      * @param string  $key
+     * @param string  $sdk
      *
      * @return Response
      */
     #[Route('/{key}/set-password', methods: ['PUT'])]
-    public function setPassword(Request $request, string $key): Response
+    public function setPassword(Request $request, string $key, #[MapQueryParameter] string $sdk): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done
         return new JsonResponse(
             $this->locator->updateAppPassword(
                 $key,
                 $this->authenticator->getAuthUser(),
+                $sdk,
                 $request->request->all(),
             ),
         );
     }
 
     /**
-     * @param Request $request
-     * @param string  $key
+     * @param string $key
+     * @param string $sdk
+     * @param string $redirectUrl
      *
      * @return Response
      */
     #[Route('/{key}/authorize', methods: ['GET'])]
-    public function authorizeApplication(Request $request, string $key): Response
-    {
+    public function authorizeApplication(
+        string $key,
+        #[MapQueryParameter] string $sdk,
+        #[MapQueryParameter('redirect_url')] string $redirectUrl,
+    ): Response {
         try {
             //TODO: refactor after ServiceLocatorMS will be done
             $this->locator->authorize(
                 $key,
                 $this->authenticator->getAuthUser(),
-                (string) $request->query->get('redirect_url'),
+                $sdk,
+                $redirectUrl,
             );
         } catch (Exception $e) {
             return new JsonResponse(['Error' => $e->getMessage()], 500);

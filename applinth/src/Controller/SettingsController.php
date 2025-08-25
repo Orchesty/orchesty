@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\Routing\Annotation\Route;
 use Throwable;
 
@@ -21,6 +22,8 @@ use Throwable;
 #[Route('/settings')]
 final class SettingsController extends AbstractController
 {
+
+    // phpcs:disable SlevomatCodingStandard.Attributes.AttributeAndTargetSpacing.IncorrectLinesCountBetweenAttributeAndTarget
 
     use ControllerTrait;
 
@@ -38,53 +41,62 @@ final class SettingsController extends AbstractController
     }
 
     /**
+     * @param string $sdk
+     *
      * @return Response
      * @throws Throwable
      */
     #[Route('', methods: ['GET'])]
-    public function getApplicationDetail(): Response
+    public function getApplicationDetail(#[MapQueryParameter] string $sdk): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done
         return new JsonResponse(
             $this->locator->getAppDetail(
                 $this->authenticator->getRootKey(),
                 $this->authenticator->getAuthUser(),
+                $sdk,
             ),
         );
     }
 
     /**
      * @param Request $request
+     * @param string  $sdk
      *
      * @return Response
      */
     #[Route('', methods: ['PUT'])]
-    public function updateApplication(Request $request): Response
+    public function updateApplication(Request $request, #[MapQueryParameter] string $sdk): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done
         return new JsonResponse(
             $this->locator->updateApp(
                 $this->authenticator->getRootKey(),
                 $this->authenticator->getAuthUser(),
+                $sdk,
                 $request->request->all(),
             ),
         );
     }
 
     /**
-     * @param Request $request
+     * @param string $sdk
+     * @param string $redirectUrl
      *
      * @return Response
      */
     #[Route('/authorize', methods: ['GET'])]
-    public function authorizeApplication(Request $request): Response
-    {
+    public function authorizeApplication(
+        #[MapQueryParameter] string $sdk,
+        #[MapQueryParameter('redirect_url')] string $redirectUrl,
+    ): Response {
         try {
             //TODO: refactor after ServiceLocatorMS will be done
             $this->locator->authorize(
                 $this->authenticator->getRootKey(),
                 $this->authenticator->getAuthUser(),
-                (string) $request->query->get('redirect_url'),
+                $sdk,
+                $redirectUrl,
             );
         } catch (Exception $e) {
             return new JsonResponse(['Error' => $e->getMessage()], 500);
@@ -95,17 +107,19 @@ final class SettingsController extends AbstractController
 
     /**
      * @param Request $request
+     * @param string  $sdk
      *
      * @return Response
      */
     #[Route('/set-password', methods: ['PUT'])]
-    public function setPassword(Request $request): Response
+    public function setPassword(Request $request, #[MapQueryParameter] string $sdk): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done
         return new JsonResponse(
             $this->locator->updateAppPassword(
                 $this->authenticator->getRootKey(),
                 $this->authenticator->getAuthUser(),
+                $sdk,
                 $request->request->all(),
             ),
         );

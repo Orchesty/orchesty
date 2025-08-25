@@ -1,5 +1,5 @@
 {
-    "http": "GET /api/applinth/application/key/authorize?redirect_url=http://example.com",
+    "http": "GET /api/applinth/application/key/authorize?sdk=php-sdk&redirect_url=http://example.com",
     "body": {
         "password": "password"
     },

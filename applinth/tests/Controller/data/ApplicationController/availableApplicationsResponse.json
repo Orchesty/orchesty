@@ -4,7 +4,7 @@
         "items": [],
         "sorter": [],
         "filter": [],
-        "host": "host",
+        "host": "php-sdk",
         "paging": {
             "page": 1,
             "itemsPerPage": 50,

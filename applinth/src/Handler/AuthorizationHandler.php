@@ -85,7 +85,7 @@ final class AuthorizationHandler
     /**
      * @param string $jwsToken
      *
-     * @return mixed[]
+     * @return array{string, int, mixed}
      */
     public function jwsFromJws(string $jwsToken): array
     {
@@ -97,6 +97,7 @@ final class AuthorizationHandler
         return [
             $this->jwsFromPayload($payload),
             $payload[self::EXP],
+            $payload,
         ];
     }
 
@@ -140,7 +141,8 @@ final class AuthorizationHandler
         try {
             $this->appInstallRepository->findUserApp($key, $user);
         } catch (Exception) {
-            $this->locator->installApp($key, $user);
+            $sdk = $this->locator->getSdkNameByInstalledApplication($key);
+            $this->locator->installApp($key, $user, $sdk);
             $pin = hash('sha256', sprintf('%s-%s-%s', time(), $key, $user));
 
             $formSettings            = [];
@@ -149,7 +151,7 @@ final class AuthorizationHandler
                 $formSettings[$k] = $v;
             }
 
-            $resp = $this->locator->updateApp($key, $user, [self::AUTHORIZATION_FORM => $formSettings]);
+            $resp = $this->locator->updateApp($key, $user, $sdk, [self::AUTHORIZATION_FORM => $formSettings]);
 
             try {
                 $app = $this->appInstallRepository->findUserApp($key, $user);

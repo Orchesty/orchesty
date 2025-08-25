@@ -3,6 +3,7 @@
     "body": {
         "access_token": "abcd",
         "expires_in": "123",
-        "oauth_redirect_link": null
+        "oauth_redirect_link": null,
+        "sdk": "php-sdk"
     }
 }

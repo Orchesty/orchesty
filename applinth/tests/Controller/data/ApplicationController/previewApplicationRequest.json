@@ -1,5 +1,5 @@
 {
-    "http": "GET /api/applinth/application/key/preview",
+    "http": "GET /api/applinth/application/key/preview?sdk=php-sdk",
     "body": [],
     "headers": {
         "HTTP_Authorization": "jwt"

@@ -5,6 +5,7 @@ namespace Hanaboso\Applinth\Controller;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\Applinth\Authenticator\EndUserAuthenticator;
 use Hanaboso\Applinth\Handler\AuthorizationHandler;
+use Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator;
 use Hanaboso\Utils\Exception\DateTimeException;
 use Hanaboso\Utils\System\ControllerUtils;
 use Hanaboso\Utils\Traits\ControllerTrait;
@@ -24,11 +25,14 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
 final class AuthorizationController extends AbstractController
 {
 
+    // phpcs:disable SlevomatCodingStandard.Attributes.AttributeAndTargetSpacing.IncorrectLinesCountBetweenAttributeAndTarget
+
     use ControllerTrait;
 
     private const string ACCESS_TOKEN  = 'access_token';
     private const string REFRESH_TOKEN = 'refresh_token';
     private const string EXPIRES_IN    = 'expires_in';
+    private const string SDK           = 'sdk';
     private const string REDIRECT_LINK = 'oauth_redirect_link';
     private const string SCOPE         = 'scope';
 
@@ -38,10 +42,12 @@ final class AuthorizationController extends AbstractController
      * @phpstan-param 'None'|'Lax'|'Strict' $sameSite
      *
      * @param AuthorizationHandler $authorizationHandler
+     * @param ServiceLocator       $locator
      * @param string               $sameSite
      */
     public function __construct(
         private readonly AuthorizationHandler $authorizationHandler,
+        private readonly ServiceLocator $locator,
         private readonly string $sameSite,
     )
     {
@@ -81,11 +87,13 @@ final class AuthorizationController extends AbstractController
 
         $this->authorizationHandler->saveRestrictToken($jweToken);
         $link = $this->authorizationHandler->initRootApp($this->authorizationHandler->payloadFromJwe($jweToken, TRUE));
+        $sdk  = $this->getSdkForUser($jwePayload[AuthorizationHandler::EU_SUB]);
 
         $res = [
             self::ACCESS_TOKEN  => $accessToken,
             self::EXPIRES_IN    => $expiration,
             self::REDIRECT_LINK => $link,
+            self::SDK           => $sdk,
         ];
         if ($request->query->get(self::SCOPE) === self::REFRESH_TOKEN) {
             $res = array_merge($res, [self::REFRESH_TOKEN => $refreshToken]);
@@ -114,18 +122,35 @@ final class AuthorizationController extends AbstractController
     public function logged(Request $request): Response
     {
         try {
-            [$jwsToken, $expiration] = $this->renewToken($request);
+            [$jwsToken, $expiration, $jwsPayload] = $this->renewToken($request);
         } catch (LogicException $e) {
             return $this->getErrorResponse($e, Response::HTTP_BAD_REQUEST, ControllerUtils::INVALID_REQUEST);
         }
 
-        return $this->getResponse([self::ACCESS_TOKEN => $jwsToken, self::EXPIRES_IN => $expiration]);
+        return $this->getResponse([
+            self::ACCESS_TOKEN => $jwsToken,
+            self::EXPIRES_IN => $expiration,
+            self::SDK => $this->getSdkForUser($jwsPayload[AuthorizationHandler::EU_SUB]),
+        ]);
+    }
+
+    /**
+     * @param string $user
+     *
+     * @return string
+     */
+    private function getSdkForUser(string $user): string
+    {
+        $user;
+
+        // TODO RB: Choose SDK based on user in future...
+        return $this->locator->getSdkNameByInstalledApplication('');
     }
 
     /**
      * @param Request $request
      *
-     * @return string[]
+     * @return array{string, int, mixed}
      */
     private function renewToken(Request $request): array
     {

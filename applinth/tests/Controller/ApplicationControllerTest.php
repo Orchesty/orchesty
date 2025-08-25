@@ -78,12 +78,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
      */
     public function testAuthorizeApplication(): void
     {
-        $sdk = new Sdk();
-        $sdk->setUrl('ip')->setName('name');
-        $this->dm->persist($sdk);
-        $this->dm->flush();
-        $this->dm->clear();
-
         $curl = $this->createMock(CurlManager::class);
         $curl
             ->method('send')
@@ -153,6 +147,20 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
+     * @return void
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $sdk = new Sdk();
+        $sdk->setUrl('php-sdk')->setName('php-sdk');
+        $this->dm->persist($sdk);
+        $this->dm->flush();
+        $this->dm->clear();
+    }
+
+    /**
      * @param ResponseDto $dto
      * @param bool        $exception
      *
@@ -160,12 +168,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
      */
     private function createLocator(ResponseDto $dto, bool $exception = FALSE): void
     {
-        $sdk = new Sdk();
-        $sdk->setName('name')->setUrl('host');
-        $this->dm->persist($sdk);
-        $this->dm->flush();
-        $this->dm->clear();
-
         $curl = self::createMock(CurlManager::class);
 
         if ($exception) {
