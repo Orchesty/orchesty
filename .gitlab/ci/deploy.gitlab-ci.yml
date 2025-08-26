@@ -1,29 +1,3 @@
-.base-deploy:
-  stage: deploy
-  environment: stage
-  image:
-    name: alpine/helm
-    entrypoint: [""]
-
-  variables:
-    HELM_DIR: ./helm
-
-  script:
-    - echo "${KUBECONFIG}" > /tmp/kubeconfig
-    - chmod 0600 /tmp/kubeconfig
-
-    - . ./export_tags
-    - cd ${PROJECT_DIR}
-    - helm repo add orchesty https://orchesty.github.io/helm-charts/
-    - helm dependencies build ${HELM_DIR}
-    - >-
-      helm --kubeconfig /tmp/kubeconfig upgrade -i --wait --reset-values -f ${HELM_DIR}/resources.yaml ${HELM_ARGS} ${HELM_ARGS_EXT}
-      pipes ${HELM_DIR}
-
-  tags:
-    - docker
-
-
 .base-deploy-current:
   stage: deploy
   environment: stage
