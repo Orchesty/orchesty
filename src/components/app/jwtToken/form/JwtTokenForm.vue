@@ -31,9 +31,9 @@
 </template>
 
 <script>
-import FormMixin from "@/services/mixins/FormMixin"
-import AppDatePickerInput from "@/components/commons/input/AppDatePickerInput"
-import AppSelect from "@/components/commons/AppSelect"
+import FormMixin from "@/services/mixins/FormMixin.vue"
+import AppDatePickerInput from "@/components/commons/input/AppDatePickerInput.vue"
+import AppSelect from "@/components/commons/AppSelect.vue"
 import { SCOPES } from "@/services/enums/jwtTokenEnums"
 import moment from "moment/moment"
 

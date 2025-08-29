@@ -104,12 +104,12 @@
 import { mapActions, mapGetters } from "vuex"
 import { REQUESTS_STATE } from "@/store/modules/api/types"
 import { API } from "@/api"
-import AppItem from "../item/AppItem"
+import AppItem from "../item/AppItem.vue"
 import { AUTH } from "@/store/modules/auth/types"
 import { ROUTES } from "@/services/enums/routerEnums"
-import AppItemButton from "@/components/app/appStore/button/AppItemButton"
+import AppItemButton from "@/components/app/appStore/button/AppItemButton.vue"
 import { APP_STORE } from "@/store/modules/appStore/types"
-import ProgressBarLinear from "@/components/commons/progressIndicators/ProgressBarLinear"
+import ProgressBarLinear from "@/components/commons/progressIndicators/ProgressBarLinear.vue"
 
 export default {
   name: "InstalledAppsGridHandler",

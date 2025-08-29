@@ -49,8 +49,8 @@ import { mapActions, mapGetters } from "vuex"
 import { APP_STORE } from "@/store/modules/appStore/types"
 import { AUTH } from "@/store/modules/auth/types"
 import { ROUTES } from "@/services/enums/routerEnums"
-import AppButton from "@/components/commons/button/AppButton"
-import ContentBasic from "@/components/layout/content/ContentBasic"
+import AppButton from "@/components/commons/button/AppButton.vue"
+import ContentBasic from "@/components/layout/content/ContentBasic.vue"
 
 export default {
   name: "AvailableApp",

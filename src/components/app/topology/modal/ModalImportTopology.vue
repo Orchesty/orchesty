@@ -51,14 +51,14 @@
 
 <script>
 import { events, EVENTS } from "../../../../services/utils/events"
-import ModalTemplate from "../../../commons/modal/ModalTemplate"
+import ModalTemplate from "../../../commons/modal/ModalTemplate.vue"
 import { mapActions, mapGetters, mapState } from "vuex"
 import { REQUESTS_STATE } from "@/store/modules/api/types"
 import { API } from "@/api"
 import { IMPLEMENTATIONS } from "@/store/modules/implementations/types"
-import ImportTopologyMixin from "@/services/mixins/ImportTopologyMixin"
-import AppButton from "@/components/commons/button/AppButton"
-import AppInput from "@/components/commons/input/AppInput"
+import ImportTopologyMixin from "@/services/mixins/ImportTopologyMixin.vue"
+import AppButton from "@/components/commons/button/AppButton.vue"
+import AppInput from "@/components/commons/input/AppInput.vue"
 import { TOPOLOGIES } from "@/store/modules/topologies/types"
 
 export default {

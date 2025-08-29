@@ -76,13 +76,13 @@
 
 <script>
 import { ROUTES } from "@/services/enums/routerEnums"
-import FormMixin from "../../../../services/mixins/FormMixin"
+import FormMixin from "../../../../services/mixins/FormMixin.vue"
 import { AUTH } from "@/store/modules/auth/types"
 import { mapActions, mapGetters } from "vuex"
 import { REQUESTS_STATE } from "@/store/modules/api/types"
 import { API } from "@/api"
-import AppButton from "@/components/commons/button/AppButton"
-import AppInput from "@/components/commons/input/AppInput"
+import AppButton from "@/components/commons/button/AppButton.vue"
+import AppInput from "@/components/commons/input/AppInput.vue"
 
 export default {
   name: "ChangePasswordForm",

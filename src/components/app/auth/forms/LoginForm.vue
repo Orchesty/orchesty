@@ -64,13 +64,13 @@
 
 <script>
 import { ROUTES } from "@/services/enums/routerEnums"
-import FormMixin from "@/services/mixins/FormMixin"
+import FormMixin from "@/services/mixins/FormMixin.vue"
 import { mapGetters } from "vuex"
 import { REQUESTS_STATE } from "@/store/modules/api/types"
 import { API } from "@/api"
-import AppButton from "@/components/commons/button/AppButton"
-import AppInput from "@/components/commons/input/AppInput"
-import AuthSplitLayout from "@/components/app/auth/layout/AuthSplitLayout"
+import AppButton from "@/components/commons/button/AppButton.vue"
+import AppInput from "@/components/commons/input/AppInput.vue"
+import AuthSplitLayout from "@/components/app/auth/layout/AuthSplitLayout.vue"
 
 export default {
   name: "LoginForm",

@@ -24,8 +24,8 @@ import { REQUESTS_STATE } from "@/store/modules/api/types"
 import { API } from "@/api"
 import { mapActions, mapGetters } from "vuex"
 import { AUTH } from "@/store/modules/auth/types"
-import AuthLayout from "@/components/layout/auth/AuthLayout"
-import AuthSplitLayout from "@/components/app/auth/layout/AuthSplitLayout"
+import AuthLayout from "@/components/layout/auth/AuthLayout.vue"
+import AuthSplitLayout from "@/components/app/auth/layout/AuthSplitLayout.vue"
 
 export default {
   components: { AuthSplitLayout, AuthLayout },

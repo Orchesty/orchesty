@@ -35,13 +35,13 @@
 
 <script>
 import { events, EVENTS } from "../../../../services/utils/events"
-import ModalTemplate from "../../../commons/modal/ModalTemplate"
+import ModalTemplate from "../../../commons/modal/ModalTemplate.vue"
 import { TOPOLOGIES } from "../../../../store/modules/topologies/types"
 import { mapActions, mapGetters } from "vuex"
 import { REQUESTS_STATE } from "../../../../store/modules/api/types"
 import { API } from "../../../../api"
-import TopologyForm from "../form/TopologyForm"
-import AppButton from "@/components/commons/button/AppButton"
+import TopologyForm from "../form/TopologyForm.vue"
+import AppButton from "@/components/commons/button/AppButton.vue"
 import { ROUTES } from "@/services/enums/routerEnums"
 import { redirectTo } from "@/services/utils/utils"
 

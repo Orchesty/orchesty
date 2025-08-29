@@ -17,8 +17,8 @@
 </template>
 
 <script>
-import AppButton from "../../../commons/button/AppButton"
-import ModalTemplate from "../../../commons/modal/ModalTemplate"
+import AppButton from "../../../commons/button/AppButton.vue"
+import ModalTemplate from "../../../commons/modal/ModalTemplate.vue"
 
 export default {
   name: "AppNotAuthorizedModal",

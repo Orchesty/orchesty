@@ -148,15 +148,15 @@
 </template>
 
 <script>
-import DataGrid from "@/components/commons/grid/DataGrid"
+import DataGrid from "@/components/commons/grid/DataGrid.vue"
 import { ROUTES } from "@/services/enums/routerEnums"
 import { mapGetters } from "vuex"
 import { REQUESTS_STATE } from "@/store/modules/api/types"
 import { API } from "@/api"
 import { DATA_GRIDS } from "@/services/enums/dataGridEnums"
 import { internationalFormat } from "@/services/utils/dateFilters"
-import Tooltip from "@/components/commons/Tooltip"
-import FlashMessageMixin from "@/services/mixins/FlashMessageMixin"
+import Tooltip from "@/components/commons/Tooltip.vue"
+import FlashMessageMixin from "@/services/mixins/FlashMessageMixin.vue"
 
 export default {
   name: "BpmnNodeGrid",

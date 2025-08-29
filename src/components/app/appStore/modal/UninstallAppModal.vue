@@ -36,8 +36,8 @@
 </template>
 
 <script>
-import ModalTemplate from "@/components/commons/modal/ModalTemplate"
-import AppButton from "@/components/commons/button/AppButton"
+import ModalTemplate from "@/components/commons/modal/ModalTemplate.vue"
+import AppButton from "@/components/commons/button/AppButton.vue"
 export default {
   name: "UninstallAppModal",
   components: { AppButton, ModalTemplate },

@@ -16,8 +16,8 @@
 </template>
 
 <script>
-import AppInput from "@/components/commons/input/AppInput"
-import AppButton from "@/components/commons/button/AppButton"
+import AppInput from "@/components/commons/input/AppInput.vue"
+import AppButton from "@/components/commons/button/AppButton.vue"
 import { OPERATOR } from "@/services/enums/gridEnums"
 export default {
   name: "UserTaskGridSimpleFilter",

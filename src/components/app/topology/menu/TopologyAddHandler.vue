@@ -39,9 +39,9 @@
 
 <script>
 import { events, EVENTS } from "@/services/utils/events"
-import ImportTopologyMixin from "@/services/mixins/ImportTopologyMixin"
-import AppSpecialButton from "@/components/commons/button/AppSpecialButton"
-import AppIcon from "@/components/commons/icon/AppIcon"
+import ImportTopologyMixin from "@/services/mixins/ImportTopologyMixin.vue"
+import AppSpecialButton from "@/components/commons/button/AppSpecialButton.vue"
+import AppIcon from "@/components/commons/icon/AppIcon.vue"
 
 export default {
   name: "TopologyAddHandler",

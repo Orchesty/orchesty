@@ -43,8 +43,8 @@
 </template>
 
 <script>
-import TopologyTitle from "@/components/app/topology/landing/TopologyTitle"
-import TopologyActionButtons from "@/components/app/topology/landing/TopologyActionButtons"
+import TopologyTitle from "@/components/app/topology/landing/TopologyTitle.vue"
+import TopologyActionButtons from "@/components/app/topology/landing/TopologyActionButtons.vue"
 import moment from "moment"
 import { ROUTES } from "@/services/enums/routerEnums"
 import { TOPOLOGY_ENUMS } from "@/services/enums/topologyEnums"

@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import SimpleList from "@/components/commons/grid/SimpleList"
+import SimpleList from "@/components/commons/grid/SimpleList.vue"
 import { mapActions } from "vuex"
 import { HEALTHCHECK } from "@/store/modules/healthcheck/types"
 export default {

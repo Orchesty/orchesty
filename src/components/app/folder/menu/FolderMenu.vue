@@ -46,10 +46,10 @@
 
 <script>
 import { events, EVENTS } from "../../../../services/utils/events"
-import ImportTopologyMixin from "@/services/mixins/ImportTopologyMixin"
-import AppListItem from "@/components/commons/AppListItem"
-import AppButton from "@/components/commons/button/AppButton"
-import AppIcon from "@/components/commons/icon/AppIcon"
+import ImportTopologyMixin from "@/services/mixins/ImportTopologyMixin.vue"
+import AppListItem from "@/components/commons/AppListItem.vue"
+import AppButton from "@/components/commons/button/AppButton.vue"
+import AppIcon from "@/components/commons/icon/AppIcon.vue"
 export default {
   name: "FolderMenu",
   components: { AppIcon, AppButton, AppListItem },

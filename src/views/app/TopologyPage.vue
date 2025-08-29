@@ -4,11 +4,11 @@
 </template>
 
 <script>
-import ContentTabs from "@/components/layout/content/ContentTabs"
+import ContentTabs from "@/components/layout/content/ContentTabs.vue"
 import { ROUTES } from "@/services/enums/routerEnums"
 import { mapGetters } from "vuex"
 import { TOPOLOGIES } from "@/store/modules/topologies/types"
-import TopologyNoSelection from "@/components/app/topology/landing/TopologyNoSelection"
+import TopologyNoSelection from "@/components/app/topology/landing/TopologyNoSelection.vue"
 import { TOPOLOGY_ENUMS } from "@/services/enums/topologyEnums"
 
 export default {

@@ -72,12 +72,12 @@ import { REQUESTS_STATE } from "@/store/modules/api/types"
 import { API } from "@/api"
 import { OPERATOR } from "@/services/enums/gridEnums"
 import { DATA_GRIDS } from "@/services/enums/dataGridEnums"
-import BpmnNodeGrid from "@/components/app/bpmn/components/BpmnNodeGrid"
-import QuickGridFilter from "@/components/commons/grid/filter/QuickGridFilter"
-import ProgressBarLinear from "@/components/commons/progressIndicators/ProgressBarLinear"
-import QuickFiltersMixin from "@/services/mixins/QuickFiltersMixin"
+import BpmnNodeGrid from "@/components/app/bpmn/components/BpmnNodeGrid.vue"
+import QuickGridFilter from "@/components/commons/grid/filter/QuickGridFilter.vue"
+import ProgressBarLinear from "@/components/commons/progressIndicators/ProgressBarLinear.vue"
+import QuickFiltersMixin from "@/services/mixins/QuickFiltersMixin.vue"
 import { QUICK_FILTERS } from "@/services/utils/quickFilters"
-import NodeDropdownHandler from "@/components/app/topology/dropdown/NodeDropdownHandler"
+import NodeDropdownHandler from "@/components/app/topology/dropdown/NodeDropdownHandler.vue"
 
 export default {
   name: "ViewerTab",

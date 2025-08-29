@@ -16,3 +16,11 @@ html {
 .max-w-100 {
   max-width: 100% !important;
 }
+
+.theme--light.v-application {
+  background: #f0f0f0;
+}
+
+.v-btn {
+  text-transform: none;
+}

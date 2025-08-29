@@ -5,13 +5,13 @@
 </template>
 
 <script>
-import ForgotPasswordForm from "@/components/app/auth/forms/ForgotPasswordForm"
+import ForgotPasswordForm from "@/components/app/auth/forms/ForgotPasswordForm.vue"
 import { REQUESTS_STATE } from "@/store/modules/api/types"
 import { API } from "@/api"
 import { mapActions, mapGetters } from "vuex"
 import { AUTH } from "@/store/modules/auth/types"
 import { ROUTES } from "@/services/enums/routerEnums"
-import AuthLayout from "@/components/layout/auth/AuthLayout"
+import AuthLayout from "@/components/layout/auth/AuthLayout.vue"
 
 export default {
   components: { AuthLayout, ForgotPasswordForm },

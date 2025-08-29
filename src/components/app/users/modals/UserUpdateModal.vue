@@ -41,9 +41,9 @@ import { mapActions, mapGetters, mapState } from "vuex"
 import { ADMIN_USERS } from "../../../../store/modules/adminUsers/types"
 import { REQUESTS_STATE } from "../../../../store/modules/api/types"
 import { API } from "../../../../api"
-import UserForm from "../form/UserForm"
-import SendingButton from "@/components/commons/button/AppButton"
-import ModalTemplate from "@/components/commons/modal/ModalTemplate"
+import UserForm from "../form/UserForm.vue"
+import SendingButton from "@/components/commons/button/AppButton.vue"
+import ModalTemplate from "@/components/commons/modal/ModalTemplate.vue"
 
 export default {
   components: { ModalTemplate, SendingButton, UserForm },

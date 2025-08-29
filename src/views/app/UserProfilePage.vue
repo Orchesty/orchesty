@@ -9,8 +9,8 @@
 </template>
 
 <script>
-import ChangePasswordForm from "@/components/app/profile/form/ChangePasswordForm"
-import ContentBasic from "@/components/layout/content/ContentBasic"
+import ChangePasswordForm from "@/components/app/profile/form/ChangePasswordForm.vue"
+import ContentBasic from "@/components/layout/content/ContentBasic.vue"
 
 export default {
   name: "UserProfilePage",

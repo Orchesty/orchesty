@@ -92,10 +92,10 @@
 import { mapActions, mapGetters } from "vuex"
 import { REQUESTS_STATE } from "../../../../store/modules/api/types"
 import { API } from "../../../../api"
-import ModalTemplate from "@/components/commons/modal/ModalTemplate"
+import ModalTemplate from "@/components/commons/modal/ModalTemplate.vue"
 import { TOPOLOGIES } from "@/store/modules/topologies/types"
 import { EVENTS, events } from "@/services/utils/events"
-import AppButton from "@/components/commons/button/AppButton"
+import AppButton from "@/components/commons/button/AppButton.vue"
 
 export default {
   name: "ModalRunTopology",
