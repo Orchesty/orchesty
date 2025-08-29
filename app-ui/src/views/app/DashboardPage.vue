@@ -5,8 +5,8 @@
 </template>
 
 <script>
-import TopologyDashboard from "@/components/app/dashboard/landingComponent/TopologyDashboard"
-import ContentBasic from "@/components/layout/content/ContentBasic"
+import TopologyDashboard from "@/components/app/dashboard/landingComponent/TopologyDashboard.vue"
+import ContentBasic from "@/components/layout/content/ContentBasic.vue"
 
 export default {
   name: "DashboardPage",

@@ -22,10 +22,10 @@
 </template>
 
 <script>
-import ModalTemplate from "@/components/commons/modal/ModalTemplate"
+import ModalTemplate from "@/components/commons/modal/ModalTemplate.vue"
 import { TOPOLOGIES } from "@/store/modules/topologies/types"
 import { mapActions } from "vuex"
-import AppButton from "@/components/commons/button/AppButton"
+import AppButton from "@/components/commons/button/AppButton.vue"
 export default {
   name: "UnsavedEditorModal",
   components: { AppButton, ModalTemplate },

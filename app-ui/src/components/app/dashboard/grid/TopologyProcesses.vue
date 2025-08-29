@@ -41,9 +41,9 @@
 </template>
 
 <script>
-import AppIcon from "@/components/commons/icon/AppIcon"
-import DataGrid from "@/components/commons/grid/DataGrid"
-import FlashMessageMixin from "@/services/mixins/FlashMessageMixin"
+import AppIcon from "@/components/commons/icon/AppIcon.vue"
+import DataGrid from "@/components/commons/grid/DataGrid.vue"
+import FlashMessageMixin from "@/services/mixins/FlashMessageMixin.vue"
 import moment from "moment/moment"
 import prettyMilliseconds from "pretty-ms"
 import { API } from "@/api"

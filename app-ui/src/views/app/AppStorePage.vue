@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import ContentTabs from "@/components/layout/content/ContentTabs"
+import ContentTabs from "@/components/layout/content/ContentTabs.vue"
 import { ROUTES } from "@/services/enums/routerEnums"
 
 export default {

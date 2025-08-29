@@ -74,16 +74,16 @@
 
 <script>
 import { DATA_GRIDS } from "@/services/enums/dataGridEnums"
-import DataGrid from "@/components/commons/grid/DataGrid"
+import DataGrid from "@/components/commons/grid/DataGrid.vue"
 import { mapActions, mapGetters } from "vuex"
 import { REQUESTS_STATE } from "@/store/modules/api/types"
 import { API } from "@/api"
 import { internationalFormat } from "@/services/utils/dateFilters"
-import UserTaskInformation from "@/components/app/userTasks/grid/UserTaskInformation"
+import UserTaskInformation from "@/components/app/userTasks/grid/UserTaskInformation.vue"
 import { TOPOLOGIES } from "@/store/modules/topologies/types"
 import { USER_TASKS } from "@/store/modules/userTasks/types"
-import UserTaskActionsModal from "@/components/app/userTasks/modal/UserTaskActionsModal"
-import QuickFiltersMixin from "@/services/mixins/QuickFiltersMixin"
+import UserTaskActionsModal from "@/components/app/userTasks/modal/UserTaskActionsModal.vue"
+import QuickFiltersMixin from "@/services/mixins/QuickFiltersMixin.vue"
 import { GRID } from "@/store/modules/grid/types"
 import { SIMPLE_FILTER } from "@/services/enums/dataGridFilterEnums"
 export default {

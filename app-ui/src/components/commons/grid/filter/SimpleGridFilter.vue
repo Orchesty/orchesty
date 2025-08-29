@@ -17,9 +17,9 @@
 
 <script>
 import { SIMPLE_FILTER } from "@/services/enums/dataGridFilterEnums"
-import UserTaskGridSimpleFilter from "@/components/commons/grid/filter/UserTaskGridSimpleFilter"
-import TrashGridSimpleFilter from "@/components/commons/grid/filter/TrashGridSimpleFilter"
-import LogsGridSimpleFilter from "@/components/commons/grid/filter/LogsGridSimpleFilter"
+import UserTaskGridSimpleFilter from "@/components/commons/grid/filter/UserTaskGridSimpleFilter.vue"
+import TrashGridSimpleFilter from "@/components/commons/grid/filter/TrashGridSimpleFilter.vue"
+import LogsGridSimpleFilter from "@/components/commons/grid/filter/LogsGridSimpleFilter.vue"
 
 export default {
   name: "SimpleGridFilter",

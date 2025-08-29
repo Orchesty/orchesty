@@ -52,7 +52,7 @@ import { mapActions, mapGetters } from "vuex"
 import { TOPOLOGIES } from "@/store/modules/topologies/types"
 import { REQUESTS_STATE } from "@/store/modules/api/types"
 import { API } from "@/api"
-import TopologyProcesses from "@/components/app/dashboard/grid/TopologyProcesses"
+import TopologyProcesses from "@/components/app/dashboard/grid/TopologyProcesses.vue"
 
 export default {
   name: "TopologyDashboard",
@@ -168,12 +168,5 @@ export default {
   text-align: center;
   position: absolute;
   top: 55px;
-}
-
-.dashboardCol {
-  flex: 0 1 25%;
-  @media #{map.get($display-breakpoints, 'sm-and-down')} {
-    flex: 0 1 100%;
-  }
 }
 </style>

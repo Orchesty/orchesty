@@ -127,12 +127,12 @@ import axios from "axios"
 import { config } from "@/config"
 import { AUTH } from "@/store/modules/auth/types"
 import { events, EVENTS } from "@/services/utils/events"
-import TopologyDetailMenu from "@/components/app/topology/menu/TopologyDetailMenu"
-import Tooltip from "@/components/commons/Tooltip"
-import AppButton from "@/components/commons/button/AppButton"
-import AppIcon from "@/components/commons/icon/AppIcon"
+import TopologyDetailMenu from "@/components/app/topology/menu/TopologyDetailMenu.vue"
+import Tooltip from "@/components/commons/Tooltip.vue"
+import AppButton from "@/components/commons/button/AppButton.vue"
+import AppIcon from "@/components/commons/icon/AppIcon.vue"
 import { redirectTo } from "@/services/utils/utils"
-import AppIconWithTextButton from "@/components/commons/button/AppIconWithTextButton"
+import AppIconWithTextButton from "@/components/commons/button/AppIconWithTextButton.vue"
 
 export default {
   name: "TopologyActionButtons",

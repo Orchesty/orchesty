@@ -40,7 +40,7 @@
 </template>
 <script>
 import { DATA_GRIDS } from "@/services/enums/dataGridEnums"
-import DataGrid from "../../../commons/grid/DataGrid"
+import DataGrid from "../../../commons/grid/DataGrid.vue"
 import { REQUESTS_STATE } from "../../../../store/modules/api/types"
 import { API } from "../../../../api"
 import { mapActions, mapGetters } from "vuex"

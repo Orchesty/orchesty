@@ -36,10 +36,10 @@
 
 <script>
 import { ROUTES } from "@/services/enums/routerEnums"
-import FormMixin from "../../../../services/mixins/FormMixin"
-import AppButton from "@/components/commons/button/AppButton"
-import AppInput from "@/components/commons/input/AppInput"
-import AuthSplitLayout from "@/components/app/auth/layout/AuthSplitLayout"
+import FormMixin from "../../../../services/mixins/FormMixin.vue"
+import AppButton from "@/components/commons/button/AppButton.vue"
+import AppInput from "@/components/commons/input/AppInput.vue"
+import AuthSplitLayout from "@/components/app/auth/layout/AuthSplitLayout.vue"
 
 export default {
   name: "ForgotPasswordForm",

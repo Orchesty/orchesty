@@ -26,7 +26,7 @@
 <script>
 import AppIcon from "@/components/commons/icon/AppIcon.vue"
 import AppListItem from "@/components/commons/AppListItem.vue"
-import AppButton from "@/components/commons/button/AppButton"
+import AppButton from "@/components/commons/button/AppButton.vue"
 import { mapActions } from "vuex"
 import { REQUESTS_STATE } from "@/store/modules/api/types"
 import FlashMessageMixin from "@/services/mixins/FlashMessageMixin.vue"

@@ -56,9 +56,9 @@
 import { mapGetters } from "vuex"
 import { REQUESTS_STATE } from "@/store/modules/api/types"
 import { API } from "@/api"
-import ModalTemplate from "@/components/commons/modal/ModalTemplate"
-import AppButton from "@/components/commons/button/AppButton"
-import JsonEditor from "@/components/app/userTasks/modal/JsonEditor"
+import ModalTemplate from "@/components/commons/modal/ModalTemplate.vue"
+import AppButton from "@/components/commons/button/AppButton.vue"
+import JsonEditor from "@/components/app/userTasks/modal/JsonEditor.vue"
 
 export default {
   name: "UserTaskActionsModal",

@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import ContentTabsHeader from "@/components/layout/content/ContentTabsHeader"
+import ContentTabsHeader from "@/components/layout/content/ContentTabsHeader.vue"
 
 export default {
   name: "ContentTabs",

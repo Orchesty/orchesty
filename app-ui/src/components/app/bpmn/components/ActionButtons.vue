@@ -77,9 +77,9 @@
 </template>
 
 <script>
-import Tooltip from "@/components/commons/Tooltip"
-import AppButton from "@/components/commons/button/AppButton"
-import AppIcon from "@/components/commons/icon/AppIcon"
+import Tooltip from "@/components/commons/Tooltip.vue"
+import AppButton from "@/components/commons/button/AppButton.vue"
+import AppIcon from "@/components/commons/icon/AppIcon.vue"
 export default {
   name: "ActionButtons",
   components: { AppIcon, AppButton, Tooltip },

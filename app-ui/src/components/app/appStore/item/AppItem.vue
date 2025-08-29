@@ -53,7 +53,7 @@
 </template>
 
 <script>
-import Tooltip from "@/components/commons/Tooltip"
+import Tooltip from "@/components/commons/Tooltip.vue"
 export default {
   name: "AppItem",
   components: { Tooltip },

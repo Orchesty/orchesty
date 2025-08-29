@@ -5,8 +5,8 @@
 </template>
 
 <script>
-import ContentBasic from "../../components/layout/content/ContentBasic"
-import ScheduledTaskGrid from "../../components/app/scheduledTask/grid/ScheduledTaskGrid"
+import ContentBasic from "../../components/layout/content/ContentBasic.vue"
+import ScheduledTaskGrid from "../../components/app/scheduledTask/grid/ScheduledTaskGrid.vue"
 
 export default {
   name: "ScheduledTaskPage",

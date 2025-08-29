@@ -145,7 +145,7 @@
 <script>
 import { GRID } from "@/store/modules/grid/types"
 import { withNamespace } from "@/store/utils"
-import DataGridFilter from "./filter/DataGridFilter"
+import DataGridFilter from "@/components/commons/grid/filter/DataGridFilter.vue"
 import { SIMPLE_FILTER } from "@/services/enums/dataGridFilterEnums"
 import { DIRECTION } from "@/services/enums/gridEnums"
 

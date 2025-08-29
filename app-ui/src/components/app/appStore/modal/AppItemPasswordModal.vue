@@ -60,12 +60,12 @@
 </template>
 
 <script>
-import ModalTemplate from "@/components/commons/modal/ModalTemplate"
-import AppButton from "@/components/commons/button/AppButton"
+import ModalTemplate from "@/components/commons/modal/ModalTemplate.vue"
+import AppButton from "@/components/commons/button/AppButton.vue"
 import { mapActions, mapGetters } from "vuex"
 import { APP_STORE } from "@/store/modules/appStore/types"
 import { AUTH } from "@/store/modules/auth/types"
-import AppInput from "@/components/commons/input/AppInput"
+import AppInput from "@/components/commons/input/AppInput.vue"
 export default {
   name: "AppItemPasswordModal",
   components: { AppInput, AppButton, ModalTemplate },

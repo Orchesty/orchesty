@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import HealthCheckErrors from "@/components/app/healthCheck/grid/HealthCheckErrors"
+import HealthCheckErrors from "@/components/app/healthCheck/grid/HealthCheckErrors.vue"
 export default {
   name: "HealthCheckWrapper",
   components: { HealthCheckErrors },

@@ -13,12 +13,12 @@
 </template>
 
 <script>
-import AuthLayout from "../../components/layout/auth/AuthLayout"
+import AuthLayout from "../../components/layout/auth/AuthLayout.vue"
 import { REQUESTS_STATE } from "@/store/modules/api/types"
 import { API } from "@/api"
 import { mapActions, mapGetters } from "vuex"
 import { AUTH } from "@/store/modules/auth/types"
-import PasswordForm from "@/components/app/auth/forms/PasswordForm"
+import PasswordForm from "@/components/app/auth/forms/PasswordForm.vue"
 
 export default {
   components: { PasswordForm, AuthLayout },

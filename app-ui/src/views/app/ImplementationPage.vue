@@ -10,9 +10,9 @@
 </template>
 
 <script>
-import ContentBasic from "@/components/layout/content/ContentBasic"
-import ImplementationGrid from "@/components/app/implementations/grid/ImplementationGrid"
-import ImplementationCreateModal from "@/components/app/implementations/modal/ImplementationCreateModal"
+import ContentBasic from "@/components/layout/content/ContentBasic.vue"
+import ImplementationGrid from "@/components/app/implementations/grid/ImplementationGrid.vue"
+import ImplementationCreateModal from "@/components/app/implementations/modal/ImplementationCreateModal.vue"
 
 export default {
   name: "ImplementationPage",

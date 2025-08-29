@@ -37,8 +37,8 @@ import { mapActions, mapGetters } from "vuex"
 import { REQUESTS_STATE } from "@/store/modules/api/types"
 import { API } from "@/api"
 import { IMPLEMENTATIONS } from "@/store/modules/implementations/types"
-import ModalTemplate from "@/components/commons/modal/ModalTemplate"
-import AppButton from "@/components/commons/button/AppButton"
+import ModalTemplate from "@/components/commons/modal/ModalTemplate.vue"
+import AppButton from "@/components/commons/button/AppButton.vue"
 
 export default {
   name: "ImplementationDeleteModal",

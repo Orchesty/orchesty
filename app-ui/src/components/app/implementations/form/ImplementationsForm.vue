@@ -30,9 +30,9 @@
 </template>
 
 <script>
-import FormMixin from "../../../../services/mixins/FormMixin"
-import AppInput from "@/components/commons/input/AppInput"
-import KeyValueInput from "@/components/commons/input/KeyValueInput"
+import FormMixin from "../../../../services/mixins/FormMixin.vue"
+import AppInput from "@/components/commons/input/AppInput.vue"
+import KeyValueInput from "@/components/commons/input/KeyValueInput.vue"
 
 export default {
   name: "ImplementationsForm",

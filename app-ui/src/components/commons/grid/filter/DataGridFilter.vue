@@ -43,8 +43,8 @@
 </template>
 
 <script>
-import QuickGridFilter from "./QuickGridFilter"
-import SimpleGridFilter from "./SimpleGridFilter"
+import QuickGridFilter from "@/components/commons/grid/filter/QuickGridFilter.vue"
+import SimpleGridFilter from "@/components/commons/grid/filter/SimpleGridFilter.vue"
 import { FILTER } from "@/services/enums/gridEnums"
 import { GRID } from "@/store/modules/grid/types"
 import { mapActions } from "vuex"

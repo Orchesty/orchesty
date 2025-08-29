@@ -26,12 +26,12 @@
 
 <script>
 import { DATA_GRIDS } from "@/services/enums/dataGridEnums"
-import BarChart from "@/components/commons/charts/BarChart"
+import BarChart from "@/components/commons/charts/BarChart.vue"
 import { mapActions, mapGetters } from "vuex"
 import { TOPOLOGIES } from "@/store/modules/topologies/types"
 import { REQUESTS_STATE } from "@/store/modules/api/types"
 import { API } from "@/api"
-import QuickFiltersMixin from "@/services/mixins/QuickFiltersMixin"
+import QuickFiltersMixin from "@/services/mixins/QuickFiltersMixin.vue"
 import prettyMilliseconds from "pretty-ms"
 
 export default {

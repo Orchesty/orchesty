@@ -20,15 +20,15 @@
 </template>
 
 <script>
-import DataGrid from "../../../commons/grid/DataGrid"
+import DataGrid from "../../../commons/grid/DataGrid.vue"
 import { DATA_GRIDS } from "@/services/enums/dataGridEnums"
 import { mapGetters } from "vuex"
 import { REQUESTS_STATE } from "../../../../store/modules/api/types"
 import { API } from "../../../../api"
 import { toLocalDateTime } from "../../../../services/utils/dateFilters"
-import UserCreateModal from "../modals/UserCreateModal"
-import UserDeleteModal from "../modals/UserDeleteModal"
-import UserUpdateModal from "../modals/UserUpdateModal"
+import UserCreateModal from "../modals/UserCreateModal.vue"
+import UserDeleteModal from "../modals/UserDeleteModal.vue"
+import UserUpdateModal from "../modals/UserUpdateModal.vue"
 
 export default {
   name: "UserGrid",

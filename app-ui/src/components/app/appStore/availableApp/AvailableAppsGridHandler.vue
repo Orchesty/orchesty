@@ -74,9 +74,9 @@ import { API } from "@/api"
 import { APP_STORE } from "@/store/modules/appStore/types"
 import { AUTH } from "@/store/modules/auth/types"
 import { ROUTES } from "@/services/enums/routerEnums"
-import AppItem from "@/components/app/appStore/item/AppItem"
-import AppItemButton from "@/components/app/appStore/button/AppItemButton"
-import ProgressBarLinear from "@/components/commons/progressIndicators/ProgressBarLinear"
+import AppItem from "@/components/app/appStore/item/AppItem.vue"
+import AppItemButton from "@/components/app/appStore/button/AppItemButton.vue"
+import ProgressBarLinear from "@/components/commons/progressIndicators/ProgressBarLinear.vue"
 
 export default {
   name: "AvailableAppsGridHandler",

@@ -22,8 +22,8 @@ import { ADMIN_USERS } from "../../../../store/modules/adminUsers/types"
 import { mapActions, mapGetters, mapState } from "vuex"
 import { REQUESTS_STATE } from "../../../../store/modules/api/types"
 import { API } from "../../../../api"
-import UserForm from "../form/UserForm"
-import ModalTemplate from "@/components/commons/modal/ModalTemplate"
+import UserForm from "../form/UserForm.vue"
+import ModalTemplate from "@/components/commons/modal/ModalTemplate.vue"
 
 export default {
   components: { ModalTemplate, UserForm },

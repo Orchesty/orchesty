@@ -3,7 +3,7 @@ import { mapActions } from "vuex"
 import { TOPOLOGIES } from "@/store/modules/topologies/types"
 import { IMPLEMENTATIONS } from "@/store/modules/implementations/types"
 import { EVENTS, events } from "@/services/utils/events"
-import FlashMessageMixin from "@/services/mixins/FlashMessageMixin"
+import FlashMessageMixin from "@/services/mixins/FlashMessageMixin.vue"
 
 export default {
   name: "ImportTopologyMixin",
