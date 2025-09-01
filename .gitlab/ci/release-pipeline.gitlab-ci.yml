@@ -2,7 +2,8 @@ include:
   - local: "/.gitlab/ci/essentials.gitlab-ci.yml"
 
 workflow:
-  rules: []
+  rules:
+    - when: always
 
 .base-rel-x.y.z:
   stage: rel-x.y.z
