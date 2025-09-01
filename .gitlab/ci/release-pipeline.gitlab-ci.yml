@@ -3,8 +3,6 @@ include:
 
 .base-rel-x.y.z:
   stage: rel-x.y.z
-  needs:
-    - collect-tags
 
   variables:
     RELEASE_IMAGE: OVERRIDE
