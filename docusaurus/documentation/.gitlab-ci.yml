@@ -6,7 +6,9 @@
 .deploy-documentation:
   stage: deploy
 
-  when: manual
+  rules:
+    - when: manual
+
   needs:
     - job: documentation:build
       optional: false
