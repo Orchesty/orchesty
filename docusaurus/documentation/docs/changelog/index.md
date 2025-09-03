@@ -1,5 +1,21 @@
 # Changelog
 
+## 2.1.0
+- minor bug and security fixes
+- updated dependencies to latest versions (GO, PHP, Node)
+- StartingPoint
+    - fixed a bug with bad handling of a missing RabbitMQ connection
+- MultiCounter
+    - updated database query for better performance
+- Frontend
+    - build has been replaced from vue-cli to vite
+
+### Environment variable changes
+- All backend services
+  - added **TZ** for specifying timezone
+- MultiCounter
+  - added **APP_RUN_CALLBACK_TOPOLOGY** for enabling/disabling run system callback topology
+
 ## 2.0.1
 - minor bug and security fixes
 
@@ -28,14 +44,14 @@
   - removed **ORCHESTY_API_KEY**
 
 ### Sdk
-- No longer has required database dependency -> db access has been replaced by WorkerApi  
+- No longer has the required database dependency -> db access has been replaced by WorkerApi  
 (MongoClient is still existing but no longer created & registered into container by default)  
 - Changed CurlSender result code  
 
 Method send(..., codes) accepts `codes` with different setting, if not specified, given range is considered
 success.  
 For more concrete settings, you can provide an object containing **success**, **repeat** (will try again later),
-**stopAndFailed** (sends message into trash as failed) ranges.
+**stopAndFailed** (sends a message into trash as failed) ranges.
 
 Example ranges:
 ```

@@ -25,18 +25,25 @@
 
 documentation:build:
   stage: build
+
   extends:
     - .base-dind-build
     - .base-documentation
+
+  rules:
+    - when: always
+
   script:
     - cd docusaurus/documentation
     - make build PORTAL_API_URL=%PORTAL_API_URL% # placeholder to be replaced by deploy job (Makefile)
+
   cache:
     key: "$CI_COMMIT_REF_SLUG"
     paths:
       - docusaurus/documentation/node_modules
+
   artifacts:
-    expire_in: 1 week
+    expire_in: 1 day
     paths:
       - docusaurus/documentation/build
 
