@@ -1,2 +1,0 @@
-- [Karta procesu](process-detail/ "Karta procesu")
-- [Editor procesu](process-editor/ "Editor procesu")

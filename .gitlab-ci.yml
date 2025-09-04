@@ -16,7 +16,6 @@ include:
   - local: "/counter/.gitlab-ci.yml"
   - local: "/cron/.gitlab-ci.yml"
   - local: "/detector/.gitlab-ci.yml"
-  - local: "/docusaurus/documentation/.gitlab-ci.yml"
   - local: "/fluentd/.gitlab-ci.yml"
   - local: "/limiter/.gitlab-ci.yml"
   - local: "/pf-bundles/.gitlab-ci.yml" # aka backend

@@ -29,7 +29,6 @@ test-js:
 	cd applinth-marketplace-ui && $(TEST)
 	cd clients/demo/node-sdk && $(TEST) && $(DOWN)
 	cd comparator && $(TEST) && $(DOWN)
-	cd docusaurus/documentation && $(TEST)
 	cd saas/applinth-billing-processor && $(TEST) && $(DOWN)
 	cd saas/console-api && $(TEST) && $(DOWN)
 	cd saas/usccp && $(TEST) && $(DOWN)
