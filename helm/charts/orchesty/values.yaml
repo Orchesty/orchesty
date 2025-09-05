@@ -1,5 +1,5 @@
 global:
-  orchestyVersion: "2.0"
+  orchestyVersion: "2.1"
   frontend_url: https://pipes.example.com
   backend_url: https://backend.pipes.example.com
   starting_point_url: http://starting-point.pipes.example.com
@@ -50,7 +50,7 @@ global:
   monitoring:
     logStorage: mongodb
 
-    # Used unly when logStorage is "google"
+    # Used only when logStorage is "google"
     # You must also add iam policy binding to that account:
     # gcloud iam service-accounts add-iam-policy-binding \
     #   --role roles/iam.workloadIdentityUser \
@@ -184,7 +184,7 @@ global:
 #      nodeSelector:
 #        bridgepool: "true"
 #      tolerations:
-#        -   effect: NoSchedule
+#        - effect: NoSchedule
 #            key: bridgepool
 #            operator: Equal
 #            value: "true"

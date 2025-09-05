@@ -11,7 +11,7 @@ metadata:
 spec:
   selector:
 {{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 4 }}
-  {{- if (eq .Values.global.backend.service.type "NodePort") }}
+  {{- if (ne .Values.global.backend.service.type "none") }}
   type: {{ .Values.global.backend.service.type }}
   {{- end }}
   ports:
