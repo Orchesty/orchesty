@@ -54,6 +54,8 @@
 
 <script>
 import Tooltip from "@/components/commons/Tooltip.vue"
+import appItemPlaceholder from "@/assets/svg/app-item-placeholder.svg"
+
 export default {
   name: "AppItem",
   components: { Tooltip },
@@ -80,10 +82,8 @@ export default {
     },
   },
   computed: {
-    appLogo() {
-      return this.logo
-        ? this.logo
-        : require("@/assets/svg/app-item-placeholder.svg")
+    appLogo(app) {
+      return app?.logo ? app.logo : appItemPlaceholder
     },
   },
 }

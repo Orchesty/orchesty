@@ -51,6 +51,7 @@ import { AUTH } from "@/store/modules/auth/types"
 import { ROUTES } from "@/services/enums/routerEnums"
 import AppButton from "@/components/commons/button/AppButton.vue"
 import ContentBasic from "@/components/layout/content/ContentBasic.vue"
+import appItemPlaceholder from "@/assets/svg/app-item-placeholder.svg"
 
 export default {
   name: "AvailableApp",
@@ -80,9 +81,7 @@ export default {
     },
 
     hasLogo(app) {
-      return app.logo
-        ? app.logo
-        : require("@/assets/svg/app-item-placeholder.svg")
+      return app?.logo ? app.logo : appItemPlaceholder
     },
   },
   async created() {

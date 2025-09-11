@@ -295,6 +295,7 @@ import AppCheckbox from "@/components/commons/AppCheckbox.vue"
 import AppNotAuthorizedModal from "@/components/app/appStore/modal/AppNotAuthorizedModal.vue"
 import { LOCAL_STORAGE } from "@/services/enums/localStorageEnums"
 import CustomActionsMenu from "@/components/app/appStore/installedApp/CustomActionsMenu.vue"
+import appItemPlaceholder from "@/assets/svg/app-item-placeholder.svg"
 
 export default {
   name: "InstalledApp",
@@ -600,9 +601,7 @@ export default {
       }
     },
     hasLogo(app) {
-      return app?.logo
-        ? app.logo
-        : require("@/assets/svg/app-item-placeholder.svg")
+      return app?.logo ? app.logo : appItemPlaceholder
     },
   },
 
