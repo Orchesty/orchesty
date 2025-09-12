@@ -70,6 +70,63 @@ spec:
 {{- else }}
 {{ toYaml $root.Values.global.worker.resources | indent 12 }}
 {{- end }}
+          {{- if $worker.readinessProbe }}
+          readinessProbe:
+           {{ toYaml $worker.readinessProbe | nindent 12 }}
+          {{- end }}
+          {{- if $worker.livenessProbe }}
+          livenessProbe:
+           {{ toYaml $worker.livenessProbe | nindent 12 }}
+          {{- end }}
+
+{{- if $worker.sidecars }}
+{{- range $i, $sidecar := $worker.sidecars }}
+        - name: {{ $sidecar.name }}
+          image: {{ $sidecar.image }}
+          imagePullPolicy: Always
+          {{- if $sidecar.command }}
+          command:
+          {{- range $c := $sidecar.command }}
+            - {{ $c }}
+          {{- end }}
+          {{- end }}
+          {{- if $sidecar.args }}
+          args:
+          {{- range $a := $sidecar.args }}
+            - {{ $a }}
+          {{- end }}
+          {{- end }}
+          {{- if $sidecar.securityContext }}
+          securityContext:
+            {{ toYaml $sidecar.securityContext | nindent 12 }}
+          {{- end }}
+          {{- if $sidecar.volumeMounts }}
+          volumeMounts:
+            {{ toYaml $sidecar.volumeMounts | nindent 12 }}
+          {{- end }}
+          {{- if $sidecar.readinessProbe }}
+          readinessProbe:
+            {{ toYaml $sidecar.readinessProbe | nindent 12 }}
+          {{- end }}
+          {{- if $sidecar.livenessProbe }}
+          livenessProbe:
+            {{ toYaml $sidecar.livenessProbe | nindent 12 }}
+          {{- end }}
+{{- end }}
+{{- end }}
+
+      volumes:
+      {{- range $i, $vol := $worker.volumes }}
+        - name: {{ $vol.name }}
+        {{- if $vol.configMap }}
+          configMap:
+            name: {{ $vol.configMap.name }}
+        {{- end }}
+        {{- if $vol.secret }}
+          secret:
+            secretName: {{ $vol.secret.secretName }}
+        {{- end }}
+      {{- end }}
 
 {{- with $root.Values.global.worker.nodeSelector | default $root.Values.global.nodeSelector }}
       nodeSelector:

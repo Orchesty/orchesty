@@ -1,5 +1,12 @@
 # Release Notes
 
+## 2.1.8
+
+### Changes
+
+- Worker: Added the option to add sidecar containers
+- Worker: Added the option to add livenessProbe and readinessProbe
+
 ## 2.1.7
 
 ### Changes
