@@ -24,7 +24,7 @@
         :key="now.getMilliseconds()"
         :class="isEnabled(items.item) ? '' : 'grey--text darken-1--text'"
       >
-        {{ $options.filters.internationalFormat(timeParser(items.item.time)) }}
+        {{ timeParser(items.item.time) | internationalFormat }}
       </td>
       <td
         v-if="isVisible('status')"
@@ -83,9 +83,7 @@ export default {
       })
     },
     timeParser(time) {
-      let interval = this.cronParser.parseExpression(time)
-      interval = interval.next().toString().slice(0, 24)
-      return interval
+      return this.cronParser.parse(time).next().toISOString()
     },
     refreshTime() {
       this.now = new Date()
