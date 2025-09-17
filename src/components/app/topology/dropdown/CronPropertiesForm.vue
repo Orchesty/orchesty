@@ -63,7 +63,7 @@ import { mapActions } from "vuex"
 
 const validateCronTime = (cronTime) => {
   try {
-    cronParser.parseExpression(cronTime)
+    cronParser.parse(cronTime)
   } catch (err) {
     return {
       valid: false,

@@ -56,6 +56,7 @@ import cronParser from "cron-parser"
 import { REQUESTS_STATE } from "@/store/modules/api/types"
 import { API } from "@/api"
 import AppStoreActionButtons from "@/components/app/appStore/landing/AppStoreActionButtons.vue"
+import { internationalFormat } from "@/services/utils/dateFilters"
 
 export default {
   name: "ContentTabsHeader",
@@ -85,6 +86,7 @@ export default {
       cronParser,
       timer: null,
       now: new Date(),
+      internationalFormat,
     }
   },
   created() {
@@ -117,23 +119,12 @@ export default {
       }
       let next = []
       cronSettings.forEach((item) => {
-        let interval = this.cronParser.parseExpression(item.cron)
-        next.push(interval.next().toString().slice(0, 24))
+        next.push(moment(this.cronParser.parse(item.cron).next().toISOString()))
       })
-      next
-        .map(function (s) {
-          return moment(s, "ddd MMM DD YYYY HH:mm:ss")
-        })
-        .sort(function (m) {
-          return m.valueOf()
-        })
-        .find(function (m) {
-          return m.isAfter()
-        })
-      next.sort(function (left, right) {
-        return moment.utc(left.timeStamp).diff(moment.utc(right.timeStamp))
-      })
-      return moment(next[next.length - 1]).format("DD. MM. YYYY HH:mm")
+
+      return this.internationalFormat(
+        next.sort((left, right) => left.diff(right))[0],
+      )
     },
     refresh() {
       this.now = new Date()

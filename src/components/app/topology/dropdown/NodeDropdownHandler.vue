@@ -145,9 +145,10 @@ export default {
       if (!time) {
         return ""
       }
-      let interval = this.cronParser.parseExpression(time)
-      interval = interval.next().toString().slice(0, 24)
-      return this.internationalFormat(interval)
+
+      return this.internationalFormat(
+        this.cronParser.parse(time).next().toISOString(),
+      )
     },
     onCronEditCancel() {
       this.isEditing = false
