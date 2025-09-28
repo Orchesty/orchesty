@@ -6,6 +6,7 @@ module.exports = {
   ],
   rules: {
     "color-function-notation": ["legacy"], // legacy color notation is still used more than the new one
+    "color-function-alias-notation": null, // don't force, an alias is fine
     "color-hex-length": null, // colors defined as 6 hex characters are fine
     "no-empty-source": null, // don't throw error when .vue component has empty styles
     "scss/comment-no-empty": null, // empty comments are used for delimiting sections

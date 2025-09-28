@@ -1,4 +1,4 @@
-import { rest } from "msw"
+import { http } from "msw"
 
 import auth from "@/api/endpoints/auth"
 import overview from "@/api/endpoints/overview"
@@ -31,7 +31,7 @@ const generatedRoutes = routeDomains
       url,
       `${route.filename}.json`
     )
-    return rest[route.method](url, async (req, res, ctx) => {
+    return http[route.method](url, async (req, res, ctx) => {
       const data = await import(`./api/${route.filename}.json`)
       return res(ctx.status(200), ctx.json(data))
     })
@@ -65,7 +65,7 @@ function getDetail(path) {
     url,
     `${path.replace("/", "-")}.json`
   )
-  return rest.get(url, async (req, res, ctx) => {
+  return http.get(url, async (req, res, ctx) => {
     const data = await import(`./api/${path.replace(/\//g, "-")}.json`)
     return res(ctx.status(200), ctx.json(data))
   })
