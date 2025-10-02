@@ -311,7 +311,7 @@ func (c kubernetesClient) logContext(data map[string]interface{}) log.Logger {
 
 func (c kubernetesClient) createContext() (context.Context, context.CancelFunc) {
 	backgroundCtx := context.Background()
-	ctx, cancel := context.WithTimeout(backgroundCtx, config.Generator.K8sTimeout*time.Second)
+	ctx, cancel := context.WithTimeout(backgroundCtx, time.Duration(config.Generator.K8sTimeout)*time.Second)
 
 	return ctx, cancel
 }
