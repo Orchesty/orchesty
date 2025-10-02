@@ -63,8 +63,11 @@ services:
         command: go run cmd/starting-point.go
 
     topology-api:
-        image: orchesty/topology-api:${VERSION}
+        image: hanabosocom/go-base:1.24
+        user: ${DEV_UID}:${DEV_GID}
         environment:
+            DEV_UID: ${DEV_UID}
+            DEV_GID: ${DEV_GID}
             DEPLOYMENT_PREFIX: ${MAIN_DB}
             GENERATOR_NETWORK: ${NETWORK_NAME}
             PLATFORM: ${PLATFORM}
@@ -72,9 +75,10 @@ services:
             MONGO_DSN: ${MONGO_DSN}
             PROJECT_SOURCE_PATH: ${PROJECT_SOURCE_PATH}/../topology
         volumes:
-            - ./../../topology-generator/:/topology-generator
+            - ./../../topology-generator/:/app:cached
             - ${DOCKER_SOCKET_PATH}:/var/run/docker.sock
             - ../topology:/srv/topology
+        command: /bin/sh -c 'su-exec root apk add --no-cache docker-compose && go run main.go server'
 
     cron-api:
         image: hanabosocom/go-base:1.24
