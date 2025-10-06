@@ -24,7 +24,7 @@ type Monitoring struct {
 }
 
 func (m *Monitoring) Run() {
-	for range time.Tick(config.App.Tick) {
+	for range time.Tick(time.Duration(config.App.Tick) * time.Second) {
 		context, _ := m.mongo.Context()
 		now := time.Now()
 
