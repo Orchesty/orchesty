@@ -84,6 +84,10 @@ spec:
         - name: {{ $sidecar.name }}
           image: {{ $sidecar.image }}
           imagePullPolicy: Always
+          {{- if $sidecar.ports }}
+          ports:
+            {{ toYaml $sidecar.ports | nindent 12 }}
+          {{- end }}
           {{- if $sidecar.command }}
           command:
           {{- range $c := $sidecar.command }}

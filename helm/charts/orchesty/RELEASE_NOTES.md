@@ -1,5 +1,11 @@
 # Release Notes
 
+## 2.1.9
+
+### Changes
+
+- Worker: Added the option to add ports for sidecar containers
+
 ## 2.1.8
 
 ### Changes
