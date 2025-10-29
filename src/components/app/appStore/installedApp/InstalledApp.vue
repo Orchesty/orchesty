@@ -70,7 +70,9 @@
       <v-col>
         <v-tabs v-model="tab" height="40">
           <v-tab
-            v-for="form in settingsConfig"
+            v-for="form in settingsConfig.filter(
+              (s) => s.key === 'info' || !!s.fields.length,
+            )"
             :key="form.key"
             class="text-transform-none body-2 font-weight-medium primary--text"
           >
@@ -82,7 +84,9 @@
 
     <v-tabs-items v-model="tab" class="mt-4">
       <v-tab-item
-        v-for="(form, index) in settingsConfig"
+        v-for="(form, index) in settingsConfig.filter(
+          (s) => s.key === 'info' || !!s.fields.length,
+        )"
         :key="form.key"
         class="application-settings-wrapper-form"
       >
