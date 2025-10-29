@@ -147,6 +147,10 @@ export default {
       this.onChange(withDefault, { type: FILTER.QUICK_FILTER, index })
     },
     createItems(filters, index = undefined) {
+      if (index === undefined) {
+        index = this.filterMeta.index
+      }
+
       return filters.map((item, i) => {
         item.active = false
 

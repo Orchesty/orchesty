@@ -1,24 +1,5 @@
 <template>
   <div>
-    <v-row dense>
-      <v-col cols="12">
-        <quick-grid-filter
-          ref="quickGridFilter"
-          :quick-filters="quickFilters"
-          :filter="filter"
-          :filter-meta="filterMeta"
-          is-viewer
-          :on-change="onFilterChange"
-          :is-loading="state.isSending"
-        >
-          <template #resetClearButtons>
-            <v-btn color="primary" icon @click="reload">
-              <v-icon> mdi-reload </v-icon>
-            </v-btn>
-          </template>
-        </quick-grid-filter>
-      </v-col>
-    </v-row>
     <v-row v-if="!state.isSending" key="2" dense class="d-flex justify-start">
       <v-col cols="12">
         <v-card outlined class="bpmn-viewer-node-grid-container">
@@ -73,7 +54,6 @@ import { API } from "@/api"
 import { OPERATOR } from "@/services/enums/gridEnums"
 import { DATA_GRIDS } from "@/services/enums/dataGridEnums"
 import BpmnNodeGrid from "@/components/app/bpmn/components/BpmnNodeGrid.vue"
-import QuickGridFilter from "@/components/commons/grid/filter/QuickGridFilter.vue"
 import ProgressBarLinear from "@/components/commons/progressIndicators/ProgressBarLinear.vue"
 import QuickFiltersMixin from "@/services/mixins/QuickFiltersMixin.vue"
 import { QUICK_FILTERS } from "@/services/utils/quickFilters"
@@ -84,7 +64,6 @@ export default {
   components: {
     NodeDropdownHandler,
     ProgressBarLinear,
-    QuickGridFilter,
     BpmnNodeGrid,
   },
   mixins: [QuickFiltersMixin],
