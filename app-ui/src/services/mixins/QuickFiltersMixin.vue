@@ -74,6 +74,75 @@ export default {
         },
       ]
     },
+    initRuns(val) {
+      this.quickFilters = [
+        {
+          name: "button.all",
+          filter: [
+            [
+              {
+                column: val,
+                operator: OPERATOR.BETWEEN,
+                value: QUICK_FILTERS.ALL_RUN(),
+                isQuickFilter: true,
+              },
+            ],
+          ],
+        },
+        {
+          name: "button.last1runs",
+          filter: [
+            [
+              {
+                column: val,
+                operator: OPERATOR.BETWEEN,
+                value: QUICK_FILTERS.LAST_1_RUN(),
+                isQuickFilter: true,
+              },
+            ],
+          ],
+        },
+        {
+          name: "button.last10runs",
+          filter: [
+            [
+              {
+                column: val,
+                operator: OPERATOR.BETWEEN,
+                value: QUICK_FILTERS.LAST_10_RUN(),
+                isQuickFilter: true,
+              },
+            ],
+          ],
+        },
+        {
+          name: "button.last100runs",
+          filter: [
+            [
+              {
+                column: val,
+                operator: OPERATOR.BETWEEN,
+                value: QUICK_FILTERS.LAST_100_RUN(),
+                isQuickFilter: true,
+              },
+            ],
+          ],
+        },
+        {
+          name: "button.last1000runs",
+          filter: [
+            [
+              {
+                column: val,
+                operator: OPERATOR.BETWEEN,
+                value: QUICK_FILTERS.LAST_1000_RUN(),
+                isQuickFilter: true,
+              },
+            ],
+          ],
+        },
+      ]
+    },
   },
   data() {
     this.column = ""

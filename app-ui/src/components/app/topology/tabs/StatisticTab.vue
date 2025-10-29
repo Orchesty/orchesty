@@ -1,5 +1,24 @@
 <template>
   <div v-if="topologyActive._id">
+    <v-row dense>
+      <v-col cols="12">
+        <quick-grid-filter
+          ref="quickGridFilter"
+          :quick-filters="quickFilters"
+          :filter="filter"
+          :filter-meta="filterMeta"
+          is-viewer
+          :on-change="onFilterChange"
+          :is-loading="state.isSending"
+        >
+          <template #resetClearButtons>
+            <v-btn color="primary" icon @click="reload">
+              <v-icon> mdi-reload </v-icon>
+            </v-btn>
+          </template>
+        </quick-grid-filter>
+      </v-col>
+    </v-row>
     <v-row v-if="nodes[0]">
       <v-col cols="12" lg="12">
         <h4 class="primary--text">{{ STATISTICS_ENUM.totalsErrors }}</h4>
@@ -33,11 +52,13 @@ import { REQUESTS_STATE } from "@/store/modules/api/types"
 import { API } from "@/api"
 import QuickFiltersMixin from "@/services/mixins/QuickFiltersMixin.vue"
 import prettyMilliseconds from "pretty-ms"
+import QuickGridFilter from "@/components/commons/grid/filter/QuickGridFilter.vue"
 
 export default {
   mixins: [QuickFiltersMixin],
   name: "StatisticTab",
   components: {
+    QuickGridFilter,
     BarChart,
   },
   data() {
@@ -54,6 +75,8 @@ export default {
       nodeParameters: [],
       DATA_GRIDS,
       nodes: [],
+      filter: [],
+      filterMeta: { index: 0 },
       options: {
         plugins: {
           title: {
@@ -132,7 +155,19 @@ export default {
       TOPOLOGIES.ACTIONS.DATA.GET_STATISTICS,
       TOPOLOGIES.ACTIONS.TOPOLOGY.NODES,
     ]),
+    async onFilterChange(filter, filterMeta) {
+      this.filter = filter
+      this.filterMeta = filterMeta
 
+      await this[TOPOLOGIES.ACTIONS.DATA.GET_STATISTICS]({
+        id: this.topologyActive._id,
+        settings: {
+          filter,
+        },
+      })
+
+      this.initNodes()
+    },
     prettyMs: prettyMilliseconds,
     initNodes() {
       if (
@@ -263,10 +298,14 @@ export default {
     },
   },
   async mounted() {
-    this.init("timestamp")
+    this.initRuns("timestamp")
+
     await this[TOPOLOGIES.ACTIONS.TOPOLOGY.NODES](this.topologyActive._id)
     await this[TOPOLOGIES.ACTIONS.DATA.GET_STATISTICS]({
       id: this.topologyActive._id,
+      settings: {
+        filter: this.quickFilters[0].filter,
+      },
     })
     this.initNodes()
   },
