@@ -53,14 +53,19 @@ init: up
 	$(DC_DEV) run --rm wait-for-it rabbitmq:15672 -t 600
 	$(DE_DEV) rabbitmq rabbitmq-plugins enable rabbitmq_consistent_hash_exchange
 	$(DE_DEV) rabbitmq rabbitmq-plugins enable rabbitmq_management
+	$(DC_DEV) run --rm wait-for-it topology-api:8080 -t 600
 	$(DE_DEV) backend bin/console service:install node-sdk node-sdk:8080
 	$(DE_DEV) backend bin/console service:install php-sdk php-sdk:80
 	$(DE_DEV) backend bin/console topology:install -c -u --force node-sdk:8080
 	$(DE_DEV) backend bin/console api-token:create --key "$(shell grep 'ORCHESTY_API_KEY' .env | cut -d "=" -f2)"
 	$(DE_DEV) backend bin/console user:create "$(shell grep 'ORCHESTY_USER' .env | cut -d "=" -f2)" "$(shell grep 'ORCHESTY_PASSWORD' .env | cut -d "=" -f2)"
 
-destroy: .env .lo0-down
+destroy: .env .lo0-down topology-destroy
 	$(DC_DEV) down -v
+
+topology-destroy:
+	docker rm -f $$(docker ps -aqf name=topology-\\d+) || true
+	sudo rm -rf ../topology/*
 
 applinth-link:
 	echo "http://$(shell grep 'DEV_IP' .env | cut -d "=" -f2):81/?u=$$($(DE_DEV) applinth-marketplace-ui /bin/bash -c 'node JWEGen.js')"

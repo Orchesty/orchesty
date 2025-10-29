@@ -144,6 +144,7 @@ services:
             APP_ENV: 'debug'
             MONGODB_DSN: ${MONGO_DSN}
             FLUENTD_DSN: 'fluentd:9880'
+            METRICS_DB: metrics
             TZ: 'UTC'
         command: sh -c 'pnpm install && pnpm run start'
 

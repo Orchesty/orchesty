@@ -111,10 +111,12 @@ import ListPosts from './JsonPlaceholder/Batch/ListPosts';
 import ListUsers from './JsonPlaceholder/Batch/ListUsers';
 import BinSender from './JsonPlaceholder/Connector/BinSender';
 import Node from './JsonPlaceholder/Custom/Node';
+import SleepAndStop from './JsonPlaceholder/Custom/SleepAndStop';
 import HubSpotCreateContactMapper from './JsonPlaceholder/HubSpotCreateContactMapper';
 import NonInstallableApplication from './JsonPlaceholder/NonInstallableApplication';
 import SampleApplication from './JsonPlaceholder/SampleApplication';
 import TenantApplication from './JsonPlaceholder/TenantApplication';
+import GetPost from './JsonPlaceholder/Connector/GetPost';
 
 export function start(): void {
     initiateContainer();
@@ -305,6 +307,10 @@ export function start(): void {
     listUsers.setSender(sender);
     container.setBatch(listUsers);
 
+    const getPost = new GetPost();
+    getPost.setSender(sender);
+    container.setConnector(getPost);
+
     const binSender = new BinSender();
     binSender.setSender(sender);
     container.setConnector(binSender);
@@ -479,6 +485,9 @@ export function start(): void {
 
     const node = new Node();
     container.setCustomNode(node);
+
+    const sleep = new SleepAndStop();
+    container.setCustomNode(sleep);
 
     const xeroApplication = new XeroApplication(provider, mongoDb, sender);
     container.setApplication(xeroApplication);
