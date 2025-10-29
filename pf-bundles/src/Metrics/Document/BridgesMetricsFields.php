@@ -14,6 +14,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 class BridgesMetricsFields
 {
 
+    public const string CREATED = 'created';
     // TODO unused metrics workerDuration
 
     /**
