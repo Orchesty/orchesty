@@ -14,6 +14,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 class ProcessesMetricsFields
 {
 
+    public const string CREATED = 'created';
     // TODO unused metrics: fail_count, ok_count
 
     /**

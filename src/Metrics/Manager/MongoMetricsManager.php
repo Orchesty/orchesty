@@ -8,10 +8,14 @@ use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Hanaboso\PipesFramework\Database\Document\Node;
 use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\PipesFramework\Metrics\Document\BridgesMetrics;
+use Hanaboso\PipesFramework\Metrics\Document\BridgesMetricsFields;
 use Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetrics;
+use Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetricsFields;
 use Hanaboso\PipesFramework\Metrics\Document\ContainerMetrics;
 use Hanaboso\PipesFramework\Metrics\Document\MonolithMetrics;
+use Hanaboso\PipesFramework\Metrics\Document\MonolithMetricsFields;
 use Hanaboso\PipesFramework\Metrics\Document\ProcessesMetrics;
+use Hanaboso\PipesFramework\Metrics\Document\ProcessesMetricsFields;
 use Hanaboso\PipesFramework\Metrics\Document\RabbitConsumerMetrics;
 use Hanaboso\PipesFramework\Metrics\Document\RabbitMetrics;
 use Hanaboso\PipesFramework\Metrics\Document\Tags;
@@ -69,17 +73,19 @@ final class MongoMetricsManager extends MetricsManagerAbstract
     public function getNodeMetrics(Node $node, Topology $topology, array $params): array
     {
         $topology;
-        [$dateFrom, $dateTo] = $this->parseDateRange($params);
+        [$dateFrom, $dateTo, $size] = $this->parseDateRange($params);
 
         $where = [
             self::NODE => $node->getId(),
         ];
 
-        $queue   = (new MetricsDto())->setMax(0)->setTotal(0)->setAvg(0, 0);
-        $request = $this->connectorNodeMetrics($where, $dateFrom, $dateTo);
-        $cpu     = $this->monolithNodeMetrics($where, $dateFrom, $dateTo);
+        $sort = $this->getSort($size);
 
-        [$processTime, $waitingTime, $error] = $this->bridgesNodeMetrics($where, $dateFrom, $dateTo);
+        $queue   = (new MetricsDto())->setMax(0)->setTotal(0)->setAvg(0, 0);
+        $request = $this->connectorNodeMetrics($where, $sort, $size, $dateFrom, $dateTo);
+        $cpu     = $this->monolithNodeMetrics($where, $sort, $size, $dateFrom, $dateTo);
+
+        [$processTime, $waitingTime, $error] = $this->bridgesNodeMetrics($where, $sort, $size, $dateFrom, $dateTo);
 
         return $this->generateOutput(
             $queue,
@@ -101,11 +107,13 @@ final class MongoMetricsManager extends MetricsManagerAbstract
      */
     public function getTopologyProcessTimeMetrics(Topology $topology, array $params): array
     {
-        [$dateFrom, $dateTo] = $this->parseDateRange($params);
+        [$dateFrom, $dateTo, $size] = $this->parseDateRange($params);
 
         $where = [self::TOPOLOGY => $topology->getId()];
 
-        [$process, $error] = $this->counterProcessMetrics($where, $dateFrom, $dateTo);
+        $sort = $this->getSort($size);
+
+        [$process, $error] = $this->counterProcessMetrics($where, $sort, $size, $dateFrom, $dateTo);
 
         return $this->generateOutput(
             new MetricsDto(),
@@ -128,7 +136,7 @@ final class MongoMetricsManager extends MetricsManagerAbstract
     {
         [$dateFrom, $dateTo] = $this->parseDateRange($params);
 
-        [$process, $error] = $this->counterProcessMetrics([], $dateFrom, $dateTo);
+        [$process, $error] = $this->counterProcessMetrics([], [], NULL, $dateFrom, $dateTo);
 
         return $this->generateOutput(
             new MetricsDto(),
@@ -150,12 +158,15 @@ final class MongoMetricsManager extends MetricsManagerAbstract
      */
     public function getTopologyRequestCountMetrics(Topology $topology, array $params): array
     {
-        $params['from'] ??= 'now - 1 hours';
+        $params['from'] ??= 'now - 30 days';
         $params['to']   ??= 'now';
+        $params['size'] ??= NULL;
 
-        [$dateFrom, $dateTo] = $this->parseDateRange($params);
+        [$dateFrom, $dateTo, $size] = $this->parseDateRange($params);
 
         $where = [self::TOPOLOGY => $topology->getId()];
+
+        $sort = $this->getSort($size);
 
         $res          = $this->getTopologyMetrics($topology, $params);
         $keepRequests = FALSE;
@@ -167,7 +178,7 @@ final class MongoMetricsManager extends MetricsManagerAbstract
             }
         }
         if ($keepRequests) {
-            $res['requests'] = $this->requestsCountAggregation($where, $dateFrom, $dateTo);
+            $res['requests'] = $this->requestsCountAggregation($where, $sort, $size, $dateFrom, $dateTo);
         }
 
         return $res;
@@ -310,17 +321,26 @@ final class MongoMetricsManager extends MetricsManagerAbstract
      */
 
     /**
-     * @param mixed[] $where
-     * @param string  $dateFrom
-     * @param string  $dateTo
+     * @param mixed[]  $where
+     * @param mixed[]  $sort
+     * @param int|null $size
+     * @param string   $dateFrom
+     * @param string   $dateTo
      *
      * @return MetricsDto|null
      * @throws DateTimeException
      */
-    private function connectorNodeMetrics(array $where, string $dateFrom, string $dateTo): MetricsDto|null
-    {
+    private function connectorNodeMetrics(
+        array $where,
+        array $sort,
+        ?int $size,
+        string $dateFrom,
+        string $dateTo,
+    ): ?MetricsDto {
         $qb = $this->metricsDm->createAggregationBuilder(ConnectorsMetrics::class);
         $this->addConditions($qb, $dateFrom, $dateTo, $where, ConnectorsMetrics::class);
+        $this->addSortations($qb, $sort, ConnectorsMetrics::class);
+        $this->addPagination($qb, $size);
         $res = $qb->group()->field('id')->ifNull(NULL, '')
             ->field('request_sum')->sum('$fields.sent_request_total_duration')
             ->field('request_count')->sum(1)
@@ -343,17 +363,26 @@ final class MongoMetricsManager extends MetricsManagerAbstract
     }
 
     /**
-     * @param mixed[] $where
-     * @param string  $dateFrom
-     * @param string  $dateTo
+     * @param mixed[]  $where
+     * @param mixed[]  $sort
+     * @param int|null $size
+     * @param string   $dateFrom
+     * @param string   $dateTo
      *
      * @return MetricsDto
      * @throws DateTimeException
      */
-    private function monolithNodeMetrics(array $where, string $dateFrom, string $dateTo): MetricsDto
-    {
+    private function monolithNodeMetrics(
+        array $where,
+        array $sort,
+        ?int $size,
+        string $dateFrom,
+        string $dateTo,
+    ): MetricsDto {
         $qb = $this->metricsDm->createAggregationBuilder(MonolithMetrics::class);
         $this->addConditions($qb, $dateFrom, $dateTo, $where, MonolithMetrics::class);
+        $this->addSortations($qb, $sort, MonolithMetrics::class);
+        $this->addPagination($qb, $size);
         $res = $qb->group()->field('id')->ifNull(NULL, '')
             ->field('cpu_sum')->sum('$fields.fpm_cpu_kernel_time')
             ->field('cpu_count')->sum(1)
@@ -381,17 +410,26 @@ final class MongoMetricsManager extends MetricsManagerAbstract
     }
 
     /**
-     * @param mixed[] $where
-     * @param string  $dateFrom
-     * @param string  $dateTo
+     * @param mixed[]  $where
+     * @param mixed[]  $sort
+     * @param int|null $size
+     * @param string   $dateFrom
+     * @param string   $dateTo
      *
      * @return mixed[]
      * @throws DateTimeException
      */
-    private function counterProcessMetrics(array $where, string $dateFrom, string $dateTo): array
-    {
+    private function counterProcessMetrics(
+        array $where,
+        array $sort,
+        ?int $size,
+        string $dateFrom,
+        string $dateTo,
+    ): array {
         $qb = $this->metricsDm->createAggregationBuilder(ProcessesMetrics::class);
         $this->addConditions($qb, $dateFrom, $dateTo, $where, ProcessesMetrics::class);
+        $this->addSortations($qb, $sort, ProcessesMetrics::class);
+        $this->addPagination($qb, $size);
         $res = $qb
             ->match()->field('parent')->equals(NULL)
             ->group()->field('id')->ifNull(NULL, '')
@@ -437,17 +475,20 @@ final class MongoMetricsManager extends MetricsManagerAbstract
     }
 
     /**
-     * @param mixed[] $where
-     * @param string  $dateFrom
-     * @param string  $dateTo
+     * @param mixed[]  $where
+     * @param mixed[]  $sort
+     * @param int|null $size
+     * @param string   $dateFrom
+     * @param string   $dateTo
      *
      * @return mixed[]
      * @throws DateTimeException
      */
-    private function bridgesNodeMetrics(array $where, string $dateFrom, string $dateTo): array
-    {
+    private function bridgesNodeMetrics(array $where, array $sort, ?int $size, string $dateFrom, string $dateTo): array {
         $qb = $this->metricsDm->createAggregationBuilder(BridgesMetrics::class);
         $this->addConditions($qb, $dateFrom, $dateTo, $where, BridgesMetrics::class);
+        $this->addSortations($qb, $sort, BridgesMetrics::class);
+        $this->addPagination($qb, $size);
         $res = $qb->group()->field('id')->ifNull(NULL, '')
             ->field('top_processed_sum')->sum('$fields.total_duration')
             ->field('top_processed_count')->sum(1)
@@ -504,20 +545,29 @@ final class MongoMetricsManager extends MetricsManagerAbstract
     }
 
     /**
-     * @param mixed[] $where
-     * @param string  $dateFrom
-     * @param string  $dateTo
+     * @param mixed[]  $where
+     * @param mixed[]  $sort
+     * @param int|null $size
+     * @param string   $dateFrom
+     * @param string   $dateTo
      *
      * @return mixed[]
      * @throws DateTimeException
      */
-    private function requestsCountAggregation(array $where, string $dateFrom, string $dateTo): array
-    {
+    private function requestsCountAggregation(
+        array $where,
+        array $sort,
+        ?int $size,
+        string $dateFrom,
+        string $dateTo,
+    ): array {
         $dateTimeFrom = DateTimeUtils::getUtcDateTime($dateFrom);
         $dateTimeTo   = DateTimeUtils::getUtcDateTime($dateTo);
 
         $qb = $this->metricsDm->createAggregationBuilder(ProcessesMetrics::class);
         $this->addConditions($qb, $dateFrom, $dateTo, $where, ProcessesMetrics::class);
+        $this->addSortations($qb, $sort, ProcessesMetrics::class);
+        $this->addPagination($qb, $size);
         $ret = RetentionFactory::getRetentionInSeconds($dateTimeFrom, $dateTimeTo);
 
         $resMs = $qb
@@ -582,6 +632,46 @@ final class MongoMetricsManager extends MetricsManagerAbstract
     }
 
     /**
+     * @param Builder $qb
+     * @param mixed[] $sort
+     * @param string  $document
+     */
+    private function addSortations(Builder $qb, array $sort, string $document): void
+    {
+        if ($sort === []) {
+            return;
+        }
+
+        $allowedFields = $this->allowedFields($document);
+        $innerSort     = [];
+
+        foreach ($sort as $field => $value) {
+            if (in_array($field, $allowedFields, TRUE)) {
+                $innerSort[sprintf('fields.%s', $field)] = $value;
+            }
+        }
+
+        if ($innerSort === []) {
+            return;
+        }
+
+        $qb->sort($innerSort);
+    }
+
+    /**
+     * @param Builder  $qb
+     * @param int|null $size
+     */
+    private function addPagination(Builder $qb, ?int $size): void
+    {
+        if ($size === NULL) {
+            return;
+        }
+
+        $qb->limit($size);
+    }
+
+    /**
      * @param string $document
      *
      * @return mixed[]
@@ -593,6 +683,22 @@ final class MongoMetricsManager extends MetricsManagerAbstract
             RabbitMetrics::class => Tags::RABBIT_TAGS,
             ConnectorsMetrics::class => Tags::CONNECTOR_TAGS,
             MonolithMetrics::class => Tags::MONOLITH_TAGS,
+            default => [],
+        };
+    }
+
+    /**
+     * @param string $document
+     *
+     * @return mixed[]
+     */
+    private function allowedFields(string $document): array
+    {
+        return match ($document) {
+            ConnectorsMetrics::class => [ConnectorsMetricsFields::CREATED],
+            MonolithMetrics::class => [MonolithMetricsFields::CREATED],
+            BridgesMetrics::class => [BridgesMetricsFields::CREATED],
+            ProcessesMetrics::class => [ProcessesMetricsFields::CREATED],
             default => [],
         };
     }
@@ -612,7 +718,24 @@ final class MongoMetricsManager extends MetricsManagerAbstract
             throw new LogicException('Date range, fields: [from, to] are required.');
         }
 
-        return [$dateFrom, $dateTo];
+        return [$dateFrom, $dateTo, $params['size'] ?? NULL];
+    }
+
+    /**
+     * @param int|null $size
+     * @return string[]
+     */
+    private function getSort(?int $size): array
+    {
+        $sort = [];
+
+        if ($size !== NULL) {
+            $sort = [
+                'created' => 'DESC',
+            ];
+        }
+
+        return $sort;
     }
 
 }

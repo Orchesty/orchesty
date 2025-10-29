@@ -14,6 +14,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 class MonolithMetricsFields
 {
 
+    public const string CREATED = 'created';
     // TODO unused metrics: fpm_request_total_duration
 
     /**

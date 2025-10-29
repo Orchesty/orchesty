@@ -14,6 +14,8 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 class ConnectorsMetricsFields
 {
 
+    public const string CREATED = 'created';
+
     /**
      * @var int
      */
