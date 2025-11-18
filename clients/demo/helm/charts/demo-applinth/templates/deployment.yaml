@@ -13,6 +13,7 @@ spec:
       labels:
         {{- include "demo-applinth.selectorLabels" . | nindent 8 }}
     spec:
+      {{- include "demo-applinth.imagePullSecrets" . | nindent 6 }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag}}"

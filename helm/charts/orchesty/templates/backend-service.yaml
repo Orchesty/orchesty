@@ -16,7 +16,7 @@ spec:
   {{- end }}
   ports:
     - protocol: TCP
-      port: 80
+      port: {{ .Values.global.backend.service.port }}
       targetPort: http
       {{- if (and (eq .Values.global.backend.service.type "NodePort") (not (empty .Values.global.backend.service.nodePort))) }}
       nodePort: {{ .Values.global.backend.service.nodePort }}

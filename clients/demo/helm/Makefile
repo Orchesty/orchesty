@@ -1,15 +1,14 @@
 CONFIG:= --kubeconfig ~/.kube/config_k3s_hb_office
 HELM:= helm $(CONFIG)
 KUBECTL:= kubectl $(CONFIG)
-PROJECT:=monitoring-dashboard
+PROJECT:=pipes
 NAMESPACE:=--namespace $(PROJECT)
 
-SECRET_FILE:=secrets.yaml
-SECRET:=monitoring-dashboard-grafana
-SECRET2:=monitoring-dashboard-influxdb
+SECRET_FILE:=secrets.stage.yaml
+SECRET:=pipes-secrets
 PULL_SECRET:=hanaboso-registry-pull-secret
 
-VALUES_FILE:=values.yaml
+VALUES_FILE:=values.stage.yaml
 
 create-namespace:
 	$(KUBECTL) create namespace $(PROJECT)
@@ -19,10 +18,6 @@ deploy:
 	$(KUBECTL) $(NAMESPACE) label secret $(SECRET) app.kubernetes.io/managed-by=Helm 
 	$(KUBECTL) $(NAMESPACE) annotate secret $(SECRET) meta.helm.sh/release-name=$(PROJECT) --overwrite 
 	$(KUBECTL) $(NAMESPACE) annotate secret $(SECRET) meta.helm.sh/release-namespace=$(PROJECT) --overwrite
-	$(KUBECTL) $(NAMESPACE) label secret $(SECRET2) app.kubernetes.io/managed-by=Helm 
-	$(KUBECTL) $(NAMESPACE) annotate secret $(SECRET2) meta.helm.sh/release-name=$(PROJECT) --overwrite 
-	$(KUBECTL) $(NAMESPACE) annotate secret $(SECRET2) meta.helm.sh/release-namespace=$(PROJECT) --overwrite
-	$(HELM) upgrade -i --values $(VALUES_FILE) $(PROJECT) ./ $(NAMESPACE)  --create-namespace
 
 diff:
 	$(HELM) ${NAMESPACE} diff -C4 upgrade -f $(VALUES_FILE) --allow-unreleased $(PROJECT) ./

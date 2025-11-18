@@ -1,45 +1,44 @@
 ---
 
 orchesty:
-  # force legacy resource names
   nameOverride: pipes
 
 global:
-  orchestyVersion: 2.0.1
+  orchestyVersion: "2.1"
   backend_url: https://api-orchesty.stage.hanaboso.net
   frontend_url: https://orchesty.stage.hanaboso.net
   starting_point_url: https://sp-orchesty.stage.hanaboso.net
   applinth_marketplace_url: https://applinth-orchesty.stage.hanaboso.net
 
+  imageRegistry:
+    enablePullSecret: true
+    pullSecret: hanaboso-registry-pull-secret
+
   imageOverrides:
-    applinth-marketplace-ui: dkr.hanaboso.net/pipes/pipes/applinth-marketplace-ui:2.0
-    backend: dkr.hanaboso.net/pipes/pipes/applinth:2.0
+    applinth-marketplace-ui: dkr.hanaboso.net/pipes/pipes/applinth-marketplace-ui:master
+    backend: dkr.hanaboso.net/pipes/pipes/applinth:master
 
   applinthMarketplaceUI:
     auth_backlink: https://demo-applinth-orchesty.stage.hanaboso.net
     service:
-      type: NodePort
-      nodePort: 30153
+      type: LoadBalancer
+      port: 80
 
   startingPoint:
     service:
-      type: NodePort
-      nodePort: 30152
+      type: LoadBalancer
+      port: 80
 
   backend:
     alpha_instance_id: hb-stage
-    ## TODO: smazat
-    resources:
-      limits:
-        cpu: 500m
     service:
-      type: NodePort
-      nodePort: 30151
+      type: LoadBalancer
+      nodePort: 80
 
   frontend:
     service:
-      type: NodePort
-      nodePort: 30150
+      type: LoadBalancer
+      nodePort: 80
 
   workers:
     default:
@@ -56,6 +55,9 @@ global:
             secretKeyRef:
               name: pipes-secrets
               key: aws_ses_secret
+  
+  valkey:
+    enabled: false
 
 customPersistence:
   node: k3snode1

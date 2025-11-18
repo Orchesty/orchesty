@@ -1,5 +1,15 @@
 # Release Notes
 
+## 2.1.10
+
+### Changes
+
+- Frontend: Added the option to change service port
+- Backend: Added the option to change service port
+- StartingPoint: Added the option to change service port
+
+- Helm: added Valkey as a optional dependency
+
 ## 2.1.9
 
 ### Changes

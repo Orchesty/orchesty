@@ -3,7 +3,7 @@
 {{- define "pipes.imagePullSecrets" }}
 {{- if .Values.global.imageRegistry.enablePullSecret -}}
 imagePullSecrets:
-  - name: {{ include "pipes.fullname" (dict "root" . "suffix" "pull-secret") }}
+  - name: {{ .Values.global.imageRegistry.pullSecret }}
 {{- end -}}
 {{- end -}}
 

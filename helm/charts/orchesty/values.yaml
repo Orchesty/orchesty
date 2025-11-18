@@ -67,6 +67,7 @@ global:
   applinthMarketplaceUI:
     service:
       type: none
+      port: 80
     auth_backlink: not-set
     branding_package_url: ""
     serviceAnnotations: {}
@@ -81,6 +82,7 @@ global:
   backend:
     service:
       type: none
+      port: 80
     alpha_instance_id: not-set
     checkInfinityLoop: true
     resources:
@@ -103,6 +105,7 @@ global:
   frontend:
     service:
       type: none
+      port: 80
     serviceAnnotations: {}
     resources:
       requests:
@@ -142,6 +145,7 @@ global:
   startingPoint:
     service:
       type: none
+      port: 8080
     serviceAnnotations: {}
     resources:
       requests:
@@ -229,3 +233,20 @@ global:
 
 nameOverride: ""
 fullnameOverride: ""
+
+
+valkey:
+  enabled: false # Enable it, if you want use Valkey(Redis) for cache
+
+  replicaCount: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+  dataStorage:
+    enabled: false # Enable it, if you want use persist storage
+    requestedSize: 1Gi
+    storageClass: local-path

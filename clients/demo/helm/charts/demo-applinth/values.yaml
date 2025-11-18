@@ -7,6 +7,5 @@ image:
   tag: master
 
 service:
-  type: NodePort
-  port: 8000
-  nodePort: 30154
+  type: LoadBalancer
+  port: 80

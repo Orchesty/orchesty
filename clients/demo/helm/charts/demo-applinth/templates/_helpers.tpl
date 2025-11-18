@@ -49,3 +49,10 @@ Selector labels
 app.kubernetes.io/name: {{ include "demo-applinth.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
+
+{{- define "demo-applinth.imagePullSecrets" }}
+{{- if .Values.global.imageRegistry.enablePullSecret -}}
+imagePullSecrets:
+  - name: {{ .Values.global.imageRegistry.pullSecret }}
+{{- end -}}
+{{- end -}}

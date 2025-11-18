@@ -1,7 +1,6 @@
 influxdb2:
     service:
-        type: NodePort
-        nodePort: 30051
+        type: LoadBalancer
 
     adminUser:
         organization: default
@@ -15,8 +14,7 @@ grafana:
         enabled: true
 
     service:
-        type: NodePort
-        nodePort: 30050
+        type: LoadBalancer
 
     admin:
         existingSecret: monitoring-dashboard-grafana

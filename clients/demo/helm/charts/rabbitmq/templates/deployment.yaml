@@ -22,7 +22,6 @@ spec:
         {{- include "rabbitmq.selectorLabels" . | nindent 8 }}
     spec:
       hostname: rabbitmq
-      priorityClassName: system-cluster-critical # todo: define our own priority classes
       containers:
         - name: rabbitmq
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default (printf "%s-%s" .Chart.AppVersion "management-alpine") }}"

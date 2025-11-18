@@ -46,7 +46,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "b6de785d-1681-4484-99de-fa00cc379495"
+        "uid": "e6394af0-614c-4aab-bc89-b2d1804854e2"
       },
       "fieldConfig": {
         "defaults": {
@@ -170,7 +170,7 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "b6de785d-1681-4484-99de-fa00cc379495"
+            "uid": "e6394af0-614c-4aab-bc89-b2d1804854e2"
           },
           "query": "import \"experimental/aggregate\"\n\n// v.windowPeriod is a variable referring to the current optimized window period (currently: $interval)\nfrom(bucket: v.bucket)\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"orchesty\" and r[\"url\"] == \"${instances}\")\n  |> filter(fn: (r) => r[\"_field\"] == \"procs_succeeded\")\n  |> group(columns: [\"url\"])\n  |> sort(columns: [\"_time\"])\n  |> increase()\n  |> aggregateWindow(every: v.windowPeriod, fn: last)\n  |> difference()\n  |> yield()\n",
           "refId": "A"
@@ -178,7 +178,7 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "b6de785d-1681-4484-99de-fa00cc379495"
+            "uid": "e6394af0-614c-4aab-bc89-b2d1804854e2"
           },
           "hide": false,
           "query": "import \"experimental/aggregate\"\n\n// v.windowPeriod is a variable referring to the current optimized window period (currently: $interval)\nfrom(bucket: v.bucket)\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"orchesty\" and r[\"url\"] == \"${instances}\")\n  |> filter(fn: (r) => r[\"_field\"] == \"procs_failed\")\n  |> group(columns: [\"url\"])\n  |> sort(columns: [\"_time\"])\n  |> difference()\n  |> aggregateWindow(every: v.windowPeriod, fn: last)\n  |> filter(fn: (r) => r._value > 0)\n  |> yield()\n",
@@ -191,7 +191,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "b6de785d-1681-4484-99de-fa00cc379495"
+        "uid": "e6394af0-614c-4aab-bc89-b2d1804854e2"
       },
       "fieldConfig": {
         "defaults": {
@@ -282,7 +282,7 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "b6de785d-1681-4484-99de-fa00cc379495"
+            "uid": "e6394af0-614c-4aab-bc89-b2d1804854e2"
           },
           "query": "// v.windowPeriod is a variable referring to the current optimized window period (currently: $interval)\nfrom(bucket: v.bucket)\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"orchesty\" and r[\"url\"] == \"${instances}\")\n  |> filter(fn: (r) => r[\"_field\"] == \"operation_sum\")\n  |> group(columns: [\"url\"])\n  |> sort(columns: [\"_time\"])\n  |> increase()\n  |> aggregateWindow(every: v.windowPeriod, fn: last)\n  |> difference()\n  |> yield()\n",
           "refId": "A"
@@ -294,7 +294,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "b6de785d-1681-4484-99de-fa00cc379495"
+        "uid": "e6394af0-614c-4aab-bc89-b2d1804854e2"
       },
       "fieldConfig": {
         "defaults": {
@@ -376,7 +376,7 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "b6de785d-1681-4484-99de-fa00cc379495"
+            "uid": "e6394af0-614c-4aab-bc89-b2d1804854e2"
           },
           "query": "import \"date\"\n\n// prevent aligning of windows (stolen)\nevery = 2h\noffset = duration(v: string(v: uint(v: now()) - uint(v:date.truncate(t: now(), unit: every))) + \"ns\")\n\n// v.windowPeriod is a variable referring to the current optimized window period (currently: $interval)\nfrom(bucket: v.bucket)\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"orchesty\" and r[\"url\"] == \"${instances}\")\n  |> filter(fn: (r) => r[\"_field\"] == \"succsessful\" or r[\"_field\"] == \"procs_failed\")\n  |> group(columns: [\"url\"])\n  |> aggregateWindow(every: every, offset: offset, fn: max, )\n  |> difference(nonNegative: true)\n  |> yield()\n",
           "refId": "A"
@@ -384,7 +384,7 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "b6de785d-1681-4484-99de-fa00cc379495"
+            "uid": "e6394af0-614c-4aab-bc89-b2d1804854e2"
           },
           "hide": false,
           "query": "// v.windowPeriod is a variable referring to the current optimized window period (currently: $interval)\nfrom(bucket: v.bucket)\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"orchesty\" and r[\"url\"] == \"${instances}\")\n  |> filter(fn: (r) => r[\"_field\"] == \"procs_in_progress\")\n  |> group(columns: [\"url\"])\n  |> aggregateWindow(every: v.windowPeriod, fn: last)\n  |> yield()\n",
@@ -412,7 +412,7 @@
         },
         "datasource": {
           "type": "influxdb",
-          "uid": "b6de785d-1681-4484-99de-fa00cc379495"
+          "uid": "e6394af0-614c-4aab-bc89-b2d1804854e2"
         },
         "definition": "import \"influxdata/influxdb/v1\"\nv1.tagValues(\n    bucket: v.bucket,\n    tag: \"url\",\n    predicate: (r) => r._measurement == \"orchesty\",\n    start: -1d\n)",
         "hide": 0,

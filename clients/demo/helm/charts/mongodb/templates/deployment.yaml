@@ -21,7 +21,6 @@ spec:
       labels:
         {{- include "mongodb.selectorLabels" . | nindent 8 }}
     spec:
-      priorityClassName: system-cluster-critical # todo: define our own priority classes
       containers:
         - name: mongodb
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"

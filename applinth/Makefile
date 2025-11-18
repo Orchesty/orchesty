@@ -19,9 +19,9 @@ Linux:
 
 
 # Build
-build: .env
+build:
 	cp .dockerignore ../.dockerignore
-	docker buildx build --pull --push --platform linux/amd64,linux/arm64/v8 -t $(IMAGE) . || rm ../.dockerignore
+	docker buildx build -f Dockerfile --pull --push --platform linux/amd64,linux/arm64/v8 -t $(IMAGE) ../. || rm ../.dockerignore
 	rm ../.dockerignore || true
 
 docker-compose.ci.yml:
