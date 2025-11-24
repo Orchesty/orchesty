@@ -1,5 +1,12 @@
 # Release Notes
 
+## 2.1.13
+
+### Changes
+
+- Helm: Alloy updated processing pipeline
+- Helm: Loki optimized resources
+
 ## 2.1.12
 
 ### Changes

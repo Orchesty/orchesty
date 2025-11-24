@@ -329,6 +329,9 @@ data:
 
         acl api-gw-instance-6qalrogarw hdr_beg(host) api-gw-6qalrogarw.eu1.cloud.orchesty.io
         use_backend api-gw-6qalrogarw if api-gw-instance-6qalrogarw
+        
+        acl grafana-instance-6qalrogarw hdr_beg(host) grafana-6qalrogarw.eu1.cloud.orchesty.io
+        use_backend grafana-6qalrogarw if grafana-instance-6qalrogarw
 
 
         # instance-iagdk5rylw
@@ -692,6 +695,10 @@ data:
     backend api-gw-6qalrogarw
         mode http
         server svc api-gateway.instance-6qalrogarw.svc.cluster.local:80
+    
+    backend grafana-6qalrogarw
+        mode http
+        server svc pipes-grafana.instance-6qalrogarw.svc.cluster.local:80
 
 
     # instance-iagdk5rylw

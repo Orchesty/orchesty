@@ -112,7 +112,7 @@ global:
       # Example: ["debug-.*", ".*-test"]
       pods:
         # Pod name patterns to include (regex). If empty, all pods are included (except excluded ones).
-        include: ["pipes-worker-.*", topology-.*]
+        include: ["pipes-worker-.*"]
         exclude: []
   
 customPersistence:

@@ -343,6 +343,9 @@ loki:
   test:
     enabled: false
 
+  chunksCache:
+    allocatedMemory: 1024
+
   singleBinary:
     replicas: 1
     persistence:
@@ -398,6 +401,10 @@ alloy:
       privileged: true
       runAsUser: 0
       runAsGroup: 0
+    
+    configMap:
+      create: false
+      name: pipes-alloy
 
   controller:
     type: daemonset
@@ -407,10 +414,6 @@ alloy:
           hostPath:
             path: /var/lib
   
-  config:
-    create: false
-    name: pipes-alloy
-
   # Disable internal metrics collection to keep it lightweight
   serviceMonitor:
     enabled: false

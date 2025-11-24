@@ -108,7 +108,30 @@ data:
     // Source: read Kubernetes pod logs (stdout/stderr streams)
     loki.source.kubernetes "pod_logs" {
       targets    = discovery.relabel.pod_logs.output
+      forward_to = [loki.process.pod_logs_processing.receiver]
+    }
+
+    // Process: parse JSON and extract labels
+    loki.process "pod_logs_processing" {
       forward_to = [loki.write.local.receiver]
+
+      // Try to parse JSON. If the line is not valid JSON, this stage is skipped
+      // and the log line is passed to the next stage without modification (no labels added).
+      stage.json {
+        expressions = {
+          correlationId = "correlationId",
+          levelName     = "levelName",
+          topologyId    = "topologyId",
+        }
+      }
+
+      stage.labels {
+        values = {
+          correlationId = "correlationId",
+          levelName     = "levelName",
+          topologyId    = "topologyId",
+        }
+      }
     }
 
     // Sink: send to Loki (single binary / gateway endpoint)
