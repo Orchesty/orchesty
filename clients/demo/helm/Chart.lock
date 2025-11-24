@@ -1,7 +1,7 @@
 dependencies:
 - name: orchesty
   repository: https://orchesty.github.io/helm-charts/
-  version: 2.1.5
+  version: 2.1.11
 - name: demo-applinth
   repository: ""
   version: '*'
@@ -11,5 +11,5 @@ dependencies:
 - name: rabbitmq
   repository: ""
   version: '*'
-digest: sha256:fea08857e70e93d33db7774b004f459210ec9c5d3a8d6f722f14c01401c20c97
-generated: "2024-03-26T11:32:28.53518+01:00"
+digest: sha256:31cdd207cac99f7864fc55b74e37000997eaccbd2f484fdf9299ca5678848851
+generated: "2025-11-24T10:05:41.586671+01:00"
