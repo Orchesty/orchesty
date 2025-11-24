@@ -2,5 +2,14 @@ dependencies:
 - name: valkey
   repository: https://valkey-io.github.io/valkey-helm/
   version: 0.7.7
-digest: sha256:7c97ae8a7eb4f39a076c120372f754897ecf0b492eb0501c86465a99d4ebe8a9
-generated: "2025-11-13T09:44:33.771547+01:00"
+- name: grafana
+  repository: https://grafana.github.io/helm-charts
+  version: 8.5.1
+- name: loki
+  repository: https://grafana.github.io/helm-charts
+  version: 6.12.0
+- name: alloy
+  repository: https://grafana.github.io/helm-charts
+  version: 0.9.1
+digest: sha256:ecda641efb1ffce995152009106d8dfa4fb80bbfd8ba6cfebcd7f274ff1dd43a
+generated: "2025-11-21T09:25:36.814137+01:00"

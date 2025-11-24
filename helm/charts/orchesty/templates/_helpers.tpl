@@ -1,16 +1,16 @@
 {{/* vim: set filetype=mustache: */}}
 
 {{- define "pipes.imagePullSecrets" }}
-{{- if .Values.global.imageRegistry.enablePullSecret -}}
+{{- if .Values.global.orchestyImageRegistry.enablePullSecret -}}
 imagePullSecrets:
-  - name: {{ .Values.global.imageRegistry.pullSecret }}
+  - name: {{ .Values.global.orchestyImageRegistry.pullSecret }}
 {{- end -}}
 {{- end -}}
 
 {{- define "pipes.imageFullname" -}}
 {{- $defaultImage := get .root.Values.global.images .image -}}
 {{- $version := .root.Values.global.orchestyVersion -}}
-{{- $defaultImageFull := printf "%s/%s/%s:%s" .root.Values.global.imageRegistry.server .root.Values.global.imageRegistry.path $defaultImage $version -}}
+{{- $defaultImageFull := printf "%s/%s/%s:%s" .root.Values.global.orchestyImageRegistry.server .root.Values.global.orchestyImageRegistry.path $defaultImage $version -}}
 {{- default $defaultImageFull (get .root.Values.global.imageOverrides .image) -}}
 {{- end -}}
 

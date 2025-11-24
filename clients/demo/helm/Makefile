@@ -18,6 +18,9 @@ deploy:
 	$(KUBECTL) $(NAMESPACE) label secret $(SECRET) app.kubernetes.io/managed-by=Helm 
 	$(KUBECTL) $(NAMESPACE) annotate secret $(SECRET) meta.helm.sh/release-name=$(PROJECT) --overwrite 
 	$(KUBECTL) $(NAMESPACE) annotate secret $(SECRET) meta.helm.sh/release-namespace=$(PROJECT) --overwrite
+# 	$(KUBECTL) $(NAMESPACE) delete statefulset pipes-loki --cascade=orphan
+	$(HELM) upgrade -i --values $(VALUES_FILE) $(PROJECT) ./ $(NAMESPACE)  --create-namespace
+# 	$(KUBECTL) $(NAMESPACE) rollout restart daemonset/pipes-alloy
 
 diff:
 	$(HELM) ${NAMESPACE} diff -C4 upgrade -f $(VALUES_FILE) --allow-unreleased $(PROJECT) ./

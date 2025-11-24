@@ -51,8 +51,8 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{- define "demo-applinth.imagePullSecrets" }}
-{{- if .Values.global.imageRegistry.enablePullSecret -}}
+{{- if .Values.global.orchestyImageRegistry.enablePullSecret -}}
 imagePullSecrets:
-  - name: {{ .Values.global.imageRegistry.pullSecret }}
+  - name: {{ .Values.global.orchestyImageRegistry.pullSecret }}
 {{- end -}}
 {{- end -}}

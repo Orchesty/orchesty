@@ -90,7 +90,7 @@ spec:
 
 {{- if not .Values.global.imageOverrides.bridge }}
             - name: DOCKER_PF_BRIDGE_IMAGE
-              value: {{ .Values.global.imageRegistry.server }}/{{ .Values.global.imageRegistry.path }}/{{ .Values.global.images.bridge }}:{{ .Values.global.orchestyVersion }}
+              value: {{ .Values.global.orchestyImageRegistry.server }}/{{ .Values.global.orchestyImageRegistry.path }}/{{ .Values.global.images.bridge }}:{{ .Values.global.orchestyVersion }}
 {{- else }}
             - name: DOCKER_PF_BRIDGE_IMAGE
               value: {{ .Values.global.imageOverrides.bridge }}

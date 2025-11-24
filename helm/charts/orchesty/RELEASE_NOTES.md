@@ -1,5 +1,13 @@
 # Release Notes
 
+## 2.1.11
+
+### Changes
+
+- Helm: added Grafana, Loki and Alloy as a optional dependency
+- Helm: imageRegistry renamed to orchestyImageRegistry
+
+
 ## 2.1.10
 
 ### Changes

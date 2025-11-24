@@ -1,0 +1,118 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pipes-alloy
+  labels:
+    {{- include "pipes.labels" . | nindent 4 }}
+data:
+  config.alloy: |
+    logging {
+      level  = "debug"
+      format = "logfmt"
+    }
+
+    discovery.kubernetes "pods" {
+      role = "pod"
+    }
+
+    discovery.kubernetes "nodes" {
+      role = "node"
+    }
+
+    discovery.kubernetes "services" {
+      role = "service"
+    }
+
+    discovery.kubernetes "endpoints" {
+      role = "endpoints"
+    }
+
+    discovery.kubernetes "endpointslices" {
+      role = "endpointslice"
+    }
+
+    discovery.kubernetes "ingresses" {
+      role = "ingress"
+    }
+
+    // Relabeling: enrich and filter targets
+    discovery.relabel "pod_logs" {
+      targets = discovery.kubernetes.pods.targets
+
+      // Map Kubernetes meta labels to stable labels
+      rule {
+        source_labels = ["__meta_kubernetes_namespace"]
+        target_label  = "namespace"
+      }
+      rule {
+        source_labels = ["__meta_kubernetes_pod_name"]
+        target_label  = "pod"
+      }
+      rule {
+        source_labels = ["__meta_kubernetes_pod_container_name"]
+        target_label  = "container"
+      }
+
+      // 1. Drop logs from Alloy containers themselves to avoid circular logging
+      rule {
+        source_labels = ["container"]
+        regex         = "alloy"
+        action        = "drop"
+      }
+
+      // 2. Drop Loki push requests from web servers (Alloy sending logs to Loki)
+      rule {
+        source_labels = ["__line__"]
+        regex         = ".*POST /loki/api/v1/push.*Alloy.*"
+        action        = "drop"
+      }
+
+      // 3. Drop pods from excluded namespaces
+      {{- if .Values.global.logs.filter.namespaces.exclude }}
+      rule {
+        source_labels = ["namespace"]
+        regex         = "({{ join "|" .Values.global.logs.filter.namespaces.exclude }})"
+        action        = "drop"
+      }
+      {{- end }}
+
+      // 4. Keep only pods from included namespaces (if list is not empty)
+      {{- if .Values.global.logs.filter.namespaces.include }}
+      rule {
+        source_labels = ["namespace"]
+        regex         = "({{ join "|" .Values.global.logs.filter.namespaces.include }})"
+        action        = "keep"
+      }
+      {{- end }}
+
+      // 5. Drop pods matching excluded patterns
+      {{- if .Values.global.logs.filter.pods.exclude }}
+      rule {
+        source_labels = ["pod"]
+        regex         = "({{ join "|" .Values.global.logs.filter.pods.exclude }})"
+        action        = "drop"
+      }
+      {{- end }}
+
+      // 6. Keep only pods matching included patterns (if list is not empty)
+      {{- if .Values.global.logs.filter.pods.include }}
+      rule {
+        source_labels = ["pod"]
+        regex         = "({{ join "|" .Values.global.logs.filter.pods.include }})"
+        action        = "keep"
+      }
+      {{- end }}
+    }
+
+    // Source: read Kubernetes pod logs (stdout/stderr streams)
+    loki.source.kubernetes "pod_logs" {
+      targets    = discovery.relabel.pod_logs.output
+      forward_to = [loki.write.local.receiver]
+    }
+
+    // Sink: send to Loki (single binary / gateway endpoint)
+    loki.write "local" {
+      endpoint {
+        url = "http://{{ tpl .Values.global.logs.lokiHostname . }}/loki/api/v1/push"
+      }
+    }
