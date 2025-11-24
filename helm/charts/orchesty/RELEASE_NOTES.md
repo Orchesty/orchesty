@@ -1,5 +1,11 @@
 # Release Notes
 
+## 2.1.12
+
+### Changes
+
+- Helm: FIX: Alloy config is created only when Alloy is enabled
+
 ## 2.1.11
 
 ### Changes

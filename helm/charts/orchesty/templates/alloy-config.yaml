@@ -1,3 +1,4 @@
+{{- if .Values.alloy.enabled -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -116,3 +117,4 @@ data:
         url = "http://{{ tpl .Values.global.logs.lokiHostname . }}/loki/api/v1/push"
       }
     }
+{{- end -}}
