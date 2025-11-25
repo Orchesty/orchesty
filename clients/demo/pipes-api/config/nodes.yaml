@@ -2,6 +2,14 @@ services:
     _defaults:
         public: '%public.services%'
 
+    # Batch
+    hbpf.batch.list-posts:
+        class: Demo\JsonPlaceholder\Batch\ListPosts
+        calls:
+          -   setSender: [ '@hbpf.transport.curl_manager' ]
+        arguments:
+          - '@hbpf.application_install.repository'
+
     # Connector
     hbpf.connector.pager-duty:
         class: Demo\Connector\PagerDutyConnector
@@ -23,6 +31,13 @@ services:
             -   setSender: [ '@hbpf.transport.curl_manager' ]
             -   setApplication: [ '@hbpf.application.hub-spot' ]
             -   setLogger: [ '@monolog.logger.commons' ]
+        arguments:
+            - '@hbpf.application_install.repository'
+
+    hbpf.connector.get-post:
+        class: Demo\JsonPlaceholder\Connector\GetPost
+        calls:
+            -   setSender: [ '@hbpf.transport.curl_manager' ]
         arguments:
             - '@hbpf.application_install.repository'
 

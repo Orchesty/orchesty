@@ -1385,16 +1385,16 @@
         },
         {
             "name": "hanaboso/commons-bundle",
-            "version": "2.12.1",
+            "version": "2.12.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/commons-bundle.git",
-                "reference": "144d3d919f7e736a36cff64d547e4362bf7a9196"
+                "reference": "bef13dcf2d06e1a366c1fc0071dc58c929bcbdb4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/commons-bundle/zipball/144d3d919f7e736a36cff64d547e4362bf7a9196",
-                "reference": "144d3d919f7e736a36cff64d547e4362bf7a9196",
+                "url": "https://api.github.com/repos/hanaboso/commons-bundle/zipball/bef13dcf2d06e1a366c1fc0071dc58c929bcbdb4",
+                "reference": "bef13dcf2d06e1a366c1fc0071dc58c929bcbdb4",
                 "shasum": ""
             },
             "require": {
@@ -1437,9 +1437,9 @@
             ],
             "description": "Hanaboso - commons-bundle",
             "support": {
-                "source": "https://github.com/hanaboso/commons-bundle/tree/2.12.1"
+                "source": "https://github.com/hanaboso/commons-bundle/tree/2.12.2"
             },
-            "time": "2025-07-24T08:13:09+00:00"
+            "time": "2025-11-12T15:24:35+00:00"
         },
         {
             "name": "hanaboso/email-service-bundle",
@@ -1575,16 +1575,16 @@
         },
         {
             "name": "hanaboso/utils",
-            "version": "1.6.1",
+            "version": "1.6.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanaboso/utils.git",
-                "reference": "ce2564c3714ce908a3d98b5c22e1a58d9ea80d90"
+                "reference": "2550969bcef24b9295e88285b6c135394ced8eff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanaboso/utils/zipball/ce2564c3714ce908a3d98b5c22e1a58d9ea80d90",
-                "reference": "ce2564c3714ce908a3d98b5c22e1a58d9ea80d90",
+                "url": "https://api.github.com/repos/hanaboso/utils/zipball/2550969bcef24b9295e88285b6c135394ced8eff",
+                "reference": "2550969bcef24b9295e88285b6c135394ced8eff",
                 "shasum": ""
             },
             "require": {
@@ -1629,9 +1629,9 @@
             "description": "Hanaboso - utils",
             "support": {
                 "issues": "https://github.com/hanaboso/utils/issues",
-                "source": "https://github.com/hanaboso/utils/tree/1.6.1"
+                "source": "https://github.com/hanaboso/utils/tree/1.6.3"
             },
-            "time": "2025-07-18T07:48:48+00:00"
+            "time": "2025-11-12T08:33:25+00:00"
         },
         {
             "name": "jean85/pretty-package-versions",
