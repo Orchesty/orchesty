@@ -1,12 +1,14 @@
 package model
 
 import (
+	"encoding/json"
 	"fmt"
+	"strconv"
+	"time"
+
 	"github.com/hanaboso/pipes/counter/pkg/enum"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
-	"strconv"
-	"time"
 )
 
 type ParsedMessage struct {
@@ -123,6 +125,14 @@ func (pm ParsedMessage) ProcessInitQuery() mongo.WriteModel {
 }
 
 func (pm ParsedMessage) ProcessQuery() mongo.WriteModel {
+	var rawAuditData map[string]string
+	_ = json.Unmarshal([]byte(pm.ProcessMessage.GetHeaderOrDefault(enum.Header_AuditEntityIds, "{}")), &rawAuditData)
+	auditData := make([]string, 0, len(rawAuditData))
+
+	for _, rawAuditItem := range rawAuditData {
+		auditData = append(auditData, rawAuditItem)
+	}
+
 	doc := mongo.NewUpdateOneModel()
 	doc.Filter = bson.M{
 		"_id": pm.ProcessMessage.GetHeaderOrDefault(enum.Header_CorrelationId, ""),
@@ -133,6 +143,11 @@ func (pm ParsedMessage) ProcessQuery() mongo.WriteModel {
 			"nok":            pm.ProcessMessage.ProcessBody.fails(),
 			"processedCount": pm.ProcessMessage.ProcessBody.successes() + pm.ProcessMessage.ProcessBody.fails(),
 			"total":          pm.ProcessMessage.ProcessBody.Following,
+		},
+		"$addToSet": bson.M{
+			"auditData": bson.M{
+				"$each": auditData,
+			},
 		},
 	}
 

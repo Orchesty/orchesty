@@ -13,4 +13,5 @@ const (
 	Header_ParentProcessId HeaderType = "parent-id"
 	Header_User            HeaderType = "user"
 	Header_SystemEvent     HeaderType = "system-event"
+	Header_AuditEntityIds  HeaderType = "audit-entity-ids"
 )
