@@ -38,8 +38,8 @@ final class SdkHandler
             'items'  => array_map(static fn(Sdk $sdk): array => $sdk->toArray(), $sdks),
             'paging' => [
                 'itemsPerPage' => 50,
-                'lastPage'     => 2,
-                'nextPage'     => 2,
+                'lastPage'     => 1,
+                'nextPage'     => 1,
                 'page'         => 1,
                 'previousPage' => 1,
                 'total'        => count($sdks),

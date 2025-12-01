@@ -58,7 +58,7 @@ class Topology
     /**
      * @var bool
      */
-    #[ODM\Field(type: 'boolean', options: ['default' => 0])]
+    #[ODM\Field(type: 'bool', options: ['default' => 0])]
     protected bool $enabled = FALSE;
 
     /**

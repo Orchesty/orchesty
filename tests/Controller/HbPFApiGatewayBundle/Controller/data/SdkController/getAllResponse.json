@@ -14,8 +14,8 @@
             "page": 1,
             "itemsPerPage": 50,
             "total": 1,
-            "nextPage": 2,
-            "lastPage": 2,
+            "nextPage": 1,
+            "lastPage": 1,
             "previousPage": 1
         }
     }
