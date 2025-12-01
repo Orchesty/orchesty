@@ -2,10 +2,11 @@ package config
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/hanaboso/go-log/pkg"
 	"github.com/hanaboso/go-log/pkg/zerolog"
 	"github.com/jinzhu/configor"
-	"strings"
 )
 
 type (
@@ -18,8 +19,10 @@ type (
 	}
 
 	mongoDb struct {
-		Dsn                string `env:"MONGODB_DSN" required:"true"`
-		UserTaskCollection string `env:"USER_TASK_COLLECTION" default:"UserTask"`
+		Dsn                   string `env:"MONGODB_DSN" required:"true"`
+		UserTaskCollection    string `env:"USER_TASK_COLLECTION" default:"UserTask"`
+		AuditEntityCollection string `env:"AUDIT_ENTITY_COLLECTION" default:"AuditEntity"`
+		AuditDataCollection   string `env:"AUDIT_DATA_COLLECTION" default:"AuditData"`
 	}
 
 	metrics struct {
