@@ -8,6 +8,10 @@ DC_DEV=docker-compose
 DE_DEV=docker-compose exec -T
 DE_DEVT=docker-compose exec
 
+TOPOLOGY_NAME = benchmark
+NODE_NAME = start
+RUNS = 1
+
 ALIAS?=alias
 Darwin:
 	sudo ifconfig lo0 $(ALIAS) $(shell awk '$$1 ~ /^DEV_IP/' .env.dist | sed -e "s/^DEV_IP=//")
@@ -69,3 +73,30 @@ topology-destroy:
 
 applinth-link:
 	echo "http://$(shell grep 'DEV_IP' .env | cut -d "=" -f2):81/?u=$$($(DE_DEV) applinth-marketplace-ui /bin/bash -c 'node JWEGen.js')"
+
+mongo-import:
+	docker compose cp AuditEntity.json mongo:/tmp
+	$(DE_DEV) mongo mongoimport --db "$(shell grep 'MAIN_DB' .env | cut -d "=" -f2)" --collection AuditEntity --file /tmp/AuditEntity.json --jsonArray
+
+run-topology:
+	/bin/bash -c 'for i in {1..$(RUNS)}; do echo "Run #$$i: HTTP $$(curl -s -o /dev/null -w "%{http_code}" -X POST http://127.0.0.66:82/topologies/$(TOPOLOGY_NAME)/nodes/$(NODE_NAME)/run-by-name)"; done'
+
+
+#INSTANCE = xxx
+#PASSWORD = xxx
+#
+#mongo-prod-export:
+#	mongodump --gzip -j 1 -o export-import "mongodb://$(INSTANCE):$(PASSWORD)@localhost:27018/$(INSTANCE)?authSource=admin" || true
+#	mongodump --gzip -j 1 -o export-import "mongodb://$(INSTANCE):$(PASSWORD)@localhost:27018/$(INSTANCE)-metrics?authSource=admin" || true
+#	rm export-import/$(INSTANCE)/ApplicationInstall.bson.gz
+#	rm export-import/$(INSTANCE)/ApplicationInstall.metadata.json.gz
+#	rm export-import/$(INSTANCE)/cron.bson.gz
+#	rm export-import/$(INSTANCE)/cron.metadata.json.gz
+#	rm export-import/$(INSTANCE)/limiter.bson.gz
+#	rm export-import/$(INSTANCE)/limiter.metadata.json.gz
+#	rm export-import/$(INSTANCE)/Webhook.bson.gz
+#	rm export-import/$(INSTANCE)/Webhook.metadata.json.gz
+#
+#mongo-prod-import:
+#	mongorestore --gzip -j 1 "mongodb://127.0.0.66:27017/demo"  export-import/$(INSTANCE)
+#	mongorestore --gzip -j 1 "mongodb://127.0.0.66:27017/metrics" export-import/$(INSTANCE)-metrics

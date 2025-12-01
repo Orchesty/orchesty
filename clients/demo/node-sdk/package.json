@@ -14,28 +14,28 @@
   "license": "Apache-2.0",
   "packageManager": "pnpm@9.1.4",
   "dependencies": {
-    "@aws-sdk/client-ses": "^3.856.0",
-    "@aws-sdk/util-endpoints": "^3.848.0",
-    "@orchesty/nodejs-connectors": "^3.1.35",
-    "@orchesty/nodejs-sdk": "^4.3.3",
+    "@aws-sdk/client-ses": "^3.930.0",
+    "@aws-sdk/util-endpoints": "^3.930.0",
+    "@orchesty/nodejs-connectors": "^3.1.43",
+    "@orchesty/nodejs-sdk": "^4.3.4",
     "copyfiles": "^2.4.1",
     "lodash": "^4.17.21",
-    "luxon": "^3.7.1",
-    "mongodb": "^6.18.0"
+    "luxon": "^3.7.2",
+    "mongodb": "^6.21.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
-    "@eslint/js": "^9.32.0",
-    "@hanaboso/eslint-plugin": "^1.2.4",
+    "@eslint/js": "^9.39.1",
+    "@hanaboso/eslint-plugin": "^1.2.5",
     "@types/jest": "^30.0.0",
     "@types/luxon": "^3.7.1",
-    "@types/node": "^24.1.0",
+    "@types/node": "^24.10.1",
     "@types/supertest": "^6.0.3",
-    "eslint": "^9.32.0",
-    "jest": "^30.0.5",
-    "nodemon": "^3.1.10",
-    "ts-jest": "^29.4.0",
+    "eslint": "^9.39.1",
+    "jest": "^30.2.0",
+    "nodemon": "^3.1.11",
+    "ts-jest": "^29.4.5",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.3"
+    "typescript": "^5.9.3"
   }
 }

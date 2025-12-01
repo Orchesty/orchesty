@@ -47,4 +47,9 @@ const (
 
 	// Batch
 	Header_Cursor = "cursor"
+
+	// Audit
+	Header_AuditEntityHeader       = "audit-entity"
+	Header_AuditEntityIdsHeader    = "audit-entity-ids"
+	Header_AuditEntityFieldsHeader = "audit-entity-fields"
 )

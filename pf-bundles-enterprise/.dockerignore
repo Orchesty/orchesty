@@ -1,0 +1,12 @@
+*
+!pf-bundles-enterprise/bin
+!pf-bundles-enterprise/config
+!pf-bundles-enterprise/public
+!pf-bundles-enterprise/src
+!pf-bundles-enterprise/composer.json
+!pf-bundles-enterprise/composer.lock
+!pf-bundles-enterprise/php-local.ini
+!pf-bundles/src
+!pf-bundles/composer.json
+!pipes-php-sdk/src
+!pipes-php-sdk/composer.json

@@ -1,0 +1,20 @@
+includes:
+    - ../vendor/hanaboso/php-check-utils/phpstan.neon
+
+parameters:
+    doctrine:
+        objectManagerLoader: DocumentManagerLoader.php
+    symfony:
+        containerXmlPath: %rootDir%/../../../var/cache/test/Hanaboso_PipesFrameworkEnterprise_KernelTestDebugContainer.xml
+    ergebnis:
+        classesAllowedToBeExtended:
+            - Hanaboso\PipesFramework\Configurator\Document\TopologyProgress
+            - PipesFrameworkEnterpriseTests\ControllerTestCaseAbstract
+            - PipesFrameworkEnterpriseTests\DatabaseTestCaseAbstract
+            - PipesFrameworkEnterpriseTests\KernelTestCaseAbstract
+        classesNotRequiredToBeAbstractOrFinal:
+            - Hanaboso\PipesFrameworkEnterprise\Configurator\Document\TopologyProgress
+            - Hanaboso\PipesFrameworkEnterprise\Mcp\Document\AuditData
+            - Hanaboso\PipesFrameworkEnterprise\Mcp\Document\AuditDataField
+            - Hanaboso\PipesFrameworkEnterprise\Mcp\Document\AuditEntity
+            - Hanaboso\PipesFrameworkEnterprise\Mcp\Document\AuditEntityField

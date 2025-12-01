@@ -68,7 +68,7 @@ class Webhook
     /**
      * @var bool
      */
-    #[ODM\Field(type: 'boolean')]
+    #[ODM\Field(type: 'bool')]
     private bool $unsubscribeFailed = FALSE;
 
     /**

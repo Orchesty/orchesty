@@ -1,0 +1,13 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    hbpf.mcp.handler.mcp:
+        class: Hanaboso\PipesFrameworkEnterprise\HbPFMcpBundle\Handler\McpHandler
+        arguments:
+            - '@hbpf.mcp.manager.mcp'
+
+    hbpf.mcp.handler.audit_entity:
+        class: Hanaboso\PipesFrameworkEnterprise\HbPFMcpBundle\Handler\AuditEntityHandler
+        arguments:
+            - '@hbpf.mcp.manager.audit_entity'

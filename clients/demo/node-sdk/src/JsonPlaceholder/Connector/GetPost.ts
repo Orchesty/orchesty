@@ -18,13 +18,13 @@ export default class GetPost extends AConnector {
                     dto,
                 ),
             )).getJsonBody(),
-        );
+        ).addAuditHeader('post', 'id', [{ id: String(dto.getJsonData().id) }]);
     }
 
 }
 
 interface IInput {
-    id: string;
+    id: number;
 }
 
 interface IResponse {

@@ -1,0 +1,46 @@
+{
+    "name": "orchesty/enterprise-backend",
+    "description": "Orchesty - Enterprise - Backend",
+    "license": "Elastic-2.0",
+    "version": "1.0.0",
+    "require": {
+        "doctrine/mongodb-odm-bundle": "^5.3",
+        "orchesty/backend": "^3.2"
+    },
+    "require-dev": {
+        "hanaboso/php-check-utils": "^1.7"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../pf-bundles",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../pipes-php-sdk",
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Hanaboso\\PipesFrameworkEnterprise\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PipesFrameworkEnterpriseTests\\": "tests",
+            "UserBundleTests\\": "vendor/hanaboso/user-bundle/tests"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "ergebnis/composer-normalize": true
+        }
+    }
+}

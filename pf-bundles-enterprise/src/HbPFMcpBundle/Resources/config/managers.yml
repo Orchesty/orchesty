@@ -1,0 +1,13 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    hbpf.mcp.manager.mcp:
+        class: Hanaboso\PipesFrameworkEnterprise\Mcp\Model\McpManager
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.mcp.manager.audit_entity:
+        class: Hanaboso\PipesFrameworkEnterprise\Mcp\Model\AuditEntityManager
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'

@@ -1,0 +1,14 @@
+{
+    "http": 200,
+    "body": {
+        "id": "123456789",
+        "key": "key",
+        "name": "name",
+        "fields": [
+            {
+                "key": "key",
+                "name": "name"
+            }
+        ]
+    }
+}

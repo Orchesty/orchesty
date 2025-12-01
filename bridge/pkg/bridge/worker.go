@@ -3,6 +3,11 @@ package bridge
 import (
 	"encoding/json"
 	"errors"
+	"sort"
+	"strings"
+	"sync"
+	"time"
+
 	metrics "github.com/hanaboso/go-metrics/pkg"
 	"github.com/hanaboso/go-rabbitmq/pkg/rabbitmq"
 	"github.com/hanaboso/pipes/bridge/pkg/bridge/types"
@@ -12,13 +17,23 @@ import (
 	"github.com/hanaboso/pipes/bridge/pkg/mongo"
 	"github.com/hanaboso/pipes/bridge/pkg/rabbit"
 	"github.com/hanaboso/pipes/bridge/pkg/topology"
+	"github.com/hanaboso/pipes/bridge/pkg/utils/arrayx"
 	"github.com/hanaboso/pipes/bridge/pkg/utils/timex"
 	"github.com/hanaboso/pipes/bridge/pkg/worker"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"sync"
-	"time"
+	"go.mongodb.org/mongo-driver/v2/bson"
 )
+
+type AuditEntity struct {
+	Key    string              `json:"key"`
+	Fields []map[string]string `json:"fields"`
+}
+
+type AuditEntityFields struct {
+	Entity string   `json:"entity"`
+	Fields []string `json:"fields"`
+}
 
 type node struct {
 	model.Node
@@ -181,6 +196,9 @@ func (n *node) innerProcess(dto *model.ProcessMessage) (model.ProcessResult, int
 
 	result.Message().Status = enum.MessageStatus_CheckResultCode
 	result = n.checkResultCode(result.Message())
+
+	n.processAudit(result.Message())
+
 	if !result.IsOk() {
 		return result, 0
 	}
@@ -290,4 +308,198 @@ func newNode(n model.Node, topologyId, topologyName string, rabbitContainer rabb
 func (n node) MarshalZerologObject(e *zerolog.Event) {
 	e.Str(enum.LogHeader_NodeId, n.ID)
 	e.Str(enum.LogHeader_TopologyId, n.topologyId)
+}
+
+func (n *node) processAudit(dto *model.ProcessMessage) {
+	rawAuditEntities, err := dto.GetHeader(enum.Header_AuditEntityHeader)
+
+	if err != nil {
+		return
+	}
+
+	auditEntities := make(map[string]AuditEntity)
+
+	if err = json.Unmarshal([]byte(rawAuditEntities), &auditEntities); err != nil {
+		log.Err(err).EmbedObject(dto).Send()
+
+		return
+	}
+
+	auditEntitiesFields := n.processAuditEntitiesFields(dto, auditEntities)
+	n.processAuditEntities(dto, auditEntities, auditEntitiesFields)
+	n.processAuditEntitiesIds(dto, auditEntities, auditEntitiesFields)
+
+	dto.DeleteHeader(enum.Header_AuditEntityHeader)
+}
+
+func (n *node) processAuditEntities(dto *model.ProcessMessage, auditEntities map[string]AuditEntity, auditEntitiesFields map[string]AuditEntityFields) {
+	for auditEntityKey, auditEntity := range auditEntities {
+		if _, has := auditEntitiesFields[auditEntityKey]; !has {
+			delete(auditEntities, auditEntityKey)
+
+			keys := make([]string, 0, len(auditEntitiesFields))
+
+			for key := range auditEntitiesFields {
+				keys = append(keys, key)
+			}
+
+			sort.Strings(keys)
+
+			log.
+				Warn().
+				EmbedObject(dto).
+				Msgf("Unknown audit entity '%s' (use '%s')", auditEntityKey, strings.Join(keys, "', '"))
+
+			continue
+		}
+
+		auditEntityFieldsForDeletion := make(map[int]bool, len(auditEntity.Fields))
+
+		for i, fields := range auditEntity.Fields {
+			for auditEntityFieldKey := range fields {
+				if !arrayx.InArray(auditEntitiesFields[auditEntityKey].Fields, auditEntityFieldKey) {
+					auditEntityFieldsForDeletion[i] = true
+					keys := auditEntitiesFields[auditEntityKey].Fields
+					sort.Strings(keys)
+
+					log.
+						Warn().
+						EmbedObject(dto).
+						Msgf("Unknown audit entity field '%s.%s' (use '%s')", auditEntityKey, auditEntityFieldKey, strings.Join(keys, "', '"))
+
+					break
+				}
+
+				if _, has := fields[auditEntity.Key]; !has {
+					auditEntityFieldsForDeletion[i] = true
+
+					log.
+						Warn().
+						EmbedObject(dto).
+						Msgf("Missing audit entity field '%s.%s'", auditEntityKey, auditEntity.Key)
+
+					break
+				}
+			}
+		}
+
+		newFields := make([]map[string]string, 0, len(auditEntity.Fields))
+
+		for i, field := range auditEntity.Fields {
+			if has := auditEntityFieldsForDeletion[i]; !has {
+				newFields = append(newFields, field)
+			}
+		}
+
+		auditEntity.Fields = newFields
+		auditEntities[auditEntityKey] = auditEntity
+	}
+}
+
+func (n *node) processAuditEntitiesIds(dto *model.ProcessMessage, auditEntities map[string]AuditEntity, auditEntitiesFields map[string]AuditEntityFields) {
+	user := dto.GetHeaderOrDefault(enum.Header_User, "")
+	auditEntitiesIds := make(map[string]string)
+	rawAuditEntitiesIds := dto.GetHeaderOrDefault(enum.Header_AuditEntityIdsHeader, "{}")
+
+	if err := json.Unmarshal([]byte(rawAuditEntitiesIds), &auditEntitiesIds); err != nil {
+		log.Err(err).EmbedObject(dto).Send()
+	}
+
+	for auditEntityKey, auditEntity := range auditEntities {
+		for _, field := range auditEntity.Fields {
+			entityKey := auditEntityKey + ":" + field[auditEntity.Key]
+
+			if _, has := auditEntitiesIds[entityKey]; !has {
+				dbAuditEntity, err := n.mongodb.UpsertAuditData(
+					bson.M{
+						"user":   user,
+						"entity": auditEntitiesFields[auditEntityKey].Entity,
+						"fields": bson.M{
+							"$elemMatch": bson.M{
+								"key":   auditEntity.Key,
+								"value": field[auditEntity.Key],
+							},
+						},
+					},
+					generateAddToSet(field),
+				)
+
+				if err != nil {
+					log.Err(err).EmbedObject(dto).Send()
+
+					continue
+				}
+
+				auditEntitiesIds[entityKey] = dbAuditEntity.ID.Hex()
+
+				continue
+			}
+
+			err := n.mongodb.UpdateAuditData(auditEntitiesIds[entityKey], generateAddToSet(field))
+
+			if err != nil {
+				log.Err(err).EmbedObject(dto).Send()
+			}
+		}
+	}
+
+	if newRawAuditEntitiesIds, err := json.Marshal(auditEntitiesIds); err != nil {
+		log.Err(err).EmbedObject(dto).Send()
+	} else {
+		dto.SetHeader(enum.Header_AuditEntityIdsHeader, string(newRawAuditEntitiesIds))
+	}
+
+}
+
+func (n *node) processAuditEntitiesFields(dto *model.ProcessMessage, auditEntities map[string]AuditEntity) map[string]AuditEntityFields {
+	auditEntitiesFields := make(map[string]AuditEntityFields)
+	rawAuditEntitiesFields := dto.GetHeaderOrDefault(enum.Header_AuditEntityFieldsHeader, "{}")
+
+	if err := json.Unmarshal([]byte(rawAuditEntitiesFields), &auditEntitiesFields); err != nil {
+		log.Err(err).EmbedObject(dto).Send()
+	}
+
+	keys := make([]string, 0)
+
+	for k := range auditEntities {
+		if _, has := auditEntitiesFields[k]; !has {
+			keys = append(keys, k)
+		}
+	}
+
+	if auditEntities, err := n.mongodb.FindAuditEntitiesByKeys(keys); err == nil {
+		for k, auditEntity := range auditEntities {
+			auditEntitiesFields[k] = AuditEntityFields{
+				Entity: auditEntity.ID.Hex(),
+				Fields: auditEntity.FieldKeys(),
+			}
+		}
+	}
+
+	if newRawAuditEntitiesFields, err := json.Marshal(auditEntitiesFields); err != nil {
+		log.Err(err).EmbedObject(dto).Send()
+	} else {
+		dto.SetHeader(enum.Header_AuditEntityFieldsHeader, string(newRawAuditEntitiesFields))
+	}
+
+	return auditEntitiesFields
+}
+
+func generateAddToSet(auditEntityFields map[string]string) bson.M {
+	fields := make([]mongo.AuditDataField, 0, len(auditEntityFields))
+
+	for key, value := range auditEntityFields {
+		fields = append(fields, mongo.AuditDataField{
+			Key:   key,
+			Value: value,
+		})
+	}
+
+	return bson.M{
+		"$addToSet": bson.M{
+			"fields": bson.M{
+				"$each": fields,
+			},
+		},
+	}
 }

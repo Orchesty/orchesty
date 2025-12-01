@@ -1,0 +1,38 @@
+{
+    "http": 200,
+    "body": {
+        "items": [
+            {
+                "id": "5e32a7a41ffeab2445696983",
+                "key": "keyOne",
+                "name": "nameOne",
+                "fields": [
+                    {
+                        "key": "key",
+                        "name": "name"
+                    }
+                ]
+            },
+            {
+                "id": "5e32a7a41ffeab2445696983",
+                "key": "keyTwo",
+                "name": "nameTwo",
+                "fields": [
+                    {
+                        "key": "key",
+                        "name": "name"
+                    }
+                ]
+            }
+        ],
+        "filter": [],
+        "paging": {
+            "page": 1,
+            "itemsPerPage": 50,
+            "total": 2,
+            "nextPage": 1,
+            "lastPage": 1,
+            "previousPage": 1
+        }
+    }
+}

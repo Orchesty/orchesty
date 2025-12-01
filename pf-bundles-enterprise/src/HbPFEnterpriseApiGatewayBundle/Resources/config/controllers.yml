@@ -1,0 +1,8 @@
+services:
+    _defaults:
+        public: '%public.services%'
+        autowire: true
+        autoconfigure: true
+
+    Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\AuditEntityController:
+        class: Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\Controller\AuditEntityController

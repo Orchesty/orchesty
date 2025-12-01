@@ -51,3 +51,7 @@ fasttest: lint
 test: init-dev fasttest docker-down-clean
 
 ci-test: test
+
+run-demo-counter:
+	docker compose -f ../clients/demo/docker-compose.yml up -d --force-recreate multi-counter
+	docker compose -f ../clients/demo/docker-compose.yml logs -f multi-counter

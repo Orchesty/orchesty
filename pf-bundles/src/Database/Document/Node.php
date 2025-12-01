@@ -71,7 +71,7 @@ class Node
     /**
      * @var bool
      */
-    #[ODM\Field(type: 'boolean', options: ['default' => 1])]
+    #[ODM\Field(type: 'bool', options: ['default' => 1])]
     protected bool $enabled = TRUE;
 
     /**

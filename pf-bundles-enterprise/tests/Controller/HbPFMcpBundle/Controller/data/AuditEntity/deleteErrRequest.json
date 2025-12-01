@@ -1,0 +1,7 @@
+{
+    "http": "DELETE /audit/entities/unknown",
+    "body": {},
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
+}
