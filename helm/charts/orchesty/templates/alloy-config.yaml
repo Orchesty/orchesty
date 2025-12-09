@@ -115,7 +115,7 @@ data:
     loki.process "pod_logs_processing" {
       forward_to = [loki.write.local.receiver]
 
-      // Try to parse JSON. If the line is not valid JSON, this stage is skipped
+      // Stage 1: Try to parse JSON. If the line is not valid JSON, this stage is skipped
       // and the log line is passed to the next stage without modification (no labels added).
       stage.json {
         expressions = {
@@ -125,6 +125,7 @@ data:
         }
       }
 
+      // Stage 2: Extract labels from parsed JSON
       stage.labels {
         values = {
           correlationId = "correlationId",

@@ -1,5 +1,12 @@
 # Release Notes
 
+## 2.1.14
+
+### Changes
+
+- Helm: updated dependents charts (Grafana, Loki, Alloy)
+- Helm: Loki: increased max limits for processing bigger logs
+
 ## 2.1.13
 
 ### Changes

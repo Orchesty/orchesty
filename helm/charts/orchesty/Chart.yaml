@@ -2,7 +2,7 @@ apiVersion: v2
 name: orchesty
 description: Orchesty is a platform + framework for systems integration and process orchestration. See https://orchesty.io
 type: application
-version: 2.1.13
+version: 2.1.14
 appVersion: 2.1.1
 
 # Add dependencies
@@ -13,16 +13,16 @@ dependencies:
     condition: valkey.enabled
   
   - name: grafana
-    version: 8.5.1
+    version: 10.3.0
     repository: https://grafana.github.io/helm-charts
     condition: grafana.enabled
   
   - name: loki
-    version: 6.12.0
+    version: 6.46.0
     repository: https://grafana.github.io/helm-charts
     condition: loki.enabled
   
   - name: alloy
-    version: 0.9.1
+    version: 1.5.0
     repository: https://grafana.github.io/helm-charts
     condition: alloy.enabled
