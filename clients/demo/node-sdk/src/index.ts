@@ -9,6 +9,7 @@ import S3Application from '@orchesty/nodejs-connectors/dist/lib/AmazonApps/S3/S3
 import SESSendEmail from '@orchesty/nodejs-connectors/dist/lib/AmazonApps/SimpleEmailService/Connector/SESSendEmail';
 import AsanaApplication from '@orchesty/nodejs-connectors/dist/lib/Asana/AsanaApplication';
 import AsanaCreateTaskConnector from '@orchesty/nodejs-connectors/dist/lib/Asana/Connector/AsanaCreateTaskConnector';
+import BeeceptorApplication from '@orchesty/nodejs-connectors/dist/lib/Beeceptor/BeeceptorApplication';
 import BigcommerceApplication from '@orchesty/nodejs-connectors/dist/lib/Bigcommerce/BigcommerceApplication';
 import BoxApplication from '@orchesty/nodejs-connectors/dist/lib/Box/BoxApplication';
 import { EventEnum } from '@orchesty/nodejs-connectors/dist/lib/Common/Events/EventEnum';
@@ -39,6 +40,7 @@ import HubSpotApplicationBasic from '@orchesty/nodejs-connectors/dist/lib/Hubspo
 import IDokladApplication from '@orchesty/nodejs-connectors/dist/lib/IDoklad/IDokladApplication';
 import JiraCreateIssueConnector from '@orchesty/nodejs-connectors/dist/lib/Jira/Connector/JiraCreateIssueConnector';
 import JiraApplication from '@orchesty/nodejs-connectors/dist/lib/Jira/JiraApplication';
+import JsonPlaceholderApplication from '@orchesty/nodejs-connectors/dist/lib/JsonPlaceholder/JsonPlaceholderApplication';
 import Magento2Application from '@orchesty/nodejs-connectors/dist/lib/Magento2/Magento2Application';
 import MailchimpApplication from '@orchesty/nodejs-connectors/dist/lib/Mailchimp/MailchimpApplication';
 import MoneyS5Application from '@orchesty/nodejs-connectors/dist/lib/MoneyS4-5/MoneyS5Application';
@@ -84,6 +86,7 @@ import HubspotApplinthContactAddContactToListMapper
 import HubspotApplinthWhitePaperAddContactToListMapper
     from './ApplinthIo/CustomNode/HubspotApplinthWhitePaperAddContactToListMapper';
 import HubspotWhiterPaperToSesEmailMapper from './ApplinthIo/CustomNode/HubspotWhiterPaperToSesEmailMapper';
+import BeeceptorSyncPostConnector from './Beeceptor/Connector/BeeceptorSyncPostConnector';
 import HubSpotAddEmailToListConnector from './Common/Connector/HubSpotAddEmailToListConnector';
 import HubSpotCreateContactConnector from './Common/Connector/HubSpotCreateContactConnector';
 import HanabosoHubSpotContactMapper from './Common/CustomNode/HanabosoHubSpotContactMapper';
@@ -107,16 +110,18 @@ import JiraWorklogsToGoogleDriveMapper from './Hanaboso/CustomNode/JiraWorklogsT
 import SetupGoogleSheetSettingDirectory from './Hanaboso/CustomNode/SetupGoogleSheetSettingDirectory';
 import SetupGoogleSheetSettingSpreadsheet from './Hanaboso/CustomNode/SetupGoogleSheetSettingSpreadsheet';
 import HanabosoContactFormMapper from './HanabosoCom/CustomNode/ContactFormMapper';
-import ListPosts from './JsonPlaceholder/Batch/ListPosts';
-import ListUsers from './JsonPlaceholder/Batch/ListUsers';
+import JsonPlaceholderGetPostCommentListBatch from './JsonPlaceholder/Batch/JsonPlaceholderGetPostCommentListBatch';
+import JsonPlaceholderGetPostListBatch from './JsonPlaceholder/Batch/JsonPlaceholderGetPostListBatch';
 import BinSender from './JsonPlaceholder/Connector/BinSender';
+import GetPost from './JsonPlaceholder/Connector/GetPost';
+import JsonPlaceholderGetPostUserConnector from './JsonPlaceholder/Connector/JsonPlaceholderGetPostUserConnector';
+import JsonPlaceholderToBeeceptorSyncPostMapper from './JsonPlaceholder/Custom/JsonPlaceholderToBeeceptorSyncPostMapper';
 import Node from './JsonPlaceholder/Custom/Node';
 import SleepAndStop from './JsonPlaceholder/Custom/SleepAndStop';
 import HubSpotCreateContactMapper from './JsonPlaceholder/HubSpotCreateContactMapper';
 import NonInstallableApplication from './JsonPlaceholder/NonInstallableApplication';
 import SampleApplication from './JsonPlaceholder/SampleApplication';
 import TenantApplication from './JsonPlaceholder/TenantApplication';
-import GetPost from './JsonPlaceholder/Connector/GetPost';
 
 export function start(): void {
     initiateContainer();
@@ -299,13 +304,15 @@ export function start(): void {
     container.setApplication(githubApplication);
     container.setNode(new GitHubGetRepositoryConnector(), githubApplication);
 
-    const listPosts = new ListPosts();
-    listPosts.setSender(sender);
-    container.setBatch(listPosts);
+    const beeceptorApplication = new BeeceptorApplication();
+    container.setApplication(beeceptorApplication);
+    container.setNode(new BeeceptorSyncPostConnector(), beeceptorApplication);
 
-    const listUsers = new ListUsers();
-    listUsers.setSender(sender);
-    container.setBatch(listUsers);
+    const jsonPlaceholderApplication = new JsonPlaceholderApplication();
+    container.setNode(new JsonPlaceholderGetPostListBatch(), jsonPlaceholderApplication);
+    container.setNode(new JsonPlaceholderGetPostCommentListBatch(), jsonPlaceholderApplication);
+    container.setNode(new JsonPlaceholderGetPostUserConnector(), jsonPlaceholderApplication);
+    container.setNode(new JsonPlaceholderToBeeceptorSyncPostMapper());
 
     const getPost = new GetPost();
     getPost.setSender(sender);

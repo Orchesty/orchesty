@@ -121,7 +121,7 @@ services:
             JWT_KEY: BWoCz4gxw3YHDMkqE5HD1WT2u6zqIAtiJkYVyf6UucL4ZtbhhatQooP5IgTQRwowYR6z8wE3biqZTl37
             EMAIL_DSN: smtp://mailhog:1025
             ALPHA_INSTANCE_ID: 'demo'
-            #INSTALLER_DIRS: '["/var/www/pipes/applinth/topology"]'
+            INSTALLER_DIRS: '["/var/www/pipes/clients/demo/node-sdk/src/topology"]'
             JWE_PRIVATE_KEY: |
                 -----BEGIN EC PRIVATE KEY-----
                 MIHcAgEBBEIAGmQ//yMnyMlFAN/E2yfZjzFL1ziTrAbDwa08KEPBq+NUWHvrxrs7

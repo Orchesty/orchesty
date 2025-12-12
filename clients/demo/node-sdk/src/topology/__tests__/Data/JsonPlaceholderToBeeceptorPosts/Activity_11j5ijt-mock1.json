@@ -1,0 +1,5 @@
+{
+    "http": "POST https://test.free.beeceptor.com/api/posts",
+    "code": 200,
+    "body": null
+}
