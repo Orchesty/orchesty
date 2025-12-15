@@ -17,8 +17,6 @@ test-go:
 	cd topology-generator && $(TEST) && $(DOWN)
 
 test-php:
-	cd pipes-php-sdk && $(TEST) && $(DOWN)
-	cd pipes-connectors && $(TEST) && $(DOWN)
 	cd pf-bundles && $(TEST) && $(DOWN)
 	cd applinth && $(TEST) && $(DOWN)
 	cd clients/demo/pipes-api && $(TEST) && $(DOWN)
@@ -28,29 +26,22 @@ test-js:
 	cd applinth-admin-ui && $(TEST)
 	cd applinth-marketplace-ui && $(TEST)
 	cd clients/demo/node-sdk && $(TEST) && $(DOWN)
-	cd comparator && $(TEST) && $(DOWN)
 	cd saas/applinth-billing-processor && $(TEST) && $(DOWN)
 	cd saas/console-api && $(TEST) && $(DOWN)
 	cd saas/usccp && $(TEST) && $(DOWN)
 	cd worker-api && $(TEST) && $(DOWN)
 
 vendor-remove: var-remove
-	cd pipes-php-sdk && $(VENDOR)
-	cd pipes-connectors && $(VENDOR)
 	cd pf-bundles && $(VENDOR)
 	cd applinth && $(VENDOR)
 	cd clients/demo/pipes-api && $(VENDOR)
 
 var-remove:
-	cd pipes-php-sdk && $(VAR)
-	cd pipes-connectors && $(VAR)
 	cd pf-bundles && $(VAR)
 	cd applinth && $(VAR)
 	cd clients/demo/pipes-api && $(VAR)
 
 vendor-refresh:
-	cd pipes-php-sdk && $(VENDOR) && $(DOCKER) && $(COMPOSER)
-	cd pipes-connectors && $(VENDOR) && $(DOCKER) && $(COMPOSER)
 	cd pf-bundles && $(VENDOR) && $(DOCKER) && $(COMPOSER)
 	cd applinth && $(VENDOR) && $(DOCKER) && $(COMPOSER)
 	cd clients/demo/pipes-api && $(VENDOR) && $(DOCKER) && $(COMPOSER)

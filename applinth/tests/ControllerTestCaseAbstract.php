@@ -234,7 +234,7 @@ lMtmVuVUqMJD6dvQr2E=
      */
     private function getMongoDatabaseName(): string
     {
-        return sprintf('%s%s', $this->dm->getConfiguration()->getDefaultDB(), getenv('TEST_TOKEN'));
+        return sprintf('%s%s', $this->dm->getConfiguration()->getDefaultDB(), (string) getenv('TEST_TOKEN'));
     }
 
 }

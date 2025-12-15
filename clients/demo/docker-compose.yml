@@ -32,19 +32,6 @@ services:
             - ../../:/var/www/pipes:cached
             - ${HOME}/dev/.composer:${HOME}/dev/.composer:cached
 
-    comparator-sdk:
-        image: node-sdk:tag
-        build: node-sdk/docker
-        user: ${DEV_UID}:${DEV_GID}
-        working_dir: /var/www
-        volumes:
-            - ./../../comparator/:/var/www:cached
-        environment:
-            JEST_DOCKER: 1
-            APP_ENV: debug
-            MONGODB_DSN: ${MONGO_DSN}
-        command: sh -c 'pnpm install && pnpm run start'
-
     starting-point:
         image: hanabosocom/go-base:1.24
         user: ${DEV_UID}:${DEV_GID}

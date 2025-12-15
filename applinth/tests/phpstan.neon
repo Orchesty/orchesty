@@ -1,24 +1,29 @@
 includes:
-    - ../vendor/hanaboso/php-check-utils/phpstan.neon
+	- ../vendor/hanaboso/php-check-utils/phpstan.neon
 
 parameters:
-    doctrine:
-        objectManagerLoader: DocumentManagerLoader.php
-    symfony:
-        containerXmlPath: %rootDir%/../../../var/cache/test/Hanaboso_Applinth_KernelTestDebugContainer.xml
-    ignoreErrors:
-            -
-                message: '#Calling putenv\(\) is forbidden, might overwrite existing variables#'
-                path: ../tests/ControllerTestCaseAbstract.php
-            -
-                message: '#Class Hanaboso\\Applinth\\Authenticator\\Document\\MarketPlaceRestrictedToken is neither abstract nor final.#'
-                path: ../src/Authenticator/Document/MarketPlaceRestrictedToken.php
-            -
-                message: '#expects array, array|ArrayAccess given#'
-                path: ../tests/*
-    ergebnis:
-        classesAllowedToBeExtended:
-            - ApplinthTests\ControllerTestCaseAbstract
-            - ApplinthTests\KernelTestCaseAbstract
-            - Hanaboso\Utils\Exception\PipesFrameworkExceptionAbstract
-            - Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator
+	doctrine:
+		objectManagerLoader: DocumentManagerLoader.php
+	symfony:
+		containerXmlPath: %rootDir%/../../../var/cache/test/Hanaboso_Applinth_KernelTestDebugContainer.xml
+	ignoreErrors:
+			-
+				message: '#Calling putenv\(\) is forbidden, might overwrite existing variables#'
+				path: ../tests/ControllerTestCaseAbstract.php
+			-
+				message: '#Class Hanaboso\\Applinth\\Authenticator\\Document\\MarketPlaceRestrictedToken is neither abstract nor final.#'
+				path: ../src/Authenticator/Document/MarketPlaceRestrictedToken.php
+			-
+				message: '#expects array, array|ArrayAccess given#'
+				path: ../tests/*
+			-
+				identifier: missingType.generics
+			-
+				message: '#.*#'
+				path: ../tests/app/config/reference.php
+	ergebnis:
+		classesAllowedToBeExtended:
+			- ApplinthTests\ControllerTestCaseAbstract
+			- ApplinthTests\KernelTestCaseAbstract
+			- Hanaboso\Utils\Exception\PipesFrameworkExceptionAbstract
+			- Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator

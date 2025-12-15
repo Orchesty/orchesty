@@ -31,22 +31,6 @@
         "symfony/polyfill-php83": "*",
         "symfony/polyfill-php84": "*"
     },
-    "repositories": [
-        {
-            "type": "path",
-            "url": "../../../pipes-php-sdk",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "path",
-            "url": "../../../pipes-connectors",
-            "options": {
-                "symlink": true
-            }
-        }
-    ],
     "autoload": {
         "psr-4": {
             "Demo\\": "src/"

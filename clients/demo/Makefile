@@ -12,15 +12,6 @@ TOPOLOGY_NAME = benchmark
 NODE_NAME = start
 RUNS = 1
 
-ALIAS?=alias
-Darwin:
-	sudo ifconfig lo0 $(ALIAS) $(shell awk '$$1 ~ /^DEV_IP/' .env.dist | sed -e "s/^DEV_IP=//")
-Linux:
-	@echo 'skipping ...'
-.lo0-up:
-	-@make `uname`
-.lo0-down:
-	-@make `uname` ALIAS='-alias'
 .env:
 	sed -e "s/{DEV_UID}/$(shell if [ "$(shell uname)" = "Linux" ]; then echo $(shell id -u); else echo '1001'; fi)/g" \
 		-e "s/{DEV_GID}/$(shell if [ "$(shell uname)" = "Linux" ]; then echo $(shell id -g); else echo '1001'; fi)/g" \
@@ -42,7 +33,7 @@ docker-compose.ci.yml:
 pull:
 	$(DC_DEV) pull --ignore-pull-failures
 
-up: .env pull .lo0-up
+up: .env pull
 	$(DC_DEV) up -d --force-recreate --remove-orphans --build
 
 init: up
@@ -64,7 +55,7 @@ init: up
 	$(DE_DEV) backend bin/console api-token:create --key "$(shell grep 'ORCHESTY_API_KEY' .env | cut -d "=" -f2)"
 	$(DE_DEV) backend bin/console user:create "$(shell grep 'ORCHESTY_USER' .env | cut -d "=" -f2)" "$(shell grep 'ORCHESTY_PASSWORD' .env | cut -d "=" -f2)"
 
-destroy: .env .lo0-down topology-destroy
+destroy: .env topology-destroy
 	$(DC_DEV) down -v
 
 topology-destroy:

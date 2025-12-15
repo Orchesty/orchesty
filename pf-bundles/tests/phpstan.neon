@@ -24,6 +24,11 @@ parameters:
 		-
 			message: '#expects array, array|ArrayAccess given#'
 			path: ../tests/*
+		- 
+			identifier: missingType.generics
+		-
+			message: '#.*#'
+			path: ../tests/app/config/reference.php
 	ergebnis:
 		classesAllowedToBeExtended:
 			- Hanaboso\PipesFramework\HbPFUsageStatsBundle\Manager\SenderAbstract

@@ -1,6 +1,6 @@
 dependencies:
 - name: orchesty
   repository: https://orchesty.github.io/helm-charts/
-  version: 2.1.2
-digest: sha256:8bcac93279f470c542cc17e779d7597e15b974dd31006e2a54ac54bf5f6e8635
-generated: "2023-06-01T13:34:58.99095+02:00"
+  version: 2.1.13
+digest: sha256:0db9cf55b8228de715ea8784b4068fb1856b8c968aa293fc51ede54278b9b067
+generated: "2025-11-26T09:36:22.157348+01:00"

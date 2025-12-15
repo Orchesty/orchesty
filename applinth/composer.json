@@ -17,13 +17,6 @@
             "options": {
                 "symlink": true
             }
-        },
-        {
-            "type": "path",
-            "url": "../pipes-php-sdk",
-            "options": {
-                "symlink": true
-            }
         }
     ],
     "autoload": {

@@ -1,8 +1,0 @@
-services:
-    _defaults:
-        public: '%public.services%'
-
-    hbpf.application.zoho:
-        class: Hanaboso\HbPFConnectors\Model\Application\Impl\Zoho\ZohoApplication
-        arguments:
-            - '@hbpf.providers.oauth2_provider'

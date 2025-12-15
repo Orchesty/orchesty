@@ -4,14 +4,18 @@ orchesty:
   # force legacy resource names
   nameOverride: pipes
 
+  valkey:
+    enabled: true
+
 global:
+  orchestyVersion: "2.1"
   backend_url: https://api-hm8rohmtf6.eu1.cloud.orchesty.io
   frontend_url: https://ui-hm8rohmtf6.eu1.cloud.orchesty.io
   starting_point_url: https://start-hm8rohmtf6.eu1.cloud.orchesty.io
 
   imageOverrides:
-    applinth-marketplace-ui: dkr.hanaboso.net/pipes/pipes/applinth-marketplace-ui:2.0.0
-    backend: dkr.hanaboso.net/pipes/pipes/applinth:2.0.0
+    applinth-marketplace-ui: dkr.hanaboso.net/pipes/pipes/applinth-marketplace-ui:2.1
+    backend: dkr.hanaboso.net/pipes/pipes/applinth:2.1
 
   workers:
     default:
@@ -38,7 +42,7 @@ global:
         APP_ENV:
           value: debug
         REDIS_DSN:
-          value: redis://pipes-redis
+          value: redis://pipes-valkey
 
   backend:
     alpha_instance_id: hm8rohmtf6

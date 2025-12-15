@@ -1,3 +1,0 @@
-parameters:
-    backendHost: '%env(BACKEND_DSN)%'
-    startingPointHost: "%env(string:STARTING_POINT_DSN)%"

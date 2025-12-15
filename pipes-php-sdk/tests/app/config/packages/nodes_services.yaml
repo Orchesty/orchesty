@@ -1,4 +1,0 @@
-parameters:
-    node_services_dirs:
-        - '%kernel.project_dir%/src/HbPFConnectorBundle/Resources/config/'
-        - '%kernel.project_dir%/src/HbPFCustomNodeBundle/Resources/config/'

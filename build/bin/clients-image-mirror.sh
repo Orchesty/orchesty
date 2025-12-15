@@ -3,7 +3,6 @@
 registry="dkr.hanaboso.net"
 
 clients='[
-    {"from": "dkr.hanaboso.net/pipes/pipes/comparator:master", "to": "dkr.hanaboso.net/oxy/images/comparator:master"},
     {"from": "dkr.hanaboso.net/pipes/pipes/applinth:2.0", "to": "dkr.hanaboso.net/fabis/applinth/applinth:2.0"},
     {"from": "dkr.hanaboso.net/pipes/pipes/applinth-marketplace-ui:2.0", "to": "dkr.hanaboso.net/fabis/applinth/applinth-marketplace-ui:2.0"}
 ]'

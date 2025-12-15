@@ -12,7 +12,6 @@ include:
   - local: "/applinth-admin-ui/.gitlab-ci.yml"
   - local: "/applinth-marketplace-ui/.gitlab-ci.yml"
   - local: "/bridge/.gitlab-ci.yml"
-  - local: "/comparator/.gitlab-ci.yml"
   - local: "/counter/.gitlab-ci.yml"
   - local: "/cron/.gitlab-ci.yml"
   - local: "/detector/.gitlab-ci.yml"
@@ -20,8 +19,6 @@ include:
   - local: "/limiter/.gitlab-ci.yml"
   - local: "/pf-bundles/.gitlab-ci.yml" # aka backend
   - local: "/pf-bundles-enterprise/.gitlab-ci.yml" # aka enterprise backend
-  - local: "/pipes-connectors/.gitlab-ci.yml"
-  - local: "/pipes-php-sdk/.gitlab-ci.yml"
   - local: "/saas/applinth-billing-processor/.gitlab-ci.yml"
   - local: "/saas/console-api/.gitlab-ci.yml"
   - local: "/saas/usccp/.gitlab-ci.yml"

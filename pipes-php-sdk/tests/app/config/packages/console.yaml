@@ -1,6 +1,0 @@
-services:
-    authorization_command:
-        class: Hanaboso\PipesPhpSdk\Command\AuthorizeUserCommand
-        tags: [console.command]
-        arguments:
-            - '@hbpf.application.manager'
