@@ -5,6 +5,7 @@ namespace Hanaboso\PipesFramework\HbPFUserTaskBundle\Handler;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
+use Exception;
 use Hanaboso\MongoDataGrid\Exception\GridException;
 use Hanaboso\MongoDataGrid\GridHandlerTrait;
 use Hanaboso\MongoDataGrid\GridRequestDto;
@@ -20,7 +21,7 @@ use Hanaboso\Utils\Validations\Validations;
  *
  * @package Hanaboso\PipesFramework\HbPFUserTaskBundle\Handler
  */
-final class UserTaskHandler
+final readonly class UserTaskHandler
 {
 
     use GridHandlerTrait;
@@ -196,6 +197,17 @@ final class UserTaskHandler
         $items = $this->manager->filter($dto);
 
         return $this->getGridResponse($dto, $items);
+    }
+
+    /**
+     * @param GridRequestDtoInterface $dto
+     *
+     * @return mixed[]
+     * @throws Exception
+     */
+    public function getUserTasks(GridRequestDtoInterface $dto): array
+    {
+        return $this->getGridResponse($dto, $this->manager->getUserTasks($dto));
     }
 
     /**

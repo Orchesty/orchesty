@@ -7,9 +7,15 @@ services:
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
 
+    hbpf.user_task.aggregation-filter.user_task:
+        class: Hanaboso\PipesFramework\UserTask\Model\UserTaskAggregationFilter
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+
     hbpf.user_task.manager.user_task:
         class: Hanaboso\PipesFramework\UserTask\Model\UserTaskManager
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
             - '@hbpf.user_task.filter.user_task'
+            - '@hbpf.user_task.aggregation-filter.user_task'
             - '@rabbit_mq.publisher.pipes-user-task'

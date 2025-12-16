@@ -5,6 +5,7 @@ namespace Hanaboso\PipesFramework\UserTask\Model;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
+use Exception;
 use Hanaboso\MongoDataGrid\GridRequestDtoInterface;
 use Hanaboso\PipesFramework\Database\Document\Node;
 use Hanaboso\PipesFramework\Database\Document\Topology;
@@ -23,7 +24,7 @@ use RabbitMqBundle\Publisher\Publisher;
  *
  * @package Hanaboso\PipesFramework\UserTask\Model
  */
-final class UserTaskManager
+final readonly class UserTaskManager
 {
 
     private const string STATE_HEADER = 'user-task-state';
@@ -48,13 +49,15 @@ final class UserTaskManager
     /**
      * UserTaskManager constructor.
      *
-     * @param DocumentManager $dm
-     * @param UserTaskFilter  $filter
-     * @param Publisher       $publisher
+     * @param DocumentManager           $dm
+     * @param UserTaskFilter            $filter
+     * @param UserTaskAggregationFilter $aggregationFilter
+     * @param Publisher                 $publisher
      */
     public function __construct(
         private DocumentManager $dm,
         private UserTaskFilter $filter,
+        private UserTaskAggregationFilter $aggregationFilter,
         private Publisher $publisher,
     )
     {
@@ -180,6 +183,17 @@ final class UserTaskManager
                 ],
             );
         }, $res);
+    }
+
+    /**
+     * @param GridRequestDtoInterface $dto
+     *
+     * @return array<mixed>
+     * @throws Exception
+     */
+    public function getUserTasks(GridRequestDtoInterface $dto): array
+    {
+        return $this->aggregationFilter->getData($dto)->toArray();
     }
 
     /**
