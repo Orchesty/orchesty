@@ -29,6 +29,16 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     /**
      * @throws Exception
      */
+    public function testGetApplicationsAction(): void
+    {
+        $this->createApplication();
+
+        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/ApplicationController/getApplicationsRequest.json');
+    }
+
+    /**
+     * @throws Exception
+     */
     public function testListApplicationsAction(): void
     {
         $this->createApplication();

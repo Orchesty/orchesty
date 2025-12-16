@@ -1603,12 +1603,35 @@ components:
                     enum: [ basic, oauth, oauth2 ]
 
         Applications:
-            type: object
-            properties:
-                items:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Application'
+            type: array
+            items:
+                type: object
+                properties:
+                    url:
+                        type: string
+                    name:
+                        type: string
+                    applications:
+                        type: array
+                        items:
+                            type: object
+                            properties:
+                                key:
+                                    type: string
+                                name:
+                                    type: string
+                                logo:
+                                    type: string
+                                description:
+                                    type: string
+                                installable:
+                                    type: boolean
+                                installed:
+                                    type: boolean
+                                activated:
+                                    type: boolean
+                                authorized:
+                                    type: boolean
 
         ApplicationInstall:
             type: object

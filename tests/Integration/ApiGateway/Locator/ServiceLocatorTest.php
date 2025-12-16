@@ -29,6 +29,43 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
     /**
      * @throws Exception
      */
+    public function testGetApplications(): void
+    {
+        $dto = new ResponseDto(200, '', Json::encode(['items' => [[
+            'description'   => 'Description',
+            'isInstallable' => TRUE,
+            'key'           => 'null',
+            'logo'          => 'Logo',
+            'name'          => 'Null',
+        ]]]), []);
+
+        $res = $this->createLocator($dto)->getApplications('user');
+        self::assertEquals(
+            [
+                [
+                    'applications' => [
+                        [
+                            'activated'   => FALSE,
+                            'authorized'  => FALSE,
+                            'description' => 'Description',
+                            'installable' => TRUE,
+                            'installed'   => FALSE,
+                            'key'         => 'null',
+                            'logo'        => 'Logo',
+                            'name'        => 'Null',
+                        ],
+                    ],
+                    'name'         => 'name',
+                    'url'          => 'host',
+                ],
+            ],
+            $res,
+        );
+    }
+
+    /**
+     * @throws Exception
+     */
     public function testGetApps(): void
     {
         $dto = new ResponseDto(200, '', Json::encode(['items' => [['key' => 'null']]]), []);

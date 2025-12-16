@@ -34,6 +34,20 @@ final class ServiceLocator implements LoggerAwareInterface
     public const array USER_TASK_LIST      = ['user-task'];
     public const string CUSTOM_ACTION_PATH = '%sapi/topologies/%s/nodes/%s/run-by-name';
 
+    private const string ITEMS          = 'items';
+    private const string KEY            = 'key';
+    private const string URL            = 'url';
+    private const string NAME           = 'name';
+    private const string LOGO           = 'logo';
+    private const string DESCRIPTION    = 'description';
+    private const string INSTALLABLE    = 'installable';
+    private const string INSTALLED      = 'installed';
+    private const string ACTIVATED      = 'activated';
+    private const string AUTHORIZED     = 'authorized';
+    private const string ENABLED        = 'enabled';
+    private const string IS_INSTALLABLE = 'isInstallable';
+    private const string APPLICATIONS   = 'applications';
+
     /**
      * @var ObjectRepository<Sdk>&SdkRepository
      */
@@ -61,6 +75,56 @@ final class ServiceLocator implements LoggerAwareInterface
     /**
      * --------------------------------------------- APP Store -----------------------------------------
      */
+
+    /**
+     * @param string $user
+     *
+     * @return mixed[]
+     */
+    public function getApplications(string $user): array
+    {
+        /** @var array<string, mixed[]> $applications */
+        $applications = [];
+
+        foreach ($this->getSdks() as $sdk) {
+            $sdkName                = $sdk->getName();
+            $applications[$sdkName] = [
+                self::APPLICATIONS => [],
+                self::NAME         => $sdkName,
+                self::URL          => $sdk->getUrl(),
+            ];
+
+            $availableApplications = $this->doRequest('applications', $sdkName);
+            $installedApplications = $this->doRequest(sprintf('applications/users/%s', $user), $sdkName);
+
+            foreach ($availableApplications[self::ITEMS] ?? [] as $application) {
+                $applications[$sdkName][self::APPLICATIONS][$application[self::KEY]] = [
+                    self::ACTIVATED    => FALSE,
+                    self::AUTHORIZED   => FALSE,
+                    self::DESCRIPTION  => $application[self::DESCRIPTION],
+                    self::INSTALLABLE  => $application[self::IS_INSTALLABLE],
+                    self::INSTALLED    => FALSE,
+                    self::KEY          => $application[self::KEY],
+                    self::LOGO         => $application[self::LOGO],
+                    self::NAME         => $application[self::NAME],
+                ];
+            }
+
+            foreach ($installedApplications[self::ITEMS] ?? [] as $application) {
+                if (!array_key_exists($application[self::KEY], $applications[$sdkName])) {
+                    continue;
+                }
+
+                $applications[$sdkName][self::APPLICATIONS][$application[self::KEY]][self::INSTALLED]  = TRUE;
+                $applications[$sdkName][self::APPLICATIONS][$application[self::KEY]][self::ACTIVATED]  = $application[self::ENABLED];
+                $applications[$sdkName][self::APPLICATIONS][$application[self::KEY]][self::AUTHORIZED] = $application[self::AUTHORIZED];
+            }
+
+            $applications[$sdkName][self::APPLICATIONS] = array_values($applications[$sdkName][self::APPLICATIONS]);
+        }
+
+        return array_values($applications);
+    }
 
     /**
      * @param string $sdk
