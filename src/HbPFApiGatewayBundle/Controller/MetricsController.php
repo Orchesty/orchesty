@@ -190,4 +190,46 @@ final class MetricsController extends AbstractController
         );
     }
 
+    /**
+     * @param Request $request
+     *
+     * @return Response
+     */
+    #[Route('/metrics/user-tasks', methods: [Request::METHOD_GET])]
+    public function getUserTasksAction(Request $request): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::getMetricsUserTasksAction',
+            ['request' => $request],
+        );
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return Response
+     */
+    #[Route('/metrics/user-tasks/total', methods: [Request::METHOD_GET])]
+    public function getUserTasksTotalAction(Request $request): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::getMetricsUserTasksTotalAction',
+            ['request' => $request],
+        );
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return Response
+     */
+    #[Route('/metrics/user-tasks/graph', methods: [Request::METHOD_GET])]
+    public function getUserTasksGraphAction(Request $request): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::getMetricsUserTasksGraphAction',
+            ['request' => $request],
+        );
+    }
+
 }

@@ -227,4 +227,52 @@ final class MetricsController
         );
     }
 
+    /**
+     * @param Request $request
+     *
+     * @return Response
+     * @throws Exception
+     */
+    #[Route('/metrics/user-tasks', methods: [Request::METHOD_GET])]
+    public function getMetricsUserTasksAction(Request $request): Response
+    {
+        return $this->getResponse(
+            $this->handler->getMetricsUserTasks(
+                new GridRequestDto(Json::decode($request->query->get('filter', '{}'))),
+            ),
+        );
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return Response
+     * @throws Exception
+     */
+    #[Route('/metrics/user-tasks/total', methods: [Request::METHOD_GET])]
+    public function getMetricsUserTasksTotalAction(Request $request): Response
+    {
+        return $this->getResponse(
+            $this->handler->getMetricsUserTasksTotal(
+                new GridRequestDto(Json::decode($request->query->get('filter', '{}'))),
+            ),
+        );
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return Response
+     * @throws Exception
+     */
+    #[Route('/metrics/user-tasks/graph', methods: [Request::METHOD_GET])]
+    public function getMetricsUserTasksGraphAction(Request $request): Response
+    {
+        return $this->getResponse(
+            $this->handler->getMetricsUserTasksGraph(
+                new GridRequestDto(Json::decode($request->query->get('filter', '{}'))),
+            ),
+        );
+    }
+
 }
