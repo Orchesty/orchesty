@@ -212,7 +212,12 @@ final class TrashControllerTest extends ControllerTestCaseAbstract
             },
         );
         $c   = self::getContainer();
-        $svc = new UserTaskManager($this->dm, $c->get('hbpf.user_task.filter.user_task'), $publisher);
+        $svc = new UserTaskManager(
+            $this->dm,
+            $c->get('hbpf.user_task.filter.user_task'),
+            $c->get('hbpf.user_task.aggregation-filter.user_task'),
+            $publisher,
+        );
         $c->set('hbpf.user_task.manager.user_task', $svc);
     }
 
