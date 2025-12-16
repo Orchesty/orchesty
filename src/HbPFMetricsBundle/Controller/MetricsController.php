@@ -2,6 +2,7 @@
 
 namespace Hanaboso\PipesFramework\HbPFMetricsBundle\Controller;
 
+use Exception;
 use Hanaboso\MongoDataGrid\GridRequestDto;
 use Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler;
 use Hanaboso\Utils\String\Json;
@@ -25,9 +26,9 @@ final class MetricsController
     /**
      * MetricsController constructor.
      *
-     * @param MetricsHandler $metricsHandler
+     * @param MetricsHandler $handler
      */
-    public function __construct(private MetricsHandler $metricsHandler)
+    public function __construct(private readonly MetricsHandler $handler)
     {
         $this->logger = new NullLogger();
     }
@@ -42,7 +43,7 @@ final class MetricsController
     public function topologyMetricsAction(Request $request, string $topology): Response
     {
         try {
-            return $this->getResponse($this->metricsHandler->getTopologyMetrics($topology, $request->query->all()));
+            return $this->getResponse($this->handler->getTopologyMetrics($topology, $request->query->all()));
         } catch (Throwable $e) {
             return $this->getErrorResponse($e);
         }
@@ -59,7 +60,7 @@ final class MetricsController
     public function nodeMetricsAction(Request $request, string $topology, string $node): Response
     {
         try {
-            return $this->getResponse($this->metricsHandler->getNodeMetrics($topology, $node, $request->query->all()));
+            return $this->getResponse($this->handler->getNodeMetrics($topology, $node, $request->query->all()));
         } catch (Throwable $e) {
             return $this->getErrorResponse($e, 400);
         }
@@ -72,7 +73,7 @@ final class MetricsController
     public function healthcheckMetricsAction(): Response
     {
         try {
-            return $this->getResponse($this->metricsHandler->getHealthcheckMetrics());
+            return $this->getResponse($this->handler->getHealthcheckMetrics());
         } catch (Throwable $e) {
             return $this->getErrorResponse($e, 400);
         }
@@ -91,11 +92,59 @@ final class MetricsController
             $dto = new GridRequestDto(Json::decode($request->query->get('filter', '{}')));
 
             return $this->getResponse(
-                $this->metricsHandler->getRequestsCountMetrics($topology, $dto),
+                $this->handler->getRequestsCountMetrics($topology, $dto),
             );
         } catch (Throwable $e) {
             return $this->getErrorResponse($e, 400);
         }
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return Response
+     * @throws Exception
+     */
+    #[Route('/metrics/connectors/overview', methods: [Request::METHOD_GET])]
+    public function getMetricsConnectorsOverviewAction(Request $request): Response
+    {
+        return $this->getResponse(
+            $this->handler->getMetricsConnectorsOverview(
+                new GridRequestDto(Json::decode($request->query->get('filter', '{}'))),
+            ),
+        );
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return Response
+     * @throws Exception
+     */
+    #[Route('/metrics/connectors', methods: [Request::METHOD_GET])]
+    public function getMetricsConnectorsAction(Request $request): Response
+    {
+        return $this->getResponse(
+            $this->handler->getMetricsConnectors(
+                new GridRequestDto(Json::decode($request->query->get('filter', '{}'))),
+            ),
+        );
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return Response
+     * @throws Exception
+     */
+    #[Route('/metrics/connectors/graph', methods: [Request::METHOD_GET])]
+    public function getMetricsConnectorsGraphAction(Request $request): Response
+    {
+        return $this->getResponse(
+            $this->handler->getMetricsConnectorsGraph(
+                new GridRequestDto(Json::decode($request->query->get('filter', '{}'))),
+            ),
+        );
     }
 
 }

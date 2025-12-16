@@ -7,6 +7,9 @@ use Exception;
 use Hanaboso\PipesFramework\Database\Document\Node;
 use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager;
+use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorAggregationFilter;
+use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorGraphAggregationFilter;
+use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorOverviewAggregationFilter;
 
 /**
  * Trait MongoTestTrait
@@ -73,6 +76,16 @@ trait MongoTestTrait
         $consumerTable = self::getContainer()->getParameter('mongodb.rabbit_consumer_table');
         /** @var DocumentManager $metricsDm */
         $metricsDm = self::getContainer()->get('doctrine_mongodb.odm.metrics_document_manager');
+        /** @var MetricConnectorOverviewAggregationFilter $metricConnectorOverviewAggregationFilter */
+        $metricConnectorOverviewAggregationFilter = self::getContainer()->get(
+            'hbpf.metric-connector-overview.aggregation-filter',
+        );
+        /** @var MetricConnectorAggregationFilter $metricConnectorAggregationFilter */
+        $metricConnectorAggregationFilter = self::getContainer()->get('hbpf.metric-connector.aggregation-filter');
+        /** @var MetricConnectorGraphAggregationFilter $metricConnectorGraphAggregationFilter */
+        $metricConnectorGraphAggregationFilter = self::getContainer()->get(
+            'hbpf.metric-connector-graph.aggregation-filter',
+        );
 
         return new MongoMetricsManager(
             $this->dm,
@@ -83,6 +96,9 @@ trait MongoTestTrait
             $connTable,
             $metricsDm,
             $consumerTable,
+            $metricConnectorOverviewAggregationFilter,
+            $metricConnectorAggregationFilter,
+            $metricConnectorGraphAggregationFilter,
         );
     }
 

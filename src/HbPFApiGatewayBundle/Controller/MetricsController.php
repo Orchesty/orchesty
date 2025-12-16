@@ -75,4 +75,46 @@ final class MetricsController extends AbstractController
         );
     }
 
+    /**
+     * @param Request $request
+     *
+     * @return Response
+     */
+    #[Route('/metrics/connectors/overview', methods: [Request::METHOD_GET])]
+    public function getMetricsConnectorsOverviewAction(Request $request): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::getMetricsConnectorsOverviewAction',
+            ['request' => $request],
+        );
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return Response
+     */
+    #[Route('/metrics/connectors', methods: [Request::METHOD_GET])]
+    public function getMetricsConnectorsAction(Request $request): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::getMetricsConnectorsAction',
+            ['request' => $request],
+        );
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return Response
+     */
+    #[Route('/metrics/connectors/graph', methods: [Request::METHOD_GET])]
+    public function getMetricsConnectorsGraphAction(Request $request): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::getMetricsConnectorsGraphAction',
+            ['request' => $request],
+        );
+    }
+
 }

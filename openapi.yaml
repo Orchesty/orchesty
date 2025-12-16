@@ -433,6 +433,32 @@ paths:
                 500:
                     $ref: '#/components/responses/500'
 
+    /api/metrics/connectors:
+        get:
+            tags: [ Metrics ]
+            responses:
+                200:
+                    $ref: '#/components/responses/MetricsConnectors'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/metrics/connectors/overview:
+        get:
+            tags: [ Metrics ]
+            responses:
+                200:
+                    $ref: '#/components/responses/MetricsConnectorsOverview'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/metrics/connectors/graph:
+        get:
+            tags: [ Metrics ]
+            responses:
+                200:
+                    $ref: '#/components/responses/MetricsConnectorsGraph'
+                500:
+                    $ref: '#/components/responses/500'
 
 
     /api/nodes/{id}:
@@ -1398,6 +1424,27 @@ components:
                     schema:
                         $ref: '#/components/schemas/TopologyRequestMetrics'
 
+        MetricsConnectors:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/MetricsConnectors'
+
+        MetricsConnectorsGraph:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/MetricsConnectorsGraph'
+
+        MetricsConnectorsOverview:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/MetricsConnectorsOverview'
+
         TopologiesRun:
             description: ''
             content:
@@ -1998,6 +2045,188 @@ components:
                             direction:
                                 type: string
                 paging:
+        MetricsConnectors:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            id:
+                                type: string
+                            nodeId:
+                                type: string
+                            topologyId:
+                                type: string
+                            applicationId:
+                                type: string
+                            created:
+                                type: string
+                                format: date-time
+                            status:
+                                type: integer
+                            message:
+                                type: string
+                                nullable: true
+                search:
+                    type: string
+                    nullable: true
+                filter:
+                    type: array
+                    items:
+                        type: array
+                        items:
+                            type: object
+                            properties:
+                                column:
+                                    type: string
+                                operator:
+                                    type: string
+                                value:
+                                    type: array
+                                    items:
+                                        type: string
+                sorter:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            column:
+                                type: string
+                            direction:
+                                type: string
+                paging:
+                    type: object
+                    properties:
+                        itemsPerPage:
+                            type: integer
+                        lastPage:
+                            type: integer
+                        nextPage:
+                            type: integer
+                        page:
+                            type: integer
+                        previousPage:
+                            type: integer
+                        total:
+                            type: integer
+
+        MetricsConnectorsGraph:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            created:
+                                type: string
+                                format: date-time
+                            status200:
+                                type: integer
+                            status400:
+                                type: integer
+                            status500:
+                                type: integer
+                search:
+                    type: string
+                    nullable: true
+                filter:
+                    type: array
+                    items:
+                        type: array
+                        items:
+                            type: object
+                            properties:
+                                column:
+                                    type: string
+                                operator:
+                                    type: string
+                                value:
+                                    type: array
+                                    items:
+                                        type: string
+                sorter:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            column:
+                                type: string
+                            direction:
+                                type: string
+                paging:
+                    type: object
+                    properties:
+                        itemsPerPage:
+                            type: integer
+                        lastPage:
+                            type: integer
+                        nextPage:
+                            type: integer
+                        page:
+                            type: integer
+                        previousPage:
+                            type: integer
+                        total:
+                            type: integer
+
+        MetricsConnectorsOverview:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            _id:
+                                type: string
+                            nodeId:
+                                type: string
+                            topologyId:
+                                type: string
+                            applicationId:
+                                type: string
+                            count:
+                                type: integer
+                            duration:
+                                type: integer
+                            status400:
+                                type: integer
+                            status500:
+                                type: integer
+                            lastStatus:
+                                type: integer
+                search:
+                    type: string
+                    nullable: true
+                filter:
+                    type: array
+                    items:
+                        type: array
+                        items:
+                            type: object
+                            properties:
+                                column:
+                                    type: string
+                                operator:
+                                    type: string
+                                value:
+                                    type: array
+                                    items:
+                                        type: string
+                sorter:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            column:
+                                type: string
+                            direction:
+                                type: string
+                paging:
+                    type: object
                     properties:
                         itemsPerPage:
                             type: integer
