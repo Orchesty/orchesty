@@ -44,3 +44,8 @@ services:
         class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyProgressHandler
         arguments:
             - '@hbpf.configurator.manager.topology_progress'
+
+    hbpf.configurator.handler.process:
+        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\ProcessHandler
+        arguments:
+            - '@hbpf.configurator.manager.process'

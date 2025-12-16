@@ -43,3 +43,11 @@ services:
         class: Hanaboso\PipesFramework\Configurator\Model\DashboardManager
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.configurator.manager.process:
+        class: Hanaboso\PipesFramework\Configurator\Model\ProcessManager
+        arguments:
+            - '@hbpf.process.aggregation-filter'
+            - '@hbpf.process-total.aggregation-filter'
+            - '@hbpf.process-graph.aggregation-filter'
+            - '@hbpf.topology.aggregation-filter'

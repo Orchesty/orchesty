@@ -17,6 +17,39 @@ use Hanaboso\Utils\Exception\DateTimeException;
     collection: 'MultiCounter',
     repositoryClass: 'Hanaboso\PipesFramework\Configurator\Repository\TopologyProgressRepository',
 )]
+#[ODM\Index(
+    keys: ['created' => 'asc'],
+    name: 'IK_multiCounter_created',
+    expireAfterSeconds: 2_628_000,
+)]
+#[ODM\Index(
+    keys: ['finished' => 'desc'],
+    name: 'IK_multiCounter_finished',
+)]
+#[ODM\Index(
+    keys: ['topologyId' => 'asc', 'created' => 'desc'],
+    name: 'IK_multiCounter_topologyId_created',
+)]
+#[ODM\Index(
+    keys: ['finished' => 'asc', 'created' => 'desc'],
+    name: 'IK_multiCounter_finished_created',
+)]
+#[ODM\Index(
+    keys: ['topologyId' => 'asc', 'finished' => 'asc', 'created' => 'desc'],
+    name: 'IK_multiCounter_topologyId_finished_created',
+)]
+#[ODM\Index(
+    keys: ['nok' => 'asc', 'finished' => 'asc', 'created' => 'desc'],
+    name: 'IK_multiCounter_nok_finished_created',
+)]
+#[ODM\Index(
+    keys: ['topologyId' => 'asc', 'nok' => 'asc', 'finished' => 'asc', 'created' => 'desc'],
+    name: 'IK_multiCounter_topologyId_nok_finished_created',
+)]
+#[ODM\Index(
+    keys: ['created' => 'asc', 'topologyId' => 'asc', 'nok' => 'asc',],
+    name: 'IK_multiCounter_created_topologyId_nok',
+)]
 class TopologyProgress
 {
 
@@ -270,12 +303,7 @@ class TopologyProgress
      */
     public static function durationInMs(DateTime $start, DateTime $end): int
     {
-        $startSecs = $start->getTimestamp() * 1_000;
-        $endSecs   = $end->getTimestamp() * 1_000;
-        $startMs   = (int) ($start->format('u') / 1_000); // @phpstan-ignore-line
-        $endMs     = (int) ($end->format('u') / 1_000); // @phpstan-ignore-line
-
-        return $endSecs - $startSecs + $endMs - $startMs;
+        return  (int) $end->format('Uv') - (int) $start->format('Uv');
     }
 
 }

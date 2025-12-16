@@ -70,6 +70,26 @@ services:
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
 
+    hbpf.process.aggregation-filter:
+        class: Hanaboso\PipesFramework\Configurator\Model\Filters\ProcessAggregationFilter
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.process-total.aggregation-filter:
+        class: Hanaboso\PipesFramework\Configurator\Model\Filters\ProcessTotalAggregationFilter
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.process-graph.aggregation-filter:
+        class: Hanaboso\PipesFramework\Configurator\Model\Filters\ProcessGraphAggregationFilter
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.topology.aggregation-filter:
+        class: Hanaboso\PipesFramework\Configurator\Model\Filters\TopologyAggregationFilter
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+
     hbpf.api_token.filter:
         class: Hanaboso\PipesFramework\Configurator\Model\Filters\ApiTokenFilter
         arguments:
