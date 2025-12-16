@@ -36,6 +36,14 @@ final class ApplicationController extends AbstractController
     {}
 
     /**
+     * @return Response
+     */
+    #[Route('/applications', methods: [Request::METHOD_GET])]
+    public function getApplicationsAction(): Response {
+        return new JsonResponse($this->locator->getApplications(self::SYSTEM_USER));
+    }
+
+    /**
      * @param string $sdk
      * @param string $exclude
      *
@@ -46,6 +54,7 @@ final class ApplicationController extends AbstractController
         #[MapQueryParameter] string $sdk,
         #[MapQueryParameter] string $exclude = '',
     ): Response {
+        // TODO RB: Remove this after new UI
         //TODO: refactor after ServiceLocatorMS will be done
         return new JsonResponse($this->locator->getApps($sdk, $exclude));
     }
@@ -61,6 +70,7 @@ final class ApplicationController extends AbstractController
         #[MapQueryParameter] string $sdk,
         #[MapQueryParameter] string $exclude = '',
     ): Response {
+        // TODO RB: Remove this after new UI
         //TODO: refactor after ServiceLocatorMS will be done
         return new JsonResponse($this->locator->getUserApps(self::SYSTEM_USER, $sdk, $exclude));
     }
