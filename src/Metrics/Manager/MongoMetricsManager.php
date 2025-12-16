@@ -27,6 +27,8 @@ use Hanaboso\PipesFramework\Metrics\Enum\ServiceNameByQueueEnum;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorAggregationFilter;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorGraphAggregationFilter;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorOverviewAggregationFilter;
+use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricProcessAggregationFilter;
+use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricRequestAggregationFilter;
 use Hanaboso\PipesFramework\Metrics\Retention\RetentionFactory;
 use Hanaboso\Utils\Date\DateTimeUtils;
 use Hanaboso\Utils\Exception\DateTimeException;
@@ -55,6 +57,8 @@ final class MongoMetricsManager extends MetricsManagerAbstract
      * @param MetricConnectorOverviewAggregationFilter $metricConnectorOverviewAggregationFilter
      * @param MetricConnectorAggregationFilter         $metricConnectorAggregationFilter
      * @param MetricConnectorGraphAggregationFilter    $metricConnectorGraphAggregationFilter
+     * @param MetricRequestAggregationFilter           $metricRequestAggregationFilter
+     * @param MetricProcessAggregationFilter           $metricProcessAggregationFilter
      */
     public function __construct(
         private DocumentManager $dm,
@@ -68,6 +72,8 @@ final class MongoMetricsManager extends MetricsManagerAbstract
         private readonly MetricConnectorOverviewAggregationFilter $metricConnectorOverviewAggregationFilter,
         private readonly MetricConnectorAggregationFilter $metricConnectorAggregationFilter,
         private readonly MetricConnectorGraphAggregationFilter $metricConnectorGraphAggregationFilter,
+        private readonly MetricRequestAggregationFilter $metricRequestAggregationFilter,
+        private readonly MetricProcessAggregationFilter $metricProcessAggregationFilter,
     )
     {
         parent::__construct($dm, $nodeTable, $fpmTable, $rabbitTable, $counterTable, $connectorTable, $consumerTable);
@@ -358,6 +364,29 @@ final class MongoMetricsManager extends MetricsManagerAbstract
     public function getMetricsConnectorsGraph(GridRequestDtoInterface $dto): array
     {
         return $this->metricConnectorGraphAggregationFilter->getData($dto)->toArray();
+    }
+
+
+    /**
+     * @param GridRequestDtoInterface $dto
+     *
+     * @return array<mixed>
+     * @throws Exception
+     */
+    public function getMetricsRequests(GridRequestDtoInterface $dto): array
+    {
+        return $this->metricRequestAggregationFilter->getData($dto)->toArray();
+    }
+
+    /**
+     * @param GridRequestDtoInterface $dto
+     *
+     * @return array<mixed>
+     * @throws Exception
+     */
+    public function getMetricsProcesses(GridRequestDtoInterface $dto): array
+    {
+        return $this->metricProcessAggregationFilter->getData($dto)->toArray();
     }
 
     /**

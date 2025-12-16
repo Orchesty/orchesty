@@ -147,4 +147,36 @@ final class MetricsController
         );
     }
 
+    /**
+     * @param Request $request
+     *
+     * @return Response
+     * @throws Exception
+     */
+    #[Route('/metrics/requests', methods: [Request::METHOD_GET])]
+    public function getMetricsRequestsAction(Request $request): Response
+    {
+        return $this->getResponse(
+            $this->handler->getMetricsRequests(
+                new GridRequestDto(Json::decode($request->query->get('filter', '{}'))),
+            ),
+        );
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return Response
+     * @throws Exception
+     */
+    #[Route('/metrics/processes', methods: [Request::METHOD_GET])]
+    public function getMetricsProcessesAction(Request $request): Response
+    {
+        return $this->getResponse(
+            $this->handler->getMetricsProcesses(
+                new GridRequestDto(Json::decode($request->query->get('filter', '{}'))),
+            ),
+        );
+    }
+
 }

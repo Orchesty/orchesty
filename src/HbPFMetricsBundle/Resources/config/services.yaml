@@ -22,6 +22,8 @@ services:
             - '@hbpf.metric-connector-overview.aggregation-filter'
             - '@hbpf.metric-connector.aggregation-filter'
             - '@hbpf.metric-connector-graph.aggregation-filter'
+            - '@hbpf.metric-request.aggregation-filter'
+            - '@hbpf.metric-process.aggregation-filter'
         calls:
             - ['setLogger', ['@monolog.logger.commons']]
 
@@ -37,5 +39,15 @@ services:
 
     hbpf.metric-connector-graph.aggregation-filter:
         class: Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorGraphAggregationFilter
+        arguments:
+            - '@doctrine_mongodb.odm.metrics_document_manager'
+
+    hbpf.metric-request.aggregation-filter:
+        class: Hanaboso\PipesFramework\Metrics\Model\Filters\MetricRequestAggregationFilter
+        arguments:
+            - '@doctrine_mongodb.odm.metrics_document_manager'
+
+    hbpf.metric-process.aggregation-filter:
+        class: Hanaboso\PipesFramework\Metrics\Model\Filters\MetricProcessAggregationFilter
         arguments:
             - '@doctrine_mongodb.odm.metrics_document_manager'

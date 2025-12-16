@@ -10,6 +10,8 @@ use Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorAggregationFilter;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorGraphAggregationFilter;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorOverviewAggregationFilter;
+use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricProcessAggregationFilter;
+use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricRequestAggregationFilter;
 
 /**
  * Trait MongoTestTrait
@@ -86,6 +88,10 @@ trait MongoTestTrait
         $metricConnectorGraphAggregationFilter = self::getContainer()->get(
             'hbpf.metric-connector-graph.aggregation-filter',
         );
+        /** @var MetricRequestAggregationFilter $metricRequestAggregationFilter */
+        $metricRequestAggregationFilter = self::getContainer()->get('hbpf.metric-request.aggregation-filter');
+        /** @var MetricProcessAggregationFilter $metricProcessAggregationFilter */
+        $metricProcessAggregationFilter = self::getContainer()->get('hbpf.metric-process.aggregation-filter');
 
         return new MongoMetricsManager(
             $this->dm,
@@ -99,6 +105,8 @@ trait MongoTestTrait
             $metricConnectorOverviewAggregationFilter,
             $metricConnectorAggregationFilter,
             $metricConnectorGraphAggregationFilter,
+            $metricRequestAggregationFilter,
+            $metricProcessAggregationFilter,
         );
     }
 

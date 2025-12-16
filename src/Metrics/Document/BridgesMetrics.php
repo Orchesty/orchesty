@@ -11,9 +11,19 @@ use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
  * @package Hanaboso\PipesFramework\Metrics\Document
  */
 #[ODM\Document(collection: 'pipes_node')]
-#[ODM\Index(keys: ['tags.node_id' => 'text', 'tags.topology_id' => 'text'], name: 'SearchIndex')]
-#[ODM\Index(keys: ['fields.created' => 'desc'], name: 'createdIndex')]
-#[ODM\Index(keys: ['fields.created' => 'asc'], name: 'expireIndex', expireAfterSeconds: 2_628_000)]
+#[ODM\Index(
+    keys: ['fields.created' => 'asc'],
+    name: 'IK_pipesNode_fieldsCreated',
+    expireAfterSeconds: 2_628_000,
+)]
+#[ODM\Index(
+    keys: ['fields.created' => 'asc', 'tags.node_id' => 'asc'],
+    name: 'IK_pipesNode_fieldsCreated_tagsNodeId',
+)]
+#[ODM\Index(
+    keys: ['tags.topology_id' => 'asc', 'tags.node_id' => 'asc', 'fields.created' => 'asc'],
+    name: 'IK_pipesNode_tagsTopologyId_tagsNodeId_fieldsCreated',
+)]
 class BridgesMetrics
 {
 
