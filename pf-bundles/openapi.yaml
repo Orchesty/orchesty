@@ -460,6 +460,24 @@ paths:
                 500:
                     $ref: '#/components/responses/500'
 
+    /api/metrics/processes:
+        get:
+            tags: [ Metrics ]
+            responses:
+                200:
+                    $ref: '#/components/responses/MetricsProcesses'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/metrics/requests:
+        get:
+            tags: [ Metrics ]
+            responses:
+                200:
+                    $ref: '#/components/responses/MetricsRequests'
+                500:
+                    $ref: '#/components/responses/500'
+
 
     /api/nodes/{id}:
         get:
@@ -1445,6 +1463,20 @@ components:
                     schema:
                         $ref: '#/components/schemas/MetricsConnectorsOverview'
 
+        MetricsProcesses:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/MetricsProcesses'
+
+        MetricsRequests:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/MetricsRequests'
+
         TopologiesRun:
             description: ''
             content:
@@ -2240,6 +2272,125 @@ components:
                             type: integer
                         total:
                             type: integer
+
+        MetricsProcesses:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            _id:
+                                type: string
+                            nodeId:
+                                type: string
+                            topologyId:
+                                type: string
+                            duration:
+                                type: integer
+                search:
+                    type: string
+                    nullable: true
+                filter:
+                    type: array
+                    items:
+                        type: array
+                        items:
+                            type: object
+                            properties:
+                                column:
+                                    type: string
+                                operator:
+                                    type: string
+                                value:
+                                    type: array
+                                    items:
+                                        type: string
+                sorter:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            column:
+                                type: string
+                            direction:
+                                type: string
+                paging:
+                    type: object
+                    properties:
+                        itemsPerPage:
+                            type: integer
+                        lastPage:
+                            type: integer
+                        nextPage:
+                            type: integer
+                        page:
+                            type: integer
+                        previousPage:
+                            type: integer
+                        total:
+                            type: integer
+
+        MetricsRequests:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            _id:
+                                type: string
+                            nodeId:
+                                type: string
+                            topologyId:
+                                type: string
+                            duration:
+                                type: integer
+                search:
+                    type: string
+                    nullable: true
+                filter:
+                    type: array
+                    items:
+                        type: array
+                        items:
+                            type: object
+                            properties:
+                                column:
+                                    type: string
+                                operator:
+                                    type: string
+                                value:
+                                    type: array
+                                    items:
+                                        type: string
+                sorter:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            column:
+                                type: string
+                            direction:
+                                type: string
+                paging:
+                    type: object
+                    properties:
+                        itemsPerPage:
+                            type: integer
+                        lastPage:
+                            type: integer
+                        nextPage:
+                            type: integer
+                        page:
+                            type: integer
+                        previousPage:
+                            type: integer
+                        total:
+                            type: integer
+
 
         TopologyTask:
             type: object

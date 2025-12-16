@@ -24,6 +24,7 @@ final class MetricsController extends AbstractController
     #[Route('/metrics/topology/{topology}', methods: ['GET'])]
     public function topologyMetricsAction(Request $request, string $topology): Response
     {
+        // TODO RB: Remove this after new UI
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::topologyMetricsAction',
             ['request' => $request, 'topology' => $topology],
@@ -40,6 +41,7 @@ final class MetricsController extends AbstractController
     #[Route('/metrics/topology/{topology}/node/{node}', methods: ['GET'])]
     public function nodeMetricsAction(Request $request, string $topology, string $node): Response
     {
+        // TODO RB: Remove this after new UI
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::nodeMetricsAction',
             ['request' => $request, 'topology' => $topology, 'node' => $node],
@@ -69,6 +71,7 @@ final class MetricsController extends AbstractController
     #[Route('/metrics/topology/{topology}/requests', methods: ['GET'])]
     public function topologyRequestsCountMetricsAction(Request $request, string $topology): Response
     {
+        // TODO RB: Remove this after new UI
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::topologyRequestsCountMetricsAction',
             ['request' => $request, 'topology' => $topology],
@@ -113,6 +116,34 @@ final class MetricsController extends AbstractController
     {
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::getMetricsConnectorsGraphAction',
+            ['request' => $request],
+        );
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return Response
+     */
+    #[Route('/metrics/requests', methods: [Request::METHOD_GET])]
+    public function getMetricsRequestsAction(Request $request): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::getMetricsRequestsAction',
+            ['request' => $request],
+        );
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return Response
+     */
+    #[Route('/metrics/processes', methods: [Request::METHOD_GET])]
+    public function getMetricsProcessesAction(Request $request): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::getMetricsProcessesAction',
             ['request' => $request],
         );
     }

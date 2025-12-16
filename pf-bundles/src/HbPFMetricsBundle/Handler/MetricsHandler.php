@@ -125,6 +125,28 @@ final readonly class MetricsHandler
     }
 
     /**
+     * @param GridRequestDtoInterface $dto
+     *
+     * @return mixed[]
+     * @throws Exception
+     */
+    public function getMetricsRequests(GridRequestDtoInterface $dto): array
+    {
+        return $this->getGridResponse($dto, $this->manager->getMetricsRequests($dto));
+    }
+
+    /**
+     * @param GridRequestDtoInterface $dto
+     *
+     * @return mixed[]
+     * @throws Exception
+     */
+    public function getMetricsProcesses(GridRequestDtoInterface $dto): array
+    {
+        return $this->getGridResponse($dto, $this->manager->getMetricsProcesses($dto));
+    }
+
+    /**
      * @param string $id
      *
      * @return Topology
