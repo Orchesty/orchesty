@@ -84,6 +84,8 @@ parameters:
 			- Hanaboso\PipesFramework\Metrics\Document\RabbitConsumerMetrics
 			- Hanaboso\PipesFramework\Metrics\Document\Tags
 			- Hanaboso\PipesFramework\Metrics\Document\TagsCamelCase
+			- Hanaboso\PipesFramework\Metrics\Document\UserTaskMetrics
+			- Hanaboso\PipesFramework\Metrics\Document\UserTaskMetricsFields
 			- Hanaboso\PipesFramework\UserTask\Document\UserTask
 			- Hanaboso\PipesFramework\UserTask\Document\UserTaskMessage
 			- Hanaboso\PipesFramework\User\Document\UserSettings

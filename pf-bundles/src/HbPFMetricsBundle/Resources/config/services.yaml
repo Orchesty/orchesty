@@ -27,6 +27,9 @@ services:
             - '@hbpf.metric-limit.aggregation-filter'
             - '@hbpf.metric-limit-total.aggregation-filter'
             - '@hbpf.metric-limit-graph.aggregation-filter'
+            - '@hbpf.metric-user-task.aggregation-filter'
+            - '@hbpf.metric-user-task-total.aggregation-filter'
+            - '@hbpf.metric-user-task-graph.aggregation-filter'
         calls:
             - ['setLogger', ['@monolog.logger.commons']]
 
@@ -69,3 +72,18 @@ services:
         class: Hanaboso\PipesFramework\Metrics\Model\Filters\MetricLimitGraphAggregationFilter
         arguments:
             - '@doctrine_mongodb.odm.metrics_document_manager'
+
+    hbpf.metric-user-task.aggregation-filter:
+        class: Hanaboso\PipesFramework\Metrics\Model\Filters\MetricUserTaskAggregationFilter
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.metric-user-task-total.aggregation-filter:
+        class: Hanaboso\PipesFramework\Metrics\Model\Filters\MetricUserTaskTotalAggregationFilter
+        arguments:
+            - '@doctrine_mongodb.odm.metrics_document_manager'
+
+    hbpf.metric-user-task-graph.aggregation-filter:
+        class: Hanaboso\PipesFramework\Metrics\Model\Filters\MetricUserTaskGraphAggregationFilter
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'

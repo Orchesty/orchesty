@@ -15,6 +15,9 @@ use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricLimitGraphAggregationFil
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricLimitTotalAggregationFilter;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricProcessAggregationFilter;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricRequestAggregationFilter;
+use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricUserTaskAggregationFilter;
+use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricUserTaskGraphAggregationFilter;
+use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricUserTaskTotalAggregationFilter;
 
 /**
  * Trait MongoTestTrait
@@ -101,6 +104,16 @@ trait MongoTestTrait
         $metricLimitTotalAggregationFilter = self::getContainer()->get('hbpf.metric-limit-total.aggregation-filter');
         /** @var MetricLimitGraphAggregationFilter $metricLimitGraphAggregationFilter */
         $metricLimitGraphAggregationFilter = self::getContainer()->get('hbpf.metric-limit-graph.aggregation-filter');
+        /** @var MetricUserTaskAggregationFilter $metricUserTaskAggregationFilter */
+        $metricUserTaskAggregationFilter = self::getContainer()->get('hbpf.metric-user-task.aggregation-filter');
+        /** @var MetricUserTaskTotalAggregationFilter $metricUserTaskTotalAggregationFilter */
+        $metricUserTaskTotalAggregationFilter = self::getContainer()->get(
+            'hbpf.metric-user-task-total.aggregation-filter',
+        );
+        /** @var MetricUserTaskGraphAggregationFilter $metricUserTaskGraphAggregationFilter */
+        $metricUserTaskGraphAggregationFilter = self::getContainer()->get(
+            'hbpf.metric-user-task-graph.aggregation-filter',
+        );
 
         return new MongoMetricsManager(
             $this->dm,
@@ -119,6 +132,9 @@ trait MongoTestTrait
             $metricLimitAggregationFilter,
             $metricLimitTotalAggregationFilter,
             $metricLimitGraphAggregationFilter,
+            $metricUserTaskAggregationFilter,
+            $metricUserTaskTotalAggregationFilter,
+            $metricUserTaskGraphAggregationFilter,
         );
     }
 

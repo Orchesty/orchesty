@@ -505,6 +505,33 @@ paths:
                 500:
                     $ref: '#/components/responses/500'
 
+    /api/metrics/user-tasks:
+        get:
+            tags: [ Metrics ]
+            responses:
+                200:
+                    $ref: '#/components/responses/MetricsUserTasks'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/metrics/user-tasks/total:
+        get:
+            tags: [ Metrics ]
+            responses:
+                200:
+                    $ref: '#/components/responses/MetricsUserTasksTotal'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/metrics/user-tasks/graph:
+        get:
+            tags: [ Metrics ]
+            responses:
+                200:
+                    $ref: '#/components/responses/MetricsUserTasksGraph'
+                500:
+                    $ref: '#/components/responses/500'
+
     /api/nodes/{id}:
         get:
             tags: [ Nodes ]
@@ -1523,6 +1550,27 @@ components:
                 application/json:
                     schema:
                         $ref: '#/components/schemas/MetricsLimitsGraph'
+
+        MetricsUserTasks:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/MetricsUserTasks'
+
+        MetricsUserTasksTotal:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/MetricsUserTasksTotal'
+
+        MetricsUserTasksGraph:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/MetricsUserTasksGraph'
 
         TopologiesRun:
             description: ''
@@ -2563,6 +2611,174 @@ components:
                             created:
                                 type: string
                                 format: date-time
+                            count:
+                                type: integer
+                search:
+                    type: string
+                    nullable: true
+                filter:
+                    type: array
+                    items:
+                        type: array
+                        items:
+                            type: object
+                            properties:
+                                column:
+                                    type: string
+                                operator:
+                                    type: string
+                                value:
+                                    type: array
+                                    items:
+                                        type: string
+                sorter:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            column:
+                                type: string
+                            direction:
+                                type: string
+                paging:
+                    type: object
+                    properties:
+                        itemsPerPage:
+                            type: integer
+                        lastPage:
+                            type: integer
+                        nextPage:
+                            type: integer
+                        page:
+                            type: integer
+                        previousPage:
+                            type: integer
+                        total:
+                            type: integer
+
+        MetricsUserTasks:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            nodeId:
+                                type: string
+                            topologyId:
+                                type: string
+                            message:
+                                type: string
+                            count:
+                                type: integer
+                search:
+                    type: string
+                    nullable: true
+                filter:
+                    type: array
+                    items:
+                        type: array
+                        items:
+                            type: object
+                            properties:
+                                column:
+                                    type: string
+                                operator:
+                                    type: string
+                                value:
+                                    type: array
+                                    items:
+                                        type: string
+                sorter:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            column:
+                                type: string
+                            direction:
+                                type: string
+                paging:
+                    type: object
+                    properties:
+                        itemsPerPage:
+                            type: integer
+                        lastPage:
+                            type: integer
+                        nextPage:
+                            type: integer
+                        page:
+                            type: integer
+                        previousPage:
+                            type: integer
+                        total:
+                            type: integer
+
+        MetricsUserTasksTotal:
+            type: object
+            properties:
+                items:
+                    type: object
+                    properties:
+                        count:
+                            type: integer
+                        previousCount:
+                            type: integer
+                            nullable: true
+                search:
+                    type: string
+                    nullable: true
+                filter:
+                    type: array
+                    items:
+                        type: array
+                        items:
+                            type: object
+                            properties:
+                                column:
+                                    type: string
+                                operator:
+                                    type: string
+                                value:
+                                    type: array
+                                    items:
+                                        type: string
+                sorter:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            column:
+                                type: string
+                            direction:
+                                type: string
+                paging:
+                    type: object
+                    properties:
+                        itemsPerPage:
+                            type: integer
+                        lastPage:
+                            type: integer
+                        nextPage:
+                            type: integer
+                        page:
+                            type: integer
+                        previousPage:
+                            type: integer
+                        total:
+                            type: integer
+
+        MetricsUserTasksGraph:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            topologyId:
+                                type: string
                             count:
                                 type: integer
                 search:
