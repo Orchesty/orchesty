@@ -727,6 +727,42 @@ paths:
                 500:
                     $ref: '#/components/responses/500'
 
+    /api/processes:
+        get:
+            tags: [ Process ]
+            responses:
+                200:
+                    $ref: '#/components/responses/Processes'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/processes/topologies:
+        get:
+            tags: [ Process ]
+            responses:
+                200:
+                    $ref: '#/components/responses/ProcessesTopologies'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/processes/graph:
+        get:
+            tags: [ Process ]
+            responses:
+                200:
+                    $ref: '#/components/responses/ProcessesGraph'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/processes/total:
+        get:
+            tags: [ Process ]
+            responses:
+                200:
+                    $ref: '#/components/responses/ProcessesTotal'
+                500:
+                    $ref: '#/components/responses/500'
+
     /api/user/login:
         post:
             tags: [ Users ]
@@ -1487,6 +1523,34 @@ components:
                 application/json:
                     schema:
                         $ref: '#/components/schemas/TopologiesNodes'
+
+        Processes:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Processes'
+
+        ProcessesTopologies:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/ProcessesTopologies'
+
+        ProcessesGraph:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/ProcessesGraph'
+
+        ProcessesTotal:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/ProcessesTotal'
 
         User:
             description: ''
@@ -2332,6 +2396,250 @@ components:
                         type: array
                         items:
                             type: string
+
+        Processes:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            _id:
+                                type: string
+                            topologyId:
+                                type: string
+                            created:
+                                type: string
+                                format: date-time
+                            status:
+                                type: string
+                            duration:
+                                type: integer
+                            messages:
+                                type: array
+                                items:
+                                    type: string
+                search:
+                    type: string
+                    nullable: true
+                filter:
+                    type: array
+                    items:
+                        type: array
+                        items:
+                            type: object
+                            properties:
+                                column:
+                                    type: string
+                                operator:
+                                    type: string
+                                value:
+                                    type: array
+                                    items:
+                                        type: string
+                sorter:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            column:
+                                type: string
+                            direction:
+                                type: string
+                paging:
+                    type: object
+                    properties:
+                        itemsPerPage:
+                            type: integer
+                        lastPage:
+                            type: integer
+                        nextPage:
+                            type: integer
+                        page:
+                            type: integer
+                        previousPage:
+                            type: integer
+                        total:
+                            type: integer
+
+        ProcessesTopologies:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            _id:
+                                type: string
+                            topologyId:
+                                type: string
+                            created:
+                                type: string
+                                format: date-time
+                            count:
+                                type: integer
+                            failedCount:
+                                type: integer
+                            status:
+                                type: string
+                                enum: [RUNNING, COMPLETED, FAILED]
+                search:
+                    type: string
+                    nullable: true
+                filter:
+                    type: array
+                    items:
+                        type: array
+                        items:
+                            type: object
+                            properties:
+                                column:
+                                    type: string
+                                operator:
+                                    type: string
+                                value:
+                                    type: array
+                                    items:
+                                        type: string
+                sorter:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            column:
+                                type: string
+                            direction:
+                                type: string
+                paging:
+                    type: object
+                    properties:
+                        itemsPerPage:
+                            type: integer
+                        lastPage:
+                            type: integer
+                        nextPage:
+                            type: integer
+                        page:
+                            type: integer
+                        previousPage:
+                            type: integer
+                        total:
+                            type: integer
+
+        ProcessesGraph:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            created:
+                                type: string
+                                format: date-time
+                            topologyId:
+                                type: string
+                            success:
+                                type: integer
+                            failed:
+                                type: integer
+                search:
+                    type: string
+                    nullable: true
+                filter:
+                    type: array
+                    items:
+                        type: array
+                        items:
+                            type: object
+                            properties:
+                                column:
+                                    type: string
+                                operator:
+                                    type: string
+                                value:
+                                    type: array
+                                    items:
+                                        type: string
+                sorter:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            column:
+                                type: string
+                            direction:
+                                type: string
+                paging:
+                    type: object
+                    properties:
+                        itemsPerPage:
+                            type: integer
+                        lastPage:
+                            type: integer
+                        nextPage:
+                            type: integer
+                        page:
+                            type: integer
+                        previousPage:
+                            type: integer
+                        total:
+                            type: integer
+
+        ProcessesTotal:
+            type: object
+            properties:
+                items:
+                    type: object
+                    properties:
+                        count:
+                            type: integer
+                        failed:
+                            type: integer
+                search:
+                    type: string
+                    nullable: true
+                filter:
+                    type: array
+                    items:
+                        type: array
+                        items:
+                            type: object
+                            properties:
+                                column:
+                                    type: string
+                                operator:
+                                    type: string
+                                value:
+                                    type: array
+                                    items:
+                                        type: string
+                sorter:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            column:
+                                type: string
+                            direction:
+                                type: string
+                paging:
+                    type: object
+                    properties:
+                        itemsPerPage:
+                            type: integer
+                        lastPage:
+                            type: integer
+                        nextPage:
+                            type: integer
+                        page:
+                            type: integer
+                        previousPage:
+                            type: integer
+                        total:
+                            type: integer
 
         User:
             type: object
