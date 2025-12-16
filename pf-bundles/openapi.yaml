@@ -1898,46 +1898,70 @@ components:
                 offset:
                     type: integer
 
-        Log:
-            type: object
-            properties:
-                id:
-                    type: string
-                severity:
-                    type: string
-                message:
-                    type: string
-                type:
-                    type: string
-                correlation_id:
-                    type: string
-                topology_id:
-                    type: string
-                topology_name:
-                    type: string
-                node_id:
-                    type: string
-                node_name:
-                    type: string
-                timestamp:
-                    type: string
-
         Logs:
             type: object
             properties:
                 items:
                     type: array
                     items:
-                        $ref: '#/components/schemas/Log'
-                count:
-                    type: integer
-                total:
-                    type: integer
-                limit:
-                    type: integer
-                offset:
-                    type: integer
-
+                        type: object
+                        properties:
+                            id:
+                                type: string
+                            nodeId:
+                                type: string
+                            topologyId:
+                                type: string
+                            correlationId:
+                                type: string
+                            created:
+                                type: string
+                                format: date-time
+                            severity:
+                                type: string
+                            message:
+                                type: string
+                search:
+                    type: string
+                    nullable: true
+                filter:
+                    type: array
+                    items:
+                        type: array
+                        items:
+                            type: object
+                            properties:
+                                column:
+                                    type: string
+                                operator:
+                                    type: string
+                                value:
+                                    type: array
+                                    items:
+                                        type: string
+                sorter:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            column:
+                                type: string
+                            direction:
+                                type: string
+                paging:
+                    properties:
+                        itemsPerPage:
+                            type: integer
+                        lastPage:
+                            type: integer
+                        nextPage:
+                            type: integer
+                        page:
+                            type: integer
+                        previousPage:
+                            type: integer
+                        total:
+                            type: integer
 
         TopologyTask:
             type: object

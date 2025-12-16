@@ -20,11 +20,26 @@ final class LogsController extends AbstractController
      *
      * @return Response
      */
-    #[Route('/logs', methods: ['GET'])]
+    #[Route('/logs-old', methods: ['GET'])]
     public function topologyMetricsAction(Request $request): Response
     {
+        // TODO RB: Remove this after new UI
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFLogsBundle\Controller\LogsController::getDataForTableAction',
+            [],
+            $request->query->all(),
+        );
+    }
+    /**
+     * @param Request $request
+     *
+     * @return Response
+     */
+    #[Route('/logs', methods: [Request::METHOD_GET])]
+    public function getLogsAction(Request $request): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFLogsBundle\Controller\LogsController::getLogsAction',
             [],
             $request->query->all(),
         );

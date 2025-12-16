@@ -13,20 +13,42 @@ use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
  */
 #[ODM\Document]
 #[ODM\Index(
-    keys: [
-        'message' =>'text',
-        'pipes.correlationId' =>'text',
-        'pipes.nodeId' =>'text',
-        'pipes.nodeName' =>'text',
-        'pipes.topologyId' =>'text',
-        'pipes.topologyName' =>'text',
-    ],
-    name: 'SearchIndex',
+    keys: ['ts' => 'asc'],
+    name: 'IK_log_created',
+    expireAfterSeconds: 2_628_000,
 )]
-#[ODM\Index(keys: ['pipes.severity' => 'hashed'], name: 'SeverityIndex')]
-#[ODM\Index(keys: ['pipes.level' => 'hashed'], name: 'LevelIndex')]
-#[ODM\Index(keys: ['ts' => 'desc'], name: 'LogsTimestampIndex')]
-#[ODM\Index(keys: ['ts' => 'asc'], name: 'expireIndex', expireAfterSeconds: 2_628_000)]
+#[ODM\Index(
+    keys: ['pipes.topology_id' => 'asc', 'ts' => 'desc'],
+    name: 'IK_log_pipesTopologyId_created',
+)]
+#[ODM\Index(
+    keys: ['pipes.node_id' => 'asc', 'ts' => 'desc'],
+    name: 'IK_log_pipesNodeId_created',
+)]
+#[ODM\Index(
+    keys: ['pipes.topology_id' => 'asc', 'pipes.node_id' => 'asc', 'ts' => 'desc'],
+    name: 'IK_log_pipesTopologyId_pipesNodeId_created',
+)]
+#[ODM\Index(
+    keys: ['pipes.severity' => 'asc', 'ts' => 'desc'],
+    name: 'IK_log_pipesSeverity_created',
+)]
+#[ODM\Index(
+    keys: ['pipes.topology_id' => 'asc', 'pipes.severity' => 'asc', 'ts' => 'desc'],
+    name: 'IK_log_pipesTopologyId_pipesSeverity_created',
+)]
+#[ODM\Index(
+    keys: ['pipes.node_id' => 'asc', 'pipes.severity' => 'asc', 'ts' => 'desc'],
+    name: 'IK_log_pipesNodeId_pipesSeverity_created',
+)]
+#[ODM\Index(
+    keys: ['pipes.topology_id' => 'asc', 'pipes.node_id' => 'asc', 'pipes.severity' => 'asc', 'ts' => 'desc'],
+    name: 'IK_log_pipesTopologyId_pipesNodeId_pipesSeverity_created',
+)]
+#[ODM\Index(
+    keys: ['pipes.correlation_id' => 'asc', 'pipes.severity' => 'asc'],
+    name: 'IK_log_pipesCorrelationId_pipesSeverity',
+)]
 class Logs
 {
 
