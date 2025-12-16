@@ -37,6 +37,10 @@ func (this MongoSvc) Collection() *mongo.Collection {
 	return this.collection
 }
 
+func (this MongoSvc) UserTaskCollection() *mongo.Collection {
+	return this.userTaskCollection
+}
+
 func (this MongoSvc) Connection() *mongodb.Connection {
 	return this.connection
 }
