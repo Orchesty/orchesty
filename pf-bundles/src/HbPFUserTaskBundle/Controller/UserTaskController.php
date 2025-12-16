@@ -2,6 +2,7 @@
 
 namespace Hanaboso\PipesFramework\HbPFUserTaskBundle\Controller;
 
+use Exception;
 use Hanaboso\MongoDataGrid\GridRequestDto;
 use Hanaboso\PipesFramework\HbPFUserTaskBundle\Handler\UserTaskHandler;
 use Hanaboso\Utils\String\Json;
@@ -27,7 +28,7 @@ final class UserTaskController
      *
      * @param UserTaskHandler $handler
      */
-    public function __construct(private UserTaskHandler $handler)
+    public function __construct(private readonly UserTaskHandler $handler)
     {
         $this->logger = new NullLogger();
     }
@@ -47,6 +48,22 @@ final class UserTaskController
         } catch (Throwable $t) {
             return $this->getErrorResponse($t);
         }
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return Response
+     * @throws Exception
+     */
+    #[Route('/user-tasks', methods: [Request::METHOD_GET])]
+    public function getUserTasksAction(Request $request): Response
+    {
+        return $this->getResponse(
+            $this->handler->getUserTasks(
+                new GridRequestDto(Json::decode($request->query->get('filter', '{}'))),
+            ),
+        );
     }
 
     /**
