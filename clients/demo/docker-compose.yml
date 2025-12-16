@@ -168,6 +168,7 @@ services:
             LIMITER_ADDR: 0.0.0.0:3333
             RABBITMQ_DSN: ${RABBITMQ_DSN}
             MONGO_DSN: ${MONGO_DSN}
+            METRICS_DSN: ${METRICS_DSN}
             UDP_LOGGER_URL: "fluentd:5120"
         command: go run cmd/limiter_app.go
         volumes:
