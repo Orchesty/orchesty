@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesFramework\HbPFMetricsBundle\Handler;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Exception;
 use Hanaboso\MongoDataGrid\GridFilterAbstract;
 use Hanaboso\MongoDataGrid\GridHandlerTrait;
 use Hanaboso\MongoDataGrid\GridRequestDtoInterface;
@@ -17,7 +18,7 @@ use Hanaboso\Utils\Exception\DateTimeException;
  *
  * @package Hanaboso\PipesFramework\HbPFMetricsBundle\Handler
  */
-final class MetricsHandler
+final readonly class MetricsHandler
 {
 
     use GridHandlerTrait;
@@ -26,9 +27,9 @@ final class MetricsHandler
      * MetricsHandler constructor.
      *
      * @param DocumentManager     $dm
-     * @param MongoMetricsManager $mongoMetricsManager
+     * @param MongoMetricsManager $manager
      */
-    public function __construct(private DocumentManager $dm, private MongoMetricsManager $mongoMetricsManager)
+    public function __construct(private DocumentManager $dm, private MongoMetricsManager $manager)
     {
     }
 
@@ -41,7 +42,7 @@ final class MetricsHandler
      */
     public function getTopologyMetrics(string $topologyId, array $params): array
     {
-        return $this->mongoMetricsManager->getTopologyMetrics($this->getTopologyById($topologyId), $params);
+        return $this->manager->getTopologyMetrics($this->getTopologyById($topologyId), $params);
     }
 
     /**
@@ -55,7 +56,7 @@ final class MetricsHandler
      */
     public function getNodeMetrics(string $topologyId, string $nodeId, array $params): array
     {
-        return $this->mongoMetricsManager->getNodeMetrics(
+        return $this->manager->getNodeMetrics(
             $this->getNodeByTopologyAndNodeId($topologyId, $nodeId),
             $this->getTopologyById($topologyId),
             $params,
@@ -68,7 +69,7 @@ final class MetricsHandler
      */
     public function getHealthcheckMetrics(): array
     {
-        return $this->mongoMetricsManager->getHealthcheckMetrics();
+        return $this->manager->getHealthcheckMetrics();
     }
 
     /**
@@ -82,12 +83,45 @@ final class MetricsHandler
     public function getRequestsCountMetrics(string $topologyId, GridRequestDtoInterface $dto): array
     {
         $params = $this->parseDateRangeFromFilter($dto);
-        $items  = $this->mongoMetricsManager->getTopologyRequestCountMetrics(
+        $items  = $this->manager->getTopologyRequestCountMetrics(
             $this->getTopologyById($topologyId),
             $params,
         );
 
         return $this->getGridResponse($dto, $items);
+    }
+
+    /**
+     * @param GridRequestDtoInterface $dto
+     *
+     * @return mixed[]
+     * @throws Exception
+     */
+    public function getMetricsConnectorsOverview(GridRequestDtoInterface $dto): array
+    {
+        return $this->getGridResponse($dto, $this->manager->getMetricsConnectorsOverview($dto));
+    }
+
+    /**
+     * @param GridRequestDtoInterface $dto
+     *
+     * @return mixed[]
+     * @throws Exception
+     */
+    public function getMetricsConnectors(GridRequestDtoInterface $dto): array
+    {
+        return $this->getGridResponse($dto, $this->manager->getMetricsConnectors($dto));
+    }
+
+    /**
+     * @param GridRequestDtoInterface $dto
+     *
+     * @return mixed[]
+     * @throws Exception
+     */
+    public function getMetricsConnectorsGraph(GridRequestDtoInterface $dto): array
+    {
+        return $this->getGridResponse($dto, $this->manager->getMetricsConnectorsGraph($dto));
     }
 
     /**
