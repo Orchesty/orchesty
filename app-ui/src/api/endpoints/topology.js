@@ -173,7 +173,7 @@ export default {
   getLogs: {
     id: "GET_LOGS",
     request: (data) => ({
-      url: `/logs?filter=${JSON.stringify(data)}`,
+      url: `/logs-old?filter=${JSON.stringify(data)}`,
       method: "GET",
     }),
   },
@@ -181,7 +181,7 @@ export default {
     id: "TOPOLOGY_GET_LOGS_BY_ID",
     request: (data) => {
       return {
-        url: `/logs?filter=${JSON.stringify(data)}`,
+        url: `/logs-old?filter=${JSON.stringify(data)}`,
         method: "GET",
       }
     },
@@ -202,7 +202,7 @@ export default {
         })
       }
       return {
-        url: `/logs?filter=${JSON.stringify(data)}`,
+        url: `/logs-old?filter=${JSON.stringify(data)}`,
         method: "GET",
       }
     },
