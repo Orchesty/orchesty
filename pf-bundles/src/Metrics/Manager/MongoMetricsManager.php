@@ -27,6 +27,9 @@ use Hanaboso\PipesFramework\Metrics\Enum\ServiceNameByQueueEnum;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorAggregationFilter;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorGraphAggregationFilter;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorOverviewAggregationFilter;
+use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricLimitAggregationFilter;
+use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricLimitGraphAggregationFilter;
+use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricLimitTotalAggregationFilter;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricProcessAggregationFilter;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricRequestAggregationFilter;
 use Hanaboso\PipesFramework\Metrics\Retention\RetentionFactory;
@@ -59,6 +62,9 @@ final class MongoMetricsManager extends MetricsManagerAbstract
      * @param MetricConnectorGraphAggregationFilter    $metricConnectorGraphAggregationFilter
      * @param MetricRequestAggregationFilter           $metricRequestAggregationFilter
      * @param MetricProcessAggregationFilter           $metricProcessAggregationFilter
+     * @param MetricLimitAggregationFilter             $metricLimitAggregationFilter
+     * @param MetricLimitTotalAggregationFilter        $metricLimitTotalAggregationFilter
+     * @param MetricLimitGraphAggregationFilter        $metricLimitGraphAggregationFilter
      */
     public function __construct(
         private DocumentManager $dm,
@@ -74,6 +80,9 @@ final class MongoMetricsManager extends MetricsManagerAbstract
         private readonly MetricConnectorGraphAggregationFilter $metricConnectorGraphAggregationFilter,
         private readonly MetricRequestAggregationFilter $metricRequestAggregationFilter,
         private readonly MetricProcessAggregationFilter $metricProcessAggregationFilter,
+        private readonly MetricLimitAggregationFilter $metricLimitAggregationFilter,
+        private readonly MetricLimitTotalAggregationFilter $metricLimitTotalAggregationFilter,
+        private readonly MetricLimitGraphAggregationFilter $metricLimitGraphAggregationFilter,
     )
     {
         parent::__construct($dm, $nodeTable, $fpmTable, $rabbitTable, $counterTable, $connectorTable, $consumerTable);
@@ -366,7 +375,6 @@ final class MongoMetricsManager extends MetricsManagerAbstract
         return $this->metricConnectorGraphAggregationFilter->getData($dto)->toArray();
     }
 
-
     /**
      * @param GridRequestDtoInterface $dto
      *
@@ -387,6 +395,39 @@ final class MongoMetricsManager extends MetricsManagerAbstract
     public function getMetricsProcesses(GridRequestDtoInterface $dto): array
     {
         return $this->metricProcessAggregationFilter->getData($dto)->toArray();
+    }
+
+    /**
+     * @param GridRequestDtoInterface $dto
+     *
+     * @return array<mixed>
+     * @throws Exception
+     */
+    public function getMetricsLimits(GridRequestDtoInterface $dto): array
+    {
+        return $this->metricLimitAggregationFilter->getData($dto)->toArray();
+    }
+
+    /**
+     * @param GridRequestDtoInterface $dto
+     *
+     * @return array<mixed>
+     * @throws Exception
+     */
+    public function getMetricsLimitsTotal(GridRequestDtoInterface $dto): array
+    {
+        return $this->metricLimitTotalAggregationFilter->getData($dto)->toArray();
+    }
+
+    /**
+     * @param GridRequestDtoInterface $dto
+     *
+     * @return array<mixed>
+     * @throws Exception
+     */
+    public function getMetricsLimitsGraph(GridRequestDtoInterface $dto): array
+    {
+        return $this->metricLimitGraphAggregationFilter->getData($dto)->toArray();
     }
 
     /**

@@ -10,6 +10,9 @@ use Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorAggregationFilter;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorGraphAggregationFilter;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorOverviewAggregationFilter;
+use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricLimitAggregationFilter;
+use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricLimitGraphAggregationFilter;
+use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricLimitTotalAggregationFilter;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricProcessAggregationFilter;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricRequestAggregationFilter;
 
@@ -92,6 +95,12 @@ trait MongoTestTrait
         $metricRequestAggregationFilter = self::getContainer()->get('hbpf.metric-request.aggregation-filter');
         /** @var MetricProcessAggregationFilter $metricProcessAggregationFilter */
         $metricProcessAggregationFilter = self::getContainer()->get('hbpf.metric-process.aggregation-filter');
+        /** @var MetricLimitAggregationFilter $metricLimitAggregationFilter */
+        $metricLimitAggregationFilter = self::getContainer()->get('hbpf.metric-limit.aggregation-filter');
+        /** @var MetricLimitTotalAggregationFilter $metricLimitTotalAggregationFilter */
+        $metricLimitTotalAggregationFilter = self::getContainer()->get('hbpf.metric-limit-total.aggregation-filter');
+        /** @var MetricLimitGraphAggregationFilter $metricLimitGraphAggregationFilter */
+        $metricLimitGraphAggregationFilter = self::getContainer()->get('hbpf.metric-limit-graph.aggregation-filter');
 
         return new MongoMetricsManager(
             $this->dm,
@@ -107,6 +116,9 @@ trait MongoTestTrait
             $metricConnectorGraphAggregationFilter,
             $metricRequestAggregationFilter,
             $metricProcessAggregationFilter,
+            $metricLimitAggregationFilter,
+            $metricLimitTotalAggregationFilter,
+            $metricLimitGraphAggregationFilter,
         );
     }
 

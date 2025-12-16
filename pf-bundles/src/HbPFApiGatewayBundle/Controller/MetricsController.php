@@ -148,4 +148,46 @@ final class MetricsController extends AbstractController
         );
     }
 
+    /**
+     * @param Request $request
+     *
+     * @return Response
+     */
+    #[Route('/metrics/limits', methods: [Request::METHOD_GET])]
+    public function getLimitsAction(Request $request): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::getMetricsLimitsAction',
+            ['request' => $request],
+        );
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return Response
+     */
+    #[Route('/metrics/limits/total', methods: [Request::METHOD_GET])]
+    public function getLimitsTotalAction(Request $request): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::getMetricsLimitsTotalAction',
+            ['request' => $request],
+        );
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return Response
+     */
+    #[Route('/metrics/limits/graph', methods: [Request::METHOD_GET])]
+    public function getLimitsGraphAction(Request $request): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::getMetricsLimitsGraphAction',
+            ['request' => $request],
+        );
+    }
+
 }
