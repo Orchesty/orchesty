@@ -179,4 +179,52 @@ final class MetricsController
         );
     }
 
+    /**
+     * @param Request $request
+     *
+     * @return Response
+     * @throws Exception
+     */
+    #[Route('/metrics/limits', methods: [Request::METHOD_GET])]
+    public function getMetricsLimitsAction(Request $request): Response
+    {
+        return $this->getResponse(
+            $this->handler->getMetricsLimits(
+                new GridRequestDto(Json::decode($request->query->get('filter', '{}'))),
+            ),
+        );
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return Response
+     * @throws Exception
+     */
+    #[Route('/metrics/limits/total', methods: [Request::METHOD_GET])]
+    public function getMetricsLimitsTotalAction(Request $request): Response
+    {
+        return $this->getResponse(
+            $this->handler->getMetricsLimitsTotal(
+                new GridRequestDto(Json::decode($request->query->get('filter', '{}'))),
+            ),
+        );
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return Response
+     * @throws Exception
+     */
+    #[Route('/metrics/limits/graph', methods: [Request::METHOD_GET])]
+    public function getMetricsLimitsGraphAction(Request $request): Response
+    {
+        return $this->getResponse(
+            $this->handler->getMetricsLimitsGraph(
+                new GridRequestDto(Json::decode($request->query->get('filter', '{}'))),
+            ),
+        );
+    }
+
 }

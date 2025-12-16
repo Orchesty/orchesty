@@ -478,6 +478,32 @@ paths:
                 500:
                     $ref: '#/components/responses/500'
 
+    /api/metrics/limits:
+        get:
+            tags: [ Metrics ]
+            responses:
+                200:
+                    $ref: '#/components/responses/MetricsLimits'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/metrics/limits/total:
+        get:
+            tags: [ Metrics ]
+            responses:
+                200:
+                    $ref: '#/components/responses/MetricsLimitsTotal'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/metrics/limits/graph:
+        get:
+            tags: [ Metrics ]
+            responses:
+                200:
+                    $ref: '#/components/responses/MetricsLimitsGraph'
+                500:
+                    $ref: '#/components/responses/500'
 
     /api/nodes/{id}:
         get:
@@ -1477,6 +1503,27 @@ components:
                     schema:
                         $ref: '#/components/schemas/MetricsRequests'
 
+        MetricsLimits:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/MetricsLimits'
+
+        MetricsLimitsTotal:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/MetricsLimitsTotal'
+
+        MetricsLimitsGraph:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/MetricsLimitsGraph'
+
         TopologiesRun:
             description: ''
             content:
@@ -2391,6 +2438,175 @@ components:
                         total:
                             type: integer
 
+        MetricsLimits:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            nodeId:
+                                type: string
+                            topologyId:
+                                type: string
+                            count:
+                                type: integer
+                            previousCount:
+                                type: integer
+                                nullable: true
+                search:
+                    type: string
+                    nullable: true
+                filter:
+                    type: array
+                    items:
+                        type: array
+                        items:
+                            type: object
+                            properties:
+                                column:
+                                    type: string
+                                operator:
+                                    type: string
+                                value:
+                                    type: array
+                                    items:
+                                        type: string
+                sorter:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            column:
+                                type: string
+                            direction:
+                                type: string
+                paging:
+                    type: object
+                    properties:
+                        itemsPerPage:
+                            type: integer
+                        lastPage:
+                            type: integer
+                        nextPage:
+                            type: integer
+                        page:
+                            type: integer
+                        previousPage:
+                            type: integer
+                        total:
+                            type: integer
+
+        MetricsLimitsTotal:
+            type: object
+            properties:
+                items:
+                    type: object
+                    properties:
+                        count:
+                            type: integer
+                        previousCount:
+                            type: integer
+                            nullable: true
+                search:
+                    type: string
+                    nullable: true
+                filter:
+                    type: array
+                    items:
+                        type: array
+                        items:
+                            type: object
+                            properties:
+                                column:
+                                    type: string
+                                operator:
+                                    type: string
+                                value:
+                                    type: array
+                                    items:
+                                        type: string
+                sorter:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            column:
+                                type: string
+                            direction:
+                                type: string
+                paging:
+                    type: object
+                    properties:
+                        itemsPerPage:
+                            type: integer
+                        lastPage:
+                            type: integer
+                        nextPage:
+                            type: integer
+                        page:
+                            type: integer
+                        previousPage:
+                            type: integer
+                        total:
+                            type: integer
+
+        MetricsLimitsGraph:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            created:
+                                type: string
+                                format: date-time
+                            count:
+                                type: integer
+                search:
+                    type: string
+                    nullable: true
+                filter:
+                    type: array
+                    items:
+                        type: array
+                        items:
+                            type: object
+                            properties:
+                                column:
+                                    type: string
+                                operator:
+                                    type: string
+                                value:
+                                    type: array
+                                    items:
+                                        type: string
+                sorter:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            column:
+                                type: string
+                            direction:
+                                type: string
+                paging:
+                    type: object
+                    properties:
+                        itemsPerPage:
+                            type: integer
+                        lastPage:
+                            type: integer
+                        nextPage:
+                            type: integer
+                        page:
+                            type: integer
+                        previousPage:
+                            type: integer
+                        total:
+                            type: integer
 
         TopologyTask:
             type: object

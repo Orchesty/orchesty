@@ -146,6 +146,41 @@ final readonly class MetricsHandler
         return $this->getGridResponse($dto, $this->manager->getMetricsProcesses($dto));
     }
 
+
+    /**
+     * @param GridRequestDtoInterface $dto
+     *
+     * @return mixed[]
+     * @throws Exception
+     */
+    public function getMetricsLimits(GridRequestDtoInterface $dto): array
+    {
+        return $this->getGridResponse($dto, $this->manager->getMetricsLimits($dto));
+    }
+
+    /**
+     * @param GridRequestDtoInterface $dto
+     *
+     * @return mixed[]
+     * @throws Exception
+     */
+    public function getMetricsLimitsTotal(GridRequestDtoInterface $dto): array
+    {
+        return $this->getGridResponse($dto, $this->manager->getMetricsLimitsTotal($dto));
+    }
+
+
+    /**
+     * @param GridRequestDtoInterface $dto
+     *
+     * @return mixed[]
+     * @throws Exception
+     */
+    public function getMetricsLimitsGraph(GridRequestDtoInterface $dto): array
+    {
+        return $this->getGridResponse($dto, $this->manager->getMetricsLimitsGraph($dto));
+    }
+
     /**
      * @param string $id
      *
