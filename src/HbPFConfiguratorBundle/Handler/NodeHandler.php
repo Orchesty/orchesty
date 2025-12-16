@@ -2,11 +2,16 @@
 
 namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
+use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\CommonsBundle\Exception\NodeException;
+use Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator;
 use Hanaboso\PipesFramework\Configurator\Model\NodeManager;
+use Hanaboso\PipesFramework\Database\Document\Node;
+use Hanaboso\PipesFramework\Database\Document\Topology;
 
 /**
  * Class NodeHandler
@@ -19,10 +24,87 @@ final class NodeHandler
     /**
      * NodeHandler constructor.
      *
-     * @param NodeManager $nodeManager
+     * @param NodeManager     $nodeManager
+     * @param DocumentManager $dm
+     * @param ServiceLocator  $serviceLocator
      */
-    public function __construct(private NodeManager $nodeManager)
+    public function __construct(
+        private NodeManager $nodeManager,
+        private DocumentManager $dm,
+        private ServiceLocator $serviceLocator,
+    )
     {
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public function getTopologiesWithNodes(): array
+    {
+        /** @var Topology[] $topologies */
+        $topologies = $this
+            ->dm
+            ->getRepository(Topology::class)
+            ->findBy(['deleted' => FALSE]);
+
+        /** @var Node[] $nodes */
+        $nodes = $this
+            ->dm
+            ->getRepository(Node::class)
+            ->createQueryBuilder()
+            ->field('deleted')
+            ->equals(FALSE)
+            ->field('type')
+            ->notIn([
+                TypeEnum::START->value,
+                TypeEnum::CRON->value,
+                TypeEnum::USER->value,
+                TypeEnum::WEBHOOK->value,
+            ])
+            ->getQuery()
+            ->toArray();
+
+        $applications = $this->serviceLocator->getApplications('orchesty');
+
+        $applicationsData = [];
+        $topologiesData   = [];
+        $nodesData        = [];
+        $tree             = [];
+
+        foreach ($applications as $sdk) {
+            foreach ($sdk['applications'] ?? [] as $application) {
+                if (isset($application['key'], $application['name'])) {
+                    $applicationsData[$application['key']] = $application['name'];
+                }
+            }
+        }
+
+        foreach ($topologies as $topology) {
+            $topologyId                  = $topology->getId();
+            $topologiesData[$topologyId] = $this->formatName($topology->getName());
+            $tree[$topologyId]           = [];
+        }
+
+        foreach ($nodes as $node) {
+            $nodeId             = $node->getId();
+            $topologyId         = $node->getTopology();
+            $nodesData[$nodeId] = $this->formatName($node->getName());
+
+            if (isset($tree[$topologyId])) {
+                $tree[$topologyId][] = $nodeId;
+            }
+        }
+
+        asort($applicationsData);
+        asort($topologiesData);
+        asort($nodesData);
+
+        return [
+            'applications' => $applicationsData,
+            'nodes'        => $nodesData,
+            'topologies'   => $topologiesData,
+            'tree'         => $tree,
+        ];
     }
 
     /**
@@ -63,6 +145,15 @@ final class NodeHandler
         $node = $this->nodeManager->updateNode($this->nodeManager->getNodeById($id), $data);
 
         return $node->toArray();
+    }
+
+    /**
+     * @param string $name
+     * @return string
+     */
+    private function formatName(string $name): string
+    {
+        return ucwords(str_replace(['-', '_'], ' ', $name));
     }
 
 }

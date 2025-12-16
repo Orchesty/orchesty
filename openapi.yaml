@@ -696,6 +696,15 @@ paths:
                 500:
                     $ref: '#/components/responses/500'
 
+    /api/topologies/nodes:
+        get:
+            tags: [ Topologies ]
+            responses:
+                200:
+                    $ref: '#/components/responses/TopologiesNodes'
+                500:
+                    $ref: '#/components/responses/500'
+
     /api/topologies/{id}/nodes:
         get:
             tags: [ Topologies ]
@@ -1471,6 +1480,13 @@ components:
                 application/json:
                     schema:
                         $ref: '#/components/schemas/TopologyTest'
+
+        TopologiesNodes:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/TopologiesNodes'
 
         User:
             description: ''
@@ -2294,6 +2310,28 @@ components:
                                 type: integer
                             message:
                                 type: string
+
+        TopologiesNodes:
+            type: object
+            properties:
+                applications:
+                    type: object
+                    additionalProperties:
+                        type: string
+                topologies:
+                    type: object
+                    additionalProperties:
+                        type: string
+                nodes:
+                    type: object
+                    additionalProperties:
+                        type: string
+                tree:
+                    type: object
+                    additionalProperties:
+                        type: array
+                        items:
+                            type: string
 
         User:
             type: object
