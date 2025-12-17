@@ -1,9 +1,11 @@
-FROM hanabosocom/go-base:1.18
+FROM --platform=$BUILDPLATFORM hanabosocom/go-base:1.24
 COPY . .
-RUN go build -ldflags='-s -w' -o /cron cmd/cron.go && upx -9 /cron
+ARG TARGETOS TARGETARCH
+RUN GOOS=$TARGETOS GOARCH=$TARGETARCH go build -ldflags='-s -w' -o /cron cmd/cron.go && upx -9 /cron
 
 FROM alpine
-RUN apk update --no-cache && apk upgrade --no-cache && apk add curl --no-cache
+RUN apk update --no-cache && apk upgrade --no-cache && apk add curl tzdata --no-cache
+
 COPY --from=0 /cron /bin/cron
 WORKDIR /bin
-CMD crond && cron
+CMD ["/bin/sh", "-c", "crond && cron"]

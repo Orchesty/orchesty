@@ -2,14 +2,15 @@ package main
 
 import (
 	"context"
+	"cron/pkg/config"
+	"cron/pkg/handler"
+	"cron/pkg/service"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
-
-	"cron/pkg/config"
-	"cron/pkg/handler"
-	"cron/pkg/service"
+	"time"
 
 	log "github.com/hanaboso/go-log/pkg"
 )
@@ -24,6 +25,7 @@ func main() {
 	}
 
 	logContext().Info("Starting HTTP server: http://0.0.0.0:8080")
+	logContext().Info(fmt.Sprintf("Local timezone is set as %s", time.Local.String()))
 	server := &http.Server{Addr: ":8080", Handler: handler.Router(handler.Routes())}
 
 	defer func() {
