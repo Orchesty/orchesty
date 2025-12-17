@@ -1,0 +1,8 @@
+{
+    "http": 405,
+    "body": null,
+    "headers": {
+        "Allow": "GET, OPTIONS",
+        "Content-Type": "application/json; charset=utf-8"
+    }
+}
