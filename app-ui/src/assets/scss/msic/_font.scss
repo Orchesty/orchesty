@@ -1,0 +1,45 @@
+.truncate {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: 1px;
+}
+
+.v-data-table > .v-data-table__wrapper > table > tbody > tr > td,
+.v-data-table > .v-data-table__wrapper > table > thead > tr > td,
+.v-data-table > .v-data-table__wrapper > table > tfoot > tr > td {
+  font-size: 0.95em;
+}
+
+.v-data-table > .v-data-table__wrapper > table > tbody > tr > th,
+.v-data-table > .v-data-table__wrapper > table > thead > tr > th,
+.v-data-table > .v-data-table__wrapper > table > tfoot > tr > th {
+  font-size: 0.85em;
+}
+
+.v-application,
+.v-application .headline,
+.v-application .title,
+.v-application .v-btn,
+.v-application .v-input,
+.v-application .caption,
+.v-application .subtitle-2,
+.v-application .display-1,
+.v-application .display-2,
+.v-application .display-3,
+.v-application .display-4,
+.v-application .body-1,
+.v-application .body-2,
+.v-application .subtitle-1,
+.v-application .text-h1,
+.v-application .text-h2,
+.v-application .text-h3,
+.v-application .text-h4,
+.v-application .text-h5,
+.v-application .text-h6,
+.v-application .text-subtitle-1,
+.v-application .text-subtitle-2,
+.v-application .text-body-1,
+.v-application .text-body-2 {
+  font-family: Montserrat, sans-serif !important;
+}

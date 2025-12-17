@@ -1,0 +1,15 @@
+@use "@/scss/variables" as *;
+
+@import "vuetify/src/styles/main";
+
+@import "bpmn-js/dist/assets/diagram-js.css";
+@import "bpmn-js/dist/assets/bpmn-font/css/bpmn.css";
+
+@import "bpmn/bpmn-properties-panel";
+@import "vuetify/v-data-table";
+@import "vuetify/expansion-panel";
+@import "vuetify/chip-router";
+@import "bpmn/bpmn-diagram";
+@import "vuetify/navigation";
+@import "msic/orchesty";
+@import "msic/font";
