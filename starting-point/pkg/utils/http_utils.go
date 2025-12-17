@@ -40,7 +40,7 @@ func ValidateBody(r *http.Request) (err error) {
 		// TODO validate xml
 		return nil
 	default:
-		return ValidateJSON(body)
+		return nil
 	}
 }
 

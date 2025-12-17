@@ -6,8 +6,8 @@ import (
 
 	log "github.com/hanaboso/go-log/pkg"
 	"github.com/hanaboso/go-mongodb"
-	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 	"starting-point/pkg/config"
 )
 
@@ -19,6 +19,7 @@ type MongoInterface interface {
 	DropApiTokenCollection() error
 	InsertApiToken(user string, scopes []string, key string) error
 	FindApiKeyByUserAndScopes(user string, scopes []string) (string, error)
+	FindApiKey(apiKey string, scopes []string) (string, error)
 	FindNodeByID(nodeID, topologyID string, uiRun bool, allowedTypes []string) *Node
 	FindNodeByName(nodeName, topologyID string) []Node
 	FindTopologyByID(topologyID, nodeID string, uiRun bool, allowedTypes []string) *Topology
@@ -30,10 +31,10 @@ type MongoInterface interface {
 type MongoDefault struct {
 	connection       *mongodb.Connection
 	log              log.Logger
-	visibilityFilter primitive.E
-	enabledFilter    primitive.E
-	deletedFilter    primitive.E
-	versionSort      primitive.D
+	visibilityFilter bson.E
+	enabledFilter    bson.E
+	deletedFilter    bson.E
+	versionSort      bson.D
 }
 
 // Mongo represents default MongoDB implementation
@@ -42,10 +43,10 @@ var Mongo MongoInterface
 // CreateMongo creates default MongoDB implementation
 func CreateMongo() {
 	Mongo = &MongoDefault{
-		visibilityFilter: primitive.E{Key: "visibility", Value: "public"},
-		enabledFilter:    primitive.E{Key: "enabled", Value: true},
-		deletedFilter:    primitive.E{Key: "deleted", Value: false},
-		versionSort:      primitive.D{{"version", -1}},
+		visibilityFilter: bson.E{Key: "visibility", Value: "public"},
+		enabledFilter:    bson.E{Key: "enabled", Value: true},
+		deletedFilter:    bson.E{Key: "deleted", Value: false},
+		versionSort:      bson.D{{"version", -1}},
 		log:              config.Logger,
 	}
 
@@ -117,23 +118,40 @@ func (m *MongoDefault) FindApiKeyByUserAndScopes(user string, scopes []string) (
 	return apiToken.Key, err
 }
 
+func (m *MongoDefault) FindApiKey(apiKey string, scopes []string) (string, error) {
+	var apiToken ApiToken
+	context, cancel := m.connection.Context()
+	defer cancel()
+
+	err := m.connection.Database.
+		Collection(config.MongoDB.ApiTokenColl).
+		FindOne(context, map[string]interface{}{"key": apiKey, "scopes": scopes}).
+		Decode(&apiToken)
+
+	if err != nil {
+		return "", err
+	}
+
+	return apiToken.Key, err
+}
+
 // FindNodeByID finds node by id
 func (m *MongoDefault) FindNodeByID(nodeID, topologyID string, uiRun bool, allowedTypes []string) *Node {
 	var node Node
 	innerContext, cancel := m.connection.Context()
 	defer cancel()
 
-	innerNodeID, err := primitive.ObjectIDFromHex(nodeID)
+	innerNodeID, err := bson.ObjectIDFromHex(nodeID)
 	if err != nil {
 		m.log.Warn("Node ID '%s' is not valid MongoDB ID.", nodeID)
 
 		return nil
 	}
 
-	filter := primitive.D{
+	filter := bson.D{
 		{"_id", innerNodeID},
 		{"topology", topologyID},
-		{"type", primitive.M{"$in": allowedTypes}},
+		{"type", bson.M{"$in": allowedTypes}},
 		m.deletedFilter,
 	}
 
@@ -158,10 +176,10 @@ func (m *MongoDefault) FindNodeByName(nodeName, topologyID string) []Node {
 	innerContext, cancel := m.connection.Context()
 	defer cancel()
 
-	cursor, err := m.connection.Database.Collection(config.MongoDB.NodeColl).Find(innerContext, primitive.D{
+	cursor, err := m.connection.Database.Collection(config.MongoDB.NodeColl).Find(innerContext, bson.D{
 		{"name", nodeName},
 		{"topology", topologyID},
-		{"type", primitive.M{"$in": enum.NodeType_StartEvents}},
+		{"type", bson.M{"$in": enum.NodeType_StartEvents}},
 		m.enabledFilter,
 		m.deletedFilter,
 	})
@@ -196,14 +214,14 @@ func (m *MongoDefault) FindTopologyByID(topologyID, nodeID string, uiRun bool, a
 	innerContext, cancel := m.connection.Context()
 	defer cancel()
 
-	innerTopologyID, err := primitive.ObjectIDFromHex(topologyID)
+	innerTopologyID, err := bson.ObjectIDFromHex(topologyID)
 	if err != nil {
 		m.log.Warn("Topology ID '%s' is not valid MongoDB ID.", topologyID)
 
 		return nil
 	}
 
-	var filters = primitive.D{
+	var filters = bson.D{
 		{"_id", innerTopologyID},
 		m.visibilityFilter,
 		m.deletedFilter,
@@ -230,7 +248,7 @@ func (m *MongoDefault) FindTopologyByName(topologyName, nodeName string) *Topolo
 	innerContext, cancel := m.connection.Context()
 	defer cancel()
 
-	cursor, err := m.connection.Database.Collection(config.MongoDB.TopologyColl).Find(innerContext, primitive.D{
+	cursor, err := m.connection.Database.Collection(config.MongoDB.TopologyColl).Find(innerContext, bson.D{
 		{"name", topologyName},
 		m.visibilityFilter,
 		m.enabledFilter,
@@ -268,10 +286,12 @@ func (m *MongoDefault) FindTopologyByApplication(topologyName, nodeName, token s
 	innerContext, cancel := m.connection.Context()
 	defer cancel()
 
-	err := m.connection.Database.Collection(config.MongoDB.WebhookColl).FindOne(innerContext, primitive.D{
+	err := m.connection.Database.Collection(config.MongoDB.WebhookColl).FindOne(innerContext, bson.D{
 		{"topology", topologyName},
 		{"node", nodeName},
 		{"token", token},
+		{"token", token},
+		{"unsubscribeFailed", bson.M{"$ne": true}},
 	}).Decode(&webhook)
 
 	if err != nil {

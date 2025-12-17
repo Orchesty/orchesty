@@ -1,8 +1,6 @@
-version: '3.5'
-
 services:
     app:
-        image: hanabosocom/go-base:1.19
+        image: hanabosocom/go-base:1.24
         user: ${DEV_UID}:${DEV_GID}
         environment:
             DEV_UID: ${DEV_UID}
@@ -34,9 +32,6 @@ services:
             - ${DEV_IP}:15672:15672
         volumes:
             - rabbitmq:/var/lib/rabbitmq
-
-    influxdb:
-        image: dkr.hanaboso.net/pipes/pipes/influxdb:dev
 
     swagger-ui:
         image: swaggerapi/swagger-ui

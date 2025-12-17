@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"testing"
 
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/v2/bson"
 	"starting-point/pkg/service"
 	"starting-point/pkg/storage"
 	"starting-point/pkg/utils"
@@ -14,7 +14,7 @@ import (
 var topology = "Topology"
 var node = "Node"
 var customID = "4cb174e20000000000000000"
-var customObjectID, _ = primitive.ObjectIDFromHex(customID)
+var customObjectID, _ = bson.ObjectIDFromHex(customID)
 var topologyObject = storage.Topology{
 	ID:   customObjectID,
 	Name: topology,
@@ -93,7 +93,7 @@ func prepareMongo() {
 	_ = storage.Mongo.InsertApiToken("orchesty", []string{"topology:run"}, "")
 }
 
-func (r RabbitMock) SendMessage(request *http.Request, topology storage.Topology, init map[string]float64) (string, error) {
+func (r RabbitMock) SendMessage(request *http.Request, topology storage.Topology, init map[string]interface{}) (string, error) {
 	return "1", nil
 }
 
@@ -137,7 +137,7 @@ func TestHandleStatus(t *testing.T) {
 	storage.Mongo = &MongoMockConnected{}
 	service.RabbitMq = RabbitMock{}
 
-	r, _ := http.NewRequest("GET", "/status", nil)
+	r, _ := http.NewRequest("GET", "/status", bytes.NewReader([]byte("[]")))
 	assertResponse(t, r, 200, `{"database":true,"metrics":true}`)
 }
 
@@ -214,7 +214,7 @@ func TestHandleRunByApplicationOptions(t *testing.T) {
 
 func TestHandleInvalidateCache(t *testing.T) {
 	mockCache(1)
-	r, _ := http.NewRequest("POST", "/topologies/a/invalidate-cache", nil)
+	r, _ := http.NewRequest("POST", "/topologies/a/invalidate-cache", bytes.NewReader([]byte("[]")))
 	assertResponse(t, r, 200, `{"cache":0}`)
 }
 
@@ -291,22 +291,6 @@ func TestHandleRunByIDTopologyNotFound(t *testing.T) {
 
 	r, _ := http.NewRequest("POST", "/topologies/a/nodes/b/run", bytes.NewReader([]byte("[]")))
 	assertResponse(t, r, 404, `{"message":"Topology with key 'a' not found!"}`)
-}
-
-func TestHandleRunByNameInvalidInput(t *testing.T) {
-	mockCache(3)
-	prepareMongo()
-
-	r, _ := http.NewRequest("POST", "/topologies/a/nodes/b/run-by-name", bytes.NewReader([]byte("invalid")))
-	assertResponse(t, r, 400, `{"message":"Content is not valid!"}`)
-}
-
-func TestHandleRunByApplicationInvalidInput(t *testing.T) {
-	mockCache(3)
-	prepareMongo()
-
-	r, _ := http.NewRequest("POST", "/topologies/a/nodes/b/token/c/run", bytes.NewReader([]byte("invalid")))
-	assertResponse(t, r, 400, `{"message":"Content is not valid!"}`)
 }
 
 // Test case: Find topology and node

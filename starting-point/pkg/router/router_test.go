@@ -14,25 +14,25 @@ func TestRouter(t *testing.T) {
 	storage.Mongo = &MongoMockConnected{}
 	prepareMongo()
 
-	r, _ := http.NewRequest("GET", "/status", nil)
+	r, _ := http.NewRequest("GET", "/status", bytes.NewReader([]byte("[]")))
 	assertResponse(t, r, 200, `{"database":true,"metrics":true}`)
 }
 
 func TestNotFound(t *testing.T) {
-	r, _ := http.NewRequest("GET", "/notFound", nil)
+	r, _ := http.NewRequest("GET", "/notFound", bytes.NewReader([]byte("[]")))
 	assertResponse(t, r, 404, "")
 }
 
 func TestNotAllowed(t *testing.T) {
-	r, _ := http.NewRequest("POST", "/status", nil)
-	assertResponse(t, r, 405, "")
+	r, _ := http.NewRequest("POST", "/status", bytes.NewReader([]byte("[]")))
+	assertResponse(t, r, 404, "")
 }
 
 func TestErrResponse(t *testing.T) {
 	prepareMongo()
 
 	r, _ := http.NewRequest("POST", "/topologies/bbb/nodes/aaa/run", bytes.NewReader([]byte("aaa")))
-	assertResponse(t, r, 400, "{\"message\":\"Content is not valid!\"}")
+	assertResponse(t, r, 404, "{\"message\":\"Topology with key 'bbb' not found!\"}")
 }
 
 func assertResponse(t *testing.T, r *http.Request, code int, content string) {

@@ -22,6 +22,7 @@ func HandleClear(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer context.Clear(r)
 		config.Logger.Info("Request: %s %s", r.Method, r.URL.String())
+		config.Logger.Debug("Request: %s %s Body: [%s]", r.Method, r.URL.String(), utils.GetBodyFromStream(r))
 
 		w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
@@ -161,8 +162,13 @@ func handleByApplication(w http.ResponseWriter, r *http.Request) {
 	processMessage(w, r, topology, init)
 }
 
-func processMessage(w http.ResponseWriter, r *http.Request, topology *storage.Topology, init map[string]float64) {
+func processMessage(w http.ResponseWriter, r *http.Request, topology *storage.Topology, init map[string]interface{}) {
 	corrId, _ := service.RabbitMq.SendMessage(r, *topology, init)
+
+	if corrId == "" {
+		writeErrorResponse(w, http.StatusInternalServerError, "Error while processing message, please try again later!")
+		return
+	}
 
 	writeResponse(w, map[string]interface{}{"state": "ok", "started": 1, "correlation_id": corrId})
 }
