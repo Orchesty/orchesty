@@ -6,8 +6,12 @@ use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Exception;
 use Hanaboso\PipesFramework\Database\Document\Node;
 use Hanaboso\PipesFramework\Database\Document\Topology;
+use Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController;
+use Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler;
 use Hanaboso\PipesFramework\Metrics\Exception\MetricsException;
+use Hanaboso\PipesFramework\Metrics\Manager\MetricsManagerAbstract;
 use Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 use Throwable;
 
@@ -16,13 +20,13 @@ use Throwable;
  *
  * @package PipesFrameworkTests\Controller\HbPFMetricsBundle\Controller
  */
+#[CoversClass(MetricsController::class)]
+#[CoversClass(MetricsHandler::class)]
+#[CoversClass(MetricsManagerAbstract::class)]
 final class MetricsControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::topologyMetricsAction
-     *
      * @throws Exception
      */
     public function testTopologyMetricsAction(): void
@@ -47,11 +51,6 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::topologyMetricsAction
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler::getTopologyMetrics
-     *
      * @throws Exception
      */
     public function testTopologyMetricsActionErr(): void
@@ -68,11 +67,6 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::nodeMetricsAction
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler::getNodeMetrics
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler::getNodeByTopologyAndNodeId
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler::getTopologyById
-     *
      * @throws Exception
      */
     public function testNodeMetricsAction(): void
@@ -91,11 +85,6 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::nodeMetricsAction
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler::getNodeMetrics
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler::getNodeByTopologyAndNodeId
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler::getTopologyById
-     *
      * @throws Exception
      */
     public function testNodeMetricsActionErr(): void
@@ -113,9 +102,6 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::healthcheckMetricsAction
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MetricsManagerAbstract::getHealthcheckMetrics
-     *
      * @throws Exception
      */
     public function testHealthcheckMetricsAction(): void
@@ -142,9 +128,6 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::healthcheckMetricsAction
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MetricsManagerAbstract::getHealthcheckMetrics
-     *
      * @throws Exception
      */
     public function testHealthcheckMetricsActionErr(): void
@@ -160,10 +143,6 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::topologyRequestsCountMetricsAction
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler::getRequestsCountMetrics
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler::getTopologyById
-     *
      * @throws Exception
      */
     public function testTopologyRequestCount(): void
@@ -180,8 +159,6 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::topologyRequestsCountMetricsAction
-     *
      * @throws Exception
      */
     public function testTopologyRequestCountErr(): void

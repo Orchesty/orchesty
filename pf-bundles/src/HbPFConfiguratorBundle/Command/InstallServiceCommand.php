@@ -18,8 +18,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 final class InstallServiceCommand extends Command
 {
 
-    private const NAME = 'name';
-    private const URL  = 'url';
+    private const string NAME = 'name';
+    private const string URL  = 'url';
 
     /**
      * InstallServiceCommand constructor.

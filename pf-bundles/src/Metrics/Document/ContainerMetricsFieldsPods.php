@@ -10,38 +10,33 @@ use Hanaboso\Utils\Date\DateTimeUtils;
  * Class ContainerMetricsFieldsPods
  *
  * @package Hanaboso\PipesFramework\Metrics\Document
- *
- * @ODM\EmbeddedDocument()
  */
+#[ODM\EmbeddedDocument]
 class ContainerMetricsFieldsPods
 {
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $message;
 
     /**
      * @var bool
-     *
-     * @ODM\Field(type="bool")
      */
+    #[ODM\Field(type: 'bool')]
     private bool $up;
 
     /**
      * @var DateTime
-     *
-     * @ODM\Field(type="date")
      */
+    #[ODM\Field(type: 'date')]
     private DateTime $created;
 
     /**
      * @var int
-     *
-     * @ODM\Field(type="int")
      */
+    #[ODM\Field(type: 'int')]
     private int $restarts;
 
     /**

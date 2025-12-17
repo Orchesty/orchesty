@@ -9,24 +9,21 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  * Class RabbitConsumerFields
  *
  * @package Hanaboso\PipesFramework\Metrics\Document
- *
- * @ODM\EmbeddedDocument()
  */
+#[ODM\EmbeddedDocument]
 class RabbitConsumerFields
 {
 
     /**
      * @var int
-     *
-     * @ODM\Field(type="int", name="consumers")
      */
+    #[ODM\Field(name: 'consumers', type: 'int')]
     private int $consumers;
 
     /**
      * @var DateTime
-     *
-     * @ODM\Field(type="date")
      */
+    #[ODM\Field(type: 'date')]
     private DateTime $created;
 
     /**

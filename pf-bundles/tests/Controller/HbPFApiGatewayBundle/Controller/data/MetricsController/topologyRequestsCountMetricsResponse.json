@@ -9,8 +9,8 @@
                     "max": "2"
                 },
                 "process": {
-                    "total": "1",
-                    "errors": "1"
+                    "total": "2",
+                    "errors": "2"
                 }
             }
         },

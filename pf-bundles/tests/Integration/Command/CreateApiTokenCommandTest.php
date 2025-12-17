@@ -4,15 +4,19 @@ namespace PipesFrameworkTests\Integration\Command;
 
 use Exception;
 use Hanaboso\PipesFramework\Configurator\Document\ApiToken;
+use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\CreateApiTokenCommand;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
  * Class CreateApiTokenCommandTest
  *
  * @package PipesFrameworkTests\Integration\Command
  */
+#[CoversClass(CreateApiTokenCommand::class)]
 final class CreateApiTokenCommandTest extends DatabaseTestCaseAbstract
 {
 
@@ -22,7 +26,9 @@ final class CreateApiTokenCommandTest extends DatabaseTestCaseAbstract
      */
     public function testExecute(): void
     {
-        $application = new Application(self::$kernel);
+        /** @var KernelInterface $kernel */
+        $kernel      = self::$kernel;
+        $application = new Application($kernel);
         $command     = $application->get('api-token:create');
 
         $commandTester = new CommandTester($command);

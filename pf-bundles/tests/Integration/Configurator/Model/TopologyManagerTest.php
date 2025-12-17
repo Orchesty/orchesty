@@ -20,6 +20,7 @@ use Hanaboso\PipesFramework\Utils\Dto\NodeSchemaDto;
 use Hanaboso\PipesFramework\Utils\Dto\Schema;
 use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Json;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -27,6 +28,9 @@ use PipesFrameworkTests\DatabaseTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Integration\Configurator\Model
  */
+#[CoversClass(TopologyManager::class)]
+#[CoversClass(Schema::class)]
+#[CoversClass(SystemConfigDto::class)]
 final class TopologyManagerTest extends DatabaseTestCaseAbstract
 {
 
@@ -36,25 +40,17 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     private TopologyManager $manager;
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::createTopology
-     *
      * @throws Exception
      */
     public function testCreateTopologyWithSameName(): void
     {
         self::expectException(TopologyException::class);
         self::expectExceptionCode(TopologyException::TOPOLOGY_NAME_ALREADY_EXISTS);
-        self::assertEquals(1, $this->manager->createTopology(['name' => 'Topology'])->getVersion());
+        self::assertSame(1, $this->manager->createTopology(['name' => 'Topology'])->getVersion());
         $this->manager->createTopology(['name' => 'Topology'])->getVersion();
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::createTopology
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateTopology
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::setTopologyData
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::checkTopologyName
-     *
      * @throws Exception
      */
     public function testUpdateUnpublishedTopologyWithName(): void
@@ -68,12 +64,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::createTopology
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::normalizeName
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateTopology
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::checkTopologyName
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::setTopologyData
-     *
      * @throws Exception
      */
     public function testUpdatePublishedTopologyWithName(): void
@@ -89,12 +79,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::createTopology
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateTopology
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::normalizeName
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::setTopologyData
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::checkTopologyName
-     *
      * @throws Exception
      */
     public function testCheckTopologyNameUnPublished(): void
@@ -102,7 +86,7 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
 
         $this->manager->createTopology(['name' => 'Another Topology']);
         $topology = $this->manager->createTopology(['name' => 'Topology']);
-        self::assertEquals(1, $topology->getVersion());
+        self::assertSame(1, $topology->getVersion());
 
         self::expectException(TopologyException::class);
         self::expectExceptionCode(TopologyException::TOPOLOGY_NAME_ALREADY_EXISTS);
@@ -110,11 +94,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateTopology
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::normalizeName
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::setTopologyData
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::checkTopologyName
-     *
      * @throws Exception
      */
     public function testUpdateTopology(): void
@@ -141,16 +120,14 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $this->dm->clear();
         /** @var Topology $top */
         $top = $this->dm->getRepository(Topology::class)->findOneBy(['id' => $top->getId()]);
-        self::assertEquals('name', $top->getName());
-        self::assertEquals('desc', $top->getDescr());
+        self::assertSame('name', $top->getName());
+        self::assertSame('desc', $top->getDescr());
         self::assertEquals(['bpmn'], $top->getBpmn());
-        self::assertEquals('bpmn', $top->getRawBpmn());
+        self::assertSame('bpmn', $top->getRawBpmn());
         self::assertFalse($top->isEnabled());
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::checkTopologySchemaIsSame
-     *
      * @throws Exception
      */
     public function testCheckTopologyIsSame(): void
@@ -167,12 +144,10 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $this->dm->persist($top);
 
         $this->manager->saveTopologySchema($top, '', $schema);
-        self::assertEquals(TRUE, $this->manager->checkTopologySchemaIsSame($top, $schema));
+        self::assertTrue($this->manager->checkTopologySchemaIsSame($top, $schema));
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::publishTopology
-     *
      * @throws Exception
      */
     public function testPublishTopology(): void
@@ -193,12 +168,10 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
 
         /** @var Topology $res */
         $res = $this->manager->publishTopology($top);
-        self::assertEquals(TopologyStatusEnum::PUBLIC->value, $res->getVisibility());
+        self::assertSame(TopologyStatusEnum::PUBLIC->value, $res->getVisibility());
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::publishTopology
-     *
      * @throws Exception
      */
     public function testPublishTopologyNoNodes(): void
@@ -216,10 +189,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::cloneTopology
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::makePatchRequestForCron
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::cloneTopologyShallow
-     *
      * @throws Exception
      */
     public function testCloneTopology(): void
@@ -301,13 +270,13 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         /** @var Topology $res */
         $res = $this->manager->cloneTopology($top);
 
-        self::assertEquals($top->getName(), $res->getName());
-        self::assertEquals($top->getVersion() + 1, $res->getVersion());
-        self::assertEquals($top->getDescr(), $res->getDescr());
-        self::assertEquals(TopologyStatusEnum::DRAFT->value, $res->getVisibility());
-        self::assertEquals($top->isEnabled(), $res->isEnabled());
+        self::assertSame($top->getName(), $res->getName());
+        self::assertSame($top->getVersion() + 1, $res->getVersion());
+        self::assertSame($top->getDescr(), $res->getDescr());
+        self::assertSame(TopologyStatusEnum::DRAFT->value, $res->getVisibility());
+        self::assertSame($top->isEnabled(), $res->isEnabled());
         self::assertEquals($top->getBpmn(), $res->getBpmn());
-        self::assertEquals($top->getRawBpmn(), $res->getRawBpmn());
+        self::assertSame($top->getRawBpmn(), $res->getRawBpmn());
 
         /** @var Node[] $nodes */
         $nodes = $this->dm->getRepository(Node::class)->findBy(['topology' => $res->getId()]);
@@ -329,10 +298,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::cloneTopology
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::makePatchRequestForCron
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::cloneTopologyShallow
-     *
      * @throws Exception
      */
     public function testCloneTopologyWithoutBpmn(): void
@@ -351,27 +316,14 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         /** @var Topology $res */
         $res = $this->manager->cloneTopology($top);
 
-        self::assertEquals($top->getName(), $res->getName());
-        self::assertEquals($top->getVersion() + 1, $res->getVersion());
-        self::assertEquals($top->getDescr(), $res->getDescr());
-        self::assertEquals(TopologyStatusEnum::DRAFT->value, $res->getVisibility());
-        self::assertEquals($top->isEnabled(), $res->isEnabled());
+        self::assertSame($top->getName(), $res->getName());
+        self::assertSame($top->getVersion() + 1, $res->getVersion());
+        self::assertSame($top->getDescr(), $res->getDescr());
+        self::assertSame(TopologyStatusEnum::DRAFT->value, $res->getVisibility());
+        self::assertSame($top->isEnabled(), $res->isEnabled());
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::saveTopologySchema
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::cloneTopologyShallow
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::generateNodes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::removeNodesByTopology
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNodes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNode
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::checkNodeAttributes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::getNodeBySchemaId
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::setNodeAttributes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::createNode
-     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getSequences
-     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getNodes
-     *
      * @throws Exception
      */
     public function testSaveTopologySchema(): void
@@ -386,26 +338,13 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         /** @var Node[] $nodes */
         $nodes = $this->dm->getRepository(Node::class)->findBy(['topology' => $topology->getId()]);
 
-        self::assertEquals($topology->getId(), $result->getId());
+        self::assertSame($topology->getId(), $result->getId());
         self::assertEquals(7, count($nodes));
 
         self::assertNodesFromSchemaFile($nodes);
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::saveTopologySchema
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::cloneTopologyShallow
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::generateNodes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::removeNodesByTopology
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNodes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNode
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::checkNodeAttributes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::getNodeBySchemaId
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::setNodeAttributes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::createNode
-     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getSequences
-     * @covers \Hanaboso\PipesFramework\Utils\Dto\Schema::getNodes
-     *
      * @throws Exception
      */
     public function testReSaveTopologySchema(): void
@@ -426,24 +365,13 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         /** @var Node[] $nodes */
         $nodes = $this->dm->getRepository(Node::class)->findBy(['topology' => $topology->getId()]);
 
-        self::assertEquals($topology->getId(), $result->getId());
+        self::assertSame($topology->getId(), $result->getId());
         self::assertEquals(7, count($nodes));
 
         self::assertNodesFromSchemaFile($nodes);
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::saveTopologySchema
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::cloneTopologyShallow
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::generateNodes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::removeNodesByTopology
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNodes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNode
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::checkNodeAttributes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::getNodeBySchemaId
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::setNodeAttributes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::createNode
-     *
      * @throws Exception
      */
     public function testSaveTopologySchemaWithClone(): void
@@ -482,29 +410,18 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
 
         $result = $this->manager->saveTopologySchema($topology, '', $this->getSchema());
 
-        self::assertNotEquals($topology->getId(), $result->getId());
+        self::assertNotSame($topology->getId(), $result->getId());
 
         /** @var Node[] $nodes */
         $nodes = $this->dm->getRepository(Node::class)->findBy(['topology' => $result->getId()]);
 
-        self::assertNotEquals($topology->getId(), $result->getId()); // because it is cloned
+        self::assertNotSame($topology->getId(), $result->getId()); // because it is cloned
         self::assertEquals(7, count($nodes));
 
         self::assertNodesFromSchemaFile($nodes);
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::saveTopologySchema
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::cloneTopologyShallow
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::generateNodes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::removeNodesByTopology
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNodes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNode
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::checkNodeAttributes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::getNodeBySchemaId
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::setNodeAttributes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::createNode
-     *
      * @throws Exception
      */
     public function testSaveTopologySchemaUpdateNodes(): void
@@ -525,62 +442,51 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         /** @var Node[] $nodes2 */
         $nodes2 = $this->dm->getRepository(Node::class)->findBy(['topology' => $result2->getId()]);
 
-        self::assertEquals($topology->getId(), $result2->getId()); // it is only updated
+        self::assertSame($topology->getId(), $result2->getId()); // it is only updated
         self::assertEquals(7, count($nodes2));
 
-        self::assertEquals($nodes1[0]->getId(), $nodes2[0]->getId());
-        self::assertEquals('Start Event', $nodes2[0]->getName());
-        self::assertEquals(TypeEnum::CUSTOM->value, $nodes2[0]->getType());
-        self::assertEquals(HandlerEnum::EVENT->value, $nodes2[0]->getHandler());
+        self::assertSame($nodes1[0]->getId(), $nodes2[0]->getId());
+        self::assertSame('Start Event', $nodes2[0]->getName());
+        self::assertSame(TypeEnum::CUSTOM->value, $nodes2[0]->getType());
+        self::assertSame(HandlerEnum::EVENT->value, $nodes2[0]->getHandler());
 
-        self::assertEquals($nodes1[1]->getId(), $nodes2[1]->getId());
-        self::assertEquals('Connector DEF', $nodes2[1]->getName());
-        self::assertEquals(TypeEnum::CONNECTOR->value, $nodes2[1]->getType());
-        self::assertEquals(HandlerEnum::ACTION->value, $nodes2[1]->getHandler());
+        self::assertSame($nodes1[1]->getId(), $nodes2[1]->getId());
+        self::assertSame('Connector DEF', $nodes2[1]->getName());
+        self::assertSame(TypeEnum::CONNECTOR->value, $nodes2[1]->getType());
+        self::assertSame(HandlerEnum::ACTION->value, $nodes2[1]->getHandler());
 
-        self::assertEquals($nodes1[2]->getId(), $nodes2[2]->getId());
-        self::assertEquals('Mapper XYZ', $nodes2[2]->getName());
-        self::assertEquals(TypeEnum::MAPPER->value, $nodes2[2]->getType());
-        self::assertEquals(HandlerEnum::ACTION->value, $nodes2[2]->getHandler());
+        self::assertSame($nodes1[2]->getId(), $nodes2[2]->getId());
+        self::assertSame('Mapper XYZ', $nodes2[2]->getName());
+        self::assertSame(TypeEnum::MAPPER->value, $nodes2[2]->getType());
+        self::assertSame(HandlerEnum::ACTION->value, $nodes2[2]->getHandler());
 
-        self::assertEquals($nodes1[3]->getId(), $nodes2[3]->getId());
-        self::assertEquals('Parser ABC', $nodes2[3]->getName());
-        self::assertEquals(TypeEnum::XML_PARSER->value, $nodes2[3]->getType());
-        self::assertEquals(HandlerEnum::ACTION->value, $nodes2[3]->getHandler());
+        self::assertSame($nodes1[3]->getId(), $nodes2[3]->getId());
+        self::assertSame('Parser ABC', $nodes2[3]->getName());
+        self::assertSame(TypeEnum::XML_PARSER->value, $nodes2[3]->getType());
+        self::assertSame(HandlerEnum::ACTION->value, $nodes2[3]->getHandler());
         self::assertEquals(1, count($nodes2[3]->getNext()));
-        self::assertEquals('Connector DEF', $nodes2[3]->getNext()[0]->getName());
+        self::assertSame('Connector DEF', $nodes2[3]->getNext()[0]->getName());
 
-        self::assertEquals($nodes1[4]->getId(), $nodes2[4]->getId());
-        self::assertEquals('Splitter SPI', $nodes2[4]->getName());
-        self::assertEquals(TypeEnum::SPLITTER->value, $nodes2[4]->getType());
-        self::assertEquals(HandlerEnum::ACTION->value, $nodes2[4]->getHandler());
+        self::assertSame($nodes1[4]->getId(), $nodes2[4]->getId());
+        self::assertSame('Splitter SPI', $nodes2[4]->getName());
+        self::assertSame(TypeEnum::SPLITTER->value, $nodes2[4]->getType());
+        self::assertSame(HandlerEnum::ACTION->value, $nodes2[4]->getHandler());
 
-        self::assertEquals($nodes1[5]->getId(), $nodes2[5]->getId());
-        self::assertEquals('Event 1', $nodes2[5]->getName());
-        self::assertEquals(TypeEnum::CRON->value, $nodes2[5]->getType());
-        self::assertEquals(HandlerEnum::EVENT->value, $nodes2[5]->getHandler());
+        self::assertSame($nodes1[5]->getId(), $nodes2[5]->getId());
+        self::assertSame('Event 1', $nodes2[5]->getName());
+        self::assertSame(TypeEnum::CRON->value, $nodes2[5]->getType());
+        self::assertSame(HandlerEnum::EVENT->value, $nodes2[5]->getHandler());
         self::assertEquals(1, count($nodes2[5]->getNext()));
-        self::assertEquals('*/2 2 * * *', $nodes2[5]->getCron());
-        self::assertEquals('Parser ABC', $nodes2[5]->getNext()[0]->getName());
+        self::assertSame('*/2 2 * * *', $nodes2[5]->getCron());
+        self::assertSame('Parser ABC', $nodes2[5]->getNext()[0]->getName());
 
-        self::assertEquals($nodes1[6]->getId(), $nodes2[6]->getId());
-        self::assertEquals('Event 2', $nodes2[6]->getName());
-        self::assertEquals(TypeEnum::WEBHOOK->value, $nodes2[6]->getType());
-        self::assertEquals(HandlerEnum::EVENT->value, $nodes2[6]->getHandler());
+        self::assertSame($nodes1[6]->getId(), $nodes2[6]->getId());
+        self::assertSame('Event 2', $nodes2[6]->getName());
+        self::assertSame(TypeEnum::WEBHOOK->value, $nodes2[6]->getType());
+        self::assertSame(HandlerEnum::EVENT->value, $nodes2[6]->getHandler());
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::saveTopologySchema
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::cloneTopologyShallow
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::generateNodes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::removeNodesByTopology
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNodes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNode
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::checkNodeAttributes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::getNodeBySchemaId
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::setNodeAttributes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::createNode
-     *
      * @throws Exception
      */
     public function testSaveTopologySchemaNameNotFound(): void
@@ -599,17 +505,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::saveTopologySchema
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::cloneTopologyShallow
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::generateNodes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::removeNodesByTopology
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNodes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNode
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::checkNodeAttributes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::getNodeBySchemaId
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::setNodeAttributes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::createNode
-     *
      * @throws Exception
      */
     public function testSaveTopologySchemaTypeNotExist(): void
@@ -628,17 +523,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::saveTopologySchema
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::cloneTopologyShallow
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::generateNodes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::removeNodesByTopology
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNodes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNode
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::checkNodeAttributes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::getNodeBySchemaId
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::setNodeAttributes
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::createNode
-     *
      * @throws Exception
      */
     public function testSaveTopologySchemaCronNotValid(): void
@@ -657,9 +541,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::deleteTopology
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::removeNodesByTopology
-     *
      * @throws Exception
      */
     public function testDeleteTopology(): void
@@ -691,8 +572,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::getCronTopologies
-     *
      * @throws Exception
      */
     public function testGetCronTopologies(): void
@@ -753,8 +632,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::getCronTopologies
-     *
      * @throws Exception
      */
     public function testGetCronTopologiesRes(): void
@@ -810,8 +687,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::getCronTopologies
-     *
      * @throws Exception
      */
     public function testGetCronTopologiesNotFound(): void
@@ -827,12 +702,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Database\Document\Dto\SystemConfigDto
-     * @covers \Hanaboso\PipesFramework\Database\Document\Node::setName
-     * @covers \Hanaboso\PipesFramework\Database\Document\Node::setSystemConfigs
-     * @covers \Hanaboso\PipesFramework\Database\Document\Node::getName
-     * @covers \Hanaboso\PipesFramework\Database\Document\Node::getSystemConfigs
-     *
      * @throws Exception
      */
     public function testSystemConfig(): void
@@ -847,25 +716,21 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $this->dm->flush();
         $foundNode = $this->dm->getRepository(Node::class)->findBy(['name' => 'node10']);
 
-        self::assertEquals('node10', $foundNode[0]->getName());
+        self::assertSame('node10', $foundNode[0]->getName());
         self::assertIsObject($foundNode[0]->getSystemConfigs());
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::unPublishTopology
-     *
      * @throws Exception
      */
     public function testUnPublishTopology(): void
     {
         $topology = $this->manager->unPublishTopology(new Topology());
 
-        self::assertEquals(TopologyStatusEnum::DRAFT->value, $topology->getVisibility());
+        self::assertSame(TopologyStatusEnum::DRAFT->value, $topology->getVisibility());
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::updateNodes
-     *
      * @throws Exception
      */
     public function testUpdateNodes(): void
@@ -890,8 +755,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::checkNodeAttributes
-     *
      * @throws Exception
      */
     public function testCheckNodeAttributes(): void
@@ -903,8 +766,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::getNodeBySchemaId
-     *
      * @throws Exception
      */
     public function testGetNodeBySchemaId(): void
@@ -917,8 +778,6 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\TopologyManager::setTopologyData
-     *
      * @throws Exception
      */
     public function testSetTopologyData(): void
@@ -974,38 +833,38 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
      */
     private function assertNodesFromSchemaFile(array $nodes): void
     {
-        self::assertEquals('Start Event', $nodes[0]->getName());
-        self::assertEquals(TypeEnum::CUSTOM->value, $nodes[0]->getType());
-        self::assertEquals(HandlerEnum::EVENT->value, $nodes[0]->getHandler());
+        self::assertSame('Start Event', $nodes[0]->getName());
+        self::assertSame(TypeEnum::CUSTOM->value, $nodes[0]->getType());
+        self::assertSame(HandlerEnum::EVENT->value, $nodes[0]->getHandler());
 
-        self::assertEquals('Connector DEF', $nodes[1]->getName());
-        self::assertEquals(TypeEnum::CONNECTOR->value, $nodes[1]->getType());
-        self::assertEquals(HandlerEnum::ACTION->value, $nodes[1]->getHandler());
+        self::assertSame('Connector DEF', $nodes[1]->getName());
+        self::assertSame(TypeEnum::CONNECTOR->value, $nodes[1]->getType());
+        self::assertSame(HandlerEnum::ACTION->value, $nodes[1]->getHandler());
 
-        self::assertEquals('Mapper XYZ', $nodes[2]->getName());
-        self::assertEquals(TypeEnum::MAPPER->value, $nodes[2]->getType());
-        self::assertEquals(HandlerEnum::ACTION->value, $nodes[2]->getHandler());
+        self::assertSame('Mapper XYZ', $nodes[2]->getName());
+        self::assertSame(TypeEnum::MAPPER->value, $nodes[2]->getType());
+        self::assertSame(HandlerEnum::ACTION->value, $nodes[2]->getHandler());
 
-        self::assertEquals('Parser ABC', $nodes[3]->getName());
-        self::assertEquals(TypeEnum::XML_PARSER->value, $nodes[3]->getType());
-        self::assertEquals(HandlerEnum::ACTION->value, $nodes[3]->getHandler());
+        self::assertSame('Parser ABC', $nodes[3]->getName());
+        self::assertSame(TypeEnum::XML_PARSER->value, $nodes[3]->getType());
+        self::assertSame(HandlerEnum::ACTION->value, $nodes[3]->getHandler());
         self::assertEquals(1, count($nodes[3]->getNext()));
-        self::assertEquals('Connector DEF', $nodes[3]->getNext()[0]->getName());
+        self::assertSame('Connector DEF', $nodes[3]->getNext()[0]->getName());
 
-        self::assertEquals('Splitter SPI', $nodes[4]->getName());
-        self::assertEquals(TypeEnum::SPLITTER->value, $nodes[4]->getType());
-        self::assertEquals(HandlerEnum::ACTION->value, $nodes[4]->getHandler());
+        self::assertSame('Splitter SPI', $nodes[4]->getName());
+        self::assertSame(TypeEnum::SPLITTER->value, $nodes[4]->getType());
+        self::assertSame(HandlerEnum::ACTION->value, $nodes[4]->getHandler());
 
-        self::assertEquals('Event 1', $nodes[5]->getName());
-        self::assertEquals(TypeEnum::CRON->value, $nodes[5]->getType());
-        self::assertEquals(HandlerEnum::EVENT->value, $nodes[5]->getHandler());
+        self::assertSame('Event 1', $nodes[5]->getName());
+        self::assertSame(TypeEnum::CRON->value, $nodes[5]->getType());
+        self::assertSame(HandlerEnum::EVENT->value, $nodes[5]->getHandler());
         self::assertEquals(1, count($nodes[5]->getNext()));
-        self::assertEquals('*/2 * * * *', $nodes[5]->getCron());
-        self::assertEquals('Parser ABC', $nodes[5]->getNext()[0]->getName());
+        self::assertSame('*/2 * * * *', $nodes[5]->getCron());
+        self::assertSame('Parser ABC', $nodes[5]->getNext()[0]->getName());
 
-        self::assertEquals('Event 2', $nodes[6]->getName());
-        self::assertEquals(TypeEnum::WEBHOOK->value, $nodes[6]->getType());
-        self::assertEquals(HandlerEnum::EVENT->value, $nodes[6]->getHandler());
+        self::assertSame('Event 2', $nodes[6]->getName());
+        self::assertSame(TypeEnum::WEBHOOK->value, $nodes[6]->getType());
+        self::assertSame(HandlerEnum::EVENT->value, $nodes[6]->getHandler());
     }
 
     /**
@@ -1019,11 +878,11 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     private function assertNodeAfterClone(Node $expected, Node $actual, Topology $topology, int $nextCount): void
     {
         self::assertFalse($expected->getId() == $actual->getId());
-        self::assertEquals($expected->getName(), $actual->getName());
-        self::assertEquals($expected->getType(), $actual->getType());
-        self::assertEquals($topology->getId(), $actual->getTopology());
-        self::assertEquals($expected->getHandler(), $actual->getHandler());
-        self::assertEquals($expected->isEnabled(), $actual->isEnabled());
+        self::assertSame($expected->getName(), $actual->getName());
+        self::assertSame($expected->getType(), $actual->getType());
+        self::assertSame($topology->getId(), $actual->getTopology());
+        self::assertSame($expected->getHandler(), $actual->getHandler());
+        self::assertSame($expected->isEnabled(), $actual->isEnabled());
 
         // next
         self::assertEquals($nextCount, count($expected->getNext()));
@@ -1036,11 +895,11 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
 
         if ($nextCount == 1) {
             self::assertFalse($expNext[0]->getId() == $actNext[0]->getId());
-            self::assertEquals($expNext[0]->getName(), $actNext[0]->getName());
+            self::assertSame($expNext[0]->getName(), $actNext[0]->getName());
         } else if ($nextCount == 2) {
             self::assertFalse($expNext[0]->getId() == $actNext[0]->getId());
-            self::assertEquals($expNext[0]->getName(), $actNext[0]->getName());
-            self::assertEquals($expNext[1]->getName(), $actNext[1]->getName());
+            self::assertSame($expNext[0]->getName(), $actNext[0]->getName());
+            self::assertSame($expNext[1]->getName(), $actNext[1]->getName());
         }
     }
 

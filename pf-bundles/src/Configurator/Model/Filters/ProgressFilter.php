@@ -17,7 +17,7 @@ use Hanaboso\Utils\Date\DateTimeUtils;
 final class ProgressFilter extends GridFilterAbstract
 {
 
-    protected const DATE_FORMAT = DateTimeUtils::DATE_TIME_GO;
+    protected const string DATE_FORMAT = DateTimeUtils::DATE_TIME_GO;
 
     /**
      * @return string[]

@@ -7,8 +7,11 @@ use Exception;
 use Hanaboso\CommonsBundle\Exception\CategoryException;
 use Hanaboso\PipesFramework\Configurator\Model\CategoryManager;
 use Hanaboso\PipesFramework\Database\Document\Category;
+use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\CategoryController;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler;
 use LogicException;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 
 /**
@@ -16,15 +19,13 @@ use PipesFrameworkTests\ControllerTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Controller\HbPFConfiguratorBundle\Controller
  */
+#[CoversClass(CategoryController::class)]
+#[CoversClass(CategoryHandler::class)]
+#[CoversClass(CategoryManager::class)]
 final class CategoryControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\CategoryController
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\CategoryController::getCategoriesAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler::getCategories
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler::getCategoryData
-     *
      * @throws Exception
      */
     public function testGetCategories(): void
@@ -41,13 +42,6 @@ final class CategoryControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\CategoryController::createCategoryAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler::createCategory
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler::getCategoryData
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\CategoryManager::createCategory
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\CategoryManager::setCategoryData
-     *
      * @throws Exception
      */
     public function testCreateTopology(): void
@@ -60,11 +54,6 @@ final class CategoryControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\CategoryController::createCategoryAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler::createCategory
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\CategoryManager::createCategory
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\CategoryManager::setCategoryData
-     *
      * @throws Exception
      */
     public function testCreateCategoryErr(): void
@@ -73,13 +62,6 @@ final class CategoryControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\CategoryController::updateCategoryAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler::updateCategory
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler::getCategory
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler::getCategoryData
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\CategoryManager::updateCategory
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\CategoryManager::setCategoryData
-     *
      * @throws Exception
      */
     public function testUpdateCategory(): void
@@ -96,10 +78,6 @@ final class CategoryControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\CategoryController::updateCategoryAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler::updateCategory
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler::getCategory
-     *
      * @throws Exception
      */
     public function testUpdateCategoryNotFound(): void
@@ -113,12 +91,6 @@ final class CategoryControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\CategoryController::updateCategoryAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler::updateCategory
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler::getCategory
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\CategoryManager::updateCategory
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\CategoryManager::setCategoryData
-     *
      * @throws Exception
      */
     public function testUpdateCategoryErr(): void
@@ -138,10 +110,6 @@ final class CategoryControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\CategoryController::deleteCategoryAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler::deleteCategory
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\CategoryManager::deleteCategory
-     *
      * @throws Exception
      */
     public function testDeleteCategory(): void
@@ -157,15 +125,11 @@ final class CategoryControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers       \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\CategoryController::deleteCategoryAction
-     * @covers       \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler::deleteCategory
-     *
-     * @dataProvider categoryErrorProvider
-     *
      * @param Exception $exception
      *
      * @throws Exception
      */
+    #[DataProvider('categoryErrorProvider')]
     public function testDeleteCategoryNotFound(Exception $exception): void
     {
         $han = $this->createPartialMock(CategoryHandler::class, ['deleteCategory']);

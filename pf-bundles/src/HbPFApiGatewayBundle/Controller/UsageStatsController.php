@@ -5,7 +5,7 @@ namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller;
 use Hanaboso\Utils\Traits\ControllerTrait;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 /**
  * Class UsageStatsController
@@ -18,10 +18,9 @@ final class UsageStatsController extends AbstractController
     use ControllerTrait;
 
     /**
-     * @Route("/usage-stats/emit-event", methods={"POST", "OPTIONS"})
-     *
      * @return Response
      */
+    #[Route('/usage-stats/emit-event', methods: ['POST'])]
     public function loginAction(): Response
     {
         return $this->forward(

@@ -26,46 +26,46 @@ use Hanaboso\Utils\String\Json;
 final class TopologyConfigFactory
 {
 
-    public const ENVIRONMENT            = 'environment';
-    public const DOCKER_PF_BRIDGE_IMAGE = 'docker_pf_bridge_image';
-    public const RABBITMQ_HOST          = 'rabbitmq_host';
-    public const RABBITMQ_DSN           = 'rabbitmq_dsn';
-    public const RABBITMQ_USER          = 'rabbitmq_user';
-    public const RABBITMQ_PASS          = 'rabbitmq_pass';
-    public const RABBITMQ_VHOST         = 'rabbitmq_vhost';
-    public const METRICS_DSN            = 'metrics_dsn';
-    public const WORKER_DEFAULT_PORT    = 'worker_default_port';
-    public const MONOLITH_API_HOST      = 'monolith_api_host';
-    public const XML_PARSER_API_HOST    = 'xml_parser_api_host';
-    public const MONGODB_DSN            = 'mongodb_dsn';
-    public const UDP_LOGGER_URL         = 'udp_logger_url';
-    public const TOPOLOGY_POD_LABELS    = 'topology_pod_labels';
-    public const STARTING_POINT_DSN     = 'starting_point_dsn';
-    public const ORCHESTY_API_KEY       = 'orchesty_api_key';
+    public const string ENVIRONMENT            = 'environment';
+    public const string DOCKER_PF_BRIDGE_IMAGE = 'docker_pf_bridge_image';
+    public const string RABBITMQ_HOST          = 'rabbitmq_host';
+    public const string RABBITMQ_DSN           = 'rabbitmq_dsn';
+    public const string RABBITMQ_USER          = 'rabbitmq_user';
+    public const string RABBITMQ_PASS          = 'rabbitmq_pass';
+    public const string RABBITMQ_VHOST         = 'rabbitmq_vhost';
+    public const string METRICS_DSN            = 'metrics_dsn';
+    public const string WORKER_DEFAULT_PORT    = 'worker_default_port';
+    public const string MONOLITH_API_HOST      = 'monolith_api_host';
+    public const string XML_PARSER_API_HOST    = 'xml_parser_api_host';
+    public const string MONGODB_DSN            = 'mongodb_dsn';
+    public const string UDP_LOGGER_URL         = 'udp_logger_url';
+    public const string TOPOLOGY_POD_LABELS    = 'topology_pod_labels';
+    public const string STARTING_POINT_DSN     = 'starting_point_dsn';
+    public const string ORCHESTY_API_KEY       = 'orchesty_api_key';
 
-    public const NODE_CONFIG = 'node_config';
-    public const WORKER      = 'worker';
-    public const TYPE        = 'type';
-    public const SETTINGS    = 'settings';
-    public const FAUCET      = 'faucet';
-    public const PREFETCH    = 'prefetch';
-    public const TIMEOUT     = 'timeout';
-    public const APPLICATION = 'application';
+    public const string NODE_CONFIG = 'node_config';
+    public const string WORKER      = 'worker';
+    public const string TYPE        = 'type';
+    public const string SETTINGS    = 'settings';
+    public const string FAUCET      = 'faucet';
+    public const string PREFETCH    = 'prefetch';
+    public const string TIMEOUT     = 'timeout';
+    public const string APPLICATION = 'application';
 
-    public const WORKER_NULL            = 'worker.null';
-    public const WORKER_HTTP_XML_PARSER = 'worker.http_xml_parser';
-    public const WORKER_USER            = 'worker.user';
-    public const WORKER_HTTP            = 'worker.http';
-    public const WORKER_CUSTOM_NODE     = 'worker.custom_node';
-    public const WORKER_BATCH           = 'worker.batch';
-    public const HOST                   = 'host';
+    public const string WORKER_NULL            = 'worker.null';
+    public const string WORKER_HTTP_XML_PARSER = 'worker.http_xml_parser';
+    public const string WORKER_USER            = 'worker.user';
+    public const string WORKER_HTTP            = 'worker.http';
+    public const string WORKER_CUSTOM_NODE     = 'worker.custom_node';
+    public const string WORKER_BATCH           = 'worker.batch';
+    public const string HOST                   = 'host';
 
-    public const PROCESS_PATH = 'process_path';
-    public const STATUS_PATH  = 'status_path';
-    public const METHOD       = 'method';
-    public const PORT         = 'port';
-    public const NAME         = 'name';
-    public const HEADERS      = 'headers';
+    public const string PROCESS_PATH = 'process_path';
+    public const string STATUS_PATH  = 'status_path';
+    public const string METHOD       = 'method';
+    public const string PORT         = 'port';
+    public const string NAME         = 'name';
+    public const string HEADERS      = 'headers';
 
     /**
      * @var ObjectRepository<Sdk>&SdkRepository
@@ -141,7 +141,7 @@ final class TopologyConfigFactory
                     self::SETTINGS => [
                         self::APPLICATION  => $node->getApplication(),
                         self::HEADERS      => $this->sdkRepository->findByHost($host),
-                        self::HOST         => $parsed[0] ?? '',
+                        self::HOST         => $parsed[0],
                         self::METHOD       => CurlManager::METHOD_POST,
                         self::PORT         => (int) ($parsed[1] ?? $this->getPort($node->getType())),
                         self::PREFETCH     => $node->getSystemConfigs()?->getPrefetch(),
@@ -272,7 +272,7 @@ final class TopologyConfigFactory
      */
     private function getHost(string $nodeType, ?SystemConfigDto $dto): string
     {
-        if ($dto && !empty($dto->getSdkHost())) {
+        if ($dto && $dto->getSdkHost() !== '') {
             return $dto->getSdkHost();
         }
 

@@ -26,9 +26,9 @@ use RabbitMqBundle\Publisher\Publisher;
 final class UserTaskManager
 {
 
-    private const STATE_HEADER = 'user-task-state';
-    private const STATE_ACCEPT = 'accept';
-    private const STATE_REJECT = 'reject';
+    private const string STATE_HEADER = 'user-task-state';
+    private const string STATE_ACCEPT = 'accept';
+    private const string STATE_REJECT = 'reject';
 
     /**
      * @var UserTaskRepository

@@ -15,9 +15,8 @@ use Hanaboso\Utils\Exception\DateTimeException;
  * Class ApplicationInstall
  *
  * @package Hanaboso\PipesFramework\Application\Document
- *
- * @ODM\Document(repositoryClass="Hanaboso\PipesFramework\Application\Repository\ApplicationInstallRepository")
  */
+#[ODM\Document(repositoryClass: 'Hanaboso\PipesFramework\Application\Repository\ApplicationInstallRepository')]
 class ApplicationInstall
 {
 
@@ -26,42 +25,37 @@ class ApplicationInstall
     use UpdatedTrait;
     use DeletedTrait;
 
-    public const USER = 'user';
-    public const KEY  = 'key';
+    public const string USER = 'user';
+    public const string KEY  = 'key';
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $user;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $key;
 
     /**
      * @var bool
-     *
-     * @ODM\Field(type="bool")
      */
+    #[ODM\Field(type: 'bool')]
     private bool $enabled = FALSE;
 
     /**
      * @var DateTime|null
-     *
-     * @ODM\Field(type="date", nullable=true)
      */
+    #[ODM\Field(type: 'date', nullable: TRUE)]
     private ?DateTime $expires = NULL;
 
     /**
      * @var mixed[]
-     *
-     * @ODM\Field(type="hash")
      */
+    #[ODM\Field(type: 'hash')]
     private array $nonEncryptedSettings = [];
 
     /**

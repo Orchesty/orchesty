@@ -9,12 +9,11 @@ use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
  * Class ProcessesMetrics
  *
  * @package Hanaboso\PipesFramework\Metrics\Document
- *
- * @ODM\Document(collection="pipes_counter")
- * @ODM\Index(name="node_idIndex", keys={"tags.node_id"="text"})
- * @ODM\Index(name="createdIndex", keys={"fields.created"="desc"})
- * @ODM\Index(name="expireIndex", keys={"fields.created"=1}, options={"expireAfterSeconds"=2628000})
  */
+#[ODM\Document(collection: 'pipes_counter')]
+#[ODM\Index(keys: ['tags.node_id' => 'text'], name: 'node_idIndex')]
+#[ODM\Index(keys: ['fields.created' => 'desc'], name: 'createdIndex')]
+#[ODM\Index(keys: ['fields.created' => 'asc'], name: 'expireIndex', expireAfterSeconds: 2_628_000)]
 class ProcessesMetrics
 {
 
@@ -22,16 +21,14 @@ class ProcessesMetrics
 
     /**
      * @var ProcessesMetricsFields
-     *
-     * @ODM\EmbedOne(targetDocument="Hanaboso\PipesFramework\Metrics\Document\ProcessesMetricsFields")
      */
+    #[ODM\EmbedOne(targetDocument: 'Hanaboso\PipesFramework\Metrics\Document\ProcessesMetricsFields')]
     private ProcessesMetricsFields $fields;
 
     /**
      * @var Tags
-     *
-     * @ODM\EmbedOne(targetDocument="Hanaboso\PipesFramework\Metrics\Document\Tags")
      */
+    #[ODM\EmbedOne(targetDocument: 'Hanaboso\PipesFramework\Metrics\Document\Tags')]
     private Tags $tags;
 
     /**

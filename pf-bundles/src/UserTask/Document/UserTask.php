@@ -16,16 +16,15 @@ use Hanaboso\Utils\String\Json;
  * Class UserTask
  *
  * @package Hanaboso\PipesFramework\UserTask\Document
- *
- * @ODM\Document(repositoryClass="Hanaboso\PipesFramework\UserTask\Repository\UserTaskRepository", indexes={
- *     @ODM\Index(keys={"node_id"="asc","created"="asc"}),
- *     @ODM\Index(keys={"topology_id"="asc","created"="asc"}),
- *     @ODM\Index(keys={"correlationId"="asc","created"="asc"}),
- *     @ODM\Index(keys={"topology_id"="asc","node_id":"asc","created"="asc"}),
- *     @ODM\Index(keys={"message.body":"text"})
- * })
- * @ODM\HasLifecycleCallbacks()
  */
+#[ODM\Document(repositoryClass: 'Hanaboso\PipesFramework\UserTask\Repository\UserTaskRepository')]
+#[ODM\Index(keys: ['node_id' => 'asc', 'created' => 'asc'])]
+#[ODM\Index(keys: ['topology_id' => 'asc', 'created' => 'asc'])]
+#[ODM\Index(keys: ['correlationId' => 'asc', 'created' => 'asc'])]
+#[ODM\Index(keys: ['topology_id' => 'asc', 'node_id' => 'asc', 'created' => 'asc'])]
+#[ODM\Index(keys: ['message.body' => 'text'])]
+#[ODM\Index(keys: ['created' => 'asc'], name: 'expireIndex', expireAfterSeconds: 2_678_400)]
+#[ODM\HasLifecycleCallbacks]
 class UserTask
 {
 
@@ -33,99 +32,88 @@ class UserTask
     use CreatedTrait;
     use UpdatedTrait;
 
-    public const ID                 = 'id';
-    public const NODE_ID            = 'nodeId';
-    public const TOPOLOGY_ID        = 'topologyId';
-    public const NODE_NAME          = 'nodeName';
-    public const TOPOLOGY_NAME      = 'topologyName';
-    public const TOPOLOGY_DESCR     = 'topologyDescr';
-    public const TOPOLOGY_VERSION   = 'topologyVersion';
-    public const TOPOLOGY_DELETED   = 'topologyDeleted';
-    public const CORRELATION_ID     = 'correlationId';
-    public const TYPE               = 'type';
-    public const RETURN_EXCHANGE    = 'returnExchange';
-    public const RETURN_ROUTING_KEY = 'returnRoutingKey';
-    public const MESSAGE            = 'message';
-    public const AUDIT_LOGS         = 'auditLogs';
-    public const CREATED            = 'created';
-    public const UPDATED            = 'updated';
-    public const USER               = 'user';
+    public const string ID                 = 'id';
+    public const string NODE_ID            = 'nodeId';
+    public const string TOPOLOGY_ID        = 'topologyId';
+    public const string NODE_NAME          = 'nodeName';
+    public const string TOPOLOGY_NAME      = 'topologyName';
+    public const string TOPOLOGY_DESCR     = 'topologyDescr';
+    public const string TOPOLOGY_VERSION   = 'topologyVersion';
+    public const string TOPOLOGY_DELETED   = 'topologyDeleted';
+    public const string CORRELATION_ID     = 'correlationId';
+    public const string TYPE               = 'type';
+    public const string RETURN_EXCHANGE    = 'returnExchange';
+    public const string RETURN_ROUTING_KEY = 'returnRoutingKey';
+    public const string MESSAGE            = 'message';
+    public const string AUDIT_LOGS         = 'auditLogs';
+    public const string CREATED            = 'created';
+    public const string UPDATED            = 'updated';
+    public const string USER               = 'user';
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $nodeId;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $topologyId;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $nodeName;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $topologyName;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $type;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $returnExchange;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $returnRoutingKey;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $correlationId;
 
     /**
      * @var UserTaskMessage
-     *
-     * @ODM\EmbedOne(targetDocument="Hanaboso\PipesFramework\UserTask\Document\UserTaskMessage")
      */
+    #[ODM\EmbedOne(targetDocument: 'Hanaboso\PipesFramework\UserTask\Document\UserTaskMessage')]
     private UserTaskMessage $message;
 
     /**
      * @var mixed[]|string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private array|string $auditLogs = [];
 
     /**
      * @var string|null
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private ?string $user = NULL;
 
     /**
@@ -361,10 +349,9 @@ class UserTask
     }
 
     /**
-     * @ODM\PreFlush()
-     *
      * @throws Exception
      */
+    #[ODM\PreFlush]
     public function preFlush(): void
     {
         if (is_array($this->auditLogs)) {
@@ -373,8 +360,9 @@ class UserTask
     }
 
     /**
-     * @ODM\PostLoad()
+     *
      */
+    #[ODM\PostLoad]
     public function postLoad(): void
     {
         $this->getAuditLogs();

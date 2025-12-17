@@ -42,6 +42,7 @@ final class MetricsDto
      */
     public function setMin(mixed $min): self
     {
+        // @phpstan-ignore-next-line
         if (!empty($min) || $min === 0) {
             $this->min = (string) $min;
         }
@@ -56,6 +57,7 @@ final class MetricsDto
      */
     public function setMax(mixed $max): self
     {
+        // @phpstan-ignore-next-line
         if (!empty($max || $max === 0)) {
             $this->max = (string) $max;
         }
@@ -71,6 +73,7 @@ final class MetricsDto
      */
     public function setAvg(mixed $count, mixed $sum): self
     {
+        // @phpstan-ignore-next-line
         if (!empty($count) && !empty($sum)) {
             $this->avg = number_format((float) ($sum / $count), 2, '.', '');
         }

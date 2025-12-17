@@ -16,7 +16,7 @@ use Throwable;
 final class UpdateMongoIndexesCommand extends Command
 {
 
-    private const CMD_NAME = 'mongodb:index:update';
+    private const string CMD_NAME = 'mongodb:index:update';
 
     /**
      * UpdateMongoIndexesCommand constructor.

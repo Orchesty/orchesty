@@ -8,7 +8,9 @@ use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\PipesFramework\Database\Document\Node;
 use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\PipesFramework\Database\Reduction\NodeReduction;
+use Hanaboso\PipesFramework\Database\Repository\NodeRepository;
 use LogicException;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -16,12 +18,11 @@ use PipesFrameworkTests\DatabaseTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Integration\Database\Repository
  */
+#[CoversClass(NodeRepository::class)]
 final class NodeRepositoryTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\Database\Repository\NodeRepository::getEventNodesByTopology
-     *
      * @throws Exception
      */
     public function testGetEventNodesByTopology(): void
@@ -68,8 +69,6 @@ final class NodeRepositoryTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Database\Repository\NodeRepository::getNodeByTopology
-     *
      * @throws Exception
      */
     public function testGetNodeByTopology(): void
@@ -92,8 +91,6 @@ final class NodeRepositoryTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Database\Repository\NodeRepository::getStartingNode
-     *
      * @throws Exception
      */
     public function testGetStartingPoint(): void
@@ -114,12 +111,10 @@ final class NodeRepositoryTest extends DatabaseTestCaseAbstract
         $this->dm->flush();
         $this->dm->clear();
 
-        self::assertEquals($node->getId(), $repo->getStartingNode($topology)->getId());
+        self::assertSame($node->getId(), $repo->getStartingNode($topology)->getId());
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Database\Repository\NodeRepository::getStartingNode
-     *
      * @throws Exception
      */
     public function testGetStartingPointNotFound(): void
@@ -146,9 +141,6 @@ final class NodeRepositoryTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Database\Repository\NodeRepository::getCronNodes
-     * @covers \Hanaboso\PipesFramework\Database\Repository\NodeRepository::getTopologyType
-     *
      * @throws Exception
      */
     public function testGetTopologyType(): void
@@ -170,7 +162,7 @@ final class NodeRepositoryTest extends DatabaseTestCaseAbstract
         $this->dm->clear();
 
         $type = $repo->getTopologyType($topology);
-        self::assertEquals(TypeEnum::CRON->value, $type);
+        self::assertSame(TypeEnum::CRON->value, $type);
 
         $topology = new Topology();
         $this->dm->persist($topology);
@@ -187,12 +179,10 @@ final class NodeRepositoryTest extends DatabaseTestCaseAbstract
         $this->dm->clear();
 
         $type = $repo->getTopologyType($topology);
-        self::assertEquals(TypeEnum::WEBHOOK->value, $type);
+        self::assertSame(TypeEnum::WEBHOOK->value, $type);
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Database\Repository\NodeRepository::getNodesByTopology
-     *
      * @throws Exception
      */
     public function testGetNodesByTopology(): void
@@ -217,7 +207,7 @@ final class NodeRepositoryTest extends DatabaseTestCaseAbstract
         self::assertCount(1, $nodes);
         /** @var Node $first */
         $first = reset($nodes);
-        self::assertEquals($node->getId(), $first->getId());
+        self::assertSame($node->getId(), $first->getId());
     }
 
 }

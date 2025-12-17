@@ -12,8 +12,8 @@ use Hanaboso\AclBundle\Enum\ResourceEnum as AclResourceEnum;
 final class ResourceEnum extends AclResourceEnum
 {
 
-    public const NODE     = 'node';
-    public const TOPOLOGY = 'topology';
+    public const string NODE     = 'node';
+    public const string TOPOLOGY = 'topology';
 
     /**
      * @var string[]

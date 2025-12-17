@@ -26,9 +26,7 @@ final class LogsCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container): void
     {
-        /** @var mixed[] $config */
-        $config = $container->getParameter(HbPFLogsBundle::KEY);
-
+        $config               = $container->getParameter(HbPFLogsBundle::KEY);
         $dm                   = $container->getDefinition('doctrine_mongodb.odm.default_document_manager');
         $startingPointsFilter = new Definition(StartingPointsFilter::class, [$dm]);
 

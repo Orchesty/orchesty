@@ -21,7 +21,7 @@ use RuntimeException;
 final class CategoryParser
 {
 
-    public const ALL = '*';
+    public const string ALL = '*';
 
     /**
      * @var mixed[]
@@ -133,7 +133,7 @@ final class CategoryParser
             /** @var Category|null $category */
             $category = $this->categoryRepository->findOneBy(['name' => $name]);
 
-            if (!empty($category) && ($category->getParent() == $parent || empty($parent))) {
+            if ($category !== NULL && ($category->getParent() == $parent || $parent === '')) {
                 $category = $this->categoryManager->updateCategory($category, ['parent' => $parent]);
             } else if ($name) {
                 $category = $this->createCategory($name, $parent);
@@ -171,6 +171,7 @@ final class CategoryParser
      */
     private function getParsedPath(string $path): array
     {
+        // @phpstan-ignore-next-line
         return array_filter(explode('/', $path));
     }
 
@@ -191,7 +192,7 @@ final class CategoryParser
                 unset($this->tmpPath[$key]);
             }
 
-            if (empty($this->tmpPath)) {
+            if ($this->tmpPath === []) {
                 $this->matchedRootAlias = is_numeric($alias) ? NULL : $alias;
                 $this->tmpFilePath      = array_unique($this->tmpFilePath);
                 array_unshift($categories, $alias);

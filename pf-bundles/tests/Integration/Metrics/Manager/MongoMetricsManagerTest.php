@@ -13,6 +13,7 @@ use Hanaboso\Utils\System\NodeGeneratorUtils;
 use LogicException;
 use MongoDB\BSON\UTCDateTime;
 use Monolog\Logger;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 use PipesFrameworkTests\DataProvider;
 use Throwable;
@@ -22,21 +23,11 @@ use Throwable;
  *
  * @package PipesFrameworkTests\Integration\Metrics\Manager
  */
+#[CoversClass(MongoMetricsManager::class)]
 final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::connectorNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::bridgesNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::monolithNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::allowedTags
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::addConditions
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::parseDateRange
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::generateOutput
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::setLogger
-     *
      * @throws Exception
      */
     public function testGetNodeMetrics(): void
@@ -105,15 +96,6 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::connectorNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::bridgesNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::monolithNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::allowedTags
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::addConditions
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::parseDateRange
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::generateOutput
-     *
      * @throws Exception
      */
     public function testGetNodeMetricsSingleDocument(): void
@@ -180,15 +162,6 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::connectorNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::bridgesNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::monolithNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::allowedTags
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::addConditions
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::parseDateRange
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::generateOutput
-     *
      * @throws Exception
      */
     public function testGetNodeMetricsNoDocument(): void
@@ -247,16 +220,6 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getTopologyMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getTopologyProcessTimeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::parseDateRange
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::counterProcessMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::generateOutput
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::connectorNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::monolithNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::bridgesNodeMetrics
-     *
      * @throws Exception
      */
     public function testGetTopologyMetrics(): void
@@ -307,16 +270,6 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getTopologyMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getTopologyProcessTimeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::parseDateRange
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::counterProcessMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::generateOutput
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::connectorNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::monolithNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::bridgesNodeMetrics
-     *
      * @throws Exception
      */
     public function testGetTopologyMetricsSingleDocument(): void
@@ -354,16 +307,6 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getTopologyMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getTopologyProcessTimeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::parseDateRange
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::counterProcessMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::generateOutput
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::connectorNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::monolithNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::bridgesNodeMetrics
-     *
      * @throws Exception
      */
     public function testGetTopologyMetricsNoDocument(): void
@@ -400,14 +343,6 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getTopologyRequestCountMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::requestsCountAggregation
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getTopologyProcessTimeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getTopologyMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::parseDateRange
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::addConditions
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::allowedTags
-     *
      * @throws Exception
      */
     public function testGetTopologyRequestCountMetric(): void
@@ -434,14 +369,6 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getTopologyRequestCountMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::requestsCountAggregation
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getTopologyProcessTimeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getTopologyMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::parseDateRange
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::addConditions
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::allowedTags
-     *
      * @throws Exception
      */
     public function testGetTopologyRequestCountMetricSingleDocument(): void
@@ -466,14 +393,6 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getTopologyRequestCountMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::requestsCountAggregation
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getTopologyProcessTimeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getTopologyMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::parseDateRange
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::addConditions
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::allowedTags
-     *
      * @throws Exception
      */
     public function testGetTopologyRequestCountMetricNoDocument(): void
@@ -494,7 +413,6 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getApplicationMetrics
      * @throws DateTimeException
      * @throws Exception
      */
@@ -516,7 +434,6 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getTopologiesProcessTimeMetrics
      * @throws DateTimeException
      * @throws Exception
      */
@@ -537,7 +454,6 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getUserMetrics
      * @throws DateTimeException
      * @throws Exception
      */

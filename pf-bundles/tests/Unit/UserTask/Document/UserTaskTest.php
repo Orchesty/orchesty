@@ -8,15 +8,15 @@ use Hanaboso\PipesFramework\UserTask\Document\UserTaskMessage;
 use Hanaboso\PipesFramework\UserTask\Enum\UserTaskEnum;
 use Hanaboso\Utils\Date\DateTimeUtils;
 use Hanaboso\Utils\Exception\EnumException;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 
 /**
  * Class UserTaskTest
  *
  * @package PipesFrameworkTests\Unit\UserTask\Document
- *
- * @covers  \Hanaboso\PipesFramework\UserTask\Document\UserTask
  */
+#[CoversClass(UserTask::class)]
 final class UserTaskTest extends KernelTestCaseAbstract
 {
 
@@ -48,15 +48,15 @@ final class UserTaskTest extends KernelTestCaseAbstract
             ->setNodeId('nid')
             ->addAuditLog(['a']);
 
-        self::assertEquals('rrk', $userTask->getReturnRoutingKey());
-        self::assertEquals('re', $userTask->getReturnExchange());
-        self::assertEquals('cid', $userTask->getCorrelationId());
-        self::assertEquals(UserTaskEnum::USER_TASK->value, $userTask->getType());
-        self::assertEquals($msg, $userTask->getMessage());
-        self::assertEquals('tid', $userTask->getTopologyId());
-        self::assertEquals('nid', $userTask->getNodeId());
-        self::assertEquals('node', $userTask->getNodeName());
-        self::assertEquals('topo', $userTask->getTopologyName());
+        self::assertSame('rrk', $userTask->getReturnRoutingKey());
+        self::assertSame('re', $userTask->getReturnExchange());
+        self::assertSame('cid', $userTask->getCorrelationId());
+        self::assertSame(UserTaskEnum::USER_TASK->value, $userTask->getType());
+        self::assertSame($msg, $userTask->getMessage());
+        self::assertSame('tid', $userTask->getTopologyId());
+        self::assertSame('nid', $userTask->getNodeId());
+        self::assertSame('node', $userTask->getNodeName());
+        self::assertSame('topo', $userTask->getTopologyName());
         self::assertEquals(
             [
                 UserTask::AUDIT_LOGS     => [['a']],

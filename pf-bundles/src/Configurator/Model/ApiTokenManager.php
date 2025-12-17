@@ -22,8 +22,8 @@ use Hanaboso\PipesFramework\Configurator\Repository\ApiTokenRepository;
 final class ApiTokenManager
 {
 
-    public const CREATED_TOKEN        = 'token';
-    public const CREATED_TOKEN_IS_NEW = 'isNew';
+    public const string CREATED_TOKEN        = 'token';
+    public const string CREATED_TOKEN_IS_NEW = 'isNew';
 
     /**
      * @var ObjectRepository<ApiToken>&ApiTokenRepository
@@ -98,6 +98,7 @@ final class ApiTokenManager
         $apiToken
             ->setKey($key)
             ->setUser($user)
+            // @phpstan-ignore-next-line
             ->setExpireAt(!empty($data[ApiToken::EXPIRE_AT]) ? new DateTime($data[ApiToken::EXPIRE_AT]) : NULL)
             ->setScopes($data[ApiToken::SCOPES]);
 

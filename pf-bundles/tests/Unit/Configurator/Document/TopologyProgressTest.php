@@ -5,6 +5,7 @@ namespace PipesFrameworkTests\Unit\Configurator\Document;
 use DateTime;
 use Exception;
 use Hanaboso\PipesFramework\Configurator\Document\TopologyProgress;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 
 /**
@@ -12,12 +13,11 @@ use PipesFrameworkTests\KernelTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Unit\Configurator\Document
  */
+#[CoversClass(TopologyProgress::class)]
 final class TopologyProgressTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Document\TopologyProgress::durationInMs
-     *
      * @throws Exception
      */
     public function testGetAll(): void
@@ -25,7 +25,7 @@ final class TopologyProgressTest extends KernelTestCaseAbstract
         $start = new DateTime('2022-06-14T09:04:58.789Z');
         $end   = new DateTime('2022-06-14T09:04:59.707Z');
 
-        self::assertEquals(918, TopologyProgress::durationInMs($start, $end));
+        self::assertSame(918, TopologyProgress::durationInMs($start, $end));
     }
 
 }

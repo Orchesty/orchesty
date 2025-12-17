@@ -5,21 +5,26 @@ namespace PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller;
 use Exception;
 use Hanaboso\PipesFramework\Database\Document\Node;
 use Hanaboso\PipesFramework\Database\Document\Topology;
+use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\MetricsController;
+use Hanaboso\PipesFramework\Metrics\Enum\ServiceNameByQueueEnum;
+use Hanaboso\PipesFramework\Metrics\Manager\MetricsManagerAbstract;
+use Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 
 /**
  * Class MetricsControllerTest
  *
  * @package PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller
- *
- * @covers  \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\MetricsController
  */
+#[CoversClass(MetricsController::class)]
+#[CoversClass(MetricsManagerAbstract::class)]
+#[CoversClass(ServiceNameByQueueEnum::class)]
+#[CoversClass(MongoMetricsManager::class)]
 final class MetricsControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\MetricsController::topologyMetricsAction
-     *
      * @throws Exception
      */
     public function testTopologyMetricsAction(): void
@@ -33,8 +38,6 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\MetricsController::nodeMetricsAction
-     *
      * @throws Exception
      */
     public function testNodeMetricsAction(): void
@@ -50,8 +53,6 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\MetricsController::topologyRequestsCountMetricsAction
-     *
      * @throws Exception
      */
     public function testTopologyRequestsCountMetricsAction(): void
@@ -65,11 +66,6 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\MetricsController::healthcheckMetricsAction
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MetricsManagerAbstract::getHealthcheckMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Enum\ServiceNameByQueueEnum::getNameAndNodeId
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getHealthcheckMetrics
-     *
      * @throws Exception
      */
     public function testHealthcheckMetricsAction(): void

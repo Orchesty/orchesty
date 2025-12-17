@@ -5,7 +5,9 @@ namespace PipesFrameworkTests\Integration\Metrics\Document;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Exception;
 use Hanaboso\PipesFramework\Metrics\Document\ProcessesMetrics;
+use Hanaboso\PipesFramework\Metrics\Document\ProcessesMetricsFields;
 use Hanaboso\Utils\Date\DateTimeUtils;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -13,16 +15,12 @@ use PipesFrameworkTests\DatabaseTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Integration\Metrics\Document
  */
+#[CoversClass(ProcessesMetrics::class)]
+#[CoversClass(ProcessesMetricsFields::class)]
 final class ProcessMetricsTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\Metrics\Document\ProcessesMetrics::getFields
-     * @covers \Hanaboso\PipesFramework\Metrics\Document\ProcessesMetrics::getTags
-     * @covers \Hanaboso\PipesFramework\Metrics\Document\ProcessesMetricsFields::getCreated
-     * @covers \Hanaboso\PipesFramework\Metrics\Document\ProcessesMetricsFields::getDuration
-     * @covers \Hanaboso\PipesFramework\Metrics\Document\ProcessesMetricsFields::isSuccess
-     *
      * @throws Exception
      */
     public function testDocument(): void
@@ -54,9 +52,9 @@ final class ProcessMetricsTest extends DatabaseTestCaseAbstract
         /** @var ProcessesMetrics $result */
         $result = $repository->findAll()[0];
         self::assertTrue($result->getFields()->isSuccess());
-        self::assertEquals(10, $result->getFields()->getDuration());
+        self::assertSame(10, $result->getFields()->getDuration());
         self::assertEquals(DateTimeUtils::getUtcDateTime('1.1.2020'), $result->getFields()->getCreated());
-        self::assertEquals('1', $result->getTags()->getNodeId());
+        self::assertSame('1', $result->getTags()->getNodeId());
     }
 
 }

@@ -9,14 +9,9 @@ use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
  * Class Category
  *
  * @package Hanaboso\PipesFramework\Database\Document
- *
- * @ODM\Document(
- *     repositoryClass="Hanaboso\PipesFramework\Database\Repository\CategoryRepository",
- *     indexes={
- *         @ODM\Index(keys={"name": "asc", "parent": "asc"}, unique=true)
- *     }
- * )
  */
+#[ODM\Document(repositoryClass: 'Hanaboso\PipesFramework\Database\Repository\CategoryRepository')]
+#[ODM\Index(keys: ['name'=> 'asc', 'parent'=>'asc'], unique: TRUE)]
 class Category
 {
 
@@ -24,17 +19,15 @@ class Category
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     protected string $name;
 
     /**
      * @var string|null
-     *
-     * @ODM\Field(type="string")
-     * @ODM\Index()
      */
+    #[ODM\Field(type: 'string')]
+    #[ODM\Index()]
     protected ?string $parent = NULL;
 
     /**

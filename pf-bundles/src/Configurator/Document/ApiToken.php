@@ -13,50 +13,45 @@ use Hanaboso\Utils\Exception\DateTimeException;
  * Class ApiToken
  *
  * @package Hanaboso\PipesFramework\Configurator\Document
- *
- * @ODM\UniqueIndex(name="UniqueKeyIndex", keys={"key" = "desc"})
- * @ODM\Index(name="expireIndex", keys={"expireAt"=1}, options={"expireAfterSeconds"=0})
- * @ODM\Document(repositoryClass="Hanaboso\PipesFramework\Configurator\Repository\ApiTokenRepository")
  */
+#[ODM\Document(repositoryClass: 'Hanaboso\PipesFramework\Configurator\Repository\ApiTokenRepository')]
+#[ODM\UniqueIndex(keys: ['key' => 'desc'], name: 'UniqueKeyIndex')]
+#[ODM\Index(keys: ['expireAt' => 'asc'], name: 'expireIndex', expireAfterSeconds: 0)]
 class ApiToken
 {
 
     use IdTrait;
     use CreatedTrait;
 
-    public const ID        = 'id';
-    public const CREATED   = 'created';
-    public const USER      = 'user';
-    public const KEY       = 'key';
-    public const EXPIRE_AT = 'expireAt';
-    public const SCOPES    = 'scopes';
+    public const string ID        = 'id';
+    public const string CREATED   = 'created';
+    public const string USER      = 'user';
+    public const string KEY       = 'key';
+    public const string EXPIRE_AT = 'expireAt';
+    public const string SCOPES    = 'scopes';
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $user;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $key;
 
     /**
      * @var DateTime|null
-     *
-     * @ODM\Field(type="date")
      */
+    #[ODM\Field(type: 'date')]
     private ?DateTime $expireAt = NULL;
 
     /**
      * @var string[]
-     *
-     * @ODM\Field(type="collection")
      */
+    #[ODM\Field(type: 'collection')]
     private array $scopes;
 
     /**

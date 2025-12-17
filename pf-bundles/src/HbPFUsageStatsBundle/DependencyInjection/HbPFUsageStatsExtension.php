@@ -6,15 +6,13 @@ use Exception;
 use InvalidArgumentException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader;
-use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 /**
  * Class HbPFUsageStatsExtension
  *
  * @package Hanaboso\PipesFramework\HbPFUsageStatsBundle\DependencyInjection
- *
- * @codeCoverageIgnore
  */
 final class HbPFUsageStatsExtension extends Extension
 {

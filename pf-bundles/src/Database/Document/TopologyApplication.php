@@ -8,24 +8,21 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  * Class TopologyApplication
  *
  * @package Hanaboso\PipesFramework\Database\Document
- *
- * @ODM\EmbeddedDocument()
  */
+#[ODM\EmbeddedDocument]
 class TopologyApplication
 {
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private readonly string $key;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private readonly string $host;
 
     /**

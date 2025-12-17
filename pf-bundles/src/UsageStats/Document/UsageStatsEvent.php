@@ -14,54 +14,47 @@ use Hanaboso\Utils\Exception\DateTimeException;
  * Class UsageStatsEvent
  *
  * @package Hanaboso\PipesFramework\UsageStats\Document
- *
- * @ODM\Document(repositoryClass="Hanaboso\PipesFramework\UsageStats\Repository\UsageStatsEventRepository", indexes={
- *     @ODM\Index(name="sortCreated", keys={"created"="asc"}),
- *     @ODM\Index(name="sortType", keys={"type"="asc"}),
- *     @ODM\Index(name="sortSent", keys={"sent"="asc"}),
- * })
  */
+#[ODM\Document(repositoryClass: 'Hanaboso\PipesFramework\UsageStats\Repository\UsageStatsEventRepository')]
+#[ODM\Index(keys: ['created' => 'asc'], name: 'sortCreated')]
+#[ODM\Index(keys: ['type' => 'asc'], name: 'sortType')]
+#[ODM\Index(keys: ['sent' => 'asc'], name: 'sortSent')]
 class UsageStatsEvent
 {
 
     use IdTrait;
     use CreatedTrait;
 
-    private const VERSION = 1;
+    private const int VERSION = 1;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $iid;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $type;
 
     /**
      * @var int
-     *
-     * @ODM\Field(type="int")
      */
+    #[ODM\Field(type: 'int')]
     private int $version;
 
     /**
      * @var mixed[]
-     *
-     * @ODM\Field(type="hash")
      */
+    #[ODM\Field(type: 'hash')]
     private array $data;
 
     /**
      * @var int|null
-     *
-     * @ODM\Field(type="int")
      */
+    #[ODM\Field(type: 'int')]
     private ?int $sent = NULL;
 
     /**

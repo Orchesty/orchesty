@@ -8,6 +8,7 @@ use Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocator;
 use Hanaboso\PipesFramework\Configurator\Model\CategoryManager;
 use Hanaboso\PipesFramework\Database\Document\Category;
 use Hanaboso\PipesFramework\Database\Repository\CategoryRepository;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 
 /**
@@ -15,12 +16,11 @@ use PipesFrameworkTests\KernelTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Unit\Configurator\Model
  */
+#[CoversClass(CategoryManager::class)]
 final class CategoryManagerTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\CategoryManager::createCategory
-     *
      * @throws Exception
      */
     public function testCreateCategory(): void
@@ -36,13 +36,11 @@ final class CategoryManagerTest extends KernelTestCaseAbstract
         $categoryManager = new CategoryManager($this->getDmlMock($parentCategory));
         $category        = $categoryManager->createCategory($data);
 
-        self::assertEquals($data['name'], $category->getName());
-        self::assertEquals($data['parent'], $category->getParent());
+        self::assertSame($data['name'], $category->getName());
+        self::assertSame($data['parent'], $category->getParent());
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\CategoryManager::updateCategory
-     *
      * @throws Exception
      */
     public function testUpdateCategory(): void
@@ -61,8 +59,8 @@ final class CategoryManagerTest extends KernelTestCaseAbstract
         $categoryManager = new CategoryManager($this->getDmlMock($parentCategory));
         $category        = $categoryManager->updateCategory($category, $data);
 
-        self::assertEquals($data['name'], $category->getName());
-        self::assertEquals($data['parent'], $category->getParent());
+        self::assertSame($data['name'], $category->getName());
+        self::assertSame($data['parent'], $category->getParent());
     }
 
     /**
@@ -77,8 +75,8 @@ final class CategoryManagerTest extends KernelTestCaseAbstract
         $repository->method('find')->willReturn($parentCategory);
 
         $dm = self::createPartialMock(DocumentManager::class, ['flush', 'getRepository', 'persist']);
-        $dm->method('flush')->willReturn(TRUE);
-        $dm->method('persist')->willReturn(TRUE);
+        $dm->method('flush');
+        $dm->method('persist');
         $dm->method('getRepository')->willReturn($repository);
 
         $dml = self::createPartialMock(DatabaseManagerLocator::class, ['getDm']);

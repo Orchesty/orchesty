@@ -3,28 +3,32 @@
 namespace PipesFrameworkTests\Integration\Command;
 
 use Exception;
+use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\InstallTopologyCommand;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
  * Class InstallTopologyCommandTest
  *
  * @package PipesFrameworkTests\Integration\Command
  */
+#[CoversClass(InstallTopologyCommand::class)]
 final class InstallTopologyCommandTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\InstallTopologyCommand
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\InstallTopologyCommand::configure
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\InstallTopologyCommand::execute
+     * @return void
      */
     public function testExecute(): void
     {
-        $application = new Application(self::$kernel);
+        /** @var KernelInterface $kernel */
+        $kernel      = self::$kernel;
+        $application = new Application($kernel);
         $command     = $application->get('topology:install');
 
         $commandTester = new CommandTester($command);
@@ -43,8 +47,6 @@ final class InstallTopologyCommandTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\InstallTopologyCommand::insertRows
-     *
      * @throws Exception
      */
     public function testInsertRows(): void

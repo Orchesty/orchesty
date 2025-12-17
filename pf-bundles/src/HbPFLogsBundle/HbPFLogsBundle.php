@@ -16,7 +16,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 final class HbPFLogsBundle extends Bundle
 {
 
-    public const KEY = 'hb_pf_logs';
+    public const string KEY = 'hb_pf_logs';
 
     /**
      * @param ContainerBuilder $container

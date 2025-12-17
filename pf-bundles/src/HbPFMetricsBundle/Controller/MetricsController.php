@@ -9,7 +9,7 @@ use Hanaboso\Utils\Traits\ControllerTrait;
 use Psr\Log\NullLogger;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Throwable;
 
 /**
@@ -33,13 +33,12 @@ final class MetricsController
     }
 
     /**
-     * @Route("/metrics/topology/{topology}", methods={"GET", "OPTIONS"})
-     *
      * @param Request $request
      * @param string  $topology
      *
      * @return Response
      */
+    #[Route('/metrics/topology/{topology}', methods: ['GET'])]
     public function topologyMetricsAction(Request $request, string $topology): Response
     {
         try {
@@ -50,14 +49,13 @@ final class MetricsController
     }
 
     /**
-     * @Route("/metrics/topology/{topology}/node/{node}", methods={"GET", "OPTIONS"})
-     *
      * @param Request $request
      * @param string  $topology
      * @param string  $node
      *
      * @return Response
      */
+    #[Route('/metrics/topology/{topology}/node/{node}', methods: ['GET'])]
     public function nodeMetricsAction(Request $request, string $topology, string $node): Response
     {
         try {
@@ -68,10 +66,9 @@ final class MetricsController
     }
 
     /**
-     * @Route("/metrics/healthcheck", methods={"GET", "OPTIONS"})
-     *
      * @return Response
      */
+    #[Route('/metrics/healthcheck', methods: ['GET'])]
     public function healthcheckMetricsAction(): Response
     {
         try {
@@ -82,13 +79,12 @@ final class MetricsController
     }
 
     /**
-     * @Route("/metrics/topology/{topology}/requests", methods={"GET", "OPTIONS"})
-     *
      * @param Request $request
      * @param string  $topology
      *
      * @return Response
      */
+    #[Route('/metrics/topology/{topology}/requests', methods: ['GET'])]
     public function topologyRequestsCountMetricsAction(Request $request, string $topology): Response
     {
         try {

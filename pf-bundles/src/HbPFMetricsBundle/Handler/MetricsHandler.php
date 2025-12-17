@@ -147,6 +147,7 @@ final class MetricsHandler
                 if ($column == 'timestamp') {
                     $params = [
                         'from' => $or[GridFilterAbstract::VALUE][0] ?? NULL,
+                        'size' => $or[GridFilterAbstract::VALUE][2] ?? NULL,
                         'to'   => $or[GridFilterAbstract::VALUE][1] ?? NULL,
                     ];
 

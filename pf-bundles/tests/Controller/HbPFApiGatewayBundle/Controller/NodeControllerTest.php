@@ -8,21 +8,20 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
 use Hanaboso\PipesFramework\Database\Document\Node;
 use Hanaboso\PipesFramework\Database\Document\Topology;
+use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NodeController;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 
 /**
  * Class NodeControllerTest
  *
  * @package PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller
- *
- * @covers  \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NodeController
  */
+#[CoversClass(NodeController::class)]
 final class NodeControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NodeController::getNodesAction
-     *
      * @throws Exception
      */
     public function testGetNodesAction(): void
@@ -36,8 +35,6 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NodeController::getNodeAction
-     *
      * @throws Exception
      */
     public function testGetNodeAction(): void
@@ -51,8 +48,6 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NodeController::updateNodeAction
-     *
      * @throws Exception
      */
     public function testUpdateNodeActionEnable(): void
@@ -66,8 +61,6 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NodeController::updateNodeAction
-     *
      * @throws Exception
      */
     public function testUpdateNodeActionCron(): void
@@ -86,8 +79,6 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NodeController::listNodesNamesAction
-     *
      * @throws Exception
      */
     public function testListNodesNamesAction(): void

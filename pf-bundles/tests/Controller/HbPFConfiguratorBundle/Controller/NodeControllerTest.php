@@ -4,26 +4,26 @@ namespace PipesFrameworkTests\Controller\HbPFConfiguratorBundle\Controller;
 
 use Doctrine\ODM\MongoDB\LockException;
 use Exception;
+use Hanaboso\PipesFramework\Configurator\Model\NodeManager;
 use Hanaboso\PipesFramework\Database\Document\Node;
 use Hanaboso\PipesFramework\Database\Document\Topology;
+use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 
 /**
  * Class NodeControllerTest
  *
  * @package PipesFrameworkTests\Controller\HbPFConfiguratorBundle\Controller
- *
- * @covers  \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController
  */
+#[CoversClass(NodeController::class)]
+#[CoversClass(NodeHandler::class)]
+#[CoversClass(NodeManager::class)]
 final class NodeControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController::getNodesAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler::getNodes
-     *
      * @throws Exception
      */
     public function testGetNodes(): void
@@ -45,10 +45,6 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController::getNodeAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler::getNode
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\NodeManager::getNodeById
-     *
      * @throws Exception
      */
     public function testGetNode(): void
@@ -66,10 +62,6 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController::getNodeAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler::getNode
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\NodeManager::getNodeById
-     *
      * @throws Exception
      */
     public function testGetNodeNotFound(): void
@@ -78,9 +70,6 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController::getNodeAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler::getNode
-     *
      * @throws Exception
      */
     public function testGetNodeErr(): void
@@ -99,10 +88,6 @@ final class NodeControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController::updateNodeAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler::updateNode
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\NodeManager::getNodeById
-     *
      * @throws Exception
      */
     public function testUpdateNode(): void

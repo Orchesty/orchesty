@@ -4,21 +4,20 @@ namespace PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller;
 
 use Exception;
 use Hanaboso\PipesFramework\Database\Document\Category;
+use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\CategoryController;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 
 /**
  * Class CategoryControllerTest
  *
  * @package PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller
- *
- * @covers  \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\CategoryController
  */
+#[CoversClass(CategoryController::class)]
 final class CategoryControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\CategoryController::getCategoriesAction
-     *
      * @throws Exception
      */
     public function testGetCategoriesAction(): void
@@ -33,8 +32,6 @@ final class CategoryControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\CategoryController::createCategoryAction
-     *
      * @throws Exception
      */
     public function testCreateCategoryAction(): void
@@ -47,8 +44,6 @@ final class CategoryControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\CategoryController::updateCategoryAction
-     *
      * @throws Exception
      */
     public function testUpdateCategoryAction(): void
@@ -64,8 +59,6 @@ final class CategoryControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\CategoryController::deleteCategoryAction
-     *
      * @throws Exception
      */
     public function testDeleteCategoryAction(): void

@@ -12,6 +12,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
 use Hanaboso\PipesFramework\Database\Document\Node;
 use Hanaboso\Utils\String\Json;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 
 /**
@@ -19,21 +20,18 @@ use PipesFrameworkTests\KernelTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Unit\Configurator\Cron
  */
+#[CoversClass(CronManager::class)]
 final class CronManagerTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager
-     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::getAll
-     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::sendAndProcessRequest
-     *
      * @throws Exception
      */
     public function testGetAll(): void
     {
         $data = $this->getManager(
             static function (RequestDto $request): ResponseDto {
-                self::assertEquals(CurlManager::METHOD_GET, $request->getMethod());
+                self::assertSame(CurlManager::METHOD_GET, $request->getMethod());
                 self::assertEquals('https://example.com/crons', $request->getUri(TRUE));
 
                 return new ResponseDto(200, 'OK', '[{"name":"Name", "time":"*/1 * * * *"}]', []);
@@ -52,16 +50,13 @@ final class CronManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::upsert
-     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::sendAndProcessRequest
-     *
      * @throws Exception
      */
     public function testUpsert(): void
     {
         $this->getManager(
             static function (RequestDto $request): ResponseDto {
-                self::assertEquals(CurlManager::METHOD_PATCH, $request->getMethod());
+                self::assertSame(CurlManager::METHOD_PATCH, $request->getMethod());
                 self::assertEquals('https://example.com/crons', $request->getUri(TRUE));
                 self::assertEquals(
                     [
@@ -81,17 +76,13 @@ final class CronManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::delete
-     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::getUrl
-     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::sendAndProcessRequest
-     *
      * @throws Exception
      */
     public function testDelete(): void
     {
         $this->getManager(
             static function (RequestDto $request): ResponseDto {
-                self::assertEquals(CurlManager::METHOD_DELETE, $request->getMethod());
+                self::assertSame(CurlManager::METHOD_DELETE, $request->getMethod());
                 self::assertEquals('https://example.com/crons', $request->getUri(TRUE));
                 self::assertEquals(
                     [
@@ -109,16 +100,13 @@ final class CronManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::batchUpsert
-     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::sendAndProcessRequest
-     *
      * @throws Exception
      */
     public function testBatchUpsert(): void
     {
         $this->getManager(
             static function (RequestDto $request): ResponseDto {
-                self::assertEquals(CurlManager::METHOD_PATCH, $request->getMethod());
+                self::assertSame(CurlManager::METHOD_PATCH, $request->getMethod());
                 self::assertEquals('https://example.com/crons', $request->getUri(TRUE));
                 self::assertEquals(
                     [
@@ -150,9 +138,6 @@ final class CronManagerTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::upsert
-     * @covers \Hanaboso\PipesFramework\Configurator\Cron\CronManager::sendAndProcessRequest
-     *
      * @throws Exception
      */
     public function testRequestFail(): void

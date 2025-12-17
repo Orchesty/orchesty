@@ -4,7 +4,9 @@ namespace PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller;
 
 use Exception;
 use Hanaboso\PipesFramework\Configurator\Document\TopologyProgress;
+use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyProgressController;
 use Hanaboso\Utils\Date\DateTimeUtils;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 
 /**
@@ -12,12 +14,11 @@ use PipesFrameworkTests\ControllerTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller
  */
+#[CoversClass(TopologyProgressController::class)]
 final class TopologyProgressControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyProgressController::getProgressTopologyAction
-     *
      * @throws Exception
      */
     public function testGetTopologyProgressAction(): void
@@ -34,8 +35,6 @@ final class TopologyProgressControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyProgressController::getProgressesAction
-     *
      * @throws Exception
      */
     public function testGetAllAction(): void
@@ -51,8 +50,6 @@ final class TopologyProgressControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyProgressController::getProgressesAction
-     *
      * @throws Exception
      */
     public function testGetAllActionWithFilter(): void

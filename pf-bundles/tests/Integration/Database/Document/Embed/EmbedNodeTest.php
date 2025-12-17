@@ -5,6 +5,7 @@ namespace PipesFrameworkTests\Integration\Database\Document\Embed;
 use Exception;
 use Hanaboso\PipesFramework\Database\Document\Embed\EmbedNode;
 use Hanaboso\PipesFramework\Database\Document\Node;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -12,16 +13,11 @@ use PipesFrameworkTests\DatabaseTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Integration\Database\Document\Embed
  */
+#[CoversClass(EmbedNode::class)]
 final class EmbedNodeTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\Database\Document\Embed\EmbedNode::setName
-     * @covers \Hanaboso\PipesFramework\Database\Document\Embed\EmbedNode::getId
-     * @covers \Hanaboso\PipesFramework\Database\Document\Embed\EmbedNode::setId
-     * @covers \Hanaboso\PipesFramework\Database\Document\Embed\EmbedNode::getName
-     * @covers \Hanaboso\PipesFramework\Database\Document\Embed\EmbedNode::from
-     *
      * @throws Exception
      */
     public function testNode(): void
@@ -33,9 +29,9 @@ final class EmbedNodeTest extends DatabaseTestCaseAbstract
         $node = (new Node())->setName('node-name');
         $this->pfd($node);
 
-        self::assertEquals('name', $embedNode->getName());
-        self::assertEquals('123', $embedNode->getId());
-        self::assertEquals('node-name', EmbedNode::from($node)->getName());
+        self::assertSame('name', $embedNode->getName());
+        self::assertSame('123', $embedNode->getId());
+        self::assertSame('node-name', EmbedNode::from($node)->getName());
     }
 
 }

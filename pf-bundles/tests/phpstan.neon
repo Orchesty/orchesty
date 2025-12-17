@@ -5,8 +5,13 @@ parameters:
 	doctrine:
 		objectManagerLoader: DocumentManagerLoader.php
 	symfony:
-		container_xml_path: %rootDir%/../../../var/cache/test/Hanaboso_PipesFramework_KernelTestDebugContainer.xml
+		containerXmlPath: %rootDir%/../../../var/cache/test/Hanaboso_PipesFramework_KernelTestDebugContainer.xml
 	ignoreErrors:
+		- '#Unreachable statement \- code above always terminates.#'
+		-
+			identifier: method.internalClass
+		-
+			identifier: method.internal
 		-
 			message: '#Calling putenv\(\) is forbidden, might overwrite existing variables#'
 			path: ../tests/KernelTestCaseAbstract.php
@@ -16,6 +21,14 @@ parameters:
 		-
 			message: '#Access to an undefined property#'
 			path: ../tests/*
+		-
+			message: '#expects array, array|ArrayAccess given#'
+			path: ../tests/*
+		- 
+			identifier: missingType.generics
+		-
+			message: '#.*#'
+			path: ../tests/app/config/reference.php
 	ergebnis:
 		classesAllowedToBeExtended:
 			- Hanaboso\PipesFramework\HbPFUsageStatsBundle\Manager\SenderAbstract

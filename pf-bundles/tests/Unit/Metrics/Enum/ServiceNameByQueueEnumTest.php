@@ -4,6 +4,7 @@ namespace PipesFrameworkTests\Unit\Metrics\Enum;
 
 use Exception;
 use Hanaboso\PipesFramework\Metrics\Enum\ServiceNameByQueueEnum;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -11,28 +12,26 @@ use PipesFrameworkTests\DatabaseTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Unit\Metrics\Enum
  */
+#[CoversClass(ServiceNameByQueueEnum::class)]
 final class ServiceNameByQueueEnumTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\Metrics\Enum\ServiceNameByQueueEnum
-     * @covers \Hanaboso\PipesFramework\Metrics\Enum\ServiceNameByQueueEnum::getNameAndNodeId
-     *
      * @throws Exception
      */
     public function testBillingEvent(): void
     {
         $repeater = ServiceNameByQueueEnum::getNameAndNodeId('pipes.repeater');
-        self::assertEquals('Repeater', $repeater['name']);
+        self::assertSame('Repeater', $repeater['name']);
         $limiter = ServiceNameByQueueEnum::getNameAndNodeId('pipes.limiter');
-        self::assertEquals('Limiter', $limiter['name']);
+        self::assertSame('Limiter', $limiter['name']);
         $multiCounter = ServiceNameByQueueEnum::getNameAndNodeId('pipes.multi-counter');
-        self::assertEquals('Multi counter', $multiCounter['name']);
+        self::assertSame('Multi counter', $multiCounter['name']);
         $neco = ServiceNameByQueueEnum::getNameAndNodeId('neco');
-        self::assertEquals('Unknown service', $neco['name']);
+        self::assertSame('Unknown service', $neco['name']);
         $bridge = ServiceNameByQueueEnum::getNameAndNodeId('node.123abc.123');
-        self::assertEquals('bridge', $bridge['name']);
-        self::assertEquals('123abc', $bridge['nodeId']);
+        self::assertSame('bridge', $bridge['name']);
+        self::assertSame('123abc', $bridge['nodeId']);
     }
 
 }

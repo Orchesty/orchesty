@@ -14,7 +14,7 @@ use Psr\Log\NullLogger;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 /**
  * Class UserController
@@ -37,14 +37,13 @@ final class UserController extends AbstractController
     }
 
     /**
-     * @Route("/user/login", methods={"POST", "OPTIONS"})
-     *
      * @param Request $request
      *
      * @return Response
      * @throws PipesFrameworkException
      * @throws SecurityManagerException
      */
+    #[Route('/user/login', methods: ['POST'])]
     public function loginUserAction(Request $request): Response
     {
         return $this->getResponse(
@@ -53,66 +52,60 @@ final class UserController extends AbstractController
     }
 
     /**
-     * @Route("/user/logout", methods={"POST", "OPTIONS"})
-     *
      * @return Response
      */
+    #[Route('/user/logout', methods: ['POST'])]
     public function logoutAction(): Response
     {
         return $this->forward('Hanaboso\UserBundle\Controller\UserController::logoutAction');
     }
 
     /**
-     * @Route("/user/logged_user", methods={"GET", "OPTIONS"})
-     *
      * @return Response
      */
+    #[Route('/user/logged_user', methods: ['GET'])]
     public function loggedUserAction(): Response
     {
         return $this->forward('Hanaboso\UserBundle\Controller\UserController::loggedUserAction');
     }
 
     /**
-     * @Route("/user/register", methods={"POST", "OPTIONS"})
-     *
      * @return Response
      */
+    #[Route('/user/register', methods: ['POST'])]
     public function registerAction(): Response
     {
         return $this->forward('Hanaboso\UserBundle\Controller\UserController::registerAction');
     }
 
     /**
-     * @Route("/user/{token}/activate", requirements={"token": "\w+"}, methods={"POST", "OPTIONS"})
-     *
      * @param string $token
      *
      * @return Response
      */
+    #[Route('/user/{token}/activate', requirements: ['token' => '\w+'], methods: ['POST'])]
     public function activateAction(string $token): Response
     {
         return $this->forward('Hanaboso\UserBundle\Controller\UserController::activateAction', ['token' => $token]);
     }
 
     /**
-     * @Route("/user/{token}/verify", requirements={"token": "\w+"}, methods={"POST", "OPTIONS"})
-     *
      * @param string $token
      *
      * @return Response
      */
+    #[Route('/user/{token}/verify', requirements: ['token' => '\w+'], methods: ['POST'])]
     public function verifyAction(string $token): Response
     {
         return $this->forward('Hanaboso\UserBundle\Controller\UserController::verifyAction', ['token' => $token]);
     }
 
     /**
-     * @Route("/user/{token}/set_password", requirements={"token": "\w+"}, methods={"POST", "OPTIONS"})
-     *
      * @param string $token
      *
      * @return Response
      */
+    #[Route('/user/{token}/set_password', requirements: ['token' => '\w+'], methods: ['POST'])]
     public function setPasswordAction(string $token): Response
     {
         return $this->forward(
@@ -122,32 +115,29 @@ final class UserController extends AbstractController
     }
 
     /**
-     * @Route("/user/change_password", methods={"POST", "OPTIONS"})
-     *
      * @return Response
      */
+    #[Route('/user/change_password', methods: ['POST'])]
     public function changePasswordAction(): Response
     {
         return $this->forward('Hanaboso\UserBundle\Controller\UserController::changePasswordAction');
     }
 
     /**
-     * @Route("/user/reset_password", methods={"POST", "OPTIONS"})
-     *
      * @return Response
      */
+    #[Route('/user/reset_password', methods: ['POST'])]
     public function resetPasswordAction(): Response
     {
         return $this->forward('Hanaboso\UserBundle\Controller\UserController::resetPasswordAction');
     }
 
     /**
-     * @Route("/user/{id}/delete", methods={"DELETE", "OPTIONS"})
-     *
      * @param string $id
      *
      * @return Response
      */
+    #[Route('/user/{id}/delete', methods: ['DELETE'])]
     public function deleteAction(string $id): Response
     {
         return $this->forward(
@@ -157,13 +147,12 @@ final class UserController extends AbstractController
     }
 
     /**
-     * @Route("/user/list", methods={"POST", "OPTIONS"})
-     *
      * @param Request $request
      *
      * @return Response
      * @throws MongoDBException
      */
+    #[Route('/user/list', methods: ['POST'])]
     public function getAllUsersAction(Request $request): Response
     {
         return $this->getResponse(
@@ -174,8 +163,6 @@ final class UserController extends AbstractController
     }
 
     /**
-     * @Route("/user/{id}/saveSettings", methods={"POST", "OPTIONS"})
-     *
      * @param Request $request
      * @param string  $id
      *
@@ -184,19 +171,19 @@ final class UserController extends AbstractController
      * @throws PipesFrameworkException
      * @throws UserManagerException
      */
+    #[Route('/user/{id}/saveSettings', methods: ['POST'])]
     public function saveUserSettingsAction(Request $request, string $id): Response
     {
         return $this->getResponse($this->userHandler->saveSettings($request->request->all(), $id));
     }
 
     /**
-     * @Route("/user/{id}", methods={"GET", "OPTIONS"}, priority="-1000")
-     *
      * @param string $id
      *
      * @return Response
      * @throws UserManagerException
      */
+    #[Route('/user/{id}', methods: ['GET'], priority: -1_000)]
     public function getUserAction(string $id): Response
     {
         return $this->getResponse($this->userHandler->getUserDetail($id));

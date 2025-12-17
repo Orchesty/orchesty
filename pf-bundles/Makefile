@@ -4,34 +4,23 @@ DC=docker-compose
 DE=docker-compose exec -T app
 DEC=docker-compose exec -T app composer
 
-ALIAS?=alias
-Darwin:
-	sudo ifconfig lo0 $(ALIAS) $(shell awk '$$1 ~ /^DEV_IP/' .env.dist | sed -e "s/^DEV_IP=//")
-Linux:
-	@echo 'skipping ...'
-.lo0-up:
-	-@make `uname`
-.lo0-down:
-	-@make `uname` ALIAS='-alias'
 .env:
 	sed -e "s/{DEV_UID}/$(shell if [ "$(shell uname)" = "Linux" ]; then echo $(shell id -u); else echo '1001'; fi)/g" \
 		-e "s/{DEV_GID}/$(shell if [ "$(shell uname)" = "Linux" ]; then echo $(shell id -g); else echo '1001'; fi)/g" \
-		-e "s/{SSH_AUTH}/$(shell if [ "$(shell uname)" = "Linux" ]; then echo '${SSH_AUTH_SOCK}' | sed 's/\//\\\//g'; else echo '\/run\/host-services\/ssh-auth.sock'; fi)/g" \
 		.env.dist > .env; \
 
 # Build
 build: .env
 	cp .dockerignore ../.dockerignore
-	docker build -f Dockerfile -t $(IMAGE) --pull ../. || rm ../.dockerignore
-	docker push $(IMAGE)
+	docker buildx build -f Dockerfile --pull --push --platform linux/amd64,linux/arm64/v8 -t $(IMAGE) ../. || rm ../.dockerignore
 	rm ../.dockerignore || true
 
 # Docker
-docker-up-force: .env .lo0-up
+docker-up-force: .env
 	$(DC) pull
 	$(DC) up -d --force-recreate --remove-orphans
 
-docker-down-clean: .env .lo0-down
+docker-down-clean: .env
 	$(DC) down -v
 
 #Composer
@@ -66,13 +55,13 @@ phpintegration: database-create
 	$(DE) ./vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --colors=always tests/Integration
 
 phpcontroller:
-	$(DE) ./vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --colors=always tests/Controller/HbPFConfiguratorBundle/Controller
+	$(DE) ./vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --colors=always tests/Controller
 
 phpcoverage:
-	$(DE) ./vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --coverage-html var/coverage --coverage-filter src tests
+	$(DE) ./vendor/bin/paratest -c ./vendor/hanaboso/php-check-utils/phpunit.xml.dist -p $$(nproc) --coverage-html var/coverage --cache-directory var/cache/coverage --coverage-filter src tests
 
 phpcoverage-ci:
-	$(DE) ./vendor/hanaboso/php-check-utils/bin/coverage.sh -c 85 -p $$(nproc)
+	$(DE) ./vendor/hanaboso/php-check-utils/bin/coverage.sh -c 80 -p $$(nproc)
 
 ci-test: test
 

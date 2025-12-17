@@ -19,26 +19,27 @@ use MongoDB\Driver\Exception\InvalidArgumentException;
 abstract class LogsAbstract implements LogsInterface
 {
 
-    protected const ID               = 'id';
-    protected const _ID              = '_id';
-    protected const CORRELATIONID    = 'correlation_id';
-    protected const CORRELATION_ID   = 'correlation_id';
-    protected const TOPOLOGYID       = 'topology_id';
-    protected const TOPOLOGY_ID      = 'topology_id';
-    protected const TOPOLOGYNAME     = 'topologyName';
-    protected const TOPOLOGY_NAME    = 'topology_name';
-    protected const NODEID           = 'node_id';
-    protected const NODE_ID          = 'node_id';
-    protected const NODENAME         = 'nodeName';
-    protected const NODE_NAME        = 'node_name';
-    protected const TIMESTAMP_PREFIX = '@timestamp';
-    protected const TIMESTAMP        = 'timestamp';
-    protected const PIPES            = 'pipes';
-    protected const SEVERITY         = 'severity';
-    protected const LEVEL            = 'severity';
-    protected const MESSAGE          = 'message';
-    protected const SERVICE          = 'service';
-    protected const LIMIT            = 1_000;
+    protected const string ID                   = 'id';
+    protected const string _ID                  = '_id';
+    protected const string CORRELATIONID        = 'correlation_id';
+    protected const string CORRELATION_ID       = 'correlation_id';
+    protected const string TOPOLOGYID           = 'topology_id';
+    protected const string TOPOLOGY_ID          = 'topology_id';
+    protected const string TOPOLOGYNAME         = 'topologyName';
+    protected const string TOPOLOGY_NAME        = 'topology_name';
+    protected const string TOPOLOGY_DESCRIPTION = 'topology_description';
+    protected const string NODEID               = 'node_id';
+    protected const string NODE_ID              = 'node_id';
+    protected const string NODENAME             = 'nodeName';
+    protected const string NODE_NAME            = 'node_name';
+    protected const string TIMESTAMP_PREFIX     = '@timestamp';
+    protected const string TIMESTAMP            = 'timestamp';
+    protected const string PIPES                = 'pipes';
+    protected const string SEVERITY             = 'severity';
+    protected const string LEVEL                = 'severity';
+    protected const string MESSAGE              = 'message';
+    protected const string SERVICE              = 'service';
+    protected const int LIMIT                   = 1_000;
 
     /**
      * LogsAbstract constructor.
@@ -68,7 +69,14 @@ abstract class LogsAbstract implements LogsInterface
             }
 
             if ($topologyId){
-                $result[$key][self::TOPOLOGY_NAME] = $this->getTopologyName($topologyId);
+                $topology = $this->getTopology($topologyId);
+                if($topology !== NULL){
+                    $result[$key][self::TOPOLOGY_NAME]        = $topology->getName();
+                    $result[$key][self::TOPOLOGY_DESCRIPTION] = $topology->getDescr();
+                }else {
+                    $result[$key][self::TOPOLOGY_NAME]        = '';
+                    $result[$key][self::TOPOLOGY_DESCRIPTION] = '';
+                }
             }
 
             if ($nodeId) {
@@ -103,9 +111,9 @@ abstract class LogsAbstract implements LogsInterface
     /**
      * @param string $topologyId
      *
-     * @return string
+     * @return ?Topology
      */
-    protected function getTopologyName(string $topologyId): string
+    protected function getTopology(string $topologyId): ?Topology
     {
         try {
             /** @var Topology|null $topology */
@@ -113,11 +121,11 @@ abstract class LogsAbstract implements LogsInterface
                 [self::ID => new ObjectId(explode('-', $topologyId)[0])],
             );
 
-            return $topology ? $topology->getName() : '';
+            return $topology;
         } catch (InvalidArgumentException $e) {
             $e;
 
-            return '';
+            return NULL;
         }
     }
 

@@ -4,12 +4,17 @@ namespace PipesFrameworkTests\Controller\HbPFUserTaskBundle\Controller;
 
 use Exception;
 use Hanaboso\PipesFramework\Database\Document\Topology;
+use Hanaboso\PipesFramework\HbPFUserTaskBundle\Controller\UserTaskController;
+use Hanaboso\PipesFramework\HbPFUserTaskBundle\Handler\UserTaskHandler;
 use Hanaboso\PipesFramework\UserTask\Document\UserTask;
 use Hanaboso\PipesFramework\UserTask\Document\UserTaskMessage;
 use Hanaboso\PipesFramework\UserTask\Enum\UserTaskEnum;
+use Hanaboso\PipesFramework\UserTask\Model\UserTaskFilter;
 use Hanaboso\PipesFramework\UserTask\Model\UserTaskManager;
+use Hanaboso\PipesFramework\UserTask\Repository\UserTaskRepository;
 use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\System\PipesHeaders;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 use RabbitMqBundle\Publisher\Publisher;
 
@@ -17,21 +22,18 @@ use RabbitMqBundle\Publisher\Publisher;
  * Class UserTaskControllerTest
  *
  * @package PipesFrameworkTests\Controller\HbPFUserTaskBundle\Controller
- *
- * @covers  \Hanaboso\PipesFramework\HbPFUserTaskBundle\Controller\UserTaskController
- * @covers  \Hanaboso\PipesFramework\HbPFUserTaskBundle\Handler\UserTaskHandler
- * @covers  \Hanaboso\PipesFramework\UserTask\Model\UserTaskManager
- * @covers  \Hanaboso\PipesFramework\UserTask\Model\UserTaskFilter
- * @covers  \Hanaboso\PipesFramework\UserTask\Repository\UserTaskRepository
  */
+#[CoversClass(UserTaskController::class)]
+#[CoversClass(UserTaskHandler::class)]
+#[CoversClass(UserTaskManager::class)]
+#[CoversClass(UserTaskFilter::class)]
+#[CoversClass(UserTaskRepository::class)]
 final class UserTaskControllerTest extends ControllerTestCaseAbstract
 {
 
-    private const IDS = ['507f191e810c19729de860ea', '507f191e810c19729de860eb'];
+    private const array IDS = ['507f191e810c19729de860ea', '507f191e810c19729de860eb'];
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFUserTaskBundle\Controller\UserTaskController::getAction
-     *
      * @throws Exception
      */
     public function testGet(): void
@@ -50,8 +52,6 @@ final class UserTaskControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFUserTaskBundle\Controller\UserTaskController::getAction
-     *
      * @throws Exception
      */
     public function testGetNotFound(): void
@@ -61,8 +61,6 @@ final class UserTaskControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFUserTaskBundle\Controller\UserTaskController::filterAction
-     *
      * @throws Exception
      */
     public function testFilter(): void
@@ -81,8 +79,6 @@ final class UserTaskControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFUserTaskBundle\Controller\UserTaskController::filterAction
-     *
      * @throws Exception
      */
     public function testFilterNative(): void
@@ -101,8 +97,6 @@ final class UserTaskControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFUserTaskBundle\Controller\UserTaskController::filterAction
-     *
      * @throws Exception
      */
     public function testFilterError(): void
@@ -112,8 +106,6 @@ final class UserTaskControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFUserTaskBundle\Controller\UserTaskController::updateAction
-     *
      * @throws Exception
      */
     public function testUpdate(): void
@@ -131,8 +123,6 @@ final class UserTaskControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFUserTaskBundle\Controller\UserTaskController::updateAction
-     *
      * @throws Exception
      */
     public function testErrorUpdate(): void
@@ -142,8 +132,6 @@ final class UserTaskControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFUserTaskBundle\Controller\UserTaskController::acceptAction
-     *
      * @throws Exception
      */
     public function testAccept(): void
@@ -156,8 +144,6 @@ final class UserTaskControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFUserTaskBundle\Controller\UserTaskController::acceptAction
-     *
      * @throws Exception
      */
     public function testAcceptError(): void
@@ -170,8 +156,6 @@ final class UserTaskControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFUserTaskBundle\Controller\UserTaskController::rejectAction
-     *
      * @throws Exception
      */
     public function testReject(): void
@@ -184,8 +168,6 @@ final class UserTaskControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFUserTaskBundle\Controller\UserTaskController::rejectAction
-     *
      * @throws Exception
      */
     public function testRejectError(): void
@@ -198,8 +180,6 @@ final class UserTaskControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFUserTaskBundle\Controller\UserTaskController::acceptBatchAction
-     *
      * @throws Exception
      */
     public function testAcceptBatchError(): void
@@ -212,8 +192,6 @@ final class UserTaskControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFUserTaskBundle\Controller\UserTaskController::acceptBatchAction
-     *
      * @throws Exception
      */
     public function testAcceptBatch(): void
@@ -226,8 +204,6 @@ final class UserTaskControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFUserTaskBundle\Controller\UserTaskController::rejectBatchAction
-     *
      * @throws Exception
      */
     public function testRejectBatch(): void
@@ -240,8 +216,6 @@ final class UserTaskControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFUserTaskBundle\Controller\UserTaskController::rejectBatchAction
-     *
      * @throws Exception
      */
     public function testRejectBatchError(): void
@@ -289,7 +263,7 @@ final class UserTaskControllerTest extends ControllerTestCaseAbstract
                 $parsed = Json::decode($body);
                 self::assertEquals('body', $parsed['body']);
                 self::assertArrayHasKey('user-task-state', $parsed['headers']);
-                self::assertEquals(PipesHeaders::get('user-task-state', $parsed['headers']), $state);
+                self::assertSame(PipesHeaders::get('user-task-state', $parsed['headers']), $state);
             },
         );
         $c   = self::getContainer();

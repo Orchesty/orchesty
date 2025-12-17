@@ -8,7 +8,6 @@ use Hanaboso\MongoDataGrid\GridRequestDto;
 use Hanaboso\PipesFramework\User\Document\UserSettings;
 use Hanaboso\PipesFramework\User\Manager\UserManager as UsersManager;
 use Hanaboso\UserBundle\Document\User;
-use Hanaboso\UserBundle\Entity\UserInterface;
 use Hanaboso\UserBundle\Model\Security\SecurityManagerException;
 use Hanaboso\UserBundle\Model\User\UserManager;
 use Hanaboso\UserBundle\Model\User\UserManagerException;
@@ -24,7 +23,7 @@ use Hanaboso\Utils\System\ControllerUtils;
 final class UserHandler
 {
 
-    private const SETTINGS = 'settings';
+    private const string SETTINGS = 'settings';
 
     /**
      * UserHandler constructor.
@@ -111,12 +110,12 @@ final class UserHandler
      */
 
     /**
-     * @param UserInterface $user
-     * @param string        $jwt
+     * @param User   $user
+     * @param string $jwt
      *
      * @return mixed[]
      */
-    private function getUserData(UserInterface $user, string $jwt): array
+    private function getUserData(User $user, string $jwt): array
     {
         $settings = $this->getSettings($user->getId());
         if ($settings) {

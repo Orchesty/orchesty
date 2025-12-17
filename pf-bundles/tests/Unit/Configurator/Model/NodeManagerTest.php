@@ -13,6 +13,7 @@ use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
 use Hanaboso\PipesFramework\Configurator\Model\NodeManager;
 use Hanaboso\PipesFramework\Database\Document\Node;
 use Hanaboso\PipesFramework\Database\Repository\NodeRepository;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 
 /**
@@ -20,13 +21,11 @@ use PipesFrameworkTests\KernelTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Unit\Configurator\Model
  */
+#[CoversClass(NodeManager::class)]
 final class NodeManagerTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\NodeManager
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\NodeManager::updateNode
-     *
      * @throws Exception
      */
     public function testUpdateNode(): void
@@ -47,14 +46,12 @@ final class NodeManagerTest extends KernelTestCaseAbstract
         $nodeManager = new NodeManager($this->getDmlMock(),$this->getCronMock());
         $result      = $nodeManager->updateNode($node, $data);
 
-        self::assertEquals('test-name', $result->getName());
-        self::assertEquals($data['type'], $result->getType());
-        self::assertEquals($data['handler'], $result->getHandler());
+        self::assertSame('test-name', $result->getName());
+        self::assertSame($data['type'], $result->getType());
+        self::assertSame($data['handler'], $result->getHandler());
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\NodeManager::updateNode
-     *
      * @throws Exception
      */
     public function testUpdateNodeEnabled(): void
@@ -70,12 +67,10 @@ final class NodeManagerTest extends KernelTestCaseAbstract
         $nodeManager = new NodeManager($this->getDmlMock(),$this->getCronMock());
         $result      = $nodeManager->updateNode($node, $data);
 
-        self::assertEquals($data['enabled'], $result->isEnabled());
+        self::assertSame($data['enabled'], $result->isEnabled());
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\NodeManager::updateNode
-     *
      * @throws Exception
      */
     public function testUpdateNodeEnabledFail(): void
@@ -103,7 +98,7 @@ final class NodeManagerTest extends KernelTestCaseAbstract
     {
         $repo = self::createPartialMock(NodeRepository::class, []);
         $dm   = self::createPartialMock(DocumentManager::class, ['flush', 'getRepository']);
-        $dm->method('flush')->willReturn(TRUE);
+        $dm->method('flush');
         $dm->method('getRepository')->willReturn($repo);
 
         $dml = self::createPartialMock(DatabaseManagerLocator::class, ['getDm']);

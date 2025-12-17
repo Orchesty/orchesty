@@ -4,7 +4,7 @@ namespace Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 /**
  * Class DashboardController
@@ -15,10 +15,9 @@ final class DashboardController extends AbstractController
 {
 
     /**
-     * @Route("/dashboards/default", methods={"GET"})
-     *
      * @return Response
      */
+    #[Route('/dashboards/default', methods: ['GET'])]
     public function getDashboardAction(): Response
     {
         return $this->forward(

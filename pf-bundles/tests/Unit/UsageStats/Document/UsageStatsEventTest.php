@@ -6,6 +6,7 @@ use Exception;
 use Hanaboso\PipesFramework\UsageStats\Document\AppInstallBillingData;
 use Hanaboso\PipesFramework\UsageStats\Document\HearthBeatData;
 use Hanaboso\PipesFramework\UsageStats\Document\UsageStatsEvent;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -13,30 +14,18 @@ use PipesFrameworkTests\DatabaseTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Unit\UsageStats\Document
  */
+#[CoversClass(UsageStatsEvent::class)]
 final class UsageStatsEventTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\UsageStats\Document\UsageStatsEvent
-     * @covers \Hanaboso\PipesFramework\UsageStats\Document\UsageStatsEvent::getId
-     * @covers \Hanaboso\PipesFramework\UsageStats\Document\UsageStatsEvent::setIid
-     * @covers \Hanaboso\PipesFramework\UsageStats\Document\UsageStatsEvent::getType
-     * @covers \Hanaboso\PipesFramework\UsageStats\Document\UsageStatsEvent::setType
-     * @covers \Hanaboso\PipesFramework\UsageStats\Document\UsageStatsEvent::getVersion
-     * @covers \Hanaboso\PipesFramework\UsageStats\Document\UsageStatsEvent::setVersion
-     * @covers \Hanaboso\PipesFramework\UsageStats\Document\UsageStatsEvent::getData
-     * @covers \Hanaboso\PipesFramework\UsageStats\Document\UsageStatsEvent::setData
-     * @covers \Hanaboso\PipesFramework\UsageStats\Document\UsageStatsEvent::setHeartBeatData
-     * @covers \Hanaboso\PipesFramework\UsageStats\Document\UsageStatsEvent::getSent
-     * @covers \Hanaboso\PipesFramework\UsageStats\Document\UsageStatsEvent::setSent
-     *
      * @throws Exception
      */
     public function testBillingEvent(): void
     {
         $usageStatsEvent = new UsageStatsEvent('1', '1');
-        self::assertEquals('1', $usageStatsEvent->getIid());
-        self::assertEquals('1', $usageStatsEvent->getType());
+        self::assertSame('1', $usageStatsEvent->getIid());
+        self::assertSame('1', $usageStatsEvent->getType());
         $usageStatsEvent->setSent(1);
         $usageStatsEvent->setVersion(1);
         $usageStatsEvent->setType('2');

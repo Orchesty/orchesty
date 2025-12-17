@@ -12,9 +12,11 @@ use Hanaboso\Utils\Exception\DateTimeException;
  * Class TopologyProgress
  *
  * @package Hanaboso\PipesFramework\Configurator\Document
- *
- * @ODM\Document(collection="MultiCounter", repositoryClass="Hanaboso\PipesFramework\Configurator\Repository\TopologyProgressRepository")
  */
+#[ODM\Document(
+    collection: 'MultiCounter',
+    repositoryClass: 'Hanaboso\PipesFramework\Configurator\Repository\TopologyProgressRepository',
+)]
 class TopologyProgress
 {
 
@@ -22,58 +24,50 @@ class TopologyProgress
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $topologyId;
 
     /**
      * @var int
-     *
-     * @ODM\Field(type="int")
      */
+    #[ODM\Field(type: 'int')]
     private int $ok = 0;
 
     /**
      * @var int
-     *
-     * @ODM\Field(type="int")
      */
+    #[ODM\Field(type: 'int')]
     private int $nok = 0;
 
     /**
      * @var int
-     *
-     * @ODM\Field(type="int")
      */
+    #[ODM\Field(type: 'int')]
     private int $total = 0;
 
     /**
      * @var int
-     *
-     * @ODM\Field(type="int")
      */
+    #[ODM\Field(type: 'int')]
     private int $processedCount = 0;
 
     /**
      * @var DateTime
-     *
-     * @ODM\Field(name="created", type="date")
      */
+    #[ODM\Field(name: 'created', type: 'date')]
     private DateTime $startedAt;
 
     /**
      * @var DateTime|null
-     *
-     * @ODM\Field(name="finished", type="date")
      */
+    #[ODM\Field(name: 'finished', type: 'date')]
     private ?DateTime $finishedAt = NULL;
 
     /**
      * @var string|null
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private ?string $user = NULL;
 
     /**
@@ -278,8 +272,8 @@ class TopologyProgress
     {
         $startSecs = $start->getTimestamp() * 1_000;
         $endSecs   = $end->getTimestamp() * 1_000;
-        $startMs   = (int) ($start->format('u') / 1_000);
-        $endMs     = (int) ($end->format('u') / 1_000);
+        $startMs   = (int) ($start->format('u') / 1_000); // @phpstan-ignore-line
+        $endMs     = (int) ($end->format('u') / 1_000); // @phpstan-ignore-line
 
         return $endSecs - $startSecs + $endMs - $startMs;
     }

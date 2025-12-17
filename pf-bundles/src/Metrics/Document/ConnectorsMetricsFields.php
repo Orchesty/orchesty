@@ -9,24 +9,23 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  * Class ConnectorsMetricsFields
  *
  * @package Hanaboso\PipesFramework\Metrics\Document
- *
- * @ODM\EmbeddedDocument()
  */
+#[ODM\EmbeddedDocument]
 class ConnectorsMetricsFields
 {
 
+    public const string CREATED = 'created';
+
     /**
      * @var int
-     *
-     * @ODM\Field(type="int", name="sent_request_total_duration")
      */
+    #[ODM\Field(name: 'sent_request_total_duration', type: 'int')]
     private int $totalDuration;
 
     /**
      * @var DateTime
-     *
-     * @ODM\Field(type="date")
      */
+    #[ODM\Field(type: 'date')]
     private DateTime $created;
 
     /**

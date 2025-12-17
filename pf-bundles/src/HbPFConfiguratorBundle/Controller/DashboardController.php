@@ -9,7 +9,7 @@ use Hanaboso\Utils\Traits\ControllerTrait;
 use Psr\Log\NullLogger;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 /**
  * Class DashboardController
@@ -32,13 +32,12 @@ final class DashboardController
     }
 
     /**
-     * @Route("/dashboards/default", methods={"GET"})
-     *
      * @param Request $request
      *
      * @return Response
      * @throws DateTimeException
      */
+    #[Route('/dashboards/default', methods: ['GET'])]
     public function getDashboardAction(Request $request): Response
     {
         $range = $request->get('range', '24h');

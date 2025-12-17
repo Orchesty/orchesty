@@ -23,12 +23,12 @@ use Throwable;
 final class CronManager
 {
 
-    private const URL = '%s/crons';
+    private const string URL = '%s/crons';
 
-    private const TOPOLOGY   = 'topology';
-    private const NODE       = 'node';
-    private const TIME       = 'time';
-    private const PARAMETERS = 'parameters';
+    private const string TOPOLOGY   = 'topology';
+    private const string NODE       = 'node';
+    private const string TIME       = 'time';
+    private const string PARAMETERS = 'parameters';
 
     /**
      * CronManager constructor.

@@ -1,13 +1,11 @@
-version: '3.5'
 services:
     app:
-        image: hanabosocom/php-dev:php-8.2-alpine
+        image: hanabosocom/php-dev:php-8.4-alpine
         user: ${DEV_UID}:${DEV_GID}
         ports:
             - ${DEV_IP}:80:80
         volumes:
             - ./:/var/www:cached
-            - ${SSH_AUTH}:/tmp/.ssh-auth-sock
             - ${HOME}/dev/.composer:${HOME}/dev/.composer:cached
         environment:
             - APP_ENV=dev
@@ -30,14 +28,13 @@ services:
             - JWT_KEY=test1234test1234test1234test1234test1234test1234test1234test1234test1234
 
     starting-point:
-        image: orchesty/starting-point:1.0.6
+        image: orchesty/starting-point:2.0
         environment:
             MONGO_DSN: mongodb://mongo/demo
             METRICS_DSN: mongodb://mongo/metrics
 
     cron-api:
-        user: ${DEV_UID}:${DEV_GID}
-        image: orchesty/cron:1.0.6
+        image: orchesty/cron:2.0
         environment:
             STARTING_POINT_DSN: starting-point:8080
             MONGO_DSN: mongodb://mongo/cron

@@ -41,8 +41,8 @@ use Throwable;
 final class TopologyHandler
 {
 
-    private const STARTING_POINTS = 'startingPoints';
-    private const BODY            = 'body';
+    private const string STARTING_POINTS = 'startingPoints';
+    private const string BODY            = 'body';
 
     /**
      * @var ObjectRepository<Topology>&TopologyRepository

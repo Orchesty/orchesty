@@ -9,7 +9,7 @@ use Hanaboso\Utils\Traits\ControllerTrait;
 use Psr\Log\NullLogger;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Throwable;
 
 /**
@@ -33,12 +33,11 @@ final class UserTaskController
     }
 
     /**
-     * @Route("/user-task", methods={"GET", "OPTIONS"})
-     *
      * @param Request $request
      *
      * @return Response
      */
+    #[Route('/user-task', methods: ['GET'])]
     public function filterAction(Request $request): Response
     {
         try {
@@ -51,13 +50,12 @@ final class UserTaskController
     }
 
     /**
-     * @Route("/user-task/{id}/accept", methods={"POST", "OPTIONS"})
-     *
      * @param Request $request
      * @param string  $id
      *
      * @return Response
      */
+    #[Route('/user-task/{id}/accept', methods: ['POST'])]
     public function acceptAction(Request $request, string $id): Response
     {
         try {
@@ -71,12 +69,11 @@ final class UserTaskController
     }
 
     /**
-     * @Route("/user-task/accept", methods={"POST", "OPTIONS"})
-     *
      * @param Request $request
      *
      * @return Response
      */
+    #[Route('/user-task/accept', methods: ['POST'])]
     public function acceptBatchAction(Request $request): Response
     {
         try {
@@ -90,12 +87,11 @@ final class UserTaskController
     }
 
     /**
-     * @Route("/user-task/{id}/reject", methods={"POST", "OPTIONS"})
-     *
      * @param string $id
      *
      * @return Response
      */
+    #[Route('/user-task/{id}/reject', methods: ['POST'])]
     public function rejectAction(string $id): Response
     {
         try {
@@ -106,12 +102,11 @@ final class UserTaskController
     }
 
     /**
-     * @Route("/user-task/reject", methods={"POST", "OPTIONS"})
-     *
      * @param Request $request
      *
      * @return Response
      */
+    #[Route('/user-task/reject', methods: ['POST'])]
     public function rejectBatchAction(Request $request): Response
     {
         try {
@@ -122,12 +117,11 @@ final class UserTaskController
     }
 
     /**
-     * @Route("/user-task/{id}", methods={"GET", "OPTIONS"})
-     *
      * @param string $id
      *
      * @return Response
      */
+    #[Route('/user-task/{id}', methods: ['GET'])]
     public function getAction(string $id): Response
     {
         try {
@@ -138,13 +132,12 @@ final class UserTaskController
     }
 
     /**
-     * @Route("/user-task/{id}", methods={"PUT", "OPTIONS"})
-     *
      * @param Request $request
      * @param string  $id
      *
      * @return Response
      */
+    #[Route('/user-task/{id}', methods: ['PUT'])]
     public function updateAction(Request $request, string $id): Response
     {
         try {

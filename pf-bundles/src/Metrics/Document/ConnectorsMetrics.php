@@ -9,12 +9,20 @@ use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
  * Class ConnectorsMetrics
  *
  * @package Hanaboso\PipesFramework\Metrics\Document
- *
- * @ODM\Document(collection="connectors")
- * @ODM\Index(name="SearchIndex", keys={"tags.node_id"="text","tags.topology_id"="text","tags.application_id"="text","tags.user_id"="text","tags.correlation_id"="text"}),
- * @ODM\Index(name="createdIndex", keys={"fields.created"="desc"})
- * @ODM\Index(name="expireIndex", keys={"timestamp"=1}, options={"expireAfterSeconds"=2628000})
  */
+#[ODM\Document(collection: 'connectors')]
+#[ODM\Index(
+    keys: [
+        'tags.application_id' => 'text',
+        'tags.correlation_id' => 'text',
+        'tags.node_id' => 'text',
+        'tags.topology_id' => 'text',
+        'tags.user_id' => 'text',
+    ],
+    name: 'SearchIndex',
+)]
+#[ODM\Index(keys: ['fields.created' => 'desc'], name: 'createdIndex')]
+#[ODM\Index(keys: ['timestamp' => 'asc'], name: 'expireIndex', expireAfterSeconds: 2_628_000)]
 class ConnectorsMetrics
 {
 
@@ -22,16 +30,14 @@ class ConnectorsMetrics
 
     /**
      * @var ConnectorsMetricsFields
-     *
-     * @ODM\EmbedOne(targetDocument="Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetricsFields")
      */
+    #[ODM\EmbedOne(targetDocument: 'Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetricsFields')]
     private ConnectorsMetricsFields $fields;
 
     /**
      * @var Tags
-     *
-     * @ODM\EmbedOne(targetDocument="Hanaboso\PipesFramework\Metrics\Document\Tags")
      */
+    #[ODM\EmbedOne(targetDocument: 'Hanaboso\PipesFramework\Metrics\Document\Tags')]
     private Tags $tags;
 
     /**

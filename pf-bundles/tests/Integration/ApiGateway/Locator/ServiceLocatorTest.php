@@ -9,8 +9,10 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator;
 use Hanaboso\PipesFramework\Configurator\Document\Sdk;
 use Hanaboso\PipesFramework\Configurator\Enum\NodeImplementationEnum;
+use Hanaboso\Utils\String\Base64;
 use Hanaboso\Utils\String\Json;
 use LogicException;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 use Psr\Log\NullLogger;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,23 +22,18 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @package PipesFrameworkTests\Integration\ApiGateway\Locator
  */
+#[CoversClass(ServiceLocator::class)]
 final class ServiceLocatorTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::getApps
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::doRequest
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::getSdks
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::setLogger
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::__construct
-     *
      * @throws Exception
      */
     public function testGetApps(): void
     {
         $dto = new ResponseDto(200, '', Json::encode(['items' => [['key' => 'null']]]), []);
 
-        $res = $this->createLocator($dto)->getApps();
+        $res = $this->createLocator($dto)->getApps('name');
         self::assertEquals(
             [
                 'filter' => [],
@@ -57,32 +54,24 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::getApp
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::doRequest
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::getSdks
-     *
      * @throws Exception
      */
     public function testGetApp(): void
     {
         $dto = new ResponseDto(200, '', Json::encode(['key' => 'null']), []);
 
-        $res = $this->createLocator($dto)->getApp('null');
+        $res = $this->createLocator($dto)->getApp('null', 'name');
         self::assertEquals(['key' => 'null', 'host' => 'host'], $res);
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::getUserApps
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::doRequest
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::getSdks
-     *
      * @throws Exception
      */
     public function testGetUserApps(): void
     {
         $dto = new ResponseDto(200, '', Json::encode(['items' => [['key' => 'null']]]), []);
 
-        $res = $this->createLocator($dto)->getUserApps('user');
+        $res = $this->createLocator($dto)->getUserApps('user', 'name');
         self::assertEquals(
             [
                 'filter' => [],
@@ -103,17 +92,13 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::getUserApps
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::doRequest
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::getSdks
-     *
      * @throws Exception
      */
     public function testGetUserAppsNoResponse(): void
     {
         $dto = new ResponseDto(200, '', Json::encode([]), []);
 
-        $res = $this->createLocator($dto)->getUserApps('user');
+        $res = $this->createLocator($dto)->getUserApps('user', 'name');
         self::assertEquals(
             [
                 'filter' => [],
@@ -133,86 +118,61 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::getAppDetail
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::doRequest
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::getSdks
-     *
      * @throws Exception
      */
     public function testGetAppDetail(): void
     {
         $dto = new ResponseDto(200, '', Json::encode(['key' => 'null', 'customActions' => []]), []);
 
-        $res = $this->createLocator($dto)->getAppDetail('null', 'user');
+        $res = $this->createLocator($dto)->getAppDetail('null', 'user', 'name');
         self::assertEquals(['key' => 'null', 'host' => 'host', 'customActions' => []], $res);
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::installApp
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::doRequest
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::getSdks
-     *
      * @throws Exception
      */
     public function testInstallApp(): void
     {
         $dto = new ResponseDto(200, '', Json::encode(['key' => 'null']), []);
 
-        $res = $this->createLocator($dto)->installApp('null', 'user');
+        $res = $this->createLocator($dto)->installApp('null', 'user', 'name');
         self::assertEquals(['key' => 'null', 'host' => 'host'], $res);
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::uninstallApp
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::doRequest
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::getSdks
-     *
      * @throws Exception
      */
     public function testUninstallApp(): void
     {
         $dto = new ResponseDto(200, '', Json::encode(['key' => 'null']), []);
 
-        $res = $this->createLocator($dto)->uninstallApp('null', 'user');
+        $res = $this->createLocator($dto)->uninstallApp('null', 'user', 'name');
         self::assertEquals(['key' => 'null', 'host' => 'host'], $res);
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::updateApp
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::doRequest
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::getSdks
-     *
      * @throws Exception
      */
     public function testUpdateApp(): void
     {
         $dto = new ResponseDto(200, '', Json::encode(['key' => 'null']), []);
 
-        $res = $this->createLocator($dto)->updateApp('null', 'user', ['form']);
+        $res = $this->createLocator($dto)->updateApp('null', 'user', 'name', ['form']);
         self::assertEquals(['key' => 'null', 'host' => 'host'], $res);
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::updateAppPassword
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::doRequest
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::getSdks
-     *
      * @throws Exception
      */
     public function testUpdateAppPassword(): void
     {
         $dto = new ResponseDto(200, '', Json::encode(['key' => 'null']), []);
 
-        $res = $this->createLocator($dto)->updateAppPassword('null', 'user', ['pass']);
+        $res = $this->createLocator($dto)->updateAppPassword('null', 'user', 'name', ['pass']);
         self::assertEquals(['key' => 'null', 'host' => 'host'], $res);
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::authorizationToken
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::doRequest
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::getSdks
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::queryToString
-     *
      * @throws Exception
      */
     public function testAuthorizationToken(): void
@@ -224,40 +184,30 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::authorizationQueryToken
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::doRequest
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::getSdks
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::queryToString
-     *
      * @throws Exception
      */
     public function testAuthorizationQueryToken(): void
     {
         $dto = new ResponseDto(200, '', Json::encode(['key' => 'null']), []);
 
-        $res = $this->createLocator($dto)->authorizationQueryToken(['param1' => 'aaa', 'state' => ['abc']]);
+        $res = $this->createLocator($dto)->authorizationQueryToken([
+            'param1' => 'aaa',
+            'state' => Base64::base64UrlEncode('name:name'),
+        ]);
         self::assertEquals(['key' => 'null', 'host' => 'host'], $res);
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::authorize
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::doRequest
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::getSdks
-     *
      * @throws Exception
      */
     public function testAuthorize(): void
     {
         $dto = new ResponseDto(200, '', Json::encode(['authorizeUrl' => 'redirect/url']), []);
-        $this->createLocator($dto)->authorize('key', 'user', 'redirect');
+        $this->createLocator($dto)->authorize('key', 'user', 'name', 'redirect');
         self::assertFake();
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::authorize
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::doRequest
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::getSdks
-     *
      * @throws Exception
      */
     public function testAuthorizeError(): void
@@ -265,14 +215,10 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
         $dto = new ResponseDto(200, '', Json::encode([]), []);
 
         self::expectException(LogicException::class);
-        $this->createLocator($dto)->authorize('key', 'user', 'redirect');
+        $this->createLocator($dto)->authorize('key', 'user', 'name', 'redirect');
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::authorize
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::doRequest
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::getSdks
-     *
      * @throws Exception
      */
     public function testAuthorizeRequestError(): void
@@ -280,13 +226,10 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
         $dto = new ResponseDto(200, '', Json::encode([]), []);
 
         self::expectException(LogicException::class);
-        $this->createLocator($dto, TRUE)->authorize('key', 'user', 'redirect');
+        $this->createLocator($dto, TRUE)->authorize('key', 'user', 'name', 'redirect');
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::getNodes
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::getSdks
-     *
      * @throws Exception
      */
     public function testGetNodes(): void
@@ -310,9 +253,6 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::getNodes
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::getSdks
-     *
      * @throws Exception
      */
     public function testGetNodesRequestError(): void
@@ -336,51 +276,39 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::subscribeWebhook
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::doRequest
-     *
      * @throws Exception
      */
     public function testSubscribeWebhook(): void
     {
         $dto = new ResponseDto(200, '', Json::encode([]), []);
 
-        $res = $this->createLocator($dto)->subscribeWebhook('key', 'user', []);
+        $res = $this->createLocator($dto)->subscribeWebhook('key', 'user', 'name', []);
         self::assertEquals([], $res);
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::unSubscribeWebhook
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::doRequest
-     *
      * @throws Exception
      */
     public function testUnSubscribeWebhook(): void
     {
         $dto = new ResponseDto(200, '', Json::encode([]), []);
 
-        $res = $this->createLocator($dto)->unSubscribeWebhook('key', 'user', []);
+        $res = $this->createLocator($dto)->unSubscribeWebhook('key', 'user', 'name', []);
         self::assertEquals([], $res);
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::listSyncActions
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::doRequest
-     *
      * @throws Exception
      */
     public function testListSyncActions(): void
     {
         $dto = new ResponseDto(200, '', Json::encode([]), []);
 
-        $res = $this->createLocator($dto)->listSyncActions('key');
+        $res = $this->createLocator($dto)->listSyncActions('key', 'name');
         self::assertEquals([], $res);
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::runSyncActions
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator::doRequest
-     *
      * @throws Exception
      */
     public function testRunSyncActions(): void
@@ -390,7 +318,7 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
         $req->setMethod('post');
 
         self::expectException(LogicException::class);
-        $this->createLocator($dto)->runSyncActions($req, 'key', 'someMethod');
+        $this->createLocator($dto)->runSyncActions($req, 'key', 'name', 'someMethod');
     }
 
     /**

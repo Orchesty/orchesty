@@ -6,6 +6,7 @@ use Exception;
 use Hanaboso\PipesFramework\UsageStats\Enum\EventTypeEnum;
 use Hanaboso\PipesFramework\UsageStats\Event\BillingEvent;
 use LogicException;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -13,25 +14,20 @@ use PipesFrameworkTests\DatabaseTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Unit\UsageStats\Event
  */
+#[CoversClass(BillingEvent::class)]
 final class BillingEventTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\UsageStats\Event\BillingEvent
-     * @covers \Hanaboso\PipesFramework\UsageStats\Event\BillingEvent::getData
-     * @covers \Hanaboso\PipesFramework\UsageStats\Event\BillingEvent::setData
-     * @covers \Hanaboso\PipesFramework\UsageStats\Event\BillingEvent::getType
-     * @covers \Hanaboso\PipesFramework\UsageStats\Event\BillingEvent::setType
-     *
      * @throws Exception
      */
     public function testBillingEvent(): void
     {
         $billingEvent = new BillingEvent(EventTypeEnum::INSTALL->value, ['aid' => '1', 'euid' => '1']);
-        self::assertEquals(EventTypeEnum::INSTALL->value, $billingEvent->getType());
+        self::assertSame(EventTypeEnum::INSTALL->value, $billingEvent->getType());
         self::assertEquals(['aid' => '1', 'euid' => '1'], $billingEvent->getData()->toArray());
         $billingEvent->setType(EventTypeEnum::UNINSTALL->value);
-        self::assertEquals(EventTypeEnum::UNINSTALL->value, $billingEvent->getType());
+        self::assertSame(EventTypeEnum::UNINSTALL->value, $billingEvent->getType());
         $billingEvent->setData(['aid' => '2', 'euid' => '2']);
         self::assertEquals(['aid' => '2', 'euid' => '2'], $billingEvent->getData()->toArray());
 

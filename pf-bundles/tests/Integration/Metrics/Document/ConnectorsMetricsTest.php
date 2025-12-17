@@ -5,7 +5,9 @@ namespace PipesFrameworkTests\Integration\Metrics\Document;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Exception;
 use Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetrics;
+use Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetricsFields;
 use Hanaboso\Utils\Date\DateTimeUtils;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -13,15 +15,12 @@ use PipesFrameworkTests\DatabaseTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Integration\Metrics\Document
  */
+#[CoversClass(ConnectorsMetrics::class)]
+#[CoversClass(ConnectorsMetricsFields::class)]
 final class ConnectorsMetricsTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetrics::getTags
-     * @covers \Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetrics::getFields
-     * @covers \Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetricsFields::getTotalDuration
-     * @covers \Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetricsFields::getCreated
-     *
      * @throws Exception
      */
     public function testDocument(): void
@@ -51,9 +50,9 @@ final class ConnectorsMetricsTest extends DatabaseTestCaseAbstract
         $repository = $dm->getRepository(ConnectorsMetrics::class);
         /** @var ConnectorsMetrics $result */
         $result = $repository->findAll()[0];
-        self::assertEquals(10, $result->getFields()->getTotalDuration());
+        self::assertSame(10, $result->getFields()->getTotalDuration());
         self::assertEquals(DateTimeUtils::getUtcDateTime('1.1.2020'), $result->getFields()->getCreated());
-        self::assertEquals('1', $result->getTags()->getNodeId());
+        self::assertSame('1', $result->getTags()->getNodeId());
     }
 
 }

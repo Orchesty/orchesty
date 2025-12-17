@@ -17,9 +17,8 @@ use Hanaboso\PipesFramework\Database\Document\Embed\EmbedNode;
  * Class Node
  *
  * @package Hanaboso\PipesFramework\Database\Document
- *
- * @ODM\Document(repositoryClass="Hanaboso\PipesFramework\Database\Repository\NodeRepository")
  */
+#[ODM\Document(repositoryClass: 'Hanaboso\PipesFramework\Database\Repository\NodeRepository')]
 class Node
 {
 
@@ -28,80 +27,69 @@ class Node
 
     /**
      * @var string|null
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     protected ?string $application;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     protected string $schemaId;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     protected string $name;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
-     * @ODM\Index()
      */
+    #[ODM\Field(type: 'string')]
+    #[ODM\Index()]
     protected string $topology;
 
     /**
      * @var mixed[]|Collection<string, EmbedNode>
-     *
-     * @ODM\EmbedMany(targetDocument="Hanaboso\PipesFramework\Database\Document\Embed\EmbedNode")
      */
+    #[ODM\EmbedMany(targetDocument: 'Hanaboso\PipesFramework\Database\Document\Embed\EmbedNode')]
     protected $next;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     protected string $type = TypeEnum::CUSTOM->value;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     protected string $handler = HandlerEnum::EVENT->value;
 
     /**
      * @var bool
-     *
-     * @ODM\Field(type="boolean", options={"default":"1"})
      */
+    #[ODM\Field(type: 'bool', options: ['default' => 1])]
     protected bool $enabled = TRUE;
 
     /**
      * @var string|null
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     protected ?string $cron = NULL;
 
     /**
      * @var string|null
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     protected ?string $cronParams = NULL;
 
     /**
      * @var string|null
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     protected ?string $systemConfigs = NULL;
 
     /**
