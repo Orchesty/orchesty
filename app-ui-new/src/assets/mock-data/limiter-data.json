@@ -1,0 +1,35 @@
+{
+  "totalMessages": 847,
+  "vsLastDay": 106,
+  "chartData": {
+    "categories": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    "series": [120, 132, 101, 134, 90, 118, 152]
+  },
+  "tableData": [
+    {
+      "connector": "Lead Sync",
+      "topology": "Lead Sync",
+      "messages": 124,
+      "change": 12.5
+    },
+    {
+      "connector": "Contact Import",
+      "topology": "Customer Update, Order Processing",
+      "messages": 87,
+      "change": 5.3
+    },
+    {
+      "connector": "Message Sync",
+      "topology": "Data Export",
+      "messages": 203,
+      "change": 18.7
+    },
+    {
+      "connector": "Ticket Export",
+      "topology": "Payment Processing, Report Generation",
+      "messages": 56,
+      "change": 3.2
+    }
+  ]
+}
+

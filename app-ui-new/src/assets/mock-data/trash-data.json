@@ -1,0 +1,39 @@
+{
+  "totalMessages": 156,
+  "vsLastDay": 13,
+  "chartData": [
+    { "x": "Lead Sync", "y": 45 },
+    { "x": "Customer Update", "y": 32 },
+    { "x": "Order Processing", "y": 28 },
+    { "x": "Data Export", "y": 24 },
+    { "x": "Email Sync", "y": 15 },
+    { "x": "Report Generation", "y": 12 }
+  ],
+  "tableData": [
+    {
+      "topology": "Lead Sync",
+      "node": "Lead Sync Action",
+      "message": "Missing required field 'email'",
+      "count": 5
+    },
+    {
+      "topology": "Customer Update",
+      "node": "Contact Import Connector",
+      "message": "Authentication token expired",
+      "count": 3
+    },
+    {
+      "topology": "Order Processing",
+      "node": "Message Sync Action",
+      "message": "Database connection timeout",
+      "count": 2
+    },
+    {
+      "topology": "Data Export",
+      "node": "Email Sync Connector",
+      "message": "Invalid JSON response format",
+      "count": 4
+    }
+  ]
+}
+

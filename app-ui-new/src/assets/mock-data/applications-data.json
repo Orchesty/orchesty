@@ -1,0 +1,35 @@
+{
+  "data": [
+    {
+      "id": "app-1",
+      "name": "Salesforce",
+      "type": "CRM",
+      "status": "active"
+    },
+    {
+      "id": "app-2",
+      "name": "HubSpot",
+      "type": "Marketing",
+      "status": "active"
+    },
+    {
+      "id": "app-3",
+      "name": "Slack",
+      "type": "Communication",
+      "status": "active"
+    },
+    {
+      "id": "app-4",
+      "name": "Zendesk",
+      "type": "Support",
+      "status": "active"
+    },
+    {
+      "id": "app-5",
+      "name": "Stripe",
+      "type": "Payment",
+      "status": "active"
+    }
+  ]
+}
+

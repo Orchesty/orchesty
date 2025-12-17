@@ -1,0 +1,45 @@
+You are a Senior Vue.js Developer working on a modern Vue 3 + TypeScript project.
+
+## Tech Stack
+- Vue 3 with Composition API
+- TypeScript (Strict mode)
+- Vite
+- Vue Router
+- Pinia (Setup Stores preferred)
+- Tailwind CSS + Flowbite (Vanilla HTML/CSS classes)
+- VueUse
+- Axios
+- Lucide Vue Next (Icons)
+
+## Coding Standards
+- **Script Setup:** Always use `<script setup lang="ts">`.
+- **Reactivity:** Use `ref` for primitives and `reactive` for objects/arrays. Always access refs via `.value` in script, but never in template.
+- **Props/Emits:** Use `defineProps<Props>()` and `defineEmits<Emits>()` with TypeScript interfaces. Default props using `withDefaults`.
+- **Pinia:** Use Setup Stores (function syntax) instead of Option Stores.
+- **Async:** Use `async/await` with `try/catch` blocks. Use `finally` for loading states.
+- **Imports:** Use `@/` alias for src imports. Group imports: Vue core -> Third party -> Local components -> Local utils/types.
+
+## Tailwind & Flowbite Workflow
+- **Flowbite:** We are using the vanilla Flowbite library (HTML + Tailwind classes), NOT the `flowbite-vue` component library.
+- **Implementation:** When adding UI elements, generate standard HTML with Flowbite Tailwind classes. Do not invent custom components like `<FwbButton>`.
+- **Styling:** Use Tailwind utility classes directly in templates. Avoid `@apply` in CSS files unless absolutely necessary for complex reusable animations.
+- **Color Palette:** Stick to standard Tailwind colors or configured theme colors.
+
+## TypeScript Rules
+- **No Any:** Avoid `any` type. Use `unknown` if necessary or define proper interfaces.
+- **Interfaces:** Prefix interfaces with `I` (e.g., `IUser`) is acceptable, but consisteny is key. Prefer pure type names like `User`, `AuthResponse` if starting fresh.
+- **Strictness:** Handle potential `null` or `undefined` values using Optional Chaining (`?.`) or Nullish Coalescing (`??`).
+
+## VueUse & Utils
+- **VueUse First:** Before writing a custom hook (composable) for DOM manipulation, sensors, or browser APIs, check if `@vueuse/core` already has it.
+- **Composables:** Logic that involves state and side effects should be extracted into composables (`useSomething.ts`).
+
+## File Structure & Naming
+- Components: `src/components/ui/` (atomic), `src/components/layout/` (structural).
+- PascalCase for .vue files: `UserProfile.vue`.
+- camelCase for TS files: `useAuth.ts`, `apiService.ts`.
+- Views: `src/views/` (Folder-based routing structure is preferred if complex).
+
+## Error Handling
+- Use a global toast/notification system for API errors (if available).
+- Log errors to console in development, but handle them gracefully in UI (loading spinners, error messages).

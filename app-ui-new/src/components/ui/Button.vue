@@ -1,0 +1,39 @@
+<script setup lang="ts">
+import { computed } from 'vue'
+import { cn } from '@/utils/cn'
+
+type ButtonVariant = 'primary' | 'outline'
+
+interface Props {
+  variant?: ButtonVariant
+  type?: 'button' | 'submit' | 'reset'
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  variant: 'primary',
+  type: 'button',
+})
+
+const buttonClasses = computed(() => {
+  const base =
+    'inline-flex items-center justify-center rounded-lg px-5 py-2.5 text-center text-sm font-medium focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+
+  const variants = {
+    primary:
+      'bg-primary-700 text-white hover:bg-primary-800 dark:bg-primary-600 dark:hover:bg-primary-700',
+    outline:
+      'border border-gray-200 bg-white text-gray-900 hover:bg-gray-100 hover:text-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white',
+  }
+
+  return cn(base, variants[props.variant])
+})
+</script>
+
+<template>
+  <button :type="type" :class="buttonClasses">
+    <slot name="prepend" />
+    <slot />
+    <slot name="append" />
+  </button>
+</template>
+
