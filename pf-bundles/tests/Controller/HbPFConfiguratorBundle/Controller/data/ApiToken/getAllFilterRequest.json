@@ -1,0 +1,7 @@
+{
+    "http": "GET /api/apiTokens?filter={\"filter\":[[{\"column\":\"key\",\"operator\":\"EQ\",\"value\":[\"One\"]}]]}",
+    "body": [],
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
+}

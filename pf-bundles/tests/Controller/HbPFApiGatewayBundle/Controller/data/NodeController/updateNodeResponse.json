@@ -1,0 +1,15 @@
+{
+    "http": 200,
+    "body": {
+        "_id": "123456789",
+        "name": "",
+        "topology_id": "123456789",
+        "next": [],
+        "type": "cron",
+        "handler": "event",
+        "enabled": false,
+        "schema_id": "",
+        "cron_time": null,
+        "cron_params": null
+    }
+}

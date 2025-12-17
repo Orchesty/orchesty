@@ -1,0 +1,31 @@
+{
+    "http": 200,
+    "body": {
+        "items": {
+            "requests": {
+                "foo": "bar"
+            }
+        },
+        "filter": [
+            [
+                {
+                    "column": "timestamp",
+                    "operator": "BETWEEN",
+                    "value": [
+                        "2021-11-24T11:39:24Z",
+                        "2021-11-24T12:39:24Z"
+                    ]
+                }
+            ]
+        ],
+        "sorter": [],
+        "paging": {
+            "page": 1,
+            "itemsPerPage": 50,
+            "total": 0,
+            "nextPage": 1,
+            "lastPage": 1,
+            "previousPage": 1
+        }
+    }
+}

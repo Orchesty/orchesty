@@ -1,0 +1,67 @@
+<?php declare(strict_types=1);
+
+namespace PipesFrameworkTests\Integration\Metrics\Document;
+
+use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
+use Exception;
+use Hanaboso\PipesFramework\Metrics\Document\BridgesMetrics;
+use Hanaboso\PipesFramework\Metrics\Document\BridgesMetricsFields;
+use Hanaboso\PipesFramework\Metrics\Document\Tags;
+use Hanaboso\Utils\Date\DateTimeUtils;
+use MongoDB\BSON\UTCDateTime;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PipesFrameworkTests\DatabaseTestCaseAbstract;
+
+/**
+ * Class BridgeMetricsTest
+ *
+ * @package PipesFrameworkTests\Integration\Metrics\Document
+ */
+#[CoversClass(BridgesMetrics::class)]
+#[CoversClass(BridgesMetricsFields::class)]
+#[CoversClass(Tags::class)]
+final class BridgeMetricsTest extends DatabaseTestCaseAbstract
+{
+
+    /**
+     * @throws Exception
+     */
+    public function testDocument(): void
+    {
+        $dm = self::getContainer()->get('doctrine_mongodb.odm.metrics_document_manager');
+        $dm->getSchemaManager()->dropDocumentCollection(BridgesMetrics::class);
+        $dm->getSchemaManager()->createDocumentCollection(BridgesMetrics::class);
+        $dm->createQueryBuilder(BridgesMetrics::class)
+            ->insert()
+            ->setNewObj(
+                [
+                    'fields' => [
+                        'created'          => new UTCDateTime(DateTimeUtils::getUtcDateTime('1.1.2020')),
+                        'result_success'   => TRUE,
+                        'total_duration'   => 20,
+                        'waiting_duration' => 10,
+                    ],
+                    'tags'   => [
+                        'node_id'     => '1',
+                        'queue'       => '12',
+                        'topology_id' => '2',
+                    ],
+                ],
+            )
+            ->getQuery()
+            ->execute();
+
+        /** @var DocumentRepository<BridgesMetrics> $repository */
+        $repository = $dm->getRepository(BridgesMetrics::class);
+        /** @var BridgesMetrics $result */
+        $result = $repository->findAll()[0];
+        self::assertTrue($result->getFields()->isSuccess());
+        self::assertSame(10, $result->getFields()->getWaitingDuration());
+        self::assertSame(20, $result->getFields()->getTotalDuration());
+        self::assertEquals(DateTimeUtils::getUtcDateTime('1.1.2020'), $result->getFields()->getCreated());
+        self::assertSame('1', $result->getTags()->getNodeId());
+        self::assertSame('2', $result->getTags()->getTopologyId());
+        self::assertSame('12', $result->getTags()->getQueue());
+    }
+
+}

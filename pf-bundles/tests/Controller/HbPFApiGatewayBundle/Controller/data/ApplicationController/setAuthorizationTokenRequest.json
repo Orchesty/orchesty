@@ -1,0 +1,9 @@
+{
+    "http": "GET /api/applications/null/users/user/authorize/token",
+    "body": {
+        "token": "token"
+    },
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
+}

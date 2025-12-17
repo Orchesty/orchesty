@@ -1,0 +1,12 @@
+services:
+    _defaults:
+        public: '%public.services%'
+        autowire: true
+        autoconfigure: true
+
+    Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController:
+        class: Hanaboso\PipesFramework\HbPFUserBundle\Controller\UserController
+        arguments:
+            - '@hbpf.user.handler.users'
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]
