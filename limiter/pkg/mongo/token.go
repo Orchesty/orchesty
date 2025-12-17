@@ -1,10 +1,11 @@
 package mongo
 
 import (
-	"github.com/hanaboso/go-utils/pkg/contextx"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"limiter/pkg/config"
+
+	"github.com/hanaboso/go-utils/pkg/contextx"
+	"go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 type ApiToken struct {
@@ -14,16 +15,13 @@ type ApiToken struct {
 func (this MongoSvc) GetApiToken() string {
 	var token ApiToken
 
+	ctx, _ := contextx.WithTimeoutSecondsCtx(30)
 	err := this.connection.Database.Collection(config.MongoDb.ApiTokenCollection).FindOne(
-		contextx.WithTimeoutSecondsCtx(30),
+		ctx,
 		bson.D{
 			{"user", config.App.SystemUser},
 		},
-		&options.FindOneOptions{
-			Projection: bson.D{{
-				"key", 1,
-			}},
-		},
+		options.FindOne().SetProjection(bson.D{{"key", 1}}),
 	).Decode(&token)
 
 	if err != nil {

@@ -2,8 +2,9 @@ package bridge
 
 import (
 	"fmt"
-	"github.com/hanaboso/go-utils/pkg/intx"
 	"limiter/pkg/enum"
+
+	"github.com/hanaboso/go-utils/pkg/intx"
 )
 
 type RequestMessage struct {

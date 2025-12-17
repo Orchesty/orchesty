@@ -3,10 +3,6 @@ package bridge
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/hanaboso/go-utils/pkg/arrayx"
-	"github.com/hanaboso/go-utils/pkg/timex"
-	"github.com/pkg/errors"
-	"github.com/rs/zerolog/log"
 	"io"
 	"limiter/pkg/enum"
 	"limiter/pkg/limiter"
@@ -14,6 +10,11 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/hanaboso/go-utils/pkg/arrayx"
+	"github.com/hanaboso/go-utils/pkg/timex"
+	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 )
 
 type BridgeSvc struct {

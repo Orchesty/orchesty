@@ -1,7 +1,7 @@
 DC=docker-compose
 DE=docker-compose exec -T app
 
-DOCKER_REGISTRY := orchesty/limiter
+IMAGE := orchesty/limiter:$(TAG)
 
 init: .env docker-up-force
 
@@ -20,8 +20,7 @@ lint:
 	$(DE) revive -config config.toml $${excludes} -formatter friendly ./...
 
 build:
-	docker build -t $(DOCKER_REGISTRY):$(TAG) .
-	docker push $(DOCKER_REGISTRY):$(TAG)
+	docker buildx build --pull --push --platform linux/amd64,linux/arm64/v8 -t $(IMAGE) .
 
 docker-compose.ci.yml:
 	# Comment out any port forwarding

@@ -1,9 +1,10 @@
 package router
 
 import (
-	"github.com/julienschmidt/httprouter"
-	"go.mongodb.org/mongo-driver/bson"
 	"net/http"
+
+	"github.com/julienschmidt/httprouter"
+	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 func Terminate(field string) route {

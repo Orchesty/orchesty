@@ -2,15 +2,16 @@ package app
 
 import (
 	"context"
-	"github.com/hanaboso/go-rabbitmq/pkg/rabbitmq"
-	"github.com/hanaboso/go-utils/pkg/timex"
-	"github.com/stretchr/testify/assert"
 	"limiter/pkg/enum"
 	"limiter/pkg/model"
 	"limiter/tests/rabbit"
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/hanaboso/go-rabbitmq/pkg/rabbitmq"
+	"github.com/hanaboso/go-utils/pkg/timex"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestRepeatSingleMessage(t *testing.T) {

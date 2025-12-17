@@ -1,10 +1,11 @@
 package rabbit
 
 import (
-	"github.com/hanaboso/go-rabbitmq/pkg/rabbitmq"
-	"github.com/rs/zerolog/log"
 	"limiter/pkg/config"
 	"limiter/pkg/model"
+
+	"github.com/hanaboso/go-rabbitmq/pkg/rabbitmq"
+	"github.com/rs/zerolog/log"
 )
 
 const (

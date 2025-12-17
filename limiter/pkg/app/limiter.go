@@ -2,8 +2,6 @@ package app
 
 import (
 	"context"
-	"github.com/hanaboso/go-utils/pkg/contextx"
-	"github.com/rs/zerolog/log"
 	"limiter/pkg/bridge"
 	"limiter/pkg/limiter"
 	"limiter/pkg/mongo"
@@ -13,6 +11,9 @@ import (
 	"sync"
 	"syscall"
 	"time"
+
+	"github.com/hanaboso/go-utils/pkg/contextx"
+	"github.com/rs/zerolog/log"
 )
 
 func Start() {
@@ -57,8 +58,10 @@ func Start() {
 		signals := make(chan os.Signal, 1)
 		signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM)
 
+		ctx, _ := contextx.WithTimeoutSecondsCtx(10)
+
 		_ = <-signals
-		serverStop(contextx.WithTimeoutSecondsCtx(10))
+		serverStop(ctx)
 		cancel()
 		rabbitSvc.LimiterConsumer.Close()
 		rabbitSvc.RepeaterConsumer.Close()
