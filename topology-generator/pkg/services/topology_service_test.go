@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/v2/bson"
 
 	"topology-generator/pkg/config"
 	"topology-generator/pkg/model"
@@ -31,7 +31,7 @@ func getAllDockerServices(t *testing.T) {
 		Path:              "/srv/app/topology",
 		TopologyPath:      "/srv/app/topology.json",
 		ProjectSourcePath: "/opt/srv",
-		Mode:              model.ModeCompose,
+		Mode:              string(model.ModeCompose),
 		Prefix:            "dev",
 		Network:           "test",
 		MultiNode:         false,
@@ -83,7 +83,7 @@ func getAllDockerServices(t *testing.T) {
 
 func getTestTopology() model.Topology {
 
-	id, _ := primitive.ObjectIDFromHex("5cc0474e4e9acc00282bb942")
+	id, _ := bson.ObjectIDFromHex("5cc0474e4e9acc00282bb942")
 
 	return model.Topology{
 		ID:         id,
@@ -120,7 +120,6 @@ func getNodeConfigs() map[string]model.NodeUserParams {
 				Settings: model.TopologyBridgeWorkerSettingsJSON{
 					Host:         "monolith-api",
 					ProcessPath:  "/connector/Webhook/webhook",
-					StatusPath:   "/connector/Webhook/webhook/test",
 					Method:       "POST",
 					Port:         80,
 					Secure:       false,
@@ -134,7 +133,6 @@ func getNodeConfigs() map[string]model.NodeUserParams {
 				Settings: model.TopologyBridgeWorkerSettingsJSON{
 					Host:         "xml-parser-api",
 					ProcessPath:  "/Xml_parser",
-					StatusPath:   "/Xml_parser/test",
 					Method:       "POST",
 					Port:         80,
 					PublishQueue: model.TopologyBridgeWorkerSettingsQueueJSON{},
@@ -146,11 +144,9 @@ func getNodeConfigs() map[string]model.NodeUserParams {
 
 func getEnvironment(mode model.Adapter) model.Environment {
 	return model.Environment{
-		DockerRegistry:      "dkr.hanaboso.net/pipes/pipes",
-		DockerPfBridgeImage: "pf-bridge:dev",
+		DockerPfBridgeImage: "hanaboso/bridge:dev",
 		RabbitMqHost:        "rabbitmq:5672",
-		MultiProbeHost:      "multi-probe:8007",
-		MetricsHost:         "kapacitor:9100",
+		MetricsDsn:          "influxdb://kapacitor:9100",
 		WorkerDefaultPort:   8808,
 		GeneratorMode:       mode,
 	}
@@ -164,12 +160,9 @@ func TestTopologyService_CreateTopologyJsonFails(t *testing.T) {
 	nodeConfig := model.NodeConfig{
 		NodeConfig: getNodeConfigs(),
 		Environment: model.Environment{
-			DockerRegistry:      "testregistry",
 			DockerPfBridgeImage: "testimages",
 			RabbitMqHost:        "",
-			MultiProbeHost:      "",
-			MetricsHost:         "",
-			MetricsPort:         "",
+			MetricsDsn:          "",
 			MetricsService:      "",
 			WorkerDefaultPort:   8888,
 			GeneratorMode:       "",
@@ -252,12 +245,9 @@ func TestGetDockerServicesFails(t *testing.T) {
 	ts, err := NewTopologyService(model.NodeConfig{
 		NodeConfig: nil,
 		Environment: model.Environment{
-			DockerRegistry:      "",
 			DockerPfBridgeImage: "",
 			RabbitMqHost:        "[x:",
-			MultiProbeHost:      "[y:",
-			MetricsHost:         "",
-			MetricsPort:         "",
+			MetricsDsn:          "",
 			MetricsService:      "",
 			WorkerDefaultPort:   0,
 			GeneratorMode:       "",
@@ -283,12 +273,9 @@ func TestTopologyService_CreateDockerComposeFails(t *testing.T) {
 	ts, err := NewTopologyService(model.NodeConfig{
 		NodeConfig: nil,
 		Environment: model.Environment{
-			DockerRegistry:      "",
 			DockerPfBridgeImage: "",
 			RabbitMqHost:        "[x:",
-			MultiProbeHost:      "[y:",
-			MetricsHost:         "",
-			MetricsPort:         "",
+			MetricsDsn:          "",
 			MetricsService:      "",
 			WorkerDefaultPort:   0,
 			GeneratorMode:       "",

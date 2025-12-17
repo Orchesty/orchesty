@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 func Test_NodeStringUtils(t *testing.T) {
@@ -21,7 +21,6 @@ func Test_TopologyStringUtils(t *testing.T) {
 		t.Run("Get docker name", getDockerName)
 		t.Run("Get multi node name", getMultiNodeName)
 		t.Run("Get swarm name", getSwarmName)
-		t.Run("Get probe service name", getProbeServiceName)
 		t.Run("Get counter service name", getCounterServiceName)
 		t.Run("Get config name", getConfigName)
 		t.Run("Get topology prefix", getTopologyPrefix)
@@ -91,16 +90,6 @@ func getCounterServiceName(t *testing.T) {
 	}
 }
 
-func getProbeServiceName(t *testing.T) {
-	topology := getTestTopology()
-	expected := "5cc0474e4e9acc00282bb942_probe"
-	result := topology.GetProbeServiceName()
-
-	if result != expected {
-		t.Errorf("bad result: expected `%s`, got `%s`", expected, result)
-	}
-}
-
 func getSwarmName(t *testing.T) {
 	expected := "dev_4e9acc00282bb942"
 	topology := getTestTopology()
@@ -112,7 +101,7 @@ func getSwarmName(t *testing.T) {
 }
 
 func getMultiNodeName(t *testing.T) {
-	expected := "mb-5cc0474e4e9acc00282bb942"
+	expected := "topology-5cc0474e4e9acc00282bb942"
 	topology := getTestTopology()
 	result := topology.GetMultiNodeName()
 
@@ -173,7 +162,7 @@ func getServiceName(t *testing.T) {
 
 func getTestTopology() Topology {
 
-	id, _ := primitive.ObjectIDFromHex("5cc0474e4e9acc00282bb942")
+	id, _ := bson.ObjectIDFromHex("5cc0474e4e9acc00282bb942")
 
 	return Topology{
 		ID:         id,
@@ -191,7 +180,7 @@ func getTestTopology() Topology {
 
 func getTestNode() Node {
 
-	id, _ := primitive.ObjectIDFromHex("5cc047dd4e9acc002a200c12")
+	id, _ := bson.ObjectIDFromHex("5cc047dd4e9acc002a200c12")
 	var next = []NodeNext{
 		{
 			ID:   "5cc047dd4e9acc002a200c14",

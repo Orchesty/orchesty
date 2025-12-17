@@ -5,6 +5,8 @@ import (
 	"flag"
 	"fmt"
 	log "github.com/hanaboso/go-log/pkg"
+	"github.com/icza/dyno"
+	"gopkg.in/yaml.v2"
 	appsV1 "k8s.io/api/apps/v1"
 	coreV1 "k8s.io/api/core/v1"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -15,6 +17,7 @@ import (
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/retry"
+	"os"
 	"strings"
 	"time"
 	"topology-generator/pkg/config"
@@ -114,6 +117,13 @@ func (c kubernetesClient) Generate(ts *TopologyService) error {
 	if err != nil {
 		return fmt.Errorf("creating deployment yaml content[topology_id=%s] failed. Reason: %v", ts.Topology.ID.Hex(), err)
 	}
+
+	// Merging with external configuration
+	var parsedConfiguration map[interface{}]interface{}
+	_ = yaml.Unmarshal(kubernetesDeployment, &parsedConfiguration)
+	parsedConfiguration = c.mergeConfiguration(parsedConfiguration)
+	kubernetesDeployment, err = yaml.Marshal(parsedConfiguration)
+
 	if err := fscommands.WriteFile(
 		dstFile,
 		"kubernetes-deployment.yaml",
@@ -301,7 +311,7 @@ func (c kubernetesClient) logContext(data map[string]interface{}) log.Logger {
 
 func (c kubernetesClient) createContext() (context.Context, context.CancelFunc) {
 	backgroundCtx := context.Background()
-	ctx, cancel := context.WithTimeout(backgroundCtx, config.Generator.K8sTimeout*time.Second)
+	ctx, cancel := context.WithTimeout(backgroundCtx, time.Duration(config.Generator.K8sTimeout)*time.Second)
 
 	return ctx, cancel
 }
@@ -338,7 +348,7 @@ func NewKubernetesSvc(clientSet *kubernetes.Clientset, namespace string) Kuberne
 
 // GetKubernetesConfig GetKubernetesConfig
 func GetKubernetesConfig(config config.GeneratorConfig) (*rest.Config, error) {
-	if config.Mode != model.ModeKubernetes {
+	if model.Adapter(config.Mode) != model.ModeKubernetes {
 		return nil, fmt.Errorf("mode %s is not compatible with kubernetes", config.Mode)
 	}
 
@@ -358,12 +368,50 @@ func GetKubernetesConfig(config config.GeneratorConfig) (*rest.Config, error) {
 		}
 	}
 	return cfg, nil
-
 }
 
 func int32Ptr(i int32) *int32 { return &i }
 
-func getKubernetPortName(nodeID string) string {
-	length := len(nodeID)
-	return "p" + nodeID[length-9:length]
+func (c kubernetesClient) mergeConfiguration(deployment map[interface{}]interface{}) map[interface{}]interface{} {
+	filePath := config.Generator.PodConfigurationPath
+	if filePath == "" {
+		return deployment
+	}
+
+	bytes, err := os.ReadFile(filePath)
+	if err != nil {
+		panic(err)
+	}
+
+	var extras map[interface{}]interface{}
+	err = yaml.Unmarshal(bytes, &extras)
+	if err != nil {
+		panic(err)
+	}
+
+	var spec map[interface{}]interface{}
+	spec, _ = dyno.GetMapI(deployment, "spec", "template", "spec")
+	_ = dyno.Set(deployment, merge(spec, extras), "spec", "template", "spec")
+
+	return deployment
+}
+
+func merge(a, b map[interface{}]interface{}) map[interface{}]interface{} {
+	out := make(map[interface{}]interface{}, len(a))
+	for k, v := range a {
+		out[k] = v
+	}
+
+	for k, v := range b {
+		if v, ok := v.(map[interface{}]interface{}); ok {
+			if bv, ok := out[k]; ok {
+				if bv, ok := bv.(map[interface{}]interface{}); ok {
+					out[k] = merge(bv, v)
+					continue
+				}
+			}
+		}
+		out[k] = v
+	}
+	return out
 }

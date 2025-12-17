@@ -2,35 +2,13 @@ package model
 
 import (
 	"fmt"
-	"net"
+	"net/url"
 	"os"
 	"strings"
 )
 
 const (
 	passPrefix = "APP_PASS_"
-	//RabbitDsn      = "RABBITMQ_DSN"
-
-	// RabbitMqHost RabbitMqHost
-	RabbitMqHost = "RABBITMQ_HOST"
-	// RabbitMqPort RabbitMqPort
-	RabbitMqPort = "RABBITMQ_PORT"
-	// RabbitMqUser RabbitMqUser
-	RabbitMqUser = "RABBITMQ_USER"
-	// RabbitMqPass RabbitMqPass
-	RabbitMqPass = "RABBITMQ_PASS"
-	// RabbitMqVHost RabbitMqVHost
-	RabbitMqVHost = "RABBITMQ_VHOST"
-	// MultiProbeHost MultiProbeHost
-	MultiProbeHost = "MULTI_PROBE_HOST"
-	// MultiProbePort MultiProbePort
-	MultiProbePort = "MULTI_PROBE_PORT"
-	// MetricsHost MetricsHost
-	MetricsHost = "METRICS_HOST"
-	// MetricsPort MetricsPort
-	MetricsPort = "METRICS_PORT"
-	// MetricsService MetricsService
-	MetricsService = "METRICS_SERVICE"
 )
 
 // Adapter Adapter
@@ -71,103 +49,97 @@ type NodeUserParams struct {
 
 // Environment Environment
 type Environment struct {
-	DockerRegistry      string `json:"docker_registry"`
-	DockerPfBridgeImage string `json:"docker_pf_bridge_image"`
-	//RabbitMqDsn         string  `json:"rabbitmq_dsn"`
-	RabbitMqHost      string   `json:"rabbitmq_host"`
-	RabbitMqUser      string   `json:"rabbitmq_user"`
-	RabbitMqPass      string   `json:"rabbitmq_pass"`
-	RabbitMqVHost     string   `json:"rabbitmq_vhost"`
-	MultiProbeHost    string   `json:"multi_probe_host"`
-	MetricsHost       string   `json:"metrics_host"`
-	MetricsPort       string   `json:"metrics_port"`
-	MetricsService    string   `json:"metrics_service"`
-	WorkerDefaultPort int      `json:"worker_default_port"`
-	GeneratorMode     Adapter  `json:"generator_mode"`
-	Limits            Limits   `json:"limits"`
-	Requests          Requests `json:"requests"`
+	DockerPfBridgeImage string   `json:"docker_pf_bridge_image"`
+	RabbitMqHost        string   `json:"rabbitmq_host"`
+	RabbitMqUser        string   `json:"rabbitmq_user"`
+	RabbitMqPass        string   `json:"rabbitmq_pass"`
+	RabbitMqVHost       string   `json:"rabbitmq_vhost"`
+	MetricsDsn          string   `json:"metrics_dsn"`
+	MongodbDsn          string   `json:"mongodb_dsn"`
+	MetricsService      string   `json:"metrics_service"`
+	WorkerDefaultPort   int      `json:"worker_default_port"`
+	GeneratorMode       Adapter  `json:"platform"`
+	Limits              Limits   `json:"limits"`
+	Requests            Requests `json:"requests"`
+	UdpLoggerUrl        string   `json:"udp_logger_url"`
+	StartingPointDsn    string   `json:"starting_point_dsn"`
+	OrchestyApiKey      string   `json:"orchesty_api_key"`
 }
 
-// GetBridges GetBridges
-func (p *NodeConfig) GetBridges(t *Topology, nodes []Node, WorkerDefaultPort int) ([]TopologyBridgeJSON, error) {
-
-	var (
-		bridges []TopologyBridgeJSON
-		port    int
-	)
+func (p *NodeConfig) GetTopologyJson(t *Topology, nodes []Node) (TopologyJson, error) {
+	topology := TopologyJson{
+		Id:       t.ID.Hex(),
+		Name:     t.Name,
+		Nodes:    make([]NodeJson, len(nodes)),
+		RabbitMq: make([]RabbitMqServer, 1),
+	}
 
 	if len(nodes) == 0 {
-		return nil, fmt.Errorf("missing nodes")
+		return topology, fmt.Errorf("missing nodes")
 	}
 
-	i := 0
-	for _, node := range nodes {
+	login := ""
+	if p.Environment.RabbitMqUser != "" || p.Environment.RabbitMqPass != "" {
+		login = fmt.Sprintf("%s:%s@", p.Environment.RabbitMqUser, p.Environment.RabbitMqPass)
+	}
+	if p.Environment.RabbitMqVHost == "" {
+		p.Environment.RabbitMqVHost = "/"
+	}
 
-		port = WorkerDefaultPort + i
+	topology.RabbitMq[0] = RabbitMqServer{
+		Dsn: fmt.Sprintf("amqp://%s%s/%s",
+			login,
+			p.Environment.RabbitMqHost,
+			url.PathEscape(p.Environment.RabbitMqVHost)),
+	}
 
-		nodeID := CreateServiceName(node.GetServiceName())
-
-		var worker TopologyBridgeWorkerJSON
-		var faucet TopologyBridgeFaucetSettingsJSON
+	var worker TopologyBridgeWorkerJSON
+	for i, node := range nodes {
 		if nodeConfig, ok := p.NodeConfig[node.ID.Hex()]; ok {
 			worker = nodeConfig.Worker
-			faucet = nodeConfig.Faucet
 		} else {
-			return nil, fmt.Errorf("missing config data for node ID: %s", node.ID.Hex())
+			return topology, fmt.Errorf("missing config data for node Id: [%s]", node.ID.Hex())
 		}
 
-		bridges = append(bridges, TopologyBridgeJSON{
-			ID: CreateServiceName(nodeID),
-			Label: TopologyBridgeLabelJSON{
-				ID:       CreateServiceName(nodeID),
-				NodeID:   node.ID.Hex(),
-				NodeName: node.Name,
+		nodeJson := NodeJson{
+			Id:          node.ID.Hex(),
+			Name:        node.Name,
+			Worker:      worker.Type,
+			Application: node.Application,
+			Followers:   make([]NodeJsonFollower, len(node.Next)),
+			Settings: NodeSettingsJson{
+				Url:        fmt.Sprintf("http://%s:%d", worker.Settings.Host, worker.Settings.Port),
+				ActionPath: worker.Settings.ProcessPath,
+				Headers:    worker.Settings.Headers,
+				Method:     worker.Settings.Method,
+				// Bridge
+				Timeout:        worker.Settings.Timeout,
+				RabbitPrefetch: worker.Settings.RabbitPrefetch,
 			},
-			Faucet: faucet,
-			Worker: worker,
-			Next:   node.GetNext(),
-			// TODO: add multimode choice
-			Debug: TopologyBridgeDebugJSON{
-				Port: port,
-				Host: t.GetMultiNodeName(),
-				URL:  fmt.Sprintf("http://%s:%d/status", t.GetMultiNodeName(), port),
-			},
-		})
+		}
+		for j, follower := range node.Next {
+			nodeJson.Followers[j] = NodeJsonFollower{
+				Id:   follower.ID,
+				Name: follower.Name,
+			}
+		}
 
-		i++
+		topology.Nodes[i] = nodeJson
 	}
 
-	return bridges, nil
+	return topology, nil
 }
 
 // GetEnvironment GetEnvironment
 func (e *Environment) GetEnvironment() (map[string]string, error) {
 	var environment = make(map[string]string)
-	var err error
-	//environment[RabbitDsn] = e.RabbitMqDsn
-	if host, port, err := net.SplitHostPort(e.RabbitMqHost); err == nil {
-		environment[RabbitMqHost] = host
-		environment[RabbitMqPort] = port
-		environment[RabbitMqUser] = e.RabbitMqUser
-		environment[RabbitMqPass] = e.RabbitMqPass
-		environment[RabbitMqVHost] = e.RabbitMqVHost
-	}
-	if err != nil {
-		return nil, fmt.Errorf("Error splitting RabbitMqHost. Reason: %v", err)
-	}
-	host, port, err := net.SplitHostPort(e.MultiProbeHost)
-	if err != nil {
-		return nil, fmt.Errorf("Error splitting MultiProbeHost. Reason: %v", err)
-	}
-	environment[MultiProbeHost] = host
-	environment[MultiProbePort] = port
 
-	environment[MetricsHost] = e.MetricsHost
-	environment[MetricsPort] = e.MetricsPort
-	environment[MetricsService] = "influx"
-	if service := e.MetricsService; service != "" {
-		environment[MetricsService] = service
-	}
+	// TODO: add support for Influx
+	environment["METRICS_DSN"] = e.MetricsDsn
+	environment["MONGODB_DSN"] = e.MongodbDsn
+	environment["UDP_LOGGER_URL"] = e.UdpLoggerUrl
+	environment["STARTING_POINT_DSN"] = e.StartingPointDsn
+	environment["ORCHESTY_API_KEY"] = e.OrchestyApiKey
 
 	for _, env := range os.Environ() {
 		if !strings.HasPrefix(env, passPrefix) {

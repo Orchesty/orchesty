@@ -76,13 +76,9 @@ components:
                             environment:
                                 type: object
                                 properties:
-                                    docker_registry:
-                                        type: string
                                     docker_pf_bridge_image:
                                         type: string
                                     rabbitmq_dsn:
-                                        type: string
-                                    multi_probe_host:
                                         type: string
                                     metrics_host:
                                         type: string
@@ -92,7 +88,7 @@ components:
                                         type: string
                                     worker_default_port:
                                         type: integer
-                                    generator_mode:
+                                    platform:
                                         type: string
                             node_config:
                                 type: object

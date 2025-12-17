@@ -1,7 +1,6 @@
 DC=docker-compose
 DE=docker-compose exec -T app
-IMAGE=dkr.hanaboso.net/pipes/pipes/topology-api-v2
-PUBLIC_IMAGE=hanaboso/pipes-topology-api-v2
+IMAGE=orchesty/topology-api:$(TAG)
 
 .env:
 	sed -e 's/{DEV_UID}/$(shell id -u)/g' \
@@ -10,10 +9,7 @@ PUBLIC_IMAGE=hanaboso/pipes-topology-api-v2
 		.env.dist >> .env; \
 
 build:
-	docker build -t ${IMAGE}:${TAG} --pull .
-	docker push ${IMAGE}:${TAG}
-	docker tag ${IMAGE}:${TAG} $(PUBLIC_IMAGE):$(TAG)
-	docker push $(PUBLIC_IMAGE):$(TAG)
+	docker buildx build --pull --push --platform linux/amd64,linux/arm64/v8 -t $(IMAGE) .
 
 docker-up-force: .env
 	$(DC) pull
@@ -37,8 +33,12 @@ wait-for-server-start:
 	$(DE) /bin/sh -c 'while [ $$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/v1/status) == 000 ]; do sleep 1; done'
 
 lint:
-	$(DE) gofmt -w .
-	$(DE) golint ./...
+	$(DE) go fmt ./...
+	excludes='';\
+	for file in $$(ls -R $$(find . -type f ) | grep test.go); do\
+		excludes="$${excludes} -exclude $$(echo $${file} | cut -c 3-)";\
+	done;\
+	$(DE) revive -config config.toml $${excludes} -formatter friendly ./...
 
 fast-test: lint
 	$(DE) mkdir var || true

@@ -1,4 +1,5 @@
-//+build integration_test
+//go:build integration_test
+// +build integration_test
 
 package test
 
@@ -6,7 +7,7 @@ import (
 	"bytes"
 	"context"
 	"github.com/hanaboso/go-mongodb"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/v2/bson"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -31,7 +32,7 @@ func TestMain(m *testing.M) {
 
 func insertTestData(db *mongo.Database) {
 	coll := db.Collection(config.Mongo.Topology)
-	objectId, err := primitive.ObjectIDFromHex(topologyID)
+	objectId, err := bson.ObjectIDFromHex(topologyID)
 	if err != nil {
 		log.Fatal("Creating primitive object id failed: ", err.Error())
 	}
@@ -55,7 +56,7 @@ func insertTestData(db *mongo.Database) {
 
 	coll = db.Collection(config.Mongo.Node)
 
-	nodeObjectId, err := primitive.ObjectIDFromHex("5ddba6a33ba8ab2922002a92")
+	nodeObjectId, err := bson.ObjectIDFromHex("5ddba6a33ba8ab2922002a92")
 	if err != nil {
 		log.Fatal("Creating primitive object id failed: ", err.Error())
 	}
@@ -78,7 +79,7 @@ func insertTestData(db *mongo.Database) {
 
 	_, err = coll.InsertOne(context.Background(), node)
 
-	nodeObjectId, err = primitive.ObjectIDFromHex("5ddba6a33ba8ab2922002a93")
+	nodeObjectId, err = bson.ObjectIDFromHex("5ddba6a33ba8ab2922002a93")
 	if err != nil {
 		log.Fatal("Creating primitive object id failed: ", err.Error())
 	}
@@ -142,12 +143,9 @@ func getTestNodeConfig() *model.NodeConfig {
 			},
 		},
 		Environment: model.Environment{
-			DockerRegistry:      "dkr.hanaboso.net/pipes/pipes",
-			DockerPfBridgeImage: "pf-bridge:dev",
+			DockerPfBridgeImage: "hanaboso/bridge:dev",
 			RabbitMqDsn:         "rabbitmq:1000",
-			MultiProbeHost:      "multi-probe:8007",
-			MetricsHost:         "kapacitor",
-			MetricsPort:         "9100",
+			MetricsDsn:          "influxdb://kapacitor:9100",
 			MetricsService:      "influx",
 			WorkerDefaultPort:   8008,
 			GeneratorMode:       "compose",
