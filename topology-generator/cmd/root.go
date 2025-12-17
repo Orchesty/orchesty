@@ -1,3 +1,4 @@
+// Package cmd CMD
 package cmd
 
 import (

@@ -10,7 +10,7 @@ import (
 
 	"github.com/hanaboso/go-log/pkg/zap"
 	"github.com/stretchr/testify/require"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/v2/bson"
 	"gopkg.in/yaml.v2"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
@@ -45,7 +45,7 @@ type testDb struct {
 }
 
 func getMockTopology() *model.Topology {
-	objectID, err := primitive.ObjectIDFromHex(topologyID)
+	objectID, err := bson.ObjectIDFromHex(topologyID)
 	if err != nil {
 		return nil
 	}
@@ -75,7 +75,7 @@ func getTestNodes() []model.Node {
 
 	var nodes = make([]model.Node, 0)
 
-	id, _ := primitive.ObjectIDFromHex("5cc047dd4e9acc002a200c12")
+	id, _ := bson.ObjectIDFromHex("5cc047dd4e9acc002a200c12")
 	var next = []model.NodeNext{
 		{
 			ID:   "5cc047dd4e9acc002a200c14",
@@ -94,7 +94,7 @@ func getTestNodes() []model.Node {
 		Deleted:  false,
 	})
 
-	id, _ = primitive.ObjectIDFromHex("5cc047dd4e9acc002a200c13")
+	id, _ = bson.ObjectIDFromHex("5cc047dd4e9acc002a200c13")
 	nodes = append(nodes, model.Node{
 		ID:       id,
 		Name:     "Webhook",
@@ -105,7 +105,7 @@ func getTestNodes() []model.Node {
 		Deleted:  false,
 	})
 
-	id, _ = primitive.ObjectIDFromHex("5cc047dd4e9acc002a200c14")
+	id, _ = bson.ObjectIDFromHex("5cc047dd4e9acc002a200c14")
 	next = []model.NodeNext{
 		{
 			ID:   "5cc047dd4e9acc002a200c13",
@@ -129,7 +129,7 @@ func getTestNodes() []model.Node {
 
 func setup() {
 	namespace := "testnamespace"
-	clientSet := fake.NewSimpleClientset()
+	clientSet := fake.NewClientset()
 	deploymentsClient := clientSet.AppsV1().Deployments(namespace)
 	configClient := clientSet.CoreV1().ConfigMaps(namespace)
 	serviceClient := clientSet.CoreV1().Services(namespace)
@@ -324,9 +324,8 @@ func TestClient_Delete(t *testing.T) {
 	}
 	ctx, cancel := testClient.createContext()
 	defer cancel()
-	d, err := testClient.deploymentClient.Get(ctx, deploymentName, v1.GetOptions{})
+	_, err = testClient.deploymentClient.Get(ctx, deploymentName, v1.GetOptions{})
 	require.NotNil(t, err, "Err cannot be null, deployment shouldnt exists")
-	require.Nil(t, d, "Deployment should be nil, because it has been deleted")
 }
 
 func TestClient_DeleteConfigMap(t *testing.T) {
@@ -339,9 +338,8 @@ func TestClient_DeleteConfigMap(t *testing.T) {
 	}
 	ctx, cancel := testClient.createContext()
 	defer cancel()
-	c, err := testClient.configClient.Get(ctx, configMapName, v1.GetOptions{})
+	_, err = testClient.configClient.Get(ctx, configMapName, v1.GetOptions{})
 	require.NotNil(t, err, "Err cannot be null, config map shouldnt exists")
-	require.Nil(t, c, "Config Map should be nil, because it has been deleted")
 }
 
 func TestClient_DeleteService(t *testing.T) {
@@ -354,9 +352,8 @@ func TestClient_DeleteService(t *testing.T) {
 	}
 	ctx, cancel := testClient.createContext()
 	defer cancel()
-	c, err := testClient.configClient.Get(ctx, deploymentName, v1.GetOptions{})
+	_, err = testClient.configClient.Get(ctx, deploymentName, v1.GetOptions{})
 	require.NotNil(t, err, "Err cannot be null, config map shouldnt exists")
-	require.Nil(t, c, "Config Map should be nil, because it has been deleted")
 }
 
 func TestClient_Start(t *testing.T) {

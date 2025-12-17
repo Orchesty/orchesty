@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 func TestEnvironment_GetEnvironment(t *testing.T) {
@@ -158,7 +158,7 @@ func getTestNodes() []Node {
 
 	var nodes = make([]Node, 0)
 
-	id, _ := primitive.ObjectIDFromHex("5cc047dd4e9acc002a200c12")
+	id, _ := bson.ObjectIDFromHex("5cc047dd4e9acc002a200c12")
 	var next = []NodeNext{
 		{
 			ID:   "5cc047dd4e9acc002a200c14",
@@ -177,7 +177,7 @@ func getTestNodes() []Node {
 		Deleted:  false,
 	})
 
-	id, _ = primitive.ObjectIDFromHex("5cc047dd4e9acc002a200c13")
+	id, _ = bson.ObjectIDFromHex("5cc047dd4e9acc002a200c13")
 	nodes = append(nodes, Node{
 		ID:       id,
 		Name:     "Webhook",
@@ -188,7 +188,7 @@ func getTestNodes() []Node {
 		Deleted:  false,
 	})
 
-	id, _ = primitive.ObjectIDFromHex("5cc047dd4e9acc002a200c14")
+	id, _ = bson.ObjectIDFromHex("5cc047dd4e9acc002a200c14")
 	next = []NodeNext{
 		{
 			ID:   "5cc047dd4e9acc002a200c13",
