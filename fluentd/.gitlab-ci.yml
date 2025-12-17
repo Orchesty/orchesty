@@ -1,0 +1,12 @@
+.base-fluentd:
+  variables:
+    DIR: fluentd
+    IMAGE: ${REGISTRY}/${IMAGE_PREFIX}fluentd
+
+fluentd:build:
+  stage: build
+  needs: []
+  extends:
+    - .base-dind-build
+    - .base-fluentd
+
