@@ -9,9 +9,10 @@ import (
 
 func TestInit(t *testing.T) {
 	load()
-	assert.True(t, app.Debug)
+	assert.True(t, App.Debug)
 
 	_ = os.Setenv("APP_DEBUG", "false")
+
 	load()
-	assert.False(t, app.Debug)
+	assert.False(t, App.Debug)
 }

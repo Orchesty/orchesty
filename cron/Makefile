@@ -1,7 +1,6 @@
 DC=docker-compose
 DE=docker-compose exec -T app
-IMAGE=dkr.hanaboso.net/pipes/pipes/cron
-PUBLIC_IMAGE=hanaboso/pipes-cron
+IMAGE=orchesty/cron:$(TAG)
 
 .env:
 	sed -e 's/{DEV_UID}/$(shell id -u)/g' \
@@ -9,10 +8,7 @@ PUBLIC_IMAGE=hanaboso/pipes-cron
 		.env.dist >> .env; \
 
 build:
-	docker build -t ${IMAGE}:${TAG} --pull .
-	docker push ${IMAGE}:${TAG}
-	docker tag ${IMAGE}:${TAG} $(PUBLIC_IMAGE):$(TAG)
-	docker push $(PUBLIC_IMAGE):$(TAG)
+	docker buildx build --pull --push --platform linux/amd64,linux/arm64/v8 -t $(IMAGE) .
 
 docker-up-force: .env
 	$(DC) pull
@@ -33,17 +29,23 @@ go-update:
 init-dev: docker-up-force wait-for-server-start
 
 wait-for-server-start:
-	$(DE) /bin/sh -c 'while [ $$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/status) == 000 ]; do sleep 1; done'
+	$(DE) /bin/sh -c 'while [ $$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/) != 404 ]; do sleep 1; done'
 
 lint:
-	$(DE) gofmt -w .
-	$(DE) golint ./...
+	$(DE) go fmt ./...
+	excludes='';\
+	for file in $$(ls -R $$(find . -type f ) | grep test.go); do\
+		excludes="$${excludes} -exclude $$(echo $${file} | cut -c 3-)";\
+	done;\
+	$(DE) revive -config config.toml $${excludes} -formatter friendly ./...
 
-fast-test: lint
+fasttest: lint
 	$(DE) mkdir var || true
-	$(DE) go test -count 1 -cover -coverprofile var/coverage.out -p 1 ./...
+	$(DE) echo -e "\033[1;32mTests may run for up to one minute due to CRON!\033[0m";
+	$(DE) go test -coverpkg=./... -p 1 -count 1 --parallel 1 -cover -coverprofile var/coverage.out ./...
 	$(DE) go tool cover -html=var/coverage.out -o var/coverage.html
+	$(DE) /coverage.sh -c 80
 
-test: init-dev fast-test docker-down-clean
+test: init-dev fasttest docker-down-clean
 
 ci-test: test

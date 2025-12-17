@@ -1,83 +1,112 @@
 package service
 
 import (
-	"fmt"
-	"io/ioutil"
-	"os/exec"
-	"strings"
-	"time"
+	"net/http"
 
+	"cron/pkg/model"
 	"cron/pkg/storage"
-	"github.com/hanaboso/go-log/pkg/zap"
+	"cron/pkg/utils"
 
 	log "github.com/hanaboso/go-log/pkg"
+	cronParser "github.com/robfig/cron/v3"
 )
 
-// Interface represents abstract cron implementation
-type Interface interface {
-	Start()
-	Stop()
-}
-
-type cron struct {
-	ticker *time.Ticker
-	log    log.Logger
-}
-
-// Cron represents specific cron implementation
-var Cron Interface = &cron{}
-
-// Start starts cron
-func (c *cron) Start() {
-	if c.log == nil {
-		c.log = zap.NewLogger()
+type (
+	CronService interface {
+		Select() ([]model.Cron, error)
+		Upsert(crons []model.Cron) error
+		Delete(crons []model.Cron) error
 	}
 
-	c.write()
+	cronService struct {
+		repository storage.MongoStorage
+		scheduler  SchedulerService
+		logger     log.Logger
+	}
+)
 
-	if c.ticker == nil {
-		c.ticker = time.NewTicker(time.Minute)
+func NewCronService(repository storage.MongoStorage, scheduler SchedulerService, logger log.Logger) CronService {
+	service := cronService{repository, scheduler, logger}
+
+	if err := service.loadFromDatabaseToScheduler(); err != nil {
+		service.logContext().Error(err)
+
+		panic(err)
 	}
 
-	go func() {
-		for range c.ticker.C {
-			c.write()
-		}
-	}()
+	return service
 }
 
-// Stop stops cron
-func (c *cron) Stop() {
-	c.ticker.Stop()
+func (service cronService) Select() ([]model.Cron, error) {
+	return service.repository.FindCrons()
 }
 
-func (c *cron) write() {
-	crons, err := storage.MongoDB.GetAll()
+func (service cronService) Upsert(crons []model.Cron) error {
+	if err := service.validate(crons); err != nil {
+		service.logContext().Error(err)
+
+		return err
+	}
+
+	if err := service.repository.UpsertCron(crons); err != nil {
+		service.logContext().Error(err)
+
+		return err
+	}
+
+	if err := service.scheduler.Upsert(crons); err != nil {
+		service.logContext().Error(err)
+
+		panic(err)
+	}
+
+	return nil
+}
+
+func (service cronService) Delete(crons []model.Cron) error {
+	if err := service.repository.DeleteCron(crons); err != nil {
+		service.logContext().Error(err)
+
+		return err
+	}
+
+	if err := service.scheduler.Delete(crons); err != nil {
+		service.logContext().Error(err)
+
+		panic(err)
+	}
+
+	return nil
+}
+
+func (service cronService) loadFromDatabaseToScheduler() error {
+	crons, err := service.repository.FindCrons()
 
 	if err != nil {
-		return
+		return err
 	}
 
-	var content []string
-
-	for _, cron := range crons {
-		content = append(content, fmt.Sprintf("%s %s", cron.Time, cron.Command))
-	}
-
-	c.logContext().Info("Updating %d CRONs...", len(crons))
-
-	if err := ioutil.WriteFile("/etc/crontabs/root", []byte(strings.Join(content, "\n")), 0777); err != nil {
-		c.logContext().Error(err)
-	}
-
-	if _, err := exec.Command("crontab", "/etc/crontabs/root").Output(); err != nil {
-		c.logContext().Error(err)
-	}
+	return service.scheduler.Upsert(crons)
 }
 
-func (c *cron) logContext() log.Logger {
-	return c.log.WithFields(map[string]interface{}{
-		"service": "cron",
-		"type":    "cron-service-loop",
+func (service cronService) validate(crons []model.Cron) *utils.Error {
+	for _, cron := range crons {
+		if _, err := cronParser.ParseStandard(cron.Time); err != nil {
+			service.logContext().Error(err)
+
+			return &utils.Error{
+				Code:    http.StatusBadRequest,
+				Message: "Unsupported CRON!",
+			}
+		}
+	}
+
+	return nil
+}
+
+func (service cronService) logContext() log.Logger {
+	return service.logger.WithFields(map[string]interface{}{
+		"service": "CRON",
+		"type":    "Service",
 	})
 }
