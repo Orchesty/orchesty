@@ -1,0 +1,16 @@
+parameters:
+    stdout_path: "%kernel.logs_dir%/stdout_%kernel.environment%.log"
+    public.services: true
+
+    node_services_dirs:
+        - '%kernel.project_dir%/config/packages/test/'
+    applications: [ '%kernel.project_dir%/config/packages/test' ]
+
+services:
+    _defaults:
+        public: '%public.services%'
+
+    hbpf.transport.curl_client_factory:
+        class: Hanaboso\CommonsBundle\Transport\Curl\CurlClientFactory
+        arguments:
+            - {"timeout": 1}

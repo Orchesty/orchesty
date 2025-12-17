@@ -1,0 +1,7 @@
+{
+    "http": "GET /logs",
+    "body": [],
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
+}

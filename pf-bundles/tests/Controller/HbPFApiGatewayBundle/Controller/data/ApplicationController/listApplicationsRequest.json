@@ -1,0 +1,7 @@
+{
+    "http": "GET /api/applications/available",
+    "body": [],
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
+}

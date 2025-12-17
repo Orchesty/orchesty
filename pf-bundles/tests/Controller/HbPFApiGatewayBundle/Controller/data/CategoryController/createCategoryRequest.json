@@ -1,0 +1,9 @@
+{
+    "http": "POST /api/categories",
+    "body": {
+        "name": "Category"
+    },
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
+}

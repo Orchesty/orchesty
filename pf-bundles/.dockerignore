@@ -1,0 +1,9 @@
+*
+!pf-bundles/bin
+!pf-bundles/config
+!pf-bundles/public
+!pf-bundles/src
+!pf-bundles/topology
+!pf-bundles/composer.json
+!pf-bundles/composer.lock
+!pf-bundles/php-local.ini

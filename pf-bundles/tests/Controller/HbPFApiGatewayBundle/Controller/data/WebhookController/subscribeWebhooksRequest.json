@@ -1,0 +1,7 @@
+{
+    "http": "POST /api/webhook/applications/key/subscribe",
+    "body": [],
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
+}

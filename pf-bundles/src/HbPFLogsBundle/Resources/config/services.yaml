@@ -1,0 +1,25 @@
+services:
+    _defaults:
+        public: '%public.services%'
+        autowire: true
+
+    hbpf.handler.logs:
+        class: Hanaboso\PipesFramework\HbPFLogsBundle\Handler\LogsHandler
+        arguments:
+            - '@hbpf.mongodb.logs'
+
+    hbpf.mongodb.logs:
+        class: Hanaboso\PipesFramework\Logs\MongoDbLogs
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@hbpf.logs.filter'
+
+    hbpf.logs.filter:
+        class: Hanaboso\PipesFramework\Logs\LogsFilter
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.logs.startingpoint_filter:
+        class: Hanaboso\PipesFramework\Logs\StartingPointsFilter
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
