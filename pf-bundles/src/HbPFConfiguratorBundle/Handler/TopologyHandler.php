@@ -3,12 +3,12 @@
 namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\LockException;
-use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\Persistence\ObjectRepository;
+use Exception;
 use Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocator;
 use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
+use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\CommonsBundle\Exception\CronException;
 use Hanaboso\CommonsBundle\Exception\NodeException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
@@ -16,18 +16,21 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyConfigException;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
+use Hanaboso\PipesFramework\Configurator\Model\NodeManager;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
-use Hanaboso\PipesPhpSdk\Database\Document\Node;
-use Hanaboso\PipesPhpSdk\Database\Document\Topology;
-use Hanaboso\PipesPhpSdk\Database\Repository\NodeRepository;
-use Hanaboso\PipesPhpSdk\Database\Repository\TopologyRepository;
+use Hanaboso\PipesFramework\Configurator\Model\TopologyTester;
+use Hanaboso\PipesFramework\Database\Document\Node;
+use Hanaboso\PipesFramework\Database\Document\Topology;
+use Hanaboso\PipesFramework\Database\Repository\TopologyRepository;
+use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController;
+use Hanaboso\PipesFramework\HbPFUserTaskBundle\Handler\UserTaskHandler;
 use Hanaboso\Utils\Exception\EnumException;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\String\UriParams;
 use Hanaboso\Utils\System\ControllerUtils;
-use JsonException;
+use Hanaboso\Utils\Validations\Validations;
 use Throwable;
 
 /**
@@ -37,6 +40,9 @@ use Throwable;
  */
 final class TopologyHandler
 {
+
+    private const string STARTING_POINTS = 'startingPoints';
+    private const string BODY            = 'body';
 
     /**
      * @var ObjectRepository<Topology>&TopologyRepository
@@ -57,19 +63,64 @@ final class TopologyHandler
      * TopologyHandler constructor.
      *
      * @param DatabaseManagerLocator  $dml
-     * @param TopologyManager         $manager
+     * @param TopologyManager         $topologyManager
+     * @param NodeManager             $nodeManager
      * @param TopologyGeneratorBridge $generatorBridge
+     * @param UserTaskHandler         $userTaskHandler
+     * @param TopologyTester          $topologyTester
      */
     public function __construct(
         DatabaseManagerLocator $dml,
-        protected TopologyManager $manager,
+        protected TopologyManager $topologyManager,
+        protected NodeManager $nodeManager,
         protected TopologyGeneratorBridge $generatorBridge,
+        protected UserTaskHandler $userTaskHandler,
+        protected TopologyTester $topologyTester,
     )
     {
         /** @var DocumentManager $dm */
         $dm                       = $dml->getDm();
         $this->dm                 = $dm;
         $this->topologyRepository = $this->dm->getRepository(Topology::class);
+    }
+
+    /**
+     * @param string  $topologyId
+     * @param mixed[] $data
+     *
+     * @return mixed[]
+     * @throws CurlException
+     */
+    public function runTopology(string $topologyId, array $data): array
+    {
+        Validations::checkParams([self::STARTING_POINTS, self::BODY], $data);
+
+        $topologiesStatus = [];
+
+        foreach ($data[self::STARTING_POINTS] as $startingPointId) {
+            $topologiesStatus[] = $this->topologyManager->runTopology($topologyId, $startingPointId, $data[self::BODY]);
+        }
+
+        return $topologiesStatus;
+    }
+
+    /**
+     * @param string  $topologyName
+     * @param string  $nodeName
+     * @param mixed[] $data
+     * @param string  $user
+     *
+     * @return mixed[]
+     * @throws CurlException
+     */
+    public function runTopologyByName(
+        string $topologyName,
+        string $nodeName,
+        array $data,
+        string $user = ApplicationController::SYSTEM_USER,
+    ): array
+    {
+        return $this->topologyManager->runTopology($topologyName, $nodeName, $data[self::BODY] ?? '[]', TRUE, $user);
     }
 
     /**
@@ -105,11 +156,22 @@ final class TopologyHandler
      * @return mixed[]
      * @throws CurlException
      * @throws CronException
-     * @throws JsonException
      */
     public function getCronTopologies(): array
     {
-        return ['items' => $this->manager->getCronTopologies()];
+        $cron = $this->topologyManager->getCronTopologies();
+
+        return [
+            'items'  => $cron,
+            'paging' => [
+                'itemsPerPage' => 50,
+                'lastPage'     => 2,
+                'nextPage'     => 2,
+                'page'         => 1,
+                'previousPage' => 1,
+                'total'        => count($cron),
+            ],
+        ];
     }
 
     /**
@@ -138,7 +200,7 @@ final class TopologyHandler
     {
         ControllerUtils::checkParameters(['name'], $data);
 
-        $topology = $this->manager->createTopology($data);
+        $topology = $this->topologyManager->createTopology($data);
 
         return $this->getTopologyData($topology);
     }
@@ -151,12 +213,11 @@ final class TopologyHandler
      * @throws TopologyException
      * @throws MongoDBException
      * @throws CurlException
-     * @throws JsonException
      */
     public function updateTopology(string $id, array $data): array
     {
         $topology = $this->getTopologyById($id);
-        $topology = $this->manager->updateTopology($topology, $data);
+        $topology = $this->topologyManager->updateTopology($topology, $data);
 
         $this->generatorBridge->invalidateTopologyCache($topology->getName());
 
@@ -185,14 +246,27 @@ final class TopologyHandler
      * @throws NodeException
      * @throws TopologyException
      * @throws MongoDBException
-     * @throws JsonException
      */
     public function saveTopologySchema(string $id, string $content, array $data): array
     {
         $topology = $this->getTopologyById($id);
-        $topology = $this->manager->saveTopologySchema($topology, $content, $data);
+        $topology = $this->topologyManager->saveTopologySchema($topology, $content, $data);
 
         return $this->getTopologyData($topology);
+    }
+
+    /**
+     * @param string  $id
+     * @param mixed[] $data
+     *
+     * @return mixed[]
+     * @throws TopologyException
+     */
+    public function checkTopologySchemaDifferences(string $id, array $data): array
+    {
+        $topology = $this->getTopologyById($id);
+
+        return ['isDifferent' => !$this->topologyManager->checkTopologySchemaIsSame($topology, $data)];
     }
 
     /**
@@ -206,7 +280,7 @@ final class TopologyHandler
     public function publishTopology(string $id): ResponseDto
     {
         $topology = $this->getTopologyById($id);
-        $topology = $this->manager->publishTopology($topology);
+        $topology = $this->topologyManager->publishTopology($topology);
         $data     = $this->getTopologyData($topology);
 
         try {
@@ -225,7 +299,7 @@ final class TopologyHandler
         }
 
         if ($code !== 200) {
-            $this->manager->unPublishTopology($topology);
+            $this->topologyManager->unPublishTopology($topology);
 
             return new ResponseDto(
                 400,
@@ -250,38 +324,42 @@ final class TopologyHandler
      * @throws NodeException
      * @throws TopologyException
      * @throws MongoDBException
-     * @throws JsonException
      */
     public function cloneTopology(string $id): array
     {
         $topology = $this->getTopologyById($id);
-        $topology = $this->manager->cloneTopology($topology);
+        $topology = $this->topologyManager->cloneTopology($topology);
 
         return $this->getTopologyData($topology);
     }
 
     /**
-     * @param string $id
+     * @param string    $id
+     * @param bool|null $removeWithTasks
      *
      * @return ResponseDto
      * @throws CronException
      * @throws CurlException
-     * @throws TopologyException
      * @throws MongoDBException
-     * @throws JsonException
+     * @throws TopologyException
      */
-    public function deleteTopology(string $id): ResponseDto
+    public function deleteTopology(string $id, ?bool $removeWithTasks = FALSE): ResponseDto
     {
         $topology = $this->getTopologyById($id);
-        $res      = new ResponseDto(200, '', '', []);
+        $res      = new ResponseDto(200, '', '{}', []);
 
-        if (!($topology->getVisibility() === TopologyStatusEnum::PUBLIC && $topology->isEnabled())) {
-            $this->generatorBridge->stopTopology($id);
+        if ($topology->getVisibility() === TopologyStatusEnum::PUBLIC->value) {
+            $this->generatorBridge->stopTopology($id, TRUE);
             $res = $this->generatorBridge->deleteTopology($id);
         }
 
-        $this->manager->deleteTopology($topology);
         $this->generatorBridge->invalidateTopologyCache($topology->getName());
+        $this->topologyManager->deleteTopology($topology);
+        if ($removeWithTasks) {
+            $this->userTaskHandler->removeAllUserTasks($topology->getId());
+            $headers = $this->topologyManager->getHeadersForTopologyRunRequest();
+            $this->generatorBridge->removeAllLimiterAndRepeaterMessages($topology->getId(), $headers);
+        }
 
         return $res;
     }
@@ -289,40 +367,34 @@ final class TopologyHandler
     /**
      * @param string $topologyId
      *
-     * @return mixed[]
-     * @throws CurlException
+     * @return array<int, array{id: string, name: string, status: string, reason: string}>
      * @throws TopologyConfigException
      * @throws TopologyException
-     * @throws LockException
-     * @throws MappingException
-     * @throws JsonException
      */
     public function runTest(string $topologyId): array
     {
-        $startTopology = TRUE;
-        $runningInfo   = $this->generatorBridge->infoTopology($topologyId);
-        if ($runningInfo->getBody()) {
-            $result = Json::decode($runningInfo->getBody());
-            if (array_key_exists('docker_info', $result) && count($result['docker_info'])) {
-                $startTopology = FALSE;
-            }
+        return $this->topologyTester->testTopology($topologyId);
+    }
+
+    /**
+     * @param string $topologyId
+     * @param string $nodeName
+     *
+     * @return mixed[]
+     * @throws Exception
+     */
+    public function getTopologiesByIdAndNodeName(string $topologyId, string $nodeName): array
+    {
+        $topologies = $this->topologyManager->getTopologiesById($topologyId);
+        foreach ($topologies as &$value) {
+            $nodes          = array_map(static fn($node): array => [
+                'id'   => $node['_id'],
+                'name' => $node['name'],
+            ], $this->nodeManager->getTopologyNodesByName($value['id'], $nodeName));
+            $value['nodes'] = $nodes;
         }
 
-        if ($startTopology) {
-            $this->generatorBridge->generateTopology($topologyId);
-            $this->generatorBridge->runTopology($topologyId);
-            sleep(3); // Wait for topology start...
-        }
-
-        $res = $this->generatorBridge->runTest($topologyId);
-
-        $topology = $this->getTopologyById($topologyId);
-        if ($topology->getVisibility() === TopologyStatusEnum::DRAFT) {
-            $this->generatorBridge->stopTopology($topologyId);
-            $this->generatorBridge->deleteTopology($topologyId);
-        }
-
-        return $res;
+        return $topologies;
     }
 
     /**
@@ -333,19 +405,25 @@ final class TopologyHandler
      */
     private function getTopologyData(Topology $topology): array
     {
-        /** @var NodeRepository $repository */
-        $repository = $this->dm->getRepository(Node::class);
+        $settings  = [];
+        $cronNodes = $this->dm->getRepository(Node::class)->getCronNodes($topology);
+        foreach ($cronNodes as $node) {
+            if ($node->getCron()) {
+                $settings[] = ['cron' => $node->getCron(), 'cronParams' => $node->getCronParams()];
+            }
+        }
 
         return [
-            '_id'        => $topology->getId(),
-            'type'       => $repository->getTopologyType($topology),
-            'name'       => $topology->getName(),
-            'descr'      => $topology->getDescr(),
-            'status'     => $topology->getStatus(),
-            'visibility' => $topology->getVisibility(),
-            'version'    => $topology->getVersion(),
-            'category'   => $topology->getCategory(),
-            'enabled'    => $topology->isEnabled(),
+            'category'     => $topology->getCategory(),
+            'cronSettings' => $settings,
+            'description'  => $topology->getDescr(),
+            'enabled'      => $topology->isEnabled(),
+            'name'         => $topology->getName(),
+            'status'       => $topology->getStatus(),
+            'type'         => count($cronNodes) >= 1 ? TypeEnum::CRON->value : TypeEnum::WEBHOOK->value,
+            'version'      => $topology->getVersion(),
+            'visibility'   => $topology->getVisibility(),
+            '_id'          => $topology->getId(),
         ];
     }
 

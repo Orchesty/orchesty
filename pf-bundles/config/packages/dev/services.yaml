@@ -1,15 +1,8 @@
 parameters:
     stdout_path: "%kernel.logs_dir%/stdout_%kernel.environment%.log"
     public.services: false
-    node_services_dirs:
-        - '%kernel.project_dir%/vendor/hanaboso/pipes-php-sdk/src/HbPFConnectorBundle/Resources/config/'
-        - '%kernel.project_dir%/vendor/hanaboso/pipes-php-sdk/src/HbPFCustomNodeBundle/Resources/config/'
-        - '%kernel.project_dir%/vendor/hanaboso/pipes-php-sdk/src/HbPFJoinerBundle/Resources/config/'
-        - '%kernel.project_dir%/vendor/hanaboso/pipes-php-sdk/src/HbPFMapperBundle/Resources/config/'
-        - '%kernel.project_dir%/config/packages/test/'
-    applications: ['%kernel.project_dir%/config/packages/test']
 
 framework:
     session:
         cookie_secure: false
-        cookie_samesite: 'none'
+        cookie_samesite: 'strict'

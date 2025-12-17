@@ -31,7 +31,20 @@ final class SdkHandler
      */
     public function getAll(): array
     {
-        return ['items' => array_map(static fn(Sdk $sdk): array => $sdk->toArray(), $this->manager->getAll())];
+        $sdks = $this->manager->getAll();
+
+        return [
+            'filter' => [],
+            'items'  => array_map(static fn(Sdk $sdk): array => $sdk->toArray(), $sdks),
+            'paging' => [
+                'itemsPerPage' => 50,
+                'lastPage'     => 1,
+                'nextPage'     => 1,
+                'page'         => 1,
+                'previousPage' => 1,
+                'total'        => count($sdks),
+            ],
+        ];
     }
 
     /**
@@ -54,7 +67,7 @@ final class SdkHandler
      */
     public function create(array $data): array
     {
-        ControllerUtils::checkParameters([Sdk::KEY, Sdk::VALUE], $data);
+        ControllerUtils::checkParameters([Sdk::NAME, Sdk::URL], $data);
 
         return $this->manager->create($data)->toArray();
     }

@@ -390,6 +390,15 @@ paths:
                 500:
                     $ref: '#/components/responses/500'
 
+    /api/metrics/healthcheck:
+        get:
+            tags: [ Metrics ]
+            responses:
+                200:
+                    $ref: '#/components/responses/HealthcheckMetrics'
+                500:
+                    $ref: '#/components/responses/500'
+
     /api/metrics/topology/{topology}:
         get:
             tags: [ Metrics ]
@@ -451,64 +460,12 @@ paths:
                 500:
                     $ref: '#/components/responses/500'
 
-    /api/nodes/{type}/list_nodes:
-        get:
-            tags: [ Nodes ]
-            parameters:
-                -   $ref: '#/components/parameters/Type'
-            responses:
-                200:
-                    $ref: '#/components/responses/NodesNames'
-                500:
-                    $ref: '#/components/responses/500'
-
     /api/nodes/list/name:
         get:
             tags: [ Nodes ]
             responses:
                 200:
                     $ref: '#/components/responses/NodesImplementationsNames'
-                500:
-                    $ref: '#/components/responses/500'
-
-    /api/notification_settings:
-        get:
-            tags: [ Notification Settings ]
-            responses:
-                200:
-                    $ref: '#/components/responses/Events'
-                500:
-                    $ref: '#/components/responses/500'
-
-    /api/notification_settings/events:
-        get:
-            tags: [ Notification Settings ]
-            responses:
-                200:
-                    $ref: '#/components/responses/Events'
-                500:
-                    $ref: '#/components/responses/500'
-
-    /api/notification_settings/{id}:
-        get:
-            tags: [ Notification Settings ]
-            parameters:
-                -   $ref: '#/components/parameters/Id'
-            responses:
-                200:
-                    $ref: '#/components/responses/Setting'
-                500:
-                    $ref: '#/components/responses/500'
-
-        put:
-            tags: [ Notification Settings ]
-            parameters:
-                -   $ref: '#/components/parameters/Id'
-            requestBody:
-                $ref: '#/components/requestBodies/NotificationSetting'
-            responses:
-                200:
-                    $ref: '#/components/responses/Setting'
                 500:
                     $ref: '#/components/responses/500'
 
@@ -565,6 +522,42 @@ paths:
             responses:
                 200:
                     $ref: '#/components/responses/Sdk'
+                404:
+                    $ref: '#/components/responses/404'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/apiTokens:
+        get:
+            tags: [ ApiTokens ]
+            parameters:
+                -   $ref: '#/components/parameters/QueryKey'
+                -   $ref: '#/components/parameters/QueryUser'
+                -   $ref: '#/components/parameters/Created'
+            responses:
+                200:
+                    $ref: '#/components/responses/ApiTokens'
+                500:
+                    $ref: '#/components/responses/500'
+
+        post:
+            tags: [ ApiTokens ]
+            requestBody:
+                $ref: '#/components/requestBodies/ApiToken'
+            responses:
+                200:
+                    $ref: '#/components/responses/ApiToken'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/apiTokens/{id}:
+        delete:
+            tags: [ ApiTokens ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            responses:
+                200:
+                    $ref: '#/components/responses/ApiToken'
                 404:
                     $ref: '#/components/responses/404'
                 500:
@@ -628,6 +621,19 @@ paths:
             responses:
                 200:
                     $ref: '#/components/responses/Empty'
+                500:
+                    $ref: '#/components/responses/500'
+
+    /api/topologies/{id}/run:
+        post:
+            tags: [ Topologies ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            requestBody:
+                $ref: '#/components/requestBodies/TopologiesRun'
+            responses:
+                200:
+                    $ref: '#/components/responses/TopologiesRun'
                 500:
                     $ref: '#/components/responses/500'
 
@@ -701,11 +707,11 @@ paths:
                 500:
                     $ref: '#/components/responses/500'
 
-    /api/progress/topology/{topologyId}:
+    /api/progress/topology/{id}:
         get:
             tags: [ Progress ]
             parameters:
-                - $ref: '#/components/parameters/Id'
+                -   $ref: '#/components/parameters/Id'
             responses:
                 200:
                     $ref: '#/components/responses/Empty'
@@ -864,6 +870,65 @@ paths:
                 500:
                     $ref: '#/components/responses/500'
 
+    /api/user-task:
+        get:
+            tags: [ UserTask ]
+            responses:
+                200:
+                    $ref: '#/components/responses/UserTasks'
+
+    /api/user-task/{id}:
+        parameters:
+            -   $ref: '#/components/parameters/Id'
+        get:
+            tags: [ UserTask ]
+            responses:
+                200:
+                    $ref: '#/components/responses/UserTask'
+        put:
+            tags: [ UserTask ]
+            requestBody:
+                $ref: '#/components/requestBodies/UserTaskMessage'
+            responses:
+                200:
+                    $ref: '#/components/responses/UserTask'
+
+    /api/user-task/{id}/accept:
+        post:
+            tags: [ UserTask ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+
+    /api/user-task/accept:
+        post:
+            tags: [ UserTask ]
+            requestBody:
+                $ref: '#/components/requestBodies/UserTaskFilter'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+
+    /api/user-task/{id}/reject:
+        post:
+            tags: [ UserTask ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+
+    /api/user-task/reject:
+        post:
+            tags: [ UserTask ]
+            requestBody:
+                $ref: '#/components/requestBodies/UserTaskFilter'
+            responses:
+                200:
+                    $ref: '#/components/responses/Empty'
+
     /api/webhook/applications/{key}/users/{user}/subscribe:
         post:
             tags: [ Webhooks ]
@@ -897,6 +962,9 @@ paths:
                     $ref: '#/components/responses/500'
 
 components:
+    ######################
+    ##     Requests     ##
+    ######################
     requestBodies:
         Empty:
             description: ''
@@ -995,24 +1063,9 @@ components:
                                     - user
                             handler:
                                 type: string
-                                enum: [action, event]
+                                enum: [ action, event ]
                             enabled:
                                 type: boolean
-
-        NotificationSetting:
-            description: ''
-            content:
-                application/json:
-                    schema:
-                        type: object
-                        properties:
-                            events:
-                                type: array
-                                items:
-                                    type: string
-                                    enum: [access_expiration, data_error, service_unavailable]
-                            settings:
-                                type: object
 
         Sdk:
             description: ''
@@ -1025,6 +1078,22 @@ components:
                                 type: string
                             value:
                                 type: string
+
+        ApiToken:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            expireAt:
+                                type: string
+                                required: false
+                            scopes:
+                                type: array
+                                items:
+                                    type: string
+                                required: false
 
         Topology:
             description: ''
@@ -1049,6 +1118,13 @@ components:
                 application/xml:
                     schema:
                         type: object
+
+        TopologiesRun:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/TopologiesRun'
 
         Login:
             description: ''
@@ -1115,6 +1191,41 @@ components:
                             settings:
                                 type: object
 
+        UserTaskMessage:
+            description: 'User task body'
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/UserTaskMessage'
+
+        UserTaskFilter:
+            description: 'User task filter'
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            ids:
+                                type: array
+                                items:
+                                    type: string
+                                    example: '507f191e810c19729de860ea'
+                            topologyId:
+                                type: string
+                                example: '507f191e810c19729de860ea'
+                            nodeId:
+                                type: string
+                                example: '507f191e810c19729de860ea'
+                            correlationId:
+                                type: string
+                                example: '507f191e810c19729de860ea'
+                            type:
+                                $ref: '#/components/schemas/UserTaskType'
+
+
+    ######################
+    ##    Responses     ##
+    ######################
     responses:
         Application:
             description: ''
@@ -1214,6 +1325,13 @@ components:
                     schema:
                         $ref: '#/components/schemas/LongRunningData'
 
+        HealthcheckMetrics:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/HealthcheckMetrics'
+
         TopologyMetrics:
             description: ''
             content:
@@ -1234,6 +1352,13 @@ components:
                 application/json:
                     schema:
                         $ref: '#/components/schemas/TopologyRequestMetrics'
+
+        TopologiesRun:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/TopologiesRunResult'
 
         Node:
             description: ''
@@ -1298,6 +1423,20 @@ components:
                     schema:
                         $ref: '#/components/schemas/Sdks'
 
+        ApiToken:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/ApiToken'
+
+        ApiTokens:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/ApiTokens'
+
         Topology:
             description: ''
             content:
@@ -1361,6 +1500,33 @@ components:
                     schema:
                         $ref: '#/components/schemas/Email'
 
+        UserTask:
+            description: 'User task'
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/UserTask'
+
+        UserTasks:
+            description: 'User tasks'
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            items:
+                                type: array
+                                items:
+                                    $ref: '#/components/schemas/UserTaskGridItem'
+                            count:
+                                type: integer
+                            total:
+                                type: integer
+                            limit:
+                                type: integer
+                            offset:
+                                type: integer
+
         Empty:
             description: ''
             content:
@@ -1416,6 +1582,9 @@ components:
                         message: Something gone wrong
                         error_code: 500
 
+    ######################
+    ##     Schemas      ##
+    ######################
     schemas:
         Application:
             type: object
@@ -1428,10 +1597,10 @@ components:
                     type: string
                 application_type:
                     type: string
-                    enum: [cron, webhook]
+                    enum: [ cron, webhook ]
                 authorization_type:
                     type: string
-                    enum: [basic, oauth, oauth2]
+                    enum: [ basic, oauth, oauth2 ]
 
         Applications:
             type: object
@@ -1452,10 +1621,10 @@ components:
                     type: string
                 application_type:
                     type: string
-                    enum: [cron, webhook]
+                    enum: [ cron, webhook ]
                 authorization_type:
                     type: string
-                    enum: [basic, oauth, oauth2]
+                    enum: [ basic, oauth, oauth2 ]
                 authorized:
                     type: boolean
                 applicationSettings:
@@ -1569,7 +1738,7 @@ components:
                     type: string
                 type:
                     type: string
-                    enum: [text, number, url, password, selectbox, checkbox]
+                    enum: [ text, number, url, password, selectbox, checkbox ]
                 label:
                     type: string
                 value:
@@ -1767,6 +1936,22 @@ components:
                 errors:
                     type: string
 
+        HealthcheckMetrics:
+            type: object
+            description: 'Type queue return fields service and topology.'
+            properties:
+                type:
+                    type: string
+                    enum: ['queue', 'service']
+                name:
+                    type: string
+                service:
+                    type: string
+                    required: false
+                topology:
+                    type: string
+                    required: false
+
         TopologyMetrics:
             type: object
             properties:
@@ -1867,7 +2052,7 @@ components:
                         - user
                 handler:
                     type: string
-                    enum: [action, event]
+                    enum: [ action, event ]
                 enabled:
                     type: boolean
                 schema_id:
@@ -1923,14 +2108,14 @@ components:
                     type: string
                 type:
                     type: string
-                    enum: [curl, email, rabbit]
+                    enum: [ curl, email, rabbit ]
                 class:
                     type: string
                 events:
                     type: array
                     items:
                         type: string
-                        enum: [access_expiration, data_error, service_unavailable]
+                        enum: [ access_expiration, data_error, service_unavailable ]
                 settings:
                     type: object
                 status:
@@ -1959,6 +2144,29 @@ components:
             items:
                 $ref: '#/components/schemas/Sdk'
 
+        ApiToken:
+            type: object
+            properties:
+                id:
+                    type: string
+                key:
+                    type: string
+                user:
+                    type: string
+                created:
+                    type: string
+                expiredAt:
+                    type: string
+                scopes:
+                    type: array
+                    items:
+                        type: string
+
+        ApiTokens:
+            type: array
+            items:
+                $ref: '#/components/schemas/ApiToken'
+
         Topology:
             type: object
             properties:
@@ -1966,17 +2174,17 @@ components:
                     type: string
                 type:
                     type: string
-                    enum: [cron, webhook]
+                    enum: [ cron, webhook ]
                 name:
                     type: string
                 descr:
                     type: string
                 status:
                     type: string
-                    enum: [New, Starting, Running, Stopped]
+                    enum: [ New, Starting, Running, Stopped ]
                 visibility:
                     type: string
-                    enum: [draft, public]
+                    enum: [ draft, public ]
                 version:
                     type: string
                 category:
@@ -1999,6 +2207,30 @@ components:
                     type: integer
                 offset:
                     type: integer
+
+        TopologiesRun:
+            type: object
+            properties:
+                startingPoints:
+                    type: array
+                    items:
+                        type: string
+                        example: ''
+                body:
+                    type: string
+
+        TopologiesRunResult:
+            type: object
+            properties:
+                state:
+                    type: string
+                    enum: [ 'ok', 'nok' ]
+                started:
+                    type: integer
+                errors:
+                    type: array
+                    items:
+                        type: string
 
         TopologySchema:
             type: object
@@ -2100,6 +2332,89 @@ components:
                 error_code:
                     type: integer
 
+        UserTaskGridItem:
+            type: object
+            properties:
+                id:
+                    type: string
+                    example: '507f191e810c19729de860ea'
+                nodeId:
+                    type: string
+                    example: '507f191e810c19729de860ea'
+                nodeName:
+                    type: string
+                    example: 'node-name'
+                topologyId:
+                    type: string
+                    example: '507f191e810c19729de860ea'
+                topologyName:
+                    type: string
+                    example: 'topology-name'
+                correlationId:
+                    type: string
+                    example: '507f191e810c19729de860ea'
+                created:
+                    type: string
+                    example: '2020-02-02 10:10:10'
+                updated:
+                    type: string
+                    example: '2020-02-02 10:10:10'
+                type:
+                    $ref: '#/components/schemas/UserTaskType'
+
+        UserTask:
+            type: object
+            properties:
+                id:
+                    type: string
+                    example: '507f191e810c19729de860ea'
+                nodeId:
+                    type: string
+                    example: '507f191e810c19729de860ea'
+                nodeName:
+                    type: string
+                    example: 'node-name'
+                topologyId:
+                    type: string
+                    example: '507f191e810c19729de860ea'
+                topologyName:
+                    type: string
+                    example: 'topology-name'
+                correlationId:
+                    type: string
+                    example: '507f191e810c19729de860ea'
+                created:
+                    type: string
+                    example: '2020-02-02 10:10:10'
+                updated:
+                    type: string
+                    example: '2020-02-02 10:10:10'
+                type:
+                    $ref: '#/components/schemas/UserTaskType'
+                message:
+                    $ref: '#/components/schemas/UserTaskMessage'
+                auditLogs:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/UserTaskMessage'
+
+        UserTaskType:
+            type: string
+            enum:
+                - userTask
+                - thrash
+
+        UserTaskMessage:
+            type: object
+            properties:
+                body:
+                    type: string
+                headers:
+                    type: object
+
+    ######################
+    ##    Parameters    ##
+    ######################
     parameters:
         Id:
             name: id
@@ -2148,7 +2463,7 @@ components:
             example: type
             schema:
                 type: string
-                enum: [connector, custom_node, joiner, mapper, long_running]
+                enum: [ connector, custom_node, mapper ]
 
         Application:
             name: application
@@ -2165,6 +2480,33 @@ components:
             example: state
             schema:
                 type: string
+
+        QueryUser:
+            name: user
+            in: query
+            required: true
+            schema:
+                type: string
+
+        QueryKey:
+            name: key
+            in: query
+            schema:
+                type: string
+
+        Created:
+            name: created
+            in: query
+            schema:
+                type: string
+
+        Scopes:
+            name: scopes
+            in: query
+            schema:
+                type: array
+                items:
+                    type: string
 
         Token:
             name: token

@@ -4,53 +4,58 @@ namespace Hanaboso\PipesFramework\Configurator\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
+use Hanaboso\Utils\String\Json;
 
 /**
  * Class Sdk
  *
  * @package Hanaboso\PipesFramework\Configurator\Document
- *
- * @ODM\Document(repositoryClass="Hanaboso\PipesFramework\Configurator\Repository\SdkRepository")
  */
+#[ODM\Document(repositoryClass: 'Hanaboso\PipesFramework\Configurator\Repository\SdkRepository')]
 class Sdk
 {
 
     use IdTrait;
 
-    public const ID    = 'id';
-    public const KEY   = 'key';
-    public const VALUE = 'value';
+    public const string ID      = 'id';
+    public const string NAME    = 'name';
+    public const string URL     = 'url';
+    public const string HEADERS = 'headers';
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
-    private string $key;
+    #[ODM\Field(type: 'string')]
+    private string $name;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
-    private string $value;
+    #[ODM\Field(type: 'string')]
+    private string $url;
+
+    /**
+     * @var string
+     */
+    #[ODM\Field(type: 'string')]
+    private string $headers = '[]';
 
     /**
      * @return string
      */
-    public function getKey(): string
+    public function getName(): string
     {
-        return $this->key;
+        return $this->name;
     }
 
     /**
-     * @param string $key
+     * @param string $name
      *
      * @return Sdk
      */
-    public function setKey(string $key): Sdk
+    public function setName(string $name): self
     {
-        $this->key = $key;
+        $this->name = $name;
 
         return $this;
     }
@@ -58,19 +63,39 @@ class Sdk
     /**
      * @return string
      */
-    public function getValue(): string
+    public function getUrl(): string
     {
-        return $this->value;
+        return $this->url;
     }
 
     /**
-     * @param string $value
+     * @param string $url
      *
      * @return Sdk
      */
-    public function setValue(string $value): Sdk
+    public function setUrl(string $url): self
     {
-        $this->value = $value;
+        $this->url = $url;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public function getHeaders(): array
+    {
+        return Json::decode($this->headers);
+    }
+
+    /**
+     * @param mixed[] $headers
+     *
+     * @return Sdk
+     */
+    public function setHeaders(array $headers): self
+    {
+        $this->headers = Json::encode($headers);
 
         return $this;
     }
@@ -81,9 +106,10 @@ class Sdk
     public function toArray(): array
     {
         return [
-            self::ID    => $this->id,
-            self::KEY   => $this->key,
-            self::VALUE => $this->value,
+            self::HEADERS => $this->getHeaders(),
+            self::ID      => $this->id,
+            self::NAME    => $this->name,
+            self::URL     => $this->url,
         ];
     }
 

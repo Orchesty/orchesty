@@ -1,5 +1,0 @@
-{
-    "http": "GET /api/notification_settings/events",
-    "body": [],
-    "headers": []
-}

@@ -5,7 +5,10 @@ namespace PipesFrameworkTests\Integration\Metrics\Document;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Exception;
 use Hanaboso\PipesFramework\Metrics\Document\MonolithMetrics;
+use Hanaboso\PipesFramework\Metrics\Document\MonolithMetricsFields;
 use Hanaboso\Utils\Date\DateTimeUtils;
+use MongoDB\BSON\UTCDateTime;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -13,33 +16,32 @@ use PipesFrameworkTests\DatabaseTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Integration\Metrics\Document
  */
+#[CoversClass(MonolithMetrics::class)]
+#[CoversClass(MonolithMetricsFields::class)]
 final class MonolithMetricsTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\Metrics\Document\MonolithMetrics::getFields
-     * @covers \Hanaboso\PipesFramework\Metrics\Document\MonolithMetrics::getTags
-     * @covers \Hanaboso\PipesFramework\Metrics\Document\MonolithMetricsFields::getCreated
-     * @covers \Hanaboso\PipesFramework\Metrics\Document\MonolithMetricsFields::getUserTime
-     * @covers \Hanaboso\PipesFramework\Metrics\Document\MonolithMetricsFields::getKernelTime
-     *
      * @throws Exception
      */
     public function testDocument(): void
     {
-        $this->dm->createQueryBuilder(MonolithMetrics::class)
+        $dm = self::getContainer()->get('doctrine_mongodb.odm.metrics_document_manager');
+        $dm->getSchemaManager()->dropDocumentCollection(MonolithMetrics::class);
+        $dm->getSchemaManager()->createDocumentCollection(MonolithMetrics::class);
+        $dm->createQueryBuilder(MonolithMetrics::class)
             ->insert()
             ->setNewObj(
                 [
                     'fields' => [
+                        'created'             => new UTCDateTime(DateTimeUtils::getUtcDateTime('1.1.2020')),
                         'fpm_cpu_kernel_time' => '1.111',
                         'fpm_cpu_user_time'   => '2.222',
-                        'created'             => DateTimeUtils::getUtcDateTime('1.1.2020')->getTimestamp(),
                     ],
                     'tags'   => [
-                        'nodeId'     => '1',
-                        'topologyId' => '2',
-                        'queue'      => '12',
+                        'node_id'     => '1',
+                        'queue'       => '12',
+                        'topology_id' => '2',
                     ],
                 ],
             )
@@ -47,13 +49,13 @@ final class MonolithMetricsTest extends DatabaseTestCaseAbstract
             ->execute();
 
         /** @var DocumentRepository<MonolithMetrics> $repository */
-        $repository = $this->dm->getRepository(MonolithMetrics::class);
+        $repository = $dm->getRepository(MonolithMetrics::class);
         /** @var MonolithMetrics $result */
         $result = $repository->findAll()[0];
         self::assertEquals('1.111', $result->getFields()->getKernelTime());
         self::assertEquals('2.222', $result->getFields()->getUserTime());
         self::assertEquals(DateTimeUtils::getUtcDateTime('1.1.2020'), $result->getFields()->getCreated());
-        self::assertEquals('1', $result->getTags()->getNodeId());
+        self::assertSame('1', $result->getTags()->getNodeId());
     }
 
 }

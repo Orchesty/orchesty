@@ -2,12 +2,16 @@
 
 namespace PipesFrameworkTests\Controller\ApiGateway\Listener;
 
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
-use Hanaboso\CommonsBundle\Process\ProcessDto;
+use Hanaboso\PipesFramework\ApiGateway\Exception\LicenseException;
 use Hanaboso\PipesFramework\ApiGateway\Listener\ControllerExceptionListener;
-use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
+use Hanaboso\UserBundle\Model\Security\SecurityManagerException;
+use Hanaboso\UserBundle\Model\User\UserManagerException;
 use Hanaboso\Utils\Exception\EnumException;
+use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\System\PipesHeaders;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 use RabbitMqBundle\Consumer\Callback\Exception\CallbackException;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -24,25 +28,24 @@ use Throwable;
  *
  * @covers  \Hanaboso\PipesFramework\ApiGateway\Listener\ControllerExceptionListener
  */
+#[CoversClass(ControllerExceptionListener::class)]
 final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Listener\ControllerExceptionListener::onKernelException
+     * @return void
      */
     public function testListener(): void
     {
-        $this->client->request('GET', '/nodes/oiz5', [], [], []);
+        $this->client->request('GET', '/nodes/oiz5', [], [], [self::$AUTHORIZATION => $this->jwt]);
 
         /** @var JsonResponse $response */
         $response = $this->client->getResponse();
 
-        self::assertEquals(404, $response->getStatusCode());
+        self::assertSame(404, $response->getStatusCode());
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Listener\ControllerExceptionListener::onKernelException
-     *
      * @throws Exception
      */
     public function testKernelException(): void
@@ -62,17 +65,17 @@ final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
         $controller->onKernelException($eventMock);
         self::assertInstanceOf(Response::class, $eventMock->getResponse());
         self::assertArrayHasKey(
-            PipesHeaders::createKey(PipesHeaders::RESULT_CODE),
+            PipesHeaders::RESULT_CODE,
             $eventMock->getResponse()->headers->all(),
         );
         self::assertEquals(
             1_006,
-            $eventMock->getResponse()->headers->get(PipesHeaders::createKey(PipesHeaders::RESULT_CODE)),
+            $eventMock->getResponse()->headers->get(PipesHeaders::RESULT_CODE),
         );
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Listener\ControllerExceptionListener::getSubscribedEvents
+     * @return void
      */
     public function testGetSubscribedEvents(): void
     {
@@ -83,23 +86,127 @@ final class ControllerExceptionListenerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\ApiGateway\Listener\ControllerExceptionListener::onKernelException
-     *
      * @throws Exception
      */
     public function testConnectorException(): void
     {
         $controller = new ControllerExceptionListener();
 
-        $eventMock = $this->mockEvent(new ConnectorException('', 0, NULL, new ProcessDto()));
+        $eventMock = $this->mockEvent(new Exception('', 0, NULL));
+        $controller->onKernelException($eventMock);
+
+        $response = $eventMock->getResponse();
+        if (!$response) {
+            self::fail('Response is null!');
+        }
+        self::assertEquals(
+            1_006,
+            $response->headers->get(PipesHeaders::RESULT_CODE),
+        );
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testLicenseException(): void
+    {
+        $controller = new ControllerExceptionListener();
+
+        $eventMock = $this->mockEvent(new LicenseException('', 0));
         $controller->onKernelException($eventMock);
 
         $response = $eventMock->getResponse();
         if ($response) {
             self::assertEquals(
                 1_006,
-                $response->headers->get(PipesHeaders::createKey(PipesHeaders::RESULT_CODE)),
+                $response->headers->get(PipesHeaders::RESULT_CODE),
             );
+
+            self::assertSame(401, $response->getStatusCode());
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testSecurityManagerException(): void
+    {
+        $controller = new ControllerExceptionListener();
+
+        $eventMock = $this->mockEvent(new SecurityManagerException('', 0));
+        $controller->onKernelException($eventMock);
+
+        $response = $eventMock->getResponse();
+        if ($response) {
+            self::assertEquals(
+                1_006,
+                $response->headers->get(PipesHeaders::RESULT_CODE),
+            );
+
+            self::assertSame(400, $response->getStatusCode());
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testPipesFrameworkException(): void
+    {
+        $controller = new ControllerExceptionListener();
+
+        $eventMock = $this->mockEvent(new PipesFrameworkException('', 0));
+        $controller->onKernelException($eventMock);
+
+        $response = $eventMock->getResponse();
+        if ($response) {
+            self::assertEquals(
+                1_006,
+                $response->headers->get(PipesHeaders::RESULT_CODE),
+            );
+
+            self::assertSame(500, $response->getStatusCode());
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testMongoDbException(): void
+    {
+        $controller = new ControllerExceptionListener();
+
+        $eventMock = $this->mockEvent(new MongoDBException('', 0));
+        $controller->onKernelException($eventMock);
+
+        $response = $eventMock->getResponse();
+        if ($response) {
+            self::assertEquals(
+                1_006,
+                $response->headers->get(PipesHeaders::RESULT_CODE),
+            );
+
+            self::assertSame(500, $response->getStatusCode());
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testUserManagerException(): void
+    {
+        $controller = new ControllerExceptionListener();
+
+        $eventMock = $this->mockEvent(new UserManagerException('', 0));
+        $controller->onKernelException($eventMock);
+
+        $response = $eventMock->getResponse();
+        if ($response) {
+            self::assertEquals(
+                1_006,
+                $response->headers->get(PipesHeaders::RESULT_CODE),
+            );
+
+            self::assertSame(500, $response->getStatusCode());
         }
     }
 

@@ -1,28 +1,30 @@
 {
-    "name": "hanaboso/pipes-framework",
-    "description": "PipesFramework for Symfony",
-    "version": "1.6.1",
-    "license": "GPL-3.0-or-later",
+    "name": "orchesty/backend",
+    "description": "Orchesty backend",
+    "license": "Elastic-2.0",
+    "version": "3.2.1",
     "require": {
-        "php": "^8.0",
+        "php": "^8.4",
         "ext-ctype": "*",
         "ext-iconv": "*",
         "ext-intl": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-mongodb": "*",
-        "hanaboso/acl-bundle": "^1.5",
-        "hanaboso/app-store": "^1.6",
-        "hanaboso/email-service-bundle": "^1.2",
-        "hanaboso/mongo-data-grid": "~1.3.1",
-        "hanaboso/pipes-php-sdk": "^1.6",
-        "hanaboso/rabbit-mq-bundle": "^1.5",
-        "hanaboso/rest-bundle": "^1.1",
-        "hanaboso/user-bundle": "^1.4",
-        "influxdb/influxdb-php": "^1.15",
-        "ruflin/elastica": "^7.1",
-        "symfony/security-bundle": "^v5.3",
-        "symfony/serializer": "^v5.3"
+        "doctrine/mongodb-odm-bundle": "^5.3",
+        "doctrine/orm": "^2.20",
+        "hanaboso/acl-bundle": "^1.10",
+        "hanaboso/email-service-bundle": "^1.6",
+        "hanaboso/mongo-data-grid": "^1.9",
+        "hanaboso/rabbit-mq-bundle": "^1.9",
+        "hanaboso/rest-bundle": "^1.5",
+        "hanaboso/user-bundle": "^1.10",
+        "symfony/security-bundle": "^7.3",
+        "symfony/serializer": "^7.3"
+    },
+    "require-dev": {
+        "hanaboso/php-check-utils": "^1.7",
+        "predis/predis": "^1.1"
     },
     "replace": {
         "ralouphie/getallheaders": "*",
@@ -34,13 +36,9 @@
         "symfony/polyfill-intl-normalizer": "*",
         "symfony/polyfill-mbstring": "*",
         "symfony/polyfill-php72": "*",
-        "symfony/polyfill-php73": "*",
-        "symfony/polyfill-php74": "*",
-        "symfony/polyfill-php80": "*"
-    },
-    "require-dev": {
-        "hanaboso/php-check-utils": "^1.2",
-        "predis/predis": "^v1.1"
+        "symfony/polyfill-php80": "*",
+        "symfony/polyfill-php83": "*",
+        "symfony/polyfill-php84": "*"
     },
     "autoload": {
         "psr-4": {
@@ -49,23 +47,14 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "PipesFrameworkTests\\": "tests"
+            "PipesFrameworkTests\\": "tests",
+            "UserBundleTests\\": "vendor/hanaboso/user-bundle/tests"
         }
     },
-    "repositories": [
-        {
-            "type": "path",
-            "url": "../pipes-php-sdk",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "path",
-            "url": "../app-store",
-            "options": {
-                "symlink": true
-            }
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "ergebnis/composer-normalize": true
         }
-    ]
+    }
 }

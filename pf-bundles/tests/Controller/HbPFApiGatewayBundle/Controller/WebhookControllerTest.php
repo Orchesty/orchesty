@@ -3,40 +3,37 @@
 namespace PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller;
 
 use Exception;
+use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 use Hanaboso\PipesFramework\Configurator\Document\Sdk;
-use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\WebhookController;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 
 /**
  * Class WebhookControllerTest
  *
  * @package PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller
- *
- * @covers  \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\WebhookController
  */
+#[CoversClass(WebhookController::class)]
 final class WebhookControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\WebhookController::subscribeWebhooksAction
-     *
      * @throws Exception
      */
     public function testSubscribeWebhookAction(): void
     {
         $this->createApplication();
-        $this->assertResponse(__DIR__ . '/data/WebhookController/subscribeWebhooksRequest.json');
+        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/WebhookController/subscribeWebhooksRequest.json');
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\WebhookController::unsubscribeWebhooksAction
-     *
      * @throws Exception
      */
     public function testUnsubscribeWebhookAction(): void
     {
         $this->createApplication();
-        $this->assertResponse(__DIR__ . '/data/WebhookController/unsubscribeWebhooksRequest.json');
+        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/WebhookController/unsubscribeWebhooksRequest.json');
     }
 
     /**
@@ -44,11 +41,11 @@ final class WebhookControllerTest extends ControllerTestCaseAbstract
      */
     private function createApplication(): void
     {
-        $application = (new ApplicationInstall())->setKey('null')->setUser('user');
+        $application = (new ApplicationInstall())->setKey('null')->setUser('orchesty');
         $this->pfd($application);
 
         $sdk = new Sdk();
-        $sdk->setKey('php-sdk')->setValue('php-sdk');
+        $sdk->setUrl('php-sdk')->setName('php-sdk');
         $this->pfd($sdk);
     }
 

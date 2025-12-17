@@ -23,7 +23,7 @@ final class Kernel extends BaseKernel
 
     use MicroKernelTrait;
 
-    public const CONFIG_EXTS = '.{yaml}';
+    public const string CONFIG_EXTS = '.{yaml}';
 
     /**
      * @return BundleInterface[]
@@ -31,6 +31,10 @@ final class Kernel extends BaseKernel
     public function registerBundles(): iterable
     {
         $contents = require sprintf('%s/config/Bundles.php', $this->getProjectDir());
+        /**
+         * @var BundleInterface $class
+         * @var mixed $envs
+         */
         foreach ($contents as $class => $envs) {
             if ($envs[$this->environment] ?? $envs['all'] ?? FALSE) {
                 yield new $class();

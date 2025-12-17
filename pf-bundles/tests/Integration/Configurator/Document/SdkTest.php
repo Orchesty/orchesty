@@ -4,6 +4,7 @@ namespace PipesFrameworkTests\Integration\Configurator\Document;
 
 use Exception;
 use Hanaboso\PipesFramework\Configurator\Document\Sdk;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -11,30 +12,26 @@ use PipesFrameworkTests\DatabaseTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Integration\Configurator\Document
  */
+#[CoversClass(Sdk::class)]
 final class SdkTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Document\Sdk::getKey
-     * @covers \Hanaboso\PipesFramework\Configurator\Document\Sdk::setKey
-     * @covers \Hanaboso\PipesFramework\Configurator\Document\Sdk::getValue
-     * @covers \Hanaboso\PipesFramework\Configurator\Document\Sdk::setValue
-     * @covers \Hanaboso\PipesFramework\Configurator\Document\Sdk::toArray
-     *
      * @throws Exception
      */
     public function testDocument(): void
     {
-        $sdk = (new Sdk())->setValue('value')->setKey('key');
+        $sdk = (new Sdk())->setUrl('value')->setName('key')->setHeaders([]);
         $this->pfd($sdk);
 
-        self::assertEquals('value', $sdk->getValue());
-        self::assertEquals('key', $sdk->getKey());
+        self::assertSame('value', $sdk->getUrl());
+        self::assertSame('key', $sdk->getName());
         self::assertEquals(
             [
+                'headers' => [],
                 'id'    => $sdk->getId(),
-                'key'   => 'key',
-                'value' => 'value',
+                'name'   => 'key',
+                'url' => 'value',
             ],
             $sdk->toArray(),
         );

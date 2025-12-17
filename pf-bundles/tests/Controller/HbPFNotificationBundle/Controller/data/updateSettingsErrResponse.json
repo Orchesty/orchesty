@@ -1,9 +1,0 @@
-{
-    "http": 500,
-    "body": {
-        "status": "INTERNAL_SERVER_ERROR",
-        "error_code": 2901,
-        "type": "Hanaboso\\PipesFramework\\Notification\\Exception\\NotificationException",
-        "message": "Notification API failed: "
-    }
-}

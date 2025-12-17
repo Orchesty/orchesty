@@ -13,15 +13,15 @@ use Hanaboso\PipesFramework\Configurator\Exception\TopologyConfigException;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
+use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\PipesFramework\TopologyInstaller\Cache\TopologyInstallerCacheInterface;
 use Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto;
-use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use Hanaboso\RestBundle\Exception\XmlDecoderException;
 use Hanaboso\RestBundle\Model\Decoder\XmlDecoder;
 use Hanaboso\Utils\Exception\EnumException;
+use Hanaboso\Utils\Traits\LoggerTrait;
 use JsonException;
 use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Throwable;
 
@@ -33,21 +33,18 @@ use Throwable;
 final class InstallManager implements LoggerAwareInterface
 {
 
-    public const AUTO_INSTALL_KEY = 'auto-install-key';
+    use LoggerTrait;
 
-    private const CREATE = 'create';
-    private const UPDATE = 'update';
-    private const DELETE = 'delete';
+    public const string AUTO_INSTALL_KEY = 'auto-install-key';
+
+    private const string CREATE = 'create';
+    private const string UPDATE = 'update';
+    private const string DELETE = 'delete';
 
     /**
      * @var TopologiesComparator
      */
     private TopologiesComparator $comparator;
-
-    /**
-     * @var LoggerInterface
-     */
-    private LoggerInterface $logger;
 
     /**
      * InstallManager constructor.
@@ -82,51 +79,47 @@ final class InstallManager implements LoggerAwareInterface
     }
 
     /**
-     * @param bool $makeCreate
-     * @param bool $makeUpdate
-     * @param bool $makeDelete
-     * @param bool $force
+     * @param bool   $makeCreate
+     * @param bool   $makeUpdate
+     * @param bool   $makeDelete
+     * @param string $forceHost
+     * @param bool   $force
      *
      * @return mixed[]
      * @throws MongoDBException
      * @throws TopologyException
      * @throws XmlDecoderException
      */
-    public function prepareInstall(bool $makeCreate, bool $makeUpdate, bool $makeDelete, bool $force = FALSE): array
+    public function prepareInstall(
+        bool $makeCreate,
+        bool $makeUpdate,
+        bool $makeDelete,
+        string $forceHost,
+        bool $force = FALSE,
+    ): array
     {
         $result = $this->generateResult();
         $this->installerCache->set(self::AUTO_INSTALL_KEY, $result);
 
         if ($force) {
-            return $this->makeInstall($makeCreate, $makeUpdate, $makeDelete);
+            return $this->makeInstall($makeCreate, $makeUpdate, $makeDelete, $forceHost);
         }
 
         return $this->generateOutput($result, $makeCreate, $makeUpdate, $makeDelete);
     }
 
     /**
-     * Sets a logger instance on the object.
-     *
-     * @param LoggerInterface $logger
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger): void
-    {
-        $this->logger = $logger;
-    }
-
-    /**
-     * @param bool $makeCreate
-     * @param bool $makeUpdate
-     * @param bool $makeDelete
+     * @param bool   $makeCreate
+     * @param bool   $makeUpdate
+     * @param bool   $makeDelete
+     * @param string $forceHost
      *
      * @return mixed[]
      * @throws MongoDBException
      * @throws TopologyException
      * @throws XmlDecoderException
      */
-    public function makeInstall(bool $makeCreate, bool $makeUpdate, bool $makeDelete): array
+    public function makeInstall(bool $makeCreate, bool $makeUpdate, bool $makeDelete, string $forceHost): array
     {
         $result = $this->installerCache->get(self::AUTO_INSTALL_KEY);
         $errors = [];
@@ -136,11 +129,11 @@ final class InstallManager implements LoggerAwareInterface
         }
 
         if ($makeCreate) {
-            $errors[self::CREATE] = $this->makeCreate($result);
+            $errors[self::CREATE] = $this->makeCreate($result, $forceHost);
         }
 
         if ($makeUpdate) {
-            $errors[self::UPDATE] = $this->makeUpdate($result);
+            $errors[self::UPDATE] = $this->makeUpdate($result, $forceHost);
         }
 
         if ($makeDelete) {
@@ -178,10 +171,11 @@ final class InstallManager implements LoggerAwareInterface
 
     /**
      * @param CompareResultDto $dto
+     * @param string           $forceHost
      *
      * @return mixed[]
      */
-    private function makeCreate(CompareResultDto $dto): array
+    private function makeCreate(CompareResultDto $dto, string $forceHost): array
     {
         $output = [];
 
@@ -191,7 +185,7 @@ final class InstallManager implements LoggerAwareInterface
                 $topology = $this->topologyManager->createTopology(
                     ['name' => TplgLoader::getName($file->getName()), 'enabled' => TRUE],
                 );
-                $this->makeRunnable($topology, $file->getFileContents());
+                $this->makeRunnable($topology, $this->replaceHost($file->getFileContents(), $forceHost));
                 $this->categoryParser->classifyTopology($topology, $file);
             } catch (Throwable $e) {
                 $this->logException($e, self::CREATE);
@@ -205,10 +199,11 @@ final class InstallManager implements LoggerAwareInterface
 
     /**
      * @param CompareResultDto $dto
+     * @param string           $forceHost
      *
      * @return mixed[]
      */
-    private function makeUpdate(CompareResultDto $dto): array
+    private function makeUpdate(CompareResultDto $dto, string $forceHost): array
     {
         $errors = [];
         foreach ($dto->getUpdate() as $obj) {
@@ -216,7 +211,10 @@ final class InstallManager implements LoggerAwareInterface
                 $message     = '';
                 $oldTopology = $obj->getTopology();
                 $this->dm->persist($oldTopology);
-                $topology = $this->makeRunnable($oldTopology, $obj->getFile()->getFileContents());
+                $topology = $this->makeRunnable(
+                    $oldTopology,
+                    $this->replaceHost($obj->getFile()->getFileContents(), $forceHost),
+                );
                 $this->categoryParser->classifyTopology($topology, $obj->getFile());
 
                 if ($topology->getId() != $oldTopology->getId()) {
@@ -305,6 +303,21 @@ final class InstallManager implements LoggerAwareInterface
     private function logException(Throwable $e, string $action): void
     {
         $this->logger->error(sprintf('Error occurred during %s action.', $action), ['exception' => $e]);
+    }
+
+    /**
+     * @param string $content
+     * @param string $forceHost
+     *
+     * @return string
+     */
+    private function replaceHost(string $content, string $forceHost): string
+    {
+        if ($forceHost !== '') {
+            $content = preg_replace('/sdkHost=".*"/Umx', sprintf('sdkHost="%s"', $forceHost), $content);
+        }
+
+        return $content ?? '';
     }
 
 }

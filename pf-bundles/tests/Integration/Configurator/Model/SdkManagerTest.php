@@ -8,6 +8,7 @@ use Exception;
 use Hanaboso\PipesFramework\Configurator\Document\Sdk;
 use Hanaboso\PipesFramework\Configurator\Model\SdkManager;
 use Hanaboso\PipesFramework\Configurator\Repository\SdkRepository;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -15,6 +16,7 @@ use PipesFrameworkTests\DatabaseTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Integration\Configurator\Model
  */
+#[CoversClass(SdkManager::class)]
 final class SdkManagerTest extends DatabaseTestCaseAbstract
 {
 
@@ -29,8 +31,6 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
     private SdkRepository $sdkRepo;
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\SdkManager::getAll
-     *
      * @throws Exception
      */
     public function testGetAll(): void
@@ -41,52 +41,47 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
         $data = $this->manager->getAll();
 
         self::assertCount(2, $data);
-        self::assertEquals('One', $data[0]->getKey());
-        self::assertEquals('One', $data[0]->getValue());
-        self::assertEquals('Two', $data[1]->getKey());
-        self::assertEquals('Two', $data[1]->getValue());
+        self::assertSame('One', $data[0]->getName());
+        self::assertSame('One', $data[0]->getUrl());
+        self::assertSame('Two', $data[1]->getName());
+        self::assertSame('Two', $data[1]->getUrl());
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\SdkManager::getOne
-     *
      * @throws Exception
      */
     public function testGetOne(): void
     {
         $data = $this->manager->getOne($this->createSdk('One')->getId());
 
-        self::assertEquals('One', $data->getKey());
-        self::assertEquals('One', $data->getValue());
+        self::assertSame('One', $data->getName());
+        self::assertSame('One', $data->getUrl());
 
         self::expectException(DocumentNotFoundException::class);
         $this->manager->getOne('Unknown');
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\SdkManager::create
-     *
      * @throws Exception
      */
     public function testCreate(): void
     {
         $data = $this->manager->create(
             [
-                Sdk::KEY   => 'Key',
-                Sdk::VALUE => 'Value',
+                Sdk::HEADERS => [],
+                Sdk::NAME => 'Name',
+                Sdk::URL  => 'url',
             ],
         );
 
         $this->dm->clear();
         self::assertCount(1, $this->sdkRepo->findAll());
 
-        self::assertEquals('Key', $data->getKey());
-        self::assertEquals('Value', $data->getValue());
+        self::assertSame('url', $data->getUrl());
+        self::assertSame('Name', $data->getName());
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\SdkManager::update
-     *
      * @throws Exception
      */
     public function testUpdate(): void
@@ -94,21 +89,19 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
         $data = $this->manager->update(
             $this->createSdk('One'),
             [
-                Sdk::KEY   => 'Key',
-                Sdk::VALUE => 'Value',
+                Sdk::NAME => 'Name1',
+                Sdk::URL  => 'url1',
             ],
         );
 
         $this->dm->clear();
         self::assertCount(1, $this->sdkRepo->findAll());
 
-        self::assertEquals('Key', $data->getKey());
-        self::assertEquals('Value', $data->getValue());
+        self::assertSame('Name1', $data->getName());
+        self::assertSame('url1', $data->getUrl());
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\SdkManager::delete
-     *
      * @throws Exception
      */
     public function testDelete(): void
@@ -119,8 +112,8 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
 
         self::assertCount(0, $this->sdkRepo->findAll());
 
-        self::assertEquals('One', $data->getKey());
-        self::assertEquals('One', $data->getValue());
+        self::assertSame('One', $data->getName());
+        self::assertSame('One', $data->getUrl());
     }
 
     /**
@@ -130,7 +123,7 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
     {
         parent::setUp();
 
-        $this->manager = self::$container->get('hbpf.configurator.manager.sdk');
+        $this->manager = self::getContainer()->get('hbpf.configurator.manager.sdk');
         $this->sdkRepo = $this->dm->getRepository(Sdk::class);
     }
 
@@ -143,8 +136,8 @@ final class SdkManagerTest extends DatabaseTestCaseAbstract
     private function createSdk(string $string): Sdk
     {
         $sdk = (new Sdk())
-            ->setKey($string)
-            ->setValue($string);
+            ->setName($string)
+            ->setUrl($string);
 
         $this->dm->persist($sdk);
         $this->dm->flush();

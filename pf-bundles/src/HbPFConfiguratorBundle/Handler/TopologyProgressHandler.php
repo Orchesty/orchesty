@@ -2,6 +2,9 @@
 
 namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler;
 
+use Doctrine\ODM\MongoDB\MongoDBException;
+use Hanaboso\MongoDataGrid\GridHandlerTrait;
+use Hanaboso\MongoDataGrid\GridRequestDtoInterface;
 use Hanaboso\PipesFramework\Configurator\Model\ProgressManager;
 
 /**
@@ -11,6 +14,8 @@ use Hanaboso\PipesFramework\Configurator\Model\ProgressManager;
  */
 final class TopologyProgressHandler
 {
+
+    use GridHandlerTrait;
 
     /**
      * TopologyProgressHandler constructor.
@@ -22,13 +27,16 @@ final class TopologyProgressHandler
     }
 
     /**
-     * @param string $topologyId
+     * @param GridRequestDtoInterface $dto
      *
-     * @return array<mixed>
+     * @return mixed[]
+     * @throws MongoDBException
      */
-    public function getProgress(string $topologyId): array
+    public function getProgress(GridRequestDtoInterface $dto): array
     {
-        return ['items' => $this->manager->getProgress($topologyId)];
+        $items = $this->manager->getProgress($dto);
+
+        return $this->getGridResponse($dto, $items);
     }
 
 }

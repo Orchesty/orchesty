@@ -6,11 +6,17 @@ use Exception;
 use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge;
+use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\PipesFramework\TopologyInstaller\Cache\RedisCache;
 use Hanaboso\PipesFramework\TopologyInstaller\CategoryParser;
+use Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto;
+use Hanaboso\PipesFramework\TopologyInstaller\Dto\TopologyFile;
+use Hanaboso\PipesFramework\TopologyInstaller\Dto\UpdateObject;
 use Hanaboso\PipesFramework\TopologyInstaller\InstallManager;
+use Hanaboso\PipesFramework\TopologyInstaller\TopologiesComparator;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
-use Hanaboso\PipesPhpSdk\Database\Document\Topology;
+use Hanaboso\Utils\File\File;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 use Predis\Client;
 use Predis\Connection\Parameters;
@@ -20,6 +26,12 @@ use Predis\Connection\Parameters;
  *
  * @package PipesFrameworkTests\Integration\TopologyInstaller
  */
+#[CoversClass(InstallManager::class)]
+#[CoversClass(CompareResultDto::class)]
+#[CoversClass(TopologyFile::class)]
+#[CoversClass(UpdateObject::class)]
+#[CoversClass(TopologiesComparator::class)]
+#[CoversClass(RedisCache::class)]
 final class InstallManagerTest extends DatabaseTestCaseAbstract
 {
 
@@ -29,29 +41,13 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
     private Client $redis;
 
     /**
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::prepareInstall
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::generateOutput
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto::toArray
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto::getArrayFromFiles
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto::getArrayFromTopologies
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto::getArrayFromObject
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\TopologyFile::getName
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\TopologyFile::getPath
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\TopologyFile::getFileContents
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\UpdateObject::getTopology
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\UpdateObject::getFile
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\TopologiesComparator::compare
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\TopologiesComparator::prepareFiles
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Cache\RedisCache
-     *
      * @throws Exception
      */
     public function testPrepareInstall(): void
     {
         $this->createTopologies();
         $manager = $this->getManager();
-        $output  = $manager->prepareInstall(TRUE, TRUE, TRUE);
+        $output  = $manager->prepareInstall(TRUE, TRUE, TRUE, 'worker');
         self::assertArrayHasKey('create', $output);
         self::assertArrayHasKey('update', $output);
         self::assertArrayHasKey('delete', $output);
@@ -65,26 +61,6 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::prepareInstall
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::generateOutput
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto::toArray
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto::getArrayFromFiles
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto::getArrayFromTopologies
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto::getArrayFromObject
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\TopologyFile::getName
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\TopologyFile::getPath
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\TopologyFile::getFileContents
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\TopologyFile::from
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\UpdateObject
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\UpdateObject::getTopology
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\UpdateObject::getFile
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::makeInstall
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::makeCreate
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::makeRunnable
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::makeUpdate
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::makeDelete
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Cache\RedisCache
-     *
      * @throws Exception
      */
     public function testMakeInstall(): void
@@ -92,11 +68,11 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
         $this->dm->getClient()->dropDatabase('pipes');
         $this->createTopologies();
         $manager = $this->getManager();
-        $manager->prepareInstall(TRUE, TRUE, TRUE);
+        $manager->prepareInstall(TRUE, TRUE, TRUE, '');
         $res = $this->redis->get(InstallManager::AUTO_INSTALL_KEY);
         self::assertNotEmpty($res);
 
-        $output = $manager->makeInstall(TRUE, TRUE, TRUE);
+        $output = $manager->makeInstall(TRUE, TRUE, TRUE, 'worker');
         self::assertArrayHasKey('create', $output);
         self::assertArrayHasKey('update', $output);
         self::assertArrayHasKey('delete', $output);
@@ -109,15 +85,12 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\InstallManager::makeInstall
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Cache\RedisCache
-     *
      * @throws Exception
      */
     public function testMakeInstallEx(): void
     {
         $manager = $this->getManager();
-        $output  = $manager->makeInstall(TRUE, TRUE, TRUE);
+        $output  = $manager->makeInstall(TRUE, TRUE, TRUE, '');
         self::assertArrayHasKey('create', $output);
         self::assertArrayHasKey('update', $output);
         self::assertArrayHasKey('delete', $output);
@@ -133,16 +106,15 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
         $requestHandler->method('runTopology')->willReturn(new ResponseDto(200, '', '', []));
         $requestHandler->method('deleteTopology')->willReturn(new ResponseDto(200, '', '', []));
 
-        /** @var string $redisDsn */
-        $redisDsn        = self::$container->getParameter('redis_dsn');
+        $redisDsn        = 'redis://redis:6379';
         $this->redis     = new Client(Parameters::create($redisDsn));
-        $topologyManager = self::$container->get('hbpf.configurator.manager.topology');
+        $topologyManager = self::getContainer()->get('hbpf.configurator.manager.topology');
         $dir             = sprintf('%s/data', __DIR__);
-        $categoryManager = self::$container->get('hbpf.configurator.manager.category');
+        $categoryManager = self::getContainer()->get('hbpf.configurator.manager.category');
         $categoryParser  = new CategoryParser($this->dm, $categoryManager);
         $categoryParser->addRoot('systems', $dir);
 
-        $xmlDecoder = self::$container->get('rest.decoder.xml');
+        $xmlDecoder = self::getContainer()->get('rest.decoder.xml');
         $redisCache = new RedisCache($redisDsn);
 
         return new InstallManager(
@@ -162,7 +134,7 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
      */
     private function createTopologies(): void
     {
-        $xmlDecoder = self::$container->get('rest.decoder.xml');
+        $xmlDecoder = self::getContainer()->get('rest.decoder.xml');
         $topology   = new Topology();
         $topology
             ->setName('file')
@@ -180,7 +152,7 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
                 ),
             )
             ->setEnabled(TRUE)
-            ->setVisibility(TopologyStatusEnum::PUBLIC);
+            ->setVisibility(TopologyStatusEnum::PUBLIC->value);
         $this->dm->persist($topology);
 
         $topology3 = new Topology();
@@ -200,14 +172,14 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
                 ),
             )
             ->setEnabled(TRUE)
-            ->setVisibility(TopologyStatusEnum::PUBLIC);
+            ->setVisibility(TopologyStatusEnum::PUBLIC->value);
         $this->dm->persist($topology3);
 
         $topology2 = new Topology();
         $topology2
             ->setName('old-file')
             ->setEnabled(TRUE)
-            ->setVisibility(TopologyStatusEnum::PUBLIC);
+            ->setVisibility(TopologyStatusEnum::PUBLIC->value);
         $this->dm->persist($topology2);
         $this->dm->flush();
     }
@@ -220,7 +192,7 @@ final class InstallManagerTest extends DatabaseTestCaseAbstract
      */
     private function load(string $name, bool $change): string
     {
-        $content = (string) file_get_contents(sprintf('%s/data/%s', __DIR__, $name));
+        $content = File::getContent(sprintf('%s/data/%s', __DIR__, $name));
 
         if (!$change) {
             return $content;

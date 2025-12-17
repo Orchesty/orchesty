@@ -1,5 +1,7 @@
 {
-    "http": "GET /api/applications/null",
+    "http": "GET /api/applications/null/preview?sdk=php-sdk",
     "body": [],
-    "headers": []
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
 }

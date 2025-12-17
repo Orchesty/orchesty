@@ -4,9 +4,19 @@
         "items": [
             {
                 "id": "123456789",
-                "key": "key",
-                "value": "val"
+                "name": "key",
+                "url": "val",
+                "headers": []
             }
-        ]
+        ],
+        "filter": [],
+        "paging": {
+            "page": 1,
+            "itemsPerPage": 50,
+            "total": 1,
+            "nextPage": 1,
+            "lastPage": 1,
+            "previousPage": 1
+        }
     }
 }

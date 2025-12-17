@@ -11,7 +11,7 @@ use Psr\Log\NullLogger;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 /**
  * Class SdkController
@@ -34,22 +34,20 @@ final class SdkController extends AbstractController
     }
 
     /**
-     * @Route("/sdks", methods={"GET", "OPTIONS"})
-     *
      * @return Response
      */
+    #[Route('/sdks', methods: ['GET'])]
     public function getAllAction(): Response
     {
         return $this->getResponse($this->handler->getAll());
     }
 
     /**
-     * @Route("/sdks/{id}", methods={"GET", "OPTIONS"}, requirements={"id": "\w+"})
-     *
      * @param string $id
      *
      * @return Response
      */
+    #[Route('/sdks/{id}', requirements: ['id' => '\w+'], methods: ['GET'])]
     public function getOneAction(string $id): Response
     {
         try {
@@ -60,12 +58,11 @@ final class SdkController extends AbstractController
     }
 
     /**
-     * @Route("/sdks", methods={"POST", "OPTIONS"})
-     *
      * @param Request $request
      *
      * @return Response
      */
+    #[Route('/sdks', methods: ['POST'])]
     public function createAction(Request $request): Response
     {
         try {
@@ -76,13 +73,12 @@ final class SdkController extends AbstractController
     }
 
     /**
-     * @Route("/sdks/{id}", methods={"PUT", "OPTIONS"}, requirements={"id": "\w+"})
-     *
      * @param Request $request
      * @param string  $id
      *
      * @return Response
      */
+    #[Route('/sdks/{id}', requirements: ['id' => '\w+'], methods: ['PUT'])]
     public function updateAction(Request $request, string $id): Response
     {
         try {
@@ -93,12 +89,11 @@ final class SdkController extends AbstractController
     }
 
     /**
-     * @Route("/sdks/{id}", methods={"DELETE", "OPTIONS"}, requirements={"id": "\w+"})
-     *
      * @param string $id
      *
      * @return Response
      */
+    #[Route('/sdks/{id}', requirements: ['id' => '\w+'], methods: ['DELETE'])]
     public function deleteAction(string $id): Response
     {
         try {

@@ -1,5 +1,7 @@
 {
-    "http": "POST /api/webhook/applications/key/users/user/subscribe",
+    "http": "POST /api/webhook/applications/key/subscribe?sdk=php-sdk",
     "body": [],
-    "headers": []
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
 }

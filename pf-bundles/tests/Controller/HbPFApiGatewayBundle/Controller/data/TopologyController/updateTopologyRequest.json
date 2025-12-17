@@ -3,5 +3,7 @@
     "body": {
         "name": "Another Topology"
     },
-    "headers": []
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
 }

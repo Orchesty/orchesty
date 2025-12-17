@@ -7,16 +7,14 @@ use InvalidArgumentException;
 use RuntimeException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader;
-use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 /**
  * Class HbPFConfiguratorExtension
  *
  * @package Hanaboso\PipesFramework\HbPFConfiguratorBundle\DependencyInjection
- *
- * @codeCoverageIgnore
  */
 final class HbPFConfiguratorExtension extends Extension implements PrependExtensionInterface
 {
@@ -32,10 +30,6 @@ final class HbPFConfiguratorExtension extends Extension implements PrependExtens
     {
         if (!$container->hasExtension('hb_pf_commons')) {
             throw new RuntimeException('You must register HbPFCommonsBundle before.');
-        }
-
-        if (!$container->hasExtension('rabbit_mq')) {
-            throw new RuntimeException('You must register RabbitMqBundle before.');
         }
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/prepend-config'));

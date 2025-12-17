@@ -9,25 +9,21 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  * Class RabbitMetricsFields
  *
  * @package Hanaboso\PipesFramework\Metrics\Document
- *
- * @ODM\EmbeddedDocument()
- * @ODM\Index(name="createdIndex", keys={"created"="desc"})
  */
+#[ODM\EmbeddedDocument]
 class RabbitMetricsFields
 {
 
     /**
      * @var int
-     *
-     * @ODM\Field(type="int", name="messages")
      */
+    #[ODM\Field(name: 'messages', type: 'int')]
     private int $messages;
 
     /**
      * @var DateTime
-     *
-     * @ODM\Field(type="date")
      */
+    #[ODM\Field(type: 'date')]
     private DateTime $created;
 
     /**

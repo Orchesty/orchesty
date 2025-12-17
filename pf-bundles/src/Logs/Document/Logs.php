@@ -10,64 +10,71 @@ use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
  * Class Logs
  *
  * @package Hanaboso\PipesFramework\Logs\Document
- *
- * @ODM\Document()
- * @ODM\Index(name="SearchIndex", keys={"message"="text", "pipes.correlation_id"="text", "pipes.topology_id"="text", "pipes.topology_name"="text", "pipes.node_id"="text", "pipes.node_name"="text"}),
- * @ODM\Index(name="SeverityIndex", keys={"pipes.severity"="hashed"}),
- * @ODM\Index(name="LogsTimestampIndex", keys={"timestamp"="desc"})
  */
+#[ODM\Document]
+#[ODM\Index(
+    keys: [
+        'message' =>'text',
+        'pipes.correlationId' =>'text',
+        'pipes.nodeId' =>'text',
+        'pipes.nodeName' =>'text',
+        'pipes.topologyId' =>'text',
+        'pipes.topologyName' =>'text',
+    ],
+    name: 'SearchIndex',
+)]
+#[ODM\Index(keys: ['pipes.severity' => 'hashed'], name: 'SeverityIndex')]
+#[ODM\Index(keys: ['pipes.level' => 'hashed'], name: 'LevelIndex')]
+#[ODM\Index(keys: ['ts' => 'desc'], name: 'LogsTimestampIndex')]
+#[ODM\Index(keys: ['ts' => 'asc'], name: 'expireIndex', expireAfterSeconds: 2_628_000)]
 class Logs
 {
 
     use IdTrait;
 
-    public const ID       = 'id';
-    public const MONGO_ID = '_id';
+    public const string ID       = 'id';
+    public const string MONGO_ID = '_id';
 
-    public const TIMESTAMP = 'timestamp';
-    public const MESSAGE   = 'message';
+    public const string TIMESTAMP = 'ts';
+    public const string MESSAGE   = 'message';
 
-    public const PIPES_TYPE           = 'pipes.type';
-    public const PIPES_SEVERITY       = 'pipes.severity';
-    public const PIPES_CORRELATION_ID = 'pipes.correlation_id';
-    public const PIPES_TOPOLOGY_ID    = 'pipes.topology_id';
-    public const PIPES_TOPOLOGY_NAME  = 'pipes.topology_name';
-    public const PIPES_NODE_ID        = 'pipes.node_id';
-    public const PIPES_NODE_NAME      = 'pipes.node_name';
+    public const string PIPES_SERVICE        = 'pipes.service';
+    public const string PIPES_SEVERITY       = 'pipes.severity';
+    public const string PIPES_CORRELATION_ID = 'pipes.correlation_id';
+    public const string PIPES_TOPOLOGY_ID    = 'pipes.topology_id';
+    public const string PIPES_NODE_ID        = 'pipes.node_id';
+    public const string PIPES_TIME_MARGIN    = 'pipes.time_margin';
+    public const string PIPES_TIMESTAMP      = 'pipes.timestamp';
+    public const string PIPES_USER_ID        = 'pipes.user_id';
 
     /**
      * @var DateTime
-     *
-     * @ODM\Field(type="date", name="@timestamp")
      */
+    #[ODM\Field(name: 'ts', type: 'date')]
     private DateTime $timestamp;
 
     /**
      * @var Pipes
-     *
-     * @ODM\EmbedOne(targetDocument="Hanaboso\PipesFramework\Logs\Document\Pipes")
      */
+    #[ODM\EmbedOne(targetDocument: 'Hanaboso\PipesFramework\Logs\Document\Pipes')]
     private Pipes $pipes;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string", name="@version")
      */
+    #[ODM\Field(name: '@version', type: 'string')]
     private string $version;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $message;
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
+    #[ODM\Field(type: 'string')]
     private string $host;
 
     /**

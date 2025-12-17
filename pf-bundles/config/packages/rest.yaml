@@ -2,6 +2,8 @@ rest:
     routes:
         '^/api/topologies/\w+/schema.bpmn': ['xml']
         '^/topologies/\w+/schema.bpmn': ['xml']
+        '^/api/topologies/check/\w+/schema.bpmn': ['xml']
+        '^/topologies/check/\w+/schema.bpmn': ['xml']
         '^/api': ['json']
         '^/webhook': ['json', 'xml']
         '^/': ['json']
@@ -12,7 +14,7 @@ rest:
         '^/api':
             origin: ['*']
             methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS']
-            headers: ['Content-Type', 'OrderBy', 'Filter', 'Page', 'Limit']
+            headers: ['Content-Type', 'OrderBy', 'Filter', 'Page', 'Limit', 'Authorization']
             credentials: TRUE
         '^/':
             origin: ['*']

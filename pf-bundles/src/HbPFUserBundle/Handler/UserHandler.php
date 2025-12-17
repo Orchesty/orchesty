@@ -8,10 +8,10 @@ use Hanaboso\MongoDataGrid\GridRequestDto;
 use Hanaboso\PipesFramework\User\Document\UserSettings;
 use Hanaboso\PipesFramework\User\Manager\UserManager as UsersManager;
 use Hanaboso\UserBundle\Document\User;
-use Hanaboso\UserBundle\Entity\UserInterface;
 use Hanaboso\UserBundle\Model\Security\SecurityManagerException;
 use Hanaboso\UserBundle\Model\User\UserManager;
 use Hanaboso\UserBundle\Model\User\UserManagerException;
+use Hanaboso\Utils\Exception\DateTimeException;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Hanaboso\Utils\System\ControllerUtils;
 
@@ -23,7 +23,7 @@ use Hanaboso\Utils\System\ControllerUtils;
 final class UserHandler
 {
 
-    private const SETTINGS = 'settings';
+    private const string SETTINGS = 'settings';
 
     /**
      * UserHandler constructor.
@@ -59,7 +59,7 @@ final class UserHandler
      */
     public function getUserDetail(string $id): array
     {
-        return $this->getUserData($this->getUser($id));
+        return $this->getUserData($this->getUser($id), '');
     }
 
     /**
@@ -95,12 +95,14 @@ final class UserHandler
      * @return mixed[]
      * @throws PipesFrameworkException
      * @throws SecurityManagerException
+     * @throws DateTimeException
      */
     public function login(array $data): array
     {
         ControllerUtils::checkParameters(['email', 'password'], $data);
+        [$user, $jwt] = $this->userManager->login($data);
 
-        return $this->getUserData($this->userManager->login($data));
+        return $this->getUserData($user, $jwt);
     }
 
     /**
@@ -108,18 +110,19 @@ final class UserHandler
      */
 
     /**
-     * @param UserInterface $user
+     * @param User   $user
+     * @param string $jwt
      *
      * @return mixed[]
      */
-    private function getUserData(UserInterface $user): array
+    private function getUserData(User $user, string $jwt): array
     {
         $settings = $this->getSettings($user->getId());
         if ($settings) {
             $settings = $settings->getSettings();
         }
 
-        return array_merge($user->toArray(), [self::SETTINGS => $settings ?? []]);
+        return array_merge($user->toArray(), [self::SETTINGS => $settings ?? []], ['token' => $jwt]);
     }
 
     /**

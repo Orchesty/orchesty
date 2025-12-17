@@ -1,5 +1,7 @@
 {
-    "http": "POST /api/applications/null/users/user",
+    "http": "POST /api/applications/null?sdk=php-sdk",
     "body": [],
-    "headers": []
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
 }

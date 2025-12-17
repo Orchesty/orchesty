@@ -1,5 +1,7 @@
 {
     "http": "DELETE /api/topologies/:id",
-    "body": {},
-    "headers": []
+    "body": [],
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
 }

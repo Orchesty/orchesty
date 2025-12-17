@@ -3,19 +3,20 @@
 namespace Hanaboso\PipesFramework\Configurator\Document;
 
 use DateTime;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
 use Hanaboso\Utils\Date\DateTimeUtils;
+use Hanaboso\Utils\Exception\DateTimeException;
 
 /**
  * Class TopologyProgress
  *
  * @package Hanaboso\PipesFramework\Configurator\Document
- *
- * @ODM\Document(collection="Progress")
  */
+#[ODM\Document(
+    collection: 'MultiCounter',
+    repositoryClass: 'Hanaboso\PipesFramework\Configurator\Repository\TopologyProgressRepository',
+)]
 class TopologyProgress
 {
 
@@ -23,74 +24,51 @@ class TopologyProgress
 
     /**
      * @var string
-     *
-     * @ODM\Field(type="string")
      */
-    private string $correlationId;
-
-    /**
-     * @var string
-     *
-     * @ODM\Field(type="string")
-     */
+    #[ODM\Field(type: 'string')]
     private string $topologyId;
 
     /**
-     * @var string
-     *
-     * @ODM\Field(type="string")
+     * @var int
      */
-    private string $topologyName;
-
-    /**
-     * @var string
-     *
-     * @ODM\Field(type="string")
-     */
-    private string $status;
+    #[ODM\Field(type: 'int')]
+    private int $ok = 0;
 
     /**
      * @var int
-     *
-     * @ODM\Field(type="integer")
      */
-    private int $followers;
+    #[ODM\Field(type: 'int')]
+    private int $nok = 0;
 
     /**
      * @var int
-     *
-     * @ODM\Field(type="integer")
      */
-    private int $duration;
+    #[ODM\Field(type: 'int')]
+    private int $total = 0;
+
+    /**
+     * @var int
+     */
+    #[ODM\Field(type: 'int')]
+    private int $processedCount = 0;
 
     /**
      * @var DateTime
-     *
-     * @ODM\Field(type="date")
      */
+    #[ODM\Field(name: 'created', type: 'date')]
     private DateTime $startedAt;
 
     /**
      * @var DateTime|null
-     *
-     * @ODM\Field(type="date")
      */
+    #[ODM\Field(name: 'finished', type: 'date')]
     private ?DateTime $finishedAt = NULL;
 
     /**
-     * @var Collection<string, NodeProgress>
-     *
-     * @ODM\EmbedMany(targetDocument=NodeProgress::class)
+     * @var string|null
      */
-    private $nodes;
-
-    /**
-     * TopologyProgress constructor.
-     */
-    public function __construct()
-    {
-        $this->nodes = new ArrayCollection();
-    }
+    #[ODM\Field(type: 'string')]
+    private ?string $user = NULL;
 
     /**
      * @return string
@@ -98,26 +76,6 @@ class TopologyProgress
     public function getId(): string
     {
         return $this->id;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCorrelationId(): string
-    {
-        return $this->correlationId;
-    }
-
-    /**
-     * @param string $correlationId
-     *
-     * @return TopologyProgress
-     */
-    public function setCorrelationId(string $correlationId): TopologyProgress
-    {
-        $this->correlationId = $correlationId;
-
-        return $this;
     }
 
     /**
@@ -133,89 +91,9 @@ class TopologyProgress
      *
      * @return TopologyProgress
      */
-    public function setTopologyId(string $topologyId): TopologyProgress
+    public function setTopologyId(string $topologyId): self
     {
         $this->topologyId = $topologyId;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTopologyName(): string
-    {
-        return $this->topologyName;
-    }
-
-    /**
-     * @param string $topologyName
-     *
-     * @return TopologyProgress
-     */
-    public function setTopologyName(string $topologyName): TopologyProgress
-    {
-        $this->topologyName = $topologyName;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getStatus(): string
-    {
-        return $this->status;
-    }
-
-    /**
-     * @param string $status
-     *
-     * @return TopologyProgress
-     */
-    public function setStatus(string $status): TopologyProgress
-    {
-        $this->status = $status;
-
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getFollowers(): int
-    {
-        return $this->followers;
-    }
-
-    /**
-     * @param int $followers
-     *
-     * @return TopologyProgress
-     */
-    public function setFollowers(int $followers): TopologyProgress
-    {
-        $this->followers = $followers;
-
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getDuration(): int
-    {
-        return $this->duration;
-    }
-
-    /**
-     * @param int $duration
-     *
-     * @return TopologyProgress
-     */
-    public function setDuration(int $duration): TopologyProgress
-    {
-        $this->duration = $duration;
 
         return $this;
     }
@@ -233,7 +111,7 @@ class TopologyProgress
      *
      * @return TopologyProgress
      */
-    public function setStartedAt(DateTime $startedAt): TopologyProgress
+    public function setStartedAt(DateTime $startedAt): self
     {
         $this->startedAt = $startedAt;
 
@@ -253,7 +131,7 @@ class TopologyProgress
      *
      * @return TopologyProgress
      */
-    public function setFinishedAt(?DateTime $finishedAt): TopologyProgress
+    public function setFinishedAt(?DateTime $finishedAt): self
     {
         $this->finishedAt = $finishedAt;
 
@@ -261,50 +139,143 @@ class TopologyProgress
     }
 
     /**
-     * @return Collection<string, NodeProgress>
+     * @return int
      */
-    public function getNodes(): Collection
+    public function getOk(): int
     {
-        return $this->nodes;
+        return $this->ok;
     }
 
     /**
-     * @param NodeProgress $node
+     * @param int $ok
      *
-     * @return $this
+     * @return TopologyProgress
      */
-    public function addNode(NodeProgress $node): TopologyProgress
+    public function setOk(int $ok): self
     {
-        $this->nodes->add($node);
+        $this->ok = $ok;
 
         return $this;
     }
 
     /**
-     * @return array<mixed>
+     * @return int
+     */
+    public function getNok(): int
+    {
+        return $this->nok;
+    }
+
+    /**
+     * @param int $nok
+     *
+     * @return TopologyProgress
+     */
+    public function setNok(int $nok): self
+    {
+        $this->nok = $nok;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getTotal(): int
+    {
+        return $this->total;
+    }
+
+    /**
+     * @param int $total
+     *
+     * @return TopologyProgress
+     */
+    public function setTotal(int $total): self
+    {
+        $this->total = $total;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getProcessedCount(): int
+    {
+        return $this->processedCount;
+    }
+
+    /**
+     * @param int $processedCount
+     *
+     * @return TopologyProgress
+     */
+    public function setProcessedCount(int $processedCount): self
+    {
+        $this->processedCount = $processedCount;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getUser(): ?string
+    {
+        return $this->user;
+    }
+
+    /**
+     * @param string $user
+     *
+     * @return TopologyProgress
+     */
+    public function setUser(string $user): self
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed[]
+     * @throws DateTimeException
      */
     public function toArray(): array
     {
-        $finished = $this->finishedAt ? $this->finishedAt->format(DateTimeUtils::DATE_TIME) : NULL;
-        $count    = $this->nodes->count();
-        $nodes    = [];
-        foreach ($this->nodes as $node) {
-            $nodes[] = $node->toArray();
-        }
+        $finished = $this->finishedAt?->format(DateTimeUtils::DATE_TIME_UTC);
+        $end      = $this->finishedAt ?? DateTimeUtils::getUtcDateTime();
+        $count    = $this->ok + $this->nok;
 
         return [
-            'id'             => $this->topologyId,
-            'name'           => $this->topologyName,
-            'correlationId'  => $this->correlationId,
-            'duration'       => $this->duration,
-            'status'         => $this->status,
-            'nodesProcessed' => $count,
-            'nodesRemaining' => $this->followers,
-            'nodesTotal'     => $this->followers + $count,
-            'nodes'          => $nodes,
-            'started'        => $this->startedAt->format(DateTimeUtils::DATE_TIME),
+            'correlationId'  => $this->id,
+            'duration'       => self::durationInMs($this->startedAt, $end),
+            'failed'         => $this->nok,
             'finished'       => $finished,
+            'id'             => $this->topologyId,
+            'nodesProcessed' => $count,
+            'nodesTotal'     => $this->total,
+            'started'        => $this->startedAt->format(DateTimeUtils::DATE_TIME_UTC),
+            'status'         => $count < $this->total ? 'IN PROGRESS' : ($this->nok > 0 ? 'FAILED' : 'SUCCESS'),
+            'user'           => $this->user ?? '',
         ];
+    }
+
+    /**
+     * @param DateTime $start
+     * @param DateTime $end
+     *
+     * @return int
+     */
+    public static function durationInMs(DateTime $start, DateTime $end): int
+    {
+        $startSecs = $start->getTimestamp() * 1_000;
+        $endSecs   = $end->getTimestamp() * 1_000;
+        $startMs   = (int) ($start->format('u') / 1_000); // @phpstan-ignore-line
+        $endMs     = (int) ($end->format('u') / 1_000); // @phpstan-ignore-line
+
+        return $endSecs - $startSecs + $endMs - $startMs;
     }
 
 }

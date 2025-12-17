@@ -3,38 +3,43 @@
 namespace PipesFrameworkTests\Integration\Command;
 
 use Exception;
+use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\InstallTopologyCommand;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
  * Class InstallTopologyCommandTest
  *
  * @package PipesFrameworkTests\Integration\Command
  */
+#[CoversClass(InstallTopologyCommand::class)]
 final class InstallTopologyCommandTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\InstallTopologyCommand
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\InstallTopologyCommand::configure
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\InstallTopologyCommand::execute
+     * @return void
      */
     public function testExecute(): void
     {
-        $application = new Application(self::$kernel);
+        /** @var KernelInterface $kernel */
+        $kernel      = self::$kernel;
+        $application = new Application($kernel);
         $command     = $application->get('topology:install');
 
         $commandTester = new CommandTester($command);
         $commandTester->execute(
             [
-                'command' => $command->getName(),
-                '-c'      => NULL,
-                '-u'      => NULL,
-                '-d'      => NULL,
-                '--force' => NULL,
+                '--force'   => NULL,
+                '-c'        => NULL,
+                '-d'        => NULL,
+                '-u'        => NULL,
+                'command'   => $command->getName(),
+                'forceHost' => '',
             ],
         );
 
@@ -42,14 +47,12 @@ final class InstallTopologyCommandTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\InstallTopologyCommand::insertRows
-     *
      * @throws Exception
      */
     public function testInsertRows(): void
     {
         $table   = new Table(new ConsoleOutput());
-        $command = self::$container->get('hbpf.command.topology_install');
+        $command = self::getContainer()->get('hbpf.command.topology_install');
         $this->invokeMethod($command, 'insertRows', [$table, ['foo1' => 'bar1'], 'create', TRUE]);
         $this->invokeMethod($command, 'insertRows', [$table, ['foo2' => 'bar2'], 'update', FALSE]);
 

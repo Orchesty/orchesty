@@ -7,7 +7,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
+use Symfony\Component\Routing\Attribute\Route;
 
 /**
  * Class WebhookController
@@ -17,43 +18,52 @@ use Symfony\Component\Routing\Annotation\Route;
 final class WebhookController extends AbstractController
 {
 
+    // phpcs:disable SlevomatCodingStandard.Attributes.AttributeAndTargetSpacing.IncorrectLinesCountBetweenAttributeAndTarget
+
     /**
      * WebhookController constructor.
      *
      * @param ServiceLocator $locator
      */
-    public function __construct(private ServiceLocator $locator)
+    public function __construct(private readonly ServiceLocator $locator)
     {
     }
 
     /**
-     * @Route("/webhook/applications/{key}/users/{user}/subscribe", methods={"POST", "OPTIONS"})
-     *
      * @param Request $request
      * @param string  $key
-     * @param string  $user
+     * @param string  $sdk
      *
      * @return Response
      */
-    public function subscribeWebhooksAction(Request $request, string $key, string $user): Response
+    #[Route('/webhook/applications/{key}/subscribe', methods: ['POST', 'OPTIONS'])]
+    public function subscribeWebhooksAction(Request $request, string $key, #[MapQueryParameter] string $sdk): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done
-        return new JsonResponse($this->locator->subscribeWebhook($key, $user, $request->request->all()));
+        return new JsonResponse(
+            $this->locator->subscribeWebhook($key, ApplicationController::SYSTEM_USER, $sdk, $request->request->all()),
+        );
     }
 
     /**
-     * @Route("/webhook/applications/{key}/users/{user}/unsubscribe", methods={"POST", "OPTIONS"})
-     *
      * @param Request $request
      * @param string  $key
-     * @param string  $user
+     * @param string  $sdk
      *
      * @return Response
      */
-    public function unsubscribeWebhooksAction(Request $request, string $key, string $user): Response
+    #[Route('/webhook/applications/{key}/unsubscribe', methods: ['POST', 'OPTIONS'])]
+    public function unsubscribeWebhooksAction(Request $request, string $key, #[MapQueryParameter] string $sdk): Response
     {
         //TODO: refactor after ServiceLocatorMS will be done
-        return new JsonResponse($this->locator->unSubscribeWebhook($key, $user, $request->request->all()));
+        return new JsonResponse(
+            $this->locator->unSubscribeWebhook(
+                $key,
+                ApplicationController::SYSTEM_USER,
+                $sdk,
+                $request->request->all(),
+            ),
+        );
     }
 
 }

@@ -20,11 +20,6 @@
             "avg": "0.00",
             "min": "0"
         },
-        "request_time": {
-            "max": "0",
-            "avg": "n\/a",
-            "min": "0"
-        },
         "process": {
             "max": "0",
             "min": "0",

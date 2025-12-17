@@ -9,9 +9,8 @@ use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
  * Class UserSettings
  *
  * @package Hanaboso\PipesFramework\User\Document
- *
- * @ODM\Document()
  */
+#[ODM\Document]
 class UserSettings
 {
 
@@ -19,14 +18,11 @@ class UserSettings
 
     /**
      * @var mixed[]
-     *
-     * @ODM\Field(type="hash")
      */
+    #[ODM\Field(type: 'hash')]
     private array $settings;
 
-    /**
-     * @ODM\Field(type="string")
-     */
+    #[ODM\Field(type: 'string')]
     private string $userId;
 
     /**
@@ -42,7 +38,7 @@ class UserSettings
      *
      * @return UserSettings
      */
-    public function setSettings(array $settings): UserSettings
+    public function setSettings(array $settings): self
     {
         $this->settings = $settings;
 

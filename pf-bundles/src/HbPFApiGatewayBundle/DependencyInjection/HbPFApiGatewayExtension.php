@@ -6,16 +6,14 @@ use Exception;
 use RuntimeException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader;
-use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 /**
  * Class HbPFApiGatewayExtension
  *
  * @package Hanaboso\PipesFramework\HbPFApiGatewayBundle\DependencyInjection
- *
- * @codeCoverageIgnore
  */
 final class HbPFApiGatewayExtension extends Extension implements PrependExtensionInterface
 {
@@ -48,9 +46,6 @@ final class HbPFApiGatewayExtension extends Extension implements PrependExtensio
         if (!$container->hasExtension('hb_pf_commons')) {
             throw new RuntimeException('You must register HbPFCommonsBundle before.');
         }
-
-        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/prepend-config'));
-        $loader->load('parameters.yml');
     }
 
 }

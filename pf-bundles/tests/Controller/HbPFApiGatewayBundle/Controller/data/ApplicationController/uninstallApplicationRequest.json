@@ -1,5 +1,7 @@
 {
-    "http": "DELETE /api/applications/null/users/user",
+    "http": "DELETE /api/applications/null?sdk=php-sdk",
     "body": [],
-    "headers": []
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
 }

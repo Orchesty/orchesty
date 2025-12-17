@@ -7,16 +7,14 @@ use Hanaboso\PipesFramework\HbPFLogsBundle\HbPFLogsBundle;
 use RuntimeException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader;
-use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 /**
  * Class HbPFLogsExtension
  *
  * @package Hanaboso\PipesFramework\HbPFLogsBundle\DependencyInjection
- *
- * @codeCoverageIgnore
  */
 final class HbPFLogsExtension extends Extension implements PrependExtensionInterface
 {
@@ -37,6 +35,9 @@ final class HbPFLogsExtension extends Extension implements PrependExtensionInter
         if (!$container->hasExtension('hb_pf_commons')) {
             throw new RuntimeException('You must register HbPFCommonsBundle before.');
         }
+
+        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/prepend-config'));
+        $loader->load('hbpf-logs.yaml');
     }
 
     /**
@@ -51,9 +52,8 @@ final class HbPFLogsExtension extends Extension implements PrependExtensionInter
         $container->setParameter(HbPFLogsBundle::KEY, $config);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
-        $loader->load('controllers.yml');
-        $loader->load('parameters.yml');
-        $loader->load('services.yml');
+        $loader->load('controllers.yaml');
+        $loader->load('services.yaml');
     }
 
 }

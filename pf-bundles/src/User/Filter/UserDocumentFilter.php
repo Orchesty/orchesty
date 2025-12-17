@@ -28,6 +28,7 @@ final class UserDocumentFilter extends GridFilterAbstract
     protected array $orderCols = [
         'created' => 'created',
         'email'   => 'email',
+        'id'      => 'id',
     ];
 
     /**

@@ -4,11 +4,12 @@
         "_id": "123456789",
         "type": "webhook",
         "name": "Topology",
-        "descr": "",
+        "description": "",
         "status": "New",
         "visibility": "draft",
         "version": 2,
         "category": null,
-        "enabled": false
+        "enabled": false,
+        "cronSettings": []
     }
 }

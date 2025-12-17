@@ -9,11 +9,11 @@ use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
  * Class MonolithMetrics
  *
  * @package Hanaboso\PipesFramework\Metrics\Document
- *
- * @ODM\Document(collection="monolith")
- * @ODM\Index(name="SearchIndex", keys={"tags.node_id"="text","tags.topology_id"="text"}),
- * @ODM\Index(name="createdIndex", keys={"created"="desc"})
  */
+#[ODM\Document(collection: 'monolith')]
+#[ODM\Index(keys: ['tags.node_id' => 'text', 'tags.topology_id' => 'text'], name: 'SearchIndex')]
+#[ODM\Index(keys: ['fields.created' => 'desc'], name: 'createdIndex')]
+#[ODM\Index(keys: ['fields.created' => 'asc'], name: 'expireIndex', expireAfterSeconds: 2_628_000)]
 class MonolithMetrics
 {
 
@@ -21,16 +21,14 @@ class MonolithMetrics
 
     /**
      * @var MonolithMetricsFields
-     *
-     * @ODM\EmbedOne(targetDocument="Hanaboso\PipesFramework\Metrics\Document\MonolithMetricsFields")
      */
+    #[ODM\EmbedOne(targetDocument: 'Hanaboso\PipesFramework\Metrics\Document\MonolithMetricsFields')]
     private MonolithMetricsFields $fields;
 
     /**
      * @var Tags
-     *
-     * @ODM\EmbedOne(targetDocument="Hanaboso\PipesFramework\Metrics\Document\Tags")
      */
+    #[ODM\EmbedOne(targetDocument: 'Hanaboso\PipesFramework\Metrics\Document\Tags')]
     private Tags $tags;
 
     /**

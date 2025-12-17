@@ -3,7 +3,6 @@
 namespace Hanaboso\PipesFramework\HbPFLogsBundle\DependencyInjection\Compiler;
 
 use Hanaboso\PipesFramework\HbPFLogsBundle\HbPFLogsBundle;
-use Hanaboso\PipesFramework\Logs\ElasticLogs;
 use Hanaboso\PipesFramework\Logs\LogsFilter;
 use Hanaboso\PipesFramework\Logs\LogsInterface;
 use Hanaboso\PipesFramework\Logs\MongoDbLogs;
@@ -27,9 +26,7 @@ final class LogsCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container): void
     {
-        /** @var mixed[] $config */
-        $config = $container->getParameter(HbPFLogsBundle::KEY);
-
+        $config               = $container->getParameter(HbPFLogsBundle::KEY);
         $dm                   = $container->getDefinition('doctrine_mongodb.odm.default_document_manager');
         $startingPointsFilter = new Definition(StartingPointsFilter::class, [$dm]);
 
@@ -38,19 +35,6 @@ final class LogsCompilerPass implements CompilerPassInterface
             $mongoDb    = new Definition(MongoDbLogs::class, [$dm, $logsFilter, $startingPointsFilter]);
 
             $container->setDefinition(LogsInterface::class, $mongoDb);
-        }
-
-        if ($config['type'] == 'elastic') {
-            $elastic = (new Definition(
-                ElasticLogs::class,
-                [
-                    $dm,
-                    $startingPointsFilter,
-                    $container->getDefinition('elastica.client'),
-                ],
-            ))->addMethodCall('setIndex', [$config['storage_name']]);
-
-            $container->setDefinition(LogsInterface::class, $elastic);
         }
     }
 

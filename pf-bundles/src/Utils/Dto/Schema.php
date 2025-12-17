@@ -3,6 +3,7 @@
 namespace Hanaboso\PipesFramework\Utils\Dto;
 
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
+use Hanaboso\PipesFramework\Database\Document\TopologyApplication;
 
 /**
  * Class Schema
@@ -23,9 +24,9 @@ final class Schema
     private array $sequences = [];
 
     /**
-     * @var string
+     * @var string[]
      */
-    private string $startNode = '';
+    private array $startNode = [];
 
     /**
      * @return NodeSchemaDto[]
@@ -41,7 +42,7 @@ final class Schema
      *
      * @return Schema
      */
-    public function addNode(string $id, NodeSchemaDto $dto): Schema
+    public function addNode(string $id, NodeSchemaDto $dto): self
     {
         $this->nodes[$id] = $dto;
 
@@ -54,7 +55,7 @@ final class Schema
      *
      * @return Schema
      */
-    public function addSequence(string $source, string $target): Schema
+    public function addSequence(string $source, string $target): self
     {
         $this->sequences[$source][] = $target;
 
@@ -70,9 +71,9 @@ final class Schema
     }
 
     /**
-     * @return string
+     * @return string[]
      */
-    public function getStartNode(): string
+    public function getStartNode(): array
     {
         return $this->startNode;
     }
@@ -82,9 +83,9 @@ final class Schema
      *
      * @return Schema
      */
-    public function setStartNode(string $startNode): Schema
+    public function addStartNode(string $startNode): self
     {
-        $this->startNode = $startNode;
+        $this->startNode[] = $startNode;
 
         return $this;
     }
@@ -99,31 +100,97 @@ final class Schema
      */
     public function buildIndex(bool $checkInfiniteLoop = TRUE): array
     {
-        if (!empty($this->nodes)) {
+        if ($this->nodes !== []) {
             $this->checkStartNode();
         } else {
             return [];
         }
 
-        $index   = [];
-        $index[] = $this->getIndexItem($this->startNode);
-        $nextIds = $this->getNextIds($this->startNode);
+        $topology = [];
+        foreach ($this->startNode as $start) {
+            $index   = [];
+            $index[] = $this->getIndexItem($start);
+            $nextIds = $this->getNextIds($start);
+            $tree    = [];
 
-        while (!empty($nextIds)) {
-            $nextId  = array_shift($nextIds);
-            $index[] = $this->getIndexItem($nextId);
-            foreach ($this->getNextIds($nextId) as $follower) {
-                if (!in_array($this->getIndexItem($follower), $index, TRUE)) {
-                    $nextIds[] = $follower;
-                } else if ($checkInfiniteLoop) {
-                    $this->isInfinity();
+            if ($checkInfiniteLoop) {
+                $clone = $nextIds;
+                $this->addToTree($tree, $start, $clone);
+            }
+
+            while ($nextIds !== []) {
+                $nextId  = array_shift($nextIds);
+                $index[] = $this->getIndexItem($nextId);
+                $ids     = $this->getNextIds($nextId);
+                if ($ids !== [] && $checkInfiniteLoop) {
+                        $clone = $ids;
+                        $this->addToTree($tree, $nextId, $clone);
+                }
+                foreach ($ids as $follower) {
+                    if (!in_array($this->getIndexItem($follower), $index, TRUE)) {
+                        $nextIds[] = $follower;
+                    }
+                }
+            }
+
+            if ($checkInfiniteLoop) {
+                $this->isInfinity($tree);
+            }
+
+            sort($index);
+            $topology[] = $index;
+        }
+
+        return $topology;
+    }
+
+    /**
+     * @return TopologyApplication[]
+     */
+    public function getApplicationList(): array {
+
+        $appList = [];
+
+        foreach ($this->getNodes() as $node) {
+            $app  = $node->getApplication();
+            $host = $node->getSystemConfigs()->getSdkHost();
+
+            if($app && $host){
+                $appList[sprintf('%s_%s',$app, $host)] = new TopologyApplication($app, $host);
+            }
+        }
+
+        return array_values($appList);
+    }
+
+    /**
+     * @param mixed[] $tree
+     * @param string  $parent
+     * @param mixed[] $followers
+     * @param bool    $canWrite
+     */
+    private function addToTree(array &$tree, string $parent, array &$followers, bool $canWrite = TRUE): void
+    {
+        foreach ($tree as $i => $node) {
+            foreach ($node as $name => $f) {
+                $isLast = next($tree) === FALSE;
+                if ($name === $parent) {
+                    foreach ($followers as $k => $follower) {
+                        $tree[$i][$parent][$follower] = [];
+                        unset($followers[$k]);
+                    }
+                } else if ($f !== []) {
+                    $this->addToTree($tree[$i][$name], $parent, $followers, $isLast);
                 }
             }
         }
 
-        sort($index);
-
-        return $index;
+        if ($canWrite) {
+            foreach ($followers as $j => $follower) {
+                $tree[$parent][$follower] = [];
+                unset($followers[$j]);
+            }
+        }
     }
 
     /**
@@ -158,7 +225,7 @@ final class Schema
      */
     private function checkStartNode(): void
     {
-        if (empty($this->startNode)) {
+        if ($this->startNode === []) {
             throw new TopologyException(
                 'Invalid schema - starting node was not found',
                 TopologyException::SCHEMA_START_NODE_MISSING,
@@ -167,11 +234,27 @@ final class Schema
     }
 
     /**
+     * @param mixed[] $tree
+     * @param mixed[] $walked
+     *
      * @throws TopologyException
      */
-    private function isInfinity(): void
+    private function isInfinity(array &$tree, array &$walked = []): void
     {
-        throw new TopologyException('Invalid schema - infinite loop', TopologyException::SCHEMA_INFINITE_LOOP);
+        foreach ($tree as $name => $node) {
+            if (array_search($name, $walked, TRUE)) {
+                throw new TopologyException('Invalid schema - infinite loop', TopologyException::SCHEMA_INFINITE_LOOP);
+            }
+
+            if ($node !== []) {
+                $walked[] = $name;
+                $this->isInfinity($tree[$name], $walked);
+            } else if (count($tree) == 1) {
+                $walked = [];
+            } else {
+                unset($tree[$name]);
+            }
+        }
     }
 
 }

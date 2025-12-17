@@ -1,5 +1,7 @@
 {
-    "http": "GET /api/applications",
+    "http": "GET /api/applications/available?sdk=php-sdk",
     "body": [],
-    "headers": []
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
 }

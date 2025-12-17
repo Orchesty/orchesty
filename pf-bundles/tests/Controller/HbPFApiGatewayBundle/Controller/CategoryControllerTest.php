@@ -3,57 +3,55 @@
 namespace PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller;
 
 use Exception;
-use Hanaboso\PipesPhpSdk\Database\Document\Category;
+use Hanaboso\PipesFramework\Database\Document\Category;
+use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\CategoryController;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 
 /**
  * Class CategoryControllerTest
  *
  * @package PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller
- *
- * @covers  \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\CategoryController
  */
+#[CoversClass(CategoryController::class)]
 final class CategoryControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\CategoryController::getCategoriesAction
-     *
      * @throws Exception
      */
     public function testGetCategoriesAction(): void
     {
         $this->createCategory();
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/CategoryController/getCategoriesRequest.json',
             ['_id' => '123456789', 'parent' => '123456789'],
         );
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\CategoryController::createCategoryAction
-     *
      * @throws Exception
      */
     public function testCreateCategoryAction(): void
     {
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/CategoryController/createCategoryRequest.json',
             ['_id' => '123456789'],
         );
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\CategoryController::updateCategoryAction
-     *
      * @throws Exception
      */
     public function testUpdateCategoryAction(): void
     {
         $category = $this->createCategory();
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/CategoryController/updateCategoryRequest.json',
             ['_id' => '123456789', 'parent' => '123456789'],
             [':id' => $category->getId()],
@@ -61,15 +59,14 @@ final class CategoryControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\CategoryController::deleteCategoryAction
-     *
      * @throws Exception
      */
     public function testDeleteCategoryAction(): void
     {
         $category = $this->createCategory();
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/CategoryController/deleteCategoryRequest.json',
             [],
             [':id' => $category->getId()],

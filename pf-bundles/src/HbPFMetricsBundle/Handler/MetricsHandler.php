@@ -3,10 +3,14 @@
 namespace Hanaboso\PipesFramework\HbPFMetricsBundle\Handler;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Hanaboso\MongoDataGrid\GridFilterAbstract;
+use Hanaboso\MongoDataGrid\GridHandlerTrait;
+use Hanaboso\MongoDataGrid\GridRequestDtoInterface;
+use Hanaboso\PipesFramework\Database\Document\Node;
+use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\PipesFramework\Metrics\Exception\MetricsException;
-use Hanaboso\PipesFramework\Metrics\Manager\MetricsManagerLoader;
-use Hanaboso\PipesPhpSdk\Database\Document\Node;
-use Hanaboso\PipesPhpSdk\Database\Document\Topology;
+use Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager;
+use Hanaboso\Utils\Exception\DateTimeException;
 
 /**
  * Class MetricsHandler
@@ -16,13 +20,15 @@ use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 final class MetricsHandler
 {
 
+    use GridHandlerTrait;
+
     /**
      * MetricsHandler constructor.
      *
-     * @param DocumentManager      $dm
-     * @param MetricsManagerLoader $loader
+     * @param DocumentManager     $dm
+     * @param MongoMetricsManager $mongoMetricsManager
      */
-    public function __construct(private DocumentManager $dm, private MetricsManagerLoader $loader)
+    public function __construct(private DocumentManager $dm, private MongoMetricsManager $mongoMetricsManager)
     {
     }
 
@@ -35,7 +41,7 @@ final class MetricsHandler
      */
     public function getTopologyMetrics(string $topologyId, array $params): array
     {
-        return $this->loader->getManager()->getTopologyMetrics($this->getTopologyById($topologyId), $params);
+        return $this->mongoMetricsManager->getTopologyMetrics($this->getTopologyById($topologyId), $params);
     }
 
     /**
@@ -44,11 +50,12 @@ final class MetricsHandler
      * @param mixed[] $params
      *
      * @return mixed[]
+     * @throws DateTimeException
      * @throws MetricsException
      */
     public function getNodeMetrics(string $topologyId, string $nodeId, array $params): array
     {
-        return $this->loader->getManager()->getNodeMetrics(
+        return $this->mongoMetricsManager->getNodeMetrics(
             $this->getNodeByTopologyAndNodeId($topologyId, $nodeId),
             $this->getTopologyById($topologyId),
             $params,
@@ -56,40 +63,31 @@ final class MetricsHandler
     }
 
     /**
-     * @param string  $topologyId
-     * @param mixed[] $params
+     * @return mixed[]
+     * @throws DateTimeException
+     */
+    public function getHealthcheckMetrics(): array
+    {
+        return $this->mongoMetricsManager->getHealthcheckMetrics();
+    }
+
+    /**
+     * @param string                  $topologyId
+     * @param GridRequestDtoInterface $dto
      *
      * @return mixed[]
+     * @throws DateTimeException
      * @throws MetricsException
      */
-    public function getRequestsCountMetrics(string $topologyId, array $params): array
+    public function getRequestsCountMetrics(string $topologyId, GridRequestDtoInterface $dto): array
     {
-        return $this->loader->getManager()->getTopologyRequestCountMetrics(
+        $params = $this->parseDateRangeFromFilter($dto);
+        $items  = $this->mongoMetricsManager->getTopologyRequestCountMetrics(
             $this->getTopologyById($topologyId),
             $params,
         );
-    }
 
-    /**
-     * @param mixed[]     $params
-     * @param string|null $key
-     *
-     * @return mixed[]
-     */
-    public function getApplicationMetrics(array $params, ?string $key): array
-    {
-        return $this->loader->getManager()->getApplicationMetrics($params, $key);
-    }
-
-    /**
-     * @param mixed[]     $params
-     * @param string|null $user
-     *
-     * @return mixed[]
-     */
-    public function getUserMetrics(array $params, ?string $user): array
-    {
-        return $this->loader->getManager()->getUserMetrics($params, $user);
+        return $this->getGridResponse($dto, $items);
     }
 
     /**
@@ -133,6 +131,32 @@ final class MetricsHandler
         }
 
         return $node;
+    }
+
+    /**
+     * @param GridRequestDtoInterface $dto
+     *
+     * @return mixed[]
+     */
+    private function parseDateRangeFromFilter(GridRequestDtoInterface $dto): array
+    {
+        $params = []; // from / to
+        foreach ($dto->getFilter() as $and) {
+            foreach ($and as $or) {
+                $column = $or[GridFilterAbstract::COLUMN] ?? '';
+                if ($column == 'timestamp') {
+                    $params = [
+                        'from' => $or[GridFilterAbstract::VALUE][0] ?? NULL,
+                        'size' => $or[GridFilterAbstract::VALUE][2] ?? NULL,
+                        'to'   => $or[GridFilterAbstract::VALUE][1] ?? NULL,
+                    ];
+
+                    break;
+                }
+            }
+        }
+
+        return $params;
     }
 
 }

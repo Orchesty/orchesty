@@ -12,10 +12,10 @@ use DateTime;
 final class RetentionFactory
 {
 
-    public const SEC       = '5s';
-    public const MIN       = '1m';
-    public const HALF_HOUR = '30m';
-    public const FOUR_HOUR = '4h';
+    public const string SEC       = '5s';
+    public const string MIN       = '1m';
+    public const string HALF_HOUR = '30m';
+    public const string FOUR_HOUR = '4h';
 
     /**
      * @param DateTime $from

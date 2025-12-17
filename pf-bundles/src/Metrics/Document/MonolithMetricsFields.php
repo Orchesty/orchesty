@@ -9,32 +9,30 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  * Class MonolithMetricsFields
  *
  * @package Hanaboso\PipesFramework\Metrics\Document
- *
- * @ODM\EmbeddedDocument()
- * @ODM\Index(name="createdIndex", keys={"created"="desc"})
  */
+#[ODM\EmbeddedDocument]
 class MonolithMetricsFields
 {
 
+    public const string CREATED = 'created';
+    // TODO unused metrics: fpm_request_total_duration
+
     /**
      * @var float
-     *
-     * @ODM\Field(type="float", name="fpm_cpu_kernel_time")
      */
+    #[ODM\Field(name: 'fpm_cpu_kernel_time', type: 'float')]
     private float $kernelTime;
 
     /**
      * @var float
-     *
-     * @ODM\Field(type="float", name="fpm_cpu_user_time")
      */
+    #[ODM\Field(name: 'fpm_cpu_user_time', type: 'float')]
     private float $userTime;
 
     /**
      * @var DateTime
-     *
-     * @ODM\Field(type="date")
      */
+    #[ODM\Field(type: 'date')]
     private DateTime $created;
 
     /**

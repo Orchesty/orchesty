@@ -1,5 +1,7 @@
 {
     "http": "GET /api/topologies?limit=2&offset=1&order_by=name-",
-    "body": {},
-    "headers": []
+    "body": [],
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
 }

@@ -9,39 +9,36 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  * Class BridgesMetricsFields
  *
  * @package Hanaboso\PipesFramework\Metrics\Document
- *
- * @ODM\EmbeddedDocument()
- * @ODM\Index(name="createdIndex", keys={"created"="desc"})
  */
+#[ODM\EmbeddedDocument]
 class BridgesMetricsFields
 {
 
+    public const string CREATED = 'created';
+    // TODO unused metrics workerDuration
+
     /**
      * @var bool
-     *
-     * @ODM\Field(type="bool", name="bridge_job_result_success")
      */
+    #[ODM\Field(name: 'result_success', type: 'bool')]
     private bool $success;
 
     /**
      * @var int
-     *
-     * @ODM\Field(type="int", name="bridge_job_waiting_duration")
      */
+    #[ODM\Field(name: 'waiting_duration', type: 'int')]
     private int $waitingDuration;
 
     /**
      * @var int
-     *
-     * @ODM\Field(type="int", name="bridge_job_total_duration")
      */
+    #[ODM\Field(name: 'total_duration', type: 'int')]
     private int $totalDuration;
 
     /**
      * @var DateTime
-     *
-     * @ODM\Field(type="date")
      */
+    #[ODM\Field(type: 'date')]
     private DateTime $created;
 
     /**

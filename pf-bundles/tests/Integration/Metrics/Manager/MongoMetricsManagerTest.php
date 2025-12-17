@@ -2,39 +2,32 @@
 
 namespace PipesFrameworkTests\Integration\Metrics\Manager;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Exception;
+use Hanaboso\PipesFramework\Database\Document\Node;
+use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager;
-use Hanaboso\PipesPhpSdk\Database\Document\Node;
-use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use Hanaboso\Utils\Date\DateTimeUtils;
 use Hanaboso\Utils\Exception\DateTimeException;
 use Hanaboso\Utils\System\NodeGeneratorUtils;
 use LogicException;
-use MongoDB\Client;
+use MongoDB\BSON\UTCDateTime;
 use Monolog\Logger;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
+use PipesFrameworkTests\DataProvider;
+use Throwable;
 
 /**
  * Class MongoMetricsManagerTest
  *
  * @package PipesFrameworkTests\Integration\Metrics\Manager
  */
+#[CoversClass(MongoMetricsManager::class)]
 final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::rabbitNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::connectorNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::bridgesNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::monolithNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::allowedTags
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::addConditions
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::parseDateRange
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::generateOutput
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::setLogger
-     *
      * @throws Exception
      */
     public function testGetNodeMetrics(): void
@@ -66,36 +59,36 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
 
         self::assertEquals(
             [
-                MongoMetricsManager::QUEUE_DEPTH  => [
-                    'max' => '5',
-                    'avg' => '0.00',
-                ],
-                MongoMetricsManager::WAITING_TIME => [
-                    'max' => '5',
-                    'avg' => '2.50',
-                    'min' => '0',
-                ],
-                MongoMetricsManager::PROCESS_TIME => [
-                    'max' => '10',
-                    'avg' => '7.00',
-                    'min' => '4',
-                ],
                 MongoMetricsManager::CPU_TIME     => [
-                    'max' => '15',
                     'avg' => '10.00',
-                    'min' => '5',
-                ],
-                MongoMetricsManager::REQUEST_TIME => [
                     'max' => '15',
-                    'avg' => '10.00',
                     'min' => '5',
                 ],
                 MongoMetricsManager::PROCESS      => [
-                    'max'    => '0',
                     'avg'    => '0.00',
+                    'errors' => '1',
+                    'max'    => '0',
                     'min'    => '0',
                     'total'  => '2',
-                    'errors' => '1',
+                ],
+                MongoMetricsManager::PROCESS_TIME => [
+                    'avg' => '7.00',
+                    'max' => '10',
+                    'min' => '4',
+                ],
+                MongoMetricsManager::QUEUE_DEPTH  => [
+                    'avg' => '0.00',
+                    'max' => '0',
+                ],
+                MongoMetricsManager::REQUEST_TIME => [
+                    'avg' => '10.00',
+                    'max' => '15',
+                    'min' => '5',
+                ],
+                MongoMetricsManager::WAITING_TIME => [
+                    'avg' => '2.50',
+                    'max' => '5',
+                    'min' => '0',
                 ],
             ],
             $result,
@@ -103,16 +96,6 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::rabbitNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::connectorNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::bridgesNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::monolithNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::allowedTags
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::addConditions
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::parseDateRange
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::generateOutput
-     *
      * @throws Exception
      */
     public function testGetNodeMetricsSingleDocument(): void
@@ -142,36 +125,36 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
 
         self::assertEquals(
             [
-                MongoMetricsManager::QUEUE_DEPTH  => [
-                    'max' => '3',
-                    'avg' => '0.00',
-                ],
-                MongoMetricsManager::WAITING_TIME => [
-                    'max' => '5',
-                    'avg' => '5.00',
-                    'min' => '5',
-                ],
-                MongoMetricsManager::PROCESS_TIME => [
-                    'max' => '10',
-                    'avg' => '10.00',
-                    'min' => '10',
-                ],
                 MongoMetricsManager::CPU_TIME     => [
-                    'max' => '15',
                     'avg' => '15.00',
+                    'max' => '15',
                     'min' => '15',
                 ],
-                MongoMetricsManager::REQUEST_TIME => [
-                    'max' => '5',
-                    'avg' => '5.00',
-                    'min' => '5',
-                ],
                 MongoMetricsManager::PROCESS      => [
-                    'max'    => '0',
                     'avg'    => '0.00',
+                    'errors' => '0',
+                    'max'    => '0',
                     'min'    => '0',
                     'total'  => '1',
-                    'errors' => '0',
+                ],
+                MongoMetricsManager::PROCESS_TIME => [
+                    'avg' => '10.00',
+                    'max' => '10',
+                    'min' => '10',
+                ],
+                MongoMetricsManager::QUEUE_DEPTH  => [
+                    'avg' => '0.00',
+                    'max' => '0',
+                ],
+                MongoMetricsManager::REQUEST_TIME => [
+                    'avg' => '5.00',
+                    'max' => '5',
+                    'min' => '5',
+                ],
+                MongoMetricsManager::WAITING_TIME => [
+                    'avg' => '5.00',
+                    'max' => '5',
+                    'min' => '5',
                 ],
             ],
             $result,
@@ -179,16 +162,6 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::rabbitNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::connectorNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::bridgesNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::monolithNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::allowedTags
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::addConditions
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::parseDateRange
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::generateOutput
-     *
      * @throws Exception
      */
     public function testGetNodeMetricsNoDocument(): void
@@ -206,46 +179,40 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
             ],
         );
 
-        self::assertCount(6, $result);
+        self::assertCount(5, $result);
         self::assertArrayHasKey(MongoMetricsManager::QUEUE_DEPTH, $result);
         self::assertArrayHasKey(MongoMetricsManager::WAITING_TIME, $result);
         self::assertArrayHasKey(MongoMetricsManager::PROCESS_TIME, $result);
         self::assertArrayHasKey(MongoMetricsManager::CPU_TIME, $result);
-        self::assertArrayHasKey(MongoMetricsManager::REQUEST_TIME, $result);
         self::assertArrayHasKey(MongoMetricsManager::PROCESS, $result);
 
         self::assertEquals(
             [
-                MongoMetricsManager::QUEUE_DEPTH  => [
-                    'max' => '0',
-                    'avg' => '0.00',
-                ],
-                MongoMetricsManager::WAITING_TIME => [
-                    'max' => '0',
-                    'avg' => '0.00',
-                    'min' => '0',
-                ],
-                MongoMetricsManager::PROCESS_TIME => [
-                    'max' => '0',
-                    'avg' => '0.00',
-                    'min' => '0',
-                ],
                 MongoMetricsManager::CPU_TIME     => [
-                    'max' => '0',
                     'avg' => '0.00',
-                    'min' => '0',
-                ],
-                MongoMetricsManager::REQUEST_TIME => [
                     'max' => '0',
-                    'avg' => 'n/a',
                     'min' => '0',
                 ],
                 MongoMetricsManager::PROCESS      => [
-                    'max'    => '0',
                     'avg'    => '0.00',
+                    'errors' => '0',
+                    'max'    => '0',
                     'min'    => '0',
                     'total'  => '0',
-                    'errors' => '0',
+                ],
+                MongoMetricsManager::PROCESS_TIME => [
+                    'avg' => '0.00',
+                    'max' => '0',
+                    'min' => '0',
+                ],
+                MongoMetricsManager::QUEUE_DEPTH  => [
+                    'avg' => '0.00',
+                    'max' => '0',
+                ],
+                MongoMetricsManager::WAITING_TIME => [
+                    'avg' => '0.00',
+                    'max' => '0',
+                    'min' => '0',
                 ],
             ],
             $result,
@@ -253,17 +220,6 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getTopologyMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getTopologyProcessTimeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::parseDateRange
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::counterProcessMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::generateOutput
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::rabbitNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::connectorNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::monolithNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::bridgesNodeMetrics
-     *
      * @throws Exception
      */
     public function testGetTopologyMetrics(): void
@@ -289,14 +245,14 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
         self::assertCount(4, $result);
         self::assertEquals(
             [
+                MongoMetricsManager::PROCESS      => [
+                    'errors' => '6',
+                    'total'  => '6',
+                ],
                 MongoMetricsManager::PROCESS_TIME => [
-                    'min' => '2',
                     'avg' => '2.00',
                     'max' => '2',
-                ],
-                MongoMetricsManager::PROCESS      => [
-                    'total'  => '6',
-                    'errors' => '3',
+                    'min' => '2',
                 ],
             ],
             $result['topology'],
@@ -314,17 +270,6 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getTopologyMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getTopologyProcessTimeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::parseDateRange
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::counterProcessMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::generateOutput
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::rabbitNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::connectorNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::monolithNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::bridgesNodeMetrics
-     *
      * @throws Exception
      */
     public function testGetTopologyMetricsSingleDocument(): void
@@ -346,14 +291,14 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
         self::assertCount(2, $result);
         self::assertEquals(
             [
+                MongoMetricsManager::PROCESS      => [
+                    'errors' => '1',
+                    'total'  => '1',
+                ],
                 MongoMetricsManager::PROCESS_TIME => [
-                    'min' => '2',
                     'avg' => '2.00',
                     'max' => '2',
-                ],
-                MongoMetricsManager::PROCESS      => [
-                    'total'  => '1',
-                    'errors' => '0',
+                    'min' => '2',
                 ],
             ],
             $result['topology'],
@@ -362,17 +307,6 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getTopologyMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getTopologyProcessTimeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::parseDateRange
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::counterProcessMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::generateOutput
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::rabbitNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::connectorNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::monolithNodeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::bridgesNodeMetrics
-     *
      * @throws Exception
      */
     public function testGetTopologyMetricsNoDocument(): void
@@ -391,14 +325,14 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
         self::assertCount(1, $result);
         self::assertEquals(
             [
+                MongoMetricsManager::PROCESS      => [
+                    'errors' => '0',
+                    'total'  => '0',
+                ],
                 MongoMetricsManager::PROCESS_TIME => [
-                    'min' => '0',
                     'avg' => '0.00',
                     'max' => '0',
-                ],
-                MongoMetricsManager::PROCESS      => [
-                    'total'  => '0',
-                    'errors' => '0',
+                    'min' => '0',
                 ],
             ],
             $result['topology'],
@@ -409,14 +343,6 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getTopologyRequestCountMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::requestsCountAggregation
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getTopologyProcessTimeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getTopologyMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::parseDateRange
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::addConditions
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::allowedTags
-     *
      * @throws Exception
      */
     public function testGetTopologyRequestCountMetric(): void
@@ -443,14 +369,6 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getTopologyRequestCountMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::requestsCountAggregation
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getTopologyProcessTimeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getTopologyMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::parseDateRange
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::addConditions
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::allowedTags
-     *
      * @throws Exception
      */
     public function testGetTopologyRequestCountMetricSingleDocument(): void
@@ -475,14 +393,6 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getTopologyRequestCountMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::requestsCountAggregation
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getTopologyProcessTimeMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getTopologyMetrics
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::parseDateRange
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::addConditions
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::allowedTags
-     *
      * @throws Exception
      */
     public function testGetTopologyRequestCountMetricNoDocument(): void
@@ -499,13 +409,10 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
             ],
         );
 
-        self::assertCount(3, $result);
-        self::assertCount(121, $result['requests']);
-        self::assertEquals(0, array_sum($result['requests']));
+        self::assertCount(2, $result);
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getApplicationMetrics
      * @throws DateTimeException
      * @throws Exception
      */
@@ -527,7 +434,26 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager::getUserMetrics
+     * @throws DateTimeException
+     * @throws Exception
+     */
+    public function testGetTopologiesProcessTimeMetrics(): void
+    {
+        $topo = $this->createTopo();
+        $node = $this->createNode($topo);
+        $this->setFakeData($topo, $node);
+
+        $manager = $this->getManager();
+        $result  = $manager->getTopologiesProcessTimeMetrics(
+            [
+                'from' => '-10 day',
+                'to'   => '+10 day',
+            ],
+        );
+        self::assertEquals(DataProvider::topologiesProcessTimeMetrics(), $result['process']);
+    }
+
+    /**
      * @throws DateTimeException
      * @throws Exception
      */
@@ -555,9 +481,12 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
     {
         parent::setUp();
 
-        $client = $this->getClient();
-        $client->selectDatabase('metrics')->drop();
-        $this->ensureCollections();
+        try {
+            $this->ensureCollections();
+        } catch (Throwable $t) {
+            $t;
+            //
+        }
     }
 
     /**
@@ -601,7 +530,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
      */
     private function getManager(): MongoMetricsManager
     {
-        return self::$container->get('hbpf.metrics.manager.mongo_metrics');
+        return self::getContainer()->get('hbpf.metrics.manager.mongo_metrics');
     }
 
     /**
@@ -613,41 +542,47 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
      */
     private function setFakeData(Topology $topology, Node $node, string $dateOffset = '-1 days'): void
     {
-        $client = $this->getClient();
+        $client = $this->getMdm()->getClient();
         $this->setMinimalFakeData($topology, $node);
 
         /** @var string $counterTable */
-        $counterTable = self::$container->getParameter('mongodb.counter_table');
+        $counterTable = self::getContainer()->getParameter('mongodb.counter_table');
         /** @var string $monolithTable */
-        $monolithTable = self::$container->getParameter('mongodb.monolith_table');
+        $monolithTable = self::getContainer()->getParameter('mongodb.monolith_table');
         /** @var string $nodeTable */
-        $nodeTable = self::$container->getParameter('mongodb.node_table');
+        $nodeTable = self::getContainer()->getParameter('mongodb.node_table');
         /** @var string $connectorTable */
-        $connectorTable = self::$container->getParameter('mongodb.connector_table');
+        $connectorTable = self::getContainer()->getParameter('mongodb.connector_table');
         /** @var string $rabbitTable */
-        $rabbitTable = self::$container->getParameter('mongodb.rabbit_table');
+        $rabbitTable = self::getContainer()->getParameter('mongodb.rabbit_table');
+        /** @var string $rabbitConsumerTable */
+        $rabbitConsumerTable = self::getContainer()->getParameter('mongodb.rabbit_consumer_table');
 
-        $processes = $client->selectCollection('metrics', $counterTable);
-        $monolith  = $client->selectCollection('metrics', $monolithTable);
-        $bridge    = $client->selectCollection('metrics', $nodeTable);
-        $connector = $client->selectCollection('metrics', $connectorTable);
-        $rabbitmq  = $client->selectCollection('metrics', $rabbitTable);
+        $processes        = $client->selectCollection('metrics', $counterTable);
+        $monolith         = $client->selectCollection('metrics', $monolithTable);
+        $bridge           = $client->selectCollection('metrics', $nodeTable);
+        $connector        = $client->selectCollection('metrics', $connectorTable);
+        $rabbitmq         = $client->selectCollection('metrics', $rabbitTable);
+        $rabbitmqConsumer = $client->selectCollection('metrics', $rabbitConsumerTable);
 
         $doc = [
-            'tags'   => [
-                MongoMetricsManager::TOPOLOGY => $topology->getId(),
-                MongoMetricsManager::NODE     => $node->getId(),
-            ],
             'fields' => [
-                'bridge_job_result_success' => FALSE,
-                'bridge_job_total_duration' => 4,
-                'created'                   => DateTimeUtils::getUtcDateTime('-1 days')
-                    ->getTimestamp(),
+                'created'        => new UTCDateTime(DateTimeUtils::getUtcDateTime('-1 days')),
+                'result_success' => FALSE,
+                'total_duration' => 4,
+            ],
+            'tags'   => [
+                MongoMetricsManager::NODE     => $node->getId(),
+                MongoMetricsManager::TOPOLOGY => $topology->getId(),
             ],
         ];
         $bridge->insertOne($doc);
 
         $doc = [
+            'fields' => [
+                'created'  => new UTCDateTime(DateTimeUtils::getUtcDateTime('-1 days')),
+                'messages' => 5,
+            ],
             'tags'   => [
                 MongoMetricsManager::QUEUE => NodeGeneratorUtils::generateQueueName(
                     $topology->getId(),
@@ -655,85 +590,68 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
                     $node->getName(),
                 ),
             ],
-            'fields' => [
-                'messages' => 5,
-                'created'  => DateTimeUtils::getUtcDateTime('-1 days')->getTimestamp(),
-            ],
         ];
         $rabbitmq->insertOne($doc);
 
         $doc = [
+            'fields' => [
+                'created'                     => new UTCDateTime(DateTimeUtils::getUtcDateTime('-1 days')),
+                'sent_request_total_duration' => 15,
+            ],
             'tags'   => [
-                MongoMetricsManager::TOPOLOGY    => $topology->getId(),
-                MongoMetricsManager::NODE        => $node->getId(),
                 MongoMetricsManager::APPLICATION => 'nutshell',
+                MongoMetricsManager::CORRELATION => '456-789',
+                MongoMetricsManager::NODE        => $node->getId(),
+                MongoMetricsManager::TOPOLOGY    => $topology->getId(),
                 MongoMetricsManager::USER        => 'user2',
-                MongoMetricsManager::CORRELATION => '456-789',
-            ],
-            'fields' => [
-                'sent_request_total_duration' => 15,
-                'created'                     => DateTimeUtils::getUtcDateTime('-1 days')
-                    ->getTimestamp(),
             ],
         ];
         $connector->insertOne($doc);
 
         $doc = [
-            'tags'   => [
-                MongoMetricsManager::TOPOLOGY => $topology->getId(),
-                MongoMetricsManager::NODE     => $node->getId(),
-            ],
             'fields' => [
+                'created'             => new UTCDateTime(DateTimeUtils::getUtcDateTime('-1 days')),
                 'fpm_cpu_kernel_time' => 5,
-                'created'             => DateTimeUtils::getUtcDateTime('-1 days')->getTimestamp(),
+            ],
+            'tags'   => [
+                MongoMetricsManager::NODE     => $node->getId(),
+                MongoMetricsManager::TOPOLOGY => $topology->getId(),
             ],
         ];
         $monolith->insertOne($doc);
 
         $doc = [
-            'tags'   => [
-                MongoMetricsManager::TOPOLOGY => $topology->getId(),
-                MongoMetricsManager::NODE     => $node->getId(),
-            ],
             'fields' => [
-                'bridge_job_result_success'   => TRUE,
-                'bridge_job_waiting_duration' => 5,
-                'bridge_job_total_duration'   => 10,
-                'created'                     => DateTimeUtils::getUtcDateTime('+5 days')->getTimestamp(),
+                'created'          => new UTCDateTime(DateTimeUtils::getUtcDateTime('+5 days')),
+                'result_success'   => TRUE,
+                'total_duration'   => 10,
+                'waiting_duration' => 5,
+            ],
+            'tags'   => [
+                MongoMetricsManager::NODE     => $node->getId(),
+                MongoMetricsManager::TOPOLOGY => $topology->getId(),
             ],
         ];
         $bridge->insertOne($doc);
 
         $doc = [
-            'tags'   => [
-                MongoMetricsManager::TOPOLOGY => $topology->getId(),
-                MongoMetricsManager::NODE     => $node->getId(),
-            ],
             'fields' => [
-                'bridge_job_result_success' => FALSE,
-                'bridge_job_total_duration' => 4,
-                'created'                   => DateTimeUtils::getUtcDateTime('-51 days')
-                    ->getTimestamp(),
+                'created'        => new UTCDateTime(DateTimeUtils::getUtcDateTime('-51 days')),
+                'result_success' => FALSE,
+                'total_duration' => 4,
+            ],
+            'tags'   => [
+                MongoMetricsManager::NODE     => $node->getId(),
+                MongoMetricsManager::TOPOLOGY => $topology->getId(),
             ],
         ];
         $bridge->insertOne($doc);
 
         $doc = [
-            'tags'   => [
-                MongoMetricsManager::QUEUE => NodeGeneratorUtils::generateQueueName(
-                    $topology->getId(),
-                    $node->getId(),
-                    $node->getName(),
-                ),
-            ],
             'fields' => [
+                'created'  => new UTCDateTime(DateTimeUtils::getUtcDateTime('+5 days')),
                 'messages' => 3,
-                'created'  => DateTimeUtils::getUtcDateTime('+5 days')->getTimestamp(),
             ],
-        ];
-        $rabbitmq->insertOne($doc);
-
-        $doc = [
             'tags'   => [
                 MongoMetricsManager::QUEUE => NodeGeneratorUtils::generateQueueName(
                     $topology->getId(),
@@ -741,93 +659,114 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
                     $node->getName(),
                 ),
             ],
+        ];
+        $rabbitmq->insertOne($doc);
+
+        $doc = [
             'fields' => [
+                'created'  => new UTCDateTime(DateTimeUtils::getUtcDateTime('-6 days')),
                 'messages' => 5,
-                'created'  => DateTimeUtils::getUtcDateTime('-6 days')->getTimestamp(),
+            ],
+            'tags'   => [
+                MongoMetricsManager::QUEUE => NodeGeneratorUtils::generateQueueName(
+                    $topology->getId(),
+                    $node->getId(),
+                    $node->getName(),
+                ),
             ],
         ];
         $rabbitmq->insertOne($doc);
 
         $doc = [
-            'tags'   => [
-                MongoMetricsManager::TOPOLOGY    => $topology->getId(),
-                MongoMetricsManager::NODE        => $node->getId(),
-                MongoMetricsManager::APPLICATION => 'nutshell',
-                MongoMetricsManager::USER        => 'user1',
-                MongoMetricsManager::CORRELATION => '456-789',
-            ],
             'fields' => [
+                'created'                     => new UTCDateTime(DateTimeUtils::getUtcDateTime('+5 days')),
                 'sent_request_total_duration' => 5,
-                'created'                     => DateTimeUtils::getUtcDateTime('+5 days')->getTimestamp(),
             ],
-        ];
-        $connector->insertOne($doc);
-
-        $doc = [
             'tags'   => [
-                MongoMetricsManager::TOPOLOGY    => $topology->getId(),
-                MongoMetricsManager::NODE        => $node->getId(),
                 MongoMetricsManager::APPLICATION => 'nutshell',
+                MongoMetricsManager::CORRELATION => '456-789',
+                MongoMetricsManager::NODE        => $node->getId(),
+                MongoMetricsManager::TOPOLOGY    => $topology->getId(),
                 MongoMetricsManager::USER        => 'user1',
-                MongoMetricsManager::CORRELATION => '123-456',
-            ],
-            'fields' => [
-                'sent_request_total_duration' => 15,
-                'created'                     => DateTimeUtils::getUtcDateTime('-5 days')
-                    ->getTimestamp(),
             ],
         ];
         $connector->insertOne($doc);
 
         $doc = [
-            'tags'   => [
-                MongoMetricsManager::TOPOLOGY => $topology->getId(),
-                MongoMetricsManager::NODE     => $node->getId(),
-            ],
             'fields' => [
+                'created'                     => new UTCDateTime(DateTimeUtils::getUtcDateTime('-5 days')),
+                'sent_request_total_duration' => 15,
+            ],
+            'tags'   => [
+                MongoMetricsManager::APPLICATION => 'nutshell',
+                MongoMetricsManager::CORRELATION => '123-456',
+                MongoMetricsManager::NODE        => $node->getId(),
+                MongoMetricsManager::TOPOLOGY    => $topology->getId(),
+                MongoMetricsManager::USER        => 'user1',
+            ],
+        ];
+        $connector->insertOne($doc);
+
+        $doc = [
+            'fields' => [
+                'created'             => new UTCDateTime(DateTimeUtils::getUtcDateTime('+5 days')),
                 'fpm_cpu_kernel_time' => 15,
-                'created'             => DateTimeUtils::getUtcDateTime('+5 days')->getTimestamp(),
+            ],
+            'tags'   => [
+                MongoMetricsManager::NODE     => $node->getId(),
+                MongoMetricsManager::TOPOLOGY => $topology->getId(),
             ],
         ];
         $monolith->insertOne($doc);
 
         $doc = [
-            'tags'   => [
-                MongoMetricsManager::TOPOLOGY => $topology->getId(),
-                MongoMetricsManager::NODE     => $node->getId(),
-            ],
             'fields' => [
+                'created'             => new UTCDateTime(DateTimeUtils::getUtcDateTime('-5 days')),
                 'fpm_cpu_kernel_time' => 5,
-                'created'             => DateTimeUtils::getUtcDateTime('-5 days')->getTimestamp(),
+            ],
+            'tags'   => [
+                MongoMetricsManager::NODE     => $node->getId(),
+                MongoMetricsManager::TOPOLOGY => $topology->getId(),
             ],
         ];
         $monolith->insertOne($doc);
 
         $doc = [
-            'tags'   => [
-                MongoMetricsManager::TOPOLOGY => $topology->getId(),
-                MongoMetricsManager::NODE     => $node->getId(),
-            ],
             'fields' => [
-                'counter_process_duration' => 2,
-                'counter_process_result'   => FALSE,
-                'created'                  => DateTimeUtils::getUtcDateTime($dateOffset)->getTimestamp(),
+                'created'  => new UTCDateTime(DateTimeUtils::getUtcDateTime($dateOffset)),
+                'duration' => 2,
+                'result'   => FALSE,
+            ],
+            'tags'   => [
+                MongoMetricsManager::NODE     => $node->getId(),
+                MongoMetricsManager::TOPOLOGY => $topology->getId(),
             ],
         ];
         $processes->insertOne($doc);
 
         $doc = [
-            'tags'   => [
-                MongoMetricsManager::TOPOLOGY => $topology->getId(),
-                MongoMetricsManager::NODE     => $node->getId(),
-            ],
             'fields' => [
-                'counter_process_duration' => 2,
-                'counter_process_result'   => FALSE,
-                'created'                  => DateTimeUtils::getUtcDateTime('+55 days')->getTimestamp(),
+                'created'  => new UTCDateTime(DateTimeUtils::getUtcDateTime('+55 days')),
+                'duration' => 2,
+                'result'   => FALSE,
+            ],
+            'tags'   => [
+                MongoMetricsManager::NODE     => $node->getId(),
+                MongoMetricsManager::TOPOLOGY => $topology->getId(),
             ],
         ];
         $processes->insertOne($doc);
+
+        $doc = [
+            'fields' => [
+                'created' => new UTCDateTime(DateTimeUtils::getUtcDateTime()),
+            ],
+            'tags'   => [
+                'consumers' => 0,
+                'queue'     => 'pipes.limiter',
+            ],
+        ];
+        $rabbitmqConsumer->insertOne($doc);
     }
 
     /**
@@ -838,18 +777,18 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
      */
     private function setMinimalFakeData(Topology $topology, Node $node): void
     {
-        $client = $this->getClient();
+        $client = $this->getMdm()->getClient();
 
         /** @var string $counterTable */
-        $counterTable = self::$container->getParameter('mongodb.counter_table');
+        $counterTable = self::getContainer()->getParameter('mongodb.counter_table');
         /** @var string $monolithTable */
-        $monolithTable = self::$container->getParameter('mongodb.monolith_table');
+        $monolithTable = self::getContainer()->getParameter('mongodb.monolith_table');
         /** @var string $nodeTable */
-        $nodeTable = self::$container->getParameter('mongodb.node_table');
+        $nodeTable = self::getContainer()->getParameter('mongodb.node_table');
         /** @var string $connectorTable */
-        $connectorTable = self::$container->getParameter('mongodb.connector_table');
+        $connectorTable = self::getContainer()->getParameter('mongodb.connector_table');
         /** @var string $rabbitTable */
-        $rabbitTable = self::$container->getParameter('mongodb.rabbit_table');
+        $rabbitTable = self::getContainer()->getParameter('mongodb.rabbit_table');
 
         $processes = $client->selectCollection('metrics', $counterTable);
         $monolith  = $client->selectCollection('metrics', $monolithTable);
@@ -858,32 +797,36 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
         $rabbitmq  = $client->selectCollection('metrics', $rabbitTable);
 
         $doc = [
-            'tags'   => [
-                MongoMetricsManager::TOPOLOGY => $topology->getId(),
-                MongoMetricsManager::NODE     => $node->getId(),
-            ],
             'fields' => [
+                'created'             => new UTCDateTime(DateTimeUtils::getUtcDateTime()),
                 'fpm_cpu_kernel_time' => 15,
-                'created'             => DateTimeUtils::getUtcDateTime()->getTimestamp(),
+            ],
+            'tags'   => [
+                MongoMetricsManager::NODE     => $node->getId(),
+                MongoMetricsManager::TOPOLOGY => $topology->getId(),
             ],
         ];
         $monolith->insertOne($doc);
 
         $doc = [
-            'tags'   => [
-                MongoMetricsManager::TOPOLOGY => $topology->getId(),
-                MongoMetricsManager::NODE     => $node->getId(),
-            ],
             'fields' => [
-                'bridge_job_result_success'   => TRUE,
-                'bridge_job_waiting_duration' => 5,
-                'bridge_job_total_duration'   => 10,
-                'created'                     => DateTimeUtils::getUtcDateTime()->getTimestamp(),
+                'created'          => new UTCDateTime(DateTimeUtils::getUtcDateTime()),
+                'result_success'   => TRUE,
+                'total_duration'   => 10,
+                'waiting_duration' => 5,
+            ],
+            'tags'   => [
+                MongoMetricsManager::NODE     => $node->getId(),
+                MongoMetricsManager::TOPOLOGY => $topology->getId(),
             ],
         ];
         $bridge->insertOne($doc);
 
         $doc = [
+            'fields' => [
+                'created'  => new UTCDateTime(DateTimeUtils::getUtcDateTime()),
+                'messages' => 3,
+            ],
             'tags'   => [
                 MongoMetricsManager::QUEUE => NodeGeneratorUtils::generateQueueName(
                     $topology->getId(),
@@ -891,46 +834,41 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
                     $node->getName(),
                 ),
             ],
-            'fields' => [
-                'messages' => 3,
-                'created'  => DateTimeUtils::getUtcDateTime()->getTimestamp(),
-            ],
         ];
         $rabbitmq->insertOne($doc);
 
         $doc = [
-            'tags'   => [
-                MongoMetricsManager::TOPOLOGY => $topology->getId(),
-                MongoMetricsManager::NODE     => $node->getId(),
-            ],
             'fields' => [
+                'created'                     => new UTCDateTime(DateTimeUtils::getUtcDateTime()),
                 'sent_request_total_duration' => 5,
-                'created'                     => DateTimeUtils::getUtcDateTime()->getTimestamp(),
+            ],
+            'tags'   => [
+                MongoMetricsManager::NODE     => $node->getId(),
+                MongoMetricsManager::TOPOLOGY => $topology->getId(),
             ],
         ];
         $connector->insertOne($doc);
 
         $doc = [
-            'tags'   => [
-                MongoMetricsManager::TOPOLOGY => $topology->getId(),
-                MongoMetricsManager::NODE     => $node->getId(),
-            ],
             'fields' => [
-                'counter_process_duration' => 2,
-                'counter_process_result'   => TRUE,
-                'created'                  => DateTimeUtils::getUtcDateTime()->getTimestamp(),
+                'created'  => new UTCDateTime(DateTimeUtils::getUtcDateTime()),
+                'duration' => 2,
+                'result'   => TRUE,
+            ],
+            'tags'   => [
+                MongoMetricsManager::NODE     => $node->getId(),
+                MongoMetricsManager::TOPOLOGY => $topology->getId(),
             ],
         ];
         $processes->insertOne($doc);
     }
 
     /**
-     * @return Client
+     * @return DocumentManager
      */
-    private function getClient(): Client
+    private function getMdm(): DocumentManager
     {
-        return self::$container->get('doctrine_mongodb.odm.metrics_document_manager')
-            ->getClient();
+        return self::getContainer()->get('doctrine_mongodb.odm.metrics_document_manager');
     }
 
     /**
@@ -938,24 +876,9 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
      */
     private function ensureCollections(): void
     {
-        $client = $this->getClient();
-
-        /** @var string $counterTable */
-        $counterTable = self::$container->getParameter('mongodb.counter_table');
-        /** @var string $monolithTable */
-        $monolithTable = self::$container->getParameter('mongodb.monolith_table');
-        /** @var string $nodeTable */
-        $nodeTable = self::$container->getParameter('mongodb.node_table');
-        /** @var string $connectorTable */
-        $connectorTable = self::$container->getParameter('mongodb.connector_table');
-        /** @var string $rabbitTable */
-        $rabbitTable = self::$container->getParameter('mongodb.rabbit_table');
-
-        $client->selectDatabase('metrics')->createCollection($counterTable);
-        $client->selectDatabase('metrics')->createCollection($monolithTable);
-        $client->selectDatabase('metrics')->createCollection($nodeTable);
-        $client->selectDatabase('metrics')->createCollection($connectorTable);
-        $client->selectDatabase('metrics')->createCollection($rabbitTable);
+        $dm = $this->getMdm();
+        $dm->getSchemaManager()->dropCollections();
+        $dm->getSchemaManager()->createCollections();
     }
 
 }

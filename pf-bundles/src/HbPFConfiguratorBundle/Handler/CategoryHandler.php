@@ -7,7 +7,7 @@ use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocatorInterface;
 use Hanaboso\CommonsBundle\Exception\CategoryException;
 use Hanaboso\PipesFramework\Configurator\Model\CategoryManager;
-use Hanaboso\PipesPhpSdk\Database\Document\Category;
+use Hanaboso\PipesFramework\Database\Document\Category;
 
 /**
  * Class CategoryHandler
@@ -113,7 +113,7 @@ final class CategoryHandler
     {
         /** @var Category|null $category */
         $category = $this->dm->getRepository(Category::class)->find($id);
-        if (empty($category)) {
+        if ($category === NULL) {
             throw new CategoryException(sprintf('Category [%s] not found', $id), CategoryException::CATEGORY_NOT_FOUND);
         }
 
@@ -128,9 +128,9 @@ final class CategoryHandler
     private function getCategoryData(Category $category): array
     {
         return [
-            '_id'    => $category->getId(),
             'name'   => $category->getName(),
             'parent' => $category->getParent(),
+            '_id'    => $category->getId(),
         ];
     }
 

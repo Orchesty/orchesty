@@ -6,8 +6,8 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Exception;
-use Hanaboso\MongoDataGrid\GridRequestDto;
-use Hanaboso\PipesPhpSdk\Database\Document\Node;
+use Hanaboso\PipesFramework\Database\Document\Node;
+use Hanaboso\PipesFramework\Database\Document\Topology;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Driver\Exception\InvalidArgumentException;
 
@@ -19,63 +19,64 @@ use MongoDB\Driver\Exception\InvalidArgumentException;
 abstract class LogsAbstract implements LogsInterface
 {
 
-    protected const ID               = 'id';
-    protected const _ID              = '_id';
-    protected const CORRELATION_ID   = 'correlation_id';
-    protected const TOPOLOGY_ID      = 'topology_id';
-    protected const TOPOLOGY_NAME    = 'topology_name';
-    protected const NODE_ID          = 'node_id';
-    protected const NODE_NAME        = 'node_name';
-    protected const TIMESTAMP_PREFIX = '@timestamp';
-    protected const TIMESTAMP        = 'timestamp';
-    protected const PIPES            = 'pipes';
-    protected const SEVERITY         = 'severity';
-    protected const MESSAGE          = 'message';
-    protected const TYPE             = 'type';
-    protected const LIMIT            = 1_000;
+    protected const string ID                   = 'id';
+    protected const string _ID                  = '_id';
+    protected const string CORRELATIONID        = 'correlation_id';
+    protected const string CORRELATION_ID       = 'correlation_id';
+    protected const string TOPOLOGYID           = 'topology_id';
+    protected const string TOPOLOGY_ID          = 'topology_id';
+    protected const string TOPOLOGYNAME         = 'topologyName';
+    protected const string TOPOLOGY_NAME        = 'topology_name';
+    protected const string TOPOLOGY_DESCRIPTION = 'topology_description';
+    protected const string NODEID               = 'node_id';
+    protected const string NODE_ID              = 'node_id';
+    protected const string NODENAME             = 'nodeName';
+    protected const string NODE_NAME            = 'node_name';
+    protected const string TIMESTAMP_PREFIX     = '@timestamp';
+    protected const string TIMESTAMP            = 'timestamp';
+    protected const string PIPES                = 'pipes';
+    protected const string SEVERITY             = 'severity';
+    protected const string LEVEL                = 'severity';
+    protected const string MESSAGE              = 'message';
+    protected const string SERVICE              = 'service';
+    protected const int LIMIT                   = 1_000;
 
     /**
      * LogsAbstract constructor.
      *
-     * @param DocumentManager      $dm
-     * @param StartingPointsFilter $startingPointsFilter
+     * @param DocumentManager $dm
      */
-    public function __construct(private DocumentManager $dm, private StartingPointsFilter $startingPointsFilter)
+    public function __construct(private DocumentManager $dm)
     {
     }
 
     /**
-     * @param GridRequestDto $dto
-     * @param mixed[]        $result
+     * @param mixed[] $result
      *
      * @return mixed[]
      * @throws MongoDBException
      * @throws Exception
      */
-    protected function processStartingPoints(GridRequestDto $dto, array $result): array
+    protected function processStartingPoints(array $result): array
     {
-        $data        = $this->startingPointsFilter->getData($dto)->toArray();
-        $innerResult = [];
-
-        foreach ($data as $item) {
-            $innerResult[$item[self::PIPES][self::CORRELATION_ID]] = $item;
-        }
-
         foreach ($result as $key => $item) {
-            $correlationId = $this->getNonEmptyValue($item, self::CORRELATION_ID);
+            $correlationId = $this->getNonEmptyValue($item, self::CORRELATIONID);
             $nodeId        = $this->getNonEmptyValue($item, self::NODE_ID);
+            $topologyId    = $this->getNonEmptyValue($item, self::TOPOLOGY_ID);
 
-            if (is_array($correlationId)) {
+            if (is_array($correlationId) || is_array($topologyId) || is_array($nodeId)) {
                 throw new LockException('Bad data format.');
             }
 
-            if (is_array($nodeId)) {
-                throw new LockException('Bad data format.');
-            }
-
-            if ($correlationId && $this->getNonEmptyValue($innerResult, $correlationId)) {
-                $result[$key][self::TOPOLOGY_ID]   = $innerResult[$correlationId][self::PIPES][self::TOPOLOGY_ID];
-                $result[$key][self::TOPOLOGY_NAME] = $innerResult[$correlationId][self::PIPES][self::TOPOLOGY_NAME];
+            if ($topologyId){
+                $topology = $this->getTopology($topologyId);
+                if($topology !== NULL){
+                    $result[$key][self::TOPOLOGY_NAME]        = $topology->getName();
+                    $result[$key][self::TOPOLOGY_DESCRIPTION] = $topology->getDescr();
+                }else {
+                    $result[$key][self::TOPOLOGY_NAME]        = '';
+                    $result[$key][self::TOPOLOGY_DESCRIPTION] = '';
+                }
             }
 
             if ($nodeId) {
@@ -100,8 +101,31 @@ abstract class LogsAbstract implements LogsInterface
             );
 
             return $node ? $node->getName() : '';
-        } catch (InvalidArgumentException) {
+        } catch (InvalidArgumentException $e) {
+            $e;
+
             return '';
+        }
+    }
+
+    /**
+     * @param string $topologyId
+     *
+     * @return ?Topology
+     */
+    protected function getTopology(string $topologyId): ?Topology
+    {
+        try {
+            /** @var Topology|null $topology */
+            $topology = $this->dm->getRepository(Topology::class)->findOneBy(
+                [self::ID => new ObjectId(explode('-', $topologyId)[0])],
+            );
+
+            return $topology;
+        } catch (InvalidArgumentException $e) {
+            $e;
+
+            return NULL;
         }
     }
 

@@ -5,15 +5,13 @@ namespace Hanaboso\PipesFramework\HbPFMetricsBundle\DependencyInjection;
 use Exception;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader;
-use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 /**
  * Class HbPFMetricsExtension
  *
  * @package Hanaboso\PipesFramework\HbPFMetricsBundle\DependencyInjection
- *
- * @codeCoverageIgnore
  */
 final class HbPFMetricsExtension extends Extension
 {
@@ -30,8 +28,9 @@ final class HbPFMetricsExtension extends Extension
         $this->processConfiguration($configuration, $configs);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
-        $loader->load('services.yml');
-        $loader->load('controllers.yml');
+        $loader->load('services.yaml');
+        $loader->load('controllers.yaml');
+        $loader->load('parameters.yaml');
     }
 
 }

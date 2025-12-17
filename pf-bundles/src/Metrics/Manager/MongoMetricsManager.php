@@ -4,20 +4,29 @@ namespace Hanaboso\PipesFramework\Metrics\Manager;
 
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentNotFoundException;
+use Hanaboso\PipesFramework\Database\Document\Node;
+use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\PipesFramework\Metrics\Document\BridgesMetrics;
+use Hanaboso\PipesFramework\Metrics\Document\BridgesMetricsFields;
 use Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetrics;
+use Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetricsFields;
+use Hanaboso\PipesFramework\Metrics\Document\ContainerMetrics;
 use Hanaboso\PipesFramework\Metrics\Document\MonolithMetrics;
+use Hanaboso\PipesFramework\Metrics\Document\MonolithMetricsFields;
 use Hanaboso\PipesFramework\Metrics\Document\ProcessesMetrics;
+use Hanaboso\PipesFramework\Metrics\Document\ProcessesMetricsFields;
+use Hanaboso\PipesFramework\Metrics\Document\RabbitConsumerMetrics;
 use Hanaboso\PipesFramework\Metrics\Document\RabbitMetrics;
 use Hanaboso\PipesFramework\Metrics\Document\Tags;
 use Hanaboso\PipesFramework\Metrics\Dto\MetricsDto;
+use Hanaboso\PipesFramework\Metrics\Enum\HealthcheckTypeEnum;
+use Hanaboso\PipesFramework\Metrics\Enum\ServiceNameByQueueEnum;
 use Hanaboso\PipesFramework\Metrics\Retention\RetentionFactory;
-use Hanaboso\PipesPhpSdk\Database\Document\Node;
-use Hanaboso\PipesPhpSdk\Database\Document\Topology;
 use Hanaboso\Utils\Date\DateTimeUtils;
 use Hanaboso\Utils\Exception\DateTimeException;
-use Hanaboso\Utils\System\NodeGeneratorUtils;
 use LogicException;
+use MongoDB\BSON\Regex;
 
 /**
  * Class MongoMetricsManager
@@ -37,20 +46,20 @@ final class MongoMetricsManager extends MetricsManagerAbstract
      * @param string          $counterTable
      * @param string          $connectorTable
      * @param DocumentManager $metricsDm
-     * @param int             $rabbitInterval
+     * @param string          $consumerTable
      */
     public function __construct(
-        DocumentManager $dm,
+        private DocumentManager $dm,
         string $nodeTable,
         string $fpmTable,
         string $rabbitTable,
         string $counterTable,
         string $connectorTable,
         private DocumentManager $metricsDm,
-        private int $rabbitInterval,
+        string $consumerTable,
     )
     {
-        parent::__construct($dm, $nodeTable, $fpmTable, $rabbitTable, $counterTable, $connectorTable);
+        parent::__construct($dm, $nodeTable, $fpmTable, $rabbitTable, $counterTable, $connectorTable, $consumerTable);
     }
 
     /**
@@ -63,18 +72,20 @@ final class MongoMetricsManager extends MetricsManagerAbstract
      */
     public function getNodeMetrics(Node $node, Topology $topology, array $params): array
     {
-        [$dateFrom, $dateTo] = $this->parseDateRange($params);
+        $topology;
+        [$dateFrom, $dateTo, $size] = $this->parseDateRange($params);
 
         $where = [
-            self::NODE  => $node->getId(),
-            self::QUEUE => NodeGeneratorUtils::generateQueueName($topology->getId(), $node->getId(), $node->getName()),
+            self::NODE => $node->getId(),
         ];
 
-        $queue   = $this->rabbitNodeMetrics($where, $dateFrom, $dateTo);
-        $request = $this->connectorNodeMetrics($where, $dateFrom, $dateTo);
-        $cpu     = $this->monolithNodeMetrics($where, $dateFrom, $dateTo);
+        $sort = $this->getSort($size);
 
-        [$processTime, $waitingTime, $error] = $this->bridgesNodeMetrics($where, $dateFrom, $dateTo);
+        $queue   = (new MetricsDto())->setMax(0)->setTotal(0)->setAvg(0, 0);
+        $request = $this->connectorNodeMetrics($where, $sort, $size, $dateFrom, $dateTo);
+        $cpu     = $this->monolithNodeMetrics($where, $sort, $size, $dateFrom, $dateTo);
+
+        [$processTime, $waitingTime, $error] = $this->bridgesNodeMetrics($where, $sort, $size, $dateFrom, $dateTo);
 
         return $this->generateOutput(
             $queue,
@@ -96,11 +107,36 @@ final class MongoMetricsManager extends MetricsManagerAbstract
      */
     public function getTopologyProcessTimeMetrics(Topology $topology, array $params): array
     {
-        [$dateFrom, $dateTo] = $this->parseDateRange($params);
+        [$dateFrom, $dateTo, $size] = $this->parseDateRange($params);
 
         $where = [self::TOPOLOGY => $topology->getId()];
 
-        [$process, $error] = $this->counterProcessMetrics($where, $dateFrom, $dateTo);
+        $sort = $this->getSort($size);
+
+        [$process, $error] = $this->counterProcessMetrics($where, $sort, $size, $dateFrom, $dateTo);
+
+        return $this->generateOutput(
+            new MetricsDto(),
+            new MetricsDto(),
+            new MetricsDto(),
+            new MetricsDto(),
+            new MetricsDto(),
+            $error,
+            $process,
+        );
+    }
+
+    /**
+     * @param mixed[] $params
+     *
+     * @return mixed[]
+     * @throws DateTimeException
+     */
+    public function getTopologiesProcessTimeMetrics(array $params): array
+    {
+        [$dateFrom, $dateTo] = $this->parseDateRange($params);
+
+        [$process, $error] = $this->counterProcessMetrics([], [], NULL, $dateFrom, $dateTo);
 
         return $this->generateOutput(
             new MetricsDto(),
@@ -122,17 +158,104 @@ final class MongoMetricsManager extends MetricsManagerAbstract
      */
     public function getTopologyRequestCountMetrics(Topology $topology, array $params): array
     {
-        $params['from'] ??= 'now - 1h';
+        $params['from'] ??= 'now - 30 days';
         $params['to']   ??= 'now';
+        $params['size'] ??= NULL;
 
-        [$dateFrom, $dateTo] = $this->parseDateRange($params);
+        [$dateFrom, $dateTo, $size] = $this->parseDateRange($params);
 
         $where = [self::TOPOLOGY => $topology->getId()];
 
-        $res             = $this->getTopologyMetrics($topology, $params);
-        $res['requests'] = $this->requestsCountAggregation($where, $dateFrom, $dateTo);
+        $sort = $this->getSort($size);
+
+        $res          = $this->getTopologyMetrics($topology, $params);
+        $keepRequests = FALSE;
+        foreach ($res as $v) {
+            if (array_key_exists('request_time', $v)) {
+                $keepRequests = TRUE;
+
+                break;
+            }
+        }
+        if ($keepRequests) {
+            $res['requests'] = $this->requestsCountAggregation($where, $sort, $size, $dateFrom, $dateTo);
+        }
 
         return $res;
+    }
+
+    /**
+     * @return mixed[]
+     * @throws DateTimeException
+     */
+    public function getHealthcheckMetrics(): array
+    {
+        $qb  = $this->metricsDm->createQueryBuilder(RabbitConsumerMetrics::class);
+        $res = $qb
+            ->field('fields.consumers')->lte(0)
+            ->getQuery()
+            ->toArray();
+
+        if (!$res) {
+            $res = [];
+        }
+
+        $healthcheckArray = array_map(
+            function (RabbitConsumerMetrics $item): array {
+                $service = ServiceNameByQueueEnum::getNameAndNodeId($item->getTags()->getQueue());
+                if ($service['name'] === ServiceNameByQueueEnum::BRIDGE->value) {
+                    $node = $this->dm->find(Node::class, $service['nodeId']);
+                    if (!$node) {
+                        throw new DocumentNotFoundException(sprintf('Node with id %s not found', $service['nodeId']));
+                    }
+                    $topology = $this->dm->find(Topology::class, $node->getTopology());
+                    if (!$topology) {
+                        throw new DocumentNotFoundException(
+                            sprintf('Topology with id %s not found', $node->getTopology()),
+                        );
+                    }
+
+                    $service['name'] = sprintf(
+                        '%s-%s_topology-%s_1',
+                        $topology->getId(),
+                        $topology->getName(),
+                        $topology->getId(),
+                    );
+                    $topology        = sprintf('%s v.%s', $topology->getName(), $topology->getVersion());
+                }
+
+                return [
+                    'name'     => $item->getTags()->getQueue(),
+                    'service'  => $service['name'],
+                    'topology' => $topology ?? NULL,
+                    'type'     => HealthcheckTypeEnum::QUEUE->value,
+                ];
+            },
+            $res,
+        );
+
+        $qb  = $this->metricsDm->createQueryBuilder(ContainerMetrics::class);
+        $res = $qb
+            ->field('fields.up')->equals(FALSE)
+            ->field('fields.name')->not(new Regex('wait-for-it'))
+            ->getQuery()
+            ->toArray();
+
+        if (!$res) {
+            $res = [];
+        }
+
+        return array_merge(
+            $healthcheckArray,
+            array_map(
+                static fn(ContainerMetrics $item): array => [
+                    'message' => $item->getFields()->getMessage(),
+                    'name'    => $item->getFields()->getName(),
+                    'type'    => HealthcheckTypeEnum::SERVICE->value,
+                ],
+                $res,
+            ),
+        );
     }
 
     /**
@@ -198,17 +321,26 @@ final class MongoMetricsManager extends MetricsManagerAbstract
      */
 
     /**
-     * @param mixed[] $where
-     * @param string  $dateFrom
-     * @param string  $dateTo
+     * @param mixed[]  $where
+     * @param mixed[]  $sort
+     * @param int|null $size
+     * @param string   $dateFrom
+     * @param string   $dateTo
      *
-     * @return MetricsDto
+     * @return MetricsDto|null
      * @throws DateTimeException
      */
-    private function connectorNodeMetrics(array $where, string $dateFrom, string $dateTo): MetricsDto
-    {
+    private function connectorNodeMetrics(
+        array $where,
+        array $sort,
+        ?int $size,
+        string $dateFrom,
+        string $dateTo,
+    ): ?MetricsDto {
         $qb = $this->metricsDm->createAggregationBuilder(ConnectorsMetrics::class);
         $this->addConditions($qb, $dateFrom, $dateTo, $where, ConnectorsMetrics::class);
+        $this->addSortations($qb, $sort, ConnectorsMetrics::class);
+        $this->addPagination($qb, $size);
         $res = $qb->group()->field('id')->ifNull(NULL, '')
             ->field('request_sum')->sum('$fields.sent_request_total_duration')
             ->field('request_count')->sum(1)
@@ -218,12 +350,7 @@ final class MongoMetricsManager extends MetricsManagerAbstract
             ->toArray();
 
         if (!$res) {
-            $res = [
-                'request_count' => 0,
-                'request_sum'   => 0,
-                'request_max'   => 0,
-                'request_min'   => 0,
-            ];
+            return NULL;
         } else {
             $res = reset($res);
         }
@@ -236,57 +363,26 @@ final class MongoMetricsManager extends MetricsManagerAbstract
     }
 
     /**
-     * @param mixed[] $where
-     * @param string  $dateFrom
-     * @param string  $dateTo
+     * @param mixed[]  $where
+     * @param mixed[]  $sort
+     * @param int|null $size
+     * @param string   $dateFrom
+     * @param string   $dateTo
      *
      * @return MetricsDto
      * @throws DateTimeException
      */
-    private function rabbitNodeMetrics(array $where, string $dateFrom, string $dateTo): MetricsDto
-    {
-        $qb = $this->metricsDm->createAggregationBuilder(RabbitMetrics::class);
-        $this->addConditions($qb, $dateFrom, $dateTo, $where, RabbitMetrics::class);
-        $res = $qb->group()->field('id')->ifNull(NULL, '')
-            ->field('queue_max')->max('$fields.messages')
-            ->field('queue_sum')->sum('$fields.messages')
-            ->execute()
-            ->toArray();
-
-        if (!$res) {
-            $res = [
-                'queue_max' => 0,
-                'queue_sum' => 0,
-            ];
-        } else {
-            $res = reset($res);
-        }
-
-        $from = DateTimeUtils::getUtcDateTime($dateFrom);
-        $to   = DateTimeUtils::getUtcDateTime($dateTo);
-        $diff = $to->diff($from);
-        $secs = (((int) $diff->days * 24 + $diff->h) * 60 + $diff->i) * 60 + $diff->s;
-
-        $res[self::QUEUE_COUNT] = $secs / $this->rabbitInterval;
-
-        return (new MetricsDto())
-            ->setMax($res[self::QUEUE_MAX])
-            ->setTotal($res[self::QUEUE_COUNT])
-            ->setAvg($res[self::QUEUE_COUNT], $res[self::QUEUE_SUM]);
-    }
-
-    /**
-     * @param mixed[] $where
-     * @param string  $dateFrom
-     * @param string  $dateTo
-     *
-     * @return MetricsDto
-     * @throws DateTimeException
-     */
-    private function monolithNodeMetrics(array $where, string $dateFrom, string $dateTo): MetricsDto
-    {
+    private function monolithNodeMetrics(
+        array $where,
+        array $sort,
+        ?int $size,
+        string $dateFrom,
+        string $dateTo,
+    ): MetricsDto {
         $qb = $this->metricsDm->createAggregationBuilder(MonolithMetrics::class);
         $this->addConditions($qb, $dateFrom, $dateTo, $where, MonolithMetrics::class);
+        $this->addSortations($qb, $sort, MonolithMetrics::class);
+        $this->addPagination($qb, $size);
         $res = $qb->group()->field('id')->ifNull(NULL, '')
             ->field('cpu_sum')->sum('$fields.fpm_cpu_kernel_time')
             ->field('cpu_count')->sum(1)
@@ -298,9 +394,9 @@ final class MongoMetricsManager extends MetricsManagerAbstract
         if (!$res) {
             $res = [
                 'cpu_count' => 0,
-                'cpu_sum'   => 0,
                 'cpu_max'   => 0,
                 'cpu_min'   => 0,
+                'cpu_sum'   => 0,
             ];
         } else {
             $res = reset($res);
@@ -314,28 +410,39 @@ final class MongoMetricsManager extends MetricsManagerAbstract
     }
 
     /**
-     * @param mixed[] $where
-     * @param string  $dateFrom
-     * @param string  $dateTo
+     * @param mixed[]  $where
+     * @param mixed[]  $sort
+     * @param int|null $size
+     * @param string   $dateFrom
+     * @param string   $dateTo
      *
      * @return mixed[]
      * @throws DateTimeException
      */
-    private function counterProcessMetrics(array $where, string $dateFrom, string $dateTo): array
-    {
+    private function counterProcessMetrics(
+        array $where,
+        array $sort,
+        ?int $size,
+        string $dateFrom,
+        string $dateTo,
+    ): array {
         $qb = $this->metricsDm->createAggregationBuilder(ProcessesMetrics::class);
         $this->addConditions($qb, $dateFrom, $dateTo, $where, ProcessesMetrics::class);
-        $res = $qb->group()->field('id')->ifNull(NULL, '')
-            ->field('process_time_sum')->sum('$fields.counter_process_duration')
+        $this->addSortations($qb, $sort, ProcessesMetrics::class);
+        $this->addPagination($qb, $size);
+        $res = $qb
+            ->match()->field('parent')->equals(NULL)
+            ->group()->field('id')->ifNull(NULL, '')
+            ->field('process_time_sum')->sum('$fields.duration')
             ->field('process_time_count')->sum(1)
-            ->field('process_time_max')->max('$fields.counter_process_duration')
-            ->field('process_time_min')->min('$fields.counter_process_duration')
+            ->field('process_time_max')->max('$fields.duration')
+            ->field('process_time_min')->min('$fields.duration')
             ->field('total_count')->sum(1)
             ->field('request_error_sum')->sum(
                 $qb->expr()->cond(
-                    $qb->expr()->eq('$fields.counter_process_result', FALSE),
-                    1,
+                    $qb->expr()->eq('$fields.fail_count', 0),
                     0,
+                    1,
                 ),
             )
             ->execute()
@@ -344,11 +451,11 @@ final class MongoMetricsManager extends MetricsManagerAbstract
         if (!$res) {
             $res = [
                 'process_time_count' => 0,
-                'process_time_sum'   => 0,
-                'process_time_min'   => 0,
                 'process_time_max'   => 0,
-                'total_count'        => 0,
+                'process_time_min'   => 0,
+                'process_time_sum'   => 0,
                 'request_error_sum'  => 0,
+                'total_count'        => 0,
             ];
         } else {
             $res = reset($res);
@@ -368,32 +475,35 @@ final class MongoMetricsManager extends MetricsManagerAbstract
     }
 
     /**
-     * @param mixed[] $where
-     * @param string  $dateFrom
-     * @param string  $dateTo
+     * @param mixed[]  $where
+     * @param mixed[]  $sort
+     * @param int|null $size
+     * @param string   $dateFrom
+     * @param string   $dateTo
      *
      * @return mixed[]
      * @throws DateTimeException
      */
-    private function bridgesNodeMetrics(array $where, string $dateFrom, string $dateTo): array
-    {
+    private function bridgesNodeMetrics(array $where, array $sort, ?int $size, string $dateFrom, string $dateTo): array {
         $qb = $this->metricsDm->createAggregationBuilder(BridgesMetrics::class);
         $this->addConditions($qb, $dateFrom, $dateTo, $where, BridgesMetrics::class);
+        $this->addSortations($qb, $sort, BridgesMetrics::class);
+        $this->addPagination($qb, $size);
         $res = $qb->group()->field('id')->ifNull(NULL, '')
-            ->field('top_processed_sum')->sum('$fields.bridge_job_total_duration')
+            ->field('top_processed_sum')->sum('$fields.total_duration')
             ->field('top_processed_count')->sum(1)
-            ->field('top_processed_max')->max('$fields.bridge_job_total_duration')
-            ->field('top_processed_min')->min('$fields.bridge_job_total_duration')
-            ->field('wait_sum')->sum('$fields.bridge_job_waiting_duration')
+            ->field('top_processed_max')->max('$fields.total_duration')
+            ->field('top_processed_min')->min('$fields.total_duration')
+            ->field('wait_sum')->sum('$fields.waiting_duration')
             ->field('wait_count')->sum(1)
-            ->field('wait_max')->max('$fields.bridge_job_waiting_duration')
+            ->field('wait_max')->max('$fields.waiting_duration')
             ->field('wait_min')->min(
-                $qb->expr()->ifNull('$fields.bridge_job_waiting_duration', 0),
+                $qb->expr()->ifNull('$fields.waiting_duration', 0),
             )
             ->field('total_count')->sum(1)
             ->field('request_error_sum')->sum(
                 $qb->expr()->cond(
-                    $qb->expr()->eq('$fields.bridge_job_result_success', FALSE),
+                    $qb->expr()->eq('$fields.result_success', FALSE),
                     1,
                     0,
                 ),
@@ -403,16 +513,16 @@ final class MongoMetricsManager extends MetricsManagerAbstract
 
         if (!$res) {
             $res = [
-                'top_processed_count' => 0,
-                'wait_count'          => 0,
-                'top_processed_sum'   => 0,
-                'wait_sum'            => 0,
                 'request_error_sum'   => 0,
-                'total_count'         => 0,
+                'top_processed_count' => 0,
                 'top_processed_max'   => 0,
+                'top_processed_min'   => 0,
+                'top_processed_sum'   => 0,
+                'total_count'         => 0,
+                'wait_count'          => 0,
                 'wait_max'            => 0,
                 'wait_min'            => 0,
-                'top_processed_min'   => 0,
+                'wait_sum'            => 0,
             ];
         } else {
             $res = reset($res);
@@ -435,38 +545,53 @@ final class MongoMetricsManager extends MetricsManagerAbstract
     }
 
     /**
-     * @param mixed[] $where
-     * @param string  $dateFrom
-     * @param string  $dateTo
+     * @param mixed[]  $where
+     * @param mixed[]  $sort
+     * @param int|null $size
+     * @param string   $dateFrom
+     * @param string   $dateTo
      *
      * @return mixed[]
      * @throws DateTimeException
      */
-    private function requestsCountAggregation(array $where, string $dateFrom, string $dateTo): array
-    {
+    private function requestsCountAggregation(
+        array $where,
+        array $sort,
+        ?int $size,
+        string $dateFrom,
+        string $dateTo,
+    ): array {
         $dateTimeFrom = DateTimeUtils::getUtcDateTime($dateFrom);
         $dateTimeTo   = DateTimeUtils::getUtcDateTime($dateTo);
 
         $qb = $this->metricsDm->createAggregationBuilder(ProcessesMetrics::class);
         $this->addConditions($qb, $dateFrom, $dateTo, $where, ProcessesMetrics::class);
+        $this->addSortations($qb, $sort, ProcessesMetrics::class);
+        $this->addPagination($qb, $size);
         $ret = RetentionFactory::getRetentionInSeconds($dateTimeFrom, $dateTimeTo);
 
-        $res = $qb
+        $resMs = $qb
             ->group()->field('id')
-            ->subtract('$fields.created', $qb->expr()->mod('$fields.created', $ret))
+            ->subtract(
+                $qb->expr()->subtract('$fields.created', DateTimeUtils::getUtcDateTimeFromTimeStamp()),
+                $qb->expr()->mod(
+                    $qb->expr()->subtract('$fields.created', DateTimeUtils::getUtcDateTimeFromTimeStamp()),
+                    $ret * 1_000,
+                ),
+            )
             ->field('count')->sum(1)
             ->execute()
             ->toArray();
 
-        /** @var mixed[] $res */
-        $res = array_combine(
-            array_column($res, '_id'),
-            array_column($res, 'count'),
-        );
+        $res = [];
+        foreach ($resMs as $row) {
+            $res[$row['_id'] / 1_000] = $row['count'];
+        }
 
-        $from  = $dateTimeFrom->getTimestamp();
+        $from = $dateTimeFrom->getTimestamp();
+        $to   = $dateTimeTo->getTimestamp();
+
         $from -= $from % $ret;
-        $to    = $dateTimeTo->getTimestamp();
         $to   -= $to % $ret;
 
         $sorted = [];
@@ -492,10 +617,10 @@ final class MongoMetricsManager extends MetricsManagerAbstract
             ->addAnd(
                 $qb->matchExpr()
                     ->field('fields.created')
-                    ->gte(DateTimeUtils::getUtcDateTime($dateFrom)->getTimestamp()),
+                    ->gte(DateTimeUtils::getUtcDateTime($dateFrom)),
                 $qb->matchExpr()
                     ->field('fields.created')
-                    ->lt(DateTimeUtils::getUtcDateTime($dateTo)->getTimestamp()),
+                    ->lt(DateTimeUtils::getUtcDateTime($dateTo)),
             );
 
         $tags = $this->allowedTags($document);
@@ -504,6 +629,46 @@ final class MongoMetricsManager extends MetricsManagerAbstract
                 $qb->match()->addOr($qb->matchExpr()->field(sprintf('tags.%s', $field))->equals($value));
             }
         }
+    }
+
+    /**
+     * @param Builder $qb
+     * @param mixed[] $sort
+     * @param string  $document
+     */
+    private function addSortations(Builder $qb, array $sort, string $document): void
+    {
+        if ($sort === []) {
+            return;
+        }
+
+        $allowedFields = $this->allowedFields($document);
+        $innerSort     = [];
+
+        foreach ($sort as $field => $value) {
+            if (in_array($field, $allowedFields, TRUE)) {
+                $innerSort[sprintf('fields.%s', $field)] = $value;
+            }
+        }
+
+        if ($innerSort === []) {
+            return;
+        }
+
+        $qb->sort($innerSort);
+    }
+
+    /**
+     * @param Builder  $qb
+     * @param int|null $size
+     */
+    private function addPagination(Builder $qb, ?int $size): void
+    {
+        if ($size === NULL) {
+            return;
+        }
+
+        $qb->limit($size);
     }
 
     /**
@@ -523,6 +688,22 @@ final class MongoMetricsManager extends MetricsManagerAbstract
     }
 
     /**
+     * @param string $document
+     *
+     * @return mixed[]
+     */
+    private function allowedFields(string $document): array
+    {
+        return match ($document) {
+            ConnectorsMetrics::class => [ConnectorsMetricsFields::CREATED],
+            MonolithMetrics::class => [MonolithMetricsFields::CREATED],
+            BridgesMetrics::class => [BridgesMetricsFields::CREATED],
+            ProcessesMetrics::class => [ProcessesMetricsFields::CREATED],
+            default => [],
+        };
+    }
+
+    /**
      * @param mixed[] $params
      *
      * @return mixed[]
@@ -537,7 +718,24 @@ final class MongoMetricsManager extends MetricsManagerAbstract
             throw new LogicException('Date range, fields: [from, to] are required.');
         }
 
-        return [$dateFrom, $dateTo];
+        return [$dateFrom, $dateTo, $params['size'] ?? NULL];
+    }
+
+    /**
+     * @param int|null $size
+     * @return string[]
+     */
+    private function getSort(?int $size): array
+    {
+        $sort = [];
+
+        if ($size !== NULL) {
+            $sort = [
+                'created' => 'DESC',
+            ];
+        }
+
+        return $sort;
     }
 
 }

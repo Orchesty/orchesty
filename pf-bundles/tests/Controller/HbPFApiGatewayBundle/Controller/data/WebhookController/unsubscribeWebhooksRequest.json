@@ -1,5 +1,7 @@
 {
-    "http": "POST /api/webhook/applications/key/users/user/unsubscribe",
+    "http": "POST /api/webhook/applications/key/unsubscribe?sdk=php-sdk",
     "body": [],
-    "headers": []
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
 }

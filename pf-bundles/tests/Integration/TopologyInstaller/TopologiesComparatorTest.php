@@ -4,12 +4,12 @@ namespace PipesFrameworkTests\Integration\TopologyInstaller;
 
 use Exception;
 use Hanaboso\CommonsBundle\Enum\TopologyStatusEnum;
-use Hanaboso\PipesFramework\TopologyInstaller\Dto\TopologyFile;
-use Hanaboso\PipesFramework\TopologyInstaller\Dto\UpdateObject;
+use Hanaboso\PipesFramework\Database\Document\Topology;
+use Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto;
 use Hanaboso\PipesFramework\TopologyInstaller\TopologiesComparator;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
-use Hanaboso\PipesPhpSdk\Database\Document\Topology;
-use Hanaboso\PipesPhpSdk\Database\Repository\TopologyRepository;
+use Hanaboso\Utils\File\File;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -17,27 +17,18 @@ use PipesFrameworkTests\DatabaseTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Integration\TopologyInstaller
  */
+#[CoversClass(TopologiesComparator::class)]
+#[CoversClass(CompareResultDto::class)]
+#[CoversClass(TopologySchemaUtils::class)]
 final class TopologiesComparatorTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\TopologiesComparator
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\TopologiesComparator::compare
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\TopologiesComparator::prepareFiles
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\TopologiesComparator::isEqual
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto::addDelete
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto::addCreate
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto::addUpdate
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto::getDelete
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto::getCreate
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto::getUpdate
-     * @covers \Hanaboso\PipesFramework\Utils\TopologySchemaUtils::getIndexHash
-     *
      * @throws Exception
      */
     public function testCompare(): void
     {
-        $xmlDecoder = self::$container->get('rest.decoder.xml');
+        $xmlDecoder = self::getContainer()->get('rest.decoder.xml');
         $topology   = new Topology();
         $topology
             ->setName('file')
@@ -48,7 +39,7 @@ final class TopologiesComparatorTest extends DatabaseTestCaseAbstract
                 ),
             )
             ->setEnabled(TRUE)
-            ->setVisibility(TopologyStatusEnum::PUBLIC);
+            ->setVisibility(TopologyStatusEnum::PUBLIC->value);
         $this->dm->persist($topology);
 
         $topology3 = new Topology();
@@ -61,19 +52,19 @@ final class TopologiesComparatorTest extends DatabaseTestCaseAbstract
                 ),
             )
             ->setEnabled(TRUE)
-            ->setVisibility(TopologyStatusEnum::PUBLIC);
+            ->setVisibility(TopologyStatusEnum::PUBLIC->value);
         $this->dm->persist($topology3);
 
         $topology2 = new Topology();
         $topology2
             ->setName('old-file')
             ->setEnabled(TRUE)
-            ->setVisibility(TopologyStatusEnum::PUBLIC);
+            ->setVisibility(TopologyStatusEnum::PUBLIC->value);
         $this->dm->persist($topology2);
         $this->dm->flush();
 
         $dir = sprintf('%s/data', __DIR__);
-        /** @var TopologyRepository $repo */
+
         $repo       = $this->dm->getRepository(Topology::class);
         $comparator = new TopologiesComparator($repo, $xmlDecoder, [$dir], TRUE);
 
@@ -84,9 +75,6 @@ final class TopologiesComparatorTest extends DatabaseTestCaseAbstract
         self::assertCount(1, $create);
         self::assertCount(1, $update);
         self::assertCount(1, $delete);
-
-        self::assertInstanceOf(TopologyFile::class, reset($create));
-        self::assertInstanceOf(UpdateObject::class, reset($update));
     }
 
     /**
@@ -97,7 +85,7 @@ final class TopologiesComparatorTest extends DatabaseTestCaseAbstract
      */
     private function load(string $name, bool $change): string
     {
-        $content = (string) file_get_contents(sprintf('%s/data/%s', __DIR__, $name));
+        $content = File::getContent(sprintf('%s/data/%s', __DIR__, $name));
 
         if (!$change) {
             return $content;

@@ -3,6 +3,7 @@
 namespace PipesFrameworkTests\Integration\TopologyInstaller;
 
 use Hanaboso\PipesFramework\TopologyInstaller\TplgLoader;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Finder\SplFileInfo;
 
@@ -11,12 +12,12 @@ use Symfony\Component\Finder\SplFileInfo;
  *
  * @package PipesFrameworkTests\Integration\TopologyInstaller
  */
+#[CoversClass(TplgLoader::class)]
 final class TplgLoaderTest extends TestCase
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\TplgLoader::load
-     * @covers \Hanaboso\PipesFramework\TopologyInstaller\TplgLoader::getName
+     * @return void
      */
     public function testLoad(): void
     {

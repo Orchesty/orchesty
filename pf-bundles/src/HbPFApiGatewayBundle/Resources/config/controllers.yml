@@ -8,18 +8,17 @@ services:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController
         arguments:
             - '@hbpp.service.locator'
+        calls:
+            - [ 'setLogger', [ '@monolog.logger.commons' ] ]
+
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\DashboardController:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\DashboardController
 
     Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\CategoryController:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\CategoryController
 
-    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ConnectorController:
-        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ConnectorController
-
     Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\LogsController:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\LogsController
-
-    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\LongRunningNodeController:
-        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\LongRunningNodeController
 
     Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\MetricsController:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\MetricsController
@@ -29,17 +28,19 @@ services:
         arguments:
             - '@hbpp.service.locator'
 
-    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NotificationController:
-        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NotificationController
-
     Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyController:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyController
 
     Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserController:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserController
+        calls:
+            - ['setLogger', ['@monolog.logger.commons']]
 
     Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\SdkController:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\SdkController
+
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApiTokenController:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApiTokenController
 
     Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\WebhookController:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\WebhookController
@@ -48,3 +49,13 @@ services:
 
     Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyProgressController:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\TopologyProgressController
+
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserTaskController:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UserTaskController
+
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\StatusController:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\StatusController
+
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UsageStatsController:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UsageStatsController
+

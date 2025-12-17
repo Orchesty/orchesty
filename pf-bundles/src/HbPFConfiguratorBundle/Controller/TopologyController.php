@@ -9,7 +9,7 @@ use Hanaboso\Utils\Traits\ControllerTrait;
 use Psr\Log\NullLogger;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Throwable;
 
 /**
@@ -33,12 +33,11 @@ final class TopologyController
     }
 
     /**
-     * @Route("/topologies", methods={"GET", "OPTIONS"})
-     *
      * @param mixed $query
      *
      * @return Response
      */
+    #[Route('/topologies', methods: ['GET'])]
     public function getTopologiesAction(mixed $query): Response
     {
         try {
@@ -57,10 +56,44 @@ final class TopologyController
     }
 
     /**
-     * @Route("/topologies/cron", methods={"GET", "OPTIONS"})
+     * @param Request $request
+     * @param string  $id
      *
      * @return Response
      */
+    #[Route('/topologies/{id}/run', methods: ['POST'])]
+    public function runTopologiesAction(Request $request, string $id): Response
+    {
+        try {
+            return $this->getResponse($this->topologyHandler->runTopology($id, $request->request->all()));
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @param string  $topologyName
+     * @param string  $nodeName
+     *
+     * @return Response
+     */
+    #[Route('/topologies/{topologyName}/nodes/{nodeName}/run-by-name', methods: ['POST'])]
+    public function runTopologyByNameAction(Request $request, string $topologyName, string $nodeName): Response
+    {
+        try {
+            return $this->getResponse(
+                $this->topologyHandler->runTopologyByName($topologyName, $nodeName, $request->request->all()),
+            );
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
+        }
+    }
+
+    /**
+     * @return Response
+     */
+    #[Route('/topologies/cron', methods: ['GET'])]
     public function getCronTopologiesAction(): Response
     {
         try {
@@ -71,61 +104,70 @@ final class TopologyController
     }
 
     /**
-     * @Route("/topologies/{id}", defaults={}, requirements={"id": "\w+"}, methods={"GET", "OPTIONS"})
-     *
      * @param string $id
      *
      * @return Response
      */
+    #[Route('/topologies/{id}', requirements: ['id' => '\w+'], methods: ['GET'])]
     public function getTopologyAction(string $id): Response
     {
         try {
             return $this->getResponse($this->topologyHandler->getTopology($id));
-        } catch (TopologyException | MongoDBException $e) {
+        } catch (TopologyException|MongoDBException $e) {
             return $this->getErrorResponse($e);
         }
     }
 
     /**
-     * @Route("/topologies", methods={"POST"})
-     *
      * @param Request $request
      *
      * @return Response
      */
+    #[Route('/topologies', methods: ['POST'])]
     public function createTopologyAction(Request $request): Response
     {
         try {
             return $this->getResponse($this->topologyHandler->createTopology($request->request->all()));
+        } catch (TopologyException $e) {
+            return match ($e->getCode()) {
+                TopologyException::TOPOLOGY_NODE_NAME_NOT_FOUND, TopologyException::TOPOLOGY_NODE_TYPE_NOT_FOUND => $this->getErrorResponse(
+                    $e,
+                    404,
+                ),
+                default => $this->getErrorResponse($e, 400),
+            };
         } catch (Throwable $e) {
             return $this->getErrorResponse($e);
         }
     }
 
     /**
-     * @Route("/topologies/{id}", defaults={}, requirements={"id": "\w+"}, methods={"PUT", "PATCH", "OPTIONS"})
-     *
      * @param Request $request
      * @param string  $id
      *
      * @return Response
      */
+    #[Route('/topologies/{id}', requirements: ['id' => '\w+'], methods: ['PUT', 'PATCH'])]
     public function updateTopologyAction(Request $request, string $id): Response
     {
         try {
             return $this->getResponse($this->topologyHandler->updateTopology($id, $request->request->all()));
-        } catch (TopologyException | Throwable $e) {
+        } catch (Throwable $e) {
             return $this->getErrorResponse($e);
         }
     }
 
     /**
-     * @Route("/topologies/{id}/schema.bpmn", defaults={"_format"="xml"}, requirements={"id": "\w+"}, methods={"GET", "OPTIONS"})
-     *
      * @param string $id
      *
      * @return Response
      */
+    #[Route(
+        '/topologies/{id}/schema.bpmn',
+        requirements: ['id' => '\w+'],
+        defaults: ['_format' => 'xml'],
+        methods: ['GET'],
+    )]
     public function getTopologySchemaAction(string $id): Response
     {
         try {
@@ -139,13 +181,17 @@ final class TopologyController
     }
 
     /**
-     * @Route("/topologies/{id}/schema.bpmn", defaults={"_format"="xml"}, requirements={"id": "\w+"}, methods={"PUT", "OPTIONS"})
-     *
      * @param Request $request
      * @param string  $id
      *
      * @return Response
      */
+    #[Route(
+        '/topologies/{id}/schema.bpmn',
+        requirements: ['id' => '\w+'],
+        defaults: ['_format' => 'xml'],
+        methods: ['PUT'],
+    )]
     public function saveTopologySchemaAction(Request $request, string $id): Response
     {
         try {
@@ -159,7 +205,7 @@ final class TopologyController
                     $request->request->all(),
                 ),
             );
-        } catch (TopologyException | Throwable $e) {
+        } catch (Throwable $e) {
             return $this->getErrorResponse(
                 $e,
                 in_array(
@@ -169,6 +215,7 @@ final class TopologyController
                         TopologyException::TOPOLOGY_NODE_TYPE_NOT_FOUND,
                         TopologyException::TOPOLOGY_NODE_TYPE_NOT_EXIST,
                         TopologyException::TOPOLOGY_NODE_CRON_NOT_VALID,
+                        TopologyException::UNSUPPORTED_SCHEMA,
                     ],
                     TRUE,
                 ) ? 400 : 500,
@@ -177,12 +224,50 @@ final class TopologyController
     }
 
     /**
-     * @Route("/topologies/{id}/publish", defaults={}, requirements={"id": "\w+"}, methods={"POST", "OPTIONS"})
+     * @param Request $request
+     * @param string  $id
      *
+     * @return Response
+     */
+    #[Route(
+        '/topologies/check/{id}/schema.bpmn',
+        requirements: ['id' => '\w+'],
+        defaults: ['_format' => 'xml'],
+        methods: ['POST'],
+    )]
+    public function checkTopologySchemaDifferencesAction(Request $request, string $id): Response
+    {
+        try {
+            return $this->getResponse(
+                $this->topologyHandler->checkTopologySchemaDifferences(
+                    $id,
+                    $request->request->all(),
+                ),
+            );
+        } catch (Throwable $e) {
+            return $this->getErrorResponse(
+                $e,
+                in_array(
+                    $e->getCode(),
+                    [
+                        TopologyException::TOPOLOGY_NODE_NAME_NOT_FOUND,
+                        TopologyException::TOPOLOGY_NODE_TYPE_NOT_FOUND,
+                        TopologyException::TOPOLOGY_NODE_TYPE_NOT_EXIST,
+                        TopologyException::TOPOLOGY_NODE_CRON_NOT_VALID,
+                        TopologyException::UNSUPPORTED_SCHEMA,
+                    ],
+                    TRUE,
+                ) ? 400 : 500,
+            );
+        }
+    }
+
+    /**
      * @param string $id
      *
      * @return Response
      */
+    #[Route('/topologies/{id}/publish', requirements: ['id' => '\w+'], methods: ['POST'])]
     public function publishTopologyAction(string $id): Response
     {
         try {
@@ -195,12 +280,11 @@ final class TopologyController
     }
 
     /**
-     * @Route("/topologies/{id}/clone", defaults={}, requirements={"id": "\w+"}, methods={"POST", "OPTIONS"})
-     *
      * @param string $id
      *
      * @return Response
      */
+    #[Route('/topologies/{id}/clone', requirements: ['id' => '\w+'], methods: ['POST'])]
     public function cloneTopologyAction(string $id): Response
     {
         try {
@@ -213,16 +297,17 @@ final class TopologyController
     }
 
     /**
-     * @Route("/topologies/{id}", defaults={}, requirements={"id": "\w+"}, methods={"DELETE", "OPTIONS"})
-     *
-     * @param string $id
+     * @param Request $request
+     * @param string  $id
      *
      * @return Response
      */
-    public function deleteTopologyAction(string $id): Response
+    #[Route('/topologies/{id}', requirements: ['id' => '\w+'], methods: ['DELETE'])]
+    public function deleteTopologyAction(Request $request, string $id): Response
     {
         try {
-            $res = $this->topologyHandler->deleteTopology($id);
+            $removeWithTasks = $request->get('removeWithTasks');
+            $res             = $this->topologyHandler->deleteTopology($id, $removeWithTasks);
 
             return $this->getResponse($res->getBody(), $res->getStatusCode());
         } catch (Throwable $e) {
@@ -231,18 +316,43 @@ final class TopologyController
     }
 
     /**
-     * @Route("/topologies/{id}/test", methods={"GET"})
-     *
      * @param string $topologyId
      *
      * @return Response
      */
+    #[Route('/topologies/{id}/test', methods: ['GET'])]
     public function testAction(string $topologyId): Response
     {
         try {
             $data = $this->topologyHandler->runTest($topologyId);
 
             return $this->getResponse($data, 200, ['Content-Type' => 'application/json']);
+        } catch (Throwable $e) {
+            return $this->getErrorResponse($e);
+        }
+    }
+
+    /**
+     * @param string $topologyId
+     * @param string $nodeName
+     *
+     * @return Response
+     */
+    #[Route('/topologies/{topologyId}/versions/node/{nodeName}', methods: ['GET'])]
+    public function getTopologyVersions(string $topologyId, string $nodeName): Response
+    {
+        try {
+            if ($topologyId && $nodeName) {
+                $data = $this->topologyHandler->getTopologiesByIdAndNodeName($topologyId, $nodeName);
+
+                return $this->getResponse($data, 200, ['Content-Type' => 'application/json']);
+            } else {
+                return $this->getResponse(
+                    sprintf('Parameter topologyId [%s] or nodeName [%s]is empty', $topologyId, $nodeName),
+                    400,
+                    ['Content-Type' => 'application/json'],
+                );
+            }
         } catch (Throwable $e) {
             return $this->getErrorResponse($e);
         }

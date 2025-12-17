@@ -8,11 +8,22 @@ use Exception;
 use Hanaboso\CommonsBundle\Exception\CronException;
 use Hanaboso\CommonsBundle\Exception\NodeException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
+use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
+use Hanaboso\PipesFramework\Configurator\Document\ApiToken;
+use Hanaboso\PipesFramework\Configurator\Enum\ApiTokenScopesEnum;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
+use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
+use Hanaboso\PipesFramework\Database\Document\Node;
+use Hanaboso\PipesFramework\Database\Document\Topology;
+use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController;
+use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler;
-use Hanaboso\PipesPhpSdk\Database\Document\Node;
-use Hanaboso\PipesPhpSdk\Database\Document\Topology;
+use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
+use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Json;
+use LogicException;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 use Throwable;
 
@@ -20,35 +31,75 @@ use Throwable;
  * Class TopologyControllerTest
  *
  * @package PipesFrameworkTests\Controller\HbPFConfiguratorBundle\Controller
- *
- * @covers  \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController
  */
+#[CoversClass(TopologyController::class)]
+#[CoversClass(TopologyHandler::class)]
+#[CoversClass(TopologyManager::class)]
+#[CoversClass(TopologySchemaUtils::class)]
 final class TopologyControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::getTopologiesAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologies
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologyData
-     *
+     * @return void
+     * @throws MongoDBException
+     * @throws Exception
+     */
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->dm->getRepository(ApiToken::class)->clear();
+        $this->dm->persist(
+            (new ApiToken())
+                ->setUser(ApplicationController::SYSTEM_USER)
+                ->setScopes(ApiTokenScopesEnum::cases())
+                ->setKey('1'),
+        );
+        $this->dm->flush();
+    }
+
+    /**
      * @throws Exception
      */
     public function testGetTopologies(): void
     {
         $this->createTopologies(4);
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/Topology/getTopologiesRequest.json',
             ['_id' => '5e32b04ce99e002a011e0d25'],
         );
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::getTopologiesAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologies
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologyData
-     *
+     * @throws Exception
+     */
+    public function testRunTopologies(): void
+    {
+        $topology = $this->createTopologies()[0];
+        $this->assertResponseLogged(
+            $this->jwt,
+            __DIR__ . '/data/Topology/runTopologiesRequest.json',
+            ['message' => "Topology with key '63591c7d47e53c5324074268' not found!"],
+            [':id' => $topology->getId()],
+        );
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testRunTopologiesErr(): void
+    {
+        $topology = $this->createTopologies()[0];
+        $this->assertResponseLogged(
+            $this->jwt,
+            __DIR__ . '/data/Topology/runTopologiesErrRequest.json',
+            [],
+            [':id' => $topology->getId()],
+        );
+    }
+
+    /**
      * @throws Exception
      */
     public function testGetTopologiesErr(): void
@@ -62,25 +113,22 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         $container = $this->client->getContainer();
         $container->set('hbpf.configurator.handler.topology', $nodeHandlerMock);
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/Topology/getTopologiesErrRequest.json',
             ['_id' => '5e32b04ce99e002a011e0d25'],
         );
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::getTopologyAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopology
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologyById
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologyData
-     *
      * @throws Exception
      */
     public function testGetTopology(): void
     {
         $topology = $this->createTopologies()[0];
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/Topology/getTopologyRequest.json',
             ['_id' => '5e32b3de8602642bb3758653'],
             [':id' => $topology->getId()],
@@ -88,49 +136,71 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::getTopologyAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopology
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologyById
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologyData
-     *
      * @throws Exception
      */
     public function testGetTopologyNotFound(): void
     {
-        $this->assertResponse(__DIR__ . '/data/Topology/getTopologyNotFoundRequest.json');
+        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/Topology/getTopologyNotFoundRequest.json');
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::createTopologyAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::createTopology
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologyData
-     *
      * @throws Exception
      */
     public function testCreateTopology(): void
     {
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/Topology/createTopologyRequest.json',
             ['_id' => '5e32b547b7c6da4b0c54ffc3'],
         );
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::createTopologyAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::createTopology
+     * @param Exception $exception
      *
      * @throws Exception
      */
-    public function testCreateTopologyErr(): void
+    #[DataProvider('topologyErrorProvider')]
+    public function testCreateTopologyError(Exception $exception): void
     {
-        $this->assertResponse(__DIR__ . '/data/Topology/createTopologyErrRequest.json');
+        $han = $this->createPartialMock(TopologyHandler::class, ['createTopology']);
+        $han->method('createTopology')->willThrowException($exception);
+        self::getContainer()->set('hbpf.configurator.handler.topology', $han);
+        switch ($exception->getCode()) {
+            case TopologyException::TOPOLOGY_NODE_NAME_NOT_FOUND:
+            case TopologyException::TOPOLOGY_NODE_TYPE_NOT_FOUND:
+                $this->assertResponseLogged(
+                    $this->jwt,
+                    __DIR__ . '/data/Topology/createTopology404Request.json',
+                    [
+                        'error_code' => 404,
+                    ],
+                );
+
+                break;
+            case TopologyException::TOPOLOGY_NODE_TYPE_NOT_EXIST:
+            case TopologyException::SCHEMA_START_NODE_MISSING:
+                $this->assertResponseLogged(
+                    $this->jwt,
+                    __DIR__ . '/data/Topology/createTopology400Request.json',
+                    [
+                        'error_code' => 400,
+                    ],
+                );
+
+                break;
+            default:
+                $this->assertResponseLogged(
+                    $this->jwt,
+                    __DIR__ . '/data/Topology/createTopology500Request.json',
+                    [
+                        'error_code' => 500,
+                    ],
+                );
+        }
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::updateTopologyAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::updateTopology
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologyById
-     *
      * @throws Exception
      */
     public function testUpdateTopology(): void
@@ -140,7 +210,8 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             ->setDescr('Topology');
         $this->pfd($topology);
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/Topology/updateTopologyRequest.json',
             ['_id' => '5e32bc7423cab649c23d4913'],
             [':id' => $topology->getId()],
@@ -148,22 +219,14 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::updateTopologyAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::updateTopology
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologyById
-     *
      * @throws Exception
      */
     public function testUpdateTopologyNotFound(): void
     {
-        $this->assertResponse(__DIR__ . '/data/Topology/updateTopologyNotFoundRequest.json');
+        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/Topology/updateTopologyNotFoundRequest.json');
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::getTopologySchemaAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologySchema
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologyById
-     *
      * @throws Exception
      */
     public function testGetTopologySchema(): void
@@ -173,26 +236,55 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         $this->client->request(
             'GET',
             sprintf('/api/topologies/%s/schema.bpmn', $topology->getId()),
+            server: [self::$AUTHORIZATION => $this->jwt],
         );
         $response = $this->client->getResponse();
         $response = (object) [
-            'status'  => $response->getStatusCode(),
             'content' => $response->getContent(),
+            'status'  => $response->getStatusCode(),
         ];
 
-        self::assertEquals(200, $response->status);
+        self::assertSame(200, $response->status);
         self::assertEquals($topology->getRawBpmn(), $response->content);
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::getTopologySchemaAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologyById
-     *
+     * @return void
+     * @throws Exception
+     */
+    public function testCheckTopologySchemaDifferences(): void
+    {
+        $topology = (new Topology())
+            ->setName('Topology')
+            ->setDescr('Topology')
+            ->setEnabled(TRUE);
+        $this->pfd($topology);
+
+        $this->client->request(
+            'POST',
+            sprintf('/api/topologies/check/%s/schema.bpmn', $topology->getId()),
+            [],
+            [],
+            [
+                'ACCEPT'             => 'application/xml',
+                'CONTENT_TYPE'       => 'application/xml',
+                self::$AUTHORIZATION => $this->jwt,
+            ],
+            $this->getBpmn(),
+        );
+
+        $response = $this->client->getResponse();
+        $response = $this->returnResponse($response);
+        self::assertEquals(TRUE, $response->content->isDifferent);
+        self::assertEquals(200, $response->status);
+    }
+
+    /**
      * @throws Exception
      */
     public function testGetTopologySchemaNotFound(): void
     {
-        $this->client->request('GET', '/api/topologies/999/schema.bpmn');
+        $this->client->request('GET', '/api/topologies/999/schema.bpmn', server: [self::$AUTHORIZATION => $this->jwt]);
         $response = $this->client->getResponse();
         $response = $this->returnResponse($response);
         $content  = $response->content;
@@ -203,10 +295,32 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::saveTopologySchemaAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::saveTopologySchema
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologyById
-     *
+     * @return void
+     * @throws Exception
+     */
+    public function testCheckTopologySchemaNotFound(): void
+    {
+        $this->client->request(
+            'POST',
+            '/api/topologies/check/999/schema.bpmn',
+            [],
+            [],
+            [
+                'ACCEPT'             => 'application/xml',
+                'CONTENT_TYPE'       => 'application/xml',
+                self::$AUTHORIZATION => $this->jwt,
+            ],
+            $this->getBpmn(),
+        );
+        $response = $this->client->getResponse();
+        $response = $this->returnResponse($response);
+        $content  = $response->content;
+        self::assertEquals(500, $response->status);
+        self::assertEquals(TopologyException::class, $content->type);
+        self::assertEquals(2_402, $content->errorCode);
+    }
+
+    /**
      * @throws Exception
      */
     public function testSaveTopologySchema(): void
@@ -217,14 +331,19 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             ->setEnabled(TRUE);
         $this->pfd($topology);
 
+        $this->client
+            ->getContainer()
+            ->set('hbpf.transport.curl_manager', self::createMock(CurlManagerInterface::class));
+
         $this->client->request(
             'PUT',
             sprintf('/api/topologies/%s/schema.bpmn', $topology->getId()),
             [],
             [],
             [
-                'CONTENT_TYPE' => 'application/xml',
-                'ACCEPT'       => 'application/xml',
+                'ACCEPT'             => 'application/xml',
+                'CONTENT_TYPE'       => 'application/xml',
+                self::$AUTHORIZATION => $this->jwt,
             ],
             $this->getBpmn(),
         );
@@ -234,11 +353,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::saveTopologySchemaAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::saveTopologySchema
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologyById
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologyData
-     *
      * @throws Exception
      */
     public function testSaveTopologySchemaNotFound(): void
@@ -249,8 +363,9 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             [],
             [],
             [
-                'CONTENT_TYPE' => 'application/xml',
-                'ACCEPT'       => 'application/xml',
+                'ACCEPT'             => 'application/xml',
+                'CONTENT_TYPE'       => 'application/xml',
+                self::$AUTHORIZATION => $this->jwt,
             ],
             $this->getBpmn(),
         );
@@ -263,10 +378,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::saveTopologySchemaAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::saveTopologySchema
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologyById
-     *
      * @throws Exception
      */
     public function testSaveTopologySchemaNameNotFound(): void
@@ -283,8 +394,9 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             [],
             [],
             [
-                'CONTENT_TYPE' => 'application/xml',
-                'ACCEPT'       => 'application/xml',
+                'ACCEPT'             => 'application/xml',
+                'CONTENT_TYPE'       => 'application/xml',
+                self::$AUTHORIZATION => $this->jwt,
             ],
             str_replace('name="Start Event"', '', $this->getBpmn()),
         );
@@ -294,10 +406,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::saveTopologySchemaAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::saveTopologySchema
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologyById
-     *
      * @throws Exception
      */
     public function testSaveTopologySchemaTypeNotExist(): void
@@ -314,25 +422,22 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             [],
             [],
             [
-                'CONTENT_TYPE' => 'application/xml',
-                'ACCEPT'       => 'application/xml',
+                'ACCEPT'             => 'application/xml',
+                'CONTENT_TYPE'       => 'application/xml',
+                self::$AUTHORIZATION => $this->jwt,
             ],
             str_replace('pipes:pipesType="custom"', 'pipes:pipesType="Unknown"', $this->getBpmn()),
         );
         $response = $this->client->getResponse();
         $response = (object) [
-            'status'  => $response->getStatusCode(),
             'content' => Json::decode((string) $response->getContent()),
+            'status'  => $response->getStatusCode(),
         ];
 
-        self::assertEquals(400, $response->status);
+        self::assertSame(400, $response->status);
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::saveTopologySchemaAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::saveTopologySchema
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologyById
-     *
      * @throws Exception
      */
     public function testSaveTopologySchemaCronNotValid(): void
@@ -349,8 +454,9 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             [],
             [],
             [
-                'CONTENT_TYPE' => 'application/xml',
-                'ACCEPT'       => 'application/xml',
+                'ACCEPT'             => 'application/xml',
+                'CONTENT_TYPE'       => 'application/xml',
+                self::$AUTHORIZATION => $this->jwt,
             ],
             str_replace('pipes:cronTime="*/2 * * * *"', 'pipes:cronTime="Unknown"', $this->getBpmn()),
         );
@@ -360,9 +466,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::saveTopologySchemaAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::saveTopologySchema
-     *
      * @throws Exception
      */
     public function testSaveTopologySchema2(): void
@@ -373,7 +476,8 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             ->setEnabled(TRUE);
         $this->pfd($topology);
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/Topology/saveTopologyRequest.json',
             ['_id' => '5e395287c5317130b67a4e83'],
             [':id' => $topology->getId()],
@@ -381,10 +485,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::getTopologySchemaAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologySchema
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getTopologyById
-     *
      * @throws Exception
      */
     public function testSaveAndGetTopologySchema(): void
@@ -399,20 +499,18 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         $this->client->request(
             'GET',
             sprintf('/api/topologies/%s/schema.bpmn', $topology->getId()),
+            server: [self::$AUTHORIZATION => $this->jwt],
         );
         $response = $this->client->getResponse();
         $response = (object) [
-            'status'  => $response->getStatusCode(),
             'content' => $response->getContent(),
+            'status'  => $response->getStatusCode(),
         ];
-        self::assertEquals(200, $response->status);
+        self::assertSame(200, $response->status);
         self::assertEquals($this->getBpmn(), $response->content);
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::deleteTopologyAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::deleteTopology
-     *
      * @throws Exception
      */
     public function testDeleteTopology(): void
@@ -425,13 +523,15 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
         $this->mockHandler('deleteTopology', new ResponseDto(200, '', '{}', []));
 
-        $this->assertResponse(__DIR__ . '/data/Topology/deleteTopologyRequest.json', [], [':id' => $topology->getId()]);
+        $this->assertResponseLogged(
+            $this->jwt,
+            __DIR__ . '/data/Topology/deleteTopologyRequest.json',
+            [],
+            [':id' => $topology->getId()],
+        );
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::deleteTopologyAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::deleteTopology
-     *
      * @throws Exception
      */
     public function testDeleteTopologyErr(): void
@@ -442,7 +542,8 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             ->setEnabled(TRUE);
         $this->pfd($topology);
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/Topology/deleteTopologyErrRequest.json',
             ['message' => 'CurlManager::send() failed: cURL error 6: Could not resolve host: topology-api (see https://curl.haxx.se/libcurl/c/libcurl-errors.html)'],
             [':id' => $topology->getId()],
@@ -450,9 +551,6 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::getCronTopologiesAction
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler::getCronTopologies
-     *
      * @throws Exception
      */
     public function testGetCronTopologies(): void
@@ -463,22 +561,20 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
                 'items' => [
                     [
                         'name'            => 'Topology-Node',
-                        'time'            => '*/1 * * * *',
-                        'topology_status' => TRUE,
-                        'topology_id'     => 'Topology ID',
-                        'topology'        => 'Topology',
                         'node'            => 'Node',
+                        'time'            => '*/1 * * * *',
+                        'topology'        => 'Topology',
+                        'topology_id'     => 'Topology ID',
+                        'topology_status' => TRUE,
                     ],
                 ],
             ],
         );
 
-        $this->assertResponse(__DIR__ . '/data/Topology/getCronTopologiesRequest.json');
+        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/Topology/getCronTopologiesRequest.json');
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::publishTopologyAction
-     *
      * @throws Exception
      */
     public function testPublishTopologyAction(): void
@@ -493,7 +589,8 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         $node = (new Node())->setTopology($topology->getId());
         $this->pfd($node);
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/Topology/testPublishTopologyRequest.json',
             [],
             [':id' => $topology->getId()],
@@ -501,20 +598,16 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::publishTopologyAction
-     *
      * @throws Exception
      */
     public function testPublishTopologyErrAction(): void
     {
         $this->mockHandler('publishTopology', new TopologyException());
 
-        $this->assertResponse(__DIR__ . '/data/Topology/testPublishTopologyErrRequest.json');
+        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/Topology/testPublishTopologyErrRequest.json');
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::cloneTopologyAction
-     *
      * @throws Exception
      */
     public function testCloneTopologyAction(): void
@@ -528,43 +621,42 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
         $this->mockHandler(
             'cloneTopology',
             [
-                '_id'    => '999',
-                'type'   => 'type',
-                'name'   => 'name',
-                'descr'  => 'desc',
-                'status' => 'status',
+                'description' => 'desc',
+                'name'        => 'name',
+                'status'      => 'status',
+                'type'        => 'type',
+                '_id'         => '999',
             ],
         );
 
-        $this->assertResponse(__DIR__ . '/data/Topology/cloneTopologyRequest.json', [], [':id' => $topology->getId()]);
+        $this->assertResponseLogged(
+            $this->jwt,
+            __DIR__ . '/data/Topology/cloneTopologyRequest.json',
+            [],
+            [':id' => $topology->getId()],
+        );
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::cloneTopologyAction
-     *
      * @throws Exception
      */
     public function testCloneTopologyActionErr(): void
     {
         $this->mockHandler('cloneTopology', new NodeException());
 
-        $this->assertResponse(__DIR__ . '/data/Topology/cloneTopologyErrRequest.json');
+        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/Topology/cloneTopologyErrRequest.json');
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::getCronTopologiesAction
-     *
      * @throws Exception
      */
     public function testGetCronTopologiesErr(): void
     {
         $this->mockHandler('getCronTopologies', new CronException());
-        $this->assertResponse(__DIR__ . '/data/Topology/getCronTopologiesErrRequest.json');
+        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/Topology/getCronTopologiesErrRequest.json');
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::testAction
-     *
      * @throws Exception
      */
     public function testAction(): void
@@ -577,12 +669,15 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             ->setEnabled(TRUE);
         $this->pfd($topology);
 
-        $this->assertResponse(__DIR__ . '/data/Topology/testActionRequest.json', [], ['id' => $topology->getId()]);
+        $this->assertResponseLogged(
+            $this->jwt,
+            __DIR__ . '/data/Topology/testActionRequest.json',
+            [],
+            ['id' => $topology->getId()],
+        );
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\TopologyController::testAction
-     *
      * @throws Exception
      */
     public function testActionErr(): void
@@ -595,7 +690,78 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
             ->setEnabled(TRUE);
         $this->pfd($topology);
 
-        $this->assertResponse(__DIR__ . '/data/Topology/testActionErrRequest.json', [], ['id' => $topology->getId()]);
+        $this->assertResponseLogged(
+            $this->jwt,
+            __DIR__ . '/data/Topology/testActionErrRequest.json',
+            [],
+            ['id' => $topology->getId()],
+        );
+    }
+
+    /**
+     * @return void
+     * @throws Exception
+     */
+    public function testGetTopologiesByIdAndNodeName(): void
+    {
+        $topology = (new Topology())
+            ->setName('SameName')
+            ->setDescr('Topology')
+            ->setEnabled(TRUE)
+            ->setBpmn($this->getBpmnArray())
+            ->setRawBpmn($this->getBpmn());
+        $this->pfd($topology);
+
+        $node = (new Node())
+            ->setName('testNode')
+            ->setTopology($topology->getId());
+        $this->pfd($node);
+
+        $topology1 = (new Topology())
+            ->setName('SameName')
+            ->setDescr('Topology')
+            ->setVersion(2)
+            ->setEnabled(TRUE)
+            ->setBpmn($this->getBpmnArray())
+            ->setRawBpmn($this->getBpmn());
+        $this->pfd($topology1);
+
+        $node1 = (new Node())
+            ->setName('testNode')
+            ->setTopology($topology1->getId());
+        $this->pfd($node1);
+
+        $response = $this->sendRequest(
+            'GET',
+            sprintf('/topologies/%s/versions/node/%s', $topology->getId(), $node->getName()),
+            [],
+            [self::$AUTHORIZATION => $this->jwt],
+        );
+
+        self::assertEquals($topology->getId(), $response['body'][0]['id']);
+        self::assertEquals($topology->getName(), $response['body'][0]['name']);
+        self::assertEquals($topology->getVersion(), $response['body'][0]['version']);
+        self::assertEquals($node->getId(), $response['body'][0]['nodes'][0]['id']);
+        self::assertEquals($node->getName(), $response['body'][0]['nodes'][0]['name']);
+
+        self::assertEquals($topology1->getId(), $response['body'][1]['id']);
+        self::assertEquals($topology1->getName(), $response['body'][1]['name']);
+        self::assertEquals($topology1->getVersion(), $response['body'][1]['version']);
+        self::assertEquals($node1->getId(), $response['body'][1]['nodes'][0]['id']);
+        self::assertEquals($node1->getName(), $response['body'][1]['nodes'][0]['name']);
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public static function topologyErrorProvider(): array
+    {
+        return [
+            [new TopologyException(code: TopologyException::TOPOLOGY_NODE_TYPE_NOT_FOUND)],
+            [new TopologyException(code: TopologyException::TOPOLOGY_NODE_NAME_NOT_FOUND)],
+            [new TopologyException(code: TopologyException::TOPOLOGY_NODE_TYPE_NOT_EXIST)],
+            [new LogicException()],
+        ];
     }
 
     /**
@@ -627,7 +793,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
      */
     private function getBpmn(): string
     {
-        return (string) file_get_contents(sprintf('%s/data/schema.bpmn', __DIR__));
+        return File::getContent(sprintf('%s/data/schema.bpmn', __DIR__));
     }
 
     /**
@@ -636,7 +802,7 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
      */
     private function getBpmnArray(): array
     {
-        return Json::decode((string) file_get_contents(sprintf('%s/data/schema.json', __DIR__)));
+        return Json::decode(File::getContent(sprintf('%s/data/schema.json', __DIR__)));
     }
 
     /**

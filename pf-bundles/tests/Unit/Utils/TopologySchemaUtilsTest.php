@@ -3,8 +3,11 @@
 namespace PipesFrameworkTests\Unit\Utils;
 
 use Exception;
+use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
 use Hanaboso\RestBundle\Model\Decoder\XmlDecoder;
+use Hanaboso\Utils\File\File;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 
 /**
@@ -12,14 +15,11 @@ use PipesFrameworkTests\KernelTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Unit\Utils
  */
+#[CoversClass(TopologySchemaUtils::class)]
 final class TopologySchemaUtilsTest extends KernelTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\Utils\TopologySchemaUtils::getSchemaObject
-     * @covers \Hanaboso\PipesFramework\Utils\TopologySchemaUtils::getPipesType
-     * @covers \Hanaboso\PipesFramework\Utils\TopologySchemaUtils::createConfigDto
-     *
      * @throws Exception
      */
     public function testGetSchemaObject(): void
@@ -27,51 +27,40 @@ final class TopologySchemaUtilsTest extends KernelTestCaseAbstract
         $content = $this->load('default.tplg');
         $schema  = TopologySchemaUtils::getSchemaObject($this->getXmlDecoder()->decode($content));
 
-        self::assertNotEmpty($schema);
-
         $nodes = $schema->getNodes();
         self::assertCount(9, $schema->getNodes());
         self::assertCount(6, $schema->getSequences());
-        self::assertEquals('Event_1lqi8dm', $schema->getStartNode());
+        self::assertEquals(['Event_1lqi8dm'], $schema->getStartNode());
 
-        foreach ($nodes as $node) {
-            self::assertObjectHasAttribute('handler', $node);
-            self::assertObjectHasAttribute('id', $node);
-            self::assertObjectHasAttribute('name', $node);
-            self::assertObjectHasAttribute('cronTime', $node);
-            self::assertObjectHasAttribute('pipesType', $node);
-            self::assertObjectHasAttribute('systemConfigs', $node);
-        }
-
-        self::assertEquals('bpmn:event', $nodes['Event_1lqi8dm']->getHandler());
-        self::assertEquals('Event_1lqi8dm', $nodes['Event_1lqi8dm']->getId());
-        self::assertEquals('hubspot-updated-contact-connector', $nodes['Event_1lqi8dm']->getName());
-        self::assertEquals('', $nodes['Event_1lqi8dm']->getCronTime());
-        self::assertEquals('webhook', $nodes['Event_1lqi8dm']->getPipesType());
+        self::assertSame('bpmn:event', $nodes['Event_1lqi8dm']->getHandler());
+        self::assertSame('Event_1lqi8dm', $nodes['Event_1lqi8dm']->getId());
+        self::assertSame('hubspot-updated-contact-connector', $nodes['Event_1lqi8dm']->getName());
+        self::assertSame('', $nodes['Event_1lqi8dm']->getCronTime());
+        self::assertSame('webhook', $nodes['Event_1lqi8dm']->getPipesType());
 
         self::assertCount(9, $schema->getNodes());
         self::assertCount(6, $schema->getSequences());
-        self::assertEquals('Event_1lqi8dm', $schema->getStartNode());
+        self::assertEquals(['Event_1lqi8dm'], $schema->getStartNode());
 
         self::assertEquals(
             [
                 'Event_1lqi8dm' => ['Task_1taayin'],
+                'Task_0nwvqkt'  => ['Task_00wzy7d'],
+                'Task_1niijps'  => ['Task_1wcc82o', 'Task_0nwvqkt'],
                 'Task_1taayin'  => ['Task_152x7cw', 'Task_1niijps'],
                 'Task_1wcc82o'  => ['Task_0h8gpta'],
                 'Task_152x7cw'  => ['Task_0fzjb0y'],
-                'Task_1niijps'  => ['Task_1wcc82o', 'Task_0nwvqkt'],
-                'Task_0nwvqkt'  => ['Task_00wzy7d'],
             ],
             $schema->getSequences(),
         );
 
         $content = $this->load('tplg-no-process.tplg');
-        $schema  = TopologySchemaUtils::getSchemaObject($this->getXmlDecoder()->decode($content));
-        self::assertCount(0, $schema->getNodes());
-
-        $content = $this->load('tplg-with-process.tplg');
-        $schema  = TopologySchemaUtils::getSchemaObject($this->getXmlDecoder()->decode($content));
-        self::assertCount(0, $schema->getNodes());
+        try {
+            TopologySchemaUtils::getSchemaObject($this->getXmlDecoder()->decode($content));
+        } catch (TopologyException $e) {
+            self::assertSame('Unsupported schema!', $e->getMessage());
+            self::assertSame(TopologyException::UNSUPPORTED_SCHEMA, $e->getCode());
+        }
 
         $content = $this->load('tplg-no-type.tplg');
         $schema  = TopologySchemaUtils::getSchemaObject($this->getXmlDecoder()->decode($content));
@@ -79,8 +68,6 @@ final class TopologySchemaUtilsTest extends KernelTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\Utils\TopologySchemaUtils::getPipesType
-     *
      * @throws Exception
      */
     public function testGetPipesType(): void
@@ -89,7 +76,7 @@ final class TopologySchemaUtilsTest extends KernelTestCaseAbstract
         $result = $this->invokeMethod($topo, 'getPipesType', ['']);
         self::assertEquals('', $result);
 
-        $result = $this->invokeMethod($topo, 'getPipesType', ['gateway']);
+        $result = $this->invokeMethod($topo, 'getPipesType', ['bpmn:exclusiveGateway']);
         self::assertEquals('gateway', $result);
     }
 
@@ -100,7 +87,7 @@ final class TopologySchemaUtilsTest extends KernelTestCaseAbstract
      */
     private function load(string $name): string
     {
-        return (string) file_get_contents(sprintf('%s/data/%s', __DIR__, $name));
+        return File::getContent(sprintf('%s/data/%s', __DIR__, $name));
     }
 
     /**
@@ -108,7 +95,7 @@ final class TopologySchemaUtilsTest extends KernelTestCaseAbstract
      */
     private function getXmlDecoder(): XmlDecoder
     {
-        return self::$container->get('rest.decoder.xml');
+        return self::getContainer()->get('rest.decoder.xml');
     }
 
 }

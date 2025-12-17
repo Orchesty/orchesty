@@ -5,7 +5,9 @@ namespace PipesFrameworkTests\Integration\Metrics\Document;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Exception;
 use Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetrics;
+use Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetricsFields;
 use Hanaboso\Utils\Date\DateTimeUtils;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -13,31 +15,31 @@ use PipesFrameworkTests\DatabaseTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Integration\Metrics\Document
  */
+#[CoversClass(ConnectorsMetrics::class)]
+#[CoversClass(ConnectorsMetricsFields::class)]
 final class ConnectorsMetricsTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetrics::getTags
-     * @covers \Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetrics::getFields
-     * @covers \Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetricsFields::getTotalDuration
-     * @covers \Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetricsFields::getCreated
-     *
      * @throws Exception
      */
     public function testDocument(): void
     {
-        $this->dm->createQueryBuilder(ConnectorsMetrics::class)
+        $dm = self::getContainer()->get('doctrine_mongodb.odm.metrics_document_manager');
+        $dm->getSchemaManager()->dropDocumentCollection(ConnectorsMetrics::class);
+        $dm->getSchemaManager()->createDocumentCollection(ConnectorsMetrics::class);
+        $dm->createQueryBuilder(ConnectorsMetrics::class)
             ->insert()
             ->setNewObj(
                 [
                     'fields' => [
-                        'sent_request_total_duration' => 10,
                         'created'                     => DateTimeUtils::getUtcDateTime('1.1.2020')->getTimestamp(),
+                        'sent_request_total_duration' => 10,
                     ],
                     'tags'   => [
-                        'nodeId'     => '1',
-                        'topologyId' => '2',
-                        'queue'      => '12',
+                        'node_id'     => '1',
+                        'queue'       => '12',
+                        'topology_id' => '2',
                     ],
                 ],
             )
@@ -45,12 +47,12 @@ final class ConnectorsMetricsTest extends DatabaseTestCaseAbstract
             ->execute();
 
         /** @var DocumentRepository<ConnectorsMetrics> $repository */
-        $repository = $this->dm->getRepository(ConnectorsMetrics::class);
+        $repository = $dm->getRepository(ConnectorsMetrics::class);
         /** @var ConnectorsMetrics $result */
         $result = $repository->findAll()[0];
-        self::assertEquals(10, $result->getFields()->getTotalDuration());
+        self::assertSame(10, $result->getFields()->getTotalDuration());
         self::assertEquals(DateTimeUtils::getUtcDateTime('1.1.2020'), $result->getFields()->getCreated());
-        self::assertEquals('1', $result->getTags()->getNodeId());
+        self::assertSame('1', $result->getTags()->getNodeId());
     }
 
 }

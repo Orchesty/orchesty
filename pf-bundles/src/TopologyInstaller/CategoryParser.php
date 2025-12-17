@@ -7,10 +7,10 @@ use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\Persistence\ObjectRepository;
 use Hanaboso\CommonsBundle\Exception\CategoryException;
 use Hanaboso\PipesFramework\Configurator\Model\CategoryManager;
+use Hanaboso\PipesFramework\Database\Document\Category;
+use Hanaboso\PipesFramework\Database\Document\Topology;
+use Hanaboso\PipesFramework\Database\Repository\CategoryRepository;
 use Hanaboso\PipesFramework\TopologyInstaller\Dto\TopologyFile;
-use Hanaboso\PipesPhpSdk\Database\Document\Category;
-use Hanaboso\PipesPhpSdk\Database\Document\Topology;
-use Hanaboso\PipesPhpSdk\Database\Repository\CategoryRepository;
 use RuntimeException;
 
 /**
@@ -21,7 +21,7 @@ use RuntimeException;
 final class CategoryParser
 {
 
-    public const ALL = '*';
+    public const string ALL = '*';
 
     /**
      * @var mixed[]
@@ -49,9 +49,9 @@ final class CategoryParser
     private array $tmpPath = [];
 
     /**
-     * @var string
+     * @var string|null
      */
-    private string $matchedRootAlias = '';
+    private string|null $matchedRootAlias = '';
 
     /**
      * @var ObjectRepository<Category>&CategoryRepository
@@ -80,7 +80,7 @@ final class CategoryParser
      *
      * @return CategoryParser
      */
-    public function addRoot(string $alias, string $path): CategoryParser
+    public function addRoot(string $alias, string $path): self
     {
         $this->roots[$alias] = $path;
 
@@ -93,7 +93,7 @@ final class CategoryParser
      *
      * @return CategoryParser
      */
-    public function addExclude(string $rootAlias, string $folder): CategoryParser
+    public function addExclude(string $rootAlias, string $folder): self
     {
         if (array_key_exists($rootAlias, $this->roots)) {
             $this->excludes[$rootAlias][] = $folder;
@@ -109,7 +109,7 @@ final class CategoryParser
      *
      * @return CategoryParser
      */
-    public function addAlias(string $rootAlias, string $folder, string $alias): CategoryParser
+    public function addAlias(string $rootAlias, string $folder, string $alias): self
     {
         if (array_key_exists($rootAlias, $this->roots)) {
             $this->aliases[$rootAlias][$alias] = $folder;
@@ -130,17 +130,19 @@ final class CategoryParser
         $categories = $this->getCategories($file);
         $parent     = '';
         foreach ($categories as $name) {
-            /** @var Category $category */
+            /** @var Category|null $category */
             $category = $this->categoryRepository->findOneBy(['name' => $name]);
 
-            if (!empty($category) && ($category->getParent() == $parent || empty($parent))) {
+            if ($category !== NULL && ($category->getParent() == $parent || $parent === '')) {
                 $category = $this->categoryManager->updateCategory($category, ['parent' => $parent]);
-            } else {
+            } else if ($name) {
                 $category = $this->createCategory($name, $parent);
             }
 
-            $topology->setCategory($category->getId());
-            $parent = $category->getId();
+            if ($category) {
+                $topology->setCategory($category->getId());
+                $parent = $category->getId();
+            }
         }
 
         $this->dm->flush();
@@ -169,6 +171,7 @@ final class CategoryParser
      */
     private function getParsedPath(string $path): array
     {
+        // @phpstan-ignore-next-line
         return array_filter(explode('/', $path));
     }
 
@@ -189,8 +192,8 @@ final class CategoryParser
                 unset($this->tmpPath[$key]);
             }
 
-            if (empty($this->tmpPath)) {
-                $this->matchedRootAlias = $alias;
+            if ($this->tmpPath === []) {
+                $this->matchedRootAlias = is_numeric($alias) ? NULL : $alias;
                 $this->tmpFilePath      = array_unique($this->tmpFilePath);
                 array_unshift($categories, $alias);
 
@@ -303,7 +306,7 @@ final class CategoryParser
      */
     private function createCategory(string $name, string $parent): Category
     {
-        return $this->categoryManager->createCategory(['name' => $name, 'parent' => $parent ?? NULL]);
+        return $this->categoryManager->createCategory(['name' => $name, 'parent' => $parent]);
     }
 
 }

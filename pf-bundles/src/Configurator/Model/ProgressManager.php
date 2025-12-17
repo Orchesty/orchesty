@@ -3,7 +3,13 @@
 namespace Hanaboso\PipesFramework\Configurator\Model;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\MongoDBException;
+use Exception;
+use Hanaboso\MongoDataGrid\GridRequestDtoInterface;
 use Hanaboso\PipesFramework\Configurator\Document\TopologyProgress;
+use Hanaboso\PipesFramework\Configurator\Model\Filters\ProgressFilter;
+use Hanaboso\PipesFramework\Database\Document\Topology;
+use Hanaboso\Utils\Date\DateTimeUtils;
 
 /**
  * Class ProgressManager
@@ -16,28 +22,48 @@ final class ProgressManager
     /**
      * ProgressManager constructor.
      *
+     * @param ProgressFilter  $progressFilter
      * @param DocumentManager $dm
      */
-    public function __construct(private DocumentManager $dm)
+    public function __construct(private readonly ProgressFilter $progressFilter, private readonly DocumentManager $dm)
     {
     }
 
     /**
-     * @param string $topologyId
+     * @param GridRequestDtoInterface $dto
      *
      * @return array<mixed>
+     * @throws MongoDBException
+     * @throws Exception
      */
-    public function getProgress(string $topologyId): array
+    public function getProgress(GridRequestDtoInterface $dto): array
     {
-        $res  = [];
-        $docs = $this->dm->getRepository(TopologyProgress::class)
-            ->findBy(['topologyId' => $topologyId],['created' =>'desc'], 20);
+        $res = $this->progressFilter->getData($dto)->toArray();
 
-        foreach ($docs ?? [] as $doc) {
-            $res[] = $doc->toArray();
-        }
+        return array_map(function (array $doc) {
+            $finished = $doc['finished']
+                ? DateTimeUtils::getUtcDateTime($doc['finished'])->format(DateTimeUtils::DATE_TIME_UTC)
+                : NULL;
+            $end      = $doc['finished'] ?? DateTimeUtils::getUtcDateTime()->format(DateTimeUtils::DATE_TIME_UTC);
+            $created  = DateTimeUtils::getUtcDateTime($doc['created']);
 
-        return $res;
+            $topo = $this->dm->getRepository(Topology::class)->findOneBy(['id' => $doc['topologyId']]);
+
+            return [
+                'correlationId'  => $doc['_id'] ?? $doc['id'],
+                'duration'       => TopologyProgress::durationInMs($created, DateTimeUtils::getUtcDateTime($end)),
+                'failed'         => $doc['nok'],
+                'finished'       => $finished,
+                'id'             => $doc['topologyId'],
+                'name'           => $topo?->getName() ?? '',
+                'nodesProcessed' => $doc['processedCount'],
+                'nodesTotal'     => $doc['total'],
+                'process'        => $topo?->getDescr() ?? '',
+                'started'        => $created->format(DateTimeUtils::DATE_TIME_UTC),
+                'status'         => $doc['processedCount'] < $doc['total'] ? 'IN PROGRESS' : ($doc['nok'] > 0 ? 'FAILED' : 'SUCCESS'),
+                'user'           => $doc['user'] ?? '',
+            ];
+        }, $res);
     }
 
 }

@@ -7,7 +7,7 @@ use Hanaboso\CommonsBundle\Enum\TypeEnum;
 use Hanaboso\CommonsBundle\Exception\CronException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
-use Hanaboso\PipesPhpSdk\Database\Document\Node;
+use Hanaboso\PipesFramework\Database\Document\Node;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -20,17 +20,15 @@ use Symfony\Component\Console\Output\OutputInterface;
 final class RefreshCronCommand extends Command
 {
 
-    private const CMD_NAME = 'cron:refresh';
-
     /**
      * RefreshCronCommand constructor.
      *
      * @param DocumentManager $dm
      * @param CronManager     $cronManager
      */
-    public function __construct(private DocumentManager $dm, private CronManager $cronManager)
+    public function __construct(private readonly DocumentManager $dm, private readonly CronManager $cronManager)
     {
-        parent::__construct(self::CMD_NAME);
+        parent::__construct();
     }
 
     /**
@@ -39,7 +37,7 @@ final class RefreshCronCommand extends Command
     protected function configure(): void
     {
         $this
-            ->setName(self::CMD_NAME)
+            ->setName('cron:refresh')
             ->setDescription('Refresh CRONs');
     }
 
@@ -54,18 +52,23 @@ final class RefreshCronCommand extends Command
         $input;
 
         /** @var Node[] $nodes */
-        $nodes = $this->dm->getRepository(Node::class)->findBy(['type' => TypeEnum::CRON]);
+        $nodes = array_filter(
+            $this->dm->getRepository(Node::class)->findBy(['type' => TypeEnum::CRON->value, 'deleted' => FALSE]),
+            static fn(Node $node): bool => $node->getCron() !== NULL && $node->getCron() !== '',
+        );
+
         $output->write(sprintf('Refreshing %s CRONs:', count($nodes)));
+
         try {
-            $this->cronManager->batchCreate($nodes);
+            $this->cronManager->batchUpsert($nodes);
             $output->writeln(' SUCCESS');
         } catch (CronException | CurlException $e) {
             $output->writeln(sprintf(' FAIL (%s)', $e->getMessage()));
 
-            return 1;
+            return self::FAILURE;
         }
 
-        return 0;
+        return self::SUCCESS;
     }
 
 }

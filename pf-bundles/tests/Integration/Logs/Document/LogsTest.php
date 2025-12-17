@@ -5,6 +5,9 @@ namespace PipesFrameworkTests\Integration\Logs\Document;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Exception;
 use Hanaboso\PipesFramework\Logs\Document\Logs;
+use Hanaboso\PipesFramework\Logs\Document\Pipes;
+use Hanaboso\PipesFramework\Logs\Document\Stacktrace;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -12,32 +15,13 @@ use PipesFrameworkTests\DatabaseTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Integration\Logs\Document
  */
+#[CoversClass(Logs::class)]
+#[CoversClass(Pipes::class)]
+#[CoversClass(Stacktrace::class)]
 final class LogsTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\Logs\Document\Logs::getTimestamp
-     * @covers \Hanaboso\PipesFramework\Logs\Document\Logs::getPipes
-     * @covers \Hanaboso\PipesFramework\Logs\Document\Logs::getMessage
-     * @covers \Hanaboso\PipesFramework\Logs\Document\Logs::getHost
-     * @covers \Hanaboso\PipesFramework\Logs\Document\Logs::getVersion
-     * @covers \Hanaboso\PipesFramework\Logs\Document\Pipes::getTimestamp
-     * @covers \Hanaboso\PipesFramework\Logs\Document\Pipes::getType
-     * @covers \Hanaboso\PipesFramework\Logs\Document\Pipes::getHostname
-     * @covers \Hanaboso\PipesFramework\Logs\Document\Pipes::getChannel
-     * @covers \Hanaboso\PipesFramework\Logs\Document\Pipes::getSeverity
-     * @covers \Hanaboso\PipesFramework\Logs\Document\Pipes::getCorrelationId
-     * @covers \Hanaboso\PipesFramework\Logs\Document\Pipes::getTopologyId
-     * @covers \Hanaboso\PipesFramework\Logs\Document\Pipes::getTopologyName
-     * @covers \Hanaboso\PipesFramework\Logs\Document\Pipes::getNodeId
-     * @covers \Hanaboso\PipesFramework\Logs\Document\Pipes::getNodeName
-     * @covers \Hanaboso\PipesFramework\Logs\Document\Pipes::getStacktrace
-     * @covers \Hanaboso\PipesFramework\Logs\Document\Stacktrace::getMessage
-     * @covers \Hanaboso\PipesFramework\Logs\Document\Stacktrace::getClass
-     * @covers \Hanaboso\PipesFramework\Logs\Document\Stacktrace::getFile
-     * @covers \Hanaboso\PipesFramework\Logs\Document\Stacktrace::getTrace
-     * @covers \Hanaboso\PipesFramework\Logs\Document\Stacktrace::getCode
-     *
      * @throws Exception
      */
     public function testDocument(): void
@@ -46,29 +30,30 @@ final class LogsTest extends DatabaseTestCaseAbstract
             ->insert()
             ->setNewObj(
                 [
+                    'host'      => 'host',
+                    'message'   => 'msg',
+                    'pipes'     => [
+                        'channel'        => 'chn',
+                        'correlation_id' => '1',
+                        'hostname'       => 'host',
+                        'nodeName'      => 'NodeName',
+                        'node_id'        => '3',
+                        'service'        => 'type',
+                        'severity'       => 'ERROR',
+                        'stacktrace'     => [
+                            'class'   => 'class',
+                            'code'    => 'code',
+                            'file'    => 'file',
+                            'message' => 'msg',
+                            'trace'   => 'trace',
+                        ],
+                        'timestamp'      => 2_222,
+                        'topologyName'  => 'TopoName',
+                        'topology_id'    => '2',
+                    ],
                     'timestamp' => '1111',
                     'version'   => '1.2',
-                    'message'   => 'msg',
-                    'host'      => 'host',
-                    'pipes'     => [
-                        'timestamp'      => '2222',
-                        'type'           => 'type',
-                        'hostname'       => 'host',
-                        'channel'        => 'chn',
-                        'severity'       => 'ERROR',
-                        'correlation_id' => '1',
-                        'topology_id'    => '2',
-                        'topology_name'  => 'TopoName',
-                        'node_id'        => '3',
-                        'node_name'      => 'NodeName',
-                        'stacktrace'     => [
-                            'message' => 'msg',
-                            'class'   => 'class',
-                            'file'    => 'file',
-                            'trace'   => 'trace',
-                            'code'    => 'code',
-                        ],
-                    ],
+
                 ],
             )
             ->getQuery()
@@ -79,24 +64,24 @@ final class LogsTest extends DatabaseTestCaseAbstract
         /** @var Logs $result */
         $result = $repository->findAll()[0];
         self::assertEquals('1111', $result->getTimestamp()->getTimestamp());
-        self::assertEquals('1.2', $result->getVersion());
-        self::assertEquals('msg', $result->getMessage());
-        self::assertEquals('host', $result->getHost());
-        self::assertEquals('2222', $result->getPipes()->getTimestamp()->getTimestamp());
-        self::assertEquals('type', $result->getPipes()->getType());
-        self::assertEquals('host', $result->getPipes()->getHostname());
-        self::assertEquals('chn', $result->getPipes()->getChannel());
-        self::assertEquals('ERROR', $result->getPipes()->getSeverity());
-        self::assertEquals('1', $result->getPipes()->getCorrelationId());
-        self::assertEquals('2', $result->getPipes()->getTopologyId());
-        self::assertEquals('TopoName', $result->getPipes()->getTopologyName());
-        self::assertEquals('3', $result->getPipes()->getNodeId());
-        self::assertEquals('NodeName', $result->getPipes()->getNodeName());
-        self::assertEquals('msg', $result->getPipes()->getStacktrace()->getMessage());
-        self::assertEquals('class', $result->getPipes()->getStacktrace()->getClass());
-        self::assertEquals('file', $result->getPipes()->getStacktrace()->getFile());
-        self::assertEquals('trace', $result->getPipes()->getStacktrace()->getTrace());
-        self::assertEquals('code', $result->getPipes()->getStacktrace()->getCode());
+        self::assertSame('1.2', $result->getVersion());
+        self::assertSame('msg', $result->getMessage());
+        self::assertSame('host', $result->getHost());
+        self::assertSame(2_222, $result->getPipes()->getTimestamp());
+        self::assertSame('type', $result->getPipes()->getService());
+        self::assertSame('host', $result->getPipes()->getHostname());
+        self::assertSame('chn', $result->getPipes()->getChannel());
+        self::assertSame('ERROR', $result->getPipes()->getSeverity());
+        self::assertSame('1', $result->getPipes()->getCorrelationId());
+        self::assertSame('2', $result->getPipes()->getTopologyId());
+        self::assertSame('TopoName', $result->getPipes()->getTopologyName());
+        self::assertSame('3', $result->getPipes()->getNodeId());
+        self::assertSame('NodeName', $result->getPipes()->getNodeName());
+        self::assertSame('msg', $result->getPipes()->getStacktrace()->getMessage());
+        self::assertSame('class', $result->getPipes()->getStacktrace()->getClass());
+        self::assertSame('file', $result->getPipes()->getStacktrace()->getFile());
+        self::assertSame('trace', $result->getPipes()->getStacktrace()->getTrace());
+        self::assertSame('code', $result->getPipes()->getStacktrace()->getCode());
     }
 
 }

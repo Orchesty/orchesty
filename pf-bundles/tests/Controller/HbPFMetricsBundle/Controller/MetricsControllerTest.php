@@ -2,11 +2,16 @@
 
 namespace PipesFrameworkTests\Controller\HbPFMetricsBundle\Controller;
 
+use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Exception;
+use Hanaboso\PipesFramework\Database\Document\Node;
+use Hanaboso\PipesFramework\Database\Document\Topology;
+use Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController;
+use Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler;
 use Hanaboso\PipesFramework\Metrics\Exception\MetricsException;
-use Hanaboso\PipesFramework\Metrics\Manager\InfluxMetricsManager;
-use Hanaboso\PipesPhpSdk\Database\Document\Node;
-use Hanaboso\PipesPhpSdk\Database\Document\Topology;
+use Hanaboso\PipesFramework\Metrics\Manager\MetricsManagerAbstract;
+use Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 use Throwable;
 
@@ -15,13 +20,13 @@ use Throwable;
  *
  * @package PipesFrameworkTests\Controller\HbPFMetricsBundle\Controller
  */
+#[CoversClass(MetricsController::class)]
+#[CoversClass(MetricsHandler::class)]
+#[CoversClass(MetricsManagerAbstract::class)]
 final class MetricsControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::topologyMetricsAction
-     *
      * @throws Exception
      */
     public function testTopologyMetricsAction(): void
@@ -30,21 +35,22 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
             'getTopologyMetrics',
             [
                 'topology' => [
-                    'process_time' => ['min' => 4, 'avg' => 2, 'max' => 10], 'process' => ['fo' => 'bar'],
+                    'process' => ['fo' => 'bar'],
+                    'process_time' => ['min' => 4, 'avg' => 2, 'max' => 10],
                 ],
             ],
         );
 
         $topo = $this->createTopo();
-        $this->assertResponse(__DIR__ . '/data/topologyMetricsRequest.json', [], [':id' => $topo->getId()]);
+        $this->assertResponseLogged(
+            $this->jwt,
+            __DIR__ . '/data/topologyMetricsRequest.json',
+            [],
+            [':id' => $topo->getId()],
+        );
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::topologyMetricsAction
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler::getTopologyMetrics
-     *
      * @throws Exception
      */
     public function testTopologyMetricsActionErr(): void
@@ -52,15 +58,15 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
         $this->mockMetricsManager('getTopologyMetrics', new MetricsException());
 
         $topo = $this->createTopo();
-        $this->assertResponse(__DIR__ . '/data/topologyMetricsErrRequest.json', [], [':id' => $topo->getId()]);
+        $this->assertResponseLogged(
+            $this->jwt,
+            __DIR__ . '/data/topologyMetricsErrRequest.json',
+            [],
+            [':id' => $topo->getId()],
+        );
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::nodeMetricsAction
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler::getNodeMetrics
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler::getNodeByTopologyAndNodeId
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler::getTopologyById
-     *
      * @throws Exception
      */
     public function testNodeMetricsAction(): void
@@ -70,7 +76,8 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
 
         $this->mockMetricsManager('getNodeMetrics', ['node' => ['foo' => 'bar']]);
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/nodeMetricsRequest.json',
             [],
             [':topoId' => $topo->getId(), ':nodeId' => $node->getId()],
@@ -78,11 +85,6 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::nodeMetricsAction
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler::getNodeMetrics
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler::getNodeByTopologyAndNodeId
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler::getTopologyById
-     *
      * @throws Exception
      */
     public function testNodeMetricsActionErr(): void
@@ -91,7 +93,8 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
         $node = $this->createNode($topo);
         $this->mockMetricsManager('getNodeMetrics', new MetricsException());
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/nodeMetricsErrRequest.json',
             [],
             [':topoId' => $topo->getId(), ':nodeId' => $node->getId()],
@@ -99,10 +102,47 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::topologyRequestsCountMetricsAction
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler::getRequestsCountMetrics
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler::getTopologyById
-     *
+     * @throws Exception
+     */
+    public function testHealthcheckMetricsAction(): void
+    {
+        $this->mockMetricsManager('getHealthcheckMetrics', [
+            [
+                'name' => 'node.123abc.123',
+                'service' => 'service',
+                'topology' => 'topology',
+                'type' => 'queue',
+            ],
+            [
+                'name' => 'neco',
+                'type' => 'service',
+            ],
+        ]);
+
+        $this->assertResponseLogged(
+            $this->jwt,
+            __DIR__ . '/data/healthcheckMetricsRequest.json',
+            [],
+            [],
+        );
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testHealthcheckMetricsActionErr(): void
+    {
+        $this->mockMetricsManager('getHealthcheckMetrics', new DocumentNotFoundException());
+
+        $this->assertResponseLogged(
+            $this->jwt,
+            __DIR__ . '/data/healthcheckMetricsErrRequest.json',
+            [],
+            [],
+        );
+    }
+
+    /**
      * @throws Exception
      */
     public function testTopologyRequestCount(): void
@@ -110,7 +150,8 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
         $topo = $this->createTopo();
         $this->mockMetricsManager('getTopologyRequestCountMetrics', ['requests' => ['foo' => 'bar']]);
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/topologyRequestMetricsCountRequest.json',
             [],
             [':id' => $topo->getId()],
@@ -118,8 +159,6 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::topologyRequestsCountMetricsAction
-     *
      * @throws Exception
      */
     public function testTopologyRequestCountErr(): void
@@ -127,76 +166,11 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
         $topo = $this->createTopo();
         $this->mockMetricsManager('getTopologyRequestCountMetrics', new MetricsException());
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/topologyRequestMetricsCountErrRequest.json',
             [],
             [':id' => $topo->getId()],
-        );
-    }
-
-    /**
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::applicationMetricsAction
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler::getApplicationMetrics
-     *
-     * @throws Exception
-     */
-    public function testApplicationMetrics(): void
-    {
-        $this->mockMetricsManager('getApplicationMetrics', ['count' => 5]);
-
-        $this->assertResponse(
-            __DIR__ . '/data/applicationMetricsRequest.json',
-            [],
-            [':key' => 'superApp'],
-        );
-    }
-
-    /**
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::applicationMetricsAction
-     *
-     * @throws Exception
-     */
-    public function testApplicationErr(): void
-    {
-        $this->mockMetricsManager('getApplicationMetrics', new Exception());
-
-        $this->assertResponse(
-            __DIR__ . '/data/applicationMetricsErrRequest.json',
-            [],
-            [':key' => 'superApp'],
-        );
-    }
-
-    /**
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::userMetricsAction
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler::getUserMetrics
-     *
-     * @throws Exception
-     */
-    public function testUserMetrics(): void
-    {
-        $this->mockMetricsManager('getUserMetrics', ['count' => 3]);
-
-        $this->assertResponse(
-            __DIR__ . '/data/userMetricsRequest.json',
-            [],
-            [':user' => '123-456-789'],
-        );
-    }
-
-    /**
-     * @covers \Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::userMetricsAction
-     *
-     * @throws Exception
-     */
-    public function testUserErr(): void
-    {
-        $this->mockMetricsManager('getUserMetrics', new Exception());
-
-        $this->assertResponse(
-            __DIR__ . '/data/userMetricsErrRequest.json',
-            [],
-            [':key' => 'superApp'],
         );
     }
 
@@ -206,7 +180,7 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
      */
     private function mockMetricsManager(string $fn, mixed $return): void
     {
-        $manager = self::createPartialMock(InfluxMetricsManager::class, [$fn]);
+        $manager = self::createPartialMock(MongoMetricsManager::class, [$fn]);
 
         if ($return instanceof Throwable) {
             $manager->expects(self::any())->method($fn)->willThrowException($return);
@@ -214,7 +188,7 @@ final class MetricsControllerTest extends ControllerTestCaseAbstract
             $manager->expects(self::any())->method($fn)->willReturn($return);
         }
 
-        self::$container->set('hbpf.metrics.manager.influx_metrics', $manager);
+        self::getContainer()->set('hbpf.metrics.manager.mongo_metrics', $manager);
     }
 
     /**

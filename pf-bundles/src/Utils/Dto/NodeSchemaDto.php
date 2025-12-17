@@ -2,7 +2,7 @@
 
 namespace Hanaboso\PipesFramework\Utils\Dto;
 
-use Hanaboso\PipesPhpSdk\Database\Document\Dto\SystemConfigDto;
+use Hanaboso\PipesFramework\Database\Document\Dto\SystemConfigDto;
 
 /**
  * Class NodeSchemaDto
@@ -12,13 +12,14 @@ use Hanaboso\PipesPhpSdk\Database\Document\Dto\SystemConfigDto;
 final class NodeSchemaDto
 {
 
-    private const HANDLER        = 'handler';
-    private const ID             = 'id';
-    private const NAME           = 'name';
-    private const CRON_TIME      = 'cron_time';
-    private const CRON_PARAMS    = 'cron_params';
-    private const PIPES_TYPE     = 'pipes_type';
-    private const SYSTEM_CONFIGS = 'system_configs';
+    private const string HANDLER        = 'handler';
+    private const string ID             = 'id';
+    private const string NAME           = 'name';
+    private const string CRON_TIME      = 'cron_time';
+    private const string CRON_PARAMS    = 'cron_params';
+    private const string PIPES_TYPE     = 'pipes_type';
+    private const string SYSTEM_CONFIGS = 'system_configs';
+    private const string APPLICATION    = 'application';
 
     /**
      * NodeSchemaDto constructor.
@@ -30,6 +31,7 @@ final class NodeSchemaDto
      * @param string          $name
      * @param string          $cronTime
      * @param string          $cronParams
+     * @param string          $application
      */
     public function __construct(
         private string $handler,
@@ -39,6 +41,7 @@ final class NodeSchemaDto
         private string $name,
         private string $cronTime = '',
         private string $cronParams = '',
+        private string $application = '',
     )
     {
     }
@@ -102,14 +105,38 @@ final class NodeSchemaDto
     /**
      * @return mixed[]
      */
+    public function getSystemConfigsArray(): array
+    {
+        return [
+            'bridgeHost' => $this->systemConfigs->getBridgeHost(),
+            'prefetch' => $this->systemConfigs->getPrefetch(),
+            'repeaterEnabled' => $this->systemConfigs->isRepeaterEnabled(),
+            'repeaterHops' => $this->systemConfigs->getRepeaterHops(),
+            'repeaterInterval' => $this->systemConfigs->getRepeaterInterval(),
+            'sdkHost' => $this->systemConfigs->getSdkHost(),
+        ];
+    }
+
+    /**
+     * @return string
+     */
+    public function getApplication(): string
+    {
+        return $this->application;
+    }
+
+    /**
+     * @return mixed[]
+     */
     public function toArray(): array
     {
         return [
+            self::APPLICATION    => $this->getApplication(),
+            self::CRON_PARAMS    => $this->getCronParams(),
+            self::CRON_TIME      => $this->getCronTime(),
             self::HANDLER        => $this->getHandler(),
             self::ID             => $this->getId(),
             self::NAME           => $this->getName(),
-            self::CRON_TIME      => $this->getCronTime(),
-            self::CRON_PARAMS    => $this->getCronParams(),
             self::PIPES_TYPE     => $this->getPipesType(),
             self::SYSTEM_CONFIGS => $this->getSystemConfigs(),
         ];

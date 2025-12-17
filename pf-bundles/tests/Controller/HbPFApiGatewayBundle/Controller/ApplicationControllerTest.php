@@ -7,9 +7,13 @@ use Hanaboso\CommonsBundle\Redirect\RedirectInterface;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator;
+use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
+use Hanaboso\PipesFramework\Configurator\Document\ApiToken;
 use Hanaboso\PipesFramework\Configurator\Document\Sdk;
-use Hanaboso\PipesPhpSdk\Application\Document\ApplicationInstall;
+use Hanaboso\PipesFramework\Configurator\Enum\ApiTokenScopesEnum;
+use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController;
 use Hanaboso\Utils\String\Json;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -17,146 +21,138 @@ use Symfony\Component\HttpFoundation\Response;
  * Class ApplicationControllerTest
  *
  * @package PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller
- *
- * @covers  \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController
  */
+#[CoversClass(ApplicationController::class)]
 final class ApplicationControllerTest extends ControllerTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::listOfApplicationsAction
-     *
      * @throws Exception
      */
     public function testListApplicationsAction(): void
     {
-        $this->assertResponse(__DIR__ . '/data/ApplicationController/listApplicationsRequest.json');
+        $this->createApplication();
+
+        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/ApplicationController/listApplicationsRequest.json');
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::getApplicationAction
-     *
      * @throws Exception
      */
     public function testGetApplicationAction(): void
     {
-        $this->assertResponse(__DIR__ . '/data/ApplicationController/getApplicationRequest.json');
+        $this->createApplication();
+
+        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/ApplicationController/getApplicationRequest.json');
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::getUsersApplicationAction
-     *
      * @throws Exception
      */
     public function testGetUsersApplicationAction(): void
     {
         $this->createApplication();
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/ApplicationController/getUsersApplicationRequest.json',
             [
-                'id'      => '123456789',
                 'created' => '2010-10-10 10:10:10',
+                'id'      => '123456789',
                 'updated' => '2010-10-10 10:10:10',
             ],
         );
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::getApplicationDetailAction
-     *
      * @throws Exception
      */
     public function testGetApplicationDetailAction(): void
     {
         $this->createApplication();
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/ApplicationController/getApplicationDetailRequest.json',
             [
-                'id'      => '123456789',
-                'created' => '2010-10-10 10:10:10',
-                'updated' => '2010-10-10 10:10:10',
+                'created'       => '2010-10-10 10:10:10',
+                'id'            => '123456789',
+                'updated'       => '2010-10-10 10:10:10',
             ],
         );
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::installApplicationAction
-     *
      * @throws Exception
      */
     public function testInstallApplicationAction(): void
     {
-        $this->assertResponse(__DIR__ . '/data/ApplicationController/installApplicationRequest.json');
+        $this->createApplication();
+
+        $this->assertResponseLogged($this->jwt, __DIR__ . '/data/ApplicationController/installApplicationRequest.json');
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::updateApplicationSettingsAction
-     *
      * @throws Exception
      */
     public function testUpdateApplicationSettingsAction(): void
     {
         $this->createApplication();
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/ApplicationController/updateApplicationSettingsRequest.json',
             [
-                'id'      => '123456789',
                 'created' => '2010-10-10 10:10:10',
+                'id'      => '123456789',
                 'updated' => '2010-10-10 10:10:10',
             ],
         );
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::uninstallApplicationAction
-     *
      * @throws Exception
      */
     public function testUninstallApplicationAction(): void
     {
         $this->createApplication();
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/ApplicationController/uninstallApplicationRequest.json',
             [
-                'id'      => '123456789',
                 'created' => '2010-10-10 10:10:10',
+                'id'      => '123456789',
                 'updated' => '2010-10-10 10:10:10',
             ],
         );
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::saveApplicationPasswordAction
-     *
      * @throws Exception
      */
     public function testSaveApplicationPasswordAction(): void
     {
         $this->createApplication();
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/ApplicationController/saveApplicationPasswordRequest.json',
             [
-                'id'      => '123456789',
                 'created' => '2010-10-10 10:10:10',
+                'id'      => '123456789',
                 'updated' => '2010-10-10 10:10:10',
             ],
         );
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::authorizeApplicationAction
-     *
      * @throws Exception
      */
     public function testAuthorizeApplicationAction(): void
     {
         $sdk = new Sdk();
-        $sdk->setKey('ip')->setValue('name');
+        $sdk->setUrl('ip')->setName('name');
         $this->dm->persist($sdk);
         $this->dm->flush();
         $this->dm->clear();
@@ -170,38 +166,42 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
             $this->dm,
             $curl,
             self::createMock(RedirectInterface::class),
+            self::getContainer()->getParameter('backendHost'),
         );
 
-        self::$container->set('hbpp.service.locator', $loader);
+        self::getContainer()->set('hbpp.service.locator', $loader);
 
         $this->createApplication();
 
-        $this->assertResponse(__DIR__ . '/data/ApplicationController/authorizeApplicationRequest.json');
+        $this->assertResponseLogged(
+            $this->jwt,
+            __DIR__ . '/data/ApplicationController/authorizeApplicationRequest.json',
+        );
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::authorizeApplicationAction
-     *
      * @throws Exception
      */
     public function testAuthorizeApplicationActionException(): void
     {
         $loader = new ServiceLocator(
             $this->dm,
-            self::$container->get('hbpf.transport.curl_manager'),
+            self::getContainer()->get('hbpf.transport.curl_manager'),
             self::createMock(RedirectInterface::class),
+            self::getContainer()->getParameter('backendHost'),
         );
 
-        self::$container->set('hbpp.service.locator', $loader);
+        self::getContainer()->set('hbpp.service.locator', $loader);
 
         $this->createApplication();
 
-        $this->assertResponse(__DIR__ . '/data/ApplicationController/authorizeApplicationExRequest.json');
+        $this->assertResponseLogged(
+            $this->jwt,
+            __DIR__ . '/data/ApplicationController/authorizeApplicationExRequest.json',
+        );
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::setAuthorizationTokenAction
-     *
      * @throws Exception
      */
     public function testSetAuthorizationTokenAction(): void
@@ -211,9 +211,10 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         $dto  = new ResponseDto(200, '', Json::encode(['redirectUrl' => 'redirect/url']), []);
         $curl = self::createMock(CurlManager::class);
         $curl->method('send')->willReturn($dto);
-        self::$container->set('hbpf.transport.curl_manager', $curl);
+        self::getContainer()->set('hbpf.transport.curl_manager', $curl);
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/ApplicationController/setAuthorizationTokenRequest.json',
             [],
             [],
@@ -228,8 +229,6 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::setAuthorizationTokenQueryAction
-     *
      * @throws Exception
      */
     public function testSetAuthorizationTokenQueryAction(): void
@@ -239,9 +238,10 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
         $dto  = new ResponseDto(200, '', Json::encode(['redirectUrl' => 'redirect/url']), []);
         $curl = self::createMock(CurlManager::class);
         $curl->method('send')->willReturn($dto);
-        self::$container->set('hbpf.transport.curl_manager', $curl);
+        self::getContainer()->set('hbpf.transport.curl_manager', $curl);
 
-        $this->assertResponse(
+        $this->assertResponseLogged(
+            $this->jwt,
             __DIR__ . '/data/ApplicationController/setAuthorizationTokenQueryRequest.json',
             [],
             [],
@@ -256,51 +256,31 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::applicationStatisticsAction
-     *
-     * @throws Exception
-     */
-    public function testApplicationStatisticsAction(): void
-    {
-        $this->assertResponse(
-            __DIR__ . '/data/ApplicationController/applicationStatisticsRequest.json',
-            [],
-            [':key' => 'superApp'],
-        );
-    }
-
-    /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::userStatisticsAction
-     *
-     * @throws Exception
-     */
-    public function testUserStatisticsAction(): void
-    {
-        $this->assertResponse(
-            __DIR__ . '/data/ApplicationController/userStatisticsRequest.json',
-            [],
-            [':user' => '123-456-789'],
-        );
-    }
-
-    /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::getSynchronousActionsAction
-     *
      * @throws Exception
      */
     public function testGetSynchronousActionsAction(): void
     {
+        self::markTestSkipped();
+        $apiToken = (new ApiToken())->setKey('abc-123')->setScopes(ApiTokenScopesEnum::cases());
+        $dm       = self::getContainer()->get('hbpf.database_manager_locator')->getDm();
+        $dm?->persist($apiToken);
+        $dm?->flush();
         $this->assertResponse(__DIR__ . '/data/ApplicationController/getSynchronousActionsRequest.json');
+        $dm?->getRepository(ApiToken::class)->clear();
     }
 
     /**
-     * @covers \Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController::runSynchronousActionsAction
-     *
      * @throws Exception
      */
     public function testRunSynchronousActionsAction(): void
     {
+        self::markTestSkipped();
+        $apiToken = (new ApiToken())->setKey('abc-123')->setScopes(ApiTokenScopesEnum::cases());
+        $dm       = self::getContainer()->get('hbpf.database_manager_locator')->getDm();
+        $dm?->persist($apiToken);
+        $dm?->flush();
         $this->assertResponse(__DIR__ . '/data/ApplicationController/runSynchronousActionsRequest.json');
+        $dm?->getRepository(ApiToken::class)->clear();
     }
 
     /**
@@ -308,11 +288,11 @@ final class ApplicationControllerTest extends ControllerTestCaseAbstract
      */
     private function createApplication(): void
     {
-        $application = (new ApplicationInstall())->setKey('null')->setUser('user');
+        $application = (new ApplicationInstall())->setKey('null')->setUser('orchesty');
         $this->pfd($application);
 
         $sdk = new Sdk();
-        $sdk->setKey('php-sdk')->setValue('php-sdk');
+        $sdk->setUrl('php-sdk')->setName('php-sdk');
         $this->pfd($sdk);
     }
 

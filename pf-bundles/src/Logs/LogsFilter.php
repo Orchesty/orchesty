@@ -14,34 +14,21 @@ use Hanaboso\PipesFramework\Logs\Document\Logs;
 final class LogsFilter extends GridFilterAbstract
 {
 
-    private const SEVERITY = [
-        'alert',
-        'warning',
-        'error',
-        'critical',
-        'ALERT',
-        'WARNING',
-        'ERROR',
-        'CRITICAL',
-    ];
-
     /**
      * @return mixed[]
      */
     protected function filterCols(): array
     {
         return [
-            Logs::ID         => Logs::MONGO_ID,
-            'timestamp_from' => 'timestamp>=',
-            'timestamp_to'   => 'timestamp<=',
-            Logs::MESSAGE    => Logs::MESSAGE,
-            'type'           => Logs::PIPES_TYPE,
-            'severity'       => Logs::PIPES_SEVERITY,
             'correlation_id' => Logs::PIPES_CORRELATION_ID,
-            'topology_id'    => Logs::PIPES_TOPOLOGY_ID,
-            'topology_name'  => Logs::PIPES_TOPOLOGY_NAME,
             'node_id'        => Logs::PIPES_NODE_ID,
-            'node_name'      => Logs::PIPES_NODE_NAME,
+            'service'        => Logs::PIPES_SERVICE,
+            'severity'       => Logs::PIPES_SEVERITY,
+            'timestamp'      => Logs::TIMESTAMP,
+            'topology_id'    => Logs::PIPES_TOPOLOGY_ID,
+            'user_id'        => Logs::PIPES_USER_ID,
+            Logs::ID         => Logs::MONGO_ID,
+            Logs::MESSAGE    => Logs::MESSAGE,
         ];
     }
 
@@ -51,16 +38,14 @@ final class LogsFilter extends GridFilterAbstract
     protected function orderCols(): array
     {
         return [
-            Logs::ID         => Logs::MONGO_ID,
-            Logs::TIMESTAMP  => Logs::TIMESTAMP,
-            Logs::MESSAGE    => Logs::MESSAGE,
-            'type'           => Logs::PIPES_TYPE,
-            'severity'       => Logs::PIPES_SEVERITY,
             'correlation_id' => Logs::PIPES_CORRELATION_ID,
-            'topology_id'    => Logs::PIPES_TOPOLOGY_ID,
-            'topology_name'  => Logs::PIPES_TOPOLOGY_NAME,
             'node_id'        => Logs::PIPES_NODE_ID,
-            'node_name'      => Logs::PIPES_NODE_NAME,
+            'service'        => Logs::PIPES_SERVICE,
+            'severity'       => Logs::PIPES_SEVERITY,
+            'timestamp'      => Logs::TIMESTAMP,
+            'topology_id'    => Logs::PIPES_TOPOLOGY_ID,
+            Logs::ID         => Logs::MONGO_ID,
+            Logs::MESSAGE    => Logs::MESSAGE,
         ];
     }
 
@@ -71,11 +56,9 @@ final class LogsFilter extends GridFilterAbstract
     {
         return [
             Logs::MESSAGE,
-            Logs::PIPES_CORRELATION_ID,
-            Logs::PIPES_TOPOLOGY_ID,
-            Logs::PIPES_TOPOLOGY_NAME,
-            Logs::PIPES_NODE_ID,
-            Logs::PIPES_NODE_NAME,
+            'correlation_id',
+            'topology_id',
+            'node_id',
         ];
     }
 
@@ -100,16 +83,15 @@ final class LogsFilter extends GridFilterAbstract
                     Logs::MONGO_ID,
                     Logs::TIMESTAMP,
                     Logs::MESSAGE,
-                    Logs::PIPES_TYPE,
+                    Logs::PIPES_SERVICE,
                     Logs::PIPES_SEVERITY,
                     Logs::PIPES_CORRELATION_ID,
                     Logs::PIPES_TOPOLOGY_ID,
-                    Logs::PIPES_TOPOLOGY_NAME,
                     Logs::PIPES_NODE_ID,
-                    Logs::PIPES_NODE_NAME,
+                    Logs::PIPES_TIMESTAMP,
                 ],
             )
-            ->field(Logs::PIPES_SEVERITY)->in(self::SEVERITY);
+            ->field(Logs::PIPES_CORRELATION_ID)->exists(TRUE);
     }
 
     /**

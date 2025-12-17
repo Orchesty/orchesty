@@ -4,7 +4,9 @@ namespace PipesFrameworkTests\Integration\Configurator\Model;
 
 use Exception;
 use Hanaboso\CommonsBundle\Exception\CategoryException;
-use Hanaboso\PipesPhpSdk\Database\Document\Category;
+use Hanaboso\PipesFramework\Configurator\Model\CategoryManager;
+use Hanaboso\PipesFramework\Database\Document\Category;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
 /**
@@ -12,22 +14,18 @@ use PipesFrameworkTests\DatabaseTestCaseAbstract;
  *
  * @package PipesFrameworkTests\Integration\Configurator\Model
  */
+#[CoversClass(CategoryManager::class)]
 final class CategoryManagerTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\CategoryManager
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\CategoryManager::createCategory
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\CategoryManager::setCategoryData
-     * @covers \Hanaboso\PipesFramework\Configurator\Model\CategoryManager::deleteCategory
-     *
      * @throws Exception
      */
     public function testManager(): void
     {
-        $manager         = self::$container->get('hbpf.configurator.manager.category');
+        $manager         = self::getContainer()->get('hbpf.configurator.manager.category');
         $repo            = $this->dm->getRepository(Category::class);
-        $topologyManager = self::$container->get('hbpf.configurator.manager.topology');
+        $topologyManager = self::getContainer()->get('hbpf.configurator.manager.topology');
 
         $dataR1 = [
             'name'   => 'root1',

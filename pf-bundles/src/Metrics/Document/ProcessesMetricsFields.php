@@ -9,32 +9,30 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  * Class ProcessesMetricsFields
  *
  * @package Hanaboso\PipesFramework\Metrics\Document
- *
- * @ODM\EmbeddedDocument()
- * @ODM\Index(name="createdIndex", keys={"created"="desc"})
  */
+#[ODM\EmbeddedDocument]
 class ProcessesMetricsFields
 {
 
+    public const string CREATED = 'created';
+    // TODO unused metrics: fail_count, ok_count
+
     /**
      * @var bool
-     *
-     * @ODM\Field(type="bool", name="counter_process_result")
      */
+    #[ODM\Field(name: 'result', type: 'bool')]
     private bool $success;
 
     /**
      * @var int
-     *
-     * @ODM\Field(type="int", name="counter_process_duration")
      */
+    #[ODM\Field(name: 'duration', type: 'int')]
     private int $duration;
 
     /**
      * @var DateTime
-     *
-     * @ODM\Field(type="date")
      */
+    #[ODM\Field(type: 'date')]
     private DateTime $created;
 
     /**
