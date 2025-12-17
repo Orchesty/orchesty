@@ -16,9 +16,9 @@ const TOPOLOGY_PATH = path.resolve(
 );
 
 describe('Tests for WflowToFlexiBeeFakturaPrijata topology', () => {
-    beforeAll(() => {
+    beforeAll(async () => {
         tester = new TopologyTester(container, __filename, true, ['Activity_032ocy1', 'Activity_1792a8q', 'Activity_1vja3mz']);
-        prepare();
+        await prepare();
     });
 
     it('run WflowToFlexiBeeFakturaPrijata manually', async () => {

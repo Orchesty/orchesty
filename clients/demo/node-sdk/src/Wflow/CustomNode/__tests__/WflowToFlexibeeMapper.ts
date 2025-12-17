@@ -7,15 +7,14 @@ import { NAME as WFLOW_TO_FLEXIBEE_MAPPER } from '../WflowToFlexibeeMapper';
 let tester: NodeTester;
 
 describe('Tests for WflowToFlexibeeMapper', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
         tester = new NodeTester(container, __filename);
+        await prepare();
 
         // eslint-disable-next-line jest/prefer-mock-return-shorthand, @typescript-eslint/strict-void-return
         jest.spyOn(crypto, 'randomBytes').mockImplementationOnce(() => Buffer.from(
             new Uint8Array([65, 65, 65, 65, 65, 65, 65, 65]).buffer,
         ));
-
-        prepare();
     });
 
     it('process - ok', async () => {

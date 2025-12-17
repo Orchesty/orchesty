@@ -6,9 +6,9 @@ import { NAME as JSON_PLACEHOLDER_TO_BEECEPTOR_SYNC_POST_MAPPER } from '../JsonP
 let tester: NodeTester;
 
 describe('Tests for JsonPlaceholderToBeeceptorSyncPostMapper', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
         tester = new NodeTester(container, __filename);
-        prepare();
+        await prepare();
     });
 
     it('process - ok', async () => {

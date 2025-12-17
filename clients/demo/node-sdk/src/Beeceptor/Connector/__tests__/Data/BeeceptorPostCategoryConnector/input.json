@@ -1,0 +1,9 @@
+{
+    "headers": {
+        "user": "TestUser"
+    },
+    "data": {
+        "id": 1,
+        "name": "Test Category"
+    }
+}

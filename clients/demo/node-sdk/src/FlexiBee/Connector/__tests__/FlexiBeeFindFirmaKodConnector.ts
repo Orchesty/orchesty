@@ -6,9 +6,9 @@ import { NAME as FLEXI_BEE_FIND_FIRMA_KOD_CONNECTOR } from '../FlexiBeeFindFirma
 let tester: NodeTester;
 
 describe('Tests for FlexiBeeFindFirmaKodConnector', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
         tester = new NodeTester(container, __filename);
-        prepare();
+        await prepare();
     });
 
     it('process - ok', async () => {

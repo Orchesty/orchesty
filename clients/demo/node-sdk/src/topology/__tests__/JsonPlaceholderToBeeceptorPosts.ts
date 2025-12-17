@@ -15,9 +15,9 @@ const TOPOLOGY_PATH = path.resolve(
 );
 
 describe('Tests for JsonPlaceholderToBeeceptorPosts topology', () => {
-    beforeAll(() => {
+    beforeAll(async () => {
         tester = new TopologyTester(container, __filename, true, ['Activity_1he0su7']);
-        prepare();
+        await prepare();
     });
 
     it('run JsonPlaceholderToBeeceptorPosts manually', async () => {

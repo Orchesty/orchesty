@@ -10,9 +10,10 @@ import Webhook from '@orchesty/nodejs-sdk/dist/lib/Application/Database/Webhook'
 import { ACCESS_TOKEN } from '@orchesty/nodejs-sdk/dist/lib/Authorization/Provider/OAuth2/OAuth2Provider';
 import { PASSWORD, TOKEN, USER } from '@orchesty/nodejs-sdk/dist/lib/Authorization/Type/Basic/ABasicApplication';
 import { CLIENT_ID, CLIENT_SECRET } from '@orchesty/nodejs-sdk/dist/lib/Authorization/Type/OAuth2/IOAuth2Application';
-import { orchestyOptions } from '@orchesty/nodejs-sdk/dist/lib/Config/Config';
+import { getEnv, orchestyOptions } from '@orchesty/nodejs-sdk/dist/lib/Config/Config';
 import { HttpMethods } from '@orchesty/nodejs-sdk/dist/lib/Transport/HttpMethods';
 import { mockOnce } from '@orchesty/nodejs-sdk/dist/test/MockServer';
+import { devIp } from '../.jest/testEnvs';
 import { Topology } from '../src/Wflow/Enum/Topology';
 import { FLEXI_BEE_FORM } from '../src/Wflow/WflowApplication';
 
@@ -22,7 +23,11 @@ export const DEFAULT_ACCESS_TOKEN = 'test-access-token';
 export const DEFAULT_CLIENT_ID = 'test-client-id';
 export const DEFAULT_CLIENT_SECRET = 'test-client-secret';
 
+const MYSQL_APP_NAME = 'mysql';
 const URL_KEY = 'url';
+const HOST = 'host';
+const PORT = 'port';
+const DATABASE = 'database';
 
 export function applicationInstall(
     name: string,
@@ -91,6 +96,18 @@ export function flexiBeeAppInstall(): ApplicationInstall {
             [USER]: DEFAULT_USER,
             [PASSWORD]: DEFAULT_PASSWORD,
             auth: 'http',
+        },
+    });
+}
+
+export function mySqlAppInstall(): ApplicationInstall {
+    return applicationInstall(MYSQL_APP_NAME, DEFAULT_USER, {
+        [CoreFormsEnum.AUTHORIZATION_FORM]: {
+            [HOST]: getEnv('MYSQL_HOST', devIp),
+            [PORT]: getEnv('MYSQL_PORT', '3306'),
+            [USER]: getEnv('MYSQL_USER', 'root'),
+            [PASSWORD]: getEnv('MYSQL_ROOT_PASSWORD', 'password'),
+            [DATABASE]: getEnv('MYSQL_DATABASE', 'orchesty'),
         },
     });
 }

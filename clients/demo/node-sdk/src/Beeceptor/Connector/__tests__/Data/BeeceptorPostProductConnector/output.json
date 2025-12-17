@@ -1,0 +1,9 @@
+{
+    "headers": {
+        "user": "TestUser",
+        "audit-entity": "{\"product\":{\"key\":\"id\",\"fields\":[{\"id\":\"1\",\"externalId\":\"d12f171b-7150-45b8-9dd5-6274cd34feca\"}]}}"
+    },
+    "data": {
+        "id": "d12f171b-7150-45b8-9dd5-6274cd34feca"
+    }
+}

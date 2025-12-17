@@ -12,6 +12,7 @@ services:
             APP_ENV: debug
             CRYPT_SECRET: ThisIsNotSoSecret
             BACKEND_URL: ${BACKEND_URL}
+            MONGO_DSN: ${MONGO_DSN}
             STARTING_POINT_DSN: ${STARTING_POINT_DSN}
             AWS_SES_KEY: ${AWS_SES_KEY}
             AWS_SES_SECRET: ${AWS_SES_SECRET}
@@ -248,6 +249,15 @@ services:
     wait-for-it:
         image: hanabosocom/wait-for-it:master
 
+    mysql:
+        image: mysql:latest
+        ports:
+            - ${DEV_IP}:3306:3306
+        environment:
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            MYSQL_DATABASE: ${MYSQL_DATABASE}
+        volumes:
+            - ./node-sdk/test/init-data/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
 volumes:
     mongodb:
     rabbitmq:

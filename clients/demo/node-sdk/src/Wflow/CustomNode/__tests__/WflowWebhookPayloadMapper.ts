@@ -6,9 +6,9 @@ import { NAME as WFLOW_WEBHOOK_PAYLOAD_MAPPER } from '../WflowWebhookPayloadMapp
 let tester: NodeTester;
 
 describe('Tests for WflowWebhookPayloadMapper', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
         tester = new NodeTester(container, __filename);
-        prepare();
+        await prepare();
     });
 
     it('process - ok', async () => {

@@ -9,7 +9,6 @@ import S3Application from '@orchesty/connector-amazon-apps-s3/dist/S3Application
 import SESSendEmail from '@orchesty/connector-amazon-apps-simple-email-service/dist/Connector/SESSendEmail';
 import AsanaApplication from '@orchesty/connector-asana/dist/AsanaApplication';
 import AsanaCreateTaskConnector from '@orchesty/connector-asana/dist/Connector/AsanaCreateTaskConnector';
-import BeeceptorApplication from '@orchesty/connector-beeceptor/dist/BeeceptorApplication';
 import BigcommerceApplication from '@orchesty/connector-bigcommerce/dist/BigcommerceApplication';
 import BoxApplication from '@orchesty/connector-box/dist/BoxApplication';
 import { EventEnum } from '@orchesty/connector-common/dist/Events/EventEnum';
@@ -84,9 +83,11 @@ import ZoomApplication from '@orchesty/connector-zoom/dist/ZoomApplication';
 import { container, initiateContainer } from '@orchesty/nodejs-sdk';
 import { OAuth2Provider } from '@orchesty/nodejs-sdk/dist/lib/Authorization/Provider/OAuth2/OAuth2Provider';
 import CacheService from '@orchesty/nodejs-sdk/dist/lib/Cache/CacheService';
+import { getEnv } from '@orchesty/nodejs-sdk/dist/lib/Config/Config';
 import DatabaseClient from '@orchesty/nodejs-sdk/dist/lib/Storage/Database/Client';
 import DataStorageManager from '@orchesty/nodejs-sdk/dist/lib/Storage/DataStore/DataStorageManager';
 import FileSystem from '@orchesty/nodejs-sdk/dist/lib/Storage/File/FileSystem';
+import { MongoDb } from '@orchesty/nodejs-sdk/dist/lib/Storage/Mongo';
 import Redis from '@orchesty/nodejs-sdk/dist/lib/Storage/Redis/Redis';
 import TopologyRunner from '@orchesty/nodejs-sdk/dist/lib/Topology/TopologyRunner';
 import CurlSender from '@orchesty/nodejs-sdk/dist/lib/Transport/Curl/CurlSender';
@@ -95,6 +96,14 @@ import HubspotApplinthContactAddContactToListMapper
 import HubspotApplinthWhitePaperAddContactToListMapper
     from './ApplinthIo/CustomNode/HubspotApplinthWhitePaperAddContactToListMapper';
 import HubspotWhiterPaperToSesEmailMapper from './ApplinthIo/CustomNode/HubspotWhiterPaperToSesEmailMapper';
+import BeeceptorCreateWebhooks from './Beeceptor/Batch/BeeceptorCreateWebhooks';
+import BeeceptorDeleteWebhooks from './Beeceptor/Batch/BeeceptorDeleteWebhooks';
+import BeeceptorApplication from './Beeceptor/BeeceptorApplication';
+import BeeceptorPostCategoryConnector from './Beeceptor/Connector/BeeceptorPostCategoryConnector';
+import BeeceptorPostProductConnector from './Beeceptor/Connector/BeeceptorPostProductConnector';
+import BeeceptorPutCategoryConnector from './Beeceptor/Connector/BeeceptorPutCategoryConnector';
+import BeeceptorPutProductCategoriesConnector from './Beeceptor/Connector/BeeceptorPutProductCategoriesConnector';
+import BeeceptorPutProductConnector from './Beeceptor/Connector/BeeceptorPutProductConnector';
 import BeeceptorSyncPostConnector from './Beeceptor/Connector/BeeceptorSyncPostConnector';
 import HubSpotAddEmailToListConnector from './Common/Connector/HubSpotAddEmailToListConnector';
 import HubSpotCreateContactConnector from './Common/Connector/HubSpotCreateContactConnector';
@@ -134,11 +143,20 @@ import HubSpotCreateContactMapper from './JsonPlaceholder/HubSpotCreateContactMa
 import NonInstallableApplication from './JsonPlaceholder/NonInstallableApplication';
 import SampleApplication from './JsonPlaceholder/SampleApplication';
 import TenantApplication from './JsonPlaceholder/TenantApplication';
+import MySqlGetCategoryListBatch from './Sql/Batch/MySqlGetCategoryListBatch';
+import MySqlGetProductCategoryListBatch from './Sql/Batch/MySqlGetProductCategoryListBatch';
+import MySqlGetProductListBatch from './Sql/Batch/MySqlGetProductListBatch';
+import MySqlCategoryFindId from './Sql/CustomNode/MySqlCategoryFindId';
+import MySqlCategoryStoreId from './Sql/CustomNode/MySqlCategoryStoreId';
+import MySqlProductCategoryFindId from './Sql/CustomNode/MySqlProductCategoryFindId';
+import MySqlProductFindId from './Sql/CustomNode/MySqlProductFindId';
+import MySqlProductStoreId from './Sql/CustomNode/MySqlProductStoreId';
+import MySqlRepository from './Sql/Repository/MySqlRepository';
 import WflowToFlexibeeMapper from './Wflow/CustomNode/WflowToFlexibeeMapper';
 import WflowWebhookPayloadMapper from './Wflow/CustomNode/WflowWebhookPayloadMapper';
 import WflowApplication from './Wflow/WflowApplication';
 
-export function start(): void {
+export async function start(): Promise<void> {
     initiateContainer();
     const sender = container.get(CurlSender);
     const mongoDb = container.get(DatabaseClient);
@@ -147,6 +165,11 @@ export function start(): void {
     const redis = new Redis('');
     const cache = new CacheService(redis, sender);
     const runner = container.get(TopologyRunner);
+
+    container.set(new MongoDb(getEnv('MONGO_DSN')));
+
+    container.set(new MySqlRepository(container.get(MongoDb), 'MySqlDocument'));
+    await container.get(MySqlRepository).createIndices();
 
     const eventStatusFilterSuccess = new EventStatusFilter(EventEnum.PROCESS_SUCCESS);
     container.setCustomNode(eventStatusFilterSuccess);
@@ -326,9 +349,16 @@ export function start(): void {
     container.setApplication(githubApplication);
     container.setNode(new GitHubGetRepositoryConnector(), githubApplication);
 
-    const beeceptorApplication = new BeeceptorApplication();
+    const beeceptorApplication = new BeeceptorApplication(container.get(TopologyRunner));
     container.setApplication(beeceptorApplication);
     container.setNode(new BeeceptorSyncPostConnector(), beeceptorApplication);
+    container.setNode(new BeeceptorPostCategoryConnector(), beeceptorApplication);
+    container.setNode(new BeeceptorPutCategoryConnector(), beeceptorApplication);
+    container.setNode(new BeeceptorPostProductConnector(), beeceptorApplication);
+    container.setNode(new BeeceptorPutProductConnector(), beeceptorApplication);
+    container.setNode(new BeeceptorPutProductCategoriesConnector(), beeceptorApplication);
+    container.setNode(new BeeceptorCreateWebhooks(), beeceptorApplication);
+    container.setNode(new BeeceptorDeleteWebhooks(), beeceptorApplication);
 
     const wflowGetOrganizationsConnector = new WflowGetOrganizationsConnector(true).setSender(sender).setDb(mongoDb);
     const wflowGetDocumentTypesConnector = new WflowGetDocumentTypesConnector(true).setSender(sender).setDb(mongoDb);
@@ -355,6 +385,16 @@ export function start(): void {
     container.setNode(new JsonPlaceholderGetPostCommentListBatch(), jsonPlaceholderApplication);
     container.setNode(new JsonPlaceholderGetPostUserConnector(), jsonPlaceholderApplication);
     container.setNode(new JsonPlaceholderToBeeceptorSyncPostMapper());
+
+    container.setBatch(new MySqlGetCategoryListBatch().setApplication(mysqlApp).setDb(mongoDb));
+    container.setBatch(new MySqlGetProductListBatch().setApplication(mysqlApp).setDb(mongoDb));
+    container.setBatch(new MySqlGetProductCategoryListBatch().setApplication(mysqlApp).setDb(mongoDb));
+
+    container.setNode(new MySqlCategoryFindId(container.get(MySqlRepository)), mysqlApp);
+    container.setNode(new MySqlProductFindId(container.get(MySqlRepository)), mysqlApp);
+    container.setNode(new MySqlCategoryStoreId(container.get(MySqlRepository)), mysqlApp);
+    container.setNode(new MySqlProductStoreId(container.get(MySqlRepository)), mysqlApp);
+    container.setNode(new MySqlProductCategoryFindId(container.get(MySqlRepository)), mysqlApp);
 
     const getPost = new GetPost();
     getPost.setSender(sender);

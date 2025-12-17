@@ -6,9 +6,9 @@ import { NAME as JSON_PLACEHOLDER_GET_POST_COMMENT_LIST_BATCH } from '../JsonPla
 let tester: NodeTester;
 
 describe('Tests for JsonPlaceholderGetPostCommentListBatch', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
         tester = new NodeTester(container, __filename);
-        prepare();
+        await prepare();
     });
 
     it('process - ok', async () => {

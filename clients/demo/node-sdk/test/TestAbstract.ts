@@ -1,17 +1,18 @@
 import { start } from '../src';
-import { beeceptorAppInstall, flexiBeeAppInstall, wflowAppInstall } from './DataProvider';
+import { beeceptorAppInstall, flexiBeeAppInstall, mySqlAppInstall, wflowAppInstall } from './DataProvider';
 
 let prepared = false;
 
-export function prepare(): void {
+export async function prepare(): Promise<void> {
     if (prepared) {
         return;
     }
 
-    start();
+    await start();
     beeceptorAppInstall();
     wflowAppInstall();
     flexiBeeAppInstall();
+    mySqlAppInstall();
 
     prepared = true;
 }

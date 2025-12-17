@@ -1,0 +1,9 @@
+{
+    "headers": {
+        "user": "TestUser"
+    },
+    "data": {
+        "id": "b4833b69-8bfb-44e5-8869-562ad1e3b6f0",
+        "name": "New Category"
+    }
+}

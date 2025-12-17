@@ -6,9 +6,9 @@ import { NAME as BEECEPTOR_SYNC_POST_CONNECTOR } from '../BeeceptorSyncPostConne
 let tester: NodeTester;
 
 describe('Tests for BeeceptorSyncPostConnector', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
         tester = new NodeTester(container, __filename);
-        prepare();
+        await prepare();
     });
 
     it('process - ok', async () => {

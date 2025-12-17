@@ -1,0 +1,9 @@
+{
+    "headers": {
+        "user": "TestUser",
+        "cursor": "1",
+        "result-code": "1011",
+        "result-message": "Message will be used as a iterator with cursor [1]. No follower will be called."
+    },
+    "data": []
+}

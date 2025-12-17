@@ -1,0 +1,9 @@
+{
+    "headers": {
+        "user": "TestUser"
+    },
+    "data": {
+        "id": "d12f171b-7150-45b8-9dd5-6274cd34feca",
+        "categories": ["b4833b69-8bfb-44e5-8869-562ad1e3b6f0", "e8b1813c-8e79-4b56-8152-628a2f93fb02"]
+    }
+}

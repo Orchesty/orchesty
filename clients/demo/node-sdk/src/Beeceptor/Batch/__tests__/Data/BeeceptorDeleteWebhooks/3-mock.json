@@ -1,0 +1,5 @@
+{
+    "http": "DELETE https://test.free.beeceptor.com/api/webhooks/6e22102e-a14f-4c20-a944-091717d01285",
+    "code": 204,
+    "body": null
+}

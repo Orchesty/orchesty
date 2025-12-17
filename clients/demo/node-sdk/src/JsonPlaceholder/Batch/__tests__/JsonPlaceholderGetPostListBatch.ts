@@ -6,9 +6,9 @@ import { prepare } from '../../../../test/TestAbstract';
 let tester: NodeTester;
 
 describe('Tests for JsonPlaceholderGetPostCommentListBatch', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
         tester = new NodeTester(container, __filename);
-        prepare();
+        await prepare();
     });
 
     it('process - ok', async () => {

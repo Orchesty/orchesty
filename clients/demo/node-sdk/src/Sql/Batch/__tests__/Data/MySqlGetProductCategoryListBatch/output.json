@@ -1,0 +1,43 @@
+{
+    "headers": {
+        "user": "TestUser"
+    },
+    "data": [
+        {
+            "body": "{\"id\":1,\"categories\":[1,2]}",
+            "headers": {
+                "audit-entity": "{\"product\":{\"key\":\"id\",\"fields\":[{\"id\":\"1\"}]},\"category\":{\"key\":\"id\",\"fields\":[{\"id\":\"1\"},{\"id\":\"2\"}]}}"
+            }
+        },
+        {
+            "body": "{\"id\":2,\"categories\":[2,3]}",
+            "headers": {
+                "audit-entity": "{\"product\":{\"key\":\"id\",\"fields\":[{\"id\":\"2\"}]},\"category\":{\"key\":\"id\",\"fields\":[{\"id\":\"2\"},{\"id\":\"3\"}]}}"
+            }
+        },
+        {
+            "body": "{\"id\":3,\"categories\":[1,3]}",
+            "headers": {
+                "audit-entity": "{\"product\":{\"key\":\"id\",\"fields\":[{\"id\":\"3\"}]},\"category\":{\"key\":\"id\",\"fields\":[{\"id\":\"1\"},{\"id\":\"3\"}]}}"
+            }
+        },
+        {
+            "body": "{\"id\":4,\"categories\":[1]}",
+            "headers": {
+                "audit-entity": "{\"product\":{\"key\":\"id\",\"fields\":[{\"id\":\"4\"}]},\"category\":{\"key\":\"id\",\"fields\":[{\"id\":\"1\"}]}}"
+            }
+        },
+        {
+            "body": "{\"id\":5,\"categories\":[2]}",
+            "headers": {
+                "audit-entity": "{\"product\":{\"key\":\"id\",\"fields\":[{\"id\":\"5\"}]},\"category\":{\"key\":\"id\",\"fields\":[{\"id\":\"2\"}]}}"
+            }
+        },
+        {
+            "body": "{\"id\":6,\"categories\":[3]}",
+            "headers": {
+                "audit-entity": "{\"product\":{\"key\":\"id\",\"fields\":[{\"id\":\"6\"}]},\"category\":{\"key\":\"id\",\"fields\":[{\"id\":\"3\"}]}}"
+            }
+        }
+    ]
+}

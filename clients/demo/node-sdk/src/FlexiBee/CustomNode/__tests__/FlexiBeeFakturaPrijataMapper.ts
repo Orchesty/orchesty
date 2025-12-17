@@ -6,9 +6,9 @@ import { NAME as FLEXI_BEE_FAKTURA_PRIJATA_MAPPER } from '../FlexiBeeFakturaPrij
 let tester: NodeTester;
 
 describe('Tests for FlexiBeeFakturaPrijataMapper', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
         tester = new NodeTester(container, __filename);
-        prepare();
+        await prepare();
     });
 
     it('process - ok', async () => {

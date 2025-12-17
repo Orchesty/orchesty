@@ -15,9 +15,9 @@ const TOPOLOGY_PATH = path.resolve(
 );
 
 describe('Tests for WflowToFlexiBeeWebhooks topology', () => {
-    beforeAll(() => {
+    beforeAll(async () => {
         tester = new TopologyTester(container, __filename, true);
-        prepare();
+        await prepare();
         mockSubscribeWflowWebhook();
         mockUnsubscribeWflowWebhook();
     });

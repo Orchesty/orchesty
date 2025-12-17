@@ -1,0 +1,25 @@
+{
+    "headers": {
+        "user": "TestUser"
+    },
+    "data": [
+        {
+            "body": "{\"id\":1,\"name\":\"Category 1\"}",
+            "headers": {
+                "audit-entity": "{\"category\":{\"key\":\"id\",\"fields\":[{\"id\":\"1\"}]}}"
+            }
+        },
+        {
+            "body": "{\"id\":2,\"name\":\"Category 2\"}",
+            "headers": {
+                "audit-entity": "{\"category\":{\"key\":\"id\",\"fields\":[{\"id\":\"2\"}]}}"
+            }
+        },
+        {
+            "body": "{\"id\":3,\"name\":\"Category 3\"}",
+            "headers": {
+                "audit-entity": "{\"category\":{\"key\":\"id\",\"fields\":[{\"id\":\"3\"}]}}"
+            }
+        }
+    ]
+}

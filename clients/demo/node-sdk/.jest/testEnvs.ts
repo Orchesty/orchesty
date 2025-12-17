@@ -14,14 +14,16 @@ process.env.STARTING_POINT_URL = `http://${devIp}:8080`;
 process.env.WORKER_API_HOST = `http://${devIp}:8080`;
 process.env.UDP_LOGGER_DSN = `${devIp}:5005`;
 process.env.REDIS_HOST = devIp;
+process.env.MYSQL_HOST = devIp;
 process.env.REDIS_DSN = `redis://${devIp}`;
 process.env.MONGO_DSN = `mongodb://${devIp}/node-sdk`;
 process.env.METRICS_DSN = `mongodb://${devIp}/metrics`;
 
 if (process.env.JEST_DOCKER) {
-    process.env.UDP_LOGGER_DSN = 'logstash:5005'
-    process.env.REDIS_HOST = 'redis'
+    process.env.UDP_LOGGER_DSN = 'logstash:5005';
+    process.env.REDIS_HOST = 'redis';
+    process.env.MYSQL_HOST = 'mysql';
     process.env.REDIS_DSN = 'redis://redis';
     process.env.MONGO_DSN = 'mongodb://mongo/node-sdk';
-    process.env.METRICS_DSN = `mongodb://mongo/metrics`;
+    process.env.METRICS_DSN = 'mongodb://mongo/metrics';
 }

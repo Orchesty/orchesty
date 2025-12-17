@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "jest --coverage --detectOpenHandles --passWithNoTests",
+    "test": "jest --coverage --detectOpenHandles --passWithNoTests --forceExit",
     "lint": "eslint src --fix",
     "start": "nodemon src/server.ts",
     "build": "rm -rf dist && tsc -p tsconfig.prod.json && copyfiles -u 1 src/**/*.html dist/src/ && copyfiles -u 1 src/**/**/**/*.html dist/src/"
@@ -71,6 +71,7 @@
     "copyfiles": "^2.4.1",
     "lodash": "^4.17.23",
     "luxon": "^3.7.2",
+    "mysql2": "^3.16.3",
     "mongodb": "^7.1.0"
   },
   "devDependencies": {
