@@ -1,10 +1,6 @@
 .PHONY: docker-build docker-push
 
-DOCKER_REGISTRY := orchesty/fluentd
+IMAGE=orchesty/fluentd:$(TAG)
 
-docker-build:
-	docker build -t $(DOCKER_REGISTRY):$(DOCKER_TAG) . --pull
-
-docker-push:
-	docker push $(DOCKER_REGISTRY):$(DOCKER_TAG)
-	docker tag $(DOCKER_REGISTRY):$(DOCKER_TAG)
+build:
+	docker buildx build --pull --push --platform linux/amd64,linux/arm64/v8 -t $(IMAGE) .
