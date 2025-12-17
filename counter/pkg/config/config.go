@@ -19,7 +19,8 @@ type (
 	}
 
 	app struct {
-		Debug bool `env:"APP_DEBUG" default:"false"`
+		Debug               bool `env:"APP_DEBUG" default:"false"`
+		RunCallbackTopology bool `env:"APP_RUN_CALLBACK_TOPOLOGY" default:"true"`
 	}
 
 	rabbitMq struct {
@@ -33,6 +34,7 @@ type (
 		CounterSubCollection string `env:"MONGODB_COUNTER_SUB_COLLECTION" default:"MultiCounterSubProcess"`
 		CounterErrCollection string `env:"MONGODB_COUNTER_ERR_COLLECTION" default:"MultiCounterError"`
 		ApiTokenCollection   string `env:"MONGODB_API_TOKEN_COLLECTION" default:"ApiToken"`
+		TopologyCollection   string `env:"MONGODB_TOPOLOGY_COLLECTION" default:"Topology"`
 	}
 
 	metrics struct {

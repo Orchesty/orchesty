@@ -1,7 +1,7 @@
 package model
 
 import (
-	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/v2/bson"
 	"time"
 )
 
@@ -21,6 +21,7 @@ type Process struct {
 	Created        time.Time  `bson:"created"`
 	Finished       *time.Time `bson:"finished"`
 	SystemEvent    bool       `bson:"systemEvent"`
+	AuditData      []string   `bson:"auditData"`
 }
 
 type ErrorMessage struct {

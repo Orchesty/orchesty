@@ -1,4 +1,4 @@
-IMAGE=orchesty/counter
+IMAGE=orchesty/counter:$(TAG)
 
 DC=docker-compose
 DE=docker-compose exec -T app
@@ -6,7 +6,7 @@ DR=docker-compose exec -T rabbitmq
 
 ALIAS?=alias
 Darwin:
-	sudo ifconfig lo0 $(ALIAS) $(shell awk '$$1 ~ /^DEV_IP/' .env.dist | sed -e "s/^DEV_IP=//")
+	sudo ifconfig lo0 $(ALIAS) $(shell awk '$$1 ~ /^DEV_IP/' .env | sed -e "s/^DEV_IP=//")
 Linux:
 	@echo 'skipping ...'
 .lo0-up:
@@ -20,8 +20,7 @@ Linux:
 		.env.dist >> .env; \
 
 build:
-	docker build -t ${IMAGE}:${TAG} .
-	docker push ${IMAGE}:${TAG}
+	docker buildx build --pull --push --platform linux/amd64,linux/arm64/v8 -t $(IMAGE) .
 
 docker-up-force: .env .lo0-up
 	$(DC) pull
@@ -52,3 +51,7 @@ fasttest: lint
 test: init-dev fasttest docker-down-clean
 
 ci-test: test
+
+run-demo-counter:
+	docker compose -f ../clients/demo/docker-compose.yml up -d --force-recreate multi-counter
+	docker compose -f ../clients/demo/docker-compose.yml logs -f multi-counter
