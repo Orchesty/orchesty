@@ -2,10 +2,11 @@ package service
 
 import (
 	"fmt"
+	"starting-point/pkg/enum"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/v2/bson"
 	"starting-point/pkg/storage"
 )
 
@@ -14,7 +15,7 @@ var node = "Node"
 var token = "Token"
 var customIDOne = "4cb174e20000000000000000"
 var customIDTwo = "4cb174e20000000000000001"
-var customObjectID, _ = primitive.ObjectIDFromHex(customIDOne)
+var customObjectID, _ = bson.ObjectIDFromHex(customIDOne)
 var topologyObject = storage.Topology{
 	ID:   customObjectID,
 	Name: topology,
@@ -41,9 +42,9 @@ func TestCache(t *testing.T) {
 	Cache = &CacheDefault{mongo: &MongoMock{}}
 	Cache.InitCache()
 
-	Cache.FindTopologyByID(customIDOne, customIDOne, "", false)
-	Cache.FindTopologyByID(customIDOne, customIDTwo, "", false)
-	Cache.FindTopologyByID(customIDOne, customIDTwo, "", false)
+	Cache.FindTopologyByID(customIDOne, customIDOne, false, enum.NodeType_StartEvents)
+	Cache.FindTopologyByID(customIDOne, customIDTwo, false, enum.NodeType_StartEvents)
+	Cache.FindTopologyByID(customIDOne, customIDTwo, false, enum.NodeType_StartEvents)
 	cache, _ := Cache.GetCache().Get(topology)
 	cacheCache, _ := Cache.GetCache().Get(cache.([]string)[0])
 
@@ -59,9 +60,9 @@ func TestCache(t *testing.T) {
 	Cache.InvalidateCache(topology)
 	assert.Equal(t, 0, Cache.GetCache().ItemCount())
 
-	Cache.FindTopologyByName(topology, node, "", false)
-	Cache.FindTopologyByName(topology, "NodeTwo", "", false)
-	Cache.FindTopologyByName(topology, "NodeTwo", "", false)
+	Cache.FindTopologyByName(topology, node)
+	Cache.FindTopologyByName(topology, "NodeTwo")
+	Cache.FindTopologyByName(topology, "NodeTwo")
 	cache, _ = Cache.GetCache().Get(topology)
 	cacheCache, _ = Cache.GetCache().Get(cache.([]string)[0])
 	assert.Equal(t, 3, Cache.GetCache().ItemCount())
@@ -89,40 +90,28 @@ func TestCache(t *testing.T) {
 	}, cacheCache)
 }
 
-func (m *MongoMock) FindNodeByID(nodeID, topologyID, humanTaskID string, isHumanTask bool) *storage.Node {
+func (m *MongoMock) FindNodeByID(nodeID, topologyID string, uiRun bool, allowedTypes []string) *storage.Node {
 	return &storage.Node{
 		ID:   customObjectID,
 		Name: node,
 	}
 }
 
-func (m *MongoMock) FindNodeByName(nodeName, topologyID, humanTaskID string, isHumanTask bool) []storage.Node {
+func (m *MongoMock) FindNodeByName(nodeName, topologyID string) []storage.Node {
 	return []storage.Node{{
 		ID:   customObjectID,
 		Name: node,
 	}}
 }
 
-func (m *MongoMock) FindTopologyByID(topologyID, nodeID, humanTaskID string, isHumanTask bool) *storage.Topology {
+func (m *MongoMock) FindTopologyByID(topologyID, nodeID string, uiRun bool, allowedTypes []string) *storage.Topology {
 	return &topologyObject
 }
 
-func (m *MongoMock) FindTopologyByName(topologyName, nodeName, humanTaskID string, isHumanTask bool) *storage.Topology {
+func (m *MongoMock) FindTopologyByName(topologyName, nodeName string) *storage.Topology {
 	return &topologyObject
 }
 
 func (m *MongoMock) FindTopologyByApplication(topologyName, nodeName, token string) (*storage.Topology, *storage.Webhook) {
 	return &topologyObject, &webhookObject
-}
-
-func (m *MongoMock) FindHumanTask(nodeID, topologyID, humanTaskID string) *storage.HumanTask {
-	return &storage.HumanTask{
-		ID:            customObjectID,
-		CorrelationID: "correlationID",
-		ProcessID:     "processID",
-		ContentType:   "contentType",
-		SequenceID:    "sequenceID",
-		ParentID:      "parentID",
-		ParentProcess: "parentProcess",
-	}
 }

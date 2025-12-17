@@ -3,159 +3,135 @@ package service
 import (
 	"encoding/json"
 	"fmt"
+	log "github.com/hanaboso/go-log/pkg"
+	"github.com/hanaboso/go-log/pkg/zap"
+	metrics "github.com/hanaboso/go-metrics/pkg"
+	"github.com/hanaboso/go-rabbitmq/pkg/rabbitmq"
+	amqp "github.com/rabbitmq/amqp091-go"
 	"net/http"
-
-	"github.com/hanaboso/go-metrics"
-	"github.com/streadway/amqp"
 	"starting-point/pkg/config"
-	"starting-point/pkg/rabbitmq"
 	"starting-point/pkg/storage"
 	"starting-point/pkg/utils"
-
-	log "github.com/sirupsen/logrus"
+	"strings"
 )
 
-// Rabbit represents rabbit
 type Rabbit interface {
-	SndMessage(r *http.Request, topology storage.Topology, init map[string]float64, isHuman bool, isStop bool)
-	DisconnectRabbit()
-	ClearChannels()
+	SendMessage(r *http.Request, topology storage.Topology, init map[string]interface{}) (string, error)
+	Disconnect()
 	IsMetricsConnected() bool
 }
 
-// RabbitDefault interprets Rabbit
-type RabbitDefault struct {
-	publisher  rabbitmq.Publisher
-	connection rabbitmq.Connection
-	builder    utils.HeaderBuilder
-	metrics    metrics.Interface
+type RabbitSvc struct {
+	publisher *rabbitmq.Publisher
+	client    *rabbitmq.Client
+	builder   utils.HeaderBuilder
+	metrics   metrics.Interface
+	logger    log.Logger
+}
+
+type MessageDto struct {
+	Body    string                 `json:"body"`
+	Headers map[string]interface{} `json:"headers"`
 }
 
 // ProcessMessage  body structures
 // ---------------------------------------------------------------------------------------------
 
-// CounterBody interprets body
-type CounterBody struct {
-	Result ResultBody `json:"result"`
-	Route  RouteBody  `json:"route"`
-}
-
-// ResultBody interprets result
-type ResultBody struct {
-	Code    int    `json:"code"`
-	Message string `json:"message"`
-}
-
-// RouteBody interprets route
-type RouteBody struct {
-	Following  int `json:"following"`
-	Multiplier int `json:"multiplier"`
-}
-
-// ---------------------------------------------------------------------------------------------
-
-// RabbitMq describe
 var RabbitMq Rabbit
 
-// ConnectToRabbit init
 func ConnectToRabbit() {
-	RabbitMq = NewRabbit()
+	rabbitClient := rabbitmq.NewClient(config.RabbitMQ.Dsn, zap.NewLogger(), true)
+
+	RabbitMq = RabbitSvc{
+		client:    rabbitClient,
+		publisher: rabbitClient.NewPublisher("", ""),
+		builder:   utils.NewHeaderBuilder(config.RabbitMQ.DeliveryMode),
+		metrics:   metrics.Connect(config.Metrics.Dsn),
+		logger:    config.Logger,
+	}
 }
 
-// SndMessage sends message to RabbitMQ
-func (r *RabbitDefault) SndMessage(
+func (this RabbitSvc) SendMessage(
 	request *http.Request,
 	topology storage.Topology,
-	init map[string]float64,
-	isHuman bool,
-	isStop bool) {
-
+	init map[string]interface{}) (string, error) {
 	// Create ProcessMessage headers
-	h, c, d, t := r.builder.BldHeaders(topology, request.Header, isHuman, isStop)
+	h, c, d, t := this.builder.BuildHeaders(topology)
 
-	// Create Queue & Message
-	q := rabbitmq.GetProcessQueue(topology)
-	m := amqp.Publishing{Body: utils.GetBodyFromStream(request), Headers: h, ContentType: c, DeliveryMode: d, Timestamp: t}
-	corrID := m.Headers[utils.CorrelationID]
+	user := ""
+	if user = request.Header.Get(utils.UserID); user != "" {
+		h[utils.UserID] = user
+	}
 
-	// Init Counter
-	r.initCounterProcess(request.Header, topology, corrID.(string), isHuman)
+	limitHeader, err := GetApplicationLimits(user, topology)
+	if err != nil {
+		config.Logger.Error(fmt.Errorf("cannot fetch sdk's limits: %+v, %v", err, limitHeader))
+	}
 
-	// Declare Queue & Publish Message
-	r.connection.Declare(q)
-	r.publisher.Publish(m, q.Name)
+	if limitHeader != "" {
+		h[utils.LimitKey] = limitHeader
+	}
+
+	apps := make([]string, len(topology.Applications))
+	for i, app := range topology.Applications {
+		apps[i] = app.Key
+	}
+	h[utils.Applications] = strings.Join(apps, ";")
+
+	dto := MessageDto{
+		Body:    string(utils.GetBodyFromStream(request)),
+		Headers: h,
+	}
+	marshaled, _ := json.Marshal(dto)
+
+	m := amqp.Publishing{Body: marshaled, Headers: map[string]interface{}{
+		utils.PublishedTimeStamp: utils.Now(),
+	}, ContentType: c, DeliveryMode: d, Timestamp: t}
+	corrID := h[utils.CorrelationID]
+
+	err = this.publisher.PublishExchangeRoutingKey(m, topology.Node.Exchange(), "1")
+	if err != nil {
+		this.RefreshExchange(topology.Node.Queue(), topology.Node.Exchange(), "1")
+		err = this.publisher.PublishExchangeRoutingKey(m, topology.Node.Exchange(), "1")
+		if err != nil {
+			this.logger.Error(err)
+			return "", err
+		}
+	}
 
 	// Send Metrics
-	if err := r.metrics.Send(config.Config.Metrics.Measurement, utils.GetTags(topology, corrID.(string)), utils.GetFields(init)); err != nil {
-		log.Error(fmt.Sprintf("Metrics error: %+v", err))
+	if err := this.metrics.Send(config.Metrics.Measurement, utils.GetTags(topology, corrID.(string)), utils.GetFields(init)); err != nil {
+		this.logger.Error(fmt.Errorf("metrics error: %+v", err))
 	}
+
+	return corrID.(string), nil
 }
 
-// DisconnectRabbit disconnects RabbitMQ
-func (r *RabbitDefault) DisconnectRabbit() {
-	r.connection.Disconnect()
-	r.metrics.Disconnect()
+func (this RabbitSvc) Disconnect() {
+	this.client.Close()
+	this.metrics.Disconnect()
 }
 
-// ClearChannels clears channels form connection
-func (r *RabbitDefault) ClearChannels() {
-	r.connection.ClearChannels()
+func (this RabbitSvc) IsMetricsConnected() bool {
+	return this.metrics.IsConnected()
 }
 
-// IsMetricsConnected checks metrics connection status
-func (r *RabbitDefault) IsMetricsConnected() bool {
-	return r.metrics.IsConnected()
-}
-
-func (r *RabbitDefault) initCounterProcess(httpHeaders http.Header, topology storage.Topology, corrID string, isHuman bool) {
-	// Create ProcessMessage body
-	body, err := json.Marshal(
-		CounterBody{
-			Result: ResultBody{0, "Starting point started process"},
-			Route:  RouteBody{1, 1},
-		})
+func (this RabbitSvc) RefreshExchange(queue, exchange, routingKey string) {
+	err := this.client.DeclareExchange(rabbitmq.Exchange{
+		Name:    exchange,
+		Kind:    "x-consistent-hash",
+		Options: rabbitmq.DefaultExchangeOptions,
+		Bindings: []rabbitmq.BindOptions{
+			{
+				Queue:  queue,
+				Key:    routingKey,
+				NoWait: false,
+				Args:   nil,
+			},
+		},
+	})
 
 	if err != nil {
-		log.Error(fmt.Sprintf("Json marshal error: %+v", err))
-	}
-
-	// Create ProcessMessage headers
-	h, c, d, t := r.builder.BldCounterHeaders(topology, httpHeaders)
-	h[utils.CorrelationID] = corrID
-
-	if isHuman {
-		h[utils.NodeID] = topology.Node.ID.Hex()
-		h[utils.NodeName] = topology.Node.Name
-		h[utils.ProcessID] = topology.Node.HumanTask.ProcessID
-		h[utils.CorrelationID] = topology.Node.HumanTask.CorrelationID
-	}
-
-	// Create & Publish Message
-	msg := amqp.Publishing{Body: body, Headers: h, ContentType: c, DeliveryMode: d, Timestamp: t}
-	r.publisher.Publish(msg, config.Config.RabbitMQ.CounterQueueName)
-}
-
-// NewRabbit construct
-func NewRabbit() Rabbit {
-	conn := rabbitmq.NewConnection(
-		config.Config.RabbitMQ.Hostname,
-		int(config.Config.RabbitMQ.Port),
-		config.Config.RabbitMQ.Vhost,
-		config.Config.RabbitMQ.Username,
-		config.Config.RabbitMQ.Password,
-		config.Config.Logger)
-	conn.Connect()
-	publisher := rabbitmq.NewPublisher(conn, config.Config.Logger)
-	builder := utils.NewHeaderBuilder(config.Config.RabbitMQ.DeliveryMode)
-
-	// Declare Process-Counter queue
-	conn.Declare(rabbitmq.GetProcessCounterQueue())
-	conn.CloseChannel(config.Config.RabbitMQ.CounterQueueName)
-
-	return &RabbitDefault{
-		publisher:  publisher,
-		connection: conn,
-		builder:    builder,
-		metrics:    metrics.Connect(config.Config.Metrics.Dsn),
+		this.logger.Debug(fmt.Sprintf("redeclare exchange: %v", err))
 	}
 }

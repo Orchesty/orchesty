@@ -15,8 +15,8 @@ type CacheInterface interface {
 	InitCache()
 	GetCache() *cache.Cache
 	InvalidateCache(topologyName string) int
-	FindTopologyByID(topologyID, nodeID, humanTaskID string, isHumanTask bool) *storage.Topology
-	FindTopologyByName(topologyName, nodeName, humanTaskID string, isHumanTask bool) *storage.Topology
+	FindTopologyByID(topologyID, nodeID string, uiRun bool, allowedTypes []string) *storage.Topology
+	FindTopologyByName(topologyName, nodeName string) *storage.Topology
 	FindTopologyByApplication(topologyName, nodeName, token string) (*storage.Topology, *storage.Webhook)
 }
 
@@ -37,9 +37,9 @@ func CreateCache() {
 
 // InitCache creates cache
 func (c *CacheDefault) InitCache() {
-	expiration, _ := strconv.Atoi(config.Config.Cache.Expiration)
-	cleanUp, _ := strconv.Atoi(config.Config.Cache.CleanUp)
-	c.cache = cache.New(time.Duration(expiration)*time.Hour, time.Duration(cleanUp)*time.Hour)
+	expiration, _ := strconv.Atoi(config.Cache.Expiration)
+	cleanUp, _ := strconv.Atoi(config.Cache.CleanUp)
+	c.cache = cache.New(time.Duration(expiration)*time.Second, time.Duration(cleanUp)*time.Second)
 }
 
 // GetCache returns cache
@@ -48,12 +48,12 @@ func (c *CacheDefault) GetCache() *cache.Cache {
 }
 
 // FindTopologyByID finds topology by ID
-func (c *CacheDefault) FindTopologyByID(topologyID, nodeID, humanTaskID string, isHumanTask bool) *storage.Topology {
+func (c *CacheDefault) FindTopologyByID(topologyID, nodeID string, uiRun bool, allowedTypes []string) *storage.Topology {
 	topologyKey := fmt.Sprintf("%s-%s", topologyID, nodeID)
 	topology, found := c.cache.Get(topologyKey)
 
 	if !found {
-		foundTopology := c.mongo.FindTopologyByID(topologyID, nodeID, humanTaskID, isHumanTask)
+		foundTopology := c.mongo.FindTopologyByID(topologyID, nodeID, uiRun, allowedTypes)
 
 		if foundTopology != nil && foundTopology.Node != nil {
 			c.cache.Set(topologyKey, foundTopology, 0)
@@ -67,12 +67,12 @@ func (c *CacheDefault) FindTopologyByID(topologyID, nodeID, humanTaskID string, 
 }
 
 // FindTopologyByName finds topology by name
-func (c *CacheDefault) FindTopologyByName(topologyName, nodeName, humanTaskID string, isHumanTask bool) *storage.Topology {
+func (c *CacheDefault) FindTopologyByName(topologyName, nodeName string) *storage.Topology {
 	topologyKey := fmt.Sprintf("%s-%s", topologyName, nodeName)
 	topology, found := c.cache.Get(topologyKey)
 
 	if !found {
-		foundTopology := c.mongo.FindTopologyByName(topologyName, nodeName, humanTaskID, isHumanTask)
+		foundTopology := c.mongo.FindTopologyByName(topologyName, nodeName)
 
 		if foundTopology != nil {
 			c.cache.Set(topologyKey, foundTopology, 0)

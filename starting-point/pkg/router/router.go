@@ -3,6 +3,7 @@ package router
 import (
 	"encoding/json"
 	"net/http"
+	"starting-point/pkg/storage"
 
 	"github.com/gorilla/mux"
 )
@@ -12,13 +13,13 @@ type Route struct {
 	Name        string
 	Method      string
 	Pattern     string
+	Protected   bool
 	HandlerFunc http.HandlerFunc
 }
 
 // Routes routes
 type Routes []Route
 
-// Router router
 func Router(routes Routes) *mux.Router {
 	router := mux.NewRouter().StrictSlash(true)
 
@@ -27,7 +28,19 @@ func Router(routes Routes) *mux.Router {
 	}
 
 	for _, route := range routes {
-		router.Methods(route.Method, http.MethodOptions).Path(route.Pattern).Name(route.Name).Handler(route.HandlerFunc)
+		if route.Protected {
+			router.
+				Methods(route.Method, http.MethodOptions).
+				Path(route.Pattern).
+				Name(route.Name).
+				Handler(authorizationHandler(route.HandlerFunc))
+		} else {
+			router.
+				Methods(route.Method, http.MethodOptions).
+				Path(route.Pattern).
+				Name(route.Name).
+				Handler(route.HandlerFunc)
+		}
 	}
 
 	router.NotFoundHandler = http.HandlerFunc(notFoundHandler)
@@ -36,12 +49,25 @@ func Router(routes Routes) *mux.Router {
 	return router
 }
 
-func notFoundHandler(w http.ResponseWriter, r *http.Request) {
+func authorizationHandler(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		headerApiKey := r.Header.Get("Authorization")
+		apiKey, err := storage.Mongo.FindApiKey(headerApiKey, []string{"topology:run"})
+		if err == nil && headerApiKey != apiKey {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
+
+func notFoundHandler(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusNotFound)
 }
 
-func methodNotAllowedHandler(w http.ResponseWriter, r *http.Request) {
+func methodNotAllowedHandler(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusMethodNotAllowed)
 }

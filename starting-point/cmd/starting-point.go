@@ -30,10 +30,9 @@ func main() {
 	log.Info("Successfully started.")
 
 	defer func() {
-		service.RabbitMq.DisconnectRabbit()
+		service.RabbitMq.Disconnect()
 		storage.Mongo.Disconnect()
 		_ = server.Shutdown(context.Background())
-
 	}()
 
 	gracefulShutdown(server)
@@ -50,7 +49,7 @@ func gracefulShutdown(server *http.Server) {
 		_ = <-sigs
 
 		log.Info("Stopping server...")
-		service.RabbitMq.DisconnectRabbit()
+		service.RabbitMq.Disconnect()
 		storage.Mongo.Disconnect()
 		_ = server.Shutdown(context.Background())
 

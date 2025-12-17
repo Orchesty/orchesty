@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"testing"
 
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/v2/bson"
 	"starting-point/pkg/service"
 	"starting-point/pkg/storage"
 	"starting-point/pkg/utils"
@@ -14,22 +14,13 @@ import (
 var topology = "Topology"
 var node = "Node"
 var customID = "4cb174e20000000000000000"
-var customObjectID, _ = primitive.ObjectIDFromHex(customID)
+var customObjectID, _ = bson.ObjectIDFromHex(customID)
 var topologyObject = storage.Topology{
 	ID:   customObjectID,
 	Name: topology,
 	Node: &storage.Node{
 		ID:   customObjectID,
 		Name: node,
-		HumanTask: &storage.HumanTask{
-			ID:            customObjectID,
-			ParentProcess: "parentProcess",
-			ParentID:      "parentID",
-			SequenceID:    "sequenceID",
-			ContentType:   "contentType",
-			ProcessID:     "processID",
-			CorrelationID: "correlationID",
-		},
 	},
 }
 var topologyNoNodeObject = storage.Topology{
@@ -46,8 +37,10 @@ var webhookObject = storage.Webhook{
 	Application: "Application",
 }
 
+var expectedResponse = `{"correlation_id":"1","started":1,"state":"ok"}`
+
 type RabbitMock struct {
-	*service.RabbitDefault
+	service.RabbitSvc
 }
 
 type CacheMock struct {
@@ -78,45 +71,41 @@ type MongoNoMock struct {
 	*storage.MongoDefault
 }
 
-type MongoNoMockHumanTask struct {
-	*storage.MongoDefault
-}
-
 func mockCache(t int) {
-	service.RabbitMq = &RabbitMock{}
+	service.RabbitMq = RabbitMock{}
 
 	switch t {
 	case 1:
 		service.Cache = &CacheMock{}
-		storage.Mongo = &MongoMock{}
 		break
 	case 2:
 		service.Cache = &CacheMockTopology{}
-		storage.Mongo = &MongoMockTopology{}
 		break
 	case 3:
 		service.Cache = &CacheNoMock{}
-		storage.Mongo = &MongoNoMock{}
-		break
-	case 4:
-		storage.Mongo = &MongoNoMockHumanTask{}
 		break
 	}
 }
 
-func (r *RabbitMock) SndMessage(request *http.Request, topology storage.Topology, init map[string]float64, isHuman bool, isStop bool) {
-	return
+func prepareMongo() {
+	storage.CreateMongo()
+	_ = storage.Mongo.DropApiTokenCollection()
+	_ = storage.Mongo.InsertApiToken("orchesty", []string{"topology:run"}, "")
+}
+
+func (r RabbitMock) SendMessage(request *http.Request, topology storage.Topology, init map[string]interface{}) (string, error) {
+	return "1", nil
 }
 
 func (c *CacheMock) InvalidateCache(topologyName string) int {
 	return 0
 }
 
-func (c *CacheMock) FindTopologyByID(topologyID, nodeID, humanTaskID string, isHumanTask bool) *storage.Topology {
+func (c *CacheMock) FindTopologyByID(topologyID, nodeID string, uiRun bool, allowedTypes []string) *storage.Topology {
 	return &topologyObject
 }
 
-func (c *CacheMock) FindTopologyByName(topologyName, nodeName, humanTaskID string, isHumanTask bool) *storage.Topology {
+func (c *CacheMock) FindTopologyByName(topologyName, nodeName string) *storage.Topology {
 	return &topologyObject
 }
 
@@ -124,11 +113,11 @@ func (c *CacheMock) FindTopologyByApplication(topologyName, nodeName, token stri
 	return &topologyObject, &webhookObject
 }
 
-func (c *MongoMock) FindTopologyByID(topologyID, nodeID, humanTaskID string, isHumanTask bool) *storage.Topology {
+func (c *MongoMock) FindTopologyByID(topologyID, nodeID string, uiRun bool, allowedTypes []string) *storage.Topology {
 	return &topologyObject
 }
 
-func (c *MongoMock) FindTopologyByName(topologyName, nodeName, humanTaskID string, isHumanTask bool) *storage.Topology {
+func (c *MongoMock) FindTopologyByName(topologyName, nodeName string) *storage.Topology {
 	return &topologyObject
 }
 
@@ -140,83 +129,74 @@ func (c *MongoMockConnected) IsConnected() bool {
 	return true
 }
 
-func (r *RabbitMock) IsMetricsConnected() bool {
+func (r RabbitMock) IsMetricsConnected() bool {
 	return true
 }
 
 func TestHandleStatus(t *testing.T) {
 	storage.Mongo = &MongoMockConnected{}
-	service.RabbitMq = &RabbitMock{}
+	service.RabbitMq = RabbitMock{}
 
-	r, _ := http.NewRequest("GET", "/status", nil)
+	r, _ := http.NewRequest("GET", "/status", bytes.NewReader([]byte("[]")))
 	assertResponse(t, r, 200, `{"database":true,"metrics":true}`)
 }
 
 func TestHandleRunByID(t *testing.T) {
 	mockCache(1)
+	prepareMongo()
 
 	r, _ := http.NewRequest("POST", "/topologies/a/nodes/b/run", bytes.NewReader([]byte("[]")))
-	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
-
-	mockCache(1)
-	r, _ = http.NewRequest("POST", "/human-tasks/topologies/a/nodes/b/run", bytes.NewReader([]byte("[]")))
-	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
-
-	mockCache(1)
-	r, _ = http.NewRequest("POST", "/human-tasks/topologies/a/nodes/b/stop", bytes.NewReader([]byte("[]")))
-	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
+	assertResponse(t, r, 200, expectedResponse)
 }
 
 func TestHandleRunByIDUser(t *testing.T) {
 	mockCache(1)
+	prepareMongo()
+
 	r, _ := http.NewRequest("POST", "/topologies/a/nodes/b/user/c/run", bytes.NewReader([]byte("[]")))
-	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
+	assertResponse(t, r, 200, expectedResponse)
 
 	mockCache(1)
-	r, _ = http.NewRequest("POST", "/topologies/a/nodes/b/run", bytes.NewReader([]byte(`{"pf-user":"c"}`)))
-	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
+
+	r, _ = http.NewRequest("POST", "/topologies/a/nodes/b/run", bytes.NewReader([]byte(`{"user":"c"}`)))
+	assertResponse(t, r, 200, expectedResponse)
 
 	mockCache(1)
+
 	r, _ = http.NewRequest("POST", "/topologies/a/nodes/b/run", bytes.NewReader([]byte("[]")))
 	r.Header.Add(utils.UserID, "c")
-	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
+	assertResponse(t, r, 200, expectedResponse)
 }
 
 func TestHandleRunByName(t *testing.T) {
 	mockCache(1)
+	prepareMongo()
 
 	r, _ := http.NewRequest("POST", "/topologies/a/nodes/b/run-by-name", bytes.NewReader([]byte("[]")))
-	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
-
-	mockCache(1)
-	r, _ = http.NewRequest("POST", "/human-tasks/topologies/a/nodes/b/run-by-name", bytes.NewReader([]byte("[]")))
-	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
-
-	mockCache(1)
-	r, _ = http.NewRequest("POST", "/human-tasks/topologies/a/nodes/b/stop-by-name", bytes.NewReader([]byte("[]")))
-	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
+	assertResponse(t, r, 200, expectedResponse)
 }
 
 func TestHandleRunByNameUser(t *testing.T) {
 	mockCache(1)
+	prepareMongo()
 	r, _ := http.NewRequest("POST", "/topologies/a/nodes/b/user/c/run-by-name", bytes.NewReader([]byte("[]")))
-	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
+	assertResponse(t, r, 200, expectedResponse)
 
 	mockCache(1)
-	r, _ = http.NewRequest("POST", "/topologies/a/nodes/b/run-by-name", bytes.NewReader([]byte(`{"pf-user":"c"}`)))
-	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
+	r, _ = http.NewRequest("POST", "/topologies/a/nodes/b/run-by-name", bytes.NewReader([]byte(`{"user":"c"}`)))
+	assertResponse(t, r, 200, expectedResponse)
 
 	mockCache(1)
 	r, _ = http.NewRequest("POST", "/topologies/a/nodes/b/run-by-name", bytes.NewReader([]byte("[]")))
 	r.Header.Add(utils.UserID, "c")
-	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
+	assertResponse(t, r, 200, expectedResponse)
 }
 
 func TestHandleRunByApplication(t *testing.T) {
 	mockCache(1)
 
 	r, _ := http.NewRequest("POST", "/topologies/a/nodes/b/token/c/run", bytes.NewReader([]byte("[]")))
-	assertResponse(t, r, 200, `{"started":1,"state":"ok"}`)
+	assertResponse(t, r, 200, expectedResponse)
 }
 
 func TestHandleRunByApplicationOptions(t *testing.T) {
@@ -234,17 +214,17 @@ func TestHandleRunByApplicationOptions(t *testing.T) {
 
 func TestHandleInvalidateCache(t *testing.T) {
 	mockCache(1)
-	r, _ := http.NewRequest("POST", "/topologies/a/invalidate-cache", nil)
+	r, _ := http.NewRequest("POST", "/topologies/a/invalidate-cache", bytes.NewReader([]byte("[]")))
 	assertResponse(t, r, 200, `{"cache":0}`)
 }
 
 // Test case: Find topology but not found Node
 
-func (c *CacheMockTopology) FindTopologyByID(topologyID, nodeID, humanTaskID string, isHumanTask bool) *storage.Topology {
+func (c *CacheMockTopology) FindTopologyByID(topologyID, nodeID string, uiRun bool, allowedTypes []string) *storage.Topology {
 	return &topologyNoNodeObject
 }
 
-func (c *CacheMockTopology) FindTopologyByName(topologyName, nodeName, humanTaskID string, isHumanTask bool) *storage.Topology {
+func (c *CacheMockTopology) FindTopologyByName(topologyName, nodeName string) *storage.Topology {
 	return nil
 }
 
@@ -252,11 +232,11 @@ func (c *CacheMockTopology) FindTopologyByApplication(topologyName, nodeName, to
 	return nil, nil
 }
 
-func (c *MongoMockTopology) FindTopologyByID(topologyID, nodeID, humanTaskID string, isHumanTask bool) *storage.Topology {
+func (c *MongoMockTopology) FindTopologyByID(topologyID, nodeID string, uiRun bool, allowedTypes []string) *storage.Topology {
 	return &topologyNoNodeObject
 }
 
-func (c *MongoMockTopology) FindTopologyByName(topologyName, nodeName, humanTaskID string, isHumanTask bool) *storage.Topology {
+func (c *MongoMockTopology) FindTopologyByName(topologyName, nodeName string) *storage.Topology {
 	return nil
 }
 
@@ -266,6 +246,7 @@ func (c *MongoMockTopology) FindTopologyByApplication(topologyName, nodeName, to
 
 func TestHandleRunByIDNodeNotFound(t *testing.T) {
 	mockCache(2)
+	prepareMongo()
 
 	r, _ := http.NewRequest("POST", "/topologies/a/nodes/b/run", bytes.NewReader([]byte("[]")))
 	assertResponse(t, r, 404, `{"message":"Node with key 'b' not found!"}`)
@@ -273,6 +254,7 @@ func TestHandleRunByIDNodeNotFound(t *testing.T) {
 
 func TestHandleRunByNameNodeNotFound(t *testing.T) {
 	mockCache(2)
+	prepareMongo()
 
 	r, _ := http.NewRequest("POST", "/topologies/a/nodes/b/run-by-name", bytes.NewReader([]byte("[]")))
 	assertResponse(t, r, 404, `{"message":"Topology with name 'a' and node with name 'b' not found!"}`)
@@ -287,66 +269,28 @@ func TestHandleRunByApplicationNodeNotFound(t *testing.T) {
 
 // Test case: Not find topology and not found Node
 
-func (c *CacheNoMock) FindTopologyByID(topologyID, nodeID, humanTaskID string, isHumanTask bool) *storage.Topology {
+func (c *CacheNoMock) FindTopologyByID(topologyID, nodeID string, uiRun bool, allowedTypes []string) *storage.Topology {
 	return nil
 }
 
-func (c *CacheNoMock) FindTopologyByName(topologyName, nodeName, humanTaskID string, isHumanTask bool) *storage.Topology {
+func (c *CacheNoMock) FindTopologyByName(topologyName, nodeName string) *storage.Topology {
 	return nil
 }
 
-func (c *MongoNoMock) FindTopologyByID(topologyID, nodeID, humanTaskID string, isHumanTask bool) *storage.Topology {
+func (c *MongoNoMock) FindTopologyByID(topologyID, nodeID string, uiRun bool, allowedTypes []string) *storage.Topology {
 	return nil
 }
 
-func (c *MongoNoMock) FindTopologyByName(topologyName, nodeName, humanTaskID string, isHumanTask bool) *storage.Topology {
+func (c *MongoNoMock) FindTopologyByName(topologyName, nodeName string) *storage.Topology {
 	return nil
 }
 
 func TestHandleRunByIDTopologyNotFound(t *testing.T) {
 	mockCache(3)
+	prepareMongo()
 
 	r, _ := http.NewRequest("POST", "/topologies/a/nodes/b/run", bytes.NewReader([]byte("[]")))
 	assertResponse(t, r, 404, `{"message":"Topology with key 'a' not found!"}`)
 }
 
-func TestHandleRunByNameInvalidInput(t *testing.T) {
-	mockCache(3)
-
-	r, _ := http.NewRequest("POST", "/topologies/a/nodes/b/run-by-name", bytes.NewReader([]byte("invalid")))
-	assertResponse(t, r, 400, `{"message":"Content is not valid!"}`)
-}
-
-func TestHandleRunByApplicationInvalidInput(t *testing.T) {
-	mockCache(3)
-
-	r, _ := http.NewRequest("POST", "/topologies/a/nodes/b/token/c/run", bytes.NewReader([]byte("invalid")))
-	assertResponse(t, r, 400, `{"message":"Content is not valid!"}`)
-}
-
-// Test case: Find topology and node but not human task
-
-func (c *MongoNoMockHumanTask) FindTopologyByID(topologyID, nodeID, humanTaskID string, isHumanTask bool) *storage.Topology {
-	topology := topologyObject
-	topology.Node.HumanTask = nil
-
-	return &topology
-}
-
-func (c *MongoNoMockHumanTask) FindTopologyByName(topologyName, nodeName, humanTaskID string, isHumanTask bool) *storage.Topology {
-	return nil
-}
-
-func TestHandleRunByIDHumanTaskNotFound(t *testing.T) {
-	mockCache(4)
-
-	r, _ := http.NewRequest("POST", "/human-tasks/topologies/a/nodes/b/token/c/run", bytes.NewReader([]byte("[]")))
-	assertResponse(t, r, 404, `{"message":"Human task with token 'c' not found!"}`)
-}
-
-func TestHandleRunByNameHumanTaskNotFound(t *testing.T) {
-	mockCache(4)
-
-	r, _ := http.NewRequest("POST", "/human-tasks/topologies/a/nodes/b/token/c/run-by-name", bytes.NewReader([]byte("[]")))
-	assertResponse(t, r, 404, `{"message":"Topology with name 'a', node with name 'b' and human task with token 'c' not found!"}`)
-}
+// Test case: Find topology and node
