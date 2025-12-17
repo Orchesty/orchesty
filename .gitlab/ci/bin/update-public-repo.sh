@@ -1,28 +1,28 @@
 #!/bin/bash
 set -ex
 
-declare -A SUBTREES_MATRIX
 PUBLIC_REPO=git@github.com:Orchesty/orchesty.git
 
-#BRANCHES="master 0.5.0 1.0.0 1.0.1 1.0.2 1.0.3 1.0.4 1.0.5 1.0.6 2.0.0"
-BRANCHES="master"
-SUBTREES_MATRIX["0.5.0"]="cron frontend kapacitor limiter logstash notification-sender pf-bridge pf-bundles starting-point topology-generator"
-SUBTREES_MATRIX["1.0.0"]="app-ui counter cron detector kapacitor limiter logstash notification-sender pf-bridge pf-bundles starting-point status-service topology-generator"
-SUBTREES_MATRIX["1.0.1"]="app-ui bridge counter cron detector kapacitor limiter logstash notification-sender pf-bridge pf-bundles starting-point status-service topology-generator"
-SUBTREES_MATRIX["1.0.2"]="app-ui bridge counter cron detector kapacitor limiter logstash notification-sender pf-bridge pf-bundles starting-point status-service topology-generator"
-SUBTREES_MATRIX["1.0.3"]="app-ui bridge counter cron detector kapacitor limiter logstash notification-sender pf-bridge pf-bundles starting-point status-service topology-generator"
-SUBTREES_MATRIX["1.0.4"]="app-ui bridge counter cron detector kapacitor limiter logstash notification-sender pf-bridge pf-bundles starting-point status-service topology-generator"
-SUBTREES_MATRIX["1.0.5"]="app-ui bridge counter cron detector fluentd kapacitor limiter logstash notification-sender pf-bridge pf-bundles starting-point status-service topology-generator"
-SUBTREES_MATRIX["1.0.6"]="app-ui bridge counter cron detector fluentd limiter pf-bundles starting-point topology-generator"
-SUBTREES_MATRIX["2.0.0"]="app-ui bridge counter cron detector fluentd limiter pf-bundles starting-point topology-generator worker-api"
-SUBTREES_MATRIX["master"]="app-ui bridge counter cron detector fluentd limiter pf-bundles starting-point topology-generator worker-api"
+BRANCHES="2.1.0 2.1.1"
+# BRANCHES="master"
 
-
-CURRENT_BRANCH=$(git symbolic-ref --short HEAD)
-for BRANCH in $BRANCHES; do
-  git checkout $BRANCH
-done
-git checkout $CURRENT_BRANCH
+get_subtrees() {
+    case $1 in
+        0.5.0) echo "cron frontend kapacitor limiter logstash notification-sender pf-bridge pf-bundles starting-point topology-generator" ;;
+        1.0.0) echo "app-ui counter cron detector kapacitor limiter logstash notification-sender pf-bridge pf-bundles starting-point status-service topology-generator" ;;
+        1.0.1) echo "app-ui bridge counter cron detector kapacitor limiter logstash notification-sender pf-bridge pf-bundles starting-point status-service topology-generator" ;;
+        1.0.2) echo "app-ui bridge counter cron detector kapacitor limiter logstash notification-sender pf-bridge pf-bundles starting-point status-service topology-generator" ;;
+        1.0.3) echo "app-ui bridge counter cron detector kapacitor limiter logstash notification-sender pf-bridge pf-bundles starting-point status-service topology-generator" ;;
+        1.0.4) echo "app-ui bridge counter cron detector kapacitor limiter logstash notification-sender pf-bridge pf-bundles starting-point status-service topology-generator" ;;
+        1.0.5) echo "app-ui bridge counter cron detector fluentd kapacitor limiter logstash notification-sender pf-bridge pf-bundles starting-point status-service topology-generator" ;;
+        1.0.6) echo "app-ui bridge counter cron detector fluentd limiter pf-bundles starting-point topology-generator" ;;
+        2.0.0) echo "app-ui bridge counter cron detector fluentd limiter pf-bundles starting-point topology-generator worker-api" ;;
+        2.1.0) echo "app-ui bridge counter cron detector fluentd limiter pf-bundles starting-point topology-generator worker-api" ;;
+        2.1.1) echo "app-ui bridge counter cron detector fluentd limiter pf-bundles starting-point topology-generator worker-api" ;;
+        master) echo "app-ui bridge counter cron detector fluentd limiter pf-bundles starting-point topology-generator worker-api" ;;
+        *) echo "" ;;
+    esac
+}
 
 
 rm -rf public_repo
@@ -32,7 +32,7 @@ git remote add source ../
 git fetch source
 
 for BRANCH in $BRANCHES; do
-  SUBTREES=${SUBTREES_MATRIX[$BRANCH]}
+  SUBTREES=$(get_subtrees $BRANCH)
 
   git checkout -b source-$BRANCH source/$BRANCH || true
   git checkout source-$BRANCH
@@ -40,13 +40,18 @@ for BRANCH in $BRANCHES; do
 
   ## Separate commits for specific sub-repo
   for S in $SUBTREES; do
-    git subtree split -P $S -b __$S --rejoin
+    git subtree split -P $S -b __$S --rejoin &
   done
+  wait
 
 
   ## Create new empty branch or checkout to existing one from public repository.
   if git show-ref --quiet refs/remotes/origin/$BRANCH; then
-    git checkout -b $BRANCH origin/$BRANCH
+    if git show-ref --quiet refs/heads/$BRANCH; then
+      git checkout $BRANCH
+    else
+      git checkout -b $BRANCH origin/$BRANCH
+    fi
   else
     git checkout --orphan $BRANCH
     git rm -rf .
