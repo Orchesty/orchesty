@@ -23,7 +23,7 @@ use Hanaboso\Utils\Exception\DateTimeException;
     expireAfterSeconds: 2_628_000,
 )]
 #[ODM\Index(
-    keys: ['finished' => 'desc'],
+    keys: ['finished' => 'asc'],
     name: 'IK_multiCounter_finished',
 )]
 #[ODM\Index(
