@@ -16,12 +16,12 @@ type Detector struct {
 }
 
 func (d *Detector) Run() {
-	log.Infof("Starting detector, ticks every [%d] secs", config.App.Tick/time.Second)
+	log.Infof("Starting detector, ticks every [%d] secs", config.App.Tick)
 
 	// Publisher
 	go d.sender.Start()
 
-	for range time.Tick(config.App.Tick) {
+	for range time.Tick(time.Duration(config.App.Tick) * time.Second) {
 		if queues, err := d.rb.GatherQueuesInfo(); err == nil {
 			d.workQueue <- queues
 			d.consumerChecker.ConsumerCheck(queues)

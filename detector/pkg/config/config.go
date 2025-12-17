@@ -3,7 +3,6 @@ package config
 
 import (
 	"github.com/rabbitmq/amqp091-go"
-	"time"
 
 	"github.com/hanaboso/go-log/pkg/zap"
 	"github.com/jinzhu/configor"
@@ -36,9 +35,9 @@ type (
 	}
 
 	app struct {
-		Debug        bool          `default:"false" env:"APP_DEBUG"`
-		Tick         time.Duration `default:"60" env:"TICK"` // in seconds
-		MonitorLabel string        `default:"app.kubernetes.io/instance=pipes" env:"COMPONENTS_DEPLOYMENT_LABEL"`
+		Debug        bool   `default:"false" env:"APP_DEBUG"`
+		Tick         int    `default:"60" env:"TICK"` // in seconds
+		MonitorLabel string `default:"app.kubernetes.io/instance=pipes" env:"COMPONENTS_DEPLOYMENT_LABEL"`
 	}
 
 	generator struct {
@@ -84,7 +83,6 @@ func init() {
 		Logger.SetLevel(log.INFO)
 	}
 
-	App.Tick *= time.Second
 	parseRabbitDsn()
 }
 

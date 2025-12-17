@@ -4,9 +4,8 @@ import (
 	"detector/pkg/config"
 	"fmt"
 	"github.com/hanaboso/go-mongodb"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 	"time"
 )
 
@@ -25,11 +24,11 @@ type Monitoring struct {
 }
 
 func (m *Monitoring) Run() {
-	for range time.Tick(config.App.Tick) {
+	for range time.Tick(time.Duration(config.App.Tick) * time.Second) {
 		context, _ := m.mongo.Context()
 		now := time.Now()
 
-		inProgress, err := m.multiCounterCollection.CountDocuments(context, map[string]interface{}{"finished": primitive.Null{}})
+		inProgress, err := m.multiCounterCollection.CountDocuments(context, map[string]interface{}{"finished": bson.Null{}})
 
 		if err != nil {
 			config.Logger.Fatal(err)
@@ -57,8 +56,8 @@ func (m *Monitoring) Run() {
 					"$match", bson.D{
 						{
 							"finished", bson.D{
-								{"$gt", primitive.NewDateTimeFromTime(m.LastT)},
-								{"$lte", primitive.NewDateTimeFromTime(now)},
+								{"$gt", bson.NewDateTimeFromTime(m.LastT)},
+								{"$lte", bson.NewDateTimeFromTime(now)},
 							},
 						},
 					},
@@ -66,7 +65,7 @@ func (m *Monitoring) Run() {
 			},
 			{
 				{"$group", bson.D{
-					{"_id", primitive.Null{}},
+					{"_id", bson.Null{}},
 					{
 						"succeeded", bson.D{
 							{
