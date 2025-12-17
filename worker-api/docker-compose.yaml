@@ -1,4 +1,3 @@
-version: '3.5'
 services:
     worker-api:
         image: worker-api:tag
@@ -25,7 +24,7 @@ services:
             - mongo:/data/db
 
     fluentd:
-        image: orchesty/fluentd:2.0.0
+        image: orchesty/fluentd:2.0
         environment:
             MONGO_DSN: 'mongodb://mongo:27017/worker-api'
             MONGO_COLLECTION: Logs

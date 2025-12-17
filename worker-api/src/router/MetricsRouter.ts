@@ -41,10 +41,11 @@ export default class MetricsRouter {
     }
 
     public initRoutes(): void {
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
         this.app.post('/metrics/:measurement', async (req, res) => {
             const { measurement } = req.params;
 
+            // eslint-disable-next-line no-useless-assignment
             let result = {} as ValidationResult;
             switch (measurement) {
                 case 'monolith':

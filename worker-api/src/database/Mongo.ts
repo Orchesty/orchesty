@@ -31,7 +31,7 @@ export default class Mongo {
             await client.connect();
             await client.close();
 
-            const result = await this.client.db().command({ ping: 1 }, { maxTimeMS: 5000 }) as { ok: number };
+            const result = await this.client.db().command({ ping: 1 }) as { ok: number };
             if (result.ok) {
                 return true;
             }
@@ -61,6 +61,7 @@ export default class Mongo {
                 // eslint-disable-next-line no-await-in-loop
                 await this.client.db().dropCollection(collection);
             } catch (e) {
+                logger.error(`Mongo error: [${e}]`);
             }
         }
     }

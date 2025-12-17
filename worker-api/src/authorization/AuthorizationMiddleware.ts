@@ -12,7 +12,8 @@ export default class AuthorizationMiddleware {
     public isAuthorized(): (req: Request, res: Response, next: NextFunction) => Promise<void> {
         const { mongoClient } = this;
 
-        return async function(req: Request, res: Response, next: NextFunction) {
+        return async (req: Request, res: Response, next: NextFunction) => {
+            // eslint-disable-next-line no-useless-assignment
             let scopes: string[] = [];
 
             const separatedPath = req.path.split('/');

@@ -6,6 +6,7 @@ import { ScopeEnum } from '../../src/authorization/ScopeEnum';
 import DocumentEnum from '../../src/enum/DocumentEnum';
 
 let services: IServices;
+
 describe('Tests for logs router', () => {
     beforeAll(async () => {
         services = await init();
@@ -270,5 +271,31 @@ describe('Tests for logs router', () => {
         resp = await supertest(services.app).get('/document/ApplicationInstall?filter={"enabled":true,"names":{"nin":["testKey"]}}').set(ORCHESTY_API_KEY, key).send();
         assert.equal(resp.statusCode, 200);
         assert.equal(resp.body.length, 1);
+    });
+
+    it('document - webhook get by ids', async () => {
+        const key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJzY29wZXMiOlsid29ya2VyOmFsbCJdfQ.L0I7Yf92rj1uXOikdzl2SN1sXJdfbHpRE8aT_q6I99A';
+
+        const apiKeyCollection = services.mongo.getApiKeyCollection();
+        await apiKeyCollection.insertOne({ key, scopes: [ScopeEnum.WORKER_ALL] });
+
+        const documentCollection = services.mongo.getCollection(DocumentEnum.WEBHOOK);
+        const wh = await documentCollection.insertOne(
+            {
+                application: 'outlook',
+                deleted: false,
+                name: 'test',
+                node: 'webhook',
+                token: '123456789',
+                topology: 'test-topo',
+                unsubscribeFailed: false,
+                user: 'orchesty',
+                webhookId: '999999',
+            },
+        );
+        const path = `/document/Webhook?filter={"ids":["${wh.insertedId.toString()}"]}`;
+        const resp = await supertest(services.app).get(path).set(ORCHESTY_API_KEY, key).send();
+        assert.equal(resp.body.length, 1);
+        assert.equal(resp.statusCode, 200);
     });
 });
