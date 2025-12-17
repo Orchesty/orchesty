@@ -52,7 +52,7 @@ const send = (config) => {
         ...config,
         url,
         headers,
-      })
+      }),
     )
   })
 }
@@ -81,14 +81,14 @@ const sendCustom = (config) => {
         ...config,
         url,
         headers,
-      })
+      }),
     )
   })
 }
 
 const call = (
   { requestData, params = null, throwError = true, store },
-  sender
+  sender,
 ) => {
   const { id, errorType, loadingType, request, mock, reduce } = requestData
 
@@ -131,7 +131,7 @@ const call = (
             logout(store.commit, store.dispatch, router.currentRoute).then(
               () => {
                 reject(err.response.data.message)
-              }
+              },
             )
 
             return
@@ -142,7 +142,7 @@ const call = (
             id,
             err.response.data.status ? err.response.data.status : "UNKNOWN",
             errorType,
-            err.response.data.message
+            err.response.data.message,
           )
         } else {
           // unknown error
@@ -152,7 +152,7 @@ const call = (
             "UNKNOWN",
             errorType,
             err.response?.data?.message ??
-              "Network error, please try again later"
+              "Network error, please try again later",
           )
         }
 

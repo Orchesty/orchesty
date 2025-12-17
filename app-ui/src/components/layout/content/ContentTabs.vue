@@ -6,6 +6,7 @@
           <content-tabs-header
             :title="title"
             :is-topology="isTopology"
+            :is-app-store="isAppStore"
             :tabs="tabs"
           />
         </v-col>
@@ -21,7 +22,7 @@
 </template>
 
 <script>
-import ContentTabsHeader from "@/components/layout/content/ContentTabsHeader"
+import ContentTabsHeader from "@/components/layout/content/ContentTabsHeader.vue"
 
 export default {
   name: "ContentTabs",
@@ -37,6 +38,10 @@ export default {
       required: true,
     },
     isTopology: {
+      type: Boolean,
+      default: false,
+    },
+    isAppStore: {
       type: Boolean,
       default: false,
     },

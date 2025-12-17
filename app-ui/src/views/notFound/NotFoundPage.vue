@@ -9,8 +9,8 @@
 </template>
 
 <script>
-import AuthSplitLayout from "@/components/app/auth/layout/AuthSplitLayout"
-import AuthLayout from "@/components/layout/auth/AuthLayout"
+import AuthSplitLayout from "@/components/app/auth/layout/AuthSplitLayout.vue"
+import AuthLayout from "@/components/layout/auth/AuthLayout.vue"
 
 export default {
   name: "NotFoundPage",

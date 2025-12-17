@@ -9,7 +9,8 @@
       <v-container fluid>
         <v-row>
           <v-col class="px-0">
-            <span>{{ $t("page.status.noAppsAvailable") }}</span>
+            <span v-if="sdk">{{ $t("page.status.noAppsAvailable") }}</span>
+            <span v-else>{{ $t("page.status.noSdksAvailable") }}</span>
           </v-col>
         </v-row>
       </v-container>
@@ -104,12 +105,12 @@
 import { mapActions, mapGetters } from "vuex"
 import { REQUESTS_STATE } from "@/store/modules/api/types"
 import { API } from "@/api"
-import AppItem from "../item/AppItem"
+import AppItem from "../item/AppItem.vue"
 import { AUTH } from "@/store/modules/auth/types"
 import { ROUTES } from "@/services/enums/routerEnums"
-import AppItemButton from "@/components/app/appStore/button/AppItemButton"
+import AppItemButton from "@/components/app/appStore/button/AppItemButton.vue"
 import { APP_STORE } from "@/store/modules/appStore/types"
-import ProgressBarLinear from "@/components/commons/progressIndicators/ProgressBarLinear"
+import ProgressBarLinear from "@/components/commons/progressIndicators/ProgressBarLinear.vue"
 
 export default {
   name: "InstalledAppsGridHandler",
@@ -127,11 +128,19 @@ export default {
     ...mapGetters(APP_STORE.NAMESPACE, {
       appsAvailable: APP_STORE.GETTERS.GET_AVAILABLE_APPS,
       appsInstalled: APP_STORE.GETTERS.GET_INSTALLED_APPS,
+      sdk: APP_STORE.GETTERS.GET_SDK,
     }),
     isRequestSending() {
       return this[REQUESTS_STATE.GETTERS.GET_STATE]([
         API.appStore.getInstalledApps.id,
       ]).isSending
+    },
+  },
+  watch: {
+    sdk: async function () {
+      await this[APP_STORE.ACTIONS.GET_AVAILABLE_APPS]({ sdk: this.sdk })
+      await this[APP_STORE.ACTIONS.GET_INSTALLED_APPS]({ sdk: this.sdk })
+      this.mergeWithInstalledApps()
     },
   },
   methods: {
@@ -141,25 +150,37 @@ export default {
       APP_STORE.ACTIONS.GET_INSTALLED_APPS,
     ]),
     mergeWithInstalledApps() {
-      this.appsMerged = this.appsInstalled.map((availableAppData) => {
-        const installedAppData = this.appsAvailable.find(
-          (installedApp) => installedApp.key === availableAppData.key
+      this.appsMerged = this.appsInstalled
+        .filter(
+          (appInstalled) =>
+            this.appsAvailable.filter(
+              (appAvailable) => appInstalled.key === appAvailable.key,
+            ).length > 0,
         )
-        if (installedAppData) {
-          const app = { ...availableAppData, ...installedAppData }
-          app.logo = app.logo ?? ""
-          return app
-        }
-      })
+        .map((availableAppData) => {
+          const installedAppData = this.appsAvailable.find(
+            (installedApp) => installedApp.key === availableAppData.key,
+          )
+          if (installedAppData) {
+            const app = { ...availableAppData, ...installedAppData }
+            app.logo = app.logo ?? ""
+            return app
+          }
+        })
     },
     async uninstall(key) {
-      await this[APP_STORE.ACTIONS.UNINSTALL_APP_REQUEST]({ key })
+      await this[APP_STORE.ACTIONS.UNINSTALL_APP_REQUEST]({
+        key,
+        sdk: this.sdk,
+      })
     },
   },
   async created() {
-    await this[APP_STORE.ACTIONS.GET_AVAILABLE_APPS]()
-    await this[APP_STORE.ACTIONS.GET_INSTALLED_APPS]()
-    this.mergeWithInstalledApps()
+    if (this.sdk) {
+      await this[APP_STORE.ACTIONS.GET_AVAILABLE_APPS]({ sdk: this.sdk })
+      await this[APP_STORE.ACTIONS.GET_INSTALLED_APPS]({ sdk: this.sdk })
+      this.mergeWithInstalledApps()
+    }
   },
 }
 </script>

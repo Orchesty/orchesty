@@ -22,8 +22,8 @@
 </template>
 
 <script>
-import Tooltip from "@/components/commons/Tooltip"
-import AppIcon from "@/components/commons/icon/AppIcon"
+import Tooltip from "@/components/commons/Tooltip.vue"
+import AppIcon from "@/components/commons/icon/AppIcon.vue"
 export default {
   name: "NavigationItem",
   components: { AppIcon, Tooltip },

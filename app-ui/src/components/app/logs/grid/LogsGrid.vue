@@ -44,7 +44,7 @@
       >
         <span
           :class="`font-weight-bold ${setColor(
-            items.item.severity
+            items.item.severity,
           )}--text text-uppercase`"
           >{{ items.item.severity }}</span
         >
@@ -82,15 +82,15 @@
 <script>
 import { internationalFormat } from "@/services/utils/dateFilters"
 import { DATA_GRIDS } from "@/services/enums/dataGridEnums"
-import DataGrid from "@/components/commons/grid/DataGrid"
+import DataGrid from "@/components/commons/grid/DataGrid.vue"
 import { REQUESTS_STATE } from "@/store/modules/api/types"
 import { API } from "@/api"
 import { mapGetters } from "vuex"
-import Tooltip from "@/components/commons/Tooltip"
-import FlashMessageMixin from "@/services/mixins/FlashMessageMixin"
-import QuickFiltersMixin from "@/services/mixins/QuickFiltersMixin"
+import Tooltip from "@/components/commons/Tooltip.vue"
+import FlashMessageMixin from "@/services/mixins/FlashMessageMixin.vue"
+import QuickFiltersMixin from "@/services/mixins/QuickFiltersMixin.vue"
 import { SIMPLE_FILTER } from "@/services/enums/dataGridFilterEnums"
-import AppIcon from "@/components/commons/icon/AppIcon"
+import AppIcon from "@/components/commons/icon/AppIcon.vue"
 import { GRID } from "@/store/modules/grid/types"
 export default {
   name: "LogsGrid",
@@ -188,7 +188,7 @@ export default {
       null,
       null,
       this.pagingInitial,
-      this.sorterInitial
+      this.sorterInitial,
     )
   },
   filters: {

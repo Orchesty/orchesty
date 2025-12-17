@@ -12,7 +12,7 @@ export default function PaletteProvider(
   lassoTool,
   handTool,
   globalConnect,
-  translate
+  translate,
 ) {
   this._palette = palette
   this._create = create
@@ -110,7 +110,7 @@ PaletteProvider.prototype.getPaletteEntries = function () {
       "Cron",
       {
         pipesType: PIPES_TYPE_CRON,
-      }
+      },
     ),
     "create.webhook-event": createAction(
       "bpmn:Event",
@@ -119,7 +119,7 @@ PaletteProvider.prototype.getPaletteEntries = function () {
       "Webhook",
       {
         pipesType: PIPES_TYPE_WEBHOOK,
-      }
+      },
     ),
     "create.start-event": createAction(
       "bpmn:Event",
@@ -128,7 +128,7 @@ PaletteProvider.prototype.getPaletteEntries = function () {
       "Start",
       {
         pipesType: PIPES_TYPE_START,
-      }
+      },
     ),
     "event-separator": {
       group: "events",
@@ -141,7 +141,7 @@ PaletteProvider.prototype.getPaletteEntries = function () {
       "Connector",
       {
         pipesType: PIPES_TYPE_CONNECTOR,
-      }
+      },
     ),
     "create.batch": createAction(
       "bpmn:Task",
@@ -150,21 +150,21 @@ PaletteProvider.prototype.getPaletteEntries = function () {
       "Batch",
       {
         pipesType: PIPES_TYPE_BATCH,
-      }
+      },
     ),
     "create.custom": createAction(
       "bpmn:Task",
       "activity",
       "bpmn-icon-task-none",
       "Custom",
-      { pipesType: PIPES_TYPE_CUSTOM }
+      { pipesType: PIPES_TYPE_CUSTOM },
     ),
     "create.user": createAction(
       "bpmn:Task",
       "activity",
       "bpmn-icon-user",
       "User task",
-      { pipesType: PIPES_TYPE_USER }
+      { pipesType: PIPES_TYPE_USER },
     ),
     "activity-separator": {
       group: "activity",
@@ -177,7 +177,7 @@ PaletteProvider.prototype.getPaletteEntries = function () {
       "Gateway",
       {
         pipesType: PIPES_TYPE_GATEWAY,
-      }
+      },
     ),
   })
 

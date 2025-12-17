@@ -70,7 +70,9 @@
       <v-col>
         <v-tabs v-model="tab" height="40">
           <v-tab
-            v-for="form in settingsConfig"
+            v-for="form in settingsConfig.filter(
+              (s) => s.key === 'info' || !!s.fields.length,
+            )"
             :key="form.key"
             class="text-transform-none body-2 font-weight-medium primary--text"
           >
@@ -82,7 +84,9 @@
 
     <v-tabs-items v-model="tab" class="mt-4">
       <v-tab-item
-        v-for="(form, index) in settingsConfig"
+        v-for="(form, index) in settingsConfig.filter(
+          (s) => s.key === 'info' || !!s.fields.length,
+        )"
         :key="form.key"
         class="application-settings-wrapper-form"
       >
@@ -283,18 +287,19 @@ import { TOPOLOGIES } from "@/store/modules/topologies/types"
 import { ROUTES } from "@/services/enums/routerEnums"
 import { REQUESTS_STATE } from "@/store/modules/api/types"
 import { config } from "@/config"
-import AppItemPasswordModal from "@/components/app/appStore/modal/AppItemPasswordModal"
-import AppInput from "@/components/commons/input/AppInput"
-import AppButton from "@/components/commons/button/AppButton"
-import ActionsWrapper from "@/components/layout/actions/ActionsWrapper"
-import ContentBasic from "@/components/layout/content/ContentBasic"
-import UninstallAppModal from "@/components/app/appStore/modal/UninstallAppModal"
+import AppItemPasswordModal from "@/components/app/appStore/modal/AppItemPasswordModal.vue"
+import AppInput from "@/components/commons/input/AppInput.vue"
+import AppButton from "@/components/commons/button/AppButton.vue"
+import ActionsWrapper from "@/components/layout/actions/ActionsWrapper.vue"
+import ContentBasic from "@/components/layout/content/ContentBasic.vue"
+import UninstallAppModal from "@/components/app/appStore/modal/UninstallAppModal.vue"
 import { API } from "@/api"
-import AppSelect from "@/components/commons/AppSelect"
-import AppCheckbox from "@/components/commons/AppCheckbox"
-import AppNotAuthorizedModal from "../modal/AppNotAuthorizedModal"
+import AppSelect from "@/components/commons/AppSelect.vue"
+import AppCheckbox from "@/components/commons/AppCheckbox.vue"
+import AppNotAuthorizedModal from "@/components/app/appStore/modal/AppNotAuthorizedModal.vue"
 import { LOCAL_STORAGE } from "@/services/enums/localStorageEnums"
-import CustomActionsMenu from "@/components/app/appStore/installedApp/CustomActionsMenu"
+import CustomActionsMenu from "@/components/app/appStore/installedApp/CustomActionsMenu.vue"
+import appItemPlaceholder from "@/assets/svg/app-item-placeholder.svg"
 
 export default {
   name: "InstalledApp",
@@ -327,6 +332,7 @@ export default {
   computed: {
     ...mapGetters(APP_STORE.NAMESPACE, {
       appActive: APP_STORE.GETTERS.GET_ACTIVE_APP,
+      sdk: APP_STORE.GETTERS.GET_SDK,
     }),
     ...mapGetters(TOPOLOGIES.NAMESPACE, {
       topologiesAll: TOPOLOGIES.GETTERS.GET_ALL_TOPOLOGIES,
@@ -384,11 +390,13 @@ export default {
       APP_STORE.ACTIONS.AUTHORIZE,
       APP_STORE.ACTIONS.ACTIVATE,
       APP_STORE.ACTIONS.RESET,
+      APP_STORE.ACTIONS.GET_SDK,
     ]),
 
     async uninstall(key) {
       const isInstalled = await this[APP_STORE.ACTIONS.UNINSTALL_APP_REQUEST]({
         key,
+        sdk: this.sdk,
       })
       if (isInstalled) {
         await this.$router.push({ name: ROUTES.APP_STORE.INSTALLED_APPS })
@@ -401,6 +409,7 @@ export default {
         if (this.webhooksSettings[name].enabled) {
           const result = await this[APP_STORE.ACTIONS.UNSUBSCRIBE_WEBHOOK]({
             key: this.appActive.key,
+            sdk: this.sdk,
             data: { name, topology: this.webhooksSettings[name].topology },
           })
           if (result) {
@@ -413,6 +422,7 @@ export default {
         } else {
           const result = await this[APP_STORE.ACTIONS.SUBSCRIBE_WEBHOOK]({
             key: this.appActive.key,
+            sdk: this.sdk,
             data: { name, topology: this.webhooksSettings[name].topology },
           })
           if (result) {
@@ -431,6 +441,7 @@ export default {
 
       const isActivated = await this[APP_STORE.ACTIONS.ACTIVATE]({
         key: this.$route.params.key,
+        sdk: this.sdk,
         data: {
           enabled: newState,
         },
@@ -473,24 +484,29 @@ export default {
 
       const isSaved = await this[APP_STORE.ACTIONS.SAVE_APP_SETTINGS]({
         key: this.appActive.key,
+        sdk: this.sdk,
         data: formSettings,
       })
 
       if (isSaved) {
         await this[APP_STORE.ACTIONS.GET_INSTALLED_APP]({
           key: this.$route.params.key,
+          sdk: this.sdk,
         })
       }
     },
     async authorizeApp() {
       const authorizeURL = new URL(
-        `/api/applications/${this.appActive.key}/authorize`,
-        config.backend.apiBaseUrl
+        `/api/applications/${this.appActive.key}/authorize?sdk=${this.sdk}`,
+        config.backend.apiBaseUrl,
       )
-      authorizeURL.searchParams.append("redirect_url", window.location.href)
+      authorizeURL.searchParams.append(
+        "redirect_url",
+        `${window.location.href}?sdk=${this.sdk}`,
+      )
       authorizeURL.searchParams.append(
         "Authorization",
-        localStorage.getItem(LOCAL_STORAGE.USER_TOKEN)
+        localStorage.getItem(LOCAL_STORAGE.USER_TOKEN),
       )
       window.open(authorizeURL.href, "_blank").focus()
 
@@ -537,14 +553,14 @@ export default {
       this.settingsSnapshots = this.settingsConfig.map((form) => ({
         key: form.key,
         fields: Object.fromEntries(
-          form.fields.map((field) => [field.key, field.value])
+          form.fields.map((field) => [field.key, field.value]),
         ),
       }))
 
       this.settingsForms = this.settingsConfig.map((form) => ({
         key: form.key,
         fields: Object.fromEntries(
-          form.fields.map((field) => [field.key, field.value])
+          form.fields.map((field) => [field.key, field.value]),
         ),
         matchesWithSnapshot: true,
         hasValidSettings: true,
@@ -579,7 +595,7 @@ export default {
 
     areFormsMatching(keys, modifiedForm, snapshot) {
       return keys.every(
-        (key) => snapshot.fields[key] === modifiedForm.fields[key]
+        (key) => snapshot.fields[key] === modifiedForm.fields[key],
       )
     },
 
@@ -595,14 +611,12 @@ export default {
         modifiedForm.matchesWithSnapshot = this.areFormsMatching(
           keys,
           modifiedForm,
-          snapshot
+          snapshot,
         )
       }
     },
     hasLogo(app) {
-      return app?.logo
-        ? app.logo
-        : require("@/assets/svg/app-item-placeholder.svg")
+      return app?.logo ? app.logo : appItemPlaceholder
     },
   },
 
@@ -627,10 +641,28 @@ export default {
     },
   },
   async created() {
-    await this[TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES]()
-    await this[APP_STORE.ACTIONS.GET_INSTALLED_APP]({
-      key: this.$route.params.key,
-    })
+    if (this.sdk) {
+      await this[TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES]()
+      await this[APP_STORE.ACTIONS.GET_INSTALLED_APP]({
+        key: this.$route.params.key,
+        sdk: this.sdk,
+      })
+    } else if (this.$route.query.sdk) {
+      this[APP_STORE.ACTIONS.GET_SDK](this.$route.query.sdk)
+
+      await this[TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES]()
+      await this[APP_STORE.ACTIONS.GET_INSTALLED_APP]({
+        key: this.$route.params.key,
+        sdk: this.$route.query.sdk,
+      })
+
+      await this.$router.push({
+        name: ROUTES.APP_STORE.INSTALLED_APP,
+        params: { key: this.$route.params.key },
+      })
+    } else {
+      await this.$router.push({ name: ROUTES.APP_STORE.INSTALLED_APPS })
+    }
   },
   beforeDestroy() {
     this[APP_STORE.ACTIONS.RESET]()

@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import TopologyTreeView from "@/components/app/topology/treeview/TopologyTreeView"
+import TopologyTreeView from "@/components/app/topology/treeview/TopologyTreeView.vue"
 
 export default {
   name: "Sidebar",

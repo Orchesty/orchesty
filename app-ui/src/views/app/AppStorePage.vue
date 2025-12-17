@@ -1,9 +1,9 @@
 <template>
-  <content-tabs :title="$t('navigation.appStore')" :tabs="tabs" />
+  <content-tabs :title="$t('navigation.appStore')" :tabs="tabs" is-app-store />
 </template>
 
 <script>
-import ContentTabs from "@/components/layout/content/ContentTabs"
+import ContentTabs from "@/components/layout/content/ContentTabs.vue"
 import { ROUTES } from "@/services/enums/routerEnums"
 
 export default {

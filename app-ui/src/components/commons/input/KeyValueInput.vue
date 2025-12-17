@@ -63,10 +63,10 @@
 </template>
 
 <script>
-import AppInput from "@/components/commons/input/AppInput"
-import AppButton from "@/components/commons/button/AppButton"
-import AppIcon from "@/components/commons/icon/AppIcon"
-import AppSpecialButton from "@/components/commons/button/AppSpecialButton"
+import AppInput from "@/components/commons/input/AppInput.vue"
+import AppButton from "@/components/commons/button/AppButton.vue"
+import AppIcon from "@/components/commons/icon/AppIcon.vue"
+import AppSpecialButton from "@/components/commons/button/AppSpecialButton.vue"
 export default {
   name: "KeyValueInput",
   components: { AppSpecialButton, AppIcon, AppButton, AppInput },
@@ -103,7 +103,7 @@ export default {
           header.key === "" ||
           header.value === "" ||
           header.key === null ||
-          header.value === null
+          header.value === null,
       )
       return checkEmptyHeaders.length >= 1 && this.headers.length > 0
     },
@@ -115,7 +115,7 @@ export default {
           header.key === "" ||
           header.value === "" ||
           header.key === null ||
-          header.value === null
+          header.value === null,
       )
       if (checkEmptyHeaders.length >= 1 && this.headers.length > 0) {
         return

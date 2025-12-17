@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import DataGrid from "@/components/commons/grid/DataGrid"
+import DataGrid from "@/components/commons/grid/DataGrid.vue"
 import { DATA_GRIDS } from "@/services/enums/dataGridEnums"
 import { mapGetters } from "vuex"
 import { GRID } from "@/store/modules/grid/types"
@@ -63,7 +63,7 @@ export default {
       null,
       null,
       this.pagingInitial,
-      this.sorterInitial
+      this.sorterInitial,
     )
   },
 }

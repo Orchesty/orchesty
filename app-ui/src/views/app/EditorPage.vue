@@ -24,16 +24,16 @@
 
 <script>
 import { ROUTES } from "@/services/enums/routerEnums"
-import ContentBasic from "../../components/layout/content/ContentBasic"
-import BpmnEditor from "@/components/app/bpmn/BpmnEditor"
+import ContentBasic from "../../components/layout/content/ContentBasic.vue"
+import BpmnEditor from "@/components/app/bpmn/BpmnEditor.vue"
 import { mapActions, mapGetters } from "vuex"
 import { TOPOLOGIES } from "@/store/modules/topologies/types"
 import { REQUESTS_STATE } from "@/store/modules/api/types"
 import { API } from "@/api"
-import UnsavedEditorModal from "@/components/app/bpmn/modals/UnsavedEditorModal"
-import ActionButtons from "@/components/app/bpmn/components/ActionButtons"
+import UnsavedEditorModal from "@/components/app/bpmn/modals/UnsavedEditorModal.vue"
+import ActionButtons from "@/components/app/bpmn/components/ActionButtons.vue"
 import { redirectTo } from "@/services/utils/utils"
-import ImportTopologyMixin from "@/services/mixins/ImportTopologyMixin"
+import ImportTopologyMixin from "@/services/mixins/ImportTopologyMixin.vue"
 import { EVENTS, events } from "@/services/utils/events"
 
 export default {
@@ -89,7 +89,7 @@ export default {
         })
       } else {
         await this[TOPOLOGIES.ACTIONS.TOPOLOGY.GET_DIAGRAM](
-          this.topologyActive._id
+          this.topologyActive._id,
         )
       }
     },
@@ -101,7 +101,7 @@ export default {
     events.listen(EVENTS.EDITOR.COMPARE_XML, async (redirectFunction) => {
       this.redirectFunction = redirectFunction
       const xml = new XMLSerializer().serializeToString(
-        await this.$refs.editor.getCurrentXMLDiagram()
+        await this.$refs.editor.getCurrentXMLDiagram(),
       )
 
       const diagramChanged = await this[

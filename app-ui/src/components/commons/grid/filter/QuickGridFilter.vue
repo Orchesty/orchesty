@@ -23,7 +23,7 @@
 <script>
 import { FILTER } from "@/services/enums/gridEnums"
 import moment from "moment"
-import AppButton from "@/components/commons/button/AppButton"
+import AppButton from "@/components/commons/button/AppButton.vue"
 
 export default {
   name: "QuickGridFilter",
@@ -58,7 +58,7 @@ export default {
     return {
       items: this.createItems(
         this.quickFilters,
-        this.filterMeta.index || undefined
+        this.filterMeta.index || undefined,
       ),
     }
   },
@@ -147,6 +147,10 @@ export default {
       this.onChange(withDefault, { type: FILTER.QUICK_FILTER, index })
     },
     createItems(filters, index = undefined) {
+      if (index === undefined) {
+        index = this.filterMeta.index
+      }
+
       return filters.map((item, i) => {
         item.active = false
 

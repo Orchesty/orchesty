@@ -35,12 +35,12 @@ export default {
     if (!payload.settings || payload.settings.length === 0) {
       localStorage.setItem(
         LOCAL_STORAGE.USER_SETTINGS,
-        JSON.stringify(userSettingsFallback)
+        JSON.stringify(userSettingsFallback),
       )
     } else {
       localStorage.setItem(
         LOCAL_STORAGE.USER_SETTINGS,
-        JSON.stringify(payload.settings)
+        JSON.stringify(payload.settings),
       )
     }
   },

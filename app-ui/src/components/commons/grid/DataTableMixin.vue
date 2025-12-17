@@ -4,7 +4,7 @@ export default {
   computed: {
     visibleHeaders() {
       return this.headers.filter(
-        (header) => header.visible || header.alwaysVisible === true
+        (header) => header.visible || header.alwaysVisible === true,
       )
     },
   },

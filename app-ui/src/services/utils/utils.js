@@ -10,13 +10,13 @@ export const startSending = (commit, id, errorType, loadingType) => {
   commit(
     withNamespace(
       REQUESTS_STATE.NAMESPACE,
-      REQUESTS_STATE.MUTATIONS.START_SENDING
+      REQUESTS_STATE.MUTATIONS.START_SENDING,
     ),
     {
       id,
       errorType,
       loadingType,
-    }
+    },
   )
 }
 
@@ -24,9 +24,9 @@ export const removeError = (commit, id) => {
   commit(
     withNamespace(
       REQUESTS_STATE.NAMESPACE,
-      REQUESTS_STATE.MUTATIONS.REMOVE_ERROR
+      REQUESTS_STATE.MUTATIONS.REMOVE_ERROR,
     ),
-    { id }
+    { id },
   )
 }
 
@@ -36,7 +36,7 @@ export const addError = (commit, id, error) => {
     {
       id,
       error,
-    }
+    },
   )
 }
 
@@ -44,9 +44,9 @@ export const stopSending = (commit, id) => {
   commit(
     withNamespace(
       REQUESTS_STATE.NAMESPACE,
-      REQUESTS_STATE.MUTATIONS.STOP_SENDING
+      REQUESTS_STATE.MUTATIONS.STOP_SENDING,
     ),
-    { id }
+    { id },
   )
 }
 
@@ -81,7 +81,7 @@ export const redirectTo = async (router, to) => {
       !(
         error.name === "NavigationDuplicated" ||
         error.message.includes(
-          "Avoided redundant navigation to current location"
+          "Avoided redundant navigation to current location",
         )
       )
     ) {

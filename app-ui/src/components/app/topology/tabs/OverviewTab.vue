@@ -43,16 +43,16 @@
 <script>
 import { internationalFormat } from "@/services/utils/dateFilters"
 import { DATA_GRIDS } from "@/services/enums/dataGridEnums"
-import DataGrid from "@/components/commons/grid/DataGrid"
+import DataGrid from "@/components/commons/grid/DataGrid.vue"
 import { REQUESTS_STATE } from "@/store/modules/api/types"
 import { API } from "@/api"
 import { mapGetters } from "vuex"
 import { TOPOLOGIES } from "@/store/modules/topologies/types"
 import { GRID } from "@/store/modules/grid/types"
 import prettyMilliseconds from "pretty-ms"
-import FlashMessageMixin from "@/services/mixins/FlashMessageMixin"
-import QuickFiltersMixin from "@/services/mixins/QuickFiltersMixin"
-import AppIcon from "@/components/commons/icon/AppIcon"
+import FlashMessageMixin from "@/services/mixins/FlashMessageMixin.vue"
+import QuickFiltersMixin from "@/services/mixins/QuickFiltersMixin.vue"
+import AppIcon from "@/components/commons/icon/AppIcon.vue"
 import moment from "moment"
 
 export default {
@@ -138,7 +138,7 @@ export default {
         }
 
         return this.prettifyMilliseconds(
-          currentTimeMilliseconds - processStartedMilliseconds
+          currentTimeMilliseconds - processStartedMilliseconds,
         )
       } else {
         return this.prettifyMilliseconds(process.duration)
@@ -177,7 +177,7 @@ export default {
       null,
       null,
       this.pagingInitial,
-      this.sorterInitial
+      this.sorterInitial,
     )
   },
 }

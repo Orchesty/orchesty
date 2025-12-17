@@ -7,7 +7,7 @@ module.exports = {
     "@vue/prettier",
   ],
   parserOptions: {
-    parser: "babel-eslint",
+    parser: "@babel/eslint-parser",
   },
   env: {
     es6: true,

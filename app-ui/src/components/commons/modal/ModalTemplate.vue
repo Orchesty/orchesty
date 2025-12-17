@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import AppButton from "@/components/commons/button/AppButton"
+import AppButton from "@/components/commons/button/AppButton.vue"
 
 export default {
   name: "ModalTemplate",

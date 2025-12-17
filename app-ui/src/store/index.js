@@ -58,7 +58,7 @@ export const createStore = (router) => {
       jwtTokens,
       [DATA_GRIDS.ADMIN_USERS_LIST]: createGrid(
         DATA_GRIDS.ADMIN_USERS_LIST,
-        {}
+        {},
       ),
       [DATA_GRIDS.DASHBOARD_PROCESSES]: createGrid(
         DATA_GRIDS.DASHBOARD_PROCESSES,
@@ -73,7 +73,7 @@ export const createStore = (router) => {
             page: 1,
             itemsPerPage: 10,
           },
-        }
+        },
       ),
       [DATA_GRIDS.OVERVIEW]: createGrid(DATA_GRIDS.OVERVIEW, {
         sorter: [
@@ -103,7 +103,7 @@ export const createStore = (router) => {
       }),
       [DATA_GRIDS.IMPLEMENTATIONS_LIST]: createGrid(
         DATA_GRIDS.IMPLEMENTATIONS_LIST,
-        {}
+        {},
       ),
       [DATA_GRIDS.SCHEDULED_TASK]: createGrid(DATA_GRIDS.SCHEDULED_TASK, {}),
       [DATA_GRIDS.JWT_TOKENS]: createGrid(DATA_GRIDS.JWT_TOKENS, {
@@ -199,7 +199,7 @@ export const createStore = (router) => {
             page: 1,
             itemsPerPage: 99999999,
           },
-        }
+        },
       ),
       [DATA_GRIDS.HEALTH_CHECK_CONTAINERS]: createGrid(
         DATA_GRIDS.HEALTH_CHECK_CONTAINERS,
@@ -221,7 +221,7 @@ export const createStore = (router) => {
             page: 1,
             itemsPerPage: 99999999,
           },
-        }
+        },
       ),
       [DATA_GRIDS.USER_TASK]: createGrid(DATA_GRIDS.USER_TASK, {
         sorter: [

@@ -36,9 +36,9 @@
 </template>
 
 <script>
-import FormMixin from "../../../../services/mixins/FormMixin"
+import FormMixin from "../../../../services/mixins/FormMixin.vue"
 import { TOPOLOGY_ENUMS } from "@/services/enums/topologyEnums"
-import AppInput from "@/components/commons/input/AppInput"
+import AppInput from "@/components/commons/input/AppInput.vue"
 
 export default {
   name: "TopologyForm",

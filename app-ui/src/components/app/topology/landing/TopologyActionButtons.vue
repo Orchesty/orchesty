@@ -127,12 +127,12 @@ import axios from "axios"
 import { config } from "@/config"
 import { AUTH } from "@/store/modules/auth/types"
 import { events, EVENTS } from "@/services/utils/events"
-import TopologyDetailMenu from "@/components/app/topology/menu/TopologyDetailMenu"
-import Tooltip from "@/components/commons/Tooltip"
-import AppButton from "@/components/commons/button/AppButton"
-import AppIcon from "@/components/commons/icon/AppIcon"
+import TopologyDetailMenu from "@/components/app/topology/menu/TopologyDetailMenu.vue"
+import Tooltip from "@/components/commons/Tooltip.vue"
+import AppButton from "@/components/commons/button/AppButton.vue"
+import AppIcon from "@/components/commons/icon/AppIcon.vue"
 import { redirectTo } from "@/services/utils/utils"
-import AppIconWithTextButton from "@/components/commons/button/AppIconWithTextButton"
+import AppIconWithTextButton from "@/components/commons/button/AppIconWithTextButton.vue"
 
 export default {
   name: "TopologyActionButtons",
@@ -242,7 +242,7 @@ export default {
       await this[action](this.topologyActive._id)
       await this[TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID](this.topologyActive._id)
       await this[TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES](
-        this.topologyActive._id
+        this.topologyActive._id,
       )
     },
     async run(item) {
@@ -267,7 +267,7 @@ export default {
       nodeType,
       topologyId,
       topologyName,
-      data = {}
+      data = {},
     ) {
       return nodeType === "webhook"
         ? `${baseURL}/topologies/${topologyName}/nodes/${nodeName}/token/${
@@ -282,14 +282,14 @@ export default {
         item.name,
         item.type,
         item.topology_id,
-        this.topologyActive.name
+        this.topologyActive.name,
       )
     },
   },
   watch: {
     topologyActiveNodes() {
       let start = this.topologyActiveNodes.filter(
-        (node) => node.type === "start"
+        (node) => node.type === "start",
       )[0]
       if (!start) return
       this.startingPoint = this.createStartingPoint(start)

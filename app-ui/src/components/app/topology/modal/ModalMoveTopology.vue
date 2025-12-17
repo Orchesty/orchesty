@@ -30,13 +30,13 @@
 
 <script>
 import { events, EVENTS } from "../../../../services/utils/events"
-import ModalTemplate from "../../../commons/modal/ModalTemplate"
+import ModalTemplate from "../../../commons/modal/ModalTemplate.vue"
 import { TOPOLOGIES } from "@/store/modules/topologies/types"
 import { mapActions, mapGetters } from "vuex"
 import { REQUESTS_STATE } from "@/store/modules/api/types"
 import { API } from "@/api"
-import TopologyMoveTreeView from "../treeview/TopologyMoveTreeView"
-import AppButton from "@/components/commons/button/AppButton"
+import TopologyMoveTreeView from "../treeview/TopologyMoveTreeView.vue"
+import AppButton from "@/components/commons/button/AppButton.vue"
 
 export default {
   name: "ModalMoveTopology",

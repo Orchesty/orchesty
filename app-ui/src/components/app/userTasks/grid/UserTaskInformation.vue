@@ -42,7 +42,7 @@
                 <span>{{
                   userTask || isTrash
                     ? $options.filters.internationalFormat(
-                        trashTaskSwitcher("created")
+                        trashTaskSwitcher("created"),
                       )
                     : ""
                 }}</span>
@@ -59,7 +59,7 @@
                 <span>{{
                   userTask || isTrash
                     ? $options.filters.internationalFormat(
-                        trashTaskSwitcher("updated")
+                        trashTaskSwitcher("updated"),
                       )
                     : ""
                 }}</span>
@@ -154,7 +154,7 @@
 <script>
 import { internationalFormat } from "@/services/utils/dateFilters"
 import { mapActions, mapState } from "vuex"
-import UserTaskActionsModal from "@/components/app/userTasks/modal/UserTaskActionsModal"
+import UserTaskActionsModal from "@/components/app/userTasks/modal/UserTaskActionsModal.vue"
 import { USER_TASKS } from "@/store/modules/userTasks/types"
 import "vue-json-pretty/lib/styles.css"
 import VueJsonPretty from "vue-json-pretty"
@@ -360,6 +360,8 @@ export default {
 </script>
 
 <style scoped lang="scss">
+@import "@/assets/scss/main";
+
 .json-ready {
   white-space: pre-wrap;
 }
@@ -376,7 +378,7 @@ export default {
   min-width: 0;
   flex-direction: column;
 
-  @media #{map-get($display-breakpoints, 'sm-and-down')} {
+  @media #{map.get($display-breakpoints, 'sm-and-down')} {
     flex: 1 0 100%;
     align-items: flex-start;
   }

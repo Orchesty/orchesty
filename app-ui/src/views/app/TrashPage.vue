@@ -5,8 +5,8 @@
 </template>
 
 <script>
-import ContentBasic from "@/components/layout/content/ContentBasic"
-import TrashHandler from "@/components/app/trash/grid/TrashHandler"
+import ContentBasic from "@/components/layout/content/ContentBasic.vue"
+import TrashHandler from "@/components/app/trash/grid/TrashHandler.vue"
 export default {
   name: "TrashPage",
   components: { TrashHandler, ContentBasic },

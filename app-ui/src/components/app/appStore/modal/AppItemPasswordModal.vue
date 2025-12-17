@@ -60,12 +60,12 @@
 </template>
 
 <script>
-import ModalTemplate from "@/components/commons/modal/ModalTemplate"
-import AppButton from "@/components/commons/button/AppButton"
+import ModalTemplate from "@/components/commons/modal/ModalTemplate.vue"
+import AppButton from "@/components/commons/button/AppButton.vue"
 import { mapActions, mapGetters } from "vuex"
 import { APP_STORE } from "@/store/modules/appStore/types"
 import { AUTH } from "@/store/modules/auth/types"
-import AppInput from "@/components/commons/input/AppInput"
+import AppInput from "@/components/commons/input/AppInput.vue"
 export default {
   name: "AppItemPasswordModal",
   components: { AppInput, AppButton, ModalTemplate },
@@ -108,6 +108,7 @@ export default {
   },
   computed: {
     ...mapGetters(AUTH.NAMESPACE, { userId: AUTH.GETTERS.GET_LOGGED_USER_ID }),
+    ...mapGetters(APP_STORE.NAMESPACE, { sdk: APP_STORE.GETTERS.GET_SDK }),
   },
   methods: {
     ...mapActions(APP_STORE.NAMESPACE, [APP_STORE.ACTIONS.APP_SET_PASSWORD]),
@@ -121,6 +122,7 @@ export default {
       }
       await this[APP_STORE.ACTIONS.APP_SET_PASSWORD]({
         key: this.appKey,
+        sdk: this.sdk,
         data: {
           password: this.password,
           formKey: this.formKey,

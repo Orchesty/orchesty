@@ -24,8 +24,8 @@
 </template>
 
 <script>
-import FormMixin from "../../../../services/mixins/FormMixin"
-import AppInput from "@/components/commons/input/AppInput"
+import FormMixin from "../../../../services/mixins/FormMixin.vue"
+import AppInput from "@/components/commons/input/AppInput.vue"
 
 export default {
   name: "UserForm",

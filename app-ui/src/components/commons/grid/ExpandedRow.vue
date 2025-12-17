@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import ProgressBarLinear from "@/components/commons/progressIndicators/ProgressBarLinear"
+import ProgressBarLinear from "@/components/commons/progressIndicators/ProgressBarLinear.vue"
 export default {
   name: "ExpandedRow",
   components: { ProgressBarLinear },

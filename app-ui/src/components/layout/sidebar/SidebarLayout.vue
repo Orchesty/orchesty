@@ -30,19 +30,19 @@
 </template>
 
 <script>
-import GlobalNotifications from "../../commons/notifications/GlobalNotifications"
-import Navigation from "../navigation/Navigation"
-import SidebarToggle from "@/components/layout/sidebar/SidebarToggle"
-import Sidebar from "@/components/layout/sidebar/Sidebar"
-import ModalRunTopology from "@/components/app/topology/modal/ModalRunTopology"
-import ModalDeleteFolder from "@/components/app/folder/modal/ModalDeleteFolder"
-import ModalEditFolder from "@/components/app/folder/modal/ModalEditFolder"
-import ModalDeleteTopology from "@/components/app/topology/modal/ModalDeleteTopology"
-import ModalMoveTopology from "@/components/app/topology/modal/ModalMoveTopology"
-import ModalEditTopology from "@/components/app/topology/modal/ModalEditTopology"
-import ModalCreateFolder from "@/components/app/folder/modal/ModalCreateFolder"
-import ModalCreateTopology from "@/components/app/topology/modal/ModalCreateTopology"
-import ModalImportTopology from "@/components/app/topology/modal/ModalImportTopology"
+import GlobalNotifications from "../../commons/notifications/GlobalNotifications.vue"
+import Navigation from "../navigation/Navigation.vue"
+import SidebarToggle from "@/components/layout/sidebar/SidebarToggle.vue"
+import Sidebar from "@/components/layout/sidebar/Sidebar.vue"
+import ModalRunTopology from "@/components/app/topology/modal/ModalRunTopology.vue"
+import ModalDeleteFolder from "@/components/app/folder/modal/ModalDeleteFolder.vue"
+import ModalEditFolder from "@/components/app/folder/modal/ModalEditFolder.vue"
+import ModalDeleteTopology from "@/components/app/topology/modal/ModalDeleteTopology.vue"
+import ModalMoveTopology from "@/components/app/topology/modal/ModalMoveTopology.vue"
+import ModalEditTopology from "@/components/app/topology/modal/ModalEditTopology.vue"
+import ModalCreateFolder from "@/components/app/folder/modal/ModalCreateFolder.vue"
+import ModalCreateTopology from "@/components/app/topology/modal/ModalCreateTopology.vue"
+import ModalImportTopology from "@/components/app/topology/modal/ModalImportTopology.vue"
 
 export default {
   name: "SidebarLayout",

@@ -24,9 +24,9 @@
 
 <script>
 import { ROUTES } from "@/services/enums/routerEnums"
-import AuthLayout from "@/components/layout/auth/AuthLayout"
-import AuthSplitLayout from "@/components/app/auth/layout/AuthSplitLayout"
-import AppButton from "@/components/commons/button/AppButton"
+import AuthLayout from "@/components/layout/auth/AuthLayout.vue"
+import AuthSplitLayout from "@/components/app/auth/layout/AuthSplitLayout.vue"
+import AppButton from "@/components/commons/button/AppButton.vue"
 
 export default {
   name: "PasswordChangedPage",

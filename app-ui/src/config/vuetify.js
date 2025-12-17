@@ -1,47 +1,13 @@
 import "@mdi/font/css/materialdesignicons.css"
 import Vue from "vue"
-import Vuetify, {
-  VApp,
-  VCard,
-  VInput,
-  VLabel,
-  VMessages,
-  VTextField,
-  VProgressLinear,
-  VCheckbox,
-  VChip,
-  VDatePicker,
-  VAutocomplete,
-  VSimpleCheckbox,
-  VTreeview,
-  VDialog,
-} from "vuetify/lib"
-import { Ripple } from "vuetify/lib/directives"
+import Vuetify from "vuetify"
+import "vuetify/dist/vuetify.min.css"
 
 Vue.use(Vuetify)
 
 export default new Vuetify({
   icons: {
     iconfont: "mdi",
-  },
-  components: {
-    VApp,
-    VCard,
-    VInput,
-    VLabel,
-    VMessages,
-    VTextField,
-    VProgressLinear,
-    VCheckbox,
-    VChip,
-    VDatePicker,
-    VAutocomplete,
-    VSimpleCheckbox,
-    VTreeview,
-    VDialog,
-  },
-  directives: {
-    Ripple,
   },
   theme: {
     options: {

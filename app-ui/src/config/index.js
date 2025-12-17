@@ -2,9 +2,9 @@ import vuetify from "./vuetify"
 import "./veeValidate"
 import { ability } from "./ability"
 
-const config =
-  process.env.NODE_ENV === "production"
-    ? require("./config.prod").default
-    : require("./config.dev").default
+import configProd from "./config.prod"
+import configDev from "./config.dev"
+
+const config = process.env.NODE_ENV === "production" ? configProd : configDev
 
 export { config, vuetify, ability }

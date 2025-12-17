@@ -1,24 +1,5 @@
 <template>
   <div>
-    <v-row dense>
-      <v-col cols="12">
-        <quick-grid-filter
-          ref="quickGridFilter"
-          :quick-filters="quickFilters"
-          :filter="filter"
-          :filter-meta="filterMeta"
-          is-viewer
-          :on-change="onFilterChange"
-          :is-loading="state.isSending"
-        >
-          <template #resetClearButtons>
-            <v-btn color="primary" icon @click="reload">
-              <v-icon> mdi-reload </v-icon>
-            </v-btn>
-          </template>
-        </quick-grid-filter>
-      </v-col>
-    </v-row>
     <v-row v-if="!state.isSending" key="2" dense class="d-flex justify-start">
       <v-col cols="12">
         <v-card outlined class="bpmn-viewer-node-grid-container">
@@ -72,20 +53,17 @@ import { REQUESTS_STATE } from "@/store/modules/api/types"
 import { API } from "@/api"
 import { OPERATOR } from "@/services/enums/gridEnums"
 import { DATA_GRIDS } from "@/services/enums/dataGridEnums"
-import { USER_TASKS } from "@/store/modules/userTasks/types"
-import BpmnNodeGrid from "@/components/app/bpmn/components/BpmnNodeGrid"
-import QuickGridFilter from "@/components/commons/grid/filter/QuickGridFilter"
-import ProgressBarLinear from "@/components/commons/progressIndicators/ProgressBarLinear"
-import QuickFiltersMixin from "@/services/mixins/QuickFiltersMixin"
+import BpmnNodeGrid from "@/components/app/bpmn/components/BpmnNodeGrid.vue"
+import ProgressBarLinear from "@/components/commons/progressIndicators/ProgressBarLinear.vue"
+import QuickFiltersMixin from "@/services/mixins/QuickFiltersMixin.vue"
 import { QUICK_FILTERS } from "@/services/utils/quickFilters"
-import NodeDropdownHandler from "@/components/app/topology/dropdown/NodeDropdownHandler"
+import NodeDropdownHandler from "@/components/app/topology/dropdown/NodeDropdownHandler.vue"
 
 export default {
   name: "ViewerTab",
   components: {
     NodeDropdownHandler,
     ProgressBarLinear,
-    QuickGridFilter,
     BpmnNodeGrid,
   },
   mixins: [QuickFiltersMixin],
@@ -108,21 +86,20 @@ export default {
   },
   computed: {
     ...mapGetters(REQUESTS_STATE.NAMESPACE, [REQUESTS_STATE.GETTERS.GET_STATE]),
-    ...mapGetters(USER_TASKS.NAMESPACE, {
-      userTasks: USER_TASKS.GETTERS.GET_USER_TASKS,
-    }),
+    // ...mapGetters(USER_TASKS.NAMESPACE, {
+    //   userTasks: USER_TASKS.GETTERS.GET_USER_TASKS,
+    // }),
     ...mapGetters(TOPOLOGIES.NAMESPACE, {
       topologyActive: TOPOLOGIES.GETTERS.GET_ACTIVE_TOPOLOGY,
       topologyActiveNodes: TOPOLOGIES.GETTERS.GET_ACTIVE_TOPOLOGY_NODES,
-      topologyActiveStatistics:
-        TOPOLOGIES.GETTERS.GET_ACTIVE_TOPOLOGY_STATISTICS,
+      // topologyActiveStatistics: TOPOLOGIES.GETTERS.GET_ACTIVE_TOPOLOGY_STATISTICS,
       topologyActiveDiagram: TOPOLOGIES.GETTERS.GET_ACTIVE_TOPOLOGY_DIAGRAM,
     }),
     state() {
       return this[REQUESTS_STATE.GETTERS.GET_STATE]([
         API.topology.getNodes.id,
         API.implementation.getList.id,
-        API.statistic.getList.id,
+        //API.statistic.getList.id,
       ])
     },
     canvasHeight() {
@@ -159,32 +136,32 @@ export default {
     ...mapActions(TOPOLOGIES.NAMESPACE, [
       TOPOLOGIES.ACTIONS.TOPOLOGY.NODES,
       TOPOLOGIES.ACTIONS.TOPOLOGY.GET_DIAGRAM,
-      TOPOLOGIES.ACTIONS.DATA.GET_STATISTICS,
+      // TOPOLOGIES.ACTIONS.DATA.GET_STATISTICS,
     ]),
-    ...mapActions(USER_TASKS.NAMESPACE, [
-      USER_TASKS.ACTIONS.USER_TASK_FETCH_TASKS,
-    ]),
+    // ...mapActions(USER_TASKS.NAMESPACE, [
+    //   USER_TASKS.ACTIONS.USER_TASK_FETCH_TASKS,
+    // ]),
 
     //#1 BACKEND DATA FETCH
     async initData(topologyActive) {
       await Promise.all([
         this[TOPOLOGIES.ACTIONS.TOPOLOGY.NODES](topologyActive._id),
         this[TOPOLOGIES.ACTIONS.TOPOLOGY.GET_DIAGRAM](topologyActive._id),
-        this[TOPOLOGIES.ACTIONS.DATA.GET_STATISTICS]({
-          id: topologyActive._id,
-          settings: null,
-        }),
-        this[USER_TASKS.ACTIONS.USER_TASK_FETCH_TASKS]({
-          filter: [
-            [
-              {
-                column: "topologyId",
-                operator: OPERATOR.EQUAL,
-                value: topologyActive._id,
-              },
-            ],
-          ],
-        }),
+        // this[TOPOLOGIES.ACTIONS.DATA.GET_STATISTICS]({
+        //   id: topologyActive._id,
+        //   settings: null,
+        // }),
+        // this[USER_TASKS.ACTIONS.USER_TASK_FETCH_TASKS]({
+        //   filter: [
+        //     [
+        //       {
+        //         column: "topologyId",
+        //         operator: OPERATOR.EQUAL,
+        //         value: topologyActive._id,
+        //       },
+        //     ],
+        //   ],
+        // }),
       ]).then(async () => await this.prepareCanvas(topologyActive))
     },
 
@@ -346,14 +323,16 @@ export default {
       document.querySelectorAll(".badge-error").forEach((badgeError) => {
         badgeError.addEventListener("click", function () {
           window.dispatchEvent(
-            new CustomEvent("nodeSelection", { detail: badgeError })
+            new CustomEvent("nodeSelection", { detail: badgeError }),
           )
         })
       })
       document.querySelectorAll(".starting-point").forEach((startingPoint) => {
         startingPoint.addEventListener("click", function () {
           window.dispatchEvent(
-            new CustomEvent("showNodeContextActions", { detail: startingPoint })
+            new CustomEvent("showNodeContextActions", {
+              detail: startingPoint,
+            }),
           )
         })
       })
@@ -366,14 +345,14 @@ export default {
         .forEach((error) =>
           !condition
             ? (error.style["display"] = "none")
-            : (error.style["display"] = "block")
+            : (error.style["display"] = "block"),
         )
     },
 
     //CONDITIONS CHECKER
     isStartingPoint(element) {
       return this.startEventTypes.some(
-        (excludedName) => element.businessObject.pipesType === excludedName
+        (excludedName) => element.businessObject.pipesType === excludedName,
       )
     },
     hasTests(topology) {
@@ -392,7 +371,7 @@ export default {
           node.type === "webhook"
         ) {
           let svg = document.querySelectorAll(
-            `g[data-element-id='${node.schema_id}'] .djs-visual > *:not(text)`
+            `g[data-element-id='${node.schema_id}'] .djs-visual > *:not(text)`,
           )
           svg.forEach((svg) => {
             !node.enabled
@@ -408,7 +387,7 @@ export default {
           topology.test.forEach((test) => {
             if (test.id === node._id) {
               let svg = document.querySelectorAll(
-                `g[data-element-id='${node.schema_id}'] .djs-visual > *:not(text)`
+                `g[data-element-id='${node.schema_id}'] .djs-visual > *:not(text)`,
               )
               if (test.status !== "ok") {
                 svg.forEach((svg) => {
@@ -447,7 +426,7 @@ export default {
 
       const title = document.createElementNS(
         "http://www.w3.org/2000/svg",
-        "title"
+        "title",
       )
       title.textContent = name
       label.appendChild(title)
@@ -488,7 +467,7 @@ export default {
     window.addEventListener("queueDepthCheckbox", this.toggleOverlaysHandler)
     window.addEventListener(
       "showNodeContextActions",
-      this.showNodeContextActions
+      this.showNodeContextActions,
     )
   },
   mounted() {
@@ -501,7 +480,7 @@ export default {
     window.removeEventListener("queueDepthCheckbox", this.toggleOverlaysHandler)
     window.removeEventListener(
       "showNodeContextActions",
-      this.showNodeContextActions
+      this.showNodeContextActions,
     )
   },
 }

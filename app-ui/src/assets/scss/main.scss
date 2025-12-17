@@ -1,8 +1,9 @@
-@import "~vuetify/src/styles/main";
+@use "@/scss/variables" as *;
 
-@import "~bpmn-js/dist/assets/diagram-js.css";
-@import "~bpmn-js/dist/assets/bpmn-font/css/bpmn.css";
-@import "~@dzangolab/vue-country-flag-icon/src/assets/scss/country-flag";
+@import "vuetify/src/styles/main";
+
+@import "bpmn-js/dist/assets/diagram-js.css";
+@import "bpmn-js/dist/assets/bpmn-font/css/bpmn.css";
 
 @import "bpmn/bpmn-properties-panel";
 @import "vuetify/v-data-table";
@@ -11,3 +12,4 @@
 @import "bpmn/bpmn-diagram";
 @import "vuetify/navigation";
 @import "msic/orchesty";
+@import "msic/font";

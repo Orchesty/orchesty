@@ -15,8 +15,8 @@
 </template>
 
 <script>
-import PageFooter from "../content/ContentFooter"
-import GlobalNotifications from "../../commons/notifications/GlobalNotifications"
+import PageFooter from "../content/ContentFooter.vue"
+import GlobalNotifications from "../../commons/notifications/GlobalNotifications.vue"
 
 export default {
   name: "AuthLayout",

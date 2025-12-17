@@ -29,8 +29,8 @@ import { TOPOLOGIES } from "@/store/modules/topologies/types"
 import { ROUTES } from "@/services/enums/routerEnums"
 import download from "@/services/utils/download"
 import { TOPOLOGY_ENUMS } from "@/services/enums/topologyEnums"
-import AppIcon from "@/components/commons/icon/AppIcon"
-import AppListItem from "@/components/commons/AppListItem"
+import AppIcon from "@/components/commons/icon/AppIcon.vue"
+import AppListItem from "@/components/commons/AppListItem.vue"
 import { redirectTo } from "@/services/utils/utils"
 
 export default {
@@ -98,7 +98,7 @@ export default {
     ]),
     async clone() {
       let response = await this[TOPOLOGIES.ACTIONS.TOPOLOGY.CLONE](
-        this.topology._id
+        this.topology._id,
       )
       if (response) {
         await this[TOPOLOGIES.ACTIONS.DATA.GET_TOPOLOGIES]()
@@ -111,12 +111,12 @@ export default {
     },
     async exportXML() {
       let diagram = await this[TOPOLOGIES.ACTIONS.TOPOLOGY.RETURN_DIAGRAM](
-        this.topology._id
+        this.topology._id,
       )
       download(
         diagram,
         `${this.topology.name}.v${this.topology.version}` + ".tplg",
-        "application/bpmn+xml"
+        "application/bpmn+xml",
       )
     },
     isEnabled() {

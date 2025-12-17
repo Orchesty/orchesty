@@ -47,13 +47,13 @@
 
 <script>
 import { events, EVENTS } from "../../../../services/utils/events"
-import ModalTemplate from "../../../commons/modal/ModalTemplate"
+import ModalTemplate from "../../../commons/modal/ModalTemplate.vue"
 import { mapActions, mapGetters } from "vuex"
 import { TOPOLOGIES } from "../../../../store/modules/topologies/types"
 import { REQUESTS_STATE } from "../../../../store/modules/api/types"
 import { API } from "../../../../api"
 import { ROUTES } from "@/services/enums/routerEnums"
-import AppButton from "@/components/commons/button/AppButton"
+import AppButton from "@/components/commons/button/AppButton.vue"
 import { redirectTo } from "@/services/utils/utils"
 
 export default {
@@ -101,7 +101,7 @@ export default {
           if (res) {
             this.isOpen = false
           }
-        }
+        },
       )
     },
   },

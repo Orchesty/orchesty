@@ -44,9 +44,9 @@ import { mapActions, mapGetters } from "vuex"
 import { JWT_TOKENS } from "@/store/modules/jwtTokens/types"
 import { REQUESTS_STATE } from "@/store/modules/api/types"
 import { API } from "@/api"
-import JwtTokenForm from "@/components/app/jwtToken/form/JwtTokenForm"
-import AppButton from "@/components/commons/button/AppButton"
-import ModalTemplate from "@/components/commons/modal/ModalTemplate"
+import JwtTokenForm from "@/components/app/jwtToken/form/JwtTokenForm.vue"
+import AppButton from "@/components/commons/button/AppButton.vue"
+import ModalTemplate from "@/components/commons/modal/ModalTemplate.vue"
 import { events, EVENTS } from "@/services/utils/events"
 
 export default {

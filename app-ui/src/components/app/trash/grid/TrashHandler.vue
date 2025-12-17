@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import TrashGrid from "@/components/app/trash/grid/TrashGrid"
+import TrashGrid from "@/components/app/trash/grid/TrashGrid.vue"
 export default {
   name: "TrashHandler",
   components: { TrashGrid },

@@ -1,12 +1,8 @@
-@import "../assets/scss/msic/font";
-@import "~vuetify/src/styles/styles";
+@use "sass:map";
 
-$material-light: map_merge(
-  $material-light,
-  (
-    "background": #f0f0f0,
-  )
-);
+$body-font-family: "Montserrat", sans-serif !default;
+$heading-font-family: "Montserrat", sans-serif !default;
+
 $btn-text-transform: none;
 $tooltip-background-color: rgba(28, 40, 73, 1);
 $skeleton-loader-image-height: 100%;

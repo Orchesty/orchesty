@@ -87,7 +87,7 @@ export default {
           darkMode: this.darkMode,
           language: this.$i18n.locale,
           show: this.show,
-        })
+        }),
       )
     },
   },
@@ -98,10 +98,10 @@ export default {
           settings: {
             show: this.show,
             darkMode: JSON.parse(
-              localStorage.getItem(LOCAL_STORAGE.USER_SETTINGS)
+              localStorage.getItem(LOCAL_STORAGE.USER_SETTINGS),
             ).darkMode,
             language: JSON.parse(
-              localStorage.getItem(LOCAL_STORAGE.USER_SETTINGS)
+              localStorage.getItem(LOCAL_STORAGE.USER_SETTINGS),
             ).language,
           },
         },

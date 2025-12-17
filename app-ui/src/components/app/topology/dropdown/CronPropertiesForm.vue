@@ -55,15 +55,15 @@
 </template>
 
 <script>
-import AppInput from "@/components/commons/input/AppInput"
-import AppButton from "@/components/commons/button/AppButton"
+import AppInput from "@/components/commons/input/AppInput.vue"
+import AppButton from "@/components/commons/button/AppButton.vue"
 import cronParser from "cron-parser"
 import { TOPOLOGIES } from "@/store/modules/topologies/types"
 import { mapActions } from "vuex"
 
 const validateCronTime = (cronTime) => {
   try {
-    cronParser.parseExpression(cronTime)
+    cronParser.parse(cronTime)
   } catch (err) {
     return {
       valid: false,

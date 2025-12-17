@@ -49,8 +49,9 @@ import { mapActions, mapGetters } from "vuex"
 import { APP_STORE } from "@/store/modules/appStore/types"
 import { AUTH } from "@/store/modules/auth/types"
 import { ROUTES } from "@/services/enums/routerEnums"
-import AppButton from "@/components/commons/button/AppButton"
-import ContentBasic from "@/components/layout/content/ContentBasic"
+import AppButton from "@/components/commons/button/AppButton.vue"
+import ContentBasic from "@/components/layout/content/ContentBasic.vue"
+import appItemPlaceholder from "@/assets/svg/app-item-placeholder.svg"
 
 export default {
   name: "AvailableApp",
@@ -59,6 +60,7 @@ export default {
     ...mapGetters(AUTH.NAMESPACE, { userId: AUTH.GETTERS.GET_LOGGED_USER_ID }),
     ...mapGetters(APP_STORE.NAMESPACE, {
       appActive: APP_STORE.GETTERS.GET_ACTIVE_APP,
+      sdk: APP_STORE.GETTERS.GET_SDK,
     }),
   },
   methods: {
@@ -70,6 +72,7 @@ export default {
     async install() {
       let isInstalled = await this[APP_STORE.ACTIONS.INSTALL_APP_REQUEST]({
         key: this.$route.params.key,
+        sdk: this.sdk,
       })
       if (isInstalled) {
         await this.$router.push({
@@ -80,13 +83,18 @@ export default {
     },
 
     hasLogo(app) {
-      return app.logo
-        ? app.logo
-        : require("@/assets/svg/app-item-placeholder.svg")
+      return app?.logo ? app.logo : appItemPlaceholder
     },
   },
   async created() {
-    await this[APP_STORE.ACTIONS.GET_AVAILABLE_APP](this.$route.params.key)
+    if (this.sdk) {
+      await this[APP_STORE.ACTIONS.GET_AVAILABLE_APP]({
+        key: this.$route.params.key,
+        sdk: this.sdk,
+      })
+    } else {
+      await this.$router.push({ name: ROUTES.APP_STORE.AVAILABLE_APPS })
+    }
   },
   beforeDestroy() {
     this[APP_STORE.ACTIONS.RESET]()

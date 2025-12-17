@@ -9,6 +9,6 @@ sed " \
     s|%frontend-base-url-placeholder%|${FRONTEND_URL}|g; \
     s|%api-base-url-placeholder%|${BACKEND_URL}|g; \
     s|%api-startingpoint-url-placeholder%|${STARTINGPOINT_URL}|g; \
-  " -i /var/www/html/js/*.js
+  " -i /var/www/html/assets/*.js
 
 exec "$@"

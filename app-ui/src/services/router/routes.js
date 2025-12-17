@@ -1,15 +1,15 @@
-import AppLayout from "@/components/layout/sidebar/SidebarLayout"
+import AppLayout from "@/components/layout/sidebar/SidebarLayout.vue"
 import { ROUTES, SECURITY } from "@/services/enums/routerEnums"
 import { TOPOLOGY, APP_STORE } from "@/services/enums/routerEnums"
-import UserTaskTab from "@/components/app/topology/tabs/UserTaskTab"
-import OverviewTab from "@/components/app/topology/tabs/OverviewTab"
-import BpmnChart from "@/components/app/topology/tabs/ViewerTab"
-import StatisticTab from "@/components/app/topology/tabs/StatisticTab"
-import LogsTab from "@/components/app/topology/tabs/LogsTab"
-import AvailableAppsGridHandler from "@/components/app/appStore/availableApp/AvailableAppsGridHandler"
-import InstalledAppsGridHandler from "@/components/app/appStore/installedApp/InstalledAppsGridHandler"
-import InstalledApp from "@/components/app/appStore/installedApp/InstalledApp"
-import AvailableApp from "@/components/app/appStore/availableApp/AvailableApp"
+import UserTaskTab from "@/components/app/topology/tabs/UserTaskTab.vue"
+import OverviewTab from "@/components/app/topology/tabs/OverviewTab.vue"
+import BpmnChart from "@/components/app/topology/tabs/ViewerTab.vue"
+import StatisticTab from "@/components/app/topology/tabs/StatisticTab.vue"
+import LogsTab from "@/components/app/topology/tabs/LogsTab.vue"
+import AvailableAppsGridHandler from "@/components/app/appStore/availableApp/AvailableAppsGridHandler.vue"
+import InstalledAppsGridHandler from "@/components/app/appStore/installedApp/InstalledAppsGridHandler.vue"
+import InstalledApp from "@/components/app/appStore/installedApp/InstalledApp.vue"
+import AvailableApp from "@/components/app/appStore/availableApp/AvailableApp.vue"
 
 export default [
   {
@@ -23,31 +23,31 @@ export default [
       {
         path: "dashboard",
         name: ROUTES.DASHBOARD,
-        component: () => import("../../views/app/DashboardPage"),
+        component: () => import("@/views/app/DashboardPage.vue"),
         meta: { title: "Dashboard" },
       },
       {
         path: "editor",
         name: ROUTES.EDITOR,
-        component: () => import("../../views/app/EditorPage"),
+        component: () => import("@/views/app/EditorPage.vue"),
         meta: { title: "Editor" },
       },
       {
         path: "health-check",
         name: ROUTES.HEALTH_CHECK,
-        component: () => import("../../views/app/HealthCheckPage"),
+        component: () => import("@/views/app/HealthCheckPage.vue"),
         meta: { title: "Health Check" },
       },
       {
         path: "logs",
         name: ROUTES.LOGS,
-        component: () => import("../../views/app/LogPage"),
+        component: () => import("@/views/app/LogPage.vue"),
         meta: { title: "Logs" },
       },
       {
         path: "topology",
         name: ROUTES.TOPOLOGY.DEFAULT,
-        component: () => import("../../views/app/TopologyPage"),
+        component: () => import("@/views/app/TopologyPage.vue"),
         meta: { title: "Topology" },
         children: [
           {
@@ -93,12 +93,12 @@ export default [
       {
         path: "scheduled-tasks",
         name: ROUTES.SCHEDULED_TASK,
-        component: () => import("../../views/app/ScheduledTaskPage"),
+        component: () => import("@/views/app/ScheduledTaskPage.vue"),
         meta: { title: "Scheduled Tasks" },
       },
       {
         path: "app-store",
-        component: () => import("../../views/app/AppStorePage"),
+        component: () => import("@/views/app/AppStorePage.vue"),
         children: [
           {
             path: "",
@@ -134,18 +134,18 @@ export default [
       {
         path: "workers",
         name: ROUTES.IMPLEMENTATION,
-        component: () => import("../../views/app/ImplementationPage"),
+        component: () => import("@/views/app/ImplementationPage.vue"),
         meta: { title: "Workers" },
       },
       {
         path: "trash",
         name: ROUTES.TRASH,
-        component: () => import("../../views/app/TrashPage"),
+        component: () => import("@/views/app/TrashPage.vue"),
         meta: { title: "Trash" },
         children: [
           {
             path: ":trashId",
-            component: () => import("../../views/app/TrashPage"),
+            component: () => import("@/views/app/TrashPage.vue"),
             name: ROUTES.TRASH_DETAIL,
             meta: { title: "Trash - Detail" },
           },
@@ -154,19 +154,19 @@ export default [
       {
         path: "users",
         name: ROUTES.USERS,
-        component: () => import("../../views/app/UsersPage"),
+        component: () => import("@/views/app/UsersPage.vue"),
         meta: { title: "Users" },
       },
       {
         path: "profile",
         name: ROUTES.USER_PROFILE,
-        component: () => import("../../views/app/UserProfilePage"),
+        component: () => import("@/views/app/UserProfilePage.vue"),
         meta: { title: "Profile" },
       },
       {
         path: "jwt-tokens",
         name: ROUTES.JWT_TOKENS,
-        component: () => import("../../views/app/JwtTokensPage"),
+        component: () => import("@/views/app/JwtTokensPage.vue"),
         meta: { title: "JWT Tokens" },
       },
     ],
@@ -174,7 +174,7 @@ export default [
   {
     path: "/login",
     name: ROUTES.LOGIN,
-    component: () => import("../../views/auth/LoginPage"),
+    component: () => import("@/views/auth/LoginPage.vue"),
     meta: {
       auth: SECURITY.PUBLIC,
     },
@@ -182,7 +182,7 @@ export default [
   {
     path: "/forgot-password",
     name: ROUTES.FORGOT_PASSWORD,
-    component: () => import("../../views/auth/ForgotPasswordPage"),
+    component: () => import("@/views/auth/ForgotPasswordPage.vue"),
     meta: {
       auth: SECURITY.PUBLIC,
     },
@@ -190,7 +190,7 @@ export default [
   {
     path: "/forgot-password-sent",
     name: ROUTES.FORGOT_PASSWORD_SENT,
-    component: () => import("../../views/auth/ForgotPasswordSentPage"),
+    component: () => import("@/views/auth/ForgotPasswordSentPage.vue"),
     meta: {
       auth: SECURITY.PUBLIC,
     },
@@ -198,7 +198,7 @@ export default [
   {
     path: "/restore-password/:token",
     name: ROUTES.RESTORE_PASSWORD,
-    component: () => import("../../views/auth/ResetPasswordPage"),
+    component: () => import("@/views/auth/ResetPasswordPage.vue"),
     meta: {
       auth: SECURITY.PUBLIC,
     },
@@ -206,7 +206,7 @@ export default [
   {
     path: "/register/:token",
     name: ROUTES.REGISTER,
-    component: () => import("../../views/auth/RegistrationConfirmPage"),
+    component: () => import("@/views/auth/RegistrationConfirmPage.vue"),
     meta: {
       auth: SECURITY.PUBLIC,
     },
@@ -214,7 +214,7 @@ export default [
   {
     path: "/password-changed",
     name: ROUTES.PASSWORD_CHANGED,
-    component: () => import("../../views/auth/PasswordChangedPage"),
+    component: () => import("@/views/auth/PasswordChangedPage.vue"),
     meta: {
       auth: SECURITY.PUBLIC,
     },
@@ -222,7 +222,7 @@ export default [
   {
     path: "*",
     name: ROUTES.NOT_FOUND,
-    component: () => import("../../views/notFound/NotFoundPage"),
+    component: () => import("@/views/notFound/NotFoundPage.vue"),
     meta: {
       auth: SECURITY.PUBLIC,
     },

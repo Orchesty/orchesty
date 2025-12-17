@@ -7,7 +7,7 @@ export default {
   [IMPLEMENTATIONS.MUTATIONS.LIST_IMPLEMENTATIONS]: (state, data) => {
     localStorage.setItem(
       LOCAL_STORAGE.IMPLEMENTATIONS,
-      JSON.stringify(data) || null
+      JSON.stringify(data) || null,
     )
     state.topologyImportState.implementationsProject = data.items
   },

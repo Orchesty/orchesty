@@ -13,7 +13,7 @@ export default function CustomElementFactory(bpmnFactory, moddle, translate) {
     if (elementType === "label") {
       return this.baseCreate(
         elementType,
-        assign({ type: "label" }, DEFAULT_LABEL_SIZE, attrs)
+        assign({ type: "label" }, DEFAULT_LABEL_SIZE, attrs),
       )
     }
     const element = this.createBpmnElement(elementType, attrs)

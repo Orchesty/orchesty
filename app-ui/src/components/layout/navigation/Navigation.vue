@@ -37,8 +37,8 @@ import { ROUTES } from "@/services/enums/routerEnums"
 import { ACL } from "@/services/enums/aclEnums"
 import { mapActions, mapGetters } from "vuex"
 import { AUTH } from "@/store/modules/auth/types"
-import TopologyAddHandler from "@/components/app/topology/menu/TopologyAddHandler"
-import NavigationItem from "@/components/layout/navigation/NavigationItem"
+import TopologyAddHandler from "@/components/app/topology/menu/TopologyAddHandler.vue"
+import NavigationItem from "@/components/layout/navigation/NavigationItem.vue"
 import { EVENTS, events } from "@/services/utils/events"
 import { TOPOLOGIES } from "@/store/modules/topologies/types"
 import { redirectTo } from "@/services/utils/utils"
@@ -137,7 +137,7 @@ export default {
         this.lastSelectedTopology?._id
       ) {
         await this[TOPOLOGIES.ACTIONS.TOPOLOGY.GET_BY_ID](
-          this.lastSelectedTopology._id
+          this.lastSelectedTopology._id,
         )
         await redirectTo(this.$router, {
           name: ROUTES.TOPOLOGY.VIEWER,

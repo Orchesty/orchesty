@@ -64,11 +64,11 @@
 import { mapActions, mapGetters } from "vuex"
 import { TOPOLOGIES } from "@/store/modules/topologies/types"
 import { config } from "@/config"
-import FlashMessageMixin from "@/services/mixins/FlashMessageMixin"
+import FlashMessageMixin from "@/services/mixins/FlashMessageMixin.vue"
 import { internationalFormat } from "@/services/utils/dateFilters"
 import cronParser from "cron-parser"
-import NodeDropdown from "@/components/app/topology/dropdown/NodeDropdown"
-import CronPropertiesForm from "./CronPropertiesForm"
+import NodeDropdown from "@/components/app/topology/dropdown/NodeDropdown.vue"
+import CronPropertiesForm from "@/components/app/topology/dropdown/CronPropertiesForm.vue"
 
 export default {
   name: "NodeDropdownHandler",
@@ -145,9 +145,10 @@ export default {
       if (!time) {
         return ""
       }
-      let interval = this.cronParser.parseExpression(time)
-      interval = interval.next().toString().slice(0, 24)
-      return this.internationalFormat(interval)
+
+      return this.internationalFormat(
+        this.cronParser.parse(time).next().toISOString(),
+      )
     },
     onCronEditCancel() {
       this.isEditing = false

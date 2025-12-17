@@ -54,7 +54,7 @@ export const beforeEach = (store) => {
     const checkLogged = () => {
       store
         .dispatch(
-          withNamespace(AUTH.NAMESPACE, AUTH.ACTIONS.CHECK_LOGGED_REQUEST)
+          withNamespace(AUTH.NAMESPACE, AUTH.ACTIONS.CHECK_LOGGED_REQUEST),
         )
         .then((res) => {
           if (!res) {
@@ -66,13 +66,13 @@ export const beforeEach = (store) => {
     if (!isChecked) {
       store
         .dispatch(
-          withNamespace(AUTH.NAMESPACE, AUTH.ACTIONS.CHECK_LOGGED_REQUEST)
+          withNamespace(AUTH.NAMESPACE, AUTH.ACTIONS.CHECK_LOGGED_REQUEST),
         )
         .then((res) => {
           if (res) {
             timer = setInterval(
               checkLogged,
-              config.checkLogged.refreshTime * 1000
+              config.checkLogged.refreshTime * 1000,
             )
 
             next()

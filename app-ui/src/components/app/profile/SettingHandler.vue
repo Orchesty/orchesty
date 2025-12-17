@@ -13,18 +13,6 @@
         <v-list-item-content>
           {{ $t("page.status.language") }}
         </v-list-item-content>
-        <v-list-item-action>
-          <v-select v-model="language" :items="languages">
-            <template #item="{ item }">
-              <vue-country-flag-icon :iso="item.flag" class="mr-1" />
-              {{ item.text }}
-            </template>
-            <template #selection="{ item }">
-              <vue-country-flag-icon :iso="item.flag" class="mr-1" />
-              {{ item.text }}
-            </template>
-          </v-select>
-        </v-list-item-action>
       </v-list-item>
     </v-list>
   </basic-card>
@@ -78,7 +66,7 @@ export default {
           darkMode: value,
           language: this.$i18n.locale,
           show: this.show,
-        })
+        }),
       )
       this[ADMIN_USERS.ACTIONS.UPDATE_USER_REQUEST]({
         data: {
@@ -99,7 +87,7 @@ export default {
           darkMode: this.$vuetify.theme.dark,
           language: value,
           show: this.show,
-        })
+        }),
       )
       this[ADMIN_USERS.ACTIONS.UPDATE_USER_REQUEST]({
         data: {

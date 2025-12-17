@@ -4,7 +4,9 @@
       <topology-title />
       <topology-action-buttons />
     </v-row>
-
+    <v-row v-else-if="isAppStore" dense justify="space-between">
+      <app-store-action-buttons />
+    </v-row>
     <v-row v-else dense>
       <v-col cols="12">
         <h1 class="headline font-weight-bold">
@@ -43,8 +45,8 @@
 </template>
 
 <script>
-import TopologyTitle from "@/components/app/topology/landing/TopologyTitle"
-import TopologyActionButtons from "@/components/app/topology/landing/TopologyActionButtons"
+import TopologyTitle from "@/components/app/topology/landing/TopologyTitle.vue"
+import TopologyActionButtons from "@/components/app/topology/landing/TopologyActionButtons.vue"
 import moment from "moment"
 import { ROUTES } from "@/services/enums/routerEnums"
 import { TOPOLOGY_ENUMS } from "@/services/enums/topologyEnums"
@@ -53,16 +55,22 @@ import { mapGetters } from "vuex"
 import cronParser from "cron-parser"
 import { REQUESTS_STATE } from "@/store/modules/api/types"
 import { API } from "@/api"
+import AppStoreActionButtons from "@/components/app/appStore/landing/AppStoreActionButtons.vue"
+import { internationalFormat } from "@/services/utils/dateFilters"
 
 export default {
   name: "ContentTabsHeader",
-  components: { TopologyActionButtons, TopologyTitle },
+  components: { AppStoreActionButtons, TopologyActionButtons, TopologyTitle },
   props: {
     tabs: {
       type: Array,
       required: true,
     },
     isTopology: {
+      type: Boolean,
+      default: false,
+    },
+    isAppStore: {
       type: Boolean,
       default: false,
     },
@@ -78,6 +86,7 @@ export default {
       cronParser,
       timer: null,
       now: new Date(),
+      internationalFormat,
     }
   },
   created() {
@@ -95,7 +104,7 @@ export default {
     isCrone() {
       if (
         this.$route.matched.some(
-          (route) => route.name === ROUTES.TOPOLOGY.DEFAULT
+          (route) => route.name === ROUTES.TOPOLOGY.DEFAULT,
         )
       ) {
         return this.topologyActive?.type === TOPOLOGY_ENUMS.CRON
@@ -110,23 +119,12 @@ export default {
       }
       let next = []
       cronSettings.forEach((item) => {
-        let interval = this.cronParser.parseExpression(item.cron)
-        next.push(interval.next().toString().slice(0, 24))
+        next.push(moment(this.cronParser.parse(item.cron).next().toISOString()))
       })
-      next
-        .map(function (s) {
-          return moment(s, "ddd MMM DD YYYY HH:mm:ss")
-        })
-        .sort(function (m) {
-          return m.valueOf()
-        })
-        .find(function (m) {
-          return m.isAfter()
-        })
-      next.sort(function (left, right) {
-        return moment.utc(left.timeStamp).diff(moment.utc(right.timeStamp))
-      })
-      return moment(next[next.length - 1]).format("DD. MM. YYYY HH:mm")
+
+      return this.internationalFormat(
+        next.sort((left, right) => left.diff(right))[0],
+      )
     },
     refresh() {
       this.now = new Date()

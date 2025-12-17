@@ -10,7 +10,7 @@
 
 <script>
 import JWTTokensHandler from "@/components/app/jwtToken/JWTTokensHandler.vue"
-import ContentBasic from "@/components/layout/content/ContentBasic"
+import ContentBasic from "@/components/layout/content/ContentBasic.vue"
 
 export default {
   name: "JwtTokensPage",

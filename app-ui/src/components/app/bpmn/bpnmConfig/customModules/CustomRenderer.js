@@ -13,7 +13,7 @@ export default function CustomRenderer(
   styles,
   pathMap,
   canvas,
-  textRenderer
+  textRenderer,
 ) {
   BaseRenderer.call(this, eventBus, 1500)
 
@@ -24,7 +24,7 @@ export default function CustomRenderer(
     pathMap,
     canvas,
     textRenderer,
-    500
+    500,
   )
   this.computeStyle = styles.computeStyle
   this.pathMap = pathMap
@@ -51,11 +51,11 @@ export default function CustomRenderer(
         const timerCircle = this.bpmnRenderer.handlers["bpmn:Event"](
           parentGfx,
           element,
-          {}
+          {},
         )
         this.bpmnRenderer.handlers["bpmn:TimerEventDefinition"](
           parentGfx,
-          element
+          element,
         )
         return timerCircle
 
@@ -63,7 +63,7 @@ export default function CustomRenderer(
         const start = this.bpmnRenderer.handlers["bpmn:Event"](
           parentGfx,
           element,
-          {}
+          {},
         )
         this.bpmnRenderer.handlers["bpmn:StartEvent"](parentGfx, element)
         return start
@@ -72,18 +72,18 @@ export default function CustomRenderer(
         const webhookCircle = this.bpmnRenderer.handlers["bpmn:Event"](
           parentGfx,
           element,
-          {}
+          {},
         )
         this.bpmnRenderer.handlers["bpmn:SignalEventDefinition"](
           parentGfx,
-          element
+          element,
         )
         return webhookCircle
 
       case "batch":
         const batchTask = this.bpmnRenderer.handlers["bpmn:ServiceTask"](
           parentGfx,
-          element
+          element,
         )
 
         const batchPathData = this.pathMap.getScaledPath("PIPES_REPEATER", {
@@ -101,7 +101,7 @@ export default function CustomRenderer(
       case "debug":
         const debugTask = this.bpmnRenderer.handlers["bpmn:Task"](
           parentGfx,
-          element
+          element,
         )
 
         const debugTaskPathData1 = this.pathMap.getScaledPath("PIPES_DEBUG_1", {
@@ -139,7 +139,7 @@ export default function CustomRenderer(
       case "connector":
         return this.bpmnRenderer.handlers["bpmn:ServiceTask"](
           parentGfx,
-          element
+          element,
         )
 
       case "custom":

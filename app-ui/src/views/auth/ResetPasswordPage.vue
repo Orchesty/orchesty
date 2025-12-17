@@ -21,9 +21,9 @@ import { REQUESTS_STATE } from "@/store/modules/api/types"
 import { API } from "@/api"
 import { mapActions, mapGetters } from "vuex"
 import { AUTH } from "@/store/modules/auth/types"
-import AuthLayout from "@/components/layout/auth/AuthLayout"
-import PasswordForm from "@/components/app/auth/forms/PasswordForm"
-import AuthSplitLayout from "@/components/app/auth/layout/AuthSplitLayout"
+import AuthLayout from "@/components/layout/auth/AuthLayout.vue"
+import PasswordForm from "@/components/app/auth/forms/PasswordForm.vue"
+import AuthSplitLayout from "@/components/app/auth/layout/AuthSplitLayout.vue"
 import { ROUTES } from "@/services/enums/routerEnums"
 
 export default {

@@ -13,7 +13,7 @@ export const addSuccessMessage = (dispatch, id, message, messageData = []) => {
       id,
       message: i18n.t(message, messageData),
       type: FLASH_MESSAGES_TYPES.SUCCESS,
-    }
+    },
   )
 }
 
@@ -25,7 +25,7 @@ export const addErrorMessage = (dispatch, id, message, messageData = []) => {
       id,
       message: i18n.t(message, messageData),
       type: FLASH_MESSAGES_TYPES.ERROR,
-    }
+    },
   )
 }
 
@@ -37,6 +37,6 @@ export const addInfoMessage = (dispatch, id, message, messageData = []) => {
       id,
       message: i18n.t(message, messageData),
       type: FLASH_MESSAGES_TYPES.INFO,
-    }
+    },
   )
 }

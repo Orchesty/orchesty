@@ -5,8 +5,8 @@
 </template>
 
 <script>
-import ContentBasic from "@/components/layout/content/ContentBasic"
-import LogsGrid from "@/components/app/logs/grid/LogsGrid"
+import ContentBasic from "@/components/layout/content/ContentBasic.vue"
+import LogsGrid from "@/components/app/logs/grid/LogsGrid.vue"
 export default {
   name: "LogPage",
   components: { LogsGrid, ContentBasic },

@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import AppIcon from "@/components/commons/icon/AppIcon"
+import AppIcon from "@/components/commons/icon/AppIcon.vue"
 export default {
   name: "AppListItem",
   components: { AppIcon },

@@ -21,12 +21,12 @@
 
 <script>
 import { DATA_GRIDS } from "@/services/enums/dataGridEnums"
-import DataGrid from "../../../commons/grid/DataGrid"
+import DataGrid from "../../../commons/grid/DataGrid.vue"
 import { REQUESTS_STATE } from "@/store/modules/api/types"
 import { API } from "@/api"
 import { mapGetters } from "vuex"
-import ImplementationUpdateModal from "@/components/app/implementations/modal/ImplementationUpdateModal"
-import ImplementationDeleteModal from "@/components/app/implementations/modal/ImplementationDeleteModal"
+import ImplementationUpdateModal from "@/components/app/implementations/modal/ImplementationUpdateModal.vue"
+import ImplementationDeleteModal from "@/components/app/implementations/modal/ImplementationDeleteModal.vue"
 import { GRID } from "@/store/modules/grid/types"
 export default {
   name: "ImplementationGrid",
@@ -82,7 +82,7 @@ export default {
       null,
       null,
       this.pagingInitial,
-      this.sorterInitial
+      this.sorterInitial,
     )
   },
 }

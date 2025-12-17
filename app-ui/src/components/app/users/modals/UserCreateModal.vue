@@ -28,13 +28,13 @@
 </template>
 
 <script>
-import UserForm from "../form/UserForm"
+import UserForm from "../form/UserForm.vue"
 import { mapActions, mapGetters } from "vuex"
 import { REQUESTS_STATE } from "../../../../store/modules/api/types"
 import { ADMIN_USERS } from "../../../../store/modules/adminUsers/types"
 import { API } from "../../../../api"
-import SendingButton from "@/components/commons/button/AppButton"
-import ModalTemplate from "@/components/commons/modal/ModalTemplate"
+import SendingButton from "@/components/commons/button/AppButton.vue"
+import ModalTemplate from "@/components/commons/modal/ModalTemplate.vue"
 
 export default {
   components: { ModalTemplate, SendingButton, UserForm },
@@ -60,7 +60,7 @@ export default {
           if (res) {
             this.isOpen = false
           }
-        }
+        },
       )
     },
   },
