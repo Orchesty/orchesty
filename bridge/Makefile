@@ -1,12 +1,16 @@
-IMAGE=orchesty/bridge
+IMAGE=orchesty/bridge:$(TAG)
 
 DC=docker-compose
 DE=docker-compose exec -T app
 DR=docker-compose exec -T rabbitmq
 
+TEST_IMAGE = bridge:test
+TOPOLOGY_ID = 690e1281a439e5b99905ffa3
+TOPOLOGY_NAME = benchmark
+
 ALIAS?=alias
 Darwin:
-	sudo ifconfig lo0 $(ALIAS) $(shell awk '$$1 ~ /^DEV_IP/' .env.dist | sed -e "s/^DEV_IP=//")
+	sudo ifconfig lo0 $(ALIAS) $(shell awk '$$1 ~ /^DEV_IP/' .env | sed -e "s/^DEV_IP=//")
 Linux:
 	@echo 'skipping ...'
 .lo0-up:
@@ -20,8 +24,7 @@ Linux:
 		.env.dist >> .env; \
 
 build:
-	docker build -t ${IMAGE}:${TAG} .
-	docker push ${IMAGE}:${TAG}
+	docker buildx build --pull --push --platform linux/amd64,linux/arm64/v8 -t $(IMAGE) .
 
 docker-up-force: .env .lo0-up
 	$(DC) pull
@@ -55,3 +58,8 @@ fasttest: lint
 test: init-dev fasttest docker-down-clean
 
 ci-test: test
+
+run-demo-bridge:
+	docker build -t $(TEST_IMAGE) .
+	docker compose -f ../clients/topology/$(TOPOLOGY_ID)-$(TOPOLOGY_NAME)/docker-compose.yml up -d --force-recreate
+	docker compose -f ../clients/topology/$(TOPOLOGY_ID)-$(TOPOLOGY_NAME)/docker-compose.yml logs -f topology-$(TOPOLOGY_ID)

@@ -20,7 +20,7 @@ const (
 
 var client = http.Client{}
 
-func sendFinishedProcess(process *model.ProcessMessage, status string, trashId *string) {
+func sendFinishedProcess(process *model.ProcessMessage, status string, trashId *string, topologyName string) {
 	if process.GetBoolHeaderOrDefault(enum.Header_SystemEvent, false) {
 		return
 	}
@@ -28,17 +28,20 @@ func sendFinishedProcess(process *model.ProcessMessage, status string, trashId *
 	message := model.StatusMessage{
 		Type: status,
 		Data: model.StatusMessageData{
-			TopologyId:    process.GetHeaderOrDefault(enum.Header_TopologyId, ""),
-			ResultMessage: process.GetHeaderOrDefault(enum.Header_ResultMessage, "Message thrown into trash"),
-			CorrelationId: process.GetHeaderOrDefault(enum.Header_CorrelationId, ""),
-			ProcessId:     process.GetHeaderOrDefault(enum.Header_ProcessId, ""),
-			User:          process.GetHeaderOrDefault(enum.Header_User, ""),
-			TimestampMs:   process.Published,
+			TopologyId:      process.GetHeaderOrDefault(enum.Header_TopologyId, ""),
+			ResultMessage:   process.GetHeaderOrDefault(enum.Header_ResultMessage, "Message thrown into trash"),
+			CorrelationId:   process.GetHeaderOrDefault(enum.Header_CorrelationId, ""),
+			ProcessId:       process.GetHeaderOrDefault(enum.Header_ProcessId, ""),
+			User:            process.GetHeaderOrDefault(enum.Header_User, ""),
+			TimestampMs:     process.Published,
+			TopologyName:    topologyName,
+			TopologyVersion: 0, // TODO: upravit a doplnit
+			Applications:    process.GetHeaderOrDefault(enum.Header_Applications, ""),
 		},
 		Contents: []model.StatusMessageContent{
 			{
 				TrashId: trashId,
-				Body:    string(process.Body),
+				Body:    process.GetOriginalBody(),
 			},
 		},
 	}
