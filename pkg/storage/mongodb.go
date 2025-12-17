@@ -23,7 +23,7 @@ func NewStorage(connection *mongodb.Connection, logger log.Logger, collection st
 
 	if err := service.createIndex(mongo.IndexModel{
 		Keys:    []bson.E{{model.Topology, 1}, {model.Node, 1}},
-		Options: options.Index().SetUnique(true),
+		Options: options.Index().SetUnique(true).SetName("IK_cron_topology_node"),
 	}); err != nil {
 		service.logContext().Error(err)
 
