@@ -3,12 +3,14 @@ package mongo
 import (
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 func indices() []mongo.IndexModel {
 	return []mongo.IndexModel{
 		{
-			Keys: bson.D{{"limitKey", 1}},
+			Keys:    bson.D{{"limitKey", 1}},
+			Options: options.Index().SetName("IK_limiter_limitKey"),
 		},
 		{
 			Keys: bson.D{
@@ -17,12 +19,14 @@ func indices() []mongo.IndexModel {
 				{"inProcess", 1},
 				{"prioritize", -1},
 			},
+			Options: options.Index().SetName("IK_limiter_limitKey_allowedAt_inProcess_prioritize"),
 		},
 		{
 			Keys: bson.D{
 				{"allowedAt", 1},
 				{"created", 1},
 			},
+			Options: options.Index().SetName("IK_limiter_allowedAt_created"),
 		},
 		{
 			Keys: bson.D{
@@ -31,6 +35,7 @@ func indices() []mongo.IndexModel {
 				{"message.headers.topology-id", 1},
 				{"message.headers.application", 1},
 			},
+			Options: options.Index().SetName("IK_limiter_messageHeadersNodeId_messageHeadersUser_messageHeadersTopologyId_messageHeadersApplication"),
 		},
 	}
 }
