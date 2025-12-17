@@ -17,20 +17,20 @@ func NewMongo() MongoDb {
 	mongoDbCon := &mongodb.Connection{}
 	mongoDbCon.Connect(config.MongoDb.Dsn)
 
-	month := int32(30 * 24 * 60 * 60)
+	month := int32(2_628_000)
 	ctx, cancel := mongoDbCon.Context()
 
 	indexFinished := mongo.IndexModel{
 		Keys: bson.M{
 			"finished": 1,
 		},
-		Options: nil,
+		Options: options.Index().SetName("IK_multiCounter_finished"),
 	}
 	indexExpires := mongo.IndexModel{
 		Keys: bson.M{
 			"created": 1,
 		},
-		Options: options.Index().SetExpireAfterSeconds(month),
+		Options: options.Index().SetExpireAfterSeconds(month).SetName("IK_multiCounter_created"),
 	}
 
 	coll := mongoDbCon.Database.Collection(config.MongoDb.CounterCollection)
@@ -42,13 +42,13 @@ func NewMongo() MongoDb {
 		Keys: bson.M{
 			"correlationId": 1,
 		},
-		Options: nil,
+		Options: options.Index().SetName("IK_multiCounterError_correlationId"),
 	}
 	indexExpires = mongo.IndexModel{
 		Keys: bson.M{
 			"created": 1,
 		},
-		Options: options.Index().SetExpireAfterSeconds(month),
+		Options: options.Index().SetExpireAfterSeconds(month).SetName("IK_multiCounterError_created"),
 	}
 
 	coll = mongoDbCon.Database.Collection(config.MongoDb.CounterSubCollection)
@@ -60,19 +60,19 @@ func NewMongo() MongoDb {
 		Keys: bson.M{
 			"correlationId": 1,
 		},
-		Options: nil,
+		Options: options.Index().SetName("IK_multiCounterError_correlationId"),
 	}
 	indexPro := mongo.IndexModel{
 		Keys: bson.M{
 			"processId": 1,
 		},
-		Options: nil,
+		Options: options.Index().SetName("IK_multiCounterError_processId"),
 	}
 	indexExpires = mongo.IndexModel{
 		Keys: bson.M{
 			"created": 1,
 		},
-		Options: options.Index().SetExpireAfterSeconds(month),
+		Options: options.Index().SetExpireAfterSeconds(month).SetName("IK_multiCounterError_created"),
 	}
 
 	coll = mongoDbCon.Database.Collection(config.MongoDb.CounterErrCollection)
