@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { provide, ref, onMounted } from 'vue'
+// Component name is intentionally single-word for generic UI component
 
 export interface Tab {
   id: string
   label: string
   target: string
+  icon?: string // SVG path for icon
+  iconViewBox?: string // SVG viewBox (default: '0 0 24 24')
 }
 
 interface Props {
@@ -39,14 +42,18 @@ const setActiveTab = (tabId: string) => {
 
 onMounted(() => {
   // Reinitialize Flowbite tabs after component mount
-  if (typeof window !== 'undefined' && (window as any).initFlowbite) {
-    setTimeout(() => {
-      ;(window as any).initFlowbite()
-    }, 100)
+  if (typeof window !== 'undefined') {
+    const windowWithFlowbite = window as Window & { initFlowbite?: () => void }
+    if (windowWithFlowbite.initFlowbite) {
+      setTimeout(() => {
+        windowWithFlowbite.initFlowbite?.()
+      }, 100)
+    }
   }
 })
 </script>
 
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div>
     <!-- Tabs Navigation -->
@@ -61,7 +68,7 @@ onMounted(() => {
       >
         <li v-for="(tab, index) in tabs" :key="tab.id" class="mr-2" role="presentation">
           <button
-            class="inline-block rounded-t-lg border-b-2 p-4"
+            class="inline-flex items-center justify-center rounded-t-lg border-b-2 p-4"
             :id="`${tab.id}-tab`"
             :data-tabs-target="`#${tab.target}`"
             type="button"
@@ -70,6 +77,16 @@ onMounted(() => {
             :aria-selected="index === 0"
             @click="setActiveTab(tab.id)"
           >
+            <svg
+              v-if="tab.icon"
+              class="w-4 h-4 me-2"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="currentColor"
+              :viewBox="tab.iconViewBox || '0 0 24 24'"
+            >
+              <path :d="tab.icon" />
+            </svg>
             {{ tab.label }}
           </button>
         </li>

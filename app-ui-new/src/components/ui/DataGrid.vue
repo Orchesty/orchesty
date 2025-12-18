@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch, onBeforeUnmount, nextTick } from 'vue'
 import type { TableColumn } from '@/types/dashboard'
-import type { ActionConfig } from '@/types/datagrid'
+import type { ActionConfig, BulkAction } from '@/types/datagrid'
 import DataGridActions from './datagrid/DataGridActions.vue'
 import LoadingSpinner from './LoadingSpinner.vue'
 
@@ -25,6 +25,10 @@ interface Props {
   sortDirection?: 'asc' | 'desc'
   // Actions
   actions?: ActionConfig[]
+  // Bulk Actions
+  bulkActions?: BulkAction[]
+  selectedRows?: Set<string>
+  rowIdKey?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -37,31 +41,167 @@ const props = withDefaults(defineProps<Props>(), {
   sortField: '',
   sortDirection: 'asc',
   actions: undefined,
+  bulkActions: undefined,
+  selectedRows: () => new Set<string>(),
+  rowIdKey: 'id',
 })
 
 const emit = defineEmits<{
   'page-change': [page: number]
   'per-page-change': [perPage: number]
   'sort': [config: SortConfig]
+  'update:selectedRows': [value: Set<string>]
 }>()
 
-// Automatically add actions column if actions prop is provided
+// Track if we have data loaded (for overlay spinner logic)
+const hasData = ref(false)
+const showLoadingOverlay = ref(false)
+let loadingTimeout: ReturnType<typeof setTimeout> | null = null
+
+// Watch loading state to show overlay spinner only after 500ms delay
+watch(
+  () => props.loading,
+  (isLoading) => {
+    if (isLoading && hasData.value) {
+      // If we already have data and loading starts, show spinner after 500ms
+      loadingTimeout = setTimeout(() => {
+        showLoadingOverlay.value = true
+      }, 500)
+    } else {
+      // Clear timeout and hide overlay immediately when loading stops
+      if (loadingTimeout) {
+        clearTimeout(loadingTimeout)
+        loadingTimeout = null
+      }
+      showLoadingOverlay.value = false
+    }
+  },
+  { immediate: true }
+)
+
+// Track when data is available
+watch(
+  () => props.data,
+  (newData) => {
+    if (newData && newData.length > 0) {
+      hasData.value = true
+    }
+  },
+  { immediate: true }
+)
+
+// Cleanup timeout on unmount
+onBeforeUnmount(() => {
+  if (loadingTimeout) {
+    clearTimeout(loadingTimeout)
+  }
+})
+
+// Bulk selection logic
+const internalSelectedRows = ref<Set<string>>(new Set())
+const selectAllCheckbox = ref<HTMLInputElement | null>(null)
+
+// Sync internal state with prop
+watch(
+  () => props.selectedRows,
+  (newValue) => {
+    if (newValue) {
+      internalSelectedRows.value = new Set(newValue)
+    }
+  },
+  { immediate: true }
+)
+
+const allRowsSelected = computed(() => {
+  if (!props.data || props.data.length === 0) return false
+  return props.data.every((row) => internalSelectedRows.value.has(row[props.rowIdKey]))
+})
+
+const someRowsSelected = computed(() => {
+  if (!props.data || props.data.length === 0) return false
+  return props.data.some((row) => internalSelectedRows.value.has(row[props.rowIdKey]))
+})
+
+// Update indeterminate state of select-all checkbox
+watch(
+  [someRowsSelected, allRowsSelected],
+  async () => {
+    await nextTick()
+    if (selectAllCheckbox.value) {
+      selectAllCheckbox.value.indeterminate = someRowsSelected.value && !allRowsSelected.value
+    }
+  }
+)
+
+const toggleSelectAll = () => {
+  if (!props.data) return
+  
+  const newSelection = new Set(internalSelectedRows.value)
+  
+  if (allRowsSelected.value) {
+    // Deselect all rows on current page
+    props.data.forEach((row) => {
+      newSelection.delete(row[props.rowIdKey])
+    })
+  } else {
+    // Select all rows on current page
+    props.data.forEach((row) => {
+      newSelection.add(row[props.rowIdKey])
+    })
+  }
+  
+  internalSelectedRows.value = newSelection
+  emit('update:selectedRows', newSelection)
+}
+
+const toggleRowSelection = (rowId: string) => {
+  const newSelection = new Set(internalSelectedRows.value)
+  
+  if (newSelection.has(rowId)) {
+    newSelection.delete(rowId)
+  } else {
+    newSelection.add(rowId)
+  }
+  
+  internalSelectedRows.value = newSelection
+  emit('update:selectedRows', newSelection)
+}
+
+const isRowSelected = (rowId: string) => {
+  return internalSelectedRows.value.has(rowId)
+}
+
+const hasSelectedRows = computed(() => {
+  return internalSelectedRows.value.size > 0
+})
+
+// Automatically add columns for bulk actions and actions
 const columnsWithActions = computed(() => {
-  if (!props.actions || props.actions.length === 0) {
-    return props.columns
+  let columns = [...props.columns]
+  
+  // Add checkbox column at the beginning if bulk actions are enabled
+  if (props.bulkActions && props.bulkActions.length > 0) {
+    const hasCheckboxColumn = columns.some(col => col.key === '__checkbox')
+    if (!hasCheckboxColumn) {
+      columns = [
+        { key: '__checkbox', label: '', className: 'w-4' },
+        ...columns
+      ]
+    }
   }
   
-  // Check if actions column already exists
-  const hasActionsColumn = props.columns.some(col => col.key === 'actions')
-  if (hasActionsColumn) {
-    return props.columns
+  // Add actions column at the end if actions prop is provided
+  if (props.actions && props.actions.length > 0) {
+    const hasActionsColumn = columns.some(col => col.key === 'actions')
+    if (!hasActionsColumn) {
+      columns = [
+        ...columns,
+        { key: 'actions', label: '', className: 'text-right' }
+      ]
+    }
   }
   
-  // Add actions column
-  return [
-    ...props.columns,
-    { key: 'actions', label: '', className: 'text-right' }
-  ]
+  return columns
 })
 
 const getCellValue = (row: Record<string, any>, key: string) => {
@@ -137,13 +277,67 @@ const pageNumbers = () => {
 
 <template>
   <div>
-    <!-- Filters slot -->
-    <div v-if="$slots.filters" class="mb-3">
-      <slot name="filters"></slot>
+    <!-- Filters area -->
+    <div class="mb-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+      <!-- Left side: Quick Filters and/or Bulk Actions -->
+      <div class="flex flex-col gap-3">
+        <!-- Quick filters (if provided) -->
+        <div v-if="$slots['quick-filters']">
+          <slot name="quick-filters"></slot>
+        </div>
+        
+        <!-- Bulk Actions -->
+        <div
+          v-if="bulkActions && bulkActions.length > 0"
+          class="flex items-center gap-4 pl-6"
+        >
+          <div class="flex items-center gap-2">
+            <input
+              ref="selectAllCheckbox"
+              type="checkbox"
+              :checked="allRowsSelected"
+              class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-primary-600 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600"
+              @change="toggleSelectAll"
+            />
+            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Select All
+            </span>
+          </div>
+          <button
+            v-for="action in bulkActions"
+            :key="action.label"
+            type="button"
+            :disabled="!hasSelectedRows"
+            class="text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50"
+            :class="{
+              'text-primary-600 hover:text-primary-700 hover:underline dark:text-primary-500': action.variant === 'primary' && hasSelectedRows,
+              'text-red-600 hover:text-red-700 hover:underline dark:text-red-500': action.variant === 'danger' && hasSelectedRows,
+              'text-gray-600 hover:text-gray-700 hover:underline dark:text-gray-400': action.variant === 'secondary' && hasSelectedRows,
+              'text-gray-400 dark:text-gray-600': !hasSelectedRows
+            }"
+            @click="action.onClick(internalSelectedRows)"
+          >
+            {{ action.label }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Right side: Regular Filters -->
+      <div v-if="$slots.filters" class="flex items-center gap-2">
+        <slot name="filters"></slot>
+      </div>
     </div>
 
     <!-- Table -->
-    <div class="overflow-x-auto">
+    <div class="relative overflow-x-auto">
+      <!-- Loading Overlay (shown after 500ms if data exists) -->
+      <div
+        v-if="showLoadingOverlay"
+        class="absolute inset-0 z-10 flex items-center justify-center bg-white/80 dark:bg-gray-800/80"
+      >
+        <LoadingSpinner size="sm" />
+      </div>
+
       <table class="w-full text-left text-sm text-gray-500 dark:text-gray-400">
         <thead class="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
           <tr>
@@ -154,33 +348,41 @@ const pageNumbers = () => {
               class="whitespace-nowrap px-6 py-3 font-semibold"
               :class="[
                 column.className,
-                { 'cursor-pointer hover:text-gray-900 dark:hover:text-white': column.sortable }
+                { 'cursor-pointer hover:text-gray-900 dark:hover:text-white': column.sortable && column.key !== '__checkbox' }
               ]"
-              @click="handleSort(column)"
+              @click="column.key !== '__checkbox' ? handleSort(column) : undefined"
             >
-              {{ column.label }}
-              <svg
-                v-if="column.sortable"
-                class="ml-1 inline-block h-4 w-4"
-                :class="{
-                  'text-gray-900 dark:text-white': sortField === column.key,
-                  'text-gray-400': sortField !== column.key
-                }"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-                aria-hidden="true"
-              >
-                <path
-                  clip-rule="evenodd"
-                  fill-rule="evenodd"
-                  d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.76 9.2a.75.75 0 011.06.04l2.7 2.908 2.7-2.908a.75.75 0 111.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 01.04-1.06z"
-                />
-              </svg>
+              <!-- Checkbox column: Empty header -->
+              <template v-if="column.key === '__checkbox'">
+                <!-- Empty - Select All is now in bulk actions bar -->
+              </template>
+              <!-- Regular column -->
+              <template v-else>
+                {{ column.label }}
+                <svg
+                  v-if="column.sortable"
+                  class="ml-1 inline-block h-4 w-4"
+                  :class="{
+                    'text-gray-900 dark:text-white': sortField === column.key,
+                    'text-gray-400': sortField !== column.key
+                  }"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  <path
+                    clip-rule="evenodd"
+                    fill-rule="evenodd"
+                    d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.76 9.2a.75.75 0 011.06.04l2.7 2.908 2.7-2.908a.75.75 0 111.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 01.04-1.06z"
+                  />
+                </svg>
+              </template>
             </th>
           </tr>
         </thead>
-        <tbody v-if="!loading && data.length > 0" class="divide-y divide-gray-100 dark:divide-gray-700">
+        <!-- Data rows - show even during loading if we have data -->
+        <tbody v-if="data && data.length > 0" class="divide-y divide-gray-100 dark:divide-gray-700">
           <tr
             v-for="(row, index) in data"
             :key="index"
@@ -192,8 +394,17 @@ const pageNumbers = () => {
               class="px-6 py-4"
               :class="column.className"
             >
+              <!-- Checkbox column -->
+              <template v-if="column.key === '__checkbox'">
+                <input
+                  type="checkbox"
+                  :checked="isRowSelected(row[rowIdKey])"
+                  class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-primary-600 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600"
+                  @change="toggleRowSelection(row[rowIdKey])"
+                />
+              </template>
               <!-- Actions column with DataGridActions or slot -->
-              <template v-if="column.key === 'actions'">
+              <template v-else-if="column.key === 'actions'">
                 <DataGridActions v-if="actions && actions.length > 0" :actions="actions" :row="row" />
                 <slot v-else name="cell-actions" :row="row" :value="getCellValue(row, column.key)"></slot>
               </template>
@@ -204,13 +415,15 @@ const pageNumbers = () => {
             </td>
           </tr>
         </tbody>
-        <tbody v-else-if="loading">
+        <!-- Initial loading state (no data yet) -->
+        <tbody v-else-if="loading && !hasData">
           <tr>
             <td :colspan="columnsWithActions.length" class="px-4 py-8 text-center">
               <LoadingSpinner size="sm" />
             </td>
           </tr>
         </tbody>
+        <!-- Empty state -->
         <tbody v-else>
           <tr>
             <td :colspan="columnsWithActions.length" class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
@@ -222,7 +435,7 @@ const pageNumbers = () => {
     </div>
 
     <!-- Pagination -->
-    <div v-if="!loading && data.length > 0" class="flex flex-col items-start justify-between space-y-3 pt-4 md:flex-row md:items-center md:space-y-0">
+    <div v-if="data && data.length > 0" class="flex flex-col items-start justify-between space-y-3 pt-4 md:flex-row md:items-center md:space-y-0">
       <div class="flex items-center space-x-3">
         <label for="rows-per-page" class="text-sm font-normal text-gray-500 dark:text-gray-400">Rows per page</label>
         <select

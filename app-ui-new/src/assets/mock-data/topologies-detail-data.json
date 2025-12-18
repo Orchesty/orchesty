@@ -1,0 +1,198 @@
+{
+  "topology-1": {
+    "_id": "topology-1",
+    "type": "cron",
+    "name": "Data Processing",
+    "descr": "Main data processing pipeline",
+    "status": "New",
+    "visibility": "draft",
+    "version": "1",
+    "category": null,
+    "enabled": false,
+    "versions": [
+      {
+        "id": "v1",
+        "version": "1",
+        "visibility": "draft",
+        "status": "New",
+        "created": "2025-01-15 10:00:00",
+        "updated": "2025-01-15 12:30:00"
+      }
+    ]
+  },
+  "topology-2": {
+    "_id": "topology-2",
+    "type": "webhook",
+    "name": "Email Sync",
+    "descr": "Email synchronization service",
+    "status": "Running",
+    "visibility": "public",
+    "version": "1",
+    "category": null,
+    "enabled": true,
+    "versions": [
+      {
+        "id": "v1",
+        "version": "1",
+        "visibility": "public",
+        "status": "Running",
+        "created": "2025-01-10 09:00:00",
+        "updated": "2025-01-10 09:00:00"
+      }
+    ]
+  },
+  "topology-3": {
+    "_id": "topology-3",
+    "type": "cron",
+    "name": "Order Processing",
+    "descr": "Order processing and fulfillment system",
+    "status": "New",
+    "visibility": "draft",
+    "version": "3",
+    "category": "folder-1",
+    "enabled": false,
+    "versions": [
+      {
+        "id": "v3",
+        "version": "3",
+        "visibility": "draft",
+        "status": "New",
+        "created": "2025-01-18 14:00:00",
+        "updated": "2025-01-18 16:45:00"
+      },
+      {
+        "id": "v2",
+        "version": "2",
+        "visibility": "public",
+        "status": "Running",
+        "created": "2025-01-12 11:00:00",
+        "updated": "2025-01-12 11:00:00"
+      },
+      {
+        "id": "v1",
+        "version": "1",
+        "visibility": "public",
+        "status": "Stopped",
+        "created": "2025-01-08 10:00:00",
+        "updated": "2025-01-08 10:00:00"
+      }
+    ]
+  },
+  "topology-4": {
+    "_id": "topology-4",
+    "type": "webhook",
+    "name": "Payment Sync",
+    "descr": "Payment gateway synchronization",
+    "status": "Running",
+    "visibility": "public",
+    "version": "2",
+    "category": "folder-1",
+    "enabled": true,
+    "versions": [
+      {
+        "id": "v2",
+        "version": "2",
+        "visibility": "public",
+        "status": "Running",
+        "created": "2025-01-16 13:00:00",
+        "updated": "2025-01-16 13:00:00"
+      },
+      {
+        "id": "v1",
+        "version": "1",
+        "visibility": "public",
+        "status": "Stopped",
+        "created": "2025-01-10 10:00:00",
+        "updated": "2025-01-10 10:00:00"
+      }
+    ]
+  },
+  "topology-5": {
+    "_id": "topology-5",
+    "type": "cron",
+    "name": "Test Workflow",
+    "descr": "Development test workflow",
+    "status": "New",
+    "visibility": "draft",
+    "version": "1",
+    "category": "folder-2",
+    "enabled": false,
+    "versions": [
+      {
+        "id": "v1",
+        "version": "1",
+        "visibility": "draft",
+        "status": "New",
+        "created": "2025-01-14 15:00:00",
+        "updated": "2025-01-14 15:30:00"
+      }
+    ]
+  },
+  "topology-6": {
+    "_id": "topology-6",
+    "type": "webhook",
+    "name": "Legacy Sync",
+    "descr": "Legacy system synchronization",
+    "status": "Stopped",
+    "visibility": "public",
+    "version": "2",
+    "category": "folder-3-1",
+    "enabled": false,
+    "versions": [
+      {
+        "id": "v2",
+        "version": "2",
+        "visibility": "public",
+        "status": "Stopped",
+        "created": "2024-12-20 10:00:00",
+        "updated": "2024-12-20 10:00:00"
+      },
+      {
+        "id": "v1",
+        "version": "1",
+        "visibility": "public",
+        "status": "Stopped",
+        "created": "2024-11-15 09:00:00",
+        "updated": "2024-11-15 09:00:00"
+      }
+    ]
+  },
+  "topology-7": {
+    "_id": "topology-7",
+    "type": "cron",
+    "name": "Report Generation",
+    "descr": "Automated report generation service",
+    "status": "Running",
+    "visibility": "public",
+    "version": "3",
+    "category": null,
+    "enabled": true,
+    "versions": [
+      {
+        "id": "v3",
+        "version": "3",
+        "visibility": "public",
+        "status": "Running",
+        "created": "2025-01-17 11:00:00",
+        "updated": "2025-01-17 11:00:00"
+      },
+      {
+        "id": "v2",
+        "version": "2",
+        "visibility": "public",
+        "status": "Stopped",
+        "created": "2025-01-05 10:00:00",
+        "updated": "2025-01-05 10:00:00"
+      },
+      {
+        "id": "v1",
+        "version": "1",
+        "visibility": "public",
+        "status": "Stopped",
+        "created": "2024-12-01 09:00:00",
+        "updated": "2024-12-01 09:00:00"
+      }
+    ]
+  }
+}
+

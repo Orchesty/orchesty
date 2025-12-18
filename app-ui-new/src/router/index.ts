@@ -37,6 +37,52 @@ const router = createRouter({
       name: 'home',
       component: HomeView,
     },
+    {
+      path: '/scheduled-tasks',
+      name: 'scheduled-tasks',
+      component: () => import('@/views/scheduled-tasks/ScheduledTasksView.vue'),
+    },
+    {
+      path: '/trash',
+      name: 'trash',
+      component: () => import('@/views/trash/FailedMessagesView.vue'),
+    },
+    {
+      path: '/logs',
+      name: 'logs',
+      component: () => import('@/views/logs/LogsView.vue'),
+    },
+    {
+      path: '/applications',
+      name: 'applications',
+      component: () => import('@/views/applications/ApplicationsView.vue'),
+    },
+    {
+      path: '/settings',
+      name: 'settings',
+      component: () => import('@/views/settings/SettingsView.vue'),
+    },
+    {
+      path: '/topologies',
+      name: 'topologies',
+      component: () => import('@/views/topologies/TopologiesView.vue'),
+    },
+    {
+      path: '/topologies/:id',
+      name: 'topology-detail',
+      component: () => import('@/views/topologies/TopologyDetailView.vue'),
+      props: true,
+    },
+    {
+      path: '/users',
+      name: 'users',
+      component: () => import('@/views/users/UsersView.vue'),
+    },
+    {
+      path: '/audit-logs',
+      name: 'audit-logs',
+      component: () => import('@/views/audit-logs/AuditLogsView.vue'),
+    },
   ],
 })
 

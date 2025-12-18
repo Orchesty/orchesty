@@ -15,3 +15,9 @@ export interface DropdownFilterOption {
   label: string
 }
 
+export interface BulkAction {
+  label: string
+  onClick: (selectedIds: Set<string>) => void
+  variant?: 'primary' | 'danger' | 'secondary'
+}
+

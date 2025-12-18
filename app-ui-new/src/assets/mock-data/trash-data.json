@@ -1,39 +1,522 @@
 {
-  "totalMessages": 156,
-  "vsLastDay": 13,
-  "chartData": [
-    { "x": "Lead Sync", "y": 45 },
-    { "x": "Customer Update", "y": 32 },
-    { "x": "Order Processing", "y": 28 },
-    { "x": "Data Export", "y": 24 },
-    { "x": "Email Sync", "y": 15 },
-    { "x": "Report Generation", "y": 12 }
-  ],
-  "tableData": [
+  "data": [
     {
-      "topology": "Lead Sync",
-      "node": "Lead Sync Action",
-      "message": "Missing required field 'email'",
-      "count": 5
+      "id": "trash-001",
+      "topology": "Customer Orders",
+      "topologyId": "top-001",
+      "node": "Payment Processor",
+      "nodeId": "node-pp-001",
+      "correlationId": "COR-2024-001-ABC123",
+      "timestamp": "2024-12-17T08:15:32.000Z",
+      "resultMessage": "Payment gateway timeout after 30 seconds",
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Request-ID": "req-abc-123",
+        "X-Correlation-ID": "COR-2024-001-ABC123",
+        "Authorization": "Bearer ***"
+      },
+      "body": {
+        "orderId": "ORD-2024-12345",
+        "customerId": "CUST-98765",
+        "amount": 299.99,
+        "currency": "USD",
+        "paymentMethod": "credit_card"
+      }
     },
     {
-      "topology": "Customer Update",
-      "node": "Contact Import Connector",
-      "message": "Authentication token expired",
-      "count": 3
+      "id": "trash-002",
+      "topology": "Inventory Sync",
+      "topologyId": "top-002",
+      "node": "Stock Validator",
+      "nodeId": "node-sv-002",
+      "correlationId": "COR-2024-002-DEF456",
+      "timestamp": "2024-12-17T09:22:18.000Z",
+      "resultMessage": "Invalid product SKU format",
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Request-ID": "req-def-456",
+        "X-Correlation-ID": "COR-2024-002-DEF456"
+      },
+      "body": {
+        "sku": "INVALID-SKU",
+        "quantity": 50,
+        "warehouseId": "WH-001"
+      }
     },
     {
-      "topology": "Order Processing",
-      "node": "Message Sync Action",
-      "message": "Database connection timeout",
-      "count": 2
+      "id": "trash-003",
+      "topology": "Customer Orders",
+      "topologyId": "top-001",
+      "node": "Email Notifier",
+      "nodeId": "node-en-003",
+      "correlationId": "COR-2024-003-GHI789",
+      "timestamp": "2024-12-17T10:45:55.000Z",
+      "resultMessage": "SMTP server connection refused",
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Request-ID": "req-ghi-789",
+        "X-Correlation-ID": "COR-2024-003-GHI789"
+      },
+      "body": {
+        "to": "customer@example.com",
+        "subject": "Order Confirmation",
+        "templateId": "order-confirm-001"
+      }
     },
     {
-      "topology": "Data Export",
-      "node": "Email Sync Connector",
-      "message": "Invalid JSON response format",
-      "count": 4
+      "id": "trash-004",
+      "topology": "Shipping Integration",
+      "topologyId": "top-003",
+      "node": "Label Generator",
+      "nodeId": "node-lg-004",
+      "correlationId": "COR-2024-004-JKL012",
+      "timestamp": "2024-12-17T11:30:12.000Z",
+      "resultMessage": "Missing required field: destination_address",
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Request-ID": "req-jkl-012",
+        "X-Correlation-ID": "COR-2024-004-JKL012"
+      },
+      "body": {
+        "orderId": "ORD-2024-12346",
+        "carrier": "UPS",
+        "serviceLevel": "ground"
+      }
+    },
+    {
+      "id": "trash-005",
+      "topology": "Inventory Sync",
+      "topologyId": "top-002",
+      "node": "Price Updater",
+      "nodeId": "node-pu-005",
+      "correlationId": "COR-2024-005-MNO345",
+      "timestamp": "2024-12-17T12:15:40.000Z",
+      "resultMessage": "Price value out of acceptable range",
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Request-ID": "req-mno-345",
+        "X-Correlation-ID": "COR-2024-005-MNO345"
+      },
+      "body": {
+        "productId": "PROD-5678",
+        "newPrice": -10.00,
+        "currency": "USD"
+      }
+    },
+    {
+      "id": "trash-006",
+      "topology": "Customer Orders",
+      "topologyId": "top-001",
+      "node": "Fraud Checker",
+      "nodeId": "node-fc-006",
+      "correlationId": "COR-2024-006-PQR678",
+      "timestamp": "2024-12-17T13:05:22.000Z",
+      "resultMessage": "Fraud detection service unavailable",
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Request-ID": "req-pqr-678",
+        "X-Correlation-ID": "COR-2024-006-PQR678"
+      },
+      "body": {
+        "orderId": "ORD-2024-12347",
+        "customerId": "CUST-11223",
+        "riskScore": null
+      }
+    },
+    {
+      "id": "trash-007",
+      "topology": "Shipping Integration",
+      "topologyId": "top-003",
+      "node": "Tracking Updater",
+      "nodeId": "node-tu-007",
+      "correlationId": "COR-2024-007-STU901",
+      "timestamp": "2024-12-17T14:20:45.000Z",
+      "resultMessage": "Invalid tracking number format",
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Request-ID": "req-stu-901",
+        "X-Correlation-ID": "COR-2024-007-STU901"
+      },
+      "body": {
+        "orderId": "ORD-2024-12348",
+        "trackingNumber": "INVALID123",
+        "carrier": "FedEx"
+      }
+    },
+    {
+      "id": "trash-008",
+      "topology": "Customer Orders",
+      "topologyId": "top-001",
+      "node": "Payment Processor",
+      "nodeId": "node-pp-001",
+      "correlationId": "COR-2024-008-VWX234",
+      "timestamp": "2024-12-17T15:10:33.000Z",
+      "resultMessage": "Credit card declined by issuer",
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Request-ID": "req-vwx-234",
+        "X-Correlation-ID": "COR-2024-008-VWX234",
+        "Authorization": "Bearer ***"
+      },
+      "body": {
+        "orderId": "ORD-2024-12349",
+        "customerId": "CUST-44556",
+        "amount": 1499.99,
+        "currency": "USD",
+        "paymentMethod": "credit_card",
+        "declineReason": "insufficient_funds"
+      }
+    },
+    {
+      "id": "trash-009",
+      "topology": "Inventory Sync",
+      "topologyId": "top-002",
+      "node": "Stock Validator",
+      "nodeId": "node-sv-002",
+      "correlationId": "COR-2024-009-YZA567",
+      "timestamp": "2024-12-17T16:35:18.000Z",
+      "resultMessage": "Database connection pool exhausted",
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Request-ID": "req-yza-567",
+        "X-Correlation-ID": "COR-2024-009-YZA567"
+      },
+      "body": {
+        "sku": "PROD-9876",
+        "quantity": 100,
+        "warehouseId": "WH-002"
+      }
+    },
+    {
+      "id": "trash-010",
+      "topology": "Shipping Integration",
+      "topologyId": "top-003",
+      "node": "Label Generator",
+      "nodeId": "node-lg-004",
+      "correlationId": "COR-2024-010-BCD890",
+      "timestamp": "2024-12-17T17:42:55.000Z",
+      "resultMessage": "Carrier API rate limit exceeded",
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Request-ID": "req-bcd-890",
+        "X-Correlation-ID": "COR-2024-010-BCD890"
+      },
+      "body": {
+        "orderId": "ORD-2024-12350",
+        "carrier": "DHL",
+        "serviceLevel": "express"
+      }
+    },
+    {
+      "id": "trash-011",
+      "topology": "Customer Orders",
+      "topologyId": "top-001",
+      "node": "Email Notifier",
+      "nodeId": "node-en-003",
+      "correlationId": "COR-2024-011-EFG123",
+      "timestamp": "2024-12-16T08:25:10.000Z",
+      "resultMessage": "Invalid email address format",
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Request-ID": "req-efg-123",
+        "X-Correlation-ID": "COR-2024-011-EFG123"
+      },
+      "body": {
+        "to": "invalid-email",
+        "subject": "Order Confirmation",
+        "templateId": "order-confirm-001"
+      }
+    },
+    {
+      "id": "trash-012",
+      "topology": "Inventory Sync",
+      "topologyId": "top-002",
+      "node": "Price Updater",
+      "nodeId": "node-pu-005",
+      "correlationId": "COR-2024-012-HIJ456",
+      "timestamp": "2024-12-16T09:50:33.000Z",
+      "resultMessage": "Concurrent modification detected",
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Request-ID": "req-hij-456",
+        "X-Correlation-ID": "COR-2024-012-HIJ456"
+      },
+      "body": {
+        "productId": "PROD-1234",
+        "newPrice": 49.99,
+        "currency": "USD",
+        "version": 5
+      }
+    },
+    {
+      "id": "trash-013",
+      "topology": "Customer Orders",
+      "topologyId": "top-001",
+      "node": "Fraud Checker",
+      "nodeId": "node-fc-006",
+      "correlationId": "COR-2024-013-KLM789",
+      "timestamp": "2024-12-16T11:15:42.000Z",
+      "resultMessage": "High fraud risk score detected",
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Request-ID": "req-klm-789",
+        "X-Correlation-ID": "COR-2024-013-KLM789"
+      },
+      "body": {
+        "orderId": "ORD-2024-12351",
+        "customerId": "CUST-77889",
+        "riskScore": 95
+      }
+    },
+    {
+      "id": "trash-014",
+      "topology": "Shipping Integration",
+      "topologyId": "top-003",
+      "node": "Tracking Updater",
+      "nodeId": "node-tu-007",
+      "correlationId": "COR-2024-014-NOP012",
+      "timestamp": "2024-12-16T13:40:28.000Z",
+      "resultMessage": "Tracking information not found",
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Request-ID": "req-nop-012",
+        "X-Correlation-ID": "COR-2024-014-NOP012"
+      },
+      "body": {
+        "orderId": "ORD-2024-12352",
+        "trackingNumber": "1Z999AA10123456784",
+        "carrier": "UPS"
+      }
+    },
+    {
+      "id": "trash-015",
+      "topology": "Customer Orders",
+      "topologyId": "top-001",
+      "node": "Payment Processor",
+      "nodeId": "node-pp-001",
+      "correlationId": "COR-2024-015-QRS345",
+      "timestamp": "2024-12-16T15:22:15.000Z",
+      "resultMessage": "Payment processor internal error",
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Request-ID": "req-qrs-345",
+        "X-Correlation-ID": "COR-2024-015-QRS345",
+        "Authorization": "Bearer ***"
+      },
+      "body": {
+        "orderId": "ORD-2024-12353",
+        "customerId": "CUST-33445",
+        "amount": 799.99,
+        "currency": "USD",
+        "paymentMethod": "credit_card"
+      }
+    },
+    {
+      "id": "trash-016",
+      "topology": "Inventory Sync",
+      "topologyId": "top-002",
+      "node": "Stock Validator",
+      "nodeId": "node-sv-002",
+      "correlationId": "COR-2024-016-TUV678",
+      "timestamp": "2024-12-15T10:30:50.000Z",
+      "resultMessage": "Negative stock quantity not allowed",
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Request-ID": "req-tuv-678",
+        "X-Correlation-ID": "COR-2024-016-TUV678"
+      },
+      "body": {
+        "sku": "PROD-5555",
+        "quantity": -5,
+        "warehouseId": "WH-001"
+      }
+    },
+    {
+      "id": "trash-017",
+      "topology": "Shipping Integration",
+      "topologyId": "top-003",
+      "node": "Label Generator",
+      "nodeId": "node-lg-004",
+      "correlationId": "COR-2024-017-WXY901",
+      "timestamp": "2024-12-15T12:18:35.000Z",
+      "resultMessage": "Unsupported shipping destination",
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Request-ID": "req-wxy-901",
+        "X-Correlation-ID": "COR-2024-017-WXY901"
+      },
+      "body": {
+        "orderId": "ORD-2024-12354",
+        "carrier": "USPS",
+        "destination": {
+          "country": "XX",
+          "postalCode": "00000"
+        }
+      }
+    },
+    {
+      "id": "trash-018",
+      "topology": "Customer Orders",
+      "topologyId": "top-001",
+      "node": "Email Notifier",
+      "nodeId": "node-en-003",
+      "correlationId": "COR-2024-018-ZAB234",
+      "timestamp": "2024-12-15T14:55:20.000Z",
+      "resultMessage": "Email template not found",
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Request-ID": "req-zab-234",
+        "X-Correlation-ID": "COR-2024-018-ZAB234"
+      },
+      "body": {
+        "to": "customer@example.com",
+        "subject": "Order Confirmation",
+        "templateId": "non-existent-template"
+      }
+    },
+    {
+      "id": "trash-019",
+      "topology": "Inventory Sync",
+      "topologyId": "top-002",
+      "node": "Price Updater",
+      "nodeId": "node-pu-005",
+      "correlationId": "COR-2024-019-CDE567",
+      "timestamp": "2024-12-15T16:40:12.000Z",
+      "resultMessage": "Product not found in catalog",
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Request-ID": "req-cde-567",
+        "X-Correlation-ID": "COR-2024-019-CDE567"
+      },
+      "body": {
+        "productId": "PROD-NONEXIST",
+        "newPrice": 29.99,
+        "currency": "USD"
+      }
+    },
+    {
+      "id": "trash-020",
+      "topology": "Customer Orders",
+      "topologyId": "top-001",
+      "node": "Fraud Checker",
+      "nodeId": "node-fc-006",
+      "correlationId": "COR-2024-020-FGH890",
+      "timestamp": "2024-12-15T18:25:48.000Z",
+      "resultMessage": "Customer verification timeout",
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Request-ID": "req-fgh-890",
+        "X-Correlation-ID": "COR-2024-020-FGH890"
+      },
+      "body": {
+        "orderId": "ORD-2024-12355",
+        "customerId": "CUST-99001",
+        "verificationMethod": "sms"
+      }
+    },
+    {
+      "id": "trash-021",
+      "topology": "Shipping Integration",
+      "topologyId": "top-003",
+      "node": "Tracking Updater",
+      "nodeId": "node-tu-007",
+      "correlationId": "COR-2024-021-IJK123",
+      "timestamp": "2024-12-14T09:10:30.000Z",
+      "resultMessage": "Carrier API authentication failed",
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Request-ID": "req-ijk-123",
+        "X-Correlation-ID": "COR-2024-021-IJK123"
+      },
+      "body": {
+        "orderId": "ORD-2024-12356",
+        "trackingNumber": "1Z999AA10123456785",
+        "carrier": "UPS"
+      }
+    },
+    {
+      "id": "trash-022",
+      "topology": "Customer Orders",
+      "topologyId": "top-001",
+      "node": "Payment Processor",
+      "nodeId": "node-pp-001",
+      "correlationId": "COR-2024-022-LMN456",
+      "timestamp": "2024-12-14T11:35:55.000Z",
+      "resultMessage": "Transaction amount exceeds daily limit",
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Request-ID": "req-lmn-456",
+        "X-Correlation-ID": "COR-2024-022-LMN456",
+        "Authorization": "Bearer ***"
+      },
+      "body": {
+        "orderId": "ORD-2024-12357",
+        "customerId": "CUST-22334",
+        "amount": 5000.00,
+        "currency": "USD",
+        "paymentMethod": "credit_card"
+      }
+    },
+    {
+      "id": "trash-023",
+      "topology": "Inventory Sync",
+      "topologyId": "top-002",
+      "node": "Stock Validator",
+      "nodeId": "node-sv-002",
+      "correlationId": "COR-2024-023-OPQ789",
+      "timestamp": "2024-12-14T14:20:40.000Z",
+      "resultMessage": "Warehouse capacity exceeded",
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Request-ID": "req-opq-789",
+        "X-Correlation-ID": "COR-2024-023-OPQ789"
+      },
+      "body": {
+        "sku": "PROD-7777",
+        "quantity": 10000,
+        "warehouseId": "WH-001"
+      }
+    },
+    {
+      "id": "trash-024",
+      "topology": "Shipping Integration",
+      "topologyId": "top-003",
+      "node": "Label Generator",
+      "nodeId": "node-lg-004",
+      "correlationId": "COR-2024-024-RST012",
+      "timestamp": "2024-12-14T16:45:25.000Z",
+      "resultMessage": "Package weight exceeds carrier limit",
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Request-ID": "req-rst-012",
+        "X-Correlation-ID": "COR-2024-024-RST012"
+      },
+      "body": {
+        "orderId": "ORD-2024-12358",
+        "carrier": "FedEx",
+        "weight": 75.5,
+        "weightUnit": "kg"
+      }
+    },
+    {
+      "id": "trash-025",
+      "topology": "Customer Orders",
+      "topologyId": "top-001",
+      "node": "Email Notifier",
+      "nodeId": "node-en-003",
+      "correlationId": "COR-2024-025-UVW345",
+      "timestamp": "2024-12-14T18:30:15.000Z",
+      "resultMessage": "Email delivery failed - recipient mailbox full",
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Request-ID": "req-uvw-345",
+        "X-Correlation-ID": "COR-2024-025-UVW345"
+      },
+      "body": {
+        "to": "customer@example.com",
+        "subject": "Order Shipped",
+        "templateId": "order-shipped-001"
+      }
     }
   ]
 }
-

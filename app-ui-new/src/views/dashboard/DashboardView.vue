@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import TabPanel from '@/components/ui/TabPanel.vue'
 import TimeFilter from '@/components/ui/TimeFilter.vue'
 import OverviewTab from '@/components/dashboard/OverviewTab.vue'
 import ConnectorsTab from '@/components/dashboard/ConnectorsTab.vue'
 import TopologiesTab from '@/components/dashboard/TopologiesTab.vue'
+import ProcessesTab from '@/components/dashboard/ProcessesTab.vue'
 import type { Tab } from '@/components/ui/Tabs.vue'
-import type { TimeFilter as TimeFilterType } from '@/types/dashboard'
+import type { TimeFilter as TimeFilterType, HeatmapClickData, ProcessesExternalFilters } from '@/types/dashboard'
+import { calculateTimeRangeFromSlot } from '@/utils/timeRangeConverter'
 
 // Tabs configuration
 const dashboardTabs: Tab[] = [
@@ -19,6 +21,42 @@ const dashboardTabs: Tab[] = [
 
 // Time filter state
 const activeTimeFilter = ref<TimeFilterType>('7d')
+
+// Processes external filters (set by heatmap click)
+const processesFilters = ref<ProcessesExternalFilters>({
+  topology: null,
+  timeRange: null,
+})
+
+const handleHeatmapClick = async (data: HeatmapClickData) => {
+  console.log('Heatmap clicked from Overview:', data)
+  
+  // Calculate time range from clicked time slot (±30 minutes)
+  const timeRange = calculateTimeRangeFromSlot(data.timeSlot)
+  
+  // Set filters for ProcessesTab
+  processesFilters.value = {
+    topology: data.topology,
+    timeRange: timeRange,
+  }
+  
+  // Check if we're not already on the Processes tab by checking if it has 'hidden' class
+  const processesPanel = document.getElementById('processes-content')
+  const isOnProcessesTab = processesPanel && !processesPanel.classList.contains('hidden')
+  
+  console.log('Is on Processes tab:', isOnProcessesTab)
+  
+  // Switch to processes tab only if we're not already there (i.e., we're on Overview)
+  if (!isOnProcessesTab) {
+    await nextTick()
+    const processesTabButton = document.getElementById('processes-tab')
+    console.log('Processes tab button:', processesTabButton)
+    if (processesTabButton) {
+      processesTabButton.click()
+      console.log('Clicked processes tab button')
+    }
+  }
+}
 </script>
 
 <template>
@@ -64,7 +102,7 @@ const activeTimeFilter = ref<TimeFilterType>('7d')
     <!-- Tabs Content -->
     <div id="dashboard-tabs-content">
       <TabPanel id="overview-content" ariaLabelledby="overview-tab">
-        <OverviewTab :time-filter="activeTimeFilter" />
+        <OverviewTab :time-filter="activeTimeFilter" @heatmap-click="handleHeatmapClick" />
       </TabPanel>
 
       <TabPanel id="connectors-content" ariaLabelledby="connectors-tab" :hidden="true">
@@ -72,16 +110,11 @@ const activeTimeFilter = ref<TimeFilterType>('7d')
       </TabPanel>
 
       <TabPanel id="topologies-content" ariaLabelledby="topologies-tab" :hidden="true">
-        <TopologiesTab />
+        <TopologiesTab :global-time-filter="activeTimeFilter" />
       </TabPanel>
 
       <TabPanel id="processes-content" ariaLabelledby="processes-tab" :hidden="true">
-        <div class="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
-          <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Processes</h2>
-          <p class="text-gray-500 dark:text-gray-400">
-            Processes content will be implemented in next phase.
-          </p>
-        </div>
+        <ProcessesTab :global-time-filter="activeTimeFilter" :external-filters="processesFilters" />
       </TabPanel>
     </div>
   </DashboardLayout>

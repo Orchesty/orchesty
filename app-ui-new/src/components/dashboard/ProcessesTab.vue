@@ -1,0 +1,404 @@
+<script setup lang="ts">
+import { ref, onMounted, watch } from 'vue'
+import ProcessesChart from './ProcessesChart.vue'
+import ProcessAuditDrawer from './ProcessAuditDrawer.vue'
+import Card from '@/components/ui/Card.vue'
+import DataGrid from '@/components/ui/DataGrid.vue'
+import QuickFilter from '@/components/ui/datagrid/QuickFilter.vue'
+import DropdownFilter from '@/components/ui/datagrid/DropdownFilter.vue'
+import DateTimeRangeFilter from '@/components/ui/datagrid/DateTimeRangeFilter.vue'
+import type { Process, ProcessStatus } from '@/types/processes'
+import type { ProcessFilter, TimeFilter, TableColumn, ProcessesChartData, ProcessesExternalFilters, HeatmapClickData } from '@/types/dashboard'
+import type { QuickFilterOption, DropdownFilterOption } from '@/types/datagrid'
+import { fetchProcesses, fetchTopologyNames } from '@/services/processesService'
+import { fetchProcessesData } from '@/services/dashboardService'
+import { convertTimeFilterToDateTimeRange, formatDateTimeForApi, calculateTimeRangeFromSlot } from '@/utils/timeRangeConverter'
+import { useDataGrid } from '@/composables/useDataGrid'
+
+interface Props {
+  globalTimeFilter: TimeFilter
+  externalFilters?: ProcessesExternalFilters
+}
+
+const props = defineProps<Props>()
+
+// Drawer state
+const drawerOpen = ref(false)
+const selectedProcess = ref<Process | null>(null)
+
+// Heatmap data and filter
+const processFilter = ref<ProcessFilter>('all')
+const processesChartData = ref<ProcessesChartData | null>(null)
+const chartLoading = ref(true)
+
+// Grid filters
+const processes = ref<Process[]>([])
+const statusFilter = ref<ProcessStatus>('all')
+const topologyFilter = ref<string | null>(null)
+
+// Local datetime range filters
+const dateTimeRange = ref<{ from: string | null; to: string | null }>({
+  from: null,
+  to: null,
+})
+
+// Table columns
+const columns: TableColumn[] = [
+  { key: 'topology', label: 'Topology', sortable: true },
+  { key: 'startTime', label: 'Start time', sortable: true },
+  { key: 'duration', label: 'Duration', sortable: true },
+  { key: 'status', label: 'Status', sortable: true },
+  { key: 'errorMessage', label: 'Error Message', sortable: false },
+  { key: 'actions', label: '', className: 'text-right' },
+]
+
+// Quick filter options
+const quickFilterOptions: QuickFilterOption[] = [
+  { value: 'all', label: 'All' },
+  { value: 'completed', label: 'Completed' },
+  { value: 'running', label: 'Running' },
+  { value: 'failed', label: 'Failed' },
+]
+
+// Topology dropdown options
+const topologyOptions = ref<DropdownFilterOption[]>([
+  { value: null, label: 'All Topologies' },
+])
+
+// Format duration from seconds to HH:MM:SS
+const formatDuration = (seconds: number): string => {
+  const hours = Math.floor(seconds / 3600)
+  const minutes = Math.floor((seconds % 3600) / 60)
+  const secs = seconds % 60
+  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
+}
+
+// Load data function
+const loadData = async () => {
+  loading.value = true
+
+  try {
+    const response = await fetchProcesses({
+      status: statusFilter.value,
+      topology: topologyFilter.value || undefined,
+      dateFrom: formatDateTimeForApi(dateTimeRange.value.from) || undefined,
+      dateTo: formatDateTimeForApi(dateTimeRange.value.to) || undefined,
+      page: currentPage.value,
+      limit: itemsPerPage.value,
+      sort: sortField.value,
+      order: sortDirection.value,
+    })
+
+    processes.value = response.data
+    totalPages.value = response.meta.totalPages
+    totalItems.value = response.meta.totalItems
+  } catch (error) {
+    console.error('Error loading processes:', error)
+  } finally {
+    loading.value = false
+  }
+}
+
+// Use DataGrid composable
+const {
+  currentPage,
+  itemsPerPage,
+  totalPages,
+  totalItems,
+  sortField,
+  sortDirection,
+  loading,
+  handlePageChange,
+  handlePerPageChange,
+  handleSort,
+} = useDataGrid({
+  defaultSort: { field: 'startTime', direction: 'desc' },
+  onDataLoad: loadData,
+  filters: [statusFilter, topologyFilter, dateTimeRange],
+})
+
+const handleAuditClick = (process: Process) => {
+  console.log('Audit button clicked for process:', process)
+  selectedProcess.value = process
+  drawerOpen.value = true
+  console.log('Drawer state:', { drawerOpen: drawerOpen.value, selectedProcess: selectedProcess.value })
+}
+
+const handleHeatmapClick = (data: HeatmapClickData) => {
+  console.log('Heatmap clicked in ProcessesTab:', data)
+  
+  // Calculate time range from clicked time slot (±30 minutes)
+  const timeRange = calculateTimeRangeFromSlot(data.timeSlot)
+  
+  // Apply topology filter
+  topologyFilter.value = data.topology
+  
+  // Apply time range filter
+  dateTimeRange.value = {
+    from: timeRange.from,
+    to: timeRange.to,
+  }
+  
+  // Data will reload automatically via watch on dateTimeRange and topologyFilter
+}
+
+const handleProcessFilterChange = async (filter: ProcessFilter) => {
+  processFilter.value = filter
+  // Reload chart data with new filter
+  try {
+    processesChartData.value = await fetchProcessesData(filter, props.globalTimeFilter)
+  } catch (error) {
+    console.error('Error reloading processes chart data:', error)
+  }
+}
+
+const loadChartData = async () => {
+  chartLoading.value = true
+  try {
+    processesChartData.value = await fetchProcessesData(processFilter.value, props.globalTimeFilter)
+  } catch (error) {
+    console.error('Error loading processes chart data:', error)
+  } finally {
+    chartLoading.value = false
+  }
+}
+
+// Watch for filter changes
+// Watch global time filter and convert to local datetime range
+watch(
+  () => props.globalTimeFilter,
+  (newFilter) => {
+    const range = convertTimeFilterToDateTimeRange(newFilter)
+    dateTimeRange.value = {
+      from: range.from,
+      to: range.to,
+    }
+    // Also reload chart data when global filter changes
+    loadChartData()
+  },
+  { immediate: true }
+)
+
+// Watch for external filters from heatmap click
+watch(
+  () => props.externalFilters,
+  (filters) => {
+    if (!filters) return
+    
+    // Apply topology filter
+    if (filters.topology) {
+      topologyFilter.value = filters.topology
+    }
+    
+    // Apply time range filter
+    if (filters.timeRange) {
+      dateTimeRange.value = {
+        from: filters.timeRange.from,
+        to: filters.timeRange.to,
+      }
+    }
+  },
+  { immediate: true, deep: true }
+)
+
+onMounted(async () => {
+  // Load topologies for dropdown filter
+  try {
+    const topologyNames = await fetchTopologyNames()
+    topologyOptions.value = [
+      { value: null, label: 'All Topologies' },
+      ...topologyNames.map((name) => ({ value: name, label: name })),
+    ]
+  } catch (error) {
+    console.error('Failed to load topologies:', error)
+  }
+
+  // Load initial data
+  loadChartData()
+  loadData()
+})
+</script>
+
+<template>
+  <div>
+    <!-- Processes Chart -->
+    <div class="mb-6">
+      <Card v-if="chartLoading" class="flex items-center justify-center p-12">
+        <div class="text-center">
+          <svg
+            class="mx-auto h-12 w-12 animate-spin text-primary-600"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+            ></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+          <p class="mt-4 text-gray-500 dark:text-gray-400">Loading chart...</p>
+        </div>
+      </Card>
+      <ProcessesChart
+        v-else-if="processesChartData"
+        :total-processes="processesChartData.totalProcesses"
+        :total-failed="processesChartData.totalFailed"
+        :time-range="processesChartData.timeRange"
+        :filter="processFilter"
+        :series="processesChartData.series"
+        :x-categories="processesChartData.xCategories"
+        :y-categories="processesChartData.yCategories"
+        @filter-change="handleProcessFilterChange"
+        @heatmap-click="handleHeatmapClick"
+      />
+    </div>
+
+    <!-- Processes Grid Card -->
+    <Card>
+      <h3 class="mb-2 text-lg font-semibold text-gray-900 dark:text-white">Processes</h3>
+
+      <DataGrid
+        :columns="columns"
+        :data="processes"
+        :loading="loading"
+        :current-page="currentPage"
+        :total-pages="totalPages"
+        :total-items="totalItems"
+        :items-per-page="itemsPerPage"
+        :sort-field="sortField"
+        :sort-direction="sortDirection"
+        @page-change="handlePageChange"
+        @per-page-change="handlePerPageChange"
+        @sort="handleSort"
+      >
+        <!-- Quick Filters (left) -->
+        <template #quick-filters>
+          <QuickFilter
+            v-model="statusFilter"
+            name="processes-filter"
+            label="Show only:"
+            :options="quickFilterOptions"
+          />
+        </template>
+
+        <!-- Regular Filters (right) -->
+        <template #filters>
+          <!-- Topology Dropdown -->
+          <DropdownFilter v-model="topologyFilter" :options="topologyOptions" />
+
+          <!-- DateTime Range Filter -->
+          <DateTimeRangeFilter v-model="dateTimeRange" />
+        </template>
+
+        <!-- Custom Cells -->
+        <template #cell-topology="{ value }">
+          <span class="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+            {{ value }}
+          </span>
+        </template>
+
+        <template #cell-startTime="{ value }">
+          <span class="whitespace-nowrap">{{ value }}</span>
+        </template>
+
+        <template #cell-duration="{ value }">
+          <span class="whitespace-nowrap">{{ formatDuration(value) }}</span>
+        </template>
+
+        <template #cell-status="{ value }">
+          <span
+            :class="[
+              'inline-flex items-center rounded-full px-2 py-1 text-xs font-medium',
+              value === 'completed'
+                ? 'bg-green-100 text-green-700 dark:bg-green-800 dark:text-green-300'
+                : value === 'running'
+                ? 'bg-blue-100 text-blue-700 dark:bg-blue-800 dark:text-blue-300'
+                : 'bg-red-100 text-red-700 dark:bg-red-800 dark:text-red-300',
+            ]"
+          >
+            {{ value.charAt(0).toUpperCase() + value.slice(1) }}
+          </span>
+        </template>
+
+        <template #cell-errorMessage="{ value }">
+          <span
+            v-if="value"
+            class="max-w-xs truncate text-xs"
+            :title="value"
+          >
+            {{ value }}
+          </span>
+          <span v-else class="text-xs">-</span>
+        </template>
+
+        <template #cell-actions="{ row }">
+          <div class="flex items-center justify-end gap-1">
+            <button
+              type="button"
+              title="Audit"
+              @click="handleAuditClick(row)"
+              class="inline-flex items-center rounded-lg p-1 text-center text-sm font-medium text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+            >
+              <svg
+                class="h-5 w-5"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+                />
+              </svg>
+              <span class="sr-only">Audit</span>
+            </button>
+            <button
+              type="button"
+              title="Get payload"
+              class="inline-flex items-center rounded-lg p-1 text-center text-sm font-medium text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+            >
+              <svg
+                class="h-5 w-5"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M13 11.15V4a1 1 0 1 0-2 0v7.15L8.78 8.374a1 1 0 1 0-1.56 1.25l4 5a1 1 0 0 0 1.56 0l4-5a1 1 0 1 0-1.56-1.25L13 11.15Z"
+                  clip-rule="evenodd"
+                />
+                <path
+                  fill-rule="evenodd"
+                  d="M9.657 15.874 7.358 13H5a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2h-2.358l-2.3 2.874a3 3 0 0 1-4.685 0ZM17 16a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2H17Z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <span class="sr-only">Get payload</span>
+            </button>
+          </div>
+        </template>
+      </DataGrid>
+    </Card>
+
+    <!-- Process Audit Drawer - Always render to ensure Flowbite initialization -->
+    <ProcessAuditDrawer v-model="drawerOpen" :process="selectedProcess" />
+  </div>
+</template>
+

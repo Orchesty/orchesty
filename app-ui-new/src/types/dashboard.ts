@@ -81,3 +81,16 @@ export interface ProcessesChartData {
   timeRange: string
 }
 
+export interface HeatmapClickData {
+  topology: string
+  timeSlot: string
+}
+
+export interface ProcessesExternalFilters {
+  topology: string | null
+  timeRange: {
+    from: string
+    to: string
+  } | null
+}
+

@@ -1,15 +1,19 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
+import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
 import QuickFilter from '@/components/ui/datagrid/QuickFilter.vue'
 import SearchInput from '@/components/ui/datagrid/SearchInput.vue'
 import DropdownFilter from '@/components/ui/datagrid/DropdownFilter.vue'
+import DateTimeRangeFilter from '@/components/ui/datagrid/DateTimeRangeFilter.vue'
 import ConnectorDetailDrawer from '@/components/dashboard/ConnectorDetailDrawer.vue'
 import type { Connector, ConnectorStatus } from '@/types/connectors'
 import type { TableColumn, TimeFilter } from '@/types/dashboard'
 import type { ActionConfig, QuickFilterOption, DropdownFilterOption } from '@/types/datagrid'
 import { fetchConnectors } from '@/services/connectorsService'
 import { fetchApplicationNames } from '@/services/applicationsService'
+import { convertTimeFilterToDateTimeRange, formatDateTimeForApi } from '@/utils/timeRangeConverter'
+import { useDataGrid } from '@/composables/useDataGrid'
 
 interface Props {
   globalTimeFilter: TimeFilter
@@ -17,23 +21,20 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const loading = ref(true)
 const connectors = ref<Connector[]>([])
 const quickFilter = ref<ConnectorStatus>('all')
 const searchQuery = ref('')
 const selectedApp = ref<string | null>(null)
-const currentPage = ref(1)
-const itemsPerPage = ref(10)
-const totalPages = ref(1)
-const totalItems = ref(0)
+
+// Local datetime range filters
+const dateTimeRange = ref<{ from: string | null; to: string | null }>({
+  from: null,
+  to: null,
+})
 
 // Drawer state
 const drawerOpen = ref(false)
 const selectedConnector = ref<Connector | null>(null)
-
-// Sorting
-const sortField = ref('name')
-const sortDirection = ref<'asc' | 'desc'>('asc')
 
 // Table columns (actions column added automatically by DataGrid)
 const columns: TableColumn[] = [
@@ -70,6 +71,7 @@ const actions: ActionConfig[] = [
   },
 ]
 
+// Load data function (will be passed to useDataGrid)
 const loadData = async () => {
   loading.value = true
 
@@ -78,6 +80,8 @@ const loadData = async () => {
       status: quickFilter.value,
       search: searchQuery.value || undefined,
       application: selectedApp.value || undefined,
+      dateFrom: formatDateTimeForApi(dateTimeRange.value.from) || undefined,
+      dateTo: formatDateTimeForApi(dateTimeRange.value.to) || undefined,
       page: currentPage.value,
       limit: itemsPerPage.value,
       sort: sortField.value,
@@ -94,28 +98,36 @@ const loadData = async () => {
   }
 }
 
-const handlePageChange = (page: number) => {
-  currentPage.value = page
-  loadData()
-}
-
-const handlePerPageChange = (perPage: number) => {
-  itemsPerPage.value = perPage
-  currentPage.value = 1
-  loadData()
-}
-
-const handleSort = (config: { field: string; direction: 'asc' | 'desc' }) => {
-  sortField.value = config.field
-  sortDirection.value = config.direction
-  loadData()
-}
-
-// Watch for filter changes and reload data
-watch([quickFilter, searchQuery, selectedApp], () => {
-  currentPage.value = 1
-  loadData()
+// Use DataGrid composable
+const {
+  currentPage,
+  itemsPerPage,
+  totalPages,
+  totalItems,
+  sortField,
+  sortDirection,
+  loading,
+  handlePageChange,
+  handlePerPageChange,
+  handleSort,
+} = useDataGrid({
+  defaultSort: { field: 'name', direction: 'asc' },
+  onDataLoad: loadData,
+  filters: [quickFilter, searchQuery, selectedApp, dateTimeRange],
 })
+
+// Watch global time filter and convert to local datetime range
+watch(
+  () => props.globalTimeFilter,
+  (newFilter) => {
+    const range = convertTimeFilterToDateTimeRange(newFilter)
+    dateTimeRange.value = {
+      from: range.from,
+      to: range.to,
+    }
+  },
+  { immediate: true }
+)
 
 onMounted(async () => {
   // Load applications for dropdown filter
@@ -135,7 +147,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+  <Card>
     <DataGrid
       :columns="columns"
       :data="connectors"
@@ -151,29 +163,29 @@ onMounted(async () => {
       @per-page-change="handlePerPageChange"
       @sort="handleSort"
     >
-    <!-- Filters -->
+    <!-- Quick Filters (left) -->
+    <template #quick-filters>
+      <QuickFilter
+        v-model="quickFilter"
+        name="connectors-filter"
+        label="Show only:"
+        :options="quickFilterOptions"
+      />
+    </template>
+
+    <!-- Regular Filters (right) -->
     <template #filters>
-      <div class="flex items-center justify-between py-2">
-        <!-- Quick Filter (left) -->
-        <QuickFilter
-          v-model="quickFilter"
-          name="connectors-filter"
-          label="Show only:"
-          :options="quickFilterOptions"
-        />
+      <!-- Search Input -->
+      <SearchInput
+        v-model="searchQuery"
+        placeholder="Search for connector or application"
+      />
 
-        <!-- Classic Filters (right) -->
-        <div class="flex items-center gap-2">
-          <!-- Search Input -->
-          <SearchInput
-            v-model="searchQuery"
-            placeholder="Search for connector or application"
-          />
+      <!-- Application Dropdown -->
+      <DropdownFilter v-model="selectedApp" :options="applicationOptions" />
 
-          <!-- Application Dropdown -->
-          <DropdownFilter v-model="selectedApp" :options="applicationOptions" />
-        </div>
-      </div>
+      <!-- DateTime Range Filter -->
+      <DateTimeRangeFilter v-model="dateTimeRange" />
     </template>
 
     <!-- Custom Cells -->
@@ -230,9 +242,9 @@ onMounted(async () => {
       >
         {{ value }}
       </span>
-    </template>
+      </template>
     </DataGrid>
-  </div>
+  </Card>
 
   <!-- Connector Detail Drawer -->
   <ConnectorDetailDrawer

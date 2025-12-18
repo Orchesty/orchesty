@@ -11,9 +11,12 @@ interface Props {
   options: DropdownFilterOption[]
   buttonLabel?: string
   dropdownId?: string
+  fullWidth?: boolean
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  fullWidth: false
+})
 
 const emit = defineEmits<{
   'update:modelValue': [value: string | null]
@@ -66,14 +69,6 @@ onMounted(async () => {
       offsetSkidding: 0,
       offsetDistance: 10,
     })
-    
-    console.log('Dropdown instance created:', dropdownInstanceRef.value)
-  } else {
-    console.error('Dropdown elements not found:', {
-      dropdownElement,
-      buttonElement,
-      dropdownId: dropdownIdValue.value
-    })
   }
 })
 </script>
@@ -82,12 +77,15 @@ onMounted(async () => {
   <div>
     <button
       :id="`${dropdownIdValue}-button`"
-      class="flex min-w-40 items-center justify-center whitespace-nowrap rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+      :class="[
+        'flex items-center justify-between rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white',
+        props.fullWidth ? 'w-full' : 'min-w-40'
+      ]"
       type="button"
     >
-      {{ displayLabel }}
+      <span class="text-left">{{ displayLabel }}</span>
       <svg
-        class="ms-1.5 h-4 w-4"
+        class="ms-1.5 h-4 w-4 flex-shrink-0"
         aria-hidden="true"
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -108,12 +106,12 @@ onMounted(async () => {
       :id="dropdownIdValue"
       class="z-50 hidden w-48 list-none divide-y divide-gray-100 rounded-lg bg-white text-sm font-medium shadow-sm dark:divide-gray-600 dark:bg-gray-700"
     >
-      <ul class="p-2 text-gray-500 dark:text-gray-400" role="none">
+      <ul class="max-h-64 overflow-y-auto p-2 text-gray-500 dark:text-gray-400" role="none">
         <li v-for="option in options" :key="option.value || 'null'">
           <button
             type="button"
             @click="handleSelect(option.value)"
-            class="inline-flex w-full items-center rounded-md px-3 py-2 hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white"
+            class="inline-flex w-full rounded-md px-3 py-2 text-left hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white"
             role="menuitem"
           >
             {{ option.label }}

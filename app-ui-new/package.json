@@ -20,10 +20,12 @@
     "format": "prettier --write --experimental-cli src/"
   },
   "dependencies": {
+    "@vuepic/vue-datepicker": "^12.1.0",
     "@vueuse/core": "^11.3.0",
     "apexcharts": "^5.3.6",
     "axios": "^1.7.9",
     "clsx": "^2.1.1",
+    "cron-validator": "^1.4.0",
     "flowbite": "^2.5.2",
     "flowbite-datepicker": "^2.0.0",
     "lucide-vue-next": "^0.460.0",

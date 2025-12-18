@@ -12,16 +12,33 @@ interface Props {
 const props = defineProps<Props>()
 
 const chartEl = ref<HTMLElement | null>(null)
+const chartMounted = ref(false)
 
 const { initChart, setupResizeObserver, isDarkMode, chartInstance } = useApexChart({
   onDarkModeChange: () => {
-    console.log('🗑️ TrashCard: Dark mode changed, re-rendering chart')
     // Re-render chart like original Flowbite template
-    if (chartEl.value) {
+    // Only if chart was already mounted
+    if (chartMounted.value && chartEl.value) {
       initChart(chartEl.value, getBarChartOptions())
       setupResizeObserver(chartEl.value)
     }
   },
+})
+
+// Initialize chart on mount
+onMounted(async () => {
+  try {
+    await nextTick()
+    if (!chartEl.value) {
+      return
+    }
+    
+    initChart(chartEl.value, getBarChartOptions())
+    setupResizeObserver(chartEl.value)
+    chartMounted.value = true
+  } catch (error) {
+    console.error('TrashCard mount error:', error)
+  }
 })
 
 const columns: TableColumn[] = [

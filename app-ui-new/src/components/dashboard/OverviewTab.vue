@@ -3,7 +3,7 @@ import { ref, onMounted, watch } from 'vue'
 import ProcessesChart from './ProcessesChart.vue'
 import LimiterCard from './LimiterCard.vue'
 import TrashCard from './TrashCard.vue'
-import type { ProcessesChartData, LimiterData, TrashData, ProcessFilter, TimeFilter } from '@/types/dashboard'
+import type { ProcessesChartData, LimiterData, TrashData, ProcessFilter, TimeFilter, HeatmapClickData } from '@/types/dashboard'
 import { fetchProcessesData, fetchLimiterData, fetchTrashData } from '@/services/dashboardService'
 
 interface Props {
@@ -13,6 +13,10 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   timeFilter: '7d',
 })
+
+const emit = defineEmits<{
+  heatmapClick: [data: HeatmapClickData]
+}>()
 
 const loading = ref(true)
 const error = ref<string | null>(null)
@@ -42,6 +46,10 @@ const loadData = async () => {
   } finally {
     loading.value = false
   }
+}
+
+const handleHeatmapClick = (data: HeatmapClickData) => {
+  emit('heatmapClick', data)
 }
 
 const handleProcessFilterChange = async (filter: ProcessFilter) => {
@@ -93,7 +101,7 @@ onMounted(() => {
     <p class="text-red-800 dark:text-red-400">{{ error }}</p>
   </div>
 
-  <div v-else-if="processesData && limiterData && trashData" class="space-y-6">
+  <div v-else-if="!loading && !error && processesData && limiterData && trashData" class="space-y-6">
     <!-- Processes Heatmap -->
     <ProcessesChart
       :total-processes="processesData.totalProcesses"
@@ -104,6 +112,7 @@ onMounted(() => {
       :x-categories="processesData.xCategories"
       :y-categories="processesData.yCategories"
       @filter-change="handleProcessFilterChange"
+      @heatmap-click="handleHeatmapClick"
     />
     
     <!-- Limiter and Trash Cards -->

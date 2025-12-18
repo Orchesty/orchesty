@@ -1,25 +1,30 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
+import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
 import QuickFilter from '@/components/ui/datagrid/QuickFilter.vue'
-import TimeRangeFilter from '@/components/ui/TimeRangeFilter.vue'
+import DateTimeRangeFilter from '@/components/ui/datagrid/DateTimeRangeFilter.vue'
 import type { Topology, TopologyStatus } from '@/types/topologies'
-import type { TableColumn } from '@/types/dashboard'
+import type { TableColumn, TimeFilter } from '@/types/dashboard'
 import type { QuickFilterOption } from '@/types/datagrid'
 import { fetchTopologies } from '@/services/topologiesService'
+import { convertTimeFilterToDateTimeRange, formatDateTimeForApi } from '@/utils/timeRangeConverter'
+import { useDataGrid } from '@/composables/useDataGrid'
 
-const loading = ref(true)
+interface Props {
+  globalTimeFilter: TimeFilter
+}
+
+const props = defineProps<Props>()
+
 const topologies = ref<Topology[]>([])
 const quickFilter = ref<TopologyStatus>('all')
-const timeRange = ref('this-month')
-const currentPage = ref(1)
-const itemsPerPage = ref(10)
-const totalPages = ref(1)
-const totalItems = ref(0)
 
-// Sorting
-const sortField = ref('name')
-const sortDirection = ref<'asc' | 'desc'>('asc')
+// Local datetime range filters
+const dateTimeRange = ref<{ from: string | null; to: string | null }>({
+  from: null,
+  to: null,
+})
 
 // Table columns
 const columns: TableColumn[] = [
@@ -45,7 +50,8 @@ const loadData = async () => {
   try {
     const response = await fetchTopologies({
       status: quickFilter.value,
-      timeRange: timeRange.value,
+      dateFrom: formatDateTimeForApi(dateTimeRange.value.from) || undefined,
+      dateTo: formatDateTimeForApi(dateTimeRange.value.to) || undefined,
       page: currentPage.value,
       limit: itemsPerPage.value,
       sort: sortField.value,
@@ -62,20 +68,23 @@ const loadData = async () => {
   }
 }
 
-const handlePageChange = (page: number) => {
-  currentPage.value = page
-}
-
-const handlePerPageChange = (perPage: number) => {
-  itemsPerPage.value = perPage
-  currentPage.value = 1
-}
-
-const handleSort = (config: { field: string; direction: 'asc' | 'desc' }) => {
-  sortField.value = config.field
-  sortDirection.value = config.direction
-  currentPage.value = 1
-}
+// Use DataGrid composable
+const {
+  currentPage,
+  itemsPerPage,
+  totalPages,
+  totalItems,
+  sortField,
+  sortDirection,
+  loading,
+  handlePageChange,
+  handlePerPageChange,
+  handleSort,
+} = useDataGrid({
+  defaultSort: { field: 'name', direction: 'asc' },
+  onDataLoad: loadData,
+  filters: [quickFilter, dateTimeRange],
+})
 
 const handleViewProcesses = (topology: Topology) => {
   // TODO: Navigate to Processes tab and filter by topology
@@ -84,15 +93,18 @@ const handleViewProcesses = (topology: Topology) => {
   // router.push({ name: 'dashboard', hash: '#processes', query: { topology: topology.id } })
 }
 
-// Watch for filter changes
-watch([quickFilter, timeRange], () => {
-  currentPage.value = 1
-  loadData()
-})
-
-watch(currentPage, () => {
-  loadData()
-})
+// Watch global time filter and convert to local datetime range
+watch(
+  () => props.globalTimeFilter,
+  (newFilter) => {
+    const range = convertTimeFilterToDateTimeRange(newFilter)
+    dateTimeRange.value = {
+      from: range.from,
+      to: range.to,
+    }
+  },
+  { immediate: true }
+)
 
 onMounted(() => {
   loadData()
@@ -100,7 +112,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+  <Card>
     <div class="mb-3">
       <h3 class="mb-2 text-lg font-semibold text-gray-900 dark:text-white">Topologies</h3>
 
@@ -118,20 +130,19 @@ onMounted(() => {
         @per-page-change="handlePerPageChange"
         @sort="handleSort"
       >
-        <!-- Filters -->
-        <template #filters>
-          <div class="flex items-center justify-between py-2">
-            <!-- Quick Filter (left) -->
-            <QuickFilter
-              v-model="quickFilter"
-              name="topologies-filter"
-              label="Show only:"
-              :options="quickFilterOptions"
-            />
+        <!-- Quick Filters (left) -->
+        <template #quick-filters>
+          <QuickFilter
+            v-model="quickFilter"
+            name="topologies-filter"
+            label="Show only:"
+            :options="quickFilterOptions"
+          />
+        </template>
 
-            <!-- Time Range Filter (right) -->
-            <TimeRangeFilter v-model="timeRange" />
-          </div>
+        <!-- Regular Filters (right) -->
+        <template #filters>
+          <DateTimeRangeFilter v-model="dateTimeRange" />
         </template>
 
         <!-- Custom Cells -->
@@ -199,5 +210,5 @@ onMounted(() => {
         </template>
       </DataGrid>
     </div>
-  </div>
+  </Card>
 </template>

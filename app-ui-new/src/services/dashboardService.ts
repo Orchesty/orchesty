@@ -7,7 +7,7 @@ import type {
 } from '@/types/dashboard'
 import processesChartDataJson from '@/assets/mock-data/processes-chart-data.json'
 import limiterDataJson from '@/assets/mock-data/limiter-data.json'
-import trashDataJson from '@/assets/mock-data/trash-data.json'
+import dashboardTrashDataJson from '@/assets/mock-data/dashboard-trash-data.json'
 
 /**
  * Get processes chart data
@@ -22,8 +22,6 @@ export async function fetchProcessesData(
 ): Promise<ProcessesChartData> {
   // Simulate API delay
   await new Promise((resolve) => setTimeout(resolve, 50))
-  
-  console.log('✓ Heatmap data enabled')
   
   const data = processesChartDataJson as ProcessesChartData
   const FAILED_OFFSET = 1000
@@ -90,8 +88,6 @@ export async function fetchLimiterData(
   // Simulate API delay
   await new Promise((resolve) => setTimeout(resolve, 50))
   
-  console.log('✓ Limiter data enabled')
-  
   return limiterDataJson as LimiterData
 }
 
@@ -106,8 +102,6 @@ export async function fetchTrashData(
   // Simulate API delay
   await new Promise((resolve) => setTimeout(resolve, 50))
   
-  console.log('✓ Trash data enabled')
-  
-  return trashDataJson as TrashData
+  return dashboardTrashDataJson as TrashData
 }
 

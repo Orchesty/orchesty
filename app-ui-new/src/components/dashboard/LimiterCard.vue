@@ -12,15 +12,33 @@ interface Props {
 const props = defineProps<Props>()
 
 const chartEl = ref<HTMLElement | null>(null)
+const chartMounted = ref(false)
 
 const { initChart, setupResizeObserver, isDarkMode, chartInstance } = useApexChart({
   onDarkModeChange: () => {
     // Re-render chart like original Flowbite template
-    if (chartEl.value) {
+    // Only if chart was already mounted
+    if (chartMounted.value && chartEl.value) {
       initChart(chartEl.value, getColumnChartOptions())
       setupResizeObserver(chartEl.value)
     }
   },
+})
+
+// Initialize chart on mount
+onMounted(async () => {
+  try {
+    await nextTick()
+    if (!chartEl.value) {
+      return
+    }
+    
+    initChart(chartEl.value, getColumnChartOptions())
+    setupResizeObserver(chartEl.value)
+    chartMounted.value = true
+  } catch (error) {
+    console.error('LimiterCard mount error:', error)
+  }
 })
 
 const columns: TableColumn[] = [

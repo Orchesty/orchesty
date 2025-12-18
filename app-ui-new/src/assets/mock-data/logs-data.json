@@ -1,0 +1,251 @@
+{
+  "data": [
+    {
+      "id": "log_001",
+      "timestamp": "2024-01-15T10:45:23.000Z",
+      "topology": "Lead Sync",
+      "topologyId": "topology_001",
+      "node": "Lead Sync Action",
+      "nodeId": "node_abc123",
+      "correlationId": "corr_456def789ghi001",
+      "severity": "error",
+      "message": "Database connection timeout after 30 seconds. Retrying with exponential backoff. Connection pool exhausted. Check database server status and network connectivity.",
+      "additionalContext": {
+        "connectionPoolSize": 50,
+        "activeConnections": 50,
+        "retryAttempt": 3
+      }
+    },
+    {
+      "id": "log_002",
+      "timestamp": "2024-01-15T10:42:15.000Z",
+      "topology": "Payment Processing",
+      "topologyId": "topology_003",
+      "node": "Payment Gateway",
+      "nodeId": "node_xyz789",
+      "correlationId": "corr_789abc012def002",
+      "severity": "info",
+      "message": "Successfully processed payment transaction ID: TX-20240115-001234",
+      "additionalContext": {
+        "transactionId": "TX-20240115-001234",
+        "amount": 125.50,
+        "currency": "USD"
+      }
+    },
+    {
+      "id": "log_003",
+      "timestamp": "2024-01-15T10:38:47.000Z",
+      "topology": "Order Processing",
+      "topologyId": "topology_002",
+      "node": "Order Processor",
+      "nodeId": "node_def456",
+      "correlationId": "corr_012ghi345jkl003",
+      "severity": "error",
+      "message": "Failed to validate order data: Missing required field 'customer_id'. Order processing aborted.",
+      "additionalContext": {
+        "orderId": "ORD-2024-001",
+        "validationErrors": ["customer_id missing"]
+      }
+    },
+    {
+      "id": "log_004",
+      "timestamp": "2024-01-15T10:35:12.000Z",
+      "topology": "Customer Update",
+      "topologyId": "topology_004",
+      "node": "Email Service",
+      "nodeId": "node_ghi012",
+      "correlationId": "corr_345mno678pqr004",
+      "severity": "info",
+      "message": "Email notification sent to customer@example.com",
+      "additionalContext": {
+        "recipientEmail": "customer@example.com",
+        "templateId": "customer_update_v2",
+        "sendDuration": 125
+      }
+    },
+    {
+      "id": "log_005",
+      "timestamp": "2024-01-15T10:30:45.000Z",
+      "topology": "Inventory Sync",
+      "topologyId": "topology_005",
+      "node": "Inventory Updater",
+      "nodeId": "node_jkl345",
+      "correlationId": "corr_678stu901vwx005",
+      "severity": "warning",
+      "message": "Inventory sync partially completed. 15 out of 100 items failed to update. Retrying failed items.",
+      "additionalContext": {
+        "totalItems": 100,
+        "successfulItems": 85,
+        "failedItems": 15
+      }
+    },
+    {
+      "id": "log_006",
+      "timestamp": "2024-01-15T10:28:33.000Z",
+      "topology": "Lead Sync",
+      "topologyId": "topology_001",
+      "node": "Lead Validator",
+      "nodeId": "node_mno678",
+      "correlationId": "corr_901yz2345abc006",
+      "severity": "debug",
+      "message": "Validating lead data: email format check passed, phone number normalized to E.164 format",
+      "additionalContext": {
+        "leadId": "LEAD-2024-456",
+        "validationSteps": ["email_format", "phone_normalization"]
+      }
+    },
+    {
+      "id": "log_007",
+      "timestamp": "2024-01-15T10:25:18.000Z",
+      "topology": "Payment Processing",
+      "topologyId": "topology_003",
+      "node": "Fraud Detection",
+      "nodeId": "node_pqr901",
+      "correlationId": "corr_234def567ghi007",
+      "severity": "warning",
+      "message": "Potential fraud detected: unusual transaction pattern. Flagging for manual review.",
+      "additionalContext": {
+        "transactionId": "TX-20240115-001235",
+        "riskScore": 78,
+        "flaggedReason": "unusual_pattern"
+      }
+    },
+    {
+      "id": "log_008",
+      "timestamp": "2024-01-15T10:20:55.000Z",
+      "topology": "Order Processing",
+      "topologyId": "topology_002",
+      "node": "Shipping Calculator",
+      "nodeId": "node_stu234",
+      "correlationId": "corr_567jkl890mno008",
+      "severity": "info",
+      "message": "Shipping cost calculated: $15.99 for standard delivery to ZIP code 94102",
+      "additionalContext": {
+        "orderId": "ORD-2024-002",
+        "shippingMethod": "standard",
+        "shippingCost": 15.99,
+        "destinationZip": "94102"
+      }
+    },
+    {
+      "id": "log_009",
+      "timestamp": "2024-01-15T10:18:42.000Z",
+      "topology": "Customer Update",
+      "topologyId": "topology_004",
+      "node": "Profile Sync",
+      "nodeId": "node_vwx567",
+      "correlationId": "corr_890pqr123stu009",
+      "severity": "error",
+      "message": "Failed to sync customer profile to CRM: API rate limit exceeded. Will retry in 60 seconds.",
+      "additionalContext": {
+        "customerId": "CUST-2024-789",
+        "apiEndpoint": "/api/crm/profiles",
+        "rateLimitReset": 60
+      }
+    },
+    {
+      "id": "log_010",
+      "timestamp": "2024-01-15T10:15:30.000Z",
+      "topology": "Inventory Sync",
+      "topologyId": "topology_005",
+      "node": "Stock Level Monitor",
+      "nodeId": "node_yz0123",
+      "correlationId": "corr_123vwx456yz0010",
+      "severity": "warning",
+      "message": "Low stock alert: Product SKU-12345 has only 5 units remaining",
+      "additionalContext": {
+        "productSku": "SKU-12345",
+        "currentStock": 5,
+        "thresholdLevel": 10
+      }
+    },
+    {
+      "id": "log_011",
+      "timestamp": "2024-01-15T10:12:18.000Z",
+      "topology": "Lead Sync",
+      "topologyId": "topology_001",
+      "node": "Lead Enrichment",
+      "nodeId": "node_abc456",
+      "correlationId": "corr_456abc789def011",
+      "severity": "info",
+      "message": "Lead enriched with company data from external API",
+      "additionalContext": {
+        "leadId": "LEAD-2024-457",
+        "enrichedFields": ["company_name", "industry", "company_size"]
+      }
+    },
+    {
+      "id": "log_012",
+      "timestamp": "2024-01-15T10:08:55.000Z",
+      "topology": "Payment Processing",
+      "topologyId": "topology_003",
+      "node": "Payment Gateway",
+      "nodeId": "node_def789",
+      "correlationId": "corr_789ghi012jkl012",
+      "severity": "error",
+      "message": "Payment gateway returned error code 402: Card declined - insufficient funds",
+      "additionalContext": {
+        "transactionId": "TX-20240115-001236",
+        "errorCode": "402",
+        "cardLastFour": "1234"
+      }
+    },
+    {
+      "id": "log_013",
+      "timestamp": "2024-01-15T10:05:42.000Z",
+      "topology": "Order Processing",
+      "topologyId": "topology_002",
+      "node": "Order Validator",
+      "nodeId": "node_ghi012",
+      "correlationId": "corr_012mno345pqr013",
+      "severity": "debug",
+      "message": "Order validation passed all checks: inventory available, payment method valid, shipping address verified",
+      "additionalContext": {
+        "orderId": "ORD-2024-003",
+        "validationChecks": ["inventory", "payment", "shipping"]
+      }
+    },
+    {
+      "id": "log_014",
+      "timestamp": "2024-01-15T10:02:30.000Z",
+      "topology": "Customer Update",
+      "topologyId": "topology_004",
+      "node": "Preference Manager",
+      "nodeId": "node_jkl345",
+      "correlationId": "corr_345stu678vwx014",
+      "severity": "info",
+      "message": "Customer preferences updated: email notifications enabled, SMS disabled",
+      "additionalContext": {
+        "customerId": "CUST-2024-790",
+        "preferences": {
+          "email": true,
+          "sms": false,
+          "push": true
+        }
+      }
+    },
+    {
+      "id": "log_015",
+      "timestamp": "2024-01-15T09:58:18.000Z",
+      "topology": "Inventory Sync",
+      "topologyId": "topology_005",
+      "node": "Warehouse Integration",
+      "nodeId": "node_mno678",
+      "correlationId": "corr_678yz0123abc015",
+      "severity": "warning",
+      "message": "Warehouse API response time exceeded 5 seconds. Consider increasing timeout or scaling warehouse service.",
+      "additionalContext": {
+        "apiEndpoint": "/api/warehouse/inventory",
+        "responseTime": 5234,
+        "threshold": 5000
+      }
+    }
+  ],
+  "pagination": {
+    "total": 127,
+    "page": 1,
+    "perPage": 15,
+    "totalPages": 9
+  }
+}
+

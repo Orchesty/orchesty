@@ -22,10 +22,7 @@ export function useApexChart(options: UseApexChartOptions = {}) {
     const wasDark = isDarkMode.value
     isDarkMode.value = checkDarkMode()
     
-    console.log('🔄 updateDarkMode: wasDark =', wasDark, ', isDark =', isDarkMode.value, ', callback exists?', !!onDarkModeChange)
-    
     if (wasDark !== isDarkMode.value && onDarkModeChange) {
-      console.log('✅ Calling onDarkModeChange callback')
       onDarkModeChange(isDarkMode.value)
     }
   }

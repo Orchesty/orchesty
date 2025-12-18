@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
-import type { Datepicker as DatepickerType } from 'flowbite-datepicker'
+import { ref, computed, onMounted, nextTick } from 'vue'
 
 interface TimeRangeOption {
   value: string
@@ -27,7 +26,7 @@ const emit = defineEmits<{
   'update:modelValue': [value: string]
 }>()
 
-// Generate unique ID
+// Generate unique ID for dropdown
 const dropdownId = ref(`time-range-filter-${Math.random().toString(36).substr(2, 9)}`)
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -36,10 +35,6 @@ const dropdownInstance = ref<any>(null)
 // Datepicker refs
 const startDateInput = ref<HTMLInputElement | null>(null)
 const endDateInput = ref<HTMLInputElement | null>(null)
-const startDatePicker = ref<DatepickerType | null>(null)
-const endDatePicker = ref<DatepickerType | null>(null)
-const selectedStartDate = ref<Date | null>(null)
-const selectedEndDate = ref<Date | null>(null)
 
 // Format date range for display (medium format: "15 Jan 2024 - 20 Jan 2024")
 const formatDateRange = (startStr: string, endStr: string): string => {
@@ -62,43 +57,46 @@ const currentLabel = computed(() => {
   return option?.label || 'Select period'
 })
 
-// Date change handlers
-const handleStartDateChange = (e: CustomEvent) => {
-  selectedStartDate.value = e.detail.date
-  checkAndApplyDateRange()
-}
-
-const handleEndDateChange = (e: CustomEvent) => {
-  selectedEndDate.value = e.detail.date
-  checkAndApplyDateRange()
-}
-
-const checkAndApplyDateRange = () => {
-  if (selectedStartDate.value && selectedEndDate.value) {
-    const start = selectedStartDate.value.toISOString().split('T')[0]
-    const end = selectedEndDate.value.toISOString().split('T')[0]
+// Watch for date range changes from Flowbite datepicker
+const checkDateRangeInputs = () => {
+  if (startDateInput.value?.value && endDateInput.value?.value) {
+    const start = startDateInput.value.value
+    const end = endDateInput.value.value
     
     // Emit custom value format: "custom:YYYY-MM-DD:YYYY-MM-DD"
     emit('update:modelValue', `custom:${start}:${end}`)
     
-    // Close dropdown
+    // Close dropdown and datepickers
     if (dropdownInstance.value) {
       dropdownInstance.value.hide()
     }
+    closeDatepickers()
     
-    // Reset selected dates for next time
-    selectedStartDate.value = null
-    selectedEndDate.value = null
+    // Clear inputs for next use
+    startDateInput.value.value = ''
+    endDateInput.value.value = ''
   }
 }
 
 const handleSelect = (value: string) => {
   emit('update:modelValue', value)
   
-  // Close dropdown
+  // Close dropdown and datepickers
   if (dropdownInstance.value) {
     dropdownInstance.value.hide()
   }
+  
+  // Close any open datepicker calendars
+  closeDatepickers()
+}
+
+const closeDatepickers = () => {
+  // Hide all datepicker popups
+  document.querySelectorAll('.datepicker').forEach((picker) => {
+    if (picker instanceof HTMLElement) {
+      picker.style.display = 'none'
+    }
+  })
 }
 
 onMounted(async () => {
@@ -112,50 +110,24 @@ onMounted(async () => {
     
     dropdownInstance.value = new Dropdown(dropdownElement, buttonElement, {
       placement: 'bottom',
+      triggerType: 'click',
+      offsetSkidding: 0,
+      offsetDistance: 10,
       onHide: () => {
-        // Optional: sync state if needed
+        // Close datepickers when dropdown closes
+        closeDatepickers()
       },
     })
   }
   
-  // Initialize date pickers
+  // Flowbite automatically initializes DateRangePicker via date-rangepicker attribute
+  // Watch for changes in date inputs
   if (startDateInput.value) {
-    const { Datepicker } = await import('flowbite-datepicker')
-    
-    startDatePicker.value = new Datepicker(startDateInput.value, {
-      autohide: false,
-      format: 'yyyy-mm-dd',
-      orientation: 'bottom',
-      todayBtn: true,
-      clearBtn: false,
-    })
-    
-    startDateInput.value.addEventListener('changeDate', handleStartDateChange as EventListener)
+    startDateInput.value.addEventListener('changeDate', checkDateRangeInputs)
   }
   
   if (endDateInput.value) {
-    const { Datepicker } = await import('flowbite-datepicker')
-    
-    endDatePicker.value = new Datepicker(endDateInput.value, {
-      autohide: false,
-      format: 'yyyy-mm-dd',
-      orientation: 'bottom',
-      todayBtn: true,
-      clearBtn: false,
-    })
-    
-    endDateInput.value.addEventListener('changeDate', handleEndDateChange as EventListener)
-  }
-})
-
-onUnmounted(() => {
-  if (startDatePicker.value) startDatePicker.value.destroy()
-  if (endDatePicker.value) endDatePicker.value.destroy()
-  if (startDateInput.value) {
-    startDateInput.value.removeEventListener('changeDate', handleStartDateChange as EventListener)
-  }
-  if (endDateInput.value) {
-    endDateInput.value.removeEventListener('changeDate', handleEndDateChange as EventListener)
+    endDateInput.value.addEventListener('changeDate', checkDateRangeInputs)
   }
 })
 </script>
@@ -165,6 +137,7 @@ onUnmounted(() => {
     <button
       :id="`${dropdownId}-button`"
       :data-dropdown-toggle="dropdownId"
+      data-dropdown-ignore-click-outside-class="datepicker"
       class="flex items-center justify-center whitespace-nowrap rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 focus:z-10 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
       type="button"
     >
@@ -220,10 +193,10 @@ onUnmounted(() => {
           </button>
         </li>
       </ul>
-      <!-- Custom Period Section (Placeholder) -->
+      <!-- Custom Period Section -->
       <div class="p-5">
         <span class="mb-2 block text-gray-900 dark:text-white">Custom period:</span>
-        <div class="flex w-full items-center gap-3">
+        <div id="date-range-picker" date-rangepicker class="flex w-full items-center gap-3">
           <div class="relative w-full">
             <div class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
               <svg
@@ -237,13 +210,15 @@ onUnmounted(() => {
               >
                 <path
                   fill-rule="evenodd"
-                  d="M5 5c.6 0 1-.4 1-1a1 1 0 1 1 2 0c0 .6.4 1 1 1h1c.6 0 1-.4 1-1a1 1 0 1 1 2 0c0 .6.4 1 1 1h1c.6 0 1-.4 1-1a1 1 0 1 1 2 0c0 .6.4 1 1 1a2 2 0 0 1 2 2v1c0 .6-.4 1-1 1H4a1 1 0 0 1-1-1V7c0-1.1.9-2 2-2ZM3 19v-7c0-.6.4-1 1-1h16c.6 0 1 .4 1 1v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Zm6-6c0-.6-.4-1-1-1a1 1 0 1 0 0 2c.6 0 1-.4 1-1Zm2 0a1 1 0 1 1 2 0c0 .6-.4 1-1 1a1 1 0 0 1-1-1Zm6 0c0-.6-.4-1-1-1a1 1 0 1 0 0 2c.6 0 1-.4 1-1ZM7 17a1 1 0 1 1 2 0c0 .6-.4 1-1 1a1 1 0 0 1-1-1Zm6 0c0-.6-.4-1-1-1a1 1 0 1 0 0 2c.6 0 1-.4 1-1Zm2 0a1 1 0 1 1 2 0c0 .6-.4 1-1 1a1 1 0 0 1-1-1Z"
+                  d="M5 5a1 1 0 0 0 1-1 1 1 0 1 1 2 0 1 1 0 0 0 1 1h1a1 1 0 0 0 1-1 1 1 0 1 1 2 0 1 1 0 0 0 1 1h1a1 1 0 0 0 1-1 1 1 0 1 1 2 0 1 1 0 0 0 1 1 2 2 0 0 1 2 2v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a2 2 0 0 1 2-2ZM3 19v-7a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Zm6.01-6a1 1 0 1 0-2 0 1 1 0 0 0 2 0Zm2 0a1 1 0 1 1 2 0 1 1 0 0 1-2 0Zm6 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0Zm-10 4a1 1 0 1 1 2 0 1 1 0 0 1-2 0Zm6 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0Zm2 0a1 1 0 1 1 2 0 1 1 0 0 1-2 0Z"
                   clip-rule="evenodd"
-                ></path>
+                />
               </svg>
             </div>
             <input
+              id="datepicker-range-start"
               ref="startDateInput"
+              name="start"
               type="text"
               class="w-full rounded-lg border border-gray-300 bg-gray-50 p-2 ps-9 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"
               placeholder="Start date"
@@ -262,13 +237,15 @@ onUnmounted(() => {
               >
                 <path
                   fill-rule="evenodd"
-                  d="M5 5c.6 0 1-.4 1-1a1 1 0 1 1 2 0c0 .6.4 1 1 1h1c.6 0 1-.4 1-1a1 1 0 1 1 2 0c0 .6.4 1 1 1h1c.6 0 1-.4 1-1a1 1 0 1 1 2 0c0 .6.4 1 1 1a2 2 0 0 1 2 2v1c0 .6-.4 1-1 1H4a1 1 0 0 1-1-1V7c0-1.1.9-2 2-2ZM3 19v-7c0-.6.4-1 1-1h16c.6 0 1 .4 1 1v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Zm6-6c0-.6-.4-1-1-1a1 1 0 1 0 0 2c.6 0 1-.4 1-1Zm2 0a1 1 0 1 1 2 0c0 .6-.4 1-1 1a1 1 0 0 1-1-1Zm6 0c0-.6-.4-1-1-1a1 1 0 1 0 0 2c.6 0 1-.4 1-1ZM7 17a1 1 0 1 1 2 0c0 .6-.4 1-1 1a1 1 0 0 1-1-1Zm6 0c0-.6-.4-1-1-1a1 1 0 1 0 0 2c.6 0 1-.4 1-1Zm2 0a1 1 0 1 1 2 0c0 .6-.4 1-1 1a1 1 0 0 1-1-1Z"
+                  d="M5 5a1 1 0 0 0 1-1 1 1 0 1 1 2 0 1 1 0 0 0 1 1h1a1 1 0 0 0 1-1 1 1 0 1 1 2 0 1 1 0 0 0 1 1h1a1 1 0 0 0 1-1 1 1 0 1 1 2 0 1 1 0 0 0 1 1 2 2 0 0 1 2 2v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a2 2 0 0 1 2-2ZM3 19v-7a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Zm6.01-6a1 1 0 1 0-2 0 1 1 0 0 0 2 0Zm2 0a1 1 0 1 1 2 0 1 1 0 0 1-2 0Zm6 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0Zm-10 4a1 1 0 1 1 2 0 1 1 0 0 1-2 0Zm6 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0Zm2 0a1 1 0 1 1 2 0 1 1 0 0 1-2 0Z"
                   clip-rule="evenodd"
-                ></path>
+                />
               </svg>
             </div>
             <input
+              id="datepicker-range-end"
               ref="endDateInput"
+              name="end"
               type="text"
               class="w-full rounded-lg border border-gray-300 bg-gray-50 p-2 ps-9 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"
               placeholder="End date"

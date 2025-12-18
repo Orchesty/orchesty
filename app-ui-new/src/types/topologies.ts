@@ -13,5 +13,7 @@ export type TopologyStatus = 'all' | 'success' | 'running' | 'failed'
 
 export interface TopologyQueryParams extends QueryParams {
   status?: TopologyStatus
-  timeRange?: string
+  dateFrom?: string
+  dateTo?: string
+  timeRange?: string // @deprecated - use dateFrom/dateTo instead
 }

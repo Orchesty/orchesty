@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { watch, nextTick, onMounted, onBeforeUnmount, ref } from 'vue'
+import Button from './Button.vue'
 
 interface Props {
   modelValue: boolean
@@ -34,7 +35,7 @@ onMounted(async () => {
     
     // Create drawer instance once
     drawerInstance.value = new Drawer(drawerElement, {
-      placement: 'left',
+      placement: 'right',
       backdrop: true,
       bodyScrolling: false,
       edge: false,
@@ -45,8 +46,7 @@ onMounted(async () => {
         emit('update:modelValue', false)
       },
       onShow: () => {
-        // Synchronize Vue state when drawer is shown
-        emit('update:modelValue', true)
+        // Don't emit here to avoid circular updates
       },
     })
   }
@@ -80,7 +80,7 @@ onBeforeUnmount(() => {
   <div
     :id="id"
     :class="[
-      'fixed top-0 left-0 z-40 h-screen p-4 overflow-y-auto transition-transform -translate-x-full bg-white dark:bg-gray-800',
+      'fixed top-0 right-0 z-40 h-screen p-4 overflow-y-auto transition-transform translate-x-full bg-white dark:bg-gray-800',
       width,
     ]"
     tabindex="-1"
@@ -136,14 +136,9 @@ onBeforeUnmount(() => {
     >
       <slot name="footer-actions">
         <!-- Default Close Button -->
-        <button
-          type="button"
-          :data-drawer-hide="id"
-          class="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
-          @click="handleClose"
-        >
+        <Button variant="outline" :data-drawer-hide="id" @click="handleClose">
           Close
-        </button>
+        </Button>
       </slot>
     </div>
   </div>

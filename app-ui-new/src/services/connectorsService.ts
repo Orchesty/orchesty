@@ -6,7 +6,9 @@ import connectorDetailDataJson from '@/assets/mock-data/connector-detail-data.js
 
 /**
  * Build URL search params from query object
+ * NOTE: Currently not used with mock data, will be used when connecting to real API
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function buildQueryParams(params: QueryParams): URLSearchParams {
   const searchParams = new URLSearchParams()
 
@@ -59,6 +61,17 @@ export async function fetchConnectors(
     )
   }
 
+  // Apply datetime range filter
+  // NOTE: In production, backend will aggregate data (requests, errors, etc.) based on this datetime range
+  // For mock data, we just log the range without actual filtering
+  if (params.dateFrom || params.dateTo) {
+    console.log('Connectors datetime filter:', {
+      from: params.dateFrom,
+      to: params.dateTo,
+    })
+    // TODO: Backend will filter/aggregate connector statistics for this datetime range
+  }
+
   // Apply sorting
   if (params.sort && params.order) {
     filtered.sort((a, b) => {
@@ -98,13 +111,14 @@ export async function fetchConnectors(
  */
 export async function fetchConnectorDetail(
   connectorId: string,
-  timeFilter: TimeFilter,
+  timeFilter: TimeFilter, // eslint-disable-line @typescript-eslint/no-unused-vars
 ): Promise<ConnectorDetail> {
   // Simulate API delay
   await new Promise((resolve) => setTimeout(resolve, 300))
 
   // FOR DEVELOPMENT: Return mock data
   // In production: return axios.get(`/api/connectors/${connectorId}/detail`, { params: { timeFilter } })
+  // NOTE: timeFilter will be used when connecting to real API
 
   // Find the connector
   const connector = (connectorsDataJson.data as Connector[]).find((c) => c.id === connectorId)

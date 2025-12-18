@@ -1,8 +1,9 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
 import { computed } from 'vue'
 import { cn } from '@/utils/cn'
 
-type ButtonVariant = 'primary' | 'outline'
+type ButtonVariant = 'primary' | 'outline' | 'danger'
 
 interface Props {
   variant?: ButtonVariant
@@ -23,6 +24,8 @@ const buttonClasses = computed(() => {
       'bg-primary-700 text-white hover:bg-primary-800 dark:bg-primary-600 dark:hover:bg-primary-700',
     outline:
       'border border-gray-200 bg-white text-gray-900 hover:bg-gray-100 hover:text-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white',
+    danger:
+      'bg-red-600 text-white hover:bg-red-700 focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800',
   }
 
   return cn(base, variants[props.variant])

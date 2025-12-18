@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "../../../.."
+		},
+		{
+			"path": "../../../../../flowbite-admin"
+		}
+	],
+	"settings": {
+		"makefile.configureOnOpen": false
+	}
+}

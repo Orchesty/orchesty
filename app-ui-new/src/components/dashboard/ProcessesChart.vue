@@ -20,20 +20,52 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   filterChange: [filter: ProcessFilter]
+  heatmapClick: [data: { topology: string; timeSlot: string }]
 }>()
 
 const chartEl = ref<HTMLElement | null>(null)
 const activeFilter = ref<ProcessFilter>(props.filter)
 
+const chartMounted = ref(false)
+
 const { chartInstance, isDarkMode, initChart, setupResizeObserver } = useApexChart({
   onDarkModeChange: () => {
     // Re-render chart like original Flowbite template
-    if (chartEl.value && props.series.length > 0) {
+    // Only if chart was already mounted
+    if (chartMounted.value && chartEl.value && props.series.length > 0) {
       initChart(chartEl.value, getHeatmapOptions())
       setupResizeObserver(chartEl.value)
     }
   },
 })
+
+// Initialize chart on mount
+onMounted(async () => {
+  try {
+    await nextTick()
+    if (!chartEl.value || props.series.length === 0) {
+      return
+    }
+    
+    initChart(chartEl.value, getHeatmapOptions())
+    setupResizeObserver(chartEl.value)
+    chartMounted.value = true
+  } catch (error) {
+    console.error('ProcessesChart mount error:', error)
+  }
+})
+
+// Watch for series changes
+watch(
+  () => props.series,
+  async () => {
+    await nextTick()
+    if (chartEl.value && props.series.length > 0) {
+      initChart(chartEl.value, getHeatmapOptions())
+      setupResizeObserver(chartEl.value)
+    }
+  }
+)
 
 const getHeatmapOptions = () => {
   const colors = getChartColors(isDarkMode.value)
@@ -99,6 +131,19 @@ const getHeatmapOptions = () => {
       parentHeightOffset: 0,
       toolbar: {
         show: false,
+      },
+      events: {
+        dataPointSelection: (event: any, chartContext: any, config: any) => {
+          const { seriesIndex, dataPointIndex } = config
+          if (seriesIndex >= 0 && dataPointIndex >= 0 && props.series[seriesIndex]) {
+            const topology = props.series[seriesIndex].name
+            const dataPoint = props.series[seriesIndex].data[dataPointIndex]
+            if (dataPoint && dataPoint.x) {
+              const timeSlot = dataPoint.x
+              emit('heatmapClick', { topology, timeSlot })
+            }
+          }
+        },
       },
     },
     plotOptions: {

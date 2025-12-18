@@ -18,6 +18,8 @@ export interface ConnectorQueryParams extends QueryParams {
   status?: ConnectorStatus
   search?: string
   application?: string
+  dateFrom?: string
+  dateTo?: string
 }
 
 export interface ConnectorErrorRecord {

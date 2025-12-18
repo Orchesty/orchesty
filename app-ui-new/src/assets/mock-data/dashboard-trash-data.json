@@ -1,0 +1,40 @@
+{
+  "totalMessages": 143,
+  "vsLastDay": 23,
+  "chartData": [
+    { "x": "Mon", "y": 18 },
+    { "x": "Tue", "y": 25 },
+    { "x": "Wed", "y": 31 },
+    { "x": "Thu", "y": 22 },
+    { "x": "Fri", "y": 27 },
+    { "x": "Sat", "y": 12 },
+    { "x": "Sun", "y": 8 }
+  ],
+  "tableData": [
+    {
+      "topology": "Lead Sync",
+      "node": "HubSpot Connector",
+      "message": "Invalid email format",
+      "count": 24
+    },
+    {
+      "topology": "Order Processing",
+      "node": "Payment Gateway",
+      "message": "Timeout error",
+      "count": 18
+    },
+    {
+      "topology": "Customer Update",
+      "node": "CRM Connector",
+      "message": "Missing required field",
+      "count": 15
+    },
+    {
+      "topology": "Inventory Sync",
+      "node": "Stock Validator",
+      "message": "Invalid SKU",
+      "count": 12
+    }
+  ]
+}
+
