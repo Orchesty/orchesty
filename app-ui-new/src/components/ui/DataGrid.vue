@@ -37,7 +37,7 @@ const props = withDefaults(defineProps<Props>(), {
   totalPages: 1,
   totalItems: 0,
   itemsPerPage: 10,
-  perPageOptions: () => [10, 25, 50, 100],
+  perPageOptions: () => [5, 10, 25, 50, 100],
   sortField: '',
   sortDirection: 'asc',
   actions: undefined,

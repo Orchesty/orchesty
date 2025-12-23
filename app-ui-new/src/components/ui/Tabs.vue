@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { provide, ref, onMounted } from 'vue'
+import { provide, ref, onMounted, watch, nextTick } from 'vue'
 // Component name is intentionally single-word for generic UI component
 
 export interface Tab {
@@ -40,6 +40,24 @@ const setActiveTab = (tabId: string) => {
   emit('tabChange', tabId)
 }
 
+// Programmatically activate tab
+const activateTab = (tabId: string) => {
+  const tabButton = document.getElementById(`${tabId}-tab`)
+  if (tabButton) {
+    tabButton.click()
+  }
+}
+
+// Watch for changes in defaultTab prop
+watch(() => props.defaultTab, (newTab) => {
+  if (newTab && newTab !== activeTab.value) {
+    activeTab.value = newTab
+    nextTick(() => {
+      activateTab(newTab)
+    })
+  }
+}, { immediate: true })
+
 onMounted(() => {
   // Reinitialize Flowbite tabs after component mount
   if (typeof window !== 'undefined') {
@@ -47,6 +65,13 @@ onMounted(() => {
     if (windowWithFlowbite.initFlowbite) {
       setTimeout(() => {
         windowWithFlowbite.initFlowbite?.()
+        
+        // Activate the default tab after Flowbite initialization
+        if (props.defaultTab) {
+          setTimeout(() => {
+            activateTab(props.defaultTab)
+          }, 50)
+        }
       }, 100)
     }
   }

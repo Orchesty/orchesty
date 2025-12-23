@@ -50,10 +50,10 @@ useSidebar()
         <!-- Trace -->
         <li>
           <RouterLink
-            to="/ai-assistant"
+            to="/trace"
             :class="[
               'group flex h-10 w-full items-center rounded-lg p-2 text-base font-medium text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700',
-              isActive('/ai-assistant') ? 'bg-gray-100 dark:bg-gray-700' : ''
+              isActive('/trace') ? 'bg-gray-100 dark:bg-gray-700' : ''
             ]"
           >
             <svg
@@ -224,32 +224,6 @@ useSidebar()
             </svg>
             <span class="ml-3 flex-1 whitespace-nowrap text-left" data-sidebar-collapse-hide
             >Settings</span
-          >
-          </RouterLink>
-        </li>
-
-        <!-- Audit Logs -->
-        <li>
-          <RouterLink
-            to="/audit-logs"
-            :class="[
-              'group flex h-10 w-full items-center rounded-lg p-2 text-base font-medium text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700',
-              isActive('/audit-logs') ? 'bg-gray-100 dark:bg-gray-700' : ''
-            ]"
-          >
-            <svg
-              class="h-6 w-6 shrink-0 text-gray-400 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
-              aria-hidden="true"
-              height="24px"
-              viewBox="0 -960 960 960"
-              width="24px"
-              fill="currentColor"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="M160-200v-440 440-15 15Zm0 80q-33 0-56.5-23.5T80-200v-440q0-33 23.5-56.5T160-720h160v-80q0-33 23.5-56.5T400-880h160q33 0 56.5 23.5T640-800v80h160q33 0 56.5 23.5T880-640v440q0 33-23.5 56.5T800-120H160Zm240-600h160v-80H400v80Zm400 360H160v160h640v-160Zm-360 80q17 0 28.5-11.5T480-320q0-17-11.5-28.5T440-360q-17 0-28.5 11.5T400-320q0 17 11.5 28.5T440-280Zm-280-80h280q17 0 28.5-11.5T480-400v-160q0-17-11.5-28.5T440-600H160v240Z"/>
-            </svg>
-            <span class="ml-3 flex-1 whitespace-nowrap text-left" data-sidebar-collapse-hide
-            >Audit Logs</span
           >
           </RouterLink>
         </li>

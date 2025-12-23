@@ -83,6 +83,16 @@ const router = createRouter({
       name: 'audit-logs',
       component: () => import('@/views/audit-logs/AuditLogsView.vue'),
     },
+    {
+      path: '/trace',
+      name: 'trace',
+      component: () => import('@/views/trace/TraceView.vue'),
+    },
+    {
+      path: '/orchesty/account',
+      name: 'account-settings',
+      component: () => import('@/views/account/AccountSettingsView.vue'),
+    },
   ],
 })
 

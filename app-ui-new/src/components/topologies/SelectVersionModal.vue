@@ -5,6 +5,7 @@ import Modal from '@/components/ui/Modal.vue'
 import Button from '@/components/ui/Button.vue'
 import { fetchTopologyVersions } from '@/services/topologiesService'
 import type { TopologyVersion } from '@/types/topologies-page'
+import { useLastTopology } from '@/composables/useLastTopology'
 
 interface Props {
   modelValue: boolean
@@ -18,6 +19,7 @@ const emit = defineEmits<{
 }>()
 
 const router = useRouter()
+const { setLastTopology } = useLastTopology()
 const versions = ref<TopologyVersion[]>([])
 const loading = ref(false)
 
@@ -72,6 +74,14 @@ const getStatusLabel = (visibility: string, status: string) => {
 
 const handleSelectVersion = (versionId: string) => {
   emit('update:modelValue', false)
+  
+  // Save selected version to localStorage
+  setLastTopology({
+    id: props.topologyId,
+    name: props.topologyName,
+    versionId
+  })
+  
   // Navigate to topology detail with version parameter
   router.push({
     name: 'topology-detail',

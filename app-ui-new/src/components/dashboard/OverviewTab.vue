@@ -3,8 +3,8 @@ import { ref, onMounted, watch } from 'vue'
 import ProcessesChart from './ProcessesChart.vue'
 import LimiterCard from './LimiterCard.vue'
 import TrashCard from './TrashCard.vue'
-import type { ProcessesChartData, LimiterData, TrashData, ProcessFilter, TimeFilter, HeatmapClickData } from '@/types/dashboard'
-import { fetchProcessesData, fetchLimiterData, fetchTrashData } from '@/services/dashboardService'
+import type { ProcessesChartData, ProcessFilter, TimeFilter, HeatmapClickData } from '@/types/dashboard'
+import { fetchProcessesData } from '@/services/dashboardService'
 
 interface Props {
   timeFilter?: TimeFilter
@@ -23,23 +23,14 @@ const error = ref<string | null>(null)
 const processFilter = ref<ProcessFilter>('all')
 
 const processesData = ref<ProcessesChartData | null>(null)
-const limiterData = ref<LimiterData | null>(null)
-const trashData = ref<TrashData | null>(null)
 
 const loadData = async () => {
   loading.value = true
   error.value = null
 
   try {
-    const [processes, limiter, trash] = await Promise.all([
-      fetchProcessesData(processFilter.value, props.timeFilter),
-      fetchLimiterData(props.timeFilter),
-      fetchTrashData(props.timeFilter),
-    ])
-
+    const processes = await fetchProcessesData(processFilter.value, props.timeFilter)
     processesData.value = processes
-    limiterData.value = limiter
-    trashData.value = trash
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Failed to load data'
     console.error('Error loading overview data:', err)
@@ -101,7 +92,7 @@ onMounted(() => {
     <p class="text-red-800 dark:text-red-400">{{ error }}</p>
   </div>
 
-  <div v-else-if="!loading && !error && processesData && limiterData && trashData" class="space-y-6">
+  <div v-else-if="!loading && !error && processesData" class="space-y-6">
     <!-- Processes Heatmap -->
     <ProcessesChart
       :total-processes="processesData.totalProcesses"
@@ -117,8 +108,8 @@ onMounted(() => {
     
     <!-- Limiter and Trash Cards -->
     <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-      <LimiterCard :data="limiterData" />
-      <TrashCard :data="trashData" />
+      <LimiterCard />
+      <TrashCard />
     </div>
   </div>
 </template>

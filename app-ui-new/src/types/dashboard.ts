@@ -56,6 +56,12 @@ export interface LimiterData {
     series: number[]
   }
   tableData: LimiterTableRow[]
+  meta: {
+    currentPage: number
+    totalPages: number
+    totalItems: number
+    itemsPerPage: number
+  }
 }
 
 export interface TrashTableRow {
@@ -70,6 +76,12 @@ export interface TrashData {
   vsLastDay: number
   chartData: Array<{ x: string; y: number }>
   tableData: TrashTableRow[]
+  meta: {
+    currentPage: number
+    totalPages: number
+    totalItems: number
+    itemsPerPage: number
+  }
 }
 
 export interface ProcessesChartData {

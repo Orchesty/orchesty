@@ -1,20 +1,17 @@
 <script setup lang="ts">
 import { ref, onMounted, nextTick } from 'vue'
 import { useApexChart, getChartColors, getBaseChartOptions } from '@/composables/useApexChart'
+import { useDataGrid } from '@/composables/useDataGrid'
+import { fetchLimiterData } from '@/services/dashboardService'
 import type { LimiterData, TableColumn } from '@/types/dashboard'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
 
-interface Props {
-  data: LimiterData
-}
-
-const props = defineProps<Props>()
-
+const limiterData = ref<LimiterData | null>(null)
 const chartEl = ref<HTMLElement | null>(null)
 const chartMounted = ref(false)
 
-const { initChart, setupResizeObserver, isDarkMode, chartInstance } = useApexChart({
+const { initChart, setupResizeObserver, isDarkMode } = useApexChart({
   onDarkModeChange: () => {
     // Re-render chart like original Flowbite template
     // Only if chart was already mounted
@@ -25,11 +22,58 @@ const { initChart, setupResizeObserver, isDarkMode, chartInstance } = useApexCha
   },
 })
 
+const columns: TableColumn[] = [
+  { key: 'connector', label: 'Connector', sortable: true, className: 'whitespace-nowrap' },
+  { key: 'topology', label: 'Topology', sortable: true, className: 'whitespace-nowrap truncate max-w-xs' },
+  { key: 'messages', label: 'Messages', sortable: true, className: 'whitespace-nowrap' },
+]
+
+// Load data function
+const loadData = async () => {
+  loading.value = true
+
+  try {
+    const response = await fetchLimiterData({
+      page: currentPage.value,
+      limit: itemsPerPage.value,
+      sortBy: sortField.value,
+      sortOrder: sortDirection.value,
+    })
+
+    limiterData.value = response
+    totalPages.value = response.meta.totalPages
+    totalItems.value = response.meta.totalItems
+  } catch (error) {
+    console.error('Error loading limiter data:', error)
+  } finally {
+    loading.value = false
+  }
+}
+
+// Use DataGrid composable
+const {
+  currentPage,
+  itemsPerPage,
+  totalPages,
+  totalItems,
+  sortField,
+  sortDirection,
+  loading,
+  handlePageChange,
+  handlePerPageChange,
+  handleSort,
+} = useDataGrid({
+  defaultSort: { field: 'connector', direction: 'asc' },
+  defaultPerPage: 5,
+  onDataLoad: loadData,
+})
+
 // Initialize chart on mount
 onMounted(async () => {
   try {
+    await loadData()
     await nextTick()
-    if (!chartEl.value) {
+    if (!chartEl.value || !limiterData.value) {
       return
     }
     
@@ -41,12 +85,6 @@ onMounted(async () => {
   }
 })
 
-const columns: TableColumn[] = [
-  { key: 'connector', label: 'Connector' },
-  { key: 'topology', label: 'Topology' },
-  { key: 'messages', label: 'Messages' },
-]
-
 const getColumnChartOptions = () => {
   const colors = getChartColors(isDarkMode.value)
 
@@ -55,7 +93,7 @@ const getColumnChartOptions = () => {
     series: [
       {
         name: 'Messages',
-        data: props.data.chartData.series,
+        data: limiterData.value?.chartData.series || [],
       },
     ],
     chart: {
@@ -87,7 +125,7 @@ const getColumnChartOptions = () => {
       enabled: false,
     },
     xaxis: {
-      categories: props.data.chartData.categories,
+      categories: limiterData.value?.chartData.categories || [],
       labels: {
         show: false,
         style: {
@@ -111,77 +149,86 @@ const getColumnChartOptions = () => {
     },
   }
 }
-
-onMounted(() => {
-  nextTick(() => {
-    if (chartEl.value) {
-      initChart(chartEl.value, getColumnChartOptions())
-      setupResizeObserver(chartEl.value)
-    }
-  })
-})
 </script>
 
 <template>
   <Card>
-    <!-- Header with metrics -->
-    <div class="mb-4 flex items-center justify-between">
-      <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Limiter</h3>
-      <div class="flex items-center gap-6">
-        <div class="flex flex-col items-center">
-          <span class="text-xs text-gray-500 dark:text-gray-400">messages</span>
-          <span class="text-2xl font-bold text-gray-900 dark:text-white">
-            {{ data.totalMessages }}
-          </span>
-        </div>
-        <div class="flex flex-col items-center">
-          <span class="text-xs text-gray-500 dark:text-gray-400">vs last day</span>
-          <div class="flex items-center gap-1">
-            <svg
-              class="h-6 w-6 text-green-600 dark:text-green-400"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 19V5m0 14-4-4m4 4 4-4"
-              />
-            </svg>
-            <span class="text-2xl font-bold text-green-600 dark:text-green-400">
-              {{ data.vsLastDay }}
+    <div v-if="limiterData">
+      <!-- Header with metrics -->
+      <div class="mb-4 flex items-center justify-between">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Limiter</h3>
+        <div class="flex items-center gap-6">
+          <div class="flex flex-col items-center">
+            <span class="text-xs text-gray-500 dark:text-gray-400">messages</span>
+            <span class="text-2xl font-bold text-gray-900 dark:text-white">
+              {{ limiterData.totalMessages }}
             </span>
+          </div>
+          <div class="flex flex-col items-center">
+            <span class="text-xs text-gray-500 dark:text-gray-400">vs last day</span>
+            <div class="flex items-center gap-1">
+              <svg
+                class="h-6 w-6 text-green-600 dark:text-green-400"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 19V5m0 14-4-4m4 4 4-4"
+                />
+              </svg>
+              <span class="text-2xl font-bold text-green-600 dark:text-green-400">
+                {{ limiterData.vsLastDay }}
+              </span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Chart -->
-    <div class="relative mb-4 h-64 overflow-hidden">
-      <div ref="chartEl" class="h-full"></div>
-    </div>
+      <!-- Chart -->
+      <div class="relative mb-4 h-64 overflow-visible">
+        <div ref="chartEl" class="h-full"></div>
+      </div>
 
-    <!-- Table -->
-    <DataGrid :columns="columns" :data="data.tableData">
-      <template #cell-connector="{ value }">
-        <span class="font-medium text-gray-900 dark:text-white">{{ value }}</span>
-      </template>
-      <template #cell-messages="{ row }">
-        {{ row.messages }} (+{{ row.change }}%)
-      </template>
-    </DataGrid>
-
-    <div class="mt-4">
-      <a
-        href="#"
-        class="text-sm font-medium text-primary-700 hover:underline dark:text-primary-500"
+      <!-- Table -->
+      <DataGrid 
+        :columns="columns" 
+        :data="limiterData.tableData"
+        :current-page="currentPage"
+        :total-pages="totalPages"
+        :total-items="totalItems"
+        :items-per-page="itemsPerPage"
+        :sort-field="sortField"
+        :sort-direction="sortDirection"
+        :loading="loading"
+        @page-change="handlePageChange"
+        @per-page-change="handlePerPageChange"
+        @sort="handleSort"
       >
-        View all →
-      </a>
+        <template #cell-connector="{ value }">
+          <span class="font-medium text-gray-900 dark:text-white">{{ value }}</span>
+        </template>
+        <template #cell-messages="{ row }">
+          {{ row.messages }} (+{{ row.change }}%)
+        </template>
+      </DataGrid>
+
+      <div class="mt-4">
+        <a
+          href="#"
+          class="text-sm font-medium text-primary-700 hover:underline dark:text-primary-500"
+        >
+          View all →
+        </a>
+      </div>
+    </div>
+    <div v-else class="flex items-center justify-center h-64">
+      <div class="text-gray-500 dark:text-gray-400">Loading...</div>
     </div>
   </Card>
 </template>

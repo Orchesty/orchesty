@@ -98,6 +98,7 @@ const getGroupName = (groupId: string) => {
     id="user-detail-drawer"
     label="USER DETAILS"
     width="w-96"
+    placement="right"
     @update:model-value="emit('update:modelValue', $event)"
   >
     <div v-if="user" class="space-y-6">

@@ -1,9 +1,14 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { ref, onMounted, computed, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import AppNavbar from '@/components/layout/AppNavbar.vue'
 import AppSidebar from '@/components/layout/AppSidebar.vue'
 import TopologiesSidebar from '@/components/topologies/TopologiesSidebar.vue'
+import TopologyProcessesTab from '@/components/topologies/TopologyProcessesTab.vue'
+import TopologyLogsTab from '@/components/topologies/TopologyLogsTab.vue'
+import TopologyFailedMessagesTab from '@/components/topologies/TopologyFailedMessagesTab.vue'
+import NodeProcessTimeChart from '@/components/topologies/NodeProcessTimeChart.vue'
+import ConnectorRequestTimeChart from '@/components/topologies/ConnectorRequestTimeChart.vue'
 import VersionHistoryDrawer from '@/components/topologies/VersionHistoryDrawer.vue'
 import TopologyDesignerDrawer from '@/components/topologies/TopologyDesignerDrawer.vue'
 import NewTopologyModal from '@/components/topologies/NewTopologyModal.vue'
@@ -12,11 +17,16 @@ import SelectVersionModal from '@/components/topologies/SelectVersionModal.vue'
 import Button from '@/components/ui/Button.vue'
 import DropdownMenu from '@/components/ui/DropdownMenu.vue'
 import TabsComponent, { type Tab } from '@/components/ui/Tabs.vue'
+import Card from '@/components/ui/Card.vue'
+import Textarea from '@/components/ui/datagrid/Textarea.vue'
 import { fetchTopologyDetail } from '@/services/topologiesService'
+import { fetchTopologyMetrics } from '@/services/topologyMetricsService'
 import type { TopologyDetail } from '@/types/topologies-page'
+import type { TopologyMetrics } from '@/types/topology-metrics'
 import topologiesTreeData from '@/assets/mock-data/topologies-tree-data.json'
 import type { TopologiesTreeNode, FolderItem } from '@/types/topologies-page'
 import { Dropdown } from 'flowbite'
+import { useLastTopology } from '@/composables/useLastTopology'
 
 interface Props {
   id: string
@@ -24,13 +34,93 @@ interface Props {
 
 const props = defineProps<Props>()
 const route = useRoute()
-const router = useRouter()
+
+const { setLastTopology, getLastTopology } = useLastTopology()
 
 const topology = ref<TopologyDetail | null>(null)
 const loading = ref(true)
 const error = ref<string | null>(null)
 const versionDrawerOpen = ref(false)
 const designerDrawerOpen = ref(false)
+
+// Metrics data
+const metricsData = ref<TopologyMetrics | null>(null)
+const metricsLoading = ref(false)
+
+// Active tab state - initialize from localStorage or default to first tab
+const lastTopology = getLastTopology()
+const activeTopologyTab = ref<string>(
+  (lastTopology && lastTopology.id === props.id && lastTopology.activeTab) 
+    ? lastTopology.activeTab 
+    : 'topology'
+)
+
+// Context tab state
+const contextManifest = ref(`configuration.api_key
+configuration.api_url
+user.email
+order.status`)
+
+// Audit tab state
+interface AuditEntity {
+  id: string
+  name: string
+  attributes: Array<{ key: string; description: string }>
+}
+
+const selectedEntity = ref<string | null>('entity-2')
+
+const auditEntities = computed<AuditEntity[]>(() => [
+  {
+    id: 'entity-1',
+    name: 'Customer account',
+    attributes: [
+      { key: 'customer_id', description: 'Unique customer identifier' },
+      { key: 'account_status', description: 'Current status of the account' }
+    ]
+  },
+  {
+    id: 'entity-2',
+    name: 'Marketing platform',
+    attributes: [
+      { key: 'account_id', description: 'Unique identifier of the external account' },
+      { key: 'api_token', description: 'Token used to authenticate API calls' }
+    ]
+  },
+  {
+    id: 'entity-3',
+    name: 'Operations monitor',
+    attributes: [
+      { key: 'monitor_id', description: 'Identifier for the monitoring system' },
+      { key: 'alert_endpoint', description: 'URL endpoint for receiving alerts' }
+    ]
+  }
+])
+
+const currentEntity = computed(() => {
+  if (!selectedEntity.value) return null
+  return auditEntities.value.find(e => e.id === selectedEntity.value) || null
+})
+
+// Access tab state
+interface AccessGroup {
+  id: string
+  name: string
+  permission: 'manager' | 'developer' | 'user'
+}
+
+const accessGroups = ref<AccessGroup[]>([
+  { id: 'group-1', name: 'Administrators', permission: 'manager' },
+  { id: 'group-2', name: 'Developers', permission: 'developer' }
+])
+
+const availableGroups = computed(() => [
+  'Administrators',
+  'Developers',
+  'Operators',
+  'Support Team',
+  'QA Team'
+])
 
 // Tabs configuration
 const topologyTabs: Tab[] = [
@@ -140,6 +230,31 @@ const loadTopologyDetail = async () => {
   error.value = null
   try {
     topology.value = await fetchTopologyDetail(props.id, versionId.value)
+    
+    // Restore last active tab for this topology if it exists
+    const lastTopology = getLastTopology()
+    
+    if (lastTopology && lastTopology.id === props.id && lastTopology.activeTab) {
+      activeTopologyTab.value = lastTopology.activeTab
+      
+      // Load metrics if returning to metrics tab
+      if (lastTopology.activeTab === 'metrics') {
+        await loadMetrics()
+      }
+    } else {
+      // Reset to first tab if this is a different topology
+      activeTopologyTab.value = 'topology'
+    }
+    
+    // Save last topology to localStorage (with current tab)
+    if (topology.value) {
+      setLastTopology({
+        id: props.id,
+        name: topology.value.name,
+        versionId: versionId.value,
+        activeTab: activeTopologyTab.value
+      })
+    }
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Failed to load topology'
     console.error('Failed to load topology:', err)
@@ -167,11 +282,101 @@ const handleSaveDesign = () => {
   // TODO: Implement save logic
 }
 
+// Context tab handlers
+const handleSaveContext = () => {
+  console.log('Save context manifest:', contextManifest.value)
+  // TODO: Implement save logic
+}
+
+// Audit tab handlers
+const handleSelectEntity = (entityId: string) => {
+  selectedEntity.value = entityId
+}
+
+const handleCreateNewEntity = () => {
+  console.log('Create new audit entity')
+  // TODO: Open modal for creating new entity
+}
+
+const handleEditEntity = () => {
+  console.log('Edit entity:', currentEntity.value)
+  // TODO: Open modal for editing entity
+}
+
+const handleSaveAudit = () => {
+  console.log('Save audit entity:', selectedEntity.value)
+  // TODO: Implement save logic
+}
+
+// Access tab handlers
+const handleAddGroup = (groupName: string) => {
+  const newGroup: AccessGroup = {
+    id: `group-${Date.now()}`,
+    name: groupName,
+    permission: 'user'
+  }
+  accessGroups.value.push(newGroup)
+}
+
+const handleRemoveGroup = (groupId: string) => {
+  accessGroups.value = accessGroups.value.filter(g => g.id !== groupId)
+}
+
+const handlePermissionChange = (groupId: string, permission: 'manager' | 'developer' | 'user') => {
+  const group = accessGroups.value.find(g => g.id === groupId)
+  if (group) {
+    group.permission = permission
+  }
+}
+
+// Load metrics data
+const loadMetrics = async () => {
+  if (!props.id) return
+  
+  metricsLoading.value = true
+  try {
+    metricsData.value = await fetchTopologyMetrics(props.id)
+  } catch (err) {
+    console.error('Failed to load metrics:', err)
+  } finally {
+    metricsLoading.value = false
+  }
+}
+
+// Handle tab change
+const handleTabChange = (tabId: string) => {
+  activeTopologyTab.value = tabId
+  
+  // Load metrics data when switching to metrics tab
+  if (tabId === 'metrics' && !metricsData.value) {
+    loadMetrics()
+  }
+  
+  // Save the active tab to localStorage
+  if (topology.value) {
+    setLastTopology({
+      id: props.id,
+      name: topology.value.name,
+      versionId: versionId.value,
+      activeTab: tabId
+    })
+  }
+}
+
+// Watch for changes in topology ID or version
+watch(
+  () => [props.id, versionId.value],
+  async () => {
+    await loadTopologyDetail()
+  }
+)
+
 onMounted(async () => {
   await loadTopologyDetail()
   
-  // Initialize Flowbite dropdowns for folder actions
+  // Initialize Flowbite dropdowns
   setTimeout(() => {
+    // Folder actions dropdowns
     allFolders.value.forEach((folder) => {
       const dropdownElement = document.getElementById(`folderActionsDropdown-${folder.id}`)
       const buttonElement = document.getElementById(`folderActionsButton-${folder.id}`)
@@ -185,6 +390,30 @@ onMounted(async () => {
         })
       }
     })
+    
+    // Audit entity dropdown
+    const auditEntityDropdown = document.getElementById('audit-entity-dropdown')
+    const auditEntityButton = document.querySelector('[data-dropdown-toggle="audit-entity-dropdown"]')
+    if (auditEntityDropdown && auditEntityButton) {
+      new Dropdown(auditEntityDropdown, auditEntityButton, {
+        placement: 'bottom-start',
+        triggerType: 'click',
+        offsetSkidding: 0,
+        offsetDistance: 10,
+      })
+    }
+    
+    // Add group dropdown
+    const addGroupDropdown = document.getElementById('add-group-dropdown')
+    const addGroupButton = document.querySelector('[data-dropdown-toggle="add-group-dropdown"]')
+    if (addGroupDropdown && addGroupButton) {
+      new Dropdown(addGroupDropdown, addGroupButton, {
+        placement: 'bottom',
+        triggerType: 'click',
+        offsetSkidding: 0,
+        offsetDistance: 10,
+      })
+    }
   }, 200)
 })
 </script>
@@ -259,7 +488,12 @@ onMounted(async () => {
               </div>
               
               <!-- Tabs -->
-              <TabsComponent :tabs="topologyTabs" content-id="topology-tabs-content">
+              <TabsComponent 
+                :tabs="topologyTabs" 
+                :default-tab="activeTopologyTab"
+                content-id="topology-tabs-content"
+                @tab-change="handleTabChange"
+              >
                 <!-- Topology Tab Content -->
                 <div id="topology-content" role="tabpanel" aria-labelledby="topology-tab">
                   <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
@@ -281,50 +515,293 @@ onMounted(async () => {
                 
                 <!-- Context Tab Content -->
                 <div id="context-content" role="tabpanel" aria-labelledby="context-tab" class="hidden">
-                  <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Context content will be placed here</p>
-                  </div>
+                  <Card>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">MCP Manifest</h3>
+                    
+                    <form @submit.prevent="handleSaveContext" class="space-y-6">
+                      <div>
+                        <Textarea
+                          v-model="contextManifest"
+                          placeholder="Enter manifest text (each line = array element)"
+                          :rows="8"
+                        />
+                      </div>
+
+                      <!-- Form Actions -->
+                      <div class="pt-4">
+                        <Button type="submit">
+                          Save
+                        </Button>
+                      </div>
+                    </form>
+                  </Card>
                 </div>
                 
                 <!-- Audit Tab Content -->
                 <div id="audit-content" role="tabpanel" aria-labelledby="audit-tab" class="hidden">
-                  <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Audit content will be placed here</p>
-                  </div>
+                  <Card>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Audit Entity</h3>
+                    
+                    <form @submit.prevent="handleSaveAudit" class="space-y-6">
+                      <!-- Section: Entity selection -->
+                      <div class="space-y-4">
+                        <div>
+                          <div class="flex flex-wrap items-center gap-3">
+                            <button
+                              type="button"
+                              data-dropdown-toggle="audit-entity-dropdown"
+                              class="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-primary-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700 dark:focus:ring-primary-900"
+                            >
+                              <span class="me-2">Select entity</span>
+                              <svg class="h-3 w-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+
+                        <div
+                          id="audit-entity-dropdown"
+                          class="z-10 hidden w-60 divide-y divide-gray-100 rounded-lg bg-white shadow dark:bg-gray-700"
+                          data-dropdown-placement="bottom-start"
+                        >
+                          <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
+                            <li v-for="entity in auditEntities" :key="entity.id">
+                              <button
+                                type="button"
+                                @click="handleSelectEntity(entity.id)"
+                                class="block w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                              >
+                                {{ entity.name }}
+                              </button>
+                            </li>
+                          </ul>
+                          <div class="py-1">
+                            <button
+                              type="button"
+                              @click="handleCreateNewEntity"
+                              class="block w-full px-4 py-2 text-left text-sm font-semibold text-primary-600 hover:bg-gray-100 dark:text-primary-400 dark:hover:bg-gray-600"
+                            >
+                              + Create new
+                            </button>
+                          </div>
+                        </div>
+
+                        <!-- Section: Selected entity -->
+                        <div v-if="currentEntity" class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+                          <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                            <div>
+                              <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1 uppercase">entity name</label>
+                              <h4 class="text-base font-semibold text-gray-900 dark:text-white">{{ currentEntity.name }}</h4>
+                              <div class="mt-4">
+                                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1 uppercase">attributes</label>
+                                <div class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+                                  <div
+                                    v-for="attr in currentEntity.attributes"
+                                    :key="attr.key"
+                                    class="flex flex-col gap-0.5 sm:flex-row sm:items-center sm:gap-2"
+                                  >
+                                    <span class="font-medium text-gray-900 dark:text-white">{{ attr.key }}:</span>
+                                    <span class="text-gray-600 dark:text-gray-300">{{ attr.description }}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <Button
+                              variant="outline"
+                              type="button"
+                              @click="handleEditEntity"
+                            >
+                              <svg class="h-4 w-4 me-2" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a2.25 2.25 0 0 1 3.182 3.182l-9.8 9.8a4.5 4.5 0 0 1-1.897 1.128l-3.356.957a.75.75 0 0 1-.918-.918l.957-3.356a4.5 4.5 0 0 1 1.128-1.897l9.8-9.8Z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5 13.5 4.5" />
+                              </svg>
+                              Edit
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Form Actions -->
+                      <div class="pt-4">
+                        <Button type="submit">
+                          Save
+                        </Button>
+                      </div>
+                    </form>
+                  </Card>
                 </div>
                 
                 <!-- Access Tab Content -->
                 <div id="access-content" role="tabpanel" aria-labelledby="access-tab" class="hidden">
-                  <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Access content will be placed here</p>
-                  </div>
+                  <Card>
+                    <div class="flex items-center justify-between mb-6">
+                      <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Access Control</h3>
+                      <button
+                        type="button"
+                        data-dropdown-toggle="add-group-dropdown"
+                        class="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                      >
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                        Group
+                      </button>
+                      <div id="add-group-dropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-60 dark:bg-gray-700">
+                        <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
+                          <li v-for="groupName in availableGroups" :key="groupName">
+                            <button
+                              type="button"
+                              @click="handleAddGroup(groupName)"
+                              class="block w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                            >
+                              {{ groupName }}
+                            </button>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                    
+                    <div class="space-y-4">
+                      <!-- Group cards -->
+                      <div
+                        v-for="group in accessGroups"
+                        :key="group.id"
+                        class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800"
+                      >
+                        <div class="mb-4 flex items-center justify-between">
+                          <h4 class="text-base font-semibold text-gray-900 dark:text-white">{{ group.name }}</h4>
+                          <button
+                            type="button"
+                            @click="handleRemoveGroup(group.id)"
+                            class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700 dark:focus:ring-primary-900"
+                          >
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M19 7H5m14 0-1 12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 7m14 0H5m3 0V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m-5 5v6m4-6v6" />
+                            </svg>
+                            Remove
+                          </button>
+                        </div>
+                        <div class="space-y-3">
+                          <!-- Manager permission -->
+                          <div class="flex items-start">
+                            <div class="flex h-5 items-center">
+                              <input
+                                :id="`${group.id}-manager`"
+                                :name="`${group.id}-permission`"
+                                type="radio"
+                                value="manager"
+                                :checked="group.permission === 'manager'"
+                                @change="handlePermissionChange(group.id, 'manager')"
+                                class="h-4 w-4 border-gray-300 bg-gray-100 text-primary-600 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600"
+                              >
+                            </div>
+                            <div class="ms-3 text-sm">
+                              <label :for="`${group.id}-manager`" class="font-medium text-gray-900 dark:text-white">Manager</label>
+                              <p class="text-xs text-gray-500 dark:text-gray-400">Full access including managing permissions, deleting topology, and all development features</p>
+                            </div>
+                          </div>
+                          <!-- Developer permission -->
+                          <div class="flex items-start">
+                            <div class="flex h-5 items-center">
+                              <input
+                                :id="`${group.id}-developer`"
+                                :name="`${group.id}-permission`"
+                                type="radio"
+                                value="developer"
+                                :checked="group.permission === 'developer'"
+                                @change="handlePermissionChange(group.id, 'developer')"
+                                class="h-4 w-4 border-gray-300 bg-gray-100 text-primary-600 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600"
+                              >
+                            </div>
+                            <div class="ms-3 text-sm">
+                              <label :for="`${group.id}-developer`" class="font-medium text-gray-900 dark:text-white">Developer</label>
+                              <p class="text-xs text-gray-500 dark:text-gray-400">Can edit topology configuration, manage nodes, and run processes</p>
+                            </div>
+                          </div>
+                          <!-- User permission -->
+                          <div class="flex items-start">
+                            <div class="flex h-5 items-center">
+                              <input
+                                :id="`${group.id}-user`"
+                                :name="`${group.id}-permission`"
+                                type="radio"
+                                value="user"
+                                :checked="group.permission === 'user'"
+                                @change="handlePermissionChange(group.id, 'user')"
+                                class="h-4 w-4 border-gray-300 bg-gray-100 text-primary-600 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600"
+                              >
+                            </div>
+                            <div class="ms-3 text-sm">
+                              <label :for="`${group.id}-user`" class="font-medium text-gray-900 dark:text-white">User</label>
+                              <p class="text-xs text-gray-500 dark:text-gray-400">View-only access with ability to run topology but cannot edit configuration</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
                 </div>
                 
                 <!-- Processes Tab Content -->
                 <div id="processes-content" role="tabpanel" aria-labelledby="processes-tab" class="hidden">
-                  <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Processes content will be placed here</p>
-                  </div>
+                  <TopologyProcessesTab
+                    v-if="topology"
+                    :topology-id="topology._id"
+                    :topology-name="topology.name"
+                  />
                 </div>
                 
                 <!-- Logs Tab Content -->
                 <div id="logs-content" role="tabpanel" aria-labelledby="logs-tab" class="hidden">
-                  <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Logs content will be placed here</p>
-                  </div>
+                  <TopologyLogsTab
+                    v-if="topology"
+                    :topology-id="topology._id"
+                    :topology-name="topology.name"
+                  />
                 </div>
                 
                 <!-- Trash Tab Content -->
                 <div id="trash-content" role="tabpanel" aria-labelledby="trash-tab" class="hidden">
-                  <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Failed messages content will be placed here</p>
-                  </div>
+                  <TopologyFailedMessagesTab
+                    v-if="topology"
+                    :topology-id="topology._id"
+                    :topology-name="topology.name"
+                  />
                 </div>
                 
                 <!-- Metrics Tab Content -->
                 <div id="metrics-content" role="tabpanel" aria-labelledby="metrics-tab" class="hidden">
-                  <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Metrics content will be placed here</p>
+                  <div v-if="metricsLoading" class="flex items-center justify-center py-12">
+                    <div role="status">
+                      <svg aria-hidden="true" class="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-primary-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+                        <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+                      </svg>
+                      <span class="sr-only">Loading...</span>
+                    </div>
+                  </div>
+                  
+                  <div v-else-if="metricsData" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Node Process Time Card -->
+                    <Card>
+                      <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Node Process Time</h3>
+                      <div class="mb-4 relative overflow-visible">
+                        <NodeProcessTimeChart :data="metricsData.nodeProcessTimes" />
+                      </div>
+                    </Card>
+                    
+                    <!-- Connector Request Time Card -->
+                    <Card>
+                      <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Connector Request Time</h3>
+                      <div class="mb-4 relative overflow-visible">
+                        <ConnectorRequestTimeChart :data="metricsData.connectorRequestTimes" />
+                      </div>
+                    </Card>
+                  </div>
+                  
+                  <div v-else class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+                    <p class="text-sm text-gray-500 dark:text-gray-400">No metrics data available</p>
                   </div>
                 </div>
               </TabsComponent>
@@ -340,6 +817,7 @@ onMounted(async () => {
       v-model="versionDrawerOpen"
       :topology-id="topology._id"
       :current-version-id="currentVersionId"
+      placement="right"
     />
 
     <!-- Topology Designer Drawer -->

@@ -75,8 +75,14 @@ export function useApexChart(options: UseApexChartOptions = {}) {
   // Destroy chart
   const destroyChart = () => {
     if (chartInstance.value) {
-      chartInstance.value.destroy()
-      chartInstance.value = null
+      try {
+        chartInstance.value.destroy()
+      } catch (error) {
+        // Ignore errors during chart destruction (e.g., if element already removed)
+        console.debug('Chart destroy error (safe to ignore):', error)
+      } finally {
+        chartInstance.value = null
+      }
     }
   }
 

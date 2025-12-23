@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
 import { watch, nextTick, onMounted, onBeforeUnmount, ref } from 'vue'
 
@@ -5,7 +6,7 @@ interface Props {
   modelValue: boolean
   id: string
   title: string
-  size?: 'sm' | 'md' | 'lg' | 'xl'
+  size?: 'sm' | 'md' | 'lg' | 'xl' | '4xl'
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -79,6 +80,7 @@ const sizeClass = {
   md: 'max-w-md',
   lg: 'max-w-lg',
   xl: 'max-w-xl',
+  '4xl': 'max-w-4xl',
 }
 </script>
 

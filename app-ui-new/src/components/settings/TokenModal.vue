@@ -122,7 +122,7 @@ const handleClose = () => {
       </div>
 
       <!-- Expiration -->
-      <TokenExpirationSelect v-model="formData.expiration" class="w-full"/>
+      <TokenExpirationSelect v-model="formData.expiration"/>
 
       <!-- Scopes -->
       <div>

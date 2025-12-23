@@ -52,12 +52,13 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="relative">
+  <div class="relative inline-flex items-center">
     <!-- Trigger Button -->
     <button
       :id="`${id}-button`"
       :data-dropdown-toggle="id"
       type="button"
+      class="inline-flex items-center"
     >
       <slot name="trigger"></slot>
     </button>

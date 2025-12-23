@@ -9,8 +9,11 @@ import NewFolderModal from '@/components/topologies/NewFolderModal.vue'
 import SelectVersionModal from '@/components/topologies/SelectVersionModal.vue'
 import topologiesTreeData from '@/assets/mock-data/topologies-tree-data.json'
 import type { TopologiesTreeNode, FolderItem } from '@/types/topologies-page'
+import { useLastTopology } from '@/composables/useLastTopology'
 
 const router = useRouter()
+
+const { getLastTopology } = useLastTopology()
 
 // Modal state
 const newTopologyModalOpen = ref(false)
@@ -65,6 +68,20 @@ onMounted(async () => {
       })
     }
   })
+  
+  // Automatically redirect to last opened topology
+  const lastTopology = getLastTopology()
+  if (lastTopology) {
+    const query = lastTopology.versionId 
+      ? { version: lastTopology.versionId } 
+      : undefined
+    
+    router.push({
+      name: 'topology-detail',
+      params: { id: lastTopology.id },
+      query
+    })
+  }
 })
 </script>
 

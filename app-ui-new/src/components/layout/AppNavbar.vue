@@ -2,10 +2,14 @@
 import { RouterLink } from 'vue-router'
 import { onMounted } from 'vue'
 import { useDarkMode } from '@/composables/useDarkMode'
+import { useTraceDrawer } from '@/composables/useTraceDrawer'
 import DropdownMenu, { type DropdownMenuSection } from '@/components/ui/DropdownMenu.vue'
 
 // Initialize dark mode toggle
 useDarkMode()
+
+// Trace drawer toggle
+const { toggleDrawer } = useTraceDrawer()
 
 // Account dropdown menu sections
 const accountMenuSections: DropdownMenuSection[] = [
@@ -43,8 +47,8 @@ onMounted(() => {
   // This is needed for Tabs and other components that use data-* attributes
   // Warnings about modal/drawer not being initialized can be ignored - 
   // those components manage their own Flowbite instances in Vue
-  if (typeof window !== 'undefined' && (window as any).initFlowbite) {
-    ;(window as any).initFlowbite()
+  if (typeof window !== 'undefined' && (window as typeof window & { initFlowbite?: () => void }).initFlowbite) {
+    ;(window as typeof window & { initFlowbite: () => void }).initFlowbite()
   }
 })
 </script>
@@ -68,12 +72,8 @@ onMounted(() => {
           <!-- Trace Drawer Toggle Button -->
           <button
             type="button"
-            data-drawer-target="traceDrawer"
-            data-drawer-toggle="traceDrawer"
-            data-drawer-placement="right"
-            data-drawer-backdrop="false"
-            aria-controls="traceDrawer"
-            class="mx-2 items-center rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+            @click="toggleDrawer"
+            class="mx-2 inline-flex items-center rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
           >
             <span class="sr-only">Toggle Trace</span>
             <svg
@@ -95,24 +95,20 @@ onMounted(() => {
             :sections="accountMenuSections"
           >
             <template #trigger>
-              <span class="mx-3 flex rounded-full bg-gray-800 text-sm focus:outline-none md:mr-0">
+              <button class="mx-3 inline-flex items-center focus:outline-none md:mr-0">
                 <span class="sr-only">Open user menu</span>
                 <svg
-                  class="h-8 w-8 cursor-pointer text-gray-800 dark:text-gray-500 dark:hover:!text-white"
+                  class="h-8 w-8 cursor-pointer text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
                   fill="currentColor"
-                  viewBox="0 0 24 24"
+                  viewBox="0 -960 960 960"
                 >
                   <path
-                    fill-rule="evenodd"
-                    d="M12 20a7.966 7.966 0 0 1-5.002-1.756l.002.001v-.683c0-1.794 1.492-3.25 3.333-3.25h3.334c1.84 0 3.333 1.456 3.333 3.25v.683A7.966 7.966 0 0 1 12 20ZM2 12C2 6.477 6.477 2 12 2s10 4.477 10 10c0 5.5-4.44 9.963-9.932 10h-.138C6.438 21.962 2 17.5 2 12Zm10-5c-1.84 0-3.333 1.455-3.333 3.25S10.159 13.5 12 13.5c1.84 0 3.333-1.455 3.333-3.25S13.841 7 12 7Z"
-                    clip-rule="evenodd"
+                    d="M234-276q51-39 114-61.5T480-360q69 0 132 22.5T726-276q35-41 54.5-93T800-480q0-133-93.5-226.5T480-800q-133 0-226.5 93.5T160-480q0 59 19.5 111t54.5 93Zm246-164q-59 0-99.5-40.5T340-580q0-59 40.5-99.5T480-720q59 0 99.5 40.5T620-580q0 59-40.5 99.5T480-440Zm0 360q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z"
                   />
                 </svg>
-              </span>
+              </button>
             </template>
 
             <template #dark-mode-toggle>

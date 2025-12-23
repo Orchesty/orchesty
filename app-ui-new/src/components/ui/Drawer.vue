@@ -7,10 +7,12 @@ interface Props {
   id: string
   label: string
   width?: string
+  placement?: 'left' | 'right'
 }
 
 const props = withDefaults(defineProps<Props>(), {
   width: 'w-1/2 min-w-[500px]',
+  placement: 'left',
 })
 
 const emit = defineEmits<{
@@ -35,7 +37,7 @@ onMounted(async () => {
     
     // Create drawer instance once
     drawerInstance.value = new Drawer(drawerElement, {
-      placement: 'right',
+      placement: props.placement,
       backdrop: true,
       bodyScrolling: false,
       edge: false,
@@ -80,7 +82,8 @@ onBeforeUnmount(() => {
   <div
     :id="id"
     :class="[
-      'fixed top-0 right-0 z-40 h-screen p-4 overflow-y-auto transition-transform translate-x-full bg-white dark:bg-gray-800',
+      'fixed top-0 z-40 h-screen p-4 overflow-y-auto transition-transform bg-white dark:bg-gray-800',
+      placement === 'left' ? 'left-0 -translate-x-full' : 'right-0 translate-x-full',
       width,
     ]"
     tabindex="-1"

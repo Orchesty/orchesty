@@ -78,30 +78,116 @@ export async function fetchProcessesData(
 }
 
 /**
- * Get limiter card data
- * Currently returns static mock data from JSON
+ * Get limiter card data with pagination and sorting
  */
-export async function fetchLimiterData(
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _timeFilter: TimeFilter = '7d',
-): Promise<LimiterData> {
+export async function fetchLimiterData(params: {
+  page?: number
+  limit?: number
+  sortBy?: string
+  sortOrder?: 'asc' | 'desc'
+  timeFilter?: TimeFilter
+}): Promise<LimiterData> {
   // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 50))
+  await new Promise((resolve) => setTimeout(resolve, 300))
   
-  return limiterDataJson as LimiterData
+  const rawData = limiterDataJson as LimiterData
+  let tableData = [...rawData.tableData]
+  
+  // Server-side sorting
+  if (params.sortBy) {
+    tableData.sort((a, b) => {
+      const aRow = a as unknown as Record<string, unknown>
+      const bRow = b as unknown as Record<string, unknown>
+      const aValue = aRow[params.sortBy!]
+      const bValue = bRow[params.sortBy!]
+
+      if (typeof aValue === 'number' && typeof bValue === 'number') {
+        return params.sortOrder === 'asc' ? aValue - bValue : bValue - aValue
+      }
+
+      const aStr = String(aValue).toLowerCase()
+      const bStr = String(bValue).toLowerCase()
+      
+      if (params.sortOrder === 'asc') {
+        return aStr.localeCompare(bStr)
+      } else {
+        return bStr.localeCompare(aStr)
+      }
+    })
+  }
+  
+  // Server-side pagination
+  const page = params.page || 1
+  const limit = params.limit || 10
+  const startIdx = (page - 1) * limit
+  const paginatedData = tableData.slice(startIdx, startIdx + limit)
+  
+  return {
+    ...rawData,
+    tableData: paginatedData,
+    meta: {
+      currentPage: page,
+      totalPages: Math.ceil(tableData.length / limit),
+      totalItems: tableData.length,
+      itemsPerPage: limit
+    }
+  }
 }
 
 /**
- * Get trash card data
- * Currently returns static mock data from JSON
+ * Get trash card data with pagination and sorting
  */
-export async function fetchTrashData(
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _timeFilter: TimeFilter = '7d',
-): Promise<TrashData> {
+export async function fetchTrashData(params: {
+  page?: number
+  limit?: number
+  sortBy?: string
+  sortOrder?: 'asc' | 'desc'
+  timeFilter?: TimeFilter
+}): Promise<TrashData> {
   // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 50))
+  await new Promise((resolve) => setTimeout(resolve, 300))
   
-  return dashboardTrashDataJson as TrashData
+  const rawData = dashboardTrashDataJson as TrashData
+  let tableData = [...rawData.tableData]
+  
+  // Server-side sorting
+  if (params.sortBy) {
+    tableData.sort((a, b) => {
+      const aRow = a as unknown as Record<string, unknown>
+      const bRow = b as unknown as Record<string, unknown>
+      const aValue = aRow[params.sortBy!]
+      const bValue = bRow[params.sortBy!]
+
+      if (typeof aValue === 'number' && typeof bValue === 'number') {
+        return params.sortOrder === 'asc' ? aValue - bValue : bValue - aValue
+      }
+
+      const aStr = String(aValue).toLowerCase()
+      const bStr = String(bValue).toLowerCase()
+      
+      if (params.sortOrder === 'asc') {
+        return aStr.localeCompare(bStr)
+      } else {
+        return bStr.localeCompare(aStr)
+      }
+    })
+  }
+  
+  // Server-side pagination
+  const page = params.page || 1
+  const limit = params.limit || 10
+  const startIdx = (page - 1) * limit
+  const paginatedData = tableData.slice(startIdx, startIdx + limit)
+  
+  return {
+    ...rawData,
+    tableData: paginatedData,
+    meta: {
+      currentPage: page,
+      totalPages: Math.ceil(tableData.length / limit),
+      totalItems: tableData.length,
+      itemsPerPage: limit
+    }
+  }
 }
 

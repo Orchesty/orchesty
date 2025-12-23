@@ -114,6 +114,7 @@ const isModuleChecked = (moduleId: string) => {
     id="group-detail-drawer"
     label="GROUP DETAILS"
     width="w-96"
+    placement="right"
     @update:model-value="emit('update:modelValue', $event)"
   >
     <div v-if="group" class="space-y-6">
