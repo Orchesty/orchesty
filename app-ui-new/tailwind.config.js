@@ -8,6 +8,7 @@ export default {
     "./index.html",
     "./src/**/*.{vue,js,ts,jsx,tsx}",
     "./node_modules/flowbite/**/*.js",
+    "./node_modules/rete-editor/**/*.{js,vue}",
   ],
   theme: {
     extend: {

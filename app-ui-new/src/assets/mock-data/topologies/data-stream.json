@@ -1,0 +1,240 @@
+{
+    "nodes": [
+      {
+        "type": "flow",
+        "id": "283e6bfeb2b68cbd",
+        "label": "Cron",
+        "shape": "circle",
+        "property": null,
+        "action": null,
+        "name": "15 min cron",
+        "crontab": "*/15 * * * *",
+        "enabled": true,
+        "nextRun": "2025-12-27T15:30:00Z",
+        "position": {
+          "x": -480,
+          "y": -45
+        }
+      },
+      {
+        "type": "flow",
+        "id": "d2486347f5f2ed8f",
+        "label": "Batch",
+        "shape": "square",
+        "property": null,
+        "action": {
+          "name": "List All Products",
+          "worker": "DefaultWorker",
+          "type": "batch"
+        },
+        "name": null,
+        "position": {
+          "x": -280,
+          "y": -60
+        }
+      },
+      {
+        "type": "flow",
+        "id": "277bc8ffe4ab58f3",
+        "label": "Custom Action",
+        "shape": "square",
+        "property": null,
+        "action": {
+          "name": "Product Mapper",
+          "worker": "DefaultWorker",
+          "type": "custom"
+        },
+        "name": null,
+        "position": {
+          "x": 220,
+          "y": -60
+        }
+      },
+      {
+        "type": "flow",
+        "id": "4f1237bd544d784e",
+        "label": "Custom Action",
+        "shape": "square",
+        "property": null,
+        "action": {
+          "name": "Find Category Cache Router",
+          "worker": "DefaultWorker",
+          "type": "custom"
+        },
+        "name": null,
+        "position": {
+          "x": 480,
+          "y": -60
+        }
+      },
+      {
+        "type": "flow",
+        "id": "02441baa9879a68f",
+        "label": "Custom Action",
+        "shape": "square",
+        "property": null,
+        "action": {
+          "name": "Store Products",
+          "worker": "DefaultWorker",
+          "type": "custom"
+        },
+        "name": null,
+        "position": {
+          "x": 760,
+          "y": 160
+        }
+      },
+      {
+        "type": "flow",
+        "id": "2b5b8496b6acfb52",
+        "label": "Connector",
+        "shape": "square",
+        "property": null,
+        "action": {
+          "name": "Call Category Sync",
+          "worker": "RESTWorker",
+          "type": "connector"
+        },
+        "name": null,
+        "position": {
+          "x": 1060,
+          "y": 160
+        }
+      },
+      {
+        "type": "flow",
+        "id": "c4a10cd803294bfc",
+        "label": "Custom Action",
+        "shape": "square",
+        "property": null,
+        "action": {
+          "name": "Find Product Cache Router",
+          "worker": "DefaultWorker",
+          "type": "custom"
+        },
+        "name": null,
+        "position": {
+          "x": 760,
+          "y": -60
+        }
+      },
+      {
+        "type": "flow",
+        "id": "5163cf5b1cc5b5f8",
+        "label": "Connector",
+        "shape": "square",
+        "property": null,
+        "action": {
+          "name": "Magento Create Product",
+          "worker": "DefaultWorker",
+          "type": "connector",
+          "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" width=\"800px\" height=\"800px\" viewBox=\"-4.5 0 54 54\" version=\"1.1\"><g id=\"Icons\" stroke=\"none\" stroke-width=\"1\" fill=\"none\" fill-rule=\"evenodd\"><g id=\"Color-\" transform=\"translate(-502.000000, -756.000000)\" fill=\"#F37B1F\"><path d=\"M524.485738,756 L502,769.845031 L502,796.153194 L507.839726,799.649354 L507.839726,773.338234 L524.490395,763.049703 L541.156199,773.323445 L541.224888,773.363671 L541.217321,799.610311 L547,796.153194 L547,769.845031 L524.485738,756 Z M527.462066,802.956805 L524.485738,804.805451 L521.507082,802.946748 L521.507082,772.220764 L513.794127,777.046767 L513.794127,803.351971 L524.485738,810 L535.267576,803.304646 L535.267576,777.030203 L527.462066,772.197101 L527.462066,802.956805 Z\" id=\"Magento\"></path></g></g></svg>"
+        },
+        "name": null,
+        "position": {
+          "x": 1060,
+          "y": -60
+        }
+      },
+      {
+        "type": "flow",
+        "id": "82225cfc1df6d020",
+        "label": "Connector",
+        "shape": "square",
+        "property": null,
+        "action": {
+          "name": "Magento Update Product",
+          "worker": "DefaultWorker",
+          "type": "connector",
+          "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" width=\"800px\" height=\"800px\" viewBox=\"-4.5 0 54 54\" version=\"1.1\"><g id=\"Icons\" stroke=\"none\" stroke-width=\"1\" fill=\"none\" fill-rule=\"evenodd\"><g id=\"Color-\" transform=\"translate(-502.000000, -756.000000)\" fill=\"#F37B1F\"><path d=\"M524.485738,756 L502,769.845031 L502,796.153194 L507.839726,799.649354 L507.839726,773.338234 L524.490395,763.049703 L541.156199,773.323445 L541.224888,773.363671 L541.217321,799.610311 L547,796.153194 L547,769.845031 L524.485738,756 Z M527.462066,802.956805 L524.485738,804.805451 L521.507082,802.946748 L521.507082,772.220764 L513.794127,777.046767 L513.794127,803.351971 L524.485738,810 L535.267576,803.304646 L535.267576,777.030203 L527.462066,772.197101 L527.462066,802.956805 Z\" id=\"Magento\"></path></g></g></svg>"
+        },
+        "name": null,
+        "position": {
+          "x": 1060,
+          "y": -280
+        }
+      },
+      {
+        "type": "flow",
+        "id": "7a774e0b4711d963",
+        "label": "Custom Action",
+        "shape": "square",
+        "property": null,
+        "action": {
+          "name": "Compare Filter",
+          "worker": "DefaultWorker",
+          "type": "custom"
+        },
+        "name": null,
+        "position": {
+          "x": -40,
+          "y": -60
+        }
+      }
+    ],
+    "connections": [
+      {
+        "id": "f09a9a143d81b43f",
+        "from": "283e6bfeb2b68cbd",
+        "to": "d2486347f5f2ed8f",
+        "sourceOutput": "output",
+        "targetInput": "input"
+      },
+      {
+        "id": "8cfb194e518e8d80",
+        "from": "4f1237bd544d784e",
+        "to": "02441baa9879a68f",
+        "sourceOutput": "output",
+        "targetInput": "input"
+      },
+      {
+        "id": "79a1e745e537d3b3",
+        "from": "02441baa9879a68f",
+        "to": "2b5b8496b6acfb52",
+        "sourceOutput": "output",
+        "targetInput": "input"
+      },
+      {
+        "id": "97237d77a651a697",
+        "from": "4f1237bd544d784e",
+        "to": "c4a10cd803294bfc",
+        "sourceOutput": "output",
+        "targetInput": "input"
+      },
+      {
+        "id": "ca5fdb79c7994359",
+        "from": "c4a10cd803294bfc",
+        "to": "82225cfc1df6d020",
+        "sourceOutput": "output",
+        "targetInput": "input"
+      },
+      {
+        "id": "8988f2be9dfab996",
+        "from": "c4a10cd803294bfc",
+        "to": "5163cf5b1cc5b5f8",
+        "sourceOutput": "output",
+        "targetInput": "input"
+      },
+      {
+        "id": "9cfaa77a8f91eb07",
+        "from": "d2486347f5f2ed8f",
+        "to": "7a774e0b4711d963",
+        "sourceOutput": "output",
+        "targetInput": "input"
+      },
+      {
+        "id": "2aa4f1e637cb4b8a",
+        "from": "7a774e0b4711d963",
+        "to": "277bc8ffe4ab58f3",
+        "sourceOutput": "output",
+        "targetInput": "input"
+      },
+      {
+        "id": "2b72e51bd767f7d5",
+        "from": "277bc8ffe4ab58f3",
+        "to": "4f1237bd544d784e",
+        "sourceOutput": "output",
+        "targetInput": "input"
+      }
+    ]
+  }

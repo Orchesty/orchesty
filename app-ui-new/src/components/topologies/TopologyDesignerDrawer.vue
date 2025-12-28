@@ -1,8 +1,15 @@
 <script setup lang="ts">
-import { onMounted, watch } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { Drawer } from 'flowbite'
 import type { DrawerInterface } from 'flowbite'
 import Button from '@/components/ui/Button.vue'
+import { ReteEditorKit } from 'rete-editor'
+import type { EditorCore } from 'rete-editor'
+import topologyData from '@/assets/mock-data/topologies/data-stream.json'
+import { useToast } from '@/composables/useToast'
+// Note: Available actions for editor are defined in @/assets/mock-data/actions.ts
+// In production, actions would be loaded from backend via topologyEditorService
+import { topologyEditorService } from '@/services/topologyEditorService'
 
 interface Props {
   modelValue: boolean
@@ -16,10 +23,79 @@ const emit = defineEmits<{
   save: []
 }>()
 
-let drawerInstance: DrawerInterface | null = null
+const { Editor, createConfig } = ReteEditorKit
+const { showToast } = useToast()
 
-const handleSave = () => {
-  emit('save')
+let drawerInstance: DrawerInterface | null = null
+const editorCore = ref<EditorCore>()
+
+// Create configuration for edit mode
+const editorConfig = createConfig({
+  mode: 'edit',
+  canvasHeight: 'calc(100vh - 8rem)'
+})
+
+const onEditorReady = async (editor: EditorCore) => {
+  editorCore.value = editor
+  
+  try {
+    // Import workflow from mock data
+    await editor.importGraph(topologyData)
+    
+    // Fit all nodes to view
+    editor.zoomToFit()
+    
+    // Log available actions (for development)
+    const actions = await topologyEditorService.getAllActions()
+    console.log(`✅ Editor ready with ${actions.length} available actions`)
+    console.log('Available action types:', {
+      custom: actions.filter(a => a.type === 'custom').length,
+      connector: actions.filter(a => a.type === 'connector').length,
+      batch: actions.filter(a => a.type === 'batch').length
+    })
+  } catch (error) {
+    console.error('Failed to load topology data:', error)
+    showToast({
+      type: 'error',
+      message: 'Failed to load topology data',
+      duration: 3000
+    })
+  }
+}
+
+const handleSave = async () => {
+  if (!editorCore.value) {
+    showToast({
+      type: 'error',
+      message: 'Editor not initialized',
+      duration: 3000
+    })
+    return
+  }
+
+  try {
+    // Export current workflow
+    const workflow = editorCore.value.exportGraph()
+    console.log('Saving workflow:', workflow)
+    
+    // Simulate save to backend
+    await new Promise(resolve => setTimeout(resolve, 500))
+    
+    showToast({
+      type: 'success',
+      message: 'Topology saved successfully',
+      duration: 3000
+    })
+    
+    emit('save')
+  } catch (error) {
+    console.error('Failed to save topology:', error)
+    showToast({
+      type: 'error',
+      message: 'Failed to save topology',
+      duration: 3000
+    })
+  }
 }
 
 const handleClose = () => {
@@ -109,9 +185,9 @@ watch(
         </div>
       </div>
       
-      <!-- Designer content placeholder -->
-      <div class="h-[calc(100vh-8rem)] bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg flex items-center justify-center">
-        <p class="text-sm text-gray-400 dark:text-gray-500">Topology editor will be placed here</p>
+      <!-- Designer content -->
+      <div class="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+        <Editor :config="editorConfig" @ready="onEditorReady" />
       </div>
     </div>
   </div>

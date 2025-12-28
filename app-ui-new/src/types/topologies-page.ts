@@ -41,3 +41,12 @@ export interface TopologyDetail {
   versions: TopologyVersion[] // All versions of this topology
 }
 
+export interface CronNode {
+  id: string
+  label: string
+  name: string
+  crontab: string
+  enabled: boolean
+  nextRun: string
+}
+
