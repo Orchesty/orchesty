@@ -15,10 +15,12 @@ import TopologyEditor from '@/components/topologies/TopologyEditor.vue'
 import NewTopologyModal from '@/components/topologies/NewTopologyModal.vue'
 import NewFolderModal from '@/components/topologies/NewFolderModal.vue'
 import SelectVersionModal from '@/components/topologies/SelectVersionModal.vue'
+import EntityModal from '@/components/settings/EntityModal.vue'
 import Button from '@/components/ui/Button.vue'
 import DropdownMenu from '@/components/ui/DropdownMenu.vue'
 import TabsComponent, { type Tab } from '@/components/ui/Tabs.vue'
 import Card from '@/components/ui/Card.vue'
+import TabCard from '@/components/ui/TabCard.vue'
 import Textarea from '@/components/ui/datagrid/Textarea.vue'
 import { fetchTopologyDetail } from '@/services/topologiesService'
 import { fetchTopologyMetrics } from '@/services/topologyMetricsService'
@@ -289,19 +291,39 @@ const handleSaveContext = () => {
   // TODO: Implement save logic
 }
 
+// Entity modal state
+const entityModalOpen = ref(false)
+const selectedEntityForModal = ref<AuditEntity | null>(null)
+const entityModalMode = ref<'create' | 'edit'>('create')
+
 // Audit tab handlers
 const handleSelectEntity = (entityId: string) => {
   selectedEntity.value = entityId
 }
 
 const handleCreateNewEntity = () => {
-  console.log('Create new audit entity')
-  // TODO: Open modal for creating new entity
+  selectedEntityForModal.value = null
+  entityModalMode.value = 'create'
+  entityModalOpen.value = true
 }
 
 const handleEditEntity = () => {
-  console.log('Edit entity:', currentEntity.value)
-  // TODO: Open modal for editing entity
+  if (currentEntity.value) {
+    selectedEntityForModal.value = currentEntity.value
+    entityModalMode.value = 'edit'
+    entityModalOpen.value = true
+  }
+}
+
+const handleSaveEntity = async (data: any) => {
+  try {
+    // TODO: Integrate with backend API
+    console.log('Saving entity:', data)
+    entityModalOpen.value = false
+    // Reload entities list if needed
+  } catch (error) {
+    console.error('Failed to save entity:', error)
+  }
 }
 
 const handleSaveAudit = () => {
@@ -504,7 +526,7 @@ onMounted(async () => {
                 <!-- Topology Tab Content -->
                 <div id="topology-content" role="tabpanel" aria-labelledby="topology-tab">
                   <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
-                    <div class="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+                    <div class="bg-gray-50 dark:bg-gray-900 rounded-lg overflow-hidden">
                       <TopologyEditor />
                     </div>
                   </div>
@@ -512,7 +534,7 @@ onMounted(async () => {
                 
                 <!-- Context Tab Content -->
                 <div id="context-content" role="tabpanel" aria-labelledby="context-tab" class="hidden">
-                  <Card>
+                  <TabCard>
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">MCP Manifest</h3>
                     
                     <form @submit.prevent="handleSaveContext" class="space-y-6">
@@ -531,58 +553,58 @@ onMounted(async () => {
                         </Button>
                       </div>
                     </form>
-                  </Card>
+                  </TabCard>
                 </div>
                 
                 <!-- Audit Tab Content -->
                 <div id="audit-content" role="tabpanel" aria-labelledby="audit-tab" class="hidden">
-                  <Card>
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Audit Entity</h3>
+                  <TabCard>
+                    <!-- Header with dropdown button -->
+                    <div class="flex items-center justify-between mb-4">
+                      <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Audit Entity</h3>
+                      
+                      <button
+                        type="button"
+                        data-dropdown-toggle="audit-entity-dropdown"
+                        class="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-primary-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700 dark:focus:ring-primary-900"
+                      >
+                        <span class="me-2">Select entity</span>
+                        <svg class="h-3 w-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
+                        </svg>
+                      </button>
+
+                      <div
+                        id="audit-entity-dropdown"
+                        class="z-10 hidden w-60 divide-y divide-gray-100 rounded-lg bg-white shadow dark:bg-gray-700"
+                        data-dropdown-placement="bottom-start"
+                      >
+                        <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
+                          <li v-for="entity in auditEntities" :key="entity.id">
+                            <button
+                              type="button"
+                              @click="handleSelectEntity(entity.id)"
+                              class="block w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                            >
+                              {{ entity.name }}
+                            </button>
+                          </li>
+                        </ul>
+                        <div class="py-1">
+                          <button
+                            type="button"
+                            @click="handleCreateNewEntity"
+                            class="block w-full px-4 py-2 text-left text-sm font-semibold text-primary-600 hover:bg-gray-100 dark:text-primary-400 dark:hover:bg-gray-600"
+                          >
+                            + Create new
+                          </button>
+                        </div>
+                      </div>
+                    </div>
                     
                     <form @submit.prevent="handleSaveAudit" class="space-y-6">
                       <!-- Section: Entity selection -->
                       <div class="space-y-4">
-                        <div>
-                          <div class="flex flex-wrap items-center gap-3">
-                            <button
-                              type="button"
-                              data-dropdown-toggle="audit-entity-dropdown"
-                              class="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-primary-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700 dark:focus:ring-primary-900"
-                            >
-                              <span class="me-2">Select entity</span>
-                              <svg class="h-3 w-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
-                              </svg>
-                            </button>
-                          </div>
-                        </div>
-
-                        <div
-                          id="audit-entity-dropdown"
-                          class="z-10 hidden w-60 divide-y divide-gray-100 rounded-lg bg-white shadow dark:bg-gray-700"
-                          data-dropdown-placement="bottom-start"
-                        >
-                          <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
-                            <li v-for="entity in auditEntities" :key="entity.id">
-                              <button
-                                type="button"
-                                @click="handleSelectEntity(entity.id)"
-                                class="block w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                              >
-                                {{ entity.name }}
-                              </button>
-                            </li>
-                          </ul>
-                          <div class="py-1">
-                            <button
-                              type="button"
-                              @click="handleCreateNewEntity"
-                              class="block w-full px-4 py-2 text-left text-sm font-semibold text-primary-600 hover:bg-gray-100 dark:text-primary-400 dark:hover:bg-gray-600"
-                            >
-                              + Create new
-                            </button>
-                          </div>
-                        </div>
 
                         <!-- Section: Selected entity -->
                         <div v-if="currentEntity" class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
@@ -626,12 +648,12 @@ onMounted(async () => {
                         </Button>
                       </div>
                     </form>
-                  </Card>
+                  </TabCard>
                 </div>
                 
                 <!-- Access Tab Content -->
                 <div id="access-content" role="tabpanel" aria-labelledby="access-tab" class="hidden">
-                  <Card>
+                  <TabCard>
                     <div class="flex items-center justify-between mb-6">
                       <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Access Control</h3>
                       <button
@@ -737,7 +759,7 @@ onMounted(async () => {
                         </div>
                       </div>
                     </div>
-                  </Card>
+                  </TabCard>
                 </div>
                 
                 <!-- Processes Tab Content -->
@@ -833,6 +855,12 @@ onMounted(async () => {
       v-model="selectVersionModalOpen"
       :topology-id="selectedTopologyId"
       :topology-name="selectedTopologyName"
+    />
+    <EntityModal
+      v-model="entityModalOpen"
+      :entity="selectedEntityForModal"
+      :mode="entityModalMode"
+      @save="handleSaveEntity"
     />
 
     <!-- Folder Actions Dropdowns (rendered at root level to avoid z-index issues) -->

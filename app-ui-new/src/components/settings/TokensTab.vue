@@ -142,16 +142,14 @@ onMounted(() => {
 
 <template>
   <div>
-    <!-- Header with Action Button -->
-    <div class="mb-3">
-      <div class="flex items-center justify-between mb-2">
+    <!-- Tokens Table -->
+    <Card>
+      <!-- Header with Action Button -->
+      <div class="flex items-center justify-between mb-4">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Tokens</h3>
         <Button variant="primary" @click="handleAddToken">+ Token</Button>
       </div>
-    </div>
 
-    <!-- Tokens Table -->
-    <Card>
       <DataGrid
         :data="tokens"
         :columns="[

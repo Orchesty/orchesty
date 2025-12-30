@@ -148,7 +148,10 @@ onMounted(async () => {
 
 <template>
   <Card>
-    <DataGrid
+    <div class="mb-3">
+      <h3 class="mb-2 text-lg font-semibold text-gray-900 dark:text-white">Connectors</h3>
+
+      <DataGrid
       :columns="columns"
       :data="connectors"
       :loading="loading"
@@ -244,6 +247,7 @@ onMounted(async () => {
       </span>
       </template>
     </DataGrid>
+    </div>
   </Card>
 
   <!-- Connector Detail Drawer -->
