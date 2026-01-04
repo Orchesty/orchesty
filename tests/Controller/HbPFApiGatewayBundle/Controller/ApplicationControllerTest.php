@@ -13,6 +13,7 @@ use Hanaboso\PipesFramework\Configurator\Document\Sdk;
 use Hanaboso\PipesFramework\Configurator\Enum\ApiTokenScopesEnum;
 use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ApplicationController;
 use Hanaboso\Utils\String\Json;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,6 +24,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @package PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller
  */
 #[CoversClass(ApplicationController::class)]
+#[AllowMockObjectsWithoutExpectations]
 final class ApplicationControllerTest extends ControllerTestCaseAbstract
 {
 

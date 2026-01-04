@@ -9,6 +9,7 @@ use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
 use Hanaboso\PipesFramework\Database\Document\Node;
 use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\NodeController;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 
@@ -18,6 +19,7 @@ use PipesFrameworkTests\ControllerTestCaseAbstract;
  * @package PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller
  */
 #[CoversClass(NodeController::class)]
+#[AllowMockObjectsWithoutExpectations]
 final class NodeControllerTest extends ControllerTestCaseAbstract
 {
 

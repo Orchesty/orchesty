@@ -21,6 +21,7 @@ use Hanaboso\PipesFramework\UsageStats\Document\UsageStatsEvent;
 use Hanaboso\PipesFramework\UsageStats\Enum\EventTypeEnum;
 use Hanaboso\PipesFramework\UsageStats\Repository\UsageStatsEventRepository;
 use Hanaboso\Utils\Exception\DateTimeException;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\Exception;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
@@ -39,6 +40,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
 #[CoversClass(OperationUsageStatsSender::class)]
 #[CoversClass(UsageStatsEventRepository::class)]
 #[CoversClass(TopologyProgressRepository::class)]
+#[AllowMockObjectsWithoutExpectations]
 final class SendBillingEventsToUSCCPCommandTest extends DatabaseTestCaseAbstract
 {
 

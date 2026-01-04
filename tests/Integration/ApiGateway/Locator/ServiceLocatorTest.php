@@ -12,6 +12,7 @@ use Hanaboso\PipesFramework\Configurator\Enum\NodeImplementationEnum;
 use Hanaboso\Utils\String\Base64;
 use Hanaboso\Utils\String\Json;
 use LogicException;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 use Psr\Log\NullLogger;
@@ -23,6 +24,7 @@ use Symfony\Component\HttpFoundation\Request;
  * @package PipesFrameworkTests\Integration\ApiGateway\Locator
  */
 #[CoversClass(ServiceLocator::class)]
+#[AllowMockObjectsWithoutExpectations]
 final class ServiceLocatorTest extends DatabaseTestCaseAbstract
 {
 

@@ -6,6 +6,7 @@ use Hanaboso\CommonsBundle\Exception\CronException;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\RefreshCronCommand;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
@@ -18,6 +19,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
  * @package PipesFrameworkTests\Integration\Command
  */
 #[CoversClass(RefreshCronCommand::class)]
+#[AllowMockObjectsWithoutExpectations]
 final class RefreshCronCommandTest extends DatabaseTestCaseAbstract
 {
 
