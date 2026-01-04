@@ -4,7 +4,7 @@ namespace Hanaboso\PipesFramework\Metrics\Model\Filters;
 
 use Closure;
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
-use Hanaboso\PipesFramework\Configurator\Model\Filters\GridAggregationFilterAbstract;
+use Hanaboso\MongoDataGrid\GridAggregationFilterAbstract;
 use Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetrics;
 
 /**
@@ -16,8 +16,7 @@ final class MetricRequestAggregationFilter extends GridAggregationFilterAbstract
 {
 
     /**
-     * @return string
-     * @phpstan-return class-string
+     * @return class-string
      */
     protected function getDocumentClass(): string
     {
@@ -27,7 +26,7 @@ final class MetricRequestAggregationFilter extends GridAggregationFilterAbstract
     /**
      * @return string[]
      */
-    protected function filterCols(): array
+    protected function getConditions(): array
     {
         return [
             'created' => 'fields.created',
@@ -38,7 +37,7 @@ final class MetricRequestAggregationFilter extends GridAggregationFilterAbstract
     /**
      * @return string[]
      */
-    protected function orderCols(): array
+    protected function getSortations(): array
     {
         return [
             'duration' => 'duration',
@@ -46,18 +45,18 @@ final class MetricRequestAggregationFilter extends GridAggregationFilterAbstract
     }
 
     /**
-     * @return mixed[]
+     * @return string[]
      */
-    protected function searchableCols(): array
+    protected function getSearch(): array
     {
         return [];
     }
 
     /**
-     * @param Builder $builder
-     * @param Closure $addConditionsCallback
-     * @param Closure $addSortationsCallback
-     * @param Closure $addPaginationCallback
+     * @param Builder         $builder
+     * @param Closure(): void $addConditionsCallback
+     * @param Closure(): void $addSortationsCallback
+     * @param Closure(): void $addPaginationCallback
      *
      * @return void
      */
@@ -76,7 +75,7 @@ final class MetricRequestAggregationFilter extends GridAggregationFilterAbstract
             ->field('topologyId')
             ->first('$tags.topology_id')
             ->field('duration')
-            ->expression($builder->expr()->avg('$fields.sent_request_total_duration'));
+            ->avg('$fields.sent_request_total_duration');
 
         $addSortationsCallback();
         $addPaginationCallback();
@@ -88,7 +87,7 @@ final class MetricRequestAggregationFilter extends GridAggregationFilterAbstract
             ->field('topologyId')
             ->expression('$topologyId')
             ->field('duration')
-            ->expression($builder->expr()->round('$duration'));
+            ->round('$duration');
     }
 
     /**

@@ -100,7 +100,7 @@ final class ApiKeyAuthenticatorTest extends KernelTestCaseAbstract
         self::assertEmpty($res);
     }
 
-    /**
+    /*
      * ------------------------------------- HELPERS -----------------------------------
      */
 

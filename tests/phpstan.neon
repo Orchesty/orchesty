@@ -46,7 +46,7 @@ parameters:
 			- PipesFrameworkTests\DatabaseTestCaseAbstract
 			- PipesFrameworkTests\KernelTestCaseAbstract
 			- Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator
-			- Hanaboso\PipesFramework\Configurator\Model\Filters\GridAggregationFilterAbstract
+			- Hanaboso\MongoDataGrid\GridAggregationFilterAbstract
 
 		classesNotRequiredToBeAbstractOrFinal:
 			- Hanaboso\PipesFramework\HbPFUsageStatsBundle\Manager\AppInstallUsageStatsSender

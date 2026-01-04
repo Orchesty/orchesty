@@ -188,7 +188,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         only_exceptions?: bool|Param, // Default: false
  *         only_main_requests?: bool|Param, // Default: false
  *         dsn?: scalar|null|Param, // Default: "file:%kernel.cache_dir%/profiler"
- *         collect_serializer_data?: bool|Param, // Enables the serializer data collector and profiler panel. // Default: false
+ *         collect_serializer_data?: true|Param, // Default: true
  *     },
  *     workflows?: bool|array{
  *         enabled?: bool|Param, // Default: false
@@ -232,7 +232,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         enabled?: bool|Param, // Default: false
  *         resource: scalar|null|Param,
  *         type?: scalar|null|Param,
- *         cache_dir?: scalar|null|Param, // Deprecated: Setting the "framework.router.cache_dir.cache_dir" configuration option is deprecated. It will be removed in version 8.0. // Default: "%kernel.build_dir%"
  *         default_uri?: scalar|null|Param, // The default URI used to generate URLs in a non-HTTP context. // Default: null
  *         http_port?: scalar|null|Param, // Default: 80
  *         https_port?: scalar|null|Param, // Default: 443
@@ -256,8 +255,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         gc_maxlifetime?: scalar|null|Param,
  *         save_path?: scalar|null|Param, // Defaults to "%kernel.cache_dir%/sessions" if the "handler_id" option is not null.
  *         metadata_update_threshold?: int|Param, // Seconds to wait between 2 session metadata updates. // Default: 0
- *         sid_length?: int|Param, // Deprecated: Setting the "framework.session.sid_length.sid_length" configuration option is deprecated. It will be removed in version 8.0. No alternative is provided as PHP 8.4 has deprecated the related option.
- *         sid_bits_per_character?: int|Param, // Deprecated: Setting the "framework.session.sid_bits_per_character.sid_bits_per_character" configuration option is deprecated. It will be removed in version 8.0. No alternative is provided as PHP 8.4 has deprecated the related option.
  *     },
  *     request?: bool|array{ // Request configuration
  *         enabled?: bool|Param, // Default: false
@@ -331,11 +328,10 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     },
  *     validation?: bool|array{ // Validation configuration
  *         enabled?: bool|Param, // Default: false
- *         cache?: scalar|null|Param, // Deprecated: Setting the "framework.validation.cache.cache" configuration option is deprecated. It will be removed in version 8.0.
  *         enable_attributes?: bool|Param, // Default: true
  *         static_method?: list<scalar|null|Param>,
  *         translation_domain?: scalar|null|Param, // Default: "validators"
- *         email_validation_mode?: "html5"|"html5-allow-no-tld"|"strict"|"loose"|Param, // Default: "html5"
+ *         email_validation_mode?: "html5"|"html5-allow-no-tld"|"strict"|Param, // Default: "html5"
  *         mapping?: array{
  *             paths?: list<scalar|null|Param>,
  *         },
@@ -347,9 +343,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         auto_mapping?: array<string, array{ // Default: []
  *             services?: list<scalar|null|Param>,
  *         }>,
- *     },
- *     annotations?: bool|array{
- *         enabled?: bool|Param, // Default: false
  *     },
  *     serializer?: bool|array{ // Serializer configuration
  *         enabled?: bool|Param, // Default: true
@@ -382,7 +375,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     },
  *     property_info?: bool|array{ // Property info configuration
  *         enabled?: bool|Param, // Default: true
- *         with_constructor_extractor?: bool|Param, // Registers the constructor extractor.
+ *         with_constructor_extractor?: bool|Param, // Registers the constructor extractor. // Default: true
  *     },
  *     cache?: array{ // Cache configuration
  *         prefix_seed?: scalar|null|Param, // Used to namespace cache keys when using several apps with the same shared backend. // Default: "_%kernel.project_dir%.%kernel.container_class%"
@@ -860,7 +853,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         bubble?: bool|Param, // Default: true
  *         interactive_only?: bool|Param, // Default: false
  *         app_name?: scalar|null|Param, // Default: null
- *         fill_extra_context?: bool|Param, // Default: false
  *         include_stacktraces?: bool|Param, // Default: false
  *         process_psr_3_messages?: array{
  *             enabled?: bool|null|Param, // Default: null
@@ -880,7 +872,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         activation_strategy?: scalar|null|Param, // Default: null
  *         stop_buffering?: bool|Param, // Default: true
  *         passthru_level?: scalar|null|Param, // Default: null
- *         excluded_404s?: list<scalar|null|Param>,
  *         excluded_http_codes?: list<array{ // Default: []
  *             code?: scalar|null|Param,
  *             urls?: list<scalar|null|Param>,
@@ -894,9 +885,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         url?: scalar|null|Param,
  *         exchange?: scalar|null|Param,
  *         exchange_name?: scalar|null|Param, // Default: "log"
- *         room?: scalar|null|Param,
- *         message_format?: scalar|null|Param, // Default: "text"
- *         api_version?: scalar|null|Param, // Default: null
  *         channel?: scalar|null|Param, // Default: null
  *         bot_name?: scalar|null|Param, // Default: "Monolog"
  *         use_attachment?: scalar|null|Param, // Default: true
@@ -905,9 +893,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         icon_emoji?: scalar|null|Param, // Default: null
  *         webhook_url?: scalar|null|Param,
  *         exclude_fields?: list<scalar|null|Param>,
- *         team?: scalar|null|Param,
- *         notify?: scalar|null|Param, // Default: false
- *         nickname?: scalar|null|Param, // Default: "Monolog"
  *         token?: scalar|null|Param,
  *         region?: scalar|null|Param,
  *         source?: scalar|null|Param,
@@ -925,12 +910,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         store?: scalar|null|Param, // Default: null
  *         connection_timeout?: scalar|null|Param,
  *         persistent?: bool|Param,
- *         dsn?: scalar|null|Param,
- *         hub_id?: scalar|null|Param, // Default: null
- *         client_id?: scalar|null|Param, // Default: null
- *         auto_log_stacks?: scalar|null|Param, // Default: false
- *         release?: scalar|null|Param, // Default: null
- *         environment?: scalar|null|Param, // Default: null
  *         message_type?: scalar|null|Param, // Default: 0
  *         parse_mode?: scalar|null|Param, // Default: null
  *         disable_webpage_preview?: bool|null|Param, // Default: null
@@ -940,7 +919,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         topic?: int|Param, // Default: null
  *         factor?: int|Param, // Default: 1
  *         tags?: list<scalar|null|Param>,
- *         console_formater_options?: mixed, // Deprecated: "monolog.handlers..console_formater_options.console_formater_options" is deprecated, use "monolog.handlers..console_formater_options.console_formatter_options" instead.
  *         console_formatter_options?: mixed, // Default: []
  *         formatter?: scalar|null|Param,
  *         nested?: bool|Param, // Default: false
@@ -950,15 +928,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             port?: scalar|null|Param, // Default: 12201
  *             chunk_size?: scalar|null|Param, // Default: 1420
  *             encoder?: "json"|"compressed_json"|Param,
- *         },
- *         mongo?: string|array{
- *             id?: scalar|null|Param,
- *             host?: scalar|null|Param,
- *             port?: scalar|null|Param, // Default: 27017
- *             user?: scalar|null|Param,
- *             pass?: scalar|null|Param,
- *             database?: scalar|null|Param, // Default: "monolog"
- *             collection?: scalar|null|Param, // Default: "logs"
  *         },
  *         mongodb?: string|array{
  *             id?: scalar|null|Param, // ID of a MongoDB\Client service
@@ -1002,7 +971,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             id: scalar|null|Param,
  *             method?: scalar|null|Param, // Default: null
  *         },
- *         lazy?: bool|Param, // Default: true
  *         verbosity_levels?: array{
  *             VERBOSITY_QUIET?: scalar|null|Param, // Default: "ERROR"
  *             VERBOSITY_NORMAL?: scalar|null|Param, // Default: "WARNING"
@@ -1019,7 +987,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  * @psalm-type SecurityConfig = array{
  *     access_denied_url?: scalar|null|Param, // Default: null
  *     session_fixation_strategy?: "none"|"migrate"|"invalidate"|Param, // Default: "migrate"
- *     hide_user_not_found?: bool|Param, // Deprecated: The "hide_user_not_found" option is deprecated and will be removed in 8.0. Use the "expose_security_errors" option instead.
  *     expose_security_errors?: \Symfony\Component\Security\Http\Authentication\ExposeSecurityLevel::None|\Symfony\Component\Security\Http\Authentication\ExposeSecurityLevel::AccountStatus|\Symfony\Component\Security\Http\Authentication\ExposeSecurityLevel::All|Param, // Default: "none"
  *     erase_credentials?: bool|Param, // Default: true
  *     access_decision_manager?: array{
@@ -1255,9 +1222,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *                     claim?: scalar|null|Param, // Claim which contains the user identifier (e.g.: sub, email..). // Default: "sub"
  *                     audience: scalar|null|Param, // Audience set in the token, for validation purpose.
  *                     issuers: list<scalar|null|Param>,
- *                     algorithm?: array<mixed>,
  *                     algorithms: list<scalar|null|Param>,
- *                     key?: scalar|null|Param, // Deprecated: The "key" option is deprecated and will be removed in 8.0. Use the "keyset" option instead. // JSON-encoded JWK used to sign the token (must contain a "kty" key).
  *                     keyset?: scalar|null|Param, // JSON-encoded JWKSet used to sign the token (must contain a list of valid public keys).
  *                     encryption?: bool|array{
  *                         enabled?: bool|Param, // Default: false

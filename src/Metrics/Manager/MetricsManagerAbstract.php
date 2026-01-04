@@ -243,7 +243,7 @@ abstract class MetricsManagerAbstract implements LoggerAwareInterface
         MetricsDto $waiting,
         MetricsDto $process,
         MetricsDto $cpu,
-        MetricsDto|null $request,
+        ?MetricsDto $request,
         MetricsDto $error,
         MetricsDto $counter,
     ): array

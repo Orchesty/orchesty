@@ -5,6 +5,7 @@ namespace Hanaboso\PipesFramework\Configurator\Model\Filters;
 use Closure;
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Query\Expr;
+use Hanaboso\MongoDataGrid\GridAggregationFilterAbstract;
 use Hanaboso\PipesFramework\Configurator\Document\TopologyProgress;
 use Hanaboso\Utils\Date\DateTimeUtils;
 use LogicException;
@@ -20,8 +21,7 @@ final class ProcessAggregationFilter extends GridAggregationFilterAbstract
 {
 
     /**
-     * @return string
-     * @phpstan-return class-string
+     * @return class-string
      */
     protected function getDocumentClass(): string
     {
@@ -31,7 +31,7 @@ final class ProcessAggregationFilter extends GridAggregationFilterAbstract
     /**
      * @return string[]
      */
-    protected function filterCols(): array
+    protected function getConditions(): array
     {
         return [
             'created' => 'startedAt',
@@ -43,7 +43,7 @@ final class ProcessAggregationFilter extends GridAggregationFilterAbstract
     /**
      * @return string[]
      */
-    protected function orderCols(): array
+    protected function getSortations(): array
     {
         return [
             'created' => 'startedAt',
@@ -51,31 +51,31 @@ final class ProcessAggregationFilter extends GridAggregationFilterAbstract
     }
 
     /**
-     * @return mixed[]
+     * @return string[]
      */
-    protected function searchableCols(): array
+    protected function getSearch(): array
     {
         return [];
     }
 
     /**
-     * @return mixed[]
+     * @return array<string, Closure(Builder, mixed[], string, Expr, ?string): void>
      */
-    protected function configFilterColsCallbacks(): array
+    protected function getConditionsCallbacks(): array
     {
         return [
             'status' => static function (
                 Builder $builder,
-                mixed $value,
+                array $values,
                 string $name,
                 Expr $expr,
-                string $operator,
+                ?string $operator,
             ): void {
                 $builder;
                 $operator;
                 $name;
 
-                match ($value[0]) {
+                match ($values[0]) {
                     'RUNNING' => $expr->addAnd($builder->matchExpr()->field('finished')->equals(NULL)),
                     'COMPLETED' => $expr->addAnd(
                         $builder->matchExpr()->field('finished')->notEqual(NULL),
@@ -86,7 +86,7 @@ final class ProcessAggregationFilter extends GridAggregationFilterAbstract
                         $builder->matchExpr()->field('nok')->notEqual(0),
                     ),
                     default => throw new LogicException(
-                        sprintf('Unknown status value `%s`.', $value[0]),
+                        sprintf('Unknown status value `%s`.', $values[0]),
                         Response::HTTP_BAD_REQUEST,
                     ),
                 };
@@ -95,10 +95,10 @@ final class ProcessAggregationFilter extends GridAggregationFilterAbstract
     }
 
     /**
-     * @param Builder $builder
-     * @param Closure $addConditionsCallback
-     * @param Closure $addSortationsCallback
-     * @param Closure $addPaginationCallback
+     * @param Builder         $builder
+     * @param Closure(): void $addConditionsCallback
+     * @param Closure(): void $addSortationsCallback
+     * @param Closure(): void $addPaginationCallback
      *
      * @return void
      */
@@ -134,6 +134,8 @@ final class ProcessAggregationFilter extends GridAggregationFilterAbstract
             ])
             ->alias('logs')
             ->project()
+            ->field('id')
+            ->expression('$_id')
             ->field('topologyId')
             ->expression('$topologyId')
             ->field('created')

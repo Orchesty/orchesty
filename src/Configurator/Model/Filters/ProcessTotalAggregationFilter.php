@@ -4,6 +4,7 @@ namespace Hanaboso\PipesFramework\Configurator\Model\Filters;
 
 use Closure;
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
+use Hanaboso\MongoDataGrid\GridAggregationFilterAbstract;
 use Hanaboso\PipesFramework\Configurator\Document\TopologyProgress;
 
 /**
@@ -15,8 +16,7 @@ final class ProcessTotalAggregationFilter extends GridAggregationFilterAbstract
 {
 
     /**
-     * @return string
-     * @phpstan-return class-string
+     * @return class-string
      */
     protected function getDocumentClass(): string
     {
@@ -26,7 +26,7 @@ final class ProcessTotalAggregationFilter extends GridAggregationFilterAbstract
     /**
      * @return string[]
      */
-    protected function filterCols(): array
+    protected function getConditions(): array
     {
         return [
             'created' => 'startedAt',
@@ -36,32 +36,24 @@ final class ProcessTotalAggregationFilter extends GridAggregationFilterAbstract
     /**
      * @return string[]
      */
-    protected function orderCols(): array
+    protected function getSortations(): array
     {
         return [];
     }
 
     /**
-     * @return mixed[]
+     * @return string[]
      */
-    protected function searchableCols(): array
+    protected function getSearch(): array
     {
         return [];
     }
 
     /**
-     * @return bool
-     */
-    protected function useBetterCount(): bool
-    {
-        return FALSE;
-    }
-
-    /**
-     * @param Builder $builder
-     * @param Closure $addConditionsCallback
-     * @param Closure $addSortationsCallback
-     * @param Closure $addPaginationCallback
+     * @param Builder         $builder
+     * @param Closure(): void $addConditionsCallback
+     * @param Closure(): void $addSortationsCallback
+     * @param Closure(): void $addPaginationCallback
      *
      * @return void
      */
@@ -79,7 +71,7 @@ final class ProcessTotalAggregationFilter extends GridAggregationFilterAbstract
             ->field('_id')
             ->expression(NULL)
             ->field('count')
-            ->expression($builder->expr()->sum(1))
+            ->sum(1)
             ->field('failed')
             ->expression(
                 $builder->expr()->sum(

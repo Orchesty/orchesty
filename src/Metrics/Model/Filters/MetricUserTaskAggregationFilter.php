@@ -4,7 +4,7 @@ namespace Hanaboso\PipesFramework\Metrics\Model\Filters;
 
 use Closure;
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
-use Hanaboso\PipesFramework\Configurator\Model\Filters\GridAggregationFilterAbstract;
+use Hanaboso\MongoDataGrid\GridAggregationFilterAbstract;
 use Hanaboso\PipesFramework\UserTask\Document\UserTask;
 
 /**
@@ -16,8 +16,7 @@ final class MetricUserTaskAggregationFilter extends GridAggregationFilterAbstrac
 {
 
     /**
-     * @return string
-     * @phpstan-return class-string
+     * @return class-string
      */
     protected function getDocumentClass(): string
     {
@@ -27,7 +26,7 @@ final class MetricUserTaskAggregationFilter extends GridAggregationFilterAbstrac
     /**
      * @return string[]
      */
-    protected function filterCols(): array
+    protected function getConditions(): array
     {
         return [
             'created' => 'created',
@@ -37,7 +36,7 @@ final class MetricUserTaskAggregationFilter extends GridAggregationFilterAbstrac
     /**
      * @return string[]
      */
-    protected function orderCols(): array
+    protected function getSortations(): array
     {
         return [
             'count' => 'count',
@@ -45,26 +44,18 @@ final class MetricUserTaskAggregationFilter extends GridAggregationFilterAbstrac
     }
 
     /**
-     * @return mixed[]
+     * @return string[]
      */
-    protected function searchableCols(): array
+    protected function getSearch(): array
     {
         return [];
     }
 
     /**
-     * @return bool
-     */
-    protected function useBetterCount(): bool
-    {
-        return FALSE;
-    }
-
-    /**
-     * @param Builder $builder
-     * @param Closure $addConditionsCallback
-     * @param Closure $addSortationsCallback
-     * @param Closure $addPaginationCallback
+     * @param Builder         $builder
+     * @param Closure(): void $addConditionsCallback
+     * @param Closure(): void $addSortationsCallback
+     * @param Closure(): void $addPaginationCallback
      *
      * @return void
      */
@@ -90,7 +81,7 @@ final class MetricUserTaskAggregationFilter extends GridAggregationFilterAbstrac
                     ->expression('$message.headers.result-message'),
             )
             ->field('count')
-            ->expression($builder->expr()->sum(1));
+            ->sum(1);
 
         $addSortationsCallback();
         $addPaginationCallback();

@@ -51,7 +51,7 @@ final class CategoryParser
     /**
      * @var string|null
      */
-    private string|null $matchedRootAlias = '';
+    private ?string $matchedRootAlias = '';
 
     /**
      * @var ObjectRepository<Category>&CategoryRepository

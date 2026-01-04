@@ -32,11 +32,8 @@ final class TopologyHandlerTest extends DatabaseTestCaseAbstract
 {
 
     /**
-     * @throws Exception
-     */
-
-    /**
      * @return void
+     * @throws Exception
      */
     public function testGetCronTopologies(): void
     {

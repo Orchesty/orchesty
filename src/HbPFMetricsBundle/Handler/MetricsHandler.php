@@ -168,7 +168,6 @@ final readonly class MetricsHandler
         return $this->getGridResponse($dto, $this->manager->getMetricsLimitsTotal($dto));
     }
 
-
     /**
      * @param GridRequestDtoInterface $dto
      *
@@ -201,7 +200,6 @@ final readonly class MetricsHandler
     {
         return $this->getGridResponse($dto, $this->manager->getMetricsUserTasksTotal($dto));
     }
-
 
     /**
      * @param GridRequestDtoInterface $dto

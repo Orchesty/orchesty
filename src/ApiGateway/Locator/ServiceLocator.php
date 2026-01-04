@@ -72,7 +72,7 @@ final class ServiceLocator implements LoggerAwareInterface
         $this->logger        = new NullLogger();
     }
 
-    /**
+    /*
      * --------------------------------------------- APP Store -----------------------------------------
      */
 
@@ -447,7 +447,7 @@ final class ServiceLocator implements LoggerAwareInterface
         )[0];
     }
 
-    /**
+    /*
      * --------------------------------------------- Nodes -----------------------------------------
      */
 
@@ -503,7 +503,7 @@ final class ServiceLocator implements LoggerAwareInterface
         return $n;
     }
 
-    /**
+    /*
      * -------------------------------------------- Webhooks -----------------------------------------
      */
 
@@ -563,7 +563,7 @@ final class ServiceLocator implements LoggerAwareInterface
         return $this->getSdks()[0]->getName();
     }
 
-    /**
+    /*
      * --------------------------------------------- HELPERS -----------------------------------------
      */
 

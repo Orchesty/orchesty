@@ -306,7 +306,7 @@ final class TopologyController
     public function deleteTopologyAction(Request $request, string $id): Response
     {
         try {
-            $removeWithTasks = $request->get('removeWithTasks');
+            $removeWithTasks = $request->query->getBoolean('removeWithTasks');
             $res             = $this->topologyHandler->deleteTopology($id, $removeWithTasks);
 
             return $this->getResponse($res->getBody(), $res->getStatusCode());

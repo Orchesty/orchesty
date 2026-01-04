@@ -5,7 +5,7 @@ namespace Hanaboso\PipesFramework\Metrics\Model\Filters;
 use Closure;
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Query\Expr;
-use Hanaboso\PipesFramework\Configurator\Model\Filters\GridAggregationFilterAbstract;
+use Hanaboso\MongoDataGrid\GridAggregationFilterAbstract;
 use Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetrics;
 use LogicException;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,8 +19,7 @@ final class MetricConnectorOverviewAggregationFilter extends GridAggregationFilt
 {
 
     /**
-     * @return string
-     * @phpstan-return class-string
+     * @return class-string
      */
     protected function getDocumentClass(): string
     {
@@ -30,7 +29,7 @@ final class MetricConnectorOverviewAggregationFilter extends GridAggregationFilt
     /**
      * @return string[]
      */
-    protected function filterCols(): array
+    protected function getConditions(): array
     {
         return [
             'applicationId' => 'tags.application_id',
@@ -45,36 +44,35 @@ final class MetricConnectorOverviewAggregationFilter extends GridAggregationFilt
     /**
      * @return string[]
      */
-    protected function orderCols(): array
+    protected function getSortations(): array
     {
         return [
             'duration' => 'duration',
         ];
     }
 
-
     /**
-     * @return mixed[]
+     * @return array<string, Closure(Builder, mixed[], string, Expr, ?string): void>
      */
-    protected function configFilterColsCallbacks(): array
+    protected function getConditionsCallbacks(): array
     {
         return [
             'status' => static function (
                 Builder $builder,
-                mixed $value,
+                array $values,
                 string $name,
                 Expr $expr,
-                string $operator,
+                ?string $operator,
             ): void {
                 $builder;
                 $operator;
                 $name;
 
-                match ($value[0]) {
+                match ($values[0]) {
                     'COMPLETED' => $expr->addAnd($builder->matchExpr()->field('fields.response_code')->lte(399)),
                     'FAILED' => $expr->addAnd($builder->matchExpr()->field('fields.response_code')->gte(400)),
                     default => throw new LogicException(
-                        sprintf('Unknown status value `%s`.', $value[0]),
+                        sprintf('Unknown status value `%s`.', $values[0]),
                         Response::HTTP_BAD_REQUEST,
                     ),
                 };
@@ -82,28 +80,19 @@ final class MetricConnectorOverviewAggregationFilter extends GridAggregationFilt
         ];
     }
 
-
     /**
-     * @return mixed[]
+     * @return string[]
      */
-    protected function searchableCols(): array
+    protected function getSearch(): array
     {
         return [];
     }
 
     /**
-     * @return bool
-     */
-    protected function useBetterCount(): bool
-    {
-        return FALSE;
-    }
-
-    /**
-     * @param Builder $builder
-     * @param Closure $addConditionsCallback
-     * @param Closure $addSortationsCallback
-     * @param Closure $addPaginationCallback
+     * @param Builder         $builder
+     * @param Closure(): void $addConditionsCallback
+     * @param Closure(): void $addSortationsCallback
+     * @param Closure(): void $addPaginationCallback
      *
      * @return void
      */
@@ -125,9 +114,9 @@ final class MetricConnectorOverviewAggregationFilter extends GridAggregationFilt
             ->field('applicationId')
             ->last('$tags.application_id')
             ->field('count')
-            ->expression($builder->expr()->sum(1))
+            ->sum(1)
             ->field('duration')
-            ->expression($builder->expr()->avg('$fields.sent_request_total_duration'))
+            ->avg('$fields.sent_request_total_duration')
             ->field('status400')
             ->expression(
                 $builder->expr()->sum(
@@ -171,7 +160,7 @@ final class MetricConnectorOverviewAggregationFilter extends GridAggregationFilt
             ->field('count')
             ->expression('$count')
             ->field('duration')
-            ->expression($builder->expr()->round('$duration'))
+            ->round('$duration')
             ->field('status400')
             ->expression('$status400')
             ->field('status500')

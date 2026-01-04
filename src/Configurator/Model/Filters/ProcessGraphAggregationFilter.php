@@ -4,6 +4,7 @@ namespace Hanaboso\PipesFramework\Configurator\Model\Filters;
 
 use Closure;
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
+use Hanaboso\MongoDataGrid\GridAggregationFilterAbstract;
 use Hanaboso\PipesFramework\Configurator\Document\TopologyProgress;
 
 /**
@@ -15,8 +16,7 @@ final class ProcessGraphAggregationFilter extends GridAggregationFilterAbstract
 {
 
     /**
-     * @return string
-     * @phpstan-return class-string
+     * @return class-string
      */
     protected function getDocumentClass(): string
     {
@@ -26,7 +26,7 @@ final class ProcessGraphAggregationFilter extends GridAggregationFilterAbstract
     /**
      * @return string[]
      */
-    protected function filterCols(): array
+    protected function getConditions(): array
     {
         return [
             'created' => 'startedAt',
@@ -36,7 +36,7 @@ final class ProcessGraphAggregationFilter extends GridAggregationFilterAbstract
     /**
      * @return string[]
      */
-    protected function orderCols(): array
+    protected function getSortations(): array
     {
         return [
             'created' => 'created',
@@ -45,26 +45,18 @@ final class ProcessGraphAggregationFilter extends GridAggregationFilterAbstract
     }
 
     /**
-     * @return mixed[]
+     * @return string[]
      */
-    protected function searchableCols(): array
+    protected function getSearch(): array
     {
         return [];
     }
 
     /**
-     * @return bool
-     */
-    protected function useBetterCount(): bool
-    {
-        return FALSE;
-    }
-
-    /**
-     * @param Builder $builder
-     * @param Closure $addConditionsCallback
-     * @param Closure $addSortationsCallback
-     * @param Closure $addPaginationCallback
+     * @param Builder         $builder
+     * @param Closure(): void $addConditionsCallback
+     * @param Closure(): void $addSortationsCallback
+     * @param Closure(): void $addPaginationCallback
      *
      * @return void
      */
@@ -130,9 +122,9 @@ final class ProcessGraphAggregationFilter extends GridAggregationFilterAbstract
             ->field('_id')
             ->expression(FALSE)
             ->field('created')
-            ->dateToString('%Y-%m-%dT%H:%M:%SZ', '$_id.hour')
+            ->dateToString('%Y-%m-%dT%H:%M:%SZ', '$created')
             ->field('topologyId')
-            ->expression('$_id.topologyId')
+            ->expression('$topologyId')
             ->field('success')
             ->expression('$success')
             ->field('failed')

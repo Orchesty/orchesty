@@ -4,8 +4,8 @@ namespace Hanaboso\PipesFramework\Metrics\Model\Filters;
 
 use Closure;
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
+use Hanaboso\MongoDataGrid\GridAggregationFilterAbstract;
 use Hanaboso\PipesFramework\Configurator\Model\Filters\AggregationFilterUtils;
-use Hanaboso\PipesFramework\Configurator\Model\Filters\GridAggregationFilterAbstract;
 use Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetrics;
 
 /**
@@ -17,8 +17,7 @@ final class MetricConnectorGraphAggregationFilter extends GridAggregationFilterA
 {
 
     /**
-     * @return string
-     * @phpstan-return class-string
+     * @return class-string
      */
     protected function getDocumentClass(): string
     {
@@ -28,7 +27,7 @@ final class MetricConnectorGraphAggregationFilter extends GridAggregationFilterA
     /**
      * @return string[]
      */
-    protected function filterCols(): array
+    protected function getConditions(): array
     {
         return [
             'created' => 'fields.created',
@@ -39,7 +38,7 @@ final class MetricConnectorGraphAggregationFilter extends GridAggregationFilterA
     /**
      * @return string[]
      */
-    protected function orderCols(): array
+    protected function getSortations(): array
     {
         return [
             'created' => 'created',
@@ -47,26 +46,18 @@ final class MetricConnectorGraphAggregationFilter extends GridAggregationFilterA
     }
 
     /**
-     * @return mixed[]
+     * @return string[]
      */
-    protected function searchableCols(): array
+    protected function getSearch(): array
     {
         return [];
     }
 
     /**
-     * @return bool
-     */
-    protected function useBetterCount(): bool
-    {
-        return FALSE;
-    }
-
-    /**
-     * @param Builder $builder
-     * @param Closure $addConditionsCallback
-     * @param Closure $addSortationsCallback
-     * @param Closure $addPaginationCallback
+     * @param Builder         $builder
+     * @param Closure(): void $addConditionsCallback
+     * @param Closure(): void $addSortationsCallback
+     * @param Closure(): void $addPaginationCallback
      *
      * @return void
      */
