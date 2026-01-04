@@ -16,6 +16,7 @@ use Hanaboso\UserBundle\Model\Security\SecurityManagerException;
 use Hanaboso\UserBundle\Model\User\UserManagerException;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 use Monolog\Logger;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 use Symfony\Component\HttpFoundation\Request;
@@ -30,6 +31,7 @@ use Symfony\Component\HttpFoundation\Request;
 #[CoversClass(UserHandler::class)]
 #[CoversClass(UserManager::class)]
 #[CoversClass(UserDocumentFilter::class)]
+#[AllowMockObjectsWithoutExpectations]
 final class UserControllerTest extends ControllerTestCaseAbstract
 {
 

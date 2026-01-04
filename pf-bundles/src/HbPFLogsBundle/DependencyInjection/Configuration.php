@@ -18,7 +18,7 @@ final class Configuration implements ConfigurationInterface
 {
 
     /**
-     * @return TreeBuilder
+     * @return TreeBuilder<'array'>
      */
     public function getConfigTreeBuilder(): TreeBuilder
     {

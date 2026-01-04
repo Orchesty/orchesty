@@ -13,6 +13,7 @@ use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
 use Hanaboso\PipesFramework\Configurator\Model\NodeManager;
 use Hanaboso\PipesFramework\Database\Document\Node;
 use Hanaboso\PipesFramework\Database\Repository\NodeRepository;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 
@@ -22,6 +23,7 @@ use PipesFrameworkTests\KernelTestCaseAbstract;
  * @package PipesFrameworkTests\Unit\Configurator\Model
  */
 #[CoversClass(NodeManager::class)]
+#[AllowMockObjectsWithoutExpectations]
 final class NodeManagerTest extends KernelTestCaseAbstract
 {
 

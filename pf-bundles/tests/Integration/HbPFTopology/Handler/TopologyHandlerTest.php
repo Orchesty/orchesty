@@ -16,6 +16,7 @@ use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\PipesFramework\Database\Repository\NodeRepository;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler;
 use Hanaboso\PipesFramework\HbPFUserTaskBundle\Handler\UserTaskHandler;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 use Throwable;
@@ -26,6 +27,7 @@ use Throwable;
  * @package PipesFrameworkTests\Integration\HbPFTopology\Handler
  */
 #[CoversClass(TopologyHandler::class)]
+#[AllowMockObjectsWithoutExpectations]
 final class TopologyHandlerTest extends DatabaseTestCaseAbstract
 {
 

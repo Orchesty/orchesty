@@ -11,6 +11,7 @@ use Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler;
 use Hanaboso\PipesFramework\Metrics\Exception\MetricsException;
 use Hanaboso\PipesFramework\Metrics\Manager\MetricsManagerAbstract;
 use Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 use Throwable;
@@ -23,6 +24,7 @@ use Throwable;
 #[CoversClass(MetricsController::class)]
 #[CoversClass(MetricsHandler::class)]
 #[CoversClass(MetricsManagerAbstract::class)]
+#[AllowMockObjectsWithoutExpectations]
 final class MetricsControllerTest extends ControllerTestCaseAbstract
 {
 

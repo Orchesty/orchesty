@@ -16,6 +16,7 @@ use Hanaboso\PipesFramework\TopologyInstaller\InstallManager;
 use Hanaboso\PipesFramework\TopologyInstaller\TopologiesComparator;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
 use Hanaboso\Utils\File\File;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 use Predis\Client;
@@ -32,6 +33,7 @@ use Predis\Connection\Parameters;
 #[CoversClass(UpdateObject::class)]
 #[CoversClass(TopologiesComparator::class)]
 #[CoversClass(RedisCache::class)]
+#[AllowMockObjectsWithoutExpectations]
 final class InstallManagerTest extends DatabaseTestCaseAbstract
 {
 

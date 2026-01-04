@@ -12,6 +12,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
 use Hanaboso\PipesFramework\Database\Document\Node;
 use Hanaboso\Utils\String\Json;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 
@@ -21,6 +22,7 @@ use PipesFrameworkTests\KernelTestCaseAbstract;
  * @package PipesFrameworkTests\Unit\Configurator\Cron
  */
 #[CoversClass(CronManager::class)]
+#[AllowMockObjectsWithoutExpectations]
 final class CronManagerTest extends KernelTestCaseAbstract
 {
 

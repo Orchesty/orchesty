@@ -8,6 +8,7 @@ use Hanaboso\PipesFramework\ApiGateway\Authenticator\ApiKey\ApiKeyAuthenticator;
 use Hanaboso\PipesFramework\Configurator\Document\ApiToken;
 use Hanaboso\PipesFramework\Configurator\Enum\ApiTokenScopesEnum;
 use Hanaboso\PipesFramework\Configurator\Model\ApiTokenManager;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,6 +22,7 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
  */
 #[CoversClass(ApiKeyAuthenticator::class)]
 #[CoversClass(ApiTokenManager::class)]
+#[AllowMockObjectsWithoutExpectations]
 final class ApiKeyAuthenticatorTest extends KernelTestCaseAbstract
 {
 

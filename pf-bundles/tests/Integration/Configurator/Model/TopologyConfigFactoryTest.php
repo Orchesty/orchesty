@@ -15,6 +15,7 @@ use Hanaboso\PipesFramework\Database\Document\Embed\EmbedNode;
 use Hanaboso\PipesFramework\Database\Document\Node;
 use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\Utils\String\Json;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
@@ -24,6 +25,7 @@ use PipesFrameworkTests\DatabaseTestCaseAbstract;
  * @package PipesFrameworkTests\Integration\Configurator\Model
  */
 #[CoversClass(TopologyConfigFactory::class)]
+#[AllowMockObjectsWithoutExpectations]
 final class TopologyConfigFactoryTest extends DatabaseTestCaseAbstract
 {
 

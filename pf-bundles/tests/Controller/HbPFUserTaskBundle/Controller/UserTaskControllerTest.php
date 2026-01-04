@@ -14,6 +14,7 @@ use Hanaboso\PipesFramework\UserTask\Model\UserTaskManager;
 use Hanaboso\PipesFramework\UserTask\Repository\UserTaskRepository;
 use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\System\PipesHeaders;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 use RabbitMqBundle\Publisher\Publisher;
@@ -28,6 +29,7 @@ use RabbitMqBundle\Publisher\Publisher;
 #[CoversClass(UserTaskManager::class)]
 #[CoversClass(UserTaskFilter::class)]
 #[CoversClass(UserTaskRepository::class)]
+#[AllowMockObjectsWithoutExpectations]
 final class UserTaskControllerTest extends ControllerTestCaseAbstract
 {
 
