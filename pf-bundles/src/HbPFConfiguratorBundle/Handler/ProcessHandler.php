@@ -48,7 +48,6 @@ final readonly class ProcessHandler
         return $this->getGridResponse($dto, $this->manager->getProcessesTotal($dto));
     }
 
-
     /**
      * @param GridRequestDtoInterface $dto
      *

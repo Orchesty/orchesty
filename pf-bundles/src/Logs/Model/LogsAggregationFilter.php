@@ -4,7 +4,7 @@ namespace Hanaboso\PipesFramework\Logs\Model;
 
 use Closure;
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
-use Hanaboso\PipesFramework\Configurator\Model\Filters\GridAggregationFilterAbstract;
+use Hanaboso\MongoDataGrid\GridAggregationFilterAbstract;
 use Hanaboso\PipesFramework\Logs\Document\Logs;
 
 /**
@@ -16,8 +16,7 @@ final class LogsAggregationFilter extends GridAggregationFilterAbstract
 {
 
     /**
-     * @return string
-     * @phpstan-return class-string
+     * @return class-string
      */
     protected function getDocumentClass(): string
     {
@@ -27,7 +26,7 @@ final class LogsAggregationFilter extends GridAggregationFilterAbstract
     /**
      * @return string[]
      */
-    protected function filterCols(): array
+    protected function getConditions(): array
     {
         return [
             'created' => 'ts',
@@ -41,7 +40,7 @@ final class LogsAggregationFilter extends GridAggregationFilterAbstract
     /**
      * @return string[]
      */
-    protected function orderCols(): array
+    protected function getSortations(): array
     {
         return [
             'created' => 'ts',
@@ -49,18 +48,18 @@ final class LogsAggregationFilter extends GridAggregationFilterAbstract
     }
 
     /**
-     * @return mixed[]
+     * @return string[]
      */
-    protected function searchableCols(): array
+    protected function getSearch(): array
     {
         return ['message'];
     }
 
     /**
-     * @param Builder $builder
-     * @param Closure $addConditionsCallback
-     * @param Closure $addSortationsCallback
-     * @param Closure $addPaginationCallback
+     * @param Builder         $builder
+     * @param Closure(): void $addConditionsCallback
+     * @param Closure(): void $addSortationsCallback
+     * @param Closure(): void $addPaginationCallback
      *
      * @return void
      */

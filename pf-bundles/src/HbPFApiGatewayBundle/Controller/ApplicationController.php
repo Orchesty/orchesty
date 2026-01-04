@@ -88,7 +88,6 @@ final class ApplicationController extends AbstractController
         return new JsonResponse($this->locator->getApp($key, $sdk));
     }
 
-
     /**
      * @param string $key
      * @param string $sdk

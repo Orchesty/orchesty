@@ -472,7 +472,7 @@ final class MongoMetricsManager extends MetricsManagerAbstract
         return $this->metricUserTaskGraphAggregationFilter->getData($dto)->toArray();
     }
 
-    /**
+    /*
      * -------------------------------------------- HELPERS ---------------------------------------------
      */
 

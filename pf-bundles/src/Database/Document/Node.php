@@ -112,7 +112,7 @@ class Node
     /**
      * @return string|null
      */
-    public function getApplication(): string |null
+    public function getApplication(): ?string
     {
         return $this->application;
     }

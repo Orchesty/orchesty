@@ -5,7 +5,7 @@ namespace Hanaboso\PipesFramework\Metrics\Model\Filters;
 use Closure;
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Query\Expr;
-use Hanaboso\PipesFramework\Configurator\Model\Filters\GridAggregationFilterAbstract;
+use Hanaboso\MongoDataGrid\GridAggregationFilterAbstract;
 use Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetrics;
 use LogicException;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,8 +19,7 @@ final class MetricConnectorAggregationFilter extends GridAggregationFilterAbstra
 {
 
     /**
-     * @return string
-     * @phpstan-return class-string
+     * @return class-string
      */
     protected function getDocumentClass(): string
     {
@@ -30,7 +29,7 @@ final class MetricConnectorAggregationFilter extends GridAggregationFilterAbstra
     /**
      * @return string[]
      */
-    protected function filterCols(): array
+    protected function getConditions(): array
     {
         return [
             'created' => 'fields.created',
@@ -42,36 +41,35 @@ final class MetricConnectorAggregationFilter extends GridAggregationFilterAbstra
     /**
      * @return string[]
      */
-    protected function orderCols(): array
+    protected function getSortations(): array
     {
         return [
             'created' => 'fields.created',
         ];
     }
 
-
     /**
-     * @return mixed[]
+     * @return array<string, Closure(Builder, mixed[], string, Expr, ?string): void>
      */
-    protected function configFilterColsCallbacks(): array
+    protected function getConditionsCallbacks(): array
     {
         return [
             'status' => static function (
                 Builder $builder,
-                mixed $value,
+                array $values,
                 string $name,
                 Expr $expr,
-                string $operator,
+                ?string $operator,
             ): void {
                 $builder;
                 $operator;
                 $name;
 
-                match ($value[0]) {
+                match ($values[0]) {
                     'COMPLETED' => $expr->addAnd($builder->matchExpr()->field('fields.response_code')->lte(399)),
                     'FAILED' => $expr->addAnd($builder->matchExpr()->field('fields.response_code')->gte(400)),
                     default => throw new LogicException(
-                        sprintf('Unknown status value `%s`.', $value[0]),
+                        sprintf('Unknown status value `%s`.', $values[0]),
                         Response::HTTP_BAD_REQUEST,
                     ),
                 };
@@ -79,20 +77,19 @@ final class MetricConnectorAggregationFilter extends GridAggregationFilterAbstra
         ];
     }
 
-
     /**
-     * @return mixed[]
+     * @return string[]
      */
-    protected function searchableCols(): array
+    protected function getSearch(): array
     {
         return [];
     }
 
     /**
-     * @param Builder $builder
-     * @param Closure $addConditionsCallback
-     * @param Closure $addSortationsCallback
-     * @param Closure $addPaginationCallback
+     * @param Builder         $builder
+     * @param Closure(): void $addConditionsCallback
+     * @param Closure(): void $addSortationsCallback
+     * @param Closure(): void $addPaginationCallback
      *
      * @return void
      */

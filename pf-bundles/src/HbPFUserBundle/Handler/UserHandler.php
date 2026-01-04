@@ -105,7 +105,7 @@ final class UserHandler
         return $this->getUserData($user, $jwt);
     }
 
-    /**
+    /*
      * ----------------------------------- HELPERS -----------------------------------
      */
 

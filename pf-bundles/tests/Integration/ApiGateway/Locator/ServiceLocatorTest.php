@@ -360,7 +360,7 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
         $this->createLocator($dto)->runSyncActions($req, 'key', 'name', 'someMethod');
     }
 
-    /**
+    /*
      * ------------------------------------ HELPERS --------------------------------------------
      */
 
