@@ -10,12 +10,14 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator;
 use Hanaboso\PipesFramework\Configurator\Document\Sdk;
 use Hanaboso\Utils\String\Json;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
 /**
  * Class SettingsControllerTest
  *
  * @package ApplinthTests\Controller
  */
+#[AllowMockObjectsWithoutExpectations]
 final class SettingsControllerTest extends ControllerTestCaseAbstract
 {
 

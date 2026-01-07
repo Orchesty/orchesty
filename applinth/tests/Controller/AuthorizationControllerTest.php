@@ -10,6 +10,7 @@ use Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator;
 use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 use Hanaboso\PipesFramework\Configurator\Document\Sdk;
 use Hanaboso\Utils\String\Json;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use Symfony\Component\BrowserKit\Cookie;
 
 /**
@@ -17,6 +18,7 @@ use Symfony\Component\BrowserKit\Cookie;
  *
  * @package ApplinthTests\Controller
  */
+#[AllowMockObjectsWithoutExpectations]
 final class AuthorizationControllerTest extends ControllerTestCaseAbstract
 {
 

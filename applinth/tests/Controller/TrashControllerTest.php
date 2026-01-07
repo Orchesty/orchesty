@@ -13,6 +13,7 @@ use Hanaboso\PipesFramework\UserTask\Model\UserTaskManager;
 use Hanaboso\Utils\Exception\EnumException;
 use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\System\PipesHeaders;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use RabbitMqBundle\Publisher\Publisher;
 
 /**
@@ -20,6 +21,7 @@ use RabbitMqBundle\Publisher\Publisher;
  *
  * @package ApplinthTests\Controller
  */
+#[AllowMockObjectsWithoutExpectations]
 final class TrashControllerTest extends ControllerTestCaseAbstract
 {
 

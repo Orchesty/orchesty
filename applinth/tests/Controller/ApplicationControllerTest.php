@@ -10,6 +10,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\PipesFramework\ApiGateway\Locator\ServiceLocator;
 use Hanaboso\PipesFramework\Configurator\Document\Sdk;
 use Hanaboso\Utils\String\Json;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use Psr\Log\NullLogger;
 
 /**
@@ -17,6 +18,7 @@ use Psr\Log\NullLogger;
  *
  * @package ApplinthTests\Controller
  */
+#[AllowMockObjectsWithoutExpectations]
 final class ApplicationControllerTest extends ControllerTestCaseAbstract
 {
 
