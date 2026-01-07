@@ -239,6 +239,8 @@ services:
             - ${DEV_IP}:27017:27017
         volumes:
             - mongodb:/data/db
+#            -   type: tmpfs
+#                target: /data/db
 
     rabbitmq:
         image: rabbitmq:management-alpine

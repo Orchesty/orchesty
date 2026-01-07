@@ -48,6 +48,48 @@ services:
         arguments:
             - '@hbpf.application_install.repository'
 
+    hbpf.connector.http-status-200-connector:
+        class: Demo\Connector\HttpStatus\HttpStatus200Connector
+        calls:
+            -   setSender: [ '@hbpf.transport.curl_manager' ]
+        arguments:
+            - '@hbpf.application_install.repository'
+
+    hbpf.connector.http-status-201-connector:
+        class: Demo\Connector\HttpStatus\HttpStatus201Connector
+        calls:
+            -   setSender: [ '@hbpf.transport.curl_manager' ]
+        arguments:
+            - '@hbpf.application_install.repository'
+
+    hbpf.connector.http-status-400-connector:
+        class: Demo\Connector\HttpStatus\HttpStatus400Connector
+        calls:
+            -   setSender: [ '@hbpf.transport.curl_manager' ]
+        arguments:
+            - '@hbpf.application_install.repository'
+
+    hbpf.connector.http-status-401-connector:
+        class: Demo\Connector\HttpStatus\HttpStatus401Connector
+        calls:
+            -   setSender: [ '@hbpf.transport.curl_manager' ]
+        arguments:
+            - '@hbpf.application_install.repository'
+
+    hbpf.connector.http-status-404-connector:
+        class: Demo\Connector\HttpStatus\HttpStatus404Connector
+        calls:
+            -   setSender: [ '@hbpf.transport.curl_manager' ]
+        arguments:
+            - '@hbpf.application_install.repository'
+
+    hbpf.connector.http-status-500-connector:
+        class: Demo\Connector\HttpStatus\HttpStatus500Connector
+        calls:
+            -   setSender: [ '@hbpf.transport.curl_manager' ]
+        arguments:
+            - '@hbpf.application_install.repository'
+
     # CustomNode
     hbpf.custom_node.data-generator:
         class: Demo\CustomNode\DataGeneratorConnector
