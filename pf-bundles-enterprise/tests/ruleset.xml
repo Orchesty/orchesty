@@ -4,7 +4,10 @@
     <rule ref="./vendor/hanaboso/php-check-utils/ruleset.xml"/>
     <rule ref="SlevomatCodingStandard.Files.TypeNameMatchesFileName">
         <properties>
-            <property name="rootNamespaces" type="array" value="src=>Hanaboso\PipesFrameworkEnterprise,tests=>PipesFrameworkEnterpriseTests"/>
+            <property name="rootNamespaces" type="array">
+                <element key="src" value="Hanaboso\PipesFrameworkEnterprise"/>
+                <element key="tests" value="PipesFrameworkEnterpriseTests"/>
+            </property>
         </properties>
     </rule>
 </ruleset>
