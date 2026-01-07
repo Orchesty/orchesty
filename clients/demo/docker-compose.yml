@@ -26,8 +26,8 @@ services:
         environment:
             PHP_WEBROOT: /var/www/pipes/clients/demo/pipes-api/public
             COMPOSER_HOME: ${HOME}/dev/.composer
-            WORKER_API: https://test.com
-            ORCHESTY_API_KEY: ThisIsNotRealKEy
+            WORKER_API: http://worker-api:8080/
+            ORCHESTY_API_KEY: ${ORCHESTY_API_KEY}
         working_dir: /var/www/pipes/clients/demo/pipes-api
         volumes:
             - ../../:/var/www/pipes:cached

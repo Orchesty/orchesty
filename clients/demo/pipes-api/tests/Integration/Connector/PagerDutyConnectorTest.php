@@ -12,6 +12,7 @@ use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
 use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Json;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use ReflectionException;
 
@@ -20,6 +21,7 @@ use ReflectionException;
  *
  * @package DemoTests\Integration\Connector
  */
+#[AllowMockObjectsWithoutExpectations]
 #[CoversClass(PagerDutyConnector::class)]
 final class PagerDutyConnectorTest extends KernelTestCaseAbstract
 {

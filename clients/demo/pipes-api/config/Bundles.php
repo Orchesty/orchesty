@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle;
 use EmailServiceBundle\EmailServiceBundle;
 use Hanaboso\CommonsBundle\HbPFCommonsBundle;
 use Hanaboso\HbPFConnectors\HbPFConnectorsBundle;
@@ -12,7 +11,6 @@ use Hanaboso\RestBundle\RestBundle;
 use Symfony\Bundle\DebugBundle\DebugBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\MonologBundle\MonologBundle;
-use Symfony\Bundle\SecurityBundle\SecurityBundle;
 
 return [
     DebugBundle::class           => ['dev' => TRUE, 'test' => TRUE],
