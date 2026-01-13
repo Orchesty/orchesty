@@ -16,6 +16,7 @@ use Hanaboso\PipesFramework\TopologyInstaller\Dto\TopologyFile;
 use Hanaboso\PipesFramework\TopologyInstaller\Dto\UpdateObject;
 use Hanaboso\PipesFramework\TopologyInstaller\InstallManager;
 use Monolog\Logger;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 
@@ -26,6 +27,7 @@ use PipesFrameworkTests\KernelTestCaseAbstract;
  */
 #[CoversClass(InstallManager::class)]
 #[CoversClass(NullCache::class)]
+#[AllowMockObjectsWithoutExpectations]
 final class InstallManagerTest extends KernelTestCaseAbstract
 {
 

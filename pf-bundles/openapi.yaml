@@ -14,10 +14,10 @@ paths:
         get:
             tags: [ Applications ]
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Applications'
-                500:
-                    $ref: '#/components/responses/500'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/applications/{key}:
         get:
@@ -25,12 +25,12 @@ paths:
             parameters:
                 -   $ref: '#/components/parameters/Key'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Application'
-                404:
-                    $ref: '#/components/responses/404'
-                500:
-                    $ref: '#/components/responses/500'
+                "404":
+                    $ref: '#/components/responses/NotFound'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/applications/users/{user}:
         get:
@@ -38,10 +38,10 @@ paths:
             parameters:
                 -   $ref: '#/components/parameters/User'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/ApplicationInstalls'
-                500:
-                    $ref: '#/components/responses/500'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/applications/{key}/users/{user}:
         get:
@@ -50,12 +50,12 @@ paths:
                 -   $ref: '#/components/parameters/Key'
                 -   $ref: '#/components/parameters/User'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/ApplicationInstall'
-                404:
-                    $ref: '#/components/responses/404'
-                500:
-                    $ref: '#/components/responses/500'
+                "404":
+                    $ref: '#/components/responses/NotFound'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
         post:
             tags: [ Applications ]
@@ -65,12 +65,12 @@ paths:
             requestBody:
                 $ref: '#/components/requestBodies/Empty'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/ApplicationInstallInstall'
-                404:
-                    $ref: '#/components/responses/404'
-                500:
-                    $ref: '#/components/responses/500'
+                "404":
+                    $ref: '#/components/responses/NotFound'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
         put:
             tags: [ Applications ]
@@ -80,12 +80,12 @@ paths:
             requestBody:
                 $ref: '#/components/requestBodies/Settings'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/ApplicationInstallSettings'
-                404:
-                    $ref: '#/components/responses/404'
-                500:
-                    $ref: '#/components/responses/500'
+                "404":
+                    $ref: '#/components/responses/NotFound'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
         delete:
             tags: [ Applications ]
@@ -93,12 +93,12 @@ paths:
                 -   $ref: '#/components/parameters/Key'
                 -   $ref: '#/components/parameters/User'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/ApplicationInstallUninstall'
-                404:
-                    $ref: '#/components/responses/404'
-                500:
-                    $ref: '#/components/responses/500'
+                "404":
+                    $ref: '#/components/responses/NotFound'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/applications/{key}/users/{user}/password:
         put:
@@ -109,12 +109,12 @@ paths:
             requestBody:
                 $ref: '#/components/requestBodies/Password'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/ApplicationInstallUninstall'
-                404:
-                    $ref: '#/components/responses/404'
-                500:
-                    $ref: '#/components/responses/500'
+                "404":
+                    $ref: '#/components/responses/NotFound'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/applications/authorize/token:
         get:
@@ -122,12 +122,12 @@ paths:
             parameters:
                 -   $ref: '#/components/parameters/State'
             responses:
-                302:
+                "302":
                     description: ''
-                404:
-                    $ref: '#/components/responses/404'
-                500:
-                    $ref: '#/components/responses/500'
+                "404":
+                    $ref: '#/components/responses/NotFound'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/applications/{key}/users/{user}/authorize:
         get:
@@ -136,12 +136,12 @@ paths:
                 -   $ref: '#/components/parameters/Key'
                 -   $ref: '#/components/parameters/User'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Empty'
-                404:
-                    $ref: '#/components/responses/404'
-                500:
-                    $ref: '#/components/responses/500'
+                "404":
+                    $ref: '#/components/responses/NotFound'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/applications/{key}/users/{user}/authorize/token:
         get:
@@ -150,12 +150,12 @@ paths:
                 -   $ref: '#/components/parameters/Key'
                 -   $ref: '#/components/parameters/User'
             responses:
-                302:
+                "302":
                     description: ''
-                404:
-                    $ref: '#/components/responses/404'
-                500:
-                    $ref: '#/components/responses/500'
+                "404":
+                    $ref: '#/components/responses/NotFound'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/applications/{key}/sync/list:
         get:
@@ -163,12 +163,12 @@ paths:
             parameters:
                 -   $ref: '#/components/parameters/Key'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Empty'
-                404:
-                    $ref: '#/components/responses/404'
-                500:
-                    $ref: '#/components/responses/500'
+                "404":
+                    $ref: '#/components/responses/NotFound'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/applications/{key}/sync/{method}:
         get:
@@ -177,12 +177,12 @@ paths:
                 -   $ref: '#/components/parameters/Key'
                 -   $ref: '#/components/parameters/Method'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Empty'
-                404:
-                    $ref: '#/components/responses/404'
-                500:
-                    $ref: '#/components/responses/500'
+                "404":
+                    $ref: '#/components/responses/NotFound'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/applications/statistics/application/{key}:
         get:
@@ -190,12 +190,12 @@ paths:
             parameters:
                 -   $ref: '#/components/parameters/Key'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Application'
-                404:
-                    $ref: '#/components/responses/404'
-                500:
-                    $ref: '#/components/responses/500'
+                "404":
+                    $ref: '#/components/responses/NotFound'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/applications/statistics/user/{user}:
         get:
@@ -203,31 +203,31 @@ paths:
             parameters:
                 -   $ref: '#/components/parameters/User'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Users'
-                404:
-                    $ref: '#/components/responses/404'
-                500:
-                    $ref: '#/components/responses/500'
+                "404":
+                    $ref: '#/components/responses/NotFound'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/categories:
         get:
             tags: [ Categories ]
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Categories'
-                500:
-                    $ref: '#/components/responses/500'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
         post:
             tags: [ Categories ]
             requestBody:
                 $ref: '#/components/requestBodies/Category'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Categories'
-                500:
-                    $ref: '#/components/responses/500'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/categories/{id}:
         put:
@@ -237,12 +237,12 @@ paths:
             requestBody:
                 $ref: '#/components/requestBodies/Category'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Category'
-                404:
-                    $ref: '#/components/responses/404'
-                500:
-                    $ref: '#/components/responses/500'
+                "404":
+                    $ref: '#/components/responses/NotFound'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
         patch:
             tags: [ Categories ]
@@ -251,22 +251,22 @@ paths:
             requestBody:
                 $ref: '#/components/requestBodies/Category'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Category'
-                404:
-                    $ref: '#/components/responses/404'
-                500:
-                    $ref: '#/components/responses/500'
+                "404":
+                    $ref: '#/components/responses/NotFound'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
         delete:
             tags: [ Categories ]
             parameters:
                 -   $ref: '#/components/parameters/Id'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Empty'
-                500:
-                    $ref: '#/components/responses/500'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/connector/{id}/action:
         post:
@@ -274,10 +274,10 @@ paths:
             parameters:
                 -   $ref: '#/components/parameters/Id'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Empty'
-                500:
-                    $ref: '#/components/responses/500'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/connector/{id}/webhook:
         post:
@@ -285,20 +285,19 @@ paths:
             parameters:
                 -   $ref: '#/components/parameters/Id'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Empty'
-                500:
-                    $ref: '#/components/responses/500'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/logs:
         get:
             tags: [ Logs ]
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Logs'
-                500:
-                    $ref: '#/components/responses/500'
-
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/longRunning/{id}/process:
         post:
@@ -306,19 +305,19 @@ paths:
             parameters:
                 -   $ref: '#/components/parameters/Id'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Empty'
-                500:
-                    $ref: '#/components/responses/500'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
         get:
             tags: [ Long Running Nodes ]
             parameters:
                 -   $ref: '#/components/parameters/Id'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Empty'
-                500:
-                    $ref: '#/components/responses/500'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/longRunning/{id}/process/test:
         get:
@@ -326,10 +325,10 @@ paths:
             parameters:
                 -   $ref: '#/components/parameters/Id'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Empty'
-                500:
-                    $ref: '#/components/responses/500'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/longRunning/id/topology/{topology}/getTasks:
         get:
@@ -337,10 +336,10 @@ paths:
             parameters:
                 -   $ref: '#/components/parameters/Topology'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/TopologyTasks'
-                500:
-                    $ref: '#/components/responses/500'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/longRunning/name/topology/{topology}/getTasks:
         get:
@@ -348,10 +347,10 @@ paths:
             parameters:
                 -   $ref: '#/components/parameters/Topology'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/TopologyTasks'
-                500:
-                    $ref: '#/components/responses/500'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/longRunning/id/topology/{topology}/node/{node}/getTasks:
         get:
@@ -360,10 +359,10 @@ paths:
                 -   $ref: '#/components/parameters/Topology'
                 -   $ref: '#/components/parameters/Node'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/TopologyTasks'
-                500:
-                    $ref: '#/components/responses/500'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/longRunning/name/topology/{topology}/node/{node}/getTasks:
         get:
@@ -372,10 +371,10 @@ paths:
                 -   $ref: '#/components/parameters/Topology'
                 -   $ref: '#/components/parameters/Node'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/TopologyTasks'
-                500:
-                    $ref: '#/components/responses/500'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/longRunning/{id}:
         put:
@@ -385,19 +384,19 @@ paths:
             requestBody:
                 $ref: '#/components/requestBodies/LongRunningData'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/LongRunningData'
-                500:
-                    $ref: '#/components/responses/500'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/metrics/healthcheck:
         get:
             tags: [ Metrics ]
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/HealthcheckMetrics'
-                500:
-                    $ref: '#/components/responses/500'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/metrics/topology/{topology}:
         get:
@@ -405,10 +404,10 @@ paths:
             parameters:
                 -   $ref: '#/components/parameters/Topology'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/TopologyMetrics'
-                500:
-                    $ref: '#/components/responses/500'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/metrics/topology/{topology}/node/{node}:
         get:
@@ -417,10 +416,10 @@ paths:
                 -   $ref: '#/components/parameters/Topology'
                 -   $ref: '#/components/parameters/Node'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/TopologyNodeMetrics'
-                500:
-                    $ref: '#/components/responses/500'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/metrics/topology/{topology}/requests:
         get:
@@ -428,12 +427,109 @@ paths:
             parameters:
                 -   $ref: '#/components/parameters/Topology'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/TopologyRequestMetrics'
-                500:
-                    $ref: '#/components/responses/500'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
+    /api/metrics/connectors:
+        get:
+            tags: [ Metrics ]
+            responses:
+                "200":
+                    $ref: '#/components/responses/MetricsConnectors'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
+    /api/metrics/connectors/overview:
+        get:
+            tags: [ Metrics ]
+            responses:
+                "200":
+                    $ref: '#/components/responses/MetricsConnectorsOverview'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
+
+    /api/metrics/connectors/graph:
+        get:
+            tags: [ Metrics ]
+            responses:
+                "200":
+                    $ref: '#/components/responses/MetricsConnectorsGraph'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
+
+    /api/metrics/processes:
+        get:
+            tags: [ Metrics ]
+            responses:
+                "200":
+                    $ref: '#/components/responses/MetricsProcesses'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
+
+    /api/metrics/requests:
+        get:
+            tags: [ Metrics ]
+            responses:
+                "200":
+                    $ref: '#/components/responses/MetricsRequests'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
+
+    /api/metrics/limits:
+        get:
+            tags: [ Metrics ]
+            responses:
+                "200":
+                    $ref: '#/components/responses/MetricsLimits'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
+
+    /api/metrics/limits/total:
+        get:
+            tags: [ Metrics ]
+            responses:
+                "200":
+                    $ref: '#/components/responses/MetricsLimitsTotal'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
+
+    /api/metrics/limits/graph:
+        get:
+            tags: [ Metrics ]
+            responses:
+                "200":
+                    $ref: '#/components/responses/MetricsLimitsGraph'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
+
+    /api/metrics/user-tasks:
+        get:
+            tags: [ Metrics ]
+            responses:
+                "200":
+                    $ref: '#/components/responses/MetricsUserTasks'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
+
+    /api/metrics/user-tasks/total:
+        get:
+            tags: [ Metrics ]
+            responses:
+                "200":
+                    $ref: '#/components/responses/MetricsUserTasksTotal'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
+
+    /api/metrics/user-tasks/graph:
+        get:
+            tags: [ Metrics ]
+            responses:
+                "200":
+                    $ref: '#/components/responses/MetricsUserTasksGraph'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/nodes/{id}:
         get:
@@ -441,12 +537,12 @@ paths:
             parameters:
                 -   $ref: '#/components/parameters/Id'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Node'
-                404:
-                    $ref: '#/components/responses/404'
-                500:
-                    $ref: '#/components/responses/500'
+                "404":
+                    $ref: '#/components/responses/NotFound'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
         patch:
             tags: [ Nodes ]
@@ -455,38 +551,38 @@ paths:
             requestBody:
                 $ref: '#/components/requestBodies/Node'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Node'
-                500:
-                    $ref: '#/components/responses/500'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/nodes/list/name:
         get:
             tags: [ Nodes ]
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/NodesImplementationsNames'
-                500:
-                    $ref: '#/components/responses/500'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/sdks:
         get:
             tags: [ SDKs ]
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Sdks'
-                500:
-                    $ref: '#/components/responses/500'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
         post:
             tags: [ SDKs ]
             requestBody:
                 $ref: '#/components/requestBodies/Sdk'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Sdk'
-                500:
-                    $ref: '#/components/responses/500'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/sdks/{id}:
         get:
@@ -494,12 +590,12 @@ paths:
             parameters:
                 -   $ref: '#/components/parameters/Id'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Sdk'
-                404:
-                    $ref: '#/components/responses/404'
-                500:
-                    $ref: '#/components/responses/500'
+                "404":
+                    $ref: '#/components/responses/NotFound'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
         put:
             tags: [ SDKs ]
@@ -508,24 +604,24 @@ paths:
             requestBody:
                 $ref: '#/components/requestBodies/Sdk'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Sdk'
-                404:
-                    $ref: '#/components/responses/404'
-                500:
-                    $ref: '#/components/responses/500'
+                "404":
+                    $ref: '#/components/responses/NotFound'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
         delete:
             tags: [ SDKs ]
             parameters:
                 -   $ref: '#/components/parameters/Id'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Sdk'
-                404:
-                    $ref: '#/components/responses/404'
-                500:
-                    $ref: '#/components/responses/500'
+                "404":
+                    $ref: '#/components/responses/NotFound'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/apiTokens:
         get:
@@ -535,20 +631,20 @@ paths:
                 -   $ref: '#/components/parameters/QueryUser'
                 -   $ref: '#/components/parameters/Created'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/ApiTokens'
-                500:
-                    $ref: '#/components/responses/500'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
         post:
             tags: [ ApiTokens ]
             requestBody:
                 $ref: '#/components/requestBodies/ApiToken'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/ApiToken'
-                500:
-                    $ref: '#/components/responses/500'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/apiTokens/{id}:
         delete:
@@ -556,40 +652,40 @@ paths:
             parameters:
                 -   $ref: '#/components/parameters/Id'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/ApiToken'
-                404:
-                    $ref: '#/components/responses/404'
-                500:
-                    $ref: '#/components/responses/500'
+                "404":
+                    $ref: '#/components/responses/NotFound'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/topologies:
         get:
             tags: [ Topologies ]
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Topologies'
-                500:
-                    $ref: '#/components/responses/500'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
         post:
             tags: [ Topologies ]
             requestBody:
                 $ref: '#/components/requestBodies/Topology'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Topology'
-                500:
-                    $ref: '#/components/responses/500'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/topologies/cron:
         get:
             tags: [ Topologies ]
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Topologies'
-                500:
-                    $ref: '#/components/responses/500'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/topologies/{id}:
         get:
@@ -597,10 +693,10 @@ paths:
             parameters:
                 -   $ref: '#/components/parameters/Id'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Topology'
-                500:
-                    $ref: '#/components/responses/500'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
         put:
             tags: [ Topologies ]
@@ -609,20 +705,20 @@ paths:
             requestBody:
                 $ref: '#/components/requestBodies/Topology'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Topology'
-                500:
-                    $ref: '#/components/responses/500'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
         delete:
             tags: [ Topologies ]
             parameters:
                 -   $ref: '#/components/parameters/Id'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Empty'
-                500:
-                    $ref: '#/components/responses/500'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/topologies/{id}/run:
         post:
@@ -632,10 +728,10 @@ paths:
             requestBody:
                 $ref: '#/components/requestBodies/TopologiesRun'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/TopologiesRun'
-                500:
-                    $ref: '#/components/responses/500'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/topologies/{id}/schema.bpmn:
         get:
@@ -643,10 +739,10 @@ paths:
             parameters:
                 -   $ref: '#/components/parameters/Id'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/TopologySchema'
-                500:
-                    $ref: '#/components/responses/500'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
         put:
             tags: [ Topologies ]
@@ -655,13 +751,12 @@ paths:
             requestBody:
                 $ref: '#/components/requestBodies/TopologySchema'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Topology'
-                400:
-                    $ref: '#/components/responses/500'
-                500:
-                    $ref: '#/components/responses/500'
-
+                "400":
+                    $ref: '#/components/responses/InternalServerError'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/topologies/{id}/publish:
         post:
@@ -669,10 +764,10 @@ paths:
             parameters:
                 -   $ref: '#/components/parameters/Id'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/TopologyPublish'
-                500:
-                    $ref: '#/components/responses/500'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/topologies/{id}/clone:
         post:
@@ -680,10 +775,10 @@ paths:
             parameters:
                 -   $ref: '#/components/parameters/Id'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Topology'
-                500:
-                    $ref: '#/components/responses/500'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/topologies/{id}/test:
         get:
@@ -691,10 +786,19 @@ paths:
             parameters:
                 -   $ref: '#/components/parameters/Id'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/TopologyTest'
-                500:
-                    $ref: '#/components/responses/500'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
+
+    /api/topologies/nodes:
+        get:
+            tags: [ Topologies ]
+            responses:
+                "200":
+                    $ref: '#/components/responses/TopologiesNodes'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/topologies/{id}/nodes:
         get:
@@ -702,10 +806,10 @@ paths:
             parameters:
                 -   $ref: '#/components/parameters/Id'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Nodes'
-                500:
-                    $ref: '#/components/responses/500'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/progress/topology/{id}:
         get:
@@ -713,10 +817,46 @@ paths:
             parameters:
                 -   $ref: '#/components/parameters/Id'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Empty'
-                500:
-                    $ref: '#/components/responses/500'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
+
+    /api/processes:
+        get:
+            tags: [ Process ]
+            responses:
+                "200":
+                    $ref: '#/components/responses/Processes'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
+
+    /api/processes/topologies:
+        get:
+            tags: [ Process ]
+            responses:
+                "200":
+                    $ref: '#/components/responses/ProcessesTopologies'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
+
+    /api/processes/graph:
+        get:
+            tags: [ Process ]
+            responses:
+                "200":
+                    $ref: '#/components/responses/ProcessesGraph'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
+
+    /api/processes/total:
+        get:
+            tags: [ Process ]
+            responses:
+                "200":
+                    $ref: '#/components/responses/ProcessesTotal'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/user/login:
         post:
@@ -724,12 +864,12 @@ paths:
             requestBody:
                 $ref: '#/components/requestBodies/Login'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/User'
-                400:
-                    $ref: '#/components/responses/400'
-                500:
-                    $ref: '#/components/responses/500'
+                "400":
+                    $ref: '#/components/responses/BadRequest'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/user/logout:
         post:
@@ -737,12 +877,12 @@ paths:
             requestBody:
                 $ref: '#/components/requestBodies/Empty'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Empty'
-                401:
-                    $ref: '#/components/responses/401'
-                500:
-                    $ref: '#/components/responses/500'
+                "401":
+                    $ref: '#/components/responses/Unauthorized'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/user/register:
         post:
@@ -750,12 +890,12 @@ paths:
             requestBody:
                 $ref: '#/components/requestBodies/Register'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Empty'
-                400:
-                    $ref: '#/components/responses/400'
-                500:
-                    $ref: '#/components/responses/500'
+                "400":
+                    $ref: '#/components/responses/BadRequest'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/user/{token}/activate:
         post:
@@ -763,12 +903,12 @@ paths:
             parameters:
                 -   $ref: '#/components/parameters/Token'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Email'
-                400:
-                    $ref: '#/components/responses/400'
-                500:
-                    $ref: '#/components/responses/500'
+                "400":
+                    $ref: '#/components/responses/BadRequest'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/user/{token}/validate:
         post:
@@ -776,12 +916,12 @@ paths:
             parameters:
                 -   $ref: '#/components/parameters/Token'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Email'
-                400:
-                    $ref: '#/components/responses/400'
-                500:
-                    $ref: '#/components/responses/500'
+                "400":
+                    $ref: '#/components/responses/BadRequest'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/user/{token}/set_password:
         post:
@@ -791,12 +931,12 @@ paths:
             requestBody:
                 $ref: '#/components/requestBodies/SetPassword'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Empty'
-                400:
-                    $ref: '#/components/responses/400'
-                500:
-                    $ref: '#/components/responses/500'
+                "400":
+                    $ref: '#/components/responses/BadRequest'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/user/change_password:
         post:
@@ -804,12 +944,12 @@ paths:
             requestBody:
                 $ref: '#/components/requestBodies/ChangePassword'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Empty'
-                401:
-                    $ref: '#/components/responses/401'
-                500:
-                    $ref: '#/components/responses/500'
+                "401":
+                    $ref: '#/components/responses/Unauthorized'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/user/reset_password:
         post:
@@ -817,12 +957,12 @@ paths:
             requestBody:
                 $ref: '#/components/requestBodies/ResetPassword'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Empty'
-                400:
-                    $ref: '#/components/responses/400'
-                500:
-                    $ref: '#/components/responses/500'
+                "400":
+                    $ref: '#/components/responses/BadRequest'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/user/{id}/delete:
         delete:
@@ -830,21 +970,21 @@ paths:
             parameters:
                 -   $ref: '#/components/parameters/Id'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/User'
-                400:
-                    $ref: '#/components/responses/400'
-                500:
-                    $ref: '#/components/responses/500'
+                "400":
+                    $ref: '#/components/responses/BadRequest'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/user/list:
         post:
             tags: [ Users ]
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Users'
-                500:
-                    $ref: '#/components/responses/500'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/user/{id}/saveSettings:
         post:
@@ -854,10 +994,10 @@ paths:
             requestBody:
                 $ref: '#/components/requestBodies/UserSettings'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/UserSettings'
-                500:
-                    $ref: '#/components/responses/500'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/user/{id}:
         post:
@@ -865,16 +1005,16 @@ paths:
             parameters:
                 -   $ref: '#/components/parameters/Id'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/User'
-                500:
-                    $ref: '#/components/responses/500'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
-    /api/user-task:
+    /api/user-tasks:
         get:
             tags: [ UserTask ]
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/UserTasks'
 
     /api/user-task/{id}:
@@ -883,14 +1023,14 @@ paths:
         get:
             tags: [ UserTask ]
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/UserTask'
         put:
             tags: [ UserTask ]
             requestBody:
                 $ref: '#/components/requestBodies/UserTaskMessage'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/UserTask'
 
     /api/user-task/{id}/accept:
@@ -899,7 +1039,7 @@ paths:
             parameters:
                 -   $ref: '#/components/parameters/Id'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Empty'
 
     /api/user-task/accept:
@@ -908,7 +1048,7 @@ paths:
             requestBody:
                 $ref: '#/components/requestBodies/UserTaskFilter'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Empty'
 
     /api/user-task/{id}/reject:
@@ -917,7 +1057,7 @@ paths:
             parameters:
                 -   $ref: '#/components/parameters/Id'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Empty'
 
     /api/user-task/reject:
@@ -926,7 +1066,7 @@ paths:
             requestBody:
                 $ref: '#/components/requestBodies/UserTaskFilter'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Empty'
 
     /api/webhook/applications/{key}/users/{user}/subscribe:
@@ -938,12 +1078,12 @@ paths:
             requestBody:
                 $ref: '#/components/requestBodies/Webhook'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Empty'
-                404:
-                    $ref: '#/components/responses/404'
-                500:
-                    $ref: '#/components/responses/500'
+                "404":
+                    $ref: '#/components/responses/NotFound'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
     /api/webhook/applications/{key}/users/{user}/unsubscribe:
         post:
@@ -954,12 +1094,12 @@ paths:
             requestBody:
                 $ref: '#/components/requestBodies/Webhook'
             responses:
-                200:
+                "200":
                     $ref: '#/components/responses/Empty'
-                404:
-                    $ref: '#/components/responses/404'
-                500:
-                    $ref: '#/components/responses/500'
+                "404":
+                    $ref: '#/components/responses/NotFound'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
 
 components:
     ######################
@@ -1088,12 +1228,10 @@ components:
                         properties:
                             expireAt:
                                 type: string
-                                required: false
                             scopes:
                                 type: array
                                 items:
                                     type: string
-                                required: false
 
         Topology:
             description: ''
@@ -1221,7 +1359,6 @@ components:
                                 example: '507f191e810c19729de860ea'
                             type:
                                 $ref: '#/components/schemas/UserTaskType'
-
 
     ######################
     ##    Responses     ##
@@ -1353,6 +1490,83 @@ components:
                     schema:
                         $ref: '#/components/schemas/TopologyRequestMetrics'
 
+        MetricsConnectors:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/MetricsConnectors'
+
+        MetricsConnectorsGraph:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/MetricsConnectorsGraph'
+
+        MetricsConnectorsOverview:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/MetricsConnectorsOverview'
+
+        MetricsProcesses:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/MetricsProcesses'
+
+        MetricsRequests:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/MetricsRequests'
+
+        MetricsLimits:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/MetricsLimits'
+
+        MetricsLimitsTotal:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/MetricsLimitsTotal'
+
+        MetricsLimitsGraph:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/MetricsLimitsGraph'
+
+        MetricsUserTasks:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/MetricsUserTasks'
+
+        MetricsUserTasksTotal:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/MetricsUserTasksTotal'
+
+        MetricsUserTasksGraph:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/MetricsUserTasksGraph'
+
         TopologiesRun:
             description: ''
             content:
@@ -1472,6 +1686,41 @@ components:
                     schema:
                         $ref: '#/components/schemas/TopologyTest'
 
+        TopologiesNodes:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/TopologiesNodes'
+
+        Processes:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Processes'
+
+        ProcessesTopologies:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/ProcessesTopologies'
+
+        ProcessesGraph:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/ProcessesGraph'
+
+        ProcessesTotal:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/ProcessesTotal'
+
         User:
             description: ''
             content:
@@ -1512,20 +1761,29 @@ components:
             content:
                 application/json:
                     schema:
-                        type: object
-                        properties:
-                            items:
-                                type: array
-                                items:
-                                    $ref: '#/components/schemas/UserTaskGridItem'
-                            count:
-                                type: integer
-                            total:
-                                type: integer
-                            limit:
-                                type: integer
-                            offset:
-                                type: integer
+                        allOf:
+                            -   type: object
+                                properties:
+                                    items:
+                                        type: array
+                                        items:
+                                            type: object
+                                            properties:
+                                                id:
+                                                    type: string
+                                                nodeId:
+                                                    type: string
+                                                topologyId:
+                                                    type: string
+                                                correlationId:
+                                                    type: string
+                                                created:
+                                                    type: string
+                                                    format: date-time
+                                                message:
+                                                    type: string
+                                                    nullable: true
+                            -   $ref: '#/components/schemas/GridMetadata'
 
         Empty:
             description: ''
@@ -1534,7 +1792,7 @@ components:
                     schema:
                         type: object
 
-        400:
+        BadRequest:
             description: ''
             content:
                 application/json:
@@ -1546,7 +1804,7 @@ components:
                         message: User email already exists!
                         error_code: 400
 
-        401:
+        Unauthorized:
             description: ''
             content:
                 application/json:
@@ -1558,7 +1816,7 @@ components:
                         message: User is not authroized!
                         error_code: 401
 
-        404:
+        NotFound:
             description: ''
             content:
                 application/json:
@@ -1570,7 +1828,7 @@ components:
                         message: Application with key 'Unknown' not found!
                         error_code: 404
 
-        500:
+        InternalServerError:
             description: ''
             content:
                 application/json:
@@ -1603,12 +1861,35 @@ components:
                     enum: [ basic, oauth, oauth2 ]
 
         Applications:
-            type: object
-            properties:
-                items:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Application'
+            type: array
+            items:
+                type: object
+                properties:
+                    url:
+                        type: string
+                    name:
+                        type: string
+                    applications:
+                        type: array
+                        items:
+                            type: object
+                            properties:
+                                key:
+                                    type: string
+                                name:
+                                    type: string
+                                logo:
+                                    type: string
+                                description:
+                                    type: string
+                                installable:
+                                    type: boolean
+                                installed:
+                                    type: boolean
+                                activated:
+                                    type: boolean
+                                authorized:
+                                    type: boolean
 
         ApplicationInstall:
             type: object
@@ -1795,46 +2076,247 @@ components:
                 offset:
                     type: integer
 
-        Log:
-            type: object
-            properties:
-                id:
-                    type: string
-                severity:
-                    type: string
-                message:
-                    type: string
-                type:
-                    type: string
-                correlation_id:
-                    type: string
-                topology_id:
-                    type: string
-                topology_name:
-                    type: string
-                node_id:
-                    type: string
-                node_name:
-                    type: string
-                timestamp:
-                    type: string
-
         Logs:
-            type: object
-            properties:
-                items:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Log'
-                count:
-                    type: integer
-                total:
-                    type: integer
-                limit:
-                    type: integer
-                offset:
-                    type: integer
+            allOf:
+                -   type: object
+                    properties:
+                        items:
+                            type: array
+                            items:
+                                type: object
+                                properties:
+                                    id:
+                                        type: string
+                                    nodeId:
+                                        type: string
+                                    topologyId:
+                                        type: string
+                                    correlationId:
+                                        type: string
+                                    created:
+                                        type: string
+                                        format: date-time
+                                    severity:
+                                        type: string
+                                    message:
+                                        type: string
+                -   $ref: '#/components/schemas/GridMetadata'
 
+        MetricsConnectors:
+            allOf:
+                -   type: object
+                    properties:
+                        items:
+                            type: array
+                            items:
+                                type: object
+                                properties:
+                                    id:
+                                        type: string
+                                    nodeId:
+                                        type: string
+                                    topologyId:
+                                        type: string
+                                    applicationId:
+                                        type: string
+                                    created:
+                                        type: string
+                                        format: date-time
+                                    status:
+                                        type: integer
+                                    message:
+                                        type: string
+                                        nullable: true
+                -   $ref: '#/components/schemas/GridMetadata'
+
+        MetricsConnectorsGraph:
+            allOf:
+                -   type: object
+                    properties:
+                        items:
+                            type: array
+                            items:
+                                type: object
+                                properties:
+                                    created:
+                                        type: string
+                                        format: date-time
+                                    status200:
+                                        type: integer
+                                    status400:
+                                        type: integer
+                                    status500:
+                                        type: integer
+                -   $ref: '#/components/schemas/GridMetadata'
+
+        MetricsConnectorsOverview:
+            allOf:
+                -   type: object
+                    properties:
+                        items:
+                            type: array
+                            items:
+                                type: object
+                                properties:
+                                    _id:
+                                        type: string
+                                    nodeId:
+                                        type: string
+                                    topologyId:
+                                        type: string
+                                    applicationId:
+                                        type: string
+                                    count:
+                                        type: integer
+                                    duration:
+                                        type: integer
+                                    status400:
+                                        type: integer
+                                    status500:
+                                        type: integer
+                                    lastStatus:
+                                        type: integer
+                -   $ref: '#/components/schemas/GridMetadata'
+
+        MetricsProcesses:
+            allOf:
+                -   type: object
+                    properties:
+                        items:
+                            type: array
+                            items:
+                                type: object
+                                properties:
+                                    _id:
+                                        type: string
+                                    nodeId:
+                                        type: string
+                                    topologyId:
+                                        type: string
+                                    duration:
+                                        type: integer
+                -   $ref: '#/components/schemas/GridMetadata'
+
+        MetricsRequests:
+            allOf:
+                -   type: object
+                    properties:
+                        items:
+                            type: array
+                            items:
+                                type: object
+                                properties:
+                                    _id:
+                                        type: string
+                                    nodeId:
+                                        type: string
+                                    topologyId:
+                                        type: string
+                                    duration:
+                                        type: integer
+                -   $ref: '#/components/schemas/GridMetadata'
+
+        MetricsLimits:
+            allOf:
+                -   type: object
+                    properties:
+                        items:
+                            type: array
+                            items:
+                                type: object
+                                properties:
+                                    nodeId:
+                                        type: string
+                                    topologyId:
+                                        type: string
+                                    count:
+                                        type: integer
+                                    previousCount:
+                                        type: integer
+                                        nullable: true
+                -   $ref: '#/components/schemas/GridMetadata'
+
+        MetricsLimitsTotal:
+            allOf:
+                -   type: object
+                    properties:
+                        items:
+                            type: array
+                            items:
+                                type: object
+                                properties:
+                                    count:
+                                        type: integer
+                                    previousCount:
+                                        type: integer
+                                        nullable: true
+                -   $ref: '#/components/schemas/GridMetadata'
+
+        MetricsLimitsGraph:
+            allOf:
+                -   type: object
+                    properties:
+                        items:
+                            type: array
+                            items:
+                                type: object
+                                properties:
+                                    created:
+                                        type: string
+                                        format: date-time
+                                    count:
+                                        type: integer
+                -   $ref: '#/components/schemas/GridMetadata'
+
+        MetricsUserTasks:
+            allOf:
+                -   type: object
+                    properties:
+                        items:
+                            type: array
+                            items:
+                                type: object
+                                properties:
+                                    nodeId:
+                                        type: string
+                                    topologyId:
+                                        type: string
+                                    message:
+                                        type: string
+                                    count:
+                                        type: integer
+                -   $ref: '#/components/schemas/GridMetadata'
+
+        MetricsUserTasksTotal:
+            allOf:
+                -   type: object
+                    properties:
+                        items:
+                            type: array
+                            items:
+                                type: object
+                                properties:
+                                    count:
+                                        type: integer
+                                    previousCount:
+                                        type: integer
+                                        nullable: true
+                -   $ref: '#/components/schemas/GridMetadata'
+
+        MetricsUserTasksGraph:
+            allOf:
+                -   type: object
+                    properties:
+                        items:
+                            type: array
+                            items:
+                                type: object
+                                properties:
+                                    topologyId:
+                                        type: string
+                                    count:
+                                        type: integer
+                -   $ref: '#/components/schemas/GridMetadata'
 
         TopologyTask:
             type: object
@@ -1947,10 +2429,8 @@ components:
                     type: string
                 service:
                     type: string
-                    required: false
                 topology:
                     type: string
-                    required: false
 
         TopologyMetrics:
             type: object
@@ -2272,6 +2752,114 @@ components:
                             message:
                                 type: string
 
+        TopologiesNodes:
+            type: object
+            properties:
+                applications:
+                    type: object
+                    additionalProperties:
+                        type: string
+                topologies:
+                    type: object
+                    additionalProperties:
+                        type: string
+                nodes:
+                    type: object
+                    additionalProperties:
+                        type: string
+                tree:
+                    type: object
+                    additionalProperties:
+                        type: array
+                        items:
+                            type: string
+
+        Processes:
+            allOf:
+                -   type: object
+                    properties:
+                        items:
+                            type: array
+                            items:
+                                type: object
+                                properties:
+                                    _id:
+                                        type: string
+                                    topologyId:
+                                        type: string
+                                    created:
+                                        type: string
+                                        format: date-time
+                                    status:
+                                        type: string
+                                    duration:
+                                        type: integer
+                                    messages:
+                                        type: array
+                                        items:
+                                            type: string
+                -   $ref: '#/components/schemas/GridMetadata'
+
+        ProcessesTopologies:
+            allOf:
+                -   type: object
+                    properties:
+                        items:
+                            type: array
+                            items:
+                                type: object
+                                properties:
+                                    _id:
+                                        type: string
+                                    topologyId:
+                                        type: string
+                                    created:
+                                        type: string
+                                        format: date-time
+                                    count:
+                                        type: integer
+                                    failedCount:
+                                        type: integer
+                                    status:
+                                        type: string
+                                        enum: [RUNNING, COMPLETED, FAILED]
+                -   $ref: '#/components/schemas/GridMetadata'
+
+        ProcessesGraph:
+            allOf:
+                -   type: object
+                    properties:
+                        items:
+                            type: array
+                            items:
+                                type: object
+                                properties:
+                                    created:
+                                        type: string
+                                        format: date-time
+                                    topologyId:
+                                        type: string
+                                    success:
+                                        type: integer
+                                    failed:
+                                        type: integer
+                -   $ref: '#/components/schemas/GridMetadata'
+
+        ProcessesTotal:
+            allOf:
+                -   type: object
+                    properties:
+                        items:
+                            type: array
+                            items:
+                                type: object
+                                properties:
+                                    count:
+                                        type: integer
+                                    failed:
+                                        type: integer
+                -   $ref: '#/components/schemas/GridMetadata'
+
         User:
             type: object
             properties:
@@ -2332,36 +2920,6 @@ components:
                 error_code:
                     type: integer
 
-        UserTaskGridItem:
-            type: object
-            properties:
-                id:
-                    type: string
-                    example: '507f191e810c19729de860ea'
-                nodeId:
-                    type: string
-                    example: '507f191e810c19729de860ea'
-                nodeName:
-                    type: string
-                    example: 'node-name'
-                topologyId:
-                    type: string
-                    example: '507f191e810c19729de860ea'
-                topologyName:
-                    type: string
-                    example: 'topology-name'
-                correlationId:
-                    type: string
-                    example: '507f191e810c19729de860ea'
-                created:
-                    type: string
-                    example: '2020-02-02 10:10:10'
-                updated:
-                    type: string
-                    example: '2020-02-02 10:10:10'
-                type:
-                    $ref: '#/components/schemas/UserTaskType'
-
         UserTask:
             type: object
             properties:
@@ -2402,7 +2960,7 @@ components:
             type: string
             enum:
                 - userTask
-                - thrash
+                - trash
 
         UserTaskMessage:
             type: object
@@ -2411,6 +2969,61 @@ components:
                     type: string
                 headers:
                     type: object
+
+        GridFilter:
+            type: object
+            properties:
+                column:
+                    type: string
+                operator:
+                    type: string
+                value:
+                    type: array
+                    items:
+                        type: string
+
+        GridSorter:
+            type: object
+            properties:
+                column:
+                    type: string
+                direction:
+                    type: string
+
+        GridPaging:
+            type: object
+            properties:
+                itemsPerPage:
+                    type: integer
+                lastPage:
+                    type: integer
+                nextPage:
+                    type: integer
+                page:
+                    type: integer
+                previousPage:
+                    type: integer
+                total:
+                    type: integer
+
+        GridMetadata:
+            type: object
+            properties:
+                search:
+                    type: string
+                    nullable: true
+                filter:
+                    type: array
+                    items:
+                        type: array
+                        items:
+                            $ref: '#/components/schemas/GridFilter'
+                sorter:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/GridSorter'
+                paging:
+                    $ref: '#/components/schemas/GridPaging'
 
     ######################
     ##    Parameters    ##

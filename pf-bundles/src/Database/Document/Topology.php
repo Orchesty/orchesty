@@ -100,7 +100,6 @@ class Topology
         $this->applications = new ArrayCollection([]);
     }
 
-
     /**
      * @return string
      */

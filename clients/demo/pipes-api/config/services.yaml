@@ -22,8 +22,6 @@ services:
 
     Demo\Controller\DefaultController:
         class: Demo\Controller\DefaultController
-        calls:
-            - [ 'setContainer', [ '@service_container' ] ]
 
     mailer:
         class: EmailServiceBundle\Mailer\Mailer

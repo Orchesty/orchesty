@@ -6,6 +6,7 @@ toolchain go1.24.6
 
 require (
 	github.com/hanaboso/go-log v1.1.0
+	github.com/hanaboso/go-metrics v1.1.0
 	github.com/hanaboso/go-mongodb v1.1.0
 	github.com/hanaboso/go-rabbitmq v1.2.1
 	github.com/hanaboso/go-utils v1.0.1
@@ -38,6 +39,5 @@ require (
 	golang.org/x/sync v0.16.0 // indirect
 	golang.org/x/sys v0.35.0 // indirect
 	golang.org/x/text v0.28.0 // indirect
-	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

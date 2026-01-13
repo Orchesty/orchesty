@@ -35,6 +35,9 @@ composer-update:
 	$(DE) composer update --dry-run roave/security-advisories
 	$(DE) composer normalize
 
+composer-outdated:
+	$(DE) composer outdated
+
 clear-cache:
 	$(DE) rm -rf var
 	$(DE) bin/console cache:warmup --env=test

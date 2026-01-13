@@ -10,6 +10,7 @@ use Hanaboso\Applinth\Handler\StatisticsHandler;
 use Hanaboso\Applinth\Manager\StatisticsManager;
 use Hanaboso\PipesFramework\Application\Document\ApplicationInstall;
 use Hanaboso\Utils\Date\DateTimeUtils;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
@@ -17,6 +18,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
  *
  * @package ApplinthTests\Controller
  */
+#[AllowMockObjectsWithoutExpectations]
 #[CoversClass(StatisticsController::class)]
 #[CoversClass(StatisticsHandler::class)]
 #[CoversClass(StatisticsManager::class)]
@@ -142,7 +144,7 @@ final class StatisticsControllerTest extends ControllerTestCaseAbstract
         );
     }
 
-    /**
+    /*
      * --------------------------------- HELPERS ------------------------
      */
 

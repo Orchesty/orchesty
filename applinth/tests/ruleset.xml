@@ -4,7 +4,10 @@
     <rule ref="./vendor/hanaboso/php-check-utils/ruleset.xml"/>
     <rule ref="SlevomatCodingStandard.Files.TypeNameMatchesFileName">
         <properties>
-            <property name="rootNamespaces" type="array" value="src=>Hanaboso\Applinth,tests=>ApplinthTests"/>
+            <property name="rootNamespaces" type="array">
+                <element key="src" value="Hanaboso\Applinth"/>
+                <element key="tests" value="ApplinthTests"/>
+            </property>
         </properties>
     </rule>
 

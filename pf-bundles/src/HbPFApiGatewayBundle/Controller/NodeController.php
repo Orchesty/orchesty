@@ -26,6 +26,17 @@ final class NodeController extends AbstractController
     }
 
     /**
+     * @return Response
+     */
+    #[Route('/topologies/nodes', methods: ['GET'])]
+    public function getTopologiesNodesAction(): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\NodeController::getTopologiesNodesAction',
+        );
+    }
+
+    /**
      * @param string $id
      *
      * @return Response

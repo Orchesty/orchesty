@@ -23,8 +23,24 @@ final class UserTaskController extends AbstractController
     #[Route('/user-task', methods: ['GET'])]
     public function filterAction(Request $request): Response
     {
+        // TODO RB: Remove this after new UI
         return $this->forward(
             'Hanaboso\PipesFramework\HbPFUserTaskBundle\Controller\UserTaskController::filterAction',
+            [],
+            $request->query->all(),
+        );
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return Response
+     */
+    #[Route('/user-tasks', methods: ['GET'])]
+    public function getUserTasksAction(Request $request): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFUserTaskBundle\Controller\UserTaskController::getUserTasksAction',
             [],
             $request->query->all(),
         );

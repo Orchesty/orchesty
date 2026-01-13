@@ -489,7 +489,7 @@ final class MongoMetricsManagerTest extends DatabaseTestCaseAbstract
         }
     }
 
-    /**
+    /*
      * --------------------------------------- HELPERS ----------------------------------
      */
 

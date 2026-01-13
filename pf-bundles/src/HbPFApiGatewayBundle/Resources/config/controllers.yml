@@ -59,3 +59,5 @@ services:
     Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UsageStatsController:
         class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\UsageStatsController
 
+    Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ProcessController:
+        class: Hanaboso\PipesFramework\HbPFApiGatewayBundle\Controller\ProcessController

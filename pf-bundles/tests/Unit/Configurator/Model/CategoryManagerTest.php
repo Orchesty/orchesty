@@ -8,6 +8,7 @@ use Hanaboso\CommonsBundle\Database\Locator\DatabaseManagerLocator;
 use Hanaboso\PipesFramework\Configurator\Model\CategoryManager;
 use Hanaboso\PipesFramework\Database\Document\Category;
 use Hanaboso\PipesFramework\Database\Repository\CategoryRepository;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 
@@ -17,6 +18,7 @@ use PipesFrameworkTests\KernelTestCaseAbstract;
  * @package PipesFrameworkTests\Unit\Configurator\Model
  */
 #[CoversClass(CategoryManager::class)]
+#[AllowMockObjectsWithoutExpectations]
 final class CategoryManagerTest extends KernelTestCaseAbstract
 {
 

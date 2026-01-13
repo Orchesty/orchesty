@@ -5,6 +5,7 @@ services:
         environment:
             RABBITMQ_DSN: ${RABBITMQ_DSN}
             MONGO_DSN: ${MONGO_DSN}
+            METRICS_DSN: ${MONGO_DSN}
         ports:
             - ${DEV_IP}:3333:3333
         volumes:

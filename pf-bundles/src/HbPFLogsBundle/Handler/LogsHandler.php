@@ -2,8 +2,11 @@
 
 namespace Hanaboso\PipesFramework\HbPFLogsBundle\Handler;
 
+use Exception;
+use Hanaboso\MongoDataGrid\GridHandlerTrait;
 use Hanaboso\MongoDataGrid\GridRequestDto;
-use Hanaboso\PipesFramework\Logs\LogsInterface;
+use Hanaboso\MongoDataGrid\GridRequestDtoInterface;
+use Hanaboso\PipesFramework\Logs\Model\LogsManager;
 use Hanaboso\PipesFramework\Logs\MongoDbLogs;
 
 /**
@@ -11,19 +14,19 @@ use Hanaboso\PipesFramework\Logs\MongoDbLogs;
  *
  * @package Hanaboso\PipesFramework\HbPFLogsBundle\Handler
  */
-final class LogsHandler
+final readonly class LogsHandler
 {
 
-    private LogsInterface $logs;
+    use GridHandlerTrait;
 
     /**
      * LogsHandler constructor.
      *
+     * @param LogsManager $manager
      * @param MongoDbLogs $logsManager
      */
-    public function __construct(MongoDbLogs $logsManager)
+    public function __construct(private LogsManager $manager, private MongoDbLogs $logsManager)
     {
-        $this->logs = $logsManager;
     }
 
     /**
@@ -34,7 +37,18 @@ final class LogsHandler
      */
     public function getData(GridRequestDto $dto, int $timeMargin): array
     {
-        return $this->logs->getData($dto, $timeMargin);
+        return $this->logsManager->getData($dto, $timeMargin);
+    }
+
+    /**
+     * @param GridRequestDtoInterface $dto
+     *
+     * @return mixed[]
+     * @throws Exception
+     */
+    public function getLogs(GridRequestDtoInterface $dto): array
+    {
+        return $this->getGridResponse($dto, $this->manager->getLogs($dto));
     }
 
 }

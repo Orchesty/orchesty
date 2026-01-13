@@ -26,8 +26,8 @@ services:
         environment:
             PHP_WEBROOT: /var/www/pipes/clients/demo/pipes-api/public
             COMPOSER_HOME: ${HOME}/dev/.composer
-            WORKER_API: https://test.com
-            ORCHESTY_API_KEY: ThisIsNotRealKEy
+            WORKER_API: http://worker-api:8080/
+            ORCHESTY_API_KEY: ${ORCHESTY_API_KEY}
         working_dir: /var/www/pipes/clients/demo/pipes-api
         volumes:
             - ../../:/var/www/pipes:cached
@@ -168,6 +168,7 @@ services:
             LIMITER_ADDR: 0.0.0.0:3333
             RABBITMQ_DSN: ${RABBITMQ_DSN}
             MONGO_DSN: ${MONGO_DSN}
+            METRICS_DSN: ${METRICS_DSN}
             UDP_LOGGER_URL: "fluentd:5120"
         command: go run cmd/limiter_app.go
         volumes:
@@ -238,6 +239,8 @@ services:
             - ${DEV_IP}:27017:27017
         volumes:
             - mongodb:/data/db
+#            -   type: tmpfs
+#                target: /data/db
 
     rabbitmq:
         image: rabbitmq:management-alpine

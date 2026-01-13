@@ -13,6 +13,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Json;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
@@ -20,6 +21,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
  *
  * @package DemoTests\Integration
  */
+#[AllowMockObjectsWithoutExpectations]
 #[CoversClass(SendDutyEmail::class)]
 final class SendDutyEmailTest extends KernelTestCaseAbstract
 {

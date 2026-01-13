@@ -18,10 +18,13 @@ type (
 	}
 
 	mongoDb struct {
-		Dsn                string `env:"MONGO_DSN" required:"true"`
-		MessageCollection  string `env:"MONGO_COLLECTION" default:"limiter"`
-		UserTaskCollection string `env:"USER_TASK_COLLECTION" default:"UserTask"`
-		ApiTokenCollection string `env:"MONGODB_API_TOKEN_COLLECTION" default:"ApiToken"`
+		Dsn                       string `env:"MONGO_DSN" required:"true"`
+		MetricsDsn                string `env:"METRICS_DSN" required:"true"`
+		MessageCollection         string `env:"MONGO_COLLECTION" default:"limiter"`
+		UserTaskCollection        string `env:"USER_TASK_COLLECTION" default:"UserTask"`
+		ApiTokenCollection        string `env:"MONGODB_API_TOKEN_COLLECTION" default:"ApiToken"`
+		MetricsLimiterCollection  string `env:"MONGO_METRICS_LIMITER_COLLECTION" default:"limiter"`
+		MetricsUserTaskCollection string `env:"MONGO_METRICS_USER_TASK_COLLECTION" default:"userTask"`
 	}
 
 	app struct {

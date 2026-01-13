@@ -12,6 +12,7 @@ use Hanaboso\PipesFramework\Configurator\Enum\NodeImplementationEnum;
 use Hanaboso\Utils\String\Base64;
 use Hanaboso\Utils\String\Json;
 use LogicException;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 use Psr\Log\NullLogger;
@@ -23,8 +24,46 @@ use Symfony\Component\HttpFoundation\Request;
  * @package PipesFrameworkTests\Integration\ApiGateway\Locator
  */
 #[CoversClass(ServiceLocator::class)]
+#[AllowMockObjectsWithoutExpectations]
 final class ServiceLocatorTest extends DatabaseTestCaseAbstract
 {
+
+    /**
+     * @throws Exception
+     */
+    public function testGetApplications(): void
+    {
+        $dto = new ResponseDto(200, '', Json::encode(['items' => [[
+            'description'   => 'Description',
+            'isInstallable' => TRUE,
+            'key'           => 'null',
+            'logo'          => 'Logo',
+            'name'          => 'Null',
+        ]]]), []);
+
+        $res = $this->createLocator($dto)->getApplications('user');
+        self::assertEquals(
+            [
+                [
+                    'applications' => [
+                        [
+                            'activated'   => FALSE,
+                            'authorized'  => FALSE,
+                            'description' => 'Description',
+                            'installable' => TRUE,
+                            'installed'   => FALSE,
+                            'key'         => 'null',
+                            'logo'        => 'Logo',
+                            'name'        => 'Null',
+                        ],
+                    ],
+                    'name'         => 'name',
+                    'url'          => 'host',
+                ],
+            ],
+            $res,
+        );
+    }
 
     /**
      * @throws Exception
@@ -321,7 +360,7 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
         $this->createLocator($dto)->runSyncActions($req, 'key', 'name', 'someMethod');
     }
 
-    /**
+    /*
      * ------------------------------------ HELPERS --------------------------------------------
      */
 

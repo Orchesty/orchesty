@@ -44,3 +44,7 @@ fasttest:
 
 clean:
 	docker-compose down -v
+
+run-demo-limiter:
+	docker compose -f ../clients/demo/docker-compose.yml up -d --force-recreate limiter
+	docker compose -f ../clients/demo/docker-compose.yml logs -f limiter

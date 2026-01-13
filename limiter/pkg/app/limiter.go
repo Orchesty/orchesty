@@ -2,15 +2,17 @@ package app
 
 import (
 	"context"
-	"limiter/pkg/bridge"
-	"limiter/pkg/limiter"
-	"limiter/pkg/mongo"
-	"limiter/pkg/rabbit"
 	"os"
 	"os/signal"
 	"sync"
 	"syscall"
 	"time"
+
+	"limiter/pkg/bridge"
+	"limiter/pkg/limiter"
+	"limiter/pkg/metrics"
+	"limiter/pkg/mongo"
+	"limiter/pkg/rabbit"
 
 	"github.com/hanaboso/go-utils/pkg/contextx"
 	"github.com/rs/zerolog/log"
@@ -20,6 +22,7 @@ func Start() {
 	limiterSvc := limiter.NewService()
 	cacheSvc := limiter.NewCache()
 	mongoSvc := mongo.NewMongoSvc()
+	metricsSvc := metrics.NewMetricsSvc(mongoSvc)
 
 	rabbitSvc := rabbit.NewRabbitSvc()
 	messageProcessor := NewMessageProcessor(
@@ -28,6 +31,8 @@ func Start() {
 		limiterSvc,
 		cacheSvc,
 	)
+
+	metricsSvc.Start()
 
 	if err := mongoSvc.UnmarkAllMessages(); err != nil {
 		log.Fatal().Err(err).Send()
@@ -65,6 +70,7 @@ func Start() {
 		cancel()
 		rabbitSvc.LimiterConsumer.Close()
 		rabbitSvc.RepeaterConsumer.Close()
+		metricsSvc.Stop()
 
 		close(closeApp)
 	}()

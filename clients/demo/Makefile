@@ -1,12 +1,12 @@
-# Client-specific vars
-CLIENT_DIR="clients/demo"
-
 IMAGE=dkr.hanaboso.net/pipes/demo/php-api:$(TAG)
 
-D=docker
-DC_DEV=docker-compose
-DE_DEV=docker-compose exec -T
-DE_DEVT=docker-compose exec
+DC = docker compose
+DE = docker compose exec -T
+DCB = docker compose exec -T backend
+DCM = docker compose exec -T mongo
+DCP = docker compose exec -T php-sdk
+DCR = docker compose exec -T rabbitmq
+DCW = docker compose run --rm wait-for-it
 
 TOPOLOGY_NAME = benchmark
 NODE_NAME = start
@@ -31,43 +31,43 @@ docker-compose.ci.yml:
 	sed -r 's/^(\s+ports:)$$/#\1/g; s/^(\s+- \$$\{DEV_IP\}.*)$$/#\1/g;' docker-compose.dev.yml > docker-compose.ci.yml
 
 pull:
-	$(DC_DEV) pull --ignore-pull-failures
+	$(DC) pull --ignore-pull-failures
 
 up: .env pull
-	$(DC_DEV) up -d --force-recreate --remove-orphans --build
+	$(DC) up -d --force-recreate --remove-orphans --build
 
 init: up
 	rm -rf pipes-api/var/cache/*
-	$(DE_DEV) php-sdk composer install --ignore-platform-reqs
-	$(DE_DEV) php-sdk rm -rf var/cache/*
-	$(DE_DEV) backend composer install --ignore-platform-reqs
-	$(DE_DEV) backend rm -rf var/cache/*
-	$(DE_DEV) backend bin/console doctrine:mongodb:schema:update --dm default || true
-	$(DE_DEV) backend bin/console doctrine:mongodb:schema:update --dm metrics || true
-	$(DE_DEV) backend bin/console mongodb:index:update || true
-	$(DC_DEV) run --rm wait-for-it rabbitmq:15672 -t 600
-	$(DE_DEV) rabbitmq rabbitmq-plugins enable rabbitmq_consistent_hash_exchange
-	$(DE_DEV) rabbitmq rabbitmq-plugins enable rabbitmq_management
-	$(DC_DEV) run --rm wait-for-it topology-api:8080 -t 600
-	$(DE_DEV) backend bin/console service:install node-sdk node-sdk:8080
-	$(DE_DEV) backend bin/console service:install php-sdk php-sdk:80
-	$(DE_DEV) backend bin/console topology:install -c -u --force node-sdk:8080
-	$(DE_DEV) backend bin/console api-token:create --key "$(shell grep 'ORCHESTY_API_KEY' .env | cut -d "=" -f2)"
-	$(DE_DEV) backend bin/console user:create "$(shell grep 'ORCHESTY_USER' .env | cut -d "=" -f2)" "$(shell grep 'ORCHESTY_PASSWORD' .env | cut -d "=" -f2)"
+	$(DCP) composer install --ignore-platform-reqs
+	$(DCP) rm -rf var/cache/*
+	$(DCB) composer install --ignore-platform-reqs
+	$(DCB) rm -rf var/cache/*
+	$(DCB) bin/console doctrine:mongodb:schema:update --dm default || true
+	$(DCB) bin/console doctrine:mongodb:schema:update --dm metrics || true
+	$(DCB) bin/console mongodb:index:update || true
+	$(DCW) rabbitmq:15672 -t 600
+	$(DCR) rabbitmq-plugins enable rabbitmq_consistent_hash_exchange
+	$(DCR) rabbitmq-plugins enable rabbitmq_management
+	$(DCW) topology-api:8080 -t 600
+	$(DCB) bin/console service:install node-sdk node-sdk:8080
+	$(DCB) bin/console service:install php-sdk php-sdk:80
+	$(DCB) bin/console topology:install -c -u --force node-sdk:8080
+	$(DCB) bin/console api-token:create --key "$(shell grep 'ORCHESTY_API_KEY' .env | cut -d "=" -f2)"
+	$(DCB) bin/console user:create "$(shell grep 'ORCHESTY_USER' .env | cut -d "=" -f2)" "$(shell grep 'ORCHESTY_PASSWORD' .env | cut -d "=" -f2)"
 
 destroy: .env topology-destroy
-	$(DC_DEV) down -v
+	$(DC) down -v
 
 topology-destroy:
 	docker rm -f $$(docker ps -aqf name=topology-\\d+) || true
 	sudo rm -rf ../topology/*
 
 applinth-link:
-	echo "http://$(shell grep 'DEV_IP' .env | cut -d "=" -f2):81/?u=$$($(DE_DEV) applinth-marketplace-ui /bin/bash -c 'node JWEGen.js')"
+	echo "http://$(shell grep 'DEV_IP' .env | cut -d "=" -f2):81/?u=$$($(DE) applinth-marketplace-ui /bin/bash -c 'node JWEGen.js')"
 
 mongo-import:
-	docker compose cp AuditEntity.json mongo:/tmp
-	$(DE_DEV) mongo mongoimport --db "$(shell grep 'MAIN_DB' .env | cut -d "=" -f2)" --collection AuditEntity --file /tmp/AuditEntity.json --jsonArray
+	$(DC) cp AuditEntity.json mongo:/tmp
+	$(DE) mongo mongoimport --db "$(shell grep 'MAIN_DB' .env | cut -d "=" -f2)" --collection AuditEntity --file /tmp/AuditEntity.json --jsonArray
 
 run-topology:
 	/bin/bash -c 'for i in {1..$(RUNS)}; do echo "Run #$$i: HTTP $$(curl -s -o /dev/null -w "%{http_code}" -X POST http://127.0.0.66:82/topologies/$(TOPOLOGY_NAME)/nodes/$(NODE_NAME)/run-by-name)"; done'
@@ -89,5 +89,11 @@ run-topology:
 #	rm export-import/$(INSTANCE)/Webhook.metadata.json.gz
 #
 #mongo-prod-import:
-#	mongorestore --gzip -j 1 "mongodb://127.0.0.66:27017/demo"  export-import/$(INSTANCE)
-#	mongorestore --gzip -j 1 "mongodb://127.0.0.66:27017/metrics" export-import/$(INSTANCE)-metrics
+#	$(DC) up -d --force-recreate mongo
+#	$(DC) cp export-import mongo:/tmp/export-import
+#	$(DCB) bin/console doctrine:mongodb:schema:update --dm default || true
+#	$(DCB) bin/console doctrine:mongodb:schema:update --dm metrics || true
+#	$(DCM) mongorestore --gzip --noIndexRestore --numParallelCollections $$(($$(nproc)*2/3)) --numInsertionWorkersPerCollection $$(($$(nproc)*2/3)) --writeConcern "{w:0}" "mongodb://localhost/demo" /tmp/export-import/$(INSTANCE)
+#	$(DCM) mongorestore --gzip --noIndexRestore --numParallelCollections $$(($$(nproc)*2/3)) --numInsertionWorkersPerCollection $$(($$(nproc)*2/3)) --writeConcern "{w:0}" "mongodb://localhost/metrics" /tmp/export-import/$(INSTANCE)-metrics
+#	$(DCB) bin/console user:create "$(shell grep 'ORCHESTY_USER' .env | cut -d "=" -f2)" "$(shell grep 'ORCHESTY_PASSWORD' .env | cut -d "=" -f2)"
+#	$(DCB) bin/console mongodb:index:update

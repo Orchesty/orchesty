@@ -192,7 +192,7 @@ final class TopologyGeneratorBridge
         }
     }
 
-    /**
+    /*
      * ------------------------------- HELPERS -------------------------------
      */
 

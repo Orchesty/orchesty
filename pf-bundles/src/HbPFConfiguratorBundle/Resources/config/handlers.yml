@@ -16,6 +16,8 @@ services:
         class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler
         arguments:
             - '@hbpf.configurator.manager.node'
+            - '@doctrine_mongodb.odm.document_manager'
+            - '@hbpp.service.locator'
 
     hbpf.handler.category:
         class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\CategoryHandler
@@ -42,3 +44,8 @@ services:
         class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyProgressHandler
         arguments:
             - '@hbpf.configurator.manager.topology_progress'
+
+    hbpf.configurator.handler.process:
+        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\ProcessHandler
+        arguments:
+            - '@hbpf.configurator.manager.process'

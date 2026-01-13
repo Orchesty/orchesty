@@ -52,3 +52,10 @@ services:
             - '@hbpf.handler.dashboard'
         calls:
             - [ 'setLogger', [ '@monolog.logger.commons' ] ]
+
+    Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\ProcessController:
+        class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller\ProcessController
+        arguments:
+            - '@hbpf.configurator.handler.process'
+        calls:
+            - [ 'setLogger', [ '@monolog.logger.commons' ] ]

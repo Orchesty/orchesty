@@ -20,6 +20,7 @@ use Hanaboso\PipesFramework\Utils\Dto\NodeSchemaDto;
 use Hanaboso\PipesFramework\Utils\Dto\Schema;
 use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Json;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
@@ -31,6 +32,7 @@ use PipesFrameworkTests\DatabaseTestCaseAbstract;
 #[CoversClass(TopologyManager::class)]
 #[CoversClass(Schema::class)]
 #[CoversClass(SystemConfigDto::class)]
+#[AllowMockObjectsWithoutExpectations]
 final class TopologyManagerTest extends DatabaseTestCaseAbstract
 {
 

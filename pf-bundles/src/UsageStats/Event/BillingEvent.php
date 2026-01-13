@@ -22,7 +22,7 @@ final class BillingEvent extends Event
     /**
      * @var AppInstallBillingData | OperationBillingData
      */
-    private AppInstallBillingData | OperationBillingData $data;
+    private AppInstallBillingData|OperationBillingData $data;
 
     /**
      * BillingEvent constructor.
@@ -63,7 +63,7 @@ final class BillingEvent extends Event
     /**
      * @return AppInstallBillingData | OperationBillingData
      */
-    public function getData(): AppInstallBillingData | OperationBillingData
+    public function getData(): AppInstallBillingData|OperationBillingData
     {
         return $this->data;
     }
@@ -85,7 +85,7 @@ final class BillingEvent extends Event
      * @return AppInstallBillingData|OperationBillingData
      * @throws LogicException
      */
-    private function checkData(array $data): AppInstallBillingData | OperationBillingData
+    private function checkData(array $data): AppInstallBillingData|OperationBillingData
     {
         if (array_key_exists('aid', $data) && array_key_exists('euid', $data)) {
             return new AppInstallBillingData($data['aid'], $data['euid']);

@@ -69,7 +69,6 @@ class ApplicationInstall
         $this->updated = DateTimeUtils::getUtcDateTime();
     }
 
-
     /**
      * @param string $user
      *

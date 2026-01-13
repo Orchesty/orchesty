@@ -13,6 +13,7 @@ use Hanaboso\PipesFramework\UserTask\Model\UserTaskManager;
 use Hanaboso\Utils\Exception\EnumException;
 use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\System\PipesHeaders;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use RabbitMqBundle\Publisher\Publisher;
 
 /**
@@ -20,6 +21,7 @@ use RabbitMqBundle\Publisher\Publisher;
  *
  * @package ApplinthTests\Controller
  */
+#[AllowMockObjectsWithoutExpectations]
 final class TrashControllerTest extends ControllerTestCaseAbstract
 {
 
@@ -212,7 +214,12 @@ final class TrashControllerTest extends ControllerTestCaseAbstract
             },
         );
         $c   = self::getContainer();
-        $svc = new UserTaskManager($this->dm, $c->get('hbpf.user_task.filter.user_task'), $publisher);
+        $svc = new UserTaskManager(
+            $this->dm,
+            $c->get('hbpf.user_task.filter.user_task'),
+            $c->get('hbpf.user_task.aggregation-filter.user_task'),
+            $publisher,
+        );
         $c->set('hbpf.user_task.manager.user_task', $svc);
     }
 

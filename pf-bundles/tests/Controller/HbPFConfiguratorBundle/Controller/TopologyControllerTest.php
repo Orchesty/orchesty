@@ -22,6 +22,7 @@ use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
 use Hanaboso\Utils\File\File;
 use Hanaboso\Utils\String\Json;
 use LogicException;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
@@ -36,6 +37,7 @@ use Throwable;
 #[CoversClass(TopologyHandler::class)]
 #[CoversClass(TopologyManager::class)]
 #[CoversClass(TopologySchemaUtils::class)]
+#[AllowMockObjectsWithoutExpectations]
 final class TopologyControllerTest extends ControllerTestCaseAbstract
 {
 

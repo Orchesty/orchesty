@@ -64,7 +64,7 @@ final class TopologyProgressControllerTest extends ControllerTestCaseAbstract
         );
     }
 
-    /**
+    /*
      * ---------------------------------------- HELPERS ------------------------------------
      */
 

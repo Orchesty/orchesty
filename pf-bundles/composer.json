@@ -2,7 +2,7 @@
     "name": "orchesty/backend",
     "description": "Orchesty backend",
     "license": "Elastic-2.0",
-    "version": "3.2.1",
+    "version": "3.3",
     "require": {
         "php": "^8.4",
         "ext-ctype": "*",
@@ -11,20 +11,20 @@
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-mongodb": "*",
-        "doctrine/mongodb-odm-bundle": "^5.3",
-        "doctrine/orm": "^2.20",
-        "hanaboso/acl-bundle": "^1.10",
-        "hanaboso/email-service-bundle": "^1.6",
-        "hanaboso/mongo-data-grid": "^1.9",
-        "hanaboso/rabbit-mq-bundle": "^1.9",
-        "hanaboso/rest-bundle": "^1.5",
-        "hanaboso/user-bundle": "^1.10",
-        "symfony/security-bundle": "^7.3",
-        "symfony/serializer": "^7.3"
+        "doctrine/mongodb-odm-bundle": "^5.5",
+        "doctrine/orm": "^3.6",
+        "hanaboso/acl-bundle": "^1.11",
+        "hanaboso/email-service-bundle": "^1.7",
+        "hanaboso/mongo-data-grid": "^2.0",
+        "hanaboso/rabbit-mq-bundle": "^1.10",
+        "hanaboso/rest-bundle": "^1.6",
+        "hanaboso/user-bundle": "^1.12",
+        "symfony/security-bundle": "^8.0",
+        "symfony/serializer": "^8.0"
     },
     "require-dev": {
-        "hanaboso/php-check-utils": "^1.7",
-        "predis/predis": "^1.1"
+        "hanaboso/php-check-utils": "^2.0",
+        "predis/predis": "^3.3"
     },
     "replace": {
         "ralouphie/getallheaders": "*",

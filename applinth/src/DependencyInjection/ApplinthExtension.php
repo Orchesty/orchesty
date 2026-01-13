@@ -20,9 +20,9 @@ final class ApplinthExtension extends Extension implements PrependExtensionInter
     /**
      * @param ContainerBuilder $container
      */
-    // @codingStandardsIgnoreStart
     public function prepend(ContainerBuilder $container): void
     {
+        $container;
     }
 
     /**

@@ -5,17 +5,18 @@
     "require": {
         "php": "^8.4",
         "ext-json": "*",
-        "azuyalabs/yasumi": "^2.7",
-        "hanaboso/commons-bundle": "^2.12",
-        "hanaboso/email-service-bundle": "^1.6",
-        "hanaboso/rest-bundle": "^1.5",
-        "orchesty/php-connectors": "^3.2",
-        "orchesty/php-sdk": "^3.2"
+        "azuyalabs/yasumi": "^2.9",
+        "hanaboso/commons-bundle": "^3.0",
+        "hanaboso/email-service-bundle": "^1.7",
+        "hanaboso/rest-bundle": "^1.6",
+        "orchesty/php-connectors": "^4.0",
+        "orchesty/php-sdk": "^4.0",
+        "symfony/routing": "^8.0"
     },
     "require-dev": {
-        "hanaboso/php-check-utils": "^1.7",
-        "symfony/debug-bundle": "^7.2",
-        "symfony/serializer": "^7.2"
+        "hanaboso/php-check-utils": "^2.0",
+        "symfony/debug-bundle": "^8.0",
+        "symfony/serializer": "^8.0"
     },
     "replace": {
         "ralouphie/getallheaders": "*",

@@ -11,6 +11,7 @@ use Hanaboso\PipesFramework\UserTask\Enum\UserTaskEnum;
 use Hanaboso\PipesFramework\UserTask\Model\UserTaskManager;
 use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\System\PipesHeaders;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\ControllerTestCaseAbstract;
 use RabbitMqBundle\Publisher\Publisher;
@@ -21,6 +22,7 @@ use RabbitMqBundle\Publisher\Publisher;
  * @package PipesFrameworkTests\Controller\HbPFApiGatewayBundle\Controller
  */
 #[CoversClass(UserTaskController::class)]
+#[AllowMockObjectsWithoutExpectations]
 final class UserTaskControllerTest extends ControllerTestCaseAbstract
 {
 
@@ -163,7 +165,12 @@ final class UserTaskControllerTest extends ControllerTestCaseAbstract
             },
         );
         $c   = self::getContainer();
-        $svc = new UserTaskManager($this->dm, $c->get('hbpf.user_task.filter.user_task'), $publisher);
+        $svc = new UserTaskManager(
+            $this->dm,
+            $c->get('hbpf.user_task.filter.user_task'),
+            $c->get('hbpf.user_task.aggregation-filter.user_task'),
+            $publisher,
+        );
         $c->set('hbpf.user_task.manager.user_task', $svc);
     }
 
