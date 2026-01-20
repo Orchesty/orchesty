@@ -1,15 +1,19 @@
 #!/bin/bash
 
+MONGODB_ADMIN_DSN="mongodb://<USERNAME>:<PASSWORD>@percona-ha-cluster-rs0.clusters.svc.cluster.local:27017/?replicaSet=rs0&authSource=admin"
 INSTANCE_ID=""
 MONGODB_PWD=""
 RABBITMQ_PWD=""
+NAME=""
 
 # Kontrola, zda jsou všechny povinné proměnné vyplněné
-if [[ -z "$INSTANCE_ID" ]] || [[ -z "$MONGODB_PWD" ]] || [[ -z "$RABBITMQ_PWD" ]]; then
+if [[ -z "$INSTANCE_ID" ]] || [[ -z "$MONGODB_PWD" ]] || [[ -z "$RABBITMQ_PWD" ]] || [[ -z "$NAME" ]] || [[ -z "$MONGODB_ADMIN_DSN" ]]; then
     echo "CHYBA: Všechny povinné proměnné musí být vyplněné:" >&2
     echo "  - INSTANCE_ID" >&2
     echo "  - MONGODB_PWD" >&2
     echo "  - RABBITMQ_PWD" >&2
+    echo "  - NAME" >&2
+    echo "  - MONGODB_ADMIN_DSN" >&2
     exit 1
 fi
 
