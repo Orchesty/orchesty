@@ -98,3 +98,5 @@ const foundActions = await topologyEditorService.searchActions('magento')
 - V readonly režimu je editace zakázána a akce nejsou dostupné
 - Pro přidání nové akce do mocků je třeba ji přidat do `actions.ts`
 
+
+

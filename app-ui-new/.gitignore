@@ -34,3 +34,9 @@ coverage
 
 # Vitest
 __screenshots__/
+
+# Logs folders (but not in views/components)
+logs/
+**/logs/
+!**/views/logs/
+!**/components/logs/

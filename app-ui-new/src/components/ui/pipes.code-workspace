@@ -5,9 +5,13 @@
 		},
 		{
 			"path": "../../../../../flowbite-admin"
+		},
+		{
+			"path": "../../../../../orchesty-cloud"
 		}
 	],
 	"settings": {
-		"makefile.configureOnOpen": false
+		"makefile.configureOnOpen": false,
+		"git.ignoreLimitWarning": true
 	}
 }
