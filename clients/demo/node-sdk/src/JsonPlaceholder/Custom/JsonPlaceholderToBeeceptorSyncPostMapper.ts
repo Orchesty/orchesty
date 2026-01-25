@@ -1,5 +1,5 @@
-import { NAME as BEECEPTOR_APP_NAME } from '@orchesty/nodejs-connectors/dist/lib/Beeceptor/BeeceptorApplication';
-import { NAME as JSON_PLACEHOLDER_APP_NAME } from '@orchesty/nodejs-connectors/dist/lib/JsonPlaceholder/JsonPlaceholderApplication';
+import { NAME as BEECEPTOR_APP_NAME } from '@orchesty/connector-beeceptor/dist/BeeceptorApplication';
+import { NAME as JSON_PLACEHOLDER_APP_NAME } from '@orchesty/connector-json-placeholder/dist/JsonPlaceholderApplication';
 import ACommonNode from '@orchesty/nodejs-sdk/dist/lib/Commons/ACommonNode';
 import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
 import { IOutput as IInput } from '../Connector/JsonPlaceholderGetPostUserConnector';

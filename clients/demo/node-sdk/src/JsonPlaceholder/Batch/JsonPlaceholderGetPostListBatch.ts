@@ -1,6 +1,6 @@
 import BaseJsonPlaceholderGetPostListBatch, {
     IInput,
-} from '@orchesty/nodejs-connectors/dist/lib/JsonPlaceholder/Batch/JsonPlaceholderGetPostListBatch';
+} from '@orchesty/connector-json-placeholder/dist/Batch/JsonPlaceholderGetPostListBatch';
 import BatchProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/BatchProcessDto';
 import { AUDIT_ENTITY } from '@orchesty/nodejs-sdk/dist/lib/Utils/Headers';
 

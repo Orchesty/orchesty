@@ -1,0 +1,5 @@
+{
+    "http": "DELETE https://api.wflow.com/api/test-organization/webhookregistrations/252aea1a-056e-4ae3-87d1-11bde1345c19",
+    "code": 200,
+    "body": null
+}

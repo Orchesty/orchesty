@@ -1,4 +1,4 @@
-import { NAME as JSON_PLACEHOLDER_GET_POST_LIST_BATCH } from '@orchesty/nodejs-connectors/dist/lib/JsonPlaceholder/Batch/JsonPlaceholderGetPostListBatch';
+import { NAME as JSON_PLACEHOLDER_GET_POST_LIST_BATCH } from '@orchesty/connector-json-placeholder/dist/Batch/JsonPlaceholderGetPostListBatch';
 import { container } from '@orchesty/nodejs-sdk';
 import NodeTester from '@orchesty/nodejs-sdk/dist/test/Testers/NodeTester';
 import { prepare } from '../../../../test/TestAbstract';

@@ -1,4 +1,4 @@
-import { IInput as IOutput } from '@orchesty/nodejs-connectors/dist/lib/AmazonApps/SimpleEmailService/Connector/SESSendEmail';
+import { IInput as IOutput } from '@orchesty/connector-amazon-apps-simple-email-service/dist/Connector/SESSendEmail';
 import ACommonNode from '@orchesty/nodejs-sdk/dist/lib/Commons/ACommonNode';
 import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
 import ResultCode from '@orchesty/nodejs-sdk/dist/lib/Utils/ResultCode';

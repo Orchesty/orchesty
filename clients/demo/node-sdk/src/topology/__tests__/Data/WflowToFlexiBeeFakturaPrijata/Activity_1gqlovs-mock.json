@@ -1,0 +1,88 @@
+{
+    "http": "GET https://api.wflow.com/api/test-organization/documents/test-document",
+    "code": 200,
+    "body": {
+        "type": {
+            "erpExclude": false,
+            "filesExtendName": false,
+            "docCreatingMethod": "Upload",
+            "autoStamp": "None",
+            "id": "53b4b60a-30dc-4ac4-92cc-f7ceaf7b250a",
+            "name": "Odeslané",
+            "kind": "IncomingInvoice",
+            "default": false
+        },
+        "accounting": {
+            "vatSupplyModeCode": "Normal",
+            "vatApplyReductionCoefficient": false,
+            "vatFixedAssets": false,
+            "vatMode": "Standard"
+        },
+        "vaTs": [
+            {
+                "rate": 21,
+                "type": "Basic",
+                "base": 700,
+                "tax": 147
+            }
+        ],
+        "lines": [
+            {
+                "id": "5d4eba51-1fed-4e83-b5d6-5e94b89a4981",
+                "totalAmount": 700,
+                "description": "Poskytnutí sídla 11/2025",
+                "quantity": 1,
+                "unitPrice": 700,
+                "vatType": "Basic",
+                "vatRate": 21,
+                "order": 1,
+                "accounting": {
+                    "vatSupplyModeCode": "Normal",
+                    "vatApplyReductionCoefficient": false,
+                    "vatFixedAssets": false,
+                    "vatMode": "Standard"
+                }
+            }
+        ],
+        "id": "test-document",
+        "number": "25201336",
+        "variableSymbol": "25201336",
+        "constantSymbol": "0308",
+        "issueDate": "2025-11-30T00:00:00",
+        "dueDate": "2025-12-30T00:00:00",
+        "vatDate": "2025-11-30T00:00:00",
+        "acceptDate": "2025-11-30T00:00:00",
+        "caseDate": "2025-11-30T00:00:00",
+        "taxExclusiveAmount": 700,
+        "totalAmount": 847,
+        "roundingAmount": 0,
+        "advanceAmount": 0,
+        "currency": "CZK",
+        "partnerIC": "25545094",
+        "partnerVAT": "CZ25545094",
+        "partnerName": "TAXPOINT s.r.o.",
+        "partnerAddress": "Chládkova  2, 616 00 Brno, ",
+        "accountNo": "2100118750",
+        "bankCode": "2010",
+        "iban": "CZ1720100000002100118750",
+        "bic": "FIOBCZPPXXX",
+        "meIC": "02063450",
+        "exchangeRate": 1,
+        "exchangeRateUnits": 1,
+        "description": "Fakturujeme Vám na základě Mandátní smlouvy č. 30/2013",
+        "invoiceType": "TaxInvoice",
+        "doNotPay": false,
+        "created": "2026-01-16T11:37:43.55",
+        "updated": "2026-01-16T11:37:43.55",
+        "lastAction": "2026-01-16T11:38:10.047",
+        "locked": false,
+        "approvalStatus": "None",
+        "flowStatus": "SentToERP",
+        "payment": {
+            "paymentStatus": "NotPaid"
+        },
+        "dataSource": "ISDOC",
+        "source": "WebApp",
+        "createdBy": "lunhul.v@orchesty-solutions.com"
+    }
+}

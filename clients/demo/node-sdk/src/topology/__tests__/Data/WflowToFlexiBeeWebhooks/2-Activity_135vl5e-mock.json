@@ -1,0 +1,5 @@
+{
+    "http": "GET http://wont.be.called",
+    "code": 200,
+    "body": null
+}

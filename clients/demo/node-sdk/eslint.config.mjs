@@ -15,7 +15,8 @@ export default [
   ...compat.extends('plugin:@hanaboso/orchesty'),
   {
     rules: {
-      "jest/no-disabled-tests": "off"
+      "jest/no-disabled-tests": "off",
+      "import/no-extraneous-dependencies": "off",
     },
   }
 ];

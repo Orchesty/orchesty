@@ -1,7 +1,7 @@
 import {
     IJiraIssue as IOutput,
     IssueTypeEnum,
-} from '@orchesty/nodejs-connectors/dist/lib/Jira/Connector/JiraCreateIssueConnector';
+} from '@orchesty/connector-jira/dist/Connector/JiraCreateIssueConnector';
 import ACommonNode from '@orchesty/nodejs-sdk/dist/lib/Commons/ACommonNode';
 import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
 import { getPageName, PageEnum } from '../Enum/PageEnum';

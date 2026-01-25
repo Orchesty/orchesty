@@ -1,5 +1,5 @@
-import JsonPlaceholderGetUserConnector, { IOutput as IUser } from '@orchesty/nodejs-connectors/dist/lib/JsonPlaceholder/Connector/JsonPlaceholderGetUserConnector';
-import { NAME as JSON_PLACEHOLDER_APP_NAME } from '@orchesty/nodejs-connectors/dist/lib/JsonPlaceholder/JsonPlaceholderApplication';
+import JsonPlaceholderGetUserConnector, { IOutput as IUser } from '@orchesty/connector-json-placeholder/dist/Connector/JsonPlaceholderGetUserConnector';
+import { NAME as JSON_PLACEHOLDER_APP_NAME } from '@orchesty/connector-json-placeholder/dist/JsonPlaceholderApplication';
 import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
 import { IOutput as IInput } from '../Batch/JsonPlaceholderGetPostCommentListBatch';
 

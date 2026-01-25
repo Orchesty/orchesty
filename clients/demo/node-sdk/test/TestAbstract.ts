@@ -1,5 +1,5 @@
 import { start } from '../src';
-import { beeceptorAppInstall } from './DataProvider';
+import { beeceptorAppInstall, flexiBeeAppInstall, wflowAppInstall } from './DataProvider';
 
 let prepared = false;
 
@@ -10,6 +10,8 @@ export function prepare(): void {
 
     start();
     beeceptorAppInstall();
+    wflowAppInstall();
+    flexiBeeAppInstall();
 
     prepared = true;
 }

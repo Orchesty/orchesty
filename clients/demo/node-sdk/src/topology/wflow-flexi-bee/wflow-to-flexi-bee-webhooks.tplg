@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?><bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:pipes="http://www.omg.org/spec/Pipes/20100524/MODEL" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="wflow-to-flexi-bee-webhooks" isExecutable="false">
+    <bpmn:event id="Event_00nj8gz" pipes:pipesType="start" pipes:sdkHost="node-sdk:8080" name="subscribe" pipes:sdkHostName="node-sdk">
+      <bpmn:outgoing>Flow_0ile9bi</bpmn:outgoing>
+    </bpmn:event>
+    <bpmn:event id="Event_0g2g3dn" pipes:pipesType="start" pipes:sdkHost="node-sdk:8080" name="unsubscribe" pipes:sdkHostName="node-sdk">
+      <bpmn:outgoing>Flow_115ntg2</bpmn:outgoing>
+    </bpmn:event>
+    <bpmn:task id="Activity_0zotiyf" pipes:pipesType="batch" pipes:sdkHost="node-sdk:8080" name="wflow-subscribe-webhooks-batch" pipes:sdkHostName="node-sdk" pipes:appName="wflow">
+      <bpmn:incoming>Flow_0ile9bi</bpmn:incoming>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="Flow_0ile9bi" sourceRef="Event_00nj8gz" targetRef="Activity_0zotiyf"/>
+    <bpmn:task id="Activity_135vl5e" pipes:pipesType="batch" pipes:sdkHost="node-sdk:8080" name="wflow-unsubscribe-webhooks-batch" pipes:sdkHostName="node-sdk" pipes:appName="wflow">
+      <bpmn:incoming>Flow_115ntg2</bpmn:incoming>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="Flow_115ntg2" sourceRef="Event_0g2g3dn" targetRef="Activity_135vl5e"/>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="wflow-to-flexi-bee-webhooks">
+      <bpmndi:BPMNShape id="Event_00nj8gz_di" bpmnElement="Event_00nj8gz">
+        <dc:Bounds x="392" y="272" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="386" y="315" width="48" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0zotiyf_di" bpmnElement="Activity_0zotiyf">
+        <dc:Bounds x="530" y="250" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_135vl5e_di" bpmnElement="Activity_135vl5e">
+        <dc:Bounds x="530" y="360" width="100" height="80"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0g2g3dn_di" bpmnElement="Event_0g2g3dn">
+        <dc:Bounds x="392" y="382" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="380" y="425" width="60" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0ile9bi_di" bpmnElement="Flow_0ile9bi">
+        <di:waypoint x="428" y="290"/>
+        <di:waypoint x="530" y="290"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_115ntg2_di" bpmnElement="Flow_115ntg2">
+        <di:waypoint x="428" y="400"/>
+        <di:waypoint x="530" y="400"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

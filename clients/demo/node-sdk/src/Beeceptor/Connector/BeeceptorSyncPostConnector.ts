@@ -1,4 +1,4 @@
-import { NAME as BEECEPTOR_APP_NAME } from '@orchesty/nodejs-connectors/dist/lib/Beeceptor/BeeceptorApplication';
+import { NAME as BEECEPTOR_APP_NAME } from '@orchesty/connector-beeceptor/dist/BeeceptorApplication';
 import AConnector from '@orchesty/nodejs-sdk/dist/lib/Connector/AConnector';
 import { HttpMethods } from '@orchesty/nodejs-sdk/dist/lib/Transport/HttpMethods';
 import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';

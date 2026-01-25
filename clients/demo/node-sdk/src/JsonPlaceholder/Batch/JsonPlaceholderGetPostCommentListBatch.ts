@@ -1,7 +1,7 @@
-import JsonPlaceholderGetCommentListBatch from '@orchesty/nodejs-connectors/dist/lib/JsonPlaceholder/Batch/JsonPlaceholderGetCommentListBatch';
-import { IOutput as IComment } from '@orchesty/nodejs-connectors/dist/lib/JsonPlaceholder/Connector/JsonPlaceholderGetCommentConnector';
-import { IOutput as IInput } from '@orchesty/nodejs-connectors/dist/lib/JsonPlaceholder/Connector/JsonPlaceholderGetPostConnector';
-import { NAME as JSON_PLACEHOLDER_APP_NAME } from '@orchesty/nodejs-connectors/dist/lib/JsonPlaceholder/JsonPlaceholderApplication';
+import JsonPlaceholderGetCommentListBatch from '@orchesty/connector-json-placeholder/dist/Batch/JsonPlaceholderGetCommentListBatch';
+import { IOutput as IComment } from '@orchesty/connector-json-placeholder/dist/Connector/JsonPlaceholderGetCommentConnector';
+import { IOutput as IInput } from '@orchesty/connector-json-placeholder/dist/Connector/JsonPlaceholderGetPostConnector';
+import { NAME as JSON_PLACEHOLDER_APP_NAME } from '@orchesty/connector-json-placeholder/dist/JsonPlaceholderApplication';
 import BatchProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/BatchProcessDto';
 import { AUDIT_ENTITY } from '@orchesty/nodejs-sdk/dist/lib/Utils/Headers';
 

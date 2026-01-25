@@ -6,8 +6,8 @@ import {
     REGION,
     REGIONS,
     VERSION,
-} from '@orchesty/nodejs-connectors/dist/lib/AmazonApps/AAwsApplication';
-import Base from '@orchesty/nodejs-connectors/dist/lib/AmazonApps/SimpleEmailService/SESApplication';
+} from '@orchesty/connector-amazon-apps-common';
+import Base from '@orchesty/connector-amazon-apps-simple-email-service/dist/SESApplication';
 import CoreFormsEnum, { getFormName } from '@orchesty/nodejs-sdk/dist/lib/Application/Base/CoreFormsEnum';
 import { ApplicationInstall } from '@orchesty/nodejs-sdk/dist/lib/Application/Database/ApplicationInstall';
 import Field from '@orchesty/nodejs-sdk/dist/lib/Application/Model/Form/Field';

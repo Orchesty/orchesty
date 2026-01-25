@@ -1,4 +1,4 @@
-import Base, { IInput as IBaseInput } from '@orchesty/nodejs-connectors/dist/lib/Hubspot/Connector/HubSpotAddEmailToListConnector';
+import Base, { IInput as IBaseInput } from '@orchesty/connector-hubspot/dist/Connector/HubSpotAddEmailToListConnector';
 import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
 
 export default class HubSpotAddEmailToListConnector extends Base {

@@ -1,3 +1,4 @@
+import logger from '@orchesty/nodejs-sdk/dist/lib/Logger/Logger';
 import {
     createLoggerMockedServer,
     createMetricsMockedServer,
@@ -6,6 +7,8 @@ import {
 jest.setTimeout(10_000);
 
 beforeAll(async () => {
+    // @ts-expect-error
+    logger.logger.level = 'error';
     createMetricsMockedServer();
     createLoggerMockedServer();
 });

@@ -1,4 +1,4 @@
-import GoogleSheetApplication from '@orchesty/nodejs-connectors/dist/lib/Google/GoogleSheet/GoogleSheetApplication';
+import GoogleSheetApplication from '@orchesty/connector-google-sheet/dist/GoogleSheetApplication';
 import { ApplicationInstall } from '@orchesty/nodejs-sdk/dist/lib/Application/Database/ApplicationInstall';
 import AConnector from '@orchesty/nodejs-sdk/dist/lib/Connector/AConnector';
 import DataStorageManager from '@orchesty/nodejs-sdk/dist/lib/Storage/DataStore/DataStorageManager';

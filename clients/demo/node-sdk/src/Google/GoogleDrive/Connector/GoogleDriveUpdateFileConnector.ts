@@ -1,7 +1,7 @@
 import BaseGoogleDriveUpdateFileConnector, {
     IInput as BaseIInput,
     IOutput,
-} from '@orchesty/nodejs-connectors/dist/lib/Google/GoogleDrive/Connector/GoogleDriveUpdateFileConnector';
+} from '@orchesty/connector-google-drive/dist/Connector/GoogleDriveUpdateFileConnector';
 import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
 import { DIRECTORY_ID } from '../../../Hanaboso/CustomNode/SetupGoogleSheetSettingDirectory';
 

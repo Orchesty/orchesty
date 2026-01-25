@@ -1,4 +1,4 @@
-import Base from '@orchesty/nodejs-connectors/dist/lib/Hubspot/Connector/HubSpotCreateContactConnector';
+import Base from '@orchesty/connector-hubspot/dist/Connector/HubSpotCreateContactConnector';
 import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
 import { IOutput as IInput } from '../CustomNode/HanabosoHubSpotContactMapper';
 
