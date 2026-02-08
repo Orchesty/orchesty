@@ -2,6 +2,7 @@
   "headers": {
     "user": "TestUser",
     "documentId": "test-document",
+    "customCompanyId": "demo",
     "firmaKod": "AAAA"
   },
   "data": {

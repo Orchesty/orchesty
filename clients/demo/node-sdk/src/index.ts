@@ -25,7 +25,7 @@ import DropboxApplication from '@orchesty/connector-dropbox/dist/DropboxApplicat
 import FacebookAdsApplication from '@orchesty/connector-facebook-ads/dist/FacebookAdsApplication';
 import FakturoidApplication from '@orchesty/connector-fakturoid/dist/FakturoidApplication';
 import FlexiBeeCreateFakturaPrijataConnector from '@orchesty/connector-flexi-bee/dist/Connector/FlexiBeeCreateFakturaPrijataConnector';
-import FlexiBeeApplication from '@orchesty/connector-flexi-bee/dist/FexiBeeApplication';
+import FlexiBeeGetCompaniesConnector from '@orchesty/connector-flexi-bee/dist/Connector/FlexiBeeGetCompaniesConnector';
 import GitHubGetRepositoryConnector from '@orchesty/connector-git-hub/dist/Connector/GitHubGetRepositoryConnector';
 import GitHubApplication from '@orchesty/connector-git-hub/dist/GitHubApplication';
 import GoogleCalendarApplication
@@ -71,6 +71,7 @@ import WebflowApplication from '@orchesty/connector-webflow/dist/WebflowApplicat
 import WflowSubscribeWebhookBatch from '@orchesty/connector-wflow/dist/Batch/WflowSubscribeWebhookBatch';
 import WflowUnsubscribeWebhookBatch from '@orchesty/connector-wflow/dist/Batch/WflowUnsubscribeWebhookBatch';
 import WflowGetDocumentConnector from '@orchesty/connector-wflow/dist/Connector/WflowGetDocumentConnector';
+import WflowGetDocumentTypesConnector from '@orchesty/connector-wflow/dist/Connector/WflowGetDocumentTypesConnector';
 import WflowGetOrganizationsConnector from '@orchesty/connector-wflow/dist/Connector/WflowGetOrganizationsConnector';
 import WflowPutDocumentConnector from '@orchesty/connector-wflow/dist/Connector/WflowPutDocumentConnector';
 import WflowUpdateDocumentStateConnector from '@orchesty/connector-wflow/dist/Connector/WflowUpdateDocumentStateConnector';
@@ -106,6 +107,7 @@ import { PageEnum } from './Common/Enum/PageEnum';
 import SESApplication from './Common/SESApplication';
 import FlexiBeeFindFirmaKodConnector from './FlexiBee/Connector/FlexiBeeFindFirmaKodConnector';
 import FlexiBeeFakturaPrijataMapper from './FlexiBee/CustomNode/FlexiBeeFakturaPrijataMapper';
+import { FlexiBeeApplication } from './FlexiBee/FlexiBeeApplication';
 import GoogleDriveCreateDirectoryConnector from './Google/GoogleDrive/Connector/GoogleDriveCreateDirectoryConnector';
 import GoogleDriveUpdateFileConnector from './Google/GoogleDrive/Connector/GoogleDriveUpdateFileConnector';
 import GoogleSheetApplication from './Google/GoogleSheet/GoogleSheetApplication';
@@ -220,6 +222,9 @@ export function start(): void {
 
     const flexiBeeApp = new FlexiBeeApplication(sender, mongoDb);
     container.setApplication(flexiBeeApp);
+
+    const flexiBeeGetCompaniesConnector = new FlexiBeeGetCompaniesConnector(true);
+    container.setNode(flexiBeeGetCompaniesConnector, flexiBeeApp);
     container.setNode(new FlexiBeeCreateFakturaPrijataConnector(), flexiBeeApp);
     container.setNode(new FlexiBeeFindFirmaKodConnector(), flexiBeeApp);
     container.setNode(new FlexiBeeFakturaPrijataMapper(), flexiBeeApp);
@@ -326,8 +331,16 @@ export function start(): void {
     container.setNode(new BeeceptorSyncPostConnector(), beeceptorApplication);
 
     const wflowGetOrganizationsConnector = new WflowGetOrganizationsConnector(true).setSender(sender).setDb(mongoDb);
-    const wflowApplication = new WflowApplication(provider, wflowGetOrganizationsConnector, runner);
+    const wflowGetDocumentTypesConnector = new WflowGetDocumentTypesConnector(true).setSender(sender).setDb(mongoDb);
+    const wflowApplication = new WflowApplication(
+        provider,
+        wflowGetOrganizationsConnector,
+        wflowGetDocumentTypesConnector,
+        flexiBeeGetCompaniesConnector,
+        runner,
+    );
     wflowGetOrganizationsConnector.setApplication(wflowApplication);
+    wflowGetDocumentTypesConnector.setApplication(wflowApplication);
     container.setApplication(wflowApplication);
     container.setNode(new WflowSubscribeWebhookBatch(), wflowApplication);
     container.setNode(new WflowUnsubscribeWebhookBatch(), wflowApplication);

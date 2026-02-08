@@ -14,6 +14,7 @@ import { orchestyOptions } from '@orchesty/nodejs-sdk/dist/lib/Config/Config';
 import { HttpMethods } from '@orchesty/nodejs-sdk/dist/lib/Transport/HttpMethods';
 import { mockOnce } from '@orchesty/nodejs-sdk/dist/test/MockServer';
 import { Topology } from '../src/Wflow/Enum/Topology';
+import { FLEXI_BEE_FORM } from '../src/Wflow/WflowApplication';
 
 export const DEFAULT_USER = 'TestUser';
 export const DEFAULT_PASSWORD = 'Password';
@@ -75,6 +76,10 @@ export function wflowAppInstall(): ApplicationInstall {
         },
         [ORGANIZATION_FORM]: {
             [ORGANIZATION]: 'test-organization',
+        },
+        [FLEXI_BEE_FORM]: {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            '53b4b60a-30dc-4ac4-92cc-f7ceaf7b250a': 'demo',
         },
     });
 }
