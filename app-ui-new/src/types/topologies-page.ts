@@ -49,4 +49,3 @@ export interface CronNode {
   enabled: boolean
   nextRun: string
 }
-

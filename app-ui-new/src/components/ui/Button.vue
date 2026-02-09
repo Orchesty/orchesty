@@ -17,7 +17,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const buttonClasses = computed(() => {
   const base =
-    'inline-flex items-center justify-center rounded-full px-5 py-2.5 text-center text-sm font-medium focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+    'inline-flex items-center justify-center rounded-full px-4 py-2 text-center text-sm font-medium focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
 
   const variants = {
     primary:

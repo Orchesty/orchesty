@@ -4,21 +4,30 @@ import TopologyTreeItem from './TopologyTreeItem.vue'
 import type { TopologiesTreeNode } from '@/types/topologies-page'
 import topologiesTreeData from '@/assets/mock-data/topologies-tree-data.json'
 
+interface Props {
+  modelValue?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: false
+})
+
 const emit = defineEmits<{
   'open-new-topology-modal': []
   'open-new-folder-modal': []
   'select-topology': [topologyId: string, topologyName: string]
+  'update:modelValue': [value: boolean]
 }>()
 
 // Constants
 const MIN_WIDTH = 256
 const MAX_WIDTH = 512
-const COLLAPSED_WIDTH = 32
+const COLLAPSED_WIDTH = 0
 const STORAGE_KEY_WIDTH = 'topologySidebarWidth'
 const STORAGE_KEY_COLLAPSED = 'topologySidebarCollapsed'
 
 // State
-const isCollapsed = ref(false)
+const isCollapsed = ref(props.modelValue)
 const sidebarWidth = ref(MIN_WIDTH)
 const treeData = ref<TopologiesTreeNode[]>(topologiesTreeData.data as TopologiesTreeNode[])
 
@@ -36,6 +45,7 @@ const saveWidth = (width: number) => {
 // Toggle sidebar collapsed state
 const toggleSidebar = () => {
   isCollapsed.value = !isCollapsed.value
+  emit('update:modelValue', isCollapsed.value)
   
   if (isCollapsed.value) {
     sidebarWidth.value = COLLAPSED_WIDTH
@@ -108,70 +118,37 @@ onMounted(() => {
 watch(isCollapsed, (newValue) => {
   localStorage.setItem(STORAGE_KEY_COLLAPSED, newValue.toString())
 })
+
+// Watch for external changes to modelValue
+watch(() => props.modelValue, (newValue) => {
+  if (newValue !== isCollapsed.value) {
+    isCollapsed.value = newValue
+    if (isCollapsed.value) {
+      sidebarWidth.value = COLLAPSED_WIDTH
+    } else {
+      sidebarWidth.value = getSavedWidth()
+    }
+  }
+})
 </script>
 
 <template>
   <aside
+    v-if="!isCollapsed"
     id="topology-sidebar"
     :style="{ width: sidebarWidth + 'px' }"
     class="relative border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 flex flex-col h-full transition-all duration-300"
   >
-    <!-- Header with title and toggle -->
+    <!-- Header with title -->
     <div
       id="topology-sidebar-header"
-      :class="[
-        'pt-4 flex items-center',
-        isCollapsed ? 'justify-center px-0' : 'justify-between pl-4 pr-2'
-      ]"
+      class="pt-4 pl-4 pr-2"
     >
-      <div v-show="!isCollapsed">
-        <h1 class="text-xl font-bold text-gray-900 dark:text-white">Topologies</h1>
-      </div>
-      <button
-        type="button"
-        id="toggle-topology-sidebar-button"
-        :aria-expanded="!isCollapsed"
-        aria-controls="topology-sidebar"
-        @click="toggleSidebar"
-        class="inline-flex items-center justify-center rounded-lg p-0 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-      >
-        <!-- Close Icon (when expanded) -->
-        <svg
-          v-show="!isCollapsed"
-          class="w-6 h-6"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          height="24px"
-          viewBox="0 -960 960 960"
-          width="24px"
-          fill="currentColor"
-        >
-          <path
-            d="M641.92-336.54v-286.92L498.08-480l143.84 143.46ZM212.31-140q-29.92 0-51.12-21.19Q140-182.39 140-212.31v-535.38q0-29.92 21.19-51.12Q182.39-820 212.31-820h535.38q29.92 0 51.12 21.19Q820-777.61 820-747.69v535.38q0 29.92-21.19 51.12Q777.61-140 747.69-140H212.31ZM320-200v-560H212.31q-4.62 0-8.46 3.85-3.85 3.84-3.85 8.46v535.38q0 4.62 3.85 8.46 3.84 3.85 8.46 3.85H320Zm60 0h367.69q4.62 0 8.46-3.85 3.85-3.84 3.85-8.46v-535.38q0-4.62-3.85-8.46-3.84-3.85-8.46-3.85H380v560Zm-60 0H200h120Z"
-          />
-        </svg>
-        <!-- Open Icon (when collapsed) -->
-        <svg
-          v-show="isCollapsed"
-          class="w-6 h-6"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          height="24px"
-          viewBox="0 -960 960 960"
-          width="24px"
-          fill="currentColor"
-        >
-          <path
-            d="M498.08-623.46v286.92L641.92-480 498.08-623.46ZM212.31-140q-29.92 0-51.12-21.19Q140-182.39 140-212.31v-535.38q0-29.92 21.19-51.12Q182.39-820 212.31-820h535.38q29.92 0 51.12 21.19Q820-777.61 820-747.69v535.38q0 29.92-21.19 51.12Q777.61-140 747.69-140H212.31ZM320-200v-560H212.31q-4.62 0-8.46 3.85-3.85 3.84-3.85 8.46v535.38q0 4.62 3.85 8.46 3.84 3.85 8.46 3.85H320Zm60 0h367.69q4.62 0 8.46-3.85 3.85-3.84 3.85-8.46v-535.38q0-4.62-3.85-8.46-3.84-3.85-8.46-3.85H380v560Zm-60 0H200h120Z"
-          />
-        </svg>
-        <span class="sr-only">Toggle sidebar</span>
-      </button>
+      <h1 class="text-xl font-bold text-gray-900 dark:text-white">Topologies</h1>
     </div>
 
     <!-- Action Buttons -->
     <div
-      v-show="!isCollapsed"
       class="px-4 py-2 border-b border-gray-200 dark:border-gray-700 flex gap-2"
     >
       <!-- New Folder Button -->
@@ -223,7 +200,6 @@ watch(isCollapsed, (newValue) => {
 
     <!-- Scrollable Tree List -->
     <div
-      v-show="!isCollapsed"
       id="topology-sidebar-scrollable"
       class="overflow-y-auto px-2 py-4 flex-1"
     >
@@ -239,7 +215,6 @@ watch(isCollapsed, (newValue) => {
 
     <!-- Resize Handle -->
     <div
-      v-show="!isCollapsed"
       id="topology-sidebar-resize-handle"
       @mousedown="startResize"
       class="absolute top-0 right-0 bottom-0 w-1 cursor-col-resize hover:bg-gray-400 dark:hover:bg-gray-600 transition-all"

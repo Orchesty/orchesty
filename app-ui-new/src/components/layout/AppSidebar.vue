@@ -51,12 +51,18 @@ useSidebar()
           <RouterLink
             to="/trace"
             :class="[
-              'group flex h-10 w-full items-center rounded-lg p-2 text-base font-medium text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700',
+              'group flex h-10 w-full items-center rounded-lg p-1.5 text-base font-medium text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700',
               isActive('/trace') ? 'bg-gray-100 dark:bg-gray-700' : ''
             ]"
           >
             <Bot
-              :class="iconClass('/trace')"
+              :class="[
+                isActive('/trace')
+                  ? 'text-primary-600 dark:text-primary-500'
+                  : 'text-gray-400 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white',
+                'h-7 w-7 shrink-0'
+              ]"
+              :stroke-width="1.8"
               aria-hidden="true"
             />
             <span class="ml-3 flex-1 whitespace-nowrap text-left" data-sidebar-collapse-hide>Trace</span>

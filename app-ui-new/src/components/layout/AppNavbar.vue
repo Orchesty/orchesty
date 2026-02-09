@@ -76,7 +76,7 @@ onMounted(() => {
             class="mx-2 inline-flex items-center rounded-lg p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
           >
             <span class="sr-only">Toggle Trace</span>
-            <BotMessageSquare class="h-7 w-7" aria-hidden="true" />
+            <BotMessageSquare class="h-6 w-6" aria-hidden="true" />
           </button>
 
           <!-- User Menu -->

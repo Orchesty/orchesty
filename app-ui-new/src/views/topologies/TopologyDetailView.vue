@@ -49,6 +49,13 @@ const error = ref<string | null>(null)
 const versionDrawerOpen = ref(false)
 const designerDrawerOpen = ref(false)
 
+// Initialize sidebar collapsed state from localStorage to match sidebar's initial state
+const getSidebarCollapsedFromStorage = (): boolean => {
+  const saved = localStorage.getItem('topologySidebarCollapsed')
+  return saved === 'true'
+}
+const topologySidebarCollapsed = ref(getSidebarCollapsedFromStorage())
+
 // Metrics data
 const metricsData = ref<TopologyMetrics | null>(null)
 const metricsLoading = ref(false)
@@ -450,6 +457,7 @@ onMounted(async () => {
     <div class="flex flex-1 overflow-hidden">
       <AppSidebar />
       <TopologiesSidebar
+        v-model="topologySidebarCollapsed"
         @open-new-topology-modal="newTopologyModalOpen = true"
         @open-new-folder-modal="newFolderModalOpen = true"
         @select-topology="handleSelectTopology"
@@ -471,11 +479,51 @@ onMounted(async () => {
             </div>
 
             <!-- Topology Detail -->
-            <div v-else-if="topology" class="px-4 pt-6 pb-4">
+            <div v-else-if="topology" class="px-4 pt-2 pb-4">
               <!-- Page Header -->
               <div class="mb-6">
-                <div class="flex items-center justify-between">
-                  <div>
+                <!-- Top row: toggle button left, action buttons right -->
+                <div class="flex items-center justify-between mb-2">
+                  <!-- Toggle Sidebar Button -->
+                   <div>
+                    <button
+                      type="button"
+                      @click="topologySidebarCollapsed = !topologySidebarCollapsed"
+                      class="items-center justify-center rounded-lg p-0 relative -left-1 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                    >
+                      <!-- Open Sidebar Icon (when collapsed) -->
+                      <svg
+                        v-show="topologySidebarCollapsed"
+                        class="w-6 h-6"
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        height="24px"
+                        viewBox="0 -960 960 960"
+                        width="24px"
+                        fill="currentColor"
+                      >
+                        <path
+                          d="M498.08-623.46v286.92L641.92-480 498.08-623.46ZM212.31-140q-29.92 0-51.12-21.19Q140-182.39 140-212.31v-535.38q0-29.92 21.19-51.12Q182.39-820 212.31-820h535.38q29.92 0 51.12 21.19Q820-777.61 820-747.69v535.38q0 29.92-21.19 51.12Q777.61-140 747.69-140H212.31ZM320-200v-560H212.31q-4.62 0-8.46 3.85-3.85 3.84-3.85 8.46v535.38q0 4.62 3.85 8.46 3.84 3.85 8.46 3.85H320Zm60 0h367.69q4.62 0 8.46-3.85 3.85-3.84 3.85-8.46v-535.38q0-4.62-3.85-8.46-3.84-3.85-8.46-3.85H380v560Zm-60 0H200h120Z"
+                        />
+                      </svg>
+                      <!-- Close Sidebar Icon (when expanded) -->
+                      <svg
+                        v-show="!topologySidebarCollapsed"
+                        class="w-6 h-6"
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        height="24px"
+                        viewBox="0 -960 960 960"
+                        width="24px"
+                        fill="currentColor"
+                      >
+                        <path
+                          d="M641.92-336.54v-286.92L498.08-480l143.84 143.46ZM212.31-140q-29.92 0-51.12-21.19Q140-182.39 140-212.31v-535.38q0-29.92 21.19-51.12Q182.39-820 212.31-820h535.38q29.92 0 51.12 21.19Q820-777.61 820-747.69v535.38q0 29.92-21.19 51.12Q777.61-140 747.69-140H212.31ZM320-200v-560H212.31q-4.62 0-8.46 3.85-3.85 3.84-3.85 8.46v535.38q0 4.62 3.85 8.46 3.84 3.85 8.46 3.85H320Zm60 0h367.69q4.62 0 8.46-3.85 3.85-3.84 3.85-8.46v-535.38q0-4.62-3.85-8.46-3.84-3.85-8.46-3.85H380v560Zm-60 0H200h120Z"
+                        />
+                      </svg>
+                      <span class="sr-only">Toggle sidebar</span>
+                    </button>
+
                     <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ topology.name }}</h1>
                     <div class="flex items-center gap-2 mt-2">
                       <span class="text-sm text-gray-500 dark:text-gray-400">Version {{ topology.version }}</span>
@@ -483,7 +531,9 @@ onMounted(async () => {
                         {{ statusLabel }}
                       </span>
                     </div>
-                  </div>
+                   </div>
+                  
+
                   <div class="flex items-center gap-2">
                     <Button variant="outline" @click="handleVersionsClick">
                       <svg class="w-5 h-5 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
@@ -517,6 +567,7 @@ onMounted(async () => {
                     </DropdownMenu>
                   </div>
                 </div>
+
               </div>
               
               <!-- Tabs -->
