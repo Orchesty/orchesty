@@ -56,7 +56,7 @@ const handleSendMessage = async (messageText: string) => {
   const userMessage: ChatMessageType = {
     id: `msg-user-${Date.now()}`,
     role: 'user',
-    content: messageText,
+    content: messageText.replace(/\n/g, '<br>'),
     timestamp: new Date(),
     status: 'sent'
   }

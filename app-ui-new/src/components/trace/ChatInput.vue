@@ -14,12 +14,23 @@ const emit = defineEmits<{
 }>()
 
 const message = ref('')
+const textareaRef = ref<HTMLTextAreaElement | null>(null)
+
+const autoResize = () => {
+  const el = textareaRef.value
+  if (!el) return
+  el.style.height = 'auto'
+  el.style.height = el.scrollHeight + 'px'
+}
 
 const handleSend = () => {
   const trimmedMessage = message.value.trim()
   if (trimmedMessage && !props.loading) {
     emit('send', trimmedMessage)
     message.value = ''
+    if (textareaRef.value) {
+      textareaRef.value.style.height = 'auto'
+    }
   }
 }
 
@@ -35,15 +46,18 @@ const handleKeydown = (event: KeyboardEvent) => {
   <div class="absolute bottom-0 left-0 right-0 z-10">
     <div class="max-w-4xl mx-auto px-4 py-3">
       <form @submit.prevent="handleSend">
-        <div class="flex items-center gap-4 border border-gray-300 rounded-lg bg-white px-3 py-2 focus-within:ring-2 focus-within:ring-primary-500 focus-within:border-primary-500 dark:bg-gray-800 dark:border-gray-600 dark:focus-within:ring-primary-500 dark:focus-within:border-primary-500">
+        <div class="flex items-center gap-4 border border-gray-300 rounded-lg bg-white px-3 py-2 dark:bg-gray-800 dark:border-gray-600">
           <label for="ai-chat-input" class="sr-only">Write message</label>
           <textarea
+            ref="textareaRef"
             id="ai-chat-input"
             v-model="message"
             @keydown="handleKeydown"
+            @input="autoResize"
             :disabled="loading"
             placeholder="Write a prompt..."
-            class="block flex-1 border-0 bg-transparent px-0 text-sm text-gray-800 focus:ring-0 resize-none overflow-y-auto max-h-[50vh] min-h-[2.5rem] dark:text-white dark:placeholder:text-gray-400"
+            rows="1"
+            class="block flex-1 border-0 bg-transparent px-0 text-sm text-gray-800 focus:ring-0 resize-none overflow-y-auto max-h-[50vh] dark:text-white dark:placeholder:text-gray-400"
           ></textarea>
           <button
             type="submit"

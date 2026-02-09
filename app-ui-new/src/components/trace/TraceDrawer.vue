@@ -22,6 +22,14 @@ const messages = ref<ChatMessageType[]>([])
 const messageInput = ref('')
 const sending = ref(false)
 const chatContainerEl = ref<HTMLElement | null>(null)
+const textareaRef = ref<HTMLTextAreaElement | null>(null)
+
+const autoResize = () => {
+  const el = textareaRef.value
+  if (!el) return
+  el.style.height = 'auto'
+  el.style.height = el.scrollHeight + 'px'
+}
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const drawerInstance = ref<any>(null)
 
@@ -91,12 +99,15 @@ const handleSendMessage = async () => {
   const userMessage: ChatMessageType = {
     id: `msg-user-${Date.now()}`,
     role: 'user',
-    content: trimmedMessage,
+    content: trimmedMessage.replace(/\n/g, '<br>'),
     timestamp: new Date(),
     status: 'sent'
   }
   messages.value.push(userMessage)
   messageInput.value = ''
+  if (textareaRef.value) {
+    textareaRef.value.style.height = 'auto'
+  }
   
   await nextTick()
   scrollToBottom()
@@ -203,15 +214,18 @@ const handleClose = () => {
       <!-- Input Field at Bottom -->
       <div class="p-4 border-t border-gray-200 dark:border-gray-700 shrink-0">
         <form @submit.prevent="handleSendMessage">
-          <div class="flex items-center gap-2 border border-gray-300 rounded-lg bg-white px-3 py-2 focus-within:ring-2 focus-within:ring-primary-500 focus-within:border-primary-500 dark:bg-gray-800 dark:border-gray-600 dark:focus-within:ring-primary-500 dark:focus-within:border-primary-500">
+          <div class="flex items-center gap-2 border border-gray-300 rounded-lg bg-white px-3 py-2 dark:bg-gray-800 dark:border-gray-600">
             <label for="trace-drawer-input" class="sr-only">Write message</label>
             <textarea 
+              ref="textareaRef"
               v-model="messageInput"
               @keydown="handleKeydown"
+              @input="autoResize"
               :disabled="sending"
               placeholder="Write a prompt..." 
               id="trace-drawer-input" 
-              class="block flex-1 border-0 bg-transparent px-0 text-sm text-gray-800 focus:ring-0 resize-none overflow-y-auto max-h-[20vh] min-h-[2.5rem] dark:text-white dark:placeholder:text-gray-400"
+              rows="1"
+              class="block flex-1 border-0 bg-transparent px-0 text-sm text-gray-800 focus:ring-0 resize-none overflow-y-auto max-h-[20vh] dark:text-white dark:placeholder:text-gray-400"
             ></textarea>
             <button 
               type="submit" 
