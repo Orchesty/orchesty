@@ -37,8 +37,8 @@ const statusLabel = computed(() => {
   }
 });
 
-const isInstallDisabled = computed(() => {
-  return props.application.status === 'authorized' || props.application.status === 'unauthorized';
+const isUninstalled = computed(() => {
+  return props.application.status === 'uninstalled';
 });
 
 const handleOpenDetail = () => {
@@ -80,9 +80,9 @@ const handleOpenDetail = () => {
     <!-- Action Buttons -->
     <div class="flex items-center gap-2">
       <Button
+        v-if="isUninstalled"
         variant="primary"
         class="flex-1"
-        :disabled="isInstallDisabled"
       >
         Install
       </Button>

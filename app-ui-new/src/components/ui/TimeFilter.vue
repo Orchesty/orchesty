@@ -29,9 +29,9 @@ const getTimeFilterClasses = (filter: TimeFilter) => {
     : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 hover:text-primary-700 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:text-white'
   
   const borderClasses = filter === '1h' 
-    ? 'rounded-l-lg' 
+    ? 'rounded-l-full' 
     : filter === '30d' 
-      ? 'rounded-r-lg border-l-0' 
+      ? 'rounded-r-full border-l-0' 
       : 'border-l-0'
   
   return `${baseClasses} ${activeClasses} ${borderClasses}`

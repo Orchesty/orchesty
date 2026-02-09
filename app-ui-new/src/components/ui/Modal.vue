@@ -38,7 +38,7 @@ onMounted(async () => {
     modalInstance.value = new Modal(modalElement, {
       placement: 'center',
       backdrop: 'dynamic',
-      backdropClasses: 'bg-gray-900/50 dark:bg-gray-900/80 fixed inset-0 z-40',
+      backdropClasses: 'bg-gray-900/50 dark:bg-gray-900/80 fixed inset-0 z-[65]',
       closable: true,
       onHide: () => {
         // Synchronize Vue state when modal is hidden by Flowbite (e.g., clicking backdrop)
@@ -89,7 +89,7 @@ const sizeClass = {
     :id="id"
     tabindex="-1"
     aria-hidden="true"
-    class="fixed left-0 right-0 top-0 z-50 hidden h-[calc(100%-1rem)] max-h-full w-full items-center justify-center overflow-y-auto overflow-x-hidden md:inset-0"
+    class="fixed left-0 right-0 top-0 z-[70] hidden h-[calc(100%-1rem)] max-h-full w-full items-center justify-center overflow-y-auto overflow-x-hidden md:inset-0"
   >
     <div :class="['relative max-h-full w-full p-4', sizeClass[size]]">
       <!-- Modal content -->

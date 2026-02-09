@@ -75,7 +75,7 @@ const getChartOptions = () => {
       zoom: {
         enabled: false,
       },
-      background: isDarkMode.value ? '#1f2937' : '#ffffff',
+      background: 'transparent',
     },
     dataLabels: {
       enabled: false,

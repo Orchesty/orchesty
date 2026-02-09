@@ -65,7 +65,7 @@ const handleDateChange = (value: [Date | null, Date | null] | null) => {
 
 // UI Configuration for Tailwind classes
 const uiConfig = {
-  input: 'rounded-lg border border-gray-200 bg-white pl-9 pr-3 py-2 text-sm text-gray-900 hover:bg-gray-50 focus:border-primary-600 focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700 dark:focus:border-primary-500 dark:focus:ring-primary-500',
+  input: 'rounded-lg border border-gray-200 bg-white pl-9 pr-3 py-2 text-sm text-gray-900 placeholder-gray-500 hover:bg-gray-50 focus:border-primary-600 focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 dark:hover:bg-gray-700 dark:focus:border-primary-500 dark:focus:ring-primary-500',
   menu: 'rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-600 dark:bg-gray-800 pb-3',
   calendar: 'px-4',
   calendarCell: 'hover:bg-gray-100 dark:hover:bg-gray-700 rounded',
@@ -114,6 +114,48 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+/* VueDatePicker theme overrides — light mode */
+:deep(.dp__theme_light) {
+  --dp-primary-color: #10C86C;
+  --dp-primary-text-color: #ffffff;
+  --dp-background-color: #ffffff;
+  --dp-text-color: #141414;
+  --dp-border-color: #C4C4C4;
+  --dp-menu-border-color: #C4C4C4;
+  --dp-hover-color: #F8F8F8;
+  --dp-hover-text-color: #141414;
+  --dp-placeholder-color: #929292;
+  --dp-range-between-dates-background-color: #D3FBDF;
+  --dp-range-between-dates-text-color: #0D663C;
+  --dp-range-between-border-color: #D3FBDF;
+  --dp-icon-color: #929292;
+  --dp-secondary-color: #ABABAB;
+}
+
+/* VueDatePicker theme overrides — dark mode */
+:deep(.dp__theme_dark) {
+  --dp-primary-color: #1BEA83;
+  --dp-primary-text-color: #141414;
+  --dp-background-color: #1F1F1F;
+  --dp-text-color: #F8F8F8;
+  --dp-border-color: #636363;
+  --dp-menu-border-color: #636363;
+  --dp-hover-color: #333333;
+  --dp-hover-text-color: #F8F8F8;
+  --dp-placeholder-color: #929292;
+  --dp-range-between-dates-background-color: #043A21;
+  --dp-range-between-dates-text-color: #ABF7C5;
+  --dp-range-between-border-color: #043A21;
+  --dp-icon-color: #929292;
+  --dp-secondary-color: #7A7A7A;
+}
+
+/* Force placeholder color to match SearchInput */
+:deep(.dp__input::placeholder) {
+  color: #929292 !important;
+  opacity: 1;
+}
+
 /* Hide selection preview */
 :deep(.dp__selection_preview) {
   display: block;
@@ -143,52 +185,54 @@ onUnmounted(() => {
   padding: 1rem 1.5rem;
   font-size: 0.875rem;
   font-weight: 500;
-  border-radius: 0.5rem;
+  border-radius: 9999px;
   transition: all 0.2s;
 }
 
 :deep(.dp__action_cancel) {
-  background-color: white;
-  border: 1px solid rgb(229, 231, 235);
-  color: rgb(17, 24, 39);
+  background-color: #ffffff;
+  border: 1px solid #C4C4C4;
+  color: #141414;
 }
 
 :deep(.dp__action_cancel:hover) {
-  background-color: rgb(249, 250, 251);
+  background-color: #F8F8F8;
 }
 
 :deep(.dp__action_select) {
-  background-color: rgb(37, 99, 235);
-  color: white;
-  border: 1px solid rgb(37, 99, 235);
+  background-color: #10C86C;
+  color: #ffffff;
+  border: 1px solid #10C86C;
 }
 
 :deep(.dp__action_select:hover) {
-  background-color: rgb(29, 78, 216);
+  background-color: #0D9E58;
+  border-color: #0D9E58;
 }
 
-/* Dark mode styles for buttons - using VueDatePicker's dark class */
+/* Dark mode styles for buttons */
 :deep(.dp__theme_dark .dp__action_cancel),
 :deep(.dp--dark .dp__action_cancel) {
-  background-color: rgb(31, 41, 55) !important;
-  border-color: rgb(75, 85, 99) !important;
-  color: white !important;
+  background-color: #333333 !important;
+  border-color: #636363 !important;
+  color: #F8F8F8 !important;
 }
 
 :deep(.dp__theme_dark .dp__action_cancel:hover),
 :deep(.dp--dark .dp__action_cancel:hover) {
-  background-color: rgb(55, 65, 81) !important;
+  background-color: #4D4D4D !important;
 }
 
 :deep(.dp__theme_dark .dp__action_select),
 :deep(.dp--dark .dp__action_select) {
-  background-color: rgb(37, 99, 235) !important;
-  border-color: rgb(37, 99, 235) !important;
+  background-color: #1BEA83 !important;
+  border-color: #1BEA83 !important;
+  color: #141414 !important;
 }
 
 :deep(.dp__theme_dark .dp__action_select:hover),
 :deep(.dp--dark .dp__action_select:hover) {
-  background-color: rgb(29, 78, 216) !important;
-  border-color: rgb(29, 78, 216) !important;
+  background-color: #10C86C !important;
+  border-color: #10C86C !important;
 }
 </style>

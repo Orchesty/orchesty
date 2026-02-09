@@ -656,16 +656,14 @@ onMounted(async () => {
                   <TabCard>
                     <div class="flex items-center justify-between mb-6">
                       <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Access Control</h3>
-                      <button
-                        type="button"
+                      <Button
                         data-dropdown-toggle="add-group-dropdown"
-                        class="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
                       >
-                        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true">
+                        <svg class="h-4 w-4 me-2" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                         </svg>
                         Group
-                      </button>
+                      </Button>
                       <div id="add-group-dropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-60 dark:bg-gray-700">
                         <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
                           <li v-for="groupName in availableGroups" :key="groupName">
@@ -690,16 +688,16 @@ onMounted(async () => {
                       >
                         <div class="mb-4 flex items-center justify-between">
                           <h4 class="text-base font-semibold text-gray-900 dark:text-white">{{ group.name }}</h4>
-                          <button
-                            type="button"
+                          <Button
+                            variant="outline"
+                            size="sm"
                             @click="handleRemoveGroup(group.id)"
-                            class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700 dark:focus:ring-primary-900"
                           >
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true">
+                            <svg class="h-4 w-4 me-2" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true">
                               <path stroke-linecap="round" stroke-linejoin="round" d="M19 7H5m14 0-1 12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 7m14 0H5m3 0V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m-5 5v6m4-6v6" />
                             </svg>
                             Remove
-                          </button>
+                          </Button>
                         </div>
                         <div class="space-y-3">
                           <!-- Manager permission -->

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
 import { onMounted } from 'vue'
+import { BotMessageSquare } from 'lucide-vue-next'
 import { useDarkMode } from '@/composables/useDarkMode'
 import { useTraceDrawer } from '@/composables/useTraceDrawer'
 import DropdownMenu, { type DropdownMenuSection } from '@/components/ui/DropdownMenu.vue'
@@ -56,14 +57,13 @@ onMounted(() => {
 <template>
   <header class="flex flex-col antialiased">
     <nav
-      class="border-b border-gray-200 bg-white px-4 py-2.5 dark:border-gray-700 dark:bg-gray-800 lg:px-6"
+      class="relative z-50 border-b border-gray-200 bg-white py-2.5 pr-4 dark:border-gray-700 dark:bg-gray-800 lg:pr-6"
     >
       <div class="flex w-full items-center justify-between">
         <!-- Logo -->
-        <div class="flex flex-shrink-0 items-center justify-start">
-          <RouterLink to="/dashboard" class="mr-6 flex text-black dark:text-gray-300">
-            <!-- TODO: Přidat Orchesty logo SVG -->
-            <span class="mr-3 h-5 w-auto text-xl font-semibold">Orchesty</span>
+        <div class="flex w-16 flex-shrink-0 items-center justify-center">
+          <RouterLink to="/dashboard" class="flex items-center">
+            <img src="/logo.svg" alt="Orchesty" class="h-8 w-8" />
           </RouterLink>
         </div>
 
@@ -73,20 +73,10 @@ onMounted(() => {
           <button
             type="button"
             @click="toggleDrawer"
-            class="mx-2 inline-flex items-center rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+            class="mx-2 inline-flex items-center rounded-lg p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
           >
             <span class="sr-only">Toggle Trace</span>
-            <svg
-              class="h-5 w-5 rotate-90 rtl:-rotate-90"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="currentColor"
-              viewBox="0 0 18 20"
-            >
-              <path
-                d="m17.914 18.594-8-18a1 1 0 0 0-1.828 0l-8 18a1 1 0 0 0 1.157 1.376L8 18.281V9a1 1 0 0 1 2 0v9.281l6.758 1.689a1 1 0 0 0 1.156-1.376Z"
-              ></path>
-            </svg>
+            <BotMessageSquare class="h-7 w-7" aria-hidden="true" />
           </button>
 
           <!-- User Menu -->

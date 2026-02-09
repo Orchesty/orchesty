@@ -125,7 +125,7 @@ const getHeatmapOptions = () => {
       width: '100%',
       height: 350,
       type: 'heatmap',
-      background: colors.background,
+      background: 'transparent',
       redrawOnWindowResize: true,
       redrawOnParentResize: true,
       parentHeightOffset: 0,
@@ -376,7 +376,7 @@ onMounted(() => {
       </div>
     </div>
 
-    <div id="overview-processes-chart-wrapper" class="w-full dark:bg-gray-800">
+    <div id="overview-processes-chart-wrapper" class="w-full">
       <div id="overview-processes-chart" ref="chartEl" class="h-64"></div>
     </div>
   </Card>

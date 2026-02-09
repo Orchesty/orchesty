@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 
 interface Props {
   modelValue: string
@@ -21,6 +21,8 @@ const emit = defineEmits<{
 const localValue = ref(props.modelValue)
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
+const hasValue = computed(() => localValue.value.length > 0)
+
 // Watch for external changes to modelValue
 watch(() => props.modelValue, (newValue) => {
   localValue.value = newValue
@@ -40,12 +42,22 @@ const handleInput = (event: Event) => {
     emit('update:modelValue', localValue.value)
   }, props.debounce)
 }
+
+const handleClear = () => {
+  localValue.value = ''
+  // Clear any pending debounce and emit immediately
+  if (debounceTimer) {
+    clearTimeout(debounceTimer)
+  }
+  emit('update:modelValue', '')
+}
 </script>
 
 <template>
   <div :class="width">
     <label for="search-input" class="sr-only">Search</label>
     <div class="relative">
+      <!-- Search icon -->
       <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
         <svg
           class="h-5 w-5 text-gray-500 dark:text-gray-400"
@@ -66,8 +78,30 @@ const handleInput = (event: Event) => {
         :value="localValue"
         @input="handleInput"
         :placeholder="placeholder"
-        class="block w-full rounded-lg border border-gray-200 bg-white p-2 pl-10 text-sm text-gray-900 focus:border-primary-600 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"
+        class="block w-full rounded-lg border border-gray-200 bg-white p-2 pl-10 pr-8 text-sm text-gray-900 focus:border-primary-600 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"
       />
+      <!-- Clear button -->
+      <button
+        v-if="hasValue"
+        type="button"
+        @click="handleClear"
+        class="absolute inset-y-0 right-0 flex items-center pr-2.5 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+      >
+        <svg
+          class="h-4 w-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </button>
     </div>
   </div>
 </template>

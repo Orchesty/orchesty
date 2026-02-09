@@ -103,7 +103,7 @@ const getBarChartOptions = () => {
       toolbar: {
         show: false,
       },
-      background: colors.background,
+      background: 'transparent',
     },
     plotOptions: {
       bar: {

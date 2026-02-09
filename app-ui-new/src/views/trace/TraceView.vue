@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, nextTick } from 'vue'
+import { Bot } from 'lucide-vue-next'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import Button from '@/components/ui/Button.vue'
 import ChatMessage from '@/components/trace/ChatMessage.vue'
@@ -192,15 +193,7 @@ const handleExportPdf = () => {
           
           <!-- Loading Indicator -->
           <div v-if="sending" class="p-6 bg-white dark:bg-gray-800 shadow-sm rounded-lg flex items-start gap-6">
-            <svg
-              class="h-6 w-6 shrink-0 text-blue-600 dark:text-blue-500 rotate-90 rtl:-rotate-90"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="currentColor"
-              viewBox="0 0 18 20"
-            >
-              <path d="m17.914 18.594-8-18a1 1 0 0 0-1.828 0l-8 18a1 1 0 0 0 1.157 1.376L8 18.281V9a1 1 0 0 1 2 0v9.281l6.758 1.689a1 1 0 0 0 1.156-1.376Z"></path>
-            </svg>
+            <Bot class="h-7 w-7 shrink-0 text-primary-600 dark:text-primary-500" aria-hidden="true" />
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-2">
                 <div class="flex space-x-1">

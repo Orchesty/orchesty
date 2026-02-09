@@ -102,7 +102,7 @@ const getColumnChartOptions = () => {
       toolbar: {
         show: false,
       },
-      background: colors.background,
+      background: 'transparent',
       dropShadow: {
         enabled: false,
       },

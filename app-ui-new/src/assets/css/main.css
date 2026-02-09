@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Global checkbox & radio primary color */
+@layer base {
+  input[type="checkbox"],
+  input[type="radio"] {
+    @apply text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600;
+  }
+}
+
 /* ApexCharts heatmap: ensure no outlines (hide cell borders/mrizka) */
 .apexcharts-canvas .apexcharts-heatmap-rect {
   stroke: transparent !important;
@@ -23,39 +31,6 @@
   background: transparent !important;
 }
 
-/* Fix dark mode background for processes heatmap */
-.dark #processes-chart .apexcharts-svg {
-  background-color: #1f2937 !important;
-}
-
-.dark #processes-chart .apexcharts-canvas {
-  background-color: #1f2937 !important;
-}
-
-.dark #processes-chart svg {
-  background-color: #1f2937 !important;
-}
-
-.dark #processes-chart-wrapper {
-  background-color: #1f2937 !important;
-}
-
-/* Fix dark mode background for overview processes heatmap */
-.dark #overview-processes-chart .apexcharts-svg {
-  background-color: #1f2937 !important;
-}
-
-.dark #overview-processes-chart .apexcharts-canvas {
-  background-color: #1f2937 !important;
-}
-
-.dark #overview-processes-chart svg {
-  background-color: #1f2937 !important;
-}
-
-.dark #overview-processes-chart-wrapper {
-  background-color: #1f2937 !important;
-}
 
 /* SVG map styles */
 .svgMap-map-wrapper {

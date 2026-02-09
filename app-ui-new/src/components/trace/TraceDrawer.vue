@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, watch, nextTick, onMounted, onBeforeUnmount } from 'vue'
+import { Bot } from 'lucide-vue-next'
 import ChatMessage from './ChatMessage.vue'
 import type { ChatMessage as ChatMessageType } from '@/types/trace'
 import { sendChatMessage } from '@/services/traceService'
@@ -142,7 +143,7 @@ const handleClose = () => {
 <template>
   <div 
     id="traceDrawer" 
-    class="fixed top-[65px] right-0 z-50 h-[calc(100vh-65px)] w-96 transition-transform translate-x-full bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700" 
+    class="fixed top-[53px] right-0 z-40 h-[calc(100vh-53px)] w-96 transition-transform translate-x-full bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700" 
     tabindex="-1" 
     aria-labelledby="traceDrawerLabel" 
     aria-hidden="true"
@@ -185,15 +186,7 @@ const handleClose = () => {
         
         <!-- Loading Indicator -->
         <div v-if="sending" class="p-6 bg-white dark:bg-gray-800 shadow-sm rounded-lg flex items-start gap-6">
-          <svg
-            class="h-6 w-6 shrink-0 text-blue-600 dark:text-blue-500 rotate-90 rtl:-rotate-90"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="currentColor"
-            viewBox="0 0 18 20"
-          >
-            <path d="m17.914 18.594-8-18a1 1 0 0 0-1.828 0l-8 18a1 1 0 0 0 1.157 1.376L8 18.281V9a1 1 0 0 1 2 0v9.281l6.758 1.689a1 1 0 0 0 1.156-1.376Z"></path>
-          </svg>
+          <Bot class="h-7 w-7 shrink-0 text-primary-600 dark:text-primary-500" aria-hidden="true" />
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2">
               <div class="flex space-x-1">

@@ -24,7 +24,7 @@ const chartData = computed(() =>
 )
 
 const getChartOptions = (): ApexOptions => ({
-  colors: ['#1a56db'],
+  colors: ['#0D9E58'],
   series: [
     {
       name: 'Time (ms)',

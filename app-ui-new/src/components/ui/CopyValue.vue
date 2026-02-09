@@ -4,6 +4,7 @@ import { ref } from 'vue'
 
 interface Props {
   value: string
+  htmlValue?: string
   hideValue?: boolean
   title?: string
 }
@@ -17,7 +18,15 @@ const copied = ref(false)
 
 const copyToClipboard = async () => {
   try {
-    await navigator.clipboard.writeText(props.value)
+    if (props.htmlValue) {
+      const item = new ClipboardItem({
+        'text/html': new Blob([props.htmlValue], { type: 'text/html' }),
+        'text/plain': new Blob([props.value], { type: 'text/plain' }),
+      })
+      await navigator.clipboard.write([item])
+    } else {
+      await navigator.clipboard.writeText(props.value)
+    }
     copied.value = true
     setTimeout(() => {
       copied.value = false

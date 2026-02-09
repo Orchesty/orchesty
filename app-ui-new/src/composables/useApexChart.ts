@@ -39,16 +39,6 @@ export function useApexChart(options: UseApexChartOptions = {}) {
       chartInstance.value = new ApexCharts(element, chartOptions)
       chartInstance.value.render()
       
-      // Apply dark mode background if needed (like original implementation)
-      setTimeout(() => {
-        if (isDarkMode.value) {
-          const svg = element.querySelector('svg')
-          if (svg) {
-            svg.style.backgroundColor = '#1f2937'
-          }
-        }
-      }, 50)
-      
       return chartInstance.value
     } catch (error) {
       console.error('Error initializing ApexChart:', error)
@@ -168,13 +158,13 @@ export function useApexChart(options: UseApexChartOptions = {}) {
 
 export function getChartColors(isDark: boolean) {
   return {
-    background: isDark ? '#1f2937' : '#ffffff',
+    background: 'transparent',
     text: isDark ? '#9CA3AF' : '#6B7280',
     border: isDark ? '#374151' : '#F3F4F6',
-    primary: isDark ? '#3B82F6' : '#2563EB',
+    primary: isDark ? '#1BEA83' : '#0D9E58',
     success: isDark ? '#22C55E' : '#16A34A',
     danger: isDark ? '#EF4444' : '#DC2626',
-    transparent: isDark ? 'rgba(31, 41, 55, 0)' : 'rgba(255, 255, 255, 0)',
+    transparent: 'transparent',
   }
 }
 
@@ -184,7 +174,7 @@ export function getBaseChartOptions(isDark: boolean) {
   return {
     chart: {
       fontFamily: 'Inter, sans-serif',
-      background: colors.background,
+      background: 'transparent',
       foreColor: colors.text,
       toolbar: {
         show: false,

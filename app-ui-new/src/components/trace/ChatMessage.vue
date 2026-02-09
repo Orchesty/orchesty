@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { Bot } from 'lucide-vue-next'
 import type { ChatMessage } from '@/types/trace'
 import CopyValue from '@/components/ui/CopyValue.vue'
 
@@ -51,15 +52,7 @@ const handleExportPdf = () => {
     </template>
     
     <template v-if="isAssistant">
-      <svg
-        class="h-6 w-6 shrink-0 text-blue-600 dark:text-blue-500 rotate-90 rtl:-rotate-90"
-        aria-hidden="true"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="currentColor"
-        viewBox="0 0 18 20"
-      >
-        <path d="m17.914 18.594-8-18a1 1 0 0 0-1.828 0l-8 18a1 1 0 0 0 1.157 1.376L8 18.281V9a1 1 0 0 1 2 0v9.281l6.758 1.689a1 1 0 0 0 1.156-1.376Z"></path>
-      </svg>
+      <Bot class="h-7 w-7 shrink-0 text-primary-600 dark:text-primary-500" aria-hidden="true" />
     </template>
 
     <!-- Message Content -->
@@ -90,7 +83,7 @@ const handleExportPdf = () => {
         </button>
         
         <!-- Copy Button -->
-        <CopyValue :value="textContent" hide-value title="Copy message" />
+        <CopyValue :value="textContent" :html-value="message.content" hide-value title="Copy message" />
         
         <!-- Export PDF Button -->
         <button 

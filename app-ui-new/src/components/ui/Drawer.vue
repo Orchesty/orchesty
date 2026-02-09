@@ -42,7 +42,7 @@ onMounted(async () => {
       bodyScrolling: false,
       edge: false,
       edgeOffset: '',
-      backdropClasses: 'bg-gray-900/50 dark:bg-gray-900/80 fixed inset-0 z-30',
+      backdropClasses: 'bg-gray-900/50 dark:bg-gray-900/80 fixed inset-0 z-[55]',
       onHide: () => {
         // Synchronize Vue state when drawer is hidden by Flowbite (e.g., clicking backdrop)
         emit('update:modelValue', false)
@@ -82,7 +82,7 @@ onBeforeUnmount(() => {
   <div
     :id="id"
     :class="[
-      'fixed top-0 z-40 h-screen p-4 overflow-y-auto transition-transform bg-white dark:bg-gray-800',
+      'fixed top-0 z-[60] h-screen p-4 overflow-y-auto transition-transform bg-white dark:bg-gray-800',
       placement === 'left' ? 'left-0 -translate-x-full' : 'right-0 translate-x-full',
       width,
     ]"
