@@ -249,3 +249,14 @@ const handleClose = () => {
   </div>
 </template>
 
+<style scoped>
+:deep(.p-6) {
+  padding: 0;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+}
+
+:deep(.pe-14) {
+  padding-inline-end: 0;
+}
+</style>

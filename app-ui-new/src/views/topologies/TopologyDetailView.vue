@@ -30,6 +30,8 @@ import topologiesTreeData from '@/assets/mock-data/topologies-tree-data.json'
 import type { TopologiesTreeNode, FolderItem } from '@/types/topologies-page'
 import { Dropdown } from 'flowbite'
 import { useLastTopology } from '@/composables/useLastTopology'
+import TraceDrawer from '@/components/trace/TraceDrawer.vue'
+import { useTraceDrawer } from '@/composables/useTraceDrawer'
 
 interface Props {
   id: string
@@ -39,6 +41,7 @@ const props = defineProps<Props>()
 const route = useRoute()
 
 const { setLastTopology, getLastTopology } = useLastTopology()
+const { isTraceDrawerOpen } = useTraceDrawer()
 
 const topology = ref<TopologyDetail | null>(null)
 const loading = ref(true)
@@ -860,6 +863,9 @@ onMounted(async () => {
       :mode="entityModalMode"
       @save="handleSaveEntity"
     />
+
+    <!-- Trace Drawer -->
+    <TraceDrawer v-model="isTraceDrawerOpen" />
 
     <!-- Folder Actions Dropdowns (rendered at root level to avoid z-index issues) -->
     <div
