@@ -32,13 +32,15 @@ final class NodeController
     }
 
     /**
+     * @param Request $request
+     *
      * @return Response
      */
     #[Route('/topologies/nodes', methods: ['GET'])]
-    public function getTopologiesNodesAction(): Response
+    public function getTopologiesNodesAction(Request $request): Response
     {
         try {
-            return $this->getResponse($this->nodeHandler->getTopologiesWithNodes());
+            return $this->getResponse($this->nodeHandler->getTopologiesWithNodes($request->query->getBoolean('all')));
         } catch (Throwable $e) {
             return $this->getErrorResponse($e);
         }

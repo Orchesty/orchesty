@@ -4,14 +4,29 @@ import { useRouter } from 'vue-router'
 import AuthLayout from '@/layouts/AuthLayout.vue'
 import Button from '@/components/ui/Button.vue'
 import Input from '@/components/ui/Input.vue'
+import { resetPassword } from '@/services/authService'
+import { useToast } from '@/composables/useToast'
 
 const router = useRouter()
-const email = ref('')
+const { showToast } = useToast()
 
-const handleSubmit = () => {
-  console.log('Send reset email to:', email.value)
-  // TODO: Implement password reset logic
-  // router.push('/reset-password')
+const email = ref('')
+const isLoading = ref(false)
+
+const handleSubmit = async () => {
+  if (isLoading.value) return
+
+  isLoading.value = true
+  try {
+    await resetPassword(email.value)
+    showToast('Reset email sent. Check your inbox for instructions.', 'success')
+  } catch (error) {
+    console.error('Password reset error:', error)
+    const errorMessage = error instanceof Error ? error.message : 'Failed to send reset email. Please try again.'
+    showToast(errorMessage, 'error')
+  } finally {
+    isLoading.value = false
+  }
 }
 </script>
 
@@ -36,8 +51,8 @@ const handleSubmit = () => {
       </div>
 
       <div class="mb-4 mt-12">
-        <Button type="submit" variant="primary" class="w-full">
-          Send confirmation email
+        <Button type="submit" variant="primary" class="w-full" :disabled="isLoading">
+          {{ isLoading ? 'Sending...' : 'Send confirmation email' }}
         </Button>
       </div>
     </form>

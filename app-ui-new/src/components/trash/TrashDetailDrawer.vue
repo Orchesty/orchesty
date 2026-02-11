@@ -10,9 +10,14 @@ import type { TrashItem } from '@/types/trash'
 interface Props {
   modelValue: boolean
   item: TrashItem | null
+  getTopologyName?: (id: string) => string
+  getNodeName?: (id: string) => string
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  getTopologyName: (id: string) => id,
+  getNodeName: (id: string) => id,
+})
 
 const emit = defineEmits<{
   'update:modelValue': [value: boolean]
@@ -90,7 +95,7 @@ const handleConfirmReject = () => {
           <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
             Topology
           </label>
-          <p class="text-sm text-gray-900 dark:text-white">{{ item.topology }}</p>
+          <p class="text-sm text-gray-900 dark:text-white">{{ getTopologyName(item.topologyId) }}</p>
         </div>
         <div>
           <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
@@ -102,7 +107,7 @@ const handleConfirmReject = () => {
           <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
             Node
           </label>
-          <p class="text-sm text-gray-900 dark:text-white">{{ item.node }}</p>
+          <p class="text-sm text-gray-900 dark:text-white">{{ getNodeName(item.nodeId) }}</p>
         </div>
         <div>
           <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">

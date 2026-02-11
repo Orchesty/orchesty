@@ -10,4 +10,4 @@ parameters:
   cronHost: "%env(string:CRON_DSN)%"
   startingPointHost: "%env(string:STARTING_POINT_URL)%"
   activateLink: '%backendHost%/user/%s/activate'
-  passwordLink: 'restore-password/%s'
+  passwordLink: 'reset-password/%s'

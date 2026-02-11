@@ -1,16 +1,39 @@
-import type { Worker, WorkerQueryParams } from '@/types/settings'
-import workersDataJson from '@/assets/mock-data/workers-data.json'
+import api from './api'
+import type {
+  Worker,
+  WorkerQueryParams,
+  WorkerHeaderItem,
+  WorkerApiResponse,
+  WorkersListResponse,
+} from '@/types/settings'
 
-// Mock data
-let workersData = [...workersDataJson.data] as Worker[]
+// Convert API headers array to component object format
+function headersArrayToObject(headers: WorkerHeaderItem[]): Record<string, string> {
+  return headers.reduce((acc, { key, value }) => {
+    acc[key] = value
+    return acc
+  }, {} as Record<string, string>)
+}
+
+// Convert component object to API headers array format
+function headersObjectToArray(headers: Record<string, string>): WorkerHeaderItem[] {
+  return Object.entries(headers).map(([key, value]) => ({ key, value }))
+}
+
+// Convert API response to component Worker type
+function mapApiWorkerToWorker(apiWorker: WorkerApiResponse): Worker {
+  return {
+    id: apiWorker.id,
+    name: apiWorker.name,
+    url: apiWorker.url,
+    headers: headersArrayToObject(apiWorker.headers),
+  }
+}
 
 /**
  * Fetch workers with pagination and filtering
  */
 export async function fetchWorkers(params: WorkerQueryParams = {}) {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 300))
-
   const {
     page = 1,
     perPage = 10,
@@ -19,39 +42,28 @@ export async function fetchWorkers(params: WorkerQueryParams = {}) {
     search = '',
   } = params
 
-  // Filter by search
-  let filteredData = [...workersData]
-  if (search) {
-    const searchLower = search.toLowerCase()
-    filteredData = filteredData.filter(
-      (worker) =>
-        worker.name.toLowerCase().includes(searchLower) ||
-        worker.url.toLowerCase().includes(searchLower)
-    )
-  }
-
-  // Sort
-  filteredData.sort((a, b) => {
-    const aValue = String(a[sortBy as keyof Worker] || '')
-    const bValue = String(b[sortBy as keyof Worker] || '')
-    const comparison = aValue.localeCompare(bValue)
-    return sortOrder === 'asc' ? comparison : -comparison
+  // Note: Backend pagination might work differently
+  // Adjust query params based on actual API requirements
+  const response = await api.get<WorkersListResponse>('/api/sdks', {
+    params: {
+      page,
+      itemsPerPage: perPage,
+      // Add other params if backend supports them
+      ...(search && { search }),
+      ...(sortBy && { sortBy }),
+      ...(sortOrder && { sortOrder }),
+    },
   })
 
-  // Paginate
-  const totalItems = filteredData.length
-  const totalPages = Math.ceil(totalItems / perPage)
-  const startIndex = (page - 1) * perPage
-  const endIndex = startIndex + perPage
-  const paginatedData = filteredData.slice(startIndex, endIndex)
+  const data = response.data
 
   return {
-    data: paginatedData,
+    data: data.items.map(mapApiWorkerToWorker),
     meta: {
-      page,
-      perPage,
-      totalItems,
-      totalPages,
+      page: data.paging.page,
+      perPage: data.paging.itemsPerPage,
+      totalItems: data.paging.total,
+      totalPages: data.paging.lastPage,
     },
   }
 }
@@ -60,54 +72,39 @@ export async function fetchWorkers(params: WorkerQueryParams = {}) {
  * Create a new worker
  */
 export async function createWorker(data: Omit<Worker, 'id'>): Promise<Worker> {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 500))
-
-  const newWorker: Worker = {
-    id: `worker-${Date.now()}`,
-    ...data,
+  const requestData = {
+    name: data.name,
+    url: data.url,
+    headers: headersObjectToArray(data.headers),
   }
 
-  workersData.push(newWorker)
+  const response = await api.post<WorkerApiResponse>('/api/sdks', requestData)
 
-  return newWorker
+  return mapApiWorkerToWorker(response.data)
 }
 
 /**
  * Update an existing worker
  */
-export async function updateWorker(
-  id: string,
-  data: Partial<Worker>
-): Promise<Worker> {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 500))
-
-  const index = workersData.findIndex((w) => w.id === id)
-  if (index === -1) {
-    throw new Error(`Worker with id ${id} not found`)
+export async function updateWorker(id: string, data: Partial<Worker>): Promise<Worker> {
+  const requestData = {
+    id,
+    ...(data.name !== undefined && { name: data.name }),
+    ...(data.url !== undefined && { url: data.url }),
+    ...(data.headers !== undefined && { headers: headersObjectToArray(data.headers) }),
   }
 
-  workersData[index] = {
-    ...workersData[index],
-    ...data,
-  }
+  const response = await api.put<WorkerApiResponse>(`/api/sdks/${id}`, requestData)
 
-  return workersData[index]
+  return mapApiWorkerToWorker(response.data)
 }
 
 /**
  * Delete a worker
  */
 export async function deleteWorker(id: string): Promise<void> {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 400))
-
-  const index = workersData.findIndex((w) => w.id === id)
-  if (index === -1) {
-    throw new Error(`Worker with id ${id} not found`)
-  }
-
-  workersData.splice(index, 1)
+  // Backend expects id in the request body for DELETE
+  await api.delete(`/api/sdks/${id}`, {
+    data: { id },
+  })
 }
-

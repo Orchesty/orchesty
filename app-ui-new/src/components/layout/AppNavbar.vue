@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { RouterLink } from 'vue-router'
-import { onMounted } from 'vue'
+import { RouterLink, useRouter } from 'vue-router'
+import { onMounted, computed } from 'vue'
 import { BotMessageSquare } from 'lucide-vue-next'
 import { useDarkMode } from '@/composables/useDarkMode'
 import { useTraceDrawer } from '@/composables/useTraceDrawer'
+import { useAuthStore } from '@/stores/auth'
 import DropdownMenu, { type DropdownMenuSection } from '@/components/ui/DropdownMenu.vue'
 
 // Initialize dark mode toggle
@@ -12,12 +13,22 @@ useDarkMode()
 // Trace drawer toggle
 const { toggleDrawer } = useTraceDrawer()
 
+// Auth store and router
+const authStore = useAuthStore()
+const router = useRouter()
+
+// Logout handler
+const handleLogout = async () => {
+  await authStore.logout()
+  router.push('/sign-in')
+}
+
 // Account dropdown menu sections
-const accountMenuSections: DropdownMenuSection[] = [
+const accountMenuSections = computed<DropdownMenuSection[]>(() => [
   {
     header: {
-      title: 'Neil Sims',
-      subtitle: 'name@flowbite.com',
+      title: authStore.user?.email.split('@')[0] || 'User',
+      subtitle: authStore.user?.email || '',
     },
     items: [
       { type: 'link', label: 'Account settings', to: '/orchesty/account' },
@@ -32,21 +43,15 @@ const accountMenuSections: DropdownMenuSection[] = [
   },
   {
     items: [
-      {
-        type: 'link',
-        label: 'Sign out',
-        to: '/sign-in',
-        icon: '<svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H8m12 0-4 4m4-4-4-4M9 4H7a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h2"></path></svg>',
-        class: 'flex items-center gap-2',
-      },
+      { type: 'custom', slotName: 'sign-out' },
     ],
   },
-]
+])
 
 onMounted(() => {
   // Reinitialize Flowbite components after Vue mount
   // This is needed for Tabs and other components that use data-* attributes
-  // Warnings about modal/drawer not being initialized can be ignored - 
+  // Warnings about modal/drawer not being initialized can be ignored -
   // those components manage their own Flowbite instances in Vue
   if (typeof window !== 'undefined' && (window as typeof window & { initFlowbite?: () => void }).initFlowbite) {
     ;(window as typeof window & { initFlowbite: () => void }).initFlowbite()
@@ -119,6 +124,18 @@ onMounted(() => {
                   <span class="sr-only">Toggle dark mode</span>
                 </div>
               </label>
+            </template>
+
+            <template #sign-out>
+              <button
+                @click="handleLogout"
+                class="flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white"
+              >
+                <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H8m12 0-4 4m4-4-4-4M9 4H7a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h2"></path>
+                </svg>
+                <span>Sign out</span>
+              </button>
             </template>
           </DropdownMenu>
 

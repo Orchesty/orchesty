@@ -1,64 +1,74 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, computed, nextTick, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import AppNavbar from '@/components/layout/AppNavbar.vue'
 import AppSidebar from '@/components/layout/AppSidebar.vue'
 import TopologiesSidebar from '@/components/topologies/TopologiesSidebar.vue'
 import NewTopologyModal from '@/components/topologies/NewTopologyModal.vue'
 import NewFolderModal from '@/components/topologies/NewFolderModal.vue'
+import RenameFolderModal from '@/components/topologies/RenameFolderModal.vue'
 import SelectVersionModal from '@/components/topologies/SelectVersionModal.vue'
-import topologiesTreeData from '@/assets/mock-data/topologies-tree-data.json'
-import type { TopologiesTreeNode, FolderItem } from '@/types/topologies-page'
+import Confirm from '@/components/ui/Confirm.vue'
+import type { FolderItem, TopologiesTreeNode } from '@/types/topologies-page'
+import { fetchCategories, deleteCategory } from '@/services/topologiesService'
 import { useLastTopology } from '@/composables/useLastTopology'
+import { useToast } from '@/composables/useToast'
+import { Dropdown } from 'flowbite'
 
 const router = useRouter()
-
+const { showToast } = useToast()
 const { getLastTopology } = useLastTopology()
+
+// Sidebar ref for refreshTree
+const sidebarRef = ref<InstanceType<typeof TopologiesSidebar> | null>(null)
 
 // Modal state
 const newTopologyModalOpen = ref(false)
 const newFolderModalOpen = ref(false)
+const renameFolderModalOpen = ref(false)
+const deleteFolderConfirmOpen = ref(false)
 const selectVersionModalOpen = ref(false)
 const selectedTopologyId = ref('')
 const selectedTopologyName = ref('')
 
-// Get all folders from tree data for dropdown initialization
-const allFolders = computed(() => {
-  const folders: FolderItem[] = []
-  
-  const extractFolders = (nodes: TopologiesTreeNode[]) => {
+// Active folder for CRUD operations
+const activeFolderId = ref('')
+const activeFolderName = ref('')
+const activeFolderParentId = ref<string | null>(null)
+
+// Folders loaded from API (for dropdown menus)
+const allFolders = ref<FolderItem[]>([])
+
+// Compute set of folder IDs that have any content (topologies or subfolders)
+const nonEmptyFolderIds = computed<Set<string>>(() => {
+  const ids = new Set<string>()
+  const walk = (nodes: TopologiesTreeNode[]) => {
     for (const node of nodes) {
-      if (node.type === 'folder') {
-        folders.push(node as FolderItem)
-        if (node.children && node.children.length > 0) {
-          extractFolders(node.children)
-        }
+      if (node.type === 'folder' && node.children.length > 0) {
+        ids.add(node.id)
+        walk(node.children)
       }
     }
   }
-  
-  extractFolders(topologiesTreeData.data as TopologiesTreeNode[])
-  return folders
+  walk(sidebarRef.value?.treeData ?? [])
+  return ids
 })
 
 // Handle topology selection
 const handleSelectTopology = (topologyId: string, topologyName: string, versionCount: number) => {
   selectedTopologyId.value = topologyId
   selectedTopologyName.value = topologyName
-  
+
   // Always show modal to display version overview
   selectVersionModalOpen.value = true
 }
 
 // Initialize Flowbite dropdowns for folder actions
-onMounted(async () => {
-  const { Dropdown } = await import('flowbite')
-  
-  // Initialize dropdown for each folder
+const initFolderDropdowns = () => {
   allFolders.value.forEach((folder) => {
     const dropdownElement = document.getElementById(`folderActionsDropdown-${folder.id}`)
     const buttonElement = document.getElementById(`folderActionsButton-${folder.id}`)
-    
+
     if (dropdownElement && buttonElement) {
       new Dropdown(dropdownElement, buttonElement, {
         placement: 'bottom',
@@ -68,14 +78,87 @@ onMounted(async () => {
       })
     }
   })
-  
+}
+
+// Refresh sidebar tree and allFolders
+const refreshAfterCrud = async () => {
+  try {
+    allFolders.value = await fetchCategories()
+  } catch (error) {
+    console.error('Failed to reload categories:', error)
+  }
+  await sidebarRef.value?.refreshTree()
+
+  // Re-initialize Flowbite dropdowns after DOM updates
+  await nextTick()
+  initFolderDropdowns()
+}
+
+// Folder dropdown actions
+const handleFolderNewTopology = (folderId: string) => {
+  activeFolderId.value = folderId
+  newTopologyModalOpen.value = true
+}
+
+const handleFolderNewSubfolder = (folderId: string) => {
+  activeFolderParentId.value = folderId
+  newFolderModalOpen.value = true
+}
+
+const handleFolderRename = (folderId: string) => {
+  const folder = allFolders.value.find(f => f.id === folderId)
+  if (!folder) return
+  activeFolderId.value = folderId
+  activeFolderName.value = folder.name
+  activeFolderParentId.value = folder.parentFolderId ?? null
+  renameFolderModalOpen.value = true
+}
+
+const handleFolderDelete = (folderId: string) => {
+  const folder = allFolders.value.find(f => f.id === folderId)
+  if (!folder) return
+  activeFolderId.value = folderId
+  activeFolderName.value = folder.name
+  deleteFolderConfirmOpen.value = true
+}
+
+const handleConfirmDelete = async () => {
+  try {
+    await deleteCategory(activeFolderId.value)
+    showToast('Folder deleted successfully', 'success')
+    await refreshAfterCrud()
+  } catch (error) {
+    console.error('Failed to delete folder:', error)
+    showToast('Failed to delete folder', 'error')
+  }
+}
+
+// "New Folder" button from sidebar header (root-level folder)
+const handleOpenNewFolderModal = () => {
+  activeFolderParentId.value = null
+  newFolderModalOpen.value = true
+}
+
+// Initialize folders and Flowbite dropdowns
+onMounted(async () => {
+  // Load folders from API
+  try {
+    allFolders.value = await fetchCategories()
+  } catch (error) {
+    console.error('Failed to load categories:', error)
+  }
+
+  // Initialize Flowbite dropdowns
+  await nextTick()
+  setTimeout(() => initFolderDropdowns(), 100)
+
   // Automatically redirect to last opened topology
   const lastTopology = getLastTopology()
   if (lastTopology) {
-    const query = lastTopology.versionId 
-      ? { version: lastTopology.versionId } 
+    const query = lastTopology.versionId
+      ? { version: lastTopology.versionId }
       : undefined
-    
+
     router.push({
       name: 'topology-detail',
       params: { id: lastTopology.id },
@@ -91,8 +174,9 @@ onMounted(async () => {
     <div class="flex flex-1 overflow-hidden">
       <AppSidebar />
       <TopologiesSidebar
-        @open-new-topology-modal="newTopologyModalOpen = true"
-        @open-new-folder-modal="newFolderModalOpen = true"
+        ref="sidebarRef"
+        @open-new-topology-modal="activeFolderId = null; newTopologyModalOpen = true"
+        @open-new-folder-modal="handleOpenNewFolderModal"
         @select-topology="handleSelectTopology"
       />
 
@@ -128,13 +212,51 @@ onMounted(async () => {
   </div>
 
   <!-- Modals -->
-  <NewTopologyModal v-model="newTopologyModalOpen" />
-  <NewFolderModal v-model="newFolderModalOpen" />
+  <NewTopologyModal v-model="newTopologyModalOpen" :category-id="activeFolderId" @created="refreshAfterCrud" />
+  <NewFolderModal
+    v-model="newFolderModalOpen"
+    :parent-id="activeFolderParentId"
+    @created="refreshAfterCrud"
+  />
+  <RenameFolderModal
+    v-model="renameFolderModalOpen"
+    :folder-id="activeFolderId"
+    :folder-name="activeFolderName"
+    :parent-id="activeFolderParentId"
+    @renamed="refreshAfterCrud"
+  />
   <SelectVersionModal
     v-model="selectVersionModalOpen"
     :topology-id="selectedTopologyId"
     :topology-name="selectedTopologyName"
   />
+
+  <!-- Delete Folder Confirm -->
+  <Confirm
+    v-model="deleteFolderConfirmOpen"
+    id="delete-folder-confirm"
+    confirm-text="Yes, delete"
+    @confirm="handleConfirmDelete"
+  >
+    <svg
+      class="mx-auto mb-4 h-12 w-12 text-gray-400 dark:text-gray-200"
+      aria-hidden="true"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 20 20"
+    >
+      <path
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+      />
+    </svg>
+    <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+      Are you sure you want to delete the folder "{{ activeFolderName }}"?
+    </h3>
+  </Confirm>
 
   <!-- Folder Actions Dropdowns (rendered at root level to avoid z-index issues) -->
   <div
@@ -147,7 +269,7 @@ onMounted(async () => {
       <li>
         <button
           type="button"
-          @click="newTopologyModalOpen = true"
+          @click="handleFolderNewTopology(folder.id)"
           class="inline-flex w-full items-center rounded-md px-3 py-2 hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white"
         >
           New Topology
@@ -156,7 +278,7 @@ onMounted(async () => {
       <li>
         <button
           type="button"
-          @click="newFolderModalOpen = true"
+          @click="handleFolderNewSubfolder(folder.id)"
           class="inline-flex w-full items-center rounded-md px-3 py-2 hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white"
         >
           New Folder
@@ -165,14 +287,16 @@ onMounted(async () => {
       <li>
         <button
           type="button"
+          @click="handleFolderRename(folder.id)"
           class="inline-flex w-full items-center rounded-md px-3 py-2 hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white"
         >
           Rename Folder
         </button>
       </li>
-      <li>
+      <li v-if="!nonEmptyFolderIds.has(folder.id)">
         <button
           type="button"
+          @click="handleFolderDelete(folder.id)"
           class="inline-flex w-full items-center rounded-md px-3 py-2 text-red-600 hover:bg-gray-100 dark:text-red-500 dark:hover:bg-gray-600 dark:hover:text-red-400"
         >
           Delete Folder
@@ -181,4 +305,3 @@ onMounted(async () => {
     </ul>
   </div>
 </template>
-

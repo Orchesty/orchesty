@@ -3,44 +3,55 @@ import { ref, watch } from 'vue'
 import Modal from '@/components/ui/Modal.vue'
 import Button from '@/components/ui/Button.vue'
 import TextInput from '@/components/ui/datagrid/TextInput.vue'
-import Textarea from '@/components/ui/datagrid/Textarea.vue'
+import { createTopology } from '@/services/topologiesService'
+import { useToast } from '@/composables/useToast'
 
 interface Props {
   modelValue: boolean
+  categoryId?: string | null
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  categoryId: null,
+})
+
 const emit = defineEmits<{
   'update:modelValue': [value: boolean]
+  'created': []
 }>()
 
+const { showToast } = useToast()
+
 const formData = ref({
-  name: '',
-  description: ''
+  name: ''
 })
+const saving = ref(false)
 
 const handleClose = () => {
   emit('update:modelValue', false)
-  // Reset form
-  formData.value = {
-    name: '',
-    description: ''
-  }
+  formData.value = { name: '' }
 }
 
-const handleCreate = () => {
-  // TODO: Implement create topology logic
-  console.log('Create topology:', formData.value)
-  handleClose()
+const handleCreate = async () => {
+  if (!formData.value.name.trim()) return
+
+  saving.value = true
+  try {
+    await createTopology(formData.value.name.trim(), props.categoryId ?? null)
+    showToast('Topology created successfully', 'success')
+    emit('created')
+    handleClose()
+  } catch (error) {
+    console.error('Failed to create topology:', error)
+    showToast('Failed to create topology', 'error')
+  } finally {
+    saving.value = false
+  }
 }
 
 watch(() => props.modelValue, (newValue) => {
   if (!newValue) {
-    // Reset form when modal closes
-    formData.value = {
-      name: '',
-      description: ''
-    }
+    formData.value = { name: '' }
   }
 })
 </script>
@@ -68,29 +79,15 @@ watch(() => props.modelValue, (newValue) => {
           required
         />
       </div>
-
-      <!-- Description -->
-      <div>
-        <label for="topology-description" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
-          Description
-        </label>
-        <Textarea
-          id="topology-description"
-          v-model="formData.description"
-          placeholder="Enter topology description (optional)"
-          :rows="3"
-        />
-      </div>
     </form>
 
     <template #footer-actions>
       <Button variant="outline" @click="handleClose">
         Cancel
       </Button>
-      <Button variant="primary" @click="handleCreate">
-        Create Topology
+      <Button variant="primary" :disabled="saving || !formData.name.trim()" @click="handleCreate">
+        {{ saving ? 'Creating...' : 'Create Topology' }}
       </Button>
     </template>
   </Modal>
 </template>
-

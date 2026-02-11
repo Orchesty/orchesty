@@ -120,8 +120,8 @@ onMounted(() => {
       <DataGrid
         :data="workers"
         :columns="[
-          { key: 'name', label: 'Name', sortable: true },
-          { key: 'url', label: 'URL', sortable: true },
+          { key: 'name', label: 'Name', sortable: false },
+          { key: 'url', label: 'URL', sortable: false },
           { key: 'headers', label: 'Headers', sortable: false },
           { key: 'actions', label: '', sortable: false },
         ]"

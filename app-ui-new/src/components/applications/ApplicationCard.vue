@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { ApplicationWithStatus } from '@/types/applications';
+import type { ApplicationWithStatus, ApplicationStatus } from '@/types/applications';
 import Button from '@/components/ui/Button.vue';
 
 interface Props {
@@ -10,39 +10,53 @@ interface Props {
 const props = defineProps<Props>();
 
 const emit = defineEmits<{
-  openDetail: [key: string];
+  openDetail: [key: string, worker: string, status: ApplicationStatus];
+  install: [key: string, worker: string];
 }>();
-
-const statusBadgeClass = computed(() => {
-  switch (props.application.status) {
-    case 'authorized':
-      return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
-    case 'unauthorized':
-      return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
-    case 'uninstalled':
-    default:
-      return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
-  }
-});
 
 const statusLabel = computed(() => {
   switch (props.application.status) {
+    case 'activated':
+      return 'Activated';
     case 'authorized':
       return 'Authorized';
-    case 'unauthorized':
+    case 'installed':
       return 'Unauthorized';
-    case 'uninstalled':
+    case 'available':
     default:
-      return 'Uninstalled';
+      return ''; // No badge for available apps
   }
 });
 
-const isUninstalled = computed(() => {
-  return props.application.status === 'uninstalled';
+const showStatusBadge = computed(() => {
+  // Only show badge if not available
+  return props.application.status !== 'available';
+});
+
+const statusBadgeClass = computed(() => {
+  switch (props.application.status) {
+    case 'activated':
+      return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
+    case 'authorized':
+      return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
+    case 'installed':
+      return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
+    case 'available':
+    default:
+      return '';
+  }
+});
+
+const isAvailable = computed(() => {
+  return props.application.status === 'available';
 });
 
 const handleOpenDetail = () => {
-  emit('openDetail', props.application.key);
+  emit('openDetail', props.application.key, props.application.worker || '', props.application.status);
+};
+
+const handleInstall = () => {
+  emit('install', props.application.key, props.application.worker || '');
 };
 </script>
 
@@ -51,8 +65,15 @@ const handleOpenDetail = () => {
     <div class="flex items-center justify-between h-7">
       <!-- Logo & Name -->
       <div class="flex items-center">
-        <!-- Generic icon placeholder - in real app, this would be dynamic based on application -->
+        <!-- Display API logo or fallback to generic icon -->
+        <img
+          v-if="application.logo"
+          :src="application.logo"
+          :alt="`${application.name} logo`"
+          class="me-2 h-7 w-7"
+        />
         <svg
+          v-else
           xmlns="http://www.w3.org/2000/svg"
           class="me-2 h-7 text-gray-900 dark:text-white"
           height="24px"
@@ -67,8 +88,12 @@ const handleOpenDetail = () => {
         <span class="font-semibold text-gray-900 dark:text-white">{{ application.name }}</span>
       </div>
 
-      <!-- Status Label -->
-      <span class="text-xs font-medium px-2.5 py-0.5 rounded" :class="statusBadgeClass">
+      <!-- Status Label - only show if not available -->
+      <span
+        v-if="showStatusBadge"
+        class="text-xs font-medium px-2.5 py-0.5 rounded"
+        :class="statusBadgeClass"
+      >
         {{ statusLabel }}
       </span>
     </div>
@@ -80,9 +105,10 @@ const handleOpenDetail = () => {
     <!-- Action Buttons -->
     <div class="flex items-center gap-2">
       <Button
-        v-if="isUninstalled"
+        v-if="isAvailable"
         variant="primary"
         class="flex-1"
+        @click="handleInstall"
       >
         Install
       </Button>

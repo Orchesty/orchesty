@@ -102,11 +102,11 @@ const handleGenerateToken = async (data: {
   try {
     const newToken = await createToken(data)
     tokenModalOpen.value = false
-    
+
     // Show the generated token in the view modal
     generatedToken.value = newToken
     viewTokenModalOpen.value = true
-    
+
     // Reload the list
     await loadData()
   } catch (error) {
@@ -153,9 +153,9 @@ onMounted(() => {
       <DataGrid
         :data="tokens"
         :columns="[
-          { key: 'name', label: 'Name', sortable: true },
-          { key: 'created', label: 'Created', sortable: true },
-          { key: 'expiration', label: 'Expiration', sortable: true },
+          { key: 'name', label: 'Name', sortable: false },
+          { key: 'created', label: 'Created', sortable: false },
+          { key: 'expiration', label: 'Expiration', sortable: false },
           { key: 'scopes', label: 'Scopes', sortable: false },
           { key: 'actions', label: '', sortable: false },
         ]"

@@ -1,111 +1,113 @@
 import type { PaginatedResponse } from '@/types/api'
-import type { ScheduledTask, ScheduledTaskQueryParams } from '@/types/scheduled-tasks'
-import scheduledTasksDataJson from '@/assets/mock-data/scheduled-tasks-data.json'
+import type {
+  ScheduledTask,
+  ScheduledTaskQueryParams,
+  ScheduledTaskApiFilter,
+  ScheduledTaskApiResponse,
+  ScheduledTaskApiItem
+} from '@/types/scheduled-tasks'
+import api from './api'
+import { formatName } from '@/utils/formatName'
+
+/**
+ * Map API item to ScheduledTask
+ */
+function mapApiItemToScheduledTask(apiItem: ScheduledTaskApiItem): ScheduledTask {
+  // Generate a unique ID from topology ID + node ID
+  const id = `${apiItem.topology.id}_${apiItem.node.id}`
+
+  // Map topology.status boolean to our status enum
+  const status = apiItem.topology.status ? 'enabled' : 'disabled'
+
+  return {
+    id,
+    name: formatName(apiItem.node.name),
+    nodeId: apiItem.node.id,
+    nodeStatus: apiItem.node.status,
+    topology: formatName(apiItem.topology.name),
+    topologyId: apiItem.topology.id,
+    crontab: apiItem.time || null,
+    params: apiItem.node.parameters || '',
+    status
+  }
+}
 
 /**
  * Fetch scheduled tasks with filters, sorting, and pagination
- * Currently returns filtered mock data, will be replaced with API call
- * 
- * @param params - Query parameters for filtering, sorting, and pagination
- * @returns Paginated response with scheduled tasks data
  */
 export async function fetchScheduledTasks(
   params: ScheduledTaskQueryParams,
 ): Promise<PaginatedResponse<ScheduledTask>> {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 400))
-
-  // FOR DEVELOPMENT: Filter mock data
-  // In production: return axios.get('/api/scheduled-tasks', { params: buildQueryParams(params) })
-
-  let filtered = [...(scheduledTasksDataJson.data as ScheduledTask[])]
-
-  // Apply sorting
-  if (params.sort && params.order) {
-    filtered.sort((a, b) => {
-      const aVal = a[params.sort as keyof ScheduledTask] as number | string
-      const bVal = b[params.sort as keyof ScheduledTask] as number | string
-      const comparison = aVal > bVal ? 1 : -1
-      return params.order === 'asc' ? comparison : -comparison
-    })
+  // Build the filter object matching API requirements
+  const filterObj: ScheduledTaskApiFilter = {
+    search: '',
+    namespace: 'SCHEDULED_TASK',
+    filter: [],
+    sorter: [
+      {
+        column: params.sort || 'id',
+        direction: params.order === 'asc' ? 'ASC' : 'DESC'
+      }
+    ],
+    paging: {
+      total: 0,
+      nextPage: 0,
+      previousPage: 0,
+      lastPage: 0,
+      page: params.page || 1,
+      itemsPerPage: params.limit || 50
+    }
   }
 
-  // Calculate pagination
-  const page = params.page || 1
-  const limit = params.limit || 10
-  const total = filtered.length
-  const totalPages = Math.ceil(total / limit)
-  const start = (page - 1) * limit
-  const end = start + limit
-  const data = filtered.slice(start, end)
+  // Encode filter as URL parameter
+  const encodedFilter = encodeURIComponent(JSON.stringify(filterObj))
+
+  // Make API request
+  const response = await api.get<ScheduledTaskApiResponse>(
+    `/api/topologies/cron?filter=${encodedFilter}`
+  )
+
+  // Map API response to component format
+  const mappedItems = response.data.items.map(mapApiItemToScheduledTask)
 
   return {
-    data,
-    pagination: {
-      page,
-      limit,
-      total,
-      totalPages,
-    },
+    data: mappedItems,
+    meta: {
+      currentPage: response.data.paging.page,
+      itemsPerPage: response.data.paging.itemsPerPage,
+      totalItems: response.data.paging.total,
+      totalPages: response.data.paging.lastPage
+    }
   }
 }
 
 /**
  * Update the status (enabled/disabled) of a scheduled task
- * 
- * @param taskId - ID of the task to update
- * @param enabled - Whether the task should be enabled
- * @returns Updated task
  */
 export async function updateTaskStatus(
-  taskId: string,
+  nodeId: string,
   enabled: boolean,
-): Promise<ScheduledTask> {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 500))
-
-  // FOR DEVELOPMENT: Simulate update
-  // In production: return axios.patch(`/api/scheduled-tasks/${taskId}/status`, { enabled })
-
-  const task = scheduledTasksDataJson.data.find((t) => t.id === taskId)
-  if (!task) {
-    throw new Error(`Task ${taskId} not found`)
-  }
-
-  // Simulate updated task
-  return {
-    ...task,
-    status: enabled ? 'enabled' : 'disabled',
-  }
+): Promise<void> {
+  await api.patch(`/api/nodes/${nodeId}`, {
+    enabled
+  })
 }
 
 /**
- * Update the crontab expression of a scheduled task
- * 
- * @param taskId - ID of the task to update
- * @param crontab - New crontab expression
- * @returns Updated task
+ * Update the crontab expression and params of a scheduled task
  */
 export async function updateTaskCrontab(
   taskId: string,
   crontab: string,
-): Promise<ScheduledTask> {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 500))
+  params: string,
+): Promise<void> {
+  // Extract nodeId from the composite taskId (format: topologyId_nodeId)
+  const nodeId = taskId.split('_')[1]
 
-  // FOR DEVELOPMENT: Simulate update
-  // In production: return axios.patch(`/api/scheduled-tasks/${taskId}/crontab`, { crontab })
-
-  const task = scheduledTasksDataJson.data.find((t) => t.id === taskId)
-  if (!task) {
-    throw new Error(`Task ${taskId} not found`)
-  }
-
-  // Simulate updated task
-  return {
-    ...task,
-    crontab,
-    status: task.status === 'not_set' ? 'disabled' : task.status,
-  }
+  await api.patch(`/api/nodes/${nodeId}`, {
+    cron: {
+      time: crontab,
+      params: params
+    }
+  })
 }
-

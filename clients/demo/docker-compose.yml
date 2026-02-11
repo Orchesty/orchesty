@@ -105,7 +105,8 @@ services:
             CRON_DSN: cron-api:8080
             STARTING_POINT_URL: ${STARTING_POINT_DSN}
             TOPOLOGY_API_DSN: topology-api:8080
-            DOCKER_PF_BRIDGE_IMAGE: orchesty/bridge:${VERSION}
+            #DOCKER_PF_BRIDGE_IMAGE: orchesty/bridge:${VERSION}
+            DOCKER_PF_BRIDGE_IMAGE: dkr.hanaboso.net/pipes/pipes/pf-bridge:new-ui
             JWT_KEY: BWoCz4gxw3YHDMkqE5HD1WT2u6zqIAtiJkYVyf6UucL4ZtbhhatQooP5IgTQRwowYR6z8wE3biqZTl37
             EMAIL_DSN: smtp://mailhog:1025
             ALPHA_INSTANCE_ID: 'demo'
@@ -201,6 +202,19 @@ services:
         volumes:
             - ../../app-ui:/var/www/app-ui:cached
         command: sh -c 'pnpm install && pnpm run start'
+
+    frontend-new:
+        build: ./../../app-ui-new/docker
+        user: ${DEV_UID}:${DEV_GID}
+        working_dir: /var/www/app-ui-new
+        environment:
+            VITE_BACKEND_URL: ${BACKEND_URL}
+            VITE_STARTINGPONT_URL: ${DEV_IP}:82
+        ports:
+            - ${DEV_IP}:84:3000
+        volumes:
+            - ../../app-ui-new:/var/www/app-ui-new:cached
+        command: sh -c 'pnpm install && pnpm run dev'
 
     applinth-marketplace-ui:
         build: ./../../applinth-marketplace-ui/docker

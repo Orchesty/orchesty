@@ -164,9 +164,9 @@ final class TopologyHandler
         return [
             'items'  => $cron,
             'paging' => [
-                'itemsPerPage' => 50,
-                'lastPage'     => 2,
-                'nextPage'     => 2,
+                'itemsPerPage' => count($cron),
+                'lastPage'     => 1,
+                'nextPage'     => 1,
                 'page'         => 1,
                 'previousPage' => 1,
                 'total'        => count($cron),

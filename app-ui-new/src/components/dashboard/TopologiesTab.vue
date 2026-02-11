@@ -10,12 +10,20 @@ import type { QuickFilterOption } from '@/types/datagrid'
 import { fetchTopologies } from '@/services/topologiesService'
 import { convertTimeFilterToDateTimeRange, formatDateTimeForApi } from '@/utils/timeRangeConverter'
 import { useDataGrid } from '@/composables/useDataGrid'
+import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 
 interface Props {
   globalTimeFilter: TimeFilter
 }
 
 const props = defineProps<Props>()
+
+const emit = defineEmits<{
+  viewProcesses: [topologyId: string]
+}>()
+
+// Use topology/node mappings composable
+const { loadMappings, getTopologyName } = useTopologyNodeMappings()
 
 const topologies = ref<Topology[]>([])
 const quickFilter = ref<TopologyStatus>('all')
@@ -28,11 +36,11 @@ const dateTimeRange = ref<{ from: string | null; to: string | null }>({
 
 // Table columns
 const columns: TableColumn[] = [
-  { key: 'name', label: 'Topologies', sortable: true },
+  { key: 'name', label: 'Topologies', sortable: false },
   { key: 'processesRun', label: 'Processes run', sortable: true },
   { key: 'failedProcesses', label: 'Failed processes', sortable: true },
   { key: 'lastRunTime', label: 'Last run time', sortable: true },
-  { key: 'lastRunStatus', label: 'Last run', sortable: true },
+  { key: 'lastRunStatus', label: 'Last run', sortable: false },
   { key: 'actions', label: '', className: 'text-right' },
 ]
 
@@ -58,7 +66,12 @@ const loadData = async () => {
       order: sortDirection.value,
     })
 
-    topologies.value = response.data
+    // Map topology IDs to names
+    topologies.value = response.data.map(topology => ({
+      ...topology,
+      name: getTopologyName(topology.id)
+    }))
+
     totalPages.value = response.meta.totalPages
     totalItems.value = response.meta.totalItems
   } catch (error) {
@@ -81,16 +94,14 @@ const {
   handlePerPageChange,
   handleSort,
 } = useDataGrid({
-  defaultSort: { field: 'name', direction: 'asc' },
+  defaultSort: { field: 'processesRun', direction: 'desc' },
   onDataLoad: loadData,
   filters: [quickFilter, dateTimeRange],
 })
 
 const handleViewProcesses = (topology: Topology) => {
-  // TODO: Navigate to Processes tab and filter by topology
-  console.log('View processes for topology:', topology.name)
-  // Future implementation:
-  // router.push({ name: 'dashboard', hash: '#processes', query: { topology: topology.id } })
+  console.log('View processes for topology:', topology.name, topology.id)
+  emit('viewProcesses', topology.id)
 }
 
 // Watch global time filter and convert to local datetime range
@@ -106,7 +117,11 @@ watch(
   { immediate: true }
 )
 
-onMounted(() => {
+onMounted(async () => {
+  // Load mappings for topology names
+  await loadMappings()
+
+  // Load initial data
   loadData()
 })
 </script>

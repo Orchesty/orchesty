@@ -1,88 +1,231 @@
 import type { PaginatedResponse } from '@/types/api'
-import type { Process, ProcessQueryParams } from '@/types/processes'
-import processesDataJson from '@/assets/mock-data/processes-data.json'
+import type {
+  Process,
+  ProcessQueryParams,
+  ProcessApiItem,
+  ProcessApiResponse,
+  ProcessApiFilter,
+  ProcessConnector,
+  ProcessTrashItem,
+  ProcessAuditConnectorApiResponse,
+  ProcessAuditTrashApiResponse,
+  ProcessAuditApiFilter
+} from '@/types/processes'
+import api from '@/services/api'
+
+/**
+ * Map API process item to UI Process model
+ */
+function mapApiItemToProcess(apiItem: ProcessApiItem): Process {
+  return {
+    id: apiItem.id,
+    topology: apiItem.topologyId, // Will be mapped to name in component
+    topologyId: apiItem.topologyId,
+    startTime: apiItem.created,
+    duration: Math.round(apiItem.duration / 1000), // Convert ms to seconds
+    status: mapApiStatusToUiStatus(apiItem.status),
+    errorMessage: apiItem.messages.length > 0 ? apiItem.messages[0] : undefined
+  }
+}
+
+/**
+ * Map API status to UI status
+ */
+function mapApiStatusToUiStatus(apiStatus: string): 'running' | 'completed' | 'failed' {
+  if (apiStatus === 'COMPLETED') return 'completed'
+  if (apiStatus === 'RUNNING') return 'running'
+  if (apiStatus === 'FAILED') return 'failed'
+  return 'completed' // default
+}
+
+/**
+ * Map UI status to API status
+ */
+function mapUiStatusToApiStatus(uiStatus: string): string {
+  if (uiStatus === 'completed') return 'COMPLETED'
+  if (uiStatus === 'running') return 'RUNNING'
+  if (uiStatus === 'failed') return 'FAILED'
+  return 'COMPLETED' // default
+}
+
+/**
+ * Map UI sort field to API column name
+ */
+function mapSortFieldToApiColumn(field: string): string {
+  const fieldMap: Record<string, string> = {
+    'topology': 'topologyId',
+    'startTime': 'created',
+    'duration': 'duration',
+    'status': 'status'
+  }
+  return fieldMap[field] || field
+}
 
 /**
  * Fetch processes with filters, sorting, and pagination
- * Currently returns filtered mock data, will be replaced with API call
- * 
+ *
  * @param params - Query parameters for filtering, sorting, and pagination
  * @returns Paginated response with processes data
  */
 export async function fetchProcesses(
   params: ProcessQueryParams,
 ): Promise<PaginatedResponse<Process>> {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 300))
+  // Build API filter object
+  const filterObj: ProcessApiFilter = {
+    search: null,
+    filter: [],
+    sorter: [],
+    paging: {
+      itemsPerPage: params.limit || 10,
+      page: params.page || 1
+    }
+  }
 
-  // FOR DEVELOPMENT: Filter mock data
-  // In production: return axios.get('/api/processes', { params: buildQueryParams(params) })
-
-  let filtered = [...(processesDataJson.data as Process[])]
-
-  // Apply status filter
+  // Add status filter
   if (params.status && params.status !== 'all') {
-    filtered = filtered.filter((p) => p.status === params.status)
+    const apiStatus = mapUiStatusToApiStatus(params.status)
+    filterObj.filter.push([{ column: 'status', operator: 'EQ', value: [apiStatus] }])
   }
 
-  // Apply topology filter
-  if (params.topology && params.topology !== 'all') {
-    filtered = filtered.filter((p) => p.topology === params.topology)
+  // Add topology filter
+  if (params.topology) {
+    filterObj.filter.push([{ column: 'topologyId', operator: 'EQ', value: [params.topology] }])
   }
 
-  // Apply datetime range filter
-  // NOTE: In production, backend will filter processes based on this datetime range
-  // For mock data, we just log the range without actual filtering
-  if (params.dateFrom || params.dateTo) {
-    console.log('Processes datetime filter:', {
-      from: params.dateFrom,
-      to: params.dateTo,
-    })
-    // TODO: Backend will filter processes for this datetime range
+  // Add date range filter
+  if (params.dateFrom && params.dateTo) {
+    filterObj.filter.push([{
+      column: 'created',
+      operator: 'BETWEEN',
+      value: [params.dateFrom, params.dateTo]
+    }])
   }
 
-  // Apply sorting
+  // Add sorting
   if (params.sort && params.order) {
-    filtered.sort((a, b) => {
-      const aVal = a[params.sort as keyof Process] as number | string
-      const bVal = b[params.sort as keyof Process] as number | string
-      const comparison = aVal > bVal ? 1 : -1
-      return params.order === 'asc' ? comparison : -comparison
+    const apiColumn = mapSortFieldToApiColumn(params.sort)
+    filterObj.sorter.push({
+      column: apiColumn,
+      direction: params.order.toUpperCase()
+    })
+  } else {
+    // Default sort: created DESC
+    filterObj.sorter.push({
+      column: 'created',
+      direction: 'DESC'
     })
   }
 
-  // Apply pagination
-  const page = params.page || 1
-  const limit = params.limit || 10
-  const startIndex = (page - 1) * limit
-  const endIndex = startIndex + limit
+  // Make API call
+  const response = await api.get<ProcessApiResponse>('/api/processes', {
+    params: {
+      filter: JSON.stringify(filterObj)
+    }
+  })
 
-  const paginated = filtered.slice(startIndex, endIndex)
+  // Map API items to UI model
+  const processes = response.data.items.map(mapApiItemToProcess)
 
   return {
-    data: paginated,
+    data: processes,
     meta: {
-      totalItems: filtered.length,
-      totalPages: Math.ceil(filtered.length / limit),
-      currentPage: page,
-      itemsPerPage: limit,
+      totalItems: response.data.paging.total,
+      totalPages: response.data.paging.lastPage,
+      currentPage: response.data.paging.page,
+      itemsPerPage: response.data.paging.itemsPerPage,
     },
   }
 }
 
 /**
- * Fetch list of topology names for filter dropdown
- * Currently returns mock data from topologies
- * 
- * @returns Array of topology names
+ * Fetch connectors for a specific process (by correlationId)
+ *
+ * @param correlationId - The correlation ID of the process
+ * @returns Array of process connectors
  */
-export async function fetchTopologyNames(): Promise<string[]> {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 200))
+export async function fetchProcessAuditConnectors(
+  correlationId: string,
+  sortField: string = 'count',
+  sortDirection: string = 'desc'
+): Promise<ProcessConnector[]> {
+  const filter: ProcessAuditApiFilter = {
+    search: null,
+    filter: [
+      [
+        {
+          column: 'correlationId',
+          operator: 'EQ',
+          value: [correlationId]
+        }
+      ]
+    ],
+    sorter: [{ column: sortField, direction: sortDirection.toUpperCase() }],
+    paging: {
+      itemsPerPage: 100, // Get all connectors for this process
+      page: 1
+    }
+  }
 
-  // Extract unique topologies from processes
-  const topologies = [...new Set(processesDataJson.data.map((p) => p.topology))]
-  
-  return topologies.sort()
+  const response = await api.get<ProcessAuditConnectorApiResponse>(
+    `/api/metrics/connectors/overview?filter=${encodeURIComponent(JSON.stringify(filter))}`
+  )
+
+  // Map API items to UI model
+  return response.data.items.map(item => ({
+    connector: item.nodeId, // Will be mapped to name in component
+    application: item.applicationId || 'N/A',
+    called: item.count,
+    errors400: item.status400,
+    errors500: item.status500
+  }))
 }
 
+/**
+ * Fetch trash items for a specific process (by correlationId)
+ *
+ * @param correlationId - The correlation ID of the process
+ * @returns Object with trash items array and total count
+ */
+export async function fetchProcessAuditTrash(
+  correlationId: string
+): Promise<{ items: ProcessTrashItem[]; total: number }> {
+  const filter: ProcessAuditApiFilter = {
+    search: null,
+    filter: [
+      [
+        {
+          column: 'type',
+          operator: 'EQ',
+          value: ['trash']
+        }
+      ],
+      [
+        {
+          column: 'correlationId',
+          operator: 'EQ',
+          value: [correlationId]
+        }
+      ]
+    ],
+    sorter: [{ column: 'created', direction: 'DESC' }],
+    paging: {
+      itemsPerPage: 10, // Show first 10 items in the table
+      page: 1
+    }
+  }
+
+  const response = await api.get<ProcessAuditTrashApiResponse>(
+    `/api/user-tasks?filter=${encodeURIComponent(JSON.stringify(filter))}`
+  )
+
+  // Map API items to UI model
+  const items = response.data.items.map(item => ({
+    whereItFailed: item.nodeId, // Will be mapped to node name in component
+    errorMessage: item.headers['result-message'] as string || 'No error message'
+  }))
+
+  return {
+    items,
+    total: response.data.paging.total
+  }
+}

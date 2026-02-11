@@ -47,8 +47,8 @@ use Hanaboso\Utils\Exception\DateTimeException;
     name: 'IK_multiCounter_topologyId_nok_finished_created',
 )]
 #[ODM\Index(
-    keys: ['created' => 'asc', 'topologyId' => 'asc', 'nok' => 'asc',],
-    name: 'IK_multiCounter_created_topologyId_nok',
+    keys: ['created' => 'asc', 'topologyId' => 'asc', 'nok' => 'asc', 'finished' => 'asc'],
+    name: 'IK_multiCounter_created_topologyId_nok_finished',
 )]
 class TopologyProgress
 {

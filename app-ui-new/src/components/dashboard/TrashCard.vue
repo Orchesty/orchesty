@@ -1,11 +1,17 @@
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, nextTick, watch } from 'vue'
 import { useApexChart, getChartColors, getBaseChartOptions } from '@/composables/useApexChart'
 import { useDataGrid } from '@/composables/useDataGrid'
 import { fetchTrashData } from '@/services/dashboardService'
-import type { TrashData, TableColumn } from '@/types/dashboard'
+import type { TrashData, TableColumn, TimeFilter } from '@/types/dashboard'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
+
+interface Props {
+  timeFilter: TimeFilter
+}
+
+const props = defineProps<Props>()
 
 const trashData = ref<TrashData | null>(null)
 const chartEl = ref<HTMLElement | null>(null)
@@ -23,9 +29,9 @@ const { initChart, setupResizeObserver, isDarkMode } = useApexChart({
 })
 
 const columns: TableColumn[] = [
-  { key: 'topology', label: 'Topology', sortable: true, className: 'whitespace-nowrap' },
-  { key: 'node', label: 'Node', sortable: true, className: 'whitespace-nowrap' },
-  { key: 'message', label: 'Message', sortable: true, className: 'whitespace-nowrap truncate max-w-xs' },
+  { key: 'topology', label: 'Topology', sortable: false, className: 'whitespace-nowrap' },
+  { key: 'node', label: 'Node', sortable: false, className: 'whitespace-nowrap' },
+  { key: 'message', label: 'Message', sortable: false, className: 'whitespace-nowrap truncate max-w-xs' },
   { key: 'count', label: 'Count', sortable: true, className: 'whitespace-nowrap' },
 ]
 
@@ -39,11 +45,19 @@ const loadData = async () => {
       limit: itemsPerPage.value,
       sortBy: sortField.value,
       sortOrder: sortDirection.value,
+      timeFilter: props.timeFilter,
     })
 
     trashData.value = response
     totalPages.value = response.meta.totalPages
     totalItems.value = response.meta.totalItems
+
+    // Re-render chart if already mounted
+    await nextTick()
+    if (chartMounted.value && chartEl.value) {
+      initChart(chartEl.value, getBarChartOptions())
+      setupResizeObserver(chartEl.value)
+    }
   } catch (error) {
     console.error('Error loading trash data:', error)
   } finally {
@@ -64,9 +78,14 @@ const {
   handlePerPageChange,
   handleSort,
 } = useDataGrid({
-  defaultSort: { field: 'topology', direction: 'asc' },
+  defaultSort: { field: 'count', direction: 'desc' },
   defaultPerPage: 5,
   onDataLoad: loadData,
+})
+
+// Add watcher for timeFilter changes
+watch(() => props.timeFilter, () => {
+  loadData()
 })
 
 // Initialize chart on mount
@@ -77,7 +96,7 @@ onMounted(async () => {
     if (!chartEl.value || !trashData.value) {
       return
     }
-    
+
     initChart(chartEl.value, getBarChartOptions())
     setupResizeObserver(chartEl.value)
     chartMounted.value = true
@@ -204,8 +223,8 @@ const getBarChartOptions = () => {
       </div>
 
       <!-- Table -->
-      <DataGrid 
-        :columns="columns" 
+      <DataGrid
+        :columns="columns"
         :data="trashData.tableData"
         :current-page="currentPage"
         :total-pages="totalPages"

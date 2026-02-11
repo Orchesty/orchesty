@@ -1,18 +1,34 @@
-import type { Token, TokenQueryParams, TokenScope } from '@/types/settings'
-import tokensDataJson from '@/assets/mock-data/tokens-data.json'
-import tokenScopesDataJson from '@/assets/mock-data/token-scopes-data.json'
+import api from './api'
+import type {
+  Token,
+  TokenQueryParams,
+  TokenScope,
+  TokenApiResponse,
+  TokensListResponse,
+} from '@/types/settings'
 
-// Mock data
-let tokensData = [...tokensDataJson.data] as Token[]
-const availableScopes = tokenScopesDataJson.scopes as TokenScope[]
+// Convert scopes string to array
+function scopesStringToArray(scopes: string | string[]): string[] {
+  if (Array.isArray(scopes)) return scopes
+  return scopes ? scopes.split(',').map(s => s.trim()) : []
+}
+
+// Map API response to component Token type
+function mapApiTokenToToken(apiToken: TokenApiResponse): Token {
+  return {
+    id: apiToken.id,
+    name: apiToken.user,  // Use user as name
+    created: apiToken.created,
+    expiration: apiToken.expireAt,
+    scopes: scopesStringToArray(apiToken.scopes),
+    tokenValue: apiToken.key,  // Only present on create
+  }
+}
 
 /**
  * Fetch tokens with pagination and filtering
  */
 export async function fetchTokens(params: TokenQueryParams = {}) {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 300))
-
   const {
     page = 1,
     perPage = 10,
@@ -21,37 +37,24 @@ export async function fetchTokens(params: TokenQueryParams = {}) {
     search = '',
   } = params
 
-  // Filter by search
-  let filteredData = [...tokensData]
-  if (search) {
-    const searchLower = search.toLowerCase()
-    filteredData = filteredData.filter((token) =>
-      token.name.toLowerCase().includes(searchLower)
-    )
-  }
-
-  // Sort
-  filteredData.sort((a, b) => {
-    const aValue = String(a[sortBy as keyof Token] || '')
-    const bValue = String(b[sortBy as keyof Token] || '')
-    const comparison = aValue.localeCompare(bValue)
-    return sortOrder === 'asc' ? comparison : -comparison
+  const response = await api.get<TokensListResponse>('/api/apiTokens', {
+    params: {
+      page,
+      itemsPerPage: perPage,
+      ...(search && { search }),
+      // Backend has its own sorting via sorter field
+    },
   })
 
-  // Paginate
-  const totalItems = filteredData.length
-  const totalPages = Math.ceil(totalItems / perPage)
-  const startIndex = (page - 1) * perPage
-  const endIndex = startIndex + perPage
-  const paginatedData = filteredData.slice(startIndex, endIndex)
+  const data = response.data
 
   return {
-    data: paginatedData,
+    data: data.items.map(mapApiTokenToToken),
     meta: {
-      page,
-      perPage,
-      totalItems,
-      totalPages,
+      page: data.paging.page,
+      perPage: data.paging.itemsPerPage,
+      totalItems: data.paging.total,
+      totalPages: data.paging.lastPage,
     },
   }
 }
@@ -64,55 +67,37 @@ export async function createToken(data: {
   expiration: string | null
   scopes: string[]
 }): Promise<Token> {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 500))
-
-  // Generate a mock JWT token
-  const tokenValue = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.${btoa(
-    JSON.stringify({
-      sub: `token-${Date.now()}`,
-      name: data.name,
-      scopes: data.scopes,
-      iat: Math.floor(Date.now() / 1000),
-    })
-  )}.${btoa(Math.random().toString(36).substring(2))}`
-
-  const newToken: Token = {
-    id: `token-${Date.now()}`,
-    name: data.name,
-    created: new Date().toISOString(),
-    expiration: data.expiration,
+  // Backend doesn't accept 'name', only expireAt and scopes
+  // Format expiration date to YYYY-MM-DD if provided
+  const requestData = {
+    expireAt: data.expiration,  // Already in correct format from datepicker
     scopes: data.scopes,
-    tokenValue,
   }
 
-  tokensData.push(newToken)
+  const response = await api.post<TokenApiResponse>('/api/apiTokens', requestData)
 
-  return newToken
+  return mapApiTokenToToken(response.data)
 }
 
 /**
  * Delete a token
  */
 export async function deleteToken(id: string): Promise<void> {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 400))
-
-  const index = tokensData.findIndex((t) => t.id === id)
-  if (index === -1) {
-    throw new Error(`Token with id ${id} not found`)
-  }
-
-  tokensData.splice(index, 1)
+  await api.delete(`/api/apiTokens/${id}`)
 }
 
 /**
  * Fetch available token scopes
+ * Note: This might need a real endpoint - for now returning hardcoded common scopes
  */
 export async function fetchAvailableScopes(): Promise<TokenScope[]> {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 200))
-
-  return availableScopes
+  // Common scopes based on the API examples
+  // TODO: Replace with real API endpoint if available
+  return [
+    { id: 'topology:run', label: 'Topology Run', description: 'Run topologies' },
+    { id: 'log:write', label: 'Log Write', description: 'Write logs' },
+    { id: 'metric:write', label: 'Metric Write', description: 'Write metrics' },
+    { id: 'worker:all', label: 'Worker All', description: 'All worker permissions' },
+    { id: 'applications:all', label: 'Applications All', description: 'All application permissions' },
+  ]
 }
-

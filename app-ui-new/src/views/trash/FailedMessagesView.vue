@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
@@ -14,7 +15,6 @@ import type { BulkAction } from '@/types/datagrid'
 import type { TableColumn } from '@/types/dashboard'
 import {
   fetchTrashItems,
-  fetchTopologyNames,
   bulkApprove,
   bulkReject,
   approveTrashItem,
@@ -22,21 +22,72 @@ import {
   updateTrashItem,
 } from '@/services/trashService'
 import { useDataGrid } from '@/composables/useDataGrid'
+import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
+import { useToast } from '@/composables/useToast'
+
+const route = useRoute()
+
+// Topology/Node mappings composable
+const {
+  loadMappings,
+  getTopologyName,
+  getNodeName,
+  topologyOptions: topologyOptionsFromMappings,
+  nodeOptions: nodeOptionsFromMappings,
+  mappings
+} = useTopologyNodeMappings()
+
+// Toast notifications
+const { showToast } = useToast()
 
 // State
 const trashItems = ref<TrashItem[]>([])
 const selectedRows = ref<Set<string>>(new Set())
 
 // Filters
+const searchFilter = ref('')
 const correlationIdFilter = ref('')
-const nodeFilter = ref('')
+const nodeFilter = ref<string | null>(null)
 const topologyFilter = ref<string | null>(null)
 const timeRangeFilter = ref('this-month')
 
-// Topology options for dropdown
-const topologyOptions = ref<{ value: string | null; label: string }[]>([
+// Topology options for dropdown with "All" option
+const topologyOptions = computed(() => [
   { value: null, label: 'All Topologies' },
+  ...topologyOptionsFromMappings.value
 ])
+
+// Node options for dropdown - filtered by selected topology
+const nodeOptions = computed(() => {
+  const baseOptions = [{ value: null, label: 'All Nodes' }]
+
+  // If no topology selected, show all nodes
+  if (!topologyFilter.value || !mappings.value) {
+    return [...baseOptions, ...nodeOptionsFromMappings.value]
+  }
+
+  // Get node IDs for the selected topology from the tree
+  const nodeIdsInTopology = mappings.value.tree[topologyFilter.value] || []
+
+  // Filter node options to only include nodes from this topology
+  const filteredNodes = nodeOptionsFromMappings.value.filter(node =>
+    nodeIdsInTopology.includes(node.value)
+  )
+
+  return [...baseOptions, ...filteredNodes]
+})
+
+// Clear node filter when topology changes if selected node is not in new topology
+watch(topologyFilter, () => {
+  if (nodeFilter.value && topologyFilter.value && mappings.value) {
+    const nodeIdsInTopology = mappings.value.tree[topologyFilter.value] || []
+
+    // If currently selected node is not in the new topology, clear it
+    if (!nodeIdsInTopology.includes(nodeFilter.value)) {
+      nodeFilter.value = null
+    }
+  }
+})
 
 // Drawer state
 const drawerOpen = ref(false)
@@ -64,21 +115,27 @@ function handleBulkReject(selectedIds: Set<string>) {
 
 async function confirmBulkApprove() {
   try {
+    const count = selectedRows.value.size
     await bulkApprove(Array.from(selectedRows.value))
-    selectedRows.value.clear()
+    showToast(`${count} message(s) approved successfully`, 'success')
+    selectedRows.value = new Set()
     loadData()
   } catch (error) {
     console.error('Bulk approve failed:', error)
+    showToast('Failed to approve messages', 'error')
   }
 }
 
 async function confirmBulkReject() {
   try {
+    const count = selectedRows.value.size
     await bulkReject(Array.from(selectedRows.value))
-    selectedRows.value.clear()
+    showToast(`${count} message(s) rejected successfully`, 'success')
+    selectedRows.value = new Set()
     loadData()
   } catch (error) {
     console.error('Bulk reject failed:', error)
+    showToast('Failed to reject messages', 'error')
   }
 }
 
@@ -114,8 +171,8 @@ const moreActionsMenuSections: DropdownMenuSection[] = [
 
 // Table columns
 const columns: TableColumn[] = [
-  { key: 'topology', label: 'Topology', sortable: true },
-  { key: 'node', label: 'Node', sortable: true },
+  { key: 'topology', label: 'Topology', sortable: false },
+  { key: 'node', label: 'Node', sortable: false },
   { key: 'timestamp', label: 'Timestamp', sortable: true },
   { key: 'resultMessage', label: 'Result Message', sortable: false },
   { key: 'actions', label: '', className: 'text-right' },
@@ -138,31 +195,34 @@ const bulkActions: BulkAction[] = [
 // Load data
 const loadData = async () => {
   loading.value = true
-  
+
   const params: TrashQueryParams = {
     page: currentPage.value,
     perPage: itemsPerPage.value,
     sortBy: sortField.value,
     sortOrder: sortDirection.value,
   }
-  
+
+  if (searchFilter.value) {
+    params.search = searchFilter.value
+  }
+
   if (correlationIdFilter.value) {
     params.correlationId = correlationIdFilter.value
   }
-  
+
   if (nodeFilter.value) {
     params.node = nodeFilter.value
   }
-  
+
   if (topologyFilter.value) {
     params.topology = topologyFilter.value
   }
-  
-  // TODO: Convert timeRangeFilter to dateFrom/dateTo when needed
+
   if (timeRangeFilter.value) {
     params.timeRange = timeRangeFilter.value
   }
-  
+
   try {
     const response = await fetchTrashItems(params)
     trashItems.value = response.data
@@ -190,17 +250,18 @@ const {
 } = useDataGrid({
   defaultSort: { field: 'timestamp', direction: 'desc' },
   onDataLoad: loadData,
-  filters: [correlationIdFilter, nodeFilter, topologyFilter, timeRangeFilter],
+  filters: [searchFilter, correlationIdFilter, nodeFilter, topologyFilter, timeRangeFilter],
 })
 
-// Load topology names
+// Load mappings and data
 onMounted(async () => {
-  const topologies = await fetchTopologyNames()
-  topologyOptions.value = [
-    { value: null, label: 'All Topologies' },
-    ...topologies.map((t) => ({ value: t, label: t })),
-  ]
-  
+  await loadMappings()
+
+  // Check for correlationId in query params
+  if (route.query.correlationId) {
+    correlationIdFilter.value = route.query.correlationId as string
+  }
+
   loadData()
 })
 
@@ -212,37 +273,46 @@ const openDrawer = (item: TrashItem) => {
 
 const handleApprove = async () => {
   if (!selectedItem.value) return
-  
+
   try {
     await approveTrashItem(selectedItem.value.id)
+    showToast('Message approved successfully', 'success')
     drawerOpen.value = false
     loadData()
   } catch (error) {
     console.error('Approve failed:', error)
+    showToast('Failed to approve message', 'error')
   }
 }
 
 const handleUpdate = async (data: { headers: Record<string, unknown>; body: Record<string, unknown> }) => {
   if (!selectedItem.value) return
-  
+
   try {
-    await updateTrashItem(selectedItem.value.id, data)
-    drawerOpen.value = false
+    const updatedData = await updateTrashItem(selectedItem.value.id, data)
+    // Update the selectedItem with the data returned from API
+    selectedItem.value.headers = updatedData.headers
+    selectedItem.value.body = updatedData.body
+    showToast('Message updated successfully', 'success')
+    // Keep drawer open so user can approve after editing
     loadData()
   } catch (error) {
     console.error('Update failed:', error)
+    showToast('Failed to update message', 'error')
   }
 }
 
 const handleReject = async () => {
   if (!selectedItem.value) return
-  
+
   try {
     await rejectTrashItem(selectedItem.value.id)
+    showToast('Message rejected successfully', 'success')
     drawerOpen.value = false
     loadData()
   } catch (error) {
     console.error('Reject failed:', error)
+    showToast('Failed to reject message', 'error')
   }
 }
 
@@ -269,7 +339,7 @@ const formatTimestamp = (timestamp: string) => {
           View failed messages from all topologies
         </p>
       </div>
-      
+
       <!-- More actions dropdown -->
       <DropdownMenu
         id="trash-more-dropdown"
@@ -317,12 +387,17 @@ const formatTimestamp = (timestamp: string) => {
       >
         <template #filters>
           <TextInput
+            v-model="searchFilter"
+            placeholder="Search"
+          />
+          <TextInput
             v-model="correlationIdFilter"
             placeholder="Correlation ID"
           />
-          <TextInput
+          <DropdownFilter
             v-model="nodeFilter"
-            placeholder="Node"
+            :options="nodeOptions"
+            placeholder="All Nodes"
           />
           <DropdownFilter
             v-model="topologyFilter"
@@ -333,17 +408,27 @@ const formatTimestamp = (timestamp: string) => {
         </template>
 
         <!-- Custom cell templates -->
+        <template #cell-node="{ row }">
+          <span class="text-sm text-gray-900 dark:text-white">
+            {{ getNodeName(row.nodeId) }}
+          </span>
+        </template>
+
         <template #cell-topology="{ row }">
           <RouterLink
             :to="`/topologies/${row.topologyId}`"
             class="font-medium text-primary-600 hover:underline dark:text-primary-500"
           >
-            {{ row.topology }}
+            {{ getTopologyName(row.topologyId) }}
           </RouterLink>
         </template>
 
         <template #cell-timestamp="{ value }">
           {{ formatTimestamp(value) }}
+        </template>
+
+        <template #cell-resultMessage="{ row }">
+          {{ row.headers['result-message'] || '' }}
         </template>
 
         <template #cell-actions="{ row }">
@@ -380,6 +465,8 @@ const formatTimestamp = (timestamp: string) => {
     <TrashDetailDrawer
       v-model="drawerOpen"
       :item="selectedItem"
+      :get-topology-name="getTopologyName"
+      :get-node-name="getNodeName"
       @approve="handleApprove"
       @update="handleUpdate"
       @reject="handleReject"

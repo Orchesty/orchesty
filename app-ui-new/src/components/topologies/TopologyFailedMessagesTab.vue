@@ -4,6 +4,7 @@ import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
 import TimeRangeFilterWithCustomRange from '@/components/ui/TimeRangeFilterWithCustomRange.vue'
 import TextInput from '@/components/ui/datagrid/TextInput.vue'
+import DropdownFilter from '@/components/ui/datagrid/DropdownFilter.vue'
 import Confirm from '@/components/ui/Confirm.vue'
 import TrashDetailDrawer from '@/components/trash/TrashDetailDrawer.vue'
 import type { TrashItem, TrashQueryParams } from '@/types/trash'
@@ -18,6 +19,8 @@ import {
   updateTrashItem,
 } from '@/services/trashService'
 import { useDataGrid } from '@/composables/useDataGrid'
+import { useToast } from '@/composables/useToast'
+import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 
 interface Props {
   topologyId: string
@@ -26,14 +29,34 @@ interface Props {
 
 const props = defineProps<Props>()
 
+// Toast notifications
+const { showToast } = useToast()
+
+// Topology and Node mappings
+const { loadMappings, mappings, getNodeName } = useTopologyNodeMappings()
+
 // State
 const trashItems = ref<TrashItem[]>([])
 const selectedRows = ref<Set<string>>(new Set())
 
 // Filters
+const searchFilter = ref('')
 const correlationIdFilter = ref('')
-const nodeFilter = ref('')
+const nodeFilter = ref<string | null>(null)
 const timeRangeFilter = ref('this-month')
+
+// Node options filtered to the current topology
+const nodeOptions = computed(() => {
+  const options: { value: string | null; label: string }[] = [{ value: null, label: 'All Nodes' }]
+  if (mappings.value) {
+    const nodeIds = mappings.value.tree[props.topologyId] || []
+    for (const nodeId of nodeIds) {
+      const name = mappings.value.nodes[nodeId] || nodeId
+      options.push({ value: nodeId, label: name })
+    }
+  }
+  return options
+})
 
 // Drawer state
 const drawerOpen = ref(false)
@@ -59,27 +82,33 @@ function handleBulkReject(selectedIds: Set<string>) {
 
 async function confirmBulkApprove() {
   try {
+    const count = selectedRows.value.size
     await bulkApprove(Array.from(selectedRows.value))
-    selectedRows.value.clear()
+    showToast(`${count} message(s) approved successfully`, 'success')
+    selectedRows.value = new Set()
     loadData()
   } catch (error) {
     console.error('Bulk approve failed:', error)
+    showToast('Failed to approve messages', 'error')
   }
 }
 
 async function confirmBulkReject() {
   try {
+    const count = selectedRows.value.size
     await bulkReject(Array.from(selectedRows.value))
-    selectedRows.value.clear()
+    showToast(`${count} message(s) rejected successfully`, 'success')
+    selectedRows.value = new Set()
     loadData()
   } catch (error) {
     console.error('Bulk reject failed:', error)
+    showToast('Failed to reject messages', 'error')
   }
 }
 
 // Table columns (without topology)
 const columns: TableColumn[] = [
-  { key: 'node', label: 'Node', sortable: true },
+  { key: 'node', label: 'Node', sortable: false },
   { key: 'timestamp', label: 'Timestamp', sortable: true },
   { key: 'resultMessage', label: 'Result Message', sortable: false },
   { key: 'actions', label: '', className: 'text-right' },
@@ -102,27 +131,31 @@ const bulkActions: BulkAction[] = [
 // Load data
 const loadData = async () => {
   loading.value = true
-  
+
   const params: TrashQueryParams = {
     page: currentPage.value,
     perPage: itemsPerPage.value,
     sortBy: sortField.value,
     sortOrder: sortDirection.value,
-    topology: props.topologyName, // Auto-filter by current topology
+    topology: props.topologyId, // Auto-filter by current topology
   }
-  
+
+  if (searchFilter.value) {
+    params.search = searchFilter.value
+  }
+
   if (correlationIdFilter.value) {
     params.correlationId = correlationIdFilter.value
   }
-  
+
   if (nodeFilter.value) {
     params.node = nodeFilter.value
   }
-  
+
   if (timeRangeFilter.value) {
     params.timeRange = timeRangeFilter.value
   }
-  
+
   try {
     const response = await fetchTrashItems(params)
     trashItems.value = response.data
@@ -150,11 +183,12 @@ const {
 } = useDataGrid({
   defaultSort: { field: 'timestamp', direction: 'desc' },
   onDataLoad: loadData,
-  filters: [correlationIdFilter, nodeFilter, timeRangeFilter],
+  filters: [searchFilter, correlationIdFilter, nodeFilter, timeRangeFilter],
 })
 
 // Load initial data
 onMounted(async () => {
+  await loadMappings()
   loadData()
 })
 
@@ -166,37 +200,46 @@ const openDrawer = (item: TrashItem) => {
 
 const handleApprove = async () => {
   if (!selectedItem.value) return
-  
+
   try {
     await approveTrashItem(selectedItem.value.id)
+    showToast('Message approved successfully', 'success')
     drawerOpen.value = false
     loadData()
   } catch (error) {
     console.error('Approve failed:', error)
+    showToast('Failed to approve message', 'error')
   }
 }
 
 const handleUpdate = async (data: { headers: Record<string, unknown>; body: Record<string, unknown> }) => {
   if (!selectedItem.value) return
-  
+
   try {
-    await updateTrashItem(selectedItem.value.id, data)
-    drawerOpen.value = false
+    const updatedData = await updateTrashItem(selectedItem.value.id, data)
+    // Update the selectedItem with the data returned from API
+    selectedItem.value.headers = updatedData.headers
+    selectedItem.value.body = updatedData.body
+    showToast('Message updated successfully', 'success')
+    // Keep drawer open so user can approve after editing
     loadData()
   } catch (error) {
     console.error('Update failed:', error)
+    showToast('Failed to update message', 'error')
   }
 }
 
 const handleReject = async () => {
   if (!selectedItem.value) return
-  
+
   try {
     await rejectTrashItem(selectedItem.value.id)
+    showToast('Message rejected successfully', 'success')
     drawerOpen.value = false
     loadData()
   } catch (error) {
     console.error('Reject failed:', error)
+    showToast('Failed to reject message', 'error')
   }
 }
 
@@ -237,12 +280,17 @@ const formatTimestamp = (timestamp: string) => {
     >
       <template #filters>
         <TextInput
+          v-model="searchFilter"
+          placeholder="Search"
+        />
+        <TextInput
           v-model="correlationIdFilter"
           placeholder="Correlation ID"
         />
-        <TextInput
+        <DropdownFilter
           v-model="nodeFilter"
-          placeholder="Node"
+          :options="nodeOptions"
+          placeholder="All Nodes"
         />
         <TimeRangeFilterWithCustomRange v-model="timeRangeFilter" />
       </template>
@@ -250,6 +298,16 @@ const formatTimestamp = (timestamp: string) => {
       <!-- Custom cell templates -->
       <template #cell-timestamp="{ value }">
         {{ formatTimestamp(value) }}
+      </template>
+
+      <template #cell-node="{ row }">
+        <span class="text-sm text-gray-900 dark:text-white">
+          {{ getNodeName(row.nodeId) }}
+        </span>
+      </template>
+
+      <template #cell-resultMessage="{ row }">
+        {{ row.headers['result-message'] || '' }}
       </template>
 
       <template #cell-actions="{ row }">

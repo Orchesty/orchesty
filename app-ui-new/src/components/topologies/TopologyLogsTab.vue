@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
 import TextInput from '@/components/ui/datagrid/TextInput.vue'
@@ -11,6 +11,7 @@ import type { LogEntry, LogQueryParams, LogSeverity } from '@/types/logs'
 import type { TableColumn } from '@/types/dashboard'
 import { fetchLogs } from '@/services/logsService'
 import { useDataGrid } from '@/composables/useDataGrid'
+import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 
 interface Props {
   topologyId: string
@@ -26,10 +27,14 @@ const logs = ref<LogEntry[]>([])
 const drawerOpen = ref(false)
 const selectedLog = ref<LogEntry | null>(null)
 
+// Topology and Node mappings
+const { loadMappings, mappings } = useTopologyNodeMappings()
+
 // Filters
 const searchFilter = ref('')
-const timeMarginFilter = ref('')
+const correlationIdFilter = ref('')
 const severityFilter = ref<LogSeverity | null>(null)
+const nodeFilter = ref<string | null>(null)
 const timeRangeFilter = ref('this-month')
 
 // Severity options for dropdown
@@ -41,12 +46,25 @@ const severityOptions = ref<{ value: LogSeverity | null; label: string }[]>([
   { value: 'debug', label: 'Debug' },
 ])
 
+// Node options filtered to the current topology
+const nodeOptions = computed(() => {
+  const options: { value: string | null; label: string }[] = [{ value: null, label: 'All Nodes' }]
+  if (mappings.value) {
+    const nodeIds = mappings.value.tree[props.topologyId] || []
+    for (const nodeId of nodeIds) {
+      const name = mappings.value.nodes[nodeId] || nodeId
+      options.push({ value: nodeId, label: name })
+    }
+  }
+  return options
+})
+
 // Table columns (without topology)
 const columns: TableColumn[] = [
   { key: 'timestamp', label: 'Timestamp', sortable: true },
   { key: 'node', label: 'Node', sortable: false },
   { key: 'nodeId', label: 'Node ID', sortable: false },
-  { key: 'severity', label: 'Severity', sortable: true },
+  { key: 'severity', label: 'Severity', sortable: false },
   { key: 'message', label: 'Message', sortable: false },
   { key: 'actions', label: '', className: 'text-right' },
 ]
@@ -84,28 +102,29 @@ const openDrawer = (log: LogEntry) => {
 // Load data function
 async function loadData() {
   loading.value = true
-  
+
   const params: LogQueryParams = {
     page: currentPage.value,
     perPage: itemsPerPage.value,
     sortBy: sortField.value,
     sortOrder: sortDirection.value,
-    topology: props.topologyName, // Auto-filter by current topology
+    topology: props.topologyId, // Auto-filter by current topology
   }
 
   if (searchFilter.value) {
     params.search = searchFilter.value
   }
 
-  if (timeMarginFilter.value) {
-    const margin = parseInt(timeMarginFilter.value, 10)
-    if (!isNaN(margin)) {
-      params.timeMargin = margin
-    }
+  if (correlationIdFilter.value) {
+    params.correlationId = correlationIdFilter.value
   }
 
   if (severityFilter.value) {
     params.severity = severityFilter.value
+  }
+
+  if (nodeFilter.value) {
+    params.node = nodeFilter.value
   }
 
   if (timeRangeFilter.value) {
@@ -139,11 +158,12 @@ const {
 } = useDataGrid({
   defaultSort: { field: 'timestamp', direction: 'desc' },
   onDataLoad: loadData,
-  filters: [searchFilter, timeMarginFilter, severityFilter, timeRangeFilter],
+  filters: [searchFilter, correlationIdFilter, severityFilter, nodeFilter, timeRangeFilter],
 })
 
 // Load initial data
 onMounted(async () => {
+  await loadMappings()
   await loadData()
 })
 </script>
@@ -173,15 +193,18 @@ onMounted(async () => {
           width="w-80"
         />
         <TextInput
-          v-model="timeMarginFilter"
-          type="number"
-          placeholder="Time Margin"
-          width="w-32"
+          v-model="correlationIdFilter"
+          placeholder="Correlation ID"
         />
         <DropdownFilter
           v-model="severityFilter"
           :options="severityOptions"
           placeholder="All Severities"
+        />
+        <DropdownFilter
+          v-model="nodeFilter"
+          :options="nodeOptions"
+          placeholder="All Nodes"
         />
         <TimeRangeFilterWithCustomRange v-model="timeRangeFilter" />
       </template>

@@ -79,12 +79,12 @@ final readonly class AggregationFilterUtils
     {
         $pipeline = $builder->getPipeline();
 
-        /** @var mixed[]|null $and */
-        $and = $pipeline[0]['$match']['$and'][0]['$and'][0]['$or'][0]['$and'] ?? NULL;
+        /** @var mixed[]|null $or */
+        $or = $pipeline[0]['$match']['$and'][0]['$or'] ?? NULL;
         /** @var UTCDateTime|NULL $gte */
-        $gte = $and[0]['fields.created']['$gte'] ?? NULL;
+        $gte = $or[0]['fields.created']['$gte'] ?? $or[0]['created']['$gte'] ?? NULL;
         /** @var UTCDateTime|NULL $lte */
-        $lte = $and[1]['fields.created']['$lte'] ?? NULL;
+        $lte = $or[0]['fields.created']['$lte'] ?? $or[0]['created']['$lte'] ?? NULL;
 
         return [$gte, $lte];
     }

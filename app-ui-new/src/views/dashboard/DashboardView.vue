@@ -30,22 +30,22 @@ const processesFilters = ref<ProcessesExternalFilters>({
 
 const handleHeatmapClick = async (data: HeatmapClickData) => {
   console.log('Heatmap clicked from Overview:', data)
-  
+
   // Calculate time range from clicked time slot (±30 minutes)
   const timeRange = calculateTimeRangeFromSlot(data.timeSlot)
-  
+
   // Set filters for ProcessesTab
   processesFilters.value = {
     topology: data.topology,
     timeRange: timeRange,
   }
-  
+
   // Check if we're not already on the Processes tab by checking if it has 'hidden' class
   const processesPanel = document.getElementById('processes-content')
   const isOnProcessesTab = processesPanel && !processesPanel.classList.contains('hidden')
-  
+
   console.log('Is on Processes tab:', isOnProcessesTab)
-  
+
   // Switch to processes tab only if we're not already there (i.e., we're on Overview)
   if (!isOnProcessesTab) {
     await nextTick()
@@ -55,6 +55,24 @@ const handleHeatmapClick = async (data: HeatmapClickData) => {
       processesTabButton.click()
       console.log('Clicked processes tab button')
     }
+  }
+}
+
+const handleTopologyProcessesClick = async (topologyId: string) => {
+  console.log('Navigate to processes for topology:', topologyId)
+
+  // Set topology filter for ProcessesTab
+  processesFilters.value = {
+    topology: topologyId,
+    timeRange: null, // Don't apply time range filter from topology click
+  }
+
+  // Switch to processes tab
+  await nextTick()
+  const processesTabButton = document.getElementById('processes-tab')
+  if (processesTabButton) {
+    processesTabButton.click()
+    console.log('Switched to processes tab with topology filter')
   }
 }
 </script>
@@ -110,7 +128,10 @@ const handleHeatmapClick = async (data: HeatmapClickData) => {
       </TabPanel>
 
       <TabPanel id="topologies-content" ariaLabelledby="topologies-tab" :hidden="true">
-        <TopologiesTab :global-time-filter="activeTimeFilter" />
+        <TopologiesTab
+          :global-time-filter="activeTimeFilter"
+          @view-processes="handleTopologyProcessesClick"
+        />
       </TabPanel>
 
       <TabPanel id="processes-content" ariaLabelledby="processes-tab" :hidden="true">

@@ -1,25 +1,34 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import type { WorkerGroup, ApplicationStatus } from '@/types/applications';
-import { fetchApplications } from '@/services/applicationsService';
+import { fetchApplications, installApplication } from '@/services/applicationsService';
 import DashboardLayout from '@/layouts/DashboardLayout.vue';
 import ApplicationCard from '@/components/applications/ApplicationCard.vue';
 import ApplicationDetailDrawer from '@/components/applications/ApplicationDetailDrawer.vue';
+import { useToast } from '@/composables/useToast';
 
-const selectedFilter = ref<ApplicationStatus | 'all' | 'installed'>('all');
+const selectedFilter = ref<ApplicationStatus | 'all' | 'all-installed'>('all');
 const workers = ref<WorkerGroup[]>([]);
 const workersExpanded = ref<Record<string, boolean>>({});
 const loading = ref(false);
+const { showToast } = useToast();
 
 const drawerOpen = ref(false);
 const selectedAppKey = ref('');
+const selectedWorkerName = ref('');
+const selectedAppStatus = ref<ApplicationStatus>('available');
 
 const loadApplications = async () => {
   loading.value = true;
   try {
-    const filterParam = selectedFilter.value === 'all' || selectedFilter.value === 'installed'
-      ? { status: selectedFilter.value === 'installed' ? 'installed' as ApplicationStatus : undefined }
-      : { status: selectedFilter.value };
+    let filterParam: { status?: ApplicationStatus | 'all-installed' };
+    if (selectedFilter.value === 'all') {
+      filterParam = { status: undefined };
+    } else if (selectedFilter.value === 'all-installed') {
+      filterParam = { status: 'all-installed' };
+    } else {
+      filterParam = { status: selectedFilter.value as ApplicationStatus };
+    }
 
     workers.value = await fetchApplications(filterParam);
 
@@ -36,7 +45,7 @@ const loadApplications = async () => {
   }
 };
 
-const handleFilterChange = (newFilter: ApplicationStatus | 'all' | 'installed') => {
+const handleFilterChange = (newFilter: ApplicationStatus | 'all' | 'all-installed') => {
   selectedFilter.value = newFilter;
   loadApplications();
 };
@@ -45,9 +54,45 @@ const toggleWorker = (workerName: string) => {
   workersExpanded.value[workerName] = !workersExpanded.value[workerName];
 };
 
-const handleOpenDetail = (appKey: string) => {
+const handleOpenDetail = (appKey: string, workerName: string, status: ApplicationStatus) => {
   selectedAppKey.value = appKey;
+  selectedWorkerName.value = workerName;
+  selectedAppStatus.value = status;
   drawerOpen.value = true;
+};
+
+const handleDrawerRefresh = () => {
+  loadApplications();
+};
+
+const handleInstall = async (appKey: string, workerName: string) => {
+  loading.value = true;
+  try {
+    const installResult = await installApplication(appKey, workerName);
+
+    // Determine the new status based on the install result
+    // The API returns authorized status in the response
+    const newStatus: ApplicationStatus = installResult.authorized ? 'authorized' : 'installed';
+
+    // Update selected app details
+    selectedAppKey.value = appKey;
+    selectedWorkerName.value = workerName;
+    selectedAppStatus.value = newStatus;
+
+    // Show success toast
+    showToast('Application installed successfully', 'success');
+
+    // Refresh the applications list
+    await loadApplications();
+
+    // Open the drawer with the installed app
+    drawerOpen.value = true;
+  } catch (error) {
+    console.error('Failed to install application:', error);
+    showToast(`Failed to install application: ${error instanceof Error ? error.message : String(error)}`, 'error');
+  } finally {
+    loading.value = false;
+  }
 };
 
 onMounted(() => {
@@ -67,7 +112,7 @@ onMounted(() => {
       <div class="mb-4 flex items-center gap-4">
         <div class="flex items-center">
           <input
-            id="filter-available"
+            id="filter-all"
             name="app-filter"
             type="radio"
             value="all"
@@ -75,35 +120,35 @@ onMounted(() => {
             class="h-4 w-4 border-gray-300 bg-gray-100 text-primary-600 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600"
             @change="() => handleFilterChange('all')"
           >
+          <label for="filter-all" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+            All
+          </label>
+        </div>
+        <div class="flex items-center">
+          <input
+            id="filter-available"
+            name="app-filter"
+            type="radio"
+            value="available"
+            :checked="selectedFilter === 'available'"
+            class="h-4 w-4 border-gray-300 bg-gray-100 text-primary-600 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600"
+            @change="() => handleFilterChange('available')"
+          >
           <label for="filter-available" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
             Available
           </label>
         </div>
         <div class="flex items-center">
           <input
-            id="filter-uninstalled"
+            id="filter-all-installed"
             name="app-filter"
             type="radio"
-            value="uninstalled"
-            :checked="selectedFilter === 'uninstalled'"
+            value="all-installed"
+            :checked="selectedFilter === 'all-installed'"
             class="h-4 w-4 border-gray-300 bg-gray-100 text-primary-600 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600"
-            @change="() => handleFilterChange('uninstalled')"
+            @change="() => handleFilterChange('all-installed')"
           >
-          <label for="filter-uninstalled" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-            Uninstalled
-          </label>
-        </div>
-        <div class="flex items-center">
-          <input
-            id="filter-installed"
-            name="app-filter"
-            type="radio"
-            value="installed"
-            :checked="selectedFilter === 'installed'"
-            class="h-4 w-4 border-gray-300 bg-gray-100 text-primary-600 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600"
-            @change="() => handleFilterChange('installed')"
-          >
-          <label for="filter-installed" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+          <label for="filter-all-installed" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
             Installed
           </label>
         </div>
@@ -112,10 +157,10 @@ onMounted(() => {
             id="filter-unauthorized"
             name="app-filter"
             type="radio"
-            value="unauthorized"
-            :checked="selectedFilter === 'unauthorized'"
+            value="installed"
+            :checked="selectedFilter === 'installed'"
             class="h-4 w-4 border-gray-300 bg-gray-100 text-primary-600 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600"
-            @change="() => handleFilterChange('unauthorized')"
+            @change="() => handleFilterChange('installed')"
           >
           <label for="filter-unauthorized" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
             Unauthorized
@@ -133,6 +178,20 @@ onMounted(() => {
           >
           <label for="filter-authorized" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
             Authorized
+          </label>
+        </div>
+        <div class="flex items-center">
+          <input
+            id="filter-activated"
+            name="app-filter"
+            type="radio"
+            value="activated"
+            :checked="selectedFilter === 'activated'"
+            class="h-4 w-4 border-gray-300 bg-gray-100 text-primary-600 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600"
+            @change="() => handleFilterChange('activated')"
+          >
+          <label for="filter-activated" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+            Activated
           </label>
         </div>
       </div>
@@ -201,6 +260,7 @@ onMounted(() => {
             :key="app.key"
             :application="app"
             @open-detail="handleOpenDetail"
+            @install="handleInstall"
           />
         </div>
       </div>
@@ -215,6 +275,9 @@ onMounted(() => {
     <ApplicationDetailDrawer
       v-model="drawerOpen"
       :application-key="selectedAppKey"
+      :worker="selectedWorkerName"
+      :status="selectedAppStatus"
+      @refresh="handleDrawerRefresh"
     />
   </DashboardLayout>
 </template>

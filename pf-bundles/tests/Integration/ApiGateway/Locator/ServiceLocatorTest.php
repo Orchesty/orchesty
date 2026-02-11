@@ -41,17 +41,27 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
             'name'          => 'Null',
         ]]]), []);
 
-        $res = $this->createLocator($dto)->getApplications('user');
+        $secondDto = new ResponseDto(200, '', Json::encode(['items' => [[
+            'authorized'    => TRUE,
+            'description'   => 'Description',
+            'enabled'       => TRUE,
+            'isInstallable' => TRUE,
+            'key'           => 'null',
+            'logo'          => 'Logo',
+            'name'          => 'Null',
+        ]]]), []);
+
+        $res = $this->createLocator($dto, FALSE, $secondDto)->getApplications('user');
         self::assertEquals(
             [
                 [
                     'applications' => [
                         [
-                            'activated'   => FALSE,
-                            'authorized'  => FALSE,
+                            'activated'   => TRUE,
+                            'authorized'  => TRUE,
                             'description' => 'Description',
                             'installable' => TRUE,
-                            'installed'   => FALSE,
+                            'installed'   => TRUE,
                             'key'         => 'null',
                             'logo'        => 'Logo',
                             'name'        => 'Null',
@@ -367,12 +377,16 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
     /**
      * @param ResponseDto $dto
      * @param bool        $exception
+     * @param ResponseDto $secondDto
      *
      * @return ServiceLocator
      * @throws Exception
      */
-    private function createLocator(ResponseDto $dto, bool $exception = FALSE): ServiceLocator
-    {
+    private function createLocator(
+        ResponseDto $dto,
+        bool $exception = FALSE,
+        ?ResponseDto $secondDto = NULL,
+    ): ServiceLocator {
         $sdk = new Sdk();
         $sdk->setName('name')->setUrl('host');
         $this->dm->persist($sdk);
@@ -383,6 +397,8 @@ final class ServiceLocatorTest extends DatabaseTestCaseAbstract
 
         if ($exception) {
             $curl->method('send')->willThrowException(new Exception());
+        } else if ($secondDto) {
+            $curl->method('send')->willReturnOnConsecutiveCalls($dto, $secondDto);
         } else {
             $curl->method('send')->willReturn($dto);
         }

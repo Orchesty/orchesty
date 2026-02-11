@@ -29,10 +29,10 @@ const modalTitle = computed(() => {
 
 const loadVersions = async () => {
   if (!props.topologyId) return
-  
+
   loading.value = true
   try {
-    versions.value = await fetchTopologyVersions(props.topologyId)
+    versions.value = await fetchTopologyVersions(props.topologyName)
   } catch (error) {
     console.error('Failed to load versions:', error)
     versions.value = []
@@ -48,40 +48,32 @@ watch(() => props.modelValue, (isOpen) => {
   }
 })
 
-const getStatusBadgeClass = (visibility: string, status: string) => {
-  // Highlight running public versions
-  if (visibility === 'public' && status === 'Running') {
-    return 'bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-300'
-  }
-  // Draft versions
+const getStatusBadgeClass = (visibility: string, enabled: boolean) => {
   if (visibility === 'draft') {
     return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
   }
-  // Stopped versions
-  if (status === 'Stopped') {
-    return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
-  }
-  // Default
-  return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
+  return enabled
+    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+    : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
 }
 
-const getStatusLabel = (visibility: string, status: string) => {
+const getStatusLabel = (visibility: string, enabled: boolean) => {
   if (visibility === 'draft') {
     return 'Draft'
   }
-  return status
+  return enabled ? 'Enabled' : 'Disabled'
 }
 
 const handleSelectVersion = (versionId: string) => {
   emit('update:modelValue', false)
-  
+
   // Save selected version to localStorage
   setLastTopology({
     id: props.topologyId,
     name: props.topologyName,
     versionId
   })
-  
+
   // Navigate to topology detail with version parameter
   router.push({
     name: 'topology-detail',
@@ -117,27 +109,24 @@ const handleClose = () => {
         @click="handleSelectVersion(version.id)"
         :class="[
           'w-full text-left rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors',
-          version.visibility === 'public' && version.status === 'Running'
-            ? 'border border-primary-600 dark:border-primary-500 bg-primary-50 dark:bg-primary-900/20'
-            : 'border border-gray-200 dark:border-gray-700'
+            version.visibility === 'public' && version.enabled
+              ? 'border border-green-600 dark:border-green-500 bg-green-50 dark:bg-green-900/20'
+              : 'border border-gray-200 dark:border-gray-700'
         ]"
       >
-        <div class="flex items-center justify-between mb-2">
+        <div class="flex items-center justify-between">
           <span class="text-sm font-semibold text-gray-900 dark:text-white">
-            {{ version.version }}
+            Version {{ version.version }}
           </span>
           <span
             :class="[
               'text-xs font-medium px-2.5 py-0.5 rounded',
-              getStatusBadgeClass(version.visibility, version.status)
+              getStatusBadgeClass(version.visibility, version.enabled)
             ]"
           >
-            {{ getStatusLabel(version.visibility, version.status) }}
+            {{ getStatusLabel(version.visibility, version.enabled) }}
           </span>
         </div>
-        <p class="text-sm text-gray-500 dark:text-gray-400">
-          {{ version.updated }}
-        </p>
       </button>
     </div>
 

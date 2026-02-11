@@ -65,7 +65,7 @@ const loadData = async () => {
   try {
     const response = await fetchProcesses({
       status: statusFilter.value,
-      topology: props.topologyName, // Auto-filter by current topology
+      topology: props.topologyId, // Auto-filter by current topology
       dateFrom: formatDateTimeForApi(dateTimeRange.value.from) || undefined,
       dateTo: formatDateTimeForApi(dateTimeRange.value.to) || undefined,
       page: currentPage.value,

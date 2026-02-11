@@ -3,40 +3,55 @@ import { ref, watch } from 'vue'
 import Modal from '@/components/ui/Modal.vue'
 import Button from '@/components/ui/Button.vue'
 import TextInput from '@/components/ui/datagrid/TextInput.vue'
+import { createCategory } from '@/services/topologiesService'
+import { useToast } from '@/composables/useToast'
 
 interface Props {
   modelValue: boolean
+  parentId?: string | null
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  parentId: null,
+})
+
 const emit = defineEmits<{
   'update:modelValue': [value: boolean]
+  'created': []
 }>()
+
+const { showToast } = useToast()
 
 const formData = ref({
   name: ''
 })
+const saving = ref(false)
 
 const handleClose = () => {
   emit('update:modelValue', false)
-  // Reset form
-  formData.value = {
-    name: ''
-  }
+  formData.value = { name: '' }
 }
 
-const handleCreate = () => {
-  // TODO: Implement create folder logic
-  console.log('Create folder:', formData.value)
-  handleClose()
+const handleCreate = async () => {
+  if (!formData.value.name.trim()) return
+
+  saving.value = true
+  try {
+    await createCategory(formData.value.name.trim(), props.parentId ?? null)
+    showToast('Folder created successfully', 'success')
+    emit('created')
+    handleClose()
+  } catch (error) {
+    console.error('Failed to create folder:', error)
+    showToast('Failed to create folder', 'error')
+  } finally {
+    saving.value = false
+  }
 }
 
 watch(() => props.modelValue, (newValue) => {
   if (!newValue) {
-    // Reset form when modal closes
-    formData.value = {
-      name: ''
-    }
+    formData.value = { name: '' }
   }
 })
 </script>
@@ -70,10 +85,9 @@ watch(() => props.modelValue, (newValue) => {
       <Button variant="outline" @click="handleClose">
         Cancel
       </Button>
-      <Button variant="primary" @click="handleCreate">
-        Create Folder
+      <Button variant="primary" :disabled="saving || !formData.name.trim()" @click="handleCreate">
+        {{ saving ? 'Creating...' : 'Create Folder' }}
       </Button>
     </template>
   </Modal>
 </template>
-

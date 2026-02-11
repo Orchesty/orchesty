@@ -1,3 +1,4 @@
+import api from './api'
 import type { ProfileUpdateData, PasswordUpdateData, NotificationSettings } from '@/types/account'
 
 /**
@@ -24,7 +25,7 @@ const simulateRandomError = () => {
 export async function updateProfile(data: ProfileUpdateData): Promise<void> {
   await simulateDelay()
   simulateRandomError()
-  
+
   console.log('Profile updated:', data)
   // In production: return axios.put('/api/account/profile', data)
 }
@@ -34,22 +35,15 @@ export async function updateProfile(data: ProfileUpdateData): Promise<void> {
  * Validates that new password and confirm password match
  */
 export async function updatePassword(data: PasswordUpdateData): Promise<void> {
-  await simulateDelay()
-  
   // Validate passwords match
   if (data.newPassword !== data.confirmPassword) {
     throw new Error('Passwords do not match')
   }
-  
-  // Validate password length
-  if (data.newPassword.length < 8) {
-    throw new Error('Password must be at least 8 characters')
-  }
-  
-  simulateRandomError()
-  
-  console.log('Password updated')
-  // In production: return axios.put('/api/account/password', data)
+
+  await api.post('/api/user/change_password', {
+    password: data.newPassword,
+    old_password: data.currentPassword,
+  })
 }
 
 /**
@@ -58,7 +52,7 @@ export async function updatePassword(data: PasswordUpdateData): Promise<void> {
 export async function updateNotifications(settings: NotificationSettings[]): Promise<void> {
   await simulateDelay()
   simulateRandomError()
-  
+
   console.log('Notifications updated:', settings)
   // In production: return axios.put('/api/account/notifications', settings)
 }

@@ -44,6 +44,8 @@ final class TopologyAggregationFilter extends GridAggregationFilterAbstract
     {
         return [
             'count' => 'count',
+            'created' => 'created',
+            'failedCount' => 'failedCount',
         ];
     }
 

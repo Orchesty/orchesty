@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, nextTick, computed } from 'vue'
+import { ref, computed } from 'vue'
 import type { TopologiesTreeNode, FolderItem, TopologyItem } from '@/types/topologies-page'
 
 interface Props {
@@ -17,28 +17,12 @@ const emit = defineEmits<{
 }>()
 
 const isExpanded = ref(props.item.type === 'folder' ? (props.item as FolderItem).isExpanded : false)
-const collapseId = ref(`folder-${props.item.id}`)
 
 const topologyItem = computed(() => props.item.type === 'topology' ? props.item as TopologyItem : null)
 
-const toggleFolder = async () => {
+const toggleFolder = () => {
   if (props.item.type !== 'folder') return
-  
   isExpanded.value = !isExpanded.value
-  
-  await nextTick()
-  
-  const { Collapse } = await import('flowbite')
-  const targetEl = document.getElementById(collapseId.value)
-  
-  if (targetEl) {
-    const collapse = new Collapse(targetEl)
-    if (isExpanded.value) {
-      collapse.show()
-    } else {
-      collapse.hide()
-    }
-  }
 }
 
 const handleSelectTopology = () => {
@@ -47,24 +31,6 @@ const handleSelectTopology = () => {
     emit('select-topology', props.item.id, props.item.name, versionCount)
   }
 }
-
-const handleFolderActions = (folderId: string) => {
-  // This will trigger dropdown via Flowbite
-  // The actual dropdown menu is rendered in the parent TopologiesView
-}
-
-onMounted(async () => {
-  if (props.item.type === 'folder' && isExpanded.value) {
-    await nextTick()
-    const { Collapse } = await import('flowbite')
-    const targetEl = document.getElementById(collapseId.value)
-    
-    if (targetEl) {
-      const collapse = new Collapse(targetEl)
-      collapse.show()
-    }
-  }
-})
 </script>
 
 <template>
@@ -73,7 +39,6 @@ onMounted(async () => {
     <div class="flex items-center gap-1">
       <button
         type="button"
-        :data-collapse-toggle="collapseId"
         @click="toggleFolder"
         class="flex-1 flex items-center gap-2 px-2 py-1.5 rounded text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
       >
@@ -123,7 +88,7 @@ onMounted(async () => {
         <span class="sr-only">Actions</span>
       </button>
     </div>
-    <div :id="collapseId" class="hidden pl-6">
+    <div v-show="isExpanded" class="pl-6">
       <div class="space-y-1 mt-1">
         <TopologyTreeItem
           v-for="child in item.children"

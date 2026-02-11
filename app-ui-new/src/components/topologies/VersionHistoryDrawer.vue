@@ -9,6 +9,7 @@ import type { TopologyVersion } from '@/types/topologies-page'
 interface Props {
   modelValue: boolean
   topologyId: string
+  topologyName?: string
   currentVersionId: string
 }
 
@@ -23,11 +24,11 @@ const versions = ref<TopologyVersion[]>([])
 const loading = ref(false)
 
 const loadVersions = async () => {
-  if (!props.topologyId) return
-  
+  if (!props.topologyName) return
+
   loading.value = true
   try {
-    versions.value = await fetchTopologyVersions(props.topologyId)
+    versions.value = await fetchTopologyVersions(props.topologyName)
   } catch (error) {
     console.error('Failed to load versions:', error)
     versions.value = []
@@ -38,38 +39,28 @@ const loadVersions = async () => {
 
 // Load versions when drawer opens
 watch(() => props.modelValue, (isOpen) => {
-  if (isOpen && props.topologyId) {
+  if (isOpen && props.topologyName) {
     loadVersions()
   }
 })
 
-const getStatusBadgeClass = (visibility: string, status: string, isCurrent: boolean) => {
-  // Current running version
-  if (isCurrent && visibility === 'public' && status === 'Running') {
-    return 'bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-300'
-  }
-  // Draft versions
+const getStatusBadgeClass = (visibility: string, enabled: boolean) => {
   if (visibility === 'draft') {
     return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
   }
-  // Stopped versions
-  if (status === 'Stopped') {
-    return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
-  }
-  // Default
-  return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
+  return enabled
+    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+    : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
 }
 
-const getStatusLabel = (visibility: string, status: string) => {
-  if (visibility === 'draft') {
-    return 'Draft'
-  }
-  return status
+const getStatusLabel = (visibility: string, enabled: boolean) => {
+  if (visibility === 'draft') return 'Draft'
+  return enabled ? 'Enabled' : 'Disabled'
 }
 
 const getVersionBorderClass = (versionId: string) => {
   return versionId === props.currentVersionId
-    ? 'border-primary-600 dark:border-primary-500 bg-primary-50 dark:bg-primary-900/20'
+    ? 'border-green-600 dark:border-green-500 bg-green-50 dark:bg-green-900/20'
     : 'border-gray-200 dark:border-gray-700'
 }
 
@@ -120,10 +111,10 @@ const handleClose = () => {
           <span
             :class="[
               'text-xs font-medium px-2.5 py-0.5 rounded',
-              getStatusBadgeClass(version.visibility, version.status, version.id === currentVersionId)
+              getStatusBadgeClass(version.visibility, version.enabled)
             ]"
           >
-            {{ getStatusLabel(version.visibility, version.status) }}
+            {{ getStatusLabel(version.visibility, version.enabled) }}
           </span>
         </div>
         <p class="text-sm text-gray-500 dark:text-gray-400">

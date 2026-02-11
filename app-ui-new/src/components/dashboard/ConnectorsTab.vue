@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
 import QuickFilter from '@/components/ui/datagrid/QuickFilter.vue'
-import SearchInput from '@/components/ui/datagrid/SearchInput.vue'
 import DropdownFilter from '@/components/ui/datagrid/DropdownFilter.vue'
 import DateTimeRangeFilter from '@/components/ui/datagrid/DateTimeRangeFilter.vue'
 import ConnectorDetailDrawer from '@/components/dashboard/ConnectorDetailDrawer.vue'
@@ -11,9 +10,9 @@ import type { Connector, ConnectorStatus } from '@/types/connectors'
 import type { TableColumn, TimeFilter } from '@/types/dashboard'
 import type { ActionConfig, QuickFilterOption, DropdownFilterOption } from '@/types/datagrid'
 import { fetchConnectors } from '@/services/connectorsService'
-import { fetchApplicationNames } from '@/services/applicationsService'
 import { convertTimeFilterToDateTimeRange, formatDateTimeForApi } from '@/utils/timeRangeConverter'
 import { useDataGrid } from '@/composables/useDataGrid'
+import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 
 interface Props {
   globalTimeFilter: TimeFilter
@@ -21,9 +20,18 @@ interface Props {
 
 const props = defineProps<Props>()
 
+// Use topology/node/application mappings composable
+const {
+  loadMappings,
+  getNodeName,
+  getApplicationName,
+  applicationOptions: applicationOptionsFromMappings,
+  nodeOptions: nodeOptionsFromMappings
+} = useTopologyNodeMappings()
+
 const connectors = ref<Connector[]>([])
 const quickFilter = ref<ConnectorStatus>('all')
-const searchQuery = ref('')
+const nodeFilter = ref<string | null>(null)
 const selectedApp = ref<string | null>(null)
 
 // Local datetime range filters
@@ -38,8 +46,8 @@ const selectedConnector = ref<Connector | null>(null)
 
 // Table columns (actions column added automatically by DataGrid)
 const columns: TableColumn[] = [
-  { key: 'application', label: 'Application', sortable: true },
-  { key: 'name', label: 'Connector', sortable: true },
+  { key: 'application', label: 'Application', sortable: false },
+  { key: 'name', label: 'Connector', sortable: false },
   { key: 'avgRequestTime', label: 'Avg request time', sortable: true },
   { key: 'requests', label: 'Requests', sortable: true },
   { key: 'errors400', label: 'Status 400', sortable: true },
@@ -54,10 +62,20 @@ const quickFilterOptions: QuickFilterOption[] = [
   { value: 'errors', label: 'Errors' },
 ]
 
-// Dropdown filter options (loaded dynamically)
-const applicationOptions = ref<DropdownFilterOption[]>([
-  { value: null, label: 'All Applications' },
-])
+// Dropdown filter options (loaded from mappings)
+const applicationOptions = computed(() => {
+  return [
+    { value: null, label: 'All Applications' },
+    ...applicationOptionsFromMappings.value
+  ]
+})
+
+const nodeOptions = computed(() => {
+  return [
+    { value: null, label: 'All Nodes' },
+    ...nodeOptionsFromMappings.value
+  ]
+})
 
 // Actions configuration
 const actions: ActionConfig[] = [
@@ -78,7 +96,7 @@ const loadData = async () => {
   try {
     const response = await fetchConnectors({
       status: quickFilter.value,
-      search: searchQuery.value || undefined,
+      node: nodeFilter.value || undefined,
       application: selectedApp.value || undefined,
       dateFrom: formatDateTimeForApi(dateTimeRange.value.from) || undefined,
       dateTo: formatDateTimeForApi(dateTimeRange.value.to) || undefined,
@@ -88,7 +106,13 @@ const loadData = async () => {
       order: sortDirection.value,
     })
 
-    connectors.value = response.data
+    // Map node IDs and application IDs to names
+    connectors.value = response.data.map(connector => ({
+      ...connector,
+      name: getNodeName(connector.id),
+      application: getApplicationName(connector.application)
+    }))
+
     totalPages.value = response.meta.totalPages
     totalItems.value = response.meta.totalItems
   } catch (error) {
@@ -111,9 +135,9 @@ const {
   handlePerPageChange,
   handleSort,
 } = useDataGrid({
-  defaultSort: { field: 'name', direction: 'asc' },
+  defaultSort: { field: 'requests', direction: 'desc' },
   onDataLoad: loadData,
-  filters: [quickFilter, searchQuery, selectedApp, dateTimeRange],
+  filters: [quickFilter, nodeFilter, selectedApp, dateTimeRange],
 })
 
 // Watch global time filter and convert to local datetime range
@@ -130,16 +154,8 @@ watch(
 )
 
 onMounted(async () => {
-  // Load applications for dropdown filter
-  try {
-    const appNames = await fetchApplicationNames()
-    applicationOptions.value = [
-      { value: null, label: 'All Applications' },
-      ...appNames.map((name) => ({ value: name, label: name })),
-    ]
-  } catch (error) {
-    console.error('Failed to load applications:', error)
-  }
+  // Load mappings for node/application names
+  await loadMappings()
 
   // Load initial data
   loadData()
@@ -178,11 +194,8 @@ onMounted(async () => {
 
     <!-- Regular Filters (right) -->
     <template #filters>
-      <!-- Search Input -->
-      <SearchInput
-        v-model="searchQuery"
-        placeholder="Search for connector or application"
-      />
+      <!-- Node Dropdown -->
+      <DropdownFilter v-model="nodeFilter" :options="nodeOptions" />
 
       <!-- Application Dropdown -->
       <DropdownFilter v-model="selectedApp" :options="applicationOptions" />
@@ -200,8 +213,8 @@ onMounted(async () => {
       <div class="flex items-center space-x-2">
         <span class="text-sm font-medium text-gray-900 dark:text-white">{{ value }}ms</span>
         <div class="h-2 w-24 rounded-full bg-gray-200 dark:bg-gray-700">
-          <div 
-            class="h-2 rounded-full bg-primary-500" 
+          <div
+            class="h-2 rounded-full bg-primary-500"
             :style="{ width: Math.min(100, (value / 400) * 100) + '%' }"
           ></div>
         </div>
