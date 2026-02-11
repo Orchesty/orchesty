@@ -67,7 +67,7 @@
     "@orchesty/connector-zendesk": "^1.0.1",
     "@orchesty/connector-zoho": "^1.0.1",
     "@orchesty/connector-zoom": "^1.0.1",
-    "@orchesty/nodejs-sdk": "^4.3.6",
+    "@orchesty/nodejs-sdk": "^5.0.0",
     "copyfiles": "^2.4.1",
     "lodash": "^4.17.23",
     "luxon": "^3.7.2",
@@ -89,5 +89,10 @@
     "ts-jest": "^29.4.6",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
+  },
+  "pnpm": {
+    "overrides": {
+      "@orchesty/nodejs-sdk": "^5.0.0"
+    }
   }
 }

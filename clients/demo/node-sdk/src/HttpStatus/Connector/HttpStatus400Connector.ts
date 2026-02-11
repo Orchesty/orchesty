@@ -1,17 +1,24 @@
 import AConnector from '@orchesty/nodejs-sdk/dist/lib/Connector/AConnector';
-import RequestDto from '@orchesty/nodejs-sdk/dist/lib/Transport/Curl/RequestDto';
 import { HttpMethods } from '@orchesty/nodejs-sdk/dist/lib/Transport/HttpMethods';
 import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
+import { NAME as HTTP_STATUS_NAME } from '../HttpStatusApplication';
+
+export const NAME = `${HTTP_STATUS_NAME}-400-connector`;
 
 export default class HttpStatus400Connector extends AConnector {
 
     public getName(): string {
-        return 'http-status-400-connector';
+        return NAME;
     }
 
     public async processAction(dto: ProcessDto): Promise<ProcessDto> {
         await this.getSender().send(
-            new RequestDto('https://mock.httpstatus.io/400', HttpMethods.GET, dto),
+            await this.getApplication().getRequestDto(
+                dto,
+                await this.getApplicationInstallFromProcess(dto),
+                HttpMethods.GET,
+                '400',
+            ),
             { stopAndFail: '>=300' },
         );
 

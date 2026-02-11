@@ -160,12 +160,14 @@ import JiraWorklogsToGoogleDriveMapper from './Hanaboso/CustomNode/JiraWorklogsT
 import SetupGoogleSheetSettingDirectory from './Hanaboso/CustomNode/SetupGoogleSheetSettingDirectory';
 import SetupGoogleSheetSettingSpreadsheet from './Hanaboso/CustomNode/SetupGoogleSheetSettingSpreadsheet';
 import HanabosoContactFormMapper from './HanabosoCom/CustomNode/ContactFormMapper';
+import HttpStatusBatch from './HttpStatus/Batch/HttpStatusBatch';
 import HttpStatus200Connector from './HttpStatus/Connector/HttpStatus200Connector';
 import HttpStatus201Connector from './HttpStatus/Connector/HttpStatus201Connector';
 import HttpStatus400Connector from './HttpStatus/Connector/HttpStatus400Connector';
 import HttpStatus401Connector from './HttpStatus/Connector/HttpStatus401Connector';
 import HttpStatus404Connector from './HttpStatus/Connector/HttpStatus404Connector';
 import HttpStatus500Connector from './HttpStatus/Connector/HttpStatus500Connector';
+import HttpStatusApplication from './HttpStatus/HttpStatusApplication';
 import JsonPlaceholderGetPostCommentListBatch from './JsonPlaceholder/Batch/JsonPlaceholderGetPostCommentListBatch';
 import JsonPlaceholderGetPostListBatch from './JsonPlaceholder/Batch/JsonPlaceholderGetPostListBatch';
 import BinSender from './JsonPlaceholder/Connector/BinSender';
@@ -703,10 +705,14 @@ export async function start(): Promise<void> {
         .setDb(mongoDb);
     container.setConnector(refreshOAuth2TokenNode);
 
-    container.setNode(new HttpStatus200Connector());
-    container.setNode(new HttpStatus201Connector());
-    container.setNode(new HttpStatus400Connector());
-    container.setNode(new HttpStatus401Connector());
-    container.setNode(new HttpStatus404Connector());
-    container.setNode(new HttpStatus500Connector());
+    const httpStatusApplication = new HttpStatusApplication();
+    container.setApplication(httpStatusApplication);
+
+    container.setNode(new HttpStatusBatch(), httpStatusApplication);
+    container.setNode(new HttpStatus200Connector(), httpStatusApplication);
+    container.setNode(new HttpStatus201Connector(), httpStatusApplication);
+    container.setNode(new HttpStatus400Connector(), httpStatusApplication);
+    container.setNode(new HttpStatus401Connector(), httpStatusApplication);
+    container.setNode(new HttpStatus404Connector(), httpStatusApplication);
+    container.setNode(new HttpStatus500Connector(), httpStatusApplication);
 }
