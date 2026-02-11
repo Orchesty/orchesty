@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": "../../../.."
+		},
+		{
+			"path": "../../../../../flowbite-admin"
+		},
+		{
+			"path": "../../../../../orchesty-cloud"
+		}
+	],
+	"settings": {
+		"makefile.configureOnOpen": false,
+		"git.ignoreLimitWarning": true
+	}
+}

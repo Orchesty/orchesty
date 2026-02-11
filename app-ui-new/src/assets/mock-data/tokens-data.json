@@ -1,0 +1,33 @@
+{
+  "data": [
+    {
+      "id": "token-1",
+      "name": "Production API",
+      "created": "2024-01-15T00:00:00.000Z",
+      "expiration": "2025-12-31T23:59:59.999Z",
+      "scopes": ["read:users", "write:users", "read:topologies"]
+    },
+    {
+      "id": "token-2",
+      "name": "Dev Testing",
+      "created": "2023-11-20T00:00:00.000Z",
+      "expiration": null,
+      "scopes": ["read:users", "read:topologies", "read:processes", "write:processes"]
+    },
+    {
+      "id": "token-3",
+      "name": "CI/CD Pipeline",
+      "created": "2024-03-10T00:00:00.000Z",
+      "expiration": "2025-03-10T23:59:59.999Z",
+      "scopes": ["read:topologies", "write:topologies", "read:processes", "write:processes"]
+    },
+    {
+      "id": "token-4",
+      "name": "Admin Token",
+      "created": "2024-06-01T00:00:00.000Z",
+      "expiration": "2024-12-31T23:59:59.999Z",
+      "scopes": ["admin"]
+    }
+  ]
+}
+

@@ -1,0 +1,103 @@
+{
+  "topology-1": {
+    "nodeProcessTimes": [
+      { "nodeName": "Lead Sync Action", "time": 245 },
+      { "nodeName": "Contact Import Node", "time": 382 },
+      { "nodeName": "Message Sync Action", "time": 156 },
+      { "nodeName": "Lead Update Node", "time": 523 },
+      { "nodeName": "Email Sync Node", "time": 298 },
+      { "nodeName": "Order Processor Node", "time": 647 },
+      { "nodeName": "Data Transform Node", "time": 189 },
+      { "nodeName": "Notification Node", "time": 412 }
+    ],
+    "connectorRequestTimes": [
+      { "connectorName": "HubSpot Connector", "time": 450 },
+      { "connectorName": "Slack Connector", "time": 680 },
+      { "connectorName": "Email Connector", "time": 320 },
+      { "connectorName": "Database Connector", "time": 1250 }
+    ]
+  },
+  "topology-2": {
+    "nodeProcessTimes": [
+      { "nodeName": "Order Validation", "time": 189 },
+      { "nodeName": "Payment Processing", "time": 456 },
+      { "nodeName": "Inventory Check", "time": 234 },
+      { "nodeName": "Shipping Preparation", "time": 567 },
+      { "nodeName": "Notification Send", "time": 123 }
+    ],
+    "connectorRequestTimes": [
+      { "connectorName": "Stripe Connector", "time": 890 },
+      { "connectorName": "Shopify Connector", "time": 567 },
+      { "connectorName": "SendGrid Connector", "time": 234 }
+    ]
+  },
+  "topology-3": {
+    "nodeProcessTimes": [
+      { "nodeName": "User Authentication", "time": 123 },
+      { "nodeName": "Data Validation", "time": 234 },
+      { "nodeName": "API Request", "time": 789 },
+      { "nodeName": "Response Transform", "time": 156 },
+      { "nodeName": "Cache Update", "time": 98 },
+      { "nodeName": "Log Entry", "time": 45 }
+    ],
+    "connectorRequestTimes": [
+      { "connectorName": "OAuth Provider", "time": 345 },
+      { "connectorName": "REST API", "time": 678 },
+      { "connectorName": "Redis Cache", "time": 123 },
+      { "connectorName": "MongoDB", "time": 456 }
+    ]
+  },
+  "topology-4": {
+    "nodeProcessTimes": [
+      { "nodeName": "Data Extraction", "time": 456 },
+      { "nodeName": "Data Cleaning", "time": 789 },
+      { "nodeName": "Data Transformation", "time": 567 },
+      { "nodeName": "Data Loading", "time": 890 }
+    ],
+    "connectorRequestTimes": [
+      { "connectorName": "PostgreSQL", "time": 678 },
+      { "connectorName": "S3 Storage", "time": 345 },
+      { "connectorName": "Snowflake", "time": 1234 }
+    ]
+  },
+  "topology-5": {
+    "nodeProcessTimes": [
+      { "nodeName": "Message Receive", "time": 89 },
+      { "nodeName": "Message Parse", "time": 123 },
+      { "nodeName": "Message Route", "time": 234 },
+      { "nodeName": "Message Transform", "time": 345 },
+      { "nodeName": "Message Send", "time": 456 }
+    ],
+    "connectorRequestTimes": [
+      { "connectorName": "RabbitMQ", "time": 234 },
+      { "connectorName": "Kafka", "time": 567 },
+      { "connectorName": "Azure Service Bus", "time": 890 }
+    ]
+  },
+  "topology-6": {
+    "nodeProcessTimes": [
+      { "nodeName": "File Upload", "time": 678 },
+      { "nodeName": "File Validation", "time": 234 },
+      { "nodeName": "File Processing", "time": 1234 },
+      { "nodeName": "File Storage", "time": 456 }
+    ],
+    "connectorRequestTimes": [
+      { "connectorName": "Azure Blob", "time": 789 },
+      { "connectorName": "FTP Server", "time": 456 }
+    ]
+  },
+  "topology-7": {
+    "nodeProcessTimes": [
+      { "nodeName": "Request Validation", "time": 123 },
+      { "nodeName": "Business Logic", "time": 567 },
+      { "nodeName": "Database Query", "time": 890 },
+      { "nodeName": "Response Build", "time": 234 }
+    ],
+    "connectorRequestTimes": [
+      { "connectorName": "MySQL", "time": 456 },
+      { "connectorName": "Elasticsearch", "time": 789 },
+      { "connectorName": "Redis", "time": 123 }
+    ]
+  }
+}
+

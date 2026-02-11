@@ -1,0 +1,53 @@
+<script setup lang="ts">
+import AppNavbar from '@/components/layout/AppNavbar.vue'
+import AppSidebar from '@/components/layout/AppSidebar.vue'
+import TraceDrawer from '@/components/trace/TraceDrawer.vue'
+import Toast from '@/components/ui/Toast.vue'
+import { useTraceDrawer } from '@/composables/useTraceDrawer'
+import { useToast } from '@/composables/useToast'
+import type { ChatMessage } from '@/types/trace'
+
+// TraceDrawer state from composable
+const { isTraceDrawerOpen } = useTraceDrawer()
+
+// Toast notifications
+const { toasts, removeToast } = useToast()
+
+const handleSaveReport = (message: ChatMessage) => {
+  console.log('Save report from TraceDrawer:', message)
+  // TODO: Implement save report functionality
+}
+</script>
+
+<template>
+  <div class="flex h-screen flex-col overflow-hidden bg-gray-50 dark:bg-gray-900">
+    <AppNavbar />
+    <div class="flex flex-1 overflow-hidden">
+      <AppSidebar />
+      <div id="main-content" class="flex-1 overflow-hidden bg-gray-50 dark:bg-gray-900">
+        <main class="h-full overflow-y-auto">
+          <div class="px-4 pb-4 pt-6">
+            <slot />
+          </div>
+        </main>
+      </div>
+    </div>
+    
+    <!-- Trace Drawer -->
+    <TraceDrawer v-model="isTraceDrawerOpen" @save="handleSaveReport" />
+    
+    <!-- Toast Notifications -->
+    <div class="fixed bottom-4 left-4 z-50 flex flex-col gap-2">
+      <Toast
+        v-for="toast in toasts"
+        :key="toast.id"
+        :id="toast.id"
+        :message="toast.message"
+        :type="toast.type"
+        :duration="toast.duration"
+        @close="removeToast"
+      />
+    </div>
+  </div>
+</template>
+
