@@ -1,92 +1,242 @@
+import api from './api' // Import the configured axios instance
 import type {
   WorkerGroup,
   ApplicationInstall,
   ApplicationQueryParams,
+  ApplicationWithStatus,
+  ApplicationStatus,
+  ApplicationSetting,
+  ApplicationInstallApiResponse,
 } from '@/types/applications';
 import mockData from '@/assets/mock-data/applications-data.json';
 
 // Simulate API delay
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+// API types for /api/applications response
+interface ApplicationApiResponse {
+  activated: boolean
+  authorized: boolean
+  description: string
+  installable: boolean
+  installed: boolean
+  key: string
+  logo: string
+  name: string
+}
+
+interface WorkerApiResponse {
+  applications: ApplicationApiResponse[]
+  name: string
+  url: string
+}
+
+// Helper to determine status from API fields
+function mapApiStatusToComponentStatus(
+  installed: boolean,
+  authorized: boolean,
+  activated: boolean
+): ApplicationStatus {
+  if (!installed) return 'available'
+  if (installed && !authorized) return 'installed'
+  if (installed && authorized && !activated) return 'authorized'
+  return 'activated' // all three true
+}
+
+// Helper to map API application to component format
+function mapApiApplicationToComponent(
+  apiApp: ApplicationApiResponse,
+  workerName: string
+): ApplicationWithStatus {
+  return {
+    key: apiApp.key,
+    name: apiApp.name,
+    description: apiApp.description,
+    // Default values for fields not provided by API
+    application_type: 'webhook', // Default, can be refined if API provides this later
+    authorization_type: 'oauth2', // Default, can be refined if API provides this later
+    status: mapApiStatusToComponentStatus(apiApp.installed, apiApp.authorized, apiApp.activated),
+    authorized: apiApp.authorized,
+    worker: workerName,
+    logo: apiApp.logo, // Base64 encoded SVG
+  }
+}
+
 /**
  * Fetch all applications grouped by workers
  */
 export async function fetchApplications(params?: ApplicationQueryParams): Promise<WorkerGroup[]> {
-  await delay(300);
+  const response = await api.get<WorkerApiResponse[]>('/api/applications')
 
-  let workers = JSON.parse(JSON.stringify(mockData.workers)) as WorkerGroup[];
+  let workers: WorkerGroup[] = response.data.map((workerApi) => ({
+    name: workerApi.name,
+    applications: workerApi.applications.map((app) =>
+      mapApiApplicationToComponent(app, workerApi.name)
+    ),
+  }))
 
   // Apply filters
   if (params?.status) {
-    workers = workers.map(worker => ({
-      ...worker,
-      applications: worker.applications.filter(app => {
-        if (params.status === 'installed') {
-          return app.status === 'unauthorized' || app.status === 'authorized';
-        }
-        return app.status === params.status;
-      }),
-    })).filter(worker => worker.applications.length > 0);
+    workers = workers
+      .map((worker) => ({
+        ...worker,
+        applications: worker.applications.filter((app) => {
+          if (params.status === 'all-installed') {
+            // Show all installed apps (unauthorized, authorized, and activated)
+            return app.status === 'installed' || app.status === 'authorized' || app.status === 'activated';
+          }
+          return app.status === params.status;
+        }),
+      }))
+      .filter((worker) => worker.applications.length > 0)
   }
 
   if (params?.worker) {
-    workers = workers.filter(worker => worker.name === params.worker);
+    workers = workers.filter((worker) => worker.name === params.worker)
   }
 
   if (params?.search) {
-    const searchLower = params.search.toLowerCase();
-    workers = workers.map(worker => ({
-      ...worker,
-      applications: worker.applications.filter(app =>
-        app.name.toLowerCase().includes(searchLower) ||
-        app.description.toLowerCase().includes(searchLower)
-      ),
-    })).filter(worker => worker.applications.length > 0);
+    const searchLower = params.search.toLowerCase()
+    workers = workers
+      .map((worker) => ({
+        ...worker,
+        applications: worker.applications.filter(
+          (app) =>
+            app.name.toLowerCase().includes(searchLower) ||
+            app.description.toLowerCase().includes(searchLower)
+        ),
+      }))
+      .filter((worker) => worker.applications.length > 0)
   }
 
-  return workers;
+  return workers
+}
+
+// Helper functions for API response transformation
+
+/**
+ * Normalize choices format (API returns objects, component expects strings)
+ */
+function normalizeChoices(choices: Array<Record<string, string>> | string[]): string[] {
+  if (!choices || choices.length === 0) return []
+
+  // If already string array, return as-is
+  if (typeof choices[0] === 'string') return choices as string[]
+
+  // Convert object array to string array (use keys)
+  return (choices as Array<Record<string, string>>).map((choice) => {
+    const key = Object.keys(choice)[0]
+    return key
+  })
+}
+
+/**
+ * Transform API response to component format
+ */
+function mapApiInstallToComponent(
+  apiResponse: ApplicationInstallApiResponse,
+  workerName: string
+): ApplicationInstall {
+  // Flatten nested form structure to flat array of settings
+  const flatSettings: ApplicationSetting[] = []
+
+  // Check if applicationSettings exists and is not null
+  if (apiResponse.applicationSettings && typeof apiResponse.applicationSettings === 'object') {
+    Object.entries(apiResponse.applicationSettings).forEach(([formKey, formGroup]) => {
+      if (formGroup && formGroup.fields && Array.isArray(formGroup.fields)) {
+        formGroup.fields.forEach((field) => {
+          flatSettings.push({
+            key: field.key,
+            type: field.type,
+            label: field.label,
+            value: field.value?.toString() || '',
+            description: field.description,
+            required: field.required,
+            readOnly: field.readOnly,
+            disabled: field.disabled,
+            choices: normalizeChoices(field.choices),
+            tab: formGroup.publicName, // For UI display: "Authorization"
+            formKey: formKey, // For API grouping: "authorization_form"
+          })
+        })
+      }
+    })
+  }
+
+  return {
+    key: apiResponse.key,
+    name: apiResponse.name,
+    description: apiResponse.description,
+    application_type: apiResponse.application_type,
+    authorization_type: apiResponse.authorization_type,
+    authorized: false, // Will be updated after install
+    applicationSettings: flatSettings,
+    worker: workerName,
+    logo: apiResponse.logo,
+  }
 }
 
 /**
  * Fetch application install details with settings
  */
-export async function fetchApplicationInstall(key: string, user: string): Promise<ApplicationInstall> {
-  await delay(400);
+export async function fetchApplicationInstall(
+  key: string,
+  worker: string,
+  isInstalled: boolean = false
+): Promise<ApplicationInstall> {
+  const endpoint = isInstalled
+    ? `/api/applications/${key}`           // For installed apps
+    : `/api/applications/${key}/preview`   // For uninstalled apps
 
-  const installData = mockData.applicationInstalls[key as keyof typeof mockData.applicationInstalls];
-  
-  if (!installData) {
-    throw new Error(`Application install with key '${key}' not found`);
+  const response = await api.get<ApplicationInstallApiResponse>(
+    endpoint,
+    { params: { sdk: worker } }
+  )
+
+  const install = mapApiInstallToComponent(response.data, worker)
+
+  // Use the 'enabled' field from API if available, otherwise use isInstalled
+  if (response.data.enabled !== undefined) {
+    install.authorized = response.data.enabled
+  } else {
+    install.authorized = isInstalled
   }
 
-  return JSON.parse(JSON.stringify(installData)) as ApplicationInstall;
+  return install
 }
 
 /**
- * Install an application for a user
+ * Install an application
  */
-export async function installApplication(key: string, user: string): Promise<ApplicationInstall> {
-  await delay(500);
-
-  // In real implementation, this would POST to /api/applications/{key}/users/{user}
-  const installData = mockData.applicationInstalls[key as keyof typeof mockData.applicationInstalls];
-  
-  if (!installData) {
-    throw new Error(`Application with key '${key}' not found`);
-  }
-
-  // Return the install data (in reality, backend would create it)
-  return JSON.parse(JSON.stringify(installData)) as ApplicationInstall;
+export async function installApplication(key: string, worker: string): Promise<ApplicationInstall> {
+  const response = await api.post<ApplicationInstallApiResponse>(
+    `/api/applications/${key}`,
+    {},
+    { params: { sdk: worker } }
+  )
+  const install = mapApiInstallToComponent(response.data, worker)
+  install.authorized = true // Mark as installed
+  return install
 }
 
 /**
- * Uninstall an application for a user
+ * Uninstall an application
  */
-export async function uninstallApplication(key: string, user: string): Promise<void> {
-  await delay(500);
+export async function uninstallApplication(key: string, worker: string): Promise<void> {
+  await api.delete(`/api/applications/${key}`, {
+    params: { sdk: worker },
+  })
+}
 
-  // In real implementation, this would DELETE to /api/applications/{key}/users/{user}
-  console.log(`Uninstalling application ${key} for user ${user}`);
+/**
+ * Change application state (activate/deactivate)
+ */
+export async function changeApplicationState(key: string, worker: string, enabled: boolean): Promise<void> {
+  await api.put(
+    `/api/applications/${key}/changeState`,
+    { enabled },
+    { params: { sdk: worker } }
+  )
 }
 
 /**
@@ -94,26 +244,37 @@ export async function uninstallApplication(key: string, user: string): Promise<v
  */
 export async function updateApplicationSettings(
   key: string,
-  user: string,
-  settings: Record<string, unknown>
+  worker: string,
+  formValues: Record<string, unknown>,
+  applicationSettings: ApplicationSetting[]
 ): Promise<ApplicationInstall> {
-  await delay(600);
+  // Transform flat formValues into grouped structure by formKey
+  const groupedValues: Record<string, Record<string, unknown>> = {}
 
-  // In real implementation, this would PUT to /api/applications/{key}/users/{user}
-  const installData = mockData.applicationInstalls[key as keyof typeof mockData.applicationInstalls];
-  
-  if (!installData) {
-    throw new Error(`Application install with key '${key}' not found`);
+  applicationSettings.forEach(setting => {
+    const groupKey = setting.formKey || setting.tab || 'general'
+    if (!groupedValues[groupKey]) {
+      groupedValues[groupKey] = {}
+    }
+    groupedValues[groupKey][setting.key] = formValues[setting.key]
+  })
+
+  // Make PUT request with grouped data
+  const response = await api.put<ApplicationInstallApiResponse>(
+    `/api/applications/${key}`,
+    groupedValues,
+    { params: { sdk: worker } }
+  )
+
+  // Map response back to component format
+  const install = mapApiInstallToComponent(response.data, worker)
+
+  // Use the 'enabled' field from API if available
+  if (response.data.enabled !== undefined) {
+    install.authorized = response.data.enabled
   }
 
-  // Update the settings values in the mock data (for demo purposes)
-  const updatedInstall = JSON.parse(JSON.stringify(installData)) as ApplicationInstall;
-  updatedInstall.applicationSettings = updatedInstall.applicationSettings.map(setting => ({
-    ...setting,
-    value: settings[setting.key] !== undefined ? String(settings[setting.key]) : setting.value,
-  }));
-
-  return updatedInstall;
+  return install
 }
 
 /**
@@ -125,7 +286,7 @@ export async function authorizeApplication(key: string, user: string): Promise<s
   // In real implementation, this would GET to /api/applications/{key}/users/{user}/authorize
   // and return a redirect URL for OAuth
   const authUrl = `/api/applications/${key}/users/${user}/authorize/token`;
-  
+
   console.log(`Initiating authorization for ${key}: ${authUrl}`);
   return authUrl;
 }

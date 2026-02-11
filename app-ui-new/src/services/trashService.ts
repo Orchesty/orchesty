@@ -1,5 +1,13 @@
-import type { TrashItem, TrashQueryParams } from '@/types/trash'
-import trashDataJson from '@/assets/mock-data/trash-data.json'
+import type {
+  TrashItem,
+  TrashQueryParams,
+  TrashApiFilter,
+  TrashApiResponse,
+  TrashItemApi,
+  TopologyNodeMappings
+} from '@/types/trash'
+import api from './api'
+import { convertTimeFilterToDateTimeRange, formatDateTimeForApiFilter } from '@/utils/timeRangeConverter'
 
 interface PaginatedResponse<T> {
   data: T[]
@@ -11,8 +19,31 @@ interface PaginatedResponse<T> {
   }
 }
 
-// Simulate API delay
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+/**
+ * Map API response item to TrashItem
+ */
+function mapApiItemToTrashItem(apiItem: TrashItemApi): TrashItem {
+  // Parse body JSON string, fallback to empty object on error
+  let parsedBody: Record<string, unknown> = {}
+  try {
+    parsedBody = JSON.parse(apiItem.body)
+  } catch (error) {
+    console.error('Failed to parse body JSON:', error)
+  }
+
+  return {
+    id: apiItem.id,
+    nodeId: apiItem.nodeId,
+    topologyId: apiItem.topologyId,
+    correlationId: apiItem.correlationId,
+    timestamp: apiItem.created,
+    // Use IDs as display values for now
+    topology: apiItem.topologyId,
+    node: apiItem.nodeId,
+    headers: apiItem.headers || {},
+    body: parsedBody,
+  }
+}
 
 /**
  * Fetch trash items with filtering, sorting, and pagination
@@ -20,124 +51,175 @@ const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 export async function fetchTrashItems(
   params: TrashQueryParams
 ): Promise<PaginatedResponse<TrashItem>> {
-  await delay(300)
+  // Map component field names to API field names
+  const sortColumn = params.sortBy === 'timestamp' ? 'created' : (params.sortBy || 'created')
 
-  let filteredData = [...trashDataJson.data]
+  // Build the complex filter structure
+  const filterObj: TrashApiFilter = {
+    search: params.search || null,
+    filter: [
+      [
+        {
+          column: 'type',
+          operator: 'EQ',
+          value: ['trash']
+        }
+      ]
+    ],
+    sorter: [
+      {
+        column: sortColumn,
+        direction: params.sortOrder === 'desc' ? 'DESC' : 'ASC'
+      }
+    ],
+    paging: {
+      itemsPerPage: params.perPage || 10,
+      page: params.page || 1
+    }
+  }
 
-  // Filter by correlation ID (partial match)
+  // Each additional filter goes in its own group for AND logic
   if (params.correlationId) {
-    const searchTerm = params.correlationId.toLowerCase()
-    filteredData = filteredData.filter((item) =>
-      item.correlationId.toLowerCase().includes(searchTerm)
-    )
+    filterObj.filter.push([
+      {
+        column: 'correlationId',
+        operator: 'EQ',
+        value: [params.correlationId]
+      }
+    ])
   }
 
-  // Filter by node (partial match)
   if (params.node) {
-    const searchTerm = params.node.toLowerCase()
-    filteredData = filteredData.filter((item) => item.node.toLowerCase().includes(searchTerm))
+    filterObj.filter.push([
+      {
+        column: 'nodeId',
+        operator: 'EQ',
+        value: [params.node]
+      }
+    ])
   }
 
-  // Filter by topology
   if (params.topology) {
-    filteredData = filteredData.filter((item) => item.topology === params.topology)
+    filterObj.filter.push([
+      {
+        column: 'topologyId',
+        operator: 'EQ',
+        value: [params.topology]
+      }
+    ])
   }
 
-  // Filter by date range
-  if (params.dateFrom || params.dateTo) {
-    filteredData = filteredData.filter((item) => {
-      const itemDate = new Date(item.timestamp)
-      if (params.dateFrom && itemDate < new Date(params.dateFrom)) return false
-      if (params.dateTo && itemDate > new Date(params.dateTo)) return false
-      return true
-    })
+  // Handle time range filter
+  if (params.timeRange) {
+    const dateRange = convertTimeFilterToDateTimeRange(params.timeRange)
+    const fromISO = formatDateTimeForApiFilter(dateRange.from)
+    const toISO = formatDateTimeForApiFilter(dateRange.to)
+
+    filterObj.filter.push([
+      {
+        column: 'created',
+        operator: 'BETWEEN',
+        value: [fromISO, toISO]
+      }
+    ])
   }
 
-  // Sorting
-  if (params.sortBy) {
-    filteredData.sort((a, b) => {
-      const aValue = a[params.sortBy as keyof TrashItem]
-      const bValue = b[params.sortBy as keyof TrashItem]
+  // Encode filter as URL parameter
+  const encodedFilter = encodeURIComponent(JSON.stringify(filterObj))
 
-      if (aValue === undefined || bValue === undefined) return 0
+  // Make API request
+  const response = await api.get<TrashApiResponse>(`/api/user-tasks?filter=${encodedFilter}`)
 
-      let comparison = 0
-      if (aValue < bValue) comparison = -1
-      if (aValue > bValue) comparison = 1
-
-      return params.sortOrder === 'desc' ? -comparison : comparison
-    })
-  }
-
-  // Pagination
-  const page = params.page || 1
-  const perPage = params.perPage || 10
-  const total = filteredData.length
-  const totalPages = Math.ceil(total / perPage)
-  const startIndex = (page - 1) * perPage
-  const endIndex = startIndex + perPage
-  const paginatedData = filteredData.slice(startIndex, endIndex)
+  // Map API response to component format
+  const mappedItems = response.data.items.map(mapApiItemToTrashItem)
 
   return {
-    data: paginatedData,
+    data: mappedItems,
     pagination: {
-      page,
-      perPage,
-      total,
-      totalPages,
+      page: response.data.paging.page,
+      perPage: response.data.paging.itemsPerPage,
+      total: response.data.paging.total,
+      totalPages: response.data.paging.lastPage,
     },
   }
 }
 
 /**
- * Get unique topology names for filter dropdown
+ * Fetch topology, node, and application name mappings (all=1, includes disabled/inactive)
+ * Used for ID-to-name resolution throughout the app.
  */
-export async function fetchTopologyNames(): Promise<string[]> {
-  await delay(100)
-  const uniqueTopologies = [...new Set(trashDataJson.data.map((item) => item.topology))]
-  return uniqueTopologies.sort()
+export async function fetchTopologyNodeMappings(): Promise<TopologyNodeMappings> {
+  const response = await api.get<TopologyNodeMappings>('/api/topologies/nodes', {
+    params: { all: 1 },
+  })
+  return response.data
 }
 
 /**
- * Approve a trash item (mock)
+ * Fetch topology, node, and application name mappings (only active/relevant)
+ * Used for populating dropdown filters.
+ */
+export async function fetchFilteredMappings(): Promise<TopologyNodeMappings> {
+  const response = await api.get<TopologyNodeMappings>('/api/topologies/nodes')
+  return response.data
+}
+
+/**
+ * Approve a trash item
  */
 export async function approveTrashItem(id: string): Promise<void> {
-  await delay(500)
-  console.log(`Mock: Approved trash item ${id}`)
+  await api.post(`/api/user-task/${id}/accept`)
 }
 
 /**
- * Reject a trash item (mock)
+ * Reject a trash item
  */
 export async function rejectTrashItem(id: string): Promise<void> {
-  await delay(500)
-  console.log(`Mock: Rejected trash item ${id}`)
+  await api.post(`/api/user-task/${id}/reject`)
 }
 
 /**
- * Update a trash item (mock)
+ * Update a trash item
  */
 export async function updateTrashItem(
   id: string,
-  data: Partial<TrashItem>
-): Promise<void> {
-  await delay(500)
-  console.log(`Mock: Updated trash item ${id}`, data)
+  data: { headers: Record<string, unknown>; body: Record<string, unknown> }
+): Promise<{ headers: Record<string, unknown>; body: Record<string, unknown> }> {
+  // Convert body object to JSON string as API expects
+  const payload = {
+    body: JSON.stringify(data.body),
+    headers: data.headers
+  }
+  const response = await api.put<{ message: { body: string; headers: Record<string, unknown> } }>(
+    `/api/user-task/${id}`,
+    payload
+  )
+
+  // Parse the body JSON string from API response
+  let parsedBody: Record<string, unknown> = {}
+  try {
+    parsedBody = JSON.parse(response.data.message.body)
+  } catch (error) {
+    console.error('Failed to parse body JSON:', error)
+  }
+
+  return {
+    headers: response.data.message.headers,
+    body: parsedBody
+  }
 }
 
 /**
- * Bulk approve trash items (mock)
+ * Bulk approve trash items
  */
 export async function bulkApprove(ids: string[]): Promise<void> {
-  await delay(800)
-  console.log(`Mock: Bulk approved ${ids.length} items`, ids)
+  await api.post('/api/user-task/accept', { ids })
 }
 
 /**
- * Bulk reject trash items (mock)
+ * Bulk reject trash items
  */
 export async function bulkReject(ids: string[]): Promise<void> {
-  await delay(800)
-  console.log(`Mock: Bulk rejected ${ids.length} items`, ids)
+  await api.post('/api/user-task/reject', { ids })
 }
 

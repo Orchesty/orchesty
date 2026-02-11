@@ -4,6 +4,7 @@ import SignInView from '@/views/auth/SignInView.vue'
 import ForgotPasswordView from '@/views/auth/ForgotPasswordView.vue'
 import ResetPasswordView from '@/views/auth/ResetPasswordView.vue'
 import DashboardView from '@/views/dashboard/DashboardView.vue'
+import { useAuthStore } from '@/stores/auth'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -28,9 +29,10 @@ const router = createRouter({
       component: ForgotPasswordView,
     },
     {
-      path: '/reset-password',
+      path: '/reset-password/:token',
       name: 'reset-password',
       component: ResetPasswordView,
+      props: true,
     },
     {
       path: '/home',
@@ -94,6 +96,29 @@ const router = createRouter({
       component: () => import('@/views/account/AccountSettingsView.vue'),
     },
   ],
+})
+
+// Navigation guard for authentication
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore()
+
+  // Define public routes that don't require authentication
+  const publicRoutes = ['/sign-in', '/forgot-password']
+  const isPublicRoute = publicRoutes.includes(to.path) || to.path.startsWith('/reset-password')
+
+  // Check if route requires authentication
+  const requiresAuth = !isPublicRoute
+
+  if (requiresAuth && !authStore.isAuthenticated) {
+    // Redirect to sign-in if trying to access protected route without auth
+    next('/sign-in')
+  } else if (isPublicRoute && authStore.isAuthenticated && to.path === '/sign-in') {
+    // Redirect to dashboard if already authenticated and trying to access sign-in
+    next('/dashboard')
+  } else {
+    // Allow navigation
+    next()
+  }
 })
 
 export default router

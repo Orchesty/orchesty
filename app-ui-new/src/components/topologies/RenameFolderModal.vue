@@ -3,11 +3,13 @@ import { ref, watch } from 'vue'
 import Modal from '@/components/ui/Modal.vue'
 import Button from '@/components/ui/Button.vue'
 import TextInput from '@/components/ui/datagrid/TextInput.vue'
-import { createCategory } from '@/services/topologiesService'
+import { renameCategory } from '@/services/topologiesService'
 import { useToast } from '@/composables/useToast'
 
 interface Props {
   modelValue: boolean
+  folderId: string
+  folderName: string
   parentId?: string | null
 }
 
@@ -17,41 +19,38 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   'update:modelValue': [value: boolean]
-  'created': []
+  'renamed': []
 }>()
 
 const { showToast } = useToast()
 
-const formData = ref({
-  name: ''
-})
+const newName = ref('')
 const saving = ref(false)
 
 const handleClose = () => {
   emit('update:modelValue', false)
-  formData.value = { name: '' }
 }
 
-const handleCreate = async () => {
-  if (!formData.value.name.trim()) return
+const handleRename = async () => {
+  if (!newName.value.trim()) return
 
   saving.value = true
   try {
-    await createCategory(formData.value.name.trim(), props.parentId ?? null)
-    showToast('Folder created successfully', 'success')
-    emit('created')
+    await renameCategory(props.folderId, newName.value.trim(), props.parentId ?? null)
+    showToast('Folder renamed successfully', 'success')
+    emit('renamed')
     handleClose()
   } catch (error) {
-    console.error('Failed to create folder:', error)
-    showToast('Failed to create folder', 'error')
+    console.error('Failed to rename folder:', error)
+    showToast('Failed to rename folder', 'error')
   } finally {
     saving.value = false
   }
 }
 
 watch(() => props.modelValue, (newValue) => {
-  if (!newValue) {
-    formData.value = { name: '' }
+  if (newValue) {
+    newName.value = props.folderName
   }
 })
 </script>
@@ -59,21 +58,20 @@ watch(() => props.modelValue, (newValue) => {
 <template>
   <Modal
     :model-value="modelValue"
-    id="new-folder-modal"
-    title="New Folder"
+    id="rename-folder-modal"
+    title="Rename Folder"
     size="md"
     @update:model-value="emit('update:modelValue', $event)"
   >
-    <form @submit.prevent="handleCreate" class="space-y-4">
-      <!-- Name -->
+    <form @submit.prevent="handleRename" class="space-y-4">
       <div>
-        <label for="folder-name" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
+        <label for="rename-folder-name" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
           Name
           <span class="text-red-600 dark:text-red-400">*</span>
         </label>
         <TextInput
-          id="folder-name"
-          v-model="formData.name"
+          id="rename-folder-name"
+          v-model="newName"
           placeholder="Enter folder name"
           width="w-full"
           required
@@ -85,8 +83,8 @@ watch(() => props.modelValue, (newValue) => {
       <Button variant="outline" @click="handleClose">
         Cancel
       </Button>
-      <Button variant="primary" :disabled="saving || !formData.name.trim()" @click="handleCreate">
-        {{ saving ? 'Creating...' : 'Create Folder' }}
+      <Button variant="primary" :disabled="saving || !newName.trim()" @click="handleRename">
+        {{ saving ? 'Renaming...' : 'Rename' }}
       </Button>
     </template>
   </Modal>

@@ -1,10 +1,15 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import Drawer from '@/components/ui/Drawer.vue'
 import Button from '@/components/ui/Button.vue'
 import CopyValue from '@/components/ui/CopyValue.vue'
+import DataGrid from '@/components/ui/DataGrid.vue'
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
-import type { Process, ProcessAuditDetail } from '@/types/processes'
+import type { Process, ProcessAuditDetail, ProcessConnector } from '@/types/processes'
+import type { TableColumn } from '@/types/dashboard'
+import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
+import { fetchProcessAuditConnectors, fetchProcessAuditTrash } from '@/services/processesService'
 
 interface Props {
   modelValue: boolean
@@ -17,9 +22,66 @@ const emit = defineEmits<{
   'update:modelValue': [value: boolean]
 }>()
 
+const router = useRouter()
+const { getNodeName, getApplicationName, loadMappings } = useTopologyNodeMappings()
+
 // Data state
 const processDetail = ref<ProcessAuditDetail | null>(null)
+const connectors = ref<ProcessConnector[]>([])
 const loading = ref(false)
+const connectorsLoading = ref(false)
+
+// Connector sort state
+const connectorSortField = ref('called')
+const connectorSortDirection = ref<'asc' | 'desc'>('desc')
+
+// Connector table columns
+const connectorColumns: TableColumn[] = [
+  { key: 'connector', label: 'Connector / Application', sortable: false },
+  { key: 'called', label: 'Voláno', sortable: true },
+  { key: 'errors400', label: '400', sortable: true },
+  { key: 'errors500', label: '500', sortable: true },
+]
+
+// Map UI sort field to API column name
+const mapSortFieldToApi = (field: string): string => {
+  const mapping: Record<string, string> = {
+    called: 'count',
+    errors400: 'status400',
+    errors500: 'status500',
+  }
+  return mapping[field] ?? field
+}
+
+// Load connectors with current sort
+const loadConnectors = async (correlationId: string) => {
+  connectorsLoading.value = true
+  try {
+    const apiSortField = mapSortFieldToApi(connectorSortField.value)
+    const connectorsData = await fetchProcessAuditConnectors(
+      correlationId,
+      apiSortField,
+      connectorSortDirection.value
+    )
+    connectors.value = connectorsData.map(connector => ({
+      ...connector,
+      connector: getNodeName(connector.connector),
+      application: getApplicationName(connector.application)
+    }))
+  } catch (error) {
+    console.error('Error loading connectors:', error)
+  } finally {
+    connectorsLoading.value = false
+  }
+}
+
+const handleConnectorSort = (config: { field: string; direction: 'asc' | 'desc' }) => {
+  connectorSortField.value = config.field
+  connectorSortDirection.value = config.direction
+  if (props.process) {
+    loadConnectors(props.process.id)
+  }
+}
 
 // Debug
 watch(() => props.modelValue, (newVal) => {
@@ -40,65 +102,44 @@ watch(
     }
 
     loading.value = true
-    try {
-      // TODO: Replace with actual API call
-      // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 300))
+    // Reset sort state
+    connectorSortField.value = 'called'
+    connectorSortDirection.value = 'desc'
 
-      // Mock data - will be replaced with actual API call
+    try {
+      // Load mappings first
+      await loadMappings()
+
+      // Fetch connectors and trash data in parallel
+      const apiSortField = mapSortFieldToApi(connectorSortField.value)
+      const [connectorsData, trashData] = await Promise.all([
+        fetchProcessAuditConnectors(newProcess.id, apiSortField, connectorSortDirection.value),
+        fetchProcessAuditTrash(newProcess.id)
+      ])
+
+      // Map connector node IDs to names
+      connectors.value = connectorsData.map(connector => ({
+        ...connector,
+        connector: getNodeName(connector.connector),
+        application: getApplicationName(connector.application)
+      }))
+
+      // Map trash item node IDs to names
+      const mappedTrashItems = trashData.items.map(item => ({
+        ...item,
+        whereItFailed: getNodeName(item.whereItFailed)
+      }))
+
       processDetail.value = {
         processId: newProcess.id,
         topology: newProcess.topology,
-        corelId: 'a8f3b2c9e7d4',
+        corelId: newProcess.id, // correlationId
         startTime: newProcess.startTime,
         endTime: calculateEndTime(newProcess.startTime, newProcess.duration),
         status: newProcess.status,
-        connectors: [
-          {
-            connector: 'Lead Sync',
-            application: 'Salesforce',
-            called: 42,
-            errors400: 3,
-            errors500: 1,
-          },
-          {
-            connector: 'Contact Import',
-            application: 'HubSpot',
-            called: 18,
-            errors400: 1,
-            errors500: 0,
-          },
-          {
-            connector: 'Message Sync',
-            application: 'Slack',
-            called: 25,
-            errors400: 0,
-            errors500: 0,
-          },
-        ],
-        trashCount: 5,
-        trashItems: [
-          {
-            whereItFailed: 'Lead Sync Action',
-            errorMessage: "Invalid request format: missing required field 'email'",
-          },
-          {
-            whereItFailed: 'Contact Import Connector',
-            errorMessage: 'Authentication failed: token expired',
-          },
-          {
-            whereItFailed: 'Message Sync Action',
-            errorMessage: 'Database connection timeout after 30 seconds',
-          },
-          {
-            whereItFailed: 'Lead Update Action',
-            errorMessage: 'Rate limit exceeded: too many requests',
-          },
-          {
-            whereItFailed: 'Email Sync Connector',
-            errorMessage: 'Invalid JSON response: malformed data structure',
-          },
-        ],
+        connectors: connectors.value,
+        trashCount: trashData.total,
+        trashItems: mappedTrashItems,
       }
     } catch (error) {
       console.error('Error loading process audit:', error)
@@ -231,47 +272,39 @@ const handleClose = () => {
       <!-- Connectors Table -->
       <div>
         <h4 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">Connectors</h4>
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-sm text-gray-500 dark:text-gray-400">
-            <thead
-              class="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400"
-            >
-              <tr>
-                <th scope="col" class="px-4 py-3">Connector / Application</th>
-                <th scope="col" class="px-4 py-3">Voláno</th>
-                <th scope="col" class="px-4 py-3">400</th>
-                <th scope="col" class="px-4 py-3">500</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y bg-white dark:divide-gray-700 dark:bg-gray-800">
-              <tr v-for="connector in processDetail.connectors" :key="connector.connector">
-                <td class="px-4 py-3">
-                  <span class="font-medium text-gray-900 dark:text-white">{{
-                    connector.connector
-                  }}</span>
-                  <span class="text-gray-500 dark:text-gray-400"> ({{ connector.application }})</span>
-                </td>
-                <td class="px-4 py-3">{{ connector.called }}</td>
-                <td class="px-4 py-3">
-                  <span
-                    v-if="connector.errors400 > 0"
-                    class="inline-flex items-center rounded-full bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-700 dark:bg-yellow-800 dark:text-yellow-300"
-                    >{{ connector.errors400 }}</span
-                  >
-                  <span v-else>-</span>
-                </td>
-                <td class="px-4 py-3">
-                  <span
-                    v-if="connector.errors500 > 0"
-                    class="inline-flex items-center rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-700 dark:bg-red-800 dark:text-red-300"
-                    >{{ connector.errors500 }}</span
-                  >
-                  <span v-else>-</span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <DataGrid
+          :columns="connectorColumns"
+          :data="connectors"
+          :loading="connectorsLoading"
+          :sort-field="connectorSortField"
+          :sort-direction="connectorSortDirection"
+          :total-items="connectors.length"
+          :total-pages="1"
+          :current-page="1"
+          :items-per-page="100"
+          @sort="handleConnectorSort"
+        >
+          <template #cell-connector="{ row }">
+            <span class="font-medium text-gray-900 dark:text-white">{{ row.connector }}</span>
+            <span class="text-gray-500 dark:text-gray-400"> ({{ row.application }})</span>
+          </template>
+
+          <template #cell-errors400="{ value }">
+            <span
+              v-if="value > 0"
+              class="inline-flex items-center rounded-full bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-700 dark:bg-yellow-800 dark:text-yellow-300"
+            >{{ value }}</span>
+            <span v-else>-</span>
+          </template>
+
+          <template #cell-errors500="{ value }">
+            <span
+              v-if="value > 0"
+              class="inline-flex items-center rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-700 dark:bg-red-800 dark:text-red-300"
+            >{{ value }}</span>
+            <span v-else>-</span>
+          </template>
+        </DataGrid>
       </div>
 
       <!-- Trash Status -->
@@ -283,12 +316,12 @@ const handleClose = () => {
           >
             {{ processDetail.trashCount }} messages in trash
           </div>
-          <a
-            href="#"
+          <router-link
+            :to="{ name: 'trash', query: { correlationId: processDetail.corelId } }"
             class="flex shrink-0 items-center text-sm font-medium text-primary-700 hover:underline dark:text-primary-500"
           >
             Go to trash
-          </a>
+          </router-link>
         </div>
       </div>
 

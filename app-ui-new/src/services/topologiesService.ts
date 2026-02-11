@@ -1,167 +1,387 @@
 import type { PaginatedResponse } from '@/types/api'
-import type { Topology, TopologyQueryParams } from '@/types/topologies'
-import type { TopologyDetail, TopologyVersion } from '@/types/topologies-page'
-import topologiesDataJson from '@/assets/mock-data/topologies-data.json'
-import topologiesDetailData from '@/assets/mock-data/topologies-detail-data.json'
+import type {
+  Topology,
+  TopologyQueryParams,
+  TopologyApiItem,
+  TopologyApiResponse,
+  TopologyApiFilter
+} from '@/types/topologies'
+import type {
+  TopologyDetail,
+  TopologyVersion,
+  TopologiesTreeNode,
+  FolderItem,
+  TopologyItem,
+} from '@/types/topologies-page'
+import api from '@/services/api'
+import { formatDateTime } from '@/utils/timeRangeConverter'
+
+// ------ Sidebar API types ------
+
+interface CategoryApiItem {
+  _id: string
+  name: string
+  parent: string | null
+}
+
+interface CategoriesApiResponse {
+  items: CategoryApiItem[]
+  total: number
+  limit: number | null
+  count: number
+  offset: number
+}
+
+interface TopologyListApiItem {
+  _id: string
+  name: string
+  category: string | null
+  cronSettings: Array<{ cron: string; cronParams: string }>
+  description: string
+  enabled: boolean
+  status: string
+  type: string
+  version: number
+  visibility: string
+}
+
+interface TopologyListApiResponse {
+  items: TopologyListApiItem[]
+  total: number
+  limit: number | null
+  count: number
+  offset: number | null
+}
+
+/**
+ * Map API topology item to UI Topology model
+ */
+function mapApiItemToTopology(apiItem: TopologyApiItem): Topology {
+  return {
+    id: apiItem.topologyId,
+    name: apiItem.topologyId, // Will be replaced by topology name in component
+    processesRun: apiItem.count,
+    failedProcesses: apiItem.failedCount,
+    lastRunTime: formatDateTime(apiItem.created),
+    lastRunStatus: mapApiStatusToUiStatus(apiItem.status)
+  }
+}
+
+/**
+ * Map API status to UI status
+ */
+function mapApiStatusToUiStatus(apiStatus: string): 'success' | 'running' | 'failed' {
+  // API values: RUNNING, COMPLETED, FAILED
+  if (apiStatus === 'COMPLETED') return 'success'
+  if (apiStatus === 'RUNNING') return 'running'
+  if (apiStatus === 'FAILED') return 'failed'
+  return 'success' // default
+}
+
+/**
+ * Map UI status to API status
+ */
+function mapUiStatusToApiStatus(uiStatus: string): string {
+  if (uiStatus === 'success') return 'COMPLETED'
+  if (uiStatus === 'running') return 'RUNNING'
+  if (uiStatus === 'failed') return 'FAILED'
+  return 'COMPLETED' // default
+}
+
+/**
+ * Map UI sort field to API column name
+ */
+function mapSortFieldToApiColumn(field: string): string {
+  const fieldMap: Record<string, string> = {
+    'name': 'topologyId',
+    'processesRun': 'count',
+    'failedProcesses': 'failedCount',
+    'lastRunTime': 'created',
+    'lastRunStatus': 'status'
+  }
+  return fieldMap[field] || field
+}
 
 /**
  * Fetch topologies with filters, sorting, and pagination
- * Currently returns filtered mock data, will be replaced with API call
- * 
+ *
  * @param params - Query parameters for filtering, sorting, and pagination
  * @returns Paginated response with topologies data
  */
 export async function fetchTopologies(
   params: TopologyQueryParams,
 ): Promise<PaginatedResponse<Topology>> {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 300))
+  // Build API filter object
+  const filterObj: TopologyApiFilter = {
+    search: null,
+    filter: [],
+    sorter: [],
+    paging: {
+      itemsPerPage: params.limit || 10,
+      page: params.page || 1
+    }
+  }
 
-  // FOR DEVELOPMENT: Filter mock data
-  // In production: return axios.get('/api/topologies', { params: buildQueryParams(params) })
-
-  let filtered = [...(topologiesDataJson.data as Topology[])]
-
-  // Apply status filter
+  // Add status filter
   if (params.status && params.status !== 'all') {
-    filtered = filtered.filter((t) => t.lastRunStatus === params.status)
+    const apiStatus = mapUiStatusToApiStatus(params.status)
+    filterObj.filter.push([{ column: 'status', operator: 'EQ', value: [apiStatus] }])
   }
 
-  // Apply datetime range filter
-  // NOTE: In production, backend will aggregate data (processesRun, failedProcesses, etc.) based on this datetime range
-  // For mock data, we just log the range without actual filtering
-  if (params.dateFrom || params.dateTo) {
-    console.log('Topologies datetime filter:', {
-      from: params.dateFrom,
-      to: params.dateTo,
-    })
-    // TODO: Backend will filter/aggregate topology statistics for this datetime range
+  // Add date range filter
+  if (params.dateFrom && params.dateTo) {
+    filterObj.filter.push([{
+      column: 'created',
+      operator: 'BETWEEN',
+      value: [params.dateFrom, params.dateTo]
+    }])
   }
 
-  // @deprecated - timeRange is replaced by dateFrom/dateTo
-  if (params.timeRange) {
-    console.log('Time range filter (deprecated):', params.timeRange)
-  }
-
-  // Apply sorting
+  // Add sorting
   if (params.sort && params.order) {
-    filtered.sort((a, b) => {
-      const aVal = a[params.sort as keyof Topology] as number | string
-      const bVal = b[params.sort as keyof Topology] as number | string
-      const comparison = aVal > bVal ? 1 : -1
-      return params.order === 'asc' ? comparison : -comparison
+    const apiColumn = mapSortFieldToApiColumn(params.sort)
+    filterObj.sorter.push({
+      column: apiColumn,
+      direction: params.order.toUpperCase()
     })
   }
 
-  // Apply pagination
-  const page = params.page || 1
-  const limit = params.limit || 10
-  const startIndex = (page - 1) * limit
-  const endIndex = startIndex + limit
+  // Make API call
+  const response = await api.get<TopologyApiResponse>('/api/processes/topologies', {
+    params: {
+      filter: JSON.stringify(filterObj)
+    }
+  })
 
-  const paginated = filtered.slice(startIndex, endIndex)
+  // Map API items to UI model
+  const topologies = response.data.items.map(mapApiItemToTopology)
 
   return {
-    data: paginated,
+    data: topologies,
     meta: {
-      totalItems: filtered.length,
-      totalPages: Math.ceil(filtered.length / limit),
-      currentPage: page,
-      itemsPerPage: limit,
+      totalItems: response.data.paging.total,
+      totalPages: response.data.paging.lastPage,
+      currentPage: response.data.paging.page,
+      itemsPerPage: response.data.paging.itemsPerPage,
     },
   }
 }
 
 /**
- * Fetch topology detail including all versions
- * 
+ * Fetch topology detail from API
+ *
  * @param topologyId - The topology ID
- * @param versionId - Optional specific version ID to load
- * @returns Topology detail with all versions
+ * @param versionId - Optional specific version ID to load (loads that version's detail instead)
+ * @returns Topology detail
  */
 export async function fetchTopologyDetail(
   topologyId: string,
   versionId?: string
 ): Promise<TopologyDetail> {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 300))
+  // When a specific version is requested, load that version's detail directly
+  const id = versionId || topologyId
 
-  // FOR DEVELOPMENT: Get mock data
-  // In production: return axios.get(`/api/topologies/${topologyId}`, { params: { version: versionId } })
+  const response = await api.get<TopologyDetail>(`/api/topologies/${id}`)
 
-  const topologyData = topologiesDetailData[topologyId as keyof typeof topologiesDetailData]
-  
-  if (!topologyData) {
-    throw new Error(`Topology with ID ${topologyId} not found`)
-  }
+  return response.data
+}
 
-  // If a specific version is requested, update the current version data
-  if (versionId) {
-    const selectedVersion = topologyData.versions.find(v => v.id === versionId)
-    if (selectedVersion) {
-      return {
-        ...topologyData,
-        version: selectedVersion.version,
-        visibility: selectedVersion.visibility,
-        status: selectedVersion.status
+/**
+ * Fetch all versions for a topology by filtering the topologies list by name
+ *
+ * @param topologyName - The topology name to find versions for
+ * @returns List of all versions for the topology, sorted newest first
+ */
+export async function fetchTopologyVersions(
+  topologyName: string
+): Promise<TopologyVersion[]> {
+  const response = await api.get<TopologyListApiResponse>('/api/topologies')
+
+  const matchingItems = response.data.items.filter(item => item.name === topologyName)
+
+  // Map to TopologyVersion and sort by version descending (newest first)
+  return matchingItems
+    .map(item => ({
+      id: item._id,
+      version: String(item.version),
+      visibility: item.visibility as 'draft' | 'public',
+      status: item.status as 'New' | 'Starting' | 'Running' | 'Stopped',
+      enabled: item.enabled,
+      created: '',
+      updated: '',
+    }))
+    .sort((a, b) => Number(b.version) - Number(a.version))
+}
+
+// ------ Sidebar tree functions ------
+
+/**
+ * Fetch categories and topologies from API, build tree structure for sidebar
+ */
+export async function fetchTopologiesTree(): Promise<TopologiesTreeNode[]> {
+  // Fetch both endpoints in parallel
+  const [categoriesResponse, topologiesResponse] = await Promise.all([
+    api.get<CategoriesApiResponse>('/api/categories'),
+    api.get<TopologyListApiResponse>('/api/topologies'),
+  ])
+
+  const categories = categoriesResponse.data.items
+  const topologies = topologiesResponse.data.items
+
+  // Group topologies by name to count versions
+  // Use the entry with the highest version number as the representative
+  const topologyByName = new Map<string, { representative: TopologyListApiItem; versionCount: number }>()
+
+  for (const topo of topologies) {
+    const existing = topologyByName.get(topo.name)
+    if (!existing) {
+      topologyByName.set(topo.name, { representative: topo, versionCount: 1 })
+    } else {
+      existing.versionCount++
+      if (topo.version > existing.representative.version) {
+        existing.representative = topo
       }
     }
   }
 
-  return topologyData as TopologyDetail
-}
+  // Build topology items grouped by category
+  const topologiesByCategory = new Map<string | 'root', TopologyItem[]>()
 
-/**
- * Fetch all versions for a topology
- * 
- * @param topologyId - The topology ID
- * @returns List of all versions for the topology
- */
-export async function fetchTopologyVersions(
-  topologyId: string
-): Promise<TopologyVersion[]> {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 200))
+  for (const [, { representative, versionCount }] of topologyByName) {
+    const categoryKey = representative.category || 'root'
 
-  // FOR DEVELOPMENT: Get mock data
-  // In production: return axios.get(`/api/topologies/${topologyId}/versions`)
+    if (!topologiesByCategory.has(categoryKey)) {
+      topologiesByCategory.set(categoryKey, [])
+    }
 
-  const topologyData = topologiesDetailData[topologyId as keyof typeof topologiesDetailData]
-  
-  if (!topologyData) {
-    throw new Error(`Topology with ID ${topologyId} not found`)
+    topologiesByCategory.get(categoryKey)!.push({
+      id: representative._id,
+      type: 'topology',
+      name: representative.name,
+      folderId: representative.category,
+      versionCount,
+      enabled: representative.enabled,
+      visibility: representative.visibility as 'draft' | 'public',
+    })
   }
 
-  return topologyData.versions
+  // Sort topologies within each category alphabetically
+  for (const [, items] of topologiesByCategory) {
+    items.sort((a, b) => a.name.localeCompare(b.name))
+  }
+
+  // Build category map for nesting
+  const categoryMap = new Map<string, CategoryApiItem>()
+  for (const cat of categories) {
+    categoryMap.set(cat._id, cat)
+  }
+
+  // Build folder nodes
+  const folderNodes = new Map<string, FolderItem>()
+  for (const cat of categories) {
+    const children = topologiesByCategory.get(cat._id) || []
+
+    folderNodes.set(cat._id, {
+      id: cat._id,
+      type: 'folder',
+      name: cat.name,
+      parentFolderId: cat.parent,
+      isExpanded: false,
+      children: [...children],
+    })
+  }
+
+  // Nest child folders under parent folders
+  for (const [, folder] of folderNodes) {
+    if (folder.parentFolderId && folderNodes.has(folder.parentFolderId)) {
+      const parent = folderNodes.get(folder.parentFolderId)!
+      parent.children.push(folder)
+    }
+  }
+
+  // Build root-level tree: folders without parents + root topologies
+  const tree: TopologiesTreeNode[] = []
+
+  // Add root-level topologies (no category)
+  const rootTopologies = topologiesByCategory.get('root') || []
+  tree.push(...rootTopologies)
+
+  // Add root-level folders (parent === null)
+  for (const [, folder] of folderNodes) {
+    if (!folder.parentFolderId) {
+      tree.push(folder)
+    }
+  }
+
+  // Sort root level: folders first, then topologies, alphabetically within each group
+  tree.sort((a, b) => {
+    if (a.type === 'folder' && b.type !== 'folder') return -1
+    if (a.type !== 'folder' && b.type === 'folder') return 1
+    return a.name.localeCompare(b.name)
+  })
+
+  return tree
 }
 
 /**
- * Switch to a different version of a topology
- * This is a mock function - in production would trigger backend version switch
- * 
- * @param topologyId - The topology ID
- * @param versionId - The version ID to switch to
+ * Fetch categories list from API (for folder dropdowns)
  */
-export async function switchTopologyVersion(
-  topologyId: string,
-  versionId: string
+export async function fetchCategories(): Promise<FolderItem[]> {
+  const response = await api.get<CategoriesApiResponse>('/api/categories')
+
+  return response.data.items.map(cat => ({
+    id: cat._id,
+    type: 'folder' as const,
+    name: cat.name,
+    parentFolderId: cat.parent,
+    isExpanded: false,
+    children: [],
+  }))
+}
+
+/**
+ * Create a new category (folder)
+ */
+export async function publishTopology(topologyId: string): Promise<void> {
+  await api.post(`/api/topologies/${topologyId}/publish`)
+}
+
+export async function toggleTopologyEnabled(topologyId: string, enabled: boolean): Promise<void> {
+  await api.patch(`/api/topologies/${topologyId}`, { enabled })
+}
+
+export async function createTopology(
+  name: string,
+  category: string | null = null,
 ): Promise<void> {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 500))
+  await api.post('/api/topologies', { name, category })
+}
 
-  // FOR DEVELOPMENT: Mock version switch
-  // In production: return axios.post(`/api/topologies/${topologyId}/versions/${versionId}/switch`)
+export async function createCategory(
+  name: string,
+  parent: string | null = null,
+): Promise<{ _id: string; name: string; parent: string | null }> {
+  const response = await api.post<{ _id: string; name: string; parent: string | null }>(
+    '/api/categories',
+    { name, parent },
+  )
+  return response.data
+}
 
-  console.log(`Switching topology ${topologyId} to version ${versionId}`)
-  
-  // Mock validation
-  const topologyData = topologiesDetailData[topologyId as keyof typeof topologiesDetailData]
-  if (!topologyData) {
-    throw new Error(`Topology with ID ${topologyId} not found`)
-  }
+/**
+ * Rename a category (folder)
+ */
+export async function renameCategory(
+  id: string,
+  name: string,
+  parent: string | null = null,
+): Promise<void> {
+  await api.put(`/api/categories/${id}`, { name, parent })
+}
 
-  const version = topologyData.versions.find(v => v.id === versionId)
-  if (!version) {
-    throw new Error(`Version ${versionId} not found for topology ${topologyId}`)
-  }
+/**
+ * Delete a category (folder)
+ */
+export async function deleteCategory(id: string): Promise<void> {
+  await api.delete(`/api/categories/${id}`)
 }

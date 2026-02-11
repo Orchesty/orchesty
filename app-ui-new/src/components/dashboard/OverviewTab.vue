@@ -4,7 +4,9 @@ import ProcessesChart from './ProcessesChart.vue'
 import LimiterCard from './LimiterCard.vue'
 import TrashCard from './TrashCard.vue'
 import type { ProcessesChartData, ProcessFilter, TimeFilter, HeatmapClickData } from '@/types/dashboard'
-import { fetchProcessesData } from '@/services/dashboardService'
+import { fetchProcessesTotalCounts, fetchProcessesGraphData } from '@/services/dashboardService'
+import { convertTimeFilterToDateTimeRange, formatDateTimeForApi } from '@/utils/timeRangeConverter'
+import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 
 interface Props {
   timeFilter?: TimeFilter
@@ -18,6 +20,9 @@ const emit = defineEmits<{
   heatmapClick: [data: HeatmapClickData]
 }>()
 
+// Use topology/node mappings composable
+const { loadMappings, getTopologyName } = useTopologyNodeMappings()
+
 const loading = ref(true)
 const error = ref<string | null>(null)
 const processFilter = ref<ProcessFilter>('all')
@@ -29,8 +34,27 @@ const loadData = async () => {
   error.value = null
 
   try {
-    const processes = await fetchProcessesData(processFilter.value, props.timeFilter)
-    processesData.value = processes
+    // Convert time filter to date range
+    const range = convertTimeFilterToDateTimeRange(props.timeFilter)
+    const dateFrom = formatDateTimeForApi(range.from) || ''
+    const dateTo = formatDateTimeForApi(range.to) || ''
+
+    // Fetch total counts
+    const totals = await fetchProcessesTotalCounts(dateFrom, dateTo)
+
+    // Fetch graph data
+    const chartData = await fetchProcessesGraphData(processFilter.value, dateFrom, dateTo)
+
+    // Map topology IDs to names in series
+    processesData.value = {
+      ...chartData,
+      totalProcesses: totals.totalProcesses,
+      failedProcesses: totals.failedProcesses,
+      series: chartData.series.map(s => ({
+        ...s,
+        name: getTopologyName(s.name)
+      }))
+    }
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Failed to load data'
     console.error('Error loading overview data:', err)
@@ -45,18 +69,18 @@ const handleHeatmapClick = (data: HeatmapClickData) => {
 
 const handleProcessFilterChange = async (filter: ProcessFilter) => {
   processFilter.value = filter
-  try {
-    processesData.value = await fetchProcessesData(filter, props.timeFilter)
-  } catch (err) {
-    console.error('Error reloading processes data:', err)
-  }
+  await loadData()
 }
 
 watch(() => props.timeFilter, () => {
   loadData()
 })
 
-onMounted(() => {
+onMounted(async () => {
+  // Load mappings for topology names
+  await loadMappings()
+
+  // Load initial data
   loadData()
 })
 </script>
@@ -95,21 +119,21 @@ onMounted(() => {
   <div v-else-if="!loading && !error && processesData" class="space-y-6">
     <!-- Processes Heatmap -->
     <ProcessesChart
-      :total-processes="processesData.totalProcesses"
-      :total-failed="processesData.totalFailed"
-      :time-range="processesData.timeRange"
+      :total-processes="processesData.totalProcesses || 0"
+      :total-failed="processesData.failedProcesses || 0"
+      :time-range="processesData.timeRange || ''"
       :filter="processFilter"
       :series="processesData.series"
-      :x-categories="processesData.xCategories"
-      :y-categories="processesData.yCategories"
+      :x-categories="processesData.xCategories || []"
+      :y-categories="processesData.yCategories || []"
       @filter-change="handleProcessFilterChange"
       @heatmap-click="handleHeatmapClick"
     />
-    
+
     <!-- Limiter and Trash Cards -->
     <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-      <LimiterCard />
-      <TrashCard />
+      <LimiterCard :time-filter="props.timeFilter" />
+      <TrashCard :time-filter="props.timeFilter" />
     </div>
   </div>
 </template>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { RouterLink } from 'vue-router'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import Card from '@/components/ui/Card.vue'
@@ -11,8 +11,17 @@ import CopyValue from '@/components/ui/CopyValue.vue'
 import LogDetailDrawer from '@/components/logs/LogDetailDrawer.vue'
 import type { LogEntry, LogQueryParams, LogSeverity } from '@/types/logs'
 import type { TableColumn } from '@/types/dashboard'
-import { fetchLogs, fetchTopologyNamesForLogs } from '@/services/logsService'
+import { fetchLogs } from '@/services/logsService'
 import { useDataGrid } from '@/composables/useDataGrid'
+import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
+
+// Topology/Node mappings composable
+const {
+  loadMappings,
+  topologyOptions: topologyOptionsFromMappings,
+  nodeOptions: nodeOptionsFromMappings,
+  mappings,
+} = useTopologyNodeMappings()
 
 // State
 const logs = ref<LogEntry[]>([])
@@ -23,9 +32,10 @@ const selectedLog = ref<LogEntry | null>(null)
 
 // Filters
 const searchFilter = ref('')
-const timeMarginFilter = ref('')
+const correlationIdFilter = ref('')
 const severityFilter = ref<LogSeverity | null>(null)
 const topologyFilter = ref<string | null>(null)
+const nodeFilter = ref<string | null>(null)
 const timeRangeFilter = ref('this-month')
 
 // Severity options for dropdown
@@ -37,18 +47,50 @@ const severityOptions = ref<{ value: LogSeverity | null; label: string }[]>([
   { value: 'debug', label: 'Debug' },
 ])
 
-// Topology options for dropdown
-const topologyOptions = ref<{ value: string | null; label: string }[]>([
+// Topology options from mappings with "All" option
+const topologyOptions = computed(() => [
   { value: null, label: 'All Topologies' },
+  ...topologyOptionsFromMappings.value,
 ])
+
+// Node options filtered by selected topology
+const nodeOptions = computed(() => {
+  const baseOptions = [{ value: null, label: 'All Nodes' }]
+
+  // If no topology selected, show all nodes
+  if (!topologyFilter.value || !mappings.value) {
+    return [...baseOptions, ...nodeOptionsFromMappings.value]
+  }
+
+  // Get node IDs for the selected topology from the tree
+  const nodeIdsInTopology = mappings.value.tree[topologyFilter.value] || []
+
+  // Filter node options to only include nodes from this topology
+  const filteredNodes = nodeOptionsFromMappings.value.filter(node =>
+    nodeIdsInTopology.includes(node.value)
+  )
+
+  return [...baseOptions, ...filteredNodes]
+})
+
+// Clear node filter when topology changes if selected node is not in new topology
+watch(topologyFilter, () => {
+  if (nodeFilter.value && topologyFilter.value && mappings.value) {
+    const nodeIdsInTopology = mappings.value.tree[topologyFilter.value] || []
+
+    if (!nodeIdsInTopology.includes(nodeFilter.value)) {
+      nodeFilter.value = null
+    }
+  }
+})
 
 // Table columns
 const columns: TableColumn[] = [
   { key: 'timestamp', label: 'Timestamp', sortable: true },
-  { key: 'topology', label: 'Topology', sortable: true },
+  { key: 'topology', label: 'Topology', sortable: false },
   { key: 'node', label: 'Node', sortable: false },
   { key: 'nodeId', label: 'Node ID', sortable: false },
-  { key: 'severity', label: 'Severity', sortable: true },
+  { key: 'severity', label: 'Severity', sortable: false },
   { key: 'message', label: 'Message', sortable: false },
   { key: 'actions', label: '', className: 'text-right' },
 ]
@@ -86,7 +128,7 @@ const openDrawer = (log: LogEntry) => {
 // Load data function
 async function loadData() {
   loading.value = true
-  
+
   const params: LogQueryParams = {
     page: currentPage.value,
     perPage: itemsPerPage.value,
@@ -98,11 +140,8 @@ async function loadData() {
     params.search = searchFilter.value
   }
 
-  if (timeMarginFilter.value) {
-    const margin = parseInt(timeMarginFilter.value, 10)
-    if (!isNaN(margin)) {
-      params.timeMargin = margin
-    }
+  if (correlationIdFilter.value) {
+    params.correlationId = correlationIdFilter.value
   }
 
   if (severityFilter.value) {
@@ -111,6 +150,10 @@ async function loadData() {
 
   if (topologyFilter.value) {
     params.topology = topologyFilter.value
+  }
+
+  if (nodeFilter.value) {
+    params.node = nodeFilter.value
   }
 
   if (timeRangeFilter.value) {
@@ -144,18 +187,12 @@ const {
 } = useDataGrid({
   defaultSort: { field: 'timestamp', direction: 'desc' },
   onDataLoad: loadData,
-  filters: [searchFilter, timeMarginFilter, severityFilter, topologyFilter, timeRangeFilter],
+  filters: [searchFilter, correlationIdFilter, severityFilter, topologyFilter, nodeFilter, timeRangeFilter],
 })
 
-// Load topology names and initial data
+// Load mappings and initial data
 onMounted(async () => {
-  const topologies = await fetchTopologyNamesForLogs()
-  topologyOptions.value = [
-    { value: null, label: 'All Topologies' },
-    ...topologies.map((t) => ({ value: t, label: t })),
-  ]
-  
-  // Load initial data
+  await loadMappings()
   await loadData()
 })
 </script>
@@ -193,15 +230,18 @@ onMounted(async () => {
             width="w-80"
           />
           <TextInput
-            v-model="timeMarginFilter"
-            type="number"
-            placeholder="Time Margin"
-            width="w-32"
+            v-model="correlationIdFilter"
+            placeholder="Correlation ID"
           />
           <DropdownFilter
             v-model="severityFilter"
             :options="severityOptions"
             placeholder="All Severities"
+          />
+          <DropdownFilter
+            v-model="nodeFilter"
+            :options="nodeOptions"
+            placeholder="All Nodes"
           />
           <DropdownFilter
             v-model="topologyFilter"

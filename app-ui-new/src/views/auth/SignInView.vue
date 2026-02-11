@@ -5,21 +5,40 @@ import AuthLayout from '@/layouts/AuthLayout.vue'
 import Button from '@/components/ui/Button.vue'
 import Input from '@/components/ui/Input.vue'
 import Checkbox from '@/components/ui/Checkbox.vue'
+import { useAuthStore } from '@/stores/auth'
+import { useToast } from '@/composables/useToast'
 
 const router = useRouter()
+const authStore = useAuthStore()
+const { showToast } = useToast()
 
 const email = ref('')
 const password = ref('')
 const remember = ref(false)
+const isLoading = ref(false)
 
-const handleSubmit = () => {
-  console.log('Sign in with:', { email: email.value, password: password.value, remember: remember.value })
-  // TODO: Implement authentication logic
+const handleSubmit = async () => {
+  if (isLoading.value) return
+
+  isLoading.value = true
+
+  try {
+    await authStore.login(email.value, password.value)
+    showToast('Welcome back!', 'success')
+    router.push('/dashboard')
+  } catch (error) {
+    console.error('Login error:', error)
+    const errorMessage = error instanceof Error ? error.message : 'Invalid credentials. Please try again.'
+    showToast(errorMessage, 'error')
+  } finally {
+    isLoading.value = false
+  }
 }
 
 const handleSocialLogin = (provider: string) => {
   console.log('Sign in with:', provider)
   // TODO: Implement social login
+  showToast(`${provider} login not yet implemented`, 'info')
 }
 </script>
 
@@ -113,8 +132,8 @@ const handleSocialLogin = (provider: string) => {
       </div>
 
       <!-- Submit Button -->
-      <Button type="submit" variant="primary" class="w-full">
-        Sign in to Orchesty
+      <Button type="submit" variant="primary" class="w-full" :disabled="isLoading">
+        {{ isLoading ? 'Signing in...' : 'Sign in to Orchesty' }}
       </Button>
     </form>
   </AuthLayout>

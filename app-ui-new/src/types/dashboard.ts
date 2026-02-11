@@ -86,11 +86,11 @@ export interface TrashData {
 
 export interface ProcessesChartData {
   series: HeatmapSeries[]
-  xCategories: string[]
-  yCategories: string[]
-  totalProcesses: number
-  totalFailed: number
-  timeRange: string
+  xCategories?: string[]
+  yCategories?: string[]
+  totalProcesses?: number
+  failedProcesses?: number
+  timeRange?: string
 }
 
 export interface HeatmapClickData {
@@ -106,3 +106,148 @@ export interface ProcessesExternalFilters {
   } | null
 }
 
+// Limiter API Types
+export interface LimiterTotalApiItem {
+  count: number
+  previousCount: number
+}
+
+export interface LimiterTotalApiResponse {
+  filter: unknown[]
+  items: LimiterTotalApiItem[]
+  paging: {
+    itemsPerPage: number
+    lastPage: number
+    nextPage: number
+    page: number
+    previousPage: number
+    total: number
+  }
+  search: string | null
+  sorter: unknown[]
+}
+
+export interface LimiterGraphApiItem {
+  created: string
+  count: number
+}
+
+export interface LimiterGraphApiResponse {
+  filter: unknown[]
+  items: LimiterGraphApiItem[]
+  paging: {
+    itemsPerPage: number
+    lastPage: number
+    nextPage: number
+    page: number
+    previousPage: number
+    total: number
+  }
+  search: string | null
+  sorter: Array<{ column: string; direction: string }>
+}
+
+export interface LimiterTableApiItem {
+  nodeId: string
+  topologyId: string
+  count: number
+  previousCount: number
+}
+
+export interface LimiterTableApiResponse {
+  filter: unknown[]
+  items: LimiterTableApiItem[]
+  paging: {
+    itemsPerPage: number
+    lastPage: number
+    nextPage: number
+    page: number
+    previousPage: number
+    total: number
+  }
+  search: string | null
+  sorter: Array<{ column: string; direction: string }>
+}
+
+export interface LimiterApiFilter {
+  search: string | null
+  filter: Array<Array<{ column: string; operator: string; value: unknown[] }>>
+  sorter: Array<{ column: string; direction: string }>
+  paging: {
+    itemsPerPage: number
+    page: number
+  }
+}
+
+// Trash API Types
+export interface TrashTotalApiItem {
+  count: number
+  previousCount: number
+}
+
+export interface TrashTotalApiResponse {
+  filter: unknown[]
+  items: TrashTotalApiItem[]
+  paging: {
+    itemsPerPage: number
+    lastPage: number
+    nextPage: number
+    page: number
+    previousPage: number
+    total: number
+  }
+  search: string | null
+  sorter: unknown[]
+}
+
+export interface TrashGraphApiItem {
+  topologyId: string
+  count: number
+}
+
+export interface TrashGraphApiResponse {
+  filter: unknown[]
+  items: TrashGraphApiItem[]
+  paging: {
+    itemsPerPage: number
+    lastPage: number
+    nextPage: number
+    page: number
+    previousPage: number
+    total: number
+  }
+  search: string | null
+  sorter: Array<{ column: string; direction: string }>
+}
+
+export interface TrashTableApiItem {
+  nodeId: string
+  topologyId: string
+  message: string | null
+  count: number
+}
+
+export interface TrashTableApiResponse {
+  filter: unknown[]
+  items: TrashTableApiItem[]
+  paging: {
+    itemsPerPage: number
+    lastPage: number
+    nextPage: number
+    page: number
+    previousPage: number
+    total: number
+  }
+  search: string | null
+  sorter: Array<{ column: string; direction: string }>
+}
+
+export interface TrashApiFilter {
+  search: string | null
+  filter: Array<Array<{ column: string; operator: string; value: unknown[] }>>
+  sorter: Array<{ column: string; direction: string }>
+  paging: {
+    itemsPerPage: number
+    page: number
+  }
+}

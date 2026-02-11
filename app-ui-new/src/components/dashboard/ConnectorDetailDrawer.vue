@@ -8,6 +8,7 @@ import type { Connector, ConnectorDetail, ConnectorErrorRecord } from '@/types/c
 import type { TimeFilter as TimeFilterType, TableColumn } from '@/types/dashboard'
 import { fetchConnectorDetail, fetchConnectorErrorRecords, fetchConnectorChartData } from '@/services/connectorsService'
 import { useApexChart } from '@/composables/useApexChart'
+import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 
 interface Props {
   modelValue: boolean
@@ -20,6 +21,9 @@ const props = defineProps<Props>()
 const emit = defineEmits<{
   'update:modelValue': [value: boolean]
 }>()
+
+// Use topology/node mappings composable
+const { getTopologyName } = useTopologyNodeMappings()
 
 // Local time filter (independent from global)
 const localTimeFilter = ref<TimeFilterType>(props.globalTimeFilter)
@@ -126,7 +130,7 @@ const getChartOptions = () => {
 // Render chart
 const renderChart = () => {
   if (!chartElement.value || !chartData.value) return
-  
+
   const options = getChartOptions()
   if (options) {
     destroyChart()
@@ -166,11 +170,16 @@ const loadData = async () => {
     chartData.value = chart
 
     // Fetch error records
+    // Map sort field from table column key to API column name
+    const apiSortField = sortField.value === 'timestamp' ? 'created' : sortField.value
     const records = await fetchConnectorErrorRecords(
       props.connector.id,
       localTimeFilter.value,
       currentPage.value,
       itemsPerPage.value,
+      getTopologyName,
+      apiSortField,
+      sortDirection.value
     )
     errorRecords.value = records.data
     totalPages.value = records.meta.totalPages
@@ -204,6 +213,10 @@ watch(currentPage, () => {
   loadData()
 })
 
+// Sort state
+const sortField = ref('timestamp')
+const sortDirection = ref<'asc' | 'desc'>('desc')
+
 // Pagination handlers
 const handlePageChange = (page: number) => {
   currentPage.value = page
@@ -214,9 +227,16 @@ const handlePerPageChange = (perPage: number) => {
   currentPage.value = 1
 }
 
+const handleSort = (config: { field: string; direction: 'asc' | 'desc' }) => {
+  sortField.value = config.field
+  sortDirection.value = config.direction
+  currentPage.value = 1
+  loadData()
+}
+
 // Table columns for error records
 const errorRecordsColumns: TableColumn[] = [
-  { key: 'timestamp', label: 'Timestamp', className: 'w-48' },
+  { key: 'timestamp', label: 'Timestamp', sortable: true, className: 'w-48' },
   { key: 'topology', label: 'Topology' },
   { key: 'code', label: 'Code' },
   { key: 'message', label: 'Error Message' },
@@ -324,8 +344,11 @@ const errorRecordsColumns: TableColumn[] = [
           :total-pages="totalPages"
           :total-items="totalItems"
           :items-per-page="itemsPerPage"
+          :sort-field="sortField"
+          :sort-direction="sortDirection"
           @page-change="handlePageChange"
           @per-page-change="handlePerPageChange"
+          @sort="handleSort"
         >
           <!-- Custom cell for timestamp -->
           <template #cell-timestamp="{ value }">

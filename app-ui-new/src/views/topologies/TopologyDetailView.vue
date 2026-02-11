@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, nextTick, onMounted, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import AppNavbar from '@/components/layout/AppNavbar.vue'
 import AppSidebar from '@/components/layout/AppSidebar.vue'
@@ -14,20 +14,23 @@ import TopologyDesignerDrawer from '@/components/topologies/TopologyDesignerDraw
 import TopologyEditor from '@/components/topologies/TopologyEditor.vue'
 import NewTopologyModal from '@/components/topologies/NewTopologyModal.vue'
 import NewFolderModal from '@/components/topologies/NewFolderModal.vue'
+import RenameFolderModal from '@/components/topologies/RenameFolderModal.vue'
 import SelectVersionModal from '@/components/topologies/SelectVersionModal.vue'
 import EntityModal from '@/components/settings/EntityModal.vue'
+import Confirm from '@/components/ui/Confirm.vue'
 import Button from '@/components/ui/Button.vue'
 import DropdownMenu from '@/components/ui/DropdownMenu.vue'
 import TabsComponent, { type Tab } from '@/components/ui/Tabs.vue'
 import Card from '@/components/ui/Card.vue'
 import TabCard from '@/components/ui/TabCard.vue'
 import Textarea from '@/components/ui/datagrid/Textarea.vue'
-import { fetchTopologyDetail } from '@/services/topologiesService'
+import { fetchTopologyDetail, fetchCategories, deleteCategory, publishTopology, toggleTopologyEnabled } from '@/services/topologiesService'
 import { fetchTopologyMetrics } from '@/services/topologyMetricsService'
+import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
+import { useToast } from '@/composables/useToast'
 import type { TopologyDetail } from '@/types/topologies-page'
 import type { TopologyMetrics } from '@/types/topology-metrics'
-import topologiesTreeData from '@/assets/mock-data/topologies-tree-data.json'
-import type { TopologiesTreeNode, FolderItem } from '@/types/topologies-page'
+import type { FolderItem, TopologiesTreeNode } from '@/types/topologies-page'
 import { Dropdown } from 'flowbite'
 import { useLastTopology } from '@/composables/useLastTopology'
 import TraceDrawer from '@/components/trace/TraceDrawer.vue'
@@ -40,8 +43,12 @@ interface Props {
 const props = defineProps<Props>()
 const route = useRoute()
 
+const { showToast } = useToast()
 const { setLastTopology, getLastTopology } = useLastTopology()
 const { isTraceDrawerOpen } = useTraceDrawer()
+
+// Sidebar ref for refreshTree
+const sidebarRef = ref<InstanceType<typeof TopologiesSidebar> | null>(null)
 
 const topology = ref<TopologyDetail | null>(null)
 const loading = ref(true)
@@ -63,8 +70,8 @@ const metricsLoading = ref(false)
 // Active tab state - initialize from localStorage or default to first tab
 const lastTopology = getLastTopology()
 const activeTopologyTab = ref<string>(
-  (lastTopology && lastTopology.id === props.id && lastTopology.activeTab) 
-    ? lastTopology.activeTab 
+  (lastTopology && lastTopology.id === props.id && lastTopology.activeTab)
+    ? lastTopology.activeTab
     : 'topology'
 )
 
@@ -150,36 +157,35 @@ const topologyTabs: Tab[] = [
 // Sidebar modal state
 const newTopologyModalOpen = ref(false)
 const newFolderModalOpen = ref(false)
+const renameFolderModalOpen = ref(false)
+const deleteFolderConfirmOpen = ref(false)
 const selectVersionModalOpen = ref(false)
 const selectedTopologyId = ref('')
 const selectedTopologyName = ref('')
 
+// Active folder for CRUD operations
+const activeFolderId = ref('')
+const activeFolderName = ref('')
+const activeFolderParentId = ref<string | null>(null)
+
 const versionId = computed(() => route.query.version as string | undefined)
 
-const currentVersionId = computed(() => {
-  if (!topology.value) return ''
-  // Find the version that matches the current topology version
-  const currentVersion = topology.value.versions.find(v => v.version === topology.value!.version)
-  return currentVersion?.id || ''
-})
+// Folders loaded from API (for dropdown menus)
+const allFolders = ref<FolderItem[]>([])
 
-// Get all folders from tree data for dropdown initialization
-const allFolders = computed(() => {
-  const folders: FolderItem[] = []
-  
-  const extractFolders = (nodes: TopologiesTreeNode[]) => {
+// Compute set of folder IDs that have any content (topologies or subfolders)
+const nonEmptyFolderIds = computed<Set<string>>(() => {
+  const ids = new Set<string>()
+  const walk = (nodes: TopologiesTreeNode[]) => {
     for (const node of nodes) {
-      if (node.type === 'folder') {
-        folders.push(node as FolderItem)
-        if (node.children && node.children.length > 0) {
-          extractFolders(node.children)
-        }
+      if (node.type === 'folder' && node.children.length > 0) {
+        ids.add(node.id)
+        walk(node.children)
       }
     }
   }
-  
-  extractFolders(topologiesTreeData.data as TopologiesTreeNode[])
-  return folders
+  walk(sidebarRef.value?.treeData ?? [])
+  return ids
 })
 
 const statusBadgeClass = computed(() => {
@@ -187,15 +193,15 @@ const statusBadgeClass = computed(() => {
   if (topology.value.visibility === 'draft') {
     return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
   }
-  if (topology.value.status === 'Running') {
-    return 'bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-300'
-  }
-  return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
+  return topology.value.enabled
+    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+    : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
 })
 
 const statusLabel = computed(() => {
   if (!topology.value) return ''
-  return topology.value.visibility === 'draft' ? 'Draft' : topology.value.status
+  if (topology.value.visibility === 'draft') return 'Draft'
+  return topology.value.enabled ? 'Enabled' : 'Disabled'
 })
 
 const moreActionsItems = [
@@ -229,11 +235,87 @@ const moreActionsItems = [
   }
 ]
 
+// Initialize Flowbite dropdowns for folder actions
+const initFolderDropdowns = () => {
+  allFolders.value.forEach((folder) => {
+    const dropdownElement = document.getElementById(`folderActionsDropdown-${folder.id}`)
+    const buttonElement = document.getElementById(`folderActionsButton-${folder.id}`)
+
+    if (dropdownElement && buttonElement) {
+      new Dropdown(dropdownElement, buttonElement, {
+        placement: 'bottom',
+        triggerType: 'click',
+        offsetSkidding: 0,
+        offsetDistance: 10,
+      })
+    }
+  })
+}
+
+// Refresh sidebar tree and allFolders
+const refreshAfterCrud = async () => {
+  try {
+    allFolders.value = await fetchCategories()
+  } catch (err) {
+    console.error('Failed to reload categories:', err)
+  }
+  await sidebarRef.value?.refreshTree()
+
+  // Re-initialize Flowbite dropdowns after DOM updates
+  await nextTick()
+  initFolderDropdowns()
+}
+
+// Folder dropdown actions
+const handleFolderNewTopology = (folderId: string) => {
+  activeFolderId.value = folderId
+  newTopologyModalOpen.value = true
+}
+
+const handleFolderNewSubfolder = (folderId: string) => {
+  activeFolderParentId.value = folderId
+  newFolderModalOpen.value = true
+}
+
+const handleFolderRename = (folderId: string) => {
+  const folder = allFolders.value.find(f => f.id === folderId)
+  if (!folder) return
+  activeFolderId.value = folderId
+  activeFolderName.value = folder.name
+  activeFolderParentId.value = folder.parentFolderId ?? null
+  renameFolderModalOpen.value = true
+}
+
+const handleFolderDelete = (folderId: string) => {
+  const folder = allFolders.value.find(f => f.id === folderId)
+  if (!folder) return
+  activeFolderId.value = folderId
+  activeFolderName.value = folder.name
+  deleteFolderConfirmOpen.value = true
+}
+
+const handleConfirmDelete = async () => {
+  try {
+    await deleteCategory(activeFolderId.value)
+    showToast('Folder deleted successfully', 'success')
+    await refreshAfterCrud()
+  } catch (err) {
+    console.error('Failed to delete folder:', err)
+    showToast('Failed to delete folder', 'error')
+  }
+}
+
+// "New Folder" button from sidebar header (root-level folder)
+const handleOpenNewFolderModal = () => {
+  activeFolderParentId.value = null
+  newFolderModalOpen.value = true
+}
+
 // Handle topology selection from sidebar
 const handleSelectTopology = (topologyId: string, topologyName: string, versionCount: number) => {
   selectedTopologyId.value = topologyId
   selectedTopologyName.value = topologyName
-  
+
   // Always show modal to display version overview
   selectVersionModalOpen.value = true
 }
@@ -243,13 +325,13 @@ const loadTopologyDetail = async () => {
   error.value = null
   try {
     topology.value = await fetchTopologyDetail(props.id, versionId.value)
-    
+
     // Restore last active tab for this topology if it exists
     const lastTopology = getLastTopology()
-    
+
     if (lastTopology && lastTopology.id === props.id && lastTopology.activeTab) {
       activeTopologyTab.value = lastTopology.activeTab
-      
+
       // Load metrics if returning to metrics tab
       if (lastTopology.activeTab === 'metrics') {
         await loadMetrics()
@@ -258,7 +340,7 @@ const loadTopologyDetail = async () => {
       // Reset to first tab if this is a different topology
       activeTopologyTab.value = 'topology'
     }
-    
+
     // Save last topology to localStorage (with current tab)
     if (topology.value) {
       setLastTopology({
@@ -277,9 +359,32 @@ const loadTopologyDetail = async () => {
 }
 
 
-const handlePublish = () => {
-  console.log('Publish topology')
-  // TODO: Implement publish functionality
+const handlePublish = async () => {
+  if (!topology.value) return
+  try {
+    await publishTopology(topology.value._id)
+    showToast('Topology published successfully', 'success')
+    // Re-fetch detail so visibility updates and Publish button disappears
+    topology.value = await fetchTopologyDetail(props.id, versionId.value)
+    await sidebarRef.value?.refreshTree()
+  } catch (error) {
+    console.error('Failed to publish topology:', error)
+    showToast('Failed to publish topology', 'error')
+  }
+}
+
+const handleToggleEnabled = async () => {
+  if (!topology.value) return
+  const newEnabled = !topology.value.enabled
+  try {
+    await toggleTopologyEnabled(topology.value._id, newEnabled)
+    showToast(`Topology ${newEnabled ? 'enabled' : 'disabled'} successfully`, 'success')
+    topology.value = await fetchTopologyDetail(props.id, versionId.value)
+    await sidebarRef.value?.refreshTree()
+  } catch (error) {
+    console.error('Failed to toggle topology:', error)
+    showToast('Failed to toggle topology state', 'error')
+  }
 }
 
 const handleVersionsClick = () => {
@@ -363,11 +468,14 @@ const handlePermissionChange = (groupId: string, permission: 'manager' | 'develo
 }
 
 // Load metrics data
+const { loadMappings } = useTopologyNodeMappings()
+
 const loadMetrics = async () => {
   if (!props.id) return
-  
+
   metricsLoading.value = true
   try {
+    await loadMappings()
     metricsData.value = await fetchTopologyMetrics(props.id)
   } catch (err) {
     console.error('Failed to load metrics:', err)
@@ -379,12 +487,12 @@ const loadMetrics = async () => {
 // Handle tab change
 const handleTabChange = (tabId: string) => {
   activeTopologyTab.value = tabId
-  
+
   // Load metrics data when switching to metrics tab
   if (tabId === 'metrics' && !metricsData.value) {
     loadMetrics()
   }
-  
+
   // Save the active tab to localStorage
   if (topology.value) {
     setLastTopology({
@@ -406,24 +514,19 @@ watch(
 
 onMounted(async () => {
   await loadTopologyDetail()
-  
+
+  // Load categories from API
+  try {
+    allFolders.value = await fetchCategories()
+  } catch (error) {
+    console.error('Failed to load categories:', error)
+  }
+
   // Initialize Flowbite dropdowns
   setTimeout(() => {
     // Folder actions dropdowns
-    allFolders.value.forEach((folder) => {
-      const dropdownElement = document.getElementById(`folderActionsDropdown-${folder.id}`)
-      const buttonElement = document.getElementById(`folderActionsButton-${folder.id}`)
-      
-      if (dropdownElement && buttonElement) {
-        new Dropdown(dropdownElement, buttonElement, {
-          placement: 'bottom',
-          triggerType: 'click',
-          offsetSkidding: 0,
-          offsetDistance: 10,
-        })
-      }
-    })
-    
+    initFolderDropdowns()
+
     // Audit entity dropdown
     const auditEntityDropdown = document.getElementById('audit-entity-dropdown')
     const auditEntityButton = document.querySelector('[data-dropdown-toggle="audit-entity-dropdown"]')
@@ -435,7 +538,7 @@ onMounted(async () => {
         offsetDistance: 10,
       })
     }
-    
+
     // Add group dropdown
     const addGroupDropdown = document.getElementById('add-group-dropdown')
     const addGroupButton = document.querySelector('[data-dropdown-toggle="add-group-dropdown"]')
@@ -457,12 +560,13 @@ onMounted(async () => {
     <div class="flex flex-1 overflow-hidden">
       <AppSidebar />
       <TopologiesSidebar
+        ref="sidebarRef"
         v-model="topologySidebarCollapsed"
-        @open-new-topology-modal="newTopologyModalOpen = true"
-        @open-new-folder-modal="newFolderModalOpen = true"
+        @open-new-topology-modal="activeFolderId = null; newTopologyModalOpen = true"
+        @open-new-folder-modal="handleOpenNewFolderModal"
         @select-topology="handleSelectTopology"
       />
-      
+
       <div id="main-content" class="flex-1 bg-gray-50 dark:bg-gray-900 overflow-hidden">
         <main class="relative h-full overflow-hidden">
           <div class="h-full overflow-y-auto">
@@ -532,7 +636,7 @@ onMounted(async () => {
                       </span>
                     </div>
                    </div>
-                  
+
 
                   <div class="flex items-center gap-2">
                     <Button variant="outline" @click="handleVersionsClick">
@@ -547,11 +651,18 @@ onMounted(async () => {
                       </svg>
                       Design
                     </Button>
-                    <Button @click="handlePublish">
+                    <Button v-if="topology.visibility === 'draft'" @click="handlePublish">
                       <svg class="-ms-1 me-2 h-4 w-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
                         <path fill-rule="evenodd" d="M5 3a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11.5c.07 0 .14-.007.207-.021.095.014.193.021.293.021h2a2 2 0 0 0 2-2V7a1 1 0 0 0-1-1h-1a1 1 0 1 0 0 2v11h-2V5a2 2 0 0 0-2-2H5Zm7 4a1 1 0 0 1 1-1h.5a1 1 0 1 1 0 2H13a1 1 0 0 1-1-1Zm0 3a1 1 0 0 1 1-1h.5a1 1 0 1 1 0 2H13a1 1 0 0 1-1-1Zm-6 4a1 1 0 0 1 1-1h6a1 1 0 1 1 0 2H7a1 1 0 0 1-1-1Zm0 3a1 1 0 0 1 1-1h6a1 1 0 1 1 0 2H7a1 1 0 0 1-1-1ZM7 6a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H7Zm1 3V8h1v1H8Z" clip-rule="evenodd"/>
                       </svg>
                       Publish
+                    </Button>
+                    <Button
+                      v-if="topology.visibility !== 'draft'"
+                      :variant="topology.enabled ? 'danger' : 'success'"
+                      @click="handleToggleEnabled"
+                    >
+                      {{ topology.enabled ? 'Disable' : 'Enable' }}
                     </Button>
                     <DropdownMenu
                       dropdown-id="topology-more-dropdown"
@@ -569,10 +680,10 @@ onMounted(async () => {
                 </div>
 
               </div>
-              
+
               <!-- Tabs -->
-              <TabsComponent 
-                :tabs="topologyTabs" 
+              <TabsComponent
+                :tabs="topologyTabs"
                 :default-tab="activeTopologyTab"
                 content-id="topology-tabs-content"
                 @tab-change="handleTabChange"
@@ -585,12 +696,12 @@ onMounted(async () => {
                     </div>
                   </div>
                 </div>
-                
+
                 <!-- Context Tab Content -->
                 <div id="context-content" role="tabpanel" aria-labelledby="context-tab" class="hidden">
                   <TabCard>
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">MCP Manifest</h3>
-                    
+
                     <form @submit.prevent="handleSaveContext" class="space-y-6">
                       <div>
                         <Textarea
@@ -609,14 +720,14 @@ onMounted(async () => {
                     </form>
                   </TabCard>
                 </div>
-                
+
                 <!-- Audit Tab Content -->
                 <div id="audit-content" role="tabpanel" aria-labelledby="audit-tab" class="hidden">
                   <TabCard>
                     <!-- Header with dropdown button -->
                     <div class="flex items-center justify-between mb-4">
                       <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Audit Entity</h3>
-                      
+
                       <button
                         type="button"
                         data-dropdown-toggle="audit-entity-dropdown"
@@ -655,7 +766,7 @@ onMounted(async () => {
                         </div>
                       </div>
                     </div>
-                    
+
                     <form @submit.prevent="handleSaveAudit" class="space-y-6">
                       <!-- Section: Entity selection -->
                       <div class="space-y-4">
@@ -704,7 +815,7 @@ onMounted(async () => {
                     </form>
                   </TabCard>
                 </div>
-                
+
                 <!-- Access Tab Content -->
                 <div id="access-content" role="tabpanel" aria-labelledby="access-tab" class="hidden">
                   <TabCard>
@@ -732,7 +843,7 @@ onMounted(async () => {
                         </ul>
                       </div>
                     </div>
-                    
+
                     <div class="space-y-4">
                       <!-- Group cards -->
                       <div
@@ -813,7 +924,7 @@ onMounted(async () => {
                     </div>
                   </TabCard>
                 </div>
-                
+
                 <!-- Processes Tab Content -->
                 <div id="processes-content" role="tabpanel" aria-labelledby="processes-tab" class="hidden">
                   <TopologyProcessesTab
@@ -822,7 +933,7 @@ onMounted(async () => {
                     :topology-name="topology.name"
                   />
                 </div>
-                
+
                 <!-- Logs Tab Content -->
                 <div id="logs-content" role="tabpanel" aria-labelledby="logs-tab" class="hidden">
                   <TopologyLogsTab
@@ -831,7 +942,7 @@ onMounted(async () => {
                     :topology-name="topology.name"
                   />
                 </div>
-                
+
                 <!-- Trash Tab Content -->
                 <div id="trash-content" role="tabpanel" aria-labelledby="trash-tab" class="hidden">
                   <TopologyFailedMessagesTab
@@ -840,7 +951,7 @@ onMounted(async () => {
                     :topology-name="topology.name"
                   />
                 </div>
-                
+
                 <!-- Metrics Tab Content -->
                 <div id="metrics-content" role="tabpanel" aria-labelledby="metrics-tab" class="hidden">
                   <div v-if="metricsLoading" class="flex items-center justify-center py-12">
@@ -852,7 +963,7 @@ onMounted(async () => {
                       <span class="sr-only">Loading...</span>
                     </div>
                   </div>
-                  
+
                   <div v-else-if="metricsData" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <!-- Node Process Time Card -->
                     <Card>
@@ -861,7 +972,7 @@ onMounted(async () => {
                         <NodeProcessTimeChart :data="metricsData.nodeProcessTimes" />
                       </div>
                     </Card>
-                    
+
                     <!-- Connector Request Time Card -->
                     <Card>
                       <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Connector Request Time</h3>
@@ -870,7 +981,7 @@ onMounted(async () => {
                       </div>
                     </Card>
                   </div>
-                  
+
                   <div v-else class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
                     <p class="text-sm text-gray-500 dark:text-gray-400">No metrics data available</p>
                   </div>
@@ -887,7 +998,8 @@ onMounted(async () => {
       v-if="topology"
       v-model="versionDrawerOpen"
       :topology-id="topology._id"
-      :current-version-id="currentVersionId"
+      :topology-name="topology.name"
+      :current-version-id="topology._id"
       placement="right"
     />
 
@@ -901,8 +1013,19 @@ onMounted(async () => {
     />
 
     <!-- Modals -->
-    <NewTopologyModal v-model="newTopologyModalOpen" />
-    <NewFolderModal v-model="newFolderModalOpen" />
+    <NewTopologyModal v-model="newTopologyModalOpen" :category-id="activeFolderId" @created="refreshAfterCrud" />
+    <NewFolderModal
+      v-model="newFolderModalOpen"
+      :parent-id="activeFolderParentId"
+      @created="refreshAfterCrud"
+    />
+    <RenameFolderModal
+      v-model="renameFolderModalOpen"
+      :folder-id="activeFolderId"
+      :folder-name="activeFolderName"
+      :parent-id="activeFolderParentId"
+      @renamed="refreshAfterCrud"
+    />
     <SelectVersionModal
       v-model="selectVersionModalOpen"
       :topology-id="selectedTopologyId"
@@ -914,6 +1037,33 @@ onMounted(async () => {
       :mode="entityModalMode"
       @save="handleSaveEntity"
     />
+
+    <!-- Delete Folder Confirm -->
+    <Confirm
+      v-model="deleteFolderConfirmOpen"
+      id="delete-folder-confirm-detail"
+      confirm-text="Yes, delete"
+      @confirm="handleConfirmDelete"
+    >
+      <svg
+        class="mx-auto mb-4 h-12 w-12 text-gray-400 dark:text-gray-200"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 20 20"
+      >
+        <path
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+        />
+      </svg>
+      <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+        Are you sure you want to delete the folder "{{ activeFolderName }}"?
+      </h3>
+    </Confirm>
 
     <!-- Trace Drawer -->
     <TraceDrawer v-model="isTraceDrawerOpen" />
@@ -929,7 +1079,7 @@ onMounted(async () => {
         <li>
           <button
             type="button"
-            @click="newTopologyModalOpen = true"
+            @click="handleFolderNewTopology(folder.id)"
             class="inline-flex w-full items-center rounded-md px-3 py-2 hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white"
           >
             New Topology
@@ -938,7 +1088,7 @@ onMounted(async () => {
         <li>
           <button
             type="button"
-            @click="newFolderModalOpen = true"
+            @click="handleFolderNewSubfolder(folder.id)"
             class="inline-flex w-full items-center rounded-md px-3 py-2 hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white"
           >
             New Folder
@@ -947,14 +1097,16 @@ onMounted(async () => {
         <li>
           <button
             type="button"
+            @click="handleFolderRename(folder.id)"
             class="inline-flex w-full items-center rounded-md px-3 py-2 hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white"
           >
             Rename Folder
           </button>
         </li>
-        <li>
+        <li v-if="!nonEmptyFolderIds.has(folder.id)">
           <button
             type="button"
+            @click="handleFolderDelete(folder.id)"
             class="inline-flex w-full items-center rounded-md px-3 py-2 text-red-600 hover:bg-gray-100 dark:text-red-500 dark:hover:bg-gray-600 dark:hover:text-red-400"
           >
             Delete Folder

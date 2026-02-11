@@ -6,6 +6,8 @@ export interface TopologyItem {
   name: string
   folderId?: string | null
   versionCount?: number // Number of versions, used to determine if modal should show
+  enabled?: boolean
+  visibility?: 'draft' | 'public'
 }
 
 export interface FolderItem {
@@ -24,6 +26,7 @@ export interface TopologyVersion {
   version: string // e.g., "0.1.0"
   visibility: 'draft' | 'public'
   status: 'New' | 'Starting' | 'Running' | 'Stopped'
+  enabled: boolean
   created: string
   updated: string
 }
@@ -32,13 +35,13 @@ export interface TopologyDetail {
   _id: string
   type: 'cron' | 'webhook'
   name: string
-  descr: string
-  status: 'New' | 'Starting' | 'Running' | 'Stopped'
+  description: string
+  status: string
   visibility: 'draft' | 'public'
-  version: string
+  version: number
   category: string | null
   enabled: boolean
-  versions: TopologyVersion[] // All versions of this topology
+  cronSettings: Array<{ cron: string; cronParams: string }>
 }
 
 export interface CronNode {

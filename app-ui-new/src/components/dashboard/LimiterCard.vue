@@ -1,11 +1,17 @@
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, nextTick, watch } from 'vue'
 import { useApexChart, getChartColors, getBaseChartOptions } from '@/composables/useApexChart'
 import { useDataGrid } from '@/composables/useDataGrid'
 import { fetchLimiterData } from '@/services/dashboardService'
-import type { LimiterData, TableColumn } from '@/types/dashboard'
+import type { LimiterData, TableColumn, TimeFilter } from '@/types/dashboard'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
+
+interface Props {
+  timeFilter: TimeFilter
+}
+
+const props = defineProps<Props>()
 
 const limiterData = ref<LimiterData | null>(null)
 const chartEl = ref<HTMLElement | null>(null)
@@ -23,8 +29,8 @@ const { initChart, setupResizeObserver, isDarkMode } = useApexChart({
 })
 
 const columns: TableColumn[] = [
-  { key: 'connector', label: 'Connector', sortable: true, className: 'whitespace-nowrap' },
-  { key: 'topology', label: 'Topology', sortable: true, className: 'whitespace-nowrap truncate max-w-xs' },
+  { key: 'connector', label: 'Connector', sortable: false, className: 'whitespace-nowrap' },
+  { key: 'topology', label: 'Topology', sortable: false, className: 'whitespace-nowrap truncate max-w-xs' },
   { key: 'messages', label: 'Messages', sortable: true, className: 'whitespace-nowrap' },
 ]
 
@@ -38,6 +44,7 @@ const loadData = async () => {
       limit: itemsPerPage.value,
       sortBy: sortField.value,
       sortOrder: sortDirection.value,
+      timeFilter: props.timeFilter
     })
 
     limiterData.value = response
@@ -63,9 +70,14 @@ const {
   handlePerPageChange,
   handleSort,
 } = useDataGrid({
-  defaultSort: { field: 'connector', direction: 'asc' },
+  defaultSort: { field: 'messages', direction: 'desc' },
   defaultPerPage: 5,
   onDataLoad: loadData,
+})
+
+// Add watcher for timeFilter changes
+watch(() => props.timeFilter, () => {
+  loadData()
 })
 
 // Initialize chart on mount
@@ -76,7 +88,7 @@ onMounted(async () => {
     if (!chartEl.value || !limiterData.value) {
       return
     }
-    
+
     initChart(chartEl.value, getColumnChartOptions())
     setupResizeObserver(chartEl.value)
     chartMounted.value = true
@@ -196,8 +208,8 @@ const getColumnChartOptions = () => {
       </div>
 
       <!-- Table -->
-      <DataGrid 
-        :columns="columns" 
+      <DataGrid
+        :columns="columns"
         :data="limiterData.tableData"
         :current-page="currentPage"
         :total-pages="totalPages"
@@ -214,7 +226,7 @@ const getColumnChartOptions = () => {
           <span class="font-medium text-gray-900 dark:text-white">{{ value }}</span>
         </template>
         <template #cell-messages="{ row }">
-          {{ row.messages }} (+{{ row.change }}%)
+          {{ row.messages }} ({{ row.change > 0 ? '+' : '' }}{{ row.change }}%)
         </template>
       </DataGrid>
 

@@ -21,10 +21,10 @@ const updatingTasks = ref<Set<string>>(new Set())
 // Table columns
 const columns: TableColumn[] = [
   { key: 'toggle', label: '', className: 'w-16' },
-  { key: 'name', label: 'Name', sortable: true },
-  { key: 'topology', label: 'Topology', sortable: true },
+  { key: 'name', label: 'Name', sortable: false },
+  { key: 'topology', label: 'Topology', sortable: false },
   { key: 'crontab', label: 'Crontab', sortable: false },
-  { key: 'status', label: 'Status', sortable: true },
+  { key: 'status', label: 'Status', sortable: false },
   { key: 'actions', label: '', className: 'text-right w-16' },
 ]
 
@@ -69,17 +69,11 @@ const handleToggleChange = async (task: ScheduledTask, event: Event) => {
   const target = event.target as HTMLInputElement
   const newEnabled = target.checked
 
-  // Prevent toggle if status is not_set
-  if (task.status === 'not_set') {
-    target.checked = false
-    return
-  }
-
   // Add to updating set
   updatingTasks.value.add(task.id)
 
   try {
-    await updateTaskStatus(task.id, newEnabled)
+    await updateTaskStatus(task.nodeId, newEnabled)
     // Reload data to get updated status
     await loadData()
   } catch (error) {
@@ -96,9 +90,9 @@ const handleSettingsClick = (task: ScheduledTask) => {
   modalOpen.value = true
 }
 
-const handleCronSave = async (taskId: string, crontab: string) => {
+const handleCronSave = async (taskId: string, crontab: string, params: string) => {
   try {
-    await updateTaskCrontab(taskId, crontab)
+    await updateTaskCrontab(taskId, crontab, params)
     // Reload data to get updated crontab
     await loadData()
   } catch (error) {
@@ -112,8 +106,6 @@ const getStatusBadgeClass = (status: string) => {
       return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
     case 'disabled':
       return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
-    case 'not_set':
-      return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
     default:
       return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
   }
@@ -125,8 +117,6 @@ const getStatusLabel = (status: string) => {
       return 'Enabled'
     case 'disabled':
       return 'Disabled'
-    case 'not_set':
-      return 'Not set'
     default:
       return status
   }
@@ -172,8 +162,8 @@ onMounted(() => {
           <label class="relative inline-flex cursor-pointer items-center">
             <input
               type="checkbox"
-              :checked="row.status === 'enabled'"
-              :disabled="row.status === 'not_set' || updatingTasks.has(row.id)"
+              :checked="row.nodeStatus"
+              :disabled="updatingTasks.has(row.id)"
               class="peer sr-only"
               @change="handleToggleChange(row as ScheduledTask, $event)"
             />
@@ -181,7 +171,7 @@ onMounted(() => {
               :class="[
                 'relative h-5 w-9 rounded-full bg-gray-200 after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[\'\'] peer-checked:bg-primary-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 dark:border-gray-600 dark:bg-gray-700 dark:peer-checked:bg-primary-600 dark:peer-focus:ring-primary-800 rtl:peer-checked:after:-translate-x-full',
                 {
-                  'cursor-not-allowed opacity-50': row.status === 'not_set' || updatingTasks.has(row.id),
+                  'cursor-not-allowed opacity-50': updatingTasks.has(row.id),
                 },
               ]"
             ></div>
@@ -190,7 +180,9 @@ onMounted(() => {
 
         <!-- Name Cell -->
         <template #cell-name="{ row }">
-          <span class="font-medium text-gray-900 dark:text-white">{{ row.name }}</span>
+          <span class="font-medium text-gray-900 dark:text-white">
+            {{ row.name }}
+          </span>
         </template>
 
         <!-- Topology Cell -->

@@ -2,79 +2,112 @@ import type {
   ProcessesChartData,
   LimiterData,
   TrashData,
+  TrashTableRow,
   ProcessFilter,
   TimeFilter,
+  HeatmapSeries,
+  LimiterTableRow,
+  LimiterApiFilter,
+  LimiterTotalApiResponse,
+  LimiterGraphApiResponse,
+  LimiterTableApiResponse,
+  TrashApiFilter,
+  TrashTotalApiResponse,
+  TrashGraphApiResponse,
+  TrashTableApiResponse,
 } from '@/types/dashboard'
-import processesChartDataJson from '@/assets/mock-data/processes-chart-data.json'
-import limiterDataJson from '@/assets/mock-data/limiter-data.json'
-import dashboardTrashDataJson from '@/assets/mock-data/dashboard-trash-data.json'
+import type {
+  ProcessTotalApiResponse,
+  ProcessGraphApiResponse,
+  ProcessApiFilter,
+} from '@/types/processes'
+import api from '@/services/api'
+import { convertTimeFilterToDateTimeRangeWithMultiplier } from '@/utils/timeRangeConverter'
+import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 
 /**
- * Get processes chart data
- * Currently returns mock data, will be replaced with API call
- * @param filter - 'all' or 'failed'
- * @param timeFilter - time range filter (not yet implemented in mock)
+ * Fetch total process counts from API
  */
-export async function fetchProcessesData(
-  filter: ProcessFilter = 'all',
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _timeFilter: TimeFilter = '7d',
+export async function fetchProcessesTotalCounts(
+  dateFrom: string,
+  dateTo: string
+): Promise<{ totalProcesses: number; failedProcesses: number }> {
+  const filterObj: ProcessApiFilter = {
+    search: null,
+    filter: [[{ column: 'created', operator: 'BETWEEN', value: [dateFrom, dateTo] }]],
+    sorter: [],
+    paging: { itemsPerPage: 10, page: 1 }
+  }
+
+  const response = await api.get<ProcessTotalApiResponse>('/api/processes/total', {
+    params: { filter: JSON.stringify(filterObj) }
+  })
+
+  const data = response.data.items[0]
+  return {
+    totalProcesses: data?.count || 0,
+    failedProcesses: data?.failed || 0
+  }
+}
+
+/**
+ * Fetch processes graph data and transform to heatmap structure
+ */
+export async function fetchProcessesGraphData(
+  filter: ProcessFilter,
+  dateFrom: string,
+  dateTo: string
 ): Promise<ProcessesChartData> {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 50))
-  
-  const data = processesChartDataJson as ProcessesChartData
-  const FAILED_OFFSET = 1000
-  
-  // Apply rendering logic: failed has priority (use offset for visual separation)
-  const processedData = {
-    ...data,
-    series: data.series.map((s) => ({
-      ...s,
-      data: s.data.map((d) => {
-        let displayValue = 0
-        
-        // Failed has priority: if any failed, use failed value with offset
-        if (d.meta.failed > 0) {
-          displayValue = d.meta.failed + FAILED_OFFSET
-        } else {
-          displayValue = d.meta.success
-        }
-        
-        return {
-          ...d,
-          y: displayValue,
-          meta: {
-            ...d.meta,
-            isFailed: d.meta.failed > 0
-          }
-        }
-      }),
-    })),
+  const filterObj: ProcessApiFilter = {
+    search: null,
+    filter: [[{ column: 'created', operator: 'BETWEEN', value: [dateFrom, dateTo] }]],
+    sorter: [
+      { column: 'topologyId', direction: 'ASC' },
+      { column: 'created', direction: 'ASC' }
+    ],
+    paging: { itemsPerPage: 9999, page: 1 }
   }
-  
-  // Apply filter if 'failed'
-  if (filter === 'failed') {
-    return {
-      ...processedData,
-      series: processedData.series.map((s) => ({
-        ...s,
-        data: s.data.map((d) => {
-          // If filtering by 'failed' and no failures, set to 0 but keep the position
-          if (d.meta.failed === 0) {
-            return {
-              ...d,
-              y: 0,
-              meta: { success: 0, failed: 0, isFailed: false }
-            }
-          }
-          return d
-        }),
-      })),
+
+  const response = await api.get<ProcessGraphApiResponse>('/api/processes/graph', {
+    params: { filter: JSON.stringify(filterObj) }
+  })
+
+  // Group by topology
+  const topologyMap = new Map<string, Map<string, { success: number; failed: number }>>()
+
+  response.data.items.forEach(item => {
+    if (!topologyMap.has(item.topologyId)) {
+      topologyMap.set(item.topologyId, new Map())
     }
-  }
-  
-  return processedData
+    const timeSlot = item.created // Use as-is or format as needed
+    const topologyData = topologyMap.get(item.topologyId)!
+    topologyData.set(timeSlot, {
+      success: item.success,
+      failed: item.failed
+    })
+  })
+
+  // Transform to series format with offset logic
+  const FAILED_OFFSET = 1000
+  const series: HeatmapSeries[] = Array.from(topologyMap.entries()).map(([topologyId, timeData]) => ({
+    name: topologyId, // Will be mapped to topology name in component
+    data: Array.from(timeData.entries()).map(([time, metrics]) => {
+      const isFailed = metrics.failed > 0
+      const displayValue = isFailed ? metrics.failed + FAILED_OFFSET : metrics.success
+
+      return {
+        x: time,
+        y: filter === 'failed' && !isFailed ? 0 : displayValue,
+        meta: {
+          success: filter === 'failed' && !isFailed ? 0 : metrics.success,
+          failed: filter === 'failed' && !isFailed ? 0 : metrics.failed,
+          isFailed
+        }
+      }
+    })
+  }))
+
+  return { series }
 }
 
 /**
@@ -85,51 +118,114 @@ export async function fetchLimiterData(params: {
   limit?: number
   sortBy?: string
   sortOrder?: 'asc' | 'desc'
-  timeFilter?: TimeFilter
+  timeFilter: TimeFilter
 }): Promise<LimiterData> {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 300))
-  
-  const rawData = limiterDataJson as LimiterData
-  let tableData = [...rawData.tableData]
-  
-  // Server-side sorting
-  if (params.sortBy) {
-    tableData.sort((a, b) => {
-      const aRow = a as unknown as Record<string, unknown>
-      const bRow = b as unknown as Record<string, unknown>
-      const aValue = aRow[params.sortBy!]
-      const bValue = bRow[params.sortBy!]
-
-      if (typeof aValue === 'number' && typeof bValue === 'number') {
-        return params.sortOrder === 'asc' ? aValue - bValue : bValue - aValue
-      }
-
-      const aStr = String(aValue).toLowerCase()
-      const bStr = String(bValue).toLowerCase()
-      
-      if (params.sortOrder === 'asc') {
-        return aStr.localeCompare(bStr)
-      } else {
-        return bStr.localeCompare(aStr)
-      }
-    })
-  }
-  
-  // Server-side pagination
   const page = params.page || 1
-  const limit = params.limit || 10
-  const startIdx = (page - 1) * limit
-  const paginatedData = tableData.slice(startIdx, startIdx + limit)
-  
+  const itemsPerPage = params.limit || 5
+
+  // Get date ranges: 2x for total/table, 1x for graph
+  const doubleRange = convertTimeFilterToDateTimeRangeWithMultiplier(params.timeFilter, 2)
+  const normalRange = convertTimeFilterToDateTimeRangeWithMultiplier(params.timeFilter, 1)
+
+  // 1. Fetch total count (2x date range)
+  const totalFilter: LimiterApiFilter = {
+    search: null,
+    filter: [[{
+      column: 'created',
+      operator: 'BETWEEN',
+      value: [doubleRange.from, doubleRange.to]
+    }]],
+    sorter: [],
+    paging: { itemsPerPage: 10, page: 1 }
+  }
+
+  const totalResponse = await api.get<LimiterTotalApiResponse>(
+    `/api/metrics/limits/total?filter=${encodeURIComponent(JSON.stringify(totalFilter))}`
+  )
+
+  // Get totals from response items
+  const totalItem = totalResponse.data.items[0] || { count: 0, previousCount: 0 }
+  const totalMessages = totalItem.count
+  const previousTotal = totalItem.previousCount
+
+  // Calculate vsLastDay (absolute difference)
+  const vsLastDay = totalMessages - previousTotal
+
+  // 2. Fetch graph data (normal date range)
+  const graphFilter: LimiterApiFilter = {
+    search: null,
+    filter: [[{
+      column: 'created',
+      operator: 'BETWEEN',
+      value: [normalRange.from, normalRange.to]
+    }]],
+    sorter: [{ column: 'created', direction: 'ASC' }],
+    paging: { itemsPerPage: 9999, page: 1 }
+  }
+
+  const graphResponse = await api.get<LimiterGraphApiResponse>(
+    `/api/metrics/limits/graph?filter=${encodeURIComponent(JSON.stringify(graphFilter))}`
+  )
+
+  // Transform graph data
+  const chartData = {
+    categories: graphResponse.data.items.map(item =>
+      new Date(item.created).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+    ),
+    series: graphResponse.data.items.map(item => item.count)
+  }
+
+  // 3. Fetch table data (2x date range)
+  // Always sort by count on the API side
+  const sortColumn = 'count'
+
+  const tableFilter: LimiterApiFilter = {
+    search: null,
+    filter: [[{
+      column: 'created',
+      operator: 'BETWEEN',
+      value: [doubleRange.from, doubleRange.to]
+    }]],
+    sorter: [{
+      column: sortColumn,
+      direction: (params.sortOrder || 'desc').toUpperCase()
+    }],
+    paging: { itemsPerPage, page }
+  }
+
+  const tableResponse = await api.get<LimiterTableApiResponse>(
+    `/api/metrics/limits?filter=${encodeURIComponent(JSON.stringify(tableFilter))}`
+  )
+
+  // Load mappings for name resolution
+  const { getNodeName, getTopologyName } = useTopologyNodeMappings()
+
+  // Transform table data
+  const tableData: LimiterTableRow[] = tableResponse.data.items.map(item => {
+    const currentCount = item.count
+    const previousCount = item.previousCount
+    const change = previousCount > 0
+      ? Math.round(((currentCount - previousCount) / previousCount) * 100)
+      : 0
+
+    return {
+      connector: getNodeName(item.nodeId),
+      topology: getTopologyName(item.topologyId),
+      messages: currentCount,
+      change
+    }
+  })
+
   return {
-    ...rawData,
-    tableData: paginatedData,
+    totalMessages,
+    vsLastDay,
+    chartData,
+    tableData,
     meta: {
-      currentPage: page,
-      totalPages: Math.ceil(tableData.length / limit),
-      totalItems: tableData.length,
-      itemsPerPage: limit
+      currentPage: tableResponse.data.paging.page,
+      totalPages: tableResponse.data.paging.lastPage,
+      totalItems: tableResponse.data.paging.total,
+      itemsPerPage: tableResponse.data.paging.itemsPerPage
     }
   }
 }
@@ -142,51 +238,100 @@ export async function fetchTrashData(params: {
   limit?: number
   sortBy?: string
   sortOrder?: 'asc' | 'desc'
-  timeFilter?: TimeFilter
+  timeFilter: TimeFilter
 }): Promise<TrashData> {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 300))
-  
-  const rawData = dashboardTrashDataJson as TrashData
-  let tableData = [...rawData.tableData]
-  
-  // Server-side sorting
-  if (params.sortBy) {
-    tableData.sort((a, b) => {
-      const aRow = a as unknown as Record<string, unknown>
-      const bRow = b as unknown as Record<string, unknown>
-      const aValue = aRow[params.sortBy!]
-      const bValue = bRow[params.sortBy!]
-
-      if (typeof aValue === 'number' && typeof bValue === 'number') {
-        return params.sortOrder === 'asc' ? aValue - bValue : bValue - aValue
-      }
-
-      const aStr = String(aValue).toLowerCase()
-      const bStr = String(bValue).toLowerCase()
-      
-      if (params.sortOrder === 'asc') {
-        return aStr.localeCompare(bStr)
-      } else {
-        return bStr.localeCompare(aStr)
-      }
-    })
-  }
-  
-  // Server-side pagination
   const page = params.page || 1
-  const limit = params.limit || 10
-  const startIdx = (page - 1) * limit
-  const paginatedData = tableData.slice(startIdx, startIdx + limit)
-  
+  const itemsPerPage = params.limit || 5
+
+  // Date ranges: 2x for total, 1x for graph and table
+  const doubleRange = convertTimeFilterToDateTimeRangeWithMultiplier(params.timeFilter, 2)
+  const normalRange = convertTimeFilterToDateTimeRangeWithMultiplier(params.timeFilter, 1)
+
+  // 1. Fetch total count (2x date range)
+  const totalFilter: TrashApiFilter = {
+    search: null,
+    filter: [[{
+      column: 'created',
+      operator: 'BETWEEN',
+      value: [doubleRange.from, doubleRange.to]
+    }]],
+    sorter: [],
+    paging: { itemsPerPage: 10, page: 1 }
+  }
+
+  const totalResponse = await api.get<TrashTotalApiResponse>(
+    `/api/metrics/user-tasks/total?filter=${encodeURIComponent(JSON.stringify(totalFilter))}`
+  )
+
+  const totalItem = totalResponse.data.items[0] || { count: 0, previousCount: 0 }
+  const totalMessages = totalItem.count
+  const previousTotal = totalItem.previousCount
+  const vsLastDay = totalMessages - previousTotal
+
+  // 2. Fetch graph data (1x date range, unlimited items, sorted by count DESC)
+  const graphFilter: TrashApiFilter = {
+    search: null,
+    filter: [[{
+      column: 'created',
+      operator: 'BETWEEN',
+      value: [normalRange.from, normalRange.to]
+    }]],
+    sorter: [{ column: 'count', direction: 'DESC' }],
+    paging: { itemsPerPage: 9999, page: 1 }
+  }
+
+  const graphResponse = await api.get<TrashGraphApiResponse>(
+    `/api/metrics/user-tasks/graph?filter=${encodeURIComponent(JSON.stringify(graphFilter))}`
+  )
+
+  // Load mappings for name resolution
+  const { getNodeName, getTopologyName } = useTopologyNodeMappings()
+
+  // Transform graph data to horizontal bar chart format { x: topologyName, y: count }
+  const chartData: Array<{ x: string; y: number }> = graphResponse.data.items.map(item => ({
+    x: getTopologyName(item.topologyId),
+    y: item.count
+  }))
+
+  // 3. Fetch table data (1x date range, always sort by count on API)
+  const sortColumn = 'count'
+
+  const tableFilter: TrashApiFilter = {
+    search: null,
+    filter: [[{
+      column: 'created',
+      operator: 'BETWEEN',
+      value: [normalRange.from, normalRange.to]
+    }]],
+    sorter: [{
+      column: sortColumn,
+      direction: (params.sortOrder || 'desc').toUpperCase()
+    }],
+    paging: { itemsPerPage, page }
+  }
+
+  const tableResponse = await api.get<TrashTableApiResponse>(
+    `/api/metrics/user-tasks?filter=${encodeURIComponent(JSON.stringify(tableFilter))}`
+  )
+
+  // Transform table data with name resolution
+  const tableData: TrashTableRow[] = tableResponse.data.items.map(item => ({
+    topology: getTopologyName(item.topologyId),
+    node: getNodeName(item.nodeId),
+    message: item.message || '',
+    count: item.count
+  }))
+
   return {
-    ...rawData,
-    tableData: paginatedData,
+    totalMessages,
+    vsLastDay,
+    chartData,
+    tableData,
     meta: {
-      currentPage: page,
-      totalPages: Math.ceil(tableData.length / limit),
-      totalItems: tableData.length,
-      itemsPerPage: limit
+      currentPage: tableResponse.data.paging.page,
+      totalPages: tableResponse.data.paging.lastPage,
+      totalItems: tableResponse.data.paging.total,
+      itemsPerPage: tableResponse.data.paging.itemsPerPage
     }
   }
 }

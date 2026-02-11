@@ -1,7 +1,14 @@
 <script setup lang="ts">
 import { ref, watch, computed, nextTick } from 'vue';
-import type { ApplicationInstall, ApplicationSetting } from '@/types/applications';
-import { fetchApplicationInstall, updateApplicationSettings } from '@/services/applicationsService';
+import type { ApplicationInstall, ApplicationSetting, ApplicationStatus } from '@/types/applications';
+import {
+  fetchApplicationInstall,
+  installApplication,
+  uninstallApplication,
+  updateApplicationSettings,
+  changeApplicationState,
+} from '@/services/applicationsService';
+import { useToast } from '@/composables/useToast';
 import Drawer from '@/components/ui/Drawer.vue';
 import Button from '@/components/ui/Button.vue';
 import TabsWithOverflow, { type TabDefinition } from '@/components/applications/TabsWithOverflow.vue';
@@ -10,16 +17,18 @@ import DynamicFormGenerator from '@/components/applications/DynamicFormGenerator
 interface Props {
   modelValue: boolean;
   applicationKey: string;
-  user?: string;
+  worker: string;
+  status: ApplicationStatus;
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  user: 'default-user',
-});
+const props = defineProps<Props>();
 
 const emit = defineEmits<{
   'update:modelValue': [value: boolean];
+  'refresh': [];
 }>();
+
+const { showToast } = useToast();
 
 const loading = ref(false);
 const saving = ref(false);
@@ -52,18 +61,38 @@ const tabs = computed<TabDefinition[]>(() => {
   }));
 });
 
-const statusBadgeClass = computed(() => {
-  if (!applicationInstall.value) return '';
-  
-  if (applicationInstall.value.authorized) {
-    return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
-  }
-  return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
-});
-
 const statusLabel = computed(() => {
   if (!applicationInstall.value) return '';
-  return applicationInstall.value.authorized ? 'Authorized' : 'Unauthorized';
+  switch (props.status) {
+    case 'activated':
+      return 'Activated';
+    case 'authorized':
+      return 'Authorized';
+    case 'installed':
+      return 'Unauthorized';
+    case 'available':
+    default:
+      return '';
+  }
+});
+
+const showStatusBadge = computed(() => {
+  return props.status !== 'available' && applicationInstall.value;
+});
+
+const statusBadgeClass = computed(() => {
+  if (!applicationInstall.value) return '';
+  switch (props.status) {
+    case 'activated':
+      return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
+    case 'authorized':
+      return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
+    case 'installed':
+      return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
+    case 'available':
+    default:
+      return '';
+  }
 });
 
 const isInstallDisabled = computed(() => {
@@ -71,36 +100,86 @@ const isInstallDisabled = computed(() => {
 });
 
 const loadApplicationData = async () => {
-  if (!props.applicationKey) return;
+  if (!props.applicationKey || !props.worker) return;
 
   loading.value = true;
   applicationInstall.value = null; // Clear previous data
-  
+
   try {
-    const data = await fetchApplicationInstall(props.applicationKey, props.user);
-    
+    // Use preview endpoint only for 'available' apps
+    const isInstalled = props.status !== 'available';
+
+    const data = await fetchApplicationInstall(props.applicationKey, props.worker, isInstalled);
+
     // Initialize form values from settings
     const initialValues: Record<string, unknown> = {};
     data.applicationSettings.forEach((setting) => {
       initialValues[setting.key] = setting.value ?? '';
     });
-    
+
     // Set all data at once
     applicationInstall.value = data;
     formValues.value = initialValues;
 
     // Wait for DOM to be ready
     await nextTick();
-    
+
     // Set active tab to first tab
     const tabsList = Object.keys(groupedSettings.value);
     if (tabsList.length > 0) {
       activeTab.value = tabsList[0];
     }
-    
+
     loading.value = false;
   } catch (error) {
     console.error('Failed to load application install:', error);
+    showToast('Failed to load application details', 'error');
+    loading.value = false;
+  }
+};
+
+const handleInstall = async () => {
+  if (!props.applicationKey || !props.worker) return;
+
+  loading.value = true;
+  try {
+    const data = await installApplication(props.applicationKey, props.worker);
+    applicationInstall.value = data;
+
+    // Initialize form values from settings
+    const initialValues: Record<string, unknown> = {};
+    data.applicationSettings.forEach((setting) => {
+      initialValues[setting.key] = setting.value ?? '';
+    });
+    formValues.value = initialValues;
+
+    showToast('Application installed successfully', 'success');
+    emit('refresh'); // Refresh parent list
+  } catch (error: any) {
+    console.error('Failed to install application:', error);
+    showToast(error.response?.data?.message || 'Failed to install application', 'error');
+  } finally {
+    loading.value = false;
+  }
+};
+
+const handleUninstall = async () => {
+  if (!props.applicationKey || !props.worker) return;
+
+  if (!confirm('Are you sure you want to uninstall this application?')) {
+    return;
+  }
+
+  loading.value = true;
+  try {
+    await uninstallApplication(props.applicationKey, props.worker);
+    showToast('Application uninstalled successfully', 'success');
+    emit('update:modelValue', false);
+    emit('refresh'); // Refresh parent list
+  } catch (error: any) {
+    console.error('Failed to uninstall application:', error);
+    showToast(error.response?.data?.message || 'Failed to uninstall application', 'error');
+  } finally {
     loading.value = false;
   }
 };
@@ -110,13 +189,50 @@ const handleSave = async () => {
 
   saving.value = true;
   try {
-    await updateApplicationSettings(props.applicationKey, props.user, formValues.value);
-    // Optionally show success message
-    console.log('Settings saved successfully');
-  } catch (error) {
+    const updatedInstall = await updateApplicationSettings(
+      props.applicationKey,
+      props.worker,
+      formValues.value,
+      applicationInstall.value.applicationSettings
+    );
+
+    // Update the local state with fresh data from API
+    applicationInstall.value = updatedInstall;
+
+    // Reinitialize form values from updated settings
+    const initialValues: Record<string, unknown> = {};
+    updatedInstall.applicationSettings.forEach((setting) => {
+      initialValues[setting.key] = setting.value ?? '';
+    });
+    formValues.value = initialValues;
+
+    showToast('Settings saved successfully', 'success');
+  } catch (error: any) {
     console.error('Failed to save settings:', error);
+    showToast(error.response?.data?.message || 'Failed to save settings', 'error');
   } finally {
     saving.value = false;
+  }
+};
+
+const handleChangeState = async (enabled: boolean) => {
+  if (!props.applicationKey || !props.worker) return;
+
+  loading.value = true;
+  try {
+    await changeApplicationState(props.applicationKey, props.worker, enabled);
+    showToast(
+      enabled ? 'Application activated successfully' : 'Application deactivated successfully',
+      'success',
+    );
+    emit('refresh');
+    emit('update:modelValue', false);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to change application state';
+    console.error('Failed to change application state:', error);
+    showToast(errorMessage, 'error');
+  } finally {
+    loading.value = false;
   }
 };
 
@@ -167,8 +283,15 @@ watch(() => props.modelValue, async (newValue) => {
       <div>
         <div class="flex items-start justify-between mb-3">
           <div>
-            <!-- Generic icon placeholder -->
+            <!-- Display API logo or fallback to generic icon -->
+            <img
+              v-if="applicationInstall.logo"
+              :src="applicationInstall.logo"
+              :alt="`${applicationInstall.name} logo`"
+              class="h-12 w-12 mb-2"
+            />
             <svg
+              v-else
               xmlns="http://www.w3.org/2000/svg"
               class="h-12 text-gray-900 dark:text-white mb-2"
               height="48px"
@@ -184,7 +307,11 @@ watch(() => props.modelValue, async (newValue) => {
               {{ applicationInstall.name }}
             </h2>
             <div class="flex items-center gap-2">
-              <span class="text-xs font-medium px-2.5 py-0.5 rounded" :class="statusBadgeClass">
+              <span
+                v-if="showStatusBadge"
+                class="text-xs font-medium px-2.5 py-0.5 rounded"
+                :class="statusBadgeClass"
+              >
                 {{ statusLabel }}
               </span>
               <span v-if="applicationInstall.worker" class="text-sm font-medium text-gray-900 dark:text-white">
@@ -194,11 +321,36 @@ watch(() => props.modelValue, async (newValue) => {
           </div>
           <div class="flex items-center gap-2">
             <Button
-              v-if="!applicationInstall.authorized"
+              v-if="props.status === 'available'"
               variant="primary"
-              :disabled="isInstallDisabled"
+              :disabled="loading"
+              @click="handleInstall"
             >
               Install
+            </Button>
+            <Button
+              v-if="props.status === 'authorized'"
+              variant="primary"
+              :disabled="loading"
+              @click="handleChangeState(true)"
+            >
+              Activate
+            </Button>
+            <Button
+              v-if="props.status === 'activated'"
+              variant="outline"
+              :disabled="loading"
+              @click="handleChangeState(false)"
+            >
+              Deactivate
+            </Button>
+            <Button
+              v-if="props.status !== 'available'"
+              variant="outline"
+              :disabled="loading"
+              @click="handleUninstall"
+            >
+              Uninstall
             </Button>
           </div>
         </div>
@@ -219,7 +371,7 @@ watch(() => props.modelValue, async (newValue) => {
               :settings="groupedSettings[tab.id] || []"
               v-model="formValues"
             />
-            
+
             <!-- Save button for this tab -->
             <div class="flex items-center justify-start pt-4">
               <Button variant="primary" :disabled="saving" @click="handleSave">

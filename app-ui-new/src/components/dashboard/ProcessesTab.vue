@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import ProcessesChart from './ProcessesChart.vue'
 import ProcessAuditDrawer from './ProcessAuditDrawer.vue'
 import Card from '@/components/ui/Card.vue'
@@ -10,10 +10,11 @@ import DateTimeRangeFilter from '@/components/ui/datagrid/DateTimeRangeFilter.vu
 import type { Process, ProcessStatus } from '@/types/processes'
 import type { ProcessFilter, TimeFilter, TableColumn, ProcessesChartData, ProcessesExternalFilters, HeatmapClickData } from '@/types/dashboard'
 import type { QuickFilterOption, DropdownFilterOption } from '@/types/datagrid'
-import { fetchProcesses, fetchTopologyNames } from '@/services/processesService'
-import { fetchProcessesData } from '@/services/dashboardService'
+import { fetchProcesses } from '@/services/processesService'
+import { fetchProcessesTotalCounts, fetchProcessesGraphData } from '@/services/dashboardService'
 import { convertTimeFilterToDateTimeRange, formatDateTimeForApi, calculateTimeRangeFromSlot } from '@/utils/timeRangeConverter'
 import { useDataGrid } from '@/composables/useDataGrid'
+import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 
 interface Props {
   globalTimeFilter: TimeFilter
@@ -21,6 +22,9 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+
+// Use topology/node mappings composable
+const { loadMappings, getTopologyName, topologyOptions: topologyOptionsFromMappings } = useTopologyNodeMappings()
 
 // Drawer state
 const drawerOpen = ref(false)
@@ -44,10 +48,10 @@ const dateTimeRange = ref<{ from: string | null; to: string | null }>({
 
 // Table columns
 const columns: TableColumn[] = [
-  { key: 'topology', label: 'Topology', sortable: true },
+  { key: 'topology', label: 'Topology', sortable: false },
   { key: 'startTime', label: 'Start time', sortable: true },
   { key: 'duration', label: 'Duration', sortable: true },
-  { key: 'status', label: 'Status', sortable: true },
+  { key: 'status', label: 'Status', sortable: false },
   { key: 'errorMessage', label: 'Error Message', sortable: false },
   { key: 'actions', label: '', className: 'text-right' },
 ]
@@ -61,8 +65,9 @@ const quickFilterOptions: QuickFilterOption[] = [
 ]
 
 // Topology dropdown options
-const topologyOptions = ref<DropdownFilterOption[]>([
+const topologyOptions = computed<DropdownFilterOption[]>(() => [
   { value: null, label: 'All Topologies' },
+  ...topologyOptionsFromMappings.value
 ])
 
 // Format duration from seconds to HH:MM:SS
@@ -89,7 +94,12 @@ const loadData = async () => {
       order: sortDirection.value,
     })
 
-    processes.value = response.data
+    // Map topology IDs to names
+    processes.value = response.data.map(process => ({
+      ...process,
+      topology: getTopologyName(process.topologyId)
+    }))
+
     totalPages.value = response.meta.totalPages
     totalItems.value = response.meta.totalItems
   } catch (error) {
@@ -126,36 +136,51 @@ const handleAuditClick = (process: Process) => {
 
 const handleHeatmapClick = (data: HeatmapClickData) => {
   console.log('Heatmap clicked in ProcessesTab:', data)
-  
+
   // Calculate time range from clicked time slot (±30 minutes)
   const timeRange = calculateTimeRangeFromSlot(data.timeSlot)
-  
+
   // Apply topology filter
   topologyFilter.value = data.topology
-  
+
   // Apply time range filter
   dateTimeRange.value = {
     from: timeRange.from,
     to: timeRange.to,
   }
-  
+
   // Data will reload automatically via watch on dateTimeRange and topologyFilter
 }
 
 const handleProcessFilterChange = async (filter: ProcessFilter) => {
   processFilter.value = filter
   // Reload chart data with new filter
-  try {
-    processesChartData.value = await fetchProcessesData(filter, props.globalTimeFilter)
-  } catch (error) {
-    console.error('Error reloading processes chart data:', error)
-  }
+  await loadChartData()
 }
 
 const loadChartData = async () => {
   chartLoading.value = true
   try {
-    processesChartData.value = await fetchProcessesData(processFilter.value, props.globalTimeFilter)
+    // Get date range
+    const dateFrom = formatDateTimeForApi(dateTimeRange.value.from) || ''
+    const dateTo = formatDateTimeForApi(dateTimeRange.value.to) || ''
+
+    // Fetch total counts
+    const totals = await fetchProcessesTotalCounts(dateFrom, dateTo)
+
+    // Fetch graph data
+    const chartData = await fetchProcessesGraphData(processFilter.value, dateFrom, dateTo)
+
+    // Map topology IDs to names in series
+    processesChartData.value = {
+      ...chartData,
+      totalProcesses: totals.totalProcesses,
+      failedProcesses: totals.failedProcesses,
+      series: chartData.series.map(s => ({
+        ...s,
+        name: getTopologyName(s.name)
+      }))
+    }
   } catch (error) {
     console.error('Error loading processes chart data:', error)
   } finally {
@@ -184,12 +209,12 @@ watch(
   () => props.externalFilters,
   (filters) => {
     if (!filters) return
-    
+
     // Apply topology filter
     if (filters.topology) {
       topologyFilter.value = filters.topology
     }
-    
+
     // Apply time range filter
     if (filters.timeRange) {
       dateTimeRange.value = {
@@ -202,16 +227,8 @@ watch(
 )
 
 onMounted(async () => {
-  // Load topologies for dropdown filter
-  try {
-    const topologyNames = await fetchTopologyNames()
-    topologyOptions.value = [
-      { value: null, label: 'All Topologies' },
-      ...topologyNames.map((name) => ({ value: name, label: name })),
-    ]
-  } catch (error) {
-    console.error('Failed to load topologies:', error)
-  }
+  // Load mappings for topology names
+  await loadMappings()
 
   // Load initial data
   loadChartData()
@@ -250,13 +267,13 @@ onMounted(async () => {
       </Card>
       <ProcessesChart
         v-else-if="processesChartData"
-        :total-processes="processesChartData.totalProcesses"
-        :total-failed="processesChartData.totalFailed"
-        :time-range="processesChartData.timeRange"
+        :total-processes="processesChartData.totalProcesses || 0"
+        :total-failed="processesChartData.failedProcesses || 0"
+        :time-range="processesChartData.timeRange || ''"
         :filter="processFilter"
         :series="processesChartData.series"
-        :x-categories="processesChartData.xCategories"
-        :y-categories="processesChartData.yCategories"
+        :x-categories="processesChartData.xCategories || []"
+        :y-categories="processesChartData.yCategories || []"
         @filter-change="handleProcessFilterChange"
         @heatmap-click="handleHeatmapClick"
       />
