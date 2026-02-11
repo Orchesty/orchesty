@@ -18,34 +18,38 @@ use Hanaboso\CommonsBundle\Database\Traits\Document\IdTrait;
     expireAfterSeconds: 2_628_000,
 )]
 #[ODM\Index(
-    keys: ['pipes.topology_id' => 'asc', 'ts' => 'desc'],
-    name: 'IK_log_pipesTopologyId_created',
-)]
-#[ODM\Index(
     keys: ['pipes.node_id' => 'asc', 'ts' => 'desc'],
     name: 'IK_log_pipesNodeId_created',
 )]
 #[ODM\Index(
-    keys: ['pipes.topology_id' => 'asc', 'pipes.node_id' => 'asc', 'ts' => 'desc'],
-    name: 'IK_log_pipesTopologyId_pipesNodeId_created',
+    keys: ['pipes.topology_id' => 'asc', 'ts' => 'desc'],
+    name: 'IK_log_pipesTopologyId_created',
+)]
+#[ODM\Index(
+    keys: ['pipes.correlation_id' => 'asc', 'ts' => 'desc'],
+    name: 'IK_log_pipesCorrelationId_created',
 )]
 #[ODM\Index(
     keys: ['pipes.severity' => 'asc', 'ts' => 'desc'],
     name: 'IK_log_pipesSeverity_created',
 )]
 #[ODM\Index(
-    keys: ['pipes.topology_id' => 'asc', 'pipes.severity' => 'asc', 'ts' => 'desc'],
-    name: 'IK_log_pipesTopologyId_pipesSeverity_created',
+    keys: ['pipes.node_id' => 'asc', 'pipes.topology_id' => 'asc', 'ts' => 'desc'],
+    name: 'IK_log_pipesNodeId_pipesTopologyId_created',
 )]
 #[ODM\Index(
     keys: ['pipes.node_id' => 'asc', 'pipes.severity' => 'asc', 'ts' => 'desc'],
     name: 'IK_log_pipesNodeId_pipesSeverity_created',
 )]
 #[ODM\Index(
-    keys: ['pipes.topology_id' => 'asc', 'pipes.node_id' => 'asc', 'pipes.severity' => 'asc', 'ts' => 'desc'],
-    name: 'IK_log_pipesTopologyId_pipesNodeId_pipesSeverity_created',
+    keys: ['pipes.topology_id' => 'asc', 'pipes.severity' => 'asc', 'ts' => 'desc'],
+    name: 'IK_log_pipesTopologyId_pipesSeverity_created',
 )]
 #[ODM\Index(
+    keys: ['pipes.node_id' => 'asc', 'pipes.topology_id' => 'asc', 'pipes.severity' => 'asc', 'ts' => 'desc'],
+    name: 'IK_log_pipesNodeId_pipesTopologyId_pipesSeverity_created',
+)]
+#[ODM\Index( // Used by \Hanaboso\PipesFramework\Configurator\Model\Filters\ProcessAggregationFilter
     keys: ['pipes.correlation_id' => 'asc', 'pipes.severity' => 'asc'],
     name: 'IK_log_pipesCorrelationId_pipesSeverity',
 )]

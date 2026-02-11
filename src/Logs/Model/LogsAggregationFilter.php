@@ -29,6 +29,7 @@ final class LogsAggregationFilter extends GridAggregationFilterAbstract
     protected function getConditions(): array
     {
         return [
+            'correlationId' => 'pipes.correlation_id',
             'created' => 'ts',
             'message' => 'message',
             'nodeId' => 'pipes.node_id',

@@ -84,8 +84,10 @@ final class UserTaskAggregationFilter extends GridAggregationFilterAbstract
             ->expression('$correlationId')
             ->field('created')
             ->dateToString('%Y-%m-%dT%H:%M:%SZ', '$created')
-            ->field('message')
-            ->ifNull('$message.headers.result-message', NULL);
+            ->field('body')
+            ->expression('$message.body')
+            ->field('headers')
+            ->expression('$message.headers');
     }
 
 }

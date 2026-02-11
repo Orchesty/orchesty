@@ -28,40 +28,28 @@ use Hanaboso\Utils\String\Json;
     name: 'IK_userTask_type_created',
 )]
 #[ODM\Index(
-    keys: ['type' => 'asc', 'topologyId' => 'asc', 'created' => 'desc'],
-    name: 'IK_userTask_type_topologyId_created',
-)]
-#[ODM\Index(
     keys: ['type' => 'asc', 'nodeId' => 'asc', 'created' => 'desc'],
     name: 'IK_userTask_type_nodeId_created',
 )]
 #[ODM\Index(
-    keys: ['type' => 'asc', 'topologyId' => 'asc', 'nodeId' => 'asc', 'created' => 'desc'],
-    name: 'IK_userTask_type_topologyId_nodeId_created',
+    keys: ['type' => 'asc', 'topologyId' => 'asc', 'created' => 'desc'],
+    name: 'IK_userTask_type_topologyId_created',
 )]
 #[ODM\Index(
     keys: ['type' => 'asc', 'correlationId' => 'asc', 'created' => 'desc'],
     name: 'IK_userTask_type_correlationId_created',
 )]
 #[ODM\Index(
-    keys: ['type' => 'asc', 'topologyId' => 'asc', 'correlationId' => 'asc', 'created' => 'desc'],
-    name: 'IK_userTask_type_topologyId_correlationId_created',
+    keys: ['type' => 'asc', 'nodeId' => 'asc', 'topologyId' => 'asc', 'created' => 'desc'],
+    name: 'IK_userTask_type_nodeId_topologyId_created',
 )]
-#[ODM\Index(
-    keys: ['type' => 'asc', 'nodeId' => 'asc', 'correlationId' => 'asc', 'created' => 'desc'],
-    name: 'IK_userTask_type_nodeId_correlationId_created',
+#[ODM\Index( // Used by \Hanaboso\PipesFramework\Metrics\Model\Filters\MetricUserTaskAggregationFilter
+    keys: ['created' => 'desc', 'message.headers.node-id' => 'asc', 'message.headers.topology-id' => 'asc', 'message.headers.result-message' => 'asc'],
+    name: 'IK_userTask_created_messageHeadersNodeId_messageHeadersTopologyId_messageHeadersResultMessage',
 )]
-#[ODM\Index(
-    keys: ['type' => 'asc', 'topologyId' => 'asc', 'nodeId' => 'asc', 'correlationId' => 'asc', 'created' => 'desc'],
-    name: 'IK_userTask_type_topologyId_nodeId_correlationId_created',
-)]
-#[ODM\Index(
+#[ODM\Index( // Used by Limiter (pkg/metrics/client.go)
     keys: ['type' => 'asc', 'message.headers.node-id' => 'asc', 'message.headers.user' => 'asc', 'message.headers.topology-id' => 'asc', 'message.headers.application' => 'asc'],
     name: 'IK_userTask_type_messageHeadersNodeId_messageHeadersUser_messageHeadersTopologyId_messageHeadersApplication',
-)]
-#[ODM\Index(
-    keys: ['created' => 'desc', 'message.headers.topology-id' => 'asc', 'message.headers.node-id' => 'asc', 'message.headers.result-message' => 'asc'],
-    name: 'IK_userTask_created_messageHeadersTopologyId_messageHeadersNodeId_messageHeadersResultMessage',
 )]
 #[ODM\HasLifecycleCallbacks]
 class UserTask

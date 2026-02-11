@@ -109,9 +109,9 @@ final class MetricLimitAggregationFilter extends GridAggregationFilterAbstract
             ->field('topologyId')
             ->expression('$topologyId')
             ->field('count')
-            ->round('$count')
+            ->expression($builder->expr()->round($builder->expr()->ifNull('$count', 0)))
             ->field('previousCount')
-            ->round('$previousCount');
+            ->expression($builder->expr()->round($builder->expr()->ifNull('$previousCount', 0)));
     }
 
     /**

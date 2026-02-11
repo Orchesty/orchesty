@@ -581,9 +581,13 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         $tp  = (new Topology())->setName('Topology')->setVersion(1)->setEnabled(TRUE);
         $tp2 = (new Topology())->setName('Topology')->setVersion(2)->setEnabled(FALSE);
         $tp3 = (new Topology())->setName('Topology')->setVersion(2)->setEnabled(FALSE)->setDeleted(TRUE);
+        $nd  = (new Node())->setName('Node');
+        $nd2 = (new Node())->setName('Node');
         $this->dm->persist($tp);
         $this->dm->persist($tp2);
         $this->dm->persist($tp3);
+        $this->dm->persist($nd);
+        $this->dm->persist($nd2);
         $this->dm->flush();
 
         $cronManager = self::createMock(CronManager::class);
@@ -592,9 +596,11 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
                 200,
                 'OK',
                 sprintf(
-                    '[{"topology":"%s", "node":"Node", "time":"*/1 * * * *"}, {"topology":"%s", "node":"Node", "time":"*/1 * * * *"}]',
+                    '[{"topology":"%s", "node":"%s", "time":"*/1 * * * *"}, {"topology":"%s", "node":"%s", "time":"*/1 * * * *"}]',
                     $tp->getId(),
+                    $nd->getId(),
                     $tp2->getId(),
+                    $nd2->getId(),
                 ),
                 [],
             ),
@@ -607,7 +613,10 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
             [
                 [
                     'node'     => [
-                        'name' => 'Node',
+                        'id'         => $topologies[0]['node']['id'],
+                        'name'       => 'Node',
+                        'parameters' => NULL,
+                        'status'     => TRUE,
                     ],
                     'time'     => '*/1 * * * *',
                     'topology' => [
@@ -618,7 +627,10 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
                     ],
                 ], [
                     'node'     => [
-                        'name' => 'Node',
+                        'id'         => $topologies[1]['node']['id'],
+                        'name'       => 'Node',
+                        'parameters' => NULL,
+                        'status'     => TRUE,
                     ],
                     'time'     => '*/1 * * * *',
                     'topology' => [
@@ -640,8 +652,12 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     {
         $tp  = (new Topology())->setName('Topology')->setVersion(1)->setEnabled(TRUE);
         $tp2 = (new Topology())->setName('Topology')->setVersion(2)->setEnabled(TRUE);
+        $nd  = (new Node())->setName('Node');
+        $nd2 = (new Node())->setName('Node');
         $this->dm->persist($tp);
         $this->dm->persist($tp2);
+        $this->dm->persist($nd);
+        $this->dm->persist($nd2);
         $this->dm->flush();
 
         $cronManager = self::createMock(CronManager::class);
@@ -650,9 +666,11 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
                 200,
                 'OK',
                 sprintf(
-                    '[{"topology":"%s", "node":"Node", "time":"*/1 * * * *"}, {"topology":"%s", "node":"Node", "time":"*/1 * * * *"}]',
+                    '[{"topology":"%s", "node":"%s", "time":"*/1 * * * *"}, {"topology":"%s", "node":"%s", "time":"*/1 * * * *"}]',
                     $tp->getId(),
+                    $nd->getId(),
                     $tp2->getId(),
+                    $nd2->getId(),
                 ),
                 [],
             ),
@@ -664,7 +682,12 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
         self::assertEquals(
             [
                 [
-                    'node'     => ['name' => 'Node'],
+                    'node'     => [
+                        'id'         => $nd2->getId(),
+                        'name'       => 'Node',
+                        'parameters' => NULL,
+                        'status'     => TRUE,
+                    ],
                     'time'     => '*/1 * * * *',
                     'topology' => [
                         'id'      => $tp2->getId(),
@@ -674,7 +697,12 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
                     ],
                 ],
                 [
-                    'node'     => ['name' => 'Node'],
+                    'node'     => [
+                        'id'         => $nd->getId(),
+                        'name'       => 'Node',
+                        'parameters' => NULL,
+                        'status'     => TRUE,
+                    ],
                     'time'     => '*/1 * * * *',
                     'topology' => [
                         'id'      => $tp->getId(),

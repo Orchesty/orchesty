@@ -47,6 +47,7 @@ final class ProcessAggregationFilter extends GridAggregationFilterAbstract
     {
         return [
             'created' => 'startedAt',
+            'duration' => 'duration',
         ];
     }
 
@@ -90,6 +91,26 @@ final class ProcessAggregationFilter extends GridAggregationFilterAbstract
                         Response::HTTP_BAD_REQUEST,
                     ),
                 };
+            },
+        ];
+    }
+
+    /**
+     * @return array<string, Closure(Builder): string[]>
+     */
+    protected function getSortationsCallbacks(): array
+    {
+        return [
+            'duration' => static function (Builder $builder): array {
+                $builder
+                    ->addFields()
+                    ->field('duration')
+                    ->subtract(
+                        $builder->expr()->ifNull('$finished', new UTCDateTime(DateTimeUtils::getUtcDateTime())),
+                        '$created',
+                    );
+
+                return ['duration'];
             },
         ];
     }
