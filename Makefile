@@ -5,6 +5,7 @@ DE=docker-compose exec -T app
 DR=docker-compose exec -T rabbitmq
 
 TEST_IMAGE = bridge:test
+NEW_UI_IMAGE = dkr.hanaboso.net/pipes/pipes/pf-bridge:new-ui
 TOPOLOGY_ID = 690e1281a439e5b99905ffa3
 TOPOLOGY_NAME = benchmark
 
@@ -16,7 +17,12 @@ TOPOLOGY_NAME = benchmark
 build:
 	docker buildx build --pull --push --platform linux/amd64,linux/arm64/v8 -t $(IMAGE) .
 
+build-new-ui:
+	docker buildx build --pull --push --platform linux/amd64,linux/arm64/v8 -t $(NEW_UI_IMAGE) .
+
 docker-up-force: .env
+
+docker-up-force: .env .lo0-up
 	$(DC) pull
 	$(DC) up -d --force-recreate --remove-orphans
 
