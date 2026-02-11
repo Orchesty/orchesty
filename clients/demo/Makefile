@@ -45,6 +45,7 @@ init: up
 	$(DCB) bin/console doctrine:mongodb:schema:update --dm default || true
 	$(DCB) bin/console doctrine:mongodb:schema:update --dm metrics || true
 	$(DCB) bin/console mongodb:index:update || true
+	docker pull dkr.hanaboso.net/pipes/pipes/pf-bridge:new-ui
 	$(DCW) rabbitmq:15672 -t 600
 	$(DCR) rabbitmq-plugins enable rabbitmq_consistent_hash_exchange
 	$(DCR) rabbitmq-plugins enable rabbitmq_management
@@ -93,7 +94,12 @@ run-topology:
 #	$(DC) cp export-import mongo:/tmp/export-import
 #	$(DCB) bin/console doctrine:mongodb:schema:update --dm default || true
 #	$(DCB) bin/console doctrine:mongodb:schema:update --dm metrics || true
-#	$(DCM) mongorestore --gzip --noIndexRestore --numParallelCollections $$(($$(nproc)*2/3)) --numInsertionWorkersPerCollection $$(($$(nproc)*2/3)) --writeConcern "{w:0}" "mongodb://localhost/demo" /tmp/export-import/$(INSTANCE)
-#	$(DCM) mongorestore --gzip --noIndexRestore --numParallelCollections $$(($$(nproc)*2/3)) --numInsertionWorkersPerCollection $$(($$(nproc)*2/3)) --writeConcern "{w:0}" "mongodb://localhost/metrics" /tmp/export-import/$(INSTANCE)-metrics
-#	$(DCB) bin/console user:create "$(shell grep 'ORCHESTY_USER' .env | cut -d "=" -f2)" "$(shell grep 'ORCHESTY_PASSWORD' .env | cut -d "=" -f2)"
+#	$(DCM) mongosh demo --eval 'db.getCollectionNames().forEach(c => db[c].dropIndexes())'
+#	$(DCM) mongosh metrics --eval 'db.getCollectionNames().forEach(c => db[c].dropIndexes())'
+#	$(DCM) mongorestore --gzip --noIndexRestore --numParallelCollections $$(($$(nproc)*2/3)) --numInsertionWorkersPerCollection $$(($$(nproc)*2/3)) --writeConcern '{w:0}' 'mongodb://localhost/demo' /tmp/export-import/$(INSTANCE)
+#	$(DCM) mongorestore --gzip --noIndexRestore --numParallelCollections $$(($$(nproc)*2/3)) --numInsertionWorkersPerCollection $$(($$(nproc)*2/3)) --writeConcern '{w:0}' 'mongodb://localhost/metrics' /tmp/export-import/$(INSTANCE)-metrics
+#	$(DCB) bin/console user:create "$(shell grep 'ORCHESTY_USER' .env | cut -d '=' -f2)" "$(shell grep 'ORCHESTY_PASSWORD' .env | cut -d '=' -f2)"
+#	$(DCB) bin/console api-token:create --key "$(shell grep 'ORCHESTY_API_KEY' .env | cut -d '=' -f2)"
+#	$(DCB) bin/console service:install node-sdk node-sdk:8080
 #	$(DCB) bin/console mongodb:index:update
+#	$(DC) up -d --force-recreate limiter
