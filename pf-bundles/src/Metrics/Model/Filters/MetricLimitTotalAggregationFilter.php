@@ -103,9 +103,9 @@ final class MetricLimitTotalAggregationFilter extends GridAggregationFilterAbstr
             ->field('_id')
             ->expression(FALSE)
             ->field('count')
-            ->round('$count')
+            ->expression($builder->expr()->round($builder->expr()->ifNull('$count', 0)))
             ->field('previousCount')
-            ->round('$previousCount');
+            ->expression($builder->expr()->round($builder->expr()->ifNull('$previousCount', 0)));
     }
 
     /**

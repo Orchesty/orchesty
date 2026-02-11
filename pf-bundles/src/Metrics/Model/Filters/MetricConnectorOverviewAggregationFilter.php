@@ -47,7 +47,11 @@ final class MetricConnectorOverviewAggregationFilter extends GridAggregationFilt
     protected function getSortations(): array
     {
         return [
+            'count' => 'count',
             'duration' => 'duration',
+            'lastStatus' => 'lastStatus',
+            'status400' => 'status400',
+            'status500' => 'status500',
         ];
     }
 

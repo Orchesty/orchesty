@@ -391,11 +391,16 @@ final class TopologyManager
         foreach ($data as $item) {
             /** @var Topology[] $topologies */
             $topologies = $this->topologyRepository->findBy(['id' => $item['topology'], 'deleted' => FALSE]);
+            /** @var Node|NULL $node */
+            $node = $this->nodeRepository->findOneBy(['id' => $item['node']]);
 
             foreach ($topologies as $topology) {
                 $result[] = [
-                    'node'     => [
-                        'name' => $item['node'],
+                    'node'           => [
+                        'id'         => $node?->getId(),
+                        'name'       => $node?->getName(),
+                        'parameters' => $node?->getCronParams(),
+                        'status'     => $node?->isEnabled(),
                     ],
                     'time'     => $item['time'],
                     'topology' => [

@@ -111,7 +111,7 @@ final class ServiceLocator implements LoggerAwareInterface
             }
 
             foreach ($installedApplications[self::ITEMS] ?? [] as $application) {
-                if (!array_key_exists($application[self::KEY], $applications[$sdkName])) {
+                if (!array_key_exists($application[self::KEY], $applications[$sdkName][self::APPLICATIONS])) {
                     continue;
                 }
 

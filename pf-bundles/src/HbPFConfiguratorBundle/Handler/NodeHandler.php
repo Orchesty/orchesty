@@ -37,9 +37,11 @@ final class NodeHandler
     }
 
     /**
+     * @param bool $all
+     *
      * @return mixed[]
      */
-    public function getTopologiesWithNodes(): array
+    public function getTopologiesWithNodes(bool $all = FALSE): array
     {
         /** @var Topology[] $topologies */
         $topologies = $this
@@ -55,7 +57,7 @@ final class NodeHandler
             ->field('deleted')
             ->equals(FALSE)
             ->field('type')
-            ->notIn([
+            ->notIn($all ? [] : [
                 TypeEnum::START->value,
                 TypeEnum::CRON->value,
                 TypeEnum::USER->value,
