@@ -21,29 +21,37 @@ const checkedMissingIds = {
 // Debounce timer for refresh
 let refreshTimer: ReturnType<typeof setTimeout> | null = null
 
+// Shared loading promise so concurrent callers can await the in-flight request
+let loadingPromise: Promise<void> | null = null
+
 export function useTopologyNodeMappings() {
   // Fetch both mapping sets if not already loaded
   const loadMappings = async (force = false) => {
-    if ((isLoaded.value || isLoading.value) && !force) return
+    if (isLoaded.value && !force) return
+    if (isLoading.value && loadingPromise && !force) return loadingPromise
 
     isLoading.value = true
-    try {
-      const [all, filtered] = await Promise.all([
-        fetchTopologyNodeMappings(),
-        fetchFilteredMappings(),
-      ])
-      allMappings.value = all
-      filteredMappingsData.value = filtered
-      isLoaded.value = true
-    } catch (error) {
-      console.error('Failed to load topology/node mappings:', error)
-      // Set empty mappings to prevent repeated failures
-      const empty = { applications: {}, nodes: {}, topologies: {}, tree: {} }
-      allMappings.value = empty
-      filteredMappingsData.value = empty
-    } finally {
-      isLoading.value = false
-    }
+    loadingPromise = (async () => {
+      try {
+        const [all, filtered] = await Promise.all([
+          fetchTopologyNodeMappings(),
+          fetchFilteredMappings(),
+        ])
+        allMappings.value = all
+        filteredMappingsData.value = filtered
+        isLoaded.value = true
+      } catch (error) {
+        console.error('Failed to load topology/node mappings:', error)
+        // Set empty mappings to prevent repeated failures
+        const empty = { applications: {}, nodes: {}, topologies: {}, tree: {} }
+        allMappings.value = empty
+        filteredMappingsData.value = empty
+      } finally {
+        isLoading.value = false
+        loadingPromise = null
+      }
+    })()
+    return loadingPromise
   }
 
   // Debounced refresh function

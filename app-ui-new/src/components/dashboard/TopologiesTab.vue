@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, watch } from 'vue'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
 import QuickFilter from '@/components/ui/datagrid/QuickFilter.vue'
@@ -53,6 +53,9 @@ const quickFilterOptions: QuickFilterOption[] = [
 ]
 
 const loadData = async () => {
+  // Ensure mappings are loaded before resolving names
+  await loadMappings()
+
   loading.value = true
 
   try {
@@ -117,13 +120,6 @@ watch(
   { immediate: true }
 )
 
-onMounted(async () => {
-  // Load mappings for topology names
-  await loadMappings()
-
-  // Load initial data
-  loadData()
-})
 </script>
 
 <template>
