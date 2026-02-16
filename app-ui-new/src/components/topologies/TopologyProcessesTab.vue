@@ -11,6 +11,7 @@ import type { QuickFilterOption } from '@/types/datagrid'
 import { fetchProcesses } from '@/services/processesService'
 import { formatDateTimeForApi } from '@/utils/timeRangeConverter'
 import { useDataGrid } from '@/composables/useDataGrid'
+import { useDateFormat } from '@/composables/useDateFormat'
 
 interface Props {
   topologyId: string
@@ -18,6 +19,7 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+const { formatDateTime } = useDateFormat()
 
 // Drawer state
 const drawerOpen = ref(false)
@@ -39,7 +41,7 @@ const columns: TableColumn[] = [
   { key: 'duration', label: 'Duration', sortable: true },
   { key: 'status', label: 'Status', sortable: true },
   { key: 'errorMessage', label: 'Error Message', sortable: false },
-  { key: 'actions', label: '', className: 'text-right' },
+  { key: 'actions', label: '', className: 'text-right w-16' },
 ]
 
 // Quick filter options
@@ -153,7 +155,7 @@ onMounted(async () => {
 
         <!-- Custom Cells -->
         <template #cell-startTime="{ value }">
-          <span class="whitespace-nowrap">{{ value }}</span>
+          <span class="whitespace-nowrap">{{ formatDateTime(value) }}</span>
         </template>
 
         <template #cell-duration="{ value }">
@@ -178,8 +180,7 @@ onMounted(async () => {
         <template #cell-errorMessage="{ value }">
           <span
             v-if="value"
-            class="max-w-xs truncate text-xs"
-            :title="value"
+            class="break-words text-xs"
           >
             {{ value }}
           </span>

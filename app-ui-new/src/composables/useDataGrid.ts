@@ -8,6 +8,8 @@ export interface UseDataGridOptions {
   defaultPerPage?: number
   onDataLoad: () => Promise<void> | void
   filters?: Ref<any>[]
+  /** When true, filter watcher skips onDataLoad (for atomic multi-filter changes) */
+  skipAutoLoad?: Ref<boolean>
 }
 
 export function useDataGrid(options: UseDataGridOptions) {
@@ -48,6 +50,7 @@ export function useDataGrid(options: UseDataGridOptions) {
     watch(
       options.filters,
       () => {
+        if (options.skipAutoLoad?.value) return
         currentPage.value = 1
         options.onDataLoad()
       },

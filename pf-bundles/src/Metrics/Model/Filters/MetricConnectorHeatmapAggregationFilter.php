@@ -9,11 +9,11 @@ use Hanaboso\PipesFramework\Configurator\Model\Filters\AggregationFilterUtils;
 use Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetrics;
 
 /**
- * Class MetricConnectorGraphAggregationFilter
+ * Class MetricConnectorHeatmapAggregationFilter
  *
  * @package Hanaboso\PipesFramework\Metrics\Model\Filters
  */
-final class MetricConnectorGraphAggregationFilter extends GridAggregationFilterAbstract
+final class MetricConnectorHeatmapAggregationFilter extends GridAggregationFilterAbstract
 {
 
     /**
@@ -31,7 +31,6 @@ final class MetricConnectorGraphAggregationFilter extends GridAggregationFilterA
     {
         return [
             'created' => 'fields.created',
-            'nodeId' => 'tags.node_id',
         ];
     }
 
@@ -42,6 +41,7 @@ final class MetricConnectorGraphAggregationFilter extends GridAggregationFilterA
     {
         return [
             'created' => 'created',
+            'nodeId' => 'nodeId',
         ];
     }
 
@@ -84,9 +84,13 @@ final class MetricConnectorGraphAggregationFilter extends GridAggregationFilterA
                                 'minute',
                                 AggregationFilterUtils::getDateTruncBinSizeFromAggregationBuilder($builder),
                             ),
-                    ),
+                    )
+                    ->field('nodeId')
+                    ->expression('$tags.node_id'),
             )
-            ->field('status200')
+            ->field('applicationId')
+            ->first('$tags.application_id')
+            ->field('success')
             ->expression(
                 $builder->expr()->sum(
                     $builder->expr()->cond(
@@ -99,33 +103,19 @@ final class MetricConnectorGraphAggregationFilter extends GridAggregationFilterA
                     ),
                 ),
             )
-            ->field('status400')
+            ->field('failed')
             ->expression(
                 $builder->expr()->sum(
                     $builder->expr()->cond(
-                        $builder->expr()->and(
-                            $builder->expr()->gte('$fields.response_code', 400),
-                            $builder->expr()->lte('$fields.response_code', 499),
-                        ),
-                        1,
-                        0,
-                    ),
-                ),
-            )
-            ->field('status500')
-            ->expression(
-                $builder->expr()->sum(
-                    $builder->expr()->cond(
-                        $builder->expr()->and(
-                            $builder->expr()->gte('$fields.response_code', 500),
-                            $builder->expr()->lte('$fields.response_code', 599),
-                        ),
+                        $builder->expr()->gte('$fields.response_code', 400),
                         1,
                         0,
                     ),
                 ),
             )
             ->addFields()
+            ->field('nodeId')
+            ->expression('$_id.nodeId')
             ->field('created')
             ->expression('$_id.hour');
 
@@ -138,12 +128,14 @@ final class MetricConnectorGraphAggregationFilter extends GridAggregationFilterA
             ->expression(FALSE)
             ->field('created')
             ->dateToString('%Y-%m-%dT%H:%M:%SZ', '$created')
-            ->field('status200')
-            ->expression('$status200')
-            ->field('status400')
-            ->expression('$status400')
-            ->field('status500')
-            ->expression('$status500');
+            ->field('nodeId')
+            ->expression('$nodeId')
+            ->field('applicationId')
+            ->expression('$applicationId')
+            ->field('success')
+            ->expression('$success')
+            ->field('failed')
+            ->expression('$failed');
     }
 
     /**
@@ -162,11 +154,18 @@ final class MetricConnectorGraphAggregationFilter extends GridAggregationFilterA
             ->expression(
                 $builder
                     ->expr()
-                    ->dateTrunc(
-                        '$fields.created',
-                        'minute',
-                        AggregationFilterUtils::getDateTruncBinSizeFromAggregationBuilder($builder),
-                    ),
+                    ->field('hour')
+                    ->expression(
+                        $builder
+                            ->expr()
+                            ->dateTrunc(
+                                '$fields.created',
+                                'minute',
+                                AggregationFilterUtils::getDateTruncBinSizeFromAggregationBuilder($builder),
+                            ),
+                    )
+                    ->field('nodeId')
+                    ->expression('$tags.node_id'),
             );
     }
 

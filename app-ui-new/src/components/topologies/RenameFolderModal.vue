@@ -2,7 +2,7 @@
 import { ref, watch } from 'vue'
 import Modal from '@/components/ui/Modal.vue'
 import Button from '@/components/ui/Button.vue'
-import TextInput from '@/components/ui/datagrid/TextInput.vue'
+import FormInput from '@/components/ui/FormInput.vue'
 import { renameCategory } from '@/services/topologiesService'
 import { useToast } from '@/composables/useToast'
 
@@ -69,12 +69,10 @@ watch(() => props.modelValue, (newValue) => {
           Name
           <span class="text-red-600 dark:text-red-400">*</span>
         </label>
-        <TextInput
+        <FormInput
           id="rename-folder-name"
           v-model="newName"
           placeholder="Enter folder name"
-          width="w-full"
-          required
         />
       </div>
     </form>

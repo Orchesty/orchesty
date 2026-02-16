@@ -109,7 +109,7 @@ export function convertTimeFilterToDateTimeRange(timeFilter: string): {
 /**
  * Format Date object to datetime-local input format: YYYY-MM-DDTHH:mm
  */
-function formatDateTimeLocal(date: Date): string {
+export function formatDateTimeLocal(date: Date): string {
   const year = date.getFullYear()
   const month = String(date.getMonth() + 1).padStart(2, '0')
   const day = String(date.getDate()).padStart(2, '0')
@@ -136,35 +136,6 @@ export function formatDateTimeForApi(dateTimeLocal: string | null): string | nul
 export function formatDateTimeForApiFilter(dateTimeLocal: string): string {
   const date = new Date(dateTimeLocal)
   return date.toISOString()
-}
-
-/**
- * Format ISO date string for chart display
- * Example: "2025-12-31T23:36:00Z" -> "Dec 31, 23:36"
- */
-export function formatChartDate(isoDate: string): string {
-  const date = new Date(isoDate)
-  return date.toLocaleString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
-}
-
-/**
- * Format ISO date string for display with full date and time
- * Example: "2025-12-31T23:36:00Z" -> "Dec 31, 2025, 11:36 PM"
- */
-export function formatDateTime(isoDate: string): string {
-  const date = new Date(isoDate)
-  return date.toLocaleString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
 }
 
 /**

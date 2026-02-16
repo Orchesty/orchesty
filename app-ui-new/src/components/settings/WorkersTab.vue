@@ -7,7 +7,10 @@ import Confirm from '@/components/ui/Confirm.vue'
 import WorkerModal from '@/components/settings/WorkerModal.vue'
 import { useDataGrid } from '@/composables/useDataGrid'
 import { fetchWorkers, createWorker, updateWorker, deleteWorker } from '@/services/workersService'
+import { useToast } from '@/composables/useToast'
 import type { Worker } from '@/types/settings'
+
+const { showToast } = useToast()
 
 const workers = ref<Worker[]>([])
 
@@ -78,13 +81,16 @@ const handleSaveWorker = async (data: Omit<Worker, 'id'> | Partial<Worker>) => {
   try {
     if (workerModalMode.value === 'create') {
       await createWorker(data as Omit<Worker, 'id'>)
+      showToast('Worker created successfully', 'success')
     } else if (selectedWorker.value) {
       await updateWorker(selectedWorker.value.id, data)
+      showToast('Worker updated successfully', 'success')
     }
     workerModalOpen.value = false
     await loadData()
   } catch (error) {
     console.error('Failed to save worker:', error)
+    showToast('Failed to save worker', 'error')
   }
 }
 
@@ -97,8 +103,10 @@ const handleConfirmDelete = async () => {
     deleteConfirmOpen.value = false
     workerToDelete.value = null
     await loadData()
+    showToast('Worker deleted successfully', 'success')
   } catch (error) {
     console.error('Failed to delete worker:', error)
+    showToast('Failed to delete worker', 'error')
   }
 }
 

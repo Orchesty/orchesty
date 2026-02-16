@@ -8,16 +8,18 @@ import NewTopologyModal from '@/components/topologies/NewTopologyModal.vue'
 import NewFolderModal from '@/components/topologies/NewFolderModal.vue'
 import RenameFolderModal from '@/components/topologies/RenameFolderModal.vue'
 import SelectVersionModal from '@/components/topologies/SelectVersionModal.vue'
+import MoveTopologyModal from '@/components/topologies/MoveTopologyModal.vue'
+import EditTopologyModal from '@/components/topologies/EditTopologyModal.vue'
 import Confirm from '@/components/ui/Confirm.vue'
 import type { FolderItem, TopologiesTreeNode } from '@/types/topologies-page'
-import { fetchCategories, deleteCategory } from '@/services/topologiesService'
+import { fetchCategories, deleteCategory, deleteTopology, runTopology } from '@/services/topologiesService'
 import { useLastTopology } from '@/composables/useLastTopology'
 import { useToast } from '@/composables/useToast'
 import { Dropdown } from 'flowbite'
 
 const router = useRouter()
 const { showToast } = useToast()
-const { getLastTopology } = useLastTopology()
+const { getLastTopology, clearLastTopology } = useLastTopology()
 
 // Sidebar ref for refreshTree
 const sidebarRef = ref<InstanceType<typeof TopologiesSidebar> | null>(null)
@@ -30,6 +32,15 @@ const deleteFolderConfirmOpen = ref(false)
 const selectVersionModalOpen = ref(false)
 const selectedTopologyId = ref('')
 const selectedTopologyName = ref('')
+
+// Topology action modals
+const editTopologyModalOpen = ref(false)
+const moveTopologyModalOpen = ref(false)
+const deleteTopologyConfirmOpen = ref(false)
+const comingSoonConfirmOpen = ref(false)
+const comingSoonFeature = ref('')
+const actionTopologyId = ref('')
+const actionTopologyName = ref('')
 
 // Active folder for CRUD operations
 const activeFolderId = ref('')
@@ -133,6 +144,69 @@ const handleConfirmDelete = async () => {
   }
 }
 
+// Handle topology actions from sidebar
+const handleSidebarTopologyAction = async (topologyId: string, topologyName: string, action: string) => {
+  actionTopologyId.value = topologyId
+  actionTopologyName.value = topologyName
+
+  switch (action) {
+    case 'run':
+      try {
+        await runTopology(topologyId)
+        showToast(`Topology "${topologyName}" run started`, 'success')
+      } catch (error) {
+        console.error('Failed to run topology:', error)
+        showToast('Failed to run topology', 'error')
+      }
+      break
+    case 'edit':
+      editTopologyModalOpen.value = true
+      break
+    case 'move':
+      moveTopologyModalOpen.value = true
+      break
+    case 'delete':
+      deleteTopologyConfirmOpen.value = true
+      break
+    case 'clone':
+      comingSoonFeature.value = 'Clone'
+      comingSoonConfirmOpen.value = true
+      break
+    case 'export':
+      comingSoonFeature.value = 'Export'
+      comingSoonConfirmOpen.value = true
+      break
+  }
+}
+
+const handleConfirmDeleteTopology = async () => {
+  if (!actionTopologyId.value) return
+  try {
+    await deleteTopology(actionTopologyId.value)
+    showToast('Topology deleted successfully', 'success')
+    deleteTopologyConfirmOpen.value = false
+
+    // Clear lastTopology if the deleted topology was the last viewed one
+    const lastTopology = getLastTopology()
+    if (lastTopology && lastTopology.id === actionTopologyId.value) {
+      clearLastTopology()
+    }
+
+    await refreshAfterCrud()
+  } catch (error) {
+    console.error('Failed to delete topology:', error)
+    showToast('Failed to delete topology', 'error')
+  }
+}
+
+const handleTopologyEdited = async () => {
+  await refreshAfterCrud()
+}
+
+const handleTopologyMoved = async () => {
+  await refreshAfterCrud()
+}
+
 // "New Folder" button from sidebar header (root-level folder)
 const handleOpenNewFolderModal = () => {
   activeFolderParentId.value = null
@@ -178,6 +252,7 @@ onMounted(async () => {
         @open-new-topology-modal="activeFolderId = null; newTopologyModalOpen = true"
         @open-new-folder-modal="handleOpenNewFolderModal"
         @select-topology="handleSelectTopology"
+        @topology-action="handleSidebarTopologyAction"
       />
 
       <div id="main-content" class="flex-1 bg-gray-50 dark:bg-gray-900 overflow-hidden">
@@ -255,6 +330,77 @@ onMounted(async () => {
     </svg>
     <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
       Are you sure you want to delete the folder "{{ activeFolderName }}"?
+    </h3>
+  </Confirm>
+
+  <!-- Topology Action Modals -->
+  <EditTopologyModal
+    v-model="editTopologyModalOpen"
+    :topology-id="actionTopologyId"
+    :topology-name="actionTopologyName"
+    current-description=""
+    @saved="handleTopologyEdited"
+  />
+  <MoveTopologyModal
+    v-model="moveTopologyModalOpen"
+    :topology-id="actionTopologyId"
+    :topology-name="actionTopologyName"
+    @moved="handleTopologyMoved"
+  />
+
+  <!-- Delete Topology Confirm -->
+  <Confirm
+    v-model="deleteTopologyConfirmOpen"
+    id="delete-topology-confirm-list"
+    confirm-text="Yes, delete"
+    @confirm="handleConfirmDeleteTopology"
+  >
+    <svg
+      class="mx-auto mb-4 h-12 w-12 text-gray-400 dark:text-gray-200"
+      aria-hidden="true"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 20 20"
+    >
+      <path
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+      />
+    </svg>
+    <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+      Are you sure you want to delete the topology "{{ actionTopologyName }}"?
+    </h3>
+  </Confirm>
+
+  <!-- Coming Soon Confirm -->
+  <Confirm
+    v-model="comingSoonConfirmOpen"
+    id="coming-soon-confirm-list"
+    confirm-text="OK"
+    cancel-text="Close"
+    confirm-variant="primary"
+    @confirm="comingSoonConfirmOpen = false"
+  >
+    <svg
+      class="mx-auto mb-4 h-12 w-12 text-gray-400 dark:text-gray-200"
+      aria-hidden="true"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <path
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+      />
+    </svg>
+    <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+      {{ comingSoonFeature }} is coming soon...
     </h3>
   </Confirm>
 

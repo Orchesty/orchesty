@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, nextTick } from 'vue'
+import { useDateFormat } from '@/composables/useDateFormat'
+
+const { formatDate } = useDateFormat()
 
 interface TimeRangeOption {
   value: string
@@ -36,12 +39,9 @@ const dropdownInstance = ref<any>(null)
 const startDateInput = ref<HTMLInputElement | null>(null)
 const endDateInput = ref<HTMLInputElement | null>(null)
 
-// Format date range for display (medium format: "15 Jan 2024 - 20 Jan 2024")
+// Format date range for display
 const formatDateRange = (startStr: string, endStr: string): string => {
-  const start = new Date(startStr)
-  const end = new Date(endStr)
-  const options: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short', year: 'numeric' }
-  return `${start.toLocaleDateString('en-GB', options)} - ${end.toLocaleDateString('en-GB', options)}`
+  return `${formatDate(startStr)} - ${formatDate(endStr)}`
 }
 
 // Get current label

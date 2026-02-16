@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import DropdownFilter from '@/components/ui/datagrid/DropdownFilter.vue'
+import { useDateFormat } from '@/composables/useDateFormat'
+
+const { formatDate } = useDateFormat()
 
 interface ExpirationOption {
   value: string
@@ -62,11 +65,7 @@ const displayDate = computed(() => {
   const expirationDate = new Date(now)
   expirationDate.setDate(expirationDate.getDate() + option.days)
   
-  return expirationDate.toLocaleDateString('en-GB', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric'
-  })
+  return formatDate(expirationDate)
 })
 
 // Handle selection change

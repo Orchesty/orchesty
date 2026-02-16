@@ -4,6 +4,7 @@ import { useRouter, useRoute } from 'vue-router'
 import Drawer from '@/components/ui/Drawer.vue'
 import Button from '@/components/ui/Button.vue'
 import { fetchTopologyVersions } from '@/services/topologiesService'
+import { useDateFormat } from '@/composables/useDateFormat'
 import type { TopologyVersion } from '@/types/topologies-page'
 
 interface Props {
@@ -20,6 +21,7 @@ const emit = defineEmits<{
 
 const router = useRouter()
 const route = useRoute()
+const { formatDateTime } = useDateFormat()
 const versions = ref<TopologyVersion[]>([])
 const loading = ref(false)
 
@@ -118,7 +120,7 @@ const handleClose = () => {
           </span>
         </div>
         <p class="text-sm text-gray-500 dark:text-gray-400">
-          {{ version.updated }}
+          {{ formatDateTime(version.updated) }}
         </p>
       </button>
     </div>

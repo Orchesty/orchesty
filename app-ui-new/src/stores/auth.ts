@@ -38,6 +38,9 @@ export const useAuthStore = defineStore('auth', () => {
 
   /**
    * Refresh the authentication token
+   * Note: On failure, does NOT logout - the API interceptor handles 401 responses
+   * and will force logout if the refresh truly fails. This prevents double-logout
+   * and allows recovery from temporary network issues.
    */
   async function refreshAuthToken(): Promise<void> {
     try {
@@ -56,12 +59,11 @@ export const useAuthStore = defineStore('auth', () => {
         }
         localStorage.setItem('auth_user', JSON.stringify(user.value))
       }
-
-      console.log('Token refreshed successfully')
     } catch (error) {
       console.error('Token refresh failed:', error)
-      // If refresh fails, logout user
-      await logout()
+      // Don't logout here - the API interceptor handles 401 and will
+      // force logout if refresh is not possible. Temporary network errors
+      // will be retried on the next interval.
     }
   }
 

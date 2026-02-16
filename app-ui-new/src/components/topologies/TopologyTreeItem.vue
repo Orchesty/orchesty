@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import SidebarMoreActions from '@/components/ui/SidebarMoreActions.vue'
+import type { MoreActionsSection } from '@/components/ui/MoreActions.vue'
 import type { TopologiesTreeNode, FolderItem, TopologyItem } from '@/types/topologies-page'
 
 interface Props {
@@ -14,6 +16,7 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<{
   'select-topology': [topologyId: string, topologyName: string, versionCount: number]
   'folder-action': [folderId: string, action: string]
+  'topology-action': [topologyId: string, topologyName: string, action: string]
 }>()
 
 const isExpanded = ref(props.item.type === 'folder' ? (props.item as FolderItem).isExpanded : false)
@@ -31,12 +34,40 @@ const handleSelectTopology = () => {
     emit('select-topology', props.item.id, props.item.name, versionCount)
   }
 }
+
+const emitTopologyAction = (action: string) => {
+  if (props.item.type === 'topology') {
+    emit('topology-action', props.item.id, props.item.name, action)
+  }
+}
+
+const topologyActionsSections = computed<MoreActionsSection[]>(() => [
+  {
+    items: [
+      { type: 'button', label: 'Run', onClick: () => emitTopologyAction('run') },
+      { type: 'button', label: 'Edit', onClick: () => emitTopologyAction('edit') },
+      { type: 'button', label: 'Move', onClick: () => emitTopologyAction('move') },
+      { type: 'button', label: 'Clone', onClick: () => emitTopologyAction('clone') },
+      { type: 'button', label: 'Export', onClick: () => emitTopologyAction('export') },
+    ],
+  },
+  {
+    items: [
+      {
+        type: 'button',
+        label: 'Delete',
+        class: 'text-red-600 hover:bg-gray-100 dark:text-red-500 dark:hover:bg-gray-600 dark:hover:text-red-400',
+        onClick: () => emitTopologyAction('delete'),
+      },
+    ],
+  },
+])
 </script>
 
 <template>
   <!-- Folder Item -->
   <div v-if="item.type === 'folder'">
-    <div class="flex items-center gap-1">
+    <div class="group flex items-center gap-1">
       <button
         type="button"
         @click="toggleFolder"
@@ -64,29 +95,31 @@ const handleSelectTopology = () => {
         </svg>
         <span class="truncate flex-1 text-left">{{ item.name }}</span>
       </button>
-      <button
-        type="button"
-        :id="`folderActionsButton-${item.id}`"
-        :data-dropdown-toggle="`folderActionsDropdown-${item.id}`"
-        title="Folder actions"
-        class="inline-flex items-center rounded-lg p-1 text-center text-sm font-medium text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-      >
-        <svg
-          class="w-4 h-4"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
+      <div class="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+        <button
+          type="button"
+          :id="`folderActionsButton-${item.id}`"
+          :data-dropdown-toggle="`folderActionsDropdown-${item.id}`"
+          title="Folder actions"
+          class="inline-flex items-center rounded-lg p-1 text-center text-sm font-medium text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
         >
-          <path
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-width="2"
-            d="M6 12h.01m6 0h.01m5.99 0h.01"
-          />
-        </svg>
-        <span class="sr-only">Actions</span>
-      </button>
+          <svg
+            class="w-4 h-4"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-width="2"
+              d="M6 12h.01m6 0h.01m5.99 0h.01"
+            />
+          </svg>
+          <span class="sr-only">Actions</span>
+        </button>
+      </div>
     </div>
     <div v-show="isExpanded" class="pl-6">
       <div class="space-y-1 mt-1">
@@ -97,32 +130,41 @@ const handleSelectTopology = () => {
           :level="level + 1"
           @select-topology="(id, name, versionCount) => emit('select-topology', id, name, versionCount)"
           @folder-action="(id, action) => emit('folder-action', id, action)"
+          @topology-action="(id, name, action) => emit('topology-action', id, name, action)"
         />
       </div>
     </div>
   </div>
 
   <!-- Topology Item -->
-  <button
-    v-else
-    type="button"
-    @click="handleSelectTopology"
-    class="w-full flex items-center gap-2 px-2 py-1.5 rounded text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
-  >
-    <svg
-      class="w-4 h-4 shrink-0"
-      aria-hidden="true"
-      height="24px"
-      viewBox="0 -960 960 960"
-      width="24px"
-      fill="currentColor"
-      xmlns="http://www.w3.org/2000/svg"
+  <div v-else class="group flex items-center gap-1">
+    <button
+      type="button"
+      @click="handleSelectTopology"
+      class="flex-1 flex items-center gap-2 px-2 py-1.5 rounded text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
     >
-      <path
-        d="M600-120v-120H440v-400h-80v120H80v-320h280v120h240v-120h280v320H600v-120h-80v320h80v-120h280v320H600Z"
+      <svg
+        class="w-4 h-4 shrink-0"
+        aria-hidden="true"
+        height="24px"
+        viewBox="0 -960 960 960"
+        width="24px"
+        fill="currentColor"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M600-120v-120H440v-400h-80v120H80v-320h280v120h240v-120h280v320H600v-120h-80v320h80v-120h280v320H600Z"
+        />
+      </svg>
+      <span class="truncate">{{ item.name }}</span>
+    </button>
+    <div class="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+      <SidebarMoreActions
+        :id="`topology-actions-${item.id}`"
+        :sections="topologyActionsSections"
+        placement="bottom-end"
+        width="w-40"
       />
-    </svg>
-    <span class="truncate">{{ item.name }}</span>
-  </button>
+    </div>
+  </div>
 </template>
-

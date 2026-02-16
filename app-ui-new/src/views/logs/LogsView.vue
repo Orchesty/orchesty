@@ -5,6 +5,7 @@ import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
 import TextInput from '@/components/ui/datagrid/TextInput.vue'
+import SearchInput from '@/components/ui/SearchInput.vue'
 import DropdownFilter from '@/components/ui/datagrid/DropdownFilter.vue'
 import TimeRangeFilterWithCustomRange from '@/components/ui/TimeRangeFilterWithCustomRange.vue'
 import CopyValue from '@/components/ui/CopyValue.vue'
@@ -12,6 +13,7 @@ import LogDetailDrawer from '@/components/logs/LogDetailDrawer.vue'
 import type { LogEntry, LogQueryParams, LogSeverity } from '@/types/logs'
 import type { TableColumn } from '@/types/dashboard'
 import { fetchLogs } from '@/services/logsService'
+import { useDateFormat } from '@/composables/useDateFormat'
 import { useDataGrid } from '@/composables/useDataGrid'
 import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 
@@ -22,6 +24,7 @@ const {
   nodeOptions: nodeOptionsFromMappings,
   mappings,
 } = useTopologyNodeMappings()
+const { formatDateTime } = useDateFormat()
 
 // State
 const logs = ref<LogEntry[]>([])
@@ -92,21 +95,8 @@ const columns: TableColumn[] = [
   { key: 'nodeId', label: 'Node ID', sortable: false },
   { key: 'severity', label: 'Severity', sortable: false },
   { key: 'message', label: 'Message', sortable: false },
-  { key: 'actions', label: '', className: 'text-right' },
+  { key: 'actions', label: '', className: 'text-right w-16' },
 ]
-
-// Format timestamp for display
-const formatTimestamp = (timestamp: string): string => {
-  const date = new Date(timestamp)
-  return date.toLocaleString('en-GB', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-  })
-}
 
 // Get severity badge classes
 const getSeverityClass = (severity: LogSeverity): string => {
@@ -224,10 +214,10 @@ onMounted(async () => {
         @sort="handleSort"
       >
         <template #filters>
-          <TextInput
+          <SearchInput
             v-model="searchFilter"
             placeholder="Search..."
-            width="w-80"
+            mode="server"
           />
           <TextInput
             v-model="correlationIdFilter"
@@ -253,7 +243,7 @@ onMounted(async () => {
 
         <!-- Custom cell templates -->
         <template #cell-timestamp="{ value }">
-          <span class="whitespace-nowrap">{{ formatTimestamp(value) }}</span>
+          <span class="whitespace-nowrap">{{ formatDateTime(value) }}</span>
         </template>
 
         <template #cell-topology="{ row }">

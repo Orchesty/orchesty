@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, nextTick, onMounted, computed, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import AppNavbar from '@/components/layout/AppNavbar.vue'
 import AppSidebar from '@/components/layout/AppSidebar.vue'
 import TopologiesSidebar from '@/components/topologies/TopologiesSidebar.vue'
@@ -17,14 +17,18 @@ import NewFolderModal from '@/components/topologies/NewFolderModal.vue'
 import RenameFolderModal from '@/components/topologies/RenameFolderModal.vue'
 import SelectVersionModal from '@/components/topologies/SelectVersionModal.vue'
 import EntityModal from '@/components/settings/EntityModal.vue'
+import MoveTopologyModal from '@/components/topologies/MoveTopologyModal.vue'
+import EditTopologyModal from '@/components/topologies/EditTopologyModal.vue'
 import Confirm from '@/components/ui/Confirm.vue'
+import Modal from '@/components/ui/Modal.vue'
 import Button from '@/components/ui/Button.vue'
-import DropdownMenu from '@/components/ui/DropdownMenu.vue'
+import MoreActions from '@/components/ui/MoreActions.vue'
+import type { MoreActionsSection } from '@/components/ui/MoreActions.vue'
 import TabsComponent, { type Tab } from '@/components/ui/Tabs.vue'
 import Card from '@/components/ui/Card.vue'
 import TabCard from '@/components/ui/TabCard.vue'
 import Textarea from '@/components/ui/datagrid/Textarea.vue'
-import { fetchTopologyDetail, fetchCategories, deleteCategory, publishTopology, toggleTopologyEnabled } from '@/services/topologiesService'
+import { fetchTopologyDetail, fetchCategories, deleteCategory, publishTopology, toggleTopologyEnabled, deleteTopology, runTopology } from '@/services/topologiesService'
 import { fetchTopologyMetrics } from '@/services/topologyMetricsService'
 import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 import { useToast } from '@/composables/useToast'
@@ -42,9 +46,10 @@ interface Props {
 
 const props = defineProps<Props>()
 const route = useRoute()
+const router = useRouter()
 
 const { showToast } = useToast()
-const { setLastTopology, getLastTopology } = useLastTopology()
+const { setLastTopology, getLastTopology, clearLastTopology } = useLastTopology()
 const { isTraceDrawerOpen } = useTraceDrawer()
 
 // Sidebar ref for refreshTree
@@ -55,6 +60,32 @@ const loading = ref(true)
 const error = ref<string | null>(null)
 const versionDrawerOpen = ref(false)
 const designerDrawerOpen = ref(false)
+
+// Description popup
+const descriptionPopupOpen = ref(false)
+const isDescriptionTruncated = ref(false)
+
+const checkDescriptionTruncation = () => {
+  nextTick(() => {
+    const el = document.querySelector('[data-description-text]') as HTMLElement | null
+    if (el) {
+      isDescriptionTruncated.value = el.scrollWidth > el.clientWidth
+    } else {
+      isDescriptionTruncated.value = false
+    }
+  })
+}
+
+// Topology action modals
+const editTopologyModalOpen = ref(false)
+const moveTopologyModalOpen = ref(false)
+const deleteTopologyConfirmOpen = ref(false)
+const comingSoonConfirmOpen = ref(false)
+const comingSoonFeature = ref('')
+
+// Sidebar action target (when actions are triggered from sidebar on a different topology)
+const sidebarActionTopologyId = ref('')
+const sidebarActionTopologyName = ref('')
 
 // Initialize sidebar collapsed state from localStorage to match sidebar's initial state
 const getSidebarCollapsedFromStorage = (): boolean => {
@@ -204,36 +235,159 @@ const statusLabel = computed(() => {
   return topology.value.enabled ? 'Enabled' : 'Disabled'
 })
 
-const moreActionsItems = [
-  {
-    type: 'link' as const,
-    label: 'Edit',
-    icon: 'M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h357l-80 80H200v560h560v-278l80-80v358q0 33-23.5 56.5T760-120H200Zm280-360ZM360-360v-170l367-367q12-12 27-18t30-6q16 0 30.5 6t26.5 18l56 57q11 12 17 26.5t6 29.5q0 15-5.5 29.5T897-728L530-360H360Zm481-424-56-56 56 56ZM440-440h56l232-232-28-28-29-28-231 231v57Zm260-260-29-28 29 28 28 28-28-28Z',
-    action: () => console.log('Edit topology')
-  },
-  {
-    type: 'link' as const,
-    label: 'Move',
-    icon: 'M806-440H320v-80h486l-62-62 56-58 160 160-160 160-56-58 62-62ZM600-600v-160H200v560h400v-160h80v160q0 33-23.5 56.5T600-120H200q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h400q33 0 56.5 23.5T680-760v160h-80Z',
-    action: () => console.log('Move topology')
-  },
-  {
-    type: 'link' as const,
-    label: 'Export',
-    icon: 'M13 11.15V4a1 1 0 1 0-2 0v7.15L8.78 8.374a1 1 0 1 0-1.56 1.25l4 5a1 1 0 0 0 1.56 0l4-5a1 1 0 1 0-1.56-1.25L13 11.15Z M9.657 15.874 7.358 13H5a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2h-2.358l-2.3 2.874a3 3 0 0 1-4.685 0ZM17 16a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2H17Z',
-    action: () => console.log('Export topology')
-  },
-  {
-    type: 'divider' as const
-  },
-  {
-    type: 'link' as const,
-    label: 'Delete',
-    icon: 'M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z',
-    danger: true,
-    action: () => console.log('Delete topology')
+// Topology action handlers (from detail page header)
+const handleRunTopology = async () => {
+  if (!topology.value) return
+  try {
+    await runTopology(topology.value._id)
+    showToast('Topology run started', 'success')
+  } catch (error) {
+    console.error('Failed to run topology:', error)
+    showToast('Failed to run topology', 'error')
   }
+}
+
+const handleEditTopology = () => {
+  if (topology.value) {
+    sidebarActionTopologyId.value = topology.value._id
+    sidebarActionTopologyName.value = topology.value.name
+  }
+  editTopologyModalOpen.value = true
+}
+
+const handleMoveTopology = () => {
+  if (topology.value) {
+    sidebarActionTopologyId.value = topology.value._id
+    sidebarActionTopologyName.value = topology.value.name
+  }
+  moveTopologyModalOpen.value = true
+}
+
+const handleDeleteTopologyAction = () => {
+  if (topology.value) {
+    sidebarActionTopologyId.value = topology.value._id
+    sidebarActionTopologyName.value = topology.value.name
+  }
+  deleteTopologyConfirmOpen.value = true
+}
+
+const handleConfirmDeleteTopology = async () => {
+  if (!sidebarActionTopologyId.value) return
+  const deletedId = sidebarActionTopologyId.value
+  const isCurrentTopology = topology.value && topology.value._id === deletedId
+  try {
+    await deleteTopology(deletedId)
+    showToast('Topology deleted successfully', 'success')
+    deleteTopologyConfirmOpen.value = false
+
+    // If the deleted topology is the current one, clear lastTopology and navigate away
+    if (isCurrentTopology) {
+      clearLastTopology()
+      router.push({ name: 'topologies' })
+    } else {
+      await refreshAfterCrud()
+    }
+  } catch (error) {
+    console.error('Failed to delete topology:', error)
+    showToast('Failed to delete topology', 'error')
+  }
+}
+
+const handleComingSoon = (feature: string) => {
+  comingSoonFeature.value = feature
+  comingSoonConfirmOpen.value = true
+}
+
+const handleTopologyEdited = async () => {
+  // Re-fetch detail to update description
+  if (topology.value) {
+    topology.value = await fetchTopologyDetail(props.id, versionId.value)
+    checkDescriptionTruncation()
+  }
+}
+
+const handleTopologyMoved = async () => {
+  // Re-fetch detail and refresh sidebar tree
+  if (topology.value) {
+    topology.value = await fetchTopologyDetail(props.id, versionId.value)
+  }
+  await refreshAfterCrud()
+}
+
+const moreActionsSections: MoreActionsSection[] = [
+  {
+    items: [
+      {
+        type: 'button',
+        label: 'Run',
+        onClick: handleRunTopology,
+      },
+      {
+        type: 'button',
+        label: 'Edit',
+        onClick: handleEditTopology,
+      },
+      {
+        type: 'button',
+        label: 'Move',
+        onClick: handleMoveTopology,
+      },
+      {
+        type: 'button',
+        label: 'Clone',
+        onClick: () => handleComingSoon('Clone'),
+      },
+      {
+        type: 'button',
+        label: 'Export',
+        onClick: () => handleComingSoon('Export'),
+      },
+    ],
+  },
+  {
+    items: [
+      {
+        type: 'button',
+        label: 'Delete',
+        class: 'text-red-600 hover:bg-gray-100 dark:text-red-500 dark:hover:bg-gray-600 dark:hover:text-red-400',
+        onClick: handleDeleteTopologyAction,
+      },
+    ],
+  },
 ]
+
+// Handle topology actions from sidebar
+const handleSidebarTopologyAction = async (topologyId: string, topologyName: string, action: string) => {
+  sidebarActionTopologyId.value = topologyId
+  sidebarActionTopologyName.value = topologyName
+
+  switch (action) {
+    case 'run':
+      try {
+        await runTopology(topologyId)
+        showToast(`Topology "${topologyName}" run started`, 'success')
+      } catch (error) {
+        console.error('Failed to run topology:', error)
+        showToast('Failed to run topology', 'error')
+      }
+      break
+    case 'edit':
+      editTopologyModalOpen.value = true
+      break
+    case 'move':
+      moveTopologyModalOpen.value = true
+      break
+    case 'delete':
+      deleteTopologyConfirmOpen.value = true
+      break
+    case 'clone':
+      handleComingSoon('Clone')
+      break
+    case 'export':
+      handleComingSoon('Export')
+      break
+  }
+}
 
 // Initialize Flowbite dropdowns for folder actions
 const initFolderDropdowns = () => {
@@ -350,6 +504,8 @@ const loadTopologyDetail = async () => {
         activeTab: activeTopologyTab.value
       })
     }
+    // Check if description is truncated after render
+    checkDescriptionTruncation()
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Failed to load topology'
     console.error('Failed to load topology:', err)
@@ -565,6 +721,7 @@ onMounted(async () => {
         @open-new-topology-modal="activeFolderId = null; newTopologyModalOpen = true"
         @open-new-folder-modal="handleOpenNewFolderModal"
         @select-topology="handleSelectTopology"
+        @topology-action="handleSidebarTopologyAction"
       />
 
       <div id="main-content" class="flex-1 bg-gray-50 dark:bg-gray-900 overflow-hidden">
@@ -629,6 +786,16 @@ onMounted(async () => {
                     </button>
 
                     <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ topology.name }}</h1>
+                    <!-- Description (truncated to 1 line) -->
+                    <div v-if="topology.description" class="flex items-center gap-1 mt-1 max-w-xl">
+                      <p data-description-text class="text-sm text-gray-500 dark:text-gray-400 overflow-hidden whitespace-nowrap">{{ topology.description }}</p>
+                      <button
+                        v-if="isDescriptionTruncated"
+                        type="button"
+                        @click="descriptionPopupOpen = true"
+                        class="shrink-0 text-xs text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+                      >...</button>
+                    </div>
                     <div class="flex items-center gap-2 mt-2">
                       <span class="text-sm text-gray-500 dark:text-gray-400">Version {{ topology.version }}</span>
                       <span :class="['text-xs font-medium px-2.5 py-0.5 rounded', statusBadgeClass]">
@@ -664,18 +831,10 @@ onMounted(async () => {
                     >
                       {{ topology.enabled ? 'Disable' : 'Enable' }}
                     </Button>
-                    <DropdownMenu
-                      dropdown-id="topology-more-dropdown"
-                      :items="moreActionsItems"
-                      button-class="inline-flex items-center rounded-lg p-2 text-center text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                    >
-                      <template #button-content>
-                        <svg class="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 3">
-                          <path d="M2 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm6.041 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM14 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Z"/>
-                        </svg>
-                        <span class="sr-only">More actions</span>
-                      </template>
-                    </DropdownMenu>
+                    <MoreActions
+                      id="topology-more-actions"
+                      :sections="moreActionsSections"
+                    />
                   </div>
                 </div>
 
@@ -1037,6 +1196,90 @@ onMounted(async () => {
       :mode="entityModalMode"
       @save="handleSaveEntity"
     />
+
+    <!-- Edit Topology Modal -->
+    <EditTopologyModal
+      v-model="editTopologyModalOpen"
+      :topology-id="sidebarActionTopologyId"
+      :topology-name="sidebarActionTopologyName"
+      :current-description="sidebarActionTopologyId === topology?._id ? (topology?.description ?? '') : ''"
+      @saved="handleTopologyEdited"
+    />
+
+    <!-- Move Topology Modal -->
+    <MoveTopologyModal
+      v-model="moveTopologyModalOpen"
+      :topology-id="sidebarActionTopologyId"
+      :topology-name="sidebarActionTopologyName"
+      :current-category-id="sidebarActionTopologyId === topology?._id ? (topology?.category ?? null) : null"
+      @moved="handleTopologyMoved"
+    />
+
+    <!-- Description Popup Modal -->
+    <Modal
+      v-model="descriptionPopupOpen"
+      id="description-popup-modal"
+      :title="topology?.name || 'Description'"
+      size="md"
+    >
+      <p class="text-sm text-gray-600 dark:text-gray-300 whitespace-pre-wrap">{{ topology?.description }}</p>
+    </Modal>
+
+    <!-- Delete Topology Confirm -->
+    <Confirm
+      v-model="deleteTopologyConfirmOpen"
+      id="delete-topology-confirm"
+      confirm-text="Yes, delete"
+      @confirm="handleConfirmDeleteTopology"
+    >
+      <svg
+        class="mx-auto mb-4 h-12 w-12 text-gray-400 dark:text-gray-200"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 20 20"
+      >
+        <path
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+        />
+      </svg>
+      <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+        Are you sure you want to delete the topology "{{ sidebarActionTopologyName }}"?
+      </h3>
+    </Confirm>
+
+    <!-- Coming Soon Confirm -->
+    <Confirm
+      v-model="comingSoonConfirmOpen"
+      id="coming-soon-confirm"
+      confirm-text="OK"
+      cancel-text="Close"
+      confirm-variant="primary"
+      @confirm="comingSoonConfirmOpen = false"
+    >
+      <svg
+        class="mx-auto mb-4 h-12 w-12 text-gray-400 dark:text-gray-200"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+        />
+      </svg>
+      <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+        {{ comingSoonFeature }} is coming soon...
+      </h3>
+    </Confirm>
 
     <!-- Delete Folder Confirm -->
     <Confirm

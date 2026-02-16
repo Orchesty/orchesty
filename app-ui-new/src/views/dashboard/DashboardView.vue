@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, watch, onMounted, nextTick } from 'vue'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import TabPanel from '@/components/ui/TabPanel.vue'
 import TimeFilter from '@/components/ui/TimeFilter.vue'
@@ -7,20 +7,68 @@ import OverviewTab from '@/components/dashboard/OverviewTab.vue'
 import ConnectorsTab from '@/components/dashboard/ConnectorsTab.vue'
 import TopologiesTab from '@/components/dashboard/TopologiesTab.vue'
 import ProcessesTab from '@/components/dashboard/ProcessesTab.vue'
+import LimiterTab from '@/components/dashboard/LimiterTab.vue'
+import ApplicationsTab from '@/components/dashboard/ApplicationsTab.vue'
 import type { Tab } from '@/components/ui/Tabs.vue'
-import type { TimeFilter as TimeFilterType, HeatmapClickData, ProcessesExternalFilters } from '@/types/dashboard'
-import { calculateTimeRangeFromSlot } from '@/utils/timeRangeConverter'
+import type { TimeFilter as TimeFilterType, ProcessFilter, HeatmapClickData, ProcessesExternalFilters } from '@/types/dashboard'
+import { formatDateTimeLocal } from '@/utils/timeRangeConverter'
 
 // Tabs configuration
 const dashboardTabs: Tab[] = [
   { id: 'overview', label: 'Overview', target: 'overview-content' },
+  { id: 'applications', label: 'Applications', target: 'applications-content' },
   { id: 'connectors', label: 'Connectors', target: 'connectors-content' },
   { id: 'topologies', label: 'Topologies', target: 'topologies-content' },
   { id: 'processes', label: 'Processes', target: 'processes-content' },
+  { id: 'limiter', label: 'Limiter', target: 'limiter-content' },
 ]
 
-// Time filter state
-const activeTimeFilter = ref<TimeFilterType>('7d')
+// Active tab persistence
+const TAB_KEY = 'orchesty_dashboard_active_tab'
+const savedTab = localStorage.getItem(TAB_KEY)
+
+const handleTabClick = (tabId: string) => {
+  localStorage.setItem(TAB_KEY, tabId)
+}
+
+const switchToTab = async (tabId: string) => {
+  await nextTick()
+  const tabButton = document.getElementById(`${tabId}-tab`)
+  if (tabButton) {
+    tabButton.click()
+  }
+}
+
+onMounted(() => {
+  // Restore saved tab after Flowbite initializes
+  if (savedTab && savedTab !== 'overview') {
+    nextTick(() => {
+      const tabButton = document.getElementById(`${savedTab}-tab`)
+      if (tabButton) {
+        tabButton.click()
+      }
+    })
+  }
+})
+
+// Time filter state - restore from localStorage
+const TIME_FILTER_KEY = 'orchesty_dashboard_time_filter'
+const savedTimeFilter = localStorage.getItem(TIME_FILTER_KEY) as TimeFilterType | null
+const activeTimeFilter = ref<TimeFilterType>(savedTimeFilter || '7d')
+
+watch(activeTimeFilter, (value) => {
+  localStorage.setItem(TIME_FILTER_KEY, value)
+})
+
+// Heatmap filter state - shared between Overview and Processes tabs
+const HEATMAP_FILTER_KEY = 'orchesty_dashboard_heatmap_filter'
+const savedHeatmapFilter = localStorage.getItem(HEATMAP_FILTER_KEY) as ProcessFilter | null
+const activeHeatmapFilter = ref<ProcessFilter>(savedHeatmapFilter || 'all')
+
+const handleHeatmapFilterChange = (filter: ProcessFilter) => {
+  activeHeatmapFilter.value = filter
+  localStorage.setItem(HEATMAP_FILTER_KEY, filter)
+}
 
 // Processes external filters (set by heatmap click)
 const processesFilters = ref<ProcessesExternalFilters>({
@@ -31,8 +79,11 @@ const processesFilters = ref<ProcessesExternalFilters>({
 const handleHeatmapClick = async (data: HeatmapClickData) => {
   console.log('Heatmap clicked from Overview:', data)
 
-  // Calculate time range from clicked time slot (±30 minutes)
-  const timeRange = calculateTimeRangeFromSlot(data.timeSlot)
+  // Use exact slot boundaries from the heatmap
+  const timeRange = {
+    from: formatDateTimeLocal(new Date(data.timeSlot)),
+    to: formatDateTimeLocal(new Date(data.timeSlotEnd)),
+  }
 
   // Set filters for ProcessesTab
   processesFilters.value = {
@@ -107,6 +158,7 @@ const handleTopologyProcessesClick = async (topologyId: string) => {
             role="tab"
             :aria-controls="tab.target"
             :aria-selected="tab.id === 'overview'"
+            @click="handleTabClick(tab.id)"
           >
             {{ tab.label }}
           </button>
@@ -120,7 +172,21 @@ const handleTopologyProcessesClick = async (topologyId: string) => {
     <!-- Tabs Content -->
     <div id="dashboard-tabs-content">
       <TabPanel id="overview-content" ariaLabelledby="overview-tab">
-        <OverviewTab :time-filter="activeTimeFilter" @heatmap-click="handleHeatmapClick" />
+        <OverviewTab
+          :time-filter="activeTimeFilter"
+          :heatmap-filter="activeHeatmapFilter"
+          @heatmap-click="handleHeatmapClick"
+          @heatmap-filter-change="handleHeatmapFilterChange"
+          @limiter-view-all="switchToTab('limiter')"
+        />
+      </TabPanel>
+
+      <TabPanel id="applications-content" ariaLabelledby="applications-tab" :hidden="true">
+        <ApplicationsTab
+          :time-filter="activeTimeFilter"
+          :heatmap-filter="activeHeatmapFilter"
+          @heatmap-filter-change="handleHeatmapFilterChange"
+        />
       </TabPanel>
 
       <TabPanel id="connectors-content" ariaLabelledby="connectors-tab" :hidden="true">
@@ -135,7 +201,16 @@ const handleTopologyProcessesClick = async (topologyId: string) => {
       </TabPanel>
 
       <TabPanel id="processes-content" ariaLabelledby="processes-tab" :hidden="true">
-        <ProcessesTab :global-time-filter="activeTimeFilter" :external-filters="processesFilters" />
+        <ProcessesTab
+          :global-time-filter="activeTimeFilter"
+          :heatmap-filter="activeHeatmapFilter"
+          :external-filters="processesFilters"
+          @heatmap-filter-change="handleHeatmapFilterChange"
+        />
+      </TabPanel>
+
+      <TabPanel id="limiter-content" ariaLabelledby="limiter-tab" :hidden="true">
+        <LimiterTab :global-time-filter="activeTimeFilter" />
       </TabPanel>
     </div>
   </DashboardLayout>

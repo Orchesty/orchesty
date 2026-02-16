@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import Modal from '@/components/ui/Modal.vue'
-import TextInput from '@/components/ui/datagrid/TextInput.vue'
+import FormInput from '@/components/ui/FormInput.vue'
 import Button from '@/components/ui/Button.vue'
 import TokenExpirationSelect from '@/components/settings/TokenExpirationSelect.vue'
 import type { TokenScope } from '@/types/settings'
@@ -110,11 +110,10 @@ const handleClose = () => {
           Name
           <span class="text-red-600 dark:text-red-400">*</span>
         </label>
-        <TextInput
+        <FormInput
           id="token-name"
           v-model="formData.name"
           placeholder="Enter token name"
-          width="w-full"
         />
         <p v-if="nameError" class="mt-1 text-sm text-red-600 dark:text-red-400">
           {{ nameError }}

@@ -65,32 +65,23 @@ final class MetricLimitGraphAggregationFilter extends GridAggregationFilterAbstr
         Closure $addConditionsCallback,
         Closure $addSortationsCallback,
         Closure $addPaginationCallback,
-    ): void
-    {
+    ): void {
         $addConditionsCallback();
 
         $builder
             ->group()
             ->field('_id')
-            ->expression(
-                $builder
-                    ->expr()
-                    ->field('hour')
-                    ->expression(
-                        $builder
-                            ->expr()
-                            ->dateTrunc(
-                                '$fields.created',
-                                'minute',
-                                AggregationFilterUtils::getDateTruncBinSizeFromAggregationBuilder($builder),
-                            ),
-                    ),
-            )
+            ->dateTrunc('$fields.created', 'minute')
+            ->field('countAtMinute')
+            ->sum('$fields.messages')
+            ->group()
+            ->field('_id')
+            ->dateTrunc('$_id', 'minute', AggregationFilterUtils::getDateTruncBinSizeFromAggregationBuilder($builder))
             ->field('count')
-            ->avg('$fields.messages')
+            ->max('$countAtMinute')
             ->addFields()
             ->field('created')
-            ->expression('$_id.hour');
+            ->expression('$_id');
 
         $addSortationsCallback();
         $addPaginationCallback();
@@ -118,15 +109,10 @@ final class MetricLimitGraphAggregationFilter extends GridAggregationFilterAbstr
         $builder
             ->group()
             ->field('_id')
-            ->expression(
-                $builder
-                    ->expr()
-                    ->dateTrunc(
-                        '$fields.created',
-                        'minute',
-                        AggregationFilterUtils::getDateTruncBinSizeFromAggregationBuilder($builder),
-                    ),
-            );
+            ->dateTrunc('$fields.created', 'minute')
+            ->group()
+            ->field('_id')
+            ->dateTrunc('$_id', 'minute', AggregationFilterUtils::getDateTruncBinSizeFromAggregationBuilder($builder));
     }
 
 }

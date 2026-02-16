@@ -9,6 +9,7 @@ use Hanaboso\PipesFramework\Database\Document\Topology;
 use Hanaboso\PipesFramework\Metrics\Manager\MongoMetricsManager;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorAggregationFilter;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorGraphAggregationFilter;
+use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorHeatmapAggregationFilter;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorOverviewAggregationFilter;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricLimitAggregationFilter;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricLimitGraphAggregationFilter;
@@ -114,6 +115,10 @@ trait MongoTestTrait
         $metricUserTaskGraphAggregationFilter = self::getContainer()->get(
             'hbpf.metric-user-task-graph.aggregation-filter',
         );
+        /** @var MetricConnectorHeatmapAggregationFilter $metricConnectorHeatmapAggregationFilter */
+        $metricConnectorHeatmapAggregationFilter = self::getContainer()->get(
+            'hbpf.metric-connector-heatmap.aggregation-filter',
+        );
 
         return new MongoMetricsManager(
             $this->dm,
@@ -135,6 +140,7 @@ trait MongoTestTrait
             $metricUserTaskAggregationFilter,
             $metricUserTaskTotalAggregationFilter,
             $metricUserTaskGraphAggregationFilter,
+            $metricConnectorHeatmapAggregationFilter,
         );
     }
 

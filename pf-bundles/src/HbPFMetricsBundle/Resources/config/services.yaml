@@ -30,6 +30,7 @@ services:
             - '@hbpf.metric-user-task.aggregation-filter'
             - '@hbpf.metric-user-task-total.aggregation-filter'
             - '@hbpf.metric-user-task-graph.aggregation-filter'
+            - '@hbpf.metric-connector-heatmap.aggregation-filter'
         calls:
             - ['setLogger', ['@monolog.logger.commons']]
 
@@ -87,3 +88,8 @@ services:
         class: Hanaboso\PipesFramework\Metrics\Model\Filters\MetricUserTaskGraphAggregationFilter
         arguments:
             - '@doctrine_mongodb.odm.default_document_manager'
+
+    hbpf.metric-connector-heatmap.aggregation-filter:
+        class: Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorHeatmapAggregationFilter
+        arguments:
+            - '@doctrine_mongodb.odm.metrics_document_manager'

@@ -14,7 +14,9 @@ import type {
   TopologyItem,
 } from '@/types/topologies-page'
 import api from '@/services/api'
-import { formatDateTime } from '@/utils/timeRangeConverter'
+import { useDateFormat } from '@/composables/useDateFormat'
+
+const { formatDateTime } = useDateFormat()
 
 // ------ Sidebar API types ------
 
@@ -299,6 +301,20 @@ export async function fetchTopologiesTree(): Promise<TopologiesTreeNode[]> {
     }
   }
 
+  // Sort helper: folders first, then topologies, alphabetically within each group
+  const sortNodes = (nodes: TopologiesTreeNode[]) => {
+    nodes.sort((a, b) => {
+      if (a.type === 'folder' && b.type !== 'folder') return -1
+      if (a.type !== 'folder' && b.type === 'folder') return 1
+      return a.name.localeCompare(b.name)
+    })
+  }
+
+  // Sort children of every folder (folders first, then topologies, alphabetically)
+  for (const [, folder] of folderNodes) {
+    sortNodes(folder.children)
+  }
+
   // Build root-level tree: folders without parents + root topologies
   const tree: TopologiesTreeNode[] = []
 
@@ -313,12 +329,8 @@ export async function fetchTopologiesTree(): Promise<TopologiesTreeNode[]> {
     }
   }
 
-  // Sort root level: folders first, then topologies, alphabetically within each group
-  tree.sort((a, b) => {
-    if (a.type === 'folder' && b.type !== 'folder') return -1
-    if (a.type !== 'folder' && b.type === 'folder') return 1
-    return a.name.localeCompare(b.name)
-  })
+  // Sort root level
+  sortNodes(tree)
 
   return tree
 }
@@ -384,4 +396,29 @@ export async function renameCategory(
  */
 export async function deleteCategory(id: string): Promise<void> {
   await api.delete(`/api/categories/${id}`)
+}
+
+/**
+ * Delete a topology
+ */
+export async function deleteTopology(id: string): Promise<void> {
+  await api.delete(`/api/topologies/${id}`)
+}
+
+/**
+ * Update a topology (description, category, etc.)
+ */
+export async function updateTopology(
+  id: string,
+  data: { description?: string; category?: string | null },
+): Promise<void> {
+  await api.patch(`/api/topologies/${id}`, data)
+}
+
+/**
+ * Run a topology
+ * Fetches topology nodes to determine starting points, then triggers the run.
+ */
+export async function runTopology(id: string, body: string = '{}'): Promise<void> {
+  await api.post(`/api/topologies/${id}/run`, { body })
 }

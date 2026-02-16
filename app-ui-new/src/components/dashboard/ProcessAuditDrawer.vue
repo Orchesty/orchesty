@@ -10,6 +10,7 @@ import type { Process, ProcessAuditDetail, ProcessConnector } from '@/types/proc
 import type { TableColumn } from '@/types/dashboard'
 import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 import { fetchProcessAuditConnectors, fetchProcessAuditTrash } from '@/services/processesService'
+import { useDateFormat } from '@/composables/useDateFormat'
 
 interface Props {
   modelValue: boolean
@@ -24,6 +25,7 @@ const emit = defineEmits<{
 
 const router = useRouter()
 const { getNodeName, getApplicationName, loadMappings } = useTopologyNodeMappings()
+const { formatDateTime } = useDateFormat()
 
 // Data state
 const processDetail = ref<ProcessAuditDetail | null>(null)
@@ -150,10 +152,9 @@ watch(
   { immediate: true }
 )
 
-const calculateEndTime = (startTime: string, durationSeconds: number): string => {
+const calculateEndTime = (startTime: string, durationSeconds: number): Date => {
   const start = new Date(startTime)
-  const end = new Date(start.getTime() + durationSeconds * 1000)
-  return end.toISOString().replace('T', ' ').substring(0, 19)
+  return new Date(start.getTime() + durationSeconds * 1000)
 }
 
 const handleClose = () => {
@@ -244,11 +245,11 @@ const handleClose = () => {
           <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
             >Start</label
           >
-          <p class="text-sm text-gray-900 dark:text-white">{{ processDetail.startTime }}</p>
+          <p class="text-sm text-gray-900 dark:text-white">{{ formatDateTime(processDetail.startTime) }}</p>
         </div>
         <div>
           <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">End</label>
-          <p class="text-sm text-gray-900 dark:text-white">{{ processDetail.endTime }}</p>
+          <p class="text-sm text-gray-900 dark:text-white">{{ formatDateTime(processDetail.endTime) }}</p>
         </div>
         <div>
           <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -282,6 +283,7 @@ const handleClose = () => {
           :total-pages="1"
           :current-page="1"
           :items-per-page="100"
+          hide-pagination
           @sort="handleConnectorSort"
         >
           <template #cell-connector="{ row }">
@@ -308,7 +310,7 @@ const handleClose = () => {
       </div>
 
       <!-- Trash Status -->
-      <div>
+      <div v-if="processDetail.trashCount > 0">
         <h4 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">Trash Status</h4>
         <div class="flex items-center gap-3">
           <div
@@ -323,31 +325,37 @@ const handleClose = () => {
             Go to trash
           </router-link>
         </div>
+
+        <!-- Trash Table -->
+        <div class="mt-4">
+          <h4 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">Trash Details</h4>
+          <div class="overflow-hidden">
+            <table class="w-full text-left text-sm text-gray-500 dark:text-gray-400">
+              <thead
+                class="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400"
+              >
+                <tr>
+                  <th scope="col" class="px-4 py-3">Where it failed</th>
+                  <th scope="col" class="px-4 py-3">Error message</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y bg-white dark:divide-gray-700 dark:bg-gray-800">
+                <tr v-for="(item, index) in processDetail.trashItems" :key="index">
+                  <td class="px-4 py-3 font-medium text-gray-900 dark:text-white">
+                    {{ item.whereItFailed }}
+                  </td>
+                  <td class="px-4 py-3 break-words">{{ item.errorMessage }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
-      <!-- Trash Table -->
-      <div>
-        <h4 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">Trash Details</h4>
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-sm text-gray-500 dark:text-gray-400">
-            <thead
-              class="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400"
-            >
-              <tr>
-                <th scope="col" class="px-4 py-3">Where it failed</th>
-                <th scope="col" class="px-4 py-3">Error message</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y bg-white dark:divide-gray-700 dark:bg-gray-800">
-              <tr v-for="(item, index) in processDetail.trashItems" :key="index">
-                <td class="px-4 py-3 font-medium text-gray-900 dark:text-white">
-                  {{ item.whereItFailed }}
-                </td>
-                <td class="px-4 py-3">{{ item.errorMessage }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+      <!-- No failed messages -->
+      <div v-else>
+        <h4 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">Trash Status</h4>
+        <p class="text-sm text-gray-500 dark:text-gray-400">No failed messages</p>
       </div>
     </div>
 

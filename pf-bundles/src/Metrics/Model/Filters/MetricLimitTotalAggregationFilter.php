@@ -5,7 +5,6 @@ namespace Hanaboso\PipesFramework\Metrics\Model\Filters;
 use Closure;
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Hanaboso\MongoDataGrid\GridAggregationFilterAbstract;
-use Hanaboso\PipesFramework\Configurator\Model\Filters\AggregationFilterUtils;
 use Hanaboso\PipesFramework\Metrics\Document\LimiterMetrics;
 
 /**
@@ -65,35 +64,23 @@ final class MetricLimitTotalAggregationFilter extends GridAggregationFilterAbstr
         Closure $addConditionsCallback,
         Closure $addSortationsCallback,
         Closure $addPaginationCallback,
-    ): void
-    {
+    ): void {
         $addConditionsCallback();
-        $middleTime = AggregationFilterUtils::getMiddleTimeFromAggregationBuilder($builder);
 
         $builder
             ->group()
             ->field('_id')
+            ->dateTrunc('$fields.created', 'minute')
+            ->field('countAtMinute')
+            ->sum('$fields.messages')
+            ->sort(['_id' => 'asc'])
+            ->group()
+            ->field('_id')
             ->expression(NULL)
             ->field('count')
-            ->expression(
-                $builder->expr()->avg(
-                    $builder->expr()->cond(
-                        $builder->expr()->gte('$fields.created', $middleTime),
-                        '$fields.messages',
-                        NULL,
-                    ),
-                ),
-            )
-            ->field('previousCount')
-            ->expression(
-                $builder->expr()->avg(
-                    $builder->expr()->cond(
-                        $builder->expr()->lte('$fields.created', $middleTime),
-                        '$fields.messages',
-                        NULL,
-                    ),
-                ),
-            );
+            ->last('$countAtMinute')
+            ->field('maximumCount')
+            ->max('$countAtMinute');
 
         $addSortationsCallback();
         $addPaginationCallback();
@@ -103,9 +90,9 @@ final class MetricLimitTotalAggregationFilter extends GridAggregationFilterAbstr
             ->field('_id')
             ->expression(FALSE)
             ->field('count')
-            ->expression($builder->expr()->round($builder->expr()->ifNull('$count', 0)))
-            ->field('previousCount')
-            ->expression($builder->expr()->round($builder->expr()->ifNull('$previousCount', 0)));
+            ->expression('$count')
+            ->field('maximumCount')
+            ->expression('$maximumCount');
     }
 
     /**

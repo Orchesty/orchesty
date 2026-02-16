@@ -69,11 +69,7 @@ const loadData = async () => {
       order: sortDirection.value,
     })
 
-    // Map topology IDs to names
-    topologies.value = response.data.map(topology => ({
-      ...topology,
-      name: getTopologyName(topology.id)
-    }))
+    topologies.value = response.data
 
     totalPages.value = response.meta.totalPages
     totalItems.value = response.meta.totalItems
@@ -157,8 +153,13 @@ watch(
         </template>
 
         <!-- Custom Cells -->
-        <template #cell-name="{ value }">
-          <span class="whitespace-nowrap font-medium text-gray-900 dark:text-white">{{ value }}</span>
+        <template #cell-name="{ row }">
+          <RouterLink
+            :to="`/topologies/${(row as Topology).id}`"
+            class="whitespace-nowrap font-medium text-gray-900 hover:underline dark:text-white"
+          >
+            {{ getTopologyName((row as Topology).id) }}
+          </RouterLink>
         </template>
 
         <template #cell-processesRun="{ value }">
@@ -176,7 +177,7 @@ watch(
         </template>
 
         <template #cell-lastRunTime="{ value }">
-          <span class="whitespace-nowrap font-medium text-gray-900 dark:text-white">{{ value }}</span>
+          <span class="whitespace-nowrap">{{ value }}</span>
         </template>
 
         <template #cell-lastRunStatus="{ value }">

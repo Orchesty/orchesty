@@ -12,6 +12,7 @@ import type { TableColumn } from '@/types/dashboard'
 import { fetchLogs } from '@/services/logsService'
 import { useDataGrid } from '@/composables/useDataGrid'
 import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
+import { useDateFormat } from '@/composables/useDateFormat'
 
 interface Props {
   topologyId: string
@@ -29,6 +30,7 @@ const selectedLog = ref<LogEntry | null>(null)
 
 // Topology and Node mappings
 const { loadMappings, mappings } = useTopologyNodeMappings()
+const { formatDateTime } = useDateFormat()
 
 // Filters
 const searchFilter = ref('')
@@ -66,21 +68,8 @@ const columns: TableColumn[] = [
   { key: 'nodeId', label: 'Node ID', sortable: false },
   { key: 'severity', label: 'Severity', sortable: false },
   { key: 'message', label: 'Message', sortable: false },
-  { key: 'actions', label: '', className: 'text-right' },
+  { key: 'actions', label: '', className: 'text-right w-16' },
 ]
-
-// Format timestamp for display
-const formatTimestamp = (timestamp: string): string => {
-  const date = new Date(timestamp)
-  return date.toLocaleString('en-GB', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-  })
-}
 
 // Get severity badge classes
 const getSeverityClass = (severity: LogSeverity): string => {
@@ -211,7 +200,7 @@ onMounted(async () => {
 
       <!-- Custom cell templates -->
       <template #cell-timestamp="{ value }">
-        <span class="whitespace-nowrap">{{ formatTimestamp(value) }}</span>
+        <span class="whitespace-nowrap">{{ formatDateTime(value) }}</span>
       </template>
 
       <template #cell-node="{ value }">

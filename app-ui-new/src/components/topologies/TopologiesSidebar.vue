@@ -16,6 +16,7 @@ const emit = defineEmits<{
   'open-new-topology-modal': []
   'open-new-folder-modal': []
   'select-topology': [topologyId: string, topologyName: string]
+  'topology-action': [topologyId: string, topologyName: string, action: string]
   'update:modelValue': [value: boolean]
 }>()
 
@@ -256,6 +257,7 @@ watch(() => props.modelValue, (newValue) => {
           :key="item.id"
           :item="item"
           @select-topology="handleSelectTopology"
+          @topology-action="(id, name, action) => emit('topology-action', id, name, action)"
         />
       </div>
     </div>

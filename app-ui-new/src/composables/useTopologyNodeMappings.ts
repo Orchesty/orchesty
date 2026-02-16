@@ -25,7 +25,8 @@ let refreshTimer: ReturnType<typeof setTimeout> | null = null
 let loadingPromise: Promise<void> | null = null
 
 export function useTopologyNodeMappings() {
-  // Fetch both mapping sets if not already loaded
+  // Fetch both mapping sets if not already loaded.
+  // If another caller is already loading, wait for its promise instead of skipping.
   const loadMappings = async (force = false) => {
     if (isLoaded.value && !force) return
     if (isLoading.value && loadingPromise && !force) return loadingPromise
@@ -163,6 +164,12 @@ export function useTopologyNodeMappings() {
       .sort((a, b) => a.label.localeCompare(b.label))
   })
 
+  // Reactive name maps (id -> name) for passing as props to chart components.
+  // These are reactive computeds -- when allMappings updates, dependent components re-render.
+  const topologyNameMap = computed<Record<string, string>>(() => allMappings.value?.topologies ?? {})
+  const nodeNameMap = computed<Record<string, string>>(() => allMappings.value?.nodes ?? {})
+  const applicationNameMap = computed<Record<string, string>>(() => allMappings.value?.applications ?? {})
+
   // Manual refresh function (for user-triggered refresh)
   // User explicitly wants to retry, so clear ALL checked IDs
   const refresh = async () => {
@@ -178,6 +185,9 @@ export function useTopologyNodeMappings() {
     getTopologyName,
     getNodeName,
     getApplicationName,
+    topologyNameMap,
+    nodeNameMap,
+    applicationNameMap,
     topologyOptions,
     topologyNames,
     nodeOptions,

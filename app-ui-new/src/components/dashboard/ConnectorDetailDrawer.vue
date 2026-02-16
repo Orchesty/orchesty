@@ -264,7 +264,7 @@ const errorRecordsColumns: TableColumn[] = [
     </template>
 
     <!-- Main Content -->
-    <div v-if="connectorDetail" class="space-y-6">
+    <div v-if="connectorDetail" class="space-y-8">
       <!-- Chart -->
       <div>
         <div ref="chartElement" id="connector-error-chart"></div>
@@ -329,7 +329,7 @@ const errorRecordsColumns: TableColumn[] = [
 
       <!-- Error Records Table -->
       <div>
-        <div class="mb-3 px-6">
+        <div class="mb-3">
           <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Error Records</h3>
           <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
             Recent error occurrences and details
@@ -380,7 +380,7 @@ const errorRecordsColumns: TableColumn[] = [
 
           <!-- Custom cell for message -->
           <template #cell-message="{ value }">
-            <span class="max-w-xs truncate" :title="value">
+            <span class="break-words text-xs">
               {{ value }}
             </span>
           </template>
