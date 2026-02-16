@@ -64,8 +64,7 @@ final class MetricUserTaskAggregationFilter extends GridAggregationFilterAbstrac
         Closure $addConditionsCallback,
         Closure $addSortationsCallback,
         Closure $addPaginationCallback,
-    ): void
-    {
+    ): void {
         $addConditionsCallback();
 
         $builder

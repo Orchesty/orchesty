@@ -130,6 +130,17 @@ final readonly class MetricsHandler
      * @return mixed[]
      * @throws Exception
      */
+    public function getMetricsConnectorsHeatmap(GridRequestDtoInterface $dto): array
+    {
+        return $this->getGridResponse($dto, $this->manager->getMetricsConnectorsHeatmap($dto));
+    }
+
+    /**
+     * @param GridRequestDtoInterface $dto
+     *
+     * @return mixed[]
+     * @throws Exception
+     */
     public function getMetricsRequests(GridRequestDtoInterface $dto): array
     {
         return $this->getGridResponse($dto, $this->manager->getMetricsRequests($dto));

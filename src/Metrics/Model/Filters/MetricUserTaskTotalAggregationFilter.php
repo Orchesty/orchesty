@@ -65,8 +65,7 @@ final class MetricUserTaskTotalAggregationFilter extends GridAggregationFilterAb
         Closure $addConditionsCallback,
         Closure $addSortationsCallback,
         Closure $addPaginationCallback,
-    ): void
-    {
+    ): void {
         $addConditionsCallback();
         $middleTime = AggregationFilterUtils::getMiddleTimeFromAggregationBuilder($builder);
 

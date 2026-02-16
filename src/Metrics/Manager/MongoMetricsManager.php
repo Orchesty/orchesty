@@ -26,6 +26,7 @@ use Hanaboso\PipesFramework\Metrics\Enum\HealthcheckTypeEnum;
 use Hanaboso\PipesFramework\Metrics\Enum\ServiceNameByQueueEnum;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorAggregationFilter;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorGraphAggregationFilter;
+use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorHeatmapAggregationFilter;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricConnectorOverviewAggregationFilter;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricLimitAggregationFilter;
 use Hanaboso\PipesFramework\Metrics\Model\Filters\MetricLimitGraphAggregationFilter;
@@ -71,6 +72,7 @@ final class MongoMetricsManager extends MetricsManagerAbstract
      * @param MetricUserTaskAggregationFilter          $metricUserTaskAggregationFilter
      * @param MetricUserTaskTotalAggregationFilter     $metricUserTaskTotalAggregationFilter
      * @param MetricUserTaskGraphAggregationFilter     $metricUserTaskGraphAggregationFilter
+     * @param MetricConnectorHeatmapAggregationFilter  $metricConnectorHeatmapAggregationFilter
      */
     public function __construct(
         private DocumentManager $dm,
@@ -92,6 +94,7 @@ final class MongoMetricsManager extends MetricsManagerAbstract
         private readonly MetricUserTaskAggregationFilter $metricUserTaskAggregationFilter,
         private readonly MetricUserTaskTotalAggregationFilter $metricUserTaskTotalAggregationFilter,
         private readonly MetricUserTaskGraphAggregationFilter $metricUserTaskGraphAggregationFilter,
+        private readonly MetricConnectorHeatmapAggregationFilter $metricConnectorHeatmapAggregationFilter,
     )
     {
         parent::__construct($dm, $nodeTable, $fpmTable, $rabbitTable, $counterTable, $connectorTable, $consumerTable);
@@ -382,6 +385,17 @@ final class MongoMetricsManager extends MetricsManagerAbstract
     public function getMetricsConnectorsGraph(GridRequestDtoInterface $dto): array
     {
         return $this->metricConnectorGraphAggregationFilter->getData($dto)->toArray();
+    }
+
+    /**
+     * @param GridRequestDtoInterface $dto
+     *
+     * @return array<mixed>
+     * @throws Exception
+     */
+    public function getMetricsConnectorsHeatmap(GridRequestDtoInterface $dto): array
+    {
+        return $this->metricConnectorHeatmapAggregationFilter->getData($dto)->toArray();
     }
 
     /**
