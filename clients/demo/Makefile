@@ -52,7 +52,7 @@ init: up
 	$(DCW) topology-api:8080 -t 600
 	$(DCB) bin/console service:install node-sdk node-sdk:8080
 	$(DCB) bin/console service:install php-sdk php-sdk:80
-	$(DCB) bin/console topology:install -c -u --force node-sdk:8080
+	$(DCB) bin/console topology:install -c -u --force ''
 	$(DCB) bin/console api-token:create --key "$(shell grep 'ORCHESTY_API_KEY' .env | cut -d "=" -f2)"
 	$(DCB) bin/console user:create "$(shell grep 'ORCHESTY_USER' .env | cut -d "=" -f2)" "$(shell grep 'ORCHESTY_PASSWORD' .env | cut -d "=" -f2)"
 

@@ -16,7 +16,7 @@ services:
             STARTING_POINT_DSN: ${STARTING_POINT_DSN}
             AWS_SES_KEY: ${AWS_SES_KEY}
             AWS_SES_SECRET: ${AWS_SES_SECRET}
-            WORKER_API_HOST: 'http://worker-api:8080'
+            WORKER_API_HOST: http://worker-api:8080
             ORCHESTY_API_KEY: ${ORCHESTY_API_KEY}
         command: sh -c 'pnpm install && pnpm run start'
 
@@ -26,7 +26,9 @@ services:
         environment:
             PHP_WEBROOT: /var/www/pipes/clients/demo/pipes-api/public
             COMPOSER_HOME: ${HOME}/dev/.composer
-            WORKER_API: http://worker-api:8080/
+            BACKEND_DSN: ${BACKEND_URL}
+            STARTING_POINT_DSN: ${STARTING_POINT_DSN}
+            WORKER_API: http://worker-api:8080
             ORCHESTY_API_KEY: ${ORCHESTY_API_KEY}
         working_dir: /var/www/pipes/clients/demo/pipes-api
         volumes:
