@@ -10,6 +10,7 @@ parameters:
 		classesAllowedToBeExtended:
 			- Demo\Connector\HubSpotCreateContactAbstract
 			- DemoTests\KernelTestCaseAbstract
+			- Hanaboso\PipesPhpSdk\Authorization\Base\Basic\BasicApplicationAbstract
 			- Hanaboso\PipesPhpSdk\Batch\BatchAbstract
 			- Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract
 			- Hanaboso\PipesPhpSdk\CustomNode\CommonNodeAbstract
