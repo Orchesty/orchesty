@@ -1,34 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:pipes="http://www.omg.org/spec/Pipes/20100524/MODEL" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
   <bpmn:process id="mysql-to-beeceptor-category" isExecutable="false">
-    <bpmn:event id="Event_04be6xs" pipes:pipesType="start" pipes:sdkHost="worker:8080" name="start" pipes:sdkHostName="worker">
+    <bpmn:event id="Event_04be6xs" pipes:pipesType="start" pipes:sdkHost="node-sdk:8080" name="start" pipes:sdkHostName="worker">
       <bpmn:outgoing>Flow_1d6twbx</bpmn:outgoing>
     </bpmn:event>
-    <bpmn:event id="Event_0jeof6k" pipes:pipesType="webhook" pipes:sdkHost="worker:8080" name="category-created" pipes:sdkHostName="worker">
+    <bpmn:event id="Event_0jeof6k" pipes:pipesType="webhook" pipes:sdkHost="node-sdk:8080" name="category-created" pipes:sdkHostName="worker">
       <bpmn:outgoing>Flow_0k58vjk</bpmn:outgoing>
     </bpmn:event>
-    <bpmn:event id="Event_1kzorl0" pipes:pipesType="webhook" pipes:sdkHost="worker:8080" name="category-updated" pipes:sdkHostName="worker">
+    <bpmn:event id="Event_1kzorl0" pipes:pipesType="webhook" pipes:sdkHost="node-sdk:8080" name="category-updated" pipes:sdkHostName="worker">
       <bpmn:outgoing>Flow_0xdom01</bpmn:outgoing>
     </bpmn:event>
-    <bpmn:task id="Activity_0qllpx1" pipes:pipesType="batch" pipes:sdkHost="worker:8080" name="get-category-list-sql-batch-connector" pipes:sdkHostName="worker" pipes:appName="mysql">
+    <bpmn:task id="Activity_0qllpx1" pipes:pipesType="batch" pipes:sdkHost="node-sdk:8080" name="get-category-list-sql-batch-connector" pipes:sdkHostName="worker" pipes:appName="mysql">
       <bpmn:incoming>Flow_1d6twbx</bpmn:incoming>
       <bpmn:incoming>Flow_0k58vjk</bpmn:incoming>
       <bpmn:incoming>Flow_0xdom01</bpmn:incoming>
       <bpmn:outgoing>Flow_1pe8jyr</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:task id="Activity_1do7apq" pipes:pipesType="custom" pipes:sdkHost="worker:8080" name="mysql-category-find-id" pipes:sdkHostName="worker" pipes:appName="mysql">
+    <bpmn:task id="Activity_1do7apq" pipes:pipesType="custom" pipes:sdkHost="node-sdk:8080" name="mysql-category-find-id" pipes:sdkHostName="worker" pipes:appName="mysql">
       <bpmn:incoming>Flow_1pe8jyr</bpmn:incoming>
       <bpmn:outgoing>Flow_1kd32no</bpmn:outgoing>
       <bpmn:outgoing>Flow_1syzu7r</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:task id="Activity_09owkad" pipes:pipesType="connector" pipes:sdkHost="worker:8080" name="beeceptor-post-category-connector" pipes:sdkHostName="worker" pipes:appName="beeceptor">
+    <bpmn:task id="Activity_09owkad" pipes:pipesType="connector" pipes:sdkHost="node-sdk:8080" name="beeceptor-post-category-connector" pipes:sdkHostName="worker" pipes:appName="beeceptor">
       <bpmn:incoming>Flow_1kd32no</bpmn:incoming>
       <bpmn:outgoing>Flow_1pi7ga6</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:task id="Activity_1idc9in" pipes:pipesType="connector" pipes:sdkHost="worker:8080" name="beeceptor-put-category-connector" pipes:sdkHostName="worker" pipes:appName="beeceptor">
+    <bpmn:task id="Activity_1idc9in" pipes:pipesType="connector" pipes:sdkHost="node-sdk:8080" name="beeceptor-put-category-connector" pipes:sdkHostName="worker" pipes:appName="beeceptor">
       <bpmn:incoming>Flow_1syzu7r</bpmn:incoming>
     </bpmn:task>
-    <bpmn:task id="Activity_0wrp4ez" pipes:pipesType="custom" pipes:sdkHost="worker:8080" name="mysql-category-store-id" pipes:sdkHostName="worker" pipes:appName="mysql">
+    <bpmn:task id="Activity_0wrp4ez" pipes:pipesType="custom" pipes:sdkHost="node-sdk:8080" name="mysql-category-store-id" pipes:sdkHostName="worker" pipes:appName="mysql">
       <bpmn:incoming>Flow_1pi7ga6</bpmn:incoming>
     </bpmn:task>
     <bpmn:sequenceFlow id="Flow_1d6twbx" sourceRef="Event_04be6xs" targetRef="Activity_0qllpx1"/>

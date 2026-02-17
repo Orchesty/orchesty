@@ -12,7 +12,7 @@ import RequestDto from '@orchesty/nodejs-sdk/dist/lib/Transport/Curl/RequestDto'
 import { HttpMethods } from '@orchesty/nodejs-sdk/dist/lib/Transport/HttpMethods';
 import AProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/AProcessDto';
 
-export const NAME = 'http-status';
+export const NAME = 'http-status-node-js';
 
 export default class HttpStatusApplication extends ABasicApplication {
 
@@ -25,7 +25,7 @@ export default class HttpStatusApplication extends ABasicApplication {
     }
 
     public getPublicName(): string {
-        return 'HTTP Status';
+        return 'HTTP Status (Node.js)';
     }
 
     public getLogo(): string | null {

@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?><bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:pipes="http://www.omg.org/spec/Pipes/20100524/MODEL" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
   <bpmn:process id="demo" isExecutable="false">
-    <bpmn:event id="Event_1tct579" pipes:pipesType="start" pipes:sdkHost="worker:8080" name="start" pipes:sdkHostName="worker">
+    <bpmn:event id="Event_1tct579" pipes:pipesType="start" pipes:sdkHost="node-sdk:8080" name="start" pipes:sdkHostName="worker">
       <bpmn:outgoing>Flow_1f76q7p</bpmn:outgoing>
     </bpmn:event>
-    <bpmn:task id="Activity_0zf0th0" pipes:pipesType="batch" pipes:sdkHost="worker:8080" name="json-placeholder-get-post-list-batch" pipes:sdkHostName="worker" pipes:appName="json-placeholder">
+    <bpmn:task id="Activity_0zf0th0" pipes:pipesType="batch" pipes:sdkHost="node-sdk:8080" name="json-placeholder-get-post-list-batch" pipes:sdkHostName="worker" pipes:appName="json-placeholder">
       <bpmn:incoming>Flow_1f76q7p</bpmn:incoming>
       <bpmn:outgoing>Flow_0so1nf2</bpmn:outgoing>
     </bpmn:task>
     <bpmn:sequenceFlow id="Flow_1f76q7p" sourceRef="Event_1tct579" targetRef="Activity_0zf0th0"/>
-    <bpmn:task id="Activity_0ipk6z5" pipes:pipesType="batch" pipes:sdkHost="worker:8080" name="json-placeholder-get-post-comment-list-batch" pipes:sdkHostName="worker" pipes:appName="json-placeholder">
+    <bpmn:task id="Activity_0ipk6z5" pipes:pipesType="batch" pipes:sdkHost="node-sdk:8080" name="json-placeholder-get-post-comment-list-batch" pipes:sdkHostName="worker" pipes:appName="json-placeholder">
       <bpmn:incoming>Flow_0so1nf2</bpmn:incoming>
       <bpmn:outgoing>Flow_066r32b</bpmn:outgoing>
     </bpmn:task>
     <bpmn:sequenceFlow id="Flow_0so1nf2" sourceRef="Activity_0zf0th0" targetRef="Activity_0ipk6z5"/>
-    <bpmn:task id="Activity_0tq6tzv" pipes:pipesType="connector" pipes:sdkHost="worker:8080" name="json-placeholder-get-post-user-connector" pipes:sdkHostName="worker" pipes:appName="json-placeholder">
+    <bpmn:task id="Activity_0tq6tzv" pipes:pipesType="connector" pipes:sdkHost="node-sdk:8080" name="json-placeholder-get-post-user-connector" pipes:sdkHostName="worker" pipes:appName="json-placeholder">
       <bpmn:incoming>Flow_066r32b</bpmn:incoming>
       <bpmn:outgoing>Flow_0va8gxu</bpmn:outgoing>
     </bpmn:task>
     <bpmn:sequenceFlow id="Flow_066r32b" sourceRef="Activity_0ipk6z5" targetRef="Activity_0tq6tzv"/>
-    <bpmn:task id="Activity_1he0su7" pipes:pipesType="custom" pipes:sdkHost="worker:8080" name="json-placeholder-to-beeceptor-sync-post-mapper" pipes:sdkHostName="worker" pipes:appName="">
+    <bpmn:task id="Activity_1he0su7" pipes:pipesType="custom" pipes:sdkHost="node-sdk:8080" name="json-placeholder-to-beeceptor-sync-post-mapper" pipes:sdkHostName="worker" pipes:appName="">
       <bpmn:incoming>Flow_0va8gxu</bpmn:incoming>
       <bpmn:outgoing>Flow_0xzxj88</bpmn:outgoing>
     </bpmn:task>
     <bpmn:sequenceFlow id="Flow_0va8gxu" sourceRef="Activity_0tq6tzv" targetRef="Activity_1he0su7"/>
-    <bpmn:task id="Activity_11j5ijt" pipes:pipesType="connector" pipes:sdkHost="worker:8080" name="beeceptor-sync-post-connector" pipes:sdkHostName="worker" pipes:appName="beeceptor">
+    <bpmn:task id="Activity_11j5ijt" pipes:pipesType="connector" pipes:sdkHost="node-sdk:8080" name="beeceptor-sync-post-connector" pipes:sdkHostName="worker" pipes:appName="beeceptor">
       <bpmn:incoming>Flow_0xzxj88</bpmn:incoming>
     </bpmn:task>
     <bpmn:sequenceFlow id="Flow_0xzxj88" sourceRef="Activity_1he0su7" targetRef="Activity_11j5ijt"/>
