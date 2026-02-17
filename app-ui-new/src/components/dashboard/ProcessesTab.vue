@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, watch, computed } from 'vue'
+import { ref, watch, computed } from 'vue'
 import ProcessesChart from './ProcessesChart.vue'
 import ProcessAuditDrawer from './ProcessAuditDrawer.vue'
 import Card from '@/components/ui/Card.vue'
@@ -80,6 +80,9 @@ const formatDuration = (seconds: number): string => {
 
 // Load data function
 const loadData = async () => {
+  // Ensure mappings are loaded before resolving names
+  await loadMappings()
+
   loading.value = true
 
   try {
@@ -159,6 +162,9 @@ const handleProcessFilterChange = async (filter: ProcessFilter) => {
 }
 
 const loadChartData = async () => {
+  // Ensure mappings are loaded before resolving names
+  await loadMappings()
+
   chartLoading.value = true
   try {
     // Get date range
@@ -226,14 +232,6 @@ watch(
   { immediate: true, deep: true }
 )
 
-onMounted(async () => {
-  // Load mappings for topology names
-  await loadMappings()
-
-  // Load initial data
-  loadChartData()
-  loadData()
-})
 </script>
 
 <template>

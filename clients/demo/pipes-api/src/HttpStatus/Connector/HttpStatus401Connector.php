@@ -1,22 +1,24 @@
 <?php declare(strict_types=1);
 
-namespace Demo\Connector\HttpStatus;
+namespace Demo\HttpStatus\Connector;
 
-use GuzzleHttp\Psr7\Uri;
+use Demo\HttpStatus\HttpStatusApplication;
+use GuzzleHttp\Exception\GuzzleException;
 use Hanaboso\CommonsBundle\Process\ProcessDto;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlManager;
-use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
+use Hanaboso\PipesPhpSdk\Application\Exception\ApplicationInstallException;
 use Hanaboso\PipesPhpSdk\Connector\ConnectorAbstract;
 use Hanaboso\PipesPhpSdk\Connector\Exception\ConnectorException;
+use Hanaboso\PipesPhpSdk\CustomNode\Exception\CustomNodeException;
 use Hanaboso\Utils\Exception\PipesFrameworkException;
 
 /**
- * Class HttpStatus500Connector
+ * Class HttpStatus401Connector
  *
- * @package Demo\Connector\HttpStatus
+ * @package Demo\HttpStatus\Connector
  */
-final class HttpStatus500Connector extends ConnectorAbstract
+final class HttpStatus401Connector extends ConnectorAbstract
 {
 
     /**
@@ -24,7 +26,7 @@ final class HttpStatus500Connector extends ConnectorAbstract
      */
     public function getName(): string
     {
-        return 'http-status-500-connector';
+        return sprintf('%s-401-connector', HttpStatusApplication::NAME);
     }
 
     /**
@@ -34,11 +36,19 @@ final class HttpStatus500Connector extends ConnectorAbstract
      * @throws CurlException
      * @throws ConnectorException
      * @throws PipesFrameworkException
+     * @throws ApplicationInstallException
+     * @throws CustomNodeException
+     * @throws GuzzleException
      */
     public function processAction(ProcessDto $dto): ProcessDto
     {
         $response = $this->getSender()->send(
-            new RequestDto(new Uri('https://mock.httpstatus.io/500'), CurlManager::METHOD_GET, $dto),
+            $this->getApplication()->getRequestDto(
+                $dto,
+                $this->getApplicationInstallFromProcess($dto),
+                CurlManager::METHOD_GET,
+                '401',
+            ),
         );
 
         return $dto->setStopProcess(

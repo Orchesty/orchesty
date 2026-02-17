@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
 import QuickFilter from '@/components/ui/datagrid/QuickFilter.vue'
@@ -91,6 +91,9 @@ const actions: ActionConfig[] = [
 
 // Load data function (will be passed to useDataGrid)
 const loadData = async () => {
+  // Ensure mappings are loaded before resolving names
+  await loadMappings()
+
   loading.value = true
 
   try {
@@ -153,13 +156,6 @@ watch(
   { immediate: true }
 )
 
-onMounted(async () => {
-  // Load mappings for node/application names
-  await loadMappings()
-
-  // Load initial data
-  loadData()
-})
 </script>
 
 <template>

@@ -1,6 +1,6 @@
 parameters:
     locale: en
-    secret: ThisTokenIsNotSoSecretChangeIt
+    secret: ThisIsNotSoSecret
     container:
         dumper:
             inline_factories: true
@@ -10,6 +10,7 @@ parameters:
         - '%kernel.project_dir%/vendor/orchesty/php-connectors/src/Resources/config/'
 
     applications:
+        - '%kernel.project_dir%/config'
         - '%kernel.project_dir%/vendor/orchesty/php-connectors/src/Resources/config/'
 
     kernel.root_dir: '%kernel.project_dir%/src'

@@ -3,25 +3,25 @@
     <bpmn:event id="Event_1tds76z" pipes:pipesType="start" pipes:sdkHost="node-sdk:8080" name="start" pipes:sdkHostName="node-sdk">
       <bpmn:outgoing>Flow_1n1qkvq</bpmn:outgoing>
     </bpmn:event>
-    <bpmn:task id="Activity_041a40y" pipes:pipesType="connector" pipes:sdkHost="node-sdk:8080" name="http-status-200-connector" pipes:sdkHostName="node-sdk" pipes:appName="http-status">
+    <bpmn:task id="Activity_041a40y" pipes:pipesType="connector" pipes:sdkHost="node-sdk:8080" name="http-status-node-js-200-connector" pipes:sdkHostName="node-sdk" pipes:appName="http-status-node-js">
       <bpmn:incoming>Flow_0n5xh4e</bpmn:incoming>
     </bpmn:task>
-    <bpmn:task id="Activity_02u691r" pipes:pipesType="connector" pipes:sdkHost="node-sdk:8080" name="http-status-201-connector" pipes:sdkHostName="node-sdk" pipes:appName="http-status">
+    <bpmn:task id="Activity_02u691r" pipes:pipesType="connector" pipes:sdkHost="node-sdk:8080" name="http-status-node-js-201-connector" pipes:sdkHostName="node-sdk" pipes:appName="http-status-node-js">
       <bpmn:incoming>Flow_15at6j0</bpmn:incoming>
     </bpmn:task>
-    <bpmn:task id="Activity_1h231cf" pipes:pipesType="connector" pipes:sdkHost="node-sdk:8080" name="http-status-400-connector" pipes:sdkHostName="node-sdk" pipes:appName="http-status">
+    <bpmn:task id="Activity_1h231cf" pipes:pipesType="connector" pipes:sdkHost="node-sdk:8080" name="http-status-node-js-400-connector" pipes:sdkHostName="node-sdk" pipes:appName="http-status-node-js">
       <bpmn:incoming>Flow_0qqzl1j</bpmn:incoming>
     </bpmn:task>
-    <bpmn:task id="Activity_0g359r3" pipes:pipesType="connector" pipes:sdkHost="node-sdk:8080" name="http-status-401-connector" pipes:sdkHostName="node-sdk" pipes:appName="http-status">
+    <bpmn:task id="Activity_0g359r3" pipes:pipesType="connector" pipes:sdkHost="node-sdk:8080" name="http-status-node-js-401-connector" pipes:sdkHostName="node-sdk" pipes:appName="http-status-node-js">
       <bpmn:incoming>Flow_1c0ju4w</bpmn:incoming>
     </bpmn:task>
-    <bpmn:task id="Activity_1meslbk" pipes:pipesType="connector" pipes:sdkHost="node-sdk:8080" name="http-status-404-connector" pipes:sdkHostName="node-sdk" pipes:appName="http-status">
+    <bpmn:task id="Activity_1meslbk" pipes:pipesType="connector" pipes:sdkHost="node-sdk:8080" name="http-status-node-js-404-connector" pipes:sdkHostName="node-sdk" pipes:appName="http-status-node-js">
       <bpmn:incoming>Flow_0rmmf3m</bpmn:incoming>
     </bpmn:task>
-    <bpmn:task id="Activity_07ah7kv" pipes:pipesType="connector" pipes:sdkHost="node-sdk:8080" name="http-status-500-connector" pipes:sdkHostName="node-sdk" pipes:appName="http-status">
+    <bpmn:task id="Activity_07ah7kv" pipes:pipesType="connector" pipes:sdkHost="node-sdk:8080" name="http-status-node-js-500-connector" pipes:sdkHostName="node-sdk" pipes:appName="http-status-node-js">
       <bpmn:incoming>Flow_1j27p4e</bpmn:incoming>
     </bpmn:task>
-    <bpmn:task id="Activity_1y908cz" pipes:pipesType="batch" pipes:sdkHost="node-sdk:8080" name="http-status-batch" pipes:sdkHostName="node-sdk" pipes:appName="http-status">
+    <bpmn:task id="Activity_1y908cz" pipes:pipesType="batch" pipes:sdkHost="node-sdk:8080" name="http-status-node-js-batch" pipes:sdkHostName="node-sdk" pipes:appName="http-status-node-js">
       <bpmn:incoming>Flow_1n1qkvq</bpmn:incoming>
       <bpmn:outgoing>Flow_0n5xh4e</bpmn:outgoing>
       <bpmn:outgoing>Flow_15at6j0</bpmn:outgoing>
