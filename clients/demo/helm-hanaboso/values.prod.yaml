@@ -34,6 +34,11 @@ global:
             secretKeyRef:
               name: pipes-secrets
               key: aws_ses_secret
+        MONGO_DSN:
+          valueFrom:
+            secretKeyRef:
+              name: pipes-secrets
+              key: mongodb_dsn
 
     laborer:
       sdk: nodejs
