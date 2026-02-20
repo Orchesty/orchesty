@@ -1,0 +1,73 @@
+{
+  "headers": {
+    "user": "TestUser",
+    "documentId": "test-document"
+  },
+  "data": {
+    "type": {
+      "erpExclude": false,
+      "filesExtendName": false,
+      "docCreatingMethod": "Upload",
+      "autoStamp": "None",
+      "id": "53b4b60a-30dc-4ac4-92cc-f7ceaf7b250a",
+      "name": "Odeslané",
+      "kind": "IncomingInvoice",
+      "default": false
+    },
+    "accounting": {
+      "vatSupplyModeCode": "Normal",
+      "vatApplyReductionCoefficient": false,
+      "vatFixedAssets": false,
+      "vatMode": "Standard"
+    },
+    "vaTs": [
+      {
+        "rate": 21,
+        "type": "Basic",
+        "base": 4200,
+        "tax": 882
+      }
+    ],
+    "id": "40830940-fc60-4ffd-a143-37ed2022bd21",
+    "number": "20250212",
+    "variableSymbol": "20250212",
+    "constantSymbol": "0308",
+    "issueDate": "2025-12-19T00:00:00",
+    "dueDate": "2025-12-26T00:00:00",
+    "vatDate": "2025-12-19T00:00:00",
+    "acceptDate": "2025-12-19T00:00:00",
+    "caseDate": "2025-12-19T00:00:00",
+    "taxExclusiveAmount": 4200,
+    "totalAmount": 5082,
+    "roundingAmount": 0,
+    "advanceAmount": 0,
+    "currency": "CZK",
+    "partnerIC": "17864810",
+    "partnerVAT": "CZ17864810",
+    "partnerName": "1. Account s.r.o.",
+    "partnerAddress": "třída Edvarda Beneše 1415/29, 50012 Hradec Králové, CZ",
+    "partnerEmail": "m.kos@1account.cz",
+    "accountNo": "2402434660",
+    "bankCode": "2010",
+    "iban": "CZ7720100000002402434660",
+    "bic": "FIOBCZPP",
+    "meIC": "02063450",
+    "exchangeRate": 1,
+    "exchangeRateUnits": 1,
+    "description": "Fakturujeme Vám za dodané zboží či služby:\r\nDovolujeme si Vás upozornit, že v případě nedodržení data splatnosti uvedeného na faktuře Vám můžeme účtovat zákonný úrok z prodlení.",
+    "invoiceType": "TaxInvoice",
+    "doNotPay": false,
+    "created": "2026-01-07T15:38:23.26",
+    "updated": "2026-01-07T15:38:23.26",
+    "lastAction": "2026-01-07T15:38:23.593",
+    "locked": false,
+    "approvalStatus": "None",
+    "flowStatus": "Extracted",
+    "payment": {
+      "paymentStatus": "NotPaid"
+    },
+    "dataSource": "ISDOC",
+    "source": "WebApp",
+    "createdBy": "lunhul.v@orchesty-solutions.com"
+  }
+}

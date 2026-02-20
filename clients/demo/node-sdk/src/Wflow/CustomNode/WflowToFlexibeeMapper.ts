@@ -28,13 +28,13 @@ export default class WflowToFlexibeeMapper extends ACommonNode {
             partnerAddress,
             partnerIC: ic,
             partnerVAT: dic,
-            lines,
+            lines = [], // eslint-disable-line @typescript-eslint/no-useless-default-assignment
         } = dto.getJsonData();
         const id = `ext:${wflowId}` as const;
         const kod = `WF-${new DataView(crypto.randomBytes(64).buffer).getBigUint64(0).toString(32)}` as const;
         const typDokl = this.getTypDokl(kind);
         const mena = `code:${currency}` as const;
-        const polozkyFaktury = this.getPolozkyFaktury(lines as WflowLine[]);
+        const polozkyFaktury = lines.length ? this.getPolozkyFaktury(lines as WflowLine[]) : undefined;
         const code = dto.getHeader(FIRMA_KOD);
         const firma = code ? `code:${code}` as const : undefined;
 
