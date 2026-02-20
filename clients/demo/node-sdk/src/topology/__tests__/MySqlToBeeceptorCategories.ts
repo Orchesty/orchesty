@@ -4,6 +4,7 @@ import TopologyTester from '@orchesty/nodejs-sdk/dist/test/Testers/TopologyTeste
 import path from 'path';
 import { DEFAULT_USER } from '../../../test/DataProvider';
 import { prepare } from '../../../test/TestAbstract';
+import MySqlRepository from '../../Sql/Repository/MySqlRepository';
 
 let tester: TopologyTester;
 const TOPOLOGY_PATH = path.resolve(
@@ -18,6 +19,7 @@ describe('Tests for MySqlToBeeceptorCategories topology', () => {
     beforeAll(async () => {
         tester = new TopologyTester(container, __filename, true, ['Activity_0qllpx1', 'Activity_1do7apq', 'Activity_1idc9in', 'Activity_0wrp4ez']);
         await prepare();
+        await container.get(MySqlRepository).deleteAll();
     });
 
     it('run MySqlToBeeceptorCategories manually', async () => {
