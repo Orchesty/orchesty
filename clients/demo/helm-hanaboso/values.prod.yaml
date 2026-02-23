@@ -51,6 +51,9 @@ global:
 
   backend:
     alpha_instance_id: hm8rohmtf6
+  
+  metricsCollector:
+    enabled: true
 
   applinthMarketplaceUI:
     auth_backlink: https://example.com/foo
