@@ -1,0 +1,44 @@
+{{- $componentName := "metrics-collector" -}}
+
+{{- if .Values.global.metricsCollector.enabled -}}
+
+{{- if .Values.global.metricsCollector.manageServiceAccount -}}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "pipes.fullname" (dict "suffix" $componentName "root" .) }}
+{{ end }}
+
+{{- if .Values.global.metricsCollector.manageRBAC -}}
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+ name: {{ include "pipes.fullname" (dict "suffix" $componentName "root" .) }}
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list"]
+- apiGroups: ["metrics.k8s.io"]
+  resources: ["pods", "nodes"]
+  verbs: ["get", "list"]
+- apiGroups: ["apps"]
+  resources: ["deployments", "services"]
+  verbs: ["get", "list"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "pipes.fullname" (dict "suffix" $componentName "root" .) }}
+subjects:
+- kind: ServiceAccount
+  name: {{ include "pipes.fullname" (dict "suffix" $componentName "root" .) }}
+roleRef:
+  kind: Role
+  name: {{ include "pipes.fullname" (dict "suffix" $componentName "root" .) }}
+  apiGroup: "rbac.authorization.k8s.io"
+{{- end -}}
+
+{{- end -}}

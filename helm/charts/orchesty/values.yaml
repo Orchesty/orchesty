@@ -45,6 +45,7 @@ global:
     fluentd: fluentd
     detector: detector
     worker-api: worker-api
+    metrics-collector: metrics-collector
 
   # Default global node selector
   nodeSelector: {}
@@ -196,6 +197,19 @@ global:
 #            operator: Equal
 #            value: "true"
 
+  metricsCollector:
+    enabled: false # Enable it, if you want use Metrics Collector
+    debug: false # Enable it, if you want to see debug logs
+    manageServiceAccount: true
+    manageRBAC: true
+    resources:
+      requests:
+        memory: 64Mi
+        cpu: 20m
+      limits:
+        memory: 128Mi
+        cpu: 100m
+
   worker:
     hostPathMounts: []
     nodeSelector: {}
@@ -346,6 +360,7 @@ loki:
       max_line_size: 1MB
       ingestion_rate_mb: 10
       max_line_size_truncate: true
+      max_query_length: 0h # no limit
     
     server:
       grpc_server_max_send_msg_size: 33554432  # 32 MB

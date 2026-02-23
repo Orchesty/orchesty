@@ -1,5 +1,11 @@
 # Release Notes
 
+## 2.1.15
+
+### Changes
+
+- Metrics-collector: added deployment
+
 ## 2.1.14
 
 ### Changes

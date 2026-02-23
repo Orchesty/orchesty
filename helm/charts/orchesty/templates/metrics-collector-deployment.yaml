@@ -1,0 +1,86 @@
+{{- $componentName := "metrics-collector" -}}
+
+{{- if .Values.global.metricsCollector.enabled -}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "pipes.fullname" (dict "suffix" $componentName "root" .) }}
+  labels:
+{{ include "pipes.labels" . | indent 4 }}
+{{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 4 }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+{{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 6 }}
+  template:
+    metadata:
+      labels:
+{{ include "pipes.selectorLabels" (dict "suffix" $componentName "root" .) | indent 8 }}
+    spec:
+{{ include "pipes.imagePullSecrets" . | indent 6 }}
+      serviceAccountName: {{ include "pipes.fullname" (dict "suffix" $componentName "root" .) }}
+      containers:
+        - name: metrics-collector
+          args: ["/bin/metrics-collector"]
+          image: {{ include "pipes.imageFullname" (dict "image" "metrics-collector" "root" .) }}
+          imagePullPolicy: Always
+          env:
+            - name: TZ
+              value: "{{ .Values.global.timezone }}"
+            
+            - name: APP_DEBUG
+              value: "{{ .Values.global.metricsCollector.debug}}"
+            - name: TICK
+              value: "60"
+            
+            - name: LOKI_URL
+              value: "http://{{ .Values.global.logs.lokiHostname }}"
+            - name: LOKI_ENABLED
+              value: "{{ .Values.loki.enabled }}"
+            
+            - name: RABBITMQ_VHOST
+              value: "{{ .Release.Namespace }}"
+            - name: RABBITMQ_URL
+              valueFrom:
+                secretKeyRef:
+                  key: rabbitmq_url
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: RABBITMQ_USER
+              valueFrom:
+                secretKeyRef:
+                  key: rabbitmq_user
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            - name: RABBITMQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: rabbitmq_password
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            
+            - name: MONGODB_DSN
+              valueFrom:
+                secretKeyRef:
+                  key: mongodb_dsn
+                  name: {{ include "pipes.fullname" (dict "suffix" "secrets" "root" .) }}
+            
+            - name: K8S_NAMESPACE
+              value: "{{ .Release.Namespace }}"
+            - name: K8S_ENABLED
+              value: "true"
+          resources:
+{{ toYaml .Values.global.metricsCollector.resources | indent 12 }}
+
+
+{{- with .Values.global.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- with .Values.global.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+{{- end }}
+
+{{- end }}

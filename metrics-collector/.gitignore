@@ -1,0 +1,15 @@
+.env
+.env.local
+metrics-collector
+*.out
+*.html
+coverage.out
+vendor/
+.DS_Store
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+*.log
+var/
