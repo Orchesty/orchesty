@@ -6,12 +6,14 @@ interface Props {
   placeholder?: string
   debounce?: number
   width?: string
+  mode?: 'client' | 'server'
 }
 
 const props = withDefaults(defineProps<Props>(), {
   placeholder: 'Search...',
   debounce: 300,
   width: 'w-80',
+  mode: 'server',
 })
 
 const emit = defineEmits<{
@@ -32,20 +34,22 @@ const handleInput = (event: Event) => {
   const target = event.target as HTMLInputElement
   localValue.value = target.value
 
-  // Clear existing timer
-  if (debounceTimer) {
-    clearTimeout(debounceTimer)
-  }
-
-  // Set new timer
-  debounceTimer = setTimeout(() => {
+  if (props.mode === 'client') {
+    // Client mode: emit immediately
     emit('update:modelValue', localValue.value)
-  }, props.debounce)
+  } else {
+    // Server mode: debounce before emitting
+    if (debounceTimer) {
+      clearTimeout(debounceTimer)
+    }
+    debounceTimer = setTimeout(() => {
+      emit('update:modelValue', localValue.value)
+    }, props.debounce)
+  }
 }
 
 const handleClear = () => {
   localValue.value = ''
-  // Clear any pending debounce and emit immediately
   if (debounceTimer) {
     clearTimeout(debounceTimer)
   }
@@ -105,4 +109,3 @@ const handleClear = () => {
     </div>
   </div>
 </template>
-

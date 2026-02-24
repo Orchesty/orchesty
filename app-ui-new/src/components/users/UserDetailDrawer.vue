@@ -5,7 +5,10 @@ import Button from '@/components/ui/Button.vue'
 import Confirm from '@/components/ui/Confirm.vue'
 import { updateUserRole, removeUser } from '@/services/usersService'
 import { addUserToGroup, removeUserFromGroup } from '@/services/groupsService'
+import { useToast } from '@/composables/useToast'
 import type { User, UserRole } from '@/types/users'
+
+const { showToast } = useToast()
 import groupsDataJson from '@/assets/mock-data/groups-data.json'
 
 interface Props {
@@ -43,8 +46,10 @@ watch(selectedRole, async (newRole) => {
     try {
       await updateUserRole(props.user.id, newRole, userGroups.value)
       emit('user-updated')
+      showToast('User role updated successfully', 'success')
     } catch (error) {
       console.error('Failed to update user role:', error)
+      showToast('Failed to update user role', 'error')
       selectedRole.value = props.user.role
     }
   }
@@ -58,8 +63,10 @@ const handleAddGroup = async (groupId: string) => {
     await updateUserRole(props.user.id, selectedRole.value, userGroups.value)
     addGroupDropdownOpen.value = false
     emit('user-updated')
+    showToast('User added to group', 'success')
   } catch (error) {
     console.error('Failed to add user to group:', error)
+    showToast('Failed to add user to group', 'error')
   }
 }
 
@@ -70,8 +77,10 @@ const handleRemoveGroup = async (groupId: string) => {
     userGroups.value = userGroups.value.filter(id => id !== groupId)
     await updateUserRole(props.user.id, selectedRole.value, userGroups.value)
     emit('user-updated')
+    showToast('User removed from group', 'success')
   } catch (error) {
     console.error('Failed to remove user from group:', error)
+    showToast('Failed to remove user from group', 'error')
   }
 }
 
@@ -81,8 +90,10 @@ const handleConfirmRemove = async () => {
     await removeUser(props.user.id)
     confirmRemoveOpen.value = false
     emit('user-removed')
+    showToast('User removed successfully', 'success')
   } catch (error) {
     console.error('Failed to remove user:', error)
+    showToast('Failed to remove user', 'error')
   }
 }
 

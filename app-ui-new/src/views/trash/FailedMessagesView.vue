@@ -7,6 +7,7 @@ import DataGrid from '@/components/ui/DataGrid.vue'
 import TimeRangeFilterWithCustomRange from '@/components/ui/TimeRangeFilterWithCustomRange.vue'
 import DropdownFilter from '@/components/ui/datagrid/DropdownFilter.vue'
 import TextInput from '@/components/ui/datagrid/TextInput.vue'
+import SearchInput from '@/components/ui/SearchInput.vue'
 import DropdownMenu, { type DropdownMenuSection } from '@/components/ui/DropdownMenu.vue'
 import Confirm from '@/components/ui/Confirm.vue'
 import TrashDetailDrawer from '@/components/trash/TrashDetailDrawer.vue'
@@ -24,8 +25,10 @@ import {
 import { useDataGrid } from '@/composables/useDataGrid'
 import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 import { useToast } from '@/composables/useToast'
+import { useDateFormat } from '@/composables/useDateFormat'
 
 const route = useRoute()
+const { formatDateTime } = useDateFormat()
 
 // Topology/Node mappings composable
 const {
@@ -148,15 +151,47 @@ const handleRejectAll = () => {
 }
 
 const confirmApproveAll = async () => {
-  // TODO: Implement approve all
-  console.log('Approve all confirmed')
-  loadData()
+  try {
+    // Fetch all items matching current filters to collect IDs
+    const params = buildCurrentFilterParams()
+    params.page = 1
+    params.perPage = totalItems.value || 9999
+    const response = await fetchTrashItems(params)
+    const ids = response.data.map((item) => item.id)
+
+    if (ids.length > 0) {
+      await bulkApprove(ids)
+    }
+
+    showToast(`${ids.length} message(s) approved successfully`, 'success')
+    selectedRows.value = new Set()
+    loadData()
+  } catch (error) {
+    console.error('Approve all failed:', error)
+    showToast('Failed to approve all messages', 'error')
+  }
 }
 
 const confirmRejectAll = async () => {
-  // TODO: Implement reject all
-  console.log('Reject all confirmed')
-  loadData()
+  try {
+    // Fetch all items matching current filters to collect IDs
+    const params = buildCurrentFilterParams()
+    params.page = 1
+    params.perPage = totalItems.value || 9999
+    const response = await fetchTrashItems(params)
+    const ids = response.data.map((item) => item.id)
+
+    if (ids.length > 0) {
+      await bulkReject(ids)
+    }
+
+    showToast(`${ids.length} message(s) rejected successfully`, 'success')
+    selectedRows.value = new Set()
+    loadData()
+  } catch (error) {
+    console.error('Reject all failed:', error)
+    showToast('Failed to reject all messages', 'error')
+  }
 }
 
 // More actions dropdown menu
@@ -175,7 +210,7 @@ const columns: TableColumn[] = [
   { key: 'node', label: 'Node', sortable: false },
   { key: 'timestamp', label: 'Timestamp', sortable: true },
   { key: 'resultMessage', label: 'Result Message', sortable: false },
-  { key: 'actions', label: '', className: 'text-right' },
+  { key: 'actions', label: '', className: 'text-right w-16' },
 ]
 
 // Bulk actions
@@ -192,10 +227,8 @@ const bulkActions: BulkAction[] = [
   },
 ]
 
-// Load data
-const loadData = async () => {
-  loading.value = true
-
+// Build query params from current filter state
+const buildCurrentFilterParams = (): TrashQueryParams => {
   const params: TrashQueryParams = {
     page: currentPage.value,
     perPage: itemsPerPage.value,
@@ -203,28 +236,21 @@ const loadData = async () => {
     sortOrder: sortDirection.value,
   }
 
-  if (searchFilter.value) {
-    params.search = searchFilter.value
-  }
+  if (searchFilter.value) params.search = searchFilter.value
+  if (correlationIdFilter.value) params.correlationId = correlationIdFilter.value
+  if (nodeFilter.value) params.node = nodeFilter.value
+  if (topologyFilter.value) params.topology = topologyFilter.value
+  if (timeRangeFilter.value) params.timeRange = timeRangeFilter.value
 
-  if (correlationIdFilter.value) {
-    params.correlationId = correlationIdFilter.value
-  }
+  return params
+}
 
-  if (nodeFilter.value) {
-    params.node = nodeFilter.value
-  }
-
-  if (topologyFilter.value) {
-    params.topology = topologyFilter.value
-  }
-
-  if (timeRangeFilter.value) {
-    params.timeRange = timeRangeFilter.value
-  }
+// Load data
+const loadData = async () => {
+  loading.value = true
 
   try {
-    const response = await fetchTrashItems(params)
+    const response = await fetchTrashItems(buildCurrentFilterParams())
     trashItems.value = response.data
     totalItems.value = response.pagination.total
     totalPages.value = response.pagination.totalPages
@@ -316,17 +342,6 @@ const handleReject = async () => {
   }
 }
 
-// Format timestamp for display
-const formatTimestamp = (timestamp: string) => {
-  const date = new Date(timestamp)
-  return date.toLocaleString('en-GB', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-}
 </script>
 
 <template>
@@ -386,9 +401,11 @@ const formatTimestamp = (timestamp: string) => {
         @update:selected-rows="selectedRows = $event"
       >
         <template #filters>
-          <TextInput
+          <SearchInput
             v-model="searchFilter"
             placeholder="Search"
+            mode="server"
+            width="w-48"
           />
           <TextInput
             v-model="correlationIdFilter"
@@ -417,14 +434,14 @@ const formatTimestamp = (timestamp: string) => {
         <template #cell-topology="{ row }">
           <RouterLink
             :to="`/topologies/${row.topologyId}`"
-            class="font-medium text-primary-600 hover:underline dark:text-primary-500"
+            class="font-medium text-gray-900 hover:underline dark:text-white"
           >
             {{ getTopologyName(row.topologyId) }}
           </RouterLink>
         </template>
 
         <template #cell-timestamp="{ value }">
-          {{ formatTimestamp(value) }}
+          {{ formatDateTime(value) }}
         </template>
 
         <template #cell-resultMessage="{ row }">

@@ -125,6 +125,20 @@ final class MetricsController extends AbstractController
      *
      * @return Response
      */
+    #[Route('/metrics/connectors/heatmap', methods: [Request::METHOD_GET])]
+    public function getMetricsConnectorsHeatmapAction(Request $request): Response
+    {
+        return $this->forward(
+            'Hanaboso\PipesFramework\HbPFMetricsBundle\Controller\MetricsController::getMetricsConnectorsHeatmapAction',
+            ['request' => $request],
+        );
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return Response
+     */
     #[Route('/metrics/requests', methods: [Request::METHOD_GET])]
     public function getMetricsRequestsAction(Request $request): Response
     {

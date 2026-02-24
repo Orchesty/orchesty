@@ -3,6 +3,9 @@ import { watch } from 'vue'
 import Modal from '@/components/ui/Modal.vue'
 import Button from '@/components/ui/Button.vue'
 import type { AuditLogEntry } from '@/types/audit-logs'
+import { useDateFormat } from '@/composables/useDateFormat'
+
+const { formatDateTime } = useDateFormat()
 
 interface Props {
   modelValue: boolean
@@ -41,7 +44,7 @@ const handleClose = () => {
     <div v-if="log" class="space-y-3">
       <div class="flex flex-col">
         <dt class="mb-1 text-sm text-gray-500 dark:text-gray-400">Timestamp</dt>
-        <dd class="text-sm text-gray-900 dark:text-white">{{ log.timestamp }}</dd>
+        <dd class="text-sm text-gray-900 dark:text-white">{{ formatDateTime(log.timestamp) }}</dd>
       </div>
       <div class="flex flex-col">
         <dt class="mb-1 text-sm text-gray-500 dark:text-gray-400">User</dt>

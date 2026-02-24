@@ -14,7 +14,10 @@ import type {
 } from '@/types/connectors'
 import type { TimeFilter } from '@/types/dashboard'
 import api from '@/services/api'
-import { convertTimeFilterToDateTimeRange, formatChartDate } from '@/utils/timeRangeConverter'
+import { convertTimeFilterToDateTimeRange } from '@/utils/timeRangeConverter'
+import { useDateFormat } from '@/composables/useDateFormat'
+
+const { formatChartDate } = useDateFormat()
 
 /**
  * Map API connector item to UI Connector model

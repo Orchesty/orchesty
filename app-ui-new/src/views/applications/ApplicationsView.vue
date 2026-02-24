@@ -1,17 +1,32 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import type { WorkerGroup, ApplicationStatus } from '@/types/applications';
 import { fetchApplications, installApplication } from '@/services/applicationsService';
 import DashboardLayout from '@/layouts/DashboardLayout.vue';
 import ApplicationCard from '@/components/applications/ApplicationCard.vue';
 import ApplicationDetailDrawer from '@/components/applications/ApplicationDetailDrawer.vue';
+import SearchInput from '@/components/ui/SearchInput.vue';
 import { useToast } from '@/composables/useToast';
 
 const selectedFilter = ref<ApplicationStatus | 'all' | 'all-installed'>('all');
 const workers = ref<WorkerGroup[]>([]);
 const workersExpanded = ref<Record<string, boolean>>({});
 const loading = ref(false);
+const searchQuery = ref('');
 const { showToast } = useToast();
+
+const filteredWorkers = computed(() => {
+  if (!searchQuery.value) return workers.value
+  const q = searchQuery.value.toLowerCase()
+  return workers.value
+    .map(worker => ({
+      ...worker,
+      applications: worker.applications.filter(app =>
+        app.name.toLowerCase().includes(q) || app.key.toLowerCase().includes(q)
+      )
+    }))
+    .filter(worker => worker.applications.length > 0)
+});
 
 const drawerOpen = ref(false);
 const selectedAppKey = ref('');
@@ -109,7 +124,8 @@ onMounted(() => {
 
     <!-- Radio Filter -->
     <div class="mb-6">
-      <div class="mb-4 flex items-center gap-4">
+      <div class="mb-4 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-4">
         <div class="flex items-center">
           <input
             id="filter-all"
@@ -194,6 +210,13 @@ onMounted(() => {
             Activated
           </label>
         </div>
+        </div>
+        <SearchInput
+          v-model="searchQuery"
+          placeholder="Search applications..."
+          mode="client"
+          width="w-64"
+        />
       </div>
       <div class="border-t border-gray-200 dark:border-gray-700"></div>
     </div>
@@ -223,7 +246,7 @@ onMounted(() => {
 
     <!-- Worker Sections -->
     <div v-else>
-      <div v-for="worker in workers" :key="worker.name" class="mb-6">
+      <div v-for="worker in filteredWorkers" :key="worker.name" class="mb-6">
         <button
           type="button"
           class="flex items-center w-full mb-4 text-lg font-semibold text-gray-900 dark:text-white hover:text-primary-600 dark:hover:text-primary-500 transition-colors"
@@ -266,7 +289,7 @@ onMounted(() => {
       </div>
 
       <!-- Empty State -->
-      <div v-if="workers.length === 0" class="text-center py-12">
+      <div v-if="filteredWorkers.length === 0" class="text-center py-12">
         <p class="text-gray-500 dark:text-gray-400">No applications found for the selected filter.</p>
       </div>
     </div>

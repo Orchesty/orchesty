@@ -3,6 +3,9 @@ import { computed } from 'vue'
 import Drawer from '@/components/ui/Drawer.vue'
 import CopyValue from '@/components/ui/CopyValue.vue'
 import type { LogEntry, LogSeverity } from '@/types/logs'
+import { useDateFormat } from '@/composables/useDateFormat'
+
+const { formatDateTime } = useDateFormat()
 
 interface Props {
   modelValue: boolean
@@ -18,15 +21,7 @@ const emit = defineEmits<{
 // Format timestamp for display
 const formattedTimestamp = computed(() => {
   if (!props.log) return ''
-  const date = new Date(props.log.timestamp)
-  return date.toLocaleString('en-GB', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-  })
+  return formatDateTime(props.log.timestamp)
 })
 
 // Get severity badge classes

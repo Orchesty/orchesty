@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import type { ApplicationSetting } from '@/types/applications';
-import TextInput from '@/components/ui/datagrid/TextInput.vue';
+import FormInput from '@/components/ui/FormInput.vue';
 
 interface Props {
   settings: ApplicationSetting[];
@@ -66,7 +66,7 @@ const handleSelectChange = (key: string, event: Event) => {
           {{ setting.label }}
           <span v-if="setting.required" class="text-red-500">*</span>
         </label>
-        <TextInput
+        <FormInput
           :id="setting.key"
           :type="getInputType(setting.type)"
           :model-value="String(formValues[setting.key] ?? setting.value ?? '')"

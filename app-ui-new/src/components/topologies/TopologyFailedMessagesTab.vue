@@ -21,6 +21,7 @@ import {
 import { useDataGrid } from '@/composables/useDataGrid'
 import { useToast } from '@/composables/useToast'
 import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
+import { useDateFormat } from '@/composables/useDateFormat'
 
 interface Props {
   topologyId: string
@@ -34,6 +35,7 @@ const { showToast } = useToast()
 
 // Topology and Node mappings
 const { loadMappings, mappings, getNodeName } = useTopologyNodeMappings()
+const { formatDateTime } = useDateFormat()
 
 // State
 const trashItems = ref<TrashItem[]>([])
@@ -111,7 +113,7 @@ const columns: TableColumn[] = [
   { key: 'node', label: 'Node', sortable: false },
   { key: 'timestamp', label: 'Timestamp', sortable: true },
   { key: 'resultMessage', label: 'Result Message', sortable: false },
-  { key: 'actions', label: '', className: 'text-right' },
+  { key: 'actions', label: '', className: 'text-right w-16' },
 ]
 
 // Bulk actions
@@ -243,17 +245,6 @@ const handleReject = async () => {
   }
 }
 
-// Format timestamp for display
-const formatTimestamp = (timestamp: string) => {
-  const date = new Date(timestamp)
-  return date.toLocaleString('en-GB', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-}
 </script>
 
 <template>
@@ -297,7 +288,7 @@ const formatTimestamp = (timestamp: string) => {
 
       <!-- Custom cell templates -->
       <template #cell-timestamp="{ value }">
-        {{ formatTimestamp(value) }}
+        {{ formatDateTime(value) }}
       </template>
 
       <template #cell-node="{ row }">

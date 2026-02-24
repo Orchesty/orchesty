@@ -4,13 +4,13 @@ import type { ProcessFilter } from '@/types/dashboard'
 
 interface Props {
   chartId?: string
-  totalProcesses: number
+  totalRequests: number
   totalFailed: number
   timeRange: string
   filter?: ProcessFilter
   series: any[]
   xCategories: string[]
-  yLabelMap?: Record<string, string>
+  yLabelPrefix?: Record<string, string>
 }
 
 withDefaults(defineProps<Props>(), {
@@ -20,27 +20,27 @@ withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   filterChange: [filter: ProcessFilter]
-  heatmapClick: [data: { topology: string; timeSlot: string; timeSlotEnd: string }]
+  heatmapClick: [data: { connector: string; timeSlot: string }]
 }>()
 
-const handleClick = (data: { name: string; timeSlot: string; timeSlotEnd: string }) => {
-  emit('heatmapClick', { topology: data.name, timeSlot: data.timeSlot, timeSlotEnd: data.timeSlotEnd })
+const handleClick = (data: { name: string; timeSlot: string }) => {
+  emit('heatmapClick', { connector: data.name, timeSlot: data.timeSlot })
 }
 </script>
 
 <template>
   <HeatmapChart
     :chart-id="chartId"
-    title="Processes over time"
-    total-label="Processes"
-    :total-count="totalProcesses"
+    title="Applications over time"
+    total-label="Requests"
+    :total-count="totalRequests"
     :total-failed="totalFailed"
     :time-range="timeRange"
-    empty-label="No processes"
+    empty-label="No requests"
     :filter="filter"
     :series="series"
     :x-categories="xCategories"
-    :y-label-map="yLabelMap"
+    :y-label-prefix="yLabelPrefix"
     @filter-change="emit('filterChange', $event)"
     @heatmap-click="handleClick"
   />

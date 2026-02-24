@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import Modal from '@/components/ui/Modal.vue'
-import TextInput from '@/components/ui/datagrid/TextInput.vue'
+import FormInput from '@/components/ui/FormInput.vue'
 import KeyValueInput from '@/components/ui/KeyValueInput.vue'
 import Button from '@/components/ui/Button.vue'
 import type { Worker } from '@/types/settings'
@@ -107,11 +107,10 @@ const handleClose = () => {
           Name
           <span class="text-red-600 dark:text-red-400">*</span>
         </label>
-        <TextInput
+        <FormInput
           id="worker-name"
           v-model="formData.name"
           placeholder="Enter worker name"
-          width="w-full"
         />
         <p v-if="nameError" class="mt-1 text-sm text-red-600 dark:text-red-400">
           {{ nameError }}
@@ -124,12 +123,10 @@ const handleClose = () => {
           URL
           <span class="text-red-600 dark:text-red-400">*</span>
         </label>
-        <TextInput
+        <FormInput
           id="worker-url"
           v-model="formData.url"
-          type="text"
           placeholder="https://worker.example.com"
-          width="w-full"
         />
         <p v-if="urlError" class="mt-1 text-sm text-red-600 dark:text-red-400">
           {{ urlError }}

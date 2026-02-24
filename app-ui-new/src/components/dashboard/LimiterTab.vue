@@ -3,8 +3,9 @@ import { ref, computed, onMounted, nextTick, watch } from 'vue'
 import { useApexChart, getChartColors, getBaseChartOptions } from '@/composables/useApexChart'
 import { useDataGrid } from '@/composables/useDataGrid'
 import { useDateFormat } from '@/composables/useDateFormat'
-import { fetchLimiterData } from '@/services/dashboardService'
-import type { LimiterData, TableColumn, TimeFilter } from '@/types/dashboard'
+import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
+import { fetchLimiterData, fetchApplicationLimiterSettings } from '@/services/dashboardService'
+import type { LimiterData, TableColumn, TimeFilter, AppLimiterSetting } from '@/types/dashboard'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
 
@@ -23,16 +24,15 @@ function getGranularityMinutes(timeFilter: TimeFilter): number {
 }
 
 interface Props {
-  timeFilter: TimeFilter
+  globalTimeFilter: TimeFilter
 }
 
 const props = defineProps<Props>()
 
-const emit = defineEmits<{
-  viewAll: []
-}>()
+const { loadMappings } = useTopologyNodeMappings()
 
 const limiterData = ref<LimiterData | null>(null)
+const appSettings = ref<Map<string, AppLimiterSetting>>(new Map())
 const chartEl = ref<HTMLElement | null>(null)
 const chartMounted = ref(false)
 
@@ -46,19 +46,19 @@ const maxDiffPercent = computed(() => {
 
 const { initChart, setupResizeObserver, isDarkMode } = useApexChart({
   onDarkModeChange: () => {
-    // Re-render chart like original Flowbite template
-    // Only if chart was already mounted
     if (chartMounted.value && chartEl.value) {
-      initChart(chartEl.value, getColumnChartOptions())
+      initChart(chartEl.value, getChartOptions())
       setupResizeObserver(chartEl.value)
     }
   },
 })
 
 const columns: TableColumn[] = [
-  { key: 'connector', label: 'Connector', sortable: false, className: 'w-[35%] truncate' },
-  { key: 'topology', label: 'Topology', sortable: false, className: 'w-[35%] truncate' },
-  { key: 'messages', label: 'Max (actual)', sortable: true, className: 'w-[30%] whitespace-nowrap' },
+  { key: 'application', label: 'Application', sortable: false },
+  { key: 'connector', label: 'Connector', sortable: false },
+  { key: 'topology', label: 'Topology', sortable: false },
+  { key: 'limitSetting', label: 'Limit', sortable: false },
+  { key: 'messages', label: 'Max (actual)', sortable: true },
 ]
 
 // Load data function
@@ -71,7 +71,8 @@ const loadData = async () => {
       limit: itemsPerPage.value,
       sortBy: sortField.value,
       sortOrder: sortDirection.value,
-      timeFilter: props.timeFilter
+      timeFilter: props.globalTimeFilter,
+      appSettings: appSettings.value,
     })
 
     limiterData.value = response
@@ -81,7 +82,7 @@ const loadData = async () => {
     // Re-render chart with new data if already mounted
     await nextTick()
     if (chartMounted.value && chartEl.value) {
-      initChart(chartEl.value, getColumnChartOptions())
+      initChart(chartEl.value, getChartOptions())
       setupResizeObserver(chartEl.value)
     }
   } catch (error) {
@@ -105,36 +106,45 @@ const {
   handleSort,
 } = useDataGrid({
   defaultSort: { field: 'messages', direction: 'desc' },
-  defaultPerPage: 5,
+  defaultPerPage: 10,
   onDataLoad: loadData,
 })
 
-// Add watcher for timeFilter changes
-watch(() => props.timeFilter, () => {
+// Watch time filter changes
+watch(() => props.globalTimeFilter, () => {
   loadData()
 })
 
-// Initialize chart on mount
+// Initialize on mount
 onMounted(async () => {
   try {
+    // Load mappings and application limiter settings in parallel
+    const [, settings] = await Promise.all([
+      loadMappings(),
+      fetchApplicationLimiterSettings(),
+    ])
+    appSettings.value = settings
+
+    // Load data
     await loadData()
     await nextTick()
+
     if (!chartEl.value || !limiterData.value) {
       return
     }
 
-    initChart(chartEl.value, getColumnChartOptions())
+    initChart(chartEl.value, getChartOptions())
     setupResizeObserver(chartEl.value)
     chartMounted.value = true
   } catch (error) {
-    console.error('LimiterCard mount error:', error)
+    console.error('LimiterTab mount error:', error)
   }
 })
 
-const getColumnChartOptions = () => {
+const getChartOptions = () => {
   const colors = getChartColors(isDarkMode.value)
   const categories = limiterData.value?.chartData.categories || []
-  const granularity = getGranularityMinutes(props.timeFilter)
+  const granularity = getGranularityMinutes(props.globalTimeFilter)
 
   return {
     ...getBaseChartOptions(isDarkMode.value),
@@ -146,7 +156,7 @@ const getColumnChartOptions = () => {
     ],
     chart: {
       type: 'area',
-      height: 256,
+      height: 320,
       toolbar: {
         show: false,
       },
@@ -188,9 +198,8 @@ const getColumnChartOptions = () => {
         },
         formatter: (value: string) => {
           if (!value) return ''
-          // Show only every Nth label to avoid clutter
           const index = categories.indexOf(value)
-          const step = Math.max(1, Math.floor(categories.length / 6))
+          const step = Math.max(1, Math.floor(categories.length / 8))
           if (index !== -1 && index % step !== 0 && index !== categories.length - 1) {
             return ''
           }
@@ -246,76 +255,101 @@ const getColumnChartOptions = () => {
 </script>
 
 <template>
-  <Card>
-    <div v-if="limiterData">
-      <!-- Header with total count -->
-      <div class="mb-4 flex items-center justify-between">
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Limiter</h3>
-        <div class="flex items-center gap-6">
-          <div class="flex flex-col items-center">
-            <span class="text-xs text-gray-500 dark:text-gray-400">max</span>
-            <span class="text-2xl font-bold text-gray-900 dark:text-white">
-              {{ limiterData.maxMessages }}
-            </span>
-          </div>
-          <div class="flex flex-col items-center">
-            <span class="text-xs text-gray-500 dark:text-gray-400">actual</span>
-            <div class="flex items-center gap-1">
-              <!-- Arrow down = actual below max (green = decrease), Arrow up = at/above max (red) -->
-              <svg
-                v-if="maxDiffPercent > 0"
-                class="h-6 w-6 text-green-600 dark:text-green-400"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19V5m0 14-4-4m4 4 4-4"/>
-              </svg>
-              <svg
-                v-else-if="maxDiffPercent < 0"
-                class="h-6 w-6 text-red-600 dark:text-red-400"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m0-14 4 4m-4-4-4 4"/>
-              </svg>
-              <span
-                class="text-2xl font-bold"
-                :class="maxDiffPercent > 0
-                  ? 'text-green-600 dark:text-green-400'
-                  : maxDiffPercent < 0
-                    ? 'text-red-600 dark:text-red-400'
-                    : 'text-gray-900 dark:text-white'"
-              >
-                {{ limiterData.totalMessages }}
-                <span v-if="maxDiffPercent !== 0" class="text-sm font-medium">{{ Math.abs(maxDiffPercent) }}%</span>
+  <div class="space-y-6">
+    <!-- Section: Chart card -->
+    <Card>
+      <div v-if="limiterData">
+        <!-- Header with total count -->
+        <div class="mb-4 flex items-center justify-between">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Limiter</h3>
+          <div class="flex items-center gap-6">
+            <div class="flex flex-col items-center">
+              <span class="text-xs text-gray-500 dark:text-gray-400">max</span>
+              <span class="text-2xl font-bold text-gray-900 dark:text-white">
+                {{ limiterData.maxMessages }}
               </span>
+            </div>
+            <div class="flex flex-col items-center">
+              <span class="text-xs text-gray-500 dark:text-gray-400">actual</span>
+              <div class="flex items-center gap-1">
+                <svg
+                  v-if="maxDiffPercent > 0"
+                  class="h-6 w-6 text-green-600 dark:text-green-400"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19V5m0 14-4-4m4 4 4-4"/>
+                </svg>
+                <svg
+                  v-else-if="maxDiffPercent < 0"
+                  class="h-6 w-6 text-red-600 dark:text-red-400"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m0-14 4 4m-4-4-4 4"/>
+                </svg>
+                <span
+                  class="text-2xl font-bold"
+                  :class="maxDiffPercent > 0
+                    ? 'text-green-600 dark:text-green-400'
+                    : maxDiffPercent < 0
+                      ? 'text-red-600 dark:text-red-400'
+                      : 'text-gray-900 dark:text-white'"
+                >
+                  {{ limiterData.totalMessages }}
+                  <span v-if="maxDiffPercent !== 0" class="text-sm font-medium">{{ Math.abs(maxDiffPercent) }}%</span>
+                </span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Chart -->
-      <div class="relative mb-4 h-64 overflow-visible">
-        <div ref="chartEl" class="h-full"></div>
+        <!-- Chart -->
+        <div class="relative h-80 overflow-visible">
+          <div ref="chartEl" class="h-full"></div>
+        </div>
       </div>
+      <div v-else class="flex h-80 items-center justify-center">
+        <div class="text-gray-500 dark:text-gray-400">Loading...</div>
+      </div>
+    </Card>
 
-      <!-- Table -->
+    <!-- Section: Grid card -->
+    <Card>
+      <h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Limiter details</h3>
+
       <DataGrid
         :columns="columns"
-        :data="limiterData.tableData"
-        table-fixed
-        hide-pagination
+        :data="limiterData?.tableData || []"
+        :loading="loading"
+        :current-page="currentPage"
+        :total-pages="totalPages"
+        :total-items="totalItems"
+        :items-per-page="itemsPerPage"
         :sort-field="sortField"
         :sort-direction="sortDirection"
-        :loading="loading"
+        @page-change="handlePageChange"
+        @per-page-change="handlePerPageChange"
         @sort="handleSort"
       >
-        <template #cell-connector="{ value }">
+        <template #cell-application="{ value }">
           <span class="font-medium text-gray-900 dark:text-white">{{ value }}</span>
+        </template>
+        <template #cell-connector="{ value }">
+          <span class="text-gray-900 dark:text-white">{{ value }}</span>
+        </template>
+        <template #cell-limitSetting="{ value }">
+          <span
+            :class="value === 'off'
+              ? 'text-gray-400 dark:text-gray-500'
+              : 'text-gray-900 dark:text-white font-medium'"
+          >
+            {{ value }}
+          </span>
         </template>
         <template #cell-messages="{ row }">
           {{ row.maxMessages }}
@@ -332,21 +366,8 @@ const getColumnChartOptions = () => {
           </span>
         </template>
       </DataGrid>
-
-      <div class="mt-4">
-        <button
-          type="button"
-          class="text-sm font-medium text-primary-700 hover:underline dark:text-primary-500"
-          @click="emit('viewAll')"
-        >
-          View all →
-        </button>
-      </div>
-    </div>
-    <div v-else class="flex items-center justify-center h-64">
-      <div class="text-gray-500 dark:text-gray-400">Loading...</div>
-    </div>
-  </Card>
+    </Card>
+  </div>
 </template>
 
 <style scoped>

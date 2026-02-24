@@ -9,8 +9,11 @@ import TimeRangeFilterWithCustomRange from '@/components/ui/TimeRangeFilterWithC
 import AuditLogDetailModal from '@/components/audit-logs/AuditLogDetailModal.vue'
 import { fetchAuditLogs, exportAuditLogs } from '@/services/auditLogsService'
 import { useDataGrid } from '@/composables/useDataGrid'
+import { useDateFormat } from '@/composables/useDateFormat'
 import type { AuditLogEntry } from '@/types/audit-logs'
 import type { TableColumn } from '@/types/dashboard'
+
+const { formatDateTime } = useDateFormat()
 
 const logs = ref<AuditLogEntry[]>([])
 const searchFilter = ref('')
@@ -32,7 +35,7 @@ const columns: TableColumn[] = [
   { key: 'object', label: 'Object', sortable: true },
   { key: 'action', label: 'Action', sortable: true },
   { key: 'note', label: 'Note', sortable: false },
-  { key: 'actions', label: '', sortable: false, className: 'text-right' },
+  { key: 'actions', label: '', sortable: false, className: 'text-right w-16' },
 ]
 
 const {
@@ -193,7 +196,7 @@ onMounted(() => {
         <!-- Custom cell templates -->
         <template #cell-timestamp="{ row }">
           <span class="font-medium text-gray-900 whitespace-nowrap dark:text-white">
-            {{ (row as AuditLogEntry).timestamp }}
+            {{ formatDateTime((row as AuditLogEntry).timestamp) }}
           </span>
         </template>
 

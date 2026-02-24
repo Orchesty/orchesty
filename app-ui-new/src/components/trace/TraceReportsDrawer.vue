@@ -2,6 +2,9 @@
 import { ref, computed, onMounted, nextTick, watch } from 'vue'
 import Drawer from '@/components/ui/Drawer.vue'
 import type { TraceReport } from '@/types/trace'
+import { useDateFormat } from '@/composables/useDateFormat'
+
+const { formatDate: formatDateUtil, formatTime: formatTimeUtil } = useDateFormat()
 
 interface Props {
   modelValue: boolean
@@ -47,7 +50,6 @@ const reportsByDate = computed(() => {
 })
 
 const formatDate = (dateStr: string) => {
-  const date = new Date(dateStr)
   const today = new Date()
   const yesterday = new Date(today)
   yesterday.setDate(yesterday.getDate() - 1)
@@ -57,19 +59,12 @@ const formatDate = (dateStr: string) => {
   } else if (dateStr === yesterday.toISOString().split('T')[0]) {
     return 'Yesterday'
   } else {
-    return date.toLocaleDateString('en-US', { 
-      month: 'long', 
-      day: 'numeric', 
-      year: 'numeric' 
-    })
+    return formatDateUtil(dateStr)
   }
 }
 
 const formatTime = (timestamp: Date) => {
-  return new Date(timestamp).toLocaleTimeString('en-US', {
-    hour: '2-digit',
-    minute: '2-digit'
-  })
+  return formatTimeUtil(timestamp)
 }
 
 const handleOpenReport = (report: TraceReport) => {

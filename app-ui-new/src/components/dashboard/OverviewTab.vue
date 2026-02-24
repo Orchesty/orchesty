@@ -10,22 +10,25 @@ import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 
 interface Props {
   timeFilter?: TimeFilter
+  heatmapFilter?: ProcessFilter
 }
 
 const props = withDefaults(defineProps<Props>(), {
   timeFilter: '7d',
+  heatmapFilter: 'all',
 })
 
 const emit = defineEmits<{
   heatmapClick: [data: HeatmapClickData]
+  heatmapFilterChange: [filter: ProcessFilter]
+  limiterViewAll: []
 }>()
 
 // Use topology/node mappings composable
-const { loadMappings, getTopologyName } = useTopologyNodeMappings()
+const { loadMappings, topologyNameMap } = useTopologyNodeMappings()
 
 const loading = ref(true)
 const error = ref<string | null>(null)
-const processFilter = ref<ProcessFilter>('all')
 
 const processesData = ref<ProcessesChartData | null>(null)
 
@@ -43,17 +46,13 @@ const loadData = async () => {
     const totals = await fetchProcessesTotalCounts(dateFrom, dateTo)
 
     // Fetch graph data
-    const chartData = await fetchProcessesGraphData(processFilter.value, dateFrom, dateTo)
+    const chartData = await fetchProcessesGraphData(props.heatmapFilter, dateFrom, dateTo)
 
-    // Map topology IDs to names in series
+    // Store raw chart data - topology IDs are resolved to names via yLabelMap in the chart
     processesData.value = {
       ...chartData,
       totalProcesses: totals.totalProcesses,
       failedProcesses: totals.failedProcesses,
-      series: chartData.series.map(s => ({
-        ...s,
-        name: getTopologyName(s.name)
-      }))
     }
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Failed to load data'
@@ -67,12 +66,16 @@ const handleHeatmapClick = (data: HeatmapClickData) => {
   emit('heatmapClick', data)
 }
 
-const handleProcessFilterChange = async (filter: ProcessFilter) => {
-  processFilter.value = filter
-  await loadData()
+const handleProcessFilterChange = (filter: ProcessFilter) => {
+  emit('heatmapFilterChange', filter)
+  // Data reload will happen via watch on props.heatmapFilter
 }
 
 watch(() => props.timeFilter, () => {
+  loadData()
+})
+
+watch(() => props.heatmapFilter, () => {
   loadData()
 })
 
@@ -119,21 +122,22 @@ onMounted(async () => {
   <div v-else-if="!loading && !error && processesData" class="space-y-6">
     <!-- Processes Heatmap -->
     <ProcessesChart
+      chart-id="overview"
       :total-processes="processesData.totalProcesses || 0"
       :total-failed="processesData.failedProcesses || 0"
       :time-range="processesData.timeRange || ''"
-      :filter="processFilter"
+      :filter="props.heatmapFilter"
       :series="processesData.series"
       :x-categories="processesData.xCategories || []"
-      :y-categories="processesData.yCategories || []"
+      :y-label-map="topologyNameMap"
       @filter-change="handleProcessFilterChange"
       @heatmap-click="handleHeatmapClick"
     />
 
     <!-- Limiter and Trash Cards -->
     <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-      <LimiterCard :time-filter="props.timeFilter" />
-      <TrashCard :time-filter="props.timeFilter" />
+      <LimiterCard :time-filter="props.timeFilter" @view-all="emit('limiterViewAll')" />
+      <TrashCard />
     </div>
   </div>
 </template>

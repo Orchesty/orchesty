@@ -25,6 +25,10 @@ interface Props {
   sortDirection?: 'asc' | 'desc'
   // Actions
   actions?: ActionConfig[]
+  // Pagination visibility
+  hidePagination?: boolean
+  // Table layout
+  tableFixed?: boolean
   // Bulk Actions
   bulkActions?: BulkAction[]
   selectedRows?: Set<string>
@@ -38,6 +42,7 @@ const props = withDefaults(defineProps<Props>(), {
   totalItems: 0,
   itemsPerPage: 10,
   perPageOptions: () => [5, 10, 25, 50, 100],
+  hidePagination: false,
   sortField: '',
   sortDirection: 'asc',
   actions: undefined,
@@ -329,7 +334,7 @@ const pageNumbers = () => {
     </div>
 
     <!-- Table -->
-    <div class="relative overflow-x-auto">
+    <div class="relative overflow-hidden">
       <!-- Loading Overlay (shown after 500ms if data exists) -->
       <div
         v-if="showLoadingOverlay"
@@ -338,7 +343,7 @@ const pageNumbers = () => {
         <LoadingSpinner size="sm" />
       </div>
 
-      <table class="w-full text-left text-sm text-gray-500 dark:text-gray-400">
+      <table :class="['w-full max-w-full text-left text-sm text-gray-500 dark:text-gray-400', tableFixed ? 'table-fixed' : 'table-auto']">
         <thead class="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
           <tr>
             <th 
@@ -391,7 +396,7 @@ const pageNumbers = () => {
             <td
               v-for="column in columnsWithActions"
               :key="column.key"
-              class="px-6 py-4"
+              class="px-6 py-4 min-w-0 break-words"
               :class="column.className"
             >
               <!-- Checkbox column -->
@@ -435,7 +440,7 @@ const pageNumbers = () => {
     </div>
 
     <!-- Pagination -->
-    <div v-if="data && data.length > 0" class="flex flex-col items-start justify-between space-y-3 pt-4 md:flex-row md:items-center md:space-y-0">
+    <div v-if="!hidePagination && data && data.length > 0" class="flex flex-col items-start justify-between space-y-3 pt-4 md:flex-row md:items-center md:space-y-0">
       <div class="flex items-center space-x-3">
         <label for="rows-per-page" class="text-sm font-normal text-gray-500 dark:text-gray-400">Rows per page</label>
         <select

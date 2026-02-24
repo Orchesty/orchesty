@@ -5,7 +5,6 @@ namespace Hanaboso\PipesFramework\Metrics\Model\Filters;
 use Closure;
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Hanaboso\MongoDataGrid\GridAggregationFilterAbstract;
-use Hanaboso\PipesFramework\Configurator\Model\Filters\AggregationFilterUtils;
 use Hanaboso\PipesFramework\Metrics\Document\LimiterMetrics;
 
 /**
@@ -65,37 +64,22 @@ final class MetricLimitAggregationFilter extends GridAggregationFilterAbstract
         Closure $addConditionsCallback,
         Closure $addSortationsCallback,
         Closure $addPaginationCallback,
-    ): void
-    {
+    ): void {
         $addConditionsCallback();
-        $middleTime = AggregationFilterUtils::getMiddleTimeFromAggregationBuilder($builder);
 
         $builder
+            ->sort(['fields.created' => 'asc'])
             ->group()
             ->field('_id')
             ->expression('$tags.nodeId')
             ->field('topologyId')
             ->first('$tags.topologyId')
+            ->field('applicationId')
+            ->first('$tags.applicationId')
             ->field('count')
-            ->expression(
-                $builder->expr()->avg(
-                    $builder->expr()->cond(
-                        $builder->expr()->gte('$fields.created', $middleTime),
-                        '$fields.messages',
-                        NULL,
-                    ),
-                ),
-            )
-            ->field('previousCount')
-            ->expression(
-                $builder->expr()->avg(
-                    $builder->expr()->cond(
-                        $builder->expr()->lte('$fields.created', $middleTime),
-                        '$fields.messages',
-                        NULL,
-                    ),
-                ),
-            );
+            ->last('$fields.messages')
+            ->field('maximumCount')
+            ->max('$fields.messages');
 
         $addSortationsCallback();
         $addPaginationCallback();
@@ -108,10 +92,12 @@ final class MetricLimitAggregationFilter extends GridAggregationFilterAbstract
             ->expression('$_id')
             ->field('topologyId')
             ->expression('$topologyId')
+            ->field('applicationId')
+            ->expression('$applicationId')
             ->field('count')
-            ->expression($builder->expr()->round($builder->expr()->ifNull('$count', 0)))
-            ->field('previousCount')
-            ->expression($builder->expr()->round($builder->expr()->ifNull('$previousCount', 0)));
+            ->expression($builder->expr()->ifNull('$count', 0))
+            ->field('maximumCount')
+            ->expression($builder->expr()->ifNull('$maximumCount', 0));
     }
 
     /**

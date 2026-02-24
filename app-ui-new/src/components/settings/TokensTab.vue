@@ -13,7 +13,12 @@ import {
   deleteToken,
   fetchAvailableScopes,
 } from '@/services/tokensService'
+import { useToast } from '@/composables/useToast'
+import { useDateFormat } from '@/composables/useDateFormat'
 import type { Token, TokenScope } from '@/types/settings'
+
+const { showToast } = useToast()
+const { formatDate } = useDateFormat()
 
 const tokens = ref<Token[]>([])
 const availableScopes = ref<TokenScope[]>([])
@@ -109,8 +114,10 @@ const handleGenerateToken = async (data: {
 
     // Reload the list
     await loadData()
+    showToast('Token generated successfully', 'success')
   } catch (error) {
     console.error('Failed to generate token:', error)
+    showToast('Failed to generate token', 'error')
   }
 }
 
@@ -123,15 +130,17 @@ const handleConfirmDelete = async () => {
     deleteConfirmOpen.value = false
     tokenToDelete.value = null
     await loadData()
+    showToast('Token deleted successfully', 'success')
   } catch (error) {
     console.error('Failed to delete token:', error)
+    showToast('Failed to delete token', 'error')
   }
 }
 
-// Format date
-const formatDate = (dateString: string | null) => {
+// Format date with "No expiration" fallback
+const formatTokenDate = (dateString: string | null) => {
   if (!dateString) return 'No expiration'
-  return new Date(dateString).toISOString().split('T')[0]
+  return formatDate(dateString)
 }
 
 onMounted(() => {
@@ -177,13 +186,13 @@ onMounted(() => {
 
         <!-- Created Column -->
         <template #cell-created="{ row }">
-          {{ formatDate((row as Token).created) }}
+          {{ formatTokenDate((row as Token).created) }}
         </template>
 
         <!-- Expiration Column -->
         <template #cell-expiration="{ row }">
           <span :class="(row as Token).expiration ? '' : 'text-gray-400 dark:text-gray-500'">
-            {{ formatDate((row as Token).expiration) }}
+            {{ formatTokenDate((row as Token).expiration) }}
           </span>
         </template>
 

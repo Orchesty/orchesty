@@ -8,6 +8,9 @@ import type { ScheduledTask } from '@/types/scheduled-tasks'
 import type { TableColumn } from '@/types/dashboard'
 import { fetchScheduledTasks, updateTaskStatus, updateTaskCrontab } from '@/services/scheduledTasksService'
 import { useDataGrid } from '@/composables/useDataGrid'
+import { useToast } from '@/composables/useToast'
+
+const { showToast } = useToast()
 
 const tasks = ref<ScheduledTask[]>([])
 
@@ -76,8 +79,10 @@ const handleToggleChange = async (task: ScheduledTask, event: Event) => {
     await updateTaskStatus(task.nodeId, newEnabled)
     // Reload data to get updated status
     await loadData()
+    showToast(`Task ${newEnabled ? 'enabled' : 'disabled'} successfully`, 'success')
   } catch (error) {
     console.error('Failed to update task status:', error)
+    showToast('Failed to update task status', 'error')
     // Revert checkbox state on error
     target.checked = !newEnabled
   } finally {
@@ -95,8 +100,10 @@ const handleCronSave = async (taskId: string, crontab: string, params: string) =
     await updateTaskCrontab(taskId, crontab, params)
     // Reload data to get updated crontab
     await loadData()
+    showToast('Crontab updated successfully', 'success')
   } catch (error) {
     console.error('Failed to update crontab:', error)
+    showToast('Failed to update crontab', 'error')
   }
 }
 
@@ -189,7 +196,7 @@ onMounted(() => {
         <template #cell-topology="{ row }">
           <RouterLink
             :to="`/topologies/${row.topologyId}`"
-            class="text-primary-600 hover:underline dark:text-primary-500"
+            class="font-medium text-gray-900 hover:underline dark:text-white"
           >
             {{ row.topology }}
           </RouterLink>

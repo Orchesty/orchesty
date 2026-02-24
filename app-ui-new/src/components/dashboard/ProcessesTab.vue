@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, nextTick } from 'vue'
 import ProcessesChart from './ProcessesChart.vue'
 import ProcessAuditDrawer from './ProcessAuditDrawer.vue'
 import Card from '@/components/ui/Card.vue'
@@ -12,26 +12,34 @@ import type { ProcessFilter, TimeFilter, TableColumn, ProcessesChartData, Proces
 import type { QuickFilterOption, DropdownFilterOption } from '@/types/datagrid'
 import { fetchProcesses } from '@/services/processesService'
 import { fetchProcessesTotalCounts, fetchProcessesGraphData } from '@/services/dashboardService'
-import { convertTimeFilterToDateTimeRange, formatDateTimeForApi, calculateTimeRangeFromSlot } from '@/utils/timeRangeConverter'
+import { convertTimeFilterToDateTimeRange, formatDateTimeForApi, formatDateTimeLocal } from '@/utils/timeRangeConverter'
 import { useDataGrid } from '@/composables/useDataGrid'
+import { useDateFormat } from '@/composables/useDateFormat'
 import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 
 interface Props {
   globalTimeFilter: TimeFilter
+  heatmapFilter?: ProcessFilter
   externalFilters?: ProcessesExternalFilters
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  heatmapFilter: 'all',
+})
+
+const emit = defineEmits<{
+  heatmapFilterChange: [filter: ProcessFilter]
+}>()
 
 // Use topology/node mappings composable
-const { loadMappings, getTopologyName, topologyOptions: topologyOptionsFromMappings } = useTopologyNodeMappings()
+const { loadMappings, getTopologyName, topologyNameMap, topologyOptions: topologyOptionsFromMappings } = useTopologyNodeMappings()
+const { formatDateTime } = useDateFormat()
 
 // Drawer state
 const drawerOpen = ref(false)
 const selectedProcess = ref<Process | null>(null)
 
-// Heatmap data and filter
-const processFilter = ref<ProcessFilter>('all')
+// Heatmap data
 const processesChartData = ref<ProcessesChartData | null>(null)
 const chartLoading = ref(true)
 
@@ -39,16 +47,18 @@ const chartLoading = ref(true)
 const processes = ref<Process[]>([])
 const statusFilter = ref<ProcessStatus>('all')
 const topologyFilter = ref<string | null>(null)
+const skipAutoLoad = ref(false)
 
-// Local datetime range filters
+// Local datetime range filters - initialize from global time filter
+const initialRange = convertTimeFilterToDateTimeRange(props.globalTimeFilter)
 const dateTimeRange = ref<{ from: string | null; to: string | null }>({
-  from: null,
-  to: null,
+  from: initialRange.from,
+  to: initialRange.to,
 })
 
 // Table columns
 const columns: TableColumn[] = [
-  { key: 'topology', label: 'Topology', sortable: false },
+  { key: 'topologyId', label: 'Topology', sortable: false },
   { key: 'startTime', label: 'Start time', sortable: true },
   { key: 'duration', label: 'Duration', sortable: true },
   { key: 'status', label: 'Status', sortable: false },
@@ -97,11 +107,8 @@ const loadData = async () => {
       order: sortDirection.value,
     })
 
-    // Map topology IDs to names
-    processes.value = response.data.map(process => ({
-      ...process,
-      topology: getTopologyName(process.topologyId)
-    }))
+    // Store raw data - topology names are resolved reactively in the template
+    processes.value = response.data
 
     totalPages.value = response.meta.totalPages
     totalItems.value = response.meta.totalItems
@@ -128,6 +135,7 @@ const {
   defaultSort: { field: 'startTime', direction: 'desc' },
   onDataLoad: loadData,
   filters: [statusFilter, topologyFilter, dateTimeRange],
+  skipAutoLoad,
 })
 
 const handleAuditClick = (process: Process) => {
@@ -140,25 +148,26 @@ const handleAuditClick = (process: Process) => {
 const handleHeatmapClick = (data: HeatmapClickData) => {
   console.log('Heatmap clicked in ProcessesTab:', data)
 
-  // Calculate time range from clicked time slot (±30 minutes)
-  const timeRange = calculateTimeRangeFromSlot(data.timeSlot)
+  // Use exact slot boundaries from the heatmap
+  // Pause auto-reload to set both filters atomically
+  skipAutoLoad.value = true
 
-  // Apply topology filter
   topologyFilter.value = data.topology
-
-  // Apply time range filter
   dateTimeRange.value = {
-    from: timeRange.from,
-    to: timeRange.to,
+    from: formatDateTimeLocal(new Date(data.timeSlot)),
+    to: formatDateTimeLocal(new Date(data.timeSlotEnd)),
   }
 
-  // Data will reload automatically via watch on dateTimeRange and topologyFilter
+  // Resume and trigger single reload
+  nextTick(() => {
+    skipAutoLoad.value = false
+    loadData()
+  })
 }
 
 const handleProcessFilterChange = async (filter: ProcessFilter) => {
-  processFilter.value = filter
-  // Reload chart data with new filter
-  await loadChartData()
+  emit('heatmapFilterChange', filter)
+  // Chart data will reload via watch on props.heatmapFilter
 }
 
 const loadChartData = async () => {
@@ -175,17 +184,13 @@ const loadChartData = async () => {
     const totals = await fetchProcessesTotalCounts(dateFrom, dateTo)
 
     // Fetch graph data
-    const chartData = await fetchProcessesGraphData(processFilter.value, dateFrom, dateTo)
+    const chartData = await fetchProcessesGraphData(props.heatmapFilter, dateFrom, dateTo)
 
-    // Map topology IDs to names in series
+    // Store raw chart data - topology IDs are resolved to names via yLabelMap in the chart
     processesChartData.value = {
       ...chartData,
       totalProcesses: totals.totalProcesses,
       failedProcesses: totals.failedProcesses,
-      series: chartData.series.map(s => ({
-        ...s,
-        name: getTopologyName(s.name)
-      }))
     }
   } catch (error) {
     console.error('Error loading processes chart data:', error)
@@ -206,8 +211,15 @@ watch(
     }
     // Also reload chart data when global filter changes
     loadChartData()
-  },
-  { immediate: true }
+  }
+)
+
+// Watch heatmap filter changes (shared with OverviewTab)
+watch(
+  () => props.heatmapFilter,
+  () => {
+    loadChartData()
+  }
 )
 
 // Watch for external filters from heatmap click
@@ -215,21 +227,29 @@ watch(
   () => props.externalFilters,
   (filters) => {
     if (!filters) return
+    if (!filters.topology && !filters.timeRange) return
 
-    // Apply topology filter
+    // Pause useDataGrid auto-reload to avoid double loadData
+    skipAutoLoad.value = true
+
     if (filters.topology) {
       topologyFilter.value = filters.topology
     }
 
-    // Apply time range filter
     if (filters.timeRange) {
       dateTimeRange.value = {
         from: filters.timeRange.from,
         to: filters.timeRange.to,
       }
     }
+
+    // Resume and trigger single reload
+    nextTick(() => {
+      skipAutoLoad.value = false
+      loadData()
+    })
   },
-  { immediate: true, deep: true }
+  { deep: true }
 )
 
 </script>
@@ -265,13 +285,14 @@ watch(
       </Card>
       <ProcessesChart
         v-else-if="processesChartData"
+        chart-id="processes"
         :total-processes="processesChartData.totalProcesses || 0"
         :total-failed="processesChartData.failedProcesses || 0"
         :time-range="processesChartData.timeRange || ''"
-        :filter="processFilter"
+        :filter="props.heatmapFilter"
         :series="processesChartData.series"
         :x-categories="processesChartData.xCategories || []"
-        :y-categories="processesChartData.yCategories || []"
+        :y-label-map="topologyNameMap"
         @filter-change="handleProcessFilterChange"
         @heatmap-click="handleHeatmapClick"
       />
@@ -315,14 +336,14 @@ watch(
         </template>
 
         <!-- Custom Cells -->
-        <template #cell-topology="{ value }">
+        <template #cell-topologyId="{ value }">
           <span class="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-            {{ value }}
+            {{ getTopologyName(value) }}
           </span>
         </template>
 
         <template #cell-startTime="{ value }">
-          <span class="whitespace-nowrap">{{ value }}</span>
+          <span class="whitespace-nowrap">{{ formatDateTime(value) }}</span>
         </template>
 
         <template #cell-duration="{ value }">
@@ -347,8 +368,7 @@ watch(
         <template #cell-errorMessage="{ value }">
           <span
             v-if="value"
-            class="max-w-xs truncate text-xs"
-            :title="value"
+            class="break-words text-xs"
           >
             {{ value }}
           </span>

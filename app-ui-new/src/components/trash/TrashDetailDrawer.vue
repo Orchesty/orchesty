@@ -6,6 +6,9 @@ import CopyValue from '@/components/ui/CopyValue.vue'
 import Confirm from '@/components/ui/Confirm.vue'
 import EditMessageModal from './EditMessageModal.vue'
 import type { TrashItem } from '@/types/trash'
+import { useDateFormat } from '@/composables/useDateFormat'
+
+const { formatDateTime } = useDateFormat()
 
 interface Props {
   modelValue: boolean
@@ -35,15 +38,7 @@ const confirmModalOpen = ref(false)
 // Format timestamp for display
 const formattedTimestamp = computed(() => {
   if (!props.item) return ''
-  const date = new Date(props.item.timestamp)
-  return date.toLocaleString('en-GB', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-  })
+  return formatDateTime(props.item.timestamp)
 })
 
 // Format JSON for display

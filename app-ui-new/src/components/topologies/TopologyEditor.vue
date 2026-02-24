@@ -6,11 +6,13 @@ import topologyData from '@/assets/mock-data/topologies/data-stream.json'
 import CronSettingsModal from '@/components/scheduled-tasks/CronSettingsModal.vue'
 import RunProcessModal from '@/components/topologies/RunProcessModal.vue'
 import { useCronNodeActions } from '@/composables/useCronNodeActions'
+import { useDateFormat } from '@/composables/useDateFormat'
 import type { ScheduledTask } from '@/types/scheduled-tasks'
 import type { CronNode } from '@/types/topologies-page'
 
 const { Editor, createConfig } = ReteEditorKit
 const { toggleNodeState, runProcess, updateCrontab } = useCronNodeActions()
+const { formatDateTime } = useDateFormat()
 
 interface EditorNode {
   id: string
@@ -40,13 +42,7 @@ const labelCustomization: LabelCustomizationMap = {
         { 
           label: 'Next run', 
           value: nodeData.nextRun 
-            ? new Date(nodeData.nextRun).toLocaleString('cs-CZ', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit'
-              })
+            ? formatDateTime(nodeData.nextRun)
             : 'N/A' 
         }
       ]

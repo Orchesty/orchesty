@@ -9,7 +9,10 @@ import {
   updateEntity,
   deleteEntity,
 } from '@/services/auditEntitiesService'
+import { useToast } from '@/composables/useToast'
 import type { AuditEntity } from '@/types/settings'
+
+const { showToast } = useToast()
 
 const entities = ref<AuditEntity[]>([])
 const loading = ref(false)
@@ -59,13 +62,16 @@ const handleSaveEntity = async (data: Omit<AuditEntity, 'id'> | Partial<AuditEnt
   try {
     if (entityModalMode.value === 'create') {
       await createEntity(data as Omit<AuditEntity, 'id'>)
+      showToast('Entity created successfully', 'success')
     } else if (selectedEntity.value) {
       await updateEntity(selectedEntity.value.id, data)
+      showToast('Entity updated successfully', 'success')
     }
     entityModalOpen.value = false
     await loadData()
   } catch (error) {
     console.error('Failed to save entity:', error)
+    showToast('Failed to save entity', 'error')
   }
 }
 
@@ -78,8 +84,10 @@ const handleConfirmDelete = async () => {
     deleteConfirmOpen.value = false
     entityToDelete.value = null
     await loadData()
+    showToast('Entity deleted successfully', 'success')
   } catch (error) {
     console.error('Failed to delete entity:', error)
+    showToast('Failed to delete entity', 'error')
   }
 }
 

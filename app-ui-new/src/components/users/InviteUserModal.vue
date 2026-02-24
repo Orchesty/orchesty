@@ -3,6 +3,9 @@ import { ref, watch } from 'vue'
 import Modal from '@/components/ui/Modal.vue'
 import Button from '@/components/ui/Button.vue'
 import { inviteUsers } from '@/services/usersService'
+import { useToast } from '@/composables/useToast'
+
+const { showToast } = useToast()
 
 interface Props {
   modelValue: boolean
@@ -72,8 +75,10 @@ const handleSubmit = async () => {
     await inviteUsers(emailsArray.value)
     emit('users-invited')
     emit('update:modelValue', false)
+    showToast('Invitations sent successfully', 'success')
   } catch (error) {
     console.error('Failed to invite users:', error)
+    showToast('Failed to send invitations', 'error')
   } finally {
     submitting.value = false
   }

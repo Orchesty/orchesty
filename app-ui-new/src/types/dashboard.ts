@@ -44,13 +44,15 @@ export interface TableColumn {
 export interface LimiterTableRow {
   connector: string
   topology: string
+  application: string
+  limitSetting: string
   messages: number
-  change: number // percentage
+  maxMessages: number
 }
 
 export interface LimiterData {
   totalMessages: number
-  vsLastDay: number
+  maxMessages: number
   chartData: {
     categories: string[]
     series: number[]
@@ -73,7 +75,6 @@ export interface TrashTableRow {
 
 export interface TrashData {
   totalMessages: number
-  vsLastDay: number
   chartData: Array<{ x: string; y: number }>
   tableData: TrashTableRow[]
   meta: {
@@ -96,6 +97,7 @@ export interface ProcessesChartData {
 export interface HeatmapClickData {
   topology: string
   timeSlot: string
+  timeSlotEnd: string
 }
 
 export interface ProcessesExternalFilters {
@@ -109,7 +111,7 @@ export interface ProcessesExternalFilters {
 // Limiter API Types
 export interface LimiterTotalApiItem {
   count: number
-  previousCount: number
+  maximumCount: number
 }
 
 export interface LimiterTotalApiResponse {
@@ -150,8 +152,9 @@ export interface LimiterGraphApiResponse {
 export interface LimiterTableApiItem {
   nodeId: string
   topologyId: string
+  applicationId: string
   count: number
-  previousCount: number
+  maximumCount: number
 }
 
 export interface LimiterTableApiResponse {
@@ -177,6 +180,14 @@ export interface LimiterApiFilter {
     itemsPerPage: number
     page: number
   }
+}
+
+// Application limiter settings
+export interface AppLimiterSetting {
+  name: string
+  useLimit: boolean
+  value: number | null
+  time: number | null
 }
 
 // Trash API Types
@@ -240,6 +251,39 @@ export interface TrashTableApiResponse {
   }
   search: string | null
   sorter: Array<{ column: string; direction: string }>
+}
+
+// Connector Heatmap API Types
+export interface ConnectorHeatmapApiItem {
+  created: string
+  nodeId: string
+  applicationId: string
+  success: number
+  failed: number
+}
+
+export interface ConnectorHeatmapApiResponse {
+  filter: unknown[]
+  items: ConnectorHeatmapApiItem[]
+  paging: {
+    itemsPerPage: number
+    lastPage: number
+    nextPage: number
+    page: number
+    previousPage: number
+    total: number
+  }
+  search: string | null
+  sorter: Array<{ column: string; direction: string }>
+}
+
+export interface ConnectorHeatmapData {
+  series: HeatmapSeries[]
+  xCategories: string[]
+  totalRequests: number
+  totalFailed: number
+  /** nodeId -> applicationId mapping (raw IDs, resolved to names in component) */
+  nodeAppMap: Map<string, string>
 }
 
 export interface TrashApiFilter {
