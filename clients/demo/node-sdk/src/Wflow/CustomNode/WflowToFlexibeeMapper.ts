@@ -16,9 +16,14 @@ export default class WflowToFlexibeeMapper extends ACommonNode {
     }
 
     public processAction(dto: ProcessDto<IInput>): ProcessDto<IOutput> {
+        const data = dto.getJsonData();
         const {
             id: wflowId,
             type: { kind },
+            accounting: {
+                vatReturnLine: { code: returnCode },
+                vatControlStatementLine: { code: controlCode },
+            },
             variableSymbol: cisDosle,
             dueDate: datSplat,
             issueDate: datVyst,
@@ -29,12 +34,16 @@ export default class WflowToFlexibeeMapper extends ACommonNode {
             partnerIC: ic,
             partnerVAT: dic,
             lines = [], // eslint-disable-line @typescript-eslint/no-useless-default-assignment
-        } = dto.getJsonData();
+        } = data;
         const id = `ext:${wflowId}` as const;
         const kod = `WF-${new DataView(crypto.randomBytes(64).buffer).getBigUint64(0).toString(32)}` as const;
         const typDokl = this.getTypDokl(kind);
+        const clenDph = `code:${returnCode}` as const;
+        const clenKonVykDph = `code:${controlCode}` as const;
         const mena = `code:${currency}` as const;
-        const polozkyFaktury = lines.length ? this.getPolozkyFaktury(lines as WflowLine[]) : undefined;
+        const polozkyFaktury = lines.length
+            ? this.getPolozkyFaktury(lines as WflowLine[])
+            : this.getPolozkaFaktury(data);
         const code = dto.getHeader(FIRMA_KOD);
         const firma = code ? `code:${code}` as const : undefined;
 
@@ -49,6 +58,8 @@ export default class WflowToFlexibeeMapper extends ACommonNode {
                         id,
                         kod,
                         typDokl,
+                        clenDph,
+                        clenKonVykDph,
                         cisDosle,
                         datSplat,
                         datVyst,
@@ -77,6 +88,8 @@ export default class WflowToFlexibeeMapper extends ACommonNode {
                     id,
                     kod,
                     typDokl,
+                    clenDph,
+                    clenKonVykDph,
                     cisDosle,
                     datSplat,
                     datVyst,
@@ -152,6 +165,27 @@ export default class WflowToFlexibeeMapper extends ACommonNode {
             cenaMj,
             sumZkl,
         }));
+    }
+
+    private getPolozkaFaktury(data: IInput): PolozkaFaktury[] {
+        /* eslint-disable @typescript-eslint/naming-convention */
+        const vatTypeToTypSzbDphMap = {
+            Basic: 'typSzbDph.dphZakl',
+            Exempt: 'typSzbDph.dphOsv',
+            FirstReduced: 'typSzbDph.dphSniz',
+            SecondReduced: 'typSzbDph.dphSniz2',
+        } as const;
+        /* eslint-enable @typescript-eslint/naming-convention */
+
+        return [{
+            nazev: data.description,
+            mnozMj: 1,
+            typSzbDphK: vatTypeToTypSzbDphMap[data.vaTs[0].type as keyof typeof vatTypeToTypSzbDphMap],
+            szbDph: data.vaTs[0].rate,
+            typPolozkyK: 'typPolozky.obecny',
+            cenaMj: data.taxExclusiveAmount,
+            sumZkl: data.taxExclusiveAmount,
+        }];
     }
 
 }

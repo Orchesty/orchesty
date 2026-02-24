@@ -32,6 +32,8 @@ export interface FakturaPayload {
         id: `ext:${string}`;
         kod: `WF-${string}`;
         typDokl: `code:${string}`;
+        clenDph: `code:${string}`;
+        clenKonVykDph: `code:${string}`;
         cisDosle: string;
         datSplat: string;
         datVyst?: string;

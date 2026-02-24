@@ -20,6 +20,8 @@
       "faktura-prijata": [
         {
           "cisDosle": "20250212",
+          "clenDph": "code:40-41",
+          "clenKonVykDph": "code:B.2-3.AUTO",
           "datSplat": "2025-12-26T00:00:00",
           "datVyst": "2025-12-19T00:00:00",
           "firma": "code:17864810",
