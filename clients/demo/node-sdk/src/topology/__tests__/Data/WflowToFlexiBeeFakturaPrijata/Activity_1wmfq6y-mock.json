@@ -1,5 +1,5 @@
 {
-    "http": "GET https://demo.flexibee.eu/c/demo/adresar/(ic='25545094')",
+    "http": "GET https://demo.flexibee.eu/c/demo/adresar/(kod='25545094')",
     "code": 200,
     "body": {
         "winstrom": {

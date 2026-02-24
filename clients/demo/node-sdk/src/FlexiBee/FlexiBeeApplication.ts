@@ -3,10 +3,20 @@ import { ApplicationInstall } from '@orchesty/nodejs-sdk/dist/lib/Application/Da
 import RequestDto from '@orchesty/nodejs-sdk/dist/lib/Transport/Curl/RequestDto';
 import { HttpMethods } from '@orchesty/nodejs-sdk/dist/lib/Transport/HttpMethods';
 import AProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/AProcessDto';
+import crypto from 'crypto';
 
 export const CUSTOM_COMPANY_ID = 'customCompanyId';
 
 export class FlexiBeeApplication extends BaseFlexiBeeApplication {
+
+    public static createCode(value: string): string {
+        return crypto
+            .createHash('md5')
+            .update(value.trim().toLowerCase())
+            .digest('hex')
+            .substring(0, 20)
+            .toUpperCase();
+    }
 
     public async getRequestDto(
         dto: AProcessDto,

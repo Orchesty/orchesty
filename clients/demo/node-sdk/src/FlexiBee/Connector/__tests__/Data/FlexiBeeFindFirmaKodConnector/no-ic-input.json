@@ -1,0 +1,138 @@
+{
+  "headers": {
+    "user": "TestUser",
+    "documentId": "test-document"
+  },
+  "data": {
+    "type": {
+      "erpExclude": false,
+      "filesExtendName": false,
+      "docCreatingMethod": "Upload",
+      "autoStamp": "None",
+      "id": "53b4b60a-30dc-4ac4-92cc-f7ceaf7b250a",
+      "name": "Odeslané",
+      "kind": "IncomingInvoice",
+      "default": false
+    },
+    "accounting": {
+      "vatSupplyModeCode": "Normal",
+      "vatApplyReductionCoefficient": false,
+      "vatFixedAssets": false,
+      "vatMode": "Standard"
+    },
+    "vaTs": [
+      {
+        "rate": 21,
+        "type": "Basic",
+        "base": 4200,
+        "tax": 882
+      }
+    ],
+    "lines": [
+      {
+        "id": "1fb14742-4c10-481b-971e-ad0115fadb70",
+        "totalAmount": 2000,
+        "description": "Vedení účetnictví 11_2025",
+        "quantity": 1,
+        "unitPrice": 2000,
+        "vatType": "Basic",
+        "vatRate": 21,
+        "order": 1,
+        "accounting": {
+          "vatSupplyModeCode": "Normal",
+          "vatApplyReductionCoefficient": false,
+          "vatFixedAssets": false,
+          "vatMode": "Standard"
+        }
+      },
+      {
+        "id": "f36ee4d2-4827-4ba5-b01c-295491cc3915",
+        "totalAmount": 1200,
+        "description": "Zpracování mezd 11_2025",
+        "quantity": 6,
+        "unitPrice": 200,
+        "vatType": "Basic",
+        "vatRate": 21,
+        "order": 2,
+        "accounting": {
+          "vatSupplyModeCode": "Normal",
+          "vatApplyReductionCoefficient": false,
+          "vatFixedAssets": false,
+          "vatMode": "Standard"
+        }
+      },
+      {
+        "id": "66014bc7-1e85-4bf8-8a1e-004f6e739f7a",
+        "totalAmount": 650,
+        "description": "DPH + Kontrolní hlášení 11_2025",
+        "quantity": 1,
+        "unitPrice": 650,
+        "vatType": "Basic",
+        "vatRate": 21,
+        "order": 3,
+        "accounting": {
+          "vatSupplyModeCode": "Normal",
+          "vatApplyReductionCoefficient": false,
+          "vatFixedAssets": false,
+          "vatMode": "Standard"
+        }
+      },
+      {
+        "id": "24455ab0-623c-4b73-9fdf-902e4260da00",
+        "totalAmount": 350,
+        "description": "Souhrnné hlášení 11_2025",
+        "quantity": 1,
+        "unitPrice": 350,
+        "vatType": "Basic",
+        "vatRate": 21,
+        "order": 4,
+        "accounting": {
+          "vatSupplyModeCode": "Normal",
+          "vatApplyReductionCoefficient": false,
+          "vatFixedAssets": false,
+          "vatMode": "Standard"
+        }
+      }
+    ],
+    "id": "40830940-fc60-4ffd-a143-37ed2022bd21",
+    "number": "20250212",
+    "variableSymbol": "20250212",
+    "constantSymbol": "0308",
+    "issueDate": "2025-12-19T00:00:00",
+    "dueDate": "2025-12-26T00:00:00",
+    "vatDate": "2025-12-19T00:00:00",
+    "acceptDate": "2025-12-19T00:00:00",
+    "caseDate": "2025-12-19T00:00:00",
+    "taxExclusiveAmount": 4200,
+    "totalAmount": 5082,
+    "roundingAmount": 0,
+    "advanceAmount": 0,
+    "currency": "CZK",
+    "partnerVAT": "CZ17864810",
+    "partnerName": "1. Account s.r.o.",
+    "partnerAddress": "třída Edvarda Beneše 1415/29, 50012 Hradec Králové, CZ",
+    "partnerEmail": "m.kos@1account.cz",
+    "accountNo": "2402434660",
+    "bankCode": "2010",
+    "iban": "CZ7720100000002402434660",
+    "bic": "FIOBCZPP",
+    "meIC": "02063450",
+    "exchangeRate": 1,
+    "exchangeRateUnits": 1,
+    "description": "Fakturujeme Vám za dodané zboží či služby:\r\nDovolujeme si Vás upozornit, že v případě nedodržení data splatnosti uvedeného na faktuře Vám můžeme účtovat zákonný úrok z prodlení.",
+    "invoiceType": "TaxInvoice",
+    "doNotPay": false,
+    "created": "2026-01-07T15:38:23.26",
+    "updated": "2026-01-07T15:38:23.26",
+    "lastAction": "2026-01-07T15:38:23.593",
+    "locked": false,
+    "approvalStatus": "None",
+    "flowStatus": "Extracted",
+    "payment": {
+      "paymentStatus": "NotPaid"
+    },
+    "dataSource": "ISDOC",
+    "source": "WebApp",
+    "createdBy": "lunhul.v@orchesty-solutions.com"
+  }
+}

@@ -22,7 +22,13 @@ export default class FlexiBeeFirmaKodFindIdConnector extends AConnector {
     public async processAction(dto: ProcessDto<IInput>): Promise<ProcessDto> {
         const app = this.getApplication<FlexiBeeApplication>();
         const appInstall = await this.getApplicationInstallFromProcess(dto);
-        const { id, partnerIC: ic, type: { id: typeId, name: typeName } } = dto.getJsonData();
+        const {
+            id,
+            partnerIC: ic,
+            partnerVAT: vat,
+            partnerName: name,
+            type: { id: typeId, name: typeName },
+        } = dto.getJsonData();
 
         const applicationInstall = await this
             .getDbClient()
@@ -43,7 +49,7 @@ export default class FlexiBeeFirmaKodFindIdConnector extends AConnector {
             dto,
             appInstall,
             HttpMethods.GET,
-            app.getUrl(appInstall, `adresar/(ic='${ic}')`),
+            app.getUrl(appInstall, `adresar/(kod='${ic ?? vat ?? FlexiBeeApplication.createCode(name)}')`),
         );
 
         const {

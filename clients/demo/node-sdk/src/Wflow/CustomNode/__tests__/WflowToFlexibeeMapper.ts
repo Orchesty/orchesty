@@ -24,4 +24,12 @@ describe('Tests for WflowToFlexibeeMapper', () => {
     it('process - no lines', async () => {
         await tester.testCustomNode(WFLOW_TO_FLEXIBEE_MAPPER, 'no-lines');
     });
+
+    it('process - no ic', async () => {
+        await tester.testCustomNode(WFLOW_TO_FLEXIBEE_MAPPER, 'no-ic');
+    });
+
+    it('process - no dic', async () => {
+        await tester.testCustomNode(WFLOW_TO_FLEXIBEE_MAPPER, 'no-dic');
+    });
 });

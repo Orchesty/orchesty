@@ -14,4 +14,12 @@ describe('Tests for FlexiBeeFindFirmaKodConnector', () => {
     it('process - ok', async () => {
         await tester.testConnector(FLEXI_BEE_FIND_FIRMA_KOD_CONNECTOR);
     });
+
+    it('process - no ic', async () => {
+        await tester.testConnector(FLEXI_BEE_FIND_FIRMA_KOD_CONNECTOR, 'no-ic');
+    });
+
+    it('process - no dic', async () => {
+        await tester.testConnector(FLEXI_BEE_FIND_FIRMA_KOD_CONNECTOR, 'no-dic');
+    });
 });

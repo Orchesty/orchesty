@@ -5,6 +5,7 @@ import ACommonNode from '@orchesty/nodejs-sdk/dist/lib/Commons/ACommonNode';
 import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
 import crypto from 'crypto';
 import { FIRMA_KOD } from '../../FlexiBee/Connector/FlexiBeeFindFirmaKodConnector';
+import { FlexiBeeApplication } from '../../FlexiBee/FlexiBeeApplication';
 import { FakturaPayload, FirmaPayload, Payload, PolozkaFaktury } from '../../FlexiBee/types/payload';
 
 export const NAME = `${WFLOW_APP_NAME}-to-${FLEXI_BEE_APPLICATION}-mapper`;
@@ -37,6 +38,7 @@ export default class WflowToFlexibeeMapper extends ACommonNode {
         } = data;
         const id = `ext:${wflowId}` as const;
         const kod = `WF-${new DataView(crypto.randomBytes(64).buffer).getBigUint64(0).toString(32)}` as const;
+        const firmaKod = ic ?? dic ?? FlexiBeeApplication.createCode(nazev);
         const typDokl = this.getTypDokl(kind);
         const clenDph = `code:${returnCode}` as const;
         const clenKonVykDph = `code:${controlCode}` as const;
@@ -76,7 +78,7 @@ export default class WflowToFlexibeeMapper extends ACommonNode {
             winstrom: {
                 '@version': '1.0',
                 adresar: [{
-                    kod: ic,
+                    kod: firmaKod,
                     nazev,
                     ulice,
                     mesto,
@@ -95,7 +97,7 @@ export default class WflowToFlexibeeMapper extends ACommonNode {
                     datVyst,
                     popis,
                     mena,
-                    firma: `code:${ic}`,
+                    firma: `code:${firmaKod}`,
                     polozkyFaktury,
                 }],
             },
