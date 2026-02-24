@@ -185,7 +185,6 @@ const handleTopologyProcessesClick = async (topologyId: string) => {
         <ApplicationsTab
           :time-filter="activeTimeFilter"
           :heatmap-filter="activeHeatmapFilter"
-          @heatmap-filter-change="handleHeatmapFilterChange"
         />
       </TabPanel>
 

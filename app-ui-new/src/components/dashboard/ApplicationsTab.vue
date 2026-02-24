@@ -1,10 +1,18 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
-import ConnectorsHeatmapChart from './ConnectorsHeatmapChart.vue'
-import type { ConnectorHeatmapData, ProcessFilter, TimeFilter } from '@/types/dashboard'
+import HeatmapChart from './HeatmapChart.vue'
+import type { HeatmapSeries, ProcessFilter, TimeFilter } from '@/types/dashboard'
 import { fetchConnectorHeatmapData } from '@/services/dashboardService'
 import { convertTimeFilterToDateTimeRange, formatDateTimeForApi } from '@/utils/timeRangeConverter'
 import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
+
+interface ApplicationHeatmapGroup {
+  applicationName: string
+  series: HeatmapSeries[]
+  xCategories: string[]
+  totalRequests: number
+  totalFailed: number
+}
 
 interface Props {
   timeFilter?: TimeFilter
@@ -16,17 +24,11 @@ const props = withDefaults(defineProps<Props>(), {
   heatmapFilter: 'all',
 })
 
-const emit = defineEmits<{
-  heatmapFilterChange: [filter: ProcessFilter]
-}>()
-
 const { loadMappings, getNodeName, getApplicationName } = useTopologyNodeMappings()
 
 const loading = ref(true)
 const error = ref<string | null>(null)
-const chartData = ref<ConnectorHeatmapData | null>(null)
-// Map of connectorName -> applicationName (for y-axis labels)
-const connectorAppMap = ref<Record<string, string>>({})
+const applicationGroups = ref<ApplicationHeatmapGroup[]>([])
 
 const loadData = async () => {
   loading.value = true
@@ -39,34 +41,37 @@ const loadData = async () => {
 
     const data = await fetchConnectorHeatmapData(props.heatmapFilter, dateFrom, dateTo)
 
-    // Map nodeIds to connector names, then merge series with the same name.
-    // Multiple nodeIds can map to the same connector name (same connector
-    // deployed in different topologies). We sum success/failed per time slot.
-    // Also build connectorName -> applicationName map for y-axis labels.
-    const appMap: Record<string, string> = {}
+    // Map nodeIds to connector names and resolve application names.
+    // Track which application each connector belongs to.
+    const connectorAppName: Record<string, string> = {}
     const namedSeries = data.series.map(s => {
       const connectorName = getNodeName(s.name)
       const appId = data.nodeAppMap.get(s.name) || ''
-      if (appId && !appMap[connectorName]) {
-        appMap[connectorName] = getApplicationName(appId)
+      if (appId && !connectorAppName[connectorName]) {
+        connectorAppName[connectorName] = getApplicationName(appId)
       }
-      return { ...s, name: connectorName }
+      const appName = connectorAppName[connectorName] || 'Unknown'
+      // Remove application name prefix from connector name, ignoring case and treating hyphens as spaces
+      // e.g. app "json-placeholder", connector "Json Placeholder Get Post" -> "Get Post"
+      const normalize = (str: string) => str.toLowerCase().replace(/-/g, ' ')
+      const normConnector = normalize(connectorName)
+      const normApp = normalize(appName)
+      const displayName = normConnector.startsWith(normApp)
+        ? connectorName.slice(appName.length).replace(/^[\s-]+/, '')
+        : connectorName
+      return { ...s, name: displayName || connectorName, _appName: appName }
     })
 
-    const mergedMap = new Map<string, typeof namedSeries[0]>()
+    // Merge series with the same connector name (same connector in different topologies)
+    const mergedMap = new Map<string, (typeof namedSeries)[0]>()
     for (const series of namedSeries) {
       const existing = mergedMap.get(series.name)
       if (!existing) {
-        // First occurrence -- deep-copy data points so we can mutate safely
         mergedMap.set(series.name, {
           ...series,
-          data: series.data.map(d => ({
-            ...d,
-            meta: { ...d.meta }
-          }))
+          data: series.data.map(d => ({ ...d, meta: { ...d.meta } })),
         })
       } else {
-        // Merge: sum success/failed per time slot and recalculate y
         for (let i = 0; i < existing.data.length; i++) {
           const target = existing.data[i]
           const source = series.data[i]
@@ -74,7 +79,6 @@ const loadData = async () => {
 
           target.meta.success += source.meta.success
           target.meta.failed += source.meta.failed
-          // Recalculate isFailed and y using the same offset logic
           target.meta.isFailed = target.meta.failed > 0
           const FAILED_OFFSET = 1000
           if (target.meta.success === 0 && target.meta.failed === 0) {
@@ -88,21 +92,48 @@ const loadData = async () => {
       }
     }
 
-    connectorAppMap.value = appMap
-    chartData.value = {
-      ...data,
-      series: Array.from(mergedMap.values())
+    // Group merged series by application name
+    const groupMap = new Map<string, HeatmapSeries[]>()
+    for (const series of mergedMap.values()) {
+      const appName = series._appName
+      if (!groupMap.has(appName)) {
+        groupMap.set(appName, [])
+      }
+      groupMap.get(appName)!.push({ name: series.name, data: series.data })
     }
+
+    // Build per-application groups with metrics
+    const groups: ApplicationHeatmapGroup[] = []
+    for (const [appName, series] of groupMap) {
+      let totalRequests = 0
+      let totalFailed = 0
+      for (const s of series) {
+        for (const d of s.data) {
+          if (d.meta) {
+            totalRequests += d.meta.success + d.meta.failed
+            totalFailed += d.meta.failed
+          }
+        }
+      }
+      groups.push({
+        applicationName: appName,
+        series,
+        xCategories: data.xCategories,
+        totalRequests,
+        totalFailed,
+      })
+    }
+
+    // Sort groups alphabetically by application name
+    groups.sort((a, b) => a.applicationName.localeCompare(b.applicationName))
+
+    applicationGroups.value = groups
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Failed to load data'
     console.error('Error loading applications heatmap data:', err)
   } finally {
     loading.value = false
   }
-}
-
-const handleFilterChange = (filter: ProcessFilter) => {
-  emit('heatmapFilterChange', filter)
 }
 
 watch(() => props.timeFilter, () => {
@@ -150,17 +181,23 @@ onMounted(async () => {
     <p class="text-red-800 dark:text-red-400">{{ error }}</p>
   </div>
 
-  <div v-else-if="!loading && !error && chartData" class="space-y-6">
-    <ConnectorsHeatmapChart
-      chart-id="applications"
-      :total-requests="chartData.totalRequests"
-      :total-failed="chartData.totalFailed"
-      time-range=""
-      :filter="props.heatmapFilter"
-      :series="chartData.series"
-      :x-categories="chartData.xCategories"
-      :y-label-prefix="connectorAppMap"
-      @filter-change="handleFilterChange"
+  <div v-else-if="!loading && !error && applicationGroups.length > 0" class="space-y-6">
+    <HeatmapChart
+      v-for="group in applicationGroups"
+      :key="group.applicationName"
+      :chart-id="`app-${group.applicationName.toLowerCase().replace(/\s+/g, '-')}`"
+      :title="group.applicationName"
+      total-label="Requests"
+      :total-count="group.totalRequests"
+      :total-failed="group.totalFailed"
+      :series="group.series"
+      :x-categories="group.xCategories"
+      :show-filter="false"
+      empty-label="No requests"
     />
+  </div>
+
+  <div v-else-if="!loading && !error" class="flex items-center justify-center p-12">
+    <p class="text-gray-500 dark:text-gray-400">No application data available</p>
   </div>
 </template>

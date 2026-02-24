@@ -19,6 +19,8 @@ interface Props {
   yLabelMap?: Record<string, string>
   /** Optional map of displayName -> prefix label (e.g. application name above connector name) */
   yLabelPrefix?: Record<string, string>
+  /** Whether to show the All/Failed filter radio buttons (default: true) */
+  showFilter?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -26,6 +28,7 @@ const props = withDefaults(defineProps<Props>(), {
   timeRange: '',
   emptyLabel: 'No data',
   filter: 'all',
+  showFilter: true,
 })
 
 // Unique ids for radio buttons to avoid conflicts between multiple instances
@@ -248,7 +251,8 @@ const getHeatmapOptions = () => {
           colors: colors.text,
           fontSize: '11px',
         },
-        maxWidth: 280,
+        minWidth: 180,
+        maxWidth: 180,
         formatter: (props.yLabelMap || props.yLabelPrefix)
           ? (val: string) => {
               const displayName = props.yLabelMap?.[val] || val
@@ -345,7 +349,7 @@ onMounted(() => {
 
 <template>
   <Card>
-    <div class="mb-4 grid grid-cols-3 items-start gap-6 sm:mb-0">
+    <div class="mb-4 grid items-start gap-6 sm:mb-0" :class="showFilter ? 'grid-cols-3' : 'grid-cols-2'">
       <div>
         <h2 class="mb-2 text-xl font-bold leading-none text-gray-900 dark:text-white">
           {{ title }}
@@ -354,7 +358,7 @@ onMounted(() => {
       </div>
 
       <!-- Metrics -->
-      <div class="mx-auto grid grid-cols-2 gap-8">
+      <div class="ml-auto grid grid-cols-2 gap-8">
         <div>
           <h3 class="mb-2 text-gray-500 dark:text-gray-400">{{ totalLabel }}</h3>
           <p class="text-2xl font-bold leading-none text-gray-900 dark:text-white">
@@ -370,7 +374,7 @@ onMounted(() => {
       </div>
 
       <!-- Filter Radio Buttons -->
-      <div class="flex items-center justify-end gap-4 self-end">
+      <div v-if="showFilter" class="flex items-center justify-end gap-4 self-end">
         <div class="flex items-center">
           <input
             :id="radioAllId"
