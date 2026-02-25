@@ -65,11 +65,7 @@ const loadConnectors = async (correlationId: string) => {
       apiSortField,
       connectorSortDirection.value
     )
-    connectors.value = connectorsData.map(connector => ({
-      ...connector,
-      connector: getNodeName(connector.connector),
-      application: getApplicationName(connector.application)
-    }))
+    connectors.value = connectorsData
   } catch (error) {
     console.error('Error loading connectors:', error)
   } finally {
@@ -119,29 +115,18 @@ watch(
         fetchProcessAuditTrash(newProcess.id)
       ])
 
-      // Map connector node IDs to names
-      connectors.value = connectorsData.map(connector => ({
-        ...connector,
-        connector: getNodeName(connector.connector),
-        application: getApplicationName(connector.application)
-      }))
-
-      // Map trash item node IDs to names
-      const mappedTrashItems = trashData.items.map(item => ({
-        ...item,
-        whereItFailed: getNodeName(item.whereItFailed)
-      }))
+      connectors.value = connectorsData
 
       processDetail.value = {
         processId: newProcess.id,
         topology: newProcess.topology,
-        corelId: newProcess.id, // correlationId
+        corelId: newProcess.id,
         startTime: newProcess.startTime,
         endTime: calculateEndTime(newProcess.startTime, newProcess.duration),
         status: newProcess.status,
         connectors: connectors.value,
         trashCount: trashData.total,
-        trashItems: mappedTrashItems,
+        trashItems: trashData.items,
       }
     } catch (error) {
       console.error('Error loading process audit:', error)
@@ -287,8 +272,8 @@ const handleClose = () => {
           @sort="handleConnectorSort"
         >
           <template #cell-connector="{ row }">
-            <span class="font-medium text-gray-900 dark:text-white">{{ row.connector }}</span>
-            <span class="text-gray-500 dark:text-gray-400"> ({{ row.application }})</span>
+            <span class="font-medium text-gray-900 dark:text-white">{{ getNodeName(row.connector) }}</span>
+            <span class="text-gray-500 dark:text-gray-400"> ({{ row.application && row.application !== 'N/A' ? getApplicationName(row.application) : 'N/A' }})</span>
           </template>
 
           <template #cell-errors400="{ value }">
@@ -342,7 +327,7 @@ const handleClose = () => {
               <tbody class="divide-y bg-white dark:divide-gray-700 dark:bg-gray-800">
                 <tr v-for="(item, index) in processDetail.trashItems" :key="index">
                   <td class="px-4 py-3 font-medium text-gray-900 dark:text-white">
-                    {{ item.whereItFailed }}
+                    {{ getNodeName(item.whereItFailed) }}
                   </td>
                   <td class="px-4 py-3 break-words">{{ item.errorMessage }}</td>
                 </tr>

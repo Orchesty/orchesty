@@ -177,7 +177,6 @@ const loadData = async () => {
       localTimeFilter.value,
       currentPage.value,
       itemsPerPage.value,
-      getTopologyName,
       apiSortField,
       sortDirection.value
     )
@@ -358,9 +357,9 @@ const errorRecordsColumns: TableColumn[] = [
           </template>
 
           <!-- Custom cell for topology -->
-          <template #cell-topology="{ value }">
-            <span class="max-w-xs truncate whitespace-nowrap" :title="value">
-              {{ value }}
+          <template #cell-topology="{ row }">
+            <span class="max-w-xs truncate whitespace-nowrap" :title="getTopologyName(row.topologyId)">
+              {{ getTopologyName(row.topologyId) }}
             </span>
           </template>
 

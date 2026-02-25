@@ -74,11 +74,11 @@ function mapGraphApiToChartData(items: ConnectorGraphApiItem[]): {
  */
 function mapErrorApiItemToRecord(
   apiItem: ConnectorErrorApiItem,
-  getTopologyName: (id: string) => string
 ): ConnectorErrorRecord {
   return {
     timestamp: apiItem.created,
-    topology: getTopologyName(apiItem.topologyId),
+    topologyId: apiItem.topologyId,
+    topology: apiItem.topologyId,
     code: apiItem.status,
     message: apiItem.message || ''
   }
@@ -250,7 +250,6 @@ export async function fetchConnectorErrorRecords(
   timeFilter: TimeFilter,
   page: number = 1,
   limit: number = 10,
-  getTopologyName: (id: string) => string = (id) => id,
   sortField: string = 'created',
   sortDirection: string = 'desc'
 ): Promise<PaginatedResponse<ConnectorErrorRecord>> {
@@ -281,7 +280,7 @@ export async function fetchConnectorErrorRecords(
 
   // Map API items to error records
   const errorRecords = response.data.items.map(item =>
-    mapErrorApiItemToRecord(item, getTopologyName)
+    mapErrorApiItemToRecord(item)
   )
 
   return {

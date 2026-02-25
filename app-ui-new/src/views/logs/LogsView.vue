@@ -7,6 +7,7 @@ import DataGrid from '@/components/ui/DataGrid.vue'
 import TextInput from '@/components/ui/datagrid/TextInput.vue'
 import SearchInput from '@/components/ui/SearchInput.vue'
 import DropdownFilter from '@/components/ui/datagrid/DropdownFilter.vue'
+import SearchableDropdownFilter from '@/components/ui/datagrid/SearchableDropdownFilter.vue'
 import TimeRangeFilterWithCustomRange from '@/components/ui/TimeRangeFilterWithCustomRange.vue'
 import CopyValue from '@/components/ui/CopyValue.vue'
 import LogDetailDrawer from '@/components/logs/LogDetailDrawer.vue'
@@ -20,8 +21,11 @@ import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 // Topology/Node mappings composable
 const {
   loadMappings,
+  getTopologyName,
+  getNodeName,
+  getNodeIdsByName,
   topologyOptions: topologyOptionsFromMappings,
-  nodeOptions: nodeOptionsFromMappings,
+  deduplicatedNodeOptions: deduplicatedNodeOptionsFromMappings,
   mappings,
 } = useTopologyNodeMappings()
 const { formatDateTime } = useDateFormat()
@@ -56,32 +60,42 @@ const topologyOptions = computed(() => [
   ...topologyOptionsFromMappings.value,
 ])
 
-// Node options filtered by selected topology
+// Node options filtered by selected topology, deduplicated by name
 const nodeOptions = computed(() => {
   const baseOptions = [{ value: null, label: 'All Nodes' }]
 
-  // If no topology selected, show all nodes
   if (!topologyFilter.value || !mappings.value) {
-    return [...baseOptions, ...nodeOptionsFromMappings.value]
+    return [...baseOptions, ...deduplicatedNodeOptionsFromMappings.value]
   }
 
   // Get node IDs for the selected topology from the tree
   const nodeIdsInTopology = mappings.value.tree[topologyFilter.value] || []
 
-  // Filter node options to only include nodes from this topology
-  const filteredNodes = nodeOptionsFromMappings.value.filter(node =>
-    nodeIdsInTopology.includes(node.value)
+  // Get unique names of nodes in this topology
+  const namesInTopology = new Set(
+    nodeIdsInTopology
+      .map(id => mappings.value?.nodes[id])
+      .filter((name): name is string => !!name)
   )
+
+  const filteredNodes = Array.from(namesInTopology)
+    .map(name => ({ value: name, label: name }))
+    .sort((a, b) => a.label.localeCompare(b.label))
 
   return [...baseOptions, ...filteredNodes]
 })
 
-// Clear node filter when topology changes if selected node is not in new topology
+// Clear node filter when topology changes if selected node name is not in new topology
 watch(topologyFilter, () => {
   if (nodeFilter.value && topologyFilter.value && mappings.value) {
     const nodeIdsInTopology = mappings.value.tree[topologyFilter.value] || []
+    const namesInTopology = new Set(
+      nodeIdsInTopology
+        .map(id => mappings.value?.nodes[id])
+        .filter(Boolean)
+    )
 
-    if (!nodeIdsInTopology.includes(nodeFilter.value)) {
+    if (!namesInTopology.has(nodeFilter.value)) {
       nodeFilter.value = null
     }
   }
@@ -143,7 +157,8 @@ async function loadData() {
   }
 
   if (nodeFilter.value) {
-    params.node = nodeFilter.value
+    const nodeIds = getNodeIdsByName(nodeFilter.value)
+    params.node = nodeIds.length > 0 ? nodeIds : [nodeFilter.value]
   }
 
   if (timeRangeFilter.value) {
@@ -228,15 +243,17 @@ onMounted(async () => {
             :options="severityOptions"
             placeholder="All Severities"
           />
-          <DropdownFilter
+          <SearchableDropdownFilter
             v-model="nodeFilter"
             :options="nodeOptions"
             placeholder="All Nodes"
+            search-placeholder="Search nodes..."
           />
-          <DropdownFilter
+          <SearchableDropdownFilter
             v-model="topologyFilter"
             :options="topologyOptions"
             placeholder="All Topologies"
+            search-placeholder="Search topologies..."
           />
           <TimeRangeFilterWithCustomRange v-model="timeRangeFilter" />
         </template>
@@ -251,12 +268,12 @@ onMounted(async () => {
             :to="`/topologies/${row.topologyId}`"
             class="whitespace-nowrap font-medium text-gray-900 hover:underline dark:text-white"
           >
-            {{ row.topology }}
+            {{ getTopologyName(row.topologyId) }}
           </RouterLink>
         </template>
 
-        <template #cell-node="{ value }">
-          <span class="whitespace-nowrap font-medium text-gray-900 dark:text-white">{{ value }}</span>
+        <template #cell-node="{ row }">
+          <span class="whitespace-nowrap font-medium text-gray-900 dark:text-white">{{ getNodeName(row.nodeId) }}</span>
         </template>
 
         <template #cell-nodeId="{ value }">

@@ -19,7 +19,7 @@ export interface TrashQueryParams {
   sortOrder?: 'asc' | 'desc'
   search?: string
   correlationId?: string
-  node?: string
+  node?: string | string[]
   topology?: string
   timeRange?: string
   dateFrom?: string

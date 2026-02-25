@@ -29,7 +29,7 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const { loadMappings } = useTopologyNodeMappings()
+const { loadMappings, getNodeName, getTopologyName, getApplicationName } = useTopologyNodeMappings()
 
 const limiterData = ref<LimiterData | null>(null)
 const appSettings = ref<Map<string, AppLimiterSetting>>(new Map())
@@ -336,11 +336,14 @@ const getChartOptions = () => {
         @per-page-change="handlePerPageChange"
         @sort="handleSort"
       >
-        <template #cell-application="{ value }">
-          <span class="font-medium text-gray-900 dark:text-white">{{ value }}</span>
+        <template #cell-application="{ row }">
+          <span class="font-medium text-gray-900 dark:text-white">{{ row.applicationId && row.applicationId !== '-' ? getApplicationName(row.applicationId) : '-' }}</span>
         </template>
-        <template #cell-connector="{ value }">
-          <span class="text-gray-900 dark:text-white">{{ value }}</span>
+        <template #cell-connector="{ row }">
+          <span class="text-gray-900 dark:text-white">{{ getNodeName(row.nodeId) }}</span>
+        </template>
+        <template #cell-topology="{ row }">
+          <span class="text-gray-900 dark:text-white">{{ getTopologyName(row.topologyId) }}</span>
         </template>
         <template #cell-limitSetting="{ value }">
           <span

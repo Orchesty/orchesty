@@ -3,9 +3,12 @@ import { ref, onMounted, nextTick } from 'vue'
 import { useApexChart, getChartColors, getBaseChartOptions } from '@/composables/useApexChart'
 import { useDataGrid } from '@/composables/useDataGrid'
 import { fetchTrashData } from '@/services/dashboardService'
+import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 import type { TrashData, TableColumn } from '@/types/dashboard'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
+
+const { getTopologyName, getNodeName } = useTopologyNodeMappings()
 
 const trashData = ref<TrashData | null>(null)
 const chartEl = ref<HTMLElement | null>(null)
@@ -195,8 +198,11 @@ const getBarChartOptions = () => {
         :loading="loading"
         @sort="handleSort"
       >
-        <template #cell-topology="{ value }">
-          <span class="font-medium text-gray-900 dark:text-white">{{ value }}</span>
+        <template #cell-topology="{ row }">
+          <span class="font-medium text-gray-900 dark:text-white">{{ getTopologyName(row.topologyId) }}</span>
+        </template>
+        <template #cell-node="{ row }">
+          <span class="text-gray-900 dark:text-white">{{ getNodeName(row.nodeId) }}</span>
         </template>
         <template #cell-count="{ value }">
           <span class="font-medium text-red-600 dark:text-red-400">{{ value }}</span>

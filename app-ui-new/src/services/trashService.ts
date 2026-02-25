@@ -90,11 +90,12 @@ export async function fetchTrashItems(
   }
 
   if (params.node) {
+    const nodeValues = Array.isArray(params.node) ? params.node : [params.node]
     filterObj.filter.push([
       {
         column: 'nodeId',
         operator: 'EQ',
-        value: [params.node]
+        value: nodeValues
       }
     ])
   }

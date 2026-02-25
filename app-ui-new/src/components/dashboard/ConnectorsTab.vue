@@ -109,12 +109,7 @@ const loadData = async () => {
       order: sortDirection.value,
     })
 
-    // Map node IDs and application IDs to names
-    connectors.value = response.data.map(connector => ({
-      ...connector,
-      name: getNodeName(connector.id),
-      application: getApplicationName(connector.application)
-    }))
+    connectors.value = response.data
 
     totalPages.value = response.meta.totalPages
     totalItems.value = response.meta.totalItems
@@ -201,8 +196,12 @@ watch(
     </template>
 
     <!-- Custom Cells -->
-    <template #cell-application="{ value }">
-      <span class="font-medium text-gray-900 dark:text-white">{{ value }}</span>
+    <template #cell-application="{ row }">
+      <span class="font-medium text-gray-900 dark:text-white">{{ getApplicationName(row.application) }}</span>
+    </template>
+
+    <template #cell-name="{ row }">
+      <span class="text-gray-900 dark:text-white">{{ getNodeName(row.id) }}</span>
     </template>
 
     <template #cell-avgRequestTime="{ value }">

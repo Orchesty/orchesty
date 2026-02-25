@@ -24,6 +24,7 @@ export interface ConnectorQueryParams extends QueryParams {
 
 export interface ConnectorErrorRecord {
   timestamp: string
+  topologyId: string
   topology: string
   code: number
   message: string

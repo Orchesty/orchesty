@@ -42,6 +42,9 @@ export interface TableColumn {
 }
 
 export interface LimiterTableRow {
+  nodeId: string
+  topologyId: string
+  applicationId: string
   connector: string
   topology: string
   application: string
@@ -67,6 +70,8 @@ export interface LimiterData {
 }
 
 export interface TrashTableRow {
+  topologyId: string
+  nodeId: string
   topology: string
   node: string
   message: string
