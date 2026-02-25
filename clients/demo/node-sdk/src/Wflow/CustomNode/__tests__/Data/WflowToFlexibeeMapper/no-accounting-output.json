@@ -20,8 +20,6 @@
       "faktura-prijata": [
         {
           "cisDosle": "20250212",
-          "clenDph": "code:40-41",
-          "clenKonVykDph": "code:B.2-3.AUTO",
           "datSplat": "2025-12-26T00:00:00",
           "datVyst": "2025-12-19T00:00:00",
           "firma": "code:17864810",
@@ -30,10 +28,37 @@
           "mena": "code:CZK",
           "polozkyFaktury": [
             {
-              "cenaMj": 4200,
+              "cenaMj": 2000,
               "mnozMj": 1,
-              "nazev": "Fakturujeme Vám za dodané zboží či služby:\r\nDovolujeme si Vás upozornit, že v případě nedodržení data splatnosti uvedeného na faktuře Vám můžeme účtovat zákonný úrok z prodlení.",
-              "sumZklMen": 4200,
+              "nazev": "Vedení účetnictví 11_2025",
+              "sumZklMen": 2000,
+              "szbDph": 21,
+              "typPolozkyK": "typPolozky.obecny",
+              "typSzbDphK": "typSzbDph.dphZakl"
+            },
+            {
+              "cenaMj": 200,
+              "mnozMj": 6,
+              "nazev": "Zpracování mezd 11_2025",
+              "sumZklMen": 1200,
+              "szbDph": 21,
+              "typPolozkyK": "typPolozky.obecny",
+              "typSzbDphK": "typSzbDph.dphZakl"
+            },
+            {
+              "cenaMj": 650,
+              "mnozMj": 1,
+              "nazev": "DPH + Kontrolní hlášení 11_2025",
+              "sumZklMen": 650,
+              "szbDph": 21,
+              "typPolozkyK": "typPolozky.obecny",
+              "typSzbDphK": "typSzbDph.dphZakl"
+            },
+            {
+              "cenaMj": 350,
+              "mnozMj": 1,
+              "nazev": "Souhrnné hlášení 11_2025",
+              "sumZklMen": 350,
               "szbDph": 21,
               "typPolozkyK": "typPolozky.obecny",
               "typSzbDphK": "typSzbDph.dphZakl"

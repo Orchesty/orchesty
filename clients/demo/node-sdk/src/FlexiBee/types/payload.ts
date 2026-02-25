@@ -23,7 +23,7 @@ export interface PolozkaFaktury {
     szbDph: number;
     typPolozkyK: 'typPolozky.obecny';
     cenaMj: number;
-    sumZkl: number;
+    sumZklMen: number;
 }
 
 /* eslint-disable @typescript-eslint/naming-convention */
@@ -32,8 +32,8 @@ export interface FakturaPayload {
         id: `ext:${string}`;
         kod: `WF-${string}`;
         typDokl: `code:${string}`;
-        clenDph: `code:${string}`;
-        clenKonVykDph: `code:${string}`;
+        clenDph?: `code:${string}`;
+        clenKonVykDph?: `code:${string}`;
         cisDosle: string;
         datSplat: string;
         datVyst?: string;

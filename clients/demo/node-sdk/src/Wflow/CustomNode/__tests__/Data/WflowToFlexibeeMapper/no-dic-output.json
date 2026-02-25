@@ -31,7 +31,7 @@
               "cenaMj": 2000,
               "mnozMj": 1,
               "nazev": "Vedení účetnictví 11_2025",
-              "sumZkl": 2000,
+              "sumZklMen": 2000,
               "szbDph": 21,
               "typPolozkyK": "typPolozky.obecny",
               "typSzbDphK": "typSzbDph.dphZakl"
@@ -40,7 +40,7 @@
               "cenaMj": 200,
               "mnozMj": 6,
               "nazev": "Zpracování mezd 11_2025",
-              "sumZkl": 1200,
+              "sumZklMen": 1200,
               "szbDph": 21,
               "typPolozkyK": "typPolozky.obecny",
               "typSzbDphK": "typSzbDph.dphZakl"
@@ -49,7 +49,7 @@
               "cenaMj": 650,
               "mnozMj": 1,
               "nazev": "DPH + Kontrolní hlášení 11_2025",
-              "sumZkl": 650,
+              "sumZklMen": 650,
               "szbDph": 21,
               "typPolozkyK": "typPolozky.obecny",
               "typSzbDphK": "typSzbDph.dphZakl"
@@ -58,7 +58,7 @@
               "cenaMj": 350,
               "mnozMj": 1,
               "nazev": "Souhrnné hlášení 11_2025",
-              "sumZkl": 350,
+              "sumZklMen": 350,
               "szbDph": 21,
               "typPolozkyK": "typPolozky.obecny",
               "typSzbDphK": "typSzbDph.dphZakl"

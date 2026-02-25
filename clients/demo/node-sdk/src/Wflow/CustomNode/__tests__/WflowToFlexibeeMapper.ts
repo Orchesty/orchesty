@@ -32,4 +32,20 @@ describe('Tests for WflowToFlexibeeMapper', () => {
     it('process - no dic', async () => {
         await tester.testCustomNode(WFLOW_TO_FLEXIBEE_MAPPER, 'no-dic');
     });
+
+    it('process - no due date', async () => {
+        await tester.testCustomNode(WFLOW_TO_FLEXIBEE_MAPPER, 'no-due-date');
+    });
+
+    it('process - no accounting', async () => {
+        await tester.testCustomNode(WFLOW_TO_FLEXIBEE_MAPPER, 'no-accounting');
+    });
+
+    it('process - no accounting proforma', async () => {
+        await tester.testCustomNode(WFLOW_TO_FLEXIBEE_MAPPER, 'no-accounting-proforma');
+    });
+
+    it('process - no vats', async () => {
+        await tester.testCustomNode(WFLOW_TO_FLEXIBEE_MAPPER, 'no-vats');
+    });
 });

@@ -21,10 +21,8 @@ export default class WflowToFlexibeeMapper extends ACommonNode {
         const {
             id: wflowId,
             type: { kind },
-            accounting: {
-                vatReturnLine: { code: returnCode },
-                vatControlStatementLine: { code: controlCode },
-            },
+            invoiceType,
+            accounting,
             variableSymbol: cisDosle,
             dueDate: datSplat,
             issueDate: datVyst,
@@ -40,8 +38,22 @@ export default class WflowToFlexibeeMapper extends ACommonNode {
         const kod = `WF-${new DataView(crypto.randomBytes(64).buffer).getBigUint64(0).toString(32)}` as const;
         const firmaKod = ic ?? dic ?? FlexiBeeApplication.createCode(nazev);
         const typDokl = this.getTypDokl(kind);
-        const clenDph = `code:${returnCode}` as const;
-        const clenKonVykDph = `code:${controlCode}` as const;
+        const isPrijataProforma = kind === 'IncomingInvoice' && invoiceType === 'Proforma';
+        let clenDph: `code:${string}` | undefined;
+        let clenKonVykDph: `code:${string}` | undefined;
+
+        if (accounting?.vatReturnLine?.code) {
+            clenDph = `code:${accounting?.vatReturnLine?.code}` as const;
+        } else if (isPrijataProforma) {
+            clenDph = 'code:000P';
+        }
+
+        if (accounting?.vatControlStatementLine?.code) {
+            clenKonVykDph = `code:${accounting?.vatControlStatementLine?.code}` as const;
+        } else if (isPrijataProforma) {
+            clenKonVykDph = 'code:0.0.';
+        }
+
         const mena = `code:${currency}` as const;
         const polozkyFaktury = lines.length
             ? this.getPolozkyFaktury(lines as WflowLine[])
@@ -63,7 +75,7 @@ export default class WflowToFlexibeeMapper extends ACommonNode {
                         clenDph,
                         clenKonVykDph,
                         cisDosle,
-                        datSplat,
+                        datSplat: datSplat ?? datVyst,
                         datVyst,
                         popis,
                         mena,
@@ -93,7 +105,7 @@ export default class WflowToFlexibeeMapper extends ACommonNode {
                     clenDph,
                     clenKonVykDph,
                     cisDosle,
-                    datSplat,
+                    datSplat: datSplat ?? datVyst,
                     datVyst,
                     popis,
                     mena,
@@ -157,7 +169,7 @@ export default class WflowToFlexibeeMapper extends ACommonNode {
             unitPrice: cenaMj,
             vatRate: szbDph,
             vatType,
-            totalAmount: sumZkl,
+            totalAmount: sumZklMen,
         }) => ({
             nazev,
             mnozMj,
@@ -165,7 +177,7 @@ export default class WflowToFlexibeeMapper extends ACommonNode {
             szbDph,
             typPolozkyK: 'typPolozky.obecny',
             cenaMj,
-            sumZkl,
+            sumZklMen,
         }));
     }
 
@@ -182,11 +194,11 @@ export default class WflowToFlexibeeMapper extends ACommonNode {
         return [{
             nazev: data.description,
             mnozMj: 1,
-            typSzbDphK: vatTypeToTypSzbDphMap[data.vaTs[0].type as keyof typeof vatTypeToTypSzbDphMap],
-            szbDph: data.vaTs[0].rate,
+            typSzbDphK: vatTypeToTypSzbDphMap[(data.vaTs?.[0]?.type ?? 'Basic') as keyof typeof vatTypeToTypSzbDphMap],
+            szbDph: data.vaTs?.[0]?.rate ?? 21,
             typPolozkyK: 'typPolozky.obecny',
             cenaMj: data.taxExclusiveAmount,
-            sumZkl: data.taxExclusiveAmount,
+            sumZklMen: data.taxExclusiveAmount,
         }];
     }
 
