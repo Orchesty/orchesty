@@ -1,4 +1,5 @@
 import * as cron from 'cron-validator'
+import cronstrue from 'cronstrue'
 
 export interface CrontabValidationResult {
   valid: boolean
@@ -50,23 +51,10 @@ export function getCrontabDescription(expression: string): string | null {
     return null
   }
 
-  // Basic description logic (can be enhanced with cronstrue library if needed)
-  const parts = expression.trim().split(/\s+/)
-  if (parts.length !== 5) {
+  try {
+    return cronstrue.toString(expression.trim(), { use24HourTimeFormat: true })
+  } catch {
     return null
   }
-
-  const [minute, hour, day, month, weekday] = parts
-
-  // Simple patterns
-  if (expression === '0 0 * * *') return 'Daily at midnight'
-  if (expression === '0 2 * * *') return 'Daily at 2:00 AM'
-  if (expression === '0 * * * *') return 'Every hour'
-  if (expression === '*/15 * * * *') return 'Every 15 minutes'
-  if (expression === '0 0 * * 0') return 'Weekly on Sunday at midnight'
-  if (expression === '0 0 1 * *') return 'Monthly on the 1st at midnight'
-
-  // Generic description
-  return `At ${minute === '*' ? 'every minute' : `minute ${minute}`}, ${hour === '*' ? 'every hour' : `hour ${hour}`}`
 }
 

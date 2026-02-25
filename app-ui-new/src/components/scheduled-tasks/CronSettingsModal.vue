@@ -4,6 +4,7 @@ import Modal from '@/components/ui/Modal.vue'
 import Button from '@/components/ui/Button.vue'
 import type { ScheduledTask } from '@/types/scheduled-tasks'
 import { validateCrontab, getCrontabDescription } from '@/utils/crontabValidator'
+import { getNextCronRuns, formatNextRun } from '@/utils/cronParser'
 
 interface Props {
   modelValue: boolean
@@ -76,6 +77,14 @@ const crontabDescription = computed(() => {
   return getCrontabDescription(crontabInput.value)
 })
 
+// Next 2 scheduled run times
+const upcomingRuns = computed(() => {
+  if (!crontabInput.value || validationError.value) {
+    return []
+  }
+  return getNextCronRuns(crontabInput.value, 2)
+})
+
 // Check if form is valid
 const isFormValid = computed(() => {
   return crontabInput.value.trim() !== '' && !validationError.value && !paramsValidationError.value
@@ -140,10 +149,15 @@ const handleSubmit = (e: Event) => {
           {{ validationError }}
         </p>
 
-        <!-- Description -->
-        <p v-else-if="crontabDescription" class="mt-2 text-xs text-green-600 dark:text-green-400">
-          {{ crontabDescription }}
-        </p>
+        <!-- Description & Upcoming Runs -->
+        <div v-else-if="crontabDescription" class="mt-2">
+          <p class="text-xs text-green-600 dark:text-green-400">
+            {{ crontabDescription }}
+          </p>
+          <div v-if="upcomingRuns.length > 0" class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            Next: {{ upcomingRuns.map(d => formatNextRun(d)).join(', ') }}
+          </div>
+        </div>
 
         <!-- Help Text -->
         <p v-else class="mt-2 text-xs text-gray-500 dark:text-gray-400">
