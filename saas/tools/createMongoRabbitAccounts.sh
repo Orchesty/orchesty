@@ -29,5 +29,5 @@ echo "Create RabbitMQ vhost and user"
 $RABBITMQCTL add_vhost $INSTANCE --description "'ocInstanceDisplayName: $NAME'"
 $RABBITMQCTL add_user $INSTANCE $RABBITMQ_PWD
 $RABBITMQCTL set_user_tags $INSTANCE monitoring
-$RABBITMQCTL set_permissions --vhost $INSTANCE default_user_z2lLQkOZkUNAfvCSHeS "'.*'" "'.*'" "'.*'"
-$RABBITMQCTL set_permissions --vhost $INSTANCE $INSTANCE "'.*'" "'.*'" "'.*'"
+$RABBITMQCTL set_permissions --vhost $INSTANCE default_user_z2lLQkOZkUNAfvCSHeS ".*" ".*" ".*"
+$RABBITMQCTL set_permissions --vhost $INSTANCE $INSTANCE ".*" ".*" ".*"

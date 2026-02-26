@@ -57,3 +57,13 @@ global:
 
   applinthMarketplaceUI:
     auth_backlink: https://example.com/foo
+  
+  topologyApi:
+    topologiesExtraSpec:
+      nodeSelector:
+        bridgepool: "true"
+      tolerations:
+        -   effect: NoSchedule
+            key: bridgepool
+            operator: Equal
+            value: "true"
