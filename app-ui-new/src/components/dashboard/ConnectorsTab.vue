@@ -3,12 +3,12 @@ import { ref, computed, watch } from 'vue'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
 import QuickFilter from '@/components/ui/datagrid/QuickFilter.vue'
-import DropdownFilter from '@/components/ui/datagrid/DropdownFilter.vue'
+import SearchableDropdownFilter from '@/components/ui/datagrid/SearchableDropdownFilter.vue'
 import DateTimeRangeFilter from '@/components/ui/datagrid/DateTimeRangeFilter.vue'
 import ConnectorDetailDrawer from '@/components/dashboard/ConnectorDetailDrawer.vue'
 import type { Connector, ConnectorStatus } from '@/types/connectors'
 import type { TableColumn, TimeFilter } from '@/types/dashboard'
-import type { ActionConfig, QuickFilterOption, DropdownFilterOption } from '@/types/datagrid'
+import type { ActionConfig, QuickFilterOption } from '@/types/datagrid'
 import { fetchConnectors } from '@/services/connectorsService'
 import { convertTimeFilterToDateTimeRange, formatDateTimeForApi } from '@/utils/timeRangeConverter'
 import { useDataGrid } from '@/composables/useDataGrid'
@@ -185,11 +185,9 @@ watch(
 
     <!-- Regular Filters (right) -->
     <template #filters>
-      <!-- Node Dropdown -->
-      <DropdownFilter v-model="nodeFilter" :options="nodeOptions" />
+      <SearchableDropdownFilter v-model="nodeFilter" :options="nodeOptions" placeholder="All Nodes" />
 
-      <!-- Application Dropdown -->
-      <DropdownFilter v-model="selectedApp" :options="applicationOptions" />
+      <SearchableDropdownFilter v-model="selectedApp" :options="applicationOptions" placeholder="All Applications" />
 
       <!-- DateTime Range Filter -->
       <DateTimeRangeFilter v-model="dateTimeRange" />

@@ -11,6 +11,7 @@ import {
 import { useToast } from '@/composables/useToast';
 import Drawer from '@/components/ui/Drawer.vue';
 import Button from '@/components/ui/Button.vue';
+import Confirm from '@/components/ui/Confirm.vue';
 import TabsWithOverflow, { type TabDefinition } from '@/components/applications/TabsWithOverflow.vue';
 import DynamicFormGenerator from '@/components/applications/DynamicFormGenerator.vue';
 
@@ -32,6 +33,7 @@ const { showToast } = useToast();
 
 const loading = ref(false);
 const saving = ref(false);
+const showUninstallConfirm = ref(false);
 const applicationInstall = ref<ApplicationInstall | null>(null);
 const formValues = ref<Record<string, unknown>>({});
 const activeTab = ref<string>('');
@@ -163,19 +165,19 @@ const handleInstall = async () => {
   }
 };
 
-const handleUninstall = async () => {
-  if (!props.applicationKey || !props.worker) return;
+const handleUninstall = () => {
+  showUninstallConfirm.value = true;
+};
 
-  if (!confirm('Are you sure you want to uninstall this application?')) {
-    return;
-  }
+const confirmUninstall = async () => {
+  if (!props.applicationKey || !props.worker) return;
 
   loading.value = true;
   try {
     await uninstallApplication(props.applicationKey, props.worker);
     showToast('Application uninstalled successfully', 'success');
     emit('update:modelValue', false);
-    emit('refresh'); // Refresh parent list
+    emit('refresh');
   } catch (error: any) {
     console.error('Failed to uninstall application:', error);
     showToast(error.response?.data?.message || 'Failed to uninstall application', 'error');
@@ -391,5 +393,24 @@ watch(() => props.modelValue, async (newValue) => {
       </div>
     </template>
   </Drawer>
+
+  <Confirm
+    v-model="showUninstallConfirm"
+    id="uninstall-app-confirm"
+    confirm-text="Yes, uninstall"
+    cancel-text="No, cancel"
+    confirm-variant="danger"
+    @confirm="confirmUninstall"
+  >
+    <svg class="mx-auto mb-4 h-12 w-12 text-gray-400 dark:text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+    </svg>
+    <h3 class="mb-2 text-lg font-normal text-gray-500 dark:text-gray-400">
+      Are you sure you want to uninstall this application?
+    </h3>
+    <p class="text-sm text-gray-400 dark:text-gray-500">
+      This action cannot be undone.
+    </p>
+  </Confirm>
 </template>
 

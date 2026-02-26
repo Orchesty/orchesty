@@ -24,7 +24,7 @@ const emit = defineEmits<{
 }>()
 
 const router = useRouter()
-const { getNodeName, getApplicationName, loadMappings } = useTopologyNodeMappings()
+const { getTopologyName, getNodeName, getApplicationName, loadMappings } = useTopologyNodeMappings()
 const { formatDateTime } = useDateFormat()
 
 // Data state
@@ -130,6 +130,18 @@ watch(
       }
     } catch (error) {
       console.error('Error loading process audit:', error)
+      connectors.value = []
+      processDetail.value = {
+        processId: newProcess.id,
+        topology: newProcess.topology,
+        corelId: newProcess.id,
+        startTime: newProcess.startTime,
+        endTime: calculateEndTime(newProcess.startTime, newProcess.duration),
+        status: newProcess.status,
+        connectors: [],
+        trashCount: 0,
+        trashItems: [],
+      }
     } finally {
       loading.value = false
     }
@@ -163,7 +175,7 @@ const handleClose = () => {
         <div class="mb-3 flex items-start justify-between">
           <div>
             <h2 class="mb-3 text-2xl font-bold text-gray-900 dark:text-white">
-              {{ processDetail.topology }}
+              {{ getTopologyName(processDetail.topology) }}
             </h2>
             <div class="flex items-center gap-2">
               <span class="text-sm text-gray-500 dark:text-gray-400">Corel ID:</span>

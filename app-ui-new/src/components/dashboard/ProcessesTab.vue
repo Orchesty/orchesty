@@ -49,11 +49,9 @@ const statusFilter = ref<ProcessStatus>('all')
 const topologyFilter = ref<string | null>(null)
 const skipAutoLoad = ref(false)
 
-// Local datetime range filters - initialize from global time filter
-const initialRange = convertTimeFilterToDateTimeRange(props.globalTimeFilter)
 const dateTimeRange = ref<{ from: string | null; to: string | null }>({
-  from: initialRange.from,
-  to: initialRange.to,
+  from: null,
+  to: null,
 })
 
 // Table columns
@@ -209,9 +207,9 @@ watch(
       from: range.from,
       to: range.to,
     }
-    // Also reload chart data when global filter changes
     loadChartData()
-  }
+  },
+  { immediate: true }
 )
 
 // Watch heatmap filter changes (shared with OverviewTab)

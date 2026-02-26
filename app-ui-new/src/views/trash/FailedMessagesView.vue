@@ -4,7 +4,7 @@ import { useRoute } from 'vue-router'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
-import TimeRangeFilterWithCustomRange from '@/components/ui/TimeRangeFilterWithCustomRange.vue'
+import DateTimeRangeFilter from '@/components/ui/datagrid/DateTimeRangeFilter.vue'
 import DropdownFilter from '@/components/ui/datagrid/DropdownFilter.vue'
 import SearchableDropdownFilter from '@/components/ui/datagrid/SearchableDropdownFilter.vue'
 import TextInput from '@/components/ui/datagrid/TextInput.vue'
@@ -55,7 +55,10 @@ const searchFilter = ref('')
 const correlationIdFilter = ref('')
 const nodeFilter = ref<string | null>(null)
 const topologyFilter = ref<string | null>(null)
-const timeRangeFilter = ref('this-month')
+const dateTimeRange = ref<{ from: string | null; to: string | null }>({
+  from: null,
+  to: null,
+})
 
 // Topology options for dropdown with "All" option
 const topologyOptions = computed(() => [
@@ -255,7 +258,10 @@ const buildCurrentFilterParams = (): TrashQueryParams => {
     params.node = nodeIds.length > 0 ? nodeIds : [nodeFilter.value]
   }
   if (topologyFilter.value) params.topology = topologyFilter.value
-  if (timeRangeFilter.value) params.timeRange = timeRangeFilter.value
+  if (dateTimeRange.value.from && dateTimeRange.value.to) {
+    params.dateFrom = dateTimeRange.value.from
+    params.dateTo = dateTimeRange.value.to
+  }
 
   return params
 }
@@ -291,7 +297,7 @@ const {
 } = useDataGrid({
   defaultSort: { field: 'timestamp', direction: 'desc' },
   onDataLoad: loadData,
-  filters: [searchFilter, correlationIdFilter, nodeFilter, topologyFilter, timeRangeFilter],
+  filters: [searchFilter, correlationIdFilter, nodeFilter, topologyFilter, dateTimeRange],
 })
 
 // Load mappings and data
@@ -410,18 +416,23 @@ const handleReject = async () => {
         :bulk-actions="bulkActions"
         :selected-rows="selectedRows"
         row-id-key="id"
+        show-refresh
         @page-change="handlePageChange"
         @per-page-change="handlePerPageChange"
         @sort="handleSort"
+        @refresh="loadData"
         @update:selected-rows="selectedRows = $event"
       >
-        <template #filters>
+        <template #search>
           <SearchInput
             v-model="searchFilter"
             placeholder="Search"
             mode="server"
             width="w-72"
           />
+        </template>
+
+        <template #filters>
           <TextInput
             v-model="correlationIdFilter"
             placeholder="Correlation ID"
@@ -438,7 +449,7 @@ const handleReject = async () => {
             placeholder="All Topologies"
             search-placeholder="Search topologies..."
           />
-          <TimeRangeFilterWithCustomRange v-model="timeRangeFilter" />
+          <DateTimeRangeFilter v-model="dateTimeRange" />
         </template>
 
         <!-- Custom cell templates -->

@@ -8,7 +8,7 @@ import TextInput from '@/components/ui/datagrid/TextInput.vue'
 import SearchInput from '@/components/ui/SearchInput.vue'
 import DropdownFilter from '@/components/ui/datagrid/DropdownFilter.vue'
 import SearchableDropdownFilter from '@/components/ui/datagrid/SearchableDropdownFilter.vue'
-import TimeRangeFilterWithCustomRange from '@/components/ui/TimeRangeFilterWithCustomRange.vue'
+import DateTimeRangeFilter from '@/components/ui/datagrid/DateTimeRangeFilter.vue'
 import CopyValue from '@/components/ui/CopyValue.vue'
 import LogDetailDrawer from '@/components/logs/LogDetailDrawer.vue'
 import type { LogEntry, LogQueryParams, LogSeverity } from '@/types/logs'
@@ -43,7 +43,10 @@ const correlationIdFilter = ref('')
 const severityFilter = ref<LogSeverity | null>(null)
 const topologyFilter = ref<string | null>(null)
 const nodeFilter = ref<string | null>(null)
-const timeRangeFilter = ref('this-month')
+const dateTimeRange = ref<{ from: string | null; to: string | null }>({
+  from: null,
+  to: null,
+})
 
 // Severity options for dropdown
 const severityOptions = ref<{ value: LogSeverity | null; label: string }[]>([
@@ -161,8 +164,9 @@ async function loadData() {
     params.node = nodeIds.length > 0 ? nodeIds : [nodeFilter.value]
   }
 
-  if (timeRangeFilter.value) {
-    params.timeRange = timeRangeFilter.value
+  if (dateTimeRange.value.from && dateTimeRange.value.to) {
+    params.dateFrom = dateTimeRange.value.from
+    params.dateTo = dateTimeRange.value.to
   }
 
   try {
@@ -192,7 +196,7 @@ const {
 } = useDataGrid({
   defaultSort: { field: 'timestamp', direction: 'desc' },
   onDataLoad: loadData,
-  filters: [searchFilter, correlationIdFilter, severityFilter, topologyFilter, nodeFilter, timeRangeFilter],
+  filters: [searchFilter, correlationIdFilter, severityFilter, topologyFilter, nodeFilter, dateTimeRange],
 })
 
 // Load mappings and initial data
@@ -224,9 +228,11 @@ onMounted(async () => {
         :items-per-page="itemsPerPage"
         :sort-field="sortField"
         :sort-direction="sortDirection"
+        show-refresh
         @page-change="handlePageChange"
         @per-page-change="handlePerPageChange"
         @sort="handleSort"
+        @refresh="loadData"
       >
         <template #filters>
           <SearchInput
@@ -255,7 +261,7 @@ onMounted(async () => {
             placeholder="All Topologies"
             search-placeholder="Search topologies..."
           />
-          <TimeRangeFilterWithCustomRange v-model="timeRangeFilter" />
+          <DateTimeRangeFilter v-model="dateTimeRange" />
         </template>
 
         <!-- Custom cell templates -->

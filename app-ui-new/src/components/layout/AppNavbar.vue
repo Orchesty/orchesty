@@ -48,14 +48,14 @@ const accountMenuSections = computed<DropdownMenuSection[]>(() => [
   },
 ])
 
-onMounted(() => {
-  // Reinitialize Flowbite components after Vue mount
-  // This is needed for Tabs and other components that use data-* attributes
-  // Warnings about modal/drawer not being initialized can be ignored -
-  // those components manage their own Flowbite instances in Vue
-  if (typeof window !== 'undefined' && (window as typeof window & { initFlowbite?: () => void }).initFlowbite) {
-    ;(window as typeof window & { initFlowbite: () => void }).initFlowbite()
-  }
+onMounted(async () => {
+  // Only init components that use data-* attributes (dropdowns, tabs, collapses).
+  // Drawers and modals manage their own Flowbite instances in Vue — calling
+  // initDrawers/initModals here would warn about instances that don't exist yet.
+  const { initDropdowns, initTabs, initCollapses } = await import('flowbite')
+  initDropdowns()
+  initTabs()
+  initCollapses()
 })
 </script>
 

@@ -24,10 +24,13 @@ let refreshTimer: ReturnType<typeof setTimeout> | null = null
 // Shared loading promise so concurrent callers can await the in-flight request
 let loadingPromise: Promise<void> | null = null
 
-async function fetchWithRetry<T>(fn: () => Promise<T>, retries = 2): Promise<T> {
+async function fetchWithRetry<T>(fn: () => Promise<T>, retries = 2, delayMs = 1000): Promise<T> {
   for (let i = 0; i <= retries; i++) {
     try { return await fn() }
-    catch (e) { if (i === retries) throw e }
+    catch (e) {
+      if (i === retries) throw e
+      await new Promise(r => setTimeout(r, delayMs * (i + 1)))
+    }
   }
   throw new Error('unreachable')
 }
@@ -43,8 +46,8 @@ export function useTopologyNodeMappings() {
     loadingPromise = (async () => {
       const empty = { applications: {}, nodes: {}, topologies: {}, tree: {} }
       const [allResult, filteredResult] = await Promise.allSettled([
-        fetchWithRetry(() => fetchTopologyNodeMappings()),
-        fetchWithRetry(() => fetchFilteredMappings()),
+        fetchTopologyNodeMappings(),
+        fetchFilteredMappings(),
       ])
 
       if (allResult.status === 'fulfilled') {

@@ -2,7 +2,7 @@
 import { ref, onMounted, computed } from 'vue'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
-import TimeRangeFilterWithCustomRange from '@/components/ui/TimeRangeFilterWithCustomRange.vue'
+import DateTimeRangeFilter from '@/components/ui/datagrid/DateTimeRangeFilter.vue'
 import TextInput from '@/components/ui/datagrid/TextInput.vue'
 import DropdownFilter from '@/components/ui/datagrid/DropdownFilter.vue'
 import Confirm from '@/components/ui/Confirm.vue'
@@ -45,7 +45,10 @@ const selectedRows = ref<Set<string>>(new Set())
 const searchFilter = ref('')
 const correlationIdFilter = ref('')
 const nodeFilter = ref<string | null>(null)
-const timeRangeFilter = ref('this-month')
+const dateTimeRange = ref<{ from: string | null; to: string | null }>({
+  from: null,
+  to: null,
+})
 
 // Node options filtered to the current topology
 const nodeOptions = computed(() => {
@@ -154,8 +157,9 @@ const loadData = async () => {
     params.node = nodeFilter.value
   }
 
-  if (timeRangeFilter.value) {
-    params.timeRange = timeRangeFilter.value
+  if (dateTimeRange.value.from && dateTimeRange.value.to) {
+    params.dateFrom = dateTimeRange.value.from
+    params.dateTo = dateTimeRange.value.to
   }
 
   try {
@@ -185,7 +189,7 @@ const {
 } = useDataGrid({
   defaultSort: { field: 'timestamp', direction: 'desc' },
   onDataLoad: loadData,
-  filters: [searchFilter, correlationIdFilter, nodeFilter, timeRangeFilter],
+  filters: [searchFilter, correlationIdFilter, nodeFilter, dateTimeRange],
 })
 
 // Load initial data
@@ -283,7 +287,7 @@ const handleReject = async () => {
           :options="nodeOptions"
           placeholder="All Nodes"
         />
-        <TimeRangeFilterWithCustomRange v-model="timeRangeFilter" />
+        <DateTimeRangeFilter v-model="dateTimeRange" />
       </template>
 
       <!-- Custom cell templates -->

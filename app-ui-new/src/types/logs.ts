@@ -25,6 +25,8 @@ export interface LogQueryParams {
   topology?: string | null
   node?: string | string[] | null
   timeRange?: string
+  dateFrom?: string
+  dateTo?: string
 }
 
 // API response types

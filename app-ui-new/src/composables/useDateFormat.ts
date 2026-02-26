@@ -55,6 +55,26 @@ function formatDateTime(input: string | Date | null | undefined): string {
 }
 
 /**
+ * Format date + time without seconds (e.g. "09.02.2026 14:30" / "02/09/2026 2:30 PM")
+ */
+function formatDateTimeShort(input: string | Date | null | undefined): string {
+  if (!input) return ''
+  const date = input instanceof Date ? input : new Date(input)
+  if (isNaN(date.getTime())) return String(input)
+
+  const datePart = date.toLocaleDateString(locale.value, {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  })
+  const timePart = date.toLocaleTimeString(locale.value, {
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+  return `${datePart} ${timePart}`
+}
+
+/**
  * Format time only (e.g. "14:30:05" / "2:30:05 PM")
  */
 function formatTime(input: string | Date | null | undefined): string {
@@ -130,6 +150,7 @@ export function useDateFormat() {
     setDateFormat,
     formatDate,
     formatDateTime,
+    formatDateTimeShort,
     formatTime,
     formatChartDate,
     formatChartLabel,
