@@ -7,6 +7,7 @@ import {
   uninstallApplication,
   updateApplicationSettings,
   changeApplicationState,
+  authorizeApplication,
 } from '@/services/applicationsService';
 import { useToast } from '@/composables/useToast';
 import Drawer from '@/components/ui/Drawer.vue';
@@ -38,6 +39,7 @@ const applicationInstall = ref<ApplicationInstall | null>(null);
 const formValues = ref<Record<string, unknown>>({});
 const activeTab = ref<string>('');
 const formRefs = ref<Record<string, InstanceType<typeof DynamicFormGenerator>>>({});
+const currentStatus = ref<ApplicationStatus>(props.status);
 
 const setFormRef = (tabId: string, el: any) => {
   if (el) formRefs.value[tabId] = el;
@@ -70,7 +72,7 @@ const tabs = computed<TabDefinition[]>(() => {
 
 const statusLabel = computed(() => {
   if (!applicationInstall.value) return '';
-  switch (props.status) {
+  switch (currentStatus.value) {
     case 'activated':
       return 'Activated';
     case 'authorized':
@@ -84,12 +86,12 @@ const statusLabel = computed(() => {
 });
 
 const showStatusBadge = computed(() => {
-  return props.status !== 'available' && applicationInstall.value;
+  return currentStatus.value !== 'available' && applicationInstall.value;
 });
 
 const statusBadgeClass = computed(() => {
   if (!applicationInstall.value) return '';
-  switch (props.status) {
+  switch (currentStatus.value) {
     case 'activated':
       return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
     case 'authorized':
@@ -106,6 +108,20 @@ const isInstallDisabled = computed(() => {
   return applicationInstall.value?.authorized ?? false;
 });
 
+const needsOAuthAuthorization = computed(() => {
+  if (!applicationInstall.value) return false;
+  return (
+    ['oauth', 'oauth2'].includes(applicationInstall.value.authorization_type) &&
+    !applicationInstall.value.authorized
+  );
+});
+
+const saveButtonLabel = computed(() => {
+  if (saving.value) return 'Saving...';
+  if (needsOAuthAuthorization.value) return 'Save & Authorize';
+  return 'Save';
+});
+
 const loadApplicationData = async () => {
   if (!props.applicationKey || !props.worker) return;
 
@@ -113,7 +129,7 @@ const loadApplicationData = async () => {
   applicationInstall.value = null; // Clear previous data
 
   try {
-    // Use preview endpoint only for 'available' apps
+    currentStatus.value = props.status;
     const isInstalled = props.status !== 'available';
 
     const data = await fetchApplicationInstall(props.applicationKey, props.worker, isInstalled);
@@ -160,8 +176,9 @@ const handleInstall = async () => {
     });
     formValues.value = initialValues;
 
+    currentStatus.value = 'installed';
     showToast('Application installed successfully', 'success');
-    emit('refresh'); // Refresh parent list
+    emit('refresh');
   } catch (error: any) {
     console.error('Failed to install application:', error);
     showToast(error.response?.data?.message || 'Failed to install application', 'error');
@@ -204,14 +221,23 @@ const handleSave = async () => {
 
   if (!isValid) return;
 
+  // Capture OAuth need before save — the response may flip `authorized` to true
+  const shouldAuthorize = needsOAuthAuthorization.value;
+
   saving.value = true;
   try {
+    const previousData = applicationInstall.value;
     const updatedInstall = await updateApplicationSettings(
       props.applicationKey,
       props.worker,
       formValues.value,
       applicationInstall.value.applicationSettings
     );
+
+    // Preserve fields the PUT response may not include
+    if (!updatedInstall.logo && previousData.logo) {
+      updatedInstall.logo = previousData.logo;
+    }
 
     // Update the local state with fresh data from API
     applicationInstall.value = updatedInstall;
@@ -222,6 +248,13 @@ const handleSave = async () => {
       initialValues[setting.key] = setting.value ?? '';
     });
     formValues.value = initialValues;
+
+    // Trigger OAuth redirect before anything else — uses window.location.href
+    // so no further code runs after this point
+    if (shouldAuthorize) {
+      authorizeApplication(props.applicationKey, props.worker);
+      return;
+    }
 
     showToast('Settings saved successfully', 'success');
   } catch (error: any) {
@@ -235,21 +268,21 @@ const handleSave = async () => {
 const handleChangeState = async (enabled: boolean) => {
   if (!props.applicationKey || !props.worker) return;
 
-  loading.value = true;
+  saving.value = true;
   try {
     await changeApplicationState(props.applicationKey, props.worker, enabled);
+    currentStatus.value = enabled ? 'activated' : 'authorized';
     showToast(
       enabled ? 'Application activated successfully' : 'Application deactivated successfully',
       'success',
     );
     emit('refresh');
-    emit('update:modelValue', false);
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Failed to change application state';
     console.error('Failed to change application state:', error);
     showToast(errorMessage, 'error');
   } finally {
-    loading.value = false;
+    saving.value = false;
   }
 };
 
@@ -338,33 +371,33 @@ watch(() => props.modelValue, async (newValue) => {
           </div>
           <div class="flex items-center gap-2">
             <Button
-              v-if="props.status === 'available'"
+              v-if="currentStatus === 'available'"
               variant="primary"
-              :disabled="loading"
+              :disabled="saving"
               @click="handleInstall"
             >
               Install
             </Button>
             <Button
-              v-if="props.status === 'authorized'"
-              variant="primary"
-              :disabled="loading"
+              v-if="currentStatus === 'authorized'"
+              :variant="needsOAuthAuthorization ? 'outline' : 'primary'"
+              :disabled="saving || needsOAuthAuthorization"
               @click="handleChangeState(true)"
             >
               Activate
             </Button>
             <Button
-              v-if="props.status === 'activated'"
+              v-if="currentStatus === 'activated'"
               variant="outline"
-              :disabled="loading"
+              :disabled="saving"
               @click="handleChangeState(false)"
             >
               Deactivate
             </Button>
             <Button
-              v-if="props.status !== 'available'"
+              v-if="currentStatus !== 'available'"
               variant="outline"
-              :disabled="loading"
+              :disabled="saving"
               @click="handleUninstall"
             >
               Uninstall
@@ -393,7 +426,7 @@ watch(() => props.modelValue, async (newValue) => {
             <!-- Save button for this tab -->
             <div class="flex items-center justify-start pt-4">
               <Button variant="primary" :disabled="saving" @click="handleSave">
-                {{ saving ? 'Saving...' : 'Save' }}
+                {{ saveButtonLabel }}
               </Button>
             </div>
           </div>

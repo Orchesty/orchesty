@@ -169,7 +169,7 @@ function mapApiInstallToComponent(
     description: apiResponse.description,
     application_type: apiResponse.application_type,
     authorization_type: apiResponse.authorization_type,
-    authorized: false, // Will be updated after install
+    authorized: apiResponse.authorized ?? false,
     applicationSettings: flatSettings,
     worker: workerName,
     logo: apiResponse.logo,
@@ -193,16 +193,7 @@ export async function fetchApplicationInstall(
     { params: { sdk: worker } }
   )
 
-  const install = mapApiInstallToComponent(response.data, worker)
-
-  // Use the 'enabled' field from API if available, otherwise use isInstalled
-  if (response.data.enabled !== undefined) {
-    install.authorized = response.data.enabled
-  } else {
-    install.authorized = isInstalled
-  }
-
-  return install
+  return mapApiInstallToComponent(response.data, worker)
 }
 
 /**
@@ -266,29 +257,26 @@ export async function updateApplicationSettings(
     { params: { sdk: worker } }
   )
 
-  // Map response back to component format
-  const install = mapApiInstallToComponent(response.data, worker)
-
-  // Use the 'enabled' field from API if available
-  if (response.data.enabled !== undefined) {
-    install.authorized = response.data.enabled
-  }
-
-  return install
+  return mapApiInstallToComponent(response.data, worker)
 }
 
 /**
- * Authorize an application (trigger OAuth flow)
+ * Authorize an application (trigger OAuth flow).
+ * Opens the authorize endpoint directly in a new browser window.
+ * The backend redirects to the OAuth provider.
  */
-export async function authorizeApplication(key: string, user: string): Promise<string> {
-  await delay(300);
+export function authorizeApplication(key: string, worker: string): void {
+  const baseUrl = api.defaults.baseURL || window.location.origin
+  const authorizeURL = new URL(`/api/applications/${key}/authorize`, baseUrl)
+  authorizeURL.searchParams.append('sdk', worker)
+  authorizeURL.searchParams.append('redirect_url', `${window.location.href}?sdk=${worker}`)
 
-  // In real implementation, this would GET to /api/applications/{key}/users/{user}/authorize
-  // and return a redirect URL for OAuth
-  const authUrl = `/api/applications/${key}/users/${user}/authorize/token`;
+  const token = localStorage.getItem('auth_token')
+  if (token) {
+    authorizeURL.searchParams.append('Authorization', token)
+  }
 
-  console.log(`Initiating authorization for ${key}: ${authUrl}`);
-  return authUrl;
+  window.location.href = authorizeURL.href
 }
 
 /**
