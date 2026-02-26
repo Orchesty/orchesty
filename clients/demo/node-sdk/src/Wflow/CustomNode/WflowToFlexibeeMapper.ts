@@ -3,7 +3,6 @@ import { IOutput as IInput } from '@orchesty/connector-wflow/dist/Connector/Wflo
 import { NAME as WFLOW_APP_NAME } from '@orchesty/connector-wflow/dist/WflowApplication';
 import ACommonNode from '@orchesty/nodejs-sdk/dist/lib/Commons/ACommonNode';
 import ProcessDto from '@orchesty/nodejs-sdk/dist/lib/Utils/ProcessDto';
-import crypto from 'crypto';
 import { FIRMA_KOD } from '../../FlexiBee/Connector/FlexiBeeFindFirmaKodConnector';
 import { FlexiBeeApplication } from '../../FlexiBee/FlexiBeeApplication';
 import { FakturaPayload, FirmaPayload, Payload, PolozkaFaktury } from '../../FlexiBee/types/payload';
@@ -35,7 +34,6 @@ export default class WflowToFlexibeeMapper extends ACommonNode {
             lines = [], // eslint-disable-line @typescript-eslint/no-useless-default-assignment
         } = data;
         const id = `ext:${wflowId}` as const;
-        const kod = `WF-${new DataView(crypto.randomBytes(64).buffer).getBigUint64(0).toString(32)}` as const;
         const firmaKod = ic ?? dic ?? FlexiBeeApplication.createCode(nazev);
         const typDokl = this.getTypDokl(kind);
         const isPrijataProforma = kind === 'IncomingInvoice' && invoiceType === 'Proforma';
@@ -70,7 +68,6 @@ export default class WflowToFlexibeeMapper extends ACommonNode {
                     '@version': '1.0',
                     'faktura-prijata': [{
                         id,
-                        kod,
                         typDokl,
                         clenDph,
                         clenKonVykDph,
@@ -100,7 +97,6 @@ export default class WflowToFlexibeeMapper extends ACommonNode {
                 }],
                 'faktura-prijata': [{
                     id,
-                    kod,
                     typDokl,
                     clenDph,
                     clenKonVykDph,
@@ -169,7 +165,6 @@ export default class WflowToFlexibeeMapper extends ACommonNode {
             unitPrice: cenaMj,
             vatRate: szbDph,
             vatType,
-            totalAmount: sumZklMen,
         }) => ({
             nazev,
             mnozMj,
@@ -177,7 +172,6 @@ export default class WflowToFlexibeeMapper extends ACommonNode {
             szbDph,
             typPolozkyK: 'typPolozky.obecny',
             cenaMj,
-            sumZklMen,
         }));
     }
 
@@ -198,7 +192,6 @@ export default class WflowToFlexibeeMapper extends ACommonNode {
             szbDph: data.vaTs?.[0]?.rate ?? 21,
             typPolozkyK: 'typPolozky.obecny',
             cenaMj: data.taxExclusiveAmount,
-            sumZklMen: data.taxExclusiveAmount,
         }];
     }
 
@@ -206,7 +199,6 @@ export default class WflowToFlexibeeMapper extends ACommonNode {
 
 interface WflowLine {
     description: string;
-    totalAmount: number;
     quantity: number;
     unitPrice: number;
     vatRate: number;

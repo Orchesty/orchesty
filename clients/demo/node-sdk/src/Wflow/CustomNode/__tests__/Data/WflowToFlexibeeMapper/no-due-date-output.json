@@ -26,14 +26,12 @@
           "datVyst": "2025-12-19T00:00:00",
           "firma": "code:17864810",
           "id": "ext:40830940-fc60-4ffd-a143-37ed2022bd21",
-          "kod": "WF-42ga1850k2ga1",
           "mena": "code:CZK",
           "polozkyFaktury": [
             {
               "cenaMj": 2000,
               "mnozMj": 1,
               "nazev": "Vedení účetnictví 11_2025",
-              "sumZklMen": 2000,
               "szbDph": 21,
               "typPolozkyK": "typPolozky.obecny",
               "typSzbDphK": "typSzbDph.dphZakl"
@@ -42,7 +40,6 @@
               "cenaMj": 200,
               "mnozMj": 6,
               "nazev": "Zpracování mezd 11_2025",
-              "sumZklMen": 1200,
               "szbDph": 21,
               "typPolozkyK": "typPolozky.obecny",
               "typSzbDphK": "typSzbDph.dphZakl"
@@ -51,7 +48,6 @@
               "cenaMj": 650,
               "mnozMj": 1,
               "nazev": "DPH + Kontrolní hlášení 11_2025",
-              "sumZklMen": 650,
               "szbDph": 21,
               "typPolozkyK": "typPolozky.obecny",
               "typSzbDphK": "typSzbDph.dphZakl"
@@ -60,7 +56,6 @@
               "cenaMj": 350,
               "mnozMj": 1,
               "nazev": "Souhrnné hlášení 11_2025",
-              "sumZklMen": 350,
               "szbDph": 21,
               "typPolozkyK": "typPolozky.obecny",
               "typSzbDphK": "typSzbDph.dphZakl"
