@@ -37,6 +37,11 @@ const showUninstallConfirm = ref(false);
 const applicationInstall = ref<ApplicationInstall | null>(null);
 const formValues = ref<Record<string, unknown>>({});
 const activeTab = ref<string>('');
+const formRefs = ref<Record<string, InstanceType<typeof DynamicFormGenerator>>>({});
+
+const setFormRef = (tabId: string, el: any) => {
+  if (el) formRefs.value[tabId] = el;
+};
 
 // Group settings by tab
 const groupedSettings = computed(() => {
@@ -189,6 +194,16 @@ const confirmUninstall = async () => {
 const handleSave = async () => {
   if (!applicationInstall.value) return;
 
+  // Validate all required fields across all tabs
+  let isValid = true;
+  for (const formRef of Object.values(formRefs.value)) {
+    if (formRef?.validate && !formRef.validate()) {
+      isValid = false;
+    }
+  }
+
+  if (!isValid) return;
+
   saving.value = true;
   try {
     const updatedInstall = await updateApplicationSettings(
@@ -254,7 +269,7 @@ watch(() => props.modelValue, async (newValue) => {
   <Drawer
     id="app-detail-drawer"
     :model-value="modelValue"
-    :label="applicationInstall?.name || 'Application Details'"
+    :label="'Application Details'"
     width="w-1/2 min-w-[500px]"
     @update:model-value="$emit('update:modelValue', $event)"
   >
@@ -370,6 +385,7 @@ watch(() => props.modelValue, async (newValue) => {
         <template v-for="tab in tabs" :key="tab.id" #[`tab-content-${tab.id}`]>
           <div class="space-y-6">
             <DynamicFormGenerator
+              :ref="(el: any) => setFormRef(tab.id, el)"
               :settings="groupedSettings[tab.id] || []"
               v-model="formValues"
             />

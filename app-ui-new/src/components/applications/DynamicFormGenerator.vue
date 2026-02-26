@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import type { ApplicationSetting } from '@/types/applications';
 import FormInput from '@/components/ui/FormInput.vue';
 
@@ -15,8 +15,12 @@ const emit = defineEmits<{
 }>();
 
 const formValues = computed(() => props.modelValue);
+const errors = ref<Record<string, string>>({});
 
 const updateValue = (key: string, value: unknown) => {
+  if (errors.value[key]) {
+    delete errors.value[key];
+  }
   emit('update:modelValue', {
     ...formValues.value,
     [key]: value,
@@ -52,6 +56,26 @@ const handleSelectChange = (key: string, event: Event) => {
   const target = event.target as HTMLSelectElement;
   updateValue(key, target.value);
 };
+
+
+const validate = (): boolean => {
+  const newErrors: Record<string, string> = {};
+  for (const setting of props.settings) {
+    if (!setting.required) continue
+    const value = formValues.value[setting.key]
+    if (value === undefined || value === null || value === '') {
+      newErrors[setting.key] = 'This field is required';
+    }
+  }
+  errors.value = newErrors;
+  return Object.keys(newErrors).length === 0;
+}
+
+const clearErrors = () => {
+  errors.value = {};
+}
+
+defineExpose({ validate, clearErrors });
 </script>
 
 <template>
@@ -72,10 +96,15 @@ const handleSelectChange = (key: string, event: Event) => {
           :model-value="String(formValues[setting.key] ?? setting.value ?? '')"
           :placeholder="setting.label"
           :disabled="setting.disabled || setting.readOnly"
+          :required="setting.required"
+          :error="!!errors[setting.key]"
           width="w-2/3"
           @update:model-value="(value) => updateValue(setting.key, value)"
         />
-        <p v-if="setting.description" class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+        <p v-if="errors[setting.key]" class="mt-1 text-xs text-red-500 dark:text-red-400">
+          {{ errors[setting.key] }}
+        </p>
+        <p v-else-if="setting.description" class="mt-1 text-xs text-gray-500 dark:text-gray-400">
           {{ setting.description }}
         </p>
       </div>
@@ -93,7 +122,13 @@ const handleSelectChange = (key: string, event: Event) => {
           :id="setting.key"
           :value="String(formValues[setting.key] ?? setting.value ?? '')"
           :disabled="setting.disabled || setting.readOnly"
-          class="block w-2/3 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-600 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"
+          :required="setting.required"
+          :class="[
+            'block w-2/3 rounded-lg border bg-gray-50 p-2.5 text-sm text-gray-900 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400',
+            errors[setting.key]
+              ? 'border-red-500 focus:border-red-500 focus:ring-red-500 dark:border-red-500'
+              : 'border-gray-300 focus:border-primary-600 focus:ring-primary-600 dark:border-gray-600 dark:focus:border-primary-500 dark:focus:ring-primary-500'
+          ]"
           @change="(e) => handleSelectChange(setting.key, e)"
         >
           <option value="">Select...</option>
@@ -105,7 +140,10 @@ const handleSelectChange = (key: string, event: Event) => {
             {{ choice }}
           </option>
         </select>
-        <p v-if="setting.description" class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+        <p v-if="errors[setting.key]" class="mt-1 text-xs text-red-500 dark:text-red-400">
+          {{ errors[setting.key] }}
+        </p>
+        <p v-else-if="setting.description" class="mt-1 text-xs text-gray-500 dark:text-gray-400">
           {{ setting.description }}
         </p>
       </div>
