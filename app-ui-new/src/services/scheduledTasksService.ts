@@ -28,7 +28,7 @@ function mapApiItemToScheduledTask(apiItem: ScheduledTaskApiItem): ScheduledTask
     topology: formatName(apiItem.topology.name),
     topologyId: apiItem.topology.id,
     crontab: apiItem.time || null,
-    nextRun: apiItem.time && apiItem.node.status ? getNextCronRun(apiItem.time) : null,
+    nextRun: apiItem.time && apiItem.node.status && apiItem.topology.status ? getNextCronRun(apiItem.time) : null,
     params: apiItem.node.parameters || '',
     status
   }

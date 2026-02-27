@@ -21,6 +21,7 @@ interface Props {
   globalTimeFilter: TimeFilter
   heatmapFilter?: ProcessFilter
   externalFilters?: ProcessesExternalFilters
+  refreshKey?: number
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -219,6 +220,11 @@ watch(
     loadChartData()
   }
 )
+
+watch(() => props.refreshKey, () => {
+  loadData()
+  loadChartData()
+})
 
 // Watch for external filters from heatmap click
 watch(

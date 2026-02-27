@@ -784,7 +784,7 @@ onMounted(async () => {
                     </Button>
                     <Button
                       v-if="topology.visibility !== 'draft'"
-                      :variant="topology.enabled ? 'danger' : 'success'"
+                      :variant="topology.enabled ? 'outline' : 'success'"
                       @click="handleToggleEnabled"
                     >
                       {{ topology.enabled ? 'Disable' : 'Enable' }}

@@ -5,7 +5,6 @@ import DataGrid from '@/components/ui/DataGrid.vue'
 import QuickFilter from '@/components/ui/datagrid/QuickFilter.vue'
 import SearchableDropdownFilter from '@/components/ui/datagrid/SearchableDropdownFilter.vue'
 import DateTimeRangeFilter from '@/components/ui/datagrid/DateTimeRangeFilter.vue'
-import ConnectorDetailDrawer from '@/components/dashboard/ConnectorDetailDrawer.vue'
 import type { Connector, ConnectorStatus } from '@/types/connectors'
 import type { TableColumn, TimeFilter } from '@/types/dashboard'
 import type { ActionConfig, QuickFilterOption } from '@/types/datagrid'
@@ -16,9 +15,14 @@ import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 
 interface Props {
   globalTimeFilter: TimeFilter
+  refreshKey?: number
 }
 
 const props = defineProps<Props>()
+
+const emit = defineEmits<{
+  openConnectorDetail: [connector: Connector]
+}>()
 
 // Use topology/node/application mappings composable
 const {
@@ -39,10 +43,6 @@ const dateTimeRange = ref<{ from: string | null; to: string | null }>({
   from: null,
   to: null,
 })
-
-// Drawer state
-const drawerOpen = ref(false)
-const selectedConnector = ref<Connector | null>(null)
 
 // Table columns (actions column added automatically by DataGrid)
 const columns: TableColumn[] = [
@@ -83,8 +83,7 @@ const actions: ActionConfig[] = [
     icon: 'search',
     title: 'View details',
     onClick: (row) => {
-      selectedConnector.value = row as Connector
-      drawerOpen.value = true
+      emit('openConnectorDetail', row as Connector)
     },
   },
 ]
@@ -136,6 +135,10 @@ const {
   defaultSort: { field: 'requests', direction: 'desc' },
   onDataLoad: loadData,
   filters: [quickFilter, nodeFilter, selectedApp, dateTimeRange],
+})
+
+watch(() => props.refreshKey, () => {
+  loadData()
 })
 
 // Watch global time filter and convert to local datetime range
@@ -242,7 +245,7 @@ watch(
       <span
         :class="[
           'inline-flex items-center rounded-full px-2 py-1 text-xs font-medium',
-          value === 200
+          value >= 200 && value < 300
             ? 'bg-green-100 text-green-700 dark:bg-green-800 dark:text-green-300'
             : value >= 400 && value < 500
             ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-800 dark:text-yellow-300'
@@ -256,11 +259,5 @@ watch(
     </div>
   </Card>
 
-  <!-- Connector Detail Drawer -->
-  <ConnectorDetailDrawer
-    v-model="drawerOpen"
-    :connector="selectedConnector"
-    :global-time-filter="props.globalTimeFilter"
-  />
 </template>
 

@@ -29,6 +29,8 @@ export interface HeatmapData {
 export interface HeatmapSeries {
   name: string // topology name
   data: HeatmapData[]
+  _nodeId?: string
+  _nodeIds?: string[]
 }
 
 export type TimeFilter = '1h' | '24h' | '7d' | '30d'

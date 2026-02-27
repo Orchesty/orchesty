@@ -135,7 +135,7 @@ const getStatusLabel = (status: string) => {
 const refreshNextRuns = () => {
   const now = new Date()
   for (const task of tasks.value) {
-    if (!task.nodeStatus || !task.crontab) {
+    if (!task.nodeStatus || !task.crontab || task.status === 'disabled') {
       task.nextRun = null
       continue
     }

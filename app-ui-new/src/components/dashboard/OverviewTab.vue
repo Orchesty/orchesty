@@ -11,6 +11,7 @@ import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 interface Props {
   timeFilter?: TimeFilter
   heatmapFilter?: ProcessFilter
+  refreshKey?: number
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -76,6 +77,10 @@ watch(() => props.timeFilter, () => {
 })
 
 watch(() => props.heatmapFilter, () => {
+  loadData()
+})
+
+watch(() => props.refreshKey, () => {
   loadData()
 })
 

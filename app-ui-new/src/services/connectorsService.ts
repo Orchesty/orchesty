@@ -14,7 +14,7 @@ import type {
 } from '@/types/connectors'
 import type { TimeFilter } from '@/types/dashboard'
 import api from '@/services/api'
-import { convertTimeFilterToDateTimeRange } from '@/utils/timeRangeConverter'
+import { convertTimeFilterToDateTimeRange, formatDateTimeForApi } from '@/utils/timeRangeConverter'
 import { useDateFormat } from '@/composables/useDateFormat'
 
 const { formatChartDate } = useDateFormat()
@@ -76,9 +76,15 @@ function mapErrorApiItemToRecord(
   apiItem: ConnectorErrorApiItem,
 ): ConnectorErrorRecord {
   return {
+    id: apiItem.id,
     timestamp: apiItem.created,
     topologyId: apiItem.topologyId,
     topology: apiItem.topologyId,
+    nodeId: apiItem.nodeId,
+    applicationId: apiItem.applicationId,
+    correlationId: apiItem.correlationId || '',
+    userId: apiItem.userId || '',
+    duration: apiItem.duration || 0,
     code: apiItem.status,
     message: apiItem.message || ''
   }
@@ -163,49 +169,50 @@ export async function fetchConnectors(
 }
 
 /**
- * Fetch connector detail with error statistics
- *
- * @param connectorId - The connector ID
- * @param timeFilter - Time filter for data aggregation
- * @returns Connector detail with error stats
+ * Fetch connector detail with error statistics.
+ * Accepts one or more nodeIds. When multiple are provided, uses the IN operator
+ * and aggregates results across all nodes (same connector in different topologies).
  */
 export async function fetchConnectorDetail(
-  connectorId: string,
+  connectorIdOrIds: string | string[],
   timeFilter: TimeFilter,
 ): Promise<ConnectorDetail> {
-  // Convert time filter to date range
+  const nodeIds = Array.isArray(connectorIdOrIds) ? connectorIdOrIds : [connectorIdOrIds]
   const dateRange = convertTimeFilterToDateTimeRange(timeFilter)
+  const dateFrom = formatDateTimeForApi(dateRange.from) || ''
+  const dateTo = formatDateTimeForApi(dateRange.to) || ''
 
-  // Build API filter object
+  const isMultiple = nodeIds.length > 1
+  const nodeFilter = isMultiple
+    ? { column: 'nodeId', operator: 'IN', value: nodeIds }
+    : { column: 'nodeId', operator: 'EQ', value: [nodeIds[0]] }
+
   const filterObj: ConnectorApiFilter = {
     search: null,
     filter: [
-      [{ column: 'created', operator: 'BETWEEN', value: [dateRange.from, dateRange.to] }],
-      [{ column: 'nodeId', operator: 'EQ', value: [connectorId] }]
+      [{ column: 'created', operator: 'BETWEEN', value: [dateFrom, dateTo] }],
+      [nodeFilter]
     ],
     sorter: [],
     paging: {
-      itemsPerPage: 1,
+      itemsPerPage: isMultiple ? nodeIds.length : 1,
       page: 1
     }
   }
 
-  // Call API
   const response = await api.get<ConnectorApiResponse>('/api/metrics/connectors/overview', {
     params: {
       filter: JSON.stringify(filterObj)
     }
   })
 
-  // Get first item (should be only one for specific nodeId)
-  const apiItem = response.data.items[0]
+  const items = response.data.items
 
-  if (!apiItem) {
-    // If no data found for this time range, return a connector with zero stats
+  if (items.length === 0) {
     return {
       connector: {
-        id: connectorId,
-        name: connectorId,
+        id: nodeIds[0],
+        name: nodeIds[0],
         application: '',
         avgRequestTime: 0,
         requests: 0,
@@ -222,46 +229,82 @@ export async function fetchConnectorDetail(
     }
   }
 
-  // Map to connector model
-  const connector = mapApiItemToConnector(apiItem)
+  if (items.length === 1) {
+    const connector = mapApiItemToConnector(items[0])
+    return {
+      connector,
+      errors400: items[0].status400,
+      errors500: items[0].status500,
+      totalRequests: items[0].count,
+      lastRequestStatus: items[0].lastStatus,
+      errorRecords: [],
+    }
+  }
+
+  // Aggregate across multiple nodes
+  let totalCount = 0
+  let totalStatus400 = 0
+  let totalStatus500 = 0
+  let totalDuration = 0
+  let lastStatus = 0
+
+  for (const item of items) {
+    totalCount += item.count
+    totalStatus400 += item.status400
+    totalStatus500 += item.status500
+    totalDuration += item.duration * item.count
+    lastStatus = item.lastStatus
+  }
+
+  const avgDuration = totalCount > 0 ? Math.round(totalDuration / totalCount) : 0
+  const hasErrors = totalStatus400 > 0 || totalStatus500 > 0
 
   return {
-    connector,
-    errors400: apiItem.status400,
-    errors500: apiItem.status500,
-    totalRequests: apiItem.count,
-    lastRequestStatus: apiItem.lastStatus,
-    errorRecords: [], // Will be fetched separately
+    connector: {
+      id: nodeIds[0],
+      name: nodeIds[0],
+      application: items[0].applicationId,
+      avgRequestTime: avgDuration,
+      requests: totalCount,
+      errors400: totalStatus400,
+      errors500: totalStatus500,
+      lastRequestStatus: lastStatus,
+      status: hasErrors ? 'errors' : 'ok',
+    },
+    errors400: totalStatus400,
+    errors500: totalStatus500,
+    totalRequests: totalCount,
+    lastRequestStatus: lastStatus,
+    errorRecords: [],
   }
 }
 
 /**
- * Fetch connector error records with pagination
- *
- * @param connectorId - The connector ID
- * @param timeFilter - Time filter for records
- * @param page - Page number
- * @param limit - Items per page
- * @param getTopologyName - Function to map topology ID to name
- * @returns Paginated error records
+ * Fetch connector error records with pagination.
+ * Accepts one or more nodeIds for aggregated queries.
  */
 export async function fetchConnectorErrorRecords(
-  connectorId: string,
+  connectorIdOrIds: string | string[],
   timeFilter: TimeFilter,
   page: number = 1,
   limit: number = 10,
   sortField: string = 'created',
   sortDirection: string = 'desc'
 ): Promise<PaginatedResponse<ConnectorErrorRecord>> {
-  // Convert time filter to date range
+  const nodeIds = Array.isArray(connectorIdOrIds) ? connectorIdOrIds : [connectorIdOrIds]
   const dateRange = convertTimeFilterToDateTimeRange(timeFilter)
+  const dateFrom = formatDateTimeForApi(dateRange.from) || ''
+  const dateTo = formatDateTimeForApi(dateRange.to) || ''
 
-  // Build API filter object
+  const nodeFilter = nodeIds.length > 1
+    ? { column: 'nodeId', operator: 'IN', value: nodeIds }
+    : { column: 'nodeId', operator: 'EQ', value: [nodeIds[0]] }
+
   const filterObj: ConnectorApiFilter = {
     search: null,
     filter: [
-      [{ column: 'created', operator: 'BETWEEN', value: [dateRange.from, dateRange.to] }],
-      [{ column: 'nodeId', operator: 'EQ', value: [connectorId] }],
+      [{ column: 'created', operator: 'BETWEEN', value: [dateFrom, dateTo] }],
+      [nodeFilter],
       [{ column: 'status', operator: 'EQ', value: ['FAILED'] }]
     ],
     sorter: [{ column: sortField, direction: sortDirection.toUpperCase() }],
@@ -295,29 +338,31 @@ export async function fetchConnectorErrorRecords(
 }
 
 /**
- * Fetch connector chart data for error visualization
- *
- * @param connectorId - The connector ID
- * @param timeFilter - Time filter for chart data
- * @returns Chart data with categories and error counts
+ * Fetch connector chart data for error visualization.
+ * Accepts one or more nodeIds for aggregated queries.
  */
 export async function fetchConnectorChartData(
-  connectorId: string,
+  connectorIdOrIds: string | string[],
   timeFilter: TimeFilter,
 ): Promise<{ categories: string[]; errors400: number[]; errors500: number[] }> {
-  // Convert time filter to date range
+  const nodeIds = Array.isArray(connectorIdOrIds) ? connectorIdOrIds : [connectorIdOrIds]
   const dateRange = convertTimeFilterToDateTimeRange(timeFilter)
+  const dateFrom = formatDateTimeForApi(dateRange.from) || ''
+  const dateTo = formatDateTimeForApi(dateRange.to) || ''
 
-  // Build API filter object
+  const nodeFilter = nodeIds.length > 1
+    ? { column: 'nodeId', operator: 'IN', value: nodeIds }
+    : { column: 'nodeId', operator: 'EQ', value: [nodeIds[0]] }
+
   const filterObj: ConnectorApiFilter = {
     search: null,
     filter: [
-      [{ column: 'created', operator: 'BETWEEN', value: [dateRange.from, dateRange.to] }],
-      [{ column: 'nodeId', operator: 'EQ', value: [connectorId] }]
+      [{ column: 'created', operator: 'BETWEEN', value: [dateFrom, dateTo] }],
+      [nodeFilter]
     ],
     sorter: [{ column: 'created', direction: 'ASC' }],
     paging: {
-      itemsPerPage: 9999, // Get all data points for chart
+      itemsPerPage: 9999,
       page: 1
     }
   }

@@ -9,7 +9,9 @@ import TopologiesTab from '@/components/dashboard/TopologiesTab.vue'
 import ProcessesTab from '@/components/dashboard/ProcessesTab.vue'
 import LimiterTab from '@/components/dashboard/LimiterTab.vue'
 import ApplicationsTab from '@/components/dashboard/ApplicationsTab.vue'
+import ConnectorDetailDrawer from '@/components/dashboard/ConnectorDetailDrawer.vue'
 import type { Tab } from '@/components/ui/Tabs.vue'
+import type { Connector } from '@/types/connectors'
 import type { TimeFilter as TimeFilterType, ProcessFilter, HeatmapClickData, ProcessesExternalFilters } from '@/types/dashboard'
 import { formatDateTimeLocal } from '@/utils/timeRangeConverter'
 
@@ -55,6 +57,16 @@ onMounted(() => {
 const TIME_FILTER_KEY = 'orchesty_dashboard_time_filter'
 const savedTimeFilter = localStorage.getItem(TIME_FILTER_KEY) as TimeFilterType | null
 const activeTimeFilter = ref<TimeFilterType>(savedTimeFilter || '7d')
+
+// Refresh trigger - incremented to notify child tabs
+const refreshKey = ref(0)
+const refreshing = ref(false)
+
+const handleRefresh = async () => {
+  refreshing.value = true
+  refreshKey.value++
+  setTimeout(() => { refreshing.value = false }, 800)
+}
 
 watch(activeTimeFilter, (value) => {
   localStorage.setItem(TIME_FILTER_KEY, value)
@@ -107,6 +119,17 @@ const handleHeatmapClick = async (data: HeatmapClickData) => {
       console.log('Clicked processes tab button')
     }
   }
+}
+
+// Connector detail drawer (shared by ConnectorsTab and ApplicationsTab)
+const connectorDrawerOpen = ref(false)
+const selectedConnector = ref<Connector | null>(null)
+const connectorNodeIds = ref<string[]>([])
+
+const handleOpenConnectorDetail = (connector: Connector, nodeIds?: string[]) => {
+  selectedConnector.value = connector
+  connectorNodeIds.value = nodeIds || []
+  connectorDrawerOpen.value = true
 }
 
 const handleTopologyProcessesClick = async (topologyId: string) => {
@@ -165,8 +188,30 @@ const handleTopologyProcessesClick = async (topologyId: string) => {
         </li>
       </ul>
 
-      <!-- Time Filter -->
-      <TimeFilter v-model="activeTimeFilter" />
+      <!-- Time Filter + Refresh -->
+      <div class="flex items-center gap-2">
+        <TimeFilter v-model="activeTimeFilter" />
+        <button
+          type="button"
+          title="Refresh"
+          class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-gray-400 transition-colors hover:text-gray-900 focus:outline-none dark:text-gray-500 dark:hover:text-white"
+          @click="handleRefresh"
+        >
+          <svg
+            class="h-5 w-5 transition-transform duration-500"
+            :class="{ 'animate-spin': refreshing }"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" d="M1 4v6h6M23 20v-6h-6" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4-4.64 4.36A9 9 0 0 1 3.51 15" />
+          </svg>
+          <span class="sr-only">Refresh</span>
+        </button>
+      </div>
     </div>
 
     <!-- Tabs Content -->
@@ -175,6 +220,7 @@ const handleTopologyProcessesClick = async (topologyId: string) => {
         <OverviewTab
           :time-filter="activeTimeFilter"
           :heatmap-filter="activeHeatmapFilter"
+          :refresh-key="refreshKey"
           @heatmap-click="handleHeatmapClick"
           @heatmap-filter-change="handleHeatmapFilterChange"
           @limiter-view-all="switchToTab('limiter')"
@@ -185,16 +231,23 @@ const handleTopologyProcessesClick = async (topologyId: string) => {
         <ApplicationsTab
           :time-filter="activeTimeFilter"
           :heatmap-filter="activeHeatmapFilter"
+          :refresh-key="refreshKey"
+          @open-connector-detail="handleOpenConnectorDetail"
         />
       </TabPanel>
 
       <TabPanel id="connectors-content" ariaLabelledby="connectors-tab" :hidden="true">
-        <ConnectorsTab :global-time-filter="activeTimeFilter" />
+        <ConnectorsTab
+          :global-time-filter="activeTimeFilter"
+          :refresh-key="refreshKey"
+          @open-connector-detail="handleOpenConnectorDetail"
+        />
       </TabPanel>
 
       <TabPanel id="topologies-content" ariaLabelledby="topologies-tab" :hidden="true">
         <TopologiesTab
           :global-time-filter="activeTimeFilter"
+          :refresh-key="refreshKey"
           @view-processes="handleTopologyProcessesClick"
         />
       </TabPanel>
@@ -204,14 +257,22 @@ const handleTopologyProcessesClick = async (topologyId: string) => {
           :global-time-filter="activeTimeFilter"
           :heatmap-filter="activeHeatmapFilter"
           :external-filters="processesFilters"
+          :refresh-key="refreshKey"
           @heatmap-filter-change="handleHeatmapFilterChange"
         />
       </TabPanel>
 
       <TabPanel id="limiter-content" ariaLabelledby="limiter-tab" :hidden="true">
-        <LimiterTab :global-time-filter="activeTimeFilter" />
+        <LimiterTab :global-time-filter="activeTimeFilter" :refresh-key="refreshKey" />
       </TabPanel>
     </div>
+    <!-- Shared Connector Detail Drawer -->
+    <ConnectorDetailDrawer
+      v-model="connectorDrawerOpen"
+      :connector="selectedConnector"
+      :global-time-filter="activeTimeFilter"
+      :node-ids="connectorNodeIds"
+    />
   </DashboardLayout>
 </template>
 

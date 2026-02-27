@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
 import HeatmapChart from './HeatmapChart.vue'
+import type { Connector } from '@/types/connectors'
 import type { HeatmapSeries, ProcessFilter, TimeFilter } from '@/types/dashboard'
 import { fetchConnectorHeatmapData } from '@/services/dashboardService'
 import { convertTimeFilterToDateTimeRange, formatDateTimeForApi } from '@/utils/timeRangeConverter'
@@ -17,6 +18,7 @@ interface ApplicationHeatmapGroup {
 interface Props {
   timeFilter?: TimeFilter
   heatmapFilter?: ProcessFilter
+  refreshKey?: number
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -24,11 +26,32 @@ const props = withDefaults(defineProps<Props>(), {
   heatmapFilter: 'all',
 })
 
+const emit = defineEmits<{
+  openConnectorDetail: [connector: Connector, nodeIds: string[]]
+}>()
+
 const { loadMappings, getNodeName, getApplicationName } = useTopologyNodeMappings()
 
 const loading = ref(true)
 const error = ref<string | null>(null)
 const applicationGroups = ref<ApplicationHeatmapGroup[]>([])
+
+const handleHeatmapClick = (data: { name: string; nodeId?: string; nodeIds?: string[]; timeSlot: string; timeSlotEnd: string }) => {
+  const ids = data.nodeIds || (data.nodeId ? [data.nodeId] : [])
+  if (ids.length === 0) return
+
+  emit('openConnectorDetail', {
+    id: ids[0],
+    name: data.name,
+    application: '',
+    avgRequestTime: 0,
+    requests: 0,
+    errors400: 0,
+    errors500: 0,
+    lastRequestStatus: 0,
+    status: 'ok',
+  }, ids)
+}
 
 const loadData = async () => {
   loading.value = true
@@ -41,28 +64,28 @@ const loadData = async () => {
 
     const data = await fetchConnectorHeatmapData(props.heatmapFilter, dateFrom, dateTo, 20)
 
-    // Map nodeIds to connector names and resolve application names.
-    // Track which application each connector belongs to.
     const connectorAppName: Record<string, string> = {}
     const namedSeries = data.series.map(s => {
+      const originalNodeId = s.name
       const connectorName = getNodeName(s.name)
       const appId = data.nodeAppMap.get(s.name) || ''
       if (appId && !connectorAppName[connectorName]) {
         connectorAppName[connectorName] = getApplicationName(appId)
       }
       const appName = connectorAppName[connectorName] || 'Unknown'
-      // Remove application name prefix from connector name, ignoring case and treating hyphens as spaces
-      // e.g. app "json-placeholder", connector "Json Placeholder Get Post" -> "Get Post"
       const normalize = (str: string) => str.toLowerCase().replace(/-/g, ' ')
       const normConnector = normalize(connectorName)
       const normApp = normalize(appName)
       const displayName = normConnector.startsWith(normApp)
         ? connectorName.slice(appName.length).replace(/^[\s-]+/, '')
         : connectorName
-      return { ...s, name: displayName || connectorName, _appName: appName }
+      const finalName = displayName || connectorName
+      return { ...s, name: finalName, _appName: appName, _nodeId: originalNodeId }
     })
 
     // Merge series with the same connector name (same connector in different topologies)
+    // Track all nodeIds per merged series for aggregated drawer queries
+    const mergedNodeIds = new Map<string, string[]>()
     const mergedMap = new Map<string, (typeof namedSeries)[0]>()
     for (const series of namedSeries) {
       const existing = mergedMap.get(series.name)
@@ -71,7 +94,9 @@ const loadData = async () => {
           ...series,
           data: series.data.map(d => ({ ...d, meta: { ...d.meta } })),
         })
+        mergedNodeIds.set(series.name, [series._nodeId])
       } else {
+        mergedNodeIds.get(series.name)!.push(series._nodeId)
         for (let i = 0; i < existing.data.length; i++) {
           const target = existing.data[i]
           const source = series.data[i]
@@ -99,7 +124,8 @@ const loadData = async () => {
       if (!groupMap.has(appName)) {
         groupMap.set(appName, [])
       }
-      groupMap.get(appName)!.push({ name: series.name, data: series.data })
+      const nodeIds = mergedNodeIds.get(series.name) || [series._nodeId]
+      groupMap.get(appName)!.push({ name: series.name, data: series.data, _nodeId: series._nodeId, _nodeIds: nodeIds })
     }
 
     // Build per-application groups with metrics
@@ -141,6 +167,10 @@ watch(() => props.timeFilter, () => {
 })
 
 watch(() => props.heatmapFilter, () => {
+  loadData()
+})
+
+watch(() => props.refreshKey, () => {
   loadData()
 })
 
@@ -194,10 +224,12 @@ onMounted(async () => {
       :x-categories="group.xCategories"
       :show-filter="false"
       empty-label="No requests"
+      @heatmap-click="handleHeatmapClick"
     />
   </div>
 
   <div v-else-if="!loading && !error" class="flex items-center justify-center p-12">
     <p class="text-gray-500 dark:text-gray-400">No application data available</p>
   </div>
+
 </template>

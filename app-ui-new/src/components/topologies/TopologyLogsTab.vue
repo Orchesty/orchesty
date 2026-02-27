@@ -6,7 +6,7 @@ import TextInput from '@/components/ui/datagrid/TextInput.vue'
 import DropdownFilter from '@/components/ui/datagrid/DropdownFilter.vue'
 import DateTimeRangeFilter from '@/components/ui/datagrid/DateTimeRangeFilter.vue'
 import CopyValue from '@/components/ui/CopyValue.vue'
-import LogDetailDrawer from '@/components/logs/LogDetailDrawer.vue'
+import LogDetailModal from '@/components/logs/LogDetailModal.vue'
 import type { LogEntry, LogQueryParams, LogSeverity } from '@/types/logs'
 import type { TableColumn } from '@/types/dashboard'
 import { fetchLogs } from '@/services/logsService'
@@ -264,8 +264,8 @@ onMounted(async () => {
       </template>
     </DataGrid>
 
-    <!-- Log Detail Drawer -->
-    <LogDetailDrawer
+    <!-- Log Detail Modal -->
+    <LogDetailModal
       v-model="drawerOpen"
       :log="selectedLog"
     />

@@ -125,13 +125,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     ...<string, DefinitionType|AliasType|PrototypeType|StackType|ArgumentsType|null>
  * }
  * @psalm-type ExtensionType = array<string, mixed>
- * @psalm-type DebugConfig = array{
- *     max_items?: int|Param, // Max number of displayed items past the first level, -1 means no limit. // Default: 2500
- *     min_depth?: int|Param, // Minimum tree depth to clone all the items, 1 is default. // Default: 1
- *     max_string_length?: int|Param, // Max length of displayed strings, -1 means no limit. // Default: -1
- *     dump_destination?: scalar|null|Param, // A stream URL where dumps should be written to. // Default: null
- *     theme?: "dark"|"light"|Param, // Changes the color of the dump() output when rendered directly on the templating. "dark" (default) or "light". // Default: "dark"
- * }
  * @psalm-type FrameworkConfig = array{
  *     secret?: scalar|null|Param,
  *     http_method_override?: bool|Param, // Set true to enable support for the '_method' request parameter to determine the intended HTTP method on POST requests. // Default: false
@@ -690,6 +683,13 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         enabled?: bool|Param, // Default: false
  *     },
  * }
+ * @psalm-type DebugConfig = array{
+ *     max_items?: int|Param, // Max number of displayed items past the first level, -1 means no limit. // Default: 2500
+ *     min_depth?: int|Param, // Minimum tree depth to clone all the items, 1 is default. // Default: 1
+ *     max_string_length?: int|Param, // Max length of displayed strings, -1 means no limit. // Default: -1
+ *     dump_destination?: scalar|null|Param, // A stream URL where dumps should be written to. // Default: null
+ *     theme?: "dark"|"light"|Param, // Changes the color of the dump() output when rendered directly on the templating. "dark" (default) or "light". // Default: "dark"
+ * }
  * @psalm-type MonologConfig = array{
  *     use_microseconds?: scalar|null|Param, // Default: true
  *     channels?: list<scalar|null|Param>,
@@ -870,8 +870,8 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     imports?: ImportsConfig,
  *     parameters?: ParametersConfig,
  *     services?: ServicesConfig,
- *     debug?: DebugConfig,
  *     framework?: FrameworkConfig,
+ *     debug?: DebugConfig,
  *     monolog?: MonologConfig,
  *     hb_pf_application?: HbPfApplicationConfig,
  *     hb_pf_batch?: HbPfBatchConfig,
@@ -880,35 +880,11 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     hb_pf_connectors?: HbPfConnectorsConfig,
  *     hb_pf_custom_node?: HbPfCustomNodeConfig,
  *     rest?: RestConfig,
- *     "when@dev"?: array{
- *         imports?: ImportsConfig,
- *         parameters?: ParametersConfig,
- *         services?: ServicesConfig,
- *         debug?: DebugConfig,
- *         framework?: FrameworkConfig,
- *         monolog?: MonologConfig,
- *         hb_pf_application?: HbPfApplicationConfig,
- *         hb_pf_batch?: HbPfBatchConfig,
- *         hb_pf_commons?: HbPfCommonsConfig,
- *         hb_pf_connector?: HbPfConnectorConfig,
- *         hb_pf_connectors?: HbPfConnectorsConfig,
- *         hb_pf_custom_node?: HbPfCustomNodeConfig,
- *         rest?: RestConfig,
- *     },
  *     "when@test"?: array{
  *         imports?: ImportsConfig,
  *         parameters?: ParametersConfig,
  *         services?: ServicesConfig,
- *         debug?: DebugConfig,
  *         framework?: FrameworkConfig,
- *         monolog?: MonologConfig,
- *         hb_pf_application?: HbPfApplicationConfig,
- *         hb_pf_batch?: HbPfBatchConfig,
- *         hb_pf_commons?: HbPfCommonsConfig,
- *         hb_pf_connector?: HbPfConnectorConfig,
- *         hb_pf_connectors?: HbPfConnectorsConfig,
- *         hb_pf_custom_node?: HbPfCustomNodeConfig,
- *         rest?: RestConfig,
  *     },
  *     ...<string, ExtensionType|array{ // extra keys must follow the when@%env% pattern or match an extension alias
  *         imports?: ImportsConfig,
@@ -989,7 +965,6 @@ namespace Symfony\Component\Routing\Loader\Configurator;
  *     deprecated?: array{package:string, version:string, message?:string},
  * }
  * @psalm-type RoutesConfig = array{
- *     "when@dev"?: array<string, RouteConfig|ImportConfig|AliasConfig>,
  *     "when@test"?: array<string, RouteConfig|ImportConfig|AliasConfig>,
  *     ...<string, RouteConfig|ImportConfig|AliasConfig>
  * }

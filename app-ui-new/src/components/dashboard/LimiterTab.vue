@@ -25,6 +25,7 @@ function getGranularityMinutes(timeFilter: TimeFilter): number {
 
 interface Props {
   globalTimeFilter: TimeFilter
+  refreshKey?: number
 }
 
 const props = defineProps<Props>()
@@ -112,6 +113,10 @@ const {
 
 // Watch time filter changes
 watch(() => props.globalTimeFilter, () => {
+  loadData()
+})
+
+watch(() => props.refreshKey, () => {
   loadData()
 })
 
