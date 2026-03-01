@@ -28,7 +28,7 @@ import TabsComponent, { type Tab } from '@/components/ui/Tabs.vue'
 import Card from '@/components/ui/Card.vue'
 import TabCard from '@/components/ui/TabCard.vue'
 import Textarea from '@/components/ui/datagrid/Textarea.vue'
-import { fetchTopologyDetail, fetchCategories, deleteCategory, publishTopology, toggleTopologyEnabled, deleteTopology, runTopology } from '@/services/topologiesService'
+import { fetchTopologyDetail, fetchCategories, deleteCategory, publishTopology, toggleTopologyEnabled, deleteTopology, runTopology, cloneTopology, fetchTopologySchema } from '@/services/topologiesService'
 import { fetchTopologyMetrics } from '@/services/topologyMetricsService'
 import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 import { useToast } from '@/composables/useToast'
@@ -54,6 +54,7 @@ const { isTraceDrawerOpen } = useTraceDrawer()
 
 // Sidebar ref for refreshTree
 const sidebarRef = ref<InstanceType<typeof TopologiesSidebar> | null>(null)
+const topologyEditorRef = ref<InstanceType<typeof TopologyEditor> | null>(null)
 
 const topology = ref<TopologyDetail | null>(null)
 const loading = ref(true)
@@ -293,6 +294,41 @@ const handleConfirmDeleteTopology = async () => {
   }
 }
 
+const handleCloneTopology = async (topologyId?: string) => {
+  const id = topologyId || topology.value?._id
+  if (!id) return
+  try {
+    const result = await cloneTopology(id)
+    showToast('Topology cloned successfully', 'success')
+    await sidebarRef.value?.refreshTree()
+    router.push({ name: 'topology-detail', params: { id: result._id }, query: { version: result._id } })
+  } catch (error) {
+    console.error('Failed to clone topology:', error)
+    showToast('Failed to clone topology', 'error')
+  }
+}
+
+const handleExportTopology = async (topologyId?: string, topologyName?: string) => {
+  const id = topologyId || topology.value?._id
+  const name = topologyName || topology.value?.name
+  if (!id || !name) return
+  try {
+    const schema = await fetchTopologySchema(id)
+    const jsonString = JSON.stringify(schema, null, 4) + '\n'
+    const blob = new Blob([jsonString], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `${name}.json`
+    a.click()
+    URL.revokeObjectURL(url)
+    showToast('Topology exported successfully', 'success')
+  } catch (error) {
+    console.error('Failed to export topology:', error)
+    showToast('Failed to export topology', 'error')
+  }
+}
+
 const handleComingSoon = (feature: string) => {
   comingSoonFeature.value = feature
   comingSoonConfirmOpen.value = true
@@ -335,12 +371,12 @@ const moreActionsSections: MoreActionsSection[] = [
       {
         type: 'button',
         label: 'Clone',
-        onClick: () => handleComingSoon('Clone'),
+        onClick: () => handleCloneTopology(),
       },
       {
         type: 'button',
         label: 'Export',
-        onClick: () => handleComingSoon('Export'),
+        onClick: () => handleExportTopology(),
       },
     ],
   },
@@ -381,10 +417,10 @@ const handleSidebarTopologyAction = async (topologyId: string, topologyName: str
       deleteTopologyConfirmOpen.value = true
       break
     case 'clone':
-      handleComingSoon('Clone')
+      handleCloneTopology(topologyId)
       break
     case 'export':
-      handleComingSoon('Export')
+      handleExportTopology(topologyId, topologyName)
       break
   }
 }
@@ -551,9 +587,13 @@ const handleOpenDesigner = () => {
   designerDrawerOpen.value = true
 }
 
-const handleSaveDesign = () => {
-  console.log('Save topology design')
-  // TODO: Implement save logic
+const handleSaveDesign = async (data: { _id: string }) => {
+  if (topology.value && data._id !== topology.value._id) {
+    await router.replace({ query: { version: data._id } })
+    await sidebarRef.value?.refreshTree()
+  } else {
+    topologyEditorRef.value?.reloadSchema()
+  }
 }
 
 // Context tab handlers
@@ -851,7 +891,7 @@ onMounted(async () => {
                 <div id="topology-content" role="tabpanel" aria-labelledby="topology-tab">
                   <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
                     <div class="bg-gray-50 dark:bg-gray-900 rounded-lg overflow-hidden">
-                      <TopologyEditor />
+                      <TopologyEditor ref="topologyEditorRef" :topology-id="topology._id" />
                     </div>
                   </div>
                 </div>
@@ -1166,6 +1206,7 @@ onMounted(async () => {
     <TopologyDesignerDrawer
       v-if="topology"
       v-model="designerDrawerOpen"
+      :topology-id="topology._id"
       :topology-name="topology.name"
       :topology-version="topology.version"
       @save="handleSaveDesign"

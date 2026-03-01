@@ -5,14 +5,13 @@ import type { DrawerInterface } from 'flowbite'
 import Button from '@/components/ui/Button.vue'
 import { ReteEditorKit } from 'rete-editor'
 import type { EditorCore } from 'rete-editor'
-import topologyData from '@/assets/mock-data/topologies/data-stream.json'
 import { useToast } from '@/composables/useToast'
-// Note: Available actions for editor are defined in @/assets/mock-data/actions.ts
-// In production, actions would be loaded from backend via topologyEditorService
 import { topologyEditorService } from '@/services/topologyEditorService'
+import { fetchTopologySchema, saveTopologySchema } from '@/services/topologiesService'
 
 interface Props {
   modelValue: boolean
+  topologyId: string
   topologyName: string
   topologyVersion: string
 }
@@ -20,7 +19,7 @@ interface Props {
 const props = defineProps<Props>()
 const emit = defineEmits<{
   'update:modelValue': [value: boolean]
-  save: []
+  save: [data: { _id: string }]
 }>()
 
 const { Editor, createConfig } = ReteEditorKit
@@ -39,62 +38,49 @@ const onEditorReady = async (editor: EditorCore) => {
   editorCore.value = editor
   
   try {
-    // Import workflow from mock data
-    await editor.importGraph(topologyData)
-    
-    // Fit all nodes to view
+    const actions = await topologyEditorService.getAllActions();
+    (window as any).__reteEditorActions = actions
+
+    const schema = await fetchTopologySchema(props.topologyId)
+    await editor.importGraph(schema)
     editor.zoomToFit()
-    
-    // Log available actions (for development)
-    const actions = await topologyEditorService.getAllActions()
-    console.log(`✅ Editor ready with ${actions.length} available actions`)
-    console.log('Available action types:', {
-      custom: actions.filter(a => a.type === 'custom').length,
-      connector: actions.filter(a => a.type === 'connector').length,
-      batch: actions.filter(a => a.type === 'batch').length
-    })
   } catch (error) {
     console.error('Failed to load topology data:', error)
-    showToast({
-      type: 'error',
-      message: 'Failed to load topology data',
-      duration: 3000
-    })
+    showToast('Failed to load topology data', 'error', 3000)
   }
 }
 
+watch(
+  () => props.topologyId,
+  async (newId) => {
+    if (editorCore.value && newId) {
+      try {
+        const schema = await fetchTopologySchema(newId)
+        await editorCore.value.importGraph(schema)
+        editorCore.value.zoomToFit()
+      } catch (error) {
+        console.error('Failed to reload topology data:', error)
+      }
+    }
+  }
+)
+
 const handleSave = async () => {
   if (!editorCore.value) {
-    showToast({
-      type: 'error',
-      message: 'Editor not initialized',
-      duration: 3000
-    })
+    showToast('Editor not initialized', 'error', 3000)
     return
   }
 
   try {
-    // Export current workflow
     const workflow = editorCore.value.exportGraph()
-    console.log('Saving workflow:', workflow)
+    const result = await saveTopologySchema(props.topologyId, workflow)
     
-    // Simulate save to backend
-    await new Promise(resolve => setTimeout(resolve, 500))
+    showToast('Topology saved successfully', 'success', 3000)
     
-    showToast({
-      type: 'success',
-      message: 'Topology saved successfully',
-      duration: 3000
-    })
-    
-    emit('save')
+    emit('save', result)
   } catch (error) {
     console.error('Failed to save topology:', error)
-    showToast({
-      type: 'error',
-      message: 'Failed to save topology',
-      duration: 3000
-    })
+    showToast('Failed to save topology', 'error', 3000)
   }
 }
 

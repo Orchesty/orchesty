@@ -12,22 +12,14 @@ export function useCronNodeActions() {
         // Simulate random error (10% chance)
         if (Math.random() < 0.1) {
           const error = new Error('Failed to toggle node state')
-          showToast({
-            type: 'error',
-            message: `Failed to ${currentState ? 'disable' : 'enable'} node`,
-            duration: 3000
-          })
+          showToast(`Failed to ${currentState ? 'disable' : 'enable'} node`, 'error', 3000)
           reject(error)
           return
         }
 
         // Success
         const newState = !currentState
-        showToast({
-          type: 'success',
-          message: `Node ${newState ? 'enabled' : 'disabled'} successfully`,
-          duration: 2000
-        })
+        showToast(`Node ${newState ? 'enabled' : 'disabled'} successfully`, 'success', 2000)
         resolve(newState)
       }, 500)
     })
@@ -42,21 +34,13 @@ export function useCronNodeActions() {
         // Simulate random error (15% chance)
         if (Math.random() < 0.15) {
           const error = new Error('Failed to start process')
-          showToast({
-            type: 'error',
-            message: 'Failed to start process',
-            duration: 3000
-          })
+          showToast('Failed to start process', 'error', 3000)
           reject(error)
           return
         }
 
         // Success
-        showToast({
-          type: 'success',
-          message: `Process "${nodeName}" started successfully`,
-          duration: 3000
-        })
+        showToast(`Process "${nodeName}" started successfully`, 'success', 3000)
         resolve()
       }, 800)
     })
@@ -71,11 +55,7 @@ export function useCronNodeActions() {
         // Simulate random error (10% chance)
         if (Math.random() < 0.1) {
           const error = new Error('Failed to update crontab')
-          showToast({
-            type: 'error',
-            message: 'Failed to update crontab configuration',
-            duration: 3000
-          })
+          showToast('Failed to update crontab configuration', 'error', 3000)
           reject(error)
           return
         }
@@ -84,11 +64,7 @@ export function useCronNodeActions() {
         const nextRun = new Date(Date.now() + 15 * 60 * 1000).toISOString()
 
         // Success
-        showToast({
-          type: 'success',
-          message: 'Crontab configuration updated successfully',
-          duration: 2000
-        })
+        showToast('Crontab configuration updated successfully', 'success', 2000)
         resolve(nextRun)
       }, 600)
     })

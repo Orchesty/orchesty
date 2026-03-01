@@ -2,13 +2,17 @@
 import { ref, computed } from 'vue'
 import { ReteEditorKit } from 'rete-editor'
 import type { EditorCore, LabelCustomizationMap } from 'rete-editor'
-import topologyData from '@/assets/mock-data/topologies/data-stream.json'
 import CronSettingsModal from '@/components/scheduled-tasks/CronSettingsModal.vue'
 import RunProcessModal from '@/components/topologies/RunProcessModal.vue'
 import { useCronNodeActions } from '@/composables/useCronNodeActions'
 import { useDateFormat } from '@/composables/useDateFormat'
+import { fetchTopologySchema } from '@/services/topologiesService'
 import type { ScheduledTask } from '@/types/scheduled-tasks'
 import type { CronNode } from '@/types/topologies-page'
+
+const props = defineProps<{
+  topologyId: string
+}>()
 
 const { Editor, createConfig } = ReteEditorKit
 const { toggleNodeState, runProcess, updateCrontab } = useCronNodeActions()
@@ -36,44 +40,44 @@ const labelCustomization: LabelCustomizationMap = {
     getFields: (node: EditorNode) => {
       const nodeData = nodesData.value[node.id]
       if (!nodeData) return []
-      
+
       return [
         { label: 'Crontab', value: nodeData.crontab || 'Not set' },
-        { 
-          label: 'Next run', 
-          value: nodeData.nextRun 
+        {
+          label: 'Next run',
+          value: nodeData.nextRun
             ? formatDateTime(nodeData.nextRun)
-            : 'N/A' 
+            : 'N/A'
         }
       ]
     },
     getActions: (node: EditorNode) => {
       const nodeData = nodesData.value[node.id]
       if (!nodeData) return []
-      
+
       const isEnabled = nodeData.enabled ?? true
-      
+
       return [
         {
           id: 'toggle',
-          icon: isEnabled 
-            ? '<path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm3.707 8.707-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 1 1 1.414-1.414L11 12.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>' 
+          icon: isEnabled
+            ? '<path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm3.707 8.707-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 1 1 1.414-1.414L11 12.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>'
             : '<path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm3.707 6.707a1 1 0 0 1-1.414 1.414L12 7.414 9.707 9.707a1 1 0 1 1-1.414-1.414l3-3a1 1 0 0 1 1.414 0l3 3Z"/>',
           label: isEnabled ? 'Disable' : 'Enable',
           tooltip: isEnabled ? 'Disable' : 'Enable',
           onClick: async (node: EditorNode) => {
             try {
               const newState = await toggleNodeState(node.id, isEnabled)
-              
+
               // Update local state
               const nodeData = nodesData.value[node.id]
               if (nodeData) {
                 nodeData.enabled = newState
               }
-              
+
               // Toggle disabled state in editor (visual indication)
               editorCore.value?.toggleNodeDisabled(node.id)
-              
+
               // Refresh label to show updated state
               editorCore.value?.refreshNodeLabel(node.id)
             } catch (error) {
@@ -114,11 +118,11 @@ const editorConfig = createConfig({
 
 const onEditorReady = async (editor: EditorCore) => {
   editorCore.value = editor
-  
+
   try {
-    // Import workflow from mock data
-    await editor.importGraph(topologyData)
-    
+    const schema = await fetchTopologySchema(props.topologyId)
+    await editor.importGraph(schema)
+
     // Initialize nodes data with imported data
     const nodes = editor.getNodes()
     nodes.forEach((node) => {
@@ -135,7 +139,7 @@ const onEditorReady = async (editor: EditorCore) => {
         }
       }
     })
-    
+
     // Fit all nodes to view
     editor.zoomToFit()
   } catch (error) {
@@ -146,10 +150,10 @@ const onEditorReady = async (editor: EditorCore) => {
 // Convert selected node to ScheduledTask format for CronSettingsModal
 const selectedNodeAsTask = computed<ScheduledTask | null>(() => {
   if (!selectedNode.value) return null
-  
+
   const nodeData = nodesData.value[selectedNode.value.id]
   if (!nodeData) return null
-  
+
   return {
     id: selectedNode.value.id,
     name: selectedNode.value.name || selectedNode.value.label,
@@ -163,26 +167,39 @@ const selectedNodeAsTask = computed<ScheduledTask | null>(() => {
 const handleCrontabSave = async (taskId: string, crontab: string) => {
   try {
     const nextRun = await updateCrontab(taskId, crontab)
-    
+
     // Update local state
     const nodeData = nodesData.value[taskId]
     if (nodeData) {
       nodeData.crontab = crontab
       nodeData.nextRun = nextRun
     }
-    
+
     // Refresh label to show updated crontab and next run
     editorCore.value?.refreshNodeLabel(taskId)
-    
+
     cronSettingsModalOpen.value = false
   } catch (error) {
     console.error('Failed to save crontab:', error)
   }
 }
 
+const reloadSchema = async () => {
+  if (!editorCore.value) return
+  try {
+    const schema = await fetchTopologySchema(props.topologyId)
+    await editorCore.value.importGraph(schema)
+    editorCore.value.zoomToFit()
+  } catch (error) {
+    console.error('Failed to reload topology schema:', error)
+  }
+}
+
+defineExpose({ reloadSchema })
+
 const handleRunProcess = async (jsonData: string) => {
   if (!selectedNode.value) return
-  
+
   try {
     await runProcess(
       selectedNode.value.id,
@@ -198,13 +215,13 @@ const handleRunProcess = async (jsonData: string) => {
 <template>
   <div>
     <Editor :config="editorConfig" @ready="onEditorReady" />
-    
+
     <CronSettingsModal
       v-model="cronSettingsModalOpen"
       :task="selectedNodeAsTask"
       @save="handleCrontabSave"
     />
-    
+
     <RunProcessModal
       v-model="runProcessModalOpen"
       :node-name="selectedNode?.name || selectedNode?.label"

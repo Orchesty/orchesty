@@ -420,5 +420,25 @@ export async function updateTopology(
  * Fetches topology nodes to determine starting points, then triggers the run.
  */
 export async function runTopology(id: string, body: string = '{}'): Promise<void> {
-  await api.post(`/api/topologies/${id}/run`, { body })
+  const nodesResponse = await api.get(`/api/topologies/${id}/nodes`)
+  const nodes = nodesResponse.data.items || []
+  const startingPoints = nodes
+    .filter((node: any) => ['start', 'cron', 'webhook'].includes(node.type))
+    .map((node: any) => node._id)
+  await api.post(`/api/topologies/${id}/run`, { startingPoints, body })
+}
+
+export async function cloneTopology(topologyId: string) {
+  const response = await api.post(`/api/topologies/${topologyId}/clone`)
+  return response.data
+}
+
+export async function fetchTopologySchema(topologyId: string) {
+  const response = await api.get(`/api/topologies/${topologyId}/schema.json`)
+  return response.data
+}
+
+export async function saveTopologySchema(topologyId: string, schema: any) {
+  const response = await api.put(`/api/topologies/${topologyId}/schema.json`, schema)
+  return response.data
 }

@@ -12,7 +12,7 @@ import MoveTopologyModal from '@/components/topologies/MoveTopologyModal.vue'
 import EditTopologyModal from '@/components/topologies/EditTopologyModal.vue'
 import Confirm from '@/components/ui/Confirm.vue'
 import type { FolderItem, TopologiesTreeNode } from '@/types/topologies-page'
-import { fetchCategories, deleteCategory, deleteTopology, runTopology } from '@/services/topologiesService'
+import { fetchCategories, deleteCategory, deleteTopology, runTopology, cloneTopology, fetchTopologySchema } from '@/services/topologiesService'
 import { useLastTopology } from '@/composables/useLastTopology'
 import { useToast } from '@/composables/useToast'
 import { Dropdown } from 'flowbite'
@@ -169,12 +169,32 @@ const handleSidebarTopologyAction = async (topologyId: string, topologyName: str
       deleteTopologyConfirmOpen.value = true
       break
     case 'clone':
-      comingSoonFeature.value = 'Clone'
-      comingSoonConfirmOpen.value = true
+      try {
+        const result = await cloneTopology(topologyId)
+        showToast(`Topology "${topologyName}" cloned successfully`, 'success')
+        await refreshAfterCrud()
+        router.push({ name: 'topology-detail', params: { id: result._id }, query: { version: result._id } })
+      } catch (error) {
+        console.error('Failed to clone topology:', error)
+        showToast('Failed to clone topology', 'error')
+      }
       break
     case 'export':
-      comingSoonFeature.value = 'Export'
-      comingSoonConfirmOpen.value = true
+      try {
+        const schema = await fetchTopologySchema(topologyId)
+        const jsonString = JSON.stringify(schema, null, 4) + '\n'
+        const blob = new Blob([jsonString], { type: 'application/json' })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `${topologyName}.json`
+        a.click()
+        URL.revokeObjectURL(url)
+        showToast(`Topology "${topologyName}" exported successfully`, 'success')
+      } catch (error) {
+        console.error('Failed to export topology:', error)
+        showToast('Failed to export topology', 'error')
+      }
       break
   }
 }

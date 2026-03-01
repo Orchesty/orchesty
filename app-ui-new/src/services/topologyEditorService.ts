@@ -1,40 +1,59 @@
-import { getAllActions, getAvailableActions, type ActionOption } from '@/assets/mock-data/actions'
+import api from './api'
 
-/**
- * Service for providing actions to the topology editor
- * This simulates backend API calls for actions
- */
+export type ActionOption = {
+  name: string
+  worker: string
+  type: 'custom' | 'connector' | 'batch'
+  app?: string | null
+}
+
+type NodeActionItem = {
+  name: string
+  app?: string | null
+}
+
+type ActionType = 'custom' | 'connector' | 'batch'
+
+const VALID_TYPES: ActionType[] = ['custom', 'connector', 'batch']
+
 export const topologyEditorService = {
-  /**
-   * Get all available actions
-   */
   async getAllActions(): Promise<ActionOption[]> {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 100))
-    return getAllActions()
+    const response = await api.get<Record<string, Record<string, NodeActionItem[] | string[]>>>('/api/nodes/list/name')
+    const data = response.data
+    const actions: ActionOption[] = []
+
+    for (const [sdkGroup, types] of Object.entries(data)) {
+      for (const [type, items] of Object.entries(types)) {
+        if (!VALID_TYPES.includes(type as ActionType)) continue
+        if (!Array.isArray(items)) continue
+
+        for (const item of items) {
+          if (typeof item === 'string') continue
+
+          actions.push({
+            name: item.name,
+            worker: sdkGroup,
+            type: type as ActionType,
+            app: item.app ?? null,
+          })
+        }
+      }
+    }
+
+    return actions
   },
 
-  /**
-   * Get actions filtered by node type
-   */
-  async getActionsByType(nodeType: 'custom' | 'connector' | 'batch'): Promise<ActionOption[]> {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 100))
-    return getAvailableActions(nodeType)
+  async getActionsByType(nodeType: ActionType): Promise<ActionOption[]> {
+    const allActions = await this.getAllActions()
+    return allActions.filter(action => action.type === nodeType)
   },
 
-  /**
-   * Search actions by name
-   */
   async searchActions(query: string): Promise<ActionOption[]> {
     const allActions = await this.getAllActions()
     const lowerQuery = query.toLowerCase()
-    return allActions.filter(action => 
+    return allActions.filter(action =>
       action.name.toLowerCase().includes(lowerQuery) ||
       action.worker.toLowerCase().includes(lowerQuery)
     )
   }
 }
-
-
-
