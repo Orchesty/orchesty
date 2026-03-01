@@ -15,6 +15,7 @@ export type ProcessStatus = 'all' | 'completed' | 'running' | 'failed'
 export interface ProcessQueryParams extends QueryParams {
   status?: ProcessStatus
   topology?: string
+  topologyIds?: string[]
   dateFrom?: string
   dateTo?: string
 }

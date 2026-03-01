@@ -87,8 +87,10 @@ export async function fetchProcesses(
     filterObj.filter.push([{ column: 'status', operator: 'EQ', value: [apiStatus] }])
   }
 
-  // Add topology filter
-  if (params.topology) {
+  // Add topology filter (supports multiple IDs for version grouping)
+  if (params.topologyIds && params.topologyIds.length > 0) {
+    filterObj.filter.push([{ column: 'topologyId', operator: 'IN', value: params.topologyIds }])
+  } else if (params.topology) {
     filterObj.filter.push([{ column: 'topologyId', operator: 'EQ', value: [params.topology] }])
   }
 

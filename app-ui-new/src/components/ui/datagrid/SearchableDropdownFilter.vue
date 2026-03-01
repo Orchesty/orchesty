@@ -14,11 +14,13 @@ interface Props {
   placeholder?: string
   searchPlaceholder?: string
   fullWidth?: boolean
+  minWidth?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
   searchPlaceholder: 'Search...',
   fullWidth: false,
+  minWidth: 'min-w-40',
 })
 
 const emit = defineEmits<{
@@ -95,7 +97,7 @@ onBeforeUnmount(() => {
       :id="`${dropdownIdValue}-button`"
       :class="[
         'flex items-center justify-between rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white',
-        props.fullWidth ? 'w-full' : 'min-w-40',
+        props.fullWidth ? 'w-full' : props.minWidth,
       ]"
       type="button"
     >

@@ -115,6 +115,21 @@ export function useTopologyNodeMappings() {
     return name || topologyId
   }
 
+  // Lookup topology version
+  const getTopologyVersion = (topologyId: string): number | null => {
+    return allMappings.value?.topologyVersions?.[topologyId]
+      ?? filteredMappingsData.value?.topologyVersions?.[topologyId]
+      ?? null
+  }
+
+  // Topology name with version suffix, e.g. "My Topology v3"
+  const getTopologyNameWithVersion = (topologyId: string): string => {
+    const name = getTopologyName(topologyId)
+    const version = getTopologyVersion(topologyId)
+    if (version === null) return name
+    return `${name} v${version}`
+  }
+
   // Lookup node name with fallback to filtered mappings and auto-refresh
   const getNodeName = (nodeId: string): string => {
     const name = allMappings.value?.nodes[nodeId]
@@ -142,13 +157,44 @@ export function useTopologyNodeMappings() {
   }
 
   // Sorted topology options for dropdowns (uses filtered mappings)
+  // Each version is a separate entry with version suffix in the label
   const topologyOptions = computed(() => {
     if (!filteredMappingsData.value) return []
 
     return Object.entries(filteredMappingsData.value.topologies)
-      .map(([id, name]) => ({ value: id, label: name }))
+      .map(([id, name]) => {
+        const version = filteredMappingsData.value?.topologyVersions?.[id]
+        const label = version ? `${name} v${version}` : name
+        return { value: id, label }
+      })
       .sort((a, b) => a.label.localeCompare(b.label))
   })
+
+  // Deduplicated topology options -- grouped by name, value is the name string.
+  // Use getTopologyIdsByName() to resolve to all matching IDs for filtering.
+  const deduplicatedTopologyOptions = computed(() => {
+    if (!filteredMappingsData.value) return []
+
+    const uniqueNames = new Set(Object.values(filteredMappingsData.value.topologies))
+    return Array.from(uniqueNames)
+      .map(name => ({ value: name, label: name }))
+      .sort((a, b) => a.label.localeCompare(b.label))
+  })
+
+  // Resolve a topology display name to all matching topology IDs (all versions)
+  const getTopologyIdsByName = (name: string): string[] => {
+    const ids: string[] = []
+    const sources = [allMappings.value, filteredMappingsData.value]
+    for (const source of sources) {
+      if (!source) continue
+      for (const [id, topoName] of Object.entries(source.topologies)) {
+        if (topoName === name && !ids.includes(id)) {
+          ids.push(id)
+        }
+      }
+    }
+    return ids
+  }
 
   // Sorted topology names array (uses filtered mappings)
   const topologyNames = computed(() => {
@@ -212,12 +258,16 @@ export function useTopologyNodeMappings() {
     loadMappings,
     refresh,
     getTopologyName,
+    getTopologyVersion,
+    getTopologyNameWithVersion,
     getNodeName,
     getApplicationName,
     topologyNameMap,
     nodeNameMap,
     applicationNameMap,
     topologyOptions,
+    deduplicatedTopologyOptions,
+    getTopologyIdsByName,
     topologyNames,
     nodeOptions,
     deduplicatedNodeOptions,

@@ -3,8 +3,8 @@
 *.log
 go/pkg
 
+clients/topology/*
 !clients/topology/.gitkeep
-clients/topology
 .DS_Store
 node_modules
 

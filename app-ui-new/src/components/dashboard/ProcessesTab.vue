@@ -5,7 +5,7 @@ import ProcessAuditDrawer from './ProcessAuditDrawer.vue'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
 import QuickFilter from '@/components/ui/datagrid/QuickFilter.vue'
-import DropdownFilter from '@/components/ui/datagrid/DropdownFilter.vue'
+import SearchableDropdownFilter from '@/components/ui/datagrid/SearchableDropdownFilter.vue'
 import DateTimeRangeFilter from '@/components/ui/datagrid/DateTimeRangeFilter.vue'
 import type { Process, ProcessStatus } from '@/types/processes'
 import type { ProcessFilter, TimeFilter, TableColumn, ProcessesChartData, ProcessesExternalFilters, HeatmapClickData } from '@/types/dashboard'
@@ -33,7 +33,7 @@ const emit = defineEmits<{
 }>()
 
 // Use topology/node mappings composable
-const { loadMappings, getTopologyName, topologyNameMap, topologyOptions: topologyOptionsFromMappings } = useTopologyNodeMappings()
+const { loadMappings, getTopologyName, getTopologyNameWithVersion, topologyNameMap, deduplicatedTopologyOptions, getTopologyIdsByName } = useTopologyNodeMappings()
 const { formatDateTime } = useDateFormat()
 
 // Drawer state
@@ -73,10 +73,10 @@ const quickFilterOptions: QuickFilterOption[] = [
   { value: 'failed', label: 'Failed' },
 ]
 
-// Topology dropdown options
+// Topology dropdown options (grouped by name -- all versions under one entry)
 const topologyOptions = computed<DropdownFilterOption[]>(() => [
   { value: null, label: 'All Topologies' },
-  ...topologyOptionsFromMappings.value
+  ...deduplicatedTopologyOptions.value
 ])
 
 // Format duration from seconds to HH:MM:SS
@@ -95,9 +95,14 @@ const loadData = async () => {
   loading.value = true
 
   try {
+    // Resolve topology name to all version IDs for filtering
+    const topologyIds = topologyFilter.value
+      ? getTopologyIdsByName(topologyFilter.value)
+      : undefined
+
     const response = await fetchProcesses({
       status: statusFilter.value,
-      topology: topologyFilter.value || undefined,
+      topologyIds: topologyIds && topologyIds.length > 0 ? topologyIds : undefined,
       dateFrom: formatDateTimeForApi(dateTimeRange.value.from) || undefined,
       dateTo: formatDateTimeForApi(dateTimeRange.value.to) || undefined,
       page: currentPage.value,
@@ -151,7 +156,8 @@ const handleHeatmapClick = (data: HeatmapClickData) => {
   // Pause auto-reload to set both filters atomically
   skipAutoLoad.value = true
 
-  topologyFilter.value = data.topology
+  // Resolve topology ID to name (filter uses grouped names)
+  topologyFilter.value = getTopologyName(data.topology)
   dateTimeRange.value = {
     from: formatDateTimeLocal(new Date(data.timeSlot)),
     to: formatDateTimeLocal(new Date(data.timeSlotEnd)),
@@ -237,7 +243,8 @@ watch(
     skipAutoLoad.value = true
 
     if (filters.topology) {
-      topologyFilter.value = filters.topology
+      // Resolve topology ID to name (filter uses grouped names)
+      topologyFilter.value = getTopologyName(filters.topology)
     }
 
     if (filters.timeRange) {
@@ -333,7 +340,13 @@ watch(
         <!-- Regular Filters (right) -->
         <template #filters>
           <!-- Topology Dropdown -->
-          <DropdownFilter v-model="topologyFilter" :options="topologyOptions" />
+          <SearchableDropdownFilter
+            v-model="topologyFilter"
+            :options="topologyOptions"
+            placeholder="All Topologies"
+            search-placeholder="Search topologies..."
+            min-width="min-w-56"
+          />
 
           <!-- DateTime Range Filter -->
           <DateTimeRangeFilter v-model="dateTimeRange" />
@@ -342,7 +355,7 @@ watch(
         <!-- Custom Cells -->
         <template #cell-topologyId="{ value }">
           <span class="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-            {{ getTopologyName(value) }}
+            {{ getTopologyNameWithVersion(value) }}
           </span>
         </template>
 

@@ -3,6 +3,7 @@
 /app
 /vendor
 /var
+/config/reference.php
 
 /tests/Unit/TopologyGenerator/DockerCompose/output/*
 !/tests/Unit/TopologyGenerator/DockerCompose/output/.gitkeep
