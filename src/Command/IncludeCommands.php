@@ -22,6 +22,7 @@ final class IncludeCommands extends BundleApplication
         'rabbit_mq:publisher:pipes-user-task',
         'service:install',
         'topology:install',
+        'topology:migrate',
         'usage_stats:send-events',
         'user:create',
         'user:delete',

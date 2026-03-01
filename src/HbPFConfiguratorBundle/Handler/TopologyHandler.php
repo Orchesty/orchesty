@@ -272,6 +272,47 @@ final class TopologyHandler
     /**
      * @param string $id
      *
+     * @return mixed[]
+     * @throws TopologyException
+     */
+    public function getTopologyJsonSchema(string $id): array
+    {
+        return $this->getTopologyById($id)->getJson();
+    }
+
+    /**
+     * @param string  $id
+     * @param mixed[] $data
+     *
+     * @return mixed[]
+     * @throws TopologyException
+     * @throws MongoDBException
+     */
+    public function saveTopologyJsonSchema(string $id, array $data): array
+    {
+        $topology = $this->getTopologyById($id);
+        $topology = $this->topologyManager->saveTopologyJsonSchema($topology, $data);
+
+        return $this->getTopologyData($topology);
+    }
+
+    /**
+     * @param string  $id
+     * @param mixed[] $data
+     *
+     * @return mixed[]
+     * @throws TopologyException
+     */
+    public function checkTopologyJsonSchemaDifferences(string $id, array $data): array
+    {
+        $topology = $this->getTopologyById($id);
+
+        return ['isDifferent' => !$this->topologyManager->checkTopologyJsonSchemaIsSame($topology, $data)];
+    }
+
+    /**
+     * @param string $id
+     *
      * @return ResponseDto
      * @throws TopologyException
      * @throws EnumException

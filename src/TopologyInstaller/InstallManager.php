@@ -9,20 +9,23 @@ use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\CommonsBundle\Exception\CronException;
 use Hanaboso\CommonsBundle\Exception\NodeException;
 use Hanaboso\CommonsBundle\Transport\Curl\CurlException;
+use Hanaboso\PipesFramework\Configurator\Document\Sdk;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyConfigException;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyGenerator\TopologyGeneratorBridge;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
 use Hanaboso\PipesFramework\Database\Document\Topology;
+use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command\MigrateTopologyCommand;
 use Hanaboso\PipesFramework\TopologyInstaller\Cache\TopologyInstallerCacheInterface;
 use Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto;
-use Hanaboso\RestBundle\Exception\XmlDecoderException;
 use Hanaboso\RestBundle\Model\Decoder\XmlDecoder;
-use Hanaboso\Utils\Exception\EnumException;
+use Hanaboso\Utils\File\File;
+use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\Traits\LoggerTrait;
 use JsonException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\NullLogger;
+use Symfony\Component\Finder\Finder;
 use Throwable;
 
 /**
@@ -65,14 +68,20 @@ final class InstallManager implements LoggerAwareInterface
         private CategoryParser $categoryParser,
         private XmlDecoder $decoder,
         private TopologyInstallerCacheInterface $installerCache,
-        array $dirs,
+        private array $dirs,
         bool $checkInfiniteLoop,
     )
     {
-        $this->logger     = new NullLogger();
+        $sdkUrlMap    = [];
+        $this->logger = new NullLogger();
+
+        foreach ($dm->getRepository(Sdk::class)->findAll() as $sdk) {
+            $sdkUrlMap[$sdk->getName()] = $sdk->getUrl();
+        }
+
         $this->comparator = new TopologiesComparator(
             $dm->getRepository(Topology::class),
-            $decoder,
+            $sdkUrlMap,
             $dirs,
             $checkInfiniteLoop,
         );
@@ -86,9 +95,9 @@ final class InstallManager implements LoggerAwareInterface
      * @param bool   $force
      *
      * @return mixed[]
+     * @throws JsonException
      * @throws MongoDBException
      * @throws TopologyException
-     * @throws XmlDecoderException
      */
     public function prepareInstall(
         bool $makeCreate,
@@ -115,9 +124,9 @@ final class InstallManager implements LoggerAwareInterface
      * @param string $forceHost
      *
      * @return mixed[]
+     * @throws JsonException
      * @throws MongoDBException
      * @throws TopologyException
-     * @throws XmlDecoderException
      */
     public function makeInstall(bool $makeCreate, bool $makeUpdate, bool $makeDelete, string $forceHost): array
     {
@@ -146,10 +155,35 @@ final class InstallManager implements LoggerAwareInterface
     }
 
     /**
+     * @return void
+     */
+    public function migrate(): void
+    {
+        $finder = new Finder();
+
+        foreach ($this->dirs as $dir) {
+            $finder->name('*.tplg')->in($dir);
+        }
+
+        foreach ($finder as $file) {
+            File::putContent(
+                (string) preg_replace('/\.tplg$/', '.tplg.json', $file->getPathname()),
+                sprintf(
+                    "%s\n",
+                    Json::encode(
+                        MigrateTopologyCommand::convertBpmnToJson($this->decoder->decode($file->getContents())),
+                        JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR,
+                    ),
+                ),
+            );
+        }
+    }
+
+    /**
      * @return CompareResultDto
+     * @throws JsonException
      * @throws MongoDBException
      * @throws TopologyException
-     * @throws XmlDecoderException
      */
     private function generateResult(): CompareResultDto
     {
@@ -185,7 +219,8 @@ final class InstallManager implements LoggerAwareInterface
                 $topology = $this->topologyManager->createTopology(
                     ['name' => TplgLoader::getName($file->getName()), 'enabled' => TRUE],
                 );
-                $this->makeRunnable($topology, $this->replaceHost($file->getFileContents(), $forceHost));
+                $data     = Json::decode($file->getFileContents());
+                $this->makeRunnable($topology, $data, $forceHost);
                 $this->categoryParser->classifyTopology($topology, $file);
             } catch (Throwable $e) {
                 $this->logException($e, self::CREATE);
@@ -211,10 +246,8 @@ final class InstallManager implements LoggerAwareInterface
                 $message     = '';
                 $oldTopology = $obj->getTopology();
                 $this->dm->persist($oldTopology);
-                $topology = $this->makeRunnable(
-                    $oldTopology,
-                    $this->replaceHost($obj->getFile()->getFileContents(), $forceHost),
-                );
+                $data     = Json::decode($obj->getFile()->getFileContents());
+                $topology = $this->makeRunnable($oldTopology, $data, $forceHost);
                 $this->categoryParser->classifyTopology($topology, $obj->getFile());
 
                 if ($topology->getId() != $oldTopology->getId()) {
@@ -255,24 +288,27 @@ final class InstallManager implements LoggerAwareInterface
 
     /**
      * @param Topology $topology
-     * @param string   $content
+     * @param mixed[]  $data
+     * @param string   $forceHost
      *
      * @return Topology
      * @throws CronException
      * @throws CurlException
-     * @throws EnumException
+     * @throws JsonException
      * @throws LockException
      * @throws MappingException
      * @throws MongoDBException
      * @throws NodeException
      * @throws TopologyConfigException
      * @throws TopologyException
-     * @throws XmlDecoderException
-     * @throws JsonException
      */
-    private function makeRunnable(Topology $topology, string $content): Topology
+    private function makeRunnable(Topology $topology, array $data, string $forceHost): Topology
     {
-        $topology = $this->topologyManager->saveTopologySchema($topology, $content, $this->decoder->decode($content));
+        $topology = $this->topologyManager->saveTopologyJsonSchema(
+            $topology,
+            $data,
+            $forceHost !== '' ? $forceHost : NULL,
+        );
         $this->topologyManager->publishTopology($topology);
         $this->topologyManager->updateTopology($topology, ['enabled' => TRUE]);
         $this->requestHandler->generateTopology($topology->getId());
@@ -303,21 +339,6 @@ final class InstallManager implements LoggerAwareInterface
     private function logException(Throwable $e, string $action): void
     {
         $this->logger->error(sprintf('Error occurred during %s action.', $action), ['exception' => $e]);
-    }
-
-    /**
-     * @param string $content
-     * @param string $forceHost
-     *
-     * @return string
-     */
-    private function replaceHost(string $content, string $forceHost): string
-    {
-        if ($forceHost !== '') {
-            $content = preg_replace('/sdkHost=".*"/Umx', sprintf('sdkHost="%s"', $forceHost), $content);
-        }
-
-        return $content ?? '';
     }
 
 }

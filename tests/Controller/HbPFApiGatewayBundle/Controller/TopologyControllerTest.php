@@ -136,6 +136,43 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     /**
      * @throws Exception
      */
+    public function testGetTopologyJsonSchemaAction(): void
+    {
+        $topology = (new Topology())
+            ->setName('Topology')
+            ->setJson(['connections' => [], 'nodes' => []]);
+        $this->pfd($topology);
+
+        $this->assertResponseLogged(
+            $this->jwt,
+            __DIR__ . '/data/TopologyController/getTopologyJsonSchemaRequest.json',
+            ['_id' => '123456789'],
+            [':id' => $topology->getId()],
+            [],
+            [],
+            static fn(Response $response): array => [$response->getContent()],
+        );
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testSaveTopologyJsonSchemaAction(): void
+    {
+        $topology = (new Topology())->setName('Topology')->setEnabled(TRUE);
+        $this->pfd($topology);
+
+        $this->assertResponseLogged(
+            $this->jwt,
+            __DIR__ . '/data/TopologyController/saveTopologyJsonSchemaRequest.json',
+            ['_id' => '123456789'],
+            [':id' => $topology->getId()],
+        );
+    }
+
+    /**
+     * @throws Exception
+     */
     public function testPublishTopologyAction(): void
     {
         $topology = (new Topology())->setName('Topology');

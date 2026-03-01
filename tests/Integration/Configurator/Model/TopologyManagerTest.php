@@ -10,6 +10,7 @@ use Hanaboso\CommonsBundle\Exception\NodeException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
+use Hanaboso\PipesFramework\Configurator\Document\Sdk;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
 use Hanaboso\PipesFramework\Database\Document\Dto\SystemConfigDto;
@@ -835,6 +836,132 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     /**
      * @throws Exception
      */
+    public function testSaveTopologyJsonSchema(): void
+    {
+        $sdk = (new Sdk())->setName('php-sdk')->setUrl('php-sdk:8080');
+        $this->pfd($sdk);
+
+        $topology = (new Topology())
+            ->setName('Topology')
+            ->setDescr('Topology');
+        $this->pfd($topology);
+
+        $result = $this->manager->saveTopologyJsonSchema($topology, $this->getJsonSchema());
+
+        /** @var Node[] $nodes */
+        $nodes = $this->dm->getRepository(Node::class)->findBy(['topology' => $topology->getId()]);
+
+        self::assertSame($topology->getId(), $result->getId());
+        self::assertEquals(7, count($nodes));
+
+        self::assertSame('start', $nodes[0]->getName());
+        self::assertSame(TypeEnum::START->value, $nodes[0]->getType());
+        self::assertSame(HandlerEnum::EVENT->value, $nodes[0]->getHandler());
+
+        self::assertSame('Connector DEF', $nodes[1]->getName());
+        self::assertSame(TypeEnum::CONNECTOR->value, $nodes[1]->getType());
+        self::assertSame(HandlerEnum::ACTION->value, $nodes[1]->getHandler());
+
+        self::assertSame('Mapper XYZ', $nodes[2]->getName());
+        self::assertSame(TypeEnum::MAPPER->value, $nodes[2]->getType());
+        self::assertSame(HandlerEnum::ACTION->value, $nodes[2]->getHandler());
+
+        self::assertSame('Parser ABC', $nodes[3]->getName());
+        self::assertSame(TypeEnum::XML_PARSER->value, $nodes[3]->getType());
+        self::assertSame(HandlerEnum::ACTION->value, $nodes[3]->getHandler());
+        self::assertEquals(1, count($nodes[3]->getNext()));
+        self::assertSame('Connector DEF', $nodes[3]->getNext()[0]->getName());
+
+        self::assertSame('Splitter SPI', $nodes[4]->getName());
+        self::assertSame(TypeEnum::SPLITTER->value, $nodes[4]->getType());
+        self::assertSame(HandlerEnum::ACTION->value, $nodes[4]->getHandler());
+
+        self::assertSame('cron', $nodes[5]->getName());
+        self::assertSame(TypeEnum::CRON->value, $nodes[5]->getType());
+        self::assertSame(HandlerEnum::EVENT->value, $nodes[5]->getHandler());
+        self::assertEquals(1, count($nodes[5]->getNext()));
+        self::assertSame('Parser ABC', $nodes[5]->getNext()[0]->getName());
+
+        self::assertSame('webhook', $nodes[6]->getName());
+        self::assertSame(TypeEnum::WEBHOOK->value, $nodes[6]->getType());
+        self::assertSame(HandlerEnum::EVENT->value, $nodes[6]->getHandler());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testCheckTopologyJsonSchemaIsSame(): void
+    {
+        $sdk = (new Sdk())->setName('php-sdk')->setUrl('php-sdk:8080');
+        $this->pfd($sdk);
+
+        $schema = $this->getJsonSchema();
+
+        $top = new Topology();
+        $top
+            ->setVisibility(TopologyStatusEnum::DRAFT->value)
+            ->setDescr('asd')
+            ->setName('asdd')
+            ->setEnabled(TRUE);
+
+        $this->dm->persist($top);
+
+        $this->manager->saveTopologyJsonSchema($top, $schema);
+        self::assertTrue($this->manager->checkTopologyJsonSchemaIsSame($top, $schema));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testSaveTopologyJsonSchemaWithClone(): void
+    {
+        $sdk = (new Sdk())->setName('php-sdk')->setUrl('php-sdk:8080');
+        $this->pfd($sdk);
+
+        $topology = (new Topology())
+            ->setName('Topology')
+            ->setDescr('Topology')
+            ->setVisibility(TopologyStatusEnum::PUBLIC->value)
+            ->setContentHash('abcd');
+
+        $this->dm->persist($topology);
+
+        $node2 = new Node();
+        $node2
+            ->setName('node2')
+            ->setType(TypeEnum::CONNECTOR->value)
+            ->setSchemaId('schema-node2')
+            ->setTopology($topology->getId())
+            ->setHandler(HandlerEnum::EVENT->value)
+            ->setEnabled(TRUE);
+        $this->dm->persist($node2);
+
+        $node1 = new Node();
+        $node1
+            ->setName('node1')
+            ->setType(TypeEnum::CONNECTOR->value)
+            ->setSchemaId('schema-node1')
+            ->setTopology($topology->getId())
+            ->setHandler(HandlerEnum::EVENT->value)
+            ->setEnabled(TRUE)
+            ->addNext(EmbedNode::from($node2));
+        $this->dm->persist($node1);
+
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $result = $this->manager->saveTopologyJsonSchema($topology, $this->getJsonSchema());
+
+        /** @var Node[] $nodes */
+        $nodes = $this->dm->getRepository(Node::class)->findBy(['topology' => $result->getId()]);
+
+        self::assertNotSame($topology->getId(), $result->getId());
+        self::assertEquals(7, count($nodes));
+    }
+
+    /**
+     * @throws Exception
+     */
     protected function setUp(): void
     {
         parent::setUp();
@@ -856,6 +983,16 @@ final class TopologyManagerTest extends DatabaseTestCaseAbstract
     private function getSchema(string $name = 'schema.json'): array
     {
         return Json::decode(File::getContent(sprintf('%s/data/%s', __DIR__, $name)));
+    }
+
+    /**
+     * @return mixed[]
+     *
+     * @throws Exception
+     */
+    private function getJsonSchema(): array
+    {
+        return Json::decode(File::getContent(sprintf('%s/data/schema-json-editor.json', __DIR__)));
     }
 
     /**
