@@ -7,6 +7,7 @@ use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
 use Hanaboso\RestBundle\Model\Decoder\XmlDecoder;
 use Hanaboso\Utils\File\File;
+use Hanaboso\Utils\String\Json;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\KernelTestCaseAbstract;
 
@@ -81,6 +82,82 @@ final class TopologySchemaUtilsTest extends KernelTestCaseAbstract
     }
 
     /**
+     * @throws Exception
+     */
+    public function testGetSchemaObjectFromJson(): void
+    {
+        $data      = $this->loadJson('schema-json-editor.json');
+        $sdkUrlMap = ['php-sdk' => 'php-sdk:8080'];
+        $schema    = TopologySchemaUtils::getSchemaObjectFromJson($data, $sdkUrlMap);
+
+        $nodes = $schema->getNodes();
+        self::assertCount(7, $nodes);
+        self::assertCount(2, $schema->getSequences());
+        self::assertEquals(['node-cron'], $schema->getStartNode());
+
+        self::assertSame('bpmn:event', $nodes['node-start']->getHandler());
+        self::assertSame('start', $nodes['node-start']->getPipesType());
+        self::assertSame('start', $nodes['node-start']->getName());
+
+        self::assertSame('bpmn:task', $nodes['node-connector']->getHandler());
+        self::assertSame('connector', $nodes['node-connector']->getPipesType());
+        self::assertSame('Connector DEF', $nodes['node-connector']->getName());
+        self::assertSame('php-sdk:8080', $nodes['node-connector']->getSystemConfigs()->getSdkHost());
+
+        self::assertSame('bpmn:task', $nodes['node-mapper']->getHandler());
+        self::assertSame('mapper', $nodes['node-mapper']->getPipesType());
+        self::assertSame('Mapper XYZ', $nodes['node-mapper']->getName());
+
+        self::assertSame('bpmn:task', $nodes['node-parser']->getHandler());
+        self::assertSame('xml_parser', $nodes['node-parser']->getPipesType());
+        self::assertSame('Parser ABC', $nodes['node-parser']->getName());
+        self::assertSame('php-sdk:8080', $nodes['node-parser']->getSystemConfigs()->getSdkHost());
+
+        self::assertSame('bpmn:task', $nodes['node-splitter']->getHandler());
+        self::assertSame('splitter', $nodes['node-splitter']->getPipesType());
+        self::assertSame('Splitter SPI', $nodes['node-splitter']->getName());
+
+        self::assertSame('bpmn:event', $nodes['node-cron']->getHandler());
+        self::assertSame('cron', $nodes['node-cron']->getPipesType());
+        self::assertSame('cron', $nodes['node-cron']->getName());
+        self::assertSame('', $nodes['node-cron']->getSystemConfigs()->getSdkHost());
+
+        self::assertSame('bpmn:event', $nodes['node-webhook']->getHandler());
+        self::assertSame('webhook', $nodes['node-webhook']->getPipesType());
+        self::assertSame('webhook', $nodes['node-webhook']->getName());
+
+        self::assertEquals(
+            [
+                'node-cron'   => ['node-parser'],
+                'node-parser' => ['node-connector'],
+            ],
+            $schema->getSequences(),
+        );
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetSchemaObjectFromJsonEmpty(): void
+    {
+        $schema = TopologySchemaUtils::getSchemaObjectFromJson([], []);
+
+        self::assertCount(0, $schema->getNodes());
+        self::assertCount(0, $schema->getSequences());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetSchemaObjectFromJsonNoNodes(): void
+    {
+        self::expectException(TopologyException::class);
+        self::expectExceptionCode(TopologyException::UNSUPPORTED_SCHEMA);
+
+        TopologySchemaUtils::getSchemaObjectFromJson(['foo' => 'bar'], []);
+    }
+
+    /**
      * @param string $name
      *
      * @return string
@@ -88,6 +165,18 @@ final class TopologySchemaUtilsTest extends KernelTestCaseAbstract
     private function load(string $name): string
     {
         return File::getContent(sprintf('%s/data/%s', __DIR__, $name));
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return mixed[]
+     *
+     * @throws Exception
+     */
+    private function loadJson(string $name): array
+    {
+        return Json::decode(File::getContent(sprintf('%s/data/%s', __DIR__, $name)));
     }
 
     /**

@@ -1,0 +1,10 @@
+{
+    "http": "PUT /api/topologies/:id/schema.json",
+    "body": {
+        "nodes": [],
+        "connections": []
+    },
+    "headers": {
+        "HTTP_Authorization": "jwt"
+    }
+}

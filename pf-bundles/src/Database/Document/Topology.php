@@ -74,6 +74,12 @@ class Topology
     protected string $rawBpmn = '';
 
     /**
+     * @var string
+     */
+    #[ODM\Field(type: 'string')]
+    protected string $json = '';
+
+    /**
      * @var string|null
      */
     #[ODM\Field(type: 'string')]
@@ -266,6 +272,34 @@ class Topology
         $this->rawBpmn = $rawBpmn;
 
         return $this;
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public function getJson(): array
+    {
+        return $this->json ? Json::decode($this->json) : [];
+    }
+
+    /**
+     * @param mixed[] $json
+     *
+     * @return Topology
+     */
+    public function setJson(array $json): self
+    {
+        $this->json = Json::encode($json);
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRawJson(): string
+    {
+        return $this->json;
     }
 
     /**

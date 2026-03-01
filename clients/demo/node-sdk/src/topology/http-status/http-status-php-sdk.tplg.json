@@ -1,0 +1,194 @@
+{
+    "connections": [
+        {
+            "from": "a1376edf879edec8",
+            "id": "988b64077dd8b121",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "0eedede8664f0253"
+        },
+        {
+            "from": "0eedede8664f0253",
+            "id": "481d949299f34015",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "ec53495a1d7aa3c9"
+        },
+        {
+            "from": "0eedede8664f0253",
+            "id": "89021dd8cf2aff14",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "fb8c8d178734d39e"
+        },
+        {
+            "from": "0eedede8664f0253",
+            "id": "b421c5bdb7e2d2ea",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "3021ad148e22bef1"
+        },
+        {
+            "from": "0eedede8664f0253",
+            "id": "0fc576628e8b9dd1",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "51e4d101fc1daef1"
+        },
+        {
+            "from": "0eedede8664f0253",
+            "id": "dd7c5bb78cd811aa",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "380b029c42439138"
+        },
+        {
+            "from": "0eedede8664f0253",
+            "id": "03a3d91cbdf616f5",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "6d8c8ea9ae724fe7"
+        }
+    ],
+    "nodes": [
+        {
+            "action": null,
+            "id": "a1376edf879edec8",
+            "label": "Event",
+            "name": "start",
+            "position": {
+                "x": 156,
+                "y": 87
+            },
+            "property": null,
+            "shape": "circle",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": "http-status-php",
+                "name": "http-status-php-200-connector",
+                "type": "connector",
+                "worker": "php-sdk"
+            },
+            "id": "ec53495a1d7aa3c9",
+            "label": "Connector",
+            "name": null,
+            "position": {
+                "x": 475,
+                "y": 87
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": "http-status-php",
+                "name": "http-status-php-201-connector",
+                "type": "connector",
+                "worker": "php-sdk"
+            },
+            "id": "fb8c8d178734d39e",
+            "label": "Connector",
+            "name": null,
+            "position": {
+                "x": 475,
+                "y": 246
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": "http-status-php",
+                "name": "http-status-php-400-connector",
+                "type": "connector",
+                "worker": "php-sdk"
+            },
+            "id": "3021ad148e22bef1",
+            "label": "Connector",
+            "name": null,
+            "position": {
+                "x": 475,
+                "y": 406
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": "http-status-php",
+                "name": "http-status-php-401-connector",
+                "type": "connector",
+                "worker": "php-sdk"
+            },
+            "id": "51e4d101fc1daef1",
+            "label": "Connector",
+            "name": null,
+            "position": {
+                "x": 475,
+                "y": 565
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": "http-status-php",
+                "name": "http-status-php-404-connector",
+                "type": "connector",
+                "worker": "php-sdk"
+            },
+            "id": "380b029c42439138",
+            "label": "Connector",
+            "name": null,
+            "position": {
+                "x": 475,
+                "y": 725
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": "http-status-php",
+                "name": "http-status-php-500-connector",
+                "type": "connector",
+                "worker": "php-sdk"
+            },
+            "id": "6d8c8ea9ae724fe7",
+            "label": "Connector",
+            "name": null,
+            "position": {
+                "x": 475,
+                "y": 884
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": "http-status-php",
+                "name": "http-status-php-batch",
+                "type": "batch",
+                "worker": "php-sdk"
+            },
+            "id": "0eedede8664f0253",
+            "label": "Batch",
+            "name": null,
+            "position": {
+                "x": 317,
+                "y": 87
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        }
+    ]
+}

@@ -10,6 +10,7 @@ use Hanaboso\CommonsBundle\Exception\NodeException;
 use Hanaboso\CommonsBundle\Transport\Curl\Dto\ResponseDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Configurator\Document\ApiToken;
+use Hanaboso\PipesFramework\Configurator\Document\Sdk;
 use Hanaboso\PipesFramework\Configurator\Enum\ApiTokenScopesEnum;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Configurator\Model\TopologyManager;
@@ -515,6 +516,169 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     /**
      * @throws Exception
      */
+    public function testGetTopologyJsonSchema(): void
+    {
+        $jsonData = $this->getJsonEditorSchema();
+        $topology = (new Topology())
+            ->setName('Topology')
+            ->setDescr('Topology')
+            ->setEnabled(TRUE)
+            ->setJson($jsonData);
+        $this->pfd($topology);
+
+        $this->client->request(
+            'GET',
+            sprintf('/api/topologies/%s/schema.json', $topology->getId()),
+            server: [self::$AUTHORIZATION => $this->jwt],
+        );
+        $response = $this->client->getResponse();
+        $response = (object) [
+            'content' => $response->getContent(),
+            'status'  => $response->getStatusCode(),
+        ];
+
+        self::assertSame(200, $response->status);
+        self::assertEquals($topology->getRawJson(), $response->content);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetTopologyJsonSchemaNotFound(): void
+    {
+        $this->client->request(
+            'GET',
+            '/api/topologies/999/schema.json',
+            server: [self::$AUTHORIZATION => $this->jwt],
+        );
+        $response = $this->client->getResponse();
+        $response = $this->returnResponse($response);
+        $content  = $response->content;
+
+        self::assertEquals(500, $response->status);
+        self::assertEquals(TopologyException::class, $content->type);
+        self::assertEquals(2_402, $content->errorCode);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testSaveTopologyJsonSchema(): void
+    {
+        $sdk = (new Sdk())->setName('php-sdk')->setUrl('php-sdk:8080');
+        $this->pfd($sdk);
+
+        $topology = (new Topology())
+            ->setName('Topology')
+            ->setDescr('Topology')
+            ->setEnabled(TRUE);
+        $this->pfd($topology);
+
+        $this->client
+            ->getContainer()
+            ->set('hbpf.transport.curl_manager', self::createMock(CurlManagerInterface::class));
+
+        $this->client->request(
+            'PUT',
+            sprintf('/api/topologies/%s/schema.json', $topology->getId()),
+            [],
+            [],
+            [
+                'CONTENT_TYPE'       => 'application/json',
+                self::$AUTHORIZATION => $this->jwt,
+            ],
+            Json::encode($this->getJsonEditorSchema()),
+        );
+        $response = $this->client->getResponse();
+        $response = $this->returnResponse($response);
+        self::assertEquals(200, $response->status);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testSaveTopologyJsonSchemaNotFound(): void
+    {
+        $this->client->request(
+            'PUT',
+            '/api/topologies/999/schema.json',
+            [],
+            [],
+            [
+                'CONTENT_TYPE'       => 'application/json',
+                self::$AUTHORIZATION => $this->jwt,
+            ],
+            Json::encode($this->getJsonEditorSchema()),
+        );
+        $response = $this->client->getResponse();
+        $response = $this->returnResponse($response);
+        $content  = $response->content;
+        self::assertEquals(500, $response->status);
+        self::assertEquals(TopologyException::class, $content->type);
+        self::assertEquals(2_402, $content->errorCode);
+    }
+
+    /**
+     * @return void
+     * @throws Exception
+     */
+    public function testCheckTopologyJsonSchemaDifferences(): void
+    {
+        $sdk = (new Sdk())->setName('php-sdk')->setUrl('php-sdk:8080');
+        $this->pfd($sdk);
+
+        $topology = (new Topology())
+            ->setName('Topology')
+            ->setDescr('Topology')
+            ->setEnabled(TRUE);
+        $this->pfd($topology);
+
+        $this->client->request(
+            'POST',
+            sprintf('/api/topologies/check/%s/schema.json', $topology->getId()),
+            [],
+            [],
+            [
+                'CONTENT_TYPE'       => 'application/json',
+                self::$AUTHORIZATION => $this->jwt,
+            ],
+            Json::encode($this->getJsonEditorSchema()),
+        );
+
+        $response = $this->client->getResponse();
+        $response = $this->returnResponse($response);
+        self::assertEquals(TRUE, $response->content->isDifferent);
+        self::assertEquals(200, $response->status);
+    }
+
+    /**
+     * @return void
+     * @throws Exception
+     */
+    public function testCheckTopologyJsonSchemaNotFound(): void
+    {
+        $this->client->request(
+            'POST',
+            '/api/topologies/check/999/schema.json',
+            [],
+            [],
+            [
+                'CONTENT_TYPE'       => 'application/json',
+                self::$AUTHORIZATION => $this->jwt,
+            ],
+            Json::encode($this->getJsonEditorSchema()),
+        );
+        $response = $this->client->getResponse();
+        $response = $this->returnResponse($response);
+        $content  = $response->content;
+        self::assertEquals(500, $response->status);
+        self::assertEquals(TopologyException::class, $content->type);
+        self::assertEquals(2_402, $content->errorCode);
+    }
+
+    /**
+     * @throws Exception
+     */
     public function testDeleteTopology(): void
     {
         $topology = (new Topology())
@@ -805,6 +969,23 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
     private function getBpmnArray(): array
     {
         return Json::decode(File::getContent(sprintf('%s/data/schema.json', __DIR__)));
+    }
+
+    /**
+     * @return mixed[]
+     *
+     * @throws Exception
+     */
+    private function getJsonEditorSchema(): array
+    {
+        return Json::decode(
+            File::getContent(
+                sprintf(
+                    '%s/../../../Integration/Configurator/Model/data/schema-json-editor.json',
+                    __DIR__,
+                ),
+            ),
+        );
     }
 
     /**

@@ -172,6 +172,115 @@ final class TopologySchemaUtils
     }
 
     /**
+     * @param mixed[] $data
+     * @param mixed[] $sdkUrlMap worker name => SDK URL (host:port)
+     *
+     * @return Schema
+     * @throws TopologyException
+     */
+    public static function getSchemaObjectFromJson(array $data, array $sdkUrlMap): Schema
+    {
+        $schema = new Schema();
+
+        if (count($data) === 0) {
+            return $schema;
+        }
+
+        if (!isset($data['nodes'])) {
+            throw new TopologyException('Unsupported schema!', TopologyException::UNSUPPORTED_SCHEMA);
+        }
+
+        $nodes       = $data['nodes'];
+        $connections = $data['connections'] ?? [];
+
+        $targetNodeIds = [];
+        $sourceNodeIds = [];
+        foreach ($connections as $connection) {
+            $targetNodeIds[$connection['to']]   = TRUE;
+            $sourceNodeIds[$connection['from']] = TRUE;
+        }
+
+        foreach ($nodes as $node) {
+            $nodeId = $node['id'];
+            $shape  = $node['shape'] ?? 'square';
+            $action = $node['action'] ?? NULL;
+            $label  = $node['label'] ?? '';
+
+            if ($shape === 'circle') {
+                $handler   = self::getJsonCircleHandler($label);
+                $pipesType = self::getJsonEventPipesType($label);
+                $name      = $node['name'] ?? $pipesType;
+                $sdkHost   = '';
+                $app       = '';
+            } else if ($action !== NULL) {
+                $handler    = self::BPMN_TASK;
+                $pipesType  = $action['type'] ?? TypeEnum::CUSTOM->value;
+                $name       = $action['name'] ?? '';
+                $workerName = $action['worker'] ?? '';
+                $sdkHost    = $sdkUrlMap[$workerName] ?? '';
+                $app        = $action['app'] ?? '';
+            } else {
+                $handler   = self::BPMN_GATEWAY;
+                $pipesType = TypeEnum::GATEWAY->value;
+                $name      = '';
+                $sdkHost   = '';
+                $app       = '';
+            }
+
+            $nodeSchemaDto = new NodeSchemaDto(
+                $handler,
+                $nodeId,
+                $pipesType,
+                new SystemConfigDto($sdkHost),
+                $name,
+                '',
+                '',
+                $app,
+            );
+
+            $schema->addNode($nodeId, $nodeSchemaDto);
+
+            if (isset($sourceNodeIds[$nodeId]) && !isset($targetNodeIds[$nodeId])) {
+                $schema->addStartNode($nodeId);
+            }
+        }
+
+        foreach ($connections as $connection) {
+            $schema->addSequence($connection['from'], $connection['to']);
+        }
+
+        return $schema;
+    }
+
+    /**
+     * @param string $label
+     *
+     * @return string
+     */
+    private static function getJsonCircleHandler(string $label): string
+    {
+        return match ($label) {
+            'End Event' => self::BPMN_END_EVENT,
+            default     => self::BPMN_EVENT,
+        };
+    }
+
+    /**
+     * @param string $label
+     *
+     * @return string
+     */
+    private static function getJsonEventPipesType(string $label): string
+    {
+        return match ($label) {
+            'Webhook'   => TypeEnum::WEBHOOK->value,
+            'Cron'      => TypeEnum::CRON->value,
+            'End Event' => '',
+            default     => TypeEnum::START->value,
+        };
+    }
+
+    /**
      * @param string $type
      *
      * @return string

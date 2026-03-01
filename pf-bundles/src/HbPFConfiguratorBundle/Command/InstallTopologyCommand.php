@@ -5,7 +5,7 @@ namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Command;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\TopologyInstaller\InstallManager;
-use Hanaboso\RestBundle\Exception\XmlDecoderException;
+use JsonException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
@@ -24,6 +24,7 @@ final class InstallTopologyCommand extends Command
     private const string CREATE     = 'create';
     private const string UPDATE     = 'update';
     private const string DELETE     = 'delete';
+    private const string MIGRATE    = 'migrate';
     private const string FORCE      = 'force';
     private const string FORCE_HOST = 'forceHost';
 
@@ -47,13 +48,14 @@ final class InstallTopologyCommand extends Command
             ->addOption(self::CREATE, 'c', InputOption::VALUE_NONE, 'Create')
             ->addOption(self::UPDATE, 'u', InputOption::VALUE_NONE, 'Update')
             ->addOption(self::DELETE, 'd', InputOption::VALUE_NONE, 'Delete')
+            ->addOption(self::MIGRATE, 'm', InputOption::VALUE_NONE, 'Migrate')
             ->addOption(self::FORCE, 'force', InputOption::VALUE_NONE, 'Force')
             ->addArgument(self::FORCE_HOST, InputArgument::OPTIONAL, 'Force SDK Host')
             ->setDescription(
-                'Possible params are: -c for create, -u for update, -d for delete, --force for apply your changes.',
+                'Possible params are: -c for create, -u for update, -d for delete, -m for migrate, --force for apply your changes.',
             )
             ->setHelp(
-                'Possible params are: -c for create, -u for update, -d for delete, --force for apply your changes.',
+                'Possible params are: -c for create, -u for update, -d for delete, -m for migrate, --force for apply your changes.',
             );
     }
 
@@ -62,9 +64,9 @@ final class InstallTopologyCommand extends Command
      * @param OutputInterface $output
      *
      * @return int
+     * @throws JsonException
      * @throws MongoDBException
      * @throws TopologyException
-     * @throws XmlDecoderException
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -73,6 +75,10 @@ final class InstallTopologyCommand extends Command
         $delete    = FALSE;
         $force     = FALSE;
         $forceHost = '';
+
+        if ($input->getOption(self::MIGRATE)) {
+            $this->manager->migrate();
+        }
 
         if ($input->getOption(self::CREATE)) {
             $create = TRUE;
