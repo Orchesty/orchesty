@@ -4,6 +4,7 @@ DC = docker compose
 DE = docker compose exec -T
 DCB = docker compose exec -T backend
 DCM = docker compose exec -T mongo
+DCN = docker compose exec -T node-sdk
 DCP = docker compose exec -T php-sdk
 DCR = docker compose exec -T rabbitmq
 DCW = docker compose run --rm wait-for-it
@@ -53,6 +54,7 @@ init: up
 	$(DCB) bin/console service:install node-sdk node-sdk:8080
 	$(DCB) bin/console service:install php-sdk php-sdk:80
 	$(DCB) bin/console topology:install -c -u --force ''
+	#$(DCB) bin/console topology:install -c -u -m --force ''
 	$(DCB) bin/console api-token:create --key "$(shell grep 'ORCHESTY_API_KEY' .env | cut -d "=" -f2)"
 	$(DCB) bin/console user:create "$(shell grep 'ORCHESTY_USER' .env | cut -d "=" -f2)" "$(shell grep 'ORCHESTY_PASSWORD' .env | cut -d "=" -f2)"
 
@@ -73,6 +75,8 @@ mongo-import:
 run-topology:
 	/bin/bash -c 'for i in {1..$(RUNS)}; do echo "Run #$$i: HTTP $$(curl -s -o /dev/null -w "%{http_code}" -X POST http://127.0.0.66:82/topologies/$(TOPOLOGY_NAME)/nodes/$(NODE_NAME)/run-by-name)"; done'
 
+migrate-topology:
+	$(DCB) bin/console topology:migrate -f
 
 #INSTANCE = xxx
 #PASSWORD = xxx
@@ -101,5 +105,6 @@ run-topology:
 #	$(DCB) bin/console user:create "$(shell grep 'ORCHESTY_USER' .env | cut -d '=' -f2)" "$(shell grep 'ORCHESTY_PASSWORD' .env | cut -d '=' -f2)"
 #	$(DCB) bin/console api-token:create --key "$(shell grep 'ORCHESTY_API_KEY' .env | cut -d '=' -f2)"
 #	$(DCB) bin/console service:install node-sdk node-sdk:8080
+#	$(DCN) node importedDatabaseFix.js
 #	$(DCB) bin/console mongodb:index:update
 #	$(DC) up -d --force-recreate limiter

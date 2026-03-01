@@ -1,0 +1,184 @@
+{
+    "connections": [
+        {
+            "from": "80f8dd1b31227882",
+            "id": "430ba2f098e5029e",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "3b705ed6a6945e37"
+        },
+        {
+            "from": "3b705ed6a6945e37",
+            "id": "f77a25c418c77f74",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "99c9d4f6accf5d08"
+        },
+        {
+            "from": "99c9d4f6accf5d08",
+            "id": "74d9f7e4cf617cca",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "130f42db8ed27ee9"
+        },
+        {
+            "from": "99c9d4f6accf5d08",
+            "id": "b57b69060b1aeec5",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "8c2a6794fe216e02"
+        },
+        {
+            "from": "130f42db8ed27ee9",
+            "id": "d24725e1d9acb5ca",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "cf9e34cfdc308bc9"
+        },
+        {
+            "from": "9dae43e6c575e074",
+            "id": "72a8225fc83174e4",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "3b705ed6a6945e37"
+        },
+        {
+            "from": "88bc586fc9a226a1",
+            "id": "e08bc884a5affce4",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "3b705ed6a6945e37"
+        }
+    ],
+    "nodes": [
+        {
+            "action": null,
+            "id": "80f8dd1b31227882",
+            "label": "Event",
+            "name": "start",
+            "position": {
+                "x": 448,
+                "y": 304
+            },
+            "property": null,
+            "shape": "circle",
+            "type": "flow"
+        },
+        {
+            "action": null,
+            "id": "9dae43e6c575e074",
+            "label": "Webhook",
+            "name": "category-created",
+            "position": {
+                "x": 448,
+                "y": 449
+            },
+            "property": null,
+            "shape": "circle",
+            "type": "flow"
+        },
+        {
+            "action": null,
+            "id": "88bc586fc9a226a1",
+            "label": "Webhook",
+            "name": "category-updated",
+            "position": {
+                "x": 448,
+                "y": 609
+            },
+            "property": null,
+            "shape": "circle",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": "mysql",
+                "name": "get-category-list-sql-batch-connector",
+                "type": "batch",
+                "worker": "node-sdk"
+            },
+            "id": "3b705ed6a6945e37",
+            "label": "Batch",
+            "name": null,
+            "position": {
+                "x": 658,
+                "y": 304
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": "mysql",
+                "name": "mysql-category-find-id",
+                "type": "custom",
+                "worker": "node-sdk"
+            },
+            "id": "99c9d4f6accf5d08",
+            "label": "Custom Action",
+            "name": null,
+            "position": {
+                "x": 854,
+                "y": 304
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": "beeceptor",
+                "name": "beeceptor-post-category-connector",
+                "type": "connector",
+                "worker": "node-sdk"
+            },
+            "id": "130f42db8ed27ee9",
+            "label": "Connector",
+            "name": null,
+            "position": {
+                "x": 1073,
+                "y": 304
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": "beeceptor",
+                "name": "beeceptor-put-category-connector",
+                "type": "connector",
+                "worker": "node-sdk"
+            },
+            "id": "8c2a6794fe216e02",
+            "label": "Connector",
+            "name": null,
+            "position": {
+                "x": 1073,
+                "y": 464
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": "mysql",
+                "name": "mysql-category-store-id",
+                "type": "custom",
+                "worker": "node-sdk"
+            },
+            "id": "cf9e34cfdc308bc9",
+            "label": "Custom Action",
+            "name": null,
+            "position": {
+                "x": 1281,
+                "y": 304
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        }
+    ]
+}

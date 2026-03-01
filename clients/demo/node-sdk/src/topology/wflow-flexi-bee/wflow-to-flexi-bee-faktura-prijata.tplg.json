@@ -1,0 +1,219 @@
+{
+    "connections": [
+        {
+            "from": "264f4d6190411b06",
+            "id": "ca6f39b652837c97",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "5da500ac31ddd29e"
+        },
+        {
+            "from": "5da500ac31ddd29e",
+            "id": "dab2a645d1e480d3",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "e9e2550b18cb31ad"
+        },
+        {
+            "from": "e9e2550b18cb31ad",
+            "id": "92cf6e7ae8ca517c",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "602315ca7616eb82"
+        },
+        {
+            "from": "602315ca7616eb82",
+            "id": "1b1bd79d07541ed9",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "00434a689bb17422"
+        },
+        {
+            "from": "00434a689bb17422",
+            "id": "4136716838425747",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "5de4135dbbd5e2aa"
+        },
+        {
+            "from": "5de4135dbbd5e2aa",
+            "id": "bfe9898cec54f6da",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "c30f318044572e73"
+        },
+        {
+            "from": "c30f318044572e73",
+            "id": "ee037cf3f7614dac",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "1e0a1320a1bb4628"
+        },
+        {
+            "from": "1e0a1320a1bb4628",
+            "id": "958692bc5050a113",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "cda909069323e7de"
+        }
+    ],
+    "nodes": [
+        {
+            "action": null,
+            "id": "264f4d6190411b06",
+            "label": "Webhook",
+            "name": "document-ready-to-export",
+            "position": {
+                "x": 522,
+                "y": 377
+            },
+            "property": null,
+            "shape": "circle",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": "wflow",
+                "name": "wflow-webhook-payload-mapper",
+                "type": "custom",
+                "worker": "node-sdk"
+            },
+            "id": "5da500ac31ddd29e",
+            "label": "Custom Action",
+            "name": null,
+            "position": {
+                "x": 744,
+                "y": 377
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": "wflow",
+                "name": "wflow-get-document-connector",
+                "type": "connector",
+                "worker": "node-sdk"
+            },
+            "id": "e9e2550b18cb31ad",
+            "label": "Connector",
+            "name": null,
+            "position": {
+                "x": 951,
+                "y": 377
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": "flexibee",
+                "name": "flexibee-find-firma-kod-connector",
+                "type": "connector",
+                "worker": "node-sdk"
+            },
+            "id": "602315ca7616eb82",
+            "label": "Connector",
+            "name": null,
+            "position": {
+                "x": 1183,
+                "y": 377
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": "wflow",
+                "name": "wflow-to-flexibee-mapper",
+                "type": "custom",
+                "worker": "node-sdk"
+            },
+            "id": "00434a689bb17422",
+            "label": "Custom Action",
+            "name": null,
+            "position": {
+                "x": 1183,
+                "y": 551
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": "flexibee",
+                "name": "flexibee-create-faktura-prijata-connector",
+                "type": "connector",
+                "worker": "node-sdk"
+            },
+            "id": "5de4135dbbd5e2aa",
+            "label": "Connector",
+            "name": null,
+            "position": {
+                "x": 1183,
+                "y": 739
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": "wflow",
+                "name": "wflow-update-document-state-connector",
+                "type": "connector",
+                "worker": "node-sdk"
+            },
+            "id": "cda909069323e7de",
+            "label": "Connector",
+            "name": null,
+            "position": {
+                "x": 1378,
+                "y": 1058
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": "flexibee",
+                "name": "flexibee-faktura-prijata-mapper",
+                "type": "custom",
+                "worker": "node-sdk"
+            },
+            "id": "c30f318044572e73",
+            "label": "Custom Action",
+            "name": null,
+            "position": {
+                "x": 1183,
+                "y": 899
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": "wflow",
+                "name": "wflow-put-document-connector",
+                "type": "connector",
+                "worker": "node-sdk"
+            },
+            "id": "1e0a1320a1bb4628",
+            "label": "Connector",
+            "name": null,
+            "position": {
+                "x": 1183,
+                "y": 1058
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        }
+    ]
+}

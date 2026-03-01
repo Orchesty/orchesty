@@ -1,0 +1,144 @@
+{
+    "connections": [
+        {
+            "from": "36b807f9a3f617cd",
+            "id": "f16471abd91f5e39",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "0f096665ad69495a"
+        },
+        {
+            "from": "0f096665ad69495a",
+            "id": "8c606f1ae45959bd",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "96cd2c863e4c117e"
+        },
+        {
+            "from": "96cd2c863e4c117e",
+            "id": "13e23914a4704140",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "f0ca79e18f14208e"
+        },
+        {
+            "from": "f0ca79e18f14208e",
+            "id": "09ea1fc60b273937",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "147965a6fcc87441"
+        },
+        {
+            "from": "147965a6fcc87441",
+            "id": "75444c3ec366ca5e",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "73a8eab297c46f4e"
+        }
+    ],
+    "nodes": [
+        {
+            "action": null,
+            "id": "36b807f9a3f617cd",
+            "label": "Event",
+            "name": "start",
+            "position": {
+                "x": 473,
+                "y": 348
+            },
+            "property": null,
+            "shape": "circle",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": "json-placeholder",
+                "name": "json-placeholder-get-post-list-batch",
+                "type": "batch",
+                "worker": "node-sdk"
+            },
+            "id": "0f096665ad69495a",
+            "label": "Batch",
+            "name": null,
+            "position": {
+                "x": 658,
+                "y": 348
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": "json-placeholder",
+                "name": "json-placeholder-get-post-comment-list-batch",
+                "type": "batch",
+                "worker": "node-sdk"
+            },
+            "id": "96cd2c863e4c117e",
+            "label": "Batch",
+            "name": null,
+            "position": {
+                "x": 841,
+                "y": 348
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": "json-placeholder",
+                "name": "json-placeholder-get-post-user-connector",
+                "type": "connector",
+                "worker": "node-sdk"
+            },
+            "id": "f0ca79e18f14208e",
+            "label": "Connector",
+            "name": null,
+            "position": {
+                "x": 1037,
+                "y": 348
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": null,
+                "name": "json-placeholder-to-beeceptor-sync-post-mapper",
+                "type": "custom",
+                "worker": "node-sdk"
+            },
+            "id": "147965a6fcc87441",
+            "label": "Custom Action",
+            "name": null,
+            "position": {
+                "x": 1220,
+                "y": 348
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": "beeceptor",
+                "name": "beeceptor-sync-post-connector",
+                "type": "connector",
+                "worker": "node-sdk"
+            },
+            "id": "73a8eab297c46f4e",
+            "label": "Connector",
+            "name": null,
+            "position": {
+                "x": 1415,
+                "y": 348
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        }
+    ]
+}

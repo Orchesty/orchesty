@@ -3,33 +3,33 @@
     <bpmn:event id="Event_0avhr0v" pipes:pipesType="start" pipes:sdkHost="node-sdk:8080" name="product" pipes:sdkHostName="node-sdk">
       <bpmn:outgoing>Flow_0c44yb6</bpmn:outgoing>
     </bpmn:event>
-    <bpmn:task id="Activity_0v5945u" pipes:pipesType="batch" pipes:sdkHost="node-sdk:8080" name="get-product-list-sql-batch-connector" pipes:sdkHostName="worker" pipes:appName="mysql">
+    <bpmn:task id="Activity_0v5945u" pipes:pipesType="batch" pipes:sdkHost="node-sdk:8080" name="get-product-list-sql-batch-connector" pipes:sdkHostName="node-sdk" pipes:appName="mysql">
       <bpmn:incoming>Flow_0c44yb6</bpmn:incoming>
       <bpmn:incoming>Flow_0nu8unk</bpmn:incoming>
       <bpmn:incoming>Flow_0cnly3a</bpmn:incoming>
       <bpmn:outgoing>Flow_0o99wwd</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:event id="Event_10a5mbo" pipes:pipesType="webhook" pipes:sdkHost="node-sdk:8080" name="product-created" pipes:sdkHostName="worker">
+    <bpmn:event id="Event_10a5mbo" pipes:pipesType="webhook" pipes:sdkHost="node-sdk:8080" name="product-created" pipes:sdkHostName="node-sdk">
       <bpmn:outgoing>Flow_0nu8unk</bpmn:outgoing>
     </bpmn:event>
-    <bpmn:event id="Event_0kkb8z3" pipes:pipesType="webhook" pipes:sdkHost="node-sdk:8080" name="product-updated" pipes:sdkHostName="worker">
+    <bpmn:event id="Event_0kkb8z3" pipes:pipesType="webhook" pipes:sdkHost="node-sdk:8080" name="product-updated" pipes:sdkHostName="node-sdk">
       <bpmn:outgoing>Flow_0cnly3a</bpmn:outgoing>
     </bpmn:event>
     <bpmn:sequenceFlow id="Flow_0c44yb6" sourceRef="Event_0avhr0v" targetRef="Activity_0v5945u"/>
-    <bpmn:task id="Activity_0qq3qff" pipes:pipesType="custom" pipes:sdkHost="node-sdk:8080" name="mysql-product-find-id" pipes:sdkHostName="worker" pipes:appName="mysql">
+    <bpmn:task id="Activity_0qq3qff" pipes:pipesType="custom" pipes:sdkHost="node-sdk:8080" name="mysql-product-find-id" pipes:sdkHostName="node-sdk" pipes:appName="mysql">
       <bpmn:incoming>Flow_0o99wwd</bpmn:incoming>
       <bpmn:outgoing>Flow_098yel8</bpmn:outgoing>
       <bpmn:outgoing>Flow_1dhgr0f</bpmn:outgoing>
     </bpmn:task>
     <bpmn:sequenceFlow id="Flow_0o99wwd" sourceRef="Activity_0v5945u" targetRef="Activity_0qq3qff"/>
-    <bpmn:task id="Activity_0bmuooz" pipes:pipesType="connector" pipes:sdkHost="node-sdk:8080" name="beeceptor-post-product-connector" pipes:sdkHostName="worker" pipes:appName="beeceptor">
+    <bpmn:task id="Activity_0bmuooz" pipes:pipesType="connector" pipes:sdkHost="node-sdk:8080" name="beeceptor-post-product-connector" pipes:sdkHostName="node-sdk" pipes:appName="beeceptor">
       <bpmn:incoming>Flow_098yel8</bpmn:incoming>
       <bpmn:outgoing>Flow_1oyepls</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:task id="Activity_09pfau6" pipes:pipesType="connector" pipes:sdkHost="node-sdk:8080" name="beeceptor-put-product-connector" pipes:sdkHostName="worker" pipes:appName="beeceptor">
+    <bpmn:task id="Activity_09pfau6" pipes:pipesType="connector" pipes:sdkHost="node-sdk:8080" name="beeceptor-put-product-connector" pipes:sdkHostName="node-sdk" pipes:appName="beeceptor">
       <bpmn:incoming>Flow_1dhgr0f</bpmn:incoming>
     </bpmn:task>
-    <bpmn:task id="Activity_0rrt44t" pipes:pipesType="custom" pipes:sdkHost="node-sdk:8080" name="mysql-product-store-id" pipes:sdkHostName="worker" pipes:appName="mysql">
+    <bpmn:task id="Activity_0rrt44t" pipes:pipesType="custom" pipes:sdkHost="node-sdk:8080" name="mysql-product-store-id" pipes:sdkHostName="node-sdk" pipes:appName="mysql">
       <bpmn:incoming>Flow_1oyepls</bpmn:incoming>
     </bpmn:task>
     <bpmn:sequenceFlow id="Flow_098yel8" sourceRef="Activity_0qq3qff" targetRef="Activity_0bmuooz"/>

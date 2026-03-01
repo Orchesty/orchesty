@@ -1,0 +1,82 @@
+{
+    "connections": [
+        {
+            "from": "99b7aa22a8f53673",
+            "id": "afe9cf78be377294",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "0a63db49152e2e1e"
+        },
+        {
+            "from": "637349e49eb22e6f",
+            "id": "82b35b45cdb54f1b",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "50f93eda6ff374f1"
+        }
+    ],
+    "nodes": [
+        {
+            "action": null,
+            "id": "99b7aa22a8f53673",
+            "label": "Event",
+            "name": "subscribe",
+            "position": {
+                "x": 436,
+                "y": 406
+            },
+            "property": null,
+            "shape": "circle",
+            "type": "flow"
+        },
+        {
+            "action": null,
+            "id": "637349e49eb22e6f",
+            "label": "Event",
+            "name": "unsubscribe",
+            "position": {
+                "x": 436,
+                "y": 580
+            },
+            "property": null,
+            "shape": "circle",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": "beeceptor",
+                "name": "beeceptor-create-webhooks",
+                "type": "batch",
+                "worker": "node-sdk"
+            },
+            "id": "0a63db49152e2e1e",
+            "label": "Batch",
+            "name": null,
+            "position": {
+                "x": 634,
+                "y": 406
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": "beeceptor",
+                "name": "beeceptor-delete-webhooks",
+                "type": "batch",
+                "worker": "node-sdk"
+            },
+            "id": "50f93eda6ff374f1",
+            "label": "Batch",
+            "name": null,
+            "position": {
+                "x": 634,
+                "y": 580
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        }
+    ]
+}

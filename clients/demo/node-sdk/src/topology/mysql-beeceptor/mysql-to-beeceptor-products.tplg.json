@@ -1,0 +1,292 @@
+{
+    "connections": [
+        {
+            "from": "a22949f71e32eda5",
+            "id": "024de9dfeb2c7e6c",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "ce4c2561e0ec02cb"
+        },
+        {
+            "from": "ce4c2561e0ec02cb",
+            "id": "fb8acf584009e688",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "58be76fbb90bacbd"
+        },
+        {
+            "from": "58be76fbb90bacbd",
+            "id": "e1265364e692d0e7",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "bbf3120d3a7c7d68"
+        },
+        {
+            "from": "58be76fbb90bacbd",
+            "id": "b7db68ee274743cf",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "f0d3814c1e9611b6"
+        },
+        {
+            "from": "bbf3120d3a7c7d68",
+            "id": "8fe374fc71d03ab7",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "2d7d48f22ad6acd9"
+        },
+        {
+            "from": "26b0b8c8d05301f8",
+            "id": "0e733d9bc0bbb596",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "ce4c2561e0ec02cb"
+        },
+        {
+            "from": "5c9d09682a2b8667",
+            "id": "4d051d3c519b6d80",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "ce4c2561e0ec02cb"
+        },
+        {
+            "from": "92edba2a3a159b4c",
+            "id": "f4dc64f671e7abd2",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "bafdc1bff566d22e"
+        },
+        {
+            "from": "bafdc1bff566d22e",
+            "id": "4c2cdd75d2ff9d35",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "c417121b5fe897ec"
+        },
+        {
+            "from": "c417121b5fe897ec",
+            "id": "18f7cb476f0aee74",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "b13563f0d3dad9e3"
+        },
+        {
+            "from": "be4c4c416efd4c9a",
+            "id": "e17759c77b81a143",
+            "sourceOutput": "output",
+            "targetInput": "input",
+            "to": "bafdc1bff566d22e"
+        }
+    ],
+    "nodes": [
+        {
+            "action": null,
+            "id": "a22949f71e32eda5",
+            "label": "Event",
+            "name": "product",
+            "position": {
+                "x": 400,
+                "y": 304
+            },
+            "property": null,
+            "shape": "circle",
+            "type": "flow"
+        },
+        {
+            "action": null,
+            "id": "26b0b8c8d05301f8",
+            "label": "Webhook",
+            "name": "product-created",
+            "position": {
+                "x": 400,
+                "y": 449
+            },
+            "property": null,
+            "shape": "circle",
+            "type": "flow"
+        },
+        {
+            "action": null,
+            "id": "5c9d09682a2b8667",
+            "label": "Webhook",
+            "name": "product-updated",
+            "position": {
+                "x": 400,
+                "y": 594
+            },
+            "property": null,
+            "shape": "circle",
+            "type": "flow"
+        },
+        {
+            "action": null,
+            "id": "92edba2a3a159b4c",
+            "label": "Event",
+            "name": "product-category",
+            "position": {
+                "x": 400,
+                "y": 797
+            },
+            "property": null,
+            "shape": "circle",
+            "type": "flow"
+        },
+        {
+            "action": null,
+            "id": "be4c4c416efd4c9a",
+            "label": "Webhook",
+            "name": "product-category-updated",
+            "position": {
+                "x": 570,
+                "y": 971
+            },
+            "property": null,
+            "shape": "circle",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": "mysql",
+                "name": "get-product-list-sql-batch-connector",
+                "type": "batch",
+                "worker": "node-sdk"
+            },
+            "id": "ce4c2561e0ec02cb",
+            "label": "Batch",
+            "name": null,
+            "position": {
+                "x": 610,
+                "y": 304
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": "mysql",
+                "name": "mysql-product-find-id",
+                "type": "custom",
+                "worker": "node-sdk"
+            },
+            "id": "58be76fbb90bacbd",
+            "label": "Custom Action",
+            "name": null,
+            "position": {
+                "x": 805,
+                "y": 304
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": "beeceptor",
+                "name": "beeceptor-post-product-connector",
+                "type": "connector",
+                "worker": "node-sdk"
+            },
+            "id": "bbf3120d3a7c7d68",
+            "label": "Connector",
+            "name": null,
+            "position": {
+                "x": 988,
+                "y": 304
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": "beeceptor",
+                "name": "beeceptor-put-product-connector",
+                "type": "connector",
+                "worker": "node-sdk"
+            },
+            "id": "f0d3814c1e9611b6",
+            "label": "Connector",
+            "name": null,
+            "position": {
+                "x": 988,
+                "y": 478
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": "mysql",
+                "name": "mysql-product-store-id",
+                "type": "custom",
+                "worker": "node-sdk"
+            },
+            "id": "2d7d48f22ad6acd9",
+            "label": "Custom Action",
+            "name": null,
+            "position": {
+                "x": 1195,
+                "y": 304
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": "mysql",
+                "name": "get-product-category-list-sql-batch-connector",
+                "type": "batch",
+                "worker": "node-sdk"
+            },
+            "id": "bafdc1bff566d22e",
+            "label": "Batch",
+            "name": null,
+            "position": {
+                "x": 610,
+                "y": 797
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": "mysql",
+                "name": "mysql-product-category-find-id",
+                "type": "custom",
+                "worker": "node-sdk"
+            },
+            "id": "c417121b5fe897ec",
+            "label": "Custom Action",
+            "name": null,
+            "position": {
+                "x": 805,
+                "y": 797
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        },
+        {
+            "action": {
+                "app": "beeceptor",
+                "name": "beeceptor-put-product-categories-connector",
+                "type": "connector",
+                "worker": "node-sdk"
+            },
+            "id": "b13563f0d3dad9e3",
+            "label": "Connector",
+            "name": null,
+            "position": {
+                "x": 988,
+                "y": 797
+            },
+            "property": null,
+            "shape": "square",
+            "type": "flow"
+        }
+    ]
+}
