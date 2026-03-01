@@ -20,6 +20,7 @@ use Hanaboso\CommonsBundle\Transport\Curl\Dto\RequestDto;
 use Hanaboso\CommonsBundle\Transport\CurlManagerInterface;
 use Hanaboso\PipesFramework\Configurator\Cron\CronManager;
 use Hanaboso\PipesFramework\Configurator\Document\ApiToken;
+use Hanaboso\PipesFramework\Configurator\Document\Sdk;
 use Hanaboso\PipesFramework\Configurator\Enum\ApiTokenScopesEnum;
 use Hanaboso\PipesFramework\Configurator\Exception\TopologyException;
 use Hanaboso\PipesFramework\Database\Document\Embed\EmbedNode;
@@ -168,6 +169,7 @@ final class TopologyManager
         $topology = $this->setTopologyData(new Topology(), $data);
         $topology->setVersion($this->topologyRepository->getMaxVersion($data['name']) + 1);
         $topology->setRawBpmn(sprintf(self::DEFAULT_SCHEME, $topology->getName()));
+        $topology->setJson(['connections' => [], 'nodes' => []]);
 
         $this->dm->persist($topology);
         $this->dm->flush();
@@ -256,6 +258,75 @@ final class TopologyManager
     {
         $oldSchemaObject = TopologySchemaUtils::getSchemaObject($topology->getBpmn());
         $newSchemaObject = TopologySchemaUtils::getSchemaObject($data);
+
+        $oldSchemaSha256 = TopologySchemaUtils::getSchemaFullIndexHash($oldSchemaObject);
+        $newSchemaSha256 = TopologySchemaUtils::getSchemaFullIndexHash($newSchemaObject);
+
+        return $oldSchemaSha256 === $newSchemaSha256;
+    }
+
+    /**
+     * @param Topology    $topology
+     * @param mixed[]     $data
+     * @param string|null $forceHost
+     *
+     * @return Topology
+     * @throws TopologyException
+     * @throws MongoDBException
+     * @throws JsonException
+     */
+    public function saveTopologyJsonSchema(Topology $topology, array $data, ?string $forceHost = NULL): Topology
+    {
+        $sdkUrlMap       = $forceHost !== NULL ? $this->getForcedSdkUrlMap($data, $forceHost) : $this->getSdkUrlMap();
+        $newSchemaObject = TopologySchemaUtils::getSchemaObjectFromJson($data, $sdkUrlMap);
+        $newSchemaSha256 = TopologySchemaUtils::getIndexHash($newSchemaObject, $this->checkInfiniteLoop);
+
+        $cloned              = FALSE;
+        $originalContentHash = $topology->getContentHash();
+
+        if ($originalContentHash !== $newSchemaSha256) {
+            if ($originalContentHash !== '' && $topology->getVisibility() === TopologyStatusEnum::PUBLIC->value) {
+                $topology = $this->cloneTopologyShallow($topology, $newSchemaSha256);
+                $cloned   = TRUE;
+            } else {
+                $topology->setContentHash($newSchemaSha256);
+            }
+        }
+
+        try {
+            if ($cloned || $originalContentHash === '') {
+                $this->generateNodes($topology, $newSchemaObject);
+            } else {
+                $this->updateNodes($topology, $newSchemaObject);
+            }
+        } catch (TopologyException $e) {
+            $topology->setContentHash('');
+            $this->removeNodesByTopology($topology);
+
+            throw $e;
+        }
+
+        $topology
+            ->setApplications($newSchemaObject->getApplicationList())
+            ->setJson($data);
+        $this->dm->flush();
+
+        return $topology;
+    }
+
+    /**
+     * @param Topology $topology
+     * @param mixed[]  $data
+     *
+     * @return bool
+     * @throws TopologyException
+     */
+    public function checkTopologyJsonSchemaIsSame(Topology $topology, array $data): bool
+    {
+        $sdkUrlMap = $this->getSdkUrlMap();
+
+        $oldSchemaObject = TopologySchemaUtils::getSchemaObjectFromJson($topology->getJson(), $sdkUrlMap);
+        $newSchemaObject = TopologySchemaUtils::getSchemaObjectFromJson($data, $sdkUrlMap);
 
         $oldSchemaSha256 = TopologySchemaUtils::getSchemaFullIndexHash($oldSchemaObject);
         $newSchemaSha256 = TopologySchemaUtils::getSchemaFullIndexHash($newSchemaObject);
@@ -474,6 +545,42 @@ final class TopologyManager
      */
 
     /**
+     * @return mixed[] worker name => SDK URL
+     */
+    private function getSdkUrlMap(): array
+    {
+        $map  = [];
+        $sdks = $this->dm->getRepository(Sdk::class)->findAll();
+
+        foreach ($sdks as $sdk) {
+            $map[$sdk->getName()] = $sdk->getUrl();
+        }
+
+        return $map;
+    }
+
+    /**
+     * @param mixed[] $data
+     * @param string  $forceHost
+     *
+     * @return mixed[]
+     */
+    private function getForcedSdkUrlMap(array $data, string $forceHost): array
+    {
+        $map = [];
+
+        foreach ($data['nodes'] ?? [] as $node) {
+            $worker = $node['action']['worker'] ?? '';
+
+            if ($worker !== '') {
+                $map[$worker] = $forceHost;
+            }
+        }
+
+        return $map;
+    }
+
+    /**
      * @param Topology $topology
      * @param string   $hash
      *
@@ -490,6 +597,7 @@ final class TopologyManager
             ->setEnabled(FALSE)
             ->setContentHash($hash)
             ->setBpmn($topology->getBpmn())
+            ->setJson($topology->getJson())
             ->setRawBpmn($topology->getRawBpmn());
 
         $this->dm->persist($res);

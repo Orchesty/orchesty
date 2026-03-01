@@ -9,6 +9,7 @@ use Hanaboso\PipesFramework\TopologyInstaller\Dto\CompareResultDto;
 use Hanaboso\PipesFramework\TopologyInstaller\TopologiesComparator;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
 use Hanaboso\Utils\File\File;
+use Hanaboso\Utils\String\Json;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PipesFrameworkTests\DatabaseTestCaseAbstract;
 
@@ -28,14 +29,15 @@ final class TopologiesComparatorTest extends DatabaseTestCaseAbstract
      */
     public function testCompare(): void
     {
-        $xmlDecoder = self::getContainer()->get('rest.decoder.xml');
-        $topology   = new Topology();
+        $sdkUrlMap = [];
+
+        $topology = new Topology();
         $topology
             ->setName('file')
-            ->setRawBpmn($this->load('file.tplg', TRUE))
+            ->setJson($this->loadJson('file.tplg.json', TRUE))
             ->setContentHash(
                 TopologySchemaUtils::getIndexHash(
-                    TopologySchemaUtils::getSchemaObject($xmlDecoder->decode($this->load('file.tplg', TRUE))),
+                    TopologySchemaUtils::getSchemaObjectFromJson($this->loadJson('file.tplg.json', TRUE), $sdkUrlMap),
                 ),
             )
             ->setEnabled(TRUE)
@@ -45,10 +47,10 @@ final class TopologiesComparatorTest extends DatabaseTestCaseAbstract
         $topology3 = new Topology();
         $topology3
             ->setName('file2')
-            ->setRawBpmn($this->load('file2.tplg', FALSE))
+            ->setJson($this->loadJson('file2.tplg.json', FALSE))
             ->setContentHash(
                 TopologySchemaUtils::getIndexHash(
-                    TopologySchemaUtils::getSchemaObject($xmlDecoder->decode($this->load('file2.tplg', FALSE))),
+                    TopologySchemaUtils::getSchemaObjectFromJson($this->loadJson('file2.tplg.json', FALSE), $sdkUrlMap),
                 ),
             )
             ->setEnabled(TRUE)
@@ -66,7 +68,7 @@ final class TopologiesComparatorTest extends DatabaseTestCaseAbstract
         $dir = sprintf('%s/data', __DIR__);
 
         $repo       = $this->dm->getRepository(Topology::class);
-        $comparator = new TopologiesComparator($repo, $xmlDecoder, [$dir], TRUE);
+        $comparator = new TopologiesComparator($repo, $sdkUrlMap, [$dir], TRUE);
 
         $result = $comparator->compare();
         $create = $result->getCreate();
@@ -81,17 +83,17 @@ final class TopologiesComparatorTest extends DatabaseTestCaseAbstract
      * @param string $name
      * @param bool   $change
      *
-     * @return string
+     * @return mixed[]
      */
-    private function load(string $name, bool $change): string
+    private function loadJson(string $name, bool $change): array
     {
         $content = File::getContent(sprintf('%s/data/%s', __DIR__, $name));
 
-        if (!$change) {
-            return $content;
+        if ($change) {
+            $content = str_replace('salesforce-create-contact-mapper', 'salesforce-updaet-contact-mapper', $content);
         }
 
-        return str_replace('salesforce-create-contact-mapper', 'salesforce-updaet-contact-mapper', $content);
+        return Json::decode($content);
     }
 
 }
