@@ -60,7 +60,8 @@ export async function fetchProcessesTotalCounts(
 export async function fetchProcessesGraphData(
   filter: ProcessFilter,
   dateFrom: string,
-  dateTo: string
+  dateTo: string,
+  buckets: number
 ): Promise<ProcessesChartData> {
   const filterObj: ProcessApiFilter = {
     search: null,
@@ -73,7 +74,7 @@ export async function fetchProcessesGraphData(
   }
 
   const response = await api.get<ProcessGraphApiResponse>('/api/processes/graph', {
-    params: { filter: JSON.stringify(filterObj) }
+    params: { filter: JSON.stringify(filterObj), buckets }
   })
 
   // Group by topology
@@ -434,7 +435,8 @@ export async function fetchTrashData(params: {
 export async function fetchConnectorHeatmapData(
   filter: ProcessFilter,
   dateFrom: string,
-  dateTo: string
+  dateTo: string,
+  buckets: number
 ): Promise<ConnectorHeatmapData> {
   const filterObj = {
     search: null,
@@ -448,7 +450,7 @@ export async function fetchConnectorHeatmapData(
 
   const response = await api.get<ConnectorHeatmapApiResponse>(
     '/api/metrics/connectors/heatmap',
-    { params: { filter: JSON.stringify(filterObj) } }
+    { params: { filter: JSON.stringify(filterObj), buckets } }
   )
 
   // Group by nodeId, track applicationId per node

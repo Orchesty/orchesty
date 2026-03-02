@@ -39,7 +39,7 @@ const loadData = async () => {
     const dateFrom = formatDateTimeForApi(range.from) || ''
     const dateTo = formatDateTimeForApi(range.to) || ''
 
-    const data = await fetchConnectorHeatmapData(props.heatmapFilter, dateFrom, dateTo)
+    const data = await fetchConnectorHeatmapData(props.heatmapFilter, dateFrom, dateTo, 20)
 
     // Map nodeIds to connector names and resolve application names.
     // Track which application each connector belongs to.
