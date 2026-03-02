@@ -44,7 +44,7 @@ use JsonException;
  *
  * @package Hanaboso\PipesFramework\Configurator\Model
  */
-final class TopologyManager
+class TopologyManager
 {
 
     use UrlBuilderTrait;
@@ -81,6 +81,7 @@ final class TopologyManager
      * @param bool                   $checkInfiniteLoop
      * @param CurlManagerInterface   $curl
      * @param string                 $startingPointHost
+     * @param class-string<Topology> $topologyClass
      */
     function __construct(
         DatabaseManagerLocator $dml,
@@ -88,13 +89,15 @@ final class TopologyManager
         private bool $checkInfiniteLoop,
         private CurlManagerInterface $curl,
         string $startingPointHost,
+        protected string $topologyClass = Topology::class,
     )
     {
         /** @var DocumentManager $dm */
         $dm       = $dml->getDm();
         $this->dm = $dm;
 
-        $topoRepo                 = $this->dm->getRepository(Topology::class);
+        /** @var TopologyRepository<Topology> $topoRepo */
+        $topoRepo                 = $this->dm->getRepository($this->topologyClass);
         $this->topologyRepository = $topoRepo;
 
         $nodeRepo             = $this->dm->getRepository(Node::class);
@@ -166,7 +169,7 @@ final class TopologyManager
             );
         }
 
-        $topology = $this->setTopologyData(new Topology(), $data);
+        $topology = $this->setTopologyData(new $this->topologyClass(), $data);
         $topology->setVersion($this->topologyRepository->getMaxVersion($data['name']) + 1);
         $topology->setRawBpmn(sprintf(self::DEFAULT_SCHEME, $topology->getName()));
         $topology->setJson(['connections' => [], 'nodes' => []]);
@@ -545,6 +548,58 @@ final class TopologyManager
      */
 
     /**
+     * @param Topology $topology
+     * @param string   $hash
+     *
+     * @return Topology
+     */
+    protected function cloneTopologyShallow(Topology $topology, string $hash): Topology
+    {
+        $version        = $this->topologyRepository->getMaxVersion($topology->getName());
+        $clonedTopology = (new $this->topologyClass())
+            ->setName($topology->getName())
+            ->setVersion($version + 1)
+            ->setDescr($topology->getDescr())
+            ->setCategory($topology->getCategory())
+            ->setEnabled(FALSE)
+            ->setContentHash($hash)
+            ->setBpmn($topology->getBpmn())
+            ->setJson($topology->getJson())
+            ->setRawBpmn($topology->getRawBpmn());
+
+        $this->dm->persist($clonedTopology);
+
+        return $clonedTopology;
+    }
+
+    /**
+     * @param Topology $topology
+     * @param mixed[]  $data
+     *
+     * @return Topology
+     */
+    protected function setTopologyData(Topology $topology, array $data): Topology
+    {
+        if (isset($data['name'])) {
+            $topology->setName($data['name']);
+        }
+
+        if (isset($data['description'])) {
+            $topology->setDescr($data['description']);
+        }
+
+        if (isset($data['enabled'])) {
+            $topology->setEnabled($data['enabled']);
+        }
+
+        if (array_key_exists('category', $data)) {
+            $topology->setCategory($data['category']);
+        }
+
+        return $topology;
+    }
+
+    /**
      * @return mixed[] worker name => SDK URL
      */
     private function getSdkUrlMap(): array
@@ -578,31 +633,6 @@ final class TopologyManager
         }
 
         return $map;
-    }
-
-    /**
-     * @param Topology $topology
-     * @param string   $hash
-     *
-     * @return Topology
-     */
-    private function cloneTopologyShallow(Topology $topology, string $hash): Topology
-    {
-        $version = $this->topologyRepository->getMaxVersion($topology->getName());
-        $res     = (new Topology())
-            ->setName($topology->getName())
-            ->setVersion($version + 1)
-            ->setDescr($topology->getDescr())
-            ->setCategory($topology->getCategory())
-            ->setEnabled(FALSE)
-            ->setContentHash($hash)
-            ->setBpmn($topology->getBpmn())
-            ->setJson($topology->getJson())
-            ->setRawBpmn($topology->getRawBpmn());
-
-        $this->dm->persist($res);
-
-        return $res;
     }
 
     /**
@@ -846,33 +876,6 @@ final class TopologyManager
                 );
             }
         }
-    }
-
-    /**
-     * @param Topology $topology
-     * @param mixed[]  $data
-     *
-     * @return Topology
-     */
-    private function setTopologyData(Topology $topology, array $data): Topology
-    {
-        if (isset($data['name'])) {
-            $topology->setName($data['name']);
-        }
-
-        if (isset($data['description'])) {
-            $topology->setDescr($data['description']);
-        }
-
-        if (isset($data['enabled'])) {
-            $topology->setEnabled($data['enabled']);
-        }
-
-        if (array_key_exists('category', $data)) {
-            $topology->setCategory($data['category']);
-        }
-
-        return $topology;
     }
 
     /**

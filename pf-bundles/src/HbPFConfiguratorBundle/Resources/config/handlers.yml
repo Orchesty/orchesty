@@ -11,6 +11,7 @@ services:
             - '@hbpf.topology_generator.bridge'
             - '@hbpf.user_task.handler.user_task'
             - '@hbpf.topology.tester'
+            - 'Hanaboso\PipesFramework\Database\Document\Topology'
 
     hbpf.configurator.handler.node:
         class: Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\NodeHandler

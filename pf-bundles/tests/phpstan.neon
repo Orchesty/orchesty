@@ -47,6 +47,8 @@ parameters:
 			- PipesFrameworkTests\KernelTestCaseAbstract
 			- Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator
 			- Hanaboso\MongoDataGrid\GridAggregationFilterAbstract
+			- Hanaboso\PipesFramework\Configurator\Model\TopologyManager
+			- Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler
 
 		classesNotRequiredToBeAbstractOrFinal:
 			- Hanaboso\PipesFramework\HbPFUsageStatsBundle\Manager\AppInstallUsageStatsSender
@@ -91,3 +93,5 @@ parameters:
 			- Hanaboso\PipesFramework\User\Document\UserSettings
 			- Hanaboso\PipesFramework\UsageStats\Document\UsageStatsEvent
 			- Hanaboso\PipesFramework\Configurator\Document\ApiToken
+			- Hanaboso\PipesFramework\Configurator\Model\TopologyManager
+			- Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler
