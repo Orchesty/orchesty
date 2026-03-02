@@ -76,6 +76,7 @@ final class ProcessController
         return $this->getResponse(
             $this->handler->getProcessesGraph(
                 new GridRequestDto(Json::decode($request->query->get('filter', '{}'))),
+                $request->query->getInt('buckets'),
             ),
         );
     }

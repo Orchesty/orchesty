@@ -126,13 +126,14 @@ final readonly class MetricsHandler
 
     /**
      * @param GridRequestDtoInterface $dto
+     * @param int                     $buckets
      *
      * @return mixed[]
      * @throws Exception
      */
-    public function getMetricsConnectorsHeatmap(GridRequestDtoInterface $dto): array
+    public function getMetricsConnectorsHeatmap(GridRequestDtoInterface $dto, int $buckets): array
     {
-        return $this->getGridResponse($dto, $this->manager->getMetricsConnectorsHeatmap($dto));
+        return $this->getGridResponse($dto, $this->manager->getMetricsConnectorsHeatmap($dto, $buckets));
     }
 
     /**

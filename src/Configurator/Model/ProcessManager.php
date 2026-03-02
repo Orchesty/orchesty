@@ -58,12 +58,15 @@ final readonly class ProcessManager
 
     /**
      * @param GridRequestDtoInterface $dto
+     * @param int                     $buckets
      *
      * @return array<mixed>
      * @throws Exception
      */
-    public function getProcessesGraph(GridRequestDtoInterface $dto): array
+    public function getProcessesGraph(GridRequestDtoInterface $dto, int $buckets): array
     {
+        $this->processGraphAggregationFilter->setBucketCount($buckets);
+
         return $this->processGraphAggregationFilter->getData($dto)->toArray();
     }
 

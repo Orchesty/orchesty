@@ -389,12 +389,15 @@ final class MongoMetricsManager extends MetricsManagerAbstract
 
     /**
      * @param GridRequestDtoInterface $dto
+     * @param int                     $buckets
      *
      * @return array<mixed>
      * @throws Exception
      */
-    public function getMetricsConnectorsHeatmap(GridRequestDtoInterface $dto): array
+    public function getMetricsConnectorsHeatmap(GridRequestDtoInterface $dto, int $buckets): array
     {
+        $this->metricConnectorHeatmapAggregationFilter->setBucketCount($buckets);
+
         return $this->metricConnectorHeatmapAggregationFilter->getData($dto)->toArray();
     }
 

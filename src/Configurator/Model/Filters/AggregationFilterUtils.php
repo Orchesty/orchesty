@@ -73,6 +73,29 @@ final readonly class AggregationFilterUtils
 
     /**
      * @param Builder $builder
+     * @param int     $buckets
+     *
+     * @return array{int, UTCDateTime|NULL, UTCDateTime|NULL}
+     */
+    public static function getDensifyBinSizeAndRangeFromAggregationBuilder(Builder $builder, int $buckets): array
+    {
+        try {
+            [$gte, $lte] = self::getDates($builder);
+
+            if ($gte === NULL || $lte === NULL) {
+                return [24 * 60 * 60 * 1_000, NULL, NULL];
+            }
+
+            $rangeSeconds = $lte->toDateTime()->getTimestamp() - $gte->toDateTime()->getTimestamp();
+
+            return [max(1_000, (int) ceil($rangeSeconds / $buckets) * 1_000), $gte, $lte];
+        } catch (OutOfRangeException) {
+            return [24 * 60 * 60 * 1_000, NULL, NULL];
+        }
+    }
+
+    /**
+     * @param Builder $builder
      * @return array{UTCDateTime|NULL, UTCDateTime|NULL}
      */
     private static function getDates(Builder $builder): array
