@@ -202,9 +202,9 @@ final class TopologyRepositoryTest extends DatabaseTestCaseAbstract
 
     /**
      * @return void
-     * @throws MongoDBException
      * @throws EnumException
      * @throws Exception
+     * @throws MongoDBException
      */
     public function testGetTopologiesWithSameName(): void
     {

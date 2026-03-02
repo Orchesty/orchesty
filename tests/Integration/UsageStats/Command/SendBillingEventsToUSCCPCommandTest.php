@@ -47,8 +47,8 @@ final class SendBillingEventsToUSCCPCommandTest extends DatabaseTestCaseAbstract
     /**
      * @return void
      * @throws DateTimeException
-     * @throws MongoDBException
      * @throws Exception
+     * @throws MongoDBException
      */
     public function testExecute(): void
     {

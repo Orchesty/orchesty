@@ -42,8 +42,8 @@ final class ApiTokenController extends AbstractController
      * @param Request $request
      *
      * @return Response
-     * @throws MongoDBException
      * @throws GridException
+     * @throws MongoDBException
      */
     #[Route('/apiTokens', methods: ['GET'])]
     public function getApiTokensAction(Request $request): Response

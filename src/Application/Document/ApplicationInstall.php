@@ -20,10 +20,10 @@ use Hanaboso\Utils\Exception\DateTimeException;
 class ApplicationInstall
 {
 
-    use IdTrait;
     use CreatedTrait;
-    use UpdatedTrait;
     use DeletedTrait;
+    use IdTrait;
+    use UpdatedTrait;
 
     public const string USER = 'user';
     public const string KEY  = 'key';

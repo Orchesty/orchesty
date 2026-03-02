@@ -84,10 +84,10 @@ final class TopologyGeneratorBridge
      *
      * @return ResponseDto
      * @throws CurlException
-     * @throws TopologyConfigException
+     * @throws JsonException
      * @throws LockException
      * @throws MappingException
-     * @throws JsonException
+     * @throws TopologyConfigException
      */
     public function generateTopology(string $topologyId): ResponseDto
     {

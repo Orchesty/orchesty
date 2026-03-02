@@ -22,8 +22,8 @@ use Hanaboso\Utils\String\Json;
 class Topology
 {
 
-    use IdTrait;
     use DeletedTrait;
+    use IdTrait;
 
     /**
      * @var string

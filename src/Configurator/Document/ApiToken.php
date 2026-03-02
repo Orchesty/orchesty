@@ -20,8 +20,8 @@ use Hanaboso\Utils\Exception\DateTimeException;
 class ApiToken
 {
 
-    use IdTrait;
     use CreatedTrait;
+    use IdTrait;
 
     public const string ID        = 'id';
     public const string CREATED   = 'created';

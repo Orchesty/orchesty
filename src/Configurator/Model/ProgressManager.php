@@ -33,8 +33,8 @@ final class ProgressManager
      * @param GridRequestDtoInterface $dto
      *
      * @return array<mixed>
-     * @throws MongoDBException
      * @throws Exception
+     * @throws MongoDBException
      */
     public function getProgress(GridRequestDtoInterface $dto): array
     {

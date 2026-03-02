@@ -55,8 +55,8 @@ use Hanaboso\Utils\String\Json;
 class UserTask
 {
 
-    use IdTrait;
     use CreatedTrait;
+    use IdTrait;
     use UpdatedTrait;
 
     public const string ID                 = 'id';

@@ -16,8 +16,8 @@ use Hanaboso\Utils\String\Json;
 abstract class DatabaseTestCaseAbstract extends KernelTestCaseAbstract
 {
 
-    use DatabaseTestTrait;
     use CustomAssertTrait;
+    use DatabaseTestTrait;
 
     /**
      * @throws Exception
