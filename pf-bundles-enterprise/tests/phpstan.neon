@@ -15,11 +15,17 @@ parameters:
 	ergebnis:
 		classesAllowedToBeExtended:
 			- Hanaboso\PipesFramework\Configurator\Document\TopologyProgress
+			- Hanaboso\PipesFramework\Configurator\Model\TopologyManager
+			- Hanaboso\PipesFramework\Database\Document\Topology
+			- Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\TopologyHandler
 			- PipesFrameworkEnterpriseTests\ControllerTestCaseAbstract
 			- PipesFrameworkEnterpriseTests\DatabaseTestCaseAbstract
 			- PipesFrameworkEnterpriseTests\KernelTestCaseAbstract
 		classesNotRequiredToBeAbstractOrFinal:
 			- Hanaboso\PipesFrameworkEnterprise\Configurator\Document\TopologyProgress
+			- Hanaboso\PipesFrameworkEnterprise\Database\Document\Topology
+			- Hanaboso\PipesFrameworkEnterprise\Configurator\Model\TopologyManager
+			- Hanaboso\PipesFrameworkEnterprise\Configurator\Handler\TopologyHandler
 			- Hanaboso\PipesFrameworkEnterprise\Mcp\Document\AuditData
 			- Hanaboso\PipesFrameworkEnterprise\Mcp\Document\AuditDataField
 			- Hanaboso\PipesFrameworkEnterprise\Mcp\Document\AuditEntity

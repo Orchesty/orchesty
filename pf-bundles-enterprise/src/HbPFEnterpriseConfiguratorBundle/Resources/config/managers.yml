@@ -1,0 +1,13 @@
+services:
+    _defaults:
+        public: '%public.services%'
+
+    hbpf.configurator.manager.topology:
+        class: Hanaboso\PipesFrameworkEnterprise\Configurator\Model\TopologyManager
+        arguments:
+            - '@hbpf.database_manager_locator'
+            - '@hbpf.cron.manager'
+            - '%checkInfiniteLoop%'
+            - '@hbpf.transport.curl_manager'
+            - '%startingPointHost%'
+            - 'Hanaboso\PipesFrameworkEnterprise\Database\Document\Topology'
