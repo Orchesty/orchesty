@@ -1,7 +1,6 @@
 import type { LogEntry, LogQueryParams, LogApiFilter, LogApiResponse } from '@/types/logs'
 import api from '@/services/api'
 import { convertTimeFilterToDateTimeRange, formatDateTimeForApiFilter } from '@/utils/timeRangeConverter'
-import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 
 interface LogsResponse {
   data: LogEntry[]
@@ -82,17 +81,26 @@ export async function fetchLogs(params: LogQueryParams = {}): Promise<LogsRespon
 
   // Add node filter
   if (params.node) {
+    const nodeValues = Array.isArray(params.node) ? params.node : [params.node]
     filterObj.filter.push([
       {
         column: 'nodeId',
         operator: 'EQ',
-        value: [params.node]
+        value: nodeValues
       }
     ])
   }
 
   // Add time range filter
-  if (params.timeRange) {
+  if (params.dateFrom && params.dateTo) {
+    filterObj.filter.push([
+      {
+        column: 'created',
+        operator: 'BETWEEN',
+        value: [params.dateFrom, params.dateTo]
+      }
+    ])
+  } else if (params.timeRange) {
     const dateRange = convertTimeFilterToDateTimeRange(params.timeRange)
     const fromISO = formatDateTimeForApiFilter(dateRange.from)
     const toISO = formatDateTimeForApiFilter(dateRange.to)
@@ -111,16 +119,13 @@ export async function fetchLogs(params: LogQueryParams = {}): Promise<LogsRespon
     `/api/logs?filter=${encodeURIComponent(JSON.stringify(filterObj))}`
   )
 
-  // Resolve topology/node names
-  const { getTopologyName, getNodeName } = useTopologyNodeMappings()
-
-  // Map API items to LogEntry
+  // Map API items to LogEntry (raw IDs; names resolved reactively in template)
   const mappedItems: LogEntry[] = response.data.items.map(item => ({
     id: item.id,
     timestamp: item.created,
-    topology: getTopologyName(item.topologyId),
+    topology: item.topologyId,
     topologyId: item.topologyId,
-    node: getNodeName(item.nodeId),
+    node: item.nodeId,
     nodeId: item.nodeId,
     correlationId: item.correlationId,
     severity: item.severity as LogEntry['severity'],

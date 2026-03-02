@@ -4,8 +4,10 @@ import Drawer from '@/components/ui/Drawer.vue'
 import TimeFilter from '@/components/ui/TimeFilter.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
+import ConnectorMetricDetailModal from '@/components/dashboard/ConnectorMetricDetailModal.vue'
 import type { Connector, ConnectorDetail, ConnectorErrorRecord } from '@/types/connectors'
 import type { TimeFilter as TimeFilterType, TableColumn } from '@/types/dashboard'
+import type { ActionConfig } from '@/types/datagrid'
 import { fetchConnectorDetail, fetchConnectorErrorRecords, fetchConnectorChartData } from '@/services/connectorsService'
 import { useApexChart } from '@/composables/useApexChart'
 import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
@@ -14,6 +16,8 @@ interface Props {
   modelValue: boolean
   connector: Connector | null
   globalTimeFilter: TimeFilterType
+  /** All nodeIds for this connector (used when connector spans multiple topology nodes) */
+  nodeIds?: string[]
 }
 
 const props = defineProps<Props>()
@@ -23,7 +27,7 @@ const emit = defineEmits<{
 }>()
 
 // Use topology/node mappings composable
-const { getTopologyName } = useTopologyNodeMappings()
+const { getTopologyName, getNodeName, getApplicationName } = useTopologyNodeMappings()
 
 // Local time filter (independent from global)
 const localTimeFilter = ref<TimeFilterType>(props.globalTimeFilter)
@@ -149,7 +153,7 @@ watch(chartData, () => {
 const lastRequestStatusColor = computed(() => {
   if (!connectorDetail.value) return 'gray'
   const status = connectorDetail.value.lastRequestStatus
-  if (status === 200) return 'green'
+  if (status >= 200 && status < 300) return 'green'
   if (status >= 400 && status < 500) return 'yellow'
   return 'red'
 })
@@ -160,24 +164,22 @@ const loadData = async () => {
 
   loading.value = true
 
+  // Use nodeIds array if provided (aggregated view), otherwise single connector id
+  const queryIds = props.nodeIds && props.nodeIds.length > 0 ? props.nodeIds : props.connector.id
+
   try {
-    // Fetch connector detail
-    const detail = await fetchConnectorDetail(props.connector.id, localTimeFilter.value)
+    const detail = await fetchConnectorDetail(queryIds, localTimeFilter.value)
     connectorDetail.value = detail
 
-    // Fetch chart data
-    const chart = await fetchConnectorChartData(props.connector.id, localTimeFilter.value)
+    const chart = await fetchConnectorChartData(queryIds, localTimeFilter.value)
     chartData.value = chart
 
-    // Fetch error records
-    // Map sort field from table column key to API column name
     const apiSortField = sortField.value === 'timestamp' ? 'created' : sortField.value
     const records = await fetchConnectorErrorRecords(
-      props.connector.id,
+      queryIds,
       localTimeFilter.value,
       currentPage.value,
       itemsPerPage.value,
-      getTopologyName,
       apiSortField,
       sortDirection.value
     )
@@ -234,12 +236,29 @@ const handleSort = (config: { field: string; direction: 'asc' | 'desc' }) => {
   loadData()
 }
 
+// Metric detail modal state
+const metricDetailOpen = ref(false)
+const selectedRecord = ref<ConnectorErrorRecord | null>(null)
+
+const openMetricDetail = (record: ConnectorErrorRecord) => {
+  selectedRecord.value = record
+  metricDetailOpen.value = true
+}
+
 // Table columns for error records
 const errorRecordsColumns: TableColumn[] = [
   { key: 'timestamp', label: 'Timestamp', sortable: true, className: 'w-48' },
   { key: 'topology', label: 'Topology' },
   { key: 'code', label: 'Code' },
   { key: 'message', label: 'Error Message' },
+]
+
+const errorRecordActions: ActionConfig[] = [
+  {
+    icon: 'search',
+    title: 'View detail',
+    onClick: (row) => openMetricDetail(row as ConnectorErrorRecord),
+  },
 ]
 </script>
 
@@ -254,8 +273,8 @@ const errorRecordsColumns: TableColumn[] = [
     <template #header-actions>
       <div v-if="connector" class="flex items-center justify-between">
         <div>
-          <h3 class="text-xl font-semibold text-gray-900 dark:text-white">{{ connector.name }}</h3>
-          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ connector.application }}</p>
+          <h3 class="text-xl font-semibold text-gray-900 dark:text-white">{{ getNodeName(connector.id) }}</h3>
+          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ getApplicationName(connector.application) }}</p>
         </div>
 
         <!-- Local Time Filter -->
@@ -346,6 +365,7 @@ const errorRecordsColumns: TableColumn[] = [
           :items-per-page="itemsPerPage"
           :sort-field="sortField"
           :sort-direction="sortDirection"
+          :actions="errorRecordActions"
           @page-change="handlePageChange"
           @per-page-change="handlePerPageChange"
           @sort="handleSort"
@@ -358,9 +378,9 @@ const errorRecordsColumns: TableColumn[] = [
           </template>
 
           <!-- Custom cell for topology -->
-          <template #cell-topology="{ value }">
-            <span class="max-w-xs truncate whitespace-nowrap" :title="value">
-              {{ value }}
+          <template #cell-topology="{ row }">
+            <span class="max-w-xs truncate whitespace-nowrap" :title="getTopologyName(row.topologyId)">
+              {{ getTopologyName(row.topologyId) }}
             </span>
           </template>
 
@@ -391,5 +411,10 @@ const errorRecordsColumns: TableColumn[] = [
     <!-- Loading State -->
     <LoadingSpinner v-else-if="loading" class="py-12" text="Loading connector details..." />
   </Drawer>
+
+  <ConnectorMetricDetailModal
+    v-model="metricDetailOpen"
+    :record="selectedRecord"
+  />
 </template>
 

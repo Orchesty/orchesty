@@ -23,8 +23,15 @@ export interface ConnectorQueryParams extends QueryParams {
 }
 
 export interface ConnectorErrorRecord {
+  id: string
   timestamp: string
+  topologyId: string
   topology: string
+  nodeId: string
+  applicationId: string
+  correlationId: string
+  userId: string
+  duration: number
   code: number
   message: string
 }
@@ -104,7 +111,10 @@ export interface ConnectorErrorApiItem {
   nodeId: string
   topologyId: string
   applicationId: string
+  correlationId: string
+  userId: string
   created: string
+  duration: number
   status: number
   message: string | null
   id: string

@@ -38,7 +38,7 @@ const radioFailedId = computed(() => `heatmap-filter-failed-${props.chartId}`)
 
 const emit = defineEmits<{
   filterChange: [filter: ProcessFilter]
-  heatmapClick: [data: { name: string; timeSlot: string; timeSlotEnd: string }]
+  heatmapClick: [data: { name: string; nodeId?: string; nodeIds?: string[]; timeSlot: string; timeSlotEnd: string }]
 }>()
 
 const chartEl = ref<HTMLElement | null>(null)
@@ -159,7 +159,9 @@ const getHeatmapOptions = () => {
                 // Single slot -- fallback +1h
                 slotEnd = new Date(new Date(slotStart).getTime() + 3600000).toISOString()
               }
-              emit('heatmapClick', { name, timeSlot: slotStart, timeSlotEnd: slotEnd })
+              const nodeId = props.series[seriesIndex]._nodeId as string | undefined
+              const nodeIds = props.series[seriesIndex]._nodeIds as string[] | undefined
+              emit('heatmapClick', { name, nodeId, nodeIds, timeSlot: slotStart, timeSlotEnd: slotEnd })
             }
           }
         },

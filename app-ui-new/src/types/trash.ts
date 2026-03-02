@@ -19,7 +19,7 @@ export interface TrashQueryParams {
   sortOrder?: 'asc' | 'desc'
   search?: string
   correlationId?: string
-  node?: string
+  node?: string | string[]
   topology?: string
   timeRange?: string
   dateFrom?: string
@@ -81,5 +81,6 @@ export interface TopologyNodeMappings {
   applications: Record<string, string>
   nodes: Record<string, string>
   topologies: Record<string, string>
+  topologyVersions?: Record<string, number>
   tree: Record<string, string[]>
 }

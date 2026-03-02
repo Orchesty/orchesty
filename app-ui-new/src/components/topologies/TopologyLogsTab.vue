@@ -4,9 +4,9 @@ import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
 import TextInput from '@/components/ui/datagrid/TextInput.vue'
 import DropdownFilter from '@/components/ui/datagrid/DropdownFilter.vue'
-import TimeRangeFilterWithCustomRange from '@/components/ui/TimeRangeFilterWithCustomRange.vue'
+import DateTimeRangeFilter from '@/components/ui/datagrid/DateTimeRangeFilter.vue'
 import CopyValue from '@/components/ui/CopyValue.vue'
-import LogDetailDrawer from '@/components/logs/LogDetailDrawer.vue'
+import LogDetailModal from '@/components/logs/LogDetailModal.vue'
 import type { LogEntry, LogQueryParams, LogSeverity } from '@/types/logs'
 import type { TableColumn } from '@/types/dashboard'
 import { fetchLogs } from '@/services/logsService'
@@ -37,7 +37,10 @@ const searchFilter = ref('')
 const correlationIdFilter = ref('')
 const severityFilter = ref<LogSeverity | null>(null)
 const nodeFilter = ref<string | null>(null)
-const timeRangeFilter = ref('this-month')
+const dateTimeRange = ref<{ from: string | null; to: string | null }>({
+  from: null,
+  to: null,
+})
 
 // Severity options for dropdown
 const severityOptions = ref<{ value: LogSeverity | null; label: string }[]>([
@@ -116,8 +119,9 @@ async function loadData() {
     params.node = nodeFilter.value
   }
 
-  if (timeRangeFilter.value) {
-    params.timeRange = timeRangeFilter.value
+  if (dateTimeRange.value.from && dateTimeRange.value.to) {
+    params.dateFrom = dateTimeRange.value.from
+    params.dateTo = dateTimeRange.value.to
   }
 
   try {
@@ -147,7 +151,7 @@ const {
 } = useDataGrid({
   defaultSort: { field: 'timestamp', direction: 'desc' },
   onDataLoad: loadData,
-  filters: [searchFilter, correlationIdFilter, severityFilter, nodeFilter, timeRangeFilter],
+  filters: [searchFilter, correlationIdFilter, severityFilter, nodeFilter, dateTimeRange],
 })
 
 // Load initial data
@@ -195,7 +199,7 @@ onMounted(async () => {
           :options="nodeOptions"
           placeholder="All Nodes"
         />
-        <TimeRangeFilterWithCustomRange v-model="timeRangeFilter" />
+        <DateTimeRangeFilter v-model="dateTimeRange" />
       </template>
 
       <!-- Custom cell templates -->
@@ -260,8 +264,8 @@ onMounted(async () => {
       </template>
     </DataGrid>
 
-    <!-- Log Detail Drawer -->
-    <LogDetailDrawer
+    <!-- Log Detail Modal -->
+    <LogDetailModal
       v-model="drawerOpen"
       :log="selectedLog"
     />

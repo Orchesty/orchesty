@@ -4,11 +4,13 @@ import { useApexChart, getChartColors, getBaseChartOptions } from '@/composables
 import { useDataGrid } from '@/composables/useDataGrid'
 import { useDateFormat } from '@/composables/useDateFormat'
 import { fetchLimiterData } from '@/services/dashboardService'
+import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 import type { LimiterData, TableColumn, TimeFilter } from '@/types/dashboard'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
 
 const { formatChartLabel } = useDateFormat()
+const { getNodeName } = useTopologyNodeMappings()
 
 /**
  * Get granularity in minutes matching backend's getDateTruncBinSize logic
@@ -314,8 +316,8 @@ const getColumnChartOptions = () => {
         :loading="loading"
         @sort="handleSort"
       >
-        <template #cell-connector="{ value }">
-          <span class="font-medium text-gray-900 dark:text-white">{{ value }}</span>
+        <template #cell-connector="{ row }">
+          <span class="font-medium text-gray-900 dark:text-white">{{ getNodeName(row.nodeId) }}</span>
         </template>
         <template #cell-messages="{ row }">
           {{ row.maxMessages }}

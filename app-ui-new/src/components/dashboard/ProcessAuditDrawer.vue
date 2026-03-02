@@ -24,7 +24,7 @@ const emit = defineEmits<{
 }>()
 
 const router = useRouter()
-const { getNodeName, getApplicationName, loadMappings } = useTopologyNodeMappings()
+const { getTopologyName, getNodeName, getApplicationName, loadMappings } = useTopologyNodeMappings()
 const { formatDateTime } = useDateFormat()
 
 // Data state
@@ -32,6 +32,8 @@ const processDetail = ref<ProcessAuditDetail | null>(null)
 const connectors = ref<ProcessConnector[]>([])
 const loading = ref(false)
 const connectorsLoading = ref(false)
+const connectorsError = ref(false)
+const trashError = ref(false)
 
 // Connector sort state
 const connectorSortField = ref('called')
@@ -65,11 +67,7 @@ const loadConnectors = async (correlationId: string) => {
       apiSortField,
       connectorSortDirection.value
     )
-    connectors.value = connectorsData.map(connector => ({
-      ...connector,
-      connector: getNodeName(connector.connector),
-      application: getApplicationName(connector.application)
-    }))
+    connectors.value = connectorsData
   } catch (error) {
     console.error('Error loading connectors:', error)
   } finally {
@@ -85,15 +83,6 @@ const handleConnectorSort = (config: { field: string; direction: 'asc' | 'desc' 
   }
 }
 
-// Debug
-watch(() => props.modelValue, (newVal) => {
-  console.log('ProcessAuditDrawer modelValue changed:', newVal)
-})
-
-watch(() => props.process, (newVal) => {
-  console.log('ProcessAuditDrawer process changed:', newVal)
-})
-
 // Load process audit detail when process changes
 watch(
   () => props.process,
@@ -104,50 +93,57 @@ watch(
     }
 
     loading.value = true
-    // Reset sort state
+    connectorsError.value = false
+    trashError.value = false
     connectorSortField.value = 'called'
     connectorSortDirection.value = 'desc'
 
     try {
-      // Load mappings first
       await loadMappings()
-
-      // Fetch connectors and trash data in parallel
-      const apiSortField = mapSortFieldToApi(connectorSortField.value)
-      const [connectorsData, trashData] = await Promise.all([
-        fetchProcessAuditConnectors(newProcess.id, apiSortField, connectorSortDirection.value),
-        fetchProcessAuditTrash(newProcess.id)
-      ])
-
-      // Map connector node IDs to names
-      connectors.value = connectorsData.map(connector => ({
-        ...connector,
-        connector: getNodeName(connector.connector),
-        application: getApplicationName(connector.application)
-      }))
-
-      // Map trash item node IDs to names
-      const mappedTrashItems = trashData.items.map(item => ({
-        ...item,
-        whereItFailed: getNodeName(item.whereItFailed)
-      }))
-
-      processDetail.value = {
-        processId: newProcess.id,
-        topology: newProcess.topology,
-        corelId: newProcess.id, // correlationId
-        startTime: newProcess.startTime,
-        endTime: calculateEndTime(newProcess.startTime, newProcess.duration),
-        status: newProcess.status,
-        connectors: connectors.value,
-        trashCount: trashData.total,
-        trashItems: mappedTrashItems,
-      }
-    } catch (error) {
-      console.error('Error loading process audit:', error)
-    } finally {
-      loading.value = false
+    } catch (e) {
+      console.warn('Failed to load mappings:', e)
     }
+
+    let connectorsData: ProcessConnector[] = []
+    let trashTotal = 0
+    let trashItems: { whereItFailed: string; errorMessage: string }[] = []
+
+    const apiSortField = mapSortFieldToApi(connectorSortField.value)
+
+    const [connectorsResult, trashResult] = await Promise.allSettled([
+      fetchProcessAuditConnectors(newProcess.id, apiSortField, connectorSortDirection.value),
+      fetchProcessAuditTrash(newProcess.id)
+    ])
+
+    if (connectorsResult.status === 'fulfilled') {
+      connectorsData = connectorsResult.value
+    } else {
+      console.error('Error loading connectors:', connectorsResult.reason)
+      connectorsError.value = true
+    }
+
+    if (trashResult.status === 'fulfilled') {
+      trashTotal = trashResult.value.total
+      trashItems = trashResult.value.items
+    } else {
+      console.error('Error loading trash data:', trashResult.reason)
+      trashError.value = true
+    }
+
+    connectors.value = connectorsData
+    processDetail.value = {
+      processId: newProcess.id,
+      topology: newProcess.topology,
+      corelId: newProcess.id,
+      startTime: newProcess.startTime,
+      endTime: calculateEndTime(newProcess.startTime, newProcess.duration),
+      status: newProcess.status,
+      connectors: connectorsData,
+      trashCount: trashTotal,
+      trashItems: trashItems,
+    }
+
+    loading.value = false
   },
   { immediate: true }
 )
@@ -178,7 +174,7 @@ const handleClose = () => {
         <div class="mb-3 flex items-start justify-between">
           <div>
             <h2 class="mb-3 text-2xl font-bold text-gray-900 dark:text-white">
-              {{ processDetail.topology }}
+              {{ getTopologyName(processDetail.topology) }}
             </h2>
             <div class="flex items-center gap-2">
               <span class="text-sm text-gray-500 dark:text-gray-400">Corel ID:</span>
@@ -273,6 +269,9 @@ const handleClose = () => {
       <!-- Connectors Table -->
       <div>
         <h4 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">Connectors</h4>
+        <p v-if="connectorsError" class="mb-3 text-sm text-yellow-600 dark:text-yellow-400">
+          Failed to load connectors data. The server may be temporarily unavailable.
+        </p>
         <DataGrid
           :columns="connectorColumns"
           :data="connectors"
@@ -287,8 +286,8 @@ const handleClose = () => {
           @sort="handleConnectorSort"
         >
           <template #cell-connector="{ row }">
-            <span class="font-medium text-gray-900 dark:text-white">{{ row.connector }}</span>
-            <span class="text-gray-500 dark:text-gray-400"> ({{ row.application }})</span>
+            <span class="font-medium text-gray-900 dark:text-white">{{ getNodeName(row.connector) }}</span>
+            <span class="text-gray-500 dark:text-gray-400"> ({{ row.application && row.application !== 'N/A' ? getApplicationName(row.application) : 'N/A' }})</span>
           </template>
 
           <template #cell-errors400="{ value }">
@@ -310,7 +309,13 @@ const handleClose = () => {
       </div>
 
       <!-- Trash Status -->
-      <div v-if="processDetail.trashCount > 0">
+      <div v-if="trashError">
+        <h4 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">Trash Status</h4>
+        <p class="text-sm text-yellow-600 dark:text-yellow-400">
+          Failed to load trash data. The server may be temporarily unavailable.
+        </p>
+      </div>
+      <div v-else-if="processDetail.trashCount > 0">
         <h4 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">Trash Status</h4>
         <div class="flex items-center gap-3">
           <div
@@ -342,7 +347,7 @@ const handleClose = () => {
               <tbody class="divide-y bg-white dark:divide-gray-700 dark:bg-gray-800">
                 <tr v-for="(item, index) in processDetail.trashItems" :key="index">
                   <td class="px-4 py-3 font-medium text-gray-900 dark:text-white">
-                    {{ item.whereItFailed }}
+                    {{ getNodeName(item.whereItFailed) }}
                   </td>
                   <td class="px-4 py-3 break-words">{{ item.errorMessage }}</td>
                 </tr>
@@ -352,7 +357,6 @@ const handleClose = () => {
         </div>
       </div>
 
-      <!-- No failed messages -->
       <div v-else>
         <h4 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">Trash Status</h4>
         <p class="text-sm text-gray-500 dark:text-gray-400">No failed messages</p>

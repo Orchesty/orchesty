@@ -68,10 +68,11 @@ final class NodeHandler
 
         $applications = $this->serviceLocator->getApplications('orchesty');
 
-        $applicationsData = [];
-        $topologiesData   = [];
-        $nodesData        = [];
-        $tree             = [];
+        $applicationsData     = [];
+        $topologiesData       = [];
+        $topologyVersionsData = [];
+        $nodesData            = [];
+        $tree                 = [];
 
         foreach ($applications as $sdk) {
             foreach ($sdk['applications'] ?? [] as $application) {
@@ -82,9 +83,10 @@ final class NodeHandler
         }
 
         foreach ($topologies as $topology) {
-            $topologyId                  = $topology->getId();
-            $topologiesData[$topologyId] = $this->formatName($topology->getName());
-            $tree[$topologyId]           = [];
+            $topologyId                        = $topology->getId();
+            $topologiesData[$topologyId]       = $this->formatName($topology->getName());
+            $topologyVersionsData[$topologyId] = $topology->getVersion();
+            $tree[$topologyId]                 = [];
         }
 
         foreach ($nodes as $node) {
@@ -102,10 +104,11 @@ final class NodeHandler
         asort($nodesData);
 
         return [
-            'applications' => $applicationsData,
-            'nodes'        => $nodesData,
-            'topologies'   => $topologiesData,
-            'tree'         => $tree,
+            'applications'     => $applicationsData,
+            'nodes'            => $nodesData,
+            'topologies'       => $topologiesData,
+            'topologyVersions' => $topologyVersionsData,
+            'tree'             => $tree,
         ];
     }
 

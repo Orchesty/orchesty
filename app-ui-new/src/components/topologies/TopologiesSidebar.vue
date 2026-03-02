@@ -32,6 +32,18 @@ const isCollapsed = ref(props.modelValue)
 const sidebarWidth = ref(MIN_WIDTH)
 const treeData = ref<TopologiesTreeNode[]>([])
 const loadingTree = ref(false)
+const treeError = ref(false)
+
+async function fetchWithRetry<T>(fn: () => Promise<T>, retries = 2, delayMs = 500): Promise<T> {
+  for (let i = 0; i <= retries; i++) {
+    try { return await fn() }
+    catch (e) {
+      if (i === retries) throw e
+      await new Promise(r => setTimeout(r, delayMs * (i + 1)))
+    }
+  }
+  throw new Error('unreachable')
+}
 
 // Get saved width from localStorage
 const getSavedWidth = (): number => {
@@ -107,10 +119,12 @@ const handleSelectTopology = (topologyId: string, topologyName: string) => {
 // Refresh tree data (called from parent after CRUD operations)
 const refreshTree = async () => {
   loadingTree.value = true
+  treeError.value = false
   try {
-    treeData.value = await fetchTopologiesTree()
+    treeData.value = await fetchWithRetry(() => fetchTopologiesTree())
   } catch (error) {
     console.error('Failed to reload topologies tree:', error)
+    treeError.value = true
   } finally {
     loadingTree.value = false
   }
@@ -131,10 +145,12 @@ onMounted(async () => {
 
   // Load tree data from API
   loadingTree.value = true
+  treeError.value = false
   try {
-    treeData.value = await fetchTopologiesTree()
+    treeData.value = await fetchWithRetry(() => fetchTopologiesTree())
   } catch (error) {
     console.error('Failed to load topologies tree:', error)
+    treeError.value = true
   } finally {
     loadingTree.value = false
   }
@@ -248,6 +264,18 @@ watch(() => props.modelValue, (newValue) => {
           />
         </svg>
         <span class="sr-only">Loading...</span>
+      </div>
+
+      <!-- Error state -->
+      <div v-else-if="treeError" class="flex flex-col items-center justify-center py-8 text-center px-4">
+        <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">Failed to load topologies</p>
+        <button
+          type="button"
+          @click="refreshTree"
+          class="text-sm font-medium text-primary-600 hover:text-primary-700 hover:underline dark:text-primary-400 dark:hover:text-primary-300"
+        >
+          Try again
+        </button>
       </div>
 
       <!-- Tree data -->

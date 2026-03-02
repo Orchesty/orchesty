@@ -3,12 +3,11 @@ import { ref, computed, watch } from 'vue'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
 import QuickFilter from '@/components/ui/datagrid/QuickFilter.vue'
-import DropdownFilter from '@/components/ui/datagrid/DropdownFilter.vue'
+import SearchableDropdownFilter from '@/components/ui/datagrid/SearchableDropdownFilter.vue'
 import DateTimeRangeFilter from '@/components/ui/datagrid/DateTimeRangeFilter.vue'
-import ConnectorDetailDrawer from '@/components/dashboard/ConnectorDetailDrawer.vue'
 import type { Connector, ConnectorStatus } from '@/types/connectors'
 import type { TableColumn, TimeFilter } from '@/types/dashboard'
-import type { ActionConfig, QuickFilterOption, DropdownFilterOption } from '@/types/datagrid'
+import type { ActionConfig, QuickFilterOption } from '@/types/datagrid'
 import { fetchConnectors } from '@/services/connectorsService'
 import { convertTimeFilterToDateTimeRange, formatDateTimeForApi } from '@/utils/timeRangeConverter'
 import { useDataGrid } from '@/composables/useDataGrid'
@@ -16,9 +15,14 @@ import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 
 interface Props {
   globalTimeFilter: TimeFilter
+  refreshKey?: number
 }
 
 const props = defineProps<Props>()
+
+const emit = defineEmits<{
+  openConnectorDetail: [connector: Connector]
+}>()
 
 // Use topology/node/application mappings composable
 const {
@@ -39,10 +43,6 @@ const dateTimeRange = ref<{ from: string | null; to: string | null }>({
   from: null,
   to: null,
 })
-
-// Drawer state
-const drawerOpen = ref(false)
-const selectedConnector = ref<Connector | null>(null)
 
 // Table columns (actions column added automatically by DataGrid)
 const columns: TableColumn[] = [
@@ -83,8 +83,7 @@ const actions: ActionConfig[] = [
     icon: 'search',
     title: 'View details',
     onClick: (row) => {
-      selectedConnector.value = row as Connector
-      drawerOpen.value = true
+      emit('openConnectorDetail', row as Connector)
     },
   },
 ]
@@ -109,12 +108,7 @@ const loadData = async () => {
       order: sortDirection.value,
     })
 
-    // Map node IDs and application IDs to names
-    connectors.value = response.data.map(connector => ({
-      ...connector,
-      name: getNodeName(connector.id),
-      application: getApplicationName(connector.application)
-    }))
+    connectors.value = response.data
 
     totalPages.value = response.meta.totalPages
     totalItems.value = response.meta.totalItems
@@ -141,6 +135,10 @@ const {
   defaultSort: { field: 'requests', direction: 'desc' },
   onDataLoad: loadData,
   filters: [quickFilter, nodeFilter, selectedApp, dateTimeRange],
+})
+
+watch(() => props.refreshKey, () => {
+  loadData()
 })
 
 // Watch global time filter and convert to local datetime range
@@ -190,19 +188,21 @@ watch(
 
     <!-- Regular Filters (right) -->
     <template #filters>
-      <!-- Node Dropdown -->
-      <DropdownFilter v-model="nodeFilter" :options="nodeOptions" />
+      <SearchableDropdownFilter v-model="nodeFilter" :options="nodeOptions" placeholder="All Nodes" />
 
-      <!-- Application Dropdown -->
-      <DropdownFilter v-model="selectedApp" :options="applicationOptions" />
+      <SearchableDropdownFilter v-model="selectedApp" :options="applicationOptions" placeholder="All Applications" />
 
       <!-- DateTime Range Filter -->
       <DateTimeRangeFilter v-model="dateTimeRange" />
     </template>
 
     <!-- Custom Cells -->
-    <template #cell-application="{ value }">
-      <span class="font-medium text-gray-900 dark:text-white">{{ value }}</span>
+    <template #cell-application="{ row }">
+      <span class="font-medium text-gray-900 dark:text-white">{{ getApplicationName(row.application) }}</span>
+    </template>
+
+    <template #cell-name="{ row }">
+      <span class="text-gray-900 dark:text-white">{{ getNodeName(row.id) }}</span>
     </template>
 
     <template #cell-avgRequestTime="{ value }">
@@ -245,7 +245,7 @@ watch(
       <span
         :class="[
           'inline-flex items-center rounded-full px-2 py-1 text-xs font-medium',
-          value === 200
+          value >= 200 && value < 300
             ? 'bg-green-100 text-green-700 dark:bg-green-800 dark:text-green-300'
             : value >= 400 && value < 500
             ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-800 dark:text-yellow-300'
@@ -259,11 +259,5 @@ watch(
     </div>
   </Card>
 
-  <!-- Connector Detail Drawer -->
-  <ConnectorDetailDrawer
-    v-model="drawerOpen"
-    :connector="selectedConnector"
-    :global-time-filter="props.globalTimeFilter"
-  />
 </template>
 

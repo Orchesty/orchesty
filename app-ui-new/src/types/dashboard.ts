@@ -29,6 +29,8 @@ export interface HeatmapData {
 export interface HeatmapSeries {
   name: string // topology name
   data: HeatmapData[]
+  _nodeId?: string
+  _nodeIds?: string[]
 }
 
 export type TimeFilter = '1h' | '24h' | '7d' | '30d'
@@ -42,6 +44,9 @@ export interface TableColumn {
 }
 
 export interface LimiterTableRow {
+  nodeId: string
+  topologyId: string
+  applicationId: string
   connector: string
   topology: string
   application: string
@@ -67,6 +72,8 @@ export interface LimiterData {
 }
 
 export interface TrashTableRow {
+  topologyId: string
+  nodeId: string
   topology: string
   node: string
   message: string

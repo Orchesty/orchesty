@@ -110,5 +110,6 @@ export interface ApplicationInstallApiResponse {
   applicationSettings?: Record<string, ApplicationFormGroupApi> | null;
   host: string;
   syncMethods?: string[];
-  enabled?: boolean; // Authorization status for installed apps
+  authorized?: boolean;
+  enabled?: boolean;
 }

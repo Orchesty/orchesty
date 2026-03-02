@@ -33,6 +33,8 @@ interface Props {
   bulkActions?: BulkAction[]
   selectedRows?: Set<string>
   rowIdKey?: string
+  // Refresh button
+  showRefresh?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -49,6 +51,7 @@ const props = withDefaults(defineProps<Props>(), {
   bulkActions: undefined,
   selectedRows: () => new Set<string>(),
   rowIdKey: 'id',
+  showRefresh: false,
 })
 
 const emit = defineEmits<{
@@ -56,6 +59,7 @@ const emit = defineEmits<{
   'per-page-change': [perPage: number]
   'sort': [config: SortConfig]
   'update:selectedRows': [value: Set<string>]
+  'refresh': []
 }>()
 
 // Track if we have data loaded (for overlay spinner logic)
@@ -283,53 +287,82 @@ const pageNumbers = () => {
 <template>
   <div>
     <!-- Filters area -->
-    <div class="mb-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-      <!-- Left side: Quick Filters and/or Bulk Actions -->
-      <div class="flex flex-col gap-3">
-        <!-- Quick filters (if provided) -->
-        <div v-if="$slots['quick-filters']">
-          <slot name="quick-filters"></slot>
-        </div>
-        
-        <!-- Bulk Actions -->
-        <div
-          v-if="bulkActions && bulkActions.length > 0"
-          class="flex items-center gap-4 pl-6"
-        >
-          <div class="flex items-center gap-2">
-            <input
-              ref="selectAllCheckbox"
-              type="checkbox"
-              :checked="allRowsSelected"
-              class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-primary-600 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600"
-              @change="toggleSelectAll"
-            />
-            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
-              Select All
-            </span>
-          </div>
-          <button
-            v-for="action in bulkActions"
-            :key="action.label"
-            type="button"
-            :disabled="!hasSelectedRows"
-            class="text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50"
-            :class="{
-              'text-primary-600 hover:text-primary-700 hover:underline dark:text-primary-500': action.variant === 'primary' && hasSelectedRows,
-              'text-red-600 hover:text-red-700 hover:underline dark:text-red-500': action.variant === 'danger' && hasSelectedRows,
-              'text-gray-600 hover:text-gray-700 hover:underline dark:text-gray-400': action.variant === 'secondary' && hasSelectedRows,
-              'text-gray-400 dark:text-gray-600': !hasSelectedRows
-            }"
-            @click="action.onClick(internalSelectedRows)"
-          >
-            {{ action.label }}
-          </button>
-        </div>
+    <div class="mb-3 flex flex-col gap-3">
+      <!-- Search row (separate, right-aligned) -->
+      <div v-if="$slots.search" class="flex justify-end">
+        <slot name="search"></slot>
       </div>
 
-      <!-- Right side: Regular Filters -->
-      <div v-if="$slots.filters" class="flex items-center gap-2">
-        <slot name="filters"></slot>
+      <!-- Main row: quick-filters + bulk actions (left) | filters + refresh (right) -->
+      <div class="flex flex-col gap-3 md:flex-row md:items-center" :class="($slots['quick-filters'] || (bulkActions && bulkActions.length > 0)) ? 'md:justify-between' : 'md:justify-end'">
+        <!-- Left side: Quick Filters and/or Bulk Actions -->
+        <div v-if="$slots['quick-filters'] || (bulkActions && bulkActions.length > 0)" class="flex flex-col gap-3">
+          <div v-if="$slots['quick-filters']">
+            <slot name="quick-filters"></slot>
+          </div>
+          
+          <!-- Bulk Actions -->
+          <div
+            v-if="bulkActions && bulkActions.length > 0"
+            class="flex items-center gap-4 pl-6"
+          >
+            <div class="flex items-center gap-2">
+              <input
+                ref="selectAllCheckbox"
+                type="checkbox"
+                :checked="allRowsSelected"
+                class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-primary-600 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600"
+                @change="toggleSelectAll"
+              />
+              <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Select All
+              </span>
+            </div>
+            <button
+              v-for="action in bulkActions"
+              :key="action.label"
+              type="button"
+              :disabled="!hasSelectedRows"
+              class="text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50"
+              :class="{
+                'text-primary-600 hover:text-primary-700 hover:underline dark:text-primary-500': action.variant === 'primary' && hasSelectedRows,
+                'text-red-600 hover:text-red-700 hover:underline dark:text-red-500': action.variant === 'danger' && hasSelectedRows,
+                'text-gray-600 hover:text-gray-700 hover:underline dark:text-gray-400': action.variant === 'secondary' && hasSelectedRows,
+                'text-gray-400 dark:text-gray-600': !hasSelectedRows
+              }"
+              @click="action.onClick(internalSelectedRows)"
+            >
+              {{ action.label }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Right side: Regular Filters + Refresh -->
+        <div v-if="$slots.filters || showRefresh" class="flex flex-wrap items-center justify-end gap-2">
+          <slot name="filters"></slot>
+          <button
+            v-if="showRefresh"
+            type="button"
+            title="Refresh"
+            :disabled="loading"
+            class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-gray-400 transition-colors hover:text-gray-900 focus:outline-none dark:text-gray-500 dark:hover:text-white"
+            @click="emit('refresh')"
+          >
+            <svg
+              class="h-5 w-5 transition-transform duration-500"
+              :class="{ 'animate-spin': loading }"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" d="M1 4v6h6M23 20v-6h-6" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4-4.64 4.36A9 9 0 0 1 3.51 15" />
+            </svg>
+            <span class="sr-only">Refresh</span>
+          </button>
+        </div>
       </div>
     </div>
 

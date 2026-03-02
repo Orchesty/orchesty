@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
@@ -7,6 +7,7 @@ import CronSettingsModal from '@/components/scheduled-tasks/CronSettingsModal.vu
 import type { ScheduledTask } from '@/types/scheduled-tasks'
 import type { TableColumn } from '@/types/dashboard'
 import { fetchScheduledTasks, updateTaskStatus, updateTaskCrontab } from '@/services/scheduledTasksService'
+import { getNextCronRun, formatNextRun } from '@/utils/cronParser'
 import { useDataGrid } from '@/composables/useDataGrid'
 import { useToast } from '@/composables/useToast'
 
@@ -27,7 +28,8 @@ const columns: TableColumn[] = [
   { key: 'name', label: 'Name', sortable: false },
   { key: 'topology', label: 'Topology', sortable: false },
   { key: 'crontab', label: 'Crontab', sortable: false },
-  { key: 'status', label: 'Status', sortable: false },
+  { key: 'nextRun', label: 'Next Run', sortable: false },
+  { key: 'status', label: 'Topology Status', sortable: false },
   { key: 'actions', label: '', className: 'text-right w-16' },
 ]
 
@@ -129,8 +131,31 @@ const getStatusLabel = (status: string) => {
   }
 }
 
+// Recalculate nextRun for tasks whose scheduled time has passed
+const refreshNextRuns = () => {
+  const now = new Date()
+  for (const task of tasks.value) {
+    if (!task.nodeStatus || !task.crontab || task.status === 'disabled') {
+      task.nextRun = null
+      continue
+    }
+    if (task.nextRun && task.nextRun <= now) {
+      task.nextRun = getNextCronRun(task.crontab)
+    }
+  }
+}
+
+let nextRunTimer: ReturnType<typeof setInterval> | null = null
+
 onMounted(() => {
   loadData()
+  nextRunTimer = setInterval(refreshNextRuns, 60_000)
+})
+
+onBeforeUnmount(() => {
+  if (nextRunTimer) {
+    clearInterval(nextRunTimer)
+  }
 })
 </script>
 
@@ -205,6 +230,14 @@ onMounted(() => {
         <!-- Crontab Cell -->
         <template #cell-crontab="{ row }">
           <span class="font-mono text-xs">{{ row.crontab || '-' }}</span>
+        </template>
+
+        <!-- Next Run Cell -->
+        <template #cell-nextRun="{ row }">
+          <span v-if="row.nextRun" class="text-sm text-gray-700 dark:text-gray-300">
+            {{ formatNextRun(row.nextRun) }}
+          </span>
+          <span v-else class="text-sm text-gray-400 dark:text-gray-500">-</span>
         </template>
 
         <!-- Status Cell -->

@@ -4,8 +4,9 @@ import { useRoute } from 'vue-router'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
-import TimeRangeFilterWithCustomRange from '@/components/ui/TimeRangeFilterWithCustomRange.vue'
+import DateTimeRangeFilter from '@/components/ui/datagrid/DateTimeRangeFilter.vue'
 import DropdownFilter from '@/components/ui/datagrid/DropdownFilter.vue'
+import SearchableDropdownFilter from '@/components/ui/datagrid/SearchableDropdownFilter.vue'
 import TextInput from '@/components/ui/datagrid/TextInput.vue'
 import SearchInput from '@/components/ui/SearchInput.vue'
 import DropdownMenu, { type DropdownMenuSection } from '@/components/ui/DropdownMenu.vue'
@@ -35,7 +36,9 @@ const {
   loadMappings,
   getTopologyName,
   getNodeName,
+  getNodeIdsByName,
   topologyOptions: topologyOptionsFromMappings,
+  deduplicatedNodeOptions: deduplicatedNodeOptionsFromMappings,
   nodeOptions: nodeOptionsFromMappings,
   mappings
 } = useTopologyNodeMappings()
@@ -52,7 +55,10 @@ const searchFilter = ref('')
 const correlationIdFilter = ref('')
 const nodeFilter = ref<string | null>(null)
 const topologyFilter = ref<string | null>(null)
-const timeRangeFilter = ref('this-month')
+const dateTimeRange = ref<{ from: string | null; to: string | null }>({
+  from: null,
+  to: null,
+})
 
 // Topology options for dropdown with "All" option
 const topologyOptions = computed(() => [
@@ -60,33 +66,42 @@ const topologyOptions = computed(() => [
   ...topologyOptionsFromMappings.value
 ])
 
-// Node options for dropdown - filtered by selected topology
+// Node options for dropdown - deduplicated by name, filtered by selected topology
 const nodeOptions = computed(() => {
   const baseOptions = [{ value: null, label: 'All Nodes' }]
 
-  // If no topology selected, show all nodes
   if (!topologyFilter.value || !mappings.value) {
-    return [...baseOptions, ...nodeOptionsFromMappings.value]
+    return [...baseOptions, ...deduplicatedNodeOptionsFromMappings.value]
   }
 
   // Get node IDs for the selected topology from the tree
   const nodeIdsInTopology = mappings.value.tree[topologyFilter.value] || []
 
-  // Filter node options to only include nodes from this topology
-  const filteredNodes = nodeOptionsFromMappings.value.filter(node =>
-    nodeIdsInTopology.includes(node.value)
+  // Get unique names of nodes in this topology
+  const namesInTopology = new Set(
+    nodeIdsInTopology
+      .map(id => mappings.value?.nodes[id])
+      .filter((name): name is string => !!name)
   )
+
+  const filteredNodes = Array.from(namesInTopology)
+    .map(name => ({ value: name, label: name }))
+    .sort((a, b) => a.label.localeCompare(b.label))
 
   return [...baseOptions, ...filteredNodes]
 })
 
-// Clear node filter when topology changes if selected node is not in new topology
+// Clear node filter when topology changes if selected node name is not in new topology
 watch(topologyFilter, () => {
   if (nodeFilter.value && topologyFilter.value && mappings.value) {
     const nodeIdsInTopology = mappings.value.tree[topologyFilter.value] || []
+    const namesInTopology = new Set(
+      nodeIdsInTopology
+        .map(id => mappings.value?.nodes[id])
+        .filter(Boolean)
+    )
 
-    // If currently selected node is not in the new topology, clear it
-    if (!nodeIdsInTopology.includes(nodeFilter.value)) {
+    if (!namesInTopology.has(nodeFilter.value)) {
       nodeFilter.value = null
     }
   }
@@ -198,8 +213,8 @@ const confirmRejectAll = async () => {
 const moreActionsMenuSections: DropdownMenuSection[] = [
   {
     items: [
-      { type: 'button', label: 'Approve All', onClick: handleApproveAll },
-      { type: 'button', label: 'Reject All', onClick: handleRejectAll },
+      { type: 'button', label: 'Approve All Filtered', onClick: handleApproveAll },
+      { type: 'button', label: 'Reject All Filtered', onClick: handleRejectAll },
     ],
   },
 ]
@@ -238,9 +253,15 @@ const buildCurrentFilterParams = (): TrashQueryParams => {
 
   if (searchFilter.value) params.search = searchFilter.value
   if (correlationIdFilter.value) params.correlationId = correlationIdFilter.value
-  if (nodeFilter.value) params.node = nodeFilter.value
+  if (nodeFilter.value) {
+    const nodeIds = getNodeIdsByName(nodeFilter.value)
+    params.node = nodeIds.length > 0 ? nodeIds : [nodeFilter.value]
+  }
   if (topologyFilter.value) params.topology = topologyFilter.value
-  if (timeRangeFilter.value) params.timeRange = timeRangeFilter.value
+  if (dateTimeRange.value.from && dateTimeRange.value.to) {
+    params.dateFrom = dateTimeRange.value.from
+    params.dateTo = dateTimeRange.value.to
+  }
 
   return params
 }
@@ -276,7 +297,7 @@ const {
 } = useDataGrid({
   defaultSort: { field: 'timestamp', direction: 'desc' },
   onDataLoad: loadData,
-  filters: [searchFilter, correlationIdFilter, nodeFilter, topologyFilter, timeRangeFilter],
+  filters: [searchFilter, correlationIdFilter, nodeFilter, topologyFilter, dateTimeRange],
 })
 
 // Load mappings and data
@@ -395,33 +416,40 @@ const handleReject = async () => {
         :bulk-actions="bulkActions"
         :selected-rows="selectedRows"
         row-id-key="id"
+        show-refresh
         @page-change="handlePageChange"
         @per-page-change="handlePerPageChange"
         @sort="handleSort"
+        @refresh="loadData"
         @update:selected-rows="selectedRows = $event"
       >
-        <template #filters>
+        <template #search>
           <SearchInput
             v-model="searchFilter"
             placeholder="Search"
             mode="server"
-            width="w-48"
+            width="w-72"
           />
+        </template>
+
+        <template #filters>
           <TextInput
             v-model="correlationIdFilter"
             placeholder="Correlation ID"
           />
-          <DropdownFilter
+          <SearchableDropdownFilter
             v-model="nodeFilter"
             :options="nodeOptions"
             placeholder="All Nodes"
+            search-placeholder="Search nodes..."
           />
-          <DropdownFilter
+          <SearchableDropdownFilter
             v-model="topologyFilter"
             :options="topologyOptions"
             placeholder="All Topologies"
+            search-placeholder="Search topologies..."
           />
-          <TimeRangeFilterWithCustomRange v-model="timeRangeFilter" />
+          <DateTimeRangeFilter v-model="dateTimeRange" />
         </template>
 
         <!-- Custom cell templates -->

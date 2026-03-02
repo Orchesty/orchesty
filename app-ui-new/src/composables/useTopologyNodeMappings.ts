@@ -24,6 +24,17 @@ let refreshTimer: ReturnType<typeof setTimeout> | null = null
 // Shared loading promise so concurrent callers can await the in-flight request
 let loadingPromise: Promise<void> | null = null
 
+async function fetchWithRetry<T>(fn: () => Promise<T>, retries = 2, delayMs = 1000): Promise<T> {
+  for (let i = 0; i <= retries; i++) {
+    try { return await fn() }
+    catch (e) {
+      if (i === retries) throw e
+      await new Promise(r => setTimeout(r, delayMs * (i + 1)))
+    }
+  }
+  throw new Error('unreachable')
+}
+
 export function useTopologyNodeMappings() {
   // Fetch both mapping sets if not already loaded.
   // If another caller is already loading, wait for its promise instead of skipping.
@@ -33,24 +44,29 @@ export function useTopologyNodeMappings() {
 
     isLoading.value = true
     loadingPromise = (async () => {
-      try {
-        const [all, filtered] = await Promise.all([
-          fetchTopologyNodeMappings(),
-          fetchFilteredMappings(),
-        ])
-        allMappings.value = all
-        filteredMappingsData.value = filtered
-        isLoaded.value = true
-      } catch (error) {
-        console.error('Failed to load topology/node mappings:', error)
-        // Set empty mappings to prevent repeated failures
-        const empty = { applications: {}, nodes: {}, topologies: {}, tree: {} }
-        allMappings.value = empty
-        filteredMappingsData.value = empty
-      } finally {
-        isLoading.value = false
-        loadingPromise = null
+      const empty = { applications: {}, nodes: {}, topologies: {}, tree: {} }
+      const [allResult, filteredResult] = await Promise.allSettled([
+        fetchTopologyNodeMappings(),
+        fetchFilteredMappings(),
+      ])
+
+      if (allResult.status === 'fulfilled') {
+        allMappings.value = allResult.value
+      } else {
+        console.error('Failed to load all topology/node mappings:', allResult.reason)
+        allMappings.value = allMappings.value ?? empty
       }
+
+      if (filteredResult.status === 'fulfilled') {
+        filteredMappingsData.value = filteredResult.value
+      } else {
+        console.error('Failed to load filtered topology/node mappings:', filteredResult.reason)
+        filteredMappingsData.value = filteredMappingsData.value ?? empty
+      }
+
+      isLoaded.value = true
+      isLoading.value = false
+      loadingPromise = null
     })()
     return loadingPromise
   }
@@ -86,14 +102,12 @@ export function useTopologyNodeMappings() {
     }, 2000) // Wait 2 seconds before refreshing (in case multiple missing IDs)
   }
 
-  // Lookup topology name with auto-refresh (uses all=1 mappings)
+  // Lookup topology name with fallback to filtered mappings and auto-refresh
   const getTopologyName = (topologyId: string): string => {
-    if (!allMappings.value) return topologyId
+    const name = allMappings.value?.topologies[topologyId]
+      ?? filteredMappingsData.value?.topologies[topologyId]
 
-    const name = allMappings.value.topologies[topologyId]
-
-    // If not found and we haven't checked this topology ID before
-    if (!name && !checkedMissingIds.topologies.has(topologyId)) {
+    if (!name && allMappings.value && !checkedMissingIds.topologies.has(topologyId)) {
       checkedMissingIds.topologies.add(topologyId)
       scheduleRefresh()
     }
@@ -101,14 +115,27 @@ export function useTopologyNodeMappings() {
     return name || topologyId
   }
 
-  // Lookup node name with auto-refresh (uses all=1 mappings)
+  // Lookup topology version
+  const getTopologyVersion = (topologyId: string): number | null => {
+    return allMappings.value?.topologyVersions?.[topologyId]
+      ?? filteredMappingsData.value?.topologyVersions?.[topologyId]
+      ?? null
+  }
+
+  // Topology name with version suffix, e.g. "My Topology v3"
+  const getTopologyNameWithVersion = (topologyId: string): string => {
+    const name = getTopologyName(topologyId)
+    const version = getTopologyVersion(topologyId)
+    if (version === null) return name
+    return `${name} v${version}`
+  }
+
+  // Lookup node name with fallback to filtered mappings and auto-refresh
   const getNodeName = (nodeId: string): string => {
-    if (!allMappings.value) return nodeId
+    const name = allMappings.value?.nodes[nodeId]
+      ?? filteredMappingsData.value?.nodes[nodeId]
 
-    const name = allMappings.value.nodes[nodeId]
-
-    // If not found and we haven't checked this node ID before
-    if (!name && !checkedMissingIds.nodes.has(nodeId)) {
+    if (!name && allMappings.value && !checkedMissingIds.nodes.has(nodeId)) {
       checkedMissingIds.nodes.add(nodeId)
       scheduleRefresh()
     }
@@ -116,14 +143,12 @@ export function useTopologyNodeMappings() {
     return name || nodeId
   }
 
-  // Lookup application name with auto-refresh (uses all=1 mappings)
+  // Lookup application name with fallback to filtered mappings and auto-refresh
   const getApplicationName = (applicationKey: string): string => {
-    if (!allMappings.value) return applicationKey
+    const name = allMappings.value?.applications[applicationKey]
+      ?? filteredMappingsData.value?.applications[applicationKey]
 
-    const name = allMappings.value.applications[applicationKey]
-
-    // If not found and we haven't checked this application key before
-    if (!name && !checkedMissingIds.applications.has(applicationKey)) {
+    if (!name && allMappings.value && !checkedMissingIds.applications.has(applicationKey)) {
       checkedMissingIds.applications.add(applicationKey)
       scheduleRefresh()
     }
@@ -132,13 +157,44 @@ export function useTopologyNodeMappings() {
   }
 
   // Sorted topology options for dropdowns (uses filtered mappings)
+  // Each version is a separate entry with version suffix in the label
   const topologyOptions = computed(() => {
     if (!filteredMappingsData.value) return []
 
     return Object.entries(filteredMappingsData.value.topologies)
-      .map(([id, name]) => ({ value: id, label: name }))
+      .map(([id, name]) => {
+        const version = filteredMappingsData.value?.topologyVersions?.[id]
+        const label = version ? `${name} v${version}` : name
+        return { value: id, label }
+      })
       .sort((a, b) => a.label.localeCompare(b.label))
   })
+
+  // Deduplicated topology options -- grouped by name, value is the name string.
+  // Use getTopologyIdsByName() to resolve to all matching IDs for filtering.
+  const deduplicatedTopologyOptions = computed(() => {
+    if (!filteredMappingsData.value) return []
+
+    const uniqueNames = new Set(Object.values(filteredMappingsData.value.topologies))
+    return Array.from(uniqueNames)
+      .map(name => ({ value: name, label: name }))
+      .sort((a, b) => a.label.localeCompare(b.label))
+  })
+
+  // Resolve a topology display name to all matching topology IDs (all versions)
+  const getTopologyIdsByName = (name: string): string[] => {
+    const ids: string[] = []
+    const sources = [allMappings.value, filteredMappingsData.value]
+    for (const source of sources) {
+      if (!source) continue
+      for (const [id, topoName] of Object.entries(source.topologies)) {
+        if (topoName === name && !ids.includes(id)) {
+          ids.push(id)
+        }
+      }
+    }
+    return ids
+  }
 
   // Sorted topology names array (uses filtered mappings)
   const topologyNames = computed(() => {
@@ -154,6 +210,25 @@ export function useTopologyNodeMappings() {
       .map(([id, name]) => ({ value: id, label: name }))
       .sort((a, b) => a.label.localeCompare(b.label))
   })
+
+  // Deduplicated node options by display name (uses filtered mappings)
+  // Prevents showing "Http Status 200 Connector" 4 times for 4 different nodeIds
+  const deduplicatedNodeOptions = computed(() => {
+    if (!filteredMappingsData.value) return []
+
+    const uniqueNames = new Set(Object.values(filteredMappingsData.value.nodes))
+    return Array.from(uniqueNames)
+      .map(name => ({ value: name, label: name }))
+      .sort((a, b) => a.label.localeCompare(b.label))
+  })
+
+  // Resolve a display name to all matching nodeIds
+  const getNodeIdsByName = (name: string): string[] => {
+    if (!filteredMappingsData.value) return []
+    return Object.entries(filteredMappingsData.value.nodes)
+      .filter(([, nodeName]) => nodeName === name)
+      .map(([id]) => id)
+  }
 
   // Sorted application options for dropdowns (uses filtered mappings)
   const applicationOptions = computed(() => {
@@ -183,14 +258,20 @@ export function useTopologyNodeMappings() {
     loadMappings,
     refresh,
     getTopologyName,
+    getTopologyVersion,
+    getTopologyNameWithVersion,
     getNodeName,
     getApplicationName,
     topologyNameMap,
     nodeNameMap,
     applicationNameMap,
     topologyOptions,
+    deduplicatedTopologyOptions,
+    getTopologyIdsByName,
     topologyNames,
     nodeOptions,
+    deduplicatedNodeOptions,
+    getNodeIdsByName,
     applicationOptions,
     isLoading,
     isLoaded,

@@ -7,10 +7,12 @@ import {
   uninstallApplication,
   updateApplicationSettings,
   changeApplicationState,
+  authorizeApplication,
 } from '@/services/applicationsService';
 import { useToast } from '@/composables/useToast';
 import Drawer from '@/components/ui/Drawer.vue';
 import Button from '@/components/ui/Button.vue';
+import Confirm from '@/components/ui/Confirm.vue';
 import TabsWithOverflow, { type TabDefinition } from '@/components/applications/TabsWithOverflow.vue';
 import DynamicFormGenerator from '@/components/applications/DynamicFormGenerator.vue';
 
@@ -32,9 +34,16 @@ const { showToast } = useToast();
 
 const loading = ref(false);
 const saving = ref(false);
+const showUninstallConfirm = ref(false);
 const applicationInstall = ref<ApplicationInstall | null>(null);
 const formValues = ref<Record<string, unknown>>({});
 const activeTab = ref<string>('');
+const formRefs = ref<Record<string, InstanceType<typeof DynamicFormGenerator>>>({});
+const currentStatus = ref<ApplicationStatus>(props.status);
+
+const setFormRef = (tabId: string, el: any) => {
+  if (el) formRefs.value[tabId] = el;
+};
 
 // Group settings by tab
 const groupedSettings = computed(() => {
@@ -63,7 +72,7 @@ const tabs = computed<TabDefinition[]>(() => {
 
 const statusLabel = computed(() => {
   if (!applicationInstall.value) return '';
-  switch (props.status) {
+  switch (currentStatus.value) {
     case 'activated':
       return 'Activated';
     case 'authorized':
@@ -77,12 +86,12 @@ const statusLabel = computed(() => {
 });
 
 const showStatusBadge = computed(() => {
-  return props.status !== 'available' && applicationInstall.value;
+  return currentStatus.value !== 'available' && applicationInstall.value;
 });
 
 const statusBadgeClass = computed(() => {
   if (!applicationInstall.value) return '';
-  switch (props.status) {
+  switch (currentStatus.value) {
     case 'activated':
       return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
     case 'authorized':
@@ -99,6 +108,20 @@ const isInstallDisabled = computed(() => {
   return applicationInstall.value?.authorized ?? false;
 });
 
+const needsOAuthAuthorization = computed(() => {
+  if (!applicationInstall.value) return false;
+  return (
+    ['oauth', 'oauth2'].includes(applicationInstall.value.authorization_type) &&
+    !applicationInstall.value.authorized
+  );
+});
+
+const saveButtonLabel = computed(() => {
+  if (saving.value) return 'Saving...';
+  if (needsOAuthAuthorization.value) return 'Save & Authorize';
+  return 'Save';
+});
+
 const loadApplicationData = async () => {
   if (!props.applicationKey || !props.worker) return;
 
@@ -106,7 +129,7 @@ const loadApplicationData = async () => {
   applicationInstall.value = null; // Clear previous data
 
   try {
-    // Use preview endpoint only for 'available' apps
+    currentStatus.value = props.status;
     const isInstalled = props.status !== 'available';
 
     const data = await fetchApplicationInstall(props.applicationKey, props.worker, isInstalled);
@@ -153,8 +176,9 @@ const handleInstall = async () => {
     });
     formValues.value = initialValues;
 
+    currentStatus.value = 'installed';
     showToast('Application installed successfully', 'success');
-    emit('refresh'); // Refresh parent list
+    emit('refresh');
   } catch (error: any) {
     console.error('Failed to install application:', error);
     showToast(error.response?.data?.message || 'Failed to install application', 'error');
@@ -163,19 +187,19 @@ const handleInstall = async () => {
   }
 };
 
-const handleUninstall = async () => {
-  if (!props.applicationKey || !props.worker) return;
+const handleUninstall = () => {
+  showUninstallConfirm.value = true;
+};
 
-  if (!confirm('Are you sure you want to uninstall this application?')) {
-    return;
-  }
+const confirmUninstall = async () => {
+  if (!props.applicationKey || !props.worker) return;
 
   loading.value = true;
   try {
     await uninstallApplication(props.applicationKey, props.worker);
     showToast('Application uninstalled successfully', 'success');
     emit('update:modelValue', false);
-    emit('refresh'); // Refresh parent list
+    emit('refresh');
   } catch (error: any) {
     console.error('Failed to uninstall application:', error);
     showToast(error.response?.data?.message || 'Failed to uninstall application', 'error');
@@ -187,14 +211,33 @@ const handleUninstall = async () => {
 const handleSave = async () => {
   if (!applicationInstall.value) return;
 
+  // Validate all required fields across all tabs
+  let isValid = true;
+  for (const formRef of Object.values(formRefs.value)) {
+    if (formRef?.validate && !formRef.validate()) {
+      isValid = false;
+    }
+  }
+
+  if (!isValid) return;
+
+  // Capture OAuth need before save — the response may flip `authorized` to true
+  const shouldAuthorize = needsOAuthAuthorization.value;
+
   saving.value = true;
   try {
+    const previousData = applicationInstall.value;
     const updatedInstall = await updateApplicationSettings(
       props.applicationKey,
       props.worker,
       formValues.value,
       applicationInstall.value.applicationSettings
     );
+
+    // Preserve fields the PUT response may not include
+    if (!updatedInstall.logo && previousData.logo) {
+      updatedInstall.logo = previousData.logo;
+    }
 
     // Update the local state with fresh data from API
     applicationInstall.value = updatedInstall;
@@ -205,6 +248,13 @@ const handleSave = async () => {
       initialValues[setting.key] = setting.value ?? '';
     });
     formValues.value = initialValues;
+
+    // Trigger OAuth redirect before anything else — uses window.location.href
+    // so no further code runs after this point
+    if (shouldAuthorize) {
+      authorizeApplication(props.applicationKey, props.worker);
+      return;
+    }
 
     showToast('Settings saved successfully', 'success');
   } catch (error: any) {
@@ -218,21 +268,21 @@ const handleSave = async () => {
 const handleChangeState = async (enabled: boolean) => {
   if (!props.applicationKey || !props.worker) return;
 
-  loading.value = true;
+  saving.value = true;
   try {
     await changeApplicationState(props.applicationKey, props.worker, enabled);
+    currentStatus.value = enabled ? 'activated' : 'authorized';
     showToast(
       enabled ? 'Application activated successfully' : 'Application deactivated successfully',
       'success',
     );
     emit('refresh');
-    emit('update:modelValue', false);
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Failed to change application state';
     console.error('Failed to change application state:', error);
     showToast(errorMessage, 'error');
   } finally {
-    loading.value = false;
+    saving.value = false;
   }
 };
 
@@ -252,7 +302,7 @@ watch(() => props.modelValue, async (newValue) => {
   <Drawer
     id="app-detail-drawer"
     :model-value="modelValue"
-    :label="applicationInstall?.name || 'Application Details'"
+    :label="'Application Details'"
     width="w-1/2 min-w-[500px]"
     @update:model-value="$emit('update:modelValue', $event)"
   >
@@ -321,33 +371,33 @@ watch(() => props.modelValue, async (newValue) => {
           </div>
           <div class="flex items-center gap-2">
             <Button
-              v-if="props.status === 'available'"
+              v-if="currentStatus === 'available'"
               variant="primary"
-              :disabled="loading"
+              :disabled="saving"
               @click="handleInstall"
             >
               Install
             </Button>
             <Button
-              v-if="props.status === 'authorized'"
-              variant="primary"
-              :disabled="loading"
+              v-if="currentStatus === 'authorized'"
+              :variant="needsOAuthAuthorization ? 'outline' : 'primary'"
+              :disabled="saving || needsOAuthAuthorization"
               @click="handleChangeState(true)"
             >
               Activate
             </Button>
             <Button
-              v-if="props.status === 'activated'"
+              v-if="currentStatus === 'activated'"
               variant="outline"
-              :disabled="loading"
+              :disabled="saving"
               @click="handleChangeState(false)"
             >
               Deactivate
             </Button>
             <Button
-              v-if="props.status !== 'available'"
+              v-if="currentStatus !== 'available'"
               variant="outline"
-              :disabled="loading"
+              :disabled="saving"
               @click="handleUninstall"
             >
               Uninstall
@@ -368,6 +418,7 @@ watch(() => props.modelValue, async (newValue) => {
         <template v-for="tab in tabs" :key="tab.id" #[`tab-content-${tab.id}`]>
           <div class="space-y-6">
             <DynamicFormGenerator
+              :ref="(el: any) => setFormRef(tab.id, el)"
               :settings="groupedSettings[tab.id] || []"
               v-model="formValues"
             />
@@ -375,7 +426,7 @@ watch(() => props.modelValue, async (newValue) => {
             <!-- Save button for this tab -->
             <div class="flex items-center justify-start pt-4">
               <Button variant="primary" :disabled="saving" @click="handleSave">
-                {{ saving ? 'Saving...' : 'Save' }}
+                {{ saveButtonLabel }}
               </Button>
             </div>
           </div>
@@ -391,5 +442,24 @@ watch(() => props.modelValue, async (newValue) => {
       </div>
     </template>
   </Drawer>
+
+  <Confirm
+    v-model="showUninstallConfirm"
+    id="uninstall-app-confirm"
+    confirm-text="Yes, uninstall"
+    cancel-text="No, cancel"
+    confirm-variant="danger"
+    @confirm="confirmUninstall"
+  >
+    <svg class="mx-auto mb-4 h-12 w-12 text-gray-400 dark:text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+    </svg>
+    <h3 class="mb-2 text-lg font-normal text-gray-500 dark:text-gray-400">
+      Are you sure you want to uninstall this application?
+    </h3>
+    <p class="text-sm text-gray-400 dark:text-gray-500">
+      This action cannot be undone.
+    </p>
+  </Confirm>
 </template>
 

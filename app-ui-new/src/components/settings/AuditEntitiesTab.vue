@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import Button from '@/components/ui/Button.vue'
 import Confirm from '@/components/ui/Confirm.vue'
 import EntityModal from '@/components/settings/EntityModal.vue'
@@ -16,6 +16,42 @@ const { showToast } = useToast()
 
 const entities = ref<AuditEntity[]>([])
 const loading = ref(false)
+
+type SdkType = 'nodejs' | 'php'
+const snippetSdk = reactive<Record<string, SdkType>>({})
+
+function getSnippetSdk(entityId: string): SdkType {
+  return snippetSdk[entityId] || 'nodejs'
+}
+
+function setSnippetSdk(entityId: string, sdk: SdkType) {
+  snippetSdk[entityId] = sdk
+}
+
+function generateSnippet(entity: AuditEntity, sdk: SdkType): string {
+  const entityKey = entity.name.toLowerCase()
+  const idAttr = entity.attributes[0]?.name || 'id'
+  const attrs = entity.attributes.map(a => a.name)
+
+  if (sdk === 'nodejs') {
+    const obj = attrs.map(a => `${a}: ''`).join(', ')
+    return `addAuditHeader('${entityKey}', '${idAttr}', [{ ${obj} }])`
+  }
+
+  const arr = attrs.map(a => `'${a}' => ''`).join(', ')
+  return `addAuditHeader('${entityKey}', '${idAttr}', [[${arr}]]);`
+}
+
+async function copySnippet(entity: AuditEntity) {
+  const sdk = getSnippetSdk(entity.id)
+  const code = generateSnippet(entity, sdk)
+  try {
+    await navigator.clipboard.writeText(code)
+    showToast('Copied to clipboard', 'success')
+  } catch {
+    showToast('Failed to copy', 'error')
+  }
+}
 
 // Entity modal state
 const entityModalOpen = ref(false)
@@ -156,6 +192,53 @@ onMounted(() => {
                   <span class="font-medium text-gray-900 dark:text-white">{{ attr.name }}:</span>
                   <span class="text-gray-600 dark:text-gray-300">{{ attr.description }}</span>
                 </div>
+              </div>
+            </div>
+            <!-- Code Snippet -->
+            <div v-if="entity.attributes.length > 0" class="mt-5">
+              <div class="flex items-center justify-between mb-2">
+                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400">
+                  Code snippet
+                </label>
+                <div class="inline-flex rounded-md shadow-sm" role="group">
+                  <button
+                    type="button"
+                    :class="[
+                      'px-3 py-1 text-xs font-medium rounded-s-lg border',
+                      getSnippetSdk(entity.id) === 'nodejs'
+                        ? 'bg-primary-600 text-white border-primary-600 dark:bg-primary-500 dark:border-primary-500'
+                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600'
+                    ]"
+                    @click="setSnippetSdk(entity.id, 'nodejs')"
+                  >
+                    Node.js
+                  </button>
+                  <button
+                    type="button"
+                    :class="[
+                      'px-3 py-1 text-xs font-medium rounded-e-lg border',
+                      getSnippetSdk(entity.id) === 'php'
+                        ? 'bg-primary-600 text-white border-primary-600 dark:bg-primary-500 dark:border-primary-500'
+                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600'
+                    ]"
+                    @click="setSnippetSdk(entity.id, 'php')"
+                  >
+                    PHP
+                  </button>
+                </div>
+              </div>
+              <div class="relative group">
+                <pre class="rounded-lg bg-gray-900 p-4 text-sm text-gray-100 overflow-x-auto"><code>{{ generateSnippet(entity, getSnippetSdk(entity.id)) }}</code></pre>
+                <button
+                  type="button"
+                  class="absolute top-2 right-2 rounded-md bg-gray-700 p-1.5 text-gray-300 opacity-0 transition-opacity hover:bg-gray-600 hover:text-white group-hover:opacity-100"
+                  title="Copy to clipboard"
+                  @click="copySnippet(entity)"
+                >
+                  <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H9.75" />
+                  </svg>
+                </button>
               </div>
             </div>
           </div>

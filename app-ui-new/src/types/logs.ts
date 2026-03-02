@@ -23,8 +23,10 @@ export interface LogQueryParams {
   timeMargin?: number
   severity?: LogSeverity | null
   topology?: string | null
-  node?: string | null
+  node?: string | string[] | null
   timeRange?: string
+  dateFrom?: string
+  dateTo?: string
 }
 
 // API response types

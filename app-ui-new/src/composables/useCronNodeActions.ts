@@ -1,4 +1,5 @@
 import { useToast } from './useToast'
+import { getNextCronRun } from '@/utils/cronParser'
 
 export function useCronNodeActions() {
   const { showToast } = useToast()
@@ -60,8 +61,8 @@ export function useCronNodeActions() {
           return
         }
 
-        // Calculate next run time (simplified - just add 15 minutes)
-        const nextRun = new Date(Date.now() + 15 * 60 * 1000).toISOString()
+        const nextRunDate = getNextCronRun(crontab)
+        const nextRun = nextRunDate ? nextRunDate.toISOString() : new Date().toISOString()
 
         // Success
         showToast('Crontab configuration updated successfully', 'success', 2000)

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import Drawer from '@/components/ui/Drawer.vue'
+import Modal from '@/components/ui/Modal.vue'
 import CopyValue from '@/components/ui/CopyValue.vue'
 import type { LogEntry, LogSeverity } from '@/types/logs'
 import { useDateFormat } from '@/composables/useDateFormat'
@@ -16,17 +16,15 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const emit = defineEmits<{
+defineEmits<{
   'update:modelValue': [value: boolean]
 }>()
 
-// Format timestamp for display
 const formattedTimestamp = computed(() => {
   if (!props.log) return ''
   return formatDateTime(props.log.timestamp)
 })
 
-// Get severity badge classes
 const getSeverityClass = (severity: LogSeverity): string => {
   const classes = {
     error: 'bg-red-100 text-red-700 dark:bg-red-800 dark:text-red-300',
@@ -37,7 +35,6 @@ const getSeverityClass = (severity: LogSeverity): string => {
   return classes[severity] || classes.info
 }
 
-// Format additional context for display
 const formatContext = (context: Record<string, unknown>): { label: string; value: string }[] => {
   return Object.entries(context).map(([key, value]) => ({
     label: key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase()),
@@ -47,21 +44,33 @@ const formatContext = (context: Record<string, unknown>): { label: string; value
 </script>
 
 <template>
-  <Drawer
+  <Modal
     :model-value="modelValue"
-    id="log-detail-drawer"
-    label="Log Detail"
-    width="w-96"
+    id="log-detail-modal"
+    title="Log Detail"
+    size="lg"
     @update:model-value="$emit('update:modelValue', $event)"
   >
     <div v-if="log" class="space-y-6">
-      <!-- Attributes Section -->
-      <div class="grid grid-cols-1 gap-4">
+      <div class="space-y-4">
         <div>
           <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
             Timestamp
           </label>
           <p class="text-sm text-gray-900 dark:text-white">{{ formattedTimestamp }}</p>
+        </div>
+        <div>
+          <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
+            Severity
+          </label>
+          <span
+            :class="[
+              'inline-flex items-center rounded-full px-2 py-1 text-xs font-medium',
+              getSeverityClass(log.severity),
+            ]"
+          >
+            {{ log.severity.charAt(0).toUpperCase() + log.severity.slice(1) }}
+          </span>
         </div>
         <div>
           <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
@@ -89,22 +98,8 @@ const formatContext = (context: Record<string, unknown>): { label: string; value
             <span class="font-mono text-sm text-gray-900 dark:text-white">{{ log.correlationId }}</span>
           </CopyValue>
         </div>
-        <div>
-          <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
-            Severity
-          </label>
-          <span
-            :class="[
-              'inline-flex items-center rounded-full px-2 py-1 text-xs font-medium',
-              getSeverityClass(log.severity),
-            ]"
-          >
-            {{ log.severity.charAt(0).toUpperCase() + log.severity.slice(1) }}
-          </span>
-        </div>
       </div>
 
-      <!-- Message Section -->
       <div>
         <h4 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">Message</h4>
         <div
@@ -114,7 +109,6 @@ const formatContext = (context: Record<string, unknown>): { label: string; value
         </div>
       </div>
 
-      <!-- Additional Context Section -->
       <div v-if="log.additionalContext && Object.keys(log.additionalContext).length > 0">
         <h4 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">
           Additional Context
@@ -137,6 +131,5 @@ const formatContext = (context: Record<string, unknown>): { label: string; value
         </div>
       </div>
     </div>
-  </Drawer>
+  </Modal>
 </template>
-

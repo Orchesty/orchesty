@@ -10,6 +10,7 @@ export interface ScheduledTask {
   topology: string
   topologyId: string
   crontab: string | null
+  nextRun: Date | null
   params: string  // Cron parameters
   status: ScheduledTaskStatus  // Topology enabled/disabled state (for badge)
 }

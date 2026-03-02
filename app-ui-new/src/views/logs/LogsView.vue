@@ -7,9 +7,10 @@ import DataGrid from '@/components/ui/DataGrid.vue'
 import TextInput from '@/components/ui/datagrid/TextInput.vue'
 import SearchInput from '@/components/ui/SearchInput.vue'
 import DropdownFilter from '@/components/ui/datagrid/DropdownFilter.vue'
-import TimeRangeFilterWithCustomRange from '@/components/ui/TimeRangeFilterWithCustomRange.vue'
+import SearchableDropdownFilter from '@/components/ui/datagrid/SearchableDropdownFilter.vue'
+import DateTimeRangeFilter from '@/components/ui/datagrid/DateTimeRangeFilter.vue'
 import CopyValue from '@/components/ui/CopyValue.vue'
-import LogDetailDrawer from '@/components/logs/LogDetailDrawer.vue'
+import LogDetailModal from '@/components/logs/LogDetailModal.vue'
 import type { LogEntry, LogQueryParams, LogSeverity } from '@/types/logs'
 import type { TableColumn } from '@/types/dashboard'
 import { fetchLogs } from '@/services/logsService'
@@ -20,8 +21,11 @@ import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 // Topology/Node mappings composable
 const {
   loadMappings,
+  getTopologyName,
+  getNodeName,
+  getNodeIdsByName,
   topologyOptions: topologyOptionsFromMappings,
-  nodeOptions: nodeOptionsFromMappings,
+  deduplicatedNodeOptions: deduplicatedNodeOptionsFromMappings,
   mappings,
 } = useTopologyNodeMappings()
 const { formatDateTime } = useDateFormat()
@@ -39,7 +43,10 @@ const correlationIdFilter = ref('')
 const severityFilter = ref<LogSeverity | null>(null)
 const topologyFilter = ref<string | null>(null)
 const nodeFilter = ref<string | null>(null)
-const timeRangeFilter = ref('this-month')
+const dateTimeRange = ref<{ from: string | null; to: string | null }>({
+  from: null,
+  to: null,
+})
 
 // Severity options for dropdown
 const severityOptions = ref<{ value: LogSeverity | null; label: string }[]>([
@@ -56,32 +63,42 @@ const topologyOptions = computed(() => [
   ...topologyOptionsFromMappings.value,
 ])
 
-// Node options filtered by selected topology
+// Node options filtered by selected topology, deduplicated by name
 const nodeOptions = computed(() => {
   const baseOptions = [{ value: null, label: 'All Nodes' }]
 
-  // If no topology selected, show all nodes
   if (!topologyFilter.value || !mappings.value) {
-    return [...baseOptions, ...nodeOptionsFromMappings.value]
+    return [...baseOptions, ...deduplicatedNodeOptionsFromMappings.value]
   }
 
   // Get node IDs for the selected topology from the tree
   const nodeIdsInTopology = mappings.value.tree[topologyFilter.value] || []
 
-  // Filter node options to only include nodes from this topology
-  const filteredNodes = nodeOptionsFromMappings.value.filter(node =>
-    nodeIdsInTopology.includes(node.value)
+  // Get unique names of nodes in this topology
+  const namesInTopology = new Set(
+    nodeIdsInTopology
+      .map(id => mappings.value?.nodes[id])
+      .filter((name): name is string => !!name)
   )
+
+  const filteredNodes = Array.from(namesInTopology)
+    .map(name => ({ value: name, label: name }))
+    .sort((a, b) => a.label.localeCompare(b.label))
 
   return [...baseOptions, ...filteredNodes]
 })
 
-// Clear node filter when topology changes if selected node is not in new topology
+// Clear node filter when topology changes if selected node name is not in new topology
 watch(topologyFilter, () => {
   if (nodeFilter.value && topologyFilter.value && mappings.value) {
     const nodeIdsInTopology = mappings.value.tree[topologyFilter.value] || []
+    const namesInTopology = new Set(
+      nodeIdsInTopology
+        .map(id => mappings.value?.nodes[id])
+        .filter(Boolean)
+    )
 
-    if (!nodeIdsInTopology.includes(nodeFilter.value)) {
+    if (!namesInTopology.has(nodeFilter.value)) {
       nodeFilter.value = null
     }
   }
@@ -143,11 +160,13 @@ async function loadData() {
   }
 
   if (nodeFilter.value) {
-    params.node = nodeFilter.value
+    const nodeIds = getNodeIdsByName(nodeFilter.value)
+    params.node = nodeIds.length > 0 ? nodeIds : [nodeFilter.value]
   }
 
-  if (timeRangeFilter.value) {
-    params.timeRange = timeRangeFilter.value
+  if (dateTimeRange.value.from && dateTimeRange.value.to) {
+    params.dateFrom = dateTimeRange.value.from
+    params.dateTo = dateTimeRange.value.to
   }
 
   try {
@@ -177,7 +196,7 @@ const {
 } = useDataGrid({
   defaultSort: { field: 'timestamp', direction: 'desc' },
   onDataLoad: loadData,
-  filters: [searchFilter, correlationIdFilter, severityFilter, topologyFilter, nodeFilter, timeRangeFilter],
+  filters: [searchFilter, correlationIdFilter, severityFilter, topologyFilter, nodeFilter, dateTimeRange],
 })
 
 // Load mappings and initial data
@@ -209,9 +228,11 @@ onMounted(async () => {
         :items-per-page="itemsPerPage"
         :sort-field="sortField"
         :sort-direction="sortDirection"
+        show-refresh
         @page-change="handlePageChange"
         @per-page-change="handlePerPageChange"
         @sort="handleSort"
+        @refresh="loadData"
       >
         <template #filters>
           <SearchInput
@@ -228,17 +249,19 @@ onMounted(async () => {
             :options="severityOptions"
             placeholder="All Severities"
           />
-          <DropdownFilter
+          <SearchableDropdownFilter
             v-model="nodeFilter"
             :options="nodeOptions"
             placeholder="All Nodes"
+            search-placeholder="Search nodes..."
           />
-          <DropdownFilter
+          <SearchableDropdownFilter
             v-model="topologyFilter"
             :options="topologyOptions"
             placeholder="All Topologies"
+            search-placeholder="Search topologies..."
           />
-          <TimeRangeFilterWithCustomRange v-model="timeRangeFilter" />
+          <DateTimeRangeFilter v-model="dateTimeRange" />
         </template>
 
         <!-- Custom cell templates -->
@@ -251,12 +274,12 @@ onMounted(async () => {
             :to="`/topologies/${row.topologyId}`"
             class="whitespace-nowrap font-medium text-gray-900 hover:underline dark:text-white"
           >
-            {{ row.topology }}
+            {{ getTopologyName(row.topologyId) }}
           </RouterLink>
         </template>
 
-        <template #cell-node="{ value }">
-          <span class="whitespace-nowrap font-medium text-gray-900 dark:text-white">{{ value }}</span>
+        <template #cell-node="{ row }">
+          <span class="whitespace-nowrap font-medium text-gray-900 dark:text-white">{{ getNodeName(row.nodeId) }}</span>
         </template>
 
         <template #cell-nodeId="{ value }">
@@ -313,8 +336,8 @@ onMounted(async () => {
       </DataGrid>
     </Card>
 
-    <!-- Log Detail Drawer -->
-    <LogDetailDrawer
+    <!-- Log Detail Modal -->
+    <LogDetailModal
       v-model="drawerOpen"
       :log="selectedLog"
     />

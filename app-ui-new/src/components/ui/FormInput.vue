@@ -8,6 +8,8 @@ interface Props {
   type?: 'text' | 'number' | 'email' | 'password'
   id?: string
   disabled?: boolean
+  required?: boolean
+  error?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -16,6 +18,8 @@ const props = withDefaults(defineProps<Props>(), {
   type: 'text',
   id: undefined,
   disabled: false,
+  required: false,
+  error: false,
 })
 
 const emit = defineEmits<{
@@ -48,11 +52,15 @@ const handleChange = () => {
     :value="localValue"
     :placeholder="placeholder"
     :disabled="disabled"
+    :required="required"
     @input="handleInput"
     @change="handleChange"
     :class="[
       width,
-      'rounded-lg border border-gray-300 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 focus:border-primary-600 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500',
+      'rounded-lg border bg-gray-50 px-3 py-2.5 text-sm text-gray-900 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400',
+      error
+        ? 'border-red-500 focus:border-red-500 focus:ring-red-500 dark:border-red-500 dark:focus:border-red-500 dark:focus:ring-red-500'
+        : 'border-gray-300 focus:border-primary-600 focus:ring-primary-600 dark:border-gray-600 dark:focus:border-primary-500 dark:focus:ring-primary-500',
       { 'cursor-not-allowed opacity-50': disabled }
     ]"
   />

@@ -16,7 +16,6 @@ import NewTopologyModal from '@/components/topologies/NewTopologyModal.vue'
 import NewFolderModal from '@/components/topologies/NewFolderModal.vue'
 import RenameFolderModal from '@/components/topologies/RenameFolderModal.vue'
 import SelectVersionModal from '@/components/topologies/SelectVersionModal.vue'
-import EntityModal from '@/components/settings/EntityModal.vue'
 import MoveTopologyModal from '@/components/topologies/MoveTopologyModal.vue'
 import EditTopologyModal from '@/components/topologies/EditTopologyModal.vue'
 import Confirm from '@/components/ui/Confirm.vue'
@@ -113,46 +112,6 @@ configuration.api_url
 user.email
 order.status`)
 
-// Audit tab state
-interface AuditEntity {
-  id: string
-  name: string
-  attributes: Array<{ key: string; description: string }>
-}
-
-const selectedEntity = ref<string | null>('entity-2')
-
-const auditEntities = computed<AuditEntity[]>(() => [
-  {
-    id: 'entity-1',
-    name: 'Customer account',
-    attributes: [
-      { key: 'customer_id', description: 'Unique customer identifier' },
-      { key: 'account_status', description: 'Current status of the account' }
-    ]
-  },
-  {
-    id: 'entity-2',
-    name: 'Marketing platform',
-    attributes: [
-      { key: 'account_id', description: 'Unique identifier of the external account' },
-      { key: 'api_token', description: 'Token used to authenticate API calls' }
-    ]
-  },
-  {
-    id: 'entity-3',
-    name: 'Operations monitor',
-    attributes: [
-      { key: 'monitor_id', description: 'Identifier for the monitoring system' },
-      { key: 'alert_endpoint', description: 'URL endpoint for receiving alerts' }
-    ]
-  }
-])
-
-const currentEntity = computed(() => {
-  if (!selectedEntity.value) return null
-  return auditEntities.value.find(e => e.id === selectedEntity.value) || null
-})
 
 // Access tab state
 interface AccessGroup {
@@ -178,7 +137,6 @@ const availableGroups = computed(() => [
 const topologyTabs: Tab[] = [
   { id: 'topology', label: 'Topology', target: 'topology-content' },
   { id: 'context', label: 'Context', target: 'context-content' },
-  { id: 'audit', label: 'Audit', target: 'audit-content' },
   { id: 'access', label: 'Access', target: 'access-content' },
   { id: 'processes', label: 'Processes', target: 'processes-content' },
   { id: 'logs', label: 'Logs', target: 'logs-content' },
@@ -510,11 +468,22 @@ const handleSelectTopology = (topologyId: string, topologyName: string, versionC
   selectVersionModalOpen.value = true
 }
 
+async function fetchWithRetry<T>(fn: () => Promise<T>, retries = 2, delayMs = 500): Promise<T> {
+  for (let i = 0; i <= retries; i++) {
+    try { return await fn() }
+    catch (e) {
+      if (i === retries) throw e
+      await new Promise(r => setTimeout(r, delayMs * (i + 1)))
+    }
+  }
+  throw new Error('unreachable')
+}
+
 const loadTopologyDetail = async () => {
   loading.value = true
   error.value = null
   try {
-    topology.value = await fetchTopologyDetail(props.id, versionId.value)
+    topology.value = await fetchWithRetry(() => fetchTopologyDetail(props.id, versionId.value))
 
     // Restore last active tab for this topology if it exists
     const lastTopology = getLastTopology()
@@ -602,45 +571,6 @@ const handleSaveContext = () => {
   // TODO: Implement save logic
 }
 
-// Entity modal state
-const entityModalOpen = ref(false)
-const selectedEntityForModal = ref<AuditEntity | null>(null)
-const entityModalMode = ref<'create' | 'edit'>('create')
-
-// Audit tab handlers
-const handleSelectEntity = (entityId: string) => {
-  selectedEntity.value = entityId
-}
-
-const handleCreateNewEntity = () => {
-  selectedEntityForModal.value = null
-  entityModalMode.value = 'create'
-  entityModalOpen.value = true
-}
-
-const handleEditEntity = () => {
-  if (currentEntity.value) {
-    selectedEntityForModal.value = currentEntity.value
-    entityModalMode.value = 'edit'
-    entityModalOpen.value = true
-  }
-}
-
-const handleSaveEntity = async (data: any) => {
-  try {
-    // TODO: Integrate with backend API
-    console.log('Saving entity:', data)
-    entityModalOpen.value = false
-    // Reload entities list if needed
-  } catch (error) {
-    console.error('Failed to save entity:', error)
-  }
-}
-
-const handleSaveAudit = () => {
-  console.log('Save audit entity:', selectedEntity.value)
-  // TODO: Implement save logic
-}
 
 // Access tab handlers
 const handleAddGroup = (groupName: string) => {
@@ -713,7 +643,7 @@ onMounted(async () => {
 
   // Load categories from API
   try {
-    allFolders.value = await fetchCategories()
+    allFolders.value = await fetchWithRetry(() => fetchCategories())
   } catch (error) {
     console.error('Failed to load categories:', error)
   }
@@ -722,18 +652,6 @@ onMounted(async () => {
   setTimeout(() => {
     // Folder actions dropdowns
     initFolderDropdowns()
-
-    // Audit entity dropdown
-    const auditEntityDropdown = document.getElementById('audit-entity-dropdown')
-    const auditEntityButton = document.querySelector('[data-dropdown-toggle="audit-entity-dropdown"]')
-    if (auditEntityDropdown && auditEntityButton) {
-      new Dropdown(auditEntityDropdown, auditEntityButton, {
-        placement: 'bottom-start',
-        triggerType: 'click',
-        offsetSkidding: 0,
-        offsetDistance: 10,
-      })
-    }
 
     // Add group dropdown
     const addGroupDropdown = document.getElementById('add-group-dropdown')
@@ -866,7 +784,7 @@ onMounted(async () => {
                     </Button>
                     <Button
                       v-if="topology.visibility !== 'draft'"
-                      :variant="topology.enabled ? 'danger' : 'success'"
+                      :variant="topology.enabled ? 'outline' : 'success'"
                       @click="handleToggleEnabled"
                     >
                       {{ topology.enabled ? 'Disable' : 'Enable' }}
@@ -908,101 +826,6 @@ onMounted(async () => {
                           placeholder="Enter manifest text (each line = array element)"
                           :rows="8"
                         />
-                      </div>
-
-                      <!-- Form Actions -->
-                      <div class="pt-4">
-                        <Button type="submit">
-                          Save
-                        </Button>
-                      </div>
-                    </form>
-                  </TabCard>
-                </div>
-
-                <!-- Audit Tab Content -->
-                <div id="audit-content" role="tabpanel" aria-labelledby="audit-tab" class="hidden">
-                  <TabCard>
-                    <!-- Header with dropdown button -->
-                    <div class="flex items-center justify-between mb-4">
-                      <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Audit Entity</h3>
-
-                      <button
-                        type="button"
-                        data-dropdown-toggle="audit-entity-dropdown"
-                        class="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-primary-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700 dark:focus:ring-primary-900"
-                      >
-                        <span class="me-2">Select entity</span>
-                        <svg class="h-3 w-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
-                        </svg>
-                      </button>
-
-                      <div
-                        id="audit-entity-dropdown"
-                        class="z-10 hidden w-60 divide-y divide-gray-100 rounded-lg bg-white shadow dark:bg-gray-700"
-                        data-dropdown-placement="bottom-start"
-                      >
-                        <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
-                          <li v-for="entity in auditEntities" :key="entity.id">
-                            <button
-                              type="button"
-                              @click="handleSelectEntity(entity.id)"
-                              class="block w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                            >
-                              {{ entity.name }}
-                            </button>
-                          </li>
-                        </ul>
-                        <div class="py-1">
-                          <button
-                            type="button"
-                            @click="handleCreateNewEntity"
-                            class="block w-full px-4 py-2 text-left text-sm font-semibold text-primary-600 hover:bg-gray-100 dark:text-primary-400 dark:hover:bg-gray-600"
-                          >
-                            + Create new
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-
-                    <form @submit.prevent="handleSaveAudit" class="space-y-6">
-                      <!-- Section: Entity selection -->
-                      <div class="space-y-4">
-
-                        <!-- Section: Selected entity -->
-                        <div v-if="currentEntity" class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-                          <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                            <div>
-                              <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1 uppercase">entity name</label>
-                              <h4 class="text-base font-semibold text-gray-900 dark:text-white">{{ currentEntity.name }}</h4>
-                              <div class="mt-4">
-                                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1 uppercase">attributes</label>
-                                <div class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
-                                  <div
-                                    v-for="attr in currentEntity.attributes"
-                                    :key="attr.key"
-                                    class="flex flex-col gap-0.5 sm:flex-row sm:items-center sm:gap-2"
-                                  >
-                                    <span class="font-medium text-gray-900 dark:text-white">{{ attr.key }}:</span>
-                                    <span class="text-gray-600 dark:text-gray-300">{{ attr.description }}</span>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <Button
-                              variant="outline"
-                              type="button"
-                              @click="handleEditEntity"
-                            >
-                              <svg class="h-4 w-4 me-2" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a2.25 2.25 0 0 1 3.182 3.182l-9.8 9.8a4.5 4.5 0 0 1-1.897 1.128l-3.356.957a.75.75 0 0 1-.918-.918l.957-3.356a4.5 4.5 0 0 1 1.128-1.897l9.8-9.8Z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5 13.5 4.5" />
-                              </svg>
-                              Edit
-                            </Button>
-                          </div>
-                        </div>
                       </div>
 
                       <!-- Form Actions -->
@@ -1231,12 +1054,7 @@ onMounted(async () => {
       :topology-id="selectedTopologyId"
       :topology-name="selectedTopologyName"
     />
-    <EntityModal
-      v-model="entityModalOpen"
-      :entity="selectedEntityForModal"
-      :mode="entityModalMode"
-      @save="handleSaveEntity"
-    />
+
 
     <!-- Edit Topology Modal -->
     <EditTopologyModal

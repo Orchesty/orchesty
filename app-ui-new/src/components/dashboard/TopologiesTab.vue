@@ -14,6 +14,7 @@ import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 
 interface Props {
   globalTimeFilter: TimeFilter
+  refreshKey?: number
 }
 
 const props = defineProps<Props>()
@@ -102,6 +103,10 @@ const handleViewProcesses = (topology: Topology) => {
   console.log('View processes for topology:', topology.name, topology.id)
   emit('viewProcesses', topology.id)
 }
+
+watch(() => props.refreshKey, () => {
+  loadData()
+})
 
 // Watch global time filter and convert to local datetime range
 watch(

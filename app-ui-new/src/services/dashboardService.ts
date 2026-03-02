@@ -307,18 +307,18 @@ export async function fetchLimiterData(params: {
     `/api/metrics/limits?filter=${encodeURIComponent(JSON.stringify(tableFilter))}`
   )
 
-  // Load mappings for name resolution
-  const { getNodeName, getTopologyName, getApplicationName } = useTopologyNodeMappings()
-
-  // Transform table data
+  // Transform table data (raw IDs; names resolved reactively in template)
   const tableData: LimiterTableRow[] = tableResponse.data.items.map(item => {
     const appKey = item.applicationId || ''
     const appSetting = params.appSettings?.get(appKey)
 
     return {
-      connector: getNodeName(item.nodeId),
-      topology: getTopologyName(item.topologyId),
-      application: appKey ? getApplicationName(appKey) : '-',
+      nodeId: item.nodeId,
+      topologyId: item.topologyId,
+      applicationId: appKey,
+      connector: item.nodeId,
+      topology: item.topologyId,
+      application: appKey || '-',
       limitSetting: formatLimiterSetting(appSetting),
       messages: item.count,
       maxMessages: item.maximumCount,
@@ -382,7 +382,7 @@ export async function fetchTrashData(params: {
   )
 
   // Load mappings for name resolution
-  const { getNodeName, getTopologyName } = useTopologyNodeMappings()
+  const { getTopologyName } = useTopologyNodeMappings()
 
   // Transform graph data to horizontal bar chart format { x: topologyName, y: count }
   const chartData: Array<{ x: string; y: number }> = graphResponse.data.items.map(item => ({
@@ -407,10 +407,12 @@ export async function fetchTrashData(params: {
     `/api/metrics/user-tasks?filter=${encodeURIComponent(JSON.stringify(tableFilter))}`
   )
 
-  // Transform table data with name resolution
+  // Transform table data (raw IDs; names resolved reactively in template)
   const tableData: TrashTableRow[] = tableResponse.data.items.map(item => ({
-    topology: getTopologyName(item.topologyId),
-    node: getNodeName(item.nodeId),
+    topologyId: item.topologyId,
+    nodeId: item.nodeId,
+    topology: item.topologyId,
+    node: item.nodeId,
     message: item.message || '',
     count: item.count
   }))

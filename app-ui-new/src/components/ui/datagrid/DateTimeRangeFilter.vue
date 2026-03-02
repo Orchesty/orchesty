@@ -2,6 +2,7 @@
 import { ref, watch, onMounted, onUnmounted } from 'vue'
 import { VueDatePicker } from '@vuepic/vue-datepicker'
 import '@vuepic/vue-datepicker/dist/main.css'
+import { useDateFormat } from '@/composables/useDateFormat'
 
 interface DateTimeRange {
   from: string | null
@@ -18,8 +19,15 @@ const emit = defineEmits<{
   'update:modelValue': [value: DateTimeRange]
 }>()
 
+const { formatDateTimeShort } = useDateFormat()
+
 // Convert from/to to array format for VueDatePicker range mode
 const dateRange = ref<[Date, Date] | null>(null)
+
+const formatRange = (dates: Date[]) => {
+  if (!dates || dates.length < 2) return ''
+  return `${formatDateTimeShort(dates[0])} - ${formatDateTimeShort(dates[1])}`
+}
 
 // Detect dark mode
 const isDark = ref(false)
@@ -103,9 +111,10 @@ onUnmounted(() => {
       range
       :enable-time-picker="true"
       placeholder="Select date range"
+      :formats="{ input: formatRange, preview: formatRange }"
       @update:model-value="handleDateChange"
       :dark="isDark"
-      
+      :teleport="true"
       :clearable="false"
       :ui="uiConfig"
       class="w-80"
@@ -114,7 +123,7 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-/* VueDatePicker theme overrides — light mode */
+/* Scoped styles for elements inside the component tree (input, theme vars) */
 :deep(.dp__theme_light) {
   --dp-primary-color: #10C86C;
   --dp-primary-text-color: #ffffff;
@@ -132,7 +141,6 @@ onUnmounted(() => {
   --dp-secondary-color: #ABABAB;
 }
 
-/* VueDatePicker theme overrides — dark mode */
 :deep(.dp__theme_dark) {
   --dp-primary-color: #1BEA83;
   --dp-primary-text-color: #141414;
@@ -150,88 +158,92 @@ onUnmounted(() => {
   --dp-secondary-color: #7A7A7A;
 }
 
-/* Force placeholder color to match SearchInput */
 :deep(.dp__input::placeholder) {
   color: #929292 !important;
   opacity: 1;
 }
+</style>
 
-/* Hide selection preview */
-:deep(.dp__selection_preview) {
-  display: block;
-  text-align: center;
-  max-width: 100% !important;
-}
-
-/* Hide arrow */
-:deep(.dp__arrow_top) {
+<style>
+/* Unscoped styles for teleported menu (rendered in <body>) */
+.dp__arrow_top {
   display: none;
 }
 
-:deep(.dp__action_row) {
-  display: block;
-  padding-top: 1rem;
+.dp__action_row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
 }
 
-/* Style action buttons */
-:deep(.dp__action_buttons) {
+.dp__selection_preview {
+  display: block;
+  text-align: center;
+  width: 100%;
+  max-width: 100% !important;
+  font-size: 0.8125rem;
+  padding: 0;
+}
+
+.dp__action_buttons {
   display: flex;
   justify-content: center;
-  gap: 0.75rem;
-  padding: 1rem;
+  gap: 0.5rem;
+  width: 100%;
 }
 
-:deep(.dp__action_button) {
-  padding: 1rem 1.5rem;
-  font-size: 0.875rem;
+.dp__action_button {
+  padding: 0.375rem 1rem;
+  font-size: 0.8125rem;
   font-weight: 500;
-  border-radius: 9999px;
-  transition: all 0.2s;
+  border-radius: 0.5rem;
+  transition: all 0.15s;
 }
 
-:deep(.dp__action_cancel) {
+.dp__action_cancel {
   background-color: #ffffff;
   border: 1px solid #C4C4C4;
   color: #141414;
 }
 
-:deep(.dp__action_cancel:hover) {
+.dp__action_cancel:hover {
   background-color: #F8F8F8;
 }
 
-:deep(.dp__action_select) {
+.dp__action_select {
   background-color: #10C86C;
   color: #ffffff;
   border: 1px solid #10C86C;
 }
 
-:deep(.dp__action_select:hover) {
+.dp__action_select:hover {
   background-color: #0D9E58;
   border-color: #0D9E58;
 }
 
-/* Dark mode styles for buttons */
-:deep(.dp__theme_dark .dp__action_cancel),
-:deep(.dp--dark .dp__action_cancel) {
+.dp__theme_dark .dp__action_cancel,
+.dp--dark .dp__action_cancel {
   background-color: #333333 !important;
   border-color: #636363 !important;
   color: #F8F8F8 !important;
 }
 
-:deep(.dp__theme_dark .dp__action_cancel:hover),
-:deep(.dp--dark .dp__action_cancel:hover) {
+.dp__theme_dark .dp__action_cancel:hover,
+.dp--dark .dp__action_cancel:hover {
   background-color: #4D4D4D !important;
 }
 
-:deep(.dp__theme_dark .dp__action_select),
-:deep(.dp--dark .dp__action_select) {
+.dp__theme_dark .dp__action_select,
+.dp--dark .dp__action_select {
   background-color: #1BEA83 !important;
   border-color: #1BEA83 !important;
   color: #141414 !important;
 }
 
-:deep(.dp__theme_dark .dp__action_select:hover),
-:deep(.dp--dark .dp__action_select:hover) {
+.dp__theme_dark .dp__action_select:hover,
+.dp--dark .dp__action_select:hover {
   background-color: #10C86C !important;
   border-color: #10C86C !important;
 }

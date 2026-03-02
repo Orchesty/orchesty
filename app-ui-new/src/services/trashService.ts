@@ -90,11 +90,12 @@ export async function fetchTrashItems(
   }
 
   if (params.node) {
+    const nodeValues = Array.isArray(params.node) ? params.node : [params.node]
     filterObj.filter.push([
       {
         column: 'nodeId',
         operator: 'EQ',
-        value: [params.node]
+        value: nodeValues
       }
     ])
   }
@@ -110,7 +111,15 @@ export async function fetchTrashItems(
   }
 
   // Handle time range filter
-  if (params.timeRange) {
+  if (params.dateFrom && params.dateTo) {
+    filterObj.filter.push([
+      {
+        column: 'created',
+        operator: 'BETWEEN',
+        value: [params.dateFrom, params.dateTo]
+      }
+    ])
+  } else if (params.timeRange) {
     const dateRange = convertTimeFilterToDateTimeRange(params.timeRange)
     const fromISO = formatDateTimeForApiFilter(dateRange.from)
     const toISO = formatDateTimeForApiFilter(dateRange.to)
