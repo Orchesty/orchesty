@@ -50,13 +50,14 @@ final readonly class ProcessHandler
 
     /**
      * @param GridRequestDtoInterface $dto
+     * @param int                     $buckets
      *
      * @return mixed[]
      * @throws Exception
      */
-    public function getProcessesGraph(GridRequestDtoInterface $dto): array
+    public function getProcessesGraph(GridRequestDtoInterface $dto, int $buckets): array
     {
-        return $this->getGridResponse($dto, $this->manager->getProcessesGraph($dto));
+        return $this->getGridResponse($dto, $this->manager->getProcessesGraph($dto, $buckets));
     }
 
     /**

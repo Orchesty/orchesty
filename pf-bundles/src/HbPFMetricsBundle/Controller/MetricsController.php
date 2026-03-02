@@ -159,6 +159,7 @@ final class MetricsController
         return $this->getResponse(
             $this->handler->getMetricsConnectorsHeatmap(
                 new GridRequestDto(Json::decode($request->query->get('filter', '{}'))),
+                $request->query->getInt('buckets'),
             ),
         );
     }

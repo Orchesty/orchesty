@@ -184,7 +184,7 @@ const loadChartData = async () => {
     const totals = await fetchProcessesTotalCounts(dateFrom, dateTo)
 
     // Fetch graph data
-    const chartData = await fetchProcessesGraphData(props.heatmapFilter, dateFrom, dateTo)
+    const chartData = await fetchProcessesGraphData(props.heatmapFilter, dateFrom, dateTo, 20)
 
     // Store raw chart data - topology IDs are resolved to names via yLabelMap in the chart
     processesChartData.value = {

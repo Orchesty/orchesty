@@ -309,6 +309,7 @@ paths:
                     $ref: '#/components/responses/Empty'
                 "500":
                     $ref: '#/components/responses/InternalServerError'
+
         get:
             tags: [ Long Running Nodes ]
             parameters:
@@ -456,6 +457,17 @@ paths:
             responses:
                 "200":
                     $ref: '#/components/responses/MetricsConnectorsGraph'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
+
+    /api/metrics/connectors/heatmap:
+        get:
+            tags: [ Metrics ]
+            parameters:
+                -   $ref: '#/components/parameters/Buckets'
+            responses:
+                "200":
+                    $ref: '#/components/responses/MetricsConnectorsHeatmap'
                 "500":
                     $ref: '#/components/responses/InternalServerError'
 
@@ -758,6 +770,61 @@ paths:
                 "500":
                     $ref: '#/components/responses/InternalServerError'
 
+    /api/topologies/check/{id}/schema.bpmn:
+        post:
+            tags: [ Topologies ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            requestBody:
+                $ref: '#/components/requestBodies/TopologySchema'
+            responses:
+                "200":
+                    $ref: '#/components/responses/TopologyCheckDifferences'
+                "400":
+                    $ref: '#/components/responses/InternalServerError'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
+
+    /api/topologies/{id}/schema.json:
+        get:
+            tags: [ Topologies ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            responses:
+                "200":
+                    $ref: '#/components/responses/TopologyJsonSchema'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
+
+        put:
+            tags: [ Topologies ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            requestBody:
+                $ref: '#/components/requestBodies/TopologyJsonSchema'
+            responses:
+                "200":
+                    $ref: '#/components/responses/Topology'
+                "400":
+                    $ref: '#/components/responses/InternalServerError'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
+
+    /api/topologies/check/{id}/schema.json:
+        post:
+            tags: [ Topologies ]
+            parameters:
+                -   $ref: '#/components/parameters/Id'
+            requestBody:
+                $ref: '#/components/requestBodies/TopologyJsonSchema'
+            responses:
+                "200":
+                    $ref: '#/components/responses/TopologyCheckDifferences'
+                "400":
+                    $ref: '#/components/responses/InternalServerError'
+                "500":
+                    $ref: '#/components/responses/InternalServerError'
+
     /api/topologies/{id}/publish:
         post:
             tags: [ Topologies ]
@@ -843,6 +910,8 @@ paths:
     /api/processes/graph:
         get:
             tags: [ Process ]
+            parameters:
+                -   $ref: '#/components/parameters/Buckets'
             responses:
                 "200":
                     $ref: '#/components/responses/ProcessesGraph'
@@ -1025,6 +1094,7 @@ paths:
             responses:
                 "200":
                     $ref: '#/components/responses/UserTask'
+
         put:
             tags: [ UserTask ]
             requestBody:
@@ -1256,6 +1326,13 @@ components:
                 application/xml:
                     schema:
                         type: object
+
+        TopologyJsonSchema:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/TopologyJsonSchema'
 
         TopologiesRun:
             description: ''
@@ -1504,6 +1581,13 @@ components:
                     schema:
                         $ref: '#/components/schemas/MetricsConnectorsGraph'
 
+        MetricsConnectorsHeatmap:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/MetricsConnectorsHeatmap'
+
         MetricsConnectorsOverview:
             description: ''
             content:
@@ -1671,6 +1755,20 @@ components:
                 application/xml:
                     schema:
                         $ref: '#/components/schemas/TopologySchema'
+
+        TopologyJsonSchema:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/TopologyJsonSchema'
+
+        TopologyCheckDifferences:
+            description: ''
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/TopologyCheckDifferences'
 
         TopologyPublish:
             description: ''
@@ -2146,6 +2244,28 @@ components:
                                     status400:
                                         type: integer
                                     status500:
+                                        type: integer
+                -   $ref: '#/components/schemas/GridMetadata'
+
+        MetricsConnectorsHeatmap:
+            allOf:
+                -   type: object
+                    properties:
+                        items:
+                            type: array
+                            items:
+                                type: object
+                                properties:
+                                    created:
+                                        type: string
+                                        format: date-time
+                                    nodeId:
+                                        type: string
+                                    applicationId:
+                                        type: string
+                                    success:
+                                        type: integer
+                                    failed:
                                         type: integer
                 -   $ref: '#/components/schemas/GridMetadata'
 
@@ -2715,6 +2835,24 @@ components:
         TopologySchema:
             type: object
 
+        TopologyJsonSchema:
+            type: object
+            properties:
+                nodes:
+                    type: array
+                    items:
+                        type: object
+                connections:
+                    type: array
+                    items:
+                        type: object
+
+        TopologyCheckDifferences:
+            type: object
+            properties:
+                isDifferent:
+                    type: boolean
+
         TopologyPublish:
             type: object
             properties:
@@ -3120,6 +3258,14 @@ components:
                 type: array
                 items:
                     type: string
+
+        Buckets:
+            name: buckets
+            in: query
+            required: true
+            example: 20
+            schema:
+                type: integer
 
         Token:
             name: token
