@@ -38,7 +38,7 @@ use Throwable;
  *
  * @package Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler
  */
-final class TopologyHandler
+class TopologyHandler
 {
 
     private const string STARTING_POINTS = 'startingPoints';
@@ -68,6 +68,7 @@ final class TopologyHandler
      * @param TopologyGeneratorBridge $generatorBridge
      * @param UserTaskHandler         $userTaskHandler
      * @param TopologyTester          $topologyTester
+     * @param class-string<Topology>  $topologyClass
      */
     public function __construct(
         DatabaseManagerLocator $dml,
@@ -76,12 +77,16 @@ final class TopologyHandler
         protected TopologyGeneratorBridge $generatorBridge,
         protected UserTaskHandler $userTaskHandler,
         protected TopologyTester $topologyTester,
+        protected string $topologyClass = Topology::class,
     )
     {
         /** @var DocumentManager $dm */
-        $dm                       = $dml->getDm();
-        $this->dm                 = $dm;
-        $this->topologyRepository = $this->dm->getRepository(Topology::class);
+        $dm       = $dml->getDm();
+        $this->dm = $dm;
+
+        /** @var TopologyRepository<Topology> $repo */
+        $repo                     = $this->dm->getRepository($this->topologyClass);
+        $this->topologyRepository = $repo;
     }
 
     /**
@@ -444,7 +449,7 @@ final class TopologyHandler
      * @return mixed[]
      * @throws MongoDBException
      */
-    private function getTopologyData(Topology $topology): array
+    protected function getTopologyData(Topology $topology): array
     {
         $settings  = [];
         $cronNodes = $this->dm->getRepository(Node::class)->getCronNodes($topology);
@@ -477,7 +482,7 @@ final class TopologyHandler
     private function getTopologyById(string $id): Topology
     {
         /** @var Topology|null $res */
-        $res = $this->dm->getRepository(Topology::class)->findOneBy(['id' => $id]);
+        $res = $this->topologyRepository->findOneBy(['id' => $id]);
 
         if (!$res) {
             throw new TopologyException(
