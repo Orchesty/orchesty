@@ -22,8 +22,8 @@ use Hanaboso\Utils\Exception\DateTimeException;
 class UsageStatsEvent
 {
 
-    use IdTrait;
     use CreatedTrait;
+    use IdTrait;
 
     private const int VERSION = 1;
 

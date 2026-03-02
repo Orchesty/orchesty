@@ -22,8 +22,8 @@ use Hanaboso\PipesFramework\Database\Document\Embed\EmbedNode;
 class Node
 {
 
-    use IdTrait;
     use DeletedTrait;
+    use IdTrait;
 
     /**
      * @var string|null

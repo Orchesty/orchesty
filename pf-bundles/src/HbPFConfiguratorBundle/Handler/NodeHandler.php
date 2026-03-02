@@ -142,8 +142,8 @@ final class NodeHandler
      * @return mixed[]
      * @throws LockException
      * @throws MappingException
-     * @throws NodeException
      * @throws MongoDBException
+     * @throws NodeException
      */
     public function updateNode(string $id, array $data): array
     {

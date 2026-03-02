@@ -75,8 +75,8 @@ final readonly class UserTaskManager
      * @param string $id
      *
      * @return UserTask
-     * @throws MongoDBException
      * @throws MappingException
+     * @throws MongoDBException
      */
     public function get(string $id): UserTask
     {

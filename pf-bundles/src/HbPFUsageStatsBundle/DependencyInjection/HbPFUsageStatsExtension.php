@@ -23,8 +23,8 @@ final class HbPFUsageStatsExtension extends Extension
      * @param mixed[]          $configs   An array of configuration values
      * @param ContainerBuilder $container A ContainerBuilder instance
      *
-     * @throws InvalidArgumentException When provided tag is not defined in this extension
      * @throws Exception
+     * @throws InvalidArgumentException When provided tag is not defined in this extension
      */
     public function load(array $configs, ContainerBuilder $container): void
     {

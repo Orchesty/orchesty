@@ -73,8 +73,8 @@ final class SendUsageStatsEventsToUSCCPCommand extends Command
      * @param OutputInterface $output
      *
      * @return int
-     * @throws MongoDBException
      * @throws DateTimeException
+     * @throws MongoDBException
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {

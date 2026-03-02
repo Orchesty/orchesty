@@ -21,8 +21,8 @@ abstract class ControllerTestCaseAbstract extends WebTestCase
 {
 
     use ControllerTestTrait;
-    use DatabaseTestTrait;
     use CustomAssertTrait;
+    use DatabaseTestTrait;
     use JwtUserTrait;
     use LoginJwtTestTrait;
 

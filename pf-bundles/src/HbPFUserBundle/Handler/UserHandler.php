@@ -93,9 +93,9 @@ final class UserHandler
      * @param mixed[] $data
      *
      * @return mixed[]
+     * @throws DateTimeException
      * @throws PipesFrameworkException
      * @throws SecurityManagerException
-     * @throws DateTimeException
      */
     public function login(array $data): array
     {

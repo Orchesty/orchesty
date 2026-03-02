@@ -159,8 +159,8 @@ class TopologyHandler
 
     /**
      * @return mixed[]
-     * @throws CurlException
      * @throws CronException
+     * @throws CurlException
      */
     public function getCronTopologies(): array
     {
@@ -183,8 +183,8 @@ class TopologyHandler
      * @param string $id
      *
      * @return mixed[]
-     * @throws TopologyException
      * @throws MongoDBException
+     * @throws TopologyException
      */
     public function getTopology(string $id): array
     {
@@ -197,8 +197,8 @@ class TopologyHandler
      * @param mixed[] $data
      *
      * @return mixed[]
-     * @throws PipesFrameworkException
      * @throws MongoDBException
+     * @throws PipesFrameworkException
      * @throws TopologyException
      */
     public function createTopology(array $data): array
@@ -215,9 +215,9 @@ class TopologyHandler
      * @param mixed[] $data
      *
      * @return mixed[]
-     * @throws TopologyException
-     * @throws MongoDBException
      * @throws CurlException
+     * @throws MongoDBException
+     * @throws TopologyException
      */
     public function updateTopology(string $id, array $data): array
     {
@@ -248,9 +248,9 @@ class TopologyHandler
      * @return mixed[]
      * @throws CronException
      * @throws CurlException
+     * @throws MongoDBException
      * @throws NodeException
      * @throws TopologyException
-     * @throws MongoDBException
      */
     public function saveTopologySchema(string $id, string $content, array $data): array
     {
@@ -290,8 +290,8 @@ class TopologyHandler
      * @param mixed[] $data
      *
      * @return mixed[]
-     * @throws TopologyException
      * @throws MongoDBException
+     * @throws TopologyException
      */
     public function saveTopologyJsonSchema(string $id, array $data): array
     {
@@ -319,9 +319,9 @@ class TopologyHandler
      * @param string $id
      *
      * @return ResponseDto
-     * @throws TopologyException
      * @throws EnumException
      * @throws MongoDBException
+     * @throws TopologyException
      */
     public function publishTopology(string $id): ResponseDto
     {
@@ -367,9 +367,9 @@ class TopologyHandler
      * @param string $id
      *
      * @return string[]
+     * @throws MongoDBException
      * @throws NodeException
      * @throws TopologyException
-     * @throws MongoDBException
      */
     public function cloneTopology(string $id): array
     {

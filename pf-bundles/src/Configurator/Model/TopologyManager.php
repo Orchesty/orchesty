@@ -156,8 +156,8 @@ class TopologyManager
      * @param mixed[] $data
      *
      * @return Topology
-     * @throws TopologyException
      * @throws MongoDBException
+     * @throws TopologyException
      */
     public function createTopology(array $data): Topology
     {
@@ -185,8 +185,8 @@ class TopologyManager
      * @param mixed[]  $data
      *
      * @return Topology
-     * @throws TopologyException
      * @throws MongoDBException
+     * @throws TopologyException
      */
     public function updateTopology(Topology $topology, array $data): Topology
     {
@@ -206,10 +206,10 @@ class TopologyManager
      * @return Topology
      * @throws CronException
      * @throws CurlException
+     * @throws JsonException
+     * @throws MongoDBException
      * @throws NodeException
      * @throws TopologyException
-     * @throws MongoDBException
-     * @throws JsonException
      */
     public function saveTopologySchema(Topology $topology, string $content, array $data): Topology
     {
@@ -274,9 +274,9 @@ class TopologyManager
      * @param string|null $forceHost
      *
      * @return Topology
-     * @throws TopologyException
-     * @throws MongoDBException
      * @throws JsonException
+     * @throws MongoDBException
+     * @throws TopologyException
      */
     public function saveTopologyJsonSchema(Topology $topology, array $data, ?string $forceHost = NULL): Topology
     {
@@ -341,9 +341,9 @@ class TopologyManager
      * @param Topology $topology
      *
      * @return Topology
-     * @throws TopologyException
      * @throws EnumException
      * @throws MongoDBException
+     * @throws TopologyException
      */
     public function publishTopology(Topology $topology): Topology
     {
@@ -380,10 +380,10 @@ class TopologyManager
      * @param Topology $topology
      *
      * @return Topology
+     * @throws JsonException
+     * @throws MongoDBException
      * @throws NodeException
      * @throws TopologyException
-     * @throws MongoDBException
-     * @throws JsonException
      */
     public function cloneTopology(Topology $topology): Topology
     {
@@ -659,9 +659,9 @@ class TopologyManager
      * @param Topology $topology
      * @param Schema   $dto
      *
-     * @throws TopologyException
-     * @throws NodeException
      * @throws MongoDBException
+     * @throws NodeException
+     * @throws TopologyException
      */
     private function generateNodes(Topology $topology, Schema $dto): void
     {
@@ -685,9 +685,9 @@ class TopologyManager
      * @param Topology $topology
      * @param Schema   $dto
      *
+     * @throws MongoDBException
      * @throws NodeException
      * @throws TopologyException
-     * @throws MongoDBException
      */
     private function updateNodes(Topology $topology, Schema $dto): void
     {
@@ -728,9 +728,9 @@ class TopologyManager
      * @param mixed[]       $nodes
      * @param NodeSchemaDto $dto
      *
+     * @throws MongoDBException
      * @throws NodeException
      * @throws TopologyException
-     * @throws MongoDBException
      */
     private function createNode(Topology $topology, array &$nodes, NodeSchemaDto $dto): void
     {
@@ -883,8 +883,8 @@ class TopologyManager
      * @param mixed[]  $data
      *
      * @return Topology
-     * @throws TopologyException
      * @throws MongoDBException
+     * @throws TopologyException
      */
     private function checkTopologyName(Topology $topology, array $data): Topology
     {

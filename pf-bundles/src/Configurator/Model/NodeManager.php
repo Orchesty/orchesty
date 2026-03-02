@@ -53,8 +53,8 @@ final class NodeManager
      * @param mixed[] $data
      *
      * @return Node
-     * @throws NodeException
      * @throws MongoDBException
+     * @throws NodeException
      */
     public function updateNode(Node $node, array $data): Node
     {
@@ -128,9 +128,9 @@ final class NodeManager
      * @param string $id
      *
      * @return Node
-     * @throws NodeException
      * @throws LockException
      * @throws MappingException
+     * @throws NodeException
      */
     public function getNodeById(string $id): Node
     {
