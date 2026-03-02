@@ -410,7 +410,7 @@ export async function deleteTopology(id: string): Promise<void> {
  */
 export async function updateTopology(
   id: string,
-  data: { description?: string; category?: string | null },
+  data: { description?: string; category?: string | null; mcp_description?: Record<string, unknown> },
 ): Promise<void> {
   await api.patch(`/api/topologies/${id}`, data)
 }

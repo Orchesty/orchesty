@@ -27,7 +27,8 @@ import TabsComponent, { type Tab } from '@/components/ui/Tabs.vue'
 import Card from '@/components/ui/Card.vue'
 import TabCard from '@/components/ui/TabCard.vue'
 import Textarea from '@/components/ui/datagrid/Textarea.vue'
-import { fetchTopologyDetail, fetchCategories, deleteCategory, publishTopology, toggleTopologyEnabled, deleteTopology, runTopology, cloneTopology, fetchTopologySchema } from '@/services/topologiesService'
+import { fetchTopologyDetail, fetchCategories, deleteCategory, publishTopology, toggleTopologyEnabled, deleteTopology, runTopology, cloneTopology, fetchTopologySchema, updateTopology } from '@/services/topologiesService'
+import { validateMcpManifest } from '@/utils/mcpManifestValidator'
 import { fetchTopologyMetrics } from '@/services/topologyMetricsService'
 import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 import { useToast } from '@/composables/useToast'
@@ -107,11 +108,49 @@ const activeTopologyTab = ref<string>(
 )
 
 // Context tab state
-const contextManifest = ref(`configuration.api_key
-configuration.api_url
-user.email
-order.status`)
+const contextPlaceholder = `{
+  "kind": "query",
+  "input_schema": {
+    "type": "object",
+    "properties": {
+      "location": {
+        "type": "string"
+      },
+      "date": {
+        "type": "string",
+        "format": "date"
+      }
+    },
+    "required": [
+      "location"
+    ]
+  },
+  "output_schema": {
+    "type": "object",
+    "properties": {
+      "temperature": {
+        "type": "number"
+      },
+      "humidity": {
+        "type": "number"
+      },
+      "text": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "temperature",
+      "humidity",
+      "text"
+    ]
+  }
+}`
+const contextManifest = ref('')
+const manifestError = ref('')
 
+const isManifestValid = computed(() => {
+  return contextManifest.value.trim() !== '' && manifestError.value === ''
+})
 
 // Access tab state
 interface AccessGroup {
@@ -509,6 +548,12 @@ const loadTopologyDetail = async () => {
         activeTab: activeTopologyTab.value
       })
     }
+    const mcpDesc = topology.value?.mcp_description
+    contextManifest.value =
+      mcpDesc && !Array.isArray(mcpDesc) && Object.keys(mcpDesc).length > 0
+        ? JSON.stringify(mcpDesc, null, 2)
+        : ''
+
     // Check if description is truncated after render
     checkDescriptionTruncation()
   } catch (err) {
@@ -566,9 +611,52 @@ const handleSaveDesign = async (data: { _id: string }) => {
 }
 
 // Context tab handlers
-const handleSaveContext = () => {
-  console.log('Save context manifest:', contextManifest.value)
-  // TODO: Implement save logic
+const savingContext = ref(false)
+
+watch(contextManifest, (text) => {
+  const trimmed = text.trim()
+  if (!trimmed) {
+    manifestError.value = ''
+    return
+  }
+  let parsed
+  try {
+    parsed = JSON.parse(trimmed)
+  } catch {
+    manifestError.value = 'Invalid JSON syntax'
+    return
+  }
+  const result = validateMcpManifest(parsed)
+  manifestError.value = result.valid ? '' : (result.error || 'Validation failed')
+})
+
+const handleSaveContext = async () => {
+  if (!topology.value) return
+
+  let parsed: Record<string, unknown>
+  try {
+    parsed = JSON.parse(contextManifest.value)
+  } catch {
+    manifestError.value = 'Invalid JSON syntax'
+    return
+  }
+
+  const validation = validateMcpManifest(parsed)
+  if (!validation.valid) {
+    manifestError.value = validation.error || 'Validation failed'
+    return
+  }
+
+  savingContext.value = true
+  try {
+    await updateTopology(topology.value._id, { mcp_description: parsed })
+    showToast('MCP Manifest saved successfully', 'success')
+  } catch (error) {
+    console.error('Failed to save MCP Manifest:', error)
+    showToast('Failed to save MCP Manifest', 'error')
+  } finally {
+    savingContext.value = false
+  }
 }
 
 
@@ -823,15 +911,16 @@ onMounted(async () => {
                       <div>
                         <Textarea
                           v-model="contextManifest"
-                          placeholder="Enter manifest text (each line = array element)"
-                          :rows="8"
+                          :placeholder="contextPlaceholder"
+                          :rows="16"
+                          :error="manifestError"
                         />
                       </div>
 
                       <!-- Form Actions -->
                       <div class="pt-4">
-                        <Button type="submit">
-                          Save
+                        <Button type="submit" :disabled="!isManifestValid || savingContext">
+                          {{ savingContext ? 'Saving...' : 'Save' }}
                         </Button>
                       </div>
                     </form>

@@ -39,6 +39,7 @@ export interface TopologyDetail {
   category: string | null
   enabled: boolean
   versions: TopologyVersion[] // All versions of this topology
+  mcp_description?: Record<string, unknown>
 }
 
 export interface CronNode {
