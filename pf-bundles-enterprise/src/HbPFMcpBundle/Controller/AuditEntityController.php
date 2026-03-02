@@ -67,7 +67,7 @@ final class AuditEntityController extends AbstractController
     {
         try {
             return $this->getResponse($this->handler->create($request->request->all()));
-        } catch (PipesFrameworkException | MongoDBException $e) {
+        } catch (MongoDBException | PipesFrameworkException $e) {
             return $this->getErrorResponse($e, 400);
         }
     }
