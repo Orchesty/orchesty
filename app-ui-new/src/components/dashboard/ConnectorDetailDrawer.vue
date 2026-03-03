@@ -171,7 +171,7 @@ const loadData = async () => {
     const detail = await fetchConnectorDetail(queryIds, localTimeFilter.value)
     connectorDetail.value = detail
 
-    const chart = await fetchConnectorChartData(queryIds, localTimeFilter.value)
+    const chart = await fetchConnectorChartData(queryIds, localTimeFilter.value, 20)
     chartData.value = chart
 
     const apiSortField = sortField.value === 'timestamp' ? 'created' : sortField.value
