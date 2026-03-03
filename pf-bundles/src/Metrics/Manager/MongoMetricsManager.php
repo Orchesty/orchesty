@@ -378,12 +378,15 @@ final class MongoMetricsManager extends MetricsManagerAbstract
 
     /**
      * @param GridRequestDtoInterface $dto
+     * @param int                     $buckets
      *
      * @return array<mixed>
      * @throws Exception
      */
-    public function getMetricsConnectorsGraph(GridRequestDtoInterface $dto): array
+    public function getMetricsConnectorsGraph(GridRequestDtoInterface $dto, int $buckets): array
     {
+        $this->metricConnectorGraphAggregationFilter->setBucketCount($buckets);
+
         return $this->metricConnectorGraphAggregationFilter->getData($dto)->toArray();
     }
 
@@ -447,12 +450,15 @@ final class MongoMetricsManager extends MetricsManagerAbstract
 
     /**
      * @param GridRequestDtoInterface $dto
+     * @param int                     $buckets
      *
      * @return array<mixed>
      * @throws Exception
      */
-    public function getMetricsLimitsGraph(GridRequestDtoInterface $dto): array
+    public function getMetricsLimitsGraph(GridRequestDtoInterface $dto, int $buckets): array
     {
+        $this->metricLimitGraphAggregationFilter->setBucketCount($buckets);
+
         return $this->metricLimitGraphAggregationFilter->getData($dto)->toArray();
     }
 

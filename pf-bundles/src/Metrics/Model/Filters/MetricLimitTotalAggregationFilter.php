@@ -5,7 +5,9 @@ namespace Hanaboso\PipesFramework\Metrics\Model\Filters;
 use Closure;
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Hanaboso\MongoDataGrid\GridAggregationFilterAbstract;
+use Hanaboso\PipesFramework\Configurator\Model\Filters\AggregationFilterUtils;
 use Hanaboso\PipesFramework\Metrics\Document\LimiterMetrics;
+use MongoDB\BSON\UTCDateTime;
 
 /**
  * Class MetricLimitTotalAggregationFilter
@@ -67,13 +69,36 @@ final class MetricLimitTotalAggregationFilter extends GridAggregationFilterAbstr
     ): void {
         $addConditionsCallback();
 
+        [$gte, $lte] = AggregationFilterUtils::getDates($builder);
+
         $builder
             ->group()
             ->field('_id')
             ->dateTrunc('$fields.created', 'minute')
             ->field('countAtMinute')
             ->sum('$fields.messages')
-            ->sort(['_id' => 'asc'])
+            ->addFields()
+            ->field('created')
+            ->expression('$_id');
+
+        if ($gte !== NULL && $lte !== NULL) {
+            $gteMs       = (int) (string) $gte;
+            $lteMs       = (int) (string) $lte;
+            $gteMinuteMs = $gteMs - $gteMs % 60_000;
+            $lteMinuteMs = $lteMs - $lteMs % 60_000;
+
+            $builder
+                ->densify('created')
+                ->range([new UTCDateTime($gteMinuteMs), new UTCDateTime($lteMinuteMs + 1)], 60_000, 'millisecond')
+                ->fill()
+                ->sortBy('created', 'asc')
+                ->output()
+                ->field('countAtMinute')
+                ->value(0);
+        }
+
+        $builder
+            ->sort(['created' => 'asc'])
             ->group()
             ->field('_id')
             ->expression(NULL)

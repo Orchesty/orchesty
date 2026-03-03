@@ -16,6 +16,18 @@ use Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetrics;
 final class MetricConnectorGraphAggregationFilter extends GridAggregationFilterAbstract
 {
 
+    private int $bucketCount = 0;
+
+    /**
+     * @param int $buckets
+     *
+     * @return void
+     */
+    public function setBucketCount(int $buckets): void
+    {
+        $this->bucketCount = $buckets;
+    }
+
     /**
      * @return class-string
      */
@@ -69,6 +81,13 @@ final class MetricConnectorGraphAggregationFilter extends GridAggregationFilterA
     ): void {
         $addConditionsCallback();
 
+        [
+            $binSize,
+            $gte,
+            $densifyStart,
+            $densifyEnd,
+        ] = AggregationFilterUtils::getDensifyBinSizeAndRangeFromAggregationBuilder($builder, $this->bucketCount);
+
         $builder
             ->group()
             ->field('_id')
@@ -76,14 +95,22 @@ final class MetricConnectorGraphAggregationFilter extends GridAggregationFilterA
                 $builder
                     ->expr()
                     ->field('hour')
-                    ->expression(
-                        $builder
-                            ->expr()
-                            ->dateTrunc(
-                                '$fields.created',
-                                'minute',
-                                AggregationFilterUtils::getDateTruncBinSizeFromAggregationBuilder($builder),
+                    ->toDate(
+                        $builder->expr()->add(
+                            $builder->expr()->toLong($gte),
+                            $builder->expr()->multiply(
+                                $builder->expr()->ceil(
+                                    $builder->expr()->divide(
+                                        $builder->expr()->subtract(
+                                            $builder->expr()->toLong('$fields.created'),
+                                            $builder->expr()->toLong($gte),
+                                        ),
+                                        $binSize,
+                                    ),
+                                ),
+                                $binSize,
                             ),
+                        ),
                     ),
             )
             ->field('status200')
@@ -129,6 +156,21 @@ final class MetricConnectorGraphAggregationFilter extends GridAggregationFilterA
             ->field('created')
             ->expression('$_id.hour');
 
+        if ($densifyStart !== NULL && $densifyEnd !== NULL) {
+            $builder
+                ->densify('created')
+                ->range([$densifyStart, $densifyEnd], $binSize, 'millisecond')
+                ->fill()
+                ->sortBy('created', 'asc')
+                ->output()
+                ->field('status200')
+                ->value(0)
+                ->field('status400')
+                ->value(0)
+                ->field('status500')
+                ->value(0);
+        }
+
         $addSortationsCallback();
         $addPaginationCallback();
 
@@ -156,18 +198,46 @@ final class MetricConnectorGraphAggregationFilter extends GridAggregationFilterA
     {
         $addConditionsCallback();
 
+        [
+            $binSize,
+            $gte,
+            $densifyStart,
+            $densifyEnd,
+        ] = AggregationFilterUtils::getDensifyBinSizeAndRangeFromAggregationBuilder($builder, $this->bucketCount);
+
         $builder
             ->group()
             ->field('_id')
             ->expression(
                 $builder
                     ->expr()
-                    ->dateTrunc(
-                        '$fields.created',
-                        'minute',
-                        AggregationFilterUtils::getDateTruncBinSizeFromAggregationBuilder($builder),
+                    ->toDate(
+                        $builder->expr()->add(
+                            $builder->expr()->toLong($gte),
+                            $builder->expr()->multiply(
+                                $builder->expr()->ceil(
+                                    $builder->expr()->divide(
+                                        $builder->expr()->subtract(
+                                            $builder->expr()->toLong('$fields.created'),
+                                            $builder->expr()->toLong($gte),
+                                        ),
+                                        $binSize,
+                                    ),
+                                ),
+                                $binSize,
+                            ),
+                        ),
                     ),
             );
+
+        if ($densifyStart !== NULL && $densifyEnd !== NULL) {
+            $builder
+                ->addFields()
+                ->field('created')
+                ->expression('$_id')
+                ->densify('created')
+                ->range([$densifyStart, $densifyEnd], $binSize, 'millisecond');
+        }
     }
 
 }

@@ -4,6 +4,7 @@ namespace Hanaboso\PipesFramework\HbPFConfiguratorBundle\Controller;
 
 use Exception;
 use Hanaboso\MongoDataGrid\GridRequestDto;
+use Hanaboso\PipesFramework\Configurator\Model\Filters\AggregationFilterUtils;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler\ProcessHandler;
 use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\Traits\ControllerTrait;
@@ -76,7 +77,7 @@ final class ProcessController
         return $this->getResponse(
             $this->handler->getProcessesGraph(
                 new GridRequestDto(Json::decode($request->query->get('filter', '{}'))),
-                $request->query->getInt('buckets'),
+                $request->query->getInt(AggregationFilterUtils::BUCKETS, AggregationFilterUtils::DEFAULT_BUCKETS),
             ),
         );
     }
