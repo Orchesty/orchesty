@@ -115,13 +115,14 @@ final readonly class MetricsHandler
 
     /**
      * @param GridRequestDtoInterface $dto
+     * @param int                     $buckets
      *
      * @return mixed[]
      * @throws Exception
      */
-    public function getMetricsConnectorsGraph(GridRequestDtoInterface $dto): array
+    public function getMetricsConnectorsGraph(GridRequestDtoInterface $dto, int $buckets): array
     {
-        return $this->getGridResponse($dto, $this->manager->getMetricsConnectorsGraph($dto));
+        return $this->getGridResponse($dto, $this->manager->getMetricsConnectorsGraph($dto, $buckets));
     }
 
     /**
@@ -182,13 +183,14 @@ final readonly class MetricsHandler
 
     /**
      * @param GridRequestDtoInterface $dto
+     * @param int                     $buckets
      *
      * @return mixed[]
      * @throws Exception
      */
-    public function getMetricsLimitsGraph(GridRequestDtoInterface $dto): array
+    public function getMetricsLimitsGraph(GridRequestDtoInterface $dto, int $buckets): array
     {
-        return $this->getGridResponse($dto, $this->manager->getMetricsLimitsGraph($dto));
+        return $this->getGridResponse($dto, $this->manager->getMetricsLimitsGraph($dto, $buckets));
     }
 
     /**

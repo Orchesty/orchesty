@@ -103,16 +103,14 @@ const handleSaveAndApprove = () => {
 }
 
 // Clear errors on input
-watch(headersJson, () => {
-  if (headersError.value) {
-    headersError.value = ''
-  }
+watch(headersJson, (text) => {
+  const result = validateJson(text)
+  headersError.value = result.valid ? '' : (result.error || 'Invalid JSON')
 })
 
-watch(bodyJson, () => {
-  if (bodyError.value) {
-    bodyError.value = ''
-  }
+watch(bodyJson, (text) => {
+  const result = validateJson(text)
+  bodyError.value = result.valid ? '' : (result.error || 'Invalid JSON')
 })
 </script>
 

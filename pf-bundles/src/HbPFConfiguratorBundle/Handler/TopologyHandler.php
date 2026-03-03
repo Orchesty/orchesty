@@ -38,7 +38,7 @@ use Throwable;
  *
  * @package Hanaboso\PipesFramework\HbPFConfiguratorBundle\Handler
  */
-final class TopologyHandler
+class TopologyHandler
 {
 
     private const string STARTING_POINTS = 'startingPoints';
@@ -68,6 +68,7 @@ final class TopologyHandler
      * @param TopologyGeneratorBridge $generatorBridge
      * @param UserTaskHandler         $userTaskHandler
      * @param TopologyTester          $topologyTester
+     * @param class-string<Topology>  $topologyClass
      */
     public function __construct(
         DatabaseManagerLocator $dml,
@@ -76,12 +77,16 @@ final class TopologyHandler
         protected TopologyGeneratorBridge $generatorBridge,
         protected UserTaskHandler $userTaskHandler,
         protected TopologyTester $topologyTester,
+        protected string $topologyClass = Topology::class,
     )
     {
         /** @var DocumentManager $dm */
-        $dm                       = $dml->getDm();
-        $this->dm                 = $dm;
-        $this->topologyRepository = $this->dm->getRepository(Topology::class);
+        $dm       = $dml->getDm();
+        $this->dm = $dm;
+
+        /** @var TopologyRepository<Topology> $repo */
+        $repo                     = $this->dm->getRepository($this->topologyClass);
+        $this->topologyRepository = $repo;
     }
 
     /**
@@ -154,8 +159,8 @@ final class TopologyHandler
 
     /**
      * @return mixed[]
-     * @throws CurlException
      * @throws CronException
+     * @throws CurlException
      */
     public function getCronTopologies(): array
     {
@@ -178,8 +183,8 @@ final class TopologyHandler
      * @param string $id
      *
      * @return mixed[]
-     * @throws TopologyException
      * @throws MongoDBException
+     * @throws TopologyException
      */
     public function getTopology(string $id): array
     {
@@ -192,8 +197,8 @@ final class TopologyHandler
      * @param mixed[] $data
      *
      * @return mixed[]
-     * @throws PipesFrameworkException
      * @throws MongoDBException
+     * @throws PipesFrameworkException
      * @throws TopologyException
      */
     public function createTopology(array $data): array
@@ -210,9 +215,9 @@ final class TopologyHandler
      * @param mixed[] $data
      *
      * @return mixed[]
-     * @throws TopologyException
-     * @throws MongoDBException
      * @throws CurlException
+     * @throws MongoDBException
+     * @throws TopologyException
      */
     public function updateTopology(string $id, array $data): array
     {
@@ -243,9 +248,9 @@ final class TopologyHandler
      * @return mixed[]
      * @throws CronException
      * @throws CurlException
+     * @throws MongoDBException
      * @throws NodeException
      * @throws TopologyException
-     * @throws MongoDBException
      */
     public function saveTopologySchema(string $id, string $content, array $data): array
     {
@@ -285,8 +290,8 @@ final class TopologyHandler
      * @param mixed[] $data
      *
      * @return mixed[]
-     * @throws TopologyException
      * @throws MongoDBException
+     * @throws TopologyException
      */
     public function saveTopologyJsonSchema(string $id, array $data): array
     {
@@ -314,9 +319,9 @@ final class TopologyHandler
      * @param string $id
      *
      * @return ResponseDto
-     * @throws TopologyException
      * @throws EnumException
      * @throws MongoDBException
+     * @throws TopologyException
      */
     public function publishTopology(string $id): ResponseDto
     {
@@ -362,9 +367,9 @@ final class TopologyHandler
      * @param string $id
      *
      * @return string[]
+     * @throws MongoDBException
      * @throws NodeException
      * @throws TopologyException
-     * @throws MongoDBException
      */
     public function cloneTopology(string $id): array
     {
@@ -444,7 +449,7 @@ final class TopologyHandler
      * @return mixed[]
      * @throws MongoDBException
      */
-    private function getTopologyData(Topology $topology): array
+    protected function getTopologyData(Topology $topology): array
     {
         $settings  = [];
         $cronNodes = $this->dm->getRepository(Node::class)->getCronNodes($topology);
@@ -477,7 +482,7 @@ final class TopologyHandler
     private function getTopologyById(string $id): Topology
     {
         /** @var Topology|null $res */
-        $res = $this->dm->getRepository(Topology::class)->findOneBy(['id' => $id]);
+        $res = $this->topologyRepository->findOneBy(['id' => $id]);
 
         if (!$res) {
             throw new TopologyException(

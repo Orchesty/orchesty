@@ -64,8 +64,8 @@ final class AuditEntityManager
      * @param mixed[] $data
      *
      * @return AuditEntity
-     * @throws PipesFrameworkException
      * @throws MongoDBException
+     * @throws PipesFrameworkException
      */
     public function create(array $data): AuditEntity
     {

@@ -344,6 +344,7 @@ export async function fetchConnectorErrorRecords(
 export async function fetchConnectorChartData(
   connectorIdOrIds: string | string[],
   timeFilter: TimeFilter,
+  buckets: number,
 ): Promise<{ categories: string[]; errors400: number[]; errors500: number[] }> {
   const nodeIds = Array.isArray(connectorIdOrIds) ? connectorIdOrIds : [connectorIdOrIds]
   const dateRange = convertTimeFilterToDateTimeRange(timeFilter)
@@ -370,7 +371,8 @@ export async function fetchConnectorChartData(
   // Call API
   const response = await api.get<ConnectorGraphApiResponse>('/api/metrics/connectors/graph', {
     params: {
-      filter: JSON.stringify(filterObj)
+      filter: JSON.stringify(filterObj),
+      buckets
     }
   })
 

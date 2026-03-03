@@ -17,8 +17,8 @@ use Hanaboso\Utils\Exception\DateTimeException;
 class Webhook
 {
 
-    use IdTrait;
     use CreatedTrait;
+    use IdTrait;
 
     public const string USER        = 'user';
     public const string APPLICATION = 'application';

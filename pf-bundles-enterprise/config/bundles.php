@@ -6,6 +6,7 @@ use Hanaboso\AclBundle\HbPFAclBundle;
 use Hanaboso\CommonsBundle\HbPFCommonsBundle;
 use Hanaboso\PipesFramework\HbPFApiGatewayBundle\HbPFApiGatewayBundle;
 use Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseApiGatewayBundle\HbPFEnterpriseApiGatewayBundle;
+use Hanaboso\PipesFrameworkEnterprise\HbPFEnterpriseConfiguratorBundle\HbPFEnterpriseConfiguratorBundle;
 use Hanaboso\PipesFramework\HbPFConfiguratorBundle\HbPFConfiguratorBundle;
 use Hanaboso\PipesFramework\HbPFLogsBundle\HbPFLogsBundle;
 use Hanaboso\PipesFrameworkEnterprise\HbPFMcpBundle\HbPFMcpBundle;
@@ -40,6 +41,7 @@ return [
     RabbitMqBundle::class         => ['all' => TRUE],
     RestBundle::class             => ['all' => TRUE],
 
-    HbPFEnterpriseApiGatewayBundle::class => ['all' => TRUE],
-    HbPFMcpBundle::class                  => ['all' => TRUE],
+    HbPFEnterpriseApiGatewayBundle::class    => ['all' => TRUE],
+    HbPFEnterpriseConfiguratorBundle::class => ['all' => TRUE],
+    HbPFMcpBundle::class                    => ['all' => TRUE],
 ];

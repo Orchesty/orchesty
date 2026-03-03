@@ -44,8 +44,8 @@ final class TopologyControllerTest extends ControllerTestCaseAbstract
 
     /**
      * @return void
-     * @throws MongoDBException
      * @throws Exception
+     * @throws MongoDBException
      */
     public function setUp(): void
     {

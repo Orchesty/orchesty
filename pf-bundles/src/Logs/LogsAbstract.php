@@ -54,8 +54,8 @@ abstract class LogsAbstract implements LogsInterface
      * @param mixed[] $result
      *
      * @return mixed[]
-     * @throws MongoDBException
      * @throws Exception
+     * @throws MongoDBException
      */
     protected function processStartingPoints(array $result): array
     {

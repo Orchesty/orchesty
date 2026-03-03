@@ -81,10 +81,12 @@ final class ProcessGraphAggregationFilter extends GridAggregationFilterAbstract
     {
         $addConditionsCallback();
 
-        [$binSize, $gte, $lte] = AggregationFilterUtils::getDensifyBinSizeAndRangeFromAggregationBuilder(
-            $builder,
-            $this->bucketCount,
-        );
+        [
+            $binSize,
+            $gte,
+            $densifyStart,
+            $densifyEnd,
+        ] = AggregationFilterUtils::getDensifyBinSizeAndRangeFromAggregationBuilder($builder, $this->bucketCount);
 
         $builder
             ->group()
@@ -97,7 +99,7 @@ final class ProcessGraphAggregationFilter extends GridAggregationFilterAbstract
                         $builder->expr()->add(
                             $builder->expr()->toLong($gte),
                             $builder->expr()->multiply(
-                                $builder->expr()->floor(
+                                $builder->expr()->ceil(
                                     $builder->expr()->divide(
                                         $builder->expr()->subtract(
                                             $builder->expr()->toLong('$created'),
@@ -135,11 +137,11 @@ final class ProcessGraphAggregationFilter extends GridAggregationFilterAbstract
             ->field('created')
             ->expression('$_id.hour');
 
-        if ($gte !== NULL && $lte !== NULL) {
+        if ($densifyStart !== NULL && $densifyEnd !== NULL) {
             $builder
                 ->densify('created')
                 ->partitionByFields('topologyId')
-                ->range([$gte, $lte], $binSize, 'millisecond')
+                ->range([$densifyStart, $densifyEnd], $binSize, 'millisecond')
                 ->fill()
                 ->sortBy('created', 'asc')
                 ->output()
@@ -176,10 +178,12 @@ final class ProcessGraphAggregationFilter extends GridAggregationFilterAbstract
     {
         $addConditionsCallback();
 
-        [$binSize, $gte, $lte] = AggregationFilterUtils::getDensifyBinSizeAndRangeFromAggregationBuilder(
-            $builder,
-            $this->bucketCount,
-        );
+        [
+            $binSize,
+            $gte,
+            $densifyStart,
+            $densifyEnd,
+        ] = AggregationFilterUtils::getDensifyBinSizeAndRangeFromAggregationBuilder($builder, $this->bucketCount);
 
         $builder
             ->group()
@@ -192,7 +196,7 @@ final class ProcessGraphAggregationFilter extends GridAggregationFilterAbstract
                         $builder->expr()->add(
                             $builder->expr()->toLong($gte),
                             $builder->expr()->multiply(
-                                $builder->expr()->floor(
+                                $builder->expr()->ceil(
                                     $builder->expr()->divide(
                                         $builder->expr()->subtract(
                                             $builder->expr()->toLong('$created'),
@@ -209,7 +213,7 @@ final class ProcessGraphAggregationFilter extends GridAggregationFilterAbstract
                     ->expression('$topologyId'),
             );
 
-        if ($gte !== NULL && $lte !== NULL) {
+        if ($densifyStart !== NULL && $densifyEnd !== NULL) {
             $builder
                 ->addFields()
                 ->field('topologyId')
@@ -218,7 +222,7 @@ final class ProcessGraphAggregationFilter extends GridAggregationFilterAbstract
                 ->expression('$_id.hour')
                 ->densify('created')
                 ->partitionByFields('topologyId')
-                ->range([$gte, $lte], $binSize, 'millisecond');
+                ->range([$densifyStart, $densifyEnd], $binSize, 'millisecond');
         }
     }
 

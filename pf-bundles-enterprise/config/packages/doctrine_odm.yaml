@@ -43,6 +43,11 @@ doctrine_mongodb:
                     is_bundle: false
                     dir: "%kernel.project_dir%/src/../vendor/orchesty/backend/src/Database/Document"
                     prefix: Hanaboso\PipesFramework\Database\Document
+                EnterpriseCommonsDocument:
+                    type: attribute
+                    is_bundle: false
+                    dir: "%kernel.project_dir%/src/Database/Document"
+                    prefix: Hanaboso\PipesFrameworkEnterprise\Database\Document
                 FileMongo:
                     type: attribute
                     is_bundle: false

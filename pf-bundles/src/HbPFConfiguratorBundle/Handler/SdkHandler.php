@@ -62,8 +62,8 @@ final class SdkHandler
      * @param mixed[] $data
      *
      * @return mixed[]
-     * @throws PipesFrameworkException
      * @throws MongoDBException
+     * @throws PipesFrameworkException
      */
     public function create(array $data): array
     {

@@ -4,6 +4,7 @@ namespace Hanaboso\PipesFramework\HbPFMetricsBundle\Controller;
 
 use Exception;
 use Hanaboso\MongoDataGrid\GridRequestDto;
+use Hanaboso\PipesFramework\Configurator\Model\Filters\AggregationFilterUtils;
 use Hanaboso\PipesFramework\HbPFMetricsBundle\Handler\MetricsHandler;
 use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\Traits\ControllerTrait;
@@ -143,6 +144,7 @@ final class MetricsController
         return $this->getResponse(
             $this->handler->getMetricsConnectorsGraph(
                 new GridRequestDto(Json::decode($request->query->get('filter', '{}'))),
+                $request->query->getInt(AggregationFilterUtils::BUCKETS, AggregationFilterUtils::DEFAULT_BUCKETS),
             ),
         );
     }
@@ -159,7 +161,7 @@ final class MetricsController
         return $this->getResponse(
             $this->handler->getMetricsConnectorsHeatmap(
                 new GridRequestDto(Json::decode($request->query->get('filter', '{}'))),
-                $request->query->getInt('buckets'),
+                $request->query->getInt(AggregationFilterUtils::BUCKETS, AggregationFilterUtils::DEFAULT_BUCKETS),
             ),
         );
     }
@@ -240,6 +242,7 @@ final class MetricsController
         return $this->getResponse(
             $this->handler->getMetricsLimitsGraph(
                 new GridRequestDto(Json::decode($request->query->get('filter', '{}'))),
+                $request->query->getInt(AggregationFilterUtils::BUCKETS, AggregationFilterUtils::DEFAULT_BUCKETS),
             ),
         );
     }

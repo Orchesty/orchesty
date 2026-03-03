@@ -113,7 +113,7 @@ final class TopologyController
     {
         try {
             return $this->getResponse($this->topologyHandler->getTopology($id));
-        } catch (TopologyException|MongoDBException $e) {
+        } catch (MongoDBException|TopologyException $e) {
             return $this->getErrorResponse($e);
         }
     }

@@ -81,10 +81,12 @@ final class MetricConnectorHeatmapAggregationFilter extends GridAggregationFilte
     ): void {
         $addConditionsCallback();
 
-        [$binSize, $gte, $lte] = AggregationFilterUtils::getDensifyBinSizeAndRangeFromAggregationBuilder(
-            $builder,
-            $this->bucketCount,
-        );
+        [
+            $binSize,
+            $gte,
+            $densifyStart,
+            $densifyEnd,
+        ] = AggregationFilterUtils::getDensifyBinSizeAndRangeFromAggregationBuilder($builder, $this->bucketCount);
 
         $builder
             ->group()
@@ -97,7 +99,7 @@ final class MetricConnectorHeatmapAggregationFilter extends GridAggregationFilte
                         $builder->expr()->add(
                             $builder->expr()->toLong($gte),
                             $builder->expr()->multiply(
-                                $builder->expr()->floor(
+                                $builder->expr()->ceil(
                                     $builder->expr()->divide(
                                         $builder->expr()->subtract(
                                             $builder->expr()->toLong('$fields.created'),
@@ -140,11 +142,11 @@ final class MetricConnectorHeatmapAggregationFilter extends GridAggregationFilte
             ->field('created')
             ->expression('$_id.hour');
 
-        if ($gte !== NULL && $lte !== NULL) {
+        if ($densifyStart !== NULL && $densifyEnd !== NULL) {
             $builder
                 ->densify('created')
                 ->partitionByFields('nodeId')
-                ->range([$gte, $lte], $binSize, 'millisecond')
+                ->range([$densifyStart, $densifyEnd], $binSize, 'millisecond')
                 ->fill()
                 ->partitionByFields('nodeId')
                 ->sortBy('created', 'asc')
@@ -192,10 +194,12 @@ final class MetricConnectorHeatmapAggregationFilter extends GridAggregationFilte
     {
         $addConditionsCallback();
 
-        [$binSize, $gte, $lte] = AggregationFilterUtils::getDensifyBinSizeAndRangeFromAggregationBuilder(
-            $builder,
-            $this->bucketCount,
-        );
+        [
+            $binSize,
+            $gte,
+            $densifyStart,
+            $densifyEnd,
+        ] = AggregationFilterUtils::getDensifyBinSizeAndRangeFromAggregationBuilder($builder, $this->bucketCount);
 
         $builder
             ->group()
@@ -208,7 +212,7 @@ final class MetricConnectorHeatmapAggregationFilter extends GridAggregationFilte
                         $builder->expr()->add(
                             $builder->expr()->toLong($gte),
                             $builder->expr()->multiply(
-                                $builder->expr()->floor(
+                                $builder->expr()->ceil(
                                     $builder->expr()->divide(
                                         $builder->expr()->subtract(
                                             $builder->expr()->toLong('$fields.created'),
@@ -225,7 +229,7 @@ final class MetricConnectorHeatmapAggregationFilter extends GridAggregationFilte
                     ->expression('$tags.node_id'),
             );
 
-        if ($gte !== NULL && $lte !== NULL) {
+        if ($densifyStart !== NULL && $densifyEnd !== NULL) {
             $builder
                 ->addFields()
                 ->field('nodeId')
@@ -234,7 +238,7 @@ final class MetricConnectorHeatmapAggregationFilter extends GridAggregationFilte
                 ->expression('$_id.hour')
                 ->densify('created')
                 ->partitionByFields('nodeId')
-                ->range([$gte, $lte], $binSize, 'millisecond');
+                ->range([$densifyStart, $densifyEnd], $binSize, 'millisecond');
         }
     }
 

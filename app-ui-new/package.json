@@ -19,6 +19,7 @@
   "dependencies": {
     "@vuepic/vue-datepicker": "^12.1.0",
     "@vueuse/core": "^11.3.0",
+    "ajv": "^8.18.0",
     "apexcharts": "^5.7.0",
     "axios": "^1.13.6",
     "clsx": "^2.1.1",

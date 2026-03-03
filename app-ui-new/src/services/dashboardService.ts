@@ -233,6 +233,7 @@ export async function fetchLimiterData(params: {
   sortOrder?: 'asc' | 'desc'
   timeFilter: TimeFilter
   appSettings?: Map<string, AppLimiterSetting>
+  buckets?: number
 }): Promise<LimiterData> {
   const page = params.page || 1
   const itemsPerPage = params.limit || 5
@@ -252,8 +253,10 @@ export async function fetchLimiterData(params: {
     paging: { itemsPerPage: 9999, page: 1 }
   }
 
+  const buckets = params.buckets || 20
   const graphResponse = await api.get<LimiterGraphApiResponse>(
-    `/api/metrics/limits/graph?filter=${encodeURIComponent(JSON.stringify(graphFilter))}`
+    '/api/metrics/limits/graph',
+    { params: { filter: JSON.stringify(graphFilter), buckets } }
   )
 
   // Transform graph data
@@ -281,10 +284,6 @@ export async function fetchLimiterData(params: {
 
   const totalMessages = totalResponse.data.items[0]?.count || 0
   const maxMessages = totalResponse.data.items[0]?.maximumCount || 0
-
-  // Append current total as the last data point so graph ends at actual current state
-  chartData.categories.push(new Date().toISOString())
-  chartData.series.push(totalMessages)
 
   // 3. Fetch table data (per-node breakdown, paginated)
   const sortColumn = 'count'

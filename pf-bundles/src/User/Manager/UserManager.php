@@ -31,8 +31,8 @@ final class UserManager
      * @param GridRequestDto $dto
      *
      * @return mixed[]
-     * @throws MongoDBException
      * @throws Exception
+     * @throws MongoDBException
      */
     public function getArrayOfUsers(GridRequestDto $dto): array
     {
