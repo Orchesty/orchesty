@@ -14,6 +14,9 @@ use OutOfRangeException;
 final readonly class AggregationFilterUtils
 {
 
+    public const string BUCKETS         = 'buckets';
+    public const int    DEFAULT_BUCKETS = 10;
+
     /**
      * @param Builder $builder
      *
@@ -39,43 +42,9 @@ final readonly class AggregationFilterUtils
 
     /**
      * @param Builder $builder
-     *
-     * @return int
-     */
-    public static function getDateTruncBinSizeFromAggregationBuilder(Builder $builder): int
-    {
-        try {
-            [$gte, $lte] = self::getDates($builder);
-
-            if ($gte === NULL || $lte === NULL) {
-                return 24;
-            }
-
-            $difference = $lte->toDateTime()->getTimestamp() - $gte->toDateTime()->getTimestamp();
-
-            if ($difference <= 60 * 60) {
-                return 5;
-            }
-
-            if ($difference <= 24 * 60 * 60) {
-                return 2 * 60;
-            }
-
-            if ($difference <= 7 * 24 * 60 * 60) {
-                return 12 * 60;
-            }
-
-            return 24 * 60;
-        } catch (OutOfRangeException) {
-            return 24 * 60;
-        }
-    }
-
-    /**
-     * @param Builder $builder
      * @param int     $buckets
      *
-     * @return array{int, UTCDateTime|NULL, UTCDateTime|NULL}
+     * @return array{int, UTCDateTime|NULL, UTCDateTime|NULL, UTCDateTime|NULL}
      */
     public static function getDensifyBinSizeAndRangeFromAggregationBuilder(Builder $builder, int $buckets): array
     {
@@ -83,14 +52,18 @@ final readonly class AggregationFilterUtils
             [$gte, $lte] = self::getDates($builder);
 
             if ($gte === NULL || $lte === NULL) {
-                return [24 * 60 * 60 * 1_000, NULL, NULL];
+                return [24 * 60 * 60 * 1_000, NULL, NULL, NULL];
             }
 
             $rangeSeconds = $lte->toDateTime()->getTimestamp() - $gte->toDateTime()->getTimestamp();
+            $binSizeMs    = max(1_000, (int) ceil($rangeSeconds / max(1, $buckets)) * 1_000);
+            $gteMs        = (int) (string) $gte;
+            $densifyStart = new UTCDateTime($gteMs + $binSizeMs);
+            $densifyEnd   = new UTCDateTime($gteMs + $buckets * $binSizeMs + 1);
 
-            return [max(1_000, (int) ceil($rangeSeconds / $buckets) * 1_000), $gte, $lte];
+            return [$binSizeMs, $gte, $densifyStart, $densifyEnd];
         } catch (OutOfRangeException) {
-            return [24 * 60 * 60 * 1_000, NULL, NULL];
+            return [24 * 60 * 60 * 1_000, NULL, NULL, NULL];
         }
     }
 
@@ -98,7 +71,7 @@ final readonly class AggregationFilterUtils
      * @param Builder $builder
      * @return array{UTCDateTime|NULL, UTCDateTime|NULL}
      */
-    private static function getDates(Builder $builder): array
+    public static function getDates(Builder $builder): array
     {
         $pipeline = $builder->getPipeline();
 
