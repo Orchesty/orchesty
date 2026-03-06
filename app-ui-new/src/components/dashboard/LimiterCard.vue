@@ -74,7 +74,7 @@ const loadData = async () => {
       sortBy: sortField.value,
       sortOrder: sortDirection.value,
       timeFilter: props.timeFilter,
-      buckets: 20
+      buckets: 40
     })
 
     limiterData.value = response

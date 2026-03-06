@@ -56,7 +56,7 @@ onMounted(() => {
 // Time filter state - restore from localStorage
 const TIME_FILTER_KEY = 'orchesty_dashboard_time_filter'
 const savedTimeFilter = localStorage.getItem(TIME_FILTER_KEY) as TimeFilterType | null
-const activeTimeFilter = ref<TimeFilterType>(savedTimeFilter || '7d')
+const activeTimeFilter = ref<TimeFilterType>(savedTimeFilter || '24h')
 
 // Refresh trigger - incremented to notify child tabs
 const refreshKey = ref(0)

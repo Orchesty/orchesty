@@ -210,12 +210,12 @@ const getBarChartOptions = () => {
       </DataGrid>
 
       <div class="mt-4">
-        <a
-          href="#"
+        <router-link
+          :to="{ name: 'trash' }"
           class="text-sm font-medium text-primary-700 hover:underline dark:text-primary-500"
         >
           View all →
-        </a>
+        </router-link>
       </div>
     </div>
     <div v-else class="flex items-center justify-center h-64">

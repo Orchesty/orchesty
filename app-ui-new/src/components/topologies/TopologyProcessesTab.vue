@@ -52,12 +52,16 @@ const quickFilterOptions: QuickFilterOption[] = [
   { value: 'failed', label: 'Failed' },
 ]
 
-// Format duration from seconds to HH:MM:SS
-const formatDuration = (seconds: number): string => {
-  const hours = Math.floor(seconds / 3600)
-  const minutes = Math.floor((seconds % 3600) / 60)
-  const secs = seconds % 60
-  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
+const formatDuration = (ms: number): string => {
+  if (ms < 1000) return `${Math.round(ms)}ms`
+  const totalSeconds = ms / 1000
+  if (totalSeconds < 60) return `${totalSeconds.toFixed(1)}s`
+  const minutes = Math.floor(totalSeconds / 60)
+  const secs = Math.round(totalSeconds % 60)
+  if (minutes < 60) return `${minutes}m ${secs}s`
+  const hours = Math.floor(minutes / 60)
+  const mins = minutes % 60
+  return `${hours}h ${mins}m ${secs}s`
 }
 
 // Load data function
@@ -111,8 +115,9 @@ const handleAuditClick = (process: Process) => {
   console.log('Drawer state:', { drawerOpen: drawerOpen.value, selectedProcess: selectedProcess.value })
 }
 
+defineExpose({ loadData })
+
 onMounted(async () => {
-  // Load initial data
   loadData()
 })
 </script>
@@ -133,9 +138,11 @@ onMounted(async () => {
         :items-per-page="itemsPerPage"
         :sort-field="sortField"
         :sort-direction="sortDirection"
+        show-refresh
         @page-change="handlePageChange"
         @per-page-change="handlePerPageChange"
         @sort="handleSort"
+        @refresh="loadData"
       >
         <!-- Quick Filters (left) -->
         <template #quick-filters>

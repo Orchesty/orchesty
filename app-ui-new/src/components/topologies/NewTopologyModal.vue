@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, nextTick } from 'vue'
 import Modal from '@/components/ui/Modal.vue'
 import Button from '@/components/ui/Button.vue'
 import FormInput from '@/components/ui/FormInput.vue'
@@ -17,7 +17,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   'update:modelValue': [value: boolean]
-  'created': []
+  'created': [topologyId: string]
 }>()
 
 const { showToast } = useToast()
@@ -37,9 +37,9 @@ const handleCreate = async () => {
 
   saving.value = true
   try {
-    await createTopology(formData.value.name.trim(), props.categoryId ?? null)
+    const result = await createTopology(formData.value.name.trim(), props.categoryId ?? null)
     showToast('Topology created successfully', 'success')
-    emit('created')
+    emit('created', result._id)
     handleClose()
   } catch (error) {
     console.error('Failed to create topology:', error)
@@ -47,6 +47,12 @@ const handleCreate = async () => {
   } finally {
     saving.value = false
   }
+}
+
+const handleShown = () => {
+  nextTick(() => {
+    document.getElementById('topology-name')?.focus()
+  })
 }
 
 watch(() => props.modelValue, (newValue) => {
@@ -63,6 +69,7 @@ watch(() => props.modelValue, (newValue) => {
     title="New Topology"
     size="md"
     @update:model-value="emit('update:modelValue', $event)"
+    @shown="handleShown"
   >
     <form @submit.prevent="handleCreate" class="space-y-4">
       <!-- Name -->

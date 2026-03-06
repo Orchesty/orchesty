@@ -15,7 +15,7 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<{
   'open-new-topology-modal': []
   'open-new-folder-modal': []
-  'select-topology': [topologyId: string, topologyName: string]
+  'select-topology': [topologyId: string, topologyName: string, versionCount: number]
   'topology-action': [topologyId: string, topologyName: string, action: string]
   'update:modelValue': [value: boolean]
 }>()
@@ -112,8 +112,8 @@ const handleMouseUp = () => {
 }
 
 // Handle topology selection
-const handleSelectTopology = (topologyId: string, topologyName: string) => {
-  emit('select-topology', topologyId, topologyName)
+const handleSelectTopology = (topologyId: string, topologyName: string, versionCount: number) => {
+  emit('select-topology', topologyId, topologyName, versionCount)
 }
 
 // Refresh tree data (called from parent after CRUD operations)

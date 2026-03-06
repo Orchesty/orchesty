@@ -474,6 +474,8 @@ paths:
     /api/metrics/processes:
         get:
             tags: [ Metrics ]
+            parameters:
+                -   $ref: '#/components/parameters/LastRun'
             responses:
                 "200":
                     $ref: '#/components/responses/MetricsProcesses'
@@ -483,6 +485,8 @@ paths:
     /api/metrics/requests:
         get:
             tags: [ Metrics ]
+            parameters:
+                -   $ref: '#/components/parameters/LastRun'
             responses:
                 "200":
                     $ref: '#/components/responses/MetricsRequests'
@@ -3530,6 +3534,14 @@ components:
             example: 20
             schema:
                 type: integer
+
+        LastRun:
+            name: lastRun
+            in: query
+            required: false
+            example: true
+            schema:
+                type: boolean
 
         Token:
             name: token

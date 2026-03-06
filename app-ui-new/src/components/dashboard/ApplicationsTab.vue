@@ -60,7 +60,7 @@ const loadData = async () => {
     const dateFrom = formatDateTimeForApi(range.from) || ''
     const dateTo = formatDateTimeForApi(range.to) || ''
 
-    const data = await fetchConnectorHeatmapData(props.heatmapFilter, dateFrom, dateTo, 20)
+    const data = await fetchConnectorHeatmapData(props.heatmapFilter, dateFrom, dateTo, 40)
 
     const connectorAppName: Record<string, string> = {}
     const namedSeries = data.series.map(s => {

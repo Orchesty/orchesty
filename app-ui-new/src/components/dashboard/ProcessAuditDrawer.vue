@@ -42,7 +42,7 @@ const connectorSortDirection = ref<'asc' | 'desc'>('desc')
 // Connector table columns
 const connectorColumns: TableColumn[] = [
   { key: 'connector', label: 'Connector / Application', sortable: false },
-  { key: 'called', label: 'Voláno', sortable: true },
+  { key: 'called', label: 'Called', sortable: true },
   { key: 'errors400', label: '400', sortable: true },
   { key: 'errors500', label: '500', sortable: true },
 ]
@@ -148,9 +148,9 @@ watch(
   { immediate: true }
 )
 
-const calculateEndTime = (startTime: string, durationSeconds: number): Date => {
+const calculateEndTime = (startTime: string, durationMs: number): Date => {
   const start = new Date(startTime)
-  return new Date(start.getTime() + durationSeconds * 1000)
+  return new Date(start.getTime() + durationMs)
 }
 
 const handleClose = () => {

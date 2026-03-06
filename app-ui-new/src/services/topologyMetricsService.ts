@@ -1,5 +1,5 @@
 import api from '@/services/api'
-import type { TopologyMetrics } from '@/types/topology-metrics'
+import type { TopologyMetrics, MetricsMode } from '@/types/topology-metrics'
 import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 
 interface MetricsApiItem {
@@ -49,18 +49,58 @@ function buildFilterObject(topologyId: string) {
   }
 }
 
-export const fetchTopologyMetrics = async (topologyId: string): Promise<TopologyMetrics> => {
-  const { getNodeName } = useTopologyNodeMappings()
+const PROCESSES_ENDPOINT = '/api/metrics/processes'
+const REQUESTS_ENDPOINT = '/api/metrics/requests'
 
+export interface RawNodeMetrics {
+  processTimeByNodeId: Record<string, number>
+  requestTimeByNodeId: Record<string, number>
+}
+
+export const fetchRawTopologyMetrics = async (
+  topologyId: string,
+): Promise<RawNodeMetrics> => {
   const filterObj = buildFilterObject(topologyId)
   const filterParam = JSON.stringify(filterObj)
 
   const [processesResponse, requestsResponse] = await Promise.all([
-    api.get<MetricsApiResponse>('/api/metrics/processes', {
-      params: { filter: filterParam },
+    api.get<MetricsApiResponse>(PROCESSES_ENDPOINT, {
+      params: { filter: filterParam, lastRun: 1 },
     }),
-    api.get<MetricsApiResponse>('/api/metrics/requests', {
-      params: { filter: filterParam },
+    api.get<MetricsApiResponse>(REQUESTS_ENDPOINT, {
+      params: { filter: filterParam, lastRun: 1 },
+    }),
+  ])
+
+  const processTimeByNodeId: Record<string, number> = {}
+  for (const item of processesResponse.data.items) {
+    processTimeByNodeId[item.nodeId] = item.duration
+  }
+
+  const requestTimeByNodeId: Record<string, number> = {}
+  for (const item of requestsResponse.data.items) {
+    requestTimeByNodeId[item.nodeId] = item.duration
+  }
+
+  return { processTimeByNodeId, requestTimeByNodeId }
+}
+
+export const fetchTopologyMetrics = async (
+  topologyId: string,
+  mode: MetricsMode = 'last-run',
+): Promise<TopologyMetrics> => {
+  const { getNodeName } = useTopologyNodeMappings()
+
+  const filterObj = buildFilterObject(topologyId)
+  const filterParam = JSON.stringify(filterObj)
+  const lastRun = mode === 'last-run' ? 1 : undefined
+
+  const [processesResponse, requestsResponse] = await Promise.all([
+    api.get<MetricsApiResponse>(PROCESSES_ENDPOINT, {
+      params: { filter: filterParam, lastRun },
+    }),
+    api.get<MetricsApiResponse>(REQUESTS_ENDPOINT, {
+      params: { filter: filterParam, lastRun },
     }),
   ])
 

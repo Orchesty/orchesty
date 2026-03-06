@@ -22,7 +22,7 @@ function mapApiItemToProcess(apiItem: ProcessApiItem): Process {
     topology: apiItem.topologyId, // Will be mapped to name in component
     topologyId: apiItem.topologyId,
     startTime: apiItem.created,
-    duration: Math.round(apiItem.duration / 1000), // Convert ms to seconds
+    duration: apiItem.duration,
     status: mapApiStatusToUiStatus(apiItem.status),
     errorMessage: apiItem.messages.length > 0 ? apiItem.messages[0] : undefined
   }

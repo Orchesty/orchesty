@@ -253,7 +253,7 @@ export async function fetchLimiterData(params: {
     paging: { itemsPerPage: 9999, page: 1 }
   }
 
-  const buckets = params.buckets || 20
+  const buckets = params.buckets || 40
   const graphResponse = await api.get<LimiterGraphApiResponse>(
     '/api/metrics/limits/graph',
     { params: { filter: JSON.stringify(graphFilter), buckets } }

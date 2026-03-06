@@ -4,7 +4,7 @@ import { Drawer } from 'flowbite'
 import type { DrawerInterface } from 'flowbite'
 import Button from '@/components/ui/Button.vue'
 import { ReteEditorKit } from 'rete-editor'
-import type { EditorCore } from 'rete-editor'
+import type { EditorCore, EditorConfig } from 'rete-editor'
 import { useToast } from '@/composables/useToast'
 import { topologyEditorService } from '@/services/topologyEditorService'
 import { fetchTopologySchema, saveTopologySchema } from '@/services/topologiesService'
@@ -13,7 +13,7 @@ interface Props {
   modelValue: boolean
   topologyId: string
   topologyName: string
-  topologyVersion: string
+  topologyVersion: string | number
 }
 
 const props = defineProps<Props>()
@@ -27,20 +27,29 @@ const { showToast } = useToast()
 
 let drawerInstance: DrawerInterface | null = null
 const editorCore = ref<EditorCore>()
+const editorConfig = ref<EditorConfig | null>(null)
 
-// Create configuration for edit mode
-const editorConfig = createConfig({
-  mode: 'edit',
-  canvasHeight: 'calc(100vh - 53px)'
-})
+const initEditorConfig = async () => {
+  try {
+    const actions = await topologyEditorService.getAllActions()
+    editorConfig.value = createConfig({
+      mode: 'edit',
+      canvasHeight: 'calc(100vh - 53px)',
+      actions
+    })
+  } catch (error) {
+    console.error('Failed to load actions:', error)
+    editorConfig.value = createConfig({
+      mode: 'edit',
+      canvasHeight: 'calc(100vh - 53px)'
+    })
+  }
+}
 
 const onEditorReady = async (editor: EditorCore) => {
   editorCore.value = editor
   
   try {
-    const actions = await topologyEditorService.getAllActions();
-    (window as any).__reteEditorActions = actions
-
     const schema = await fetchTopologySchema(props.topologyId)
     await editor.importGraph(schema)
     editor.zoomToFit()
@@ -90,7 +99,7 @@ const handleClose = () => {
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
   const drawerEl = document.getElementById('topology-designer-drawer')
   if (drawerEl) {
     drawerInstance = new Drawer(drawerEl, {
@@ -108,6 +117,8 @@ onMounted(() => {
       }
     })
   }
+
+  await initEditorConfig()
 })
 
 watch(
@@ -159,8 +170,8 @@ watch(
     </nav>
     
     <!-- Editor fills remaining space -->
-    <div class="flex-1 overflow-hidden ">
-      <Editor :config="editorConfig" @ready="onEditorReady" />
+    <div class="flex-1 overflow-hidden">
+      <Editor v-if="editorConfig" :config="editorConfig" @ready="onEditorReady" />
     </div>
   </div>
 </template>

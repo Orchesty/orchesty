@@ -365,8 +365,9 @@ export async function toggleTopologyEnabled(topologyId: string, enabled: boolean
 export async function createTopology(
   name: string,
   category: string | null = null,
-): Promise<void> {
-  await api.post('/api/topologies', { name, category })
+): Promise<{ _id: string }> {
+  const response = await api.post('/api/topologies', { name, category })
+  return response.data
 }
 
 export async function createCategory(

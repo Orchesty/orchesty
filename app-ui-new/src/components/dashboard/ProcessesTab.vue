@@ -79,12 +79,16 @@ const topologyOptions = computed<DropdownFilterOption[]>(() => [
   ...deduplicatedTopologyOptions.value
 ])
 
-// Format duration from seconds to HH:MM:SS
-const formatDuration = (seconds: number): string => {
-  const hours = Math.floor(seconds / 3600)
-  const minutes = Math.floor((seconds % 3600) / 60)
-  const secs = seconds % 60
-  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
+const formatDuration = (ms: number): string => {
+  if (ms < 1000) return `${Math.round(ms)}ms`
+  const totalSeconds = ms / 1000
+  if (totalSeconds < 60) return `${totalSeconds.toFixed(1)}s`
+  const minutes = Math.floor(totalSeconds / 60)
+  const secs = Math.round(totalSeconds % 60)
+  if (minutes < 60) return `${minutes}m ${secs}s`
+  const hours = Math.floor(minutes / 60)
+  const mins = minutes % 60
+  return `${hours}h ${mins}m ${secs}s`
 }
 
 // Load data function
@@ -189,7 +193,7 @@ const loadChartData = async () => {
     const totals = await fetchProcessesTotalCounts(dateFrom, dateTo)
 
     // Fetch graph data
-    const chartData = await fetchProcessesGraphData(props.heatmapFilter, dateFrom, dateTo, 20)
+    const chartData = await fetchProcessesGraphData(props.heatmapFilter, dateFrom, dateTo, 40)
 
     // Store raw chart data - topology IDs are resolved to names via yLabelMap in the chart
     processesChartData.value = {

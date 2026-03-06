@@ -192,7 +192,8 @@ const {
   filters: [searchFilter, correlationIdFilter, nodeFilter, dateTimeRange],
 })
 
-// Load initial data
+defineExpose({ loadData })
+
 onMounted(async () => {
   await loadMappings()
   loadData()
@@ -268,9 +269,11 @@ const handleReject = async () => {
       :bulk-actions="bulkActions"
       :selected-rows="selectedRows"
       row-id-key="id"
+      show-refresh
       @page-change="handlePageChange"
       @per-page-change="handlePerPageChange"
       @sort="handleSort"
+      @refresh="loadData"
       @update:selected-rows="selectedRows = $event"
     >
       <template #filters>

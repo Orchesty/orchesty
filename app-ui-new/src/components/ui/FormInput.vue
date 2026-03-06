@@ -36,12 +36,7 @@ watch(() => props.modelValue, (newValue) => {
 const handleInput = (event: Event) => {
   const target = event.target as HTMLInputElement
   localValue.value = target.value
-}
-
-const handleChange = () => {
-  if (localValue.value !== props.modelValue) {
-    emit('update:modelValue', localValue.value)
-  }
+  emit('update:modelValue', target.value)
 }
 </script>
 
@@ -54,7 +49,6 @@ const handleChange = () => {
     :disabled="disabled"
     :required="required"
     @input="handleInput"
-    @change="handleChange"
     :class="[
       width,
       'rounded-lg border bg-gray-50 px-3 py-2.5 text-sm text-gray-900 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400',

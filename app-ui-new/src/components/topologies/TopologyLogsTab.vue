@@ -29,7 +29,7 @@ const drawerOpen = ref(false)
 const selectedLog = ref<LogEntry | null>(null)
 
 // Topology and Node mappings
-const { loadMappings, mappings } = useTopologyNodeMappings()
+const { loadMappings, mappings, getNodeName } = useTopologyNodeMappings()
 const { formatDateTime } = useDateFormat()
 
 // Filters
@@ -154,7 +154,8 @@ const {
   filters: [searchFilter, correlationIdFilter, severityFilter, nodeFilter, dateTimeRange],
 })
 
-// Load initial data
+defineExpose({ loadData })
+
 onMounted(async () => {
   await loadMappings()
   await loadData()
@@ -175,9 +176,11 @@ onMounted(async () => {
       :items-per-page="itemsPerPage"
       :sort-field="sortField"
       :sort-direction="sortDirection"
+      show-refresh
       @page-change="handlePageChange"
       @per-page-change="handlePerPageChange"
       @sort="handleSort"
+      @refresh="loadData"
     >
       <template #filters>
         <TextInput
@@ -208,7 +211,7 @@ onMounted(async () => {
       </template>
 
       <template #cell-node="{ value }">
-        <span class="whitespace-nowrap font-medium text-gray-900 dark:text-white">{{ value }}</span>
+        <span class="whitespace-nowrap font-medium text-gray-900 dark:text-white">{{ getNodeName(value) }}</span>
       </template>
 
       <template #cell-nodeId="{ value }">

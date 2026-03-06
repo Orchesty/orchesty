@@ -66,14 +66,20 @@ const router = createRouter({
     },
     {
       path: '/topologies',
-      name: 'topologies',
-      component: () => import('@/views/topologies/TopologiesView.vue'),
-    },
-    {
-      path: '/topologies/:id',
-      name: 'topology-detail',
-      component: () => import('@/views/topologies/TopologyDetailView.vue'),
-      props: true,
+      component: () => import('@/views/topologies/TopologiesLayout.vue'),
+      children: [
+        {
+          path: '',
+          name: 'topologies',
+          component: () => import('@/views/topologies/TopologiesPlaceholder.vue'),
+        },
+        {
+          path: ':id',
+          name: 'topology-detail',
+          component: () => import('@/views/topologies/TopologyDetailView.vue'),
+          props: true,
+        },
+      ],
     },
     {
       path: '/users',
