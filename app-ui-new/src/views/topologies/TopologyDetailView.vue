@@ -20,13 +20,15 @@ import Textarea from '@/components/ui/datagrid/Textarea.vue'
 import { fetchTopologyDetail, publishTopology, toggleTopologyEnabled, updateTopology } from '@/services/topologiesService'
 import { validateMcpManifest } from '@/utils/mcpManifestValidator'
 import { fetchTopologyMetrics } from '@/services/topologyMetricsService'
-import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 import { useToast } from '@/composables/useToast'
 import type { TopologyDetail, TopologyLayoutContext } from '@/types/topologies-page'
 import type { TopologyMetrics, MetricsMode } from '@/types/topology-metrics'
 import { useLastTopology } from '@/composables/useLastTopology'
 import TraceDrawer from '@/components/trace/TraceDrawer.vue'
+import TrashDetailDrawer from '@/components/trash/TrashDetailDrawer.vue'
 import { useTraceDrawer } from '@/composables/useTraceDrawer'
+import { approveTrashItem, rejectTrashItem, updateTrashItem } from '@/services/trashService'
+import type { TrashItem } from '@/types/trash'
 
 interface Props {
   id: string
@@ -192,6 +194,55 @@ const inactiveTabClass = 'text-gray-500 border-transparent hover:text-gray-600 h
 
 // Refresh trigger -- incremented after process run to invalidate tab data
 const refreshKey = ref(0)
+
+// Shared trash drawer state
+const trashDrawerOpen = ref(false)
+const trashDrawerItem = ref<TrashItem | null>(null)
+
+const handleOpenFailedMessage = (item: TrashItem) => {
+  trashDrawerItem.value = item
+  trashDrawerOpen.value = true
+}
+
+const handleDrawerApprove = async () => {
+  if (!trashDrawerItem.value) return
+  try {
+    await approveTrashItem(trashDrawerItem.value.id)
+    showToast('Message approved successfully', 'success')
+    trashDrawerOpen.value = false
+    refreshKey.value++
+  } catch (error) {
+    console.error('Approve failed:', error)
+    showToast('Failed to approve message', 'error')
+  }
+}
+
+const handleDrawerUpdate = async (data: { headers: Record<string, unknown>; body: Record<string, unknown> }) => {
+  if (!trashDrawerItem.value) return
+  try {
+    const updatedData = await updateTrashItem(trashDrawerItem.value.id, data)
+    trashDrawerItem.value.headers = updatedData.headers
+    trashDrawerItem.value.body = updatedData.body
+    showToast('Message updated successfully', 'success')
+    refreshKey.value++
+  } catch (error) {
+    console.error('Update failed:', error)
+    showToast('Failed to update message', 'error')
+  }
+}
+
+const handleDrawerReject = async () => {
+  if (!trashDrawerItem.value) return
+  try {
+    await rejectTrashItem(trashDrawerItem.value.id)
+    showToast('Message rejected successfully', 'success')
+    trashDrawerOpen.value = false
+    refreshKey.value++
+  } catch (error) {
+    console.error('Reject failed:', error)
+    showToast('Failed to reject message', 'error')
+  }
+}
 
 // Topology action handlers (from detail page header, delegating to layout)
 const handleRunTopology = async () => {
@@ -438,13 +489,10 @@ const handlePermissionChange = (groupId: string, permission: 'manager' | 'develo
 }
 
 // Load metrics data
-const { loadMappings } = useTopologyNodeMappings()
-
 const loadMetrics = async () => {
   if (!props.id) return
   metricsLoading.value = true
   try {
-    await loadMappings()
     metricsData.value = await fetchTopologyMetrics(props.id, metricsMode.value)
   } catch (err) {
     console.error('Failed to load metrics:', err)
@@ -616,7 +664,7 @@ onMounted(async () => {
     <div v-show="activeTopologyTab === 'topology'">
       <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
         <div class="bg-gray-50 dark:bg-gray-900 rounded-lg overflow-hidden">
-          <TopologyEditor ref="topologyEditorRef" :topology-id="topology._id" @process-run="handleProcessRun" />
+          <TopologyEditor ref="topologyEditorRef" :topology-id="topology._id" :topology-enabled="topology.enabled" :refresh-key="refreshKey" @process-run="handleProcessRun" @open-failed-message="handleOpenFailedMessage" />
         </div>
       </div>
     </div>
@@ -731,6 +779,7 @@ onMounted(async () => {
         :topology-id="topology._id"
         :topology-name="topology.name"
         :refresh-key="refreshKey"
+        @open-drawer="handleOpenFailedMessage"
       />
     </KeepAlive>
 
@@ -835,4 +884,13 @@ onMounted(async () => {
 
   <!-- Trace Drawer -->
   <TraceDrawer v-model="isTraceDrawerOpen" />
+
+  <!-- Shared Failed Message Drawer -->
+  <TrashDetailDrawer
+    v-model="trashDrawerOpen"
+    :item="trashDrawerItem"
+    @approve="handleDrawerApprove"
+    @update="handleDrawerUpdate"
+    @reject="handleDrawerReject"
+  />
 </template>

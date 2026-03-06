@@ -50,8 +50,12 @@ const onEditorReady = async (editor: EditorCore) => {
   editorCore.value = editor
   
   try {
-    const schema = await fetchTopologySchema(props.topologyId)
+    const [schema, actions] = await Promise.all([
+      fetchTopologySchema(props.topologyId),
+      topologyEditorService.getAllActions(),
+    ])
     await editor.importGraph(schema)
+    await editor.setActions(actions)
     editor.zoomToFit()
   } catch (error) {
     console.error('Failed to load topology data:', error)

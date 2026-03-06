@@ -27,7 +27,6 @@ const emit = defineEmits<{
 
 // Use topology/node/application mappings composable
 const {
-  loadMappings,
   getApplicationName,
   getNodeName,
   getNodeIdsByName,
@@ -126,9 +125,6 @@ const actions: ActionConfig[] = [
 
 // Load data function (will be passed to useDataGrid)
 const loadData = async () => {
-  // Ensure mappings are loaded before resolving names
-  await loadMappings()
-
   loading.value = true
 
   try {

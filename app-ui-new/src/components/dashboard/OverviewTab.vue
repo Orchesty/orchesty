@@ -27,7 +27,7 @@ const emit = defineEmits<{
 }>()
 
 // Use topology/node mappings composable
-const { loadMappings, topologyNameMap } = useTopologyNodeMappings()
+const { topologyNameMap } = useTopologyNodeMappings()
 const { isActive, isStale, markFresh, invalidate } = useTabDataFreshness()
 
 const loading = ref(true)
@@ -84,8 +84,7 @@ watch(() => props.refreshKey, () => {
   loadData()
 })
 
-onMounted(async () => {
-  await loadMappings()
+onMounted(() => {
   loadData()
 })
 

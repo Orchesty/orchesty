@@ -34,7 +34,7 @@ const emit = defineEmits<{
 }>()
 
 // Use topology/node mappings composable
-const { loadMappings, getTopologyName, getTopologyNameWithVersion, topologyNameMap, deduplicatedTopologyOptions, getTopologyIdsByName } = useTopologyNodeMappings()
+const { getTopologyName, getTopologyNameWithVersion, topologyNameMap, deduplicatedTopologyOptions, getTopologyIdsByName } = useTopologyNodeMappings()
 const { formatDateTime } = useDateFormat()
 const { isActive, isStale, markFresh, invalidate } = useTabDataFreshness()
 
@@ -95,9 +95,6 @@ const formatDuration = (ms: number): string => {
 
 // Load data function
 const loadData = async () => {
-  // Ensure mappings are loaded before resolving names
-  await loadMappings()
-
   loading.value = true
 
   try {
@@ -182,9 +179,6 @@ const handleProcessFilterChange = async (filter: ProcessFilter) => {
 }
 
 const loadChartData = async () => {
-  // Ensure mappings are loaded before resolving names
-  await loadMappings()
-
   chartLoading.value = true
   try {
     // Get date range

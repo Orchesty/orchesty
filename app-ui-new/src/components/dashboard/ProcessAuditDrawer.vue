@@ -24,7 +24,7 @@ const emit = defineEmits<{
 }>()
 
 const router = useRouter()
-const { getTopologyName, getNodeName, getApplicationName, loadMappings } = useTopologyNodeMappings()
+const { getTopologyName, getNodeName, getApplicationName } = useTopologyNodeMappings()
 const { formatDateTime } = useDateFormat()
 
 // Data state
@@ -97,12 +97,6 @@ watch(
     trashError.value = false
     connectorSortField.value = 'called'
     connectorSortDirection.value = 'desc'
-
-    try {
-      await loadMappings()
-    } catch (e) {
-      console.warn('Failed to load mappings:', e)
-    }
 
     let connectorsData: ProcessConnector[] = []
     let trashTotal = 0

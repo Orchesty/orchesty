@@ -1,29 +1,41 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { ReteEditorKit } from 'rete-editor'
 import type { EditorCore, LabelCustomizationMap } from 'rete-editor'
 import CronSettingsModal from '@/components/scheduled-tasks/CronSettingsModal.vue'
 import RunProcessModal from '@/components/topologies/RunProcessModal.vue'
 import { useCronNodeActions } from '@/composables/useCronNodeActions'
 import { useDateFormat } from '@/composables/useDateFormat'
+import { useProcessPolling } from '@/composables/useProcessPolling'
 import { fetchTopologySchema, saveTopologySchema } from '@/services/topologiesService'
 import { fetchRawTopologyMetrics } from '@/services/topologyMetricsService'
+import { fetchTrashItems } from '@/services/trashService'
 import api from '@/services/api'
 import { topologyEditorService } from '@/services/topologyEditorService'
 import type { ScheduledTask } from '@/types/scheduled-tasks'
 import type { CronNode } from '@/types/topologies-page'
+import type { TrashItem } from '@/types/trash'
 
-const props = defineProps<{
+interface Props {
   topologyId: string
-}>()
+  topologyEnabled?: boolean
+  refreshKey?: number
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  topologyEnabled: true,
+  refreshKey: 0,
+})
 
 const emit = defineEmits<{
   'process-run': []
+  'open-failed-message': [item: TrashItem]
 }>()
 
 const { Editor, createConfig } = ReteEditorKit
 const { toggleNodeState, runProcess, updateCrontab } = useCronNodeActions()
 const { formatDateTime } = useDateFormat()
+const polling = useProcessPolling(props.topologyId)
 
 interface EditorNode {
   id: string
@@ -122,32 +134,64 @@ const getOverlayTopRight = (node: EditorNode) => {
   }
 }
 
+const nodeStatuses = ref<Record<string, boolean>>({})
+
+const errorIconSvg = '<svg style="width:40px;height:40px;" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" fill="#dc2626" stroke="#dc2626"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+
+const handleErrorIconClick = async (editorNodeId: string) => {
+  const backendNodeId = resolveBackendId(editorNodeId)
+  const correlationId = polling.latestProcess.value?.id
+  if (!correlationId) return
+
+  try {
+    const result = await fetchTrashItems({
+      correlationId,
+      node: backendNodeId,
+      topology: props.topologyId,
+      perPage: 1,
+      sortBy: 'timestamp',
+      sortOrder: 'desc',
+    })
+    const item = result.data[0]
+    if (item) {
+      emit('open-failed-message', item)
+    }
+  } catch (err) {
+    console.error('Failed to fetch failed message for node:', err)
+  }
+}
+
+const getOverlayTopLeft = (node: EditorNode) => {
+  if (!nodeStatuses.value[node.id]) return null
+  return {
+    content: errorIconSvg,
+    onClick: () => handleErrorIconClick(node.id),
+  }
+}
 
 const overlayMethods = {
   getTopRightSlot: getOverlayTopRight,
+  getTopLeftSlot: getOverlayTopLeft,
 }
 
 const createToggleAction = (node: EditorNode) => {
   const nodeData = nodesData.value[node.id]
   if (!nodeData) return null
 
-  const isEnabled = nodeData.enabled ?? true
-
   return {
     id: 'toggle',
-    icon: isEnabled
-      ? '<path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm3.707 8.707-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 1 1 1.414-1.414L11 12.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>'
-      : '<path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm3.707 6.707a1 1 0 0 1-1.414 1.414L12 7.414 9.707 9.707a1 1 0 1 1-1.414-1.414l3-3a1 1 0 0 1 1.414 0l3 3Z"/>',
-    label: isEnabled ? 'Disable' : 'Enable',
-    tooltip: isEnabled ? 'Disable' : 'Enable',
+    icon: '<path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm3.707 8.707-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 1 1 1.414-1.414L11 12.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>',
+    label: 'Toggle',
+    tooltip: 'Toggle',
     onClick: async (node: EditorNode) => {
       try {
+        const currentEnabled = nodesData.value[node.id]?.enabled ?? true
         const backendId = resolveBackendId(node.id)
-        const newState = await toggleNodeState(backendId, isEnabled)
+        const newState = await toggleNodeState(backendId, currentEnabled)
 
-        const nodeData = nodesData.value[node.id]
-        if (nodeData) {
-          nodeData.enabled = newState
+        const nd = nodesData.value[node.id]
+        if (nd) {
+          nd.enabled = newState
         }
 
         editorCore.value?.toggleNodeDisabled(node.id)
@@ -185,7 +229,7 @@ const labelCustomization: LabelCustomizationMap = {
         { label: 'Crontab', value: nodeData.crontab || 'Not set' },
         {
           label: 'Next run',
-          value: nodeData.nextRun
+          value: nodeData.nextRun && props.topologyEnabled && nodeData.enabled
             ? formatDateTime(nodeData.nextRun)
             : 'N/A'
         }
@@ -288,6 +332,14 @@ const onEditorReady = async (editor: EditorCore) => {
     await editor.importGraph(schema)
     await editor.setActions(actions)
     initNodesData(editor, backendNodes)
+
+    const disabledNodeIds = Object.entries(nodesData.value)
+      .filter(([, data]) => !data.enabled)
+      .map(([id]) => id)
+    if (disabledNodeIds.length > 0) {
+      await editor.setDisabledNodes(disabledNodeIds)
+    }
+
     editor.zoomToFit()
     loadNodeMetrics()
   } catch (error) {
@@ -321,7 +373,7 @@ const handleCrontabSave = async (backendNodeId: string, crontab: string) => {
     const nodeData = nodesData.value[editorNodeId]
     if (nodeData) {
       nodeData.crontab = crontab
-      nodeData.nextRun = nextRun
+      nodeData.nextRun = props.topologyEnabled && nodeData.enabled ? nextRun : ''
     }
 
     editorCore.value?.refreshNodeLabel(editorNodeId)
@@ -350,6 +402,65 @@ const reloadSchema = async () => {
 
 defineExpose({ reloadSchema, loadNodeMetrics })
 
+const processStartNodeName = ref<string | null>(null)
+const processStartedAt = ref<string | null>(null)
+
+const processStatus = computed(() => {
+  const process = polling.latestProcess.value
+  if (!process) return polling.isPolling.value ? 'running' : null
+  if (process.status === 'completed') return 'success'
+  if (process.status === 'failed') return 'failed'
+  return 'running'
+})
+
+const statusBadgeClass = computed(() => {
+  const base = 'text-xs font-medium px-2.5 py-0.5 rounded-full'
+  switch (processStatus.value) {
+    case 'running': return `${base} bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300`
+    case 'success': return `${base} bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300`
+    case 'failed': return `${base} bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300`
+    default: return base
+  }
+})
+
+const statusLabel = computed(() => {
+  switch (processStatus.value) {
+    case 'running': return 'Running'
+    case 'success': return 'Success'
+    case 'failed': return 'Failed'
+    default: return ''
+  }
+})
+
+const displayStartTime = computed(() =>
+  polling.latestProcess.value?.startTime || processStartedAt.value
+)
+
+const processEndTime = computed(() => {
+  const p = polling.latestProcess.value
+  if (!p?.startTime || !p?.duration) return null
+  const start = new Date(p.startTime).getTime()
+  return new Date(start + p.duration).toISOString()
+})
+
+const processDuration = computed(() => {
+  const p = polling.latestProcess.value
+  if (!p?.duration) return null
+  return formatMs(p.duration)
+})
+
+const showProcessPanel = computed(() =>
+  processStartNodeName.value && (polling.isPolling.value || polling.processCompleted.value)
+)
+
+const dismissProcessPanel = () => {
+  processStartNodeName.value = null
+  processStartedAt.value = null
+  polling.latestProcess.value = null
+  polling.processCompleted.value = false
+  nodeStatuses.value = {}
+}
+
 const handleRunProcess = async (jsonData: string) => {
   if (!selectedNode.value) return
 
@@ -361,6 +472,10 @@ const handleRunProcess = async (jsonData: string) => {
       selectedNode.value.name || selectedNode.value.label,
       jsonData
     )
+    nodeStatuses.value = {}
+    processStartNodeName.value = selectedNode.value.name || selectedNode.value.label
+    processStartedAt.value = new Date().toISOString()
+    polling.startPolling()
     emit('process-run')
   } catch (error) {
     console.error('Failed to run process:', error)
@@ -376,11 +491,126 @@ const handlePositionChanged = async () => {
     console.error('Failed to save topology layout:', error)
   }
 }
+
+const buildBackendToEditorMap = (): Map<string, string> => {
+  const map = new Map<string, string>()
+  for (const [editorId, backendId] of Object.entries(schemaToBackendId.value)) {
+    map.set(backendId, editorId)
+  }
+  return map
+}
+
+const applyPolledMetrics = () => {
+  const raw = polling.rawMetrics.value
+  if (!raw) return
+
+  const backendToEditor = buildBackendToEditorMap()
+  const metrics: Record<string, NodeMetricsData> = {}
+
+  for (const [backendNodeId, duration] of Object.entries(raw.processTimeByNodeId)) {
+    const editorId = backendToEditor.get(backendNodeId)
+    if (editorId) {
+      if (!metrics[editorId]) metrics[editorId] = {}
+      metrics[editorId].processTime = duration
+    }
+  }
+
+  for (const [backendNodeId, duration] of Object.entries(raw.requestTimeByNodeId)) {
+    const editorId = backendToEditor.get(backendNodeId)
+    if (editorId) {
+      if (!metrics[editorId]) metrics[editorId] = {}
+      metrics[editorId].requestTime = duration
+    }
+  }
+
+  nodeMetrics.value = metrics
+}
+
+const applyNodeStatuses = () => {
+  const backendToEditor = buildBackendToEditorMap()
+  const statuses: Record<string, boolean> = {}
+
+  for (const backendNodeId of polling.failedNodeIds.value) {
+    const editorId = backendToEditor.get(backendNodeId)
+    if (editorId) {
+      statuses[editorId] = true
+    }
+  }
+
+  nodeStatuses.value = statuses
+}
+
+watch(() => polling.rawMetrics.value, async () => {
+  applyPolledMetrics()
+  await editorCore.value?.updateNodeOverlays()
+})
+
+watch(() => polling.processCompleted.value, async (completed) => {
+  if (completed) {
+    applyPolledMetrics()
+    applyNodeStatuses()
+    await editorCore.value?.updateNodeOverlays()
+  }
+})
+
+watch(() => props.refreshKey, () => {
+  if (polling.isPolling.value) return
+  nodeStatuses.value = {}
+  const startNode = Object.values(nodesData.value).find(n =>
+    ['event', 'webhook', 'cron'].includes(n.label.toLowerCase())
+  )
+  processStartNodeName.value = startNode?.name || 'topology'
+  processStartedAt.value = new Date().toISOString()
+  polling.startPolling()
+})
 </script>
 
 <template>
-  <div>
+  <div class="relative">
     <Editor :config="editorConfig" @ready="onEditorReady" @node-position-changed="handlePositionChanged" />
+
+    <Transition
+      enter-active-class="transition ease-out duration-200"
+      enter-from-class="opacity-0 -translate-y-1"
+      enter-to-class="opacity-100 translate-y-0"
+      leave-active-class="transition ease-in duration-150"
+      leave-from-class="opacity-100 translate-y-0"
+      leave-to-class="opacity-0 -translate-y-1"
+    >
+      <div
+        v-if="showProcessPanel"
+        class="absolute top-3 left-3 z-50 rounded-lg border shadow-lg px-4 py-3 text-sm min-w-[280px]
+               bg-white border-gray-200 dark:bg-gray-800 dark:border-gray-700"
+      >
+        <div class="flex items-start justify-between gap-3">
+          <div class="space-y-1.5">
+            <div class="flex items-center gap-2">
+              <span class="font-semibold text-gray-900 dark:text-white">
+                Process from event {{ processStartNodeName }}
+              </span>
+              <span :class="statusBadgeClass">{{ statusLabel }}</span>
+            </div>
+            <div v-if="displayStartTime" class="text-gray-500 dark:text-gray-400">
+              Start: {{ formatDateTime(displayStartTime) }}
+            </div>
+            <div v-if="processEndTime" class="text-gray-500 dark:text-gray-400">
+              End: {{ formatDateTime(processEndTime) }}
+            </div>
+            <div v-if="processDuration" class="text-gray-500 dark:text-gray-400">
+              Duration: {{ processDuration }}
+            </div>
+          </div>
+          <button
+            @click="dismissProcessPanel"
+            class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-0.5 -mt-0.5"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </Transition>
 
     <CronSettingsModal
       v-model="cronSettingsModalOpen"

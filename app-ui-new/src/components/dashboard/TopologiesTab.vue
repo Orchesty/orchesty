@@ -25,7 +25,7 @@ const emit = defineEmits<{
 }>()
 
 // Use topology/node mappings composable
-const { loadMappings, getTopologyName } = useTopologyNodeMappings()
+const { getTopologyName } = useTopologyNodeMappings()
 const { isActive, isStale, markFresh, invalidate } = useTabDataFreshness()
 
 const topologies = ref<Topology[]>([])
@@ -56,9 +56,6 @@ const quickFilterOptions: QuickFilterOption[] = [
 ]
 
 const loadData = async () => {
-  // Ensure mappings are loaded before resolving names
-  await loadMappings()
-
   loading.value = true
 
   try {

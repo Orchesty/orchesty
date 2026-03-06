@@ -7,20 +7,17 @@ import Confirm from '@/components/ui/Confirm.vue'
 import EditMessageModal from './EditMessageModal.vue'
 import type { TrashItem } from '@/types/trash'
 import { useDateFormat } from '@/composables/useDateFormat'
+import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 
 const { formatDateTime } = useDateFormat()
+const { getTopologyName, getNodeName } = useTopologyNodeMappings()
 
 interface Props {
   modelValue: boolean
   item: TrashItem | null
-  getTopologyName?: (id: string) => string
-  getNodeName?: (id: string) => string
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  getTopologyName: (id: string) => id,
-  getNodeName: (id: string) => id,
-})
+const props = defineProps<Props>()
 
 const emit = defineEmits<{
   'update:modelValue': [value: boolean]

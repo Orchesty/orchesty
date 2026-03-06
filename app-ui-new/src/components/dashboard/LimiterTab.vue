@@ -31,7 +31,7 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const { loadMappings, getNodeName, getTopologyName, getApplicationName } = useTopologyNodeMappings()
+const { getNodeName, getTopologyName, getApplicationName } = useTopologyNodeMappings()
 const { isActive, isStale, markFresh, invalidate } = useTabDataFreshness()
 
 const limiterData = ref<LimiterData | null>(null)
@@ -142,11 +142,7 @@ onDeactivated(() => {
 // Initialize on mount
 onMounted(async () => {
   try {
-    // Load mappings and application limiter settings in parallel
-    const [, settings] = await Promise.all([
-      loadMappings(),
-      fetchApplicationLimiterSettings(),
-    ])
+    const settings = await fetchApplicationLimiterSettings()
     appSettings.value = settings
 
     // Load data

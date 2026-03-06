@@ -31,7 +31,7 @@ const emit = defineEmits<{
   openConnectorDetail: [connector: Connector]
 }>()
 
-const { loadMappings, getNodeName, getApplicationName } = useTopologyNodeMappings()
+const { ensureLoaded, getNodeName, getApplicationName } = useTopologyNodeMappings()
 const { isActive, isStale, markFresh, invalidate } = useTabDataFreshness()
 
 const loading = ref(true)
@@ -58,6 +58,7 @@ const loadData = async () => {
   error.value = null
 
   try {
+    await ensureLoaded()
     const range = convertTimeFilterToDateTimeRange(props.timeFilter)
     const dateFrom = formatDateTimeForApi(range.from) || ''
     const dateTo = formatDateTimeForApi(range.to) || ''
@@ -178,8 +179,7 @@ watch(() => props.refreshKey, () => {
   loadData()
 })
 
-onMounted(async () => {
-  await loadMappings()
+onMounted(() => {
   loadData()
 })
 

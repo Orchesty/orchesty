@@ -89,7 +89,8 @@ export const fetchTopologyMetrics = async (
   topologyId: string,
   mode: MetricsMode = 'last-run',
 ): Promise<TopologyMetrics> => {
-  const { getNodeName } = useTopologyNodeMappings()
+  const { ensureLoaded, getNodeName } = useTopologyNodeMappings()
+  await ensureLoaded()
 
   const filterObj = buildFilterObject(topologyId)
   const filterParam = JSON.stringify(filterObj)

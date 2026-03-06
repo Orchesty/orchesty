@@ -245,6 +245,14 @@ export function useTopologyNodeMappings() {
   const nodeNameMap = computed<Record<string, string>>(() => allMappings.value?.nodes ?? {})
   const applicationNameMap = computed<Record<string, string>>(() => allMappings.value?.applications ?? {})
 
+  const isReady = computed(() => isLoaded.value)
+
+  const ensureLoaded = async () => {
+    if (isLoaded.value) return
+    if (loadingPromise) return loadingPromise
+    return loadMappings()
+  }
+
   // Manual refresh function (for user-triggered refresh)
   // User explicitly wants to retry, so clear ALL checked IDs
   const refresh = async () => {
@@ -256,6 +264,8 @@ export function useTopologyNodeMappings() {
 
   return {
     loadMappings,
+    ensureLoaded,
+    isReady,
     refresh,
     getTopologyName,
     getTopologyVersion,

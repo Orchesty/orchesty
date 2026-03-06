@@ -2,8 +2,12 @@
 import { RouterView } from 'vue-router'
 import Toast from '@/components/ui/Toast.vue'
 import { useToast } from '@/composables/useToast'
+import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 
 const { toasts, removeToast } = useToast()
+
+const { loadMappings } = useTopologyNodeMappings()
+loadMappings()
 </script>
 
 <template>

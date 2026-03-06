@@ -32,7 +32,7 @@ const drawerOpen = ref(false)
 const selectedLog = ref<LogEntry | null>(null)
 
 // Topology and Node mappings
-const { loadMappings, mappings, getNodeName } = useTopologyNodeMappings()
+const { mappings, getNodeName } = useTopologyNodeMappings()
 const { formatDateTime } = useDateFormat()
 
 // Filters
@@ -158,9 +158,8 @@ const {
   filters: [searchFilter, correlationIdFilter, severityFilter, nodeFilter, dateTimeRange],
 })
 
-onMounted(async () => {
-  await loadMappings()
-  await loadData()
+onMounted(() => {
+  loadData()
 })
 
 onActivated(() => {

@@ -140,6 +140,21 @@ export async function fetchProcesses(
 }
 
 /**
+ * Fetch the most recent process for a topology (sorted by created DESC, limit 1).
+ * Returns null if no processes exist.
+ */
+export async function fetchLatestProcess(topologyId: string): Promise<Process | null> {
+  const result = await fetchProcesses({
+    topology: topologyId,
+    sort: 'startTime',
+    order: 'desc',
+    limit: 1,
+    page: 1,
+  })
+  return result.data.length > 0 ? result.data[0] : null
+}
+
+/**
  * Fetch connectors for a specific process (by correlationId)
  *
  * @param correlationId - The correlation ID of the process
