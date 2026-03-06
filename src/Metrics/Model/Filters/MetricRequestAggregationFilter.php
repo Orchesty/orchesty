@@ -15,6 +15,18 @@ use Hanaboso\PipesFramework\Metrics\Document\ConnectorsMetrics;
 final class MetricRequestAggregationFilter extends GridAggregationFilterAbstract
 {
 
+    private bool $lastRunMode = FALSE;
+
+    /**
+     * @param bool $lastRunMode
+     *
+     * @return void
+     */
+    public function setLastRunMode(bool $lastRunMode): void
+    {
+        $this->lastRunMode = $lastRunMode;
+    }
+
     /**
      * @return class-string
      */
@@ -68,14 +80,21 @@ final class MetricRequestAggregationFilter extends GridAggregationFilterAbstract
     ): void {
         $addConditionsCallback();
 
-        $builder
+        if ($this->lastRunMode) {
+            $builder->sort(['fields.created' => 'desc']);
+        }
+
+        $group = $builder
             ->group()
             ->field('_id')
             ->expression('$tags.node_id')
             ->field('topologyId')
             ->first('$tags.topology_id')
-            ->field('duration')
-            ->avg('$fields.sent_request_total_duration');
+            ->field('duration');
+
+        $this->lastRunMode
+            ? $group->first('$fields.sent_request_total_duration')
+            : $group->avg('$fields.sent_request_total_duration');
 
         $addSortationsCallback();
         $addPaginationCallback();

@@ -406,23 +406,29 @@ final class MongoMetricsManager extends MetricsManagerAbstract
 
     /**
      * @param GridRequestDtoInterface $dto
+     * @param bool                    $lastRun
      *
      * @return array<mixed>
      * @throws Exception
      */
-    public function getMetricsRequests(GridRequestDtoInterface $dto): array
+    public function getMetricsRequests(GridRequestDtoInterface $dto, bool $lastRun): array
     {
+        $this->metricRequestAggregationFilter->setLastRunMode($lastRun);
+
         return $this->metricRequestAggregationFilter->getData($dto)->toArray();
     }
 
     /**
      * @param GridRequestDtoInterface $dto
+     * @param bool                    $lastRun
      *
      * @return array<mixed>
      * @throws Exception
      */
-    public function getMetricsProcesses(GridRequestDtoInterface $dto): array
+    public function getMetricsProcesses(GridRequestDtoInterface $dto, bool $lastRun): array
     {
+        $this->metricProcessAggregationFilter->setLastRunMode($lastRun);
+
         return $this->metricProcessAggregationFilter->getData($dto)->toArray();
     }
 
