@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, onActivated, nextTick } from 'vue'
 import { useApexChart, getChartColors, getBaseChartOptions } from '@/composables/useApexChart'
 import { useDataGrid } from '@/composables/useDataGrid'
 import { fetchTrashData } from '@/services/dashboardService'
@@ -78,7 +78,6 @@ const {
   onDataLoad: loadData,
 })
 
-// Initialize chart on mount
 onMounted(async () => {
   try {
     await loadData()
@@ -93,6 +92,14 @@ onMounted(async () => {
   } catch (error) {
     console.error('TrashCard mount error:', error)
   }
+})
+
+onActivated(() => {
+  nextTick(() => {
+    if (chartMounted.value && chartEl.value && trashData.value) {
+      initChart(chartEl.value, getBarChartOptions())
+    }
+  })
 })
 
 const getBarChartOptions = () => {

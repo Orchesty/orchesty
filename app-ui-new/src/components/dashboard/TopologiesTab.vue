@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, onActivated, onDeactivated } from 'vue'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
 import QuickFilter from '@/components/ui/datagrid/QuickFilter.vue'
@@ -11,6 +11,7 @@ import { fetchTopologies } from '@/services/topologiesService'
 import { convertTimeFilterToDateTimeRange, formatDateTimeForApi } from '@/utils/timeRangeConverter'
 import { useDataGrid } from '@/composables/useDataGrid'
 import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
+import { useTabDataFreshness } from '@/composables/useTabDataFreshness'
 
 interface Props {
   globalTimeFilter: TimeFilter
@@ -25,6 +26,7 @@ const emit = defineEmits<{
 
 // Use topology/node mappings composable
 const { loadMappings, getTopologyName } = useTopologyNodeMappings()
+const { isActive, isStale, markFresh, invalidate } = useTabDataFreshness()
 
 const topologies = ref<Topology[]>([])
 const quickFilter = ref<TopologyStatus>('all')
@@ -74,6 +76,7 @@ const loadData = async () => {
 
     totalPages.value = response.meta.totalPages
     totalItems.value = response.meta.totalItems
+    markFresh()
   } catch (error) {
     console.error('Error loading topologies:', error)
   } finally {
@@ -105,10 +108,10 @@ const handleViewProcesses = (topology: Topology) => {
 }
 
 watch(() => props.refreshKey, () => {
+  invalidate()
   loadData()
 })
 
-// Watch global time filter and convert to local datetime range
 watch(
   () => props.globalTimeFilter,
   (newFilter) => {
@@ -117,9 +120,20 @@ watch(
       from: range.from,
       to: range.to,
     }
+    invalidate()
+    if (isActive.value) loadData()
   },
   { immediate: true }
 )
+
+onActivated(() => {
+  isActive.value = true
+  if (isStale()) loadData()
+})
+
+onDeactivated(() => {
+  isActive.value = false
+})
 
 </script>
 

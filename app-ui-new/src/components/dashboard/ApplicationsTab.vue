@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, onActivated, onDeactivated, watch } from 'vue'
 import HeatmapChart from './HeatmapChart.vue'
 import type { Connector } from '@/types/connectors'
 import type { HeatmapSeries, ProcessFilter, TimeFilter } from '@/types/dashboard'
 import { fetchConnectorHeatmapData } from '@/services/dashboardService'
 import { convertTimeFilterToDateTimeRange, formatDateTimeForApi } from '@/utils/timeRangeConverter'
 import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
+import { useTabDataFreshness } from '@/composables/useTabDataFreshness'
 
 interface ApplicationHeatmapGroup {
   applicationName: string
@@ -31,6 +32,7 @@ const emit = defineEmits<{
 }>()
 
 const { loadMappings, getNodeName, getApplicationName } = useTopologyNodeMappings()
+const { isActive, isStale, markFresh, invalidate } = useTabDataFreshness()
 
 const loading = ref(true)
 const error = ref<string | null>(null)
@@ -152,6 +154,7 @@ const loadData = async () => {
     groups.sort((a, b) => a.applicationName.localeCompare(b.applicationName))
 
     applicationGroups.value = groups
+    markFresh()
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Failed to load data'
     console.error('Error loading applications heatmap data:', err)
@@ -161,20 +164,32 @@ const loadData = async () => {
 }
 
 watch(() => props.timeFilter, () => {
-  loadData()
+  invalidate()
+  if (isActive.value) loadData()
 })
 
 watch(() => props.heatmapFilter, () => {
-  loadData()
+  invalidate()
+  if (isActive.value) loadData()
 })
 
 watch(() => props.refreshKey, () => {
+  invalidate()
   loadData()
 })
 
 onMounted(async () => {
   await loadMappings()
   loadData()
+})
+
+onActivated(() => {
+  isActive.value = true
+  if (isStale()) loadData()
+})
+
+onDeactivated(() => {
+  isActive.value = false
 })
 </script>
 

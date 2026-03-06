@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onActivated, onDeactivated, watch } from 'vue'
 import ProcessAuditDrawer from '@/components/dashboard/ProcessAuditDrawer.vue'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
@@ -12,14 +12,17 @@ import { fetchProcesses } from '@/services/processesService'
 import { formatDateTimeForApi } from '@/utils/timeRangeConverter'
 import { useDataGrid } from '@/composables/useDataGrid'
 import { useDateFormat } from '@/composables/useDateFormat'
+import { useTabDataFreshness } from '@/composables/useTabDataFreshness'
 
 interface Props {
   topologyId: string
   topologyName: string
+  refreshKey?: number
 }
 
 const props = defineProps<Props>()
 const { formatDateTime } = useDateFormat()
+const { isActive, isStale, markFresh, invalidate } = useTabDataFreshness()
 
 // Drawer state
 const drawerOpen = ref(false)
@@ -83,6 +86,7 @@ const loadData = async () => {
     processes.value = response.data
     totalPages.value = response.meta.totalPages
     totalItems.value = response.meta.totalItems
+    markFresh()
   } catch (error) {
     console.error('Error loading processes:', error)
   } finally {
@@ -115,10 +119,22 @@ const handleAuditClick = (process: Process) => {
   console.log('Drawer state:', { drawerOpen: drawerOpen.value, selectedProcess: selectedProcess.value })
 }
 
-defineExpose({ loadData })
-
-onMounted(async () => {
+onMounted(() => {
   loadData()
+})
+
+onActivated(() => {
+  isActive.value = true
+  if (isStale()) loadData()
+})
+
+onDeactivated(() => {
+  isActive.value = false
+})
+
+watch(() => props.refreshKey, () => {
+  invalidate()
+  if (isActive.value) loadData()
 })
 </script>
 

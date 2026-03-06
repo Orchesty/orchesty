@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, onActivated, onDeactivated, watch } from 'vue'
 import ProcessesChart from './ProcessesChart.vue'
 import LimiterCard from './LimiterCard.vue'
 import TrashCard from './TrashCard.vue'
@@ -7,6 +7,7 @@ import type { ProcessesChartData, ProcessFilter, TimeFilter, HeatmapClickData } 
 import { fetchProcessesTotalCounts, fetchProcessesGraphData } from '@/services/dashboardService'
 import { convertTimeFilterToDateTimeRange, formatDateTimeForApi } from '@/utils/timeRangeConverter'
 import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
+import { useTabDataFreshness } from '@/composables/useTabDataFreshness'
 
 interface Props {
   timeFilter?: TimeFilter
@@ -27,6 +28,7 @@ const emit = defineEmits<{
 
 // Use topology/node mappings composable
 const { loadMappings, topologyNameMap } = useTopologyNodeMappings()
+const { isActive, isStale, markFresh, invalidate } = useTabDataFreshness()
 
 const loading = ref(true)
 const error = ref<string | null>(null)
@@ -38,23 +40,19 @@ const loadData = async () => {
   error.value = null
 
   try {
-    // Convert time filter to date range
     const range = convertTimeFilterToDateTimeRange(props.timeFilter)
     const dateFrom = formatDateTimeForApi(range.from) || ''
     const dateTo = formatDateTimeForApi(range.to) || ''
 
-    // Fetch total counts
     const totals = await fetchProcessesTotalCounts(dateFrom, dateTo)
-
-    // Fetch graph data
     const chartData = await fetchProcessesGraphData(props.heatmapFilter, dateFrom, dateTo, 40)
 
-    // Store raw chart data - topology IDs are resolved to names via yLabelMap in the chart
     processesData.value = {
       ...chartData,
       totalProcesses: totals.totalProcesses,
       failedProcesses: totals.failedProcesses,
     }
+    markFresh()
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Failed to load data'
     console.error('Error loading overview data:', err)
@@ -69,27 +67,35 @@ const handleHeatmapClick = (data: HeatmapClickData) => {
 
 const handleProcessFilterChange = (filter: ProcessFilter) => {
   emit('heatmapFilterChange', filter)
-  // Data reload will happen via watch on props.heatmapFilter
 }
 
 watch(() => props.timeFilter, () => {
-  loadData()
+  invalidate()
+  if (isActive.value) loadData()
 })
 
 watch(() => props.heatmapFilter, () => {
-  loadData()
+  invalidate()
+  if (isActive.value) loadData()
 })
 
 watch(() => props.refreshKey, () => {
+  invalidate()
   loadData()
 })
 
 onMounted(async () => {
-  // Load mappings for topology names
   await loadMappings()
-
-  // Load initial data
   loadData()
+})
+
+onActivated(() => {
+  isActive.value = true
+  if (isStale()) loadData()
+})
+
+onDeactivated(() => {
+  isActive.value = false
 })
 </script>
 

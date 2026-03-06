@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onActivated, onDeactivated, watch } from 'vue'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
 import TextInput from '@/components/ui/datagrid/TextInput.vue'
@@ -13,13 +13,16 @@ import { fetchLogs } from '@/services/logsService'
 import { useDataGrid } from '@/composables/useDataGrid'
 import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 import { useDateFormat } from '@/composables/useDateFormat'
+import { useTabDataFreshness } from '@/composables/useTabDataFreshness'
 
 interface Props {
   topologyId: string
   topologyName: string
+  refreshKey?: number
 }
 
 const props = defineProps<Props>()
+const { isActive, isStale, markFresh, invalidate } = useTabDataFreshness()
 
 // State
 const logs = ref<LogEntry[]>([])
@@ -129,6 +132,7 @@ async function loadData() {
     logs.value = response.data
     totalItems.value = response.pagination.total
     totalPages.value = response.pagination.totalPages
+    markFresh()
   } catch (error) {
     console.error('Failed to load logs:', error)
   } finally {
@@ -154,11 +158,23 @@ const {
   filters: [searchFilter, correlationIdFilter, severityFilter, nodeFilter, dateTimeRange],
 })
 
-defineExpose({ loadData })
-
 onMounted(async () => {
   await loadMappings()
   await loadData()
+})
+
+onActivated(() => {
+  isActive.value = true
+  if (isStale()) loadData()
+})
+
+onDeactivated(() => {
+  isActive.value = false
+})
+
+watch(() => props.refreshKey, () => {
+  invalidate()
+  if (isActive.value) loadData()
 })
 </script>
 

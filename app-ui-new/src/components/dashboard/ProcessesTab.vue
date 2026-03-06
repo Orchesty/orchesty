@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, computed, nextTick } from 'vue'
+import { ref, watch, computed, nextTick, onActivated, onDeactivated } from 'vue'
 import ProcessesChart from './ProcessesChart.vue'
 import ProcessAuditDrawer from './ProcessAuditDrawer.vue'
 import Card from '@/components/ui/Card.vue'
@@ -16,6 +16,7 @@ import { convertTimeFilterToDateTimeRange, formatDateTimeForApi, formatDateTimeL
 import { useDataGrid } from '@/composables/useDataGrid'
 import { useDateFormat } from '@/composables/useDateFormat'
 import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
+import { useTabDataFreshness } from '@/composables/useTabDataFreshness'
 
 interface Props {
   globalTimeFilter: TimeFilter
@@ -35,6 +36,7 @@ const emit = defineEmits<{
 // Use topology/node mappings composable
 const { loadMappings, getTopologyName, getTopologyNameWithVersion, topologyNameMap, deduplicatedTopologyOptions, getTopologyIdsByName } = useTopologyNodeMappings()
 const { formatDateTime } = useDateFormat()
+const { isActive, isStale, markFresh, invalidate } = useTabDataFreshness()
 
 // Drawer state
 const drawerOpen = ref(false)
@@ -115,11 +117,11 @@ const loadData = async () => {
       order: sortDirection.value,
     })
 
-    // Store raw data - topology names are resolved reactively in the template
     processes.value = response.data
 
     totalPages.value = response.meta.totalPages
     totalItems.value = response.meta.totalItems
+    markFresh()
   } catch (error) {
     console.error('Error loading processes:', error)
   } finally {
@@ -208,8 +210,6 @@ const loadChartData = async () => {
   }
 }
 
-// Watch for filter changes
-// Watch global time filter and convert to local datetime range
 watch(
   () => props.globalTimeFilter,
   (newFilter) => {
@@ -218,36 +218,37 @@ watch(
       from: range.from,
       to: range.to,
     }
-    loadChartData()
+    invalidate()
+    if (isActive.value) {
+      loadChartData()
+    }
   },
   { immediate: true }
 )
 
-// Watch heatmap filter changes (shared with OverviewTab)
 watch(
   () => props.heatmapFilter,
   () => {
-    loadChartData()
+    invalidate()
+    if (isActive.value) loadChartData()
   }
 )
 
 watch(() => props.refreshKey, () => {
+  invalidate()
   loadData()
   loadChartData()
 })
 
-// Watch for external filters from heatmap click
 watch(
   () => props.externalFilters,
   (filters) => {
     if (!filters) return
     if (!filters.topology && !filters.timeRange) return
 
-    // Pause useDataGrid auto-reload to avoid double loadData
     skipAutoLoad.value = true
 
     if (filters.topology) {
-      // Resolve topology ID to name (filter uses grouped names)
       topologyFilter.value = getTopologyName(filters.topology)
     }
 
@@ -258,14 +259,27 @@ watch(
       }
     }
 
-    // Resume and trigger single reload
+    invalidate()
     nextTick(() => {
       skipAutoLoad.value = false
       loadData()
+      loadChartData()
     })
   },
   { deep: true }
 )
+
+onActivated(() => {
+  isActive.value = true
+  if (isStale()) {
+    loadData()
+    loadChartData()
+  }
+})
+
+onDeactivated(() => {
+  isActive.value = false
+})
 
 </script>
 

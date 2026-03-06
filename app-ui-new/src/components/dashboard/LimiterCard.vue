@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, nextTick, watch } from 'vue'
+import { ref, computed, onMounted, onActivated, nextTick, watch } from 'vue'
 import { useApexChart, getChartColors, getBaseChartOptions } from '@/composables/useApexChart'
 import { useDataGrid } from '@/composables/useDataGrid'
 import { useDateFormat } from '@/composables/useDateFormat'
@@ -117,7 +117,6 @@ watch(() => props.timeFilter, () => {
   loadData()
 })
 
-// Initialize chart on mount
 onMounted(async () => {
   try {
     await loadData()
@@ -132,6 +131,14 @@ onMounted(async () => {
   } catch (error) {
     console.error('LimiterCard mount error:', error)
   }
+})
+
+onActivated(() => {
+  nextTick(() => {
+    if (chartMounted.value && chartEl.value && limiterData.value) {
+      initChart(chartEl.value, getColumnChartOptions())
+    }
+  })
 })
 
 const getColumnChartOptions = () => {

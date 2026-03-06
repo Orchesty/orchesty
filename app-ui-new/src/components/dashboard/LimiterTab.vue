@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, nextTick, watch } from 'vue'
+import { ref, computed, onMounted, onActivated, onDeactivated, nextTick, watch } from 'vue'
 import { useApexChart, getChartColors, getBaseChartOptions } from '@/composables/useApexChart'
 import { useDataGrid } from '@/composables/useDataGrid'
 import { useDateFormat } from '@/composables/useDateFormat'
 import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
+import { useTabDataFreshness } from '@/composables/useTabDataFreshness'
 import { fetchLimiterData, fetchApplicationLimiterSettings } from '@/services/dashboardService'
 import type { LimiterData, TableColumn, TimeFilter, AppLimiterSetting } from '@/types/dashboard'
 import Card from '@/components/ui/Card.vue'
@@ -31,6 +32,7 @@ interface Props {
 const props = defineProps<Props>()
 
 const { loadMappings, getNodeName, getTopologyName, getApplicationName } = useTopologyNodeMappings()
+const { isActive, isStale, markFresh, invalidate } = useTabDataFreshness()
 
 const limiterData = ref<LimiterData | null>(null)
 const appSettings = ref<Map<string, AppLimiterSetting>>(new Map())
@@ -80,8 +82,8 @@ const loadData = async () => {
     limiterData.value = response
     totalPages.value = response.meta.totalPages
     totalItems.value = response.meta.totalItems
+    markFresh()
 
-    // Re-render chart with new data if already mounted
     await nextTick()
     if (chartMounted.value && chartEl.value) {
       initChart(chartEl.value, getChartOptions())
@@ -112,13 +114,29 @@ const {
   onDataLoad: loadData,
 })
 
-// Watch time filter changes
 watch(() => props.globalTimeFilter, () => {
-  loadData()
+  invalidate()
+  if (isActive.value) loadData()
 })
 
 watch(() => props.refreshKey, () => {
+  invalidate()
   loadData()
+})
+
+onActivated(async () => {
+  isActive.value = true
+  if (isStale()) {
+    await loadData()
+  }
+  await nextTick()
+  if (chartMounted.value && chartEl.value && limiterData.value) {
+    initChart(chartEl.value, getChartOptions())
+  }
+})
+
+onDeactivated(() => {
+  isActive.value = false
 })
 
 // Initialize on mount

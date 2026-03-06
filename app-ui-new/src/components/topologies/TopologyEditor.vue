@@ -17,6 +17,10 @@ const props = defineProps<{
   topologyId: string
 }>()
 
+const emit = defineEmits<{
+  'process-run': []
+}>()
+
 const { Editor, createConfig } = ReteEditorKit
 const { toggleNodeState, runProcess, updateCrontab } = useCronNodeActions()
 const { formatDateTime } = useDateFormat()
@@ -357,6 +361,7 @@ const handleRunProcess = async (jsonData: string) => {
       selectedNode.value.name || selectedNode.value.label,
       jsonData
     )
+    emit('process-run')
   } catch (error) {
     console.error('Failed to run process:', error)
   }

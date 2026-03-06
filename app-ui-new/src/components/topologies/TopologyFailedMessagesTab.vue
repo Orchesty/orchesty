@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, onActivated, onDeactivated, computed, watch } from 'vue'
 import Card from '@/components/ui/Card.vue'
 import DataGrid from '@/components/ui/DataGrid.vue'
 import DateTimeRangeFilter from '@/components/ui/datagrid/DateTimeRangeFilter.vue'
@@ -22,16 +22,19 @@ import { useDataGrid } from '@/composables/useDataGrid'
 import { useToast } from '@/composables/useToast'
 import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
 import { useDateFormat } from '@/composables/useDateFormat'
+import { useTabDataFreshness } from '@/composables/useTabDataFreshness'
 
 interface Props {
   topologyId: string
   topologyName: string
+  refreshKey?: number
 }
 
 const props = defineProps<Props>()
 
 // Toast notifications
 const { showToast } = useToast()
+const { isActive, isStale, markFresh, invalidate } = useTabDataFreshness()
 
 // Topology and Node mappings
 const { loadMappings, mappings, getNodeName } = useTopologyNodeMappings()
@@ -167,6 +170,7 @@ const loadData = async () => {
     trashItems.value = response.data
     totalItems.value = response.pagination.total
     totalPages.value = response.pagination.totalPages
+    markFresh()
   } catch (error) {
     console.error('Failed to load trash items:', error)
   } finally {
@@ -192,11 +196,23 @@ const {
   filters: [searchFilter, correlationIdFilter, nodeFilter, dateTimeRange],
 })
 
-defineExpose({ loadData })
-
 onMounted(async () => {
   await loadMappings()
   loadData()
+})
+
+onActivated(() => {
+  isActive.value = true
+  if (isStale()) loadData()
+})
+
+onDeactivated(() => {
+  isActive.value = false
+})
+
+watch(() => props.refreshKey, () => {
+  invalidate()
+  if (isActive.value) loadData()
 })
 
 // Drawer handlers

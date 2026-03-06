@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, nextTick } from 'vue'
+import { ref, computed, onMounted, onActivated, watch, nextTick } from 'vue'
 import { useApexChart, getChartColors, getBaseChartOptions } from '@/composables/useApexChart'
 import type { ProcessFilter } from '@/types/dashboard'
 import Card from '@/components/ui/Card.vue'
@@ -343,6 +343,15 @@ onMounted(() => {
     if (chartEl.value && props.series.length > 0) {
       initChart(chartEl.value, getHeatmapOptions())
       setupResizeObserver(chartEl.value)
+      chartMounted.value = true
+    }
+  })
+})
+
+onActivated(() => {
+  nextTick(() => {
+    if (chartEl.value && props.series.length > 0) {
+      initChart(chartEl.value, getHeatmapOptions())
       chartMounted.value = true
     }
   })
