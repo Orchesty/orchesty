@@ -34,7 +34,6 @@ use Hanaboso\PipesFramework\Utils\Dto\Schema;
 use Hanaboso\PipesFramework\Utils\TopologySchemaUtils;
 use Hanaboso\Utils\Cron\CronParser;
 use Hanaboso\Utils\Exception\EnumException;
-use Hanaboso\Utils\String\Json;
 use Hanaboso\Utils\String\Strings;
 use Hanaboso\Utils\Traits\UrlBuilderTrait;
 use JsonException;
@@ -454,49 +453,63 @@ class TopologyManager
 
     /**
      * @return mixed[]
-     * @throws CronException
-     * @throws CurlException
      */
     public function getCronTopologies(): array
     {
-        $data   = Json::decode($this->cronManager->getAll()->getBody());
+        /** @var Node[] $cronNodes */
+        $cronNodes = $this->nodeRepository->findBy([
+            'deleted' => FALSE,
+            'type'    => TypeEnum::CRON->value,
+        ]);
+
+        $ids = array_unique(array_map(
+            static fn(Node $node): string => $node->getTopology(),
+            $cronNodes,
+        ));
+
+        $topologies = [];
+
+        /** @var Topology $topology */
+        foreach ($this->topologyRepository->findBy(['id' => ['$in' => $ids], 'deleted' => FALSE]) as $topology) {
+            $topologies[$topology->getId()] = $topology;
+        }
+
         $result = [];
 
-        foreach ($data as $item) {
-            /** @var Topology[] $topologies */
-            $topologies = $this->topologyRepository->findBy(['id' => $item['topology'], 'deleted' => FALSE]);
-            /** @var Node|NULL $node */
-            $node = $this->nodeRepository->findOneBy(['id' => $item['node']]);
+        foreach ($cronNodes as $node) {
+            $topology = $topologies[$node->getTopology()] ?? NULL;
 
-            foreach ($topologies as $topology) {
-                $result[] = [
-                    'node'           => [
-                        'id'         => $node?->getId(),
-                        'name'       => $node?->getName(),
-                        'parameters' => $node?->getCronParams(),
-                        'status'     => $node?->isEnabled(),
-                    ],
-                    'time'     => $item['time'],
-                    'topology' => [
-                        'id'      => $topology->getId(),
-                        'name'    => $topology->getName(),
-                        'status'  => $topology->isEnabled(),
-                        'version' => $topology->getVersion(),
-                    ],
-                ];
+            if (!$topology) {
+                continue;
             }
+
+            $result[] = [
+                'node'     => [
+                    'id'         => $node->getId(),
+                    'name'       => $node->getName(),
+                    'parameters' => $node->getCronParams(),
+                    'status'     => $node->isEnabled(),
+                ],
+                'time'     => $node->getCron() ?? '',
+                'topology' => [
+                    'id'      => $topology->getId(),
+                    'name'    => $topology->getName(),
+                    'status'  => $topology->isEnabled(),
+                    'version' => $topology->getVersion(),
+                ],
+            ];
         }
 
         usort(
             $result,
             static function (array $one, array $two): int {
-                $result = $one['topology']['status'] <=> $two['topology']['status'];
+                $result = strcasecmp($one['topology']['name'], $two['topology']['name']);
 
                 if (!$result) {
                     $result = $one['topology']['version'] <=> $two['topology']['version'];
                 }
 
-                return $result * -1;
+                return $result;
             },
         );
 
@@ -783,9 +796,13 @@ class TopologyManager
             ->setHandler(
                 Strings::endsWith($dto->getHandler(), 'vent') ? HandlerEnum::EVENT->value : HandlerEnum::ACTION->value,
             )
-            ->setCronParams(urldecode($dto->getCronParams()))
-            ->setCron($dto->getCronTime())
             ->setApplication($dto->getApplication());
+
+        if ($dto->getCronTime() !== '') {
+            $node
+                ->setCronParams(urldecode($dto->getCronParams()))
+                ->setCron($dto->getCronTime());
+        }
 
         return $node;
     }

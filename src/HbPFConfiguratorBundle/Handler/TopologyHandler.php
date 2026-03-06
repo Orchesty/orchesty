@@ -159,8 +159,6 @@ class TopologyHandler
 
     /**
      * @return mixed[]
-     * @throws CronException
-     * @throws CurlException
      */
     public function getCronTopologies(): array
     {
