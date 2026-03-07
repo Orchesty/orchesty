@@ -99,7 +99,7 @@ final class MetricConnectorGraphAggregationFilter extends GridAggregationFilterA
                         $builder->expr()->add(
                             $builder->expr()->toLong($gte),
                             $builder->expr()->multiply(
-                                $builder->expr()->ceil(
+                                $builder->expr()->floor(
                                     $builder->expr()->divide(
                                         $builder->expr()->subtract(
                                             $builder->expr()->toLong('$fields.created'),
@@ -215,7 +215,7 @@ final class MetricConnectorGraphAggregationFilter extends GridAggregationFilterA
                         $builder->expr()->add(
                             $builder->expr()->toLong($gte),
                             $builder->expr()->multiply(
-                                $builder->expr()->ceil(
+                                $builder->expr()->floor(
                                     $builder->expr()->divide(
                                         $builder->expr()->subtract(
                                             $builder->expr()->toLong('$fields.created'),

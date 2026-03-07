@@ -100,7 +100,7 @@ final class MetricLimitGraphAggregationFilter extends GridAggregationFilterAbstr
                     $builder->expr()->add(
                         $builder->expr()->toLong($gte),
                         $builder->expr()->multiply(
-                            $builder->expr()->ceil(
+                            $builder->expr()->floor(
                                 $builder->expr()->divide(
                                     $builder->expr()->subtract(
                                         $builder->expr()->toLong('$_id'),
@@ -172,7 +172,7 @@ final class MetricLimitGraphAggregationFilter extends GridAggregationFilterAbstr
                     $builder->expr()->add(
                         $builder->expr()->toLong($gte),
                         $builder->expr()->multiply(
-                            $builder->expr()->ceil(
+                            $builder->expr()->floor(
                                 $builder->expr()->divide(
                                     $builder->expr()->subtract(
                                         $builder->expr()->toLong('$_id'),
