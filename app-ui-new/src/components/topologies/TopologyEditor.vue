@@ -1,15 +1,23 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onBeforeUnmount } from 'vue'
 import { ReteEditorKit } from 'rete-editor'
 import type { EditorCore, LabelCustomizationMap } from 'rete-editor'
 import CronSettingsModal from '@/components/scheduled-tasks/CronSettingsModal.vue'
 import RunProcessModal from '@/components/topologies/RunProcessModal.vue'
+import BreakpointModal from '@/components/topologies/BreakpointModal.vue'
 import { useCronNodeActions } from '@/composables/useCronNodeActions'
+import { useToast } from '@/composables/useToast'
 import { useDateFormat } from '@/composables/useDateFormat'
 import { useProcessPolling } from '@/composables/useProcessPolling'
 import { fetchTopologySchema, saveTopologySchema } from '@/services/topologiesService'
 import { fetchRawTopologyMetrics } from '@/services/topologyMetricsService'
 import { fetchTrashItems } from '@/services/trashService'
+import {
+  fetchNodeOverlayCounts,
+  approveAllBreakpoints,
+  rejectAllBreakpoints,
+  hasBreakpointMessages,
+} from '@/services/breakpointService'
 import api from '@/services/api'
 import { topologyEditorService } from '@/services/topologyEditorService'
 import type { ScheduledTask } from '@/types/scheduled-tasks'
@@ -34,6 +42,7 @@ const emit = defineEmits<{
 
 const { Editor, createConfig } = ReteEditorKit
 const { toggleNodeState, runProcess, updateCrontab } = useCronNodeActions()
+const { showToast } = useToast()
 const { formatDateTime } = useDateFormat()
 const polling = useProcessPolling(props.topologyId)
 
@@ -58,7 +67,12 @@ interface BackendNode {
 const editorCore = ref<EditorCore>()
 const cronSettingsModalOpen = ref(false)
 const runProcessModalOpen = ref(false)
+const breakpointModalOpen = ref(false)
 const selectedNode = ref<EditorNode | null>(null)
+const breakpointCounts = ref<Record<string, number>>({})
+const hasBreakpoints = ref(false)
+let breakpointPollTimer: ReturnType<typeof setInterval> | null = null
+let cachedSchema: any = null
 
 const nodesData = ref<Record<string, CronNode>>({})
 const schemaToBackendId = ref<Record<string, string>>({})
@@ -81,6 +95,13 @@ const formatMs = (ms: number): string => {
   return `${minutes}m ${seconds}s`
 }
 
+const EXCLUDED_PROCESS_TIME_LABELS = new Set(['event', 'webhook', 'cron', 'breakpoint'])
+
+const isProcessTimeRelevant = (editorId: string): boolean => {
+  const label = nodesData.value[editorId]?.label?.toLowerCase()
+  return !label || !EXCLUDED_PROCESS_TIME_LABELS.has(label)
+}
+
 const loadNodeMetrics = async () => {
   try {
     const raw = await fetchRawTopologyMetrics(props.topologyId)
@@ -94,7 +115,7 @@ const loadNodeMetrics = async () => {
 
     for (const [backendNodeId, duration] of Object.entries(raw.processTimeByNodeId)) {
       const editorId = backendToEditorId.get(backendNodeId)
-      if (editorId) {
+      if (editorId && isProcessTimeRelevant(editorId)) {
         if (!metrics[editorId]) metrics[editorId] = {}
         metrics[editorId].processTime = duration
       }
@@ -102,7 +123,7 @@ const loadNodeMetrics = async () => {
 
     for (const [backendNodeId, duration] of Object.entries(raw.requestTimeByNodeId)) {
       const editorId = backendToEditorId.get(backendNodeId)
-      if (editorId) {
+      if (editorId && isProcessTimeRelevant(editorId)) {
         if (!metrics[editorId]) metrics[editorId] = {}
         metrics[editorId].requestTime = duration
       }
@@ -174,6 +195,105 @@ const overlayMethods = {
   getTopLeftSlot: getOverlayTopLeft,
 }
 
+const getBreakpointOverlay = (node: EditorNode) => {
+  const count = breakpointCounts.value[node.id]
+  if (!count) return null
+  return {
+    content: `<span style="display:inline-flex;align-items:center;justify-content:center;min-width:36px;height:36px;padding:0 8px;font-size:1rem;font-weight:400;color:#fff;background:#dc2626;border-radius:9999px;box-shadow:0 2px 6px rgba(0,0,0,.3);">${count}</span>`,
+    onClick: () => {
+      selectedNode.value = node
+      breakpointModalOpen.value = true
+    },
+  }
+}
+
+const getBreakpointActions = (node: EditorNode) => {
+  const count = breakpointCounts.value[node.id] || 0
+  if (!count) return []
+  return [
+    {
+      id: 'approve-all',
+      icon: '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
+      label: 'Approve all',
+      tooltip: 'Approve all',
+      onClick: async () => {
+        try {
+          await approveAllBreakpoints(props.topologyId)
+          showToast('All breakpoint messages approved', 'success')
+          await refreshNodeOverlays()
+        } catch (err) {
+          console.error('Failed to approve all:', err)
+          showToast('Failed to approve all messages', 'error')
+        }
+      },
+    },
+    {
+      id: 'reject-all',
+      icon: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+      label: 'Reject all',
+      tooltip: 'Reject all',
+      onClick: async () => {
+        try {
+          await rejectAllBreakpoints(props.topologyId)
+          showToast('All breakpoint messages rejected', 'success')
+          await refreshNodeOverlays()
+        } catch (err) {
+          console.error('Failed to reject all:', err)
+          showToast('Failed to reject all messages', 'error')
+        }
+      },
+    },
+  ]
+}
+
+const refreshNodeOverlays = async () => {
+  try {
+    const correlationId = polling.latestProcess.value?.id
+    const result = await fetchNodeOverlayCounts(props.topologyId, correlationId)
+    const backendToEditor = buildBackendToEditorMap()
+
+    const counts: Record<string, number> = {}
+    for (const [backendId, count] of Object.entries(result.breakpointCounts)) {
+      const editorId = backendToEditor.get(backendId)
+      if (editorId) {
+        counts[editorId] = count
+      }
+    }
+    breakpointCounts.value = counts
+    hasBreakpoints.value = Object.values(counts).some(c => c > 0)
+
+    const statuses: Record<string, boolean> = {}
+    for (const backendNodeId of result.failedNodeIds) {
+      const editorId = backendToEditor.get(backendNodeId)
+      if (editorId) {
+        statuses[editorId] = true
+      }
+    }
+    nodeStatuses.value = statuses
+
+    await editorCore.value?.updateNodeOverlays()
+  } catch {
+    // silently ignore polling errors
+  }
+}
+
+const startBreakpointPolling = (intervalMs = 2000) => {
+  stopBreakpointPolling()
+  refreshNodeOverlays()
+  breakpointPollTimer = setInterval(refreshNodeOverlays, intervalMs)
+}
+
+const stopBreakpointPolling = () => {
+  if (breakpointPollTimer) {
+    clearInterval(breakpointPollTimer)
+    breakpointPollTimer = null
+  }
+}
+
+onBeforeUnmount(() => {
+  stopBreakpointPolling()
+})
+
 const createToggleAction = (node: EditorNode) => {
   const nodeData = nodesData.value[node.id]
   if (!nodeData) return null
@@ -211,7 +331,7 @@ const eventNodeActions = {
     actions.push(runAction)
     return actions
   },
-  ...overlayMethods,
+  getTopLeftSlot: getOverlayTopLeft,
 }
 
 const labelCustomization: LabelCustomizationMap = {
@@ -220,6 +340,10 @@ const labelCustomization: LabelCustomizationMap = {
   Connector: { ...overlayMethods },
   'Custom Action': { ...overlayMethods },
   Batch: { ...overlayMethods },
+  Breakpoint: {
+    getTopLeftSlot: getBreakpointOverlay,
+    getActions: getBreakpointActions,
+  },
   Cron: {
     getFields: (node: EditorNode) => {
       const nodeData = nodesData.value[node.id]
@@ -252,7 +376,7 @@ const labelCustomization: LabelCustomizationMap = {
       })
       return actions
     },
-    ...overlayMethods,
+    getTopLeftSlot: getOverlayTopLeft,
   }
 }
 
@@ -330,6 +454,7 @@ const onEditorReady = async (editor: EditorCore) => {
       topologyEditorService.getAllActions()
     ])
     await editor.importGraph(schema)
+    cachedSchema = structuredClone(schema)
     await editor.setActions(actions)
     initNodesData(editor, backendNodes)
 
@@ -342,6 +467,7 @@ const onEditorReady = async (editor: EditorCore) => {
 
     editor.zoomToFit()
     loadNodeMetrics()
+    refreshNodeOverlays()
   } catch (error) {
     console.error('Failed to load topology data:', error)
   }
@@ -392,6 +518,7 @@ const reloadSchema = async () => {
       topologyEditorService.getAllActions()
     ])
     await editorCore.value.importGraph(schema)
+    cachedSchema = structuredClone(schema)
     await editorCore.value.setActions(actions)
     initNodesData(editorCore.value, backendNodes)
     editorCore.value.zoomToFit()
@@ -465,6 +592,13 @@ const handleRunProcess = async (jsonData: string) => {
   if (!selectedNode.value) return
 
   try {
+    if (hasBreakpoints.value) {
+      await rejectAllBreakpoints(props.topologyId)
+      breakpointCounts.value = {}
+      hasBreakpoints.value = false
+      await editorCore.value?.updateNodeOverlays()
+    }
+
     const backendId = resolveBackendId(selectedNode.value.id)
     await runProcess(
       props.topologyId,
@@ -476,17 +610,39 @@ const handleRunProcess = async (jsonData: string) => {
     processStartNodeName.value = selectedNode.value.name || selectedNode.value.label
     processStartedAt.value = new Date().toISOString()
     polling.startPolling()
+    startBreakpointPolling(2000)
     emit('process-run')
   } catch (error) {
     console.error('Failed to run process:', error)
   }
 }
 
+const handleBreakpointUpdate = async () => {
+  await refreshNodeOverlays()
+  if (polling.isPolling.value) {
+    polling.resetToFastPolling()
+  } else {
+    polling.startPolling()
+    startBreakpointPolling(2000)
+  }
+}
+
 const handlePositionChanged = async () => {
-  if (!editorCore.value) return
+  if (!editorCore.value || !cachedSchema) return
   try {
-    const graph = editorCore.value.exportGraph()
-    await saveTopologySchema(props.topologyId, graph)
+    const positions = editorCore.value.getNodePositions()
+    const updated = structuredClone(cachedSchema)
+
+    if (updated.nodes && Array.isArray(updated.nodes)) {
+      for (const node of updated.nodes) {
+        const pos = positions[node.id]
+        if (pos) {
+          node.position = { x: pos.x, y: pos.y }
+        }
+      }
+    }
+
+    await saveTopologySchema(props.topologyId, updated)
   } catch (error) {
     console.error('Failed to save topology layout:', error)
   }
@@ -509,7 +665,7 @@ const applyPolledMetrics = () => {
 
   for (const [backendNodeId, duration] of Object.entries(raw.processTimeByNodeId)) {
     const editorId = backendToEditor.get(backendNodeId)
-    if (editorId) {
+    if (editorId && isProcessTimeRelevant(editorId)) {
       if (!metrics[editorId]) metrics[editorId] = {}
       metrics[editorId].processTime = duration
     }
@@ -517,27 +673,13 @@ const applyPolledMetrics = () => {
 
   for (const [backendNodeId, duration] of Object.entries(raw.requestTimeByNodeId)) {
     const editorId = backendToEditor.get(backendNodeId)
-    if (editorId) {
+    if (editorId && isProcessTimeRelevant(editorId)) {
       if (!metrics[editorId]) metrics[editorId] = {}
       metrics[editorId].requestTime = duration
     }
   }
 
   nodeMetrics.value = metrics
-}
-
-const applyNodeStatuses = () => {
-  const backendToEditor = buildBackendToEditorMap()
-  const statuses: Record<string, boolean> = {}
-
-  for (const backendNodeId of polling.failedNodeIds.value) {
-    const editorId = backendToEditor.get(backendNodeId)
-    if (editorId) {
-      statuses[editorId] = true
-    }
-  }
-
-  nodeStatuses.value = statuses
 }
 
 watch(() => polling.rawMetrics.value, async () => {
@@ -548,7 +690,8 @@ watch(() => polling.rawMetrics.value, async () => {
 watch(() => polling.processCompleted.value, async (completed) => {
   if (completed) {
     applyPolledMetrics()
-    applyNodeStatuses()
+    stopBreakpointPolling()
+    await refreshNodeOverlays()
     await editorCore.value?.updateNodeOverlays()
   }
 })
@@ -562,6 +705,7 @@ watch(() => props.refreshKey, () => {
   processStartNodeName.value = startNode?.name || 'topology'
   processStartedAt.value = new Date().toISOString()
   polling.startPolling()
+  startBreakpointPolling(2000)
 })
 </script>
 
@@ -622,7 +766,16 @@ watch(() => props.refreshKey, () => {
       v-model="runProcessModalOpen"
       :node-name="selectedNode?.name || selectedNode?.label"
       :node-id="selectedNode?.id"
+      :has-breakpoint-messages="hasBreakpoints"
       @run="handleRunProcess"
+    />
+
+    <BreakpointModal
+      v-model="breakpointModalOpen"
+      :node-name="selectedNode?.name || selectedNode?.label || ''"
+      :node-id="selectedNode ? resolveBackendId(selectedNode.id) : ''"
+      :topology-id="topologyId"
+      @update="handleBreakpointUpdate"
     />
   </div>
 </template>

@@ -136,6 +136,9 @@ const getHeatmapOptions = () => {
       toolbar: {
         show: false,
       },
+      selection: {
+        enabled: false,
+      },
       events: {
         dataPointSelection: (_event: any, _chartContext: any, config: any) => {
           const { seriesIndex, dataPointIndex } = config
@@ -166,6 +169,11 @@ const getHeatmapOptions = () => {
           }
         },
       },
+    },
+    states: {
+      normal: { filter: { type: 'none' } },
+      hover: { filter: { type: 'none' } },
+      active: { filter: { type: 'none' }, allowMultipleDataPointsSelection: false },
     },
     plotOptions: {
       heatmap: {
@@ -430,11 +438,20 @@ onActivated(() => {
 </template>
 
 <style scoped>
-/* Override ApexCharts tooltip wrapper so our custom content controls all styling */
 :deep(.apexcharts-tooltip) {
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
   padding: 0 !important;
+}
+
+:deep(.apexcharts-canvas),
+:deep(.apexcharts-canvas *) {
+  outline: none !important;
+}
+
+:deep(.apexcharts-series rect) {
+  stroke: none !important;
+  stroke-width: 0 !important;
 }
 </style>

@@ -85,6 +85,8 @@ export const fetchRawTopologyMetrics = async (
   return { processTimeByNodeId, requestTimeByNodeId }
 }
 
+const EXCLUDED_NODE_TYPES = new Set(['start', 'cron', 'webhook', 'user'])
+
 export const fetchTopologyMetrics = async (
   topologyId: string,
   mode: MetricsMode = 'last-run',
@@ -105,10 +107,27 @@ export const fetchTopologyMetrics = async (
     }),
   ])
 
-  const nodeProcessTimes = processesResponse.data.items.map((item) => ({
-    nodeName: getNodeName(item.nodeId),
-    time: item.duration,
-  }))
+  let excludedNodeIds = new Set<string>()
+  try {
+    const nodesResponse = await api.get<{ items: Array<{ _id: string; type: string }> }>(
+      `/api/topologies/${topologyId}/nodes`,
+    )
+    const allNodes = nodesResponse.data.items || []
+    excludedNodeIds = new Set(
+      allNodes
+        .filter((n) => EXCLUDED_NODE_TYPES.has(n.type))
+        .map((n) => n._id),
+    )
+  } catch {
+    // If nodes fetch fails, proceed without filtering
+  }
+
+  const nodeProcessTimes = processesResponse.data.items
+    .filter((item) => !excludedNodeIds.has(item.nodeId))
+    .map((item) => ({
+      nodeName: getNodeName(item.nodeId),
+      time: item.duration,
+    }))
 
   const connectorRequestTimes = requestsResponse.data.items.map((item) => ({
     connectorName: getNodeName(item.nodeId),

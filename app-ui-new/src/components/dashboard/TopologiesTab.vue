@@ -212,19 +212,39 @@ onDeactivated(() => {
         </template>
 
         <template #cell-actions="{ row }">
-          <div class="text-right">
+          <div class="flex items-center justify-end gap-1">
+            <RouterLink
+              :to="`/topologies/${(row as Topology).id}`"
+              title="View detail"
+              class="inline-flex items-center rounded-lg p-1 text-center text-sm font-medium text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+            >
+              <svg
+                class="h-5 w-5"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+                />
+              </svg>
+              <span class="sr-only">View detail</span>
+            </RouterLink>
             <button
               type="button"
               title="View processes"
-              class="inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+              class="inline-flex items-center rounded-lg p-1 text-center text-sm font-medium text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
               @click="handleViewProcesses(row as Topology)"
             >
               <svg
-                class="-ms-0.5 me-1.5 h-4 w-4"
+                class="h-5 w-5"
                 aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
                 fill="currentColor"
                 viewBox="0 0 24 24"
               >
@@ -232,7 +252,7 @@ onDeactivated(() => {
                   d="M5.05 3C3.291 3 2.352 5.024 3.51 6.317l5.422 6.059v4.874c0 .472.227.917.613 1.2l3.069 2.25c1.01.742 2.454.036 2.454-1.2v-7.124l5.422-6.059C21.647 5.024 20.708 3 18.95 3H5.05Z"
                 />
               </svg>
-              Processes
+              <span class="sr-only">View processes</span>
             </button>
           </div>
         </template>

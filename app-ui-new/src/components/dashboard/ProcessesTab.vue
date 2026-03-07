@@ -181,17 +181,13 @@ const handleProcessFilterChange = async (filter: ProcessFilter) => {
 const loadChartData = async () => {
   chartLoading.value = true
   try {
-    // Get date range
-    const dateFrom = formatDateTimeForApi(dateTimeRange.value.from) || ''
-    const dateTo = formatDateTimeForApi(dateTimeRange.value.to) || ''
+    const range = convertTimeFilterToDateTimeRange(props.globalTimeFilter)
+    const dateFrom = formatDateTimeForApi(range.from) || ''
+    const dateTo = formatDateTimeForApi(range.to) || ''
 
-    // Fetch total counts
     const totals = await fetchProcessesTotalCounts(dateFrom, dateTo)
-
-    // Fetch graph data
     const chartData = await fetchProcessesGraphData(props.heatmapFilter, dateFrom, dateTo, 40)
 
-    // Store raw chart data - topology IDs are resolved to names via yLabelMap in the chart
     processesChartData.value = {
       ...chartData,
       totalProcesses: totals.totalProcesses,
@@ -253,11 +249,9 @@ watch(
       }
     }
 
-    invalidate()
     nextTick(() => {
       skipAutoLoad.value = false
       loadData()
-      loadChartData()
     })
   },
   { deep: true }

@@ -4,6 +4,9 @@ import Modal from '@/components/ui/Modal.vue'
 import Button from '@/components/ui/Button.vue'
 import Textarea from '@/components/ui/datagrid/Textarea.vue'
 import type { TrashItem } from '@/types/trash'
+import { useTopologyNodeMappings } from '@/composables/useTopologyNodeMappings'
+
+const { getTopologyName, getNodeName } = useTopologyNodeMappings()
 
 interface Props {
   modelValue: boolean
@@ -18,32 +21,23 @@ const emit = defineEmits<{
   'save-and-approve': [data: { headers: Record<string, unknown>; body: Record<string, unknown> }]
 }>()
 
-// Form state
-const headersJson = ref('')
 const bodyJson = ref('')
-const headersError = ref('')
 const bodyError = ref('')
 
-// Modal title
-const modalTitle = computed(() => {
-  return `${props.item.topology} / ${props.item.node}`
-})
+const topologyName = computed(() => getTopologyName(props.item.topologyId))
+const nodeName = computed(() => getNodeName(props.item.nodeId))
 
-// Watch for item changes to reset form
 watch(
   () => props.item,
   (newItem) => {
     if (newItem) {
-      headersJson.value = JSON.stringify(newItem.headers, null, 2)
       bodyJson.value = JSON.stringify(newItem.body, null, 2)
-      headersError.value = ''
       bodyError.value = ''
     }
   },
   { immediate: true }
 )
 
-// Validate JSON
 const validateJson = (jsonString: string): { valid: boolean; parsed?: unknown; error?: string } => {
   try {
     const parsed = JSON.parse(jsonString)
@@ -53,60 +47,31 @@ const validateJson = (jsonString: string): { valid: boolean; parsed?: unknown; e
   }
 }
 
-// Validate form
 const isFormValid = computed(() => {
-  const headersValidation = validateJson(headersJson.value)
-  const bodyValidation = validateJson(bodyJson.value)
-  return headersValidation.valid && bodyValidation.valid
+  return validateJson(bodyJson.value).valid
 })
 
-// Handle save
+const getPayload = () => {
+  const bodyValidation = validateJson(bodyJson.value)
+  if (!bodyValidation.valid) {
+    bodyError.value = bodyValidation.error || 'Invalid JSON'
+    return null
+  }
+  return {
+    headers: props.item.headers as Record<string, unknown>,
+    body: bodyValidation.parsed as Record<string, unknown>,
+  }
+}
+
 const handleSave = () => {
-  const headersValidation = validateJson(headersJson.value)
-  const bodyValidation = validateJson(bodyJson.value)
-
-  if (!headersValidation.valid) {
-    headersError.value = headersValidation.error || 'Invalid JSON'
-    return
-  }
-
-  if (!bodyValidation.valid) {
-    bodyError.value = bodyValidation.error || 'Invalid JSON'
-    return
-  }
-
-  emit('save', {
-    headers: headersValidation.parsed as Record<string, unknown>,
-    body: bodyValidation.parsed as Record<string, unknown>,
-  })
+  const data = getPayload()
+  if (data) emit('save', data)
 }
 
-// Handle save and approve
 const handleSaveAndApprove = () => {
-  const headersValidation = validateJson(headersJson.value)
-  const bodyValidation = validateJson(bodyJson.value)
-
-  if (!headersValidation.valid) {
-    headersError.value = headersValidation.error || 'Invalid JSON'
-    return
-  }
-
-  if (!bodyValidation.valid) {
-    bodyError.value = bodyValidation.error || 'Invalid JSON'
-    return
-  }
-
-  emit('save-and-approve', {
-    headers: headersValidation.parsed as Record<string, unknown>,
-    body: bodyValidation.parsed as Record<string, unknown>,
-  })
+  const data = getPayload()
+  if (data) emit('save-and-approve', data)
 }
-
-// Clear errors on input
-watch(headersJson, (text) => {
-  const result = validateJson(text)
-  headersError.value = result.valid ? '' : (result.error || 'Invalid JSON')
-})
 
 watch(bodyJson, (text) => {
   const result = validateJson(text)
@@ -118,30 +83,22 @@ watch(bodyJson, (text) => {
   <Modal
     :model-value="modelValue"
     id="edit-message-modal"
-    :title="modalTitle"
+    title="Update message"
     size="xl"
     @update:model-value="$emit('update:modelValue', $event)"
   >
-    <!-- Modal Body -->
     <div class="space-y-4">
-      <!-- Headers -->
-      <div>
-        <label
-          for="headers-textarea"
-          class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-        >
-          Headers
-        </label>
-        <Textarea
-          id="headers-textarea"
-          v-model="headersJson"
-          :rows="8"
-          placeholder='{"Content-Type": "application/json"}'
-          :error="headersError"
-        />
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">Topology</label>
+          <p class="text-sm text-gray-900 dark:text-white">{{ topologyName }}</p>
+        </div>
+        <div>
+          <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">Node</label>
+          <p class="text-sm text-gray-900 dark:text-white">{{ nodeName }}</p>
+        </div>
       </div>
 
-      <!-- Body -->
       <div>
         <label
           for="body-textarea"

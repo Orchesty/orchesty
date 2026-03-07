@@ -4,7 +4,7 @@ import { fetchApplications } from './applicationsService'
 export type ActionOption = {
   name: string
   worker: string
-  type: 'custom' | 'connector' | 'batch'
+  type: 'custom' | 'connector' | 'batch' | 'user'
   app?: string | null
   icon?: string
 }
@@ -14,9 +14,9 @@ type NodeActionItem = {
   app?: string | null
 }
 
-type ActionType = 'custom' | 'connector' | 'batch'
+type ActionType = 'custom' | 'connector' | 'batch' | 'user'
 
-const VALID_TYPES: ActionType[] = ['custom', 'connector', 'batch']
+const VALID_TYPES: ActionType[] = ['custom', 'connector', 'batch', 'user']
 
 async function buildAppLogoMap(): Promise<Map<string, string>> {
   try {
@@ -50,7 +50,14 @@ export const topologyEditorService = {
         if (!Array.isArray(items)) continue
 
         for (const item of items) {
-          if (typeof item === 'string') continue
+          if (typeof item === 'string') {
+            actions.push({
+              name: item,
+              worker: sdkGroup,
+              type: type as ActionType,
+            })
+            continue
+          }
 
           actions.push({
             name: item.name,

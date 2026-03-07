@@ -56,6 +56,7 @@ export interface TrashItemApi {
   nodeId: string
   topologyId: string
   correlationId: string
+  type: string
   created: string  // ISO date string
   message: string
   body: string  // JSON string that needs parsing

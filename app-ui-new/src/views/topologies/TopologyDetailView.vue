@@ -17,7 +17,7 @@ import type { MoreActionsSection } from '@/components/ui/MoreActions.vue'
 import Card from '@/components/ui/Card.vue'
 import TabCard from '@/components/ui/TabCard.vue'
 import Textarea from '@/components/ui/datagrid/Textarea.vue'
-import { fetchTopologyDetail, publishTopology, toggleTopologyEnabled, updateTopology } from '@/services/topologiesService'
+import { fetchTopologyDetail, fetchTopologySchema, publishTopology, toggleTopologyEnabled, updateTopology } from '@/services/topologiesService'
 import { validateMcpManifest } from '@/utils/mcpManifestValidator'
 import { fetchTopologyMetrics } from '@/services/topologyMetricsService'
 import { useToast } from '@/composables/useToast'
@@ -300,7 +300,6 @@ const handleExportTopology = () => {
 const moreActionsSections: MoreActionsSection[] = [
   {
     items: [
-      { type: 'button', label: 'Run', onClick: handleRunTopology },
       { type: 'button', label: 'Edit', onClick: handleEditTopology },
       { type: 'button', label: 'Move', onClick: handleMoveTopology },
       { type: 'button', label: 'Clone', onClick: handleCloneTopology },
@@ -361,6 +360,16 @@ const loadTopologyDetail = async () => {
         : ''
 
     checkDescriptionTruncation()
+
+    if (topology.value) {
+      try {
+        const schema = await fetchTopologySchema(topology.value._id)
+        const nodes = schema?.nodes ?? []
+        hasFlow.value = Array.isArray(nodes) && nodes.some((n: { type?: string }) => n.type === 'flow')
+      } catch {
+        hasFlow.value = false
+      }
+    }
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Failed to load topology'
     console.error('Failed to load topology:', err)
@@ -370,6 +379,7 @@ const loadTopologyDetail = async () => {
 }
 
 const publishing = ref(false)
+const hasFlow = ref(false)
 
 const handlePublish = async () => {
   if (!topology.value) return
@@ -415,6 +425,17 @@ const handleSaveDesign = async (data: { _id: string }) => {
     await layout.refreshSidebar()
   } else {
     topologyEditorRef.value?.reloadSchema()
+  }
+
+  const targetId = data._id || topology.value?._id
+  if (targetId) {
+    try {
+      const schema = await fetchTopologySchema(targetId)
+      const nodes = schema?.nodes ?? []
+      hasFlow.value = Array.isArray(nodes) && nodes.some((n: { type?: string }) => n.type === 'flow')
+    } catch {
+      hasFlow.value = false
+    }
   }
 }
 
@@ -490,10 +511,11 @@ const handlePermissionChange = (groupId: string, permission: 'manager' | 'develo
 
 // Load metrics data
 const loadMetrics = async () => {
-  if (!props.id) return
+  const topologyId = topology.value?._id || props.id
+  if (!topologyId) return
   metricsLoading.value = true
   try {
-    metricsData.value = await fetchTopologyMetrics(props.id, metricsMode.value)
+    metricsData.value = await fetchTopologyMetrics(topologyId, metricsMode.value)
   } catch (err) {
     console.error('Failed to load metrics:', err)
   } finally {
@@ -525,6 +547,7 @@ const handleTabChange = (tabId: string) => {
 watch(
   () => [props.id, versionId.value],
   async () => {
+    metricsData.value = null
     await loadTopologyDetail()
   }
 )
@@ -605,19 +628,7 @@ onMounted(async () => {
         </div>
 
         <div class="flex items-center gap-2">
-          <Button variant="outline" @click="handleVersionsClick">
-            <svg class="w-5 h-5 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
-              <path d="M480-120q-138 0-240.5-91.5T122-440h82q14 104 92.5 172T480-200q117 0 198.5-81.5T760-480q0-117-81.5-198.5T480-760q-69 0-129 32t-101 88h110v80H120v-240h80v94q51-64 124.5-99T480-840q75 0 140.5 28.5t114 77q48.5 48.5 77 114T840-480q0 75-28.5 140.5t-77 114q-48.5 48.5-114 77T480-120Zm112-192L440-464v-216h80v184l128 128-56 56Z"/>
-            </svg>
-            Versions
-          </Button>
-          <Button variant="outline" @click="handleOpenDesigner">
-            <svg class="w-5 h-5 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
-              <path d="M160-120v-170l527-526q12-12 27-18t30-6q16 0 30.5 6t25.5 18l56 56q12 11 18 25.5t6 30.5q0 15-6 30t-18 27L330-120H160Zm80-80h56l393-392-28-29-29-28-392 393v56Zm560-503-57-57 57 57Zm-139 82-29-28 57 57-28-29ZM560-120q74 0 137-37t63-103q0-36-19-62t-51-45l-59 59q23 10 36 22t13 26q0 23-36.5 41.5T560-200q-17 0-28.5 11.5T520-160q0 17 11.5 28.5T560-120ZM183-426l60-60q-20-8-31.5-16.5T200-520q0-12 18-24t76-37q88-38 117-69t29-70q0-55-44-87.5T280-840q-45 0-80.5 16T145-785q-11 13-9 29t15 26q13 11 29 9t27-13q14-14 31-20t42-6q41 0 60.5 12t19.5 28q0 14-17.5 25.5T262-654q-80 35-111 63.5T120-520q0 32 17 54.5t46 39.5Z"/>
-            </svg>
-            Design
-          </Button>
-          <Button v-if="topology.visibility === 'draft'" :loading="publishing" @click="handlePublish">
+          <Button v-if="topology.visibility === 'draft'" :loading="publishing" :disabled="!hasFlow" @click="handlePublish">
             <template #prepend>
               <svg class="-ms-1 me-2 h-4 w-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
                 <path fill-rule="evenodd" d="M5 3a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11.5c.07 0 .14-.007.207-.021.095.014.193.021.293.021h2a2 2 0 0 0 2-2V7a1 1 0 0 0-1-1h-1a1 1 0 1 0 0 2v11h-2V5a2 2 0 0 0-2-2H5Zm7 4a1 1 0 0 1 1-1h.5a1 1 0 1 1 0 2H13a1 1 0 0 1-1-1Zm0 3a1 1 0 0 1 1-1h.5a1 1 0 1 1 0 2H13a1 1 0 0 1-1-1Zm-6 4a1 1 0 0 1 1-1h6a1 1 0 1 1 0 2H7a1 1 0 0 1-1-1Zm0 3a1 1 0 0 1 1-1h6a1 1 0 1 1 0 2H7a1 1 0 0 1-1-1ZM7 6a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H7Zm1 3V8h1v1H8Z" clip-rule="evenodd"/>
@@ -631,6 +642,18 @@ onMounted(async () => {
             @click="handleToggleEnabled"
           >
             {{ topology.enabled ? 'Disable' : 'Enable' }}
+          </Button>
+          <Button variant="outline" @click="handleOpenDesigner">
+            <svg class="w-5 h-5 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
+              <path d="M160-120v-170l527-526q12-12 27-18t30-6q16 0 30.5 6t25.5 18l56 56q12 11 18 25.5t6 30.5q0 15-6 30t-18 27L330-120H160Zm80-80h56l393-392-28-29-29-28-392 393v56Zm560-503-57-57 57 57Zm-139 82-29-28 57 57-28-29ZM560-120q74 0 137-37t63-103q0-36-19-62t-51-45l-59 59q23 10 36 22t13 26q0 23-36.5 41.5T560-200q-17 0-28.5 11.5T520-160q0 17 11.5 28.5T560-120ZM183-426l60-60q-20-8-31.5-16.5T200-520q0-12 18-24t76-37q88-38 117-69t29-70q0-55-44-87.5T280-840q-45 0-80.5 16T145-785q-11 13-9 29t15 26q13 11 29 9t27-13q14-14 31-20t42-6q41 0 60.5 12t19.5 28q0 14-17.5 25.5T262-654q-80 35-111 63.5T120-520q0 32 17 54.5t46 39.5Z"/>
+            </svg>
+            Design
+          </Button>
+          <Button variant="outline" @click="handleVersionsClick">
+            <svg class="w-5 h-5 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
+              <path d="M480-120q-138 0-240.5-91.5T122-440h82q14 104 92.5 172T480-200q117 0 198.5-81.5T760-480q0-117-81.5-198.5T480-760q-69 0-129 32t-101 88h110v80H120v-240h80v94q51-64 124.5-99T480-840q75 0 140.5 28.5t114 77q48.5 48.5 77 114T840-480q0 75-28.5 140.5t-77 114q-48.5 48.5-114 77T480-120Zm112-192L440-464v-216h80v184l128 128-56 56Z"/>
+            </svg>
+            Versions
           </Button>
           <MoreActions
             id="topology-more-actions"

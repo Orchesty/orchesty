@@ -212,6 +212,12 @@ final class TopologySchemaUtils
                 $name      = $node['name'] ?? $pipesType;
                 $sdkHost   = '';
                 $app       = '';
+            } else if ($shape === 'hexagon') {
+                $handler   = self::BPMN_TASK;
+                $pipesType = TypeEnum::USER->value;
+                $name      = $node['name'] ?? 'user-task';
+                $sdkHost   = '';
+                $app       = '';
             } else if ($action !== NULL) {
                 $handler    = self::BPMN_TASK;
                 $pipesType  = $action['type'] ?? TypeEnum::CUSTOM->value;

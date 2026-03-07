@@ -119,6 +119,16 @@ export function useProcessPolling(topologyId: string) {
     }
   }
 
+  const resetToFastPolling = () => {
+    if (!isPolling.value) return
+    tickCount = 0
+    if (timeoutId) {
+      clearTimeout(timeoutId)
+      timeoutId = null
+    }
+    timeoutId = setTimeout(poll, PROCESS_POLL_FAST_INTERVAL_MS)
+  }
+
   onBeforeUnmount(() => {
     stopPolling()
   })
@@ -131,5 +141,6 @@ export function useProcessPolling(topologyId: string) {
     processCompleted,
     startPolling,
     stopPolling,
+    resetToFastPolling,
   }
 }

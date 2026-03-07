@@ -19,9 +19,14 @@ const props = withDefaults(defineProps<Props>(), {
   disabled: false,
 })
 
+const isDisabled = computed(() => props.loading || props.disabled)
+
 const buttonClasses = computed(() => {
   const base =
-    'inline-flex items-center justify-center rounded-full px-4 py-2 text-center text-sm font-medium focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+    'inline-flex items-center justify-center rounded-full px-4 py-2 text-center text-sm font-medium focus:outline-none transition-colors disabled:cursor-not-allowed disabled:opacity-50'
+
+  const disabledStyle =
+    'border border-gray-200 bg-white text-gray-400 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-500'
 
   const variants = {
     primary:
@@ -34,7 +39,7 @@ const buttonClasses = computed(() => {
       'bg-green-600 text-white hover:bg-green-700 focus:ring-4 focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800',
   }
 
-  return cn(base, variants[props.variant])
+  return cn(base, isDisabled.value ? disabledStyle : variants[props.variant])
 })
 </script>
 

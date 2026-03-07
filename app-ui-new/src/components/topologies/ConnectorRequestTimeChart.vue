@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onActivated, nextTick, computed } from 'vue'
+import { ref, onMounted, onActivated, nextTick, computed, watch } from 'vue'
 import { useApexChart } from '@/composables/useApexChart'
 import type { ApexOptions } from 'apexcharts'
 
@@ -107,19 +107,21 @@ const getChartOptions = (): ApexOptions => ({
 
 const { initChart } = useApexChart()
 
-onMounted(() => {
+const tryInitChart = () => {
   if (chartEl.value && props.data && props.data.length > 0) {
     initChart(chartEl.value, getChartOptions())
   }
-})
+}
 
-onActivated(() => {
-  nextTick(() => {
-    if (chartEl.value && props.data && props.data.length > 0) {
-      initChart(chartEl.value, getChartOptions())
-    }
-  })
-})
+onMounted(() => tryInitChart())
+
+onActivated(() => nextTick(() => tryInitChart()))
+
+watch(() => props.data, (newData) => {
+  if (newData && newData.length > 0) {
+    nextTick(() => tryInitChart())
+  }
+}, { deep: true })
 </script>
 
 <template>

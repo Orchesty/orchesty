@@ -8,9 +8,12 @@ interface Props {
   modelValue: boolean
   nodeName?: string
   nodeId?: string
+  hasBreakpointMessages?: boolean
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  hasBreakpointMessages: false,
+})
 
 const emit = defineEmits<{
   'update:modelValue': [value: boolean]
@@ -20,8 +23,8 @@ const emit = defineEmits<{
 const jsonInput = ref('{\n  \n}')
 const validationError = ref<string | null>(null)
 const isRunning = ref(false)
+const showBreakpointAlert = ref(false)
 
-// Watch for modal open to reset state
 watch(
   () => props.modelValue,
   (newValue) => {
@@ -29,6 +32,7 @@ watch(
       jsonInput.value = '{\n  \n}'
       validationError.value = null
       isRunning.value = false
+      showBreakpointAlert.value = props.hasBreakpointMessages
     }
   }
 )
@@ -84,6 +88,29 @@ const handleClose = () => {
     @update:model-value="handleClose"
   >
     <div class="space-y-4">
+      <div
+        v-if="showBreakpointAlert"
+        class="flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 p-3 dark:border-amber-800 dark:bg-amber-900/20"
+      >
+        <svg
+          class="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-500"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+          <line x1="12" y1="9" x2="12" y2="13" />
+          <line x1="12" y1="17" x2="12.01" y2="17" />
+        </svg>
+        <p class="text-sm text-amber-800 dark:text-amber-200">
+          All breakpoint queues will be cleared when the process starts.
+        </p>
+      </div>
+
       <div>
         <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">
           Input Data (JSON)
